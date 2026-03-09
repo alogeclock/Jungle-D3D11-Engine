@@ -77,6 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,6 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,6 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -117,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,6 +128,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Application.cpp" />
+    <ClCompile Include="Core\Input.cpp" />
+    <ClCompile Include="Core\Texture.cpp" />
+    <ClCompile Include="Core\TextureManager.cpp" />
+    <ClCompile Include="Core\Time.cpp" />
+    <ClCompile Include="Data\FileManager.cpp" />
+    <ClCompile Include="Data\MapLoader.cpp" />
+    <ClCompile Include="Data\ScoreRepository.cpp" />
+    <ClCompile Include="Gameplay\Actor.cpp" />
+    <ClCompile Include="Gameplay\BeatSystem.cpp" />
+    <ClCompile Include="Gameplay\Camera2D.cpp" />
+    <ClCompile Include="Gameplay\CreditPopup.cpp" />
+    <ClCompile Include="Gameplay\MapData.cpp" />
+    <ClCompile Include="Gameplay\Monster.cpp" />
+    <ClCompile Include="Gameplay\Player.cpp" />
+    <ClCompile Include="Gameplay\PopupManager.cpp" />
+    <ClCompile Include="Gameplay\ScoreboardPopup.cpp" />
+    <ClCompile Include="Gameplay\ScoreSystem.cpp" />
+    <ClCompile Include="Gameplay\Stage.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -132,8 +155,12 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="core\Renderer.cpp" />
-    <ClCompile Include="core\Game.cpp" />
+    <ClCompile Include="Core\Renderer.cpp" />
+    <ClCompile Include="Core\Game.cpp" />
+    <ClCompile Include="Scene\PlayScene.cpp" />
+    <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -141,6 +168,27 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Application.h" />
+    <ClInclude Include="Core\GameContext.h" />
+    <ClInclude Include="Core\Input.h" />
+    <ClInclude Include="Core\Texture.h" />
+    <ClInclude Include="Core\TextureManager.h" />
+    <ClInclude Include="Core\Time.h" />
+    <ClInclude Include="Data\FileManager.h" />
+    <ClInclude Include="Data\MapLoader.h" />
+    <ClInclude Include="Data\ScoreRepository.h" />
+    <ClInclude Include="Gameplay\Actor.h" />
+    <ClInclude Include="Gameplay\BeatSystem.h" />
+    <ClInclude Include="Gameplay\Camera2D.h" />
+    <ClInclude Include="Gameplay\CreditPopup.h" />
+    <ClInclude Include="Gameplay\MapData.h" />
+    <ClInclude Include="Gameplay\Monster.h" />
+    <ClInclude Include="Gameplay\Player.h" />
+    <ClInclude Include="Gameplay\Popup.h" />
+    <ClInclude Include="Gameplay\PopupManager.h" />
+    <ClInclude Include="Gameplay\ScoreboardPopup.h" />
+    <ClInclude Include="Gameplay\ScoreSystem.h" />
+    <ClInclude Include="Gameplay\Stage.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_dx11.h" />
@@ -149,11 +197,15 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="Scene\PlayScene.h" />
+    <ClInclude Include="Scene\Scene.h" />
+    <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Sphere.h" />
-    <ClInclude Include="core\Types.h" />
-    <ClInclude Include="core\Renderer.h" />
-    <ClInclude Include="core\Game.h" />
-    <ClInclude Include="core\Logger.h" />
+    <ClInclude Include="Core\Types.h" />
+    <ClInclude Include="Core\Renderer.h" />
+    <ClInclude Include="Core\Game.h" />
+    <ClInclude Include="Core\Logger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
