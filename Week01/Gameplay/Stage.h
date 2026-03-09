@@ -4,12 +4,15 @@
 #include <string>
 #include <vector>
 
-class FMapData;
-class FPlayer;
-class FMonster;
-class FBeatSystem;
-class FCamera2D;
-class FScoreSystem;
+#include "MapData.h"
+#include "Player.h"
+#include "Monster.h"
+#include "Tile.h"
+#include "Wall.h"
+#include "BeatSystem.h"
+#include "Camera2D.h"
+#include "ScoreSystem.h"
+
 class FActor;
 struct FGameContext;
 
@@ -36,6 +39,14 @@ public:
 	std::vector<std::unique_ptr<FMonster>>& GetMonsters();
 	const std::vector<std::unique_ptr<FMonster>>& GetMonsters() const;
 
+	std::vector<FTile>& GetTiles();
+	const std::vector<FTile>& GetTiles() const;
+
+	std::vector<FWall>& GetWalls();
+	const std::vector<FWall>& GetWalls() const;
+	FWall* FindWallAt(int X, int Y);
+	void RemoveDestroyedWalls();
+
 	FMapData& GetMap();
 	const FMapData& GetMap() const;
 
@@ -57,6 +68,8 @@ private:
 	std::unique_ptr<FMapData> Map;
 	std::unique_ptr<FPlayer> Player;
 	std::vector<std::unique_ptr<FMonster>> Monsters;
+	std::vector<FTile> Tiles;
+	std::vector<FWall> Walls;
 
 	std::unique_ptr<FBeatSystem> BeatSystem;
 	std::unique_ptr<FCamera2D> Camera;

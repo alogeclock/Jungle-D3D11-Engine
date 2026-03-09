@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include "Scene.h"
 
@@ -9,6 +10,8 @@ class FPopupManager;
 class FPlayScene : public IScene
 {
 public:
+	~FPlayScene() override;
+
 	void Enter() override;
 	void Exit() override;
 
@@ -19,8 +22,8 @@ public:
 	void RestartGame();
 
 private:
-	FStage* Stage = nullptr;
-	FPopupManager* PopupManager = nullptr;
+	std::unique_ptr<FStage> Stage;
+	std::unique_ptr<FPopupManager> PopupManager;
 
 	bool bIsPaused = false;
 	bool bIsGameOverPopupOpened = false;

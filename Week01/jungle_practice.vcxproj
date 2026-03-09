@@ -147,6 +147,8 @@
     <ClCompile Include="Gameplay\ScoreboardPopup.cpp" />
     <ClCompile Include="Gameplay\ScoreSystem.cpp" />
     <ClCompile Include="Gameplay\Stage.cpp" />
+    <ClCompile Include="Gameplay\Tile.cpp" />
+    <ClCompile Include="Gameplay\Wall.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -189,6 +191,8 @@
     <ClInclude Include="Gameplay\ScoreboardPopup.h" />
     <ClInclude Include="Gameplay\ScoreSystem.h" />
     <ClInclude Include="Gameplay\Stage.h" />
+    <ClInclude Include="Gameplay\Tile.h" />
+    <ClInclude Include="Gameplay\Wall.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_dx11.h" />

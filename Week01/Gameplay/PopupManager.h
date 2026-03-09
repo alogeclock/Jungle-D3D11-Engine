@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-class IPopup;
+#include "Popup.h"
 struct FGameContext;
 
 class FPopupManager

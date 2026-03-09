@@ -3,10 +3,13 @@
 #include "TitleScene.h"
 #include "PlayScene.h"
 #include "../Core/GameContext.h"
+#include "../Gameplay/PopupManager.h"
+#include "../Gameplay/Stage.h"
 
 void FSceneManager::Initialize(FGameContext* InGameContext)
 {
 	GameContext = InGameContext;
+	ChangeSceneImmediately(ESceneType::Title);
 }
 
 void FSceneManager::RequestChangeScene(ESceneType SceneType)
