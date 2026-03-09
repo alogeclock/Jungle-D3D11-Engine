@@ -1,9 +1,11 @@
 #include "Game.h"
+#include "Logger.h"
 
 void UGame::Init(URenderer* InRenderer, HWND InHWnd)
 {
 	Renderer = InRenderer;
 	hWnd = InHWnd;
+	Logger::Log("Game initialized");
 }
 
 void UGame::Update(float deltaTime)

@@ -12,6 +12,14 @@
 #include "core/Renderer.h"
 #include "core/Game.h"
 
+#define DEBUG
+
+#ifdef DEBUG
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#else
+#pragma comment(linker, "/subsystem:windows")
+#endif
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
