@@ -1,0 +1,36 @@
+RhythmMaze/
+├─ Core/
+│  ├─ Application.h
+│  ├─ GameContext.h
+│  ├─ Time.h
+│  ├─ Input.h
+│  ├─ Renderer.h
+│  ├─ Texture.h
+│  └─ TextureManager.h
+│
+├─ Scene/
+│  ├─ Scene.h
+│  ├─ SceneManager.h
+│  ├─ TitleScene.h
+│  └─ PlayScene.h
+│
+├─ UI/
+│  ├─ Popup.h
+│  ├─ PopupManager.h
+│  ├─ CreditPopup.h
+│  └─ ScoreboardPopup.h
+│
+├─ Gameplay/
+│  ├─ Stage.h
+│  ├─ MapData.h
+│  ├─ BeatSystem.h
+│  ├─ Camera2D.h
+│  ├─ ScoreSystem.h
+│  ├─ Actor.h
+│  ├─ Player.h
+│  └─ Monster.h
+│
+└─ Data/
+   ├─ FileManager.h
+   ├─ MapLoader.h
+   └─ ScoreRepository.h
