@@ -12,7 +12,8 @@
         "name": "Stage 1: Rhythm Beginnings",
         "width": 10,
         "height": 8,
-        "spawn_point": { "x": 2, "y": 2 }
+        "spawn_point": { "x": 2, "y": 2 },
+        "bpm": 60
       },
       "layers": [
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],

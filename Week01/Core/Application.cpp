@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "Data/MapLoader.h"
+#include "Data/StageLoader.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
@@ -23,11 +23,10 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     if (!Renderer->Initialize(WindowHandle, ScreenWidth, ScreenHeight))
         return false;
 
-    // TODO
+    // TODO: 텍스처 모두 로드
     // TextureManager->Initialize(Renderer->Device);
 
-    // 맵 데이터 미리 로드
-    FMapLoader::Get().Initialize("Resources/Maps/stages.json");
+    // TODO: 스테이지 로더 세팅
 
     // ImGui 초기화
     IMGUI_CHECKVERSION();
