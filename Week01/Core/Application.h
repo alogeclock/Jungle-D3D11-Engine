@@ -18,14 +18,14 @@ class FApplication
     void Run();
     void Shutdown();
 
-    void RequestQuit();
-    bool IsRunning() const;
+	void RequestQuit();
+	bool IsRunning() const;
 
-    FTime           &GetTime();
-    FInput          &GetInput();
-    FRenderer       &GetRenderer();
-    FTextureManager &GetTextureManager();
-    FSceneManager   &GetSceneManager();
+	FTime& GetTime();
+	FInput& GetInput();
+	FRenderer& GetRenderer();
+	FTextureManager& GetTextureManager();
+	FSceneManager& GetSceneManager();
 
   private:
     bool bIsRunning = true;

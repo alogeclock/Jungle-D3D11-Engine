@@ -34,10 +34,10 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 }
 
 /*
-    1. Input 처리
-    2. Time 처리 (실제 흐른 시각 기준)
-    3. Scene 업데이트: Scene 타입을 구분하여 처리
-    4. Scene 렌더
+        1. Input 처리
+        2. Time 처리 (실제 흐른 시각 기준)
+        3. Scene 업데이트: Scene 타입을 구분하여 처리
+        4. Scene 렌더
 */
 void FApplication::Run()
 {
@@ -58,8 +58,10 @@ void FApplication::Run()
         // Scene 렌더
         Renderer->BeginFrame();
         SceneManager->Render();
+        Renderer->DrawTexture(nullptr, 100, 100, 20, 20);
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        Renderer->Render();
         Renderer->EndFrame();
     }
 }

@@ -7,8 +7,8 @@
 
 struct FVertexSimple
 {
-    float x, y, z;    // Position
-    float r, g, b, a; // Color
+    float x, y, z; // Position
+    float u, v;
 };
 
 struct FVector
