@@ -48,6 +48,7 @@ void FRenderer::PrepareShader()
 
 void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 {
+	PrepareShader();
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
 	DeviceContext->PSSetSamplers(0, 1, &SamplerState); // 0 = shader register 0 // THINK ABOUT : Maybe this line can be in BeginFrame()

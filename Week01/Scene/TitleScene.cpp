@@ -7,7 +7,8 @@
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
-
+#include "Render/Renderer.h"
+#include "Render/TextureManager.h"
 FTitleScene::~FTitleScene() = default;
 
 void FTitleScene::Enter()
@@ -48,6 +49,8 @@ void FTitleScene::Render(FGameContext& Context)
 	ImGui::End();
 
 	UIManager.Render(Context);
+
+	Context.Renderer.DrawTexture(Context.Textures.Get("Floor"), 100, 100, 100, 100);
 }
 
 void FTitleScene::StartGame()
