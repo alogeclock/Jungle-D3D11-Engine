@@ -2,19 +2,19 @@
 
 #include <memory>
 #include <optional>
+#include <windows.h>
 #include "GameContext.h"
 #include "Input.h"
 #include "Renderer.h"
-#include "Scene/SceneManager.h"
+#include "SceneManager.h"
 #include "TextureManager.h"
 #include "Time.h"
-
-struct FGameContext;
+#include "FWindow.h"
 
 class FApplication
 {
   public:
-    bool Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeight);
+    bool Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHeight);
     void Run();
     void Shutdown();
 
@@ -29,15 +29,14 @@ class FApplication
 
   private:
     bool bIsRunning = true;
-    HWND HWnd = nullptr;
+
+    FWindow Window;
 
     std::unique_ptr<FTime>           Time;
     std::unique_ptr<FInput>          Input;
     std::unique_ptr<FRenderer>       Renderer;
     std::unique_ptr<FTextureManager> TextureManager;
     std::unique_ptr<FSceneManager>   SceneManager;
-    std::optional<FGameContext>      GameContext;
 
-  private:
-    bool ProcessWindowMessages();
+    std::optional<FGameContext> GameContext;
 };

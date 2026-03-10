@@ -1,12 +1,17 @@
 #include "Application.h"
+#include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
-#include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 
-bool FApplication::Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeight)
+bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHeight)
 {
-    HWnd = WindowHandle;
+    if (!Window.Initialize(hInstance, ScreenWidth, ScreenHeight, L"My Game"))
+        return false;
+
+    HWND WindowHandle = Window.GetHandle();
+    if (WindowHandle == nullptr)
+        return false;
 
     Time = std::make_unique<FTime>();
     Input = std::make_unique<FInput>();
@@ -14,10 +19,11 @@ bool FApplication::Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeig
     TextureManager = std::make_unique<FTextureManager>();
     SceneManager = std::make_unique<FSceneManager>();
 
-    if (!Renderer->Initialize(HWnd, ScreenWidth, ScreenHeight))
+    if (!Renderer->Initialize(WindowHandle, ScreenWidth, ScreenHeight))
         return false;
 
-    TextureManager->Initialize(Renderer->Device);
+    // TODO
+    // TextureManager->Initialize(Renderer->Device);
 
     GameContext.emplace(FGameContext{*Time, *Input, *Renderer, *TextureManager});
 
@@ -35,14 +41,8 @@ bool FApplication::Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeig
 */
 void FApplication::Run()
 {
-    while (bIsRunning)
+    while (bIsRunning && Window.ProcessMessages())
     {
-        if (!ProcessWindowMessages())
-        {
-            bIsRunning = false;
-            break;
-        }
-
         // Input, Time 업데이트
         Input->Update();
         Time->Update();
@@ -66,7 +66,8 @@ void FApplication::Run()
 
 void FApplication::Shutdown()
 {
-    // todo
+    // TODO: 씬 매니저, 렌더러 등 정리
+    Window.Shutdown();
 }
 
 void FApplication::RequestQuit() { bIsRunning = false; }
@@ -82,22 +83,3 @@ FRenderer &FApplication::GetRenderer() { return *Renderer; }
 FTextureManager &FApplication::GetTextureManager() { return *TextureManager; }
 
 FSceneManager &FApplication::GetSceneManager() { return *SceneManager; }
-
-// false 반환시 종료
-bool FApplication::ProcessWindowMessages()
-{
-    MSG Msg{};
-
-    while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
-    {
-        TranslateMessage(&Msg);
-        DispatchMessage(&Msg);
-
-        if (Msg.message == WM_QUIT)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
