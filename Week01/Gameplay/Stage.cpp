@@ -203,6 +203,12 @@ void FStage::Update(float DeltaTime, FGameContext& Context)
 		}
 	}
 
+	// 플레이어 사망 체크
+	if (Player->IsDead())
+	{
+		bIsGameOver = true;
+	}
+
 	// 골인 지점 도달 체크
 	if (GoalX >= 0 && Player->GetTileX() == GoalX && Player->GetTileY() == GoalY)
 	{
