@@ -6,7 +6,6 @@ enum class EGameOverPopupAction
 {
     None,
     BackToTitle,
-    Close
 };
 
 class FGameOverPopup : public FUIPopupBase
@@ -42,20 +41,10 @@ void FGameOverPopup::Render(FGameContext &Context)
     {
         ImGui::Text("Game Over");
         ImGui::Separator();
-        ImGui::Text("Return to title?");
 
         if (ImGui::Button("Back to Title", ImVec2(200, 0)))
         {
             PendingAction = EGameOverPopupAction::BackToTitle;
-            ImGui::CloseCurrentPopup();
-            Close();
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Close", ImVec2(120, 0)))
-        {
-            PendingAction = EGameOverPopupAction::Close;
             ImGui::CloseCurrentPopup();
             Close();
         }
