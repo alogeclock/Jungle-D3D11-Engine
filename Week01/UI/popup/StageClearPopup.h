@@ -6,7 +6,7 @@ enum class EStageClearPopupAction
 {
     None,
     NextStage,
-    Close
+    OpenSaveScorePopup
 };
 
 class FStageClearPopup : public FUIPopupBase
@@ -51,42 +51,26 @@ void FStageClearPopup::Render(FGameContext &Context)
     if (ImGui::BeginPopupModal("Stage Clear", nullptr, Flags))
     {
         ImGui::Text("Stage %d Clear!", ClearedStage);
+        ImGui::Separator();
 
         if (bAllCleared)
         {
-            ImGui::Separator();
             ImGui::Text("You cleared all stages!");
-            ImGui::Text("Please enter your nickname for score saving.");
+
+            if (ImGui::Button("Save Score", ImVec2(280, 0)))
+            {
+                PendingAction = EStageClearPopupAction::OpenSaveScorePopup;
+                ImGui::CloseCurrentPopup();
+                Close();
+            }
         }
         else
         {
-            ImGui::Separator();
             ImGui::Text("Go to next stage?");
-        }
 
-        if (!bAllCleared)
-        {
-            if (ImGui::Button("Next Stage", ImVec2(140, 0)))
+            if (ImGui::Button("Next Stage", ImVec2(280, 0)))
             {
                 PendingAction = EStageClearPopupAction::NextStage;
-                ImGui::CloseCurrentPopup();
-                Close();
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Close", ImVec2(140, 0)))
-            {
-                PendingAction = EStageClearPopupAction::Close;
-                ImGui::CloseCurrentPopup();
-                Close();
-            }
-        }
-        else
-        {
-            if (ImGui::Button("OK", ImVec2(280, 0)))
-            {
-                PendingAction = EStageClearPopupAction::Close;
                 ImGui::CloseCurrentPopup();
                 Close();
             }

@@ -1,6 +1,8 @@
 #include "PlayScene.h"
 #include "SceneManager.h"
+#include "SceneType.h"
 #include "TitleScene.h"
+
 
 void FSceneManager::Initialize() { ChangeSceneInternal(ESceneType::Title); }
 
@@ -24,7 +26,6 @@ void FSceneManager::Render(FGameContext &Context)
 {
     if (!CurrentScene)
         return;
-
     CurrentScene->Render(Context);
 }
 
