@@ -8,53 +8,51 @@
 // TODO
 #define MAX_NICKNAME_LENGTH 6
 
-#pragma once
-
-enum class ENicknamePopupAction
+enum class ESaveScorePopupAction
 {
     None,
     Submit,
     Cancel
 };
 
-struct FNicknamePopupResult
+struct FSaveScorePopupResult
 {
-    ENicknamePopupAction Action = ENicknamePopupAction::None;
-    std::string          Nickname;
+    ESaveScorePopupAction Action = ESaveScorePopupAction::None;
+    std::string           Nickname;
 };
 
-class FNicknamePopup : public FUIPopupBase
+class FSaveScorePopup : public FUIPopupBase
 {
   public:
-    FNicknamePopup();
+    FSaveScorePopup();
 
-    void                 ResetInput();
-    const char          *GetNickname() const;
-    FNicknamePopupResult ConsumeResult();
+    void                  ResetInput();
+    const char           *GetNickname() const;
+    FSaveScorePopupResult ConsumeResult();
 
     void Render(FGameContext &Context) override;
 
   private:
-    std::array<char, 32> NicknameBuffer{};
-    FNicknamePopupResult PendingResult{};
+    std::array<char, MAX_NICKNAME_LENGTH + 1> NicknameBuffer{};
+    FSaveScorePopupResult                     PendingResult{};
 };
 
 // =============================================================================
 
-FNicknamePopup::FNicknamePopup() { ResetInput(); }
+FSaveScorePopup::FSaveScorePopup() { ResetInput(); }
 
-void FNicknamePopup::ResetInput() { NicknameBuffer.fill('\0'); }
+void FSaveScorePopup::ResetInput() { NicknameBuffer.fill('\0'); }
 
-const char *FNicknamePopup::GetNickname() const { return NicknameBuffer.data(); }
+const char *FSaveScorePopup::GetNickname() const { return NicknameBuffer.data(); }
 
-FNicknamePopupResult FNicknamePopup::ConsumeResult()
+FSaveScorePopupResult FSaveScorePopup::ConsumeResult()
 {
-    FNicknamePopupResult Result = PendingResult;
+    FSaveScorePopupResult Result = PendingResult;
     PendingResult = {};
     return Result;
 }
 
-void FNicknamePopup::Render(FGameContext &Context)
+void FSaveScorePopup::Render(FGameContext &Context)
 {
     if (ConsumeOpenRequest())
     {
@@ -81,7 +79,7 @@ void FNicknamePopup::Render(FGameContext &Context)
 
         if (ImGui::Button("Save", ImVec2(120, 0)) && bCanSubmit)
         {
-            PendingResult.Action = ENicknamePopupAction::Submit;
+            PendingResult.Action = ESaveScorePopupAction::Submit;
             PendingResult.Nickname = NicknameBuffer.data();
 
             ImGui::CloseCurrentPopup();
@@ -92,7 +90,7 @@ void FNicknamePopup::Render(FGameContext &Context)
 
         if (ImGui::Button("Cancel", ImVec2(120, 0)))
         {
-            PendingResult.Action = ENicknamePopupAction::Cancel;
+            PendingResult.Action = ESaveScorePopupAction::Cancel;
             PendingResult.Nickname.clear();
 
             ImGui::CloseCurrentPopup();
