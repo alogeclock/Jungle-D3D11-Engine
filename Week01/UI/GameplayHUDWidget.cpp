@@ -5,28 +5,19 @@
 #include "Render/Renderer.h"
 #include "imgui/imgui.h"
 
-void FGameplayHUDWidget::BindStage(const FStage* InStage)
-{
-	Stage = InStage;
-}
+void FGameplayHUDWidget::BindStage(const FStage *InStage) { Stage = InStage; }
 
-void FGameplayHUDWidget::BindPauseFlag(bool *InPauseFlag)
-{
-	PauseFlag = InPauseFlag;
-}
+void FGameplayHUDWidget::BindPauseFlag(bool *InPauseFlag) { PauseFlag = InPauseFlag; }
 
-void FGameplayHUDWidget::ResetPlayTime()
-{
-	PlayTime = 0.0f;
-}
+void FGameplayHUDWidget::ResetPlayTime() { PlayTime = 0.0f; }
 
-void FGameplayHUDWidget::Update(FGameContext& Context)
+void FGameplayHUDWidget::Update(FGameContext &Context)
 {
-	bool bPaused = PauseFlag && *PauseFlag;
-	if (!bPaused)
-	{
-		PlayTime += Context.Time.GetDeltaTime();
-	}
+    bool bPaused = PauseFlag && *PauseFlag;
+    if (!bPaused)
+    {
+        PlayTime += Context.Time.GetDeltaTime();
+    }
 }
 
 void FGameplayHUDWidget::Render(FGameContext& Context)
