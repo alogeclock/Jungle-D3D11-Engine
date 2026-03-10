@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Renderer.h"
 #include <filesystem>
 
@@ -69,6 +70,8 @@ void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 
 bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
 {
+	ShaderError.clear();
+
 	ID3DBlob* VsBlob = nullptr;
 	ID3DBlob* PsBlob = nullptr;
 	ID3DBlob* ErrorBlob = nullptr;
@@ -76,7 +79,15 @@ bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
 	HRESULT Hr = D3DCompileFromFile(Path.c_str(), nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VsBlob, &ErrorBlob);
 	if (FAILED(Hr))
 	{
-		if (ErrorBlob) ErrorBlob->Release();
+		if (ErrorBlob)
+		{
+			ShaderError = "VS: " + std::string((const char*)ErrorBlob->GetBufferPointer(), ErrorBlob->GetBufferSize());
+			ErrorBlob->Release();
+		}
+		else
+		{
+			ShaderError = "VS: Failed to open file";
+		}
 		if (VsBlob) VsBlob->Release();
 		return false;
 	}
@@ -84,7 +95,15 @@ bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
 	Hr = D3DCompileFromFile(Path.c_str(), nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &PsBlob, &ErrorBlob);
 	if (FAILED(Hr))
 	{
-		if (ErrorBlob) ErrorBlob->Release();
+		if (ErrorBlob)
+		{
+			ShaderError = "PS: " + std::string((const char*)ErrorBlob->GetBufferPointer(), ErrorBlob->GetBufferSize());
+			ErrorBlob->Release();
+		}
+		else
+		{
+			ShaderError = "PS: Failed to compile";
+		}
 		if (PsBlob) PsBlob->Release();
 		VsBlob->Release();
 		return false;
@@ -109,6 +128,7 @@ bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
 
 	if (!NewVS || !NewPS || !NewIL)
 	{
+		ShaderError = "Failed to create shader objects";
 		if (NewVS) NewVS->Release();
 		if (NewPS) NewPS->Release();
 		if (NewIL) NewIL->Release();
@@ -125,6 +145,11 @@ bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
 	CurrentShaderName = FsPath.stem().string();
 
 	return true;
+}
+
+const std::string& FRenderer::GetShaderError() const
+{
+	return ShaderError;
 }
 
 std::vector<std::string> FRenderer::GetAvailableShaders() const

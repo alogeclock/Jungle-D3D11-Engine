@@ -68,6 +68,7 @@ public:
 	bool LoadShaderFromFile(const std::wstring& Path);
 	std::vector<std::string> GetAvailableShaders() const;
 	const std::string& GetCurrentShaderName() const;
+	const std::string& GetShaderError() const;
 
 	void UpdateConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f, float Angle = 0.0f, float ChargeSign = 0.0f);
 	void Prepare();
@@ -96,6 +97,7 @@ public:
 
 private:
 	std::string CurrentShaderName = "Default";
+	std::string ShaderError;
 	std::vector<FRenderObject> RenderObjects;
 	const FVertexSimple quadVertices[6] =
 	{

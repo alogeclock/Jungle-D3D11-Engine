@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Camera2D.h"
 
 void FCamera2D::Reset()

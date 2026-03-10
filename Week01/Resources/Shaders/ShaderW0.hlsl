@@ -15,14 +15,12 @@ SamplerState SimpleSampler : register(s0);
 struct VS_INPUT
 {
     float4 position : POSITION;
-    float4 color : COLOR;
     float2 UV : TEXCOORD0;
 };
 
 struct PS_INPUT
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
     float2 UV : TEXCOORD0;
 };
 
@@ -37,13 +35,10 @@ PS_INPUT mainVS(VS_INPUT input)
     worldPos.xyz += Offset;
 
     // 2D NDC 변환 (Screen Space to NDC)
-    // Screen (0,0) -> NDC (-1, 1)
-    // Screen (Width, Height) -> NDC (1, -1)
     float x_ndc = (worldPos.x / ScreenSize.x) * 2.0f - 1.0f;
     float y_ndc = 1.0f - (worldPos.y / ScreenSize.y) * 2.0f;
 
     output.position = float4(x_ndc, y_ndc, 0.f, 1.f);
-    output.color = input.color;
     output.UV = input.UV;
     return output;
 }

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "BeatSystem.h"
 #include <cmath>
 

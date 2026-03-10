@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Stage.h"
 #include "BeatSystem.h"
 #include "Camera2D.h"
