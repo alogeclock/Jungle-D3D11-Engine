@@ -4,7 +4,7 @@
 #include "ScoreRecord.h"
 #include "UIPopupBase.h"
 
-class FScoreboardPopup : public FPopupBase
+class FScoreboardPopup : public FUIPopupBase
 {
   public:
     void SetRecords(const std::vector<FScoreRecord> &InRecords) { Records = InRecords; }
@@ -44,7 +44,7 @@ void FScoreboardPopup::Render(FGameContext &Context)
                 ImGui::TableNextRow();
 
                 ImGui::TableSetColumnIndex(0);
-                ImGui::Text("%s", Record.Nickname.c_str());
+                ImGui::Text("%s", Record.Name.c_str());
 
                 ImGui::TableSetColumnIndex(1);
                 ImGui::Text("%d", Record.Stage);

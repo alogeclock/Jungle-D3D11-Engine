@@ -1,16 +1,20 @@
 #pragma once
 
-struct FGameContext;
+#include "GameContext.h"
 
 class IUIPopup
 {
   public:
     virtual ~IUIPopup() = default;
 
-    virtual void Open() = 0;
-    virtual void Close() = 0;
-    virtual bool IsOpen() const = 0;
-
     virtual void Update(FGameContext &Context) = 0;
     virtual void Render(FGameContext &Context) = 0;
+
+    bool IsClosed() const { return bClosed; }
+
+  protected:
+    void Close() { bClosed = true; }
+
+  private:
+    bool bClosed = false;
 };

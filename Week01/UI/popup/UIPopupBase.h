@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIPopup.h"
+#include "imgui/imgui.h"
 #include "imgui_impl_win32.h"
 
 class FUIPopupBase : public IUIPopup
