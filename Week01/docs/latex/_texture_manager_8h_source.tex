@@ -1,0 +1,48 @@
+\doxysection{Texture\+Manager.\+h}
+\hypertarget{_texture_manager_8h_source}{}\label{_texture_manager_8h_source}\index{Core/TextureManager.h@{Core/TextureManager.h}}
+\doxymbox{\hyperlink{_texture_manager_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }ID3D11Device;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{struct\ }ID3D11SamplerState;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }ID3D11DeviceContext;}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_texture_8h}{Texture.h}}"{}}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}}
+\DoxyCodeLine{00014\ \{}
+\DoxyCodeLine{00015\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager_a4d386635666ef24ce0d750e78615a955}{\string~FTextureManager}}();}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{comment}{//\ 초기화:\ D3D11\ 디바이스\ 연결\ +\ 기본\ 샘플러\ 생성}}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_manager_aef3eb923880a1f465e755440684677db}{Initialize}}(ID3D11Device*\ InDevice);}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{comment}{//\ 텍스처\ 로드/관리}}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_texture_manager_ac8f52449c14074dbd48135e0d1dbab6e}{Load}}(\textcolor{keyword}{const}\ std::string\&\ Key,\ \textcolor{keyword}{const}\ std::string\&\ Path);}
+\DoxyCodeLine{00023\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture}{FTexture}}*\ \doxymbox{\hyperlink{class_f_texture_manager_ad199aa919e2a3c376b20a50e29bb96df}{Get}}(\textcolor{keyword}{const}\ std::string\&\ Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_texture_manager_af59626fa5964275f29727319443d08b6}{Has}}(\textcolor{keyword}{const}\ std::string\&\ Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_manager_a1602f407f67129a27f085cb2a6978ae6}{Unload}}(\textcolor{keyword}{const}\ std::string\&\ Key);}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_manager_a2afe883588b90d2f5eff5159a64abf25}{Clear}}();}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//\ 기본\ 샘플러\ (Point\ 필터링\ —\ 픽셀아트용)}}
+\DoxyCodeLine{00029\ \ \ \ \ ID3D11SamplerState*\ \doxymbox{\hyperlink{class_f_texture_manager_a9d21ab5e8a7c460b388af9c500506ecc}{GetDefaultSampler}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{comment}{//\ 셰이더에\ 텍스처\ +\ 샘플러\ 바인딩}}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_manager_a4fa1dbf13aab4df4d55f20d56036276a}{Bind}}(\textcolor{keyword}{const}\ std::string\&\ Key,\ ID3D11DeviceContext*\ Context,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ Slot\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_manager_af974ebf9477dc2a84ff4c3819a673b47}{Unbind}}(ID3D11DeviceContext*\ Context,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ Slot\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00036\ \ \ \ \ ID3D11Device*\ Device\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00037\ \ \ \ \ ID3D11SamplerState*\ DefaultSampler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ std::unordered\_map<std::string,\ std::unique\_ptr<FTexture>>\ Textures;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ CreateDefaultSampler();}
+\DoxyCodeLine{00042\ \};}
+
+\end{DoxyCode}

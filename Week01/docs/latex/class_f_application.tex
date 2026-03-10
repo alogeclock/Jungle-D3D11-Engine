@@ -1,0 +1,100 @@
+\doxysection{FApplication Class Reference}
+\hypertarget{class_f_application}{}\label{class_f_application}\index{FApplication@{FApplication}}
+
+
+{\ttfamily \+\#include $<$Application.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_f_application_aed19757075fc8e26ecb1bfc2a6eca93c}{Initialize}} (HWND Window\+Handle, int Screen\+Width, int Screen\+Height)
+\item 
+void \doxymbox{\hyperlink{class_f_application_abb4eefbfe47780177f0cad1ec4e72264}{Run}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_application_a2e95ee4f22ce25bc8be1618ad7e5cb78}{Shutdown}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_application_a1f1fe26c85d60ccdf4c51a58b8abd54d}{Request\+Quit}} ()
+\item 
+bool \doxymbox{\hyperlink{class_f_application_abc696bc3b580646be76c62500ab16eaf}{Is\+Running}} () const
+\item 
+\doxymbox{\hyperlink{class_f_time}{FTime}} \& \doxymbox{\hyperlink{class_f_application_a7f0f6209a60f918182630ef3d995354a}{Get\+Time}} ()
+\item 
+\doxymbox{\hyperlink{class_f_input}{FInput}} \& \doxymbox{\hyperlink{class_f_application_a85a7409efe0b186c3e0596e20aca3cac}{Get\+Input}} ()
+\item 
+\doxymbox{\hyperlink{class_f_renderer}{FRenderer}} \& \doxymbox{\hyperlink{class_f_application_a64876b1ef0cb6c6e5c6340771eaa8c1a}{Get\+Renderer}} ()
+\item 
+\doxymbox{\hyperlink{class_f_texture_manager}{FTexture\+Manager}} \& \doxymbox{\hyperlink{class_f_application_a41dd5ced5072ce08b01a5dccbc447042}{Get\+Texture\+Manager}} ()
+\item 
+\doxymbox{\hyperlink{class_f_scene_manager}{FScene\+Manager}} \& \doxymbox{\hyperlink{class_f_application_a40a7c6567b74a72d901d2876fc9869f7}{Get\+Scene\+Manager}} ()
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_application_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_application_a85a7409efe0b186c3e0596e20aca3cac}\index{FApplication@{FApplication}!GetInput@{GetInput}}
+\index{GetInput@{GetInput}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{GetInput()}{GetInput()}}
+{\footnotesize\ttfamily \label{class_f_application_a85a7409efe0b186c3e0596e20aca3cac} 
+\doxymbox{\hyperlink{class_f_input}{FInput}} \& FApplication::\+\+Get\+Input (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_a64876b1ef0cb6c6e5c6340771eaa8c1a}\index{FApplication@{FApplication}!GetRenderer@{GetRenderer}}
+\index{GetRenderer@{GetRenderer}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{GetRenderer()}{GetRenderer()}}
+{\footnotesize\ttfamily \label{class_f_application_a64876b1ef0cb6c6e5c6340771eaa8c1a} 
+\doxymbox{\hyperlink{class_f_renderer}{FRenderer}} \& FApplication::\+\+Get\+Renderer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_a40a7c6567b74a72d901d2876fc9869f7}\index{FApplication@{FApplication}!GetSceneManager@{GetSceneManager}}
+\index{GetSceneManager@{GetSceneManager}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{GetSceneManager()}{GetSceneManager()}}
+{\footnotesize\ttfamily \label{class_f_application_a40a7c6567b74a72d901d2876fc9869f7} 
+\doxymbox{\hyperlink{class_f_scene_manager}{FScene\+Manager}} \& FApplication::\+\+Get\+Scene\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_a41dd5ced5072ce08b01a5dccbc447042}\index{FApplication@{FApplication}!GetTextureManager@{GetTextureManager}}
+\index{GetTextureManager@{GetTextureManager}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{GetTextureManager()}{GetTextureManager()}}
+{\footnotesize\ttfamily \label{class_f_application_a41dd5ced5072ce08b01a5dccbc447042} 
+\doxymbox{\hyperlink{class_f_texture_manager}{FTexture\+Manager}} \& FApplication::\+\+Get\+Texture\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_a7f0f6209a60f918182630ef3d995354a}\index{FApplication@{FApplication}!GetTime@{GetTime}}
+\index{GetTime@{GetTime}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{GetTime()}{GetTime()}}
+{\footnotesize\ttfamily \label{class_f_application_a7f0f6209a60f918182630ef3d995354a} 
+\doxymbox{\hyperlink{class_f_time}{FTime}} \& FApplication::\+\+Get\+Time (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_aed19757075fc8e26ecb1bfc2a6eca93c}\index{FApplication@{FApplication}!Initialize@{Initialize}}
+\index{Initialize@{Initialize}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{Initialize()}{Initialize()}}
+{\footnotesize\ttfamily \label{class_f_application_aed19757075fc8e26ecb1bfc2a6eca93c} 
+bool FApplication::\+\+Initialize (\begin{DoxyParamCaption}\item[{HWND}]{Window\+Handle}{, }\item[{int}]{Screen\+Width}{, }\item[{int}]{Screen\+Height}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_abc696bc3b580646be76c62500ab16eaf}\index{FApplication@{FApplication}!IsRunning@{IsRunning}}
+\index{IsRunning@{IsRunning}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{IsRunning()}{IsRunning()}}
+{\footnotesize\ttfamily \label{class_f_application_abc696bc3b580646be76c62500ab16eaf} 
+bool FApplication::\+\+Is\+Running (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_application_a1f1fe26c85d60ccdf4c51a58b8abd54d}\index{FApplication@{FApplication}!RequestQuit@{RequestQuit}}
+\index{RequestQuit@{RequestQuit}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{RequestQuit()}{RequestQuit()}}
+{\footnotesize\ttfamily \label{class_f_application_a1f1fe26c85d60ccdf4c51a58b8abd54d} 
+void FApplication::\+\+Request\+Quit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_abb4eefbfe47780177f0cad1ec4e72264}\index{FApplication@{FApplication}!Run@{Run}}
+\index{Run@{Run}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{Run()}{Run()}}
+{\footnotesize\ttfamily \label{class_f_application_abb4eefbfe47780177f0cad1ec4e72264} 
+void FApplication::\+\+Run (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_application_a2e95ee4f22ce25bc8be1618ad7e5cb78}\index{FApplication@{FApplication}!Shutdown@{Shutdown}}
+\index{Shutdown@{Shutdown}!FApplication@{FApplication}}
+\doxysubsubsection{\texorpdfstring{Shutdown()}{Shutdown()}}
+{\footnotesize\ttfamily \label{class_f_application_a2e95ee4f22ce25bc8be1618ad7e5cb78} 
+void FApplication::\+\+Shutdown (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Core/\+\doxymbox{\hyperlink{_application_8h}{Application.\+h}}\item 
+Core/\+\doxymbox{\hyperlink{_application_8cpp}{Application.\+cpp}}\end{DoxyCompactItemize}

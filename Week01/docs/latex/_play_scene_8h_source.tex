@@ -1,0 +1,46 @@
+\doxysection{Play\+Scene.\+h}
+\hypertarget{_play_scene_8h_source}{}\label{_play_scene_8h_source}\index{Scene/PlayScene.h@{Scene/PlayScene.h}}
+\doxymbox{\hyperlink{_play_scene_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_scene_8h}{Scene.h}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_manager_8h}{UI/UIManager.h}}"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_stage}{FStage}};}
+\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_renderer}{FRenderer}};}
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}};}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_play_scene}{FPlayScene}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\DoxyCodeLine{00013\ \{}
+\DoxyCodeLine{00014\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{class_f_play_scene_ac9765276bea588d5726e8a2f9188713e}{\string~FPlayScene}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_a2d2bfbee4ab9f07caf785cba32c666ba}{SetRenderer}}(\doxymbox{\hyperlink{class_f_renderer}{FRenderer}}*\ InRenderer);}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_a815842514d5ed702dfd5e3cd356a24f5}{SetTextureManager}}(\doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}*\ InTextures);}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_a1a0d603364bf29b307921ee74cdf716f}{Enter}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_a14a04db3fe5db974c991bbdb29ad2a9d}{Exit}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_afd49d1c64f2553201b96c70884366ca7}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_a0c45ecd9ee46d0766898ec84f32c26a5}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_ae667d69faeb1021925b6ee715352db63}{StartNewGame}}(\textcolor{keyword}{const}\ std::string\ \&MapPath);}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_ac0495f4bfbeb1f0c8922d1937f5b4037}{RestartGame}}();}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00030\ \ \ \ \ std::unique\_ptr<FStage>\ Stage;}
+\DoxyCodeLine{00031\ \ \ \ \ \doxymbox{\hyperlink{class_f_u_i_manager}{FUIManager}}\ UIManager;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}*\ Renderer\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00034\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}*\ Textures\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsPaused\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsGameOverPopupOpened\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ std::string\ CurrentMapPath;}
+\DoxyCodeLine{00040\ \};}
+
+\end{DoxyCode}

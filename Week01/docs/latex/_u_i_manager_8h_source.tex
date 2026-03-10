@@ -1,0 +1,44 @@
+\doxysection{UIManager.\+h}
+\hypertarget{_u_i_manager_8h_source}{}\label{_u_i_manager_8h_source}\index{UI/UIManager.h@{UI/UIManager.h}}
+\doxymbox{\hyperlink{_u_i_manager_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_popup_manager_8h}{PopupManager.h}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_widget_8h}{UIWidget.h}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_u_i_manager}{FUIManager}}}
+\DoxyCodeLine{00012\ \{}
+\DoxyCodeLine{00013\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_u_i_manager_aba4ccf85ac65d42d403c49a75b6a176c}{AddWidget}}(\textcolor{keyword}{const}\ std::string\ \&Id,\ std::unique\_ptr<IUIWidget>\ Widget);}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_u_i_manager_a71db847015ad15a6afd6b435189626b1}{RemoveWidget}}(\textcolor{keyword}{const}\ std::string\ \&Id);}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_u_i_manager_a0310d09ca2d56f67ad6d73291635b7b2}{ClearWidgets}}();}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_u_i_manager_a0631814fc9416c1a34278fe0f22d47b7}{HasWidget}}(\textcolor{keyword}{const}\ std::string\ \&Id)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{class_i_u_i_widget}{IUIWidget}}\ \ \ \ \ \ \ *\doxymbox{\hyperlink{class_f_u_i_manager_a04e89d0497362b57f53f7b58e26a0677}{GetWidget}}(\textcolor{keyword}{const}\ std::string\ \&Id);}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_i_u_i_widget}{IUIWidget}}\ *\doxymbox{\hyperlink{class_f_u_i_manager_a04e89d0497362b57f53f7b58e26a0677}{GetWidget}}(\textcolor{keyword}{const}\ std::string\ \&Id)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_u_i_manager_a1e3e5b1b7bd34db5ccb52a3c31ba510a}{SetWidgetVisible}}(\textcolor{keyword}{const}\ std::string\ \&Id,\ \textcolor{keywordtype}{bool}\ bVisible);}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_u_i_manager_acbb6c26e22ae2de70508c38783b647cf}{IsWidgetVisible}}(\textcolor{keyword}{const}\ std::string\ \&Id)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_u_i_manager_aa6b8074a2218296c3c536ac943cde215}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_u_i_manager_a18b076fa69d275599017aebc0b8a58ea}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \doxymbox{\hyperlink{class_f_popup_manager}{FPopupManager}}\ \ \ \ \ \ \ \&\doxymbox{\hyperlink{class_f_u_i_manager_ad1b5cf704b75dfe9f8547f7d2a4602bb}{GetPopupManager}}();}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_popup_manager}{FPopupManager}}\ \&\doxymbox{\hyperlink{class_f_u_i_manager_ad1b5cf704b75dfe9f8547f7d2a4602bb}{GetPopupManager}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_u_i_manager_aeac1307e624e3d5912070c3511f10264}{ClearAll}}();}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00036\ \ \ \ \ std::unordered\_map<std::string,\ std::unique\_ptr<IUIWidget>>\ WidgetMap;}
+\DoxyCodeLine{00037\ \ \ \ \ \doxymbox{\hyperlink{class_f_popup_manager}{FPopupManager}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PopupManager;}
+\DoxyCodeLine{00038\ \};}
+
+\end{DoxyCode}

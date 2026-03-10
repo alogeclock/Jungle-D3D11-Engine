@@ -1,0 +1,195 @@
+\doxysection{Im\+Font\+Atlas\+Builder Struct Reference}
+\hypertarget{struct_im_font_atlas_builder}{}\label{struct_im_font_atlas_builder}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+
+
+{\ttfamily \+\#include $<$imgui\+\_\+internal.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_im_font_atlas_builder_a79208b6ce19800aec00be91b1f69a270}{Im\+Font\+Atlas\+Builder}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{structstbrp__context__opaque}{stbrp\+\_\+context\+\_\+opaque}} \doxymbox{\hyperlink{struct_im_font_atlas_builder_a8c9dabbbd389330e1d126c0e790dba81}{Pack\+Context}}
+\item 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$ \doxymbox{\hyperlink{imgui__internal_8h_acc39a273f7ff20029f7c5c47c50e6861}{stbrp\+\_\+node\+\_\+im}} $>$ \doxymbox{\hyperlink{struct_im_font_atlas_builder_a865cf914db2efb13c48ed4298df56a40}{Pack\+Nodes}}
+\item 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$ \doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}} $>$ \doxymbox{\hyperlink{struct_im_font_atlas_builder_a4f9256a923b50e99cc2c22b22a4a72ec}{Rects}}
+\item 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$ \doxymbox{\hyperlink{struct_im_font_atlas_rect_entry}{Im\+Font\+Atlas\+Rect\+Entry}} $>$ \doxymbox{\hyperlink{struct_im_font_atlas_builder_afe30b0241eb02526da9aa14fbf3b67a4}{Rects\+Index}}
+\item 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$ unsigned char $>$ \doxymbox{\hyperlink{struct_im_font_atlas_builder_a33c9a35a4420885c1c29f6fa7522e166}{Temp\+Buffer}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_atlas_builder_a93e9e4261c25e461cb169fee28172279}{Rects\+Index\+Free\+List\+Start}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_atlas_builder_afc61046a49637ba8f97fd123b33862b2}{Rects\+Packed\+Count}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_atlas_builder_a2826275efe2c30ab7999758b12139a6d}{Rects\+Packed\+Surface}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_atlas_builder_ae3f83de5a911b1d2279f76784deb4d40}{Rects\+Discarded\+Count}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_atlas_builder_a95002e7c792315983b572244b693c89a}{Rects\+Discarded\+Surface}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_atlas_builder_a49234cf91fcbd920118cb2c8eda8119b}{Frame\+Count}}
+\item 
+\doxymbox{\hyperlink{struct_im_vec2i}{Im\+Vec2i}} \doxymbox{\hyperlink{struct_im_font_atlas_builder_a1b386bcf52c3daa5ce5de749d62417d6}{Max\+Rect\+Size}}
+\item 
+\doxymbox{\hyperlink{struct_im_vec2i}{Im\+Vec2i}} \doxymbox{\hyperlink{struct_im_font_atlas_builder_a1a97f57c58a81c35d8c16e989c72356b}{Max\+Rect\+Bounds}}
+\item 
+bool \doxymbox{\hyperlink{struct_im_font_atlas_builder_a94c30248204c48b5c152e320f45856ee}{Lock\+Disable\+Resize}}
+\item 
+bool \doxymbox{\hyperlink{struct_im_font_atlas_builder_a2bea39b5519aae98fa206622d4694087}{Preloaded\+All\+Glyphs\+Ranges}}
+\item 
+\doxymbox{\hyperlink{struct_im_stable_vector}{Im\+Stable\+Vector}}$<$ \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}}, 32 $>$ \doxymbox{\hyperlink{struct_im_font_atlas_builder_acbe56204c9062b3b6bdea756134d7e87}{Baked\+Pool}}
+\item 
+\doxymbox{\hyperlink{struct_im_gui_storage}{Im\+Gui\+Storage}} \doxymbox{\hyperlink{struct_im_font_atlas_builder_ab6557cc9d42fc551619c3411205bfacb}{Baked\+Map}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_atlas_builder_ac2f643d8abc462e7abec1126706663db}{Baked\+Discarded\+Count}}
+\item 
+\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} \doxymbox{\hyperlink{struct_im_font_atlas_builder_a829ff402f4cd80a33ece5dd9d0c7f060}{Pack\+Id\+Mouse\+Cursors}}
+\item 
+\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} \doxymbox{\hyperlink{struct_im_font_atlas_builder_ad33f106c004947fa4978771f3efe037c}{Pack\+Id\+Lines\+Tex\+Data}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_im_font_atlas_builder_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_im_font_atlas_builder_a79208b6ce19800aec00be91b1f69a270}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuilder()}{ImFontAtlasBuilder()}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a79208b6ce19800aec00be91b1f69a270} 
+Im\+Font\+Atlas\+Builder::\+\+Im\+Font\+Atlas\+Builder (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_im_font_atlas_builder_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_im_font_atlas_builder_ac2f643d8abc462e7abec1126706663db}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!BakedDiscardedCount@{BakedDiscardedCount}}
+\index{BakedDiscardedCount@{BakedDiscardedCount}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{BakedDiscardedCount}{BakedDiscardedCount}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_ac2f643d8abc462e7abec1126706663db} 
+int Im\+Font\+Atlas\+Builder::\+\+Baked\+Discarded\+Count}
+
+\Hypertarget{struct_im_font_atlas_builder_ab6557cc9d42fc551619c3411205bfacb}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!BakedMap@{BakedMap}}
+\index{BakedMap@{BakedMap}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{BakedMap}{BakedMap}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_ab6557cc9d42fc551619c3411205bfacb} 
+\doxymbox{\hyperlink{struct_im_gui_storage}{Im\+Gui\+Storage}} Im\+Font\+Atlas\+Builder::\+\+Baked\+Map}
+
+\Hypertarget{struct_im_font_atlas_builder_acbe56204c9062b3b6bdea756134d7e87}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!BakedPool@{BakedPool}}
+\index{BakedPool@{BakedPool}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{BakedPool}{BakedPool}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_acbe56204c9062b3b6bdea756134d7e87} 
+\doxymbox{\hyperlink{struct_im_stable_vector}{Im\+Stable\+Vector}}$<$\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}},32$>$ Im\+Font\+Atlas\+Builder::\+\+Baked\+Pool}
+
+\Hypertarget{struct_im_font_atlas_builder_a49234cf91fcbd920118cb2c8eda8119b}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!FrameCount@{FrameCount}}
+\index{FrameCount@{FrameCount}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{FrameCount}{FrameCount}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a49234cf91fcbd920118cb2c8eda8119b} 
+int Im\+Font\+Atlas\+Builder::\+\+Frame\+Count}
+
+\Hypertarget{struct_im_font_atlas_builder_a94c30248204c48b5c152e320f45856ee}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!LockDisableResize@{LockDisableResize}}
+\index{LockDisableResize@{LockDisableResize}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{LockDisableResize}{LockDisableResize}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a94c30248204c48b5c152e320f45856ee} 
+bool Im\+Font\+Atlas\+Builder::\+\+Lock\+Disable\+Resize}
+
+\Hypertarget{struct_im_font_atlas_builder_a1a97f57c58a81c35d8c16e989c72356b}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!MaxRectBounds@{MaxRectBounds}}
+\index{MaxRectBounds@{MaxRectBounds}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{MaxRectBounds}{MaxRectBounds}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a1a97f57c58a81c35d8c16e989c72356b} 
+\doxymbox{\hyperlink{struct_im_vec2i}{Im\+Vec2i}} Im\+Font\+Atlas\+Builder::\+\+Max\+Rect\+Bounds}
+
+\Hypertarget{struct_im_font_atlas_builder_a1b386bcf52c3daa5ce5de749d62417d6}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!MaxRectSize@{MaxRectSize}}
+\index{MaxRectSize@{MaxRectSize}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{MaxRectSize}{MaxRectSize}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a1b386bcf52c3daa5ce5de749d62417d6} 
+\doxymbox{\hyperlink{struct_im_vec2i}{Im\+Vec2i}} Im\+Font\+Atlas\+Builder::\+\+Max\+Rect\+Size}
+
+\Hypertarget{struct_im_font_atlas_builder_a8c9dabbbd389330e1d126c0e790dba81}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!PackContext@{PackContext}}
+\index{PackContext@{PackContext}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{PackContext}{PackContext}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a8c9dabbbd389330e1d126c0e790dba81} 
+\doxymbox{\hyperlink{structstbrp__context__opaque}{stbrp\+\_\+context\+\_\+opaque}} Im\+Font\+Atlas\+Builder::\+\+Pack\+Context}
+
+\Hypertarget{struct_im_font_atlas_builder_ad33f106c004947fa4978771f3efe037c}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!PackIdLinesTexData@{PackIdLinesTexData}}
+\index{PackIdLinesTexData@{PackIdLinesTexData}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{PackIdLinesTexData}{PackIdLinesTexData}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_ad33f106c004947fa4978771f3efe037c} 
+\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} Im\+Font\+Atlas\+Builder::\+\+Pack\+Id\+Lines\+Tex\+Data}
+
+\Hypertarget{struct_im_font_atlas_builder_a829ff402f4cd80a33ece5dd9d0c7f060}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!PackIdMouseCursors@{PackIdMouseCursors}}
+\index{PackIdMouseCursors@{PackIdMouseCursors}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{PackIdMouseCursors}{PackIdMouseCursors}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a829ff402f4cd80a33ece5dd9d0c7f060} 
+\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} Im\+Font\+Atlas\+Builder::\+\+Pack\+Id\+Mouse\+Cursors}
+
+\Hypertarget{struct_im_font_atlas_builder_a865cf914db2efb13c48ed4298df56a40}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!PackNodes@{PackNodes}}
+\index{PackNodes@{PackNodes}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{PackNodes}{PackNodes}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a865cf914db2efb13c48ed4298df56a40} 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$\doxymbox{\hyperlink{imgui__internal_8h_acc39a273f7ff20029f7c5c47c50e6861}{stbrp\+\_\+node\+\_\+im}}$>$ Im\+Font\+Atlas\+Builder::\+\+Pack\+Nodes}
+
+\Hypertarget{struct_im_font_atlas_builder_a2bea39b5519aae98fa206622d4694087}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!PreloadedAllGlyphsRanges@{PreloadedAllGlyphsRanges}}
+\index{PreloadedAllGlyphsRanges@{PreloadedAllGlyphsRanges}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{PreloadedAllGlyphsRanges}{PreloadedAllGlyphsRanges}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a2bea39b5519aae98fa206622d4694087} 
+bool Im\+Font\+Atlas\+Builder::\+\+Preloaded\+All\+Glyphs\+Ranges}
+
+\Hypertarget{struct_im_font_atlas_builder_a4f9256a923b50e99cc2c22b22a4a72ec}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!Rects@{Rects}}
+\index{Rects@{Rects}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{Rects}{Rects}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a4f9256a923b50e99cc2c22b22a4a72ec} 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$\doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}}$>$ Im\+Font\+Atlas\+Builder::\+\+Rects}
+
+\Hypertarget{struct_im_font_atlas_builder_ae3f83de5a911b1d2279f76784deb4d40}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!RectsDiscardedCount@{RectsDiscardedCount}}
+\index{RectsDiscardedCount@{RectsDiscardedCount}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{RectsDiscardedCount}{RectsDiscardedCount}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_ae3f83de5a911b1d2279f76784deb4d40} 
+int Im\+Font\+Atlas\+Builder::\+\+Rects\+Discarded\+Count}
+
+\Hypertarget{struct_im_font_atlas_builder_a95002e7c792315983b572244b693c89a}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!RectsDiscardedSurface@{RectsDiscardedSurface}}
+\index{RectsDiscardedSurface@{RectsDiscardedSurface}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{RectsDiscardedSurface}{RectsDiscardedSurface}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a95002e7c792315983b572244b693c89a} 
+int Im\+Font\+Atlas\+Builder::\+\+Rects\+Discarded\+Surface}
+
+\Hypertarget{struct_im_font_atlas_builder_afe30b0241eb02526da9aa14fbf3b67a4}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!RectsIndex@{RectsIndex}}
+\index{RectsIndex@{RectsIndex}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{RectsIndex}{RectsIndex}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_afe30b0241eb02526da9aa14fbf3b67a4} 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$\doxymbox{\hyperlink{struct_im_font_atlas_rect_entry}{Im\+Font\+Atlas\+Rect\+Entry}}$>$ Im\+Font\+Atlas\+Builder::\+\+Rects\+Index}
+
+\Hypertarget{struct_im_font_atlas_builder_a93e9e4261c25e461cb169fee28172279}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!RectsIndexFreeListStart@{RectsIndexFreeListStart}}
+\index{RectsIndexFreeListStart@{RectsIndexFreeListStart}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{RectsIndexFreeListStart}{RectsIndexFreeListStart}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a93e9e4261c25e461cb169fee28172279} 
+int Im\+Font\+Atlas\+Builder::\+\+Rects\+Index\+Free\+List\+Start}
+
+\Hypertarget{struct_im_font_atlas_builder_afc61046a49637ba8f97fd123b33862b2}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!RectsPackedCount@{RectsPackedCount}}
+\index{RectsPackedCount@{RectsPackedCount}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{RectsPackedCount}{RectsPackedCount}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_afc61046a49637ba8f97fd123b33862b2} 
+int Im\+Font\+Atlas\+Builder::\+\+Rects\+Packed\+Count}
+
+\Hypertarget{struct_im_font_atlas_builder_a2826275efe2c30ab7999758b12139a6d}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!RectsPackedSurface@{RectsPackedSurface}}
+\index{RectsPackedSurface@{RectsPackedSurface}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{RectsPackedSurface}{RectsPackedSurface}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a2826275efe2c30ab7999758b12139a6d} 
+int Im\+Font\+Atlas\+Builder::\+\+Rects\+Packed\+Surface}
+
+\Hypertarget{struct_im_font_atlas_builder_a33c9a35a4420885c1c29f6fa7522e166}\index{ImFontAtlasBuilder@{ImFontAtlasBuilder}!TempBuffer@{TempBuffer}}
+\index{TempBuffer@{TempBuffer}!ImFontAtlasBuilder@{ImFontAtlasBuilder}}
+\doxysubsubsection{\texorpdfstring{TempBuffer}{TempBuffer}}
+{\footnotesize\ttfamily \label{struct_im_font_atlas_builder_a33c9a35a4420885c1c29f6fa7522e166} 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$unsigned char$>$ Im\+Font\+Atlas\+Builder::\+\+Temp\+Buffer}
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+imgui/\+\doxymbox{\hyperlink{imgui__internal_8h}{imgui\+\_\+internal.\+h}}\end{DoxyCompactItemize}

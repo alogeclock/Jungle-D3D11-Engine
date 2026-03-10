@@ -1,0 +1,63 @@
+\doxysection{main.\+cpp File Reference}
+\hypertarget{main_8cpp}{}\label{main_8cpp}\index{main.cpp@{main.cpp}}
+{\ttfamily \+\#include $<$windows.\+h$>$}\newline
+{\ttfamily \+\#include "{}imgui/\+imgui.\+h"{}}\newline
+{\ttfamily \+\#include "{}imgui/\+imgui\+\_\+impl\+\_\+dx11.\+h"{}}\newline
+{\ttfamily \+\#include "{}imgui/\+imgui\+\_\+impl\+\_\+win32.\+h"{}}\newline
+{\ttfamily \+\#include "{}Core/\+\+Application.\+h"{}}\newline
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{main_8cpp_a2e6ef411e0ff00ad889788b6cde701b5}{WIN\+\_\+\+WIDTH}}~1024
+\item 
+\+\#define \doxymbox{\hyperlink{main_8cpp_a0a33b1743038db1adbbf1045aa839b38}{WIN\+\_\+\+HEIGHT}}~1024
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+LRESULT \doxymbox{\hyperlink{main_8cpp_a70299ab59549d1b43179a4be76715495}{Im\+Gui\+\_\+\+Impl\+Win32\+\_\+\+Wnd\+Proc\+Handler}} (HWND hwnd, UINT msg, WPARAM w\+Param, LPARAM l\+Param)
+\item 
+LRESULT CALLBACK \doxymbox{\hyperlink{main_8cpp_a30a1e3b0304f1b083637664cbda94e72}{Wnd\+Proc}} (HWND h\+Wnd, UINT message, WPARAM w\+Param, LPARAM l\+Param)
+\item 
+int WINAPI \doxymbox{\hyperlink{main_8cpp_ac11a9f698adda87a72e4d287beaabc5f}{Win\+Main}} (HINSTANCE h\+Instance, HINSTANCE h\+Prev\+Instance, LPSTR lp\+Cmd\+Line, int n\+Show\+Cmd)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{main_8cpp_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{main_8cpp_a0a33b1743038db1adbbf1045aa839b38}\index{main.cpp@{main.cpp}!WIN\_HEIGHT@{WIN\_HEIGHT}}
+\index{WIN\_HEIGHT@{WIN\_HEIGHT}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{WIN\_HEIGHT}{WIN\_HEIGHT}}
+{\footnotesize\ttfamily \label{main_8cpp_a0a33b1743038db1adbbf1045aa839b38} 
+\+\#define WIN\+\_\+\+HEIGHT~1024}
+
+\Hypertarget{main_8cpp_a2e6ef411e0ff00ad889788b6cde701b5}\index{main.cpp@{main.cpp}!WIN\_WIDTH@{WIN\_WIDTH}}
+\index{WIN\_WIDTH@{WIN\_WIDTH}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{WIN\_WIDTH}{WIN\_WIDTH}}
+{\footnotesize\ttfamily \label{main_8cpp_a2e6ef411e0ff00ad889788b6cde701b5} 
+\+\#define WIN\+\_\+\+WIDTH~1024}
+
+
+
+\label{doc-func-members}
+\Hypertarget{main_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8cpp_a70299ab59549d1b43179a4be76715495}\index{main.cpp@{main.cpp}!ImGui\_ImplWin32\_WndProcHandler@{ImGui\_ImplWin32\_WndProcHandler}}
+\index{ImGui\_ImplWin32\_WndProcHandler@{ImGui\_ImplWin32\_WndProcHandler}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{ImGui\_ImplWin32\_WndProcHandler()}{ImGui\_ImplWin32\_WndProcHandler()}}
+{\footnotesize\ttfamily \label{main_8cpp_a70299ab59549d1b43179a4be76715495} 
+LRESULT Im\+Gui\+\_\+\+Impl\+Win32\+\_\+\+Wnd\+Proc\+Handler (\begin{DoxyParamCaption}\item[{HWND}]{hwnd}{, }\item[{UINT}]{msg}{, }\item[{WPARAM}]{w\+Param}{, }\item[{LPARAM}]{l\+Param}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+\Hypertarget{main_8cpp_ac11a9f698adda87a72e4d287beaabc5f}\index{main.cpp@{main.cpp}!WinMain@{WinMain}}
+\index{WinMain@{WinMain}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{WinMain()}{WinMain()}}
+{\footnotesize\ttfamily \label{main_8cpp_ac11a9f698adda87a72e4d287beaabc5f} 
+int WINAPI Win\+Main (\begin{DoxyParamCaption}\item[{HINSTANCE}]{h\+Instance}{, }\item[{HINSTANCE}]{h\+Prev\+Instance}{, }\item[{LPSTR}]{lp\+Cmd\+Line}{, }\item[{int}]{n\+Show\+Cmd}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8cpp_a30a1e3b0304f1b083637664cbda94e72}\index{main.cpp@{main.cpp}!WndProc@{WndProc}}
+\index{WndProc@{WndProc}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{WndProc()}{WndProc()}}
+{\footnotesize\ttfamily \label{main_8cpp_a30a1e3b0304f1b083637664cbda94e72} 
+LRESULT CALLBACK Wnd\+Proc (\begin{DoxyParamCaption}\item[{HWND}]{h\+Wnd}{, }\item[{UINT}]{message}{, }\item[{WPARAM}]{w\+Param}{, }\item[{LPARAM}]{l\+Param}{}\end{DoxyParamCaption})}
+

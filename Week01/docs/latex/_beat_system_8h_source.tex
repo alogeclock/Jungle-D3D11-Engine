@@ -1,0 +1,40 @@
+\doxysection{Beat\+System.\+h}
+\hypertarget{_beat_system_8h_source}{}\label{_beat_system_8h_source}\index{Gameplay/BeatSystem.h@{Gameplay/BeatSystem.h}}
+\doxymbox{\hyperlink{_beat_system_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Core/Types.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_beat_system}{FBeatSystem}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_beat_system_ad4f58cb0b055a769b6c517285c3c1646}{Reset}}();}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_beat_system_ad57c67aeec7fa317d1afc6bc608db61b}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime);}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_beat_system_a6bdbe624efca00d193fba995221a9b35}{SetBpm}}(\textcolor{keywordtype}{float}\ InBpm);}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_beat_system_a5a0e2c316575782e539c02add2b38cec}{GetBpm}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_beat_system_ac6d48788df3316f54a2c24e9003781a5}{GetBeatInterval}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_beat_system_a706b54901b68bf0becba95bb6b938beb}{SetJudgeWindows}}(\textcolor{keywordtype}{float}\ InPerfectWindow,\ \textcolor{keywordtype}{float}\ InGoodWindow);}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeatJudge}}\ \doxymbox{\hyperlink{class_f_beat_system_aaa0e13fea098d8598594e7f7da0e5749}{JudgeInput}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_beat_system_aebc93633bbfb37d871d277e8570c39f2}{IsBeatJustTriggered}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_beat_system_a7a85f6add305295886abc6927c14b8d7}{ConsumeBeat}}();}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_beat_system_a405820b752e971ecfb1fb16bb4f88da4}{GetElapsedTime}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_beat_system_abf7d6ae3e7881dccab5de88d936e1be4}{GetTimeToNextBeat}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{float}\ Bpm\ =\ 120.0f;}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{float}\ BeatInterval\ =\ 0.5f;}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{float}\ ElapsedTime\ =\ 0.0f;}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{float}\ PerfectWindow\ =\ 0.08f;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{float}\ GoodWindow\ =\ 0.15f;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsBeatJustTriggered\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00034\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,24 @@
+\doxysection{UIWidget.\+h}
+\hypertarget{_u_i_widget_8h_source}{}\label{_u_i_widget_8h_source}\index{UI/UIWidget.h@{UI/UIWidget.h}}
+\doxymbox{\hyperlink{_u_i_widget_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_game_context_8h}{Core/GameContext.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_i_u_i_widget}{IUIWidget}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keyword}{virtual}\ \doxymbox{\hyperlink{class_i_u_i_widget_ad69f73e9d6632b87cb5c98cd113bc777}{\string~IUIWidget}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_u_i_widget_a550065e70237fac75b7c61ab81e969ea}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ =\ 0;}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_u_i_widget_ae700b3bb9392cd080853fb6427befc43}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ =\ 0;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_u_i_widget_ac308cc817ab57ad96af22323e4b538c5}{SetVisible}}(\textcolor{keywordtype}{bool}\ bVisible)\ \{\ \doxymbox{\hyperlink{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}{bIsVisible}}\ =\ bVisible;\ \}}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_i_u_i_widget_aa82d6de865326ac99d99644d78a095c2}{IsVisible}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}{bIsVisible}};\ \}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}{bIsVisible}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00018\ \};}
+
+\end{DoxyCode}
