@@ -45,6 +45,10 @@ void FDebugWidget::Render(FGameContext &Context)
         {
             Stage->SetTimeFrozen(bTimeFrozen);
         }
+        if (ImGui::Checkbox("Disable Darkness", &bDarknessDisabled))
+        {
+            Stage->SetDarknessDisabled(bDarknessDisabled);
+        }
 
         // --- Settings ---
         ImGui::Separator();
@@ -71,6 +75,9 @@ void FDebugWidget::Render(FGameContext &Context)
 
             bTimeFrozen = false;
             Stage->SetTimeFrozen(false);
+
+            bDarknessDisabled = false;
+            Stage->SetDarknessDisabled(false);
 
             TimeScale = 1.0f;
             Stage->GetBeatSystem().SetTimeScale(1.0f);

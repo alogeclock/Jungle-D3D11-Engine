@@ -77,6 +77,9 @@ class FStage
     bool IsTimeFrozen() const;
     void SetTimeFrozen(bool bFrozen);
 
+    bool IsDarknessDisabled() const;
+    void SetDarknessDisabled(bool bDisabled);
+
     int                GetCurrentStageIndex() const;
     const std::string &GetStageName() const;
 
@@ -97,6 +100,7 @@ class FStage
 
     int  DarknessLevel = 2; // 0~4 (5단계)
     bool bTimeFrozen = false;
+    bool bDarknessDisabled = false;
 
     bool bIsGameOver = false;
     bool bIsCleared = false;

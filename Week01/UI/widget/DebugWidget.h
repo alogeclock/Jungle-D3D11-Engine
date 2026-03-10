@@ -19,6 +19,7 @@ private:
     FStage *Stage = nullptr;
     bool    bInvincible = false;
     bool    bTimeFrozen = false;
+    bool    bDarknessDisabled = false;
     float   TimeScale = 1.0f;
     int     DarknessLevel = 2;
     int     TotalStages = 1;

@@ -31,6 +31,8 @@ bool FPopupManager::IsPopupClosed() const
 void FPopupManager::Open(std::unique_ptr<FUIPopupBase> InPopup)
 {
     CurrentPopup = std::move(InPopup);
+    if (CurrentPopup)
+        CurrentPopup->Open();
 }
 
 void FPopupManager::RemoveClosedPopup()

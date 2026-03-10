@@ -321,7 +321,7 @@ void FStage::Render()
 
     // 큐에 쌓인 RenderObjects를 먼저 처리한 뒤 암흑 오버레이
     Renderer->Render();
-    if (DarknessTexture && Player && !Player->IsDead())
+    if (DarknessTexture && !bDarknessDisabled && Player && !Player->IsDead())
     {
         FVec2 PlayerWorld;
         PlayerWorld.X = Player->GetRenderX() + TileSize * 0.5f;
@@ -732,6 +732,10 @@ void FStage::SetDarknessLevel(int Level)
 bool FStage::IsTimeFrozen() const { return bTimeFrozen; }
 
 void FStage::SetTimeFrozen(bool bFrozen) { bTimeFrozen = bFrozen; }
+
+bool FStage::IsDarknessDisabled() const { return bDarknessDisabled; }
+
+void FStage::SetDarknessDisabled(bool bDisabled) { bDarknessDisabled = bDisabled; }
 
 int FStage::GetCurrentStageIndex() const { return CurrentStageIndex; }
 
