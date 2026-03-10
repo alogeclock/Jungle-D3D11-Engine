@@ -169,7 +169,7 @@
     <ClCompile Include="Scene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderW0.hlsl">
+    <FxCompile Include="Resources\Shaders\ShaderW0.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
