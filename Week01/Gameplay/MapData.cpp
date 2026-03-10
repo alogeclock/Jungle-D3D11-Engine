@@ -42,17 +42,7 @@ bool FMapData::IsWalkable(int X, int Y) const
 	{
 		return false;
 	}
-	int V = Tiles[Y][X];
-	return V == static_cast<int>(ETileValue::Path) || V == static_cast<int>(ETileValue::Goal);
-}
-
-bool FMapData::IsGoal(int X, int Y) const
-{
-	if (!IsInside(X, Y))
-	{
-		return false;
-	}
-	return Tiles[Y][X] == static_cast<int>(ETileValue::Goal);
+	return Tiles[Y][X] == 0;
 }
 
 int FMapData::GetWidth() const

@@ -1,36 +1,25 @@
 #include "Player.h"
 #include "Stage.h"
 
-EActorType FPlayer::GetActorType() const
+EActorType FPlayer::GetActorType() const { return EActorType::Player; }
+
+void FPlayer::Update(float DeltaTime, FGameContext &Context) { FActor::Update(DeltaTime, Context); }
+
+void FPlayer::OnBeat(FStage &Stage)
 {
-	return EActorType::Player;
+    if (HasQueuedInput())
+    {
+        TryMove(Stage, QueuedInput.value());
+        ClearQueuedInput();
+    }
 }
 
-void FPlayer::Update(float DeltaTime)
-{
-	FActor::Update(DeltaTime);
-}
+int FPlayer::GetLastMovedBeatIndex() { return LastMovedBeatIndex; }
 
-void FPlayer::OnBeat(FStage& Stage)
-{
-	if (HasQueuedInput())
-	{
-		TryMove(Stage, QueuedInput.value());
-		ClearQueuedInput();
-	}
-}
+void FPlayer::SetLastMovedBeatIndex(int CurrentBeatIndex) { LastMovedBeatIndex = CurrentBeatIndex; }
 
-void FPlayer::QueueInput(EDirection InDirection)
-{
-	QueuedInput = InDirection;
-}
+void FPlayer::QueueInput(EDirection InDirection) { QueuedInput = InDirection; }
 
-void FPlayer::ClearQueuedInput()
-{
-	QueuedInput.reset();
-}
+void FPlayer::ClearQueuedInput() { QueuedInput.reset(); }
 
-bool FPlayer::HasQueuedInput() const
-{
-	return QueuedInput.has_value();
-}
+bool FPlayer::HasQueuedInput() const { return QueuedInput.has_value(); }

@@ -19,9 +19,9 @@ void FCreditPopup::Render(FGameContext &Context)
     {
         ImGui::Text("--- Credits ---");
         ImGui::Separator();
-        ImGui::Text("코어 + 파일 처리: 김연하");
-        ImGui::Text("렌더/UI: 이호진");
-        ImGui::Text("게임플레이: 전현길, 심우진");
+        // ImGui::Text("코어 + 파일 처리: 김연하");
+        // ImGui::Text("렌더 + UI: 이호진");
+        // ImGui::Text("게임플레이: 전현길, 심우진");
 
         ImGui::End();
     }

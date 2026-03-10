@@ -1,16 +1,21 @@
 #pragma once
 
+#include "../Core/GameContext.h"
 #include "Actor.h"
 #include <optional>
+
+struct FGameContext;
 
 class FMonster : public FActor
 {
   public:
     EActorType GetActorType() const override;
 
-    void Update(float DeltaTime) override;
+    void Update(float DeltaTime, FGameContext &Context) override;
     void OnBeat(FStage &Stage) override;
 
+    void           SetMoveFrequency(int InFreq);
+    int            GetMoveFrequency() const;
     void           SetAiType(EMonsterAIType InAiType);
     EMonsterAIType GetAiType() const;
 
@@ -20,5 +25,8 @@ class FMonster : public FActor
     std::optional<EDirection> SearchPlayer(const FStage &Stage) const;
 
     EMonsterAIType AiType = EMonsterAIType::RandomMove;
-    int            SearchRange = 20; // ÇÃ·¹ÀÌ¾î Å½»ö ÃÖ´ë ¹üÀ§ (20½ºÅÜ)
+    int            MoveFrequency = 2;
+    int            MoveFrequencyOffset = 0;
+    int            BeatCount = 0;
+    int            SearchRange = 5; // Ã‡ÃƒÂ·Â¹Ã€ÃŒÂ¾Ã® Ã…Â½Â»Ã¶ ÃƒÃ–Â´Ã« Â¹Ã¼Ã€Â§ (20Â½ÂºÃ…Ãœ)
 };

@@ -3,11 +3,8 @@
 
 #include <fstream>
 #include <sstream>
-#include "ThirdParty/nlohmann/json.hpp"
 
-using json = nlohmann::json;
-
-bool FMapLoader::LoadFromFile(const std::string& Path)
+bool FMapLoader::LoadFromFile(const std::string& Path, FMapData& OutMap)
 {
 	std::ifstream File(Path);
 	if (!File.is_open())
@@ -15,101 +12,49 @@ bool FMapLoader::LoadFromFile(const std::string& Path)
 		return false;
 	}
 
-	std::stringstream Buffer;
-	Buffer << File.rdbuf();
-	FileContent = Buffer.str();
-	FilePath = Path;
-	bLoaded = true;
-	return true;
-}
+	int Width = 0;
+	int Height = 0;
+	File >> Width >> Height;
 
-int FMapLoader::GetStageCount() const
-{
-	if (!bLoaded) return 0;
-
-	try
-	{
-		json Doc = json::parse(FileContent);
-		if (Doc.contains("stages") && Doc["stages"].is_array())
-		{
-			return static_cast<int>(Doc["stages"].size());
-		}
-	}
-	catch (...)
-	{
-	}
-	return 0;
-}
-
-bool FMapLoader::LoadStage(int StageIndex, FMapData& OutMap, FStageInfo& OutInfo) const
-{
-	if (!bLoaded) return false;
-
-	try
-	{
-		json Doc = json::parse(FileContent);
-
-		if (!Doc.contains("stages") || !Doc["stages"].is_array())
-			return false;
-
-		auto& Stages = Doc["stages"];
-		if (StageIndex < 0 || StageIndex >= static_cast<int>(Stages.size()))
-			return false;
-
-		auto& Stage = Stages[StageIndex];
-		auto& Meta = Stage["metadata"];
-
-		OutInfo.Id = Meta.value("id", 0);
-		OutInfo.Name = Meta.value("name", "");
-		OutInfo.Width = Meta.value("width", 0);
-		OutInfo.Height = Meta.value("height", 0);
-
-		if (OutInfo.Width <= 0 || OutInfo.Height <= 0)
-			return false;
-
-		// 플레이어 스폰 포인트
-		if (Meta.contains("spawn_point"))
-		{
-			OutInfo.PlayerSpawn.X = Meta["spawn_point"].value("x", 0);
-			OutInfo.PlayerSpawn.Y = Meta["spawn_point"].value("y", 0);
-		}
-
-		// 몬스터 스폰 포인트
-		OutInfo.MonsterSpawns.clear();
-		if (Meta.contains("monster_spawns") && Meta["monster_spawns"].is_array())
-		{
-			for (auto& Spawn : Meta["monster_spawns"])
-			{
-				FSpawnPoint Sp;
-				Sp.X = Spawn.value("x", 0);
-				Sp.Y = Spawn.value("y", 0);
-				OutInfo.MonsterSpawns.push_back(Sp);
-			}
-		}
-
-		// 타일 데이터 로드
-		auto& Layers = Stage["layers"];
-		if (!Layers.is_array() || static_cast<int>(Layers.size()) != OutInfo.Height)
-			return false;
-
-		OutMap.Resize(OutInfo.Width, OutInfo.Height);
-
-		for (int Y = 0; Y < OutInfo.Height; Y++)
-		{
-			auto& Row = Layers[Y];
-			if (!Row.is_array() || static_cast<int>(Row.size()) != OutInfo.Width)
-				return false;
-
-			for (int X = 0; X < OutInfo.Width; X++)
-			{
-				OutMap.SetTile(X, Y, Row[X].get<int>());
-			}
-		}
-
-		return true;
-	}
-	catch (...)
+	if (Width <= 0 || Height <= 0)
 	{
 		return false;
 	}
+
+	OutMap.Resize(Width, Height);
+
+	for (int Y = 0; Y < Height; Y++)
+	{
+		for (int X = 0; X < Width; X++)
+		{
+			int Value = 0;
+			File >> Value;
+			OutMap.SetTile(X, Y, Value);
+		}
+	}
+
+	return true;
+}
+
+bool FMapLoader::SaveToFile(const std::string& Path, const FMapData& Map)
+{
+	std::ofstream File(Path);
+	if (!File.is_open())
+	{
+		return false;
+	}
+
+	File << Map.GetWidth() << " " << Map.GetHeight() << "\n";
+
+	for (int Y = 0; Y < Map.GetHeight(); Y++)
+	{
+		for (int X = 0; X < Map.GetWidth(); X++)
+		{
+			if (X > 0) File << " ";
+			File << Map.GetTile(X, Y);
+		}
+		File << "\n";
+	}
+
+	return true;
 }
