@@ -27,9 +27,21 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 		return false;
 
 	//TEST Register
-	FImageLoader ImageLoader;
-	std::unique_ptr<FTexture> Texture = ImageLoader.LoadAsTexture(Renderer->Device, "Resources/Sprites/tile_floor.png");
-	TextureManager->Register("Floor", std::move(Texture));
+
+	auto LoadTex = [&](const std::string& Key, const std::string& Path)
+		{
+			if (!TextureManager->Has(Key))
+			{
+				auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
+				if (Tex)
+					TextureManager->Register(Key, std::move(Tex));
+			}
+		};
+	LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
+	LoadTex("goal", "Resources/Sprites/goal.png");
+	LoadTex("wall", "Resources/Sprites/wall.png");
+	LoadTex("player", "Resources/Sprites/player.png");
+	LoadTex("monster", "Resources/Sprites/monster.png");
 
 
 
@@ -37,15 +49,15 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	// TODO
 	// TextureManager->Initialize(Renderer->Device);
 
-    // 스테이지 데이터 로드
-    FStageLoader::Get().Initialize("Resources/Maps/stages.json");
+	// 스테이지 데이터 로드
+	FStageLoader::Get().Initialize("Resources/Maps/stages.json");
 
-    // ImGui 초기화
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGui_ImplWin32_Init(WindowHandle);
-    ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext);
+	// ImGui 초기화
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(WindowHandle);
+	ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext);
 
 	GameContext.emplace(FGameContext{ *Time, *Input, *Renderer, *TextureManager });
 

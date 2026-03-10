@@ -29,6 +29,8 @@ public:
 	void DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width,
 		float height, const FCamera2D& camera);
 
+	void DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FVec2& Position);
+
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
 

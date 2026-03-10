@@ -445,6 +445,17 @@ void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float 
 	RenderObjects.push_back(RenderObject);
 }
 
+void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FVec2& Position)
+{
+	FRenderObject RenderObject;
+	RenderObject.Texture = texture;
+	RenderObject.Position.X = worldX - Position.X;
+	RenderObject.Position.Y = worldY - Position.Y;
+	RenderObject.Size.X = width;
+	RenderObject.Size.Y = height;
+	RenderObjects.push_back(RenderObject);
+}
+
 bool FRenderer::Initialize(HWND hWindow, int ScreenWidth, int ScreenHeight)
 {
 	Create(hWindow);
