@@ -16,4 +16,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+// XAudio2
+#include <xaudio2.h>
+
 #define DEBUG

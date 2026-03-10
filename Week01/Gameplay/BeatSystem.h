@@ -25,6 +25,9 @@ class FBeatSystem
     float GetTimeToNextBeat() const;
     float GetGoodWindow() const;
 
+    void  SetTimeScale(float InScale);
+    float GetTimeScale() const;
+
   private:
     float Bpm = 120.0f;
     float BeatInterval = 0.5f;
@@ -32,6 +35,8 @@ class FBeatSystem
 
     float PerfectWindow = 0.08f;
     float GoodWindow = 0.2f;
+
+    float TimeScale = 1.0f;
 
     bool bIsBeatJustTriggered = false;
 };

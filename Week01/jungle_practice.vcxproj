@@ -144,6 +144,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Core\AudioSystem.cpp" />
     <ClCompile Include="Core\Application.cpp" />
     <ClCompile Include="Core\Input.cpp" />
     <ClCompile Include="Core\FWindow.cpp" />
@@ -207,6 +208,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Core\AudioSystem.h" />
     <ClInclude Include="Core\Application.h" />
     <ClInclude Include="Core\GameContext.h" />
     <ClInclude Include="Core\Input.h" />

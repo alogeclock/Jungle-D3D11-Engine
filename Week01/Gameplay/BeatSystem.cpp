@@ -11,7 +11,7 @@ void FBeatSystem::Reset()
 void FBeatSystem::Update(float DeltaTime, FGameContext &Context)
 {
     float PreviousTime = ElapsedTime;
-    ElapsedTime += DeltaTime;
+    ElapsedTime += DeltaTime * TimeScale;
 
     int PreviousBeat = static_cast<int>(PreviousTime / BeatInterval);
     int CurrentBeat = static_cast<int>(ElapsedTime / BeatInterval);
@@ -68,3 +68,7 @@ float FBeatSystem::GetTimeToNextBeat() const
 }
 
 float FBeatSystem::GetGoodWindow() const { return GoodWindow; }
+
+void FBeatSystem::SetTimeScale(float InScale) { TimeScale = InScale; }
+
+float FBeatSystem::GetTimeScale() const { return TimeScale; }

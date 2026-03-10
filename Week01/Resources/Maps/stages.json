@@ -10,6 +10,8 @@
       "metadata": {
         "id": 1,
         "name": "Stage 1: Rhythm Beginnings",
+        "bpm": 93,
+        "music": "Resources/Sounds/stage1.wav",
         "width": 10,
         "height": 8,
         "spawn_point": { "x": 2, "y": 2 }
@@ -29,6 +31,8 @@
       "metadata": {
         "id": 2,
         "name": "Stage 2: Double Tempo",
+        "bpm": 121,
+        "music": "Resources/Sounds/stage2.wav",
         "width": 10,
         "height": 8,
         "spawn_point": { "x": 1, "y": 1 },

@@ -15,4 +15,5 @@ public:
 private:
     FStage *Stage = nullptr;
     bool    bInvincible = false;
+    float   TimeScale = 1.0f;
 };

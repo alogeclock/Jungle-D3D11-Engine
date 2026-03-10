@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PlayScene.h"
+#include "Core/AudioSystem.h"
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Data/StageLoader.h"
@@ -18,6 +19,7 @@ void FPlayScene::Enter() { StartNewGame(0); }
 
 void FPlayScene::Exit()
 {
+    FAudioSystem::Get().StopAll();
     Stage.reset();
     UIManager.ClearAll();
 }

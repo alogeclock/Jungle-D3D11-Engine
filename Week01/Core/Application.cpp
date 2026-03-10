@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Application.h"
+#include "AudioSystem.h"
 #include "Data/StageLoader.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx11.h"
@@ -43,6 +44,12 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	LoadTex("player", "Resources/Sprites/player.png");
 	LoadTex("monster", "Resources/Sprites/monster.png");
 	LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
+
+	// 오디오 초기화
+	FAudioSystem::Get().Initialize();
+
+	// 스테이지 데이터 로드
+	FStageLoader::Get().Initialize("Resources/Maps/stages.json");
 
 
 
@@ -102,6 +109,8 @@ void FApplication::Run()
 
 void FApplication::Shutdown()
 {
+	FAudioSystem::Get().Shutdown();
+
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();

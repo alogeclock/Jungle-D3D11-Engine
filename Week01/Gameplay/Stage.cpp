@@ -4,6 +4,7 @@
 #include "Camera2D.h"
 #include "Core/GameContext.h"
 #include "Core/Input.h"
+#include "Core/AudioSystem.h"
 #include "Core/Logger.h"
 #include "Data/StageData.h"
 #include "Data/StageLoader.h"
@@ -88,9 +89,20 @@ bool FStage::Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InText
 	// 렌더링 리소스 생성
 	CreateRenderResources();
 
-	// 비트 시스템 초기화
+	// 비트 시스템 초기화 (스테이지 BPM 적용)
+	BeatSystem->SetBpm(static_cast<float>(Map->GetBpm()));
 	BeatSystem->Reset();
 	ScoreSystem->Reset();
+
+	// BGM 재생
+	FAudioSystem::Get().StopAll();
+	const std::string &MusicPath = Map->GetMusicPath();
+	if (!MusicPath.empty())
+	{
+		std::string BgmKey = "bgm_stage" + std::to_string(StageIndex);
+		FAudioSystem::Get().LoadWav(BgmKey, MusicPath);
+		FAudioSystem::Get().Play(BgmKey, true);
+	}
 
 	bIsGameOver = false;
 	bIsCleared = false;
@@ -142,11 +154,17 @@ void FStage::Update(float DeltaTime, FGameContext& Context)
 	{
 		MoveDir = EDirection::Left;
 		bHasInput = true;
+		FSpriteInfo Spr = Player->GetSprite();
+		Spr.bIsMirrored = false;
+		Player->SetSprite(Spr);
 	}
 	else if (Context.Input.GetKeyDown(EKeyCode::Right))
 	{
 		MoveDir = EDirection::Right;
 		bHasInput = true;
+		FSpriteInfo Spr = Player->GetSprite();
+		Spr.bIsMirrored = true;
+		Player->SetSprite(Spr);
 	}
 
 	if (!Player->IsDead() && bHasInput)
