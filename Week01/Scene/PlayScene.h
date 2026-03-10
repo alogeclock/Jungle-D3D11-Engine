@@ -2,28 +2,29 @@
 
 #include <string>
 #include "Scene.h"
+#include "UIManager.h"
 
 class FStage;
 class FPopupManager;
 
 class FPlayScene : public IScene
 {
-public:
-	void Enter() override;
-	void Exit() override;
+  public:
+    void Enter() override;
+    void Exit() override;
 
-	void Update(FGameContext& Context) override;
-	void Render(FGameContext& Context) override;
+    void Update(FGameContext &Context) override;
+    void Render(FGameContext &Context) override;
 
-	void StartNewGame(const std::string& MapPath);
-	void RestartGame();
+    void StartNewGame(const std::string &MapPath);
+    void RestartGame();
 
-private:
-	FStage* Stage = nullptr;
-	FPopupManager* PopupManager = nullptr;
+  private:
+    FStage    *Stage = nullptr;
+    FUIManager UIManager;
 
-	bool bIsPaused = false;
-	bool bIsGameOverPopupOpened = false;
+    bool bIsPaused = false;
+    bool bIsGameOverPopupOpened = false;
 
-	std::string CurrentMapPath;
+    std::string CurrentMapPath;
 };
