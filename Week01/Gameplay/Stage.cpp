@@ -273,6 +273,7 @@ void FStage::Render()
 			return;
 		float WorldX = Player->GetRenderX() + TileSize * 0.5f;
 		float WorldY = Player->GetRenderY() + TileSize * 0.5f;
+		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, Player->GetSprite());
 		Renderer->DrawTextureInWorld(Textures->Get("player"), WorldX, WorldY, TileSize, TileSize, GetCamera());
 	}
 }
