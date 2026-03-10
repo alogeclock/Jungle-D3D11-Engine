@@ -40,7 +40,12 @@ EBeatJudge FBeatSystem::JudgeInput() const
     float TimeSinceLast = BeatInterval - TimeToNext;
     float Distance = (TimeToNext < TimeSinceLast) ? TimeToNext : TimeSinceLast;
 
-    if (Distance <= GoodWindow)
+    if (Distance <= PerfectWindow)
+    {
+        return EBeatJudge::Perfect;
+    }
+
+    else if (Distance <= GoodWindow)
     {
         return EBeatJudge::Good;
     }

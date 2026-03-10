@@ -1,98 +1,88 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameplayHUDWidget.h"
 #include "Gameplay/Stage.h"
 #include "Core/Time.h"
 #include "Render/Renderer.h"
 #include "imgui/imgui.h"
 
-void FGameplayHUDWidget::BindStage(const FStage* InStage)
+void FGameplayHUDWidget::BindStage(const FStage *InStage) { Stage = InStage; }
+
+void FGameplayHUDWidget::BindPauseFlag(bool *InPauseFlag) { PauseFlag = InPauseFlag; }
+
+void FGameplayHUDWidget::ResetPlayTime() { PlayTime = 0.0f; }
+
+void FGameplayHUDWidget::Update(FGameContext &Context)
 {
-	Stage = InStage;
+    bool bPaused = PauseFlag && *PauseFlag;
+    if (!bPaused)
+    {
+        PlayTime += Context.Time.GetDeltaTime();
+    }
 }
 
-void FGameplayHUDWidget::BindPauseFlag(bool *InPauseFlag)
+void FGameplayHUDWidget::Render(FGameContext &Context)
 {
-	PauseFlag = InPauseFlag;
-}
+    if (!Stage)
+        return;
 
-void FGameplayHUDWidget::ResetPlayTime()
-{
-	PlayTime = 0.0f;
-}
+    bool bPaused = PauseFlag && *PauseFlag;
 
-void FGameplayHUDWidget::Update(FGameContext& Context)
-{
-	bool bPaused = PauseFlag && *PauseFlag;
-	if (!bPaused)
-	{
-		PlayTime += Context.Time.GetDeltaTime();
-	}
-}
+    int Score = Stage->GetScoreSystem().GetScore();
+    int Combo = Stage->GetScoreSystem().GetCombo();
+    int HP = Stage->GetPlayer().GetHp();
 
-void FGameplayHUDWidget::Render(FGameContext& Context)
-{
-	if (!Stage) return;
+    ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+    ImGui::SetNextWindowBgAlpha(0.5f);
 
-	bool bPaused = PauseFlag && *PauseFlag;
+    ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+                             ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-	int Score = Stage->GetScoreSystem().GetScore();
-	int Combo = Stage->GetScoreSystem().GetCombo();
-	int HP = Stage->GetPlayer().GetHp();
+    if (ImGui::Begin("##HUD", nullptr, Flags))
+    {
+        int Minutes = static_cast<int>(PlayTime) / 60;
+        int Seconds = static_cast<int>(PlayTime) % 60;
 
-	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
-	ImGui::SetNextWindowBgAlpha(0.5f);
+        ImGui::Text("HP    %d", HP);
+        ImGui::Text("Time  %d:%02d", Minutes, Seconds);
+        ImGui::Text("Score %d", Score);
+        if (Combo > 0)
+        {
+            ImGui::Text("Combo x%d", Combo);
+        }
 
-	ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration
-		| ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoFocusOnAppearing
-		| ImGuiWindowFlags_NoNav;
+        ImGui::Separator();
+        if (PauseFlag)
+        {
+            if (ImGui::Button(bPaused ? "Resume" : "Pause", ImVec2(80, 0)))
+            {
+                *PauseFlag = !*PauseFlag;
+            }
+        }
+    }
+    ImGui::End();
 
-	if (ImGui::Begin("##HUD", nullptr, Flags))
-	{
-		int Minutes = static_cast<int>(PlayTime) / 60;
-		int Seconds = static_cast<int>(PlayTime) % 60;
+    // 일시정지 오버레이
+    if (bPaused)
+    {
+        float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+        float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
 
-		ImGui::Text("HP    %d", HP);
-		ImGui::Text("Time  %d:%02d", Minutes, Seconds);
-		ImGui::Text("Score %d", Score);
-		if (Combo > 0)
-		{
-			ImGui::Text("Combo x%d", Combo);
-		}
+        ImGui::SetNextWindowPos(ImVec2(ScreenW * 0.5f, ScreenH * 0.5f), ImGuiCond_Always,
+                                ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowBgAlpha(0.7f);
 
-		ImGui::Separator();
-		if (PauseFlag)
-		{
-			if (ImGui::Button(bPaused ? "Resume" : "Pause", ImVec2(80, 0)))
-			{
-				*PauseFlag = !*PauseFlag;
-			}
-		}
-	}
-	ImGui::End();
+        ImGuiWindowFlags PauseFlags = ImGuiWindowFlags_NoDecoration |
+                                      ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 
-	// 일시정지 오버레이
-	if (bPaused)
-	{
-		float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
-		float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
-
-		ImGui::SetNextWindowPos(ImVec2(ScreenW * 0.5f, ScreenH * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-		ImGui::SetNextWindowBgAlpha(0.7f);
-
-		ImGuiWindowFlags PauseFlags = ImGuiWindowFlags_NoDecoration
-			| ImGuiWindowFlags_AlwaysAutoResize
-			| ImGuiWindowFlags_NoNav;
-
-		if (ImGui::Begin("##PauseOverlay", nullptr, PauseFlags))
-		{
-			ImGui::Text("PAUSED");
-			ImGui::Separator();
-			if (ImGui::Button("Resume", ImVec2(120, 0)))
-			{
-				*PauseFlag = false;
-			}
-		}
-		ImGui::End();
-	}
+        if (ImGui::Begin("##PauseOverlay", nullptr, PauseFlags))
+        {
+            ImGui::Text("PAUSED");
+            ImGui::Separator();
+            if (ImGui::Button("Resume", ImVec2(120, 0)))
+            {
+                *PauseFlag = false;
+            }
+        }
+        ImGui::End();
+    }
 }

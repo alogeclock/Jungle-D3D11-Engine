@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ScoreSystem.h"
 
 void FScoreSystem::Reset()
@@ -13,10 +13,11 @@ void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
 {
     switch (Judge)
     {
-    case EBeatJudge::Good:
+    case EBeatJudge::Perfect:
         Combo++;
-        Score += 25 * Combo;
+        Score += 5 * Combo;
         break;
+    case EBeatJudge::Good:
     case EBeatJudge::Miss:
         BreakCombo();
         break;
