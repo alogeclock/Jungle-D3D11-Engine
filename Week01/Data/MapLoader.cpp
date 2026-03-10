@@ -10,6 +10,10 @@ using json = nlohmann::json;
 
 bool FMapLoader::LoadFromFile(const std::string& Path)
 {
+	std::ifstream File(Path);
+	if (!File.is_open())
+		return false;
+
 	std::stringstream Buffer;
 	Buffer << File.rdbuf();
 	FileContent = Buffer.str();

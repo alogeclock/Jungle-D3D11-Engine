@@ -1,14 +1,15 @@
 #include "Stage.h"
-#include "../Core/GameContext.h"
-#include "../Core/Input.h"
-#include "../Core/Logger.h"
+#include "Core/GameContext.h"
+#include "Core/Input.h"
+#include "Core/Logger.h"
 #include "BeatSystem.h"
 #include "Camera2D.h"
-#include "Core/Renderer.h"
-#include "Core/Texture.h"
-#include "Core/TextureManager.h"
+#include "Render/Renderer.h"
+#include "Render/Texture.h"
+#include "Render/TextureManager.h"
 #include "Data/MapLoader.h"
-#include "MapData.h"
+#include "Data/MapData.h"
+#include "IO/ImageLoader.h"
 #include "Monster.h"
 #include "Player.h"
 #include "ScoreSystem.h"
@@ -360,11 +361,19 @@ void FStage::LoadSpriteResources()
         return;
 
     // 스프라이트 텍스처 로드 (파일이 없으면 셰이더 폴백 색상 사용)
-    Textures->Load("tile_floor", "Resources/Sprites/tile_floor.png");
-    Textures->Load("goal", "Resources/Sprites/goal.png");
-    Textures->Load("wall", "Resources/Sprites/wall.png");
-    Textures->Load("player", "Resources/Sprites/player.png");
-    Textures->Load("monster", "Resources/Sprites/monster.png");
+    auto LoadTex = [&](const std::string& Key, const std::string& Path)
+    {
+        if (!Textures->Has(Key))
+        {
+            auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
+            if (Tex) Textures->Register(Key, std::move(Tex));
+        }
+    };
+    LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
+    LoadTex("goal", "Resources/Sprites/goal.png");
+    LoadTex("wall", "Resources/Sprites/wall.png");
+    LoadTex("player", "Resources/Sprites/player.png");
+    LoadTex("monster", "Resources/Sprites/monster.png");
 
     // 타일에 스프라이트 할당
     for (auto &Tile : Tiles)
@@ -411,10 +420,11 @@ void FStage::DrawSpriteAtWorld(float WorldCenterX, float WorldCenterY, float Wid
     if (Textures && !Sprite.TextureKey.empty())
     {
         FTexture *Tex = Textures->Get(Sprite.TextureKey);
-        if (Tex && Tex->GetSRV())
+        if (Tex && Tex->GetTextureSRV())
         {
-            Textures->Bind(Sprite.TextureKey, Renderer->DeviceContext, 0);
-            TexSize = {static_cast<float>(Tex->GetWidth()), static_cast<float>(Tex->GetHeight())};
+            ID3D11ShaderResourceView* SRV = Tex->GetTextureSRV();
+            Renderer->DeviceContext->PSSetShaderResources(0, 1, &SRV);
+            TexSize = {static_cast<float>(Tex->Width), static_cast<float>(Tex->Height)};
         }
     }
 

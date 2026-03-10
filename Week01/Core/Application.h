@@ -5,9 +5,9 @@
 #include <windows.h>
 #include "GameContext.h"
 #include "Input.h"
-#include "Renderer.h"
-#include "SceneManager.h"
-#include "TextureManager.h"
+#include "Render/Renderer.h"
+#include "Scene/SceneManager.h"
+#include "Render/TextureManager.h"
 #include "Time.h"
 #include "FWindow.h"
 

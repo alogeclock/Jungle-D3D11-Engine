@@ -2,9 +2,9 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include "../Gameplay/Camera2D.h"
+#include "Gameplay/Camera2D.h"
 #include "RenderObject.h"
-#include "Types.h"
+#include "Core/Types.h"
 
 class FRenderer
 {
@@ -92,12 +92,12 @@ private:
 	std::vector<FRenderObject> RenderObjects;
 	const FVertexSimple quadVertices[6] =
 	{
-		{ -0.5f, -0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   0.f, 0.f },
-		{  0.5f, -0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   1.f, 0.f },
-		{  0.5f,  0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   1.f, 1.f },
+		{ -0.5f, -0.5f, 0.f,   0.f, 0.f },
+		{  0.5f, -0.5f, 0.f,   1.f, 0.f },
+		{  0.5f,  0.5f, 0.f,   1.f, 1.f },
 
-		{ -0.5f, -0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   0.f, 0.f },
-		{  0.5f,  0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   1.f, 1.f },
-		{ -0.5f,  0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   0.f, 1.f }
+		{ -0.5f, -0.5f, 0.f,   0.f, 0.f },
+		{  0.5f,  0.5f, 0.f,   1.f, 1.f },
+		{ -0.5f,  0.5f, 0.f,   0.f, 1.f }
 	};
 };

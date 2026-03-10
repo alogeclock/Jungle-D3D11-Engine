@@ -6,10 +6,10 @@
 #include <vector>
 #include "FileIO.h"
 #include "ImageLoader.h"
-#include "Texture.h"
+#include "Render/Texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "ThridParty/stb_image.h"
 
 namespace
 {

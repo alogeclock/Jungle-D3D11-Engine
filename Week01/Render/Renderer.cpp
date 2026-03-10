@@ -53,9 +53,10 @@ void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 	DeviceContext->PSSetSamplers(0, 1, &SamplerState); // 0 = shader register 0 // THINK ABOUT : Maybe this line can be in BeginFrame()
 	for (const FRenderObject& RenderObject : RenderObjects)
 	{
-		if (RenderObject.Texture && RenderObject.Texture->SRV)
+		if (RenderObject.Texture && RenderObject.Texture->GetTextureSRV())
 		{
-			DeviceContext->PSSetShaderResources(0, 1, &RenderObject.Texture->SRV);
+			ID3D11ShaderResourceView* SRV = RenderObject.Texture->GetTextureSRV();
+			DeviceContext->PSSetShaderResources(0, 1, &SRV);
 		}
 		FVector Offset(RenderObject.Position.X, RenderObject.Position.Y, 0.f);
 		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y, 0.f, 0.f);

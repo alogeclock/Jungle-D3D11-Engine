@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "Types.h"
+#include "Core/Types.h"
 #include "Texture.h"
 struct FRenderObject
 {
