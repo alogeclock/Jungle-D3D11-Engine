@@ -47,11 +47,11 @@ float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     float4 color = SimpleTexture.Sample(SimpleSampler, input.UV);
 
-    // 투명 픽셀은 버림
-    if (color.a < 0.01f)
+    // 테스트를 위해 투명 픽셀 유기는 주석처리
+    /*if (color.a < 0.01f)
     {
         discard;
-    }
+    }*/
 
     return color;
 }

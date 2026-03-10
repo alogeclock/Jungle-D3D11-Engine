@@ -29,6 +29,8 @@ public:
 	void DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width,
 		float height, const FCamera2D& camera);
 
+	void DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FVec2& Position);
+
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
 
@@ -101,12 +103,31 @@ private:
 	std::vector<FRenderObject> RenderObjects;
 	const FVertexSimple quadVertices[6] =
 	{
-		{ -0.5f, -0.5f, 0.f,   0.f, 0.f },
-		{  0.5f, -0.5f, 0.f,   1.f, 0.f },
-		{  0.5f,  0.5f, 0.f,   1.f, 1.f },
+		//CCW
+		//{ -0.5f, -0.5f, 0.f, 0.f, 1.f },//좌하단
+		//{  0.5f, -0.5f, 0.f, 1.f, 1.f },//우하단
+		//{  0.5f,  0.5f, 0.f, 1.f, 0.f },//우상단
 
-		{ -0.5f, -0.5f, 0.f,   0.f, 0.f },
-		{  0.5f,  0.5f, 0.f,   1.f, 1.f },
-		{ -0.5f,  0.5f, 0.f,   0.f, 1.f }
+		//{ -0.5f, -0.5f, 0.f, 0.f, 1.f },//좌하단
+		//{  0.5f,  0.5f, 0.f, 1.f, 0.f },//우상단
+		//{ -0.5f,  0.5f, 0.f, 0.f, 0.f } //좌상단
+
+
+			{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
+	{  0.5f, -0.5f, 0.f, 1.f, 0.f }, // 우하단
+	{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
+
+	{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
+	{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
+	{ -0.5f,  0.5f, 0.f, 0.f, 1.f }  // 좌상단
+
+	//CW
+	//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
+	//{  -0.5f, 0.5f, 0.f, 1.f, 0.f },
+	//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
+
+	//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
+	//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
+	//{  0.5f,  -0.5f, 0.f, 0.f, 1.f }
 	};
 };

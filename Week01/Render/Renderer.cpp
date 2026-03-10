@@ -52,6 +52,7 @@ void FRenderer::PrepareShader()
 
 void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 {
+	PrepareShader();
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
 	DeviceContext->PSSetSamplers(0, 1, &SamplerState); // 0 = shader register 0 // THINK ABOUT : Maybe this line can be in BeginFrame()
@@ -439,6 +440,17 @@ void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float 
 	RenderObject.Texture = texture;
 	RenderObject.Position.X = worldX - camera.GetPosition().X;
 	RenderObject.Position.Y = worldY - camera.GetPosition().Y;
+	RenderObject.Size.X = width;
+	RenderObject.Size.Y = height;
+	RenderObjects.push_back(RenderObject);
+}
+
+void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FVec2& Position)
+{
+	FRenderObject RenderObject;
+	RenderObject.Texture = texture;
+	RenderObject.Position.X = worldX - Position.X;
+	RenderObject.Position.Y = worldY - Position.Y;
 	RenderObject.Size.X = width;
 	RenderObject.Size.Y = height;
 	RenderObjects.push_back(RenderObject);
