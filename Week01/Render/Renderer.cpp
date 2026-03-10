@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Renderer.h"
+#include "FontManager.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -65,6 +66,38 @@ void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 		}
 		FVector Offset(RenderObject.Position.X, RenderObject.Position.Y, 0.f);
 		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y, 0.f, 0.f);
+		DeviceContext->Draw(sizeof(quadVertices) / sizeof(FVertexSimple), 0);
+	}
+
+
+	for (const FFontRenderObject& RenderObject : FontRenderObjects)
+	{
+		if (RenderObject.Texture && RenderObject.Texture->GetTextureSRV())
+		{
+			ID3D11ShaderResourceView* SRV = RenderObject.Texture->GetTextureSRV();
+			DeviceContext->PSSetShaderResources(0, 1, &SRV);
+		}
+
+		FVector Offset(RenderObject.Offset.X, RenderObject.Offset.Y, 0.f);
+		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y, 0.f, 0.f);
+
+		FVec2 UV0 = RenderObject.UV0;
+		FVec2 UV1 = RenderObject.UV1;
+
+		FVertexSimple textVertices[6] =
+		{
+			{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
+			{  0.5f, -0.5f, 0.f, UV1.X, UV0.Y }, // 우하단
+			{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
+
+			{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
+			{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
+			{ -0.5f,  0.5f, 0.f, UV0.X, UV1.Y }, // 좌상단
+		};
+
+		UpdateTextQuadBuffer(textVertices);
+		UINT offset = 0;
+		DeviceContext->IASetVertexBuffers(0, 1, &TextQuadBuffer, &Stride, &offset);
 		DeviceContext->Draw(sizeof(quadVertices) / sizeof(FVertexSimple), 0);
 	}
 }
@@ -229,6 +262,7 @@ void FRenderer::Create(HWND hWindow)
 	CreateFrameBuffer();
 	CreateRasterizerState();
 	CreateSimpleQuad();
+	CreateTextQuadBuffer();
 	CreateSamplerState();
 }
 
@@ -397,6 +431,25 @@ ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWi
 	return vertexBuffer;
 }
 
+void FRenderer::CreateTextQuadBuffer()
+{
+	D3D11_BUFFER_DESC vertexbufferdesc = {};
+	vertexbufferdesc.ByteWidth = sizeof(quadVertices);
+	vertexbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
+	vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	Device->CreateBuffer(&vertexbufferdesc, nullptr, &TextQuadBuffer);
+}
+
+void FRenderer::UpdateTextQuadBuffer(FVertexSimple* textVertices)
+{
+	D3D11_MAPPED_SUBRESOURCE mapped = {};
+	DeviceContext->Map(TextQuadBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+	memcpy(mapped.pData, textVertices, sizeof(FVertexSimple) * 6);
+	DeviceContext->Unmap(TextQuadBuffer, 0);
+}
+
 void FRenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
 	vertexBuffer->Release();
@@ -456,6 +509,33 @@ void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float 
 	RenderObjects.push_back(RenderObject);
 }
 
+void FRenderer::DrawFont(const std::string& text, const FBitmapFont* Font, const FTexture* texture,
+	float screenX, float screenY, float scale)
+{
+	float ScaleFactor = 1.0f;
+	if (Font->LineHeight > 0)
+	{
+		ScaleFactor = scale / static_cast<float>(Font->LineHeight);
+	}
+
+	std::vector<FTextQuad> Quads = BuildQuads(*Font, text, screenX, screenY, ScaleFactor);
+	FFontRenderObject FontRenderObj;
+	for (const FTextQuad& Quad : Quads)
+	{
+		FontRenderObj.Offset.X = Quad.ScreenX;
+		FontRenderObj.Offset.Y = Quad.ScreenY;
+		FontRenderObj.Size.X = Quad.Width;
+		FontRenderObj.Size.Y = Quad.Height;
+		FontRenderObj.Texture = texture;
+		FontRenderObj.UV0.X = Quad.U0;
+		FontRenderObj.UV0.Y = Quad.V0;
+		FontRenderObj.UV1.X = Quad.U1;
+		FontRenderObj.UV1.Y = Quad.V1;
+
+		FontRenderObjects.push_back(FontRenderObj);
+	}
+}
+
 bool FRenderer::Initialize(HWND hWindow, int ScreenWidth, int ScreenHeight)
 {
 	Create(hWindow);
@@ -474,6 +554,7 @@ void FRenderer::EndFrame()
 {
 	SwapBuffer();
 	RenderObjects.clear();
+	FontRenderObjects.clear();
 }
 
 int FRenderer::GetScreenWidth() const

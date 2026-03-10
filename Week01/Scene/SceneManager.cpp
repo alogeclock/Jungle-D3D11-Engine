@@ -95,6 +95,7 @@ std::unique_ptr<IScene> FSceneManager::CreateScene(ESceneType SceneType)
 		{
 			Scene->SetRenderer(&GameContext->Renderer);
 			Scene->SetTextureManager(&GameContext->Textures);
+			Scene->SetFontManager(&GameContext->FontManager);
 		}
 		return Scene;
 	}

@@ -8,7 +8,7 @@
 class FStage;
 class FRenderer;
 class FTextureManager;
-
+class FFontManager;
 class FPlayScene : public IScene
 {
 public:
@@ -16,15 +16,16 @@ public:
 
 	void SetRenderer(FRenderer* InRenderer);
 	void SetTextureManager(FTextureManager* InTextures);
+	void SetFontManager(FFontManager* FontManager);
 
 	void Enter() override;
 	void Exit() override;
 
-    void Update(FGameContext &Context) override;
-    void Render(FGameContext &Context) override;
+	void Update(FGameContext& Context) override;
+	void Render(FGameContext& Context) override;
 
-    void StartNewGame(int StageIndex = 0);
-    void RestartGame();
+	void StartNewGame(int StageIndex = 0);
+	void RestartGame();
 
 private:
 	std::unique_ptr<FStage> Stage;
@@ -32,9 +33,10 @@ private:
 
 	FRenderer* Renderer = nullptr;
 	FTextureManager* Textures = nullptr;
+	FFontManager* FontManager = nullptr;
 
-    bool bIsPaused = false;
-    bool bIsGameOverPopupOpened = false;
+	bool bIsPaused = false;
+	bool bIsGameOverPopupOpened = false;
 
-    int CurrentStageIndex = 0;
+	int CurrentStageIndex = 0;
 };

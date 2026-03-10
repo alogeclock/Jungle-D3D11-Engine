@@ -6,7 +6,9 @@
 #include <vector>
 #include "Gameplay/Camera2D.h"
 #include "RenderObject.h"
+#include "FontRenderObject.h"
 #include "Core/Types.h"
+#include "Render/BitmapFont.h"
 
 class FRenderer
 {
@@ -30,6 +32,9 @@ public:
 		float height, const FCamera2D& camera);
 
 	void DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FVec2& Position);
+
+	void DrawFont(const std::string& text, const FBitmapFont* Font, const FTexture* texture,
+		float screenX, float screenY, float scale);
 
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
@@ -56,6 +61,7 @@ public:
 	ID3D11RasterizerState* RasterizerState = nullptr;
 	ID3D11Buffer* ConstantBuffer = nullptr;
 	ID3D11Buffer* QuadBuffer = nullptr;
+	ID3D11Buffer* TextQuadBuffer = nullptr;
 
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	D3D11_VIEWPORT ViewportInfo;
@@ -89,9 +95,13 @@ public:
 	void Release();
 	void SwapBuffer();
 	void CreateSamplerState();
-	void CreateSimpleQuad();
 
 	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
+
+	void CreateSimpleQuad();
+	void CreateTextQuadBuffer();
+	void UpdateTextQuadBuffer(FVertexSimple* textVertices);
+
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 	void CreateConstantBuffer();
 	void ReleaseConstantBuffer();
@@ -101,7 +111,8 @@ private:
 	std::string CurrentShaderName = "Default";
 	std::string ShaderError;
 	std::vector<FRenderObject> RenderObjects;
-	const FVertexSimple quadVertices[6] =
+	std::vector<FFontRenderObject> FontRenderObjects;
+	FVertexSimple quadVertices[6] =
 	{
 		//CCW
 		//{ -0.5f, -0.5f, 0.f, 0.f, 1.f },//좌하단
@@ -113,21 +124,21 @@ private:
 		//{ -0.5f,  0.5f, 0.f, 0.f, 0.f } //좌상단
 
 
-			{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
-	{  0.5f, -0.5f, 0.f, 1.f, 0.f }, // 우하단
-	{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
+		{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
+		{  0.5f, -0.5f, 0.f, 1.f, 0.f }, // 우하단
+		{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
 
-	{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
-	{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
-	{ -0.5f,  0.5f, 0.f, 0.f, 1.f }  // 좌상단
+		{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
+		{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
+		{ -0.5f,  0.5f, 0.f, 0.f, 1.f }  // 좌상단
 
-	//CW
-	//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
-	//{  -0.5f, 0.5f, 0.f, 1.f, 0.f },
-	//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
+		//CW
+		//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
+		//{  -0.5f, 0.5f, 0.f, 1.f, 0.f },
+		//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
 
-	//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
-	//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
-	//{  0.5f,  -0.5f, 0.f, 0.f, 1.f }
+		//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
+		//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
+		//{  0.5f,  -0.5f, 0.f, 0.f, 1.f }
 	};
 };

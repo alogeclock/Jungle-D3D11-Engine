@@ -6,6 +6,7 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_internal.h"
 #include "IO/ImageLoader.h"
+#include "IO/BitmapFontLoader.h"
 
 
 bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHeight)
@@ -22,6 +23,7 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	Renderer = std::make_unique<FRenderer>();
 	TextureManager = std::make_unique<FTextureManager>();
 	SceneManager = std::make_unique<FSceneManager>();
+	FontManager = std::make_unique<FFontManager>();
 
 	if (!Renderer->Initialize(WindowHandle, ScreenWidth, ScreenHeight))
 		return false;
@@ -44,7 +46,9 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	LoadTex("monster", "Resources/Sprites/monster.png");
 	LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
 
-
+	//Font
+	auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, "Resources/Fonts/bmFont.png");
+	FontManager->Register("basic_font", "Resources/Fonts/bmFont.fnt", std::move(Tex));
 
 
 	// TODO
@@ -60,7 +64,7 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	ImGui_ImplWin32_Init(WindowHandle);
 	ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext);
 
-	GameContext.emplace(FGameContext{ *Time, *Input, *Renderer, *TextureManager });
+	GameContext.emplace(FGameContext{ *Time, *Input, *Renderer, *TextureManager ,*FontManager });
 
 	SceneManager->Initialize(&GameContext.value());
 	SceneManager->ChangeSceneImmediately(ESceneType::Title);

@@ -12,9 +12,11 @@
 #include <string>
 #include <vector>
 
+
 class FActor;
 class FRenderer;
 class FTextureManager;
+class FFontManager;
 struct FSpriteInfo;
 struct ID3D11Buffer;
 
@@ -43,7 +45,8 @@ class FStage
 public:
 	~FStage();
 
-	bool Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InTextures);
+	bool Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InTextures,
+		FFontManager* InFontManager);
 	void Reset();
 
 	void Update(float DeltaTime, FGameContext& Context);
@@ -114,6 +117,7 @@ private:
 
 	FRenderer* Renderer = nullptr;
 	FTextureManager* Textures = nullptr;
+	FFontManager* FontManager = nullptr;//need to link
 
 	// 렌더링 리소스
 	ID3D11Buffer* QuadVB = nullptr;   // 공유 쿼드 버텍스 버퍼 (단위 사각형)
