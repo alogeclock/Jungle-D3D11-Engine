@@ -28,8 +28,8 @@ public:
 	ID3D11SamplerState* GetDefaultSampler() const;
 
 	// 셰이더에 텍스처 + 샘플러 바인딩
-	void Bind(const std::string& Key, ID3D11DeviceContext* Context, UINT Slot = 0) const;
-	void Unbind(ID3D11DeviceContext* Context, UINT Slot = 0) const;
+	void Bind(const std::string& Key, ID3D11DeviceContext* Context, unsigned int Slot = 0) const;
+	void Unbind(ID3D11DeviceContext* Context, unsigned int Slot = 0) const;
 
 private:
 	ID3D11Device* Device = nullptr;

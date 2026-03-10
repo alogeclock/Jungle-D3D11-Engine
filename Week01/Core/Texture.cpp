@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+#include <vector>
 #include <wincodec.h>
 #include <wrl/client.h>
 
