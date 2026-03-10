@@ -1,12 +1,12 @@
-#include "pch.h"
-#include "PlayScene.h"
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Data/StageLoader.h"
 #include "Gameplay/Stage.h"
-#include "UI/BeatHUDWidget.h"
-#include "UI/DebugWidget.h"
-#include "UI/GameplayHUDWidget.h"
+#include "PlayScene.h"
+#include "UI/widget/BeatHUDWidget.h"
+#include "UI/widget/DebugWidget.h"
+#include "UI/widget/GameplayHUDWidget.h"
+#include "pch.h"
 
 FPlayScene::~FPlayScene() = default;
 
