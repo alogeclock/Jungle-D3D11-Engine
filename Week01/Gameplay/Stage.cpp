@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Stage.h"
 #include "BeatSystem.h"
 #include "Camera2D.h"
@@ -113,7 +113,6 @@ void FStage::Reset()
     bIsCleared = false;
 }
 
-
 void FStage::Update(float DeltaTime, FGameContext &Context)
 {
     // 비트 시스템 업데이트
@@ -153,13 +152,13 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     if (!Player->IsDead() && bHasInput)
     {
         // 입력이 들어온 현재 시점의 박자 인덱스
-        float AdjustedTime = BeatSystem->GetElapsedTime() + (BeatSystem->GetBeatInterval() * 0.5f);
-        int   TargetBeatIndex = static_cast<int>(AdjustedTime / BeatSystem->GetBeatInterval());
+        int CurrentBeatIndex =
+            static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
 
         if (BeatSystem->JudgeInput() == EBeatJudge::Good)
         {
             Logger::Log("Good Input");
-            if (Player->GetLastMovedBeatIndex() == TargetBeatIndex)
+            if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
             {
                 Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
             }
@@ -168,18 +167,19 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 // 즉시 이동 처리
                 Player->QueueInput(MoveDir);
                 Player->OnBeat(*this);
-                Player->SetLastMovedBeatIndex(TargetBeatIndex);
+                Player->SetLastMovedBeatIndex(CurrentBeatIndex);
             }
         }
         else
         {
             Logger::Log("Miss Input");
             Player->Damage(1); // 엇박자 입력 시 데미지
-            Player->SetLastMovedBeatIndex(TargetBeatIndex);
+            Player->SetLastMovedBeatIndex(CurrentBeatIndex);
         }
     }
 
-    if (BeatSystem->ConsumeBeat())
+    // 3. 비트 시작 시 처리 (박자가 넘어가는 순간에만 1회 수행)
+    if (BeatSystem->ConsumeBeat()) //
     {
         // 몬스터 이동
         for (auto &Mon : Monsters)
@@ -188,29 +188,20 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         }
     }
 
-    static int LastCheckedBeat = -1;
-    float      Interval = BeatSystem->GetBeatInterval();
-    float      CurrentTime = BeatSystem->GetElapsedTime();
-
-    // 현재 박자의 정점에서 0.2초가 지났는지 확인
-    int   CurrentBeatIndex = static_cast<int>(CurrentTime / Interval);
-    float TimeInBeat = fmod(CurrentTime, Interval);
-
-    if (TimeInBeat > 0.2f && LastCheckedBeat < CurrentBeatIndex)
+    if (BeatSystem->IsBeatSkipped())
     {
-        if (Player->GetLastMovedBeatIndex() < CurrentBeatIndex)
+        int CurrentBeatIndex =
+            static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
+
+        if (!Player->IsDead() && CurrentBeatIndex > 0)
         {
-            Logger::Log("No Input in Window - Player Damaged");
-            Player->Damage(1);
+
+            if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
+            {
+                Logger::Log("No Input Detected - Player Damaged");
+                Player->Damage(1);
+            }
         }
-        LastCheckedBeat = CurrentBeatIndex;
-    }
-
-
-    // 플레이어 사망 체크
-    if (Player->IsDead())
-    {
-        bIsGameOver = true;
     }
 
     // 골인 지점 도달 체크
@@ -226,6 +217,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     Camera->SetTargetCenter(PlayerCenter);
     Camera->Update(DeltaTime);
 }
+
 void FStage::Render()
 {
     if (!Renderer || !QuadVB || !SpriteCB)
