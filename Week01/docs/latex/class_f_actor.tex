@@ -17,7 +17,7 @@ virtual \doxymbox{\hyperlink{class_f_actor_aad1e02b0db6bcdd5d3c6a0430050c848}{\t
 \item 
 virtual \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActor\+Type}} \doxymbox{\hyperlink{class_f_actor_aacfa923eb1d70916869e858aa897097e}{Get\+Actor\+Type}} () const =0
 \item 
-virtual void \doxymbox{\hyperlink{class_f_actor_a1a55fa9c80cb537ed6b701de1bf01d5f}{Update}} (float Delta\+Time)
+virtual void \doxymbox{\hyperlink{class_f_actor_a9b8bdf8a83131a5c626b070534d851f6}{Update}} (float Delta\+Time, \doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)
 \item 
 virtual void \doxymbox{\hyperlink{class_f_actor_a88bccdf6676b7fff8414a48d9cec2cc5}{On\+Beat}} (\doxymbox{\hyperlink{class_f_stage}{FStage}} \&Stage)=0
 \item 
@@ -49,6 +49,10 @@ void \doxymbox{\hyperlink{class_f_actor_a279cf6d77a0343648e2dece3f1eb1801}{Heal}
 \item 
 bool \doxymbox{\hyperlink{class_f_actor_a4e8f828e5728dc61a99878afcd02fe4d}{Is\+Dead}} () const
 \item 
+void \doxymbox{\hyperlink{class_f_actor_ae30eefecc73f1ae6a57d9a146db2de43}{Set\+Invincible}} (bool b\+Enable)
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a2f466aae61cd1e033a6d9fc7c73c3667}{Is\+Invincible}} () const
+\item 
 bool \doxymbox{\hyperlink{class_f_actor_adc0348f0969c577bd049e44dcec1e840}{Is\+Moving}} () const
 \item 
 void \doxymbox{\hyperlink{class_f_actor_a0382ed1b6c73a2a6d5649440dd992e7f}{Set\+Sprite}} (const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&In\+Sprite)
@@ -68,7 +72,9 @@ float \doxymbox{\hyperlink{class_f_actor_a9aceaf647fb5b86ac7ac887913ac67db}{Rend
 \item 
 \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} \doxymbox{\hyperlink{class_f_actor_a713cc90aceb283518cfc654a60659f5c}{Direction}} = \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53}{EDirection::\+\+Down}}
 \item 
-int \doxymbox{\hyperlink{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239}{Hp}} = 1
+int \doxymbox{\hyperlink{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239}{Hp}} = 5
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a78d706532c3fa04982ca6722ea22309f}{b\+Is\+Invincible}} = false
 \item 
 bool \doxymbox{\hyperlink{class_f_actor_a1423baf579ad4798e911df3cf2ed3ee7}{b\+Is\+Moving}} = false
 \item 
@@ -172,6 +178,12 @@ void FActor::\+\+Heal (\begin{DoxyParamCaption}\item[{int}]{Amount}{}\end{DoxyPa
 {\footnotesize\ttfamily \label{class_f_actor_a4e8f828e5728dc61a99878afcd02fe4d} 
 bool FActor::\+\+Is\+Dead (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{class_f_actor_a2f466aae61cd1e033a6d9fc7c73c3667}\index{FActor@{FActor}!IsInvincible@{IsInvincible}}
+\index{IsInvincible@{IsInvincible}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{IsInvincible()}{IsInvincible()}}
+{\footnotesize\ttfamily \label{class_f_actor_a2f466aae61cd1e033a6d9fc7c73c3667} 
+bool FActor::\+\+Is\+Invincible (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{class_f_actor_adc0348f0969c577bd049e44dcec1e840}\index{FActor@{FActor}!IsMoving@{IsMoving}}
 \index{IsMoving@{IsMoving}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{IsMoving()}{IsMoving()}}
@@ -200,6 +212,12 @@ void FActor::\+\+Set\+Direction (\begin{DoxyParamCaption}\item[{\doxymbox{\hyper
 {\footnotesize\ttfamily \label{class_f_actor_a68595bdd34cbe511ae5a21193037da90} 
 void FActor::\+\+Set\+Hp (\begin{DoxyParamCaption}\item[{int}]{In\+Hp}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_actor_ae30eefecc73f1ae6a57d9a146db2de43}\index{FActor@{FActor}!SetInvincible@{SetInvincible}}
+\index{SetInvincible@{SetInvincible}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{SetInvincible()}{SetInvincible()}}
+{\footnotesize\ttfamily \label{class_f_actor_ae30eefecc73f1ae6a57d9a146db2de43} 
+void FActor::\+\+Set\+Invincible (\begin{DoxyParamCaption}\item[{bool}]{b\+Enable}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_actor_aa4e2ef6e4886ce328bcf1d9c12b30bcf}\index{FActor@{FActor}!SetPosition@{SetPosition}}
 \index{SetPosition@{SetPosition}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{SetPosition()}{SetPosition()}}
@@ -224,21 +242,27 @@ void FActor::\+\+Start\+Move\+To (\begin{DoxyParamCaption}\item[{int}]{In\+TileX
 {\footnotesize\ttfamily \label{class_f_actor_a7d444ecb3ee3be5c675d5b616b8e204d} 
 bool FActor::\+\+Try\+Move (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_stage}{FStage}} \&}]{Stage}{, }\item[{\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}}]{Direction}{}\end{DoxyParamCaption})}
 
-\Hypertarget{class_f_actor_a1a55fa9c80cb537ed6b701de1bf01d5f}\index{FActor@{FActor}!Update@{Update}}
+\Hypertarget{class_f_actor_a9b8bdf8a83131a5c626b070534d851f6}\index{FActor@{FActor}!Update@{Update}}
 \index{Update@{Update}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{Update()}{Update()}}
-{\footnotesize\ttfamily \label{class_f_actor_a1a55fa9c80cb537ed6b701de1bf01d5f} 
-void FActor::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+{\footnotesize\ttfamily \label{class_f_actor_a9b8bdf8a83131a5c626b070534d851f6} 
+void FActor::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{, }\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
 
 
 
-Reimplemented in \doxymbox{\hyperlink{class_f_monster_a9361e0047f38b61acd842fc445589f70}{FMonster}}, and \doxymbox{\hyperlink{class_f_player_a10c8bb94f4a4680a32119c48a05fa017}{FPlayer}}.
+Reimplemented in \doxymbox{\hyperlink{class_f_monster_ab99ea1e9983cf0533ac2ce78efb35cce}{FMonster}}, and \doxymbox{\hyperlink{class_f_player_a3f3db60ee81f30e06add71f232c83b3f}{FPlayer}}.
 
 
 
 \label{doc-variable-members}
 \Hypertarget{class_f_actor_doc-variable-members}
 \doxysubsection{Member Data Documentation}
+\Hypertarget{class_f_actor_a78d706532c3fa04982ca6722ea22309f}\index{FActor@{FActor}!bIsInvincible@{bIsInvincible}}
+\index{bIsInvincible@{bIsInvincible}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{bIsInvincible}{bIsInvincible}}
+{\footnotesize\ttfamily \label{class_f_actor_a78d706532c3fa04982ca6722ea22309f} 
+bool FActor::\+b\+Is\+Invincible = false\hspace{0.3cm}{\ttfamily [protected]}}
+
 \Hypertarget{class_f_actor_a1423baf579ad4798e911df3cf2ed3ee7}\index{FActor@{FActor}!bIsMoving@{bIsMoving}}
 \index{bIsMoving@{bIsMoving}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{bIsMoving}{bIsMoving}}
@@ -255,7 +279,7 @@ bool FActor::\+b\+Is\+Moving = false\hspace{0.3cm}{\ttfamily [protected]}}
 \index{Hp@{Hp}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{Hp}{Hp}}
 {\footnotesize\ttfamily \label{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239} 
-int FActor::\+\+Hp = 1\hspace{0.3cm}{\ttfamily [protected]}}
+int FActor::\+\+Hp = 5\hspace{0.3cm}{\ttfamily [protected]}}
 
 \Hypertarget{class_f_actor_ae10f80275dcedb0653f3255c1c28ba4c}\index{FActor@{FActor}!MoveDuration@{MoveDuration}}
 \index{MoveDuration@{MoveDuration}!FActor@{FActor}}

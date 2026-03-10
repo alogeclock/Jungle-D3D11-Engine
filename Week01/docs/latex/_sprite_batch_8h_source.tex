@@ -1,0 +1,211 @@
+\doxysection{Sprite\+Batch.\+h}
+\hypertarget{_sprite_batch_8h_source}{}\label{_sprite_batch_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/SpriteBatch.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/SpriteBatch.h}}
+\doxymbox{\hyperlink{_sprite_batch_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ SpriteBatch.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#ifdef\ USING\_DIRECTX\_HEADERS}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <dxgi1\_4.h>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <DirectXColors.h>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_render_target_state_8h}{RenderTargetState.h}}"{}}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{DX12}}}
+\DoxyCodeLine{00059\ \ \ \ \ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{SpriteSortMode}}\ :\ uint32\_t}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{SpriteSortMode\_Deferred}},}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aa38e916792d1675c9c69e9aa1dc7ad4fe}{SpriteSortMode\_Immediate}},}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaf67150087454da02c27acac6f860c44c}{SpriteSortMode\_Texture}},}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaf1a1f4d06c0362bf92d72dbc1f37b3f4}{SpriteSortMode\_BackToFront}},}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aa205c6d6dea1f11fadac02033e63dd1be}{SpriteSortMode\_FrontToBack}},}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ :\ uint32\_t}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}}\ =\ 0,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a7413ea8611fccc35fa9fe0b8a1969a4a}{SpriteEffects\_FlipHorizontally}}\ =\ 1,}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9aa3e0316040c35b4819812d13dd40edd2}{SpriteEffects\_FlipVertically}}\ =\ 2,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a7d821ddb8c2640956a1f170c97476c89}{SpriteEffects\_FlipBoth}}\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a7413ea8611fccc35fa9fe0b8a1969a4a}{SpriteEffects\_FlipHorizontally}}\ |\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9aa3e0316040c35b4819812d13dd40edd2}{SpriteEffects\_FlipVertically}},}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aec8937a6cd8d181a2c79c82709ee31ca}{SpriteBatchPipelineStateDescription}}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{explicit}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aec8937a6cd8d181a2c79c82709ee31ca}{SpriteBatchPipelineStateDescription}}(}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{RenderTargetState}}\&\ renderTarget,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ \textcolor{keyword}{const}\ D3D12\_BLEND\_DESC*\ blend\ =\ \textcolor{keyword}{nullptr},}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ \textcolor{keyword}{const}\ D3D12\_DEPTH\_STENCIL\_DESC*\ depthStencil\ =\ \textcolor{keyword}{nullptr},}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ \textcolor{keyword}{const}\ D3D12\_RASTERIZER\_DESC*\ rasterizer\ =\ \textcolor{keyword}{nullptr},}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ \textcolor{keyword}{const}\ D3D12\_GPU\_DESCRIPTOR\_HANDLE*\ isamplerDescriptor\ =\ \textcolor{keyword}{nullptr})\ noexcept}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_abf96d9469b6bbc88d5b77b5a6faa38ce}{blendDesc}}(blend\ ?\ *blend\ :\ s\_DefaultBlendDesc),}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_adaa2a9c12eaafc0672ae18bc7c41d731}{depthStencilDesc}}(depthStencil\ ?\ *depthStencil\ :\ s\_DefaultDepthStencilDesc),}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aa0a44b2214ccc9f7a5ae772ca007d3d0}{rasterizerDesc}}(rasterizer\ ?\ *rasterizer\ :\ s\_DefaultRasterizerDesc),}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a0d1d825622124580e8d8e5760378231e}{renderTargetState}}(renderTarget),}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a6be447046a5a5434a8b0702b1e3bf0ae}{samplerDescriptor}}\{\},}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ customRootSignature(\textcolor{keyword}{nullptr}),}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ customVertexShader\{\},}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ customPixelShader\{\}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isamplerDescriptor)}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>samplerDescriptor\ =\ *isamplerDescriptor;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_BLEND\_DESC\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_abf96d9469b6bbc88d5b77b5a6faa38ce}{blendDesc}};}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DEPTH\_STENCIL\_DESC\ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_adaa2a9c12eaafc0672ae18bc7c41d731}{depthStencilDesc}};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RASTERIZER\_DESC\ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aa0a44b2214ccc9f7a5ae772ca007d3d0}{rasterizerDesc}};}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{RenderTargetState}}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a0d1d825622124580e8d8e5760378231e}{renderTargetState}};}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a6be447046a5a5434a8b0702b1e3bf0ae}{samplerDescriptor}};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ ID3D12RootSignature*\ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a4240f6770afd8a08365696e1328f7a28}{customRootSignature}};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SHADER\_BYTECODE\ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8952af62c9c291f18b9da3c737ed4e68}{customVertexShader}};}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SHADER\_BYTECODE\ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8203ca6decc4f8de8a8eb4387d890d9f}{customPixelShader}};}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_BLEND\_DESC\ \ \ \ \ \ \ \ \ \ \ s\_DefaultBlendDesc;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_RASTERIZER\_DESC\ \ \ \ \ \ s\_DefaultRasterizerDesc;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_DEPTH\_STENCIL\_DESC\ \ \ s\_DefaultDepthStencilDesc;}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}(}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ upload,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description}{SpriteBatchPipelineStateDescription}}\&\ psoDesc,}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ \textcolor{keyword}{const}\ D3D12\_VIEWPORT*\ viewport\ =\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a9936550e8d36142090f9e344cb1f97fc}{SpriteBatch}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}\&\&)\ noexcept;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}\&\&)\ noexcept;}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{SpriteBatch}}();}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Begin/End\ a\ batch\ of\ sprite\ drawing\ operations.}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_ab25fe3be7c26448066c87dd4a197f66b}{Begin}}(}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{SpriteSortMode}}\ sortMode\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{SpriteSortMode\_Deferred}},}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ transformMatrix\ =\ MatrixIdentity);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_ab25fe3be7c26448066c87dd4a197f66b}{Begin}}(}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ sampler,}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{SpriteSortMode}}\ sortMode\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{SpriteSortMode\_Deferred}},}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ transformMatrix\ =\ MatrixIdentity);}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4e9ead8340af516b52c1f32b8933e578}{End}}();}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ overloads\ specifying\ position,\ origin\ and\ scale\ as\ XMFLOAT2.}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White);}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,\ \_In\_opt\_\ RECT\ const*\ sourceRectangle,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ XMFLOAT2\ const\&\ origin\ =\ Float2Zero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0);}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,\ \_In\_opt\_\ RECT\ const*\ sourceRectangle,}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ XMFLOAT2\ const\&\ origin,\ XMFLOAT2\ const\&\ scale,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0);}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ overloads\ specifying\ position,\ origin\ and\ scale\ via\ the\ first\ two\ components\ of\ an\ XMVECTOR.}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,\ \_In\_opt\_\ RECT\ const*\ sourceRectangle,}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ FXMVECTOR\ origin\ =\ g\_XMZero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,\ \_In\_opt\_\ RECT\ const*\ sourceRectangle,}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ FXMVECTOR\ origin,\ GXMVECTOR\ scale,}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0);}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ overloads\ specifying\ position\ as\ a\ RECT.}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RECT\ const\&\ destinationRectangle,}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}}(D3D12\_GPU\_DESCRIPTOR\_HANDLE}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textureSRV,\ XMUINT2\ const\&\ textureSize,}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RECT\ const\&\ destinationRectangle,\ \_In\_opt\_\ RECT\ const*\ sourceRectangle,}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ XMFLOAT2\ const\&\ origin\ =\ Float2Zero,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0);}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Rotation\ mode\ to\ be\ applied\ to\ the\ sprite\ transformation}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{preprocessor}{\#if\ defined(\_\_dxgi1\_2\_h\_\_)\ ||\ defined(\_\_d3d11\_x\_h\_\_)\ ||\ defined(\_\_d3d12\_x\_h\_\_)\ ||\ defined(\_\_XBOX\_D3D12\_X\_\_)}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetRotation(DXGI\_MODE\_ROTATION\ mode);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ DXGI\_MODE\_ROTATION\ \_\_cdecl\ GetRotation()\ const\ noexcept;}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ viewport\ for\ sprite\ transformation}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4d7bdad1a681e7a6c41fe07c69c9e9b9}{SetViewport}}(\textcolor{keyword}{const}\ D3D12\_VIEWPORT\&\ viewPort);}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }Impl;}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ XMMATRIX\ MatrixIdentity;}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ XMFLOAT2\ Float2Zero;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00204\ \ \ \ \ \}}
+\DoxyCodeLine{00205\ \}}
+
+\end{DoxyCode}

@@ -8,8 +8,6 @@ var dir_042d05fde9de49a23d65aa13d3a79273 =
     [ "Camera2D.h", "_camera2_d_8h.html", "_camera2_d_8h" ],
     [ "CreditPopup.cpp", "_credit_popup_8cpp.html", null ],
     [ "CreditPopup.h", "_credit_popup_8h.html", "_credit_popup_8h" ],
-    [ "MapData.cpp", "_map_data_8cpp.html", null ],
-    [ "MapData.h", "_map_data_8h.html", "_map_data_8h" ],
     [ "Monster.cpp", "_monster_8cpp.html", null ],
     [ "Monster.h", "_monster_8h.html", "_monster_8h" ],
     [ "Player.cpp", "_player_8cpp.html", null ],

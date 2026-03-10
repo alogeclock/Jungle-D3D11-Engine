@@ -1,0 +1,377 @@
+\doxysection{DirectX::\+DX12::\+Model Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_model}{}\label{class_direct_x_1_1_d_x12_1_1_model}\index{DirectX::DX12::Model@{DirectX::DX12::Model}}
+
+
+{\ttfamily \+\#include $<$Model.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Effect\+Collection}} = std::\+vector$<$std::\+shared\+\_\+ptr$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}}$>$$>$
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db}{Model\+Material\+Info}} = \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_i_effect_factory_1_1_effect_info}{IEffect\+Factory::\+\+Effect\+Info}}
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f}{Model\+Material\+Info\+Collection}} = std::\+vector$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db}{Model\+Material\+Info}}$>$
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783}{Texture\+Collection}} = std::\+vector$<$std::\+wstring$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} () noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a4269e001662f0ef867a2ee3f19abf3da}{Model}} (Model \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a4683fdda7100448cb3ec444e57f0d036}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a9d853b0b48ef238a4f37ad62b675e2b6}{Model}} (Model const \&other)
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a32b70cf293fd1da516a3014c291345f4}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} const \&rhs)
+\item 
+virtual \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a56dcd6e4b88e2a5dc80e5d21b32e6b94}{\texorpdfstring{$\sim$}{\string~}\+Model}} ()
+\item 
+{\footnotesize template$<$typename... TForward\+Args$>$ }\\void \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_adabd935adddd9d9b9e263a83da5841f5}{Draw\+Opaque}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, TForward\+Args \&\&... args) const
+\item 
+{\footnotesize template$<$typename... TForward\+Args$>$ }\\void \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a8135109964717d4fb369a4923995c7d4}{Draw\+Alpha}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, TForward\+Args \&\&... args) const
+\item 
+{\footnotesize template$<$typename... TForward\+Args$>$ }\\void \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ab1e884bbe71ee5ad0a24d8eda8750630}{Draw}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, TForward\+Args \&\&... args) const
+\item 
+{\footnotesize template$<$typename... TForward\+Args$>$ }\\void \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_acba285bc23dabc3cbfbe018208c3086a}{Draw\+Skinned\+Opaque}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, TForward\+Args \&\&... args) const
+\item 
+{\footnotesize template$<$typename... TForward\+Args$>$ }\\void \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a523e483577b952f4ee36acd92c362b14}{Draw\+Skinned\+Alpha}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, TForward\+Args \&\&... args) const
+\item 
+{\footnotesize template$<$typename... TForward\+Args$>$ }\\void \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae894a1fa7db2fa3f0ebd74934403f4d3}{Draw\+Skinned}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, TForward\+Args \&\&... args) const
+\item 
+int \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_aea158524d9da49634c0071c3b50d5cb9}{Load\+Textures}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_texture_factory}{IEffect\+Texture\+Factory}} \&tex\+Factory, int destination\+Descriptor\+Offset=0) const
+\item 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_texture_factory}{Effect\+Texture\+Factory}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_aa1f9a764abb1089ff9366ee27cd17fd6}{Load\+Textures}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload\+Batch, \+\_\+\+In\+\_\+opt\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}textures\+Path=nullptr, D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+FLAGS flags=D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+FLAG\+\_\+\+SHADER\+\_\+\+VISIBLE) const
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a9a7cc98fec7ed3d1758d41f1ce45536e}{Load\+Static\+Buffers}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload\+Batch, bool keep\+Memory=false)
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Effect\+Collection}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a8d12abc88f8d2c7887043611e81d5627}{Create\+Effects}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&opaque\+Pipeline\+State, const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&alpha\+Pipeline\+State, \+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}texture\+Descriptor\+Heap, \+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}sampler\+Descriptor\+Heap, int texture\+Descriptor\+Offset=0, int sampler\+Descriptor\+Offset=0) const
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Effect\+Collection}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a160c623ec67079e69669e54cca0f0f94}{Create\+Effects}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{IEffect\+Factory}} \&fx\+Factory, const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&opaque\+Pipeline\+State, const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&alpha\+Pipeline\+State, int texture\+Descriptor\+Offset=0, int sampler\+Descriptor\+Offset=0) const
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1eee125ddc04c2f3e14aac3477e9f5cd}{Copy\+Absolute\+Bone\+Transforms\+To}} (size\+\_\+t nbones, \+\_\+\+Out\+\_\+writes\+\_\+(nbones) XMMATRIX \texorpdfstring{$\ast$}{*}bone\+Transforms) const
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a89c2c5c067da4c98db50d2060c17c49c}{Copy\+Absolute\+Bone\+Transforms}} (size\+\_\+t nbones, \+\_\+\+In\+\_\+reads\+\_\+(nbones) const XMMATRIX \texorpdfstring{$\ast$}{*}in\+Bone\+Transforms, \+\_\+\+Out\+\_\+writes\+\_\+(nbones) XMMATRIX \texorpdfstring{$\ast$}{*}out\+Bone\+Transforms) const
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a58b3cdd1e266ea0eb13765cfe8e0a953}{Copy\+Bone\+Transforms\+From}} (size\+\_\+t nbones, \+\_\+\+In\+\_\+reads\+\_\+(nbones) const XMMATRIX \texorpdfstring{$\ast$}{*}bone\+Transforms)
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a0f334ac19df919a0ecb244a6679b699a}{Copy\+Bone\+Transforms\+To}} (size\+\_\+t nbones, \+\_\+\+Out\+\_\+writes\+\_\+(nbones) XMMATRIX \texorpdfstring{$\ast$}{*}bone\+Transforms) const
+\item 
+D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_aeb2a7e4b2bc0427345de972392558dac}{Get\+Gpu\+Texture\+Handle\+For\+Material\+Index}} (uint32\+\_\+t material\+Index, \+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}heap, \+\_\+\+In\+\_\+ size\+\_\+t descriptor\+Size, \+\_\+\+In\+\_\+ size\+\_\+t descriptor\+Offset) const
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f8a28cd561ad1e3585afff698bb0c92}{Transition}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+Before\+VB, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+After\+VB, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+Before\+IB, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+After\+IB)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a5024ab6e717311e7a72d07587aefe4c1}{Create\+From\+CMO}} (\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}mesh\+Data, \+\_\+\+In\+\_\+ size\+\_\+t data\+Size, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}} flags=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}, \+\_\+\+Out\+\_\+opt\+\_\+ size\+\_\+t \texorpdfstring{$\ast$}{*}anims\+Offset=nullptr)
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a2004de6fa7623361128fbd5c954a0a0c}{Create\+From\+CMO}} (\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}} flags=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}, \+\_\+\+Out\+\_\+opt\+\_\+ size\+\_\+t \texorpdfstring{$\ast$}{*}anims\+Offset=nullptr)
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a59bfefb6f6914d09e913968bd7e5fa8c}{Create\+From\+SDKMESH}} (\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}mesh\+Data, \+\_\+\+In\+\_\+ size\+\_\+t data\+Size, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}} flags=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}})
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a8d15902b30e6903718fe1525337d15c5}{Create\+From\+SDKMESH}} (\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}} flags=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}})
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a0c72d9acb70af153ecd3e9f8d142225f}{Create\+From\+VBO}} (\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}mesh\+Data, \+\_\+\+In\+\_\+ size\+\_\+t data\+Size, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}} flags=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}})
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a48c20f7c396fdcb661184f9a41e1f948}{Create\+From\+VBO}} (\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}} flags=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}})
+\item 
+static void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a0b3dfa2407c2500347cf2feb412ec117}{Update\+Effect\+Matrices}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Effect\+Collection}} \&effects, FXMMATRIX world, CXMMATRIX view, CXMMATRIX proj)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a1342fea3103e2a81f8a855efbf6b6c93}{Model\+Mesh::\+\+Collection}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd}{meshes}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f}{Model\+Material\+Info\+Collection}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_accbcf68221490a4688b8f0b774b43761}{materials}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783}{Texture\+Collection}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a207eda61ecb91704819c97bc3de93449}{texture\+Names}}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5}{Model\+Bone::\+\+Collection}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a3227694507e5477be7133b4a4299a3a1}{bones}}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Model\+Bone::\+\+Transform\+Array}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a56cfab37936cdef99920e56c95c0a351}{bone\+Matrices}}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Model\+Bone::\+\+Transform\+Array}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ab0241b13c24fafb23c11bef2db3904bb}{inv\+Bind\+Pose\+Matrices}}
+\item 
+std::\+wstring \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a09887669c7398289b230c7a1cd5acd3f}{name}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_doc-typedef-members}
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!EffectCollection@{EffectCollection}}
+\index{EffectCollection@{EffectCollection}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{EffectCollection}{EffectCollection}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Direct\+X::\+\+DX12::\+\+Model::\+\+Effect\+Collection}} = std::\+vector$<$std::\+shared\+\_\+ptr$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}}$>$$>$}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!ModelMaterialInfo@{ModelMaterialInfo}}
+\index{ModelMaterialInfo@{ModelMaterialInfo}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{ModelMaterialInfo}{ModelMaterialInfo}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db}{Direct\+X::\+\+DX12::\+\+Model::\+\+Model\+Material\+Info}} = \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_i_effect_factory_1_1_effect_info}{IEffect\+Factory::\+\+Effect\+Info}}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!ModelMaterialInfoCollection@{ModelMaterialInfoCollection}}
+\index{ModelMaterialInfoCollection@{ModelMaterialInfoCollection}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{ModelMaterialInfoCollection}{ModelMaterialInfoCollection}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f}{Direct\+X::\+\+DX12::\+\+Model::\+\+Model\+Material\+Info\+Collection}} = std::\+vector$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db}{Model\+Material\+Info}}$>$}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!TextureCollection@{TextureCollection}}
+\index{TextureCollection@{TextureCollection}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{TextureCollection}{TextureCollection}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783}{Direct\+X::\+\+DX12::\+\+Model::\+\+Texture\+Collection}} = std::\+vector$<$std::\+wstring$>$}
+
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!Model@{Model}}
+\index{Model@{Model}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{Model()}{Model()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0} 
+Direct\+X::\+\+DX12::\+\+Model::\+\+Model (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a4269e001662f0ef867a2ee3f19abf3da}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!Model@{Model}}
+\index{Model@{Model}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{Model()}{Model()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a4269e001662f0ef867a2ee3f19abf3da} 
+Direct\+X::\+\+DX12::\+\+Model::\+\+Model (\begin{DoxyParamCaption}\item[{Model \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a9d853b0b48ef238a4f37ad62b675e2b6}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!Model@{Model}}
+\index{Model@{Model}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{Model()}{Model()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a9d853b0b48ef238a4f37ad62b675e2b6} 
+Direct\+X::\+\+DX12::\+\+Model::\+\+Model (\begin{DoxyParamCaption}\item[{Model const \&}]{other}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a56dcd6e4b88e2a5dc80e5d21b32e6b94}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!````~Model@{\texorpdfstring{$\sim$}{\string~}Model}}
+\index{````~Model@{\texorpdfstring{$\sim$}{\string~}Model}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Model()}{\string~Model()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a56dcd6e4b88e2a5dc80e5d21b32e6b94} 
+virtual Direct\+X::\+\+DX12::\+\+Model::\+\texorpdfstring{$\sim$}{\string~}\+Model (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a89c2c5c067da4c98db50d2060c17c49c}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CopyAbsoluteBoneTransforms@{CopyAbsoluteBoneTransforms}}
+\index{CopyAbsoluteBoneTransforms@{CopyAbsoluteBoneTransforms}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CopyAbsoluteBoneTransforms()}{CopyAbsoluteBoneTransforms()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a89c2c5c067da4c98db50d2060c17c49c} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Copy\+Absolute\+Bone\+Transforms (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{nbones}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+(nbones) const XMMATRIX \texorpdfstring{$\ast$}{*}}]{in\+Bone\+Transforms}{, }\item[{\+\_\+\+Out\+\_\+writes\+\_\+(nbones) XMMATRIX \texorpdfstring{$\ast$}{*}}]{out\+Bone\+Transforms}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a1eee125ddc04c2f3e14aac3477e9f5cd}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CopyAbsoluteBoneTransformsTo@{CopyAbsoluteBoneTransformsTo}}
+\index{CopyAbsoluteBoneTransformsTo@{CopyAbsoluteBoneTransformsTo}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CopyAbsoluteBoneTransformsTo()}{CopyAbsoluteBoneTransformsTo()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a1eee125ddc04c2f3e14aac3477e9f5cd} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Copy\+Absolute\+Bone\+Transforms\+To (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{nbones}{, }\item[{\+\_\+\+Out\+\_\+writes\+\_\+(nbones) XMMATRIX \texorpdfstring{$\ast$}{*}}]{bone\+Transforms}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a58b3cdd1e266ea0eb13765cfe8e0a953}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CopyBoneTransformsFrom@{CopyBoneTransformsFrom}}
+\index{CopyBoneTransformsFrom@{CopyBoneTransformsFrom}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CopyBoneTransformsFrom()}{CopyBoneTransformsFrom()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a58b3cdd1e266ea0eb13765cfe8e0a953} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Copy\+Bone\+Transforms\+From (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{nbones}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+(nbones) const XMMATRIX \texorpdfstring{$\ast$}{*}}]{bone\+Transforms}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a0f334ac19df919a0ecb244a6679b699a}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CopyBoneTransformsTo@{CopyBoneTransformsTo}}
+\index{CopyBoneTransformsTo@{CopyBoneTransformsTo}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CopyBoneTransformsTo()}{CopyBoneTransformsTo()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a0f334ac19df919a0ecb244a6679b699a} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Copy\+Bone\+Transforms\+To (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{nbones}{, }\item[{\+\_\+\+Out\+\_\+writes\+\_\+(nbones) XMMATRIX \texorpdfstring{$\ast$}{*}}]{bone\+Transforms}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a8d12abc88f8d2c7887043611e81d5627}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateEffects@{CreateEffects}}
+\index{CreateEffects@{CreateEffects}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateEffects()}{CreateEffects()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a8d12abc88f8d2c7887043611e81d5627} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Effect\+Collection}} \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+Effects (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&}]{opaque\+Pipeline\+State}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&}]{alpha\+Pipeline\+State}{, }\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}}]{texture\+Descriptor\+Heap}{, }\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}}]{sampler\+Descriptor\+Heap}{, }\item[{int}]{texture\+Descriptor\+Offset}{ = {\ttfamily 0}, }\item[{int}]{sampler\+Descriptor\+Offset}{ = {\ttfamily 0}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a160c623ec67079e69669e54cca0f0f94}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateEffects@{CreateEffects}}
+\index{CreateEffects@{CreateEffects}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateEffects()}{CreateEffects()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a160c623ec67079e69669e54cca0f0f94} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Effect\+Collection}} \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+Effects (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{IEffect\+Factory}} \&}]{fx\+Factory}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&}]{opaque\+Pipeline\+State}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&}]{alpha\+Pipeline\+State}{, }\item[{int}]{texture\+Descriptor\+Offset}{ = {\ttfamily 0}, }\item[{int}]{sampler\+Descriptor\+Offset}{ = {\ttfamily 0}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a5024ab6e717311e7a72d07587aefe4c1}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateFromCMO@{CreateFromCMO}}
+\index{CreateFromCMO@{CreateFromCMO}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateFromCMO()}{CreateFromCMO()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a5024ab6e717311e7a72d07587aefe4c1} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+From\+CMO (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{mesh\+Data}{, }\item[{\+\_\+\+In\+\_\+ size\+\_\+t}]{data\+Size}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}}}]{flags}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}}, }\item[{\+\_\+\+Out\+\_\+opt\+\_\+ size\+\_\+t \texorpdfstring{$\ast$}{*}}]{anims\+Offset}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a2004de6fa7623361128fbd5c954a0a0c}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateFromCMO@{CreateFromCMO}}
+\index{CreateFromCMO@{CreateFromCMO}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateFromCMO()}{CreateFromCMO()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a2004de6fa7623361128fbd5c954a0a0c} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+From\+CMO (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}}]{sz\+File\+Name}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}}}]{flags}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}}, }\item[{\+\_\+\+Out\+\_\+opt\+\_\+ size\+\_\+t \texorpdfstring{$\ast$}{*}}]{anims\+Offset}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a59bfefb6f6914d09e913968bd7e5fa8c}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateFromSDKMESH@{CreateFromSDKMESH}}
+\index{CreateFromSDKMESH@{CreateFromSDKMESH}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateFromSDKMESH()}{CreateFromSDKMESH()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a59bfefb6f6914d09e913968bd7e5fa8c} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+From\+SDKMESH (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{mesh\+Data}{, }\item[{\+\_\+\+In\+\_\+ size\+\_\+t}]{data\+Size}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}}}]{flags}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a8d15902b30e6903718fe1525337d15c5}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateFromSDKMESH@{CreateFromSDKMESH}}
+\index{CreateFromSDKMESH@{CreateFromSDKMESH}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateFromSDKMESH()}{CreateFromSDKMESH()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a8d15902b30e6903718fe1525337d15c5} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+From\+SDKMESH (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}}]{sz\+File\+Name}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}}}]{flags}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a0c72d9acb70af153ecd3e9f8d142225f}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateFromVBO@{CreateFromVBO}}
+\index{CreateFromVBO@{CreateFromVBO}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateFromVBO()}{CreateFromVBO()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a0c72d9acb70af153ecd3e9f8d142225f} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+From\+VBO (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{mesh\+Data}{, }\item[{\+\_\+\+In\+\_\+ size\+\_\+t}]{data\+Size}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}}}]{flags}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a48c20f7c396fdcb661184f9a41e1f948}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!CreateFromVBO@{CreateFromVBO}}
+\index{CreateFromVBO@{CreateFromVBO}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{CreateFromVBO()}{CreateFromVBO()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a48c20f7c396fdcb661184f9a41e1f948} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Create\+From\+VBO (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}}]{sz\+File\+Name}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{Model\+Loader\+Flags}}}]{flags}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{Model\+Loader\+\_\+\+Default}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_ab1e884bbe71ee5ad0a24d8eda8750630}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_ab1e884bbe71ee5ad0a24d8eda8750630} 
+template$<$typename... TForward\+Args$>$ \\
+void Direct\+X::\+\+DX12::\+\+Model::\+\+Draw (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{TForward\+Args \&\&...}]{args}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a8135109964717d4fb369a4923995c7d4}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!DrawAlpha@{DrawAlpha}}
+\index{DrawAlpha@{DrawAlpha}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{DrawAlpha()}{DrawAlpha()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a8135109964717d4fb369a4923995c7d4} 
+template$<$typename... TForward\+Args$>$ \\
+void Direct\+X::\+\+DX12::\+\+Model::\+\+Draw\+Alpha (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{TForward\+Args \&\&...}]{args}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_adabd935adddd9d9b9e263a83da5841f5}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!DrawOpaque@{DrawOpaque}}
+\index{DrawOpaque@{DrawOpaque}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{DrawOpaque()}{DrawOpaque()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_adabd935adddd9d9b9e263a83da5841f5} 
+template$<$typename... TForward\+Args$>$ \\
+void Direct\+X::\+\+DX12::\+\+Model::\+\+Draw\+Opaque (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{TForward\+Args \&\&...}]{args}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_ae894a1fa7db2fa3f0ebd74934403f4d3}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!DrawSkinned@{DrawSkinned}}
+\index{DrawSkinned@{DrawSkinned}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{DrawSkinned()}{DrawSkinned()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_ae894a1fa7db2fa3f0ebd74934403f4d3} 
+template$<$typename... TForward\+Args$>$ \\
+void Direct\+X::\+\+DX12::\+\+Model::\+\+Draw\+Skinned (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{TForward\+Args \&\&...}]{args}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a523e483577b952f4ee36acd92c362b14}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!DrawSkinnedAlpha@{DrawSkinnedAlpha}}
+\index{DrawSkinnedAlpha@{DrawSkinnedAlpha}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{DrawSkinnedAlpha()}{DrawSkinnedAlpha()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a523e483577b952f4ee36acd92c362b14} 
+template$<$typename... TForward\+Args$>$ \\
+void Direct\+X::\+\+DX12::\+\+Model::\+\+Draw\+Skinned\+Alpha (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{TForward\+Args \&\&...}]{args}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_acba285bc23dabc3cbfbe018208c3086a}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!DrawSkinnedOpaque@{DrawSkinnedOpaque}}
+\index{DrawSkinnedOpaque@{DrawSkinnedOpaque}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{DrawSkinnedOpaque()}{DrawSkinnedOpaque()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_acba285bc23dabc3cbfbe018208c3086a} 
+template$<$typename... TForward\+Args$>$ \\
+void Direct\+X::\+\+DX12::\+\+Model::\+\+Draw\+Skinned\+Opaque (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{TForward\+Args \&\&...}]{args}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_aeb2a7e4b2bc0427345de972392558dac}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!GetGpuTextureHandleForMaterialIndex@{GetGpuTextureHandleForMaterialIndex}}
+\index{GetGpuTextureHandleForMaterialIndex@{GetGpuTextureHandleForMaterialIndex}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{GetGpuTextureHandleForMaterialIndex()}{GetGpuTextureHandleForMaterialIndex()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_aeb2a7e4b2bc0427345de972392558dac} 
+D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Get\+Gpu\+Texture\+Handle\+For\+Material\+Index (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{material\+Index}{, }\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}}]{heap}{, }\item[{\+\_\+\+In\+\_\+ size\+\_\+t}]{descriptor\+Size}{, }\item[{\+\_\+\+In\+\_\+ size\+\_\+t}]{descriptor\+Offset}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a9a7cc98fec7ed3d1758d41f1ce45536e}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!LoadStaticBuffers@{LoadStaticBuffers}}
+\index{LoadStaticBuffers@{LoadStaticBuffers}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{LoadStaticBuffers()}{LoadStaticBuffers()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a9a7cc98fec7ed3d1758d41f1ce45536e} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Load\+Static\+Buffers (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&}]{resource\+Upload\+Batch}{, }\item[{bool}]{keep\+Memory}{ = {\ttfamily false}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_aa1f9a764abb1089ff9366ee27cd17fd6}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!LoadTextures@{LoadTextures}}
+\index{LoadTextures@{LoadTextures}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{LoadTextures()}{LoadTextures()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_aa1f9a764abb1089ff9366ee27cd17fd6} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_texture_factory}{Effect\+Texture\+Factory}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Load\+Textures (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&}]{resource\+Upload\+Batch}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}}]{textures\+Path}{ = {\ttfamily nullptr}, }\item[{D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+FLAGS}]{flags}{ = {\ttfamily D3D12\+\_\+DESCRIPTOR\+\_\+HEAP\+\_\+FLAG\+\_\+SHADER\+\_\+VISIBLE}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_aea158524d9da49634c0071c3b50d5cb9}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!LoadTextures@{LoadTextures}}
+\index{LoadTextures@{LoadTextures}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{LoadTextures()}{LoadTextures()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_aea158524d9da49634c0071c3b50d5cb9} 
+int \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Load\+Textures (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_texture_factory}{IEffect\+Texture\+Factory}} \&}]{tex\+Factory}{, }\item[{int}]{destination\+Descriptor\+Offset}{ = {\ttfamily 0}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a4683fdda7100448cb3ec444e57f0d036}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a4683fdda7100448cb3ec444e57f0d036} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} \& Direct\+X::\+\+DX12::\+\+Model::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a32b70cf293fd1da516a3014c291345f4}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a32b70cf293fd1da516a3014c291345f4} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} \& Direct\+X::\+\+DX12::\+\+Model::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}} const \&}]{rhs}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a1f8a28cd561ad1e3585afff698bb0c92}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!Transition@{Transition}}
+\index{Transition@{Transition}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{Transition()}{Transition()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a1f8a28cd561ad1e3585afff698bb0c92} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model::\+\+Transition (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+Before\+VB}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+After\+VB}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+Before\+IB}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+After\+IB}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a0b3dfa2407c2500347cf2feb412ec117}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!UpdateEffectMatrices@{UpdateEffectMatrices}}
+\index{UpdateEffectMatrices@{UpdateEffectMatrices}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{UpdateEffectMatrices()}{UpdateEffectMatrices()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a0b3dfa2407c2500347cf2feb412ec117} 
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Model::\+\+Update\+Effect\+Matrices (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{Effect\+Collection}} \&}]{effects}{, }\item[{FXMMATRIX}]{world}{, }\item[{CXMMATRIX}]{view}{, }\item[{CXMMATRIX}]{proj}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a56cfab37936cdef99920e56c95c0a351}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!boneMatrices@{boneMatrices}}
+\index{boneMatrices@{boneMatrices}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{boneMatrices}{boneMatrices}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a56cfab37936cdef99920e56c95c0a351} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Model\+Bone::\+\+Transform\+Array}} Direct\+X::\+\+DX12::\+\+Model::\+bone\+Matrices}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a3227694507e5477be7133b4a4299a3a1}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!bones@{bones}}
+\index{bones@{bones}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{bones}{bones}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a3227694507e5477be7133b4a4299a3a1} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5}{Model\+Bone::\+\+Collection}} Direct\+X::\+\+DX12::\+\+Model::\+bones}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_ab0241b13c24fafb23c11bef2db3904bb}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!invBindPoseMatrices@{invBindPoseMatrices}}
+\index{invBindPoseMatrices@{invBindPoseMatrices}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{invBindPoseMatrices}{invBindPoseMatrices}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_ab0241b13c24fafb23c11bef2db3904bb} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Model\+Bone::\+\+Transform\+Array}} Direct\+X::\+\+DX12::\+\+Model::\+inv\+Bind\+Pose\+Matrices}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_accbcf68221490a4688b8f0b774b43761}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!materials@{materials}}
+\index{materials@{materials}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{materials}{materials}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_accbcf68221490a4688b8f0b774b43761} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f}{Model\+Material\+Info\+Collection}} Direct\+X::\+\+DX12::\+\+Model::\+materials}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!meshes@{meshes}}
+\index{meshes@{meshes}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{meshes}{meshes}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a1342fea3103e2a81f8a855efbf6b6c93}{Model\+Mesh::\+\+Collection}} Direct\+X::\+\+DX12::\+\+Model::\+meshes}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a09887669c7398289b230c7a1cd5acd3f}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!name@{name}}
+\index{name@{name}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a09887669c7398289b230c7a1cd5acd3f} 
+std::\+wstring Direct\+X::\+\+DX12::\+\+Model::\+name}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_a207eda61ecb91704819c97bc3de93449}\index{DirectX::DX12::Model@{DirectX::DX12::Model}!textureNames@{textureNames}}
+\index{textureNames@{textureNames}!DirectX::DX12::Model@{DirectX::DX12::Model}}
+\doxysubsubsection{\texorpdfstring{textureNames}{textureNames}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_a207eda61ecb91704819c97bc3de93449} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783}{Texture\+Collection}} Direct\+X::\+\+DX12::\+\+Model::\+texture\+Names}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_model_8h}{Model.\+h}}\end{DoxyCompactItemize}

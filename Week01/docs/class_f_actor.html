@@ -108,7 +108,7 @@ Inheritance diagram for FActor:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aad1e02b0db6bcdd5d3c6a0430050c848" id="r_aad1e02b0db6bcdd5d3c6a0430050c848"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#aad1e02b0db6bcdd5d3c6a0430050c848">~FActor</a> ()=default</td></tr>
 <tr class="memitem:aacfa923eb1d70916869e858aa897097e" id="r_aacfa923eb1d70916869e858aa897097e"><td class="memItemLeft">virtual <a class="el" href="_types_8h.html#ad914e65c956dae027f9a1765ac337c68">EActorType</a>&#160;</td><td class="memItemRight"><a class="el" href="#aacfa923eb1d70916869e858aa897097e">GetActorType</a> () const =0</td></tr>
-<tr class="memitem:a1a55fa9c80cb537ed6b701de1bf01d5f" id="r_a1a55fa9c80cb537ed6b701de1bf01d5f"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a1a55fa9c80cb537ed6b701de1bf01d5f">Update</a> (float DeltaTime)</td></tr>
+<tr class="memitem:a9b8bdf8a83131a5c626b070534d851f6" id="r_a9b8bdf8a83131a5c626b070534d851f6"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a9b8bdf8a83131a5c626b070534d851f6">Update</a> (float DeltaTime, <a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context)</td></tr>
 <tr class="memitem:a88bccdf6676b7fff8414a48d9cec2cc5" id="r_a88bccdf6676b7fff8414a48d9cec2cc5"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a88bccdf6676b7fff8414a48d9cec2cc5">OnBeat</a> (<a class="el" href="class_f_stage.html">FStage</a> &amp;Stage)=0</td></tr>
 <tr class="memitem:aa4e2ef6e4886ce328bcf1d9c12b30bcf" id="r_aa4e2ef6e4886ce328bcf1d9c12b30bcf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa4e2ef6e4886ce328bcf1d9c12b30bcf">SetPosition</a> (int InTileX, int InTileY, float TileSize)</td></tr>
 <tr class="memitem:a7d444ecb3ee3be5c675d5b616b8e204d" id="r_a7d444ecb3ee3be5c675d5b616b8e204d"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7d444ecb3ee3be5c675d5b616b8e204d">TryMove</a> (<a class="el" href="class_f_stage.html">FStage</a> &amp;Stage, <a class="el" href="_types_8h.html#acb2b033915f6659a71a38b5aa6e4eb42">EDirection</a> <a class="el" href="#a713cc90aceb283518cfc654a60659f5c">Direction</a>)</td></tr>
@@ -124,6 +124,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a152a420fa7ab37e9ed626c91a33b185b" id="r_a152a420fa7ab37e9ed626c91a33b185b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a152a420fa7ab37e9ed626c91a33b185b">Damage</a> (int Amount)</td></tr>
 <tr class="memitem:a279cf6d77a0343648e2dece3f1eb1801" id="r_a279cf6d77a0343648e2dece3f1eb1801"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a279cf6d77a0343648e2dece3f1eb1801">Heal</a> (int Amount)</td></tr>
 <tr class="memitem:a4e8f828e5728dc61a99878afcd02fe4d" id="r_a4e8f828e5728dc61a99878afcd02fe4d"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a4e8f828e5728dc61a99878afcd02fe4d">IsDead</a> () const</td></tr>
+<tr class="memitem:ae30eefecc73f1ae6a57d9a146db2de43" id="r_ae30eefecc73f1ae6a57d9a146db2de43"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae30eefecc73f1ae6a57d9a146db2de43">SetInvincible</a> (bool bEnable)</td></tr>
+<tr class="memitem:a2f466aae61cd1e033a6d9fc7c73c3667" id="r_a2f466aae61cd1e033a6d9fc7c73c3667"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a2f466aae61cd1e033a6d9fc7c73c3667">IsInvincible</a> () const</td></tr>
 <tr class="memitem:adc0348f0969c577bd049e44dcec1e840" id="r_adc0348f0969c577bd049e44dcec1e840"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#adc0348f0969c577bd049e44dcec1e840">IsMoving</a> () const</td></tr>
 <tr class="memitem:a0382ed1b6c73a2a6d5649440dd992e7f" id="r_a0382ed1b6c73a2a6d5649440dd992e7f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0382ed1b6c73a2a6d5649440dd992e7f">SetSprite</a> (const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;InSprite)</td></tr>
 <tr class="memitem:abf4308febfabb82b0dc4a3bf349f1ddc" id="r_abf4308febfabb82b0dc4a3bf349f1ddc"><td class="memItemLeft">const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#abf4308febfabb82b0dc4a3bf349f1ddc">GetSprite</a> () const</td></tr>
@@ -135,7 +137,8 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a200e89f6255c46ed1e8669d5af3ef2d2" id="r_a200e89f6255c46ed1e8669d5af3ef2d2"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a200e89f6255c46ed1e8669d5af3ef2d2">RenderX</a> = 0.0f</td></tr>
 <tr class="memitem:a9aceaf647fb5b86ac7ac887913ac67db" id="r_a9aceaf647fb5b86ac7ac887913ac67db"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a9aceaf647fb5b86ac7ac887913ac67db">RenderY</a> = 0.0f</td></tr>
 <tr class="memitem:a713cc90aceb283518cfc654a60659f5c" id="r_a713cc90aceb283518cfc654a60659f5c"><td class="memItemLeft"><a class="el" href="_types_8h.html#acb2b033915f6659a71a38b5aa6e4eb42">EDirection</a>&#160;</td><td class="memItemRight"><a class="el" href="#a713cc90aceb283518cfc654a60659f5c">Direction</a> = <a class="el" href="_types_8h.html#acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53">EDirection::Down</a></td></tr>
-<tr class="memitem:a76d0af9467bf9ec1b559deef9dea7239" id="r_a76d0af9467bf9ec1b559deef9dea7239"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a76d0af9467bf9ec1b559deef9dea7239">Hp</a> = 1</td></tr>
+<tr class="memitem:a76d0af9467bf9ec1b559deef9dea7239" id="r_a76d0af9467bf9ec1b559deef9dea7239"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a76d0af9467bf9ec1b559deef9dea7239">Hp</a> = 5</td></tr>
+<tr class="memitem:a78d706532c3fa04982ca6722ea22309f" id="r_a78d706532c3fa04982ca6722ea22309f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a78d706532c3fa04982ca6722ea22309f">bIsInvincible</a> = false</td></tr>
 <tr class="memitem:a1423baf579ad4798e911df3cf2ed3ee7" id="r_a1423baf579ad4798e911df3cf2ed3ee7"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1423baf579ad4798e911df3cf2ed3ee7">bIsMoving</a> = false</td></tr>
 <tr class="memitem:a98c8bf23f5550dfdbb14f4ae866de705" id="r_a98c8bf23f5550dfdbb14f4ae866de705"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a98c8bf23f5550dfdbb14f4ae866de705">MoveTimer</a> = 0.0f</td></tr>
 <tr class="memitem:ae10f80275dcedb0653f3255c1c28ba4c" id="r_ae10f80275dcedb0653f3255c1c28ba4c"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#ae10f80275dcedb0653f3255c1c28ba4c">MoveDuration</a> = 0.12f</td></tr>
@@ -369,6 +372,23 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a2f466aae61cd1e033a6d9fc7c73c3667" name="a2f466aae61cd1e033a6d9fc7c73c3667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f466aae61cd1e033a6d9fc7c73c3667">&#9670;&#160;</a></span>IsInvincible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FActor::IsInvincible </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="adc0348f0969c577bd049e44dcec1e840" name="adc0348f0969c577bd049e44dcec1e840"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adc0348f0969c577bd049e44dcec1e840">&#9670;&#160;</a></span>IsMoving()</h2>
 
@@ -440,6 +460,23 @@ Protected Attributes</h2></td></tr>
           <td class="memname">void FActor::SetHp </td>
           <td>(</td>
           <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InHp</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae30eefecc73f1ae6a57d9a146db2de43" name="ae30eefecc73f1ae6a57d9a146db2de43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae30eefecc73f1ae6a57d9a146db2de43">&#9670;&#160;</a></span>SetInvincible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FActor::SetInvincible </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bEnable</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -537,8 +574,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1a55fa9c80cb537ed6b701de1bf01d5f" name="a1a55fa9c80cb537ed6b701de1bf01d5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a55fa9c80cb537ed6b701de1bf01d5f">&#9670;&#160;</a></span>Update()</h2>
+<a id="a9b8bdf8a83131a5c626b070534d851f6" name="a9b8bdf8a83131a5c626b070534d851f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b8bdf8a83131a5c626b070534d851f6">&#9670;&#160;</a></span>Update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -549,8 +586,12 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void FActor::Update </td>
           <td>(</td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>DeltaTime</em></span></td><td>)</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>DeltaTime</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -560,11 +601,33 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="class_f_monster.html#a9361e0047f38b61acd842fc445589f70">FMonster</a>, and <a class="el" href="class_f_player.html#a10c8bb94f4a4680a32119c48a05fa017">FPlayer</a>.</p>
+<p>Reimplemented in <a class="el" href="class_f_monster.html#ab99ea1e9983cf0533ac2ce78efb35cce">FMonster</a>, and <a class="el" href="class_f_player.html#a3f3db60ee81f30e06add71f232c83b3f">FPlayer</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a78d706532c3fa04982ca6722ea22309f" name="a78d706532c3fa04982ca6722ea22309f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d706532c3fa04982ca6722ea22309f">&#9670;&#160;</a></span>bIsInvincible</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FActor::bIsInvincible = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a1423baf579ad4798e911df3cf2ed3ee7" name="a1423baf579ad4798e911df3cf2ed3ee7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1423baf579ad4798e911df3cf2ed3ee7">&#9670;&#160;</a></span>bIsMoving</h2>
 
@@ -619,7 +682,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int FActor::Hp = 1</td>
+          <td class="memname">int FActor::Hp = 5</td>
         </tr>
       </table>
   </td>

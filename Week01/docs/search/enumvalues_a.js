@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['randommove_0',['RandomMove',['../_types_8h.html#a5950ad5ea571cdaa0468f4494c9234afa3ca08d8818a56b7341a19f236290adec',1,'Types.h']]],
-  ['right_1',['Right',['../_types_8h.html#acb2b033915f6659a71a38b5aa6e4eb42a92b09c7c48c520c3c55e497875da437c',1,'Right:&#160;Types.h'],['../_types_8h.html#aa67133a8a9762ae46eca5395ef73cd64a92b09c7c48c520c3c55e497875da437c',1,'Right:&#160;Types.h']]]
+  ['k_0',['K',['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7bafffea8984fca95991d22cb1e0df39e8a',1,'DirectX::Keyboard']]],
+  ['kana_1',['Kana',['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7ba51af16035f72424236304b22c8d5382b',1,'DirectX::Keyboard']]],
+  ['kanji_2',['Kanji',['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7baeecaee879216d6a04f3a5f11ec1a1e67',1,'DirectX::Keyboard']]]
 ];

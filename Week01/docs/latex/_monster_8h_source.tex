@@ -4,27 +4,35 @@
 \begin{DoxyCode}{0}
 \DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{00002\ }
-\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_actor_8h}{Actor.h}}"{}}}
-\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <optional>}}
-\DoxyCodeLine{00005\ }
-\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_monster}{FMonster}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_actor}{FActor}}}
-\DoxyCodeLine{00007\ \{}
-\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActorType}}\ \doxymbox{\hyperlink{class_f_monster_a8d9e57fc0fbce15a135045329bb042be}{GetActorType}}()\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{00010\ }
-\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_monster_a9361e0047f38b61acd842fc445589f70}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime)\ \textcolor{keyword}{override};}
-\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_monster_a52648e30a33904f0e417483607c00e85}{OnBeat}}(\doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_game_context_8h}{Core/GameContext.h}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_actor_8h}{Actor.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_monster}{FMonster}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_actor}{FActor}}}
+\DoxyCodeLine{00010\ \{}
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00012\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActorType}}\ \doxymbox{\hyperlink{class_f_monster_a8d9e57fc0fbce15a135045329bb042be}{GetActorType}}()\ \textcolor{keyword}{const\ override};}
 \DoxyCodeLine{00013\ }
-\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_monster_ac05ba03c3564bdf723b4bb7941bf491a}{SetAiType}}(\doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ InAiType);}
-\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ \doxymbox{\hyperlink{class_f_monster_a65963fc01a9144a68db4fb3b3e0485c8}{GetAiType}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_monster_ab99ea1e9983cf0533ac2ce78efb35cce}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime,\ \doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_monster_a52648e30a33904f0e417483607c00e85}{OnBeat}}(\doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{override};}
 \DoxyCodeLine{00016\ }
-\DoxyCodeLine{00017\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}\ \doxymbox{\hyperlink{class_f_monster_a8e3f39148b9461ff77ef1a332bdd8319}{DecideNextMove}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00018\ }
-\DoxyCodeLine{00019\ \ \ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00020\ \ \ \ \ std::optional<EDirection>\ SearchPlayer(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_monster_a61085fbafcefad2fcf277660ddedf5f9}{SetMoveFrequency}}(\textcolor{keywordtype}{int}\ InFreq);}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_monster_a09ebcec17395797acd1b61704e10cbf9}{GetMoveFrequency}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_monster_ac05ba03c3564bdf723b4bb7941bf491a}{SetAiType}}(\doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ InAiType);}
+\DoxyCodeLine{00020\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ \doxymbox{\hyperlink{class_f_monster_a65963fc01a9144a68db4fb3b3e0485c8}{GetAiType}}()\ \textcolor{keyword}{const};}
 \DoxyCodeLine{00021\ }
-\DoxyCodeLine{00022\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ AiType\ =\ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa3ca08d8818a56b7341a19f236290adec}{EMonsterAIType::RandomMove}};}
-\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ SearchRange\ =\ 20;\ \textcolor{comment}{//\ ÇÃ·¹ÀÌ¾î Å½»ö ÃÖ´ë ¹üÀ§ (20½ºÅÜ)}}
-\DoxyCodeLine{00024\ \};}
+\DoxyCodeLine{00022\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}\ \doxymbox{\hyperlink{class_f_monster_a8e3f39148b9461ff77ef1a332bdd8319}{DecideNextMove}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00025\ \ \ \ \ std::optional<EDirection>\ SearchPlayer(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ AiType\ =\ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa3ca08d8818a56b7341a19f236290adec}{EMonsterAIType::RandomMove}};}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ MoveFrequency\ =\ 2;}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ MoveFrequencyOffset\ =\ 0;}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ BeatCount\ =\ 0;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ SearchRange\ =\ 5;\ \textcolor{comment}{//\ Ã‡ÃƒÂ·Â¹Ã€ÃŒÂ¾Ã®\ Ã…Â½Â»Ã¶\ ÃƒÃ–Â´Ã«\ Â¹Ã¼Ã€Â§\ (20Â½ÂºÃ…Ãœ)}}
+\DoxyCodeLine{00032\ \};}
 
 \end{DoxyCode}

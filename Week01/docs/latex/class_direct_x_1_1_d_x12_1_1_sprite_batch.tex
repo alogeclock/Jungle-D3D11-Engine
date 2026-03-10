@@ -1,0 +1,168 @@
+\doxysection{DirectX::\+DX12::\+Sprite\+Batch Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch}{}\label{class_direct_x_1_1_d_x12_1_1_sprite_batch}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+
+
+{\ttfamily \+\#include $<$Sprite\+Batch.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&upload, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description}{Sprite\+Batch\+Pipeline\+State\+Description}} \&pso\+Desc, \+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+VIEWPORT \texorpdfstring{$\ast$}{*}viewport=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a9936550e8d36142090f9e344cb1f97fc}{Sprite\+Batch}} (Sprite\+Batch \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a5238a465a92b030ec2e0f56a5dabc5c4}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a1cec6a4176b7cc4adb3cc02ae373ce71}{Sprite\+Batch}} (Sprite\+Batch const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae836f8de2fcc6ce5d73b4ea0596fc17e}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_afe282a34adba5e54ca7e768e1f585963}{\texorpdfstring{$\sim$}{\string~}\+Sprite\+Batch}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_ab25fe3be7c26448066c87dd4a197f66b}{Begin}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{Sprite\+Sort\+Mode}} sort\+Mode=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{Sprite\+Sort\+Mode\+\_\+\+Deferred}}, FXMMATRIX transform\+Matrix=Matrix\+Identity)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae2e7c368ba605787edeefdc43c43f83d}{Begin}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE sampler, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{Sprite\+Sort\+Mode}} sort\+Mode=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{Sprite\+Sort\+Mode\+\_\+\+Deferred}}, FXMMATRIX transform\+Matrix=Matrix\+Identity)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4e9ead8340af516b52c1f32b8933e578}{End}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, XMFLOAT2 const \&position, FXMVECTOR color=Colors::\+\+White)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_afd103ae17e136d01f1753c335d10c94f}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, XMFLOAT2 const \&position, \+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}source\+Rectangle, FXMVECTOR color=Colors::\+\+White, float rotation=0, XMFLOAT2 const \&origin=Float2\+Zero, float scale=1, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}} effects=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}, float layer\+Depth=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a49f793b8ae211bc1d33d49907aebc634}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, XMFLOAT2 const \&position, \+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}source\+Rectangle, FXMVECTOR color, float rotation, XMFLOAT2 const \&origin, XMFLOAT2 const \&scale, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}} effects=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}, float layer\+Depth=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a5b98acfe251e8e45d87f9aea6acc189f}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, FXMVECTOR position, FXMVECTOR color=Colors::\+\+White)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_af794e2cad203f527f2377d90e2b98ee6}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, FXMVECTOR position, \+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}source\+Rectangle, FXMVECTOR color=Colors::\+\+White, float rotation=0, FXMVECTOR origin=g\+\_\+\+XMZero, float scale=1, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}} effects=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}, float layer\+Depth=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae9ca417198ead3409e314938c0cdddf9}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, FXMVECTOR position, \+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}source\+Rectangle, FXMVECTOR color, float rotation, FXMVECTOR origin, GXMVECTOR scale, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}} effects=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}, float layer\+Depth=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a444463544cc371098fb3b09ba0eb6199}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, RECT const \&destination\+Rectangle, FXMVECTOR color=Colors::\+\+White)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a187cfeb88d8f7d63f31b9e09afd569ad}{Draw}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE texture\+SRV, XMUINT2 const \&texture\+Size, RECT const \&destination\+Rectangle, \+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}source\+Rectangle, FXMVECTOR color=Colors::\+\+White, float rotation=0, XMFLOAT2 const \&origin=Float2\+Zero, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}} effects=\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}, float layer\+Depth=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4d7bdad1a681e7a6c41fe07c69c9e9b9}{Set\+Viewport}} (const D3\+D12\+\_\+\+VIEWPORT \&view\+Port)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!SpriteBatch@{SpriteBatch}}
+\index{SpriteBatch@{SpriteBatch}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{SpriteBatch()}{SpriteBatch()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Sprite\+Batch (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&}]{upload}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description}{Sprite\+Batch\+Pipeline\+State\+Description}} \&}]{pso\+Desc}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+VIEWPORT \texorpdfstring{$\ast$}{*}}]{viewport}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a9936550e8d36142090f9e344cb1f97fc}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!SpriteBatch@{SpriteBatch}}
+\index{SpriteBatch@{SpriteBatch}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{SpriteBatch()}{SpriteBatch()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a9936550e8d36142090f9e344cb1f97fc} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Sprite\+Batch (\begin{DoxyParamCaption}\item[{Sprite\+Batch \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a1cec6a4176b7cc4adb3cc02ae373ce71}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!SpriteBatch@{SpriteBatch}}
+\index{SpriteBatch@{SpriteBatch}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{SpriteBatch()}{SpriteBatch()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a1cec6a4176b7cc4adb3cc02ae373ce71} 
+Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Sprite\+Batch (\begin{DoxyParamCaption}\item[{Sprite\+Batch const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_afe282a34adba5e54ca7e768e1f585963}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!````~SpriteBatch@{\texorpdfstring{$\sim$}{\string~}SpriteBatch}}
+\index{````~SpriteBatch@{\texorpdfstring{$\sim$}{\string~}SpriteBatch}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}SpriteBatch()}{\string~SpriteBatch()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_afe282a34adba5e54ca7e768e1f585963} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\texorpdfstring{$\sim$}{\string~}\+Sprite\+Batch (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae2e7c368ba605787edeefdc43c43f83d}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Begin@{Begin}}
+\index{Begin@{Begin}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Begin()}{Begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae2e7c368ba605787edeefdc43c43f83d} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Begin (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{sampler}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{Sprite\+Sort\+Mode}}}]{sort\+Mode}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{Sprite\+Sort\+Mode\+\_\+\+Deferred}}}, }\item[{FXMMATRIX}]{transform\+Matrix}{ = {\ttfamily MatrixIdentity}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_ab25fe3be7c26448066c87dd4a197f66b}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Begin@{Begin}}
+\index{Begin@{Begin}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Begin()}{Begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_ab25fe3be7c26448066c87dd4a197f66b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Begin (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{Sprite\+Sort\+Mode}}}]{sort\+Mode}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{Sprite\+Sort\+Mode\+\_\+\+Deferred}}}, }\item[{FXMMATRIX}]{transform\+Matrix}{ = {\ttfamily MatrixIdentity}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae9ca417198ead3409e314938c0cdddf9}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae9ca417198ead3409e314938c0cdddf9} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{FXMVECTOR}]{position}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}}]{source\+Rectangle}{, }\item[{FXMVECTOR}]{color}{, }\item[{float}]{rotation}{, }\item[{FXMVECTOR}]{origin}{, }\item[{GXMVECTOR}]{scale}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}}}]{effects}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}}, }\item[{float}]{layer\+Depth}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_af794e2cad203f527f2377d90e2b98ee6}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_af794e2cad203f527f2377d90e2b98ee6} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{FXMVECTOR}]{position}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}}]{source\+Rectangle}{, }\item[{FXMVECTOR}]{color}{ = {\ttfamily Colors:\+:\+White}, }\item[{float}]{rotation}{ = {\ttfamily 0}, }\item[{FXMVECTOR}]{origin}{ = {\ttfamily g\+\_\+XMZero}, }\item[{float}]{scale}{ = {\ttfamily 1}, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}}}]{effects}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}}, }\item[{float}]{layer\+Depth}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a5b98acfe251e8e45d87f9aea6acc189f}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a5b98acfe251e8e45d87f9aea6acc189f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{FXMVECTOR}]{position}{, }\item[{FXMVECTOR}]{color}{ = {\ttfamily Colors:\+:\+White}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a187cfeb88d8f7d63f31b9e09afd569ad}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a187cfeb88d8f7d63f31b9e09afd569ad} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{RECT const \&}]{destination\+Rectangle}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}}]{source\+Rectangle}{, }\item[{FXMVECTOR}]{color}{ = {\ttfamily Colors:\+:\+White}, }\item[{float}]{rotation}{ = {\ttfamily 0}, }\item[{XMFLOAT2 const \&}]{origin}{ = {\ttfamily Float2Zero}, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}}}]{effects}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}}, }\item[{float}]{layer\+Depth}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a444463544cc371098fb3b09ba0eb6199}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a444463544cc371098fb3b09ba0eb6199} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{RECT const \&}]{destination\+Rectangle}{, }\item[{FXMVECTOR}]{color}{ = {\ttfamily Colors:\+:\+White}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a49f793b8ae211bc1d33d49907aebc634}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a49f793b8ae211bc1d33d49907aebc634} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{XMFLOAT2 const \&}]{position}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}}]{source\+Rectangle}{, }\item[{FXMVECTOR}]{color}{, }\item[{float}]{rotation}{, }\item[{XMFLOAT2 const \&}]{origin}{, }\item[{XMFLOAT2 const \&}]{scale}{, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}}}]{effects}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}}, }\item[{float}]{layer\+Depth}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_afd103ae17e136d01f1753c335d10c94f}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_afd103ae17e136d01f1753c335d10c94f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{XMFLOAT2 const \&}]{position}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ RECT const \texorpdfstring{$\ast$}{*}}]{source\+Rectangle}{, }\item[{FXMVECTOR}]{color}{ = {\ttfamily Colors:\+:\+White}, }\item[{float}]{rotation}{ = {\ttfamily 0}, }\item[{XMFLOAT2 const \&}]{origin}{ = {\ttfamily Float2Zero}, }\item[{float}]{scale}{ = {\ttfamily 1}, }\item[{\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Sprite\+Effects}}}]{effects}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Sprite\+Effects\+\_\+\+None}}}, }\item[{float}]{layer\+Depth}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a66fb6fbe29a001a9f30383b19c1bdecb} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{texture\+SRV}{, }\item[{XMUINT2 const \&}]{texture\+Size}{, }\item[{XMFLOAT2 const \&}]{position}{, }\item[{FXMVECTOR}]{color}{ = {\ttfamily Colors:\+:\+White}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4e9ead8340af516b52c1f32b8933e578}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!End@{End}}
+\index{End@{End}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{End()}{End()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4e9ead8340af516b52c1f32b8933e578} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+End (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a5238a465a92b030ec2e0f56a5dabc5c4}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a5238a465a92b030ec2e0f56a5dabc5c4} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} \& Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae836f8de2fcc6ce5d73b4ea0596fc17e}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_ae836f8de2fcc6ce5d73b4ea0596fc17e} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} \& Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_a7fbc0eadb0c7d82648b16c6eca418574}{Sprite\+Batch}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4d7bdad1a681e7a6c41fe07c69c9e9b9}\index{DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}!SetViewport@{SetViewport}}
+\index{SetViewport@{SetViewport}!DirectX::DX12::SpriteBatch@{DirectX::DX12::SpriteBatch}}
+\doxysubsubsection{\texorpdfstring{SetViewport()}{SetViewport()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_a4d7bdad1a681e7a6c41fe07c69c9e9b9} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Sprite\+Batch::\+\+Set\+Viewport (\begin{DoxyParamCaption}\item[{const D3\+D12\+\_\+\+VIEWPORT \&}]{view\+Port}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_sprite_batch_8h}{Sprite\+Batch.\+h}}\end{DoxyCompactItemize}

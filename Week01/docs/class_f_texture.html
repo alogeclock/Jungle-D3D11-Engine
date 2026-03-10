@@ -96,14 +96,78 @@ $(function(){initNavTree('class_f_texture.html','','class_f_texture-members'); }
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a86feef52c0554227dddd79d00777d7d2" id="r_a86feef52c0554227dddd79d00777d7d2"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a86feef52c0554227dddd79d00777d7d2">FTexture</a> ()=default</td></tr>
+<tr class="memitem:a27f65abec6d6e2d4e3f4f182cdd78545" id="r_a27f65abec6d6e2d4e3f4f182cdd78545"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a27f65abec6d6e2d4e3f4f182cdd78545">FTexture</a> (int InWidth, int InHeight, ID3D11Texture2D *InTexture2D, ID3D11ShaderResourceView *InTextureSRV)</td></tr>
 <tr class="memitem:afde9c452c0c031e5f429b9fbd77c0c40" id="r_afde9c452c0c031e5f429b9fbd77c0c40"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#afde9c452c0c031e5f429b9fbd77c0c40">~FTexture</a> ()</td></tr>
-<tr class="memitem:a4ed57d0fce470395005364f095237c0a" id="r_a4ed57d0fce470395005364f095237c0a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a4ed57d0fce470395005364f095237c0a">LoadFromFile</a> (ID3D11Device *Device, const std::string &amp;Path)</td></tr>
-<tr class="memitem:af9dbfbfaf7ada4781891999cdbf08baa" id="r_af9dbfbfaf7ada4781891999cdbf08baa"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af9dbfbfaf7ada4781891999cdbf08baa">Release</a> ()</td></tr>
-<tr class="memitem:a1a43d0757e6af5f476e48da94ceb2ee1" id="r_a1a43d0757e6af5f476e48da94ceb2ee1"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a1a43d0757e6af5f476e48da94ceb2ee1">GetWidth</a> () const</td></tr>
-<tr class="memitem:a7245bc000bc0f6deb81282857756f281" id="r_a7245bc000bc0f6deb81282857756f281"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a7245bc000bc0f6deb81282857756f281">GetHeight</a> () const</td></tr>
-<tr class="memitem:a0964e09a6508224570fbef1dd3802b2b" id="r_a0964e09a6508224570fbef1dd3802b2b"><td class="memItemLeft">ID3D11ShaderResourceView *&#160;</td><td class="memItemRight"><a class="el" href="#a0964e09a6508224570fbef1dd3802b2b">GetSRV</a> () const</td></tr>
+<tr class="memitem:aaafc29c2c73971e2ae7461c6b889837a" id="r_aaafc29c2c73971e2ae7461c6b889837a"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aaafc29c2c73971e2ae7461c6b889837a">FTexture</a> (const <a class="el" href="class_f_texture.html">FTexture</a> &amp;)=delete</td></tr>
+<tr class="memitem:ab7811372ef0e5e8ff5635abb4c825415" id="r_ab7811372ef0e5e8ff5635abb4c825415"><td class="memItemLeft"><a class="el" href="class_f_texture.html">FTexture</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ab7811372ef0e5e8ff5635abb4c825415">operator=</a> (const <a class="el" href="class_f_texture.html">FTexture</a> &amp;)=delete</td></tr>
+<tr class="memitem:aa722989060eb18da66f2cdfe66e4ac52" id="r_aa722989060eb18da66f2cdfe66e4ac52"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aa722989060eb18da66f2cdfe66e4ac52">FTexture</a> (<a class="el" href="class_f_texture.html">FTexture</a> &amp;&amp;Other) noexcept</td></tr>
+<tr class="memitem:a1b8cf735f3d0028cae762affe73d2933" id="r_a1b8cf735f3d0028cae762affe73d2933"><td class="memItemLeft"><a class="el" href="class_f_texture.html">FTexture</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a1b8cf735f3d0028cae762affe73d2933">operator=</a> (<a class="el" href="class_f_texture.html">FTexture</a> &amp;&amp;Other) noexcept</td></tr>
+<tr class="memitem:a920edd7bff479a0537e17bbd1161f17a" id="r_a920edd7bff479a0537e17bbd1161f17a"><td class="memItemLeft">ID3D11Texture2D *&#160;</td><td class="memItemRight"><a class="el" href="#a920edd7bff479a0537e17bbd1161f17a">GetTexture2D</a> () const</td></tr>
+<tr class="memitem:ac786bade1ad736d2d7dede1f34e6e15b" id="r_ac786bade1ad736d2d7dede1f34e6e15b"><td class="memItemLeft">ID3D11ShaderResourceView *&#160;</td><td class="memItemRight"><a class="el" href="#ac786bade1ad736d2d7dede1f34e6e15b">GetTextureSRV</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:abade208d8819fff1346a0184720b4411" id="r_abade208d8819fff1346a0184720b4411"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#abade208d8819fff1346a0184720b4411">Width</a> = 0</td></tr>
+<tr class="memitem:a9ad844b03ff11fa59e22552d7675e348" id="r_a9ad844b03ff11fa59e22552d7675e348"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a9ad844b03ff11fa59e22552d7675e348">Height</a> = 0</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a86feef52c0554227dddd79d00777d7d2" name="a86feef52c0554227dddd79d00777d7d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86feef52c0554227dddd79d00777d7d2">&#9670;&#160;</a></span>FTexture() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">FTexture::FTexture </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a27f65abec6d6e2d4e3f4f182cdd78545" name="a27f65abec6d6e2d4e3f4f182cdd78545"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27f65abec6d6e2d4e3f4f182cdd78545">&#9670;&#160;</a></span>FTexture() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">FTexture::FTexture </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InWidth</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InHeight</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ID3D11Texture2D *</td>          <td class="paramname"><span class="paramname"><em>InTexture2D</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ID3D11ShaderResourceView *</td>          <td class="paramname"><span class="paramname"><em>InTextureSRV</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="afde9c452c0c031e5f429b9fbd77c0c40" name="afde9c452c0c031e5f429b9fbd77c0c40"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afde9c452c0c031e5f429b9fbd77c0c40">&#9670;&#160;</a></span>~FTexture()</h2>
 
@@ -121,90 +185,180 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="aaafc29c2c73971e2ae7461c6b889837a" name="aaafc29c2c73971e2ae7461c6b889837a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaafc29c2c73971e2ae7461c6b889837a">&#9670;&#160;</a></span>FTexture() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">FTexture::FTexture </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_f_texture.html">FTexture</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa722989060eb18da66f2cdfe66e4ac52" name="aa722989060eb18da66f2cdfe66e4ac52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa722989060eb18da66f2cdfe66e4ac52">&#9670;&#160;</a></span>FTexture() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">FTexture::FTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_f_texture.html">FTexture</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>Other</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a7245bc000bc0f6deb81282857756f281" name="a7245bc000bc0f6deb81282857756f281"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7245bc000bc0f6deb81282857756f281">&#9670;&#160;</a></span>GetHeight()</h2>
+<a id="a920edd7bff479a0537e17bbd1161f17a" name="a920edd7bff479a0537e17bbd1161f17a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a920edd7bff479a0537e17bbd1161f17a">&#9670;&#160;</a></span>GetTexture2D()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int FTexture::GetHeight </td>
+          <td class="memname">ID3D11Texture2D * FTexture::GetTexture2D </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a0964e09a6508224570fbef1dd3802b2b" name="a0964e09a6508224570fbef1dd3802b2b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0964e09a6508224570fbef1dd3802b2b">&#9670;&#160;</a></span>GetSRV()</h2>
+<a id="ac786bade1ad736d2d7dede1f34e6e15b" name="ac786bade1ad736d2d7dede1f34e6e15b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac786bade1ad736d2d7dede1f34e6e15b">&#9670;&#160;</a></span>GetTextureSRV()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ID3D11ShaderResourceView * FTexture::GetSRV </td>
+          <td class="memname">ID3D11ShaderResourceView * FTexture::GetTextureSRV </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a1a43d0757e6af5f476e48da94ceb2ee1" name="a1a43d0757e6af5f476e48da94ceb2ee1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a43d0757e6af5f476e48da94ceb2ee1">&#9670;&#160;</a></span>GetWidth()</h2>
+<a id="ab7811372ef0e5e8ff5635abb4c825415" name="ab7811372ef0e5e8ff5635abb4c825415"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7811372ef0e5e8ff5635abb4c825415">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int FTexture::GetWidth </td>
+          <td class="memname"><a class="el" href="class_f_texture.html">FTexture</a> &amp; FTexture::operator= </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4ed57d0fce470395005364f095237c0a" name="a4ed57d0fce470395005364f095237c0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ed57d0fce470395005364f095237c0a">&#9670;&#160;</a></span>LoadFromFile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool FTexture::LoadFromFile </td>
-          <td>(</td>
-          <td class="paramtype">ID3D11Device *</td>          <td class="paramname"><span class="paramname"><em>Device</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="class_f_texture.html">FTexture</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>Path</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1b8cf735f3d0028cae762affe73d2933" name="a1b8cf735f3d0028cae762affe73d2933"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b8cf735f3d0028cae762affe73d2933">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_f_texture.html">FTexture</a> &amp; FTexture::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_f_texture.html">FTexture</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>Other</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a9ad844b03ff11fa59e22552d7675e348" name="a9ad844b03ff11fa59e22552d7675e348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ad844b03ff11fa59e22552d7675e348">&#9670;&#160;</a></span>Height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int FTexture::Height = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="af9dbfbfaf7ada4781891999cdbf08baa" name="af9dbfbfaf7ada4781891999cdbf08baa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af9dbfbfaf7ada4781891999cdbf08baa">&#9670;&#160;</a></span>Release()</h2>
+<a id="abade208d8819fff1346a0184720b4411" name="abade208d8819fff1346a0184720b4411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abade208d8819fff1346a0184720b4411">&#9670;&#160;</a></span>Width</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void FTexture::Release </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
+          <td class="memname">int FTexture::Width = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -212,8 +366,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>Core/<a class="el" href="_texture_8h_source.html">Texture.h</a></li>
-<li>Core/<a class="el" href="_texture_8cpp.html">Texture.cpp</a></li>
+<li>Render/<a class="el" href="_texture_8h_source.html">Texture.h</a></li>
+<li>Render/<a class="el" href="_texture_8cpp.html">Texture.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

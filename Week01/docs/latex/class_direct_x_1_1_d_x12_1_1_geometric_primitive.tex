@@ -1,0 +1,331 @@
+\doxysection{DirectX::\+DX12::\+Geometric\+Primitive Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive}{}\label{class_direct_x_1_1_d_x12_1_1_geometric_primitive}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+
+
+{\ttfamily \+\#include $<$Geometric\+Primitive.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6c6fb378994bc647b73441844f92a0f0}{Vertex\+Type}} = \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture}{Vertex\+Position\+Normal\+Texture}}
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} = std::\+vector$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6c6fb378994bc647b73441844f92a0f0}{Vertex\+Type}}$>$
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} = std::\+vector$<$uint16\+\_\+t$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} (Geometric\+Primitive \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a54a0267fc0f370d8dd7f62bd98337dd4}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1c26cfcce369e1151f20225eafaaab31}{Geometric\+Primitive}} (Geometric\+Primitive const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ac4bffac7f3f529f55bd2142e87ff4abb}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_aa93fe777a8db54e04af10ff2d7b68aca}{\texorpdfstring{$\sim$}{\string~}\+Geometric\+Primitive}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a908dda5742cc2a31424a097b82a1f4fa}{Load\+Static\+Buffers}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload\+Batch)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a94ff3b085465a7bc77e85182b270b97e}{Transition}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+Before\+VB, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+After\+VB, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+Before\+IB, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+After\+IB)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a2ffa4503b883a34684120b14ec0f8015}{Draw}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List) const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a19f3da1b6e1ebd34ae19d93e9e6bbff8}{Draw\+Instanced}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, uint32\+\_\+t instance\+Count, uint32\+\_\+t start\+Instance\+Location=0) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a05c001c0414ad9f5ccd1e46416d6d85c}{Create\+Cube}} (float size=1, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a12fe4e83d0d96e3fa6680f39fc69d317}{Create\+Box}} (const XMFLOAT3 \&size, bool rhcoords=true, bool invertn=false, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a4e0ae9043317a6aa0d3a369867dbf0ea}{Create\+Sphere}} (float diameter=1, size\+\_\+t tessellation=16, bool rhcoords=true, bool invertn=false, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1edae2fc12d18749ebed015d6e1829f1}{Create\+Geo\+Sphere}} (float diameter=1, size\+\_\+t tessellation=3, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a892328859ebafe4c94616c2cebe33988}{Create\+Cylinder}} (float height=1, float diameter=1, size\+\_\+t tessellation=32, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ae04f0292149f20012ddb861988c7feb8}{Create\+Cone}} (float diameter=1, float height=1, size\+\_\+t tessellation=32, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1e7194e7ebe3f9a83d43b2d5294118c3}{Create\+Torus}} (float diameter=1, float thickness=0.\+333f, size\+\_\+t tessellation=32, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a7de92300255d49900ee00c9b03d334cc}{Create\+Tetrahedron}} (float size=1, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a7cb6455c071c70c7f1d71ee25d6a787d}{Create\+Octahedron}} (float size=1, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ad3b18b930a0318750323aa571778aa90}{Create\+Dodecahedron}} (float size=1, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a39dcdcc8af4457112bda4830ed7611e6}{Create\+Icosahedron}} (float size=1, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a00e4f73d6feace3585c9200d47f3c591}{Create\+Teapot}} (float size=1, size\+\_\+t tessellation=8, bool rhcoords=true, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ac923fbfd84b32b4ad6655316f8b9e984}{Create\+Custom}} (const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a82a23092633f3d5bd818bd4f499f5e08}{Create\+Cube}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float size=1, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ace172dbf8f0396192f996022d600267f}{Create\+Box}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, const XMFLOAT3 \&size, bool rhcoords=true, bool invertn=false)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ab58795a3e76663cfeb4ea20074c30500}{Create\+Sphere}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float diameter=1, size\+\_\+t tessellation=16, bool rhcoords=true, bool invertn=false)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ab62ad93b52fb16568a0c435fb802a6df}{Create\+Geo\+Sphere}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float diameter=1, size\+\_\+t tessellation=3, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a743892fbb2638b3683494c1cd82f4084}{Create\+Cylinder}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float height=1, float diameter=1, size\+\_\+t tessellation=32, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afb5641cd0a4c5286ad2f804b68ae34b9}{Create\+Cone}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float diameter=1, float height=1, size\+\_\+t tessellation=32, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a0d4ba531f4e7199e0cb591d31aedc203}{Create\+Torus}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float diameter=1, float thickness=0.\+333f, size\+\_\+t tessellation=32, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6b68411dfbe0031adc149947f8082966}{Create\+Tetrahedron}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float size=1, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a2755b53780d6dedf65c935ea451d8c9f}{Create\+Octahedron}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float size=1, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af75f87a782a5e1843e2b6422c0032d11}{Create\+Dodecahedron}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float size=1, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ae7a401996369fc95fc50e19911bf5cc2}{Create\+Icosahedron}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float size=1, bool rhcoords=true)
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_aa6d9be066e9f33dbd65495a745488f69}{Create\+Teapot}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&vertices, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&indices, float size=1, size\+\_\+t tessellation=8, bool rhcoords=true)
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_doc-typedef-members}
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!IndexCollection@{IndexCollection}}
+\index{IndexCollection@{IndexCollection}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{IndexCollection}{IndexCollection}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Index\+Collection}} = std::\+vector$<$uint16\+\_\+t$>$}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!VertexCollection@{VertexCollection}}
+\index{VertexCollection@{VertexCollection}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{VertexCollection}{VertexCollection}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Vertex\+Collection}} = std::\+vector$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6c6fb378994bc647b73441844f92a0f0}{Vertex\+Type}}$>$}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6c6fb378994bc647b73441844f92a0f0}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!VertexType@{VertexType}}
+\index{VertexType@{VertexType}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{VertexType}{VertexType}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6c6fb378994bc647b73441844f92a0f0} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6c6fb378994bc647b73441844f92a0f0}{Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Vertex\+Type}} = \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture}{Vertex\+Position\+Normal\+Texture}}}
+
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!GeometricPrimitive@{GeometricPrimitive}}
+\index{GeometricPrimitive@{GeometricPrimitive}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{GeometricPrimitive()}{GeometricPrimitive()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61} 
+Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Geometric\+Primitive (\begin{DoxyParamCaption}\item[{Geometric\+Primitive \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1c26cfcce369e1151f20225eafaaab31}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!GeometricPrimitive@{GeometricPrimitive}}
+\index{GeometricPrimitive@{GeometricPrimitive}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{GeometricPrimitive()}{GeometricPrimitive()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1c26cfcce369e1151f20225eafaaab31} 
+Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Geometric\+Primitive (\begin{DoxyParamCaption}\item[{Geometric\+Primitive const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_aa93fe777a8db54e04af10ff2d7b68aca}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!````~GeometricPrimitive@{\texorpdfstring{$\sim$}{\string~}GeometricPrimitive}}
+\index{````~GeometricPrimitive@{\texorpdfstring{$\sim$}{\string~}GeometricPrimitive}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}GeometricPrimitive()}{\string~GeometricPrimitive()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_aa93fe777a8db54e04af10ff2d7b68aca} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\texorpdfstring{$\sim$}{\string~}\+Geometric\+Primitive (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a12fe4e83d0d96e3fa6680f39fc69d317}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateBox@{CreateBox}}
+\index{CreateBox@{CreateBox}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateBox()}{CreateBox()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a12fe4e83d0d96e3fa6680f39fc69d317} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Box (\begin{DoxyParamCaption}\item[{const XMFLOAT3 \&}]{size}{, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{bool}]{invertn}{ = {\ttfamily false}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ace172dbf8f0396192f996022d600267f}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateBox@{CreateBox}}
+\index{CreateBox@{CreateBox}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateBox()}{CreateBox()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ace172dbf8f0396192f996022d600267f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Box (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{const XMFLOAT3 \&}]{size}{, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{bool}]{invertn}{ = {\ttfamily false}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ae04f0292149f20012ddb861988c7feb8}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateCone@{CreateCone}}
+\index{CreateCone@{CreateCone}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateCone()}{CreateCone()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ae04f0292149f20012ddb861988c7feb8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Cone (\begin{DoxyParamCaption}\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{float}]{height}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 32}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afb5641cd0a4c5286ad2f804b68ae34b9}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateCone@{CreateCone}}
+\index{CreateCone@{CreateCone}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateCone()}{CreateCone()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afb5641cd0a4c5286ad2f804b68ae34b9} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Cone (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{float}]{height}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 32}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a05c001c0414ad9f5ccd1e46416d6d85c}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateCube@{CreateCube}}
+\index{CreateCube@{CreateCube}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateCube()}{CreateCube()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a05c001c0414ad9f5ccd1e46416d6d85c} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Cube (\begin{DoxyParamCaption}\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a82a23092633f3d5bd818bd4f499f5e08}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateCube@{CreateCube}}
+\index{CreateCube@{CreateCube}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateCube()}{CreateCube()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a82a23092633f3d5bd818bd4f499f5e08} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Cube (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ac923fbfd84b32b4ad6655316f8b9e984}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateCustom@{CreateCustom}}
+\index{CreateCustom@{CreateCustom}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateCustom()}{CreateCustom()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ac923fbfd84b32b4ad6655316f8b9e984} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Custom (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a892328859ebafe4c94616c2cebe33988}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateCylinder@{CreateCylinder}}
+\index{CreateCylinder@{CreateCylinder}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateCylinder()}{CreateCylinder()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a892328859ebafe4c94616c2cebe33988} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Cylinder (\begin{DoxyParamCaption}\item[{float}]{height}{ = {\ttfamily 1}, }\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 32}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a743892fbb2638b3683494c1cd82f4084}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateCylinder@{CreateCylinder}}
+\index{CreateCylinder@{CreateCylinder}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateCylinder()}{CreateCylinder()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a743892fbb2638b3683494c1cd82f4084} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Cylinder (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{height}{ = {\ttfamily 1}, }\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 32}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ad3b18b930a0318750323aa571778aa90}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateDodecahedron@{CreateDodecahedron}}
+\index{CreateDodecahedron@{CreateDodecahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateDodecahedron()}{CreateDodecahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ad3b18b930a0318750323aa571778aa90} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Dodecahedron (\begin{DoxyParamCaption}\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af75f87a782a5e1843e2b6422c0032d11}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateDodecahedron@{CreateDodecahedron}}
+\index{CreateDodecahedron@{CreateDodecahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateDodecahedron()}{CreateDodecahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af75f87a782a5e1843e2b6422c0032d11} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Dodecahedron (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1edae2fc12d18749ebed015d6e1829f1}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateGeoSphere@{CreateGeoSphere}}
+\index{CreateGeoSphere@{CreateGeoSphere}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateGeoSphere()}{CreateGeoSphere()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1edae2fc12d18749ebed015d6e1829f1} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Geo\+Sphere (\begin{DoxyParamCaption}\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 3}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ab62ad93b52fb16568a0c435fb802a6df}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateGeoSphere@{CreateGeoSphere}}
+\index{CreateGeoSphere@{CreateGeoSphere}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateGeoSphere()}{CreateGeoSphere()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ab62ad93b52fb16568a0c435fb802a6df} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Geo\+Sphere (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 3}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a39dcdcc8af4457112bda4830ed7611e6}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateIcosahedron@{CreateIcosahedron}}
+\index{CreateIcosahedron@{CreateIcosahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateIcosahedron()}{CreateIcosahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a39dcdcc8af4457112bda4830ed7611e6} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Icosahedron (\begin{DoxyParamCaption}\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ae7a401996369fc95fc50e19911bf5cc2}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateIcosahedron@{CreateIcosahedron}}
+\index{CreateIcosahedron@{CreateIcosahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateIcosahedron()}{CreateIcosahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ae7a401996369fc95fc50e19911bf5cc2} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Icosahedron (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a7cb6455c071c70c7f1d71ee25d6a787d}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateOctahedron@{CreateOctahedron}}
+\index{CreateOctahedron@{CreateOctahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateOctahedron()}{CreateOctahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a7cb6455c071c70c7f1d71ee25d6a787d} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Octahedron (\begin{DoxyParamCaption}\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a2755b53780d6dedf65c935ea451d8c9f}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateOctahedron@{CreateOctahedron}}
+\index{CreateOctahedron@{CreateOctahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateOctahedron()}{CreateOctahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a2755b53780d6dedf65c935ea451d8c9f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Octahedron (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a4e0ae9043317a6aa0d3a369867dbf0ea}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateSphere@{CreateSphere}}
+\index{CreateSphere@{CreateSphere}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateSphere()}{CreateSphere()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a4e0ae9043317a6aa0d3a369867dbf0ea} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Sphere (\begin{DoxyParamCaption}\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 16}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{bool}]{invertn}{ = {\ttfamily false}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ab58795a3e76663cfeb4ea20074c30500}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateSphere@{CreateSphere}}
+\index{CreateSphere@{CreateSphere}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateSphere()}{CreateSphere()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ab58795a3e76663cfeb4ea20074c30500} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Sphere (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 16}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{bool}]{invertn}{ = {\ttfamily false}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a00e4f73d6feace3585c9200d47f3c591}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateTeapot@{CreateTeapot}}
+\index{CreateTeapot@{CreateTeapot}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateTeapot()}{CreateTeapot()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a00e4f73d6feace3585c9200d47f3c591} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Teapot (\begin{DoxyParamCaption}\item[{float}]{size}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 8}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_aa6d9be066e9f33dbd65495a745488f69}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateTeapot@{CreateTeapot}}
+\index{CreateTeapot@{CreateTeapot}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateTeapot()}{CreateTeapot()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_aa6d9be066e9f33dbd65495a745488f69} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Teapot (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{size}{ = {\ttfamily 1}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 8}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a7de92300255d49900ee00c9b03d334cc}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateTetrahedron@{CreateTetrahedron}}
+\index{CreateTetrahedron@{CreateTetrahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateTetrahedron()}{CreateTetrahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a7de92300255d49900ee00c9b03d334cc} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Tetrahedron (\begin{DoxyParamCaption}\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6b68411dfbe0031adc149947f8082966}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateTetrahedron@{CreateTetrahedron}}
+\index{CreateTetrahedron@{CreateTetrahedron}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateTetrahedron()}{CreateTetrahedron()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a6b68411dfbe0031adc149947f8082966} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Tetrahedron (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{size}{ = {\ttfamily 1}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1e7194e7ebe3f9a83d43b2d5294118c3}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateTorus@{CreateTorus}}
+\index{CreateTorus@{CreateTorus}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateTorus()}{CreateTorus()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a1e7194e7ebe3f9a83d43b2d5294118c3} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Torus (\begin{DoxyParamCaption}\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{float}]{thickness}{ = {\ttfamily 0.333f}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 32}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a0d4ba531f4e7199e0cb591d31aedc203}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!CreateTorus@{CreateTorus}}
+\index{CreateTorus@{CreateTorus}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{CreateTorus()}{CreateTorus()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a0d4ba531f4e7199e0cb591d31aedc203} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Create\+Torus (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a8af519714ea77329fd9b41f2d40ee528}{Vertex\+Collection}} \&}]{vertices}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_afcdcecf026039b0878c0fbccfa0d33c5}{Index\+Collection}} \&}]{indices}{, }\item[{float}]{diameter}{ = {\ttfamily 1}, }\item[{float}]{thickness}{ = {\ttfamily 0.333f}, }\item[{size\+\_\+t}]{tessellation}{ = {\ttfamily 32}, }\item[{bool}]{rhcoords}{ = {\ttfamily true}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a2ffa4503b883a34684120b14ec0f8015}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a2ffa4503b883a34684120b14ec0f8015} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Draw (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a19f3da1b6e1ebd34ae19d93e9e6bbff8}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!DrawInstanced@{DrawInstanced}}
+\index{DrawInstanced@{DrawInstanced}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{DrawInstanced()}{DrawInstanced()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a19f3da1b6e1ebd34ae19d93e9e6bbff8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Draw\+Instanced (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{uint32\+\_\+t}]{instance\+Count}{, }\item[{uint32\+\_\+t}]{start\+Instance\+Location}{ = {\ttfamily 0}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a908dda5742cc2a31424a097b82a1f4fa}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!LoadStaticBuffers@{LoadStaticBuffers}}
+\index{LoadStaticBuffers@{LoadStaticBuffers}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{LoadStaticBuffers()}{LoadStaticBuffers()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a908dda5742cc2a31424a097b82a1f4fa} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Load\+Static\+Buffers (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&}]{resource\+Upload\+Batch}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a54a0267fc0f370d8dd7f62bd98337dd4}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a54a0267fc0f370d8dd7f62bd98337dd4} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} \& Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ac4bffac7f3f529f55bd2142e87ff4abb}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_ac4bffac7f3f529f55bd2142e87ff4abb} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} \& Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_geometric_primitive_af812307696dc6eb4452398cce3561c61}{Geometric\+Primitive}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a94ff3b085465a7bc77e85182b270b97e}\index{DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}!Transition@{Transition}}
+\index{Transition@{Transition}!DirectX::DX12::GeometricPrimitive@{DirectX::DX12::GeometricPrimitive}}
+\doxysubsubsection{\texorpdfstring{Transition()}{Transition()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_geometric_primitive_a94ff3b085465a7bc77e85182b270b97e} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Geometric\+Primitive::\+\+Transition (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+Before\+VB}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+After\+VB}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+Before\+IB}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+After\+IB}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_geometric_primitive_8h}{Geometric\+Primitive.\+h}}\end{DoxyCompactItemize}

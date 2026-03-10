@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['win_5fheight_0',['WIN_HEIGHT',['../main_8cpp.html#a0a33b1743038db1adbbf1045aa839b38',1,'main.cpp']]],
-  ['win_5fwidth_1',['WIN_WIDTH',['../main_8cpp.html#a2e6ef411e0ff00ad889788b6cde701b5',1,'main.cpp']]]
+  ['_5f_5fdirectxtk_5feffects_5fh_5f_5f_0',['__DIRECTXTK_EFFECTS_H__',['../_effects_8h.html#ab4f3fa0254d7f690c4e4042f27f5222a',1,'Effects.h']]]
 ];

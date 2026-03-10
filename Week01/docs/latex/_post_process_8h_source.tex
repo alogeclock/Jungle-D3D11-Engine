@@ -1,0 +1,250 @@
+\doxysection{Post\+Process.\+h}
+\hypertarget{_post_process_8h_source}{}\label{_post_process_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/PostProcess.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/PostProcess.h}}
+\doxymbox{\hyperlink{_post_process_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ PostProcess.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_render_target_state_8h}{RenderTargetState.h}}"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00050\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{DX12}}}
+\DoxyCodeLine{00052\ \ \ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Abstract\ interface\ representing\ a\ post-\/process\ pass}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a88d7426b2bcbd31d8543ed2a92bb9403}{\string~IPostProcess}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_abf2d8d22ffba95bad598b9145d4fc41a}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a082ac1a25e3f4ea45101b50999bbb3f8}{Process}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList)\ =\ 0;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_af22622d3da9ccb795b93de730316da3c}{IPostProcess}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a287f201fdfeaae729e0ede71006236dd}{IPostProcess}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a501cfda19e0c3a407ac34e18036ba1d0}{operator=}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Basic\ post-\/process}}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process}{BasicPostProcess}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28}{Effect}}\ :\ uint32\_t}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a8443405f420f19885ffe9d6639ed2b59}{Copy}},}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5a01e9550bd0d1ff42915915cd6e74ab}{Monochrome}},}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae3e2f48713da87b79cbac0c79ac90dde}{Sepia}},}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ac878ca9f8328fc0b87678db5c92afbcb}{DownScale\_2x2}},}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a4b9f4f085a93d27f05e3c9e8b4d48a83}{DownScale\_4x4}},}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a7d022ef19532949a3512473f62870a8d}{GaussianBlur\_5x5}},}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a73da1a984c53b86bd4c4f300e73c5a40}{BloomExtract}},}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5cf64042281e9a5cee9b8919de28a2a5}{BloomBlur}},}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae93698b1388389c5281a3b1e60f5ae62}{Effect\_Max}}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}(}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{RenderTargetState}}\&\ rtState,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28}{Effect}}\ fx);}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_acc8c26193e1cc368dd85c37cb3032808}{BasicPostProcess}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}\&\&)\ noexcept;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}\&\&)\ noexcept;}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{BasicPostProcess}}()\ override;}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ IPostProcess\ methods.}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_aba66c948e73d5b57080c6c6e253ab0e6}{Process}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList)\ override;}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Properties}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a65da1c6c471880e0ab88dd074f757876}{SetSourceTexture}}(D3D12\_GPU\_DESCRIPTOR\_HANDLE\ srvDescriptor,\ \_In\_opt\_\ ID3D12Resource*\ resource);}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ multiplier\ for\ GaussianBlur\_5x5}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a210a959b5a48b0f567566d88edb28482}{SetGaussianParameter}}(\textcolor{keywordtype}{float}\ multiplier);}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ parameters\ for\ BloomExtract}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_ac6fbdd552d6336f14ff08ce552756225}{SetBloomExtractParameter}}(\textcolor{keywordtype}{float}\ threshold);}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ parameters\ for\ BloomBlur}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af18c96836ac3e7f946e16607bd5368d0}{SetBloomBlurParameters}}(\textcolor{keywordtype}{bool}\ horizontal,\ \textcolor{keywordtype}{float}\ size,\ \textcolor{keywordtype}{float}\ brightness);}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ private:}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ class\ Impl;}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Dual-\/texure\ post-\/process}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ class\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process}{DualPostProcess}}\ :\ public\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a}{Effect}}\ :\ uint32\_t}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa2f9111c85f21b2ceedf7e5d4acb7512e}{Merge}},}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa027b21c9cec4edd06319bf2f4bd0c542}{BloomCombine}},}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aaccf2e67c6bf43545ed39bb4dbcfc608f}{Effect\_Max}}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}(}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{RenderTargetState}}\&\ rtState,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a}{Effect}}\ fx);}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_afde2068b26c78b6883dbe9a2f6032653}{DualPostProcess}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}\&\&)\ noexcept;}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}\&\&)\ noexcept;}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{DualPostProcess}}()\ override;}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ IPostProcess\ methods.}}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac021ac3e605e20925a0b61bbaff1923e}{Process}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList)\ override;}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Properties}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_aed01b4f0408c3194ea521e28489ad97b}{SetSourceTexture}}(D3D12\_GPU\_DESCRIPTOR\_HANDLE\ srvDescriptor);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_af7fb3e5c7930c8100ba00e1f7d003062}{SetSourceTexture2}}(D3D12\_GPU\_DESCRIPTOR\_HANDLE\ srvDescriptor);}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ parameters\ for\ Merge}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_acecf19769fbaf2dc1187b5b14b3ef57b}{SetMergeParameters}}(\textcolor{keywordtype}{float}\ weight1,\ \textcolor{keywordtype}{float}\ weight2);}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ parameters\ for\ BloomCombine}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a38d0e9388c0f1288a773654b41059063}{SetBloomCombineParameters}}(\textcolor{keywordtype}{float}\ bloom,\ \textcolor{keywordtype}{float}\ base,\ \textcolor{keywordtype}{float}\ bloomSaturation,\ \textcolor{keywordtype}{float}\ baseSaturation);}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ private:}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ class\ Impl;}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Tone-\/map\ post-\/process}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ class\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}\ :\ public\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPostProcess}}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Tone-\/mapping\ operator}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0}{Operator}}\ :\ uint32\_t}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a05df23e93a83ae4e75c2d9055981d652}{None}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Pass-\/through}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a84da42665fc2d49f40a26fe44ab6c589}{Saturate}},\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Clamp\ [0,1]}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a6b8bd084d4e99a3e460117d5393b2be5}{Reinhard}},\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ x/(1+x)}}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0aace320dc780ebd3556f2b7873c815228}{ACESFilmic}},}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0af6fc94f4b292549a4e76ec0256e8244a}{Operator\_Max}}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Electro-\/Optical\ Transfer\ Function\ (EOTF)}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8}{TransferFunction}}\ :\ uint32\_t}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8ad24b09003658bb2814b146b0336c1398}{Linear}},\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Pass-\/through}}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8affa5f1c2b82e6ed8a2c9f94cf1fbc3ae}{SRGB}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ sRGB\ (Rec.709\ and\ approximate\ sRGB\ display\ curve)}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a0cfe544ad2b77e81fc7c6e916f1a79c8}{ST2084}},\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ HDR10\ (Rec.2020\ color\ primaries\ and\ ST.2084\ display\ curve)}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a5e837d47d5c46b4fa106df7de16fa64d}{TransferFunction\_Max}}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Color\ Rotation\ Transform\ for\ HDR10}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3}{ColorPrimaryRotation}}\ :\ uint32\_t}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a9f64055f83e3e06c071726865bbae8f4}{HDTV\_to\_UHDTV}},\ \ \ \ \ \ \ \textcolor{comment}{//\ Rec.709\ to\ Rec.2020}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a245de84d862a358b36b7af1fb41491ce}{DCI\_P3\_D65\_to\_UHDTV}},\ \textcolor{comment}{//\ DCI-\/P3-\/D65\ (a.k.a\ Display\ P3\ or\ P3D65)\ to\ Rec.2020}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a0b0d84f24b347f033f8adb58df87b82c}{HDTV\_to\_DCI\_P3\_D65}},\ \ \textcolor{comment}{//\ Rec.709\ to\ DCI-\/P3-\/D65\ (a.k.a\ Display\ P3\ or\ P3D65)}}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}(}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{RenderTargetState}}\&\ rtState,}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0}{Operator}}\ op,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8}{TransferFunction}}\ func}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \#\textcolor{keywordflow}{if}\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ,\ \textcolor{keywordtype}{bool}\ mrt\ =\ \textcolor{keyword}{false}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \#endif}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac775f6fc84ca1e6adc566629635bc7fb}{ToneMapPostProcess}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}\&\&)\ noexcept;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}\&\&)\ noexcept;}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{ToneMapPostProcess}}()\ override;}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ IPostProcess\ methods.}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aea3aedd0cb15ae03418bc0e020081e45}{Process}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList)\ override;}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Properties}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a476814d5b6666d7e8008f31bac844f00}{SetHDRSourceTexture}}(D3D12\_GPU\_DESCRIPTOR\_HANDLE\ srvDescriptor);}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ the\ Color\ Rotation\ Transform\ for\ HDR10\ signal\ output}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44cf6e564240fca73726d2ba7c12a75f}{SetColorRotation}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3}{ColorPrimaryRotation}}\ value);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44cf6e564240fca73726d2ba7c12a75f}{SetColorRotation}}(CXMMATRIX\ value);}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ exposure\ value\ for\ LDR\ tonemap\ operators}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_abcd9c19a84db4c11a5558d7de62c7372}{SetExposure}}(\textcolor{keywordtype}{float}\ exposureValue);}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ ST.2084\ parameter\ for\ how\ bright\ white\ should\ be\ in\ nits}}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aa03d310cc4bf80af65118832cbc12ad7}{SetST2084Parameter}}(\textcolor{keywordtype}{float}\ paperWhiteNits);}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ private:}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ class\ Impl;}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \}}
+
+\end{DoxyCode}

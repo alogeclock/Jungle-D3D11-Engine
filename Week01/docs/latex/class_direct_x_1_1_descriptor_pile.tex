@@ -1,0 +1,191 @@
+\doxysection{DirectX::\+Descriptor\+Pile Class Reference}
+\hypertarget{class_direct_x_1_1_descriptor_pile}{}\label{class_direct_x_1_1_descriptor_pile}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+
+
+{\ttfamily \+\#include $<$Descriptor\+Heap.\+h$>$}
+
+Inheritance diagram for DirectX::\+Descriptor\+Pile:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_direct_x_1_1_descriptor_pile}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} = size\+\_\+t
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} (\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}p\+Existing\+Heap, size\+\_\+t reserve=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ad3d2d7813c270b80be8561530e561706}{Descriptor\+Pile}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ const D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+DESC \texorpdfstring{$\ast$}{*}p\+Desc, size\+\_\+t reserve=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a01fa0e15df94b3d54674143eef7fadc8}{Descriptor\+Pile}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+TYPE type, D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+FLAGS flags, size\+\_\+t capacity, size\+\_\+t reserve=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a0448faab162246a97cc6d9b5951fcc70}{Descriptor\+Pile}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, size\+\_\+t count, size\+\_\+t reserve=0)
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_aca09ead1824bee5d3150f9f7e10bd998}{Descriptor\+Pile}} (Descriptor\+Pile \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \& \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ae9156fdde5503bc2af210f6250c71101}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_aa9d60ca967ecdb2ef190fd9d7db083d3}{Descriptor\+Pile}} (const Descriptor\+Pile \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \& \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ad1fb8c1d4a06081529a7aa4b050a439b}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \&)=delete
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a606ba1ab14388012d0a525c6e563ff22}{Allocate}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a544b25a6a43fae4859b54cb283790017}{Allocate\+Range}} (size\+\_\+t num\+Descriptors, \+\_\+\+Out\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} \&start, \+\_\+\+Out\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} \&end)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap}{Direct\+X::\+\+Descriptor\+Heap}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{Descriptor\+Heap}} (\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}p\+Existing\+Heap)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ae94e0f659d24fbd88505c1643a9c314f}{Descriptor\+Heap}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ const D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+DESC \texorpdfstring{$\ast$}{*}p\+Desc)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_adfc4c97c363d7de46637b230dcf415d5}{Descriptor\+Heap}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+TYPE type, D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+FLAGS flags, size\+\_\+t count)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a9f99b9b2df8fd564dedcc04c9adfee40}{Descriptor\+Heap}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, size\+\_\+t count)
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ac09a69c29ebc77d5f2f2c634f9b1e4e1}{Descriptor\+Heap}} (Descriptor\+Heap \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{Descriptor\+Heap}} \& \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a6feddcc1f4412853190ef3be8cfbf029}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{Descriptor\+Heap}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ab2f7964751403e53c796e5bb5835b209}{Descriptor\+Heap}} (const Descriptor\+Heap \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{Descriptor\+Heap}} \& \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a2ab01428e6445243e0ce1fe0e3a2e093}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{Descriptor\+Heap}} \&)=delete
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ac5136db82c52805dc44d866532e50ebf}{Write\+Descriptors}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, uint32\+\_\+t offset\+Into\+Heap, uint32\+\_\+t total\+Descriptor\+Count, \+\_\+\+In\+\_\+reads\+\_\+(descriptor\+Range\+Count) const D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \texorpdfstring{$\ast$}{*}p\+Descriptor\+Range\+Starts, \+\_\+\+In\+\_\+reads\+\_\+(descriptor\+Range\+Count) const uint32\+\_\+t \texorpdfstring{$\ast$}{*}p\+Descriptor\+Range\+Sizes, uint32\+\_\+t descriptor\+Range\+Count)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ae7341050866a88a751e8108a35cd4c05}{Write\+Descriptors}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, uint32\+\_\+t offset\+Into\+Heap, \+\_\+\+In\+\_\+reads\+\_\+(descriptor\+Range\+Count) const D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \texorpdfstring{$\ast$}{*}p\+Descriptor\+Range\+Starts, \+\_\+\+In\+\_\+reads\+\_\+(descriptor\+Range\+Count) const uint32\+\_\+t \texorpdfstring{$\ast$}{*}p\+Descriptor\+Range\+Sizes, uint32\+\_\+t descriptor\+Range\+Count)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a33d8b6f2f45455e69db2496e429fc29e}{Write\+Descriptors}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, uint32\+\_\+t offset\+Into\+Heap, \+\_\+\+In\+\_\+reads\+\_\+(descriptor\+Count) const D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \texorpdfstring{$\ast$}{*}p\+Descriptors, uint32\+\_\+t descriptor\+Count)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a0b8b146d97678e40c652ef0d9cfb60b6}{Get\+First\+Gpu\+Handle}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a0cb9d3d784b8d4ee8e676bda08a0cb56}{Get\+First\+Cpu\+Handle}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a81ff8aef3952a1c668799dcfbc9f9151}{Get\+Gpu\+Handle}} (\+\_\+\+In\+\_\+ size\+\_\+t index) const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a2ce075e5970ed07cd7005c8c5de6658b}{Get\+Cpu\+Handle}} (\+\_\+\+In\+\_\+ size\+\_\+t index) const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} size\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a40f084a531c6ffeb163b318b85047e0d}{Count}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} unsigned int \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a0c59d2675e67f96ef503fba8a2dbf2af}{Flags}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+TYPE \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ac0fe7ea85b007a31ed396b0820b1ed05}{Type}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a8527f499126642cf77f5e08fdeca07e2}{Increment}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a85276048641b95a3c71d2a2172d29945}{Heap}} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a87870f016740c9676e822297459385b5}{INVALID\+\_\+\+INDEX}} = size\+\_\+t(-\/1)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Static Public Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap}{Direct\+X::\+\+Descriptor\+Heap}}}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a35c705e746b58e605790a4750f85a3e3}{Default\+Desc}} (\+\_\+\+In\+\_\+ D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+TYPE type, \+\_\+\+Out\+\_\+ D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+DESC \texorpdfstring{$\ast$}{*}p\+Desc) noexcept
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_doc-typedef-members}
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!IndexType@{IndexType}}
+\index{IndexType@{IndexType}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{IndexType}{IndexType}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Direct\+X::\+\+Descriptor\+Pile::\+\+Index\+Type}} = size\+\_\+t}
+
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!DescriptorPile@{DescriptorPile}}
+\index{DescriptorPile@{DescriptorPile}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{DescriptorPile()}{DescriptorPile()}\hspace{0.1cm}{\footnotesize\ttfamily [1/6]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Descriptor\+Pile::\+\+Descriptor\+Pile (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}}]{p\+Existing\+Heap}{, }\item[{size\+\_\+t}]{reserve}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_ad3d2d7813c270b80be8561530e561706}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!DescriptorPile@{DescriptorPile}}
+\index{DescriptorPile@{DescriptorPile}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{DescriptorPile()}{DescriptorPile()}\hspace{0.1cm}{\footnotesize\ttfamily [2/6]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_ad3d2d7813c270b80be8561530e561706} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Descriptor\+Pile::\+\+Descriptor\+Pile (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{\+\_\+\+In\+\_\+ const D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+DESC \texorpdfstring{$\ast$}{*}}]{p\+Desc}{, }\item[{size\+\_\+t}]{reserve}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_a01fa0e15df94b3d54674143eef7fadc8}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!DescriptorPile@{DescriptorPile}}
+\index{DescriptorPile@{DescriptorPile}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{DescriptorPile()}{DescriptorPile()}\hspace{0.1cm}{\footnotesize\ttfamily [3/6]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_a01fa0e15df94b3d54674143eef7fadc8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Descriptor\+Pile::\+\+Descriptor\+Pile (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+TYPE}]{type}{, }\item[{D3\+D12\+\_\+\+DESCRIPTOR\+\_\+\+HEAP\+\_\+\+FLAGS}]{flags}{, }\item[{size\+\_\+t}]{capacity}{, }\item[{size\+\_\+t}]{reserve}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_a0448faab162246a97cc6d9b5951fcc70}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!DescriptorPile@{DescriptorPile}}
+\index{DescriptorPile@{DescriptorPile}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{DescriptorPile()}{DescriptorPile()}\hspace{0.1cm}{\footnotesize\ttfamily [4/6]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_a0448faab162246a97cc6d9b5951fcc70} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Descriptor\+Pile::\+\+Descriptor\+Pile (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{size\+\_\+t}]{count}{, }\item[{size\+\_\+t}]{reserve}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_aca09ead1824bee5d3150f9f7e10bd998}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!DescriptorPile@{DescriptorPile}}
+\index{DescriptorPile@{DescriptorPile}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{DescriptorPile()}{DescriptorPile()}\hspace{0.1cm}{\footnotesize\ttfamily [5/6]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_aca09ead1824bee5d3150f9f7e10bd998} 
+Direct\+X::\+\+Descriptor\+Pile::\+\+Descriptor\+Pile (\begin{DoxyParamCaption}\item[{Descriptor\+Pile \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_aa9d60ca967ecdb2ef190fd9d7db083d3}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!DescriptorPile@{DescriptorPile}}
+\index{DescriptorPile@{DescriptorPile}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{DescriptorPile()}{DescriptorPile()}\hspace{0.1cm}{\footnotesize\ttfamily [6/6]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_aa9d60ca967ecdb2ef190fd9d7db083d3} 
+Direct\+X::\+\+Descriptor\+Pile::\+\+Descriptor\+Pile (\begin{DoxyParamCaption}\item[{const Descriptor\+Pile \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_a606ba1ab14388012d0a525c6e563ff22}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!Allocate@{Allocate}}
+\index{Allocate@{Allocate}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{Allocate()}{Allocate()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_a606ba1ab14388012d0a525c6e563ff22} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} Direct\+X::\+\+Descriptor\+Pile::\+\+Allocate (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_a544b25a6a43fae4859b54cb283790017}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!AllocateRange@{AllocateRange}}
+\index{AllocateRange@{AllocateRange}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{AllocateRange()}{AllocateRange()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_a544b25a6a43fae4859b54cb283790017} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void Direct\+X::\+\+Descriptor\+Pile::\+\+Allocate\+Range (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{num\+Descriptors}{, }\item[{\+\_\+\+Out\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} \&}]{start}{, }\item[{\+\_\+\+Out\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} \&}]{end}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_ad1fb8c1d4a06081529a7aa4b050a439b}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_ad1fb8c1d4a06081529a7aa4b050a439b} 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \& Direct\+X::\+\+Descriptor\+Pile::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_descriptor_pile_ae9156fdde5503bc2af210f6250c71101}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_ae9156fdde5503bc2af210f6250c71101} 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \& Direct\+X::\+\+Descriptor\+Pile::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{Descriptor\+Pile}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_descriptor_pile_a87870f016740c9676e822297459385b5}\index{DirectX::DescriptorPile@{DirectX::DescriptorPile}!INVALID\_INDEX@{INVALID\_INDEX}}
+\index{INVALID\_INDEX@{INVALID\_INDEX}!DirectX::DescriptorPile@{DirectX::DescriptorPile}}
+\doxysubsubsection{\texorpdfstring{INVALID\_INDEX}{INVALID\_INDEX}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_descriptor_pile_a87870f016740c9676e822297459385b5} 
+\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{Index\+Type}} Direct\+X::\+\+Descriptor\+Pile::\+\+INVALID\+\_\+\+INDEX = size\+\_\+t(-\/1)\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_descriptor_heap_8h}{Descriptor\+Heap.\+h}}\end{DoxyCompactItemize}

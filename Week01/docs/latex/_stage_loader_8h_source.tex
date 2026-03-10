@@ -1,0 +1,31 @@
+\doxysection{Stage\+Loader.\+h}
+\hypertarget{_stage_loader_8h_source}{}\label{_stage_loader_8h_source}\index{Data/StageLoader.h@{Data/StageLoader.h}}
+\doxymbox{\hyperlink{_stage_loader_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Core/Types.h}}"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_stage_data}{FStageData}};}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }FStageLoader}
+\DoxyCodeLine{00010\ \{}
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{static}\ FStageLoader\ \&\doxymbox{\hyperlink{class_f_stage_loader_a68b92a633fc89a8201fba2ca8d631527}{Get}}();}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_loader_af19be2a2eeadf3f0ef5f14eb0f61983c}{Initialize}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_loader_af05c1127b9d23cc63065bd39e995db07}{IsLoaded}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \doxymbox{\hyperlink{class_f_stage_loader_a57fce289c4cac9c19549d38da8a2a436}{GetStageCount}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_loader_a664cbba5f1ba4b3e794af31707a831da}{LoadStageById}}(\textcolor{keywordtype}{int}\ StageIndex,\ \doxymbox{\hyperlink{struct_f_stage_data}{FStageData}}\ \&OutStage)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00021\ \ \ \ \ FStageLoader()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ std::string\ FileContent;}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ bLoaded\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00025\ \};}
+
+\end{DoxyCode}

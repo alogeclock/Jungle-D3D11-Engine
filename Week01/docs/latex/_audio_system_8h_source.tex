@@ -1,0 +1,71 @@
+\doxysection{Audio\+System.\+h}
+\hypertarget{_audio_system_8h_source}{}\label{_audio_system_8h_source}\index{Core/AudioSystem.h@{Core/AudioSystem.h}}
+\doxymbox{\hyperlink{_audio_system_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{struct\ }IXAudio2;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }IXAudio2MasteringVoice;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{struct\ }IXAudio2SourceVoice;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }FAudioSystem}
+\DoxyCodeLine{00013\ \{}
+\DoxyCodeLine{00014\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{static}\ FAudioSystem\ \&\doxymbox{\hyperlink{class_f_audio_system_aa0f3afaa0c3dec49dbaaf4f2e35a69c0}{Get}}();}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_aae7f34646f38b8194b559927fdc8faa1}{Initialize}}();}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a677fe730f99df5bb39b2d26a171a1b7c}{Shutdown}}();}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{comment}{//\ WAV\ 파일\ 로드\ (키로\ 관리)}}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_a707ad416f8a553dae2dbaccba0ee086e}{LoadWav}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keyword}{const}\ std::string\ \&FilePath);}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{comment}{//\ 재생\ (bLoop\ =\ true\ 이면\ 반복\ 재생)}}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_accc0c9ca589632744435814921274f82}{Play}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{bool}\ bLoop\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_aa8455741ff5bc8cf75db7ad0f05fccd6}{Stop}}(\textcolor{keyword}{const}\ std::string\ \&Key);}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a65252f4342bea1ca01111ae98660cd47}{StopAll}}();}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//\ 볼륨\ 조절\ (0.0\ \string~\ 1.0)}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a4c1767d3b5fdf261b8eccdf464e39808}{SetVolume}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{float}\ Volume);}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_aeea6a5dc32d0974c0d8d4e1a86e56460}{SetMasterVolume}}(\textcolor{keywordtype}{float}\ Volume);}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{comment}{//\ 재생\ 속도\ 조절\ (1.0\ =\ 원래\ 속도)}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a10ea8a91ff45b871f8d6801dc4b6ff91}{SetPlaybackRate}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{float}\ Rate);}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_af070c31db19634576488bba16f76783f}{SetAllPlaybackRate}}(\textcolor{keywordtype}{float}\ Rate);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_aced10bd6c9b27cc1eaa0878e95ec3a34}{IsPlaying}}(\textcolor{keyword}{const}\ std::string\ \&Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \ \ FAudioSystem()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00040\ \ \ \ \ \string~FAudioSystem();}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ FAudioSystem(\textcolor{keyword}{const}\ FAudioSystem\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00043\ \ \ \ \ FAudioSystem\ \&operator=(\textcolor{keyword}{const}\ FAudioSystem\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{struct\ }FWavData}
+\DoxyCodeLine{00046\ \ \ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ std::vector<uint8\_t>\ \ AudioData;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ std::vector<uint8\_t>\ \ FormatData;\ \textcolor{comment}{//\ WAVEFORMATEX\ or\ WAVEFORMATEXTENSIBLE}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ WAVEFORMATEX\ \ \ *GetFormat()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }WAVEFORMATEX\ *\textcolor{keyword}{>}(FormatData.data());\ \}}
+\DoxyCodeLine{00050\ \ \ \ \ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{struct\ }FPlayingVoice}
+\DoxyCodeLine{00053\ \ \ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ IXAudio2SourceVoice\ *Voice\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bIsPlaying\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00056\ \ \ \ \ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ IXAudio2\ \ \ \ \ \ \ \ \ \ \ \ \ \ *XAudio2\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00059\ \ \ \ \ IXAudio2MasteringVoice\ *MasterVoice\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ std::unordered\_map<std::string,\ FWavData>\ \ \ \ \ \ LoadedSounds;}
+\DoxyCodeLine{00062\ \ \ \ \ std::unordered\_map<std::string,\ FPlayingVoice>\ PlayingVoices;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{bool}\ bInitialized\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00065\ \};}
+
+\end{DoxyCode}

@@ -96,62 +96,13 @@ $(function(){initNavTree('class_f_texture_manager.html','','class_f_texture_mana
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4d386635666ef24ce0d750e78615a955" id="r_a4d386635666ef24ce0d750e78615a955"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4d386635666ef24ce0d750e78615a955">~FTextureManager</a> ()</td></tr>
-<tr class="memitem:aef3eb923880a1f465e755440684677db" id="r_aef3eb923880a1f465e755440684677db"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aef3eb923880a1f465e755440684677db">Initialize</a> (ID3D11Device *InDevice)</td></tr>
-<tr class="memitem:ac8f52449c14074dbd48135e0d1dbab6e" id="r_ac8f52449c14074dbd48135e0d1dbab6e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ac8f52449c14074dbd48135e0d1dbab6e">Load</a> (const std::string &amp;Key, const std::string &amp;Path)</td></tr>
+<tr class="memitem:a9204cb67cd904c4b49710d03bc31389c" id="r_a9204cb67cd904c4b49710d03bc31389c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a9204cb67cd904c4b49710d03bc31389c">Register</a> (const std::string &amp;Key, std::unique_ptr&lt; <a class="el" href="class_f_texture.html">FTexture</a> &gt; Texture)</td></tr>
 <tr class="memitem:ad199aa919e2a3c376b20a50e29bb96df" id="r_ad199aa919e2a3c376b20a50e29bb96df"><td class="memItemLeft"><a class="el" href="class_f_texture.html">FTexture</a> *&#160;</td><td class="memItemRight"><a class="el" href="#ad199aa919e2a3c376b20a50e29bb96df">Get</a> (const std::string &amp;Key) const</td></tr>
 <tr class="memitem:af59626fa5964275f29727319443d08b6" id="r_af59626fa5964275f29727319443d08b6"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#af59626fa5964275f29727319443d08b6">Has</a> (const std::string &amp;Key) const</td></tr>
 <tr class="memitem:a1602f407f67129a27f085cb2a6978ae6" id="r_a1602f407f67129a27f085cb2a6978ae6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1602f407f67129a27f085cb2a6978ae6">Unload</a> (const std::string &amp;Key)</td></tr>
 <tr class="memitem:a2afe883588b90d2f5eff5159a64abf25" id="r_a2afe883588b90d2f5eff5159a64abf25"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2afe883588b90d2f5eff5159a64abf25">Clear</a> ()</td></tr>
-<tr class="memitem:a9d21ab5e8a7c460b388af9c500506ecc" id="r_a9d21ab5e8a7c460b388af9c500506ecc"><td class="memItemLeft">ID3D11SamplerState *&#160;</td><td class="memItemRight"><a class="el" href="#a9d21ab5e8a7c460b388af9c500506ecc">GetDefaultSampler</a> () const</td></tr>
-<tr class="memitem:a4fa1dbf13aab4df4d55f20d56036276a" id="r_a4fa1dbf13aab4df4d55f20d56036276a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4fa1dbf13aab4df4d55f20d56036276a">Bind</a> (const std::string &amp;Key, ID3D11DeviceContext *Context, unsigned int Slot=0) const</td></tr>
-<tr class="memitem:af974ebf9477dc2a84ff4c3819a673b47" id="r_af974ebf9477dc2a84ff4c3819a673b47"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af974ebf9477dc2a84ff4c3819a673b47">Unbind</a> (ID3D11DeviceContext *Context, unsigned int Slot=0) const</td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a4d386635666ef24ce0d750e78615a955" name="a4d386635666ef24ce0d750e78615a955"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d386635666ef24ce0d750e78615a955">&#9670;&#160;</a></span>~FTextureManager()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">FTextureManager::~FTextureManager </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a4fa1dbf13aab4df4d55f20d56036276a" name="a4fa1dbf13aab4df4d55f20d56036276a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4fa1dbf13aab4df4d55f20d56036276a">&#9670;&#160;</a></span>Bind()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FTextureManager::Bind </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>Key</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ID3D11DeviceContext *</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned int</td>          <td class="paramname"><span class="paramname"><em>Slot</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;) const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a2afe883588b90d2f5eff5159a64abf25" name="a2afe883588b90d2f5eff5159a64abf25"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2afe883588b90d2f5eff5159a64abf25">&#9670;&#160;</a></span>Clear()</h2>
 
@@ -186,23 +137,6 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9d21ab5e8a7c460b388af9c500506ecc" name="a9d21ab5e8a7c460b388af9c500506ecc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d21ab5e8a7c460b388af9c500506ecc">&#9670;&#160;</a></span>GetDefaultSampler()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ID3D11SamplerState * FTextureManager::GetDefaultSampler </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="af59626fa5964275f29727319443d08b6" name="af59626fa5964275f29727319443d08b6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af59626fa5964275f29727319443d08b6">&#9670;&#160;</a></span>Has()</h2>
 
@@ -220,59 +154,21 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aef3eb923880a1f465e755440684677db" name="aef3eb923880a1f465e755440684677db"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef3eb923880a1f465e755440684677db">&#9670;&#160;</a></span>Initialize()</h2>
+<a id="a9204cb67cd904c4b49710d03bc31389c" name="a9204cb67cd904c4b49710d03bc31389c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9204cb67cd904c4b49710d03bc31389c">&#9670;&#160;</a></span>Register()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void FTextureManager::Initialize </td>
-          <td>(</td>
-          <td class="paramtype">ID3D11Device *</td>          <td class="paramname"><span class="paramname"><em>InDevice</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac8f52449c14074dbd48135e0d1dbab6e" name="ac8f52449c14074dbd48135e0d1dbab6e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8f52449c14074dbd48135e0d1dbab6e">&#9670;&#160;</a></span>Load()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool FTextureManager::Load </td>
+          <td class="memname">bool FTextureManager::Register </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>Key</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>Path</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af974ebf9477dc2a84ff4c3819a673b47" name="af974ebf9477dc2a84ff4c3819a673b47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af974ebf9477dc2a84ff4c3819a673b47">&#9670;&#160;</a></span>Unbind()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FTextureManager::Unbind </td>
-          <td>(</td>
-          <td class="paramtype">ID3D11DeviceContext *</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned int</td>          <td class="paramname"><span class="paramname"><em>Slot</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;) const</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="class_f_texture.html">FTexture</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>Texture</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -297,8 +193,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>Core/<a class="el" href="_texture_manager_8h_source.html">TextureManager.h</a></li>
-<li>Core/<a class="el" href="_texture_manager_8cpp.html">TextureManager.cpp</a></li>
+<li>Render/<a class="el" href="_texture_manager_8h_source.html">TextureManager.h</a></li>
+<li>Render/<a class="el" href="_texture_manager_8cpp.html">TextureManager.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

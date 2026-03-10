@@ -1,0 +1,65 @@
+\doxysection{packages/\+directxtk12\+\_\+desktop\+\_\+2019.2025.10.28.1/\+include/\+\+WICTexture\+Loader.h File Reference}
+\hypertarget{_w_i_c_texture_loader_8h}{}\label{_w_i_c_texture_loader_8h}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/WICTextureLoader.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/WICTextureLoader.h}}
+{\ttfamily \+\#include $<$d3d12.\+h$>$}\newline
+{\ttfamily \+\#include $<$cstddef$>$}\newline
+{\ttfamily \+\#include $<$cstdint$>$}\newline
+{\ttfamily \+\#include $<$memory$>$}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x}{DirectX}}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{Direct\+X::\+\+DX12}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{_w_i_c_texture_loader_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+FLAGS}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a1cac01b4ab4dd26e933b7072e6e945e6}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+DEFAULT}} = 0
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950ad403fbd896e177a4d303ffacba6a051b}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+FORCE\+\_\+\+SRGB}} = 0x1
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950adcd31ab427c9c80f29f5e63cc6ffac75}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+IGNORE\+\_\+\+SRGB}} = 0x2
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a6ab8f7a866dc7437c6f89a189617c056}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+SRGB\+\_\+\+DEFAULT}} = 0x4
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a29209f7825decf21b3de63afd8179ed9}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+MIP\+\_\+\+AUTOGEN}} = 0x8
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a3289204c844cb7501fee0df7d3776ff3}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+MIP\+\_\+\+RESERVE}} = 0x10
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950ad25b95b5176427cb898b37426287e1b6}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+FIT\+\_\+\+POW2}} = 0x20
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a7488668121bc58476bdfc83e4e241176}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+MAKE\+\_\+\+SQUARE}} = 0x40
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a24138ce33ae0e444c979623d57fe9946}{Direct\+X::\+\+DX12::\+\+WIC\+\_\+\+LOADER\+\_\+\+FORCE\+\_\+\+RGBA32}} = 0x80
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_ad0421049a7b94d174daef438996c049b}{Direct\+X::\+\+Load\+WICTexture\+From\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(wic\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}wic\+Data, size\+\_\+t wic\+Data\+Size, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&decoded\+Data, D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \&subresource, size\+\_\+t maxsize=0) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_ab876335c0dc5b15f72b1671b8104b613}{Direct\+X::\+\+Load\+WICTexture\+From\+File}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&decoded\+Data, D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \&subresource, size\+\_\+t maxsize=0) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a81d2114703b93ed6715d39a86de39cca}{Direct\+X::\+\+Create\+WICTexture\+From\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(wic\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}wic\+Data, size\+\_\+t wic\+Data\+Size, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, bool generate\+Mips=false, size\+\_\+t maxsize=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_af3aa8c76ff11e8c9c24375bd8e69862b}{Direct\+X::\+\+Create\+WICTexture\+From\+File}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, bool generate\+Mips=false, size\+\_\+t maxsize=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a4c4fc485f0146f3375862deac0911ed5}{Direct\+X::\+\+Load\+WICTexture\+From\+Memory\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(wic\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}wic\+Data, size\+\_\+t wic\+Data\+Size, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&decoded\+Data, D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \&subresource) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a623a8e8e65a599610723b806cd716c44}{Direct\+X::\+\+Load\+WICTexture\+From\+File\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&decoded\+Data, D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \&subresource) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a671c42531616861832fd74563180fc7d}{Direct\+X::\+\+Create\+WICTexture\+From\+Memory\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(wic\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}wic\+Data, size\+\_\+t wic\+Data\+Size, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a909ae06175fb8e5a799ecfba27d2fb39}{Direct\+X::\+\+Create\+WICTexture\+From\+File\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_w_i_c_texture_loader_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_w_i_c_texture_loader_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}\index{WICTextureLoader.h@{WICTextureLoader.h}!DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}}
+\index{DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}!WICTextureLoader.h@{WICTextureLoader.h}}
+\doxysubsubsection{\texorpdfstring{DIRECTX\_TOOLKIT\_API}{DIRECTX\_TOOLKIT\_API}}
+{\footnotesize\ttfamily \label{_w_i_c_texture_loader_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74} 
+\+\#define DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}
+

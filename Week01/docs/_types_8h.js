@@ -33,5 +33,18 @@ var _types_8h =
     [ "ESceneType", "_types_8h.html#ab6949df4214b79a5795967590fe95bc9", [
       [ "Title", "_types_8h.html#ab6949df4214b79a5795967590fe95bc9ab78a3223503896721cca1303f776159b", null ],
       [ "Play", "_types_8h.html#ab6949df4214b79a5795967590fe95bc9ade3c731be5633838089a07179d301d7b", null ]
+    ] ],
+    [ "ETileValue", "_types_8h.html#acb5155edb69157d4a0b96d0afe557006", [
+      [ "Path", "_types_8h.html#acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b", null ],
+      [ "Wall", "_types_8h.html#acb5155edb69157d4a0b96d0afe557006a94e8a499539d1a472f3b5dbbb85508c0", null ],
+      [ "Outer", "_types_8h.html#acb5155edb69157d4a0b96d0afe557006ae6e36dccbeaf26fca4a6813bf2e83a28", null ],
+      [ "Goal", "_types_8h.html#acb5155edb69157d4a0b96d0afe557006a12c74214cb4c18cf36d885303d6aa2e1", null ]
+    ] ],
+    [ "TileType", "_types_8h.html#a4757b7789a9b5e8b0286eeae37140ea0", [
+      [ "Path", "_types_8h.html#a4757b7789a9b5e8b0286eeae37140ea0aac70412e939d72a9234cdebb1af5867b", null ],
+      [ "Wall", "_types_8h.html#a4757b7789a9b5e8b0286eeae37140ea0a94e8a499539d1a472f3b5dbbb85508c0", null ],
+      [ "Outer", "_types_8h.html#a4757b7789a9b5e8b0286eeae37140ea0ae6e36dccbeaf26fca4a6813bf2e83a28", null ],
+      [ "Goal", "_types_8h.html#a4757b7789a9b5e8b0286eeae37140ea0a12c74214cb4c18cf36d885303d6aa2e1", null ],
+      [ "Count", "_types_8h.html#a4757b7789a9b5e8b0286eeae37140ea0ae93f994f01c537c4e2f7d8528c3eb5e9", null ]
     ] ]
 ];

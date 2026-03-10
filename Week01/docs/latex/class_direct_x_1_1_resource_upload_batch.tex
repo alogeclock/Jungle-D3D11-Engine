@@ -1,0 +1,128 @@
+\doxysection{DirectX::\+Resource\+Upload\+Batch Class Reference}
+\hypertarget{class_direct_x_1_1_resource_upload_batch}{}\label{class_direct_x_1_1_resource_upload_batch}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+
+
+{\ttfamily \+\#include $<$Resource\+Upload\+Batch.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device) noexcept(false)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a7d516bb456d11cec36c9a7f152aff1e3}{Resource\+Upload\+Batch}} (Resource\+Upload\+Batch \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} \& \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a988bcf7a521ea8eafe27dfeced0f3399}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a422a6e3a276665575179bb4c65388041}{Resource\+Upload\+Batch}} (Resource\+Upload\+Batch const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} \& \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a3b9ce169604a87b2c7ec50c79a655806}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a3475b64edd10fb69f19740f00465c0f3}{\texorpdfstring{$\sim$}{\string~}\+Resource\+Upload\+Batch}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_ace42bfb359644c172042498ba759257a}{Begin}} (D3\+D12\+\_\+\+COMMAND\+\_\+\+LIST\+\_\+\+TYPE command\+Type=D3\+D12\+\_\+\+COMMAND\+\_\+\+LIST\+\_\+\+TYPE\+\_\+\+DIRECT)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_ab8f9ed5538946360f62e2d8880516b39}{Upload}} (\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}resource, uint32\+\_\+t subresource\+Index\+Start, \+\_\+\+In\+\_\+reads\+\_\+(num\+Subresources) const D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \texorpdfstring{$\ast$}{*}sub\+Res, uint32\+\_\+t num\+Subresources)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a9808ab892d2804615dbef4d637c9e1e4}{Upload}} (\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}resource, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{Shared\+Graphics\+Resource}} \&buffer)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a88c78b89d327f16bb3d15957984c9c9f}{Generate\+Mips}} (\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}resource)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a0edd3b2743171174a6bf72f74638ad0c}{Transition}} (\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}resource, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+Before, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+After)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+future$<$ void $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa564eaa32af424c1bf679a3dcc735f67}{End}} (\+\_\+\+In\+\_\+ ID3\+D12\+Command\+Queue \texorpdfstring{$\ast$}{*}command\+Queue)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a4a3a0eb1ab823e6061fec8593832ac25}{Is\+Supported\+For\+Generate\+Mips}} (DXGI\+\_\+\+FORMAT format) noexcept
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!ResourceUploadBatch@{ResourceUploadBatch}}
+\index{ResourceUploadBatch@{ResourceUploadBatch}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{ResourceUploadBatch()}{ResourceUploadBatch()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Resource\+Upload\+Batch (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a7d516bb456d11cec36c9a7f152aff1e3}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!ResourceUploadBatch@{ResourceUploadBatch}}
+\index{ResourceUploadBatch@{ResourceUploadBatch}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{ResourceUploadBatch()}{ResourceUploadBatch()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a7d516bb456d11cec36c9a7f152aff1e3} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Resource\+Upload\+Batch (\begin{DoxyParamCaption}\item[{Resource\+Upload\+Batch \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a422a6e3a276665575179bb4c65388041}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!ResourceUploadBatch@{ResourceUploadBatch}}
+\index{ResourceUploadBatch@{ResourceUploadBatch}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{ResourceUploadBatch()}{ResourceUploadBatch()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a422a6e3a276665575179bb4c65388041} 
+Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Resource\+Upload\+Batch (\begin{DoxyParamCaption}\item[{Resource\+Upload\+Batch const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a3475b64edd10fb69f19740f00465c0f3}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!````~ResourceUploadBatch@{\texorpdfstring{$\sim$}{\string~}ResourceUploadBatch}}
+\index{````~ResourceUploadBatch@{\texorpdfstring{$\sim$}{\string~}ResourceUploadBatch}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}ResourceUploadBatch()}{\string~ResourceUploadBatch()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a3475b64edd10fb69f19740f00465c0f3} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Resource\+Upload\+Batch::\+\texorpdfstring{$\sim$}{\string~}\+Resource\+Upload\+Batch (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_ace42bfb359644c172042498ba759257a}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!Begin@{Begin}}
+\index{Begin@{Begin}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{Begin()}{Begin()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_ace42bfb359644c172042498ba759257a} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Begin (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+COMMAND\+\_\+\+LIST\+\_\+\+TYPE}]{command\+Type}{ = {\ttfamily D3D12\+\_\+COMMAND\+\_\+LIST\+\_\+TYPE\+\_\+DIRECT}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_aa564eaa32af424c1bf679a3dcc735f67}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!End@{End}}
+\index{End@{End}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{End()}{End()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_aa564eaa32af424c1bf679a3dcc735f67} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+future$<$ void $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+Resource\+Upload\+Batch::\+\+End (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Command\+Queue \texorpdfstring{$\ast$}{*}}]{command\+Queue}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a88c78b89d327f16bb3d15957984c9c9f}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!GenerateMips@{GenerateMips}}
+\index{GenerateMips@{GenerateMips}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{GenerateMips()}{GenerateMips()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a88c78b89d327f16bb3d15957984c9c9f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Generate\+Mips (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}}]{resource}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a4a3a0eb1ab823e6061fec8593832ac25}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!IsSupportedForGenerateMips@{IsSupportedForGenerateMips}}
+\index{IsSupportedForGenerateMips@{IsSupportedForGenerateMips}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{IsSupportedForGenerateMips()}{IsSupportedForGenerateMips()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a4a3a0eb1ab823e6061fec8593832ac25} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Is\+Supported\+For\+Generate\+Mips (\begin{DoxyParamCaption}\item[{DXGI\+\_\+\+FORMAT}]{format}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a988bcf7a521ea8eafe27dfeced0f3399}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a988bcf7a521ea8eafe27dfeced0f3399} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} \& Direct\+X::\+\+Resource\+Upload\+Batch::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a3b9ce169604a87b2c7ec50c79a655806}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a3b9ce169604a87b2c7ec50c79a655806} 
+\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} \& Direct\+X::\+\+Resource\+Upload\+Batch::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{Resource\+Upload\+Batch}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a0edd3b2743171174a6bf72f74638ad0c}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!Transition@{Transition}}
+\index{Transition@{Transition}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{Transition()}{Transition()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a0edd3b2743171174a6bf72f74638ad0c} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Transition (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}}]{resource}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+Before}{, }\item[{D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES}]{state\+After}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_a9808ab892d2804615dbef4d637c9e1e4}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!Upload@{Upload}}
+\index{Upload@{Upload}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{Upload()}{Upload()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_a9808ab892d2804615dbef4d637c9e1e4} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Upload (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}}]{resource}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{Shared\+Graphics\+Resource}} \&}]{buffer}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_resource_upload_batch_ab8f9ed5538946360f62e2d8880516b39}\index{DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}!Upload@{Upload}}
+\index{Upload@{Upload}!DirectX::ResourceUploadBatch@{DirectX::ResourceUploadBatch}}
+\doxysubsubsection{\texorpdfstring{Upload()}{Upload()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_resource_upload_batch_ab8f9ed5538946360f62e2d8880516b39} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Resource\+Upload\+Batch::\+\+Upload (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}}]{resource}{, }\item[{uint32\+\_\+t}]{subresource\+Index\+Start}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+(num\+Subresources) const D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \texorpdfstring{$\ast$}{*}}]{sub\+Res}{, }\item[{uint32\+\_\+t}]{num\+Subresources}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_resource_upload_batch_8h}{Resource\+Upload\+Batch.\+h}}\end{DoxyCompactItemize}

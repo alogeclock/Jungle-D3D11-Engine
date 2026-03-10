@@ -97,7 +97,7 @@ $(function(){initNavTree('class_f_beat_system.html','','class_f_beat_system-memb
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad4f58cb0b055a769b6c517285c3c1646" id="r_ad4f58cb0b055a769b6c517285c3c1646"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad4f58cb0b055a769b6c517285c3c1646">Reset</a> ()</td></tr>
-<tr class="memitem:ad57c67aeec7fa317d1afc6bc608db61b" id="r_ad57c67aeec7fa317d1afc6bc608db61b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad57c67aeec7fa317d1afc6bc608db61b">Update</a> (float DeltaTime)</td></tr>
+<tr class="memitem:ad59fed601f13ce5ad1b1d8ab77db9ea0" id="r_ad59fed601f13ce5ad1b1d8ab77db9ea0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad59fed601f13ce5ad1b1d8ab77db9ea0">Update</a> (float DeltaTime, <a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context)</td></tr>
 <tr class="memitem:a6bdbe624efca00d193fba995221a9b35" id="r_a6bdbe624efca00d193fba995221a9b35"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6bdbe624efca00d193fba995221a9b35">SetBpm</a> (float InBpm)</td></tr>
 <tr class="memitem:a5a0e2c316575782e539c02add2b38cec" id="r_a5a0e2c316575782e539c02add2b38cec"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a5a0e2c316575782e539c02add2b38cec">GetBpm</a> () const</td></tr>
 <tr class="memitem:ac6d48788df3316f54a2c24e9003781a5" id="r_ac6d48788df3316f54a2c24e9003781a5"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#ac6d48788df3316f54a2c24e9003781a5">GetBeatInterval</a> () const</td></tr>
@@ -105,8 +105,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaa0e13fea098d8598594e7f7da0e5749" id="r_aaa0e13fea098d8598594e7f7da0e5749"><td class="memItemLeft"><a class="el" href="_types_8h.html#a9395470b121c3a8c4ca82eb6db81f063">EBeatJudge</a>&#160;</td><td class="memItemRight"><a class="el" href="#aaa0e13fea098d8598594e7f7da0e5749">JudgeInput</a> () const</td></tr>
 <tr class="memitem:aebc93633bbfb37d871d277e8570c39f2" id="r_aebc93633bbfb37d871d277e8570c39f2"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aebc93633bbfb37d871d277e8570c39f2">IsBeatJustTriggered</a> () const</td></tr>
 <tr class="memitem:a7a85f6add305295886abc6927c14b8d7" id="r_a7a85f6add305295886abc6927c14b8d7"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7a85f6add305295886abc6927c14b8d7">ConsumeBeat</a> ()</td></tr>
+<tr class="memitem:a0fa6505f90ab25ac93ec0edced68c73c" id="r_a0fa6505f90ab25ac93ec0edced68c73c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a0fa6505f90ab25ac93ec0edced68c73c">IsBeatSkipped</a> ()</td></tr>
 <tr class="memitem:a405820b752e971ecfb1fb16bb4f88da4" id="r_a405820b752e971ecfb1fb16bb4f88da4"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a405820b752e971ecfb1fb16bb4f88da4">GetElapsedTime</a> () const</td></tr>
 <tr class="memitem:abf7d6ae3e7881dccab5de88d936e1be4" id="r_abf7d6ae3e7881dccab5de88d936e1be4"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#abf7d6ae3e7881dccab5de88d936e1be4">GetTimeToNextBeat</a> () const</td></tr>
+<tr class="memitem:a60ed2cf9555bc786d4f5c5afb2c749db" id="r_a60ed2cf9555bc786d4f5c5afb2c749db"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a60ed2cf9555bc786d4f5c5afb2c749db">GetGoodWindow</a> () const</td></tr>
+<tr class="memitem:a32855b47e7a3e11a26084461c5dfe673" id="r_a32855b47e7a3e11a26084461c5dfe673"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a32855b47e7a3e11a26084461c5dfe673">SetTimeScale</a> (float InScale)</td></tr>
+<tr class="memitem:a3f83d757037fe9c07ec293826f549170" id="r_a3f83d757037fe9c07ec293826f549170"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a3f83d757037fe9c07ec293826f549170">GetTimeScale</a> () const</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a7a85f6add305295886abc6927c14b8d7" name="a7a85f6add305295886abc6927c14b8d7"></a>
@@ -177,6 +181,40 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a60ed2cf9555bc786d4f5c5afb2c749db" name="a60ed2cf9555bc786d4f5c5afb2c749db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60ed2cf9555bc786d4f5c5afb2c749db">&#9670;&#160;</a></span>GetGoodWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float FBeatSystem::GetGoodWindow </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f83d757037fe9c07ec293826f549170" name="a3f83d757037fe9c07ec293826f549170"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f83d757037fe9c07ec293826f549170">&#9670;&#160;</a></span>GetTimeScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float FBeatSystem::GetTimeScale </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="abf7d6ae3e7881dccab5de88d936e1be4" name="abf7d6ae3e7881dccab5de88d936e1be4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abf7d6ae3e7881dccab5de88d936e1be4">&#9670;&#160;</a></span>GetTimeToNextBeat()</h2>
 
@@ -205,6 +243,23 @@ Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0fa6505f90ab25ac93ec0edced68c73c" name="a0fa6505f90ab25ac93ec0edced68c73c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fa6505f90ab25ac93ec0edced68c73c">&#9670;&#160;</a></span>IsBeatSkipped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FBeatSystem::IsBeatSkipped </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -283,8 +338,25 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad57c67aeec7fa317d1afc6bc608db61b" name="ad57c67aeec7fa317d1afc6bc608db61b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad57c67aeec7fa317d1afc6bc608db61b">&#9670;&#160;</a></span>Update()</h2>
+<a id="a32855b47e7a3e11a26084461c5dfe673" name="a32855b47e7a3e11a26084461c5dfe673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32855b47e7a3e11a26084461c5dfe673">&#9670;&#160;</a></span>SetTimeScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FBeatSystem::SetTimeScale </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>InScale</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad59fed601f13ce5ad1b1d8ab77db9ea0" name="ad59fed601f13ce5ad1b1d8ab77db9ea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad59fed601f13ce5ad1b1d8ab77db9ea0">&#9670;&#160;</a></span>Update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -292,8 +364,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void FBeatSystem::Update </td>
           <td>(</td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>DeltaTime</em></span></td><td>)</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>DeltaTime</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

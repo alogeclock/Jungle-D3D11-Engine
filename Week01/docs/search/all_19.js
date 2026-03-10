@@ -1,12 +1,6 @@
 var searchData=
 [
-  ['_7efactor_0',['~FActor',['../class_f_actor.html#aad1e02b0db6bcdd5d3c6a0430050c848',1,'FActor']]],
-  ['_7efplayscene_1',['~FPlayScene',['../class_f_play_scene.html#ac9765276bea588d5726e8a2f9188713e',1,'FPlayScene']]],
-  ['_7efstage_2',['~FStage',['../class_f_stage.html#a3deb7aa7822e14c77d581281f158b1f5',1,'FStage']]],
-  ['_7eftexture_3',['~FTexture',['../class_f_texture.html#afde9c452c0c031e5f429b9fbd77c0c40',1,'FTexture']]],
-  ['_7eftexturemanager_4',['~FTextureManager',['../class_f_texture_manager.html#a4d386635666ef24ce0d750e78615a955',1,'FTextureManager']]],
-  ['_7eftitlescene_5',['~FTitleScene',['../class_f_title_scene.html#aa931a3c9e6b1e56dc8f11312d5fb016a',1,'FTitleScene']]],
-  ['_7eipopup_6',['~IPopup',['../class_i_popup.html#a29edccd2511d9ac447a6ac98d32a1977',1,'IPopup']]],
-  ['_7eiscene_7',['~IScene',['../class_i_scene.html#a146b1101069efb7a46b3bb6e419bc2bc',1,'IScene']]],
-  ['_7eiuiwidget_8',['~IUIWidget',['../class_i_u_i_widget.html#ad69f73e9d6632b87cb5c98cd113bc777',1,'IUIWidget']]]
+  ['y_0',['Y',['../struct_f_vec2.html#accb1f72779f7373fea3a5e2ef913f73f',1,'FVec2::Y'],['../struct_f_spawn_point.html#a59ca201b56c09032059ccc41563a91fb',1,'FSpawnPoint::Y'],['../struct_direct_x_1_1_keyboard_1_1_state.html#a8dbfc242675097b3fb709cc0f0acf159',1,'DirectX::Keyboard::State::Y'],['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7ba577a3825a64bdc1b10ab1db6970d5686',1,'DirectX::Keyboard::Y']]],
+  ['y_1',['y',['../struct_f_vertex_simple.html#a1fa376465f74ebf1a1b311e2dc6b7646',1,'FVertexSimple::y'],['../struct_f_vector.html#af17cfedf5c997cdf6bb88a01b585780f',1,'FVector::y'],['../struct_vec2.html#a30543787e62f6d915543cf1dfb04c094',1,'Vec2::y'],['../struct_direct_x_1_1_game_pad_1_1_buttons.html#ad51420902bfa32c5cc1317441f1a4af9',1,'DirectX::GamePad::Buttons::y'],['../class_direct_x_1_1_game_pad_1_1_button_state_tracker.html#af49f65cdc82e109e731621515175db7b',1,'DirectX::GamePad::ButtonStateTracker::y'],['../struct_direct_x_1_1_mouse_1_1_state.html#a0227ab84a6c5a8d11c7f2f0faefcc02a',1,'DirectX::Mouse::State::y'],['../struct_direct_x_1_1_simple_math_1_1_rectangle.html#aaa506dc0eb10b13efdef2a1ead87455d',1,'DirectX::SimpleMath::Rectangle::y'],['../class_direct_x_1_1_simple_math_1_1_viewport.html#a8ca74cae4009a33c6cdea27fb1316828',1,'DirectX::SimpleMath::Viewport::y']]],
+  ['yoffset_2',['YOffset',['../struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph.html#a935eb45a66de280d8f7ba374e59e4e83',1,'DirectX::DX12::SpriteFont::Glyph']]]
 ];

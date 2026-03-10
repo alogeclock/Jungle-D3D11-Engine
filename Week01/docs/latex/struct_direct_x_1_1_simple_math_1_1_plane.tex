@@ -1,0 +1,281 @@
+\doxysection{DirectX::\+Simple\+Math::\+Plane Struct Reference}
+\hypertarget{struct_direct_x_1_1_simple_math_1_1_plane}{}\label{struct_direct_x_1_1_simple_math_1_1_plane}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+
+
+{\ttfamily \+\#include $<$Simple\+Math.\+h$>$}
+
+Inheritance diagram for DirectX::\+Simple\+Math::\+Plane:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{struct_direct_x_1_1_simple_math_1_1_plane}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} () noexcept
+\item 
+constexpr \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a4d44ef50f0d8c8d767eeb2f5be7dc963}{Plane}} (float ix, float iy, float iz, float iw) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a3d5236e0466f55ecc5c08ea75f9e71cc}{Plane}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&normal, float d) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a9ff06a0ebdbf48c14400c721d843d00b}{Plane}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&point1, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&point2, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&point3) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_aee1d7467dabcba10d6e4d629b4fdc953}{Plane}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&point, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&normal) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a36f8fdf71381ff8ebf3e7749ac92b92b}{Plane}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&v) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a0053c086bfb1e7c1caaac4050d8a5fef}{Plane}} (\+\_\+\+In\+\_\+reads\+\_\+(4) const float \texorpdfstring{$\ast$}{*}p\+Array) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a46c5a6bba6b0e0acfbf46834604ca1b9}{Plane}} (FXMVECTOR V) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a19e9cd4f8432792c1379b6ddd25616b2}{Plane}} (const XMFLOAT4 \&p) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a2cd73485f41325aa84e3c2af961b198b}{Plane}} (const XMVECTORF32 \&F) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a9ac1178bc825fab4afec49f53cf0eee3}{Plane}} (const Plane \&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a9f0f96e1ad45ab0a223d406d92614cd9}{operator=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a8d99f979f89ce659cefe842cb9cadc3b}{Plane}} (Plane \&\&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a403558f37ab4e62b3d719c74c8f3fd45}{operator=}} (\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a0e80a0fe7587b256e5723809f0d4eccd}{operator XMVECTOR}} () const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_ac5676debb7c5dab8280b4923b3af917e}{operator==}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&p) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a8b562b1c35cd962bad560d0efa04bf70}{operator!=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&p) const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_aa11878292360c03ca397c133949bfa8d}{operator=}} (const XMVECTORF32 \&F) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a7be7035a4cfdbe5802f9e282cf12b044}{Normal}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afd6a03d07bdb5fbde308b98be413edf8}{Normal}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&normal) noexcept
+\item 
+float \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afe3a25983fecb44f60860349c58421f1}{D}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_ae4b5930025b6eda3462d79ad66e620cd}{D}} (float d) noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_ad6247fffb1b477aa27b93e0c6da0e78c}{Normalize}} () noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a863519d4b3708fd3b86ed78c721149cb}{Normalize}} (\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&result) const noexcept
+\item 
+float \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afddffc87c62b7856ddcc133a53bc537d}{Dot}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&v) const noexcept
+\item 
+float \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_acef31d8f3b60ff81fa8baec7f90388b1}{Dot\+Coordinate}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&position) const noexcept
+\item 
+float \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a4dca0a2409667ce8b736bb297d87e3bd}{Dot\+Normal}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&normal) const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_ad7f3cf2a8b827f9d69d521348d115190}{Transform}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&plane, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix}{Matrix}} \&M, \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&result) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_aa0aa3d95c8c94af349e40ceae18ac04b}{Transform}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&plane, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix}{Matrix}} \&M) noexcept
+\item 
+static void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_a3a9bc52c404cf844d6580f8b35c84c4c}{Transform}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&plane, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&rotation, \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&result) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_aa048c3728b6dd97624e20a5e8a0441fd}{Transform}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&plane, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&rotation) noexcept
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [1/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a4d44ef50f0d8c8d767eeb2f5be7dc963}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [2/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a4d44ef50f0d8c8d767eeb2f5be7dc963} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{float}]{ix}{, }\item[{float}]{iy}{, }\item[{float}]{iz}{, }\item[{float}]{iw}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a3d5236e0466f55ecc5c08ea75f9e71cc}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [3/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a3d5236e0466f55ecc5c08ea75f9e71cc} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{normal}{, }\item[{float}]{d}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a9ff06a0ebdbf48c14400c721d843d00b}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [4/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a9ff06a0ebdbf48c14400c721d843d00b} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{point1}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{point2}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{point3}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_aee1d7467dabcba10d6e4d629b4fdc953}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [5/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_aee1d7467dabcba10d6e4d629b4fdc953} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{point}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{normal}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a36f8fdf71381ff8ebf3e7749ac92b92b}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [6/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a36f8fdf71381ff8ebf3e7749ac92b92b} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a0053c086bfb1e7c1caaac4050d8a5fef}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [7/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a0053c086bfb1e7c1caaac4050d8a5fef} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+reads\+\_\+(4) const float \texorpdfstring{$\ast$}{*}}]{p\+Array}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a46c5a6bba6b0e0acfbf46834604ca1b9}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [8/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a46c5a6bba6b0e0acfbf46834604ca1b9} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{FXMVECTOR}]{V}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a19e9cd4f8432792c1379b6ddd25616b2}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [9/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a19e9cd4f8432792c1379b6ddd25616b2} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{const XMFLOAT4 \&}]{p}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a2cd73485f41325aa84e3c2af961b198b}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [10/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a2cd73485f41325aa84e3c2af961b198b} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{const XMVECTORF32 \&}]{F}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a9ac1178bc825fab4afec49f53cf0eee3}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [11/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a9ac1178bc825fab4afec49f53cf0eee3} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{const Plane \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a8d99f979f89ce659cefe842cb9cadc3b}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Plane@{Plane}}
+\index{Plane@{Plane}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Plane()}{Plane()}\hspace{0.1cm}{\footnotesize\ttfamily [12/12]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a8d99f979f89ce659cefe842cb9cadc3b} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Plane (\begin{DoxyParamCaption}\item[{Plane \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_afe3a25983fecb44f60860349c58421f1}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!D@{D}}
+\index{D@{D}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{D()}{D()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_afe3a25983fecb44f60860349c58421f1} 
+float Direct\+X::\+\+Simple\+Math::\+\+Plane::\+D (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_ae4b5930025b6eda3462d79ad66e620cd}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!D@{D}}
+\index{D@{D}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{D()}{D()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_ae4b5930025b6eda3462d79ad66e620cd} 
+void Direct\+X::\+\+Simple\+Math::\+\+Plane::\+D (\begin{DoxyParamCaption}\item[{float}]{d}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_afddffc87c62b7856ddcc133a53bc537d}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Dot@{Dot}}
+\index{Dot@{Dot}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Dot()}{Dot()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_afddffc87c62b7856ddcc133a53bc537d} 
+float Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Dot (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&}]{v}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_acef31d8f3b60ff81fa8baec7f90388b1}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!DotCoordinate@{DotCoordinate}}
+\index{DotCoordinate@{DotCoordinate}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{DotCoordinate()}{DotCoordinate()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_acef31d8f3b60ff81fa8baec7f90388b1} 
+float Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Dot\+Coordinate (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{position}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a4dca0a2409667ce8b736bb297d87e3bd}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!DotNormal@{DotNormal}}
+\index{DotNormal@{DotNormal}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{DotNormal()}{DotNormal()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a4dca0a2409667ce8b736bb297d87e3bd} 
+float Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Dot\+Normal (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{normal}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a7be7035a4cfdbe5802f9e282cf12b044}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Normal@{Normal}}
+\index{Normal@{Normal}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Normal()}{Normal()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a7be7035a4cfdbe5802f9e282cf12b044} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Normal (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_afd6a03d07bdb5fbde308b98be413edf8}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Normal@{Normal}}
+\index{Normal@{Normal}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Normal()}{Normal()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_afd6a03d07bdb5fbde308b98be413edf8} 
+void Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Normal (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{normal}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_ad6247fffb1b477aa27b93e0c6da0e78c}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Normalize@{Normalize}}
+\index{Normalize@{Normalize}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Normalize()}{Normalize()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_ad6247fffb1b477aa27b93e0c6da0e78c} 
+void Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Normalize (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a863519d4b3708fd3b86ed78c721149cb}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Normalize@{Normalize}}
+\index{Normalize@{Normalize}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Normalize()}{Normalize()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a863519d4b3708fd3b86ed78c721149cb} 
+void Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Normalize (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{result}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a0e80a0fe7587b256e5723809f0d4eccd}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!operator XMVECTOR@{operator XMVECTOR}}
+\index{operator XMVECTOR@{operator XMVECTOR}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{operator XMVECTOR()}{operator XMVECTOR()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a0e80a0fe7587b256e5723809f0d4eccd} 
+Direct\+X::\+\+Simple\+Math::\+\+Plane::\+operator XMVECTOR (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a8b562b1c35cd962bad560d0efa04bf70}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a8b562b1c35cd962bad560d0efa04bf70} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Plane::\+operator!= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{p}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a9f0f96e1ad45ab0a223d406d92614cd9}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a9f0f96e1ad45ab0a223d406d92614cd9} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \& Direct\+X::\+\+Simple\+Math::\+\+Plane::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_aa11878292360c03ca397c133949bfa8d}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_aa11878292360c03ca397c133949bfa8d} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \& Direct\+X::\+\+Simple\+Math::\+\+Plane::\+operator= (\begin{DoxyParamCaption}\item[{const XMVECTORF32 \&}]{F}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a403558f37ab4e62b3d719c74c8f3fd45}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a403558f37ab4e62b3d719c74c8f3fd45} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \& Direct\+X::\+\+Simple\+Math::\+\+Plane::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_ac5676debb7c5dab8280b4923b3af917e}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!operator==@{operator==}}
+\index{operator==@{operator==}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_ac5676debb7c5dab8280b4923b3af917e} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Plane::\+operator== (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{p}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_aa0aa3d95c8c94af349e40ceae18ac04b}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Transform@{Transform}}
+\index{Transform@{Transform}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Transform()}{Transform()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_aa0aa3d95c8c94af349e40ceae18ac04b} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Transform (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{plane}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix}{Matrix}} \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_ad7f3cf2a8b827f9d69d521348d115190}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Transform@{Transform}}
+\index{Transform@{Transform}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Transform()}{Transform()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_ad7f3cf2a8b827f9d69d521348d115190} 
+void Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Transform (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{plane}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix}{Matrix}} \&}]{M}{, }\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{result}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_aa048c3728b6dd97624e20a5e8a0441fd}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Transform@{Transform}}
+\index{Transform@{Transform}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Transform()}{Transform()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_aa048c3728b6dd97624e20a5e8a0441fd} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Transform (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{plane}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&}]{rotation}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_plane_a3a9bc52c404cf844d6580f8b35c84c4c}\index{DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}!Transform@{Transform}}
+\index{Transform@{Transform}!DirectX::SimpleMath::Plane@{DirectX::SimpleMath::Plane}}
+\doxysubsubsection{\texorpdfstring{Transform()}{Transform()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_plane_a3a9bc52c404cf844d6580f8b35c84c4c} 
+void Direct\+X::\+\+Simple\+Math::\+\+Plane::\+\+Transform (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{plane}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&}]{rotation}{, }\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane_afbed2404254e9ebf969a0be2ac9cbe3a}{Plane}} \&}]{result}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_simple_math_8h}{Simple\+Math.\+h}}\end{DoxyCompactItemize}

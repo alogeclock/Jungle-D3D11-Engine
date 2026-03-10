@@ -1,0 +1,310 @@
+\doxysection{DirectX::\+DX12::\+Model\+Mesh\+Part Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part}{}\label{class_direct_x_1_1_d_x12_1_1_model_mesh_part}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+
+
+{\ttfamily \+\#include $<$Model.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} = std::\+vector$<$std::\+unique\+\_\+ptr$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}}$>$$>$
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4}{Draw\+Callback}} = std::\+function$<$void(\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List\texorpdfstring{$\ast$}{*} command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}}\& part)$>$
+\item 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acaa99c62bfb509ea82372a6816d74005}{Input\+Layout\+Collection}} = std::\+vector$<$D3\+D12\+\_\+\+INPUT\+\_\+\+ELEMENT\+\_\+\+DESC$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} (uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1697a24505d81401ceff947a45bc1344}{part\+Index}}) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a18fc608d097a8663a1181abe1849fb00}{Model\+Mesh\+Part}} (Model\+Mesh\+Part \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a9eb31e438559ca9230be8f0bf547b086}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a88f6c78ed30f29487859fa51d8c77bb0}{Model\+Mesh\+Part}} (Model\+Mesh\+Part const \&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a830956548f257bd17f5a7f481c098c0f}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} const \&)=default
+\item 
+virtual \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_aa973acaaa510621e7eb1318c31528908}{\texorpdfstring{$\sim$}{\string~}\+Model\+Mesh\+Part}} ()
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a4c9dc3384513ba75d7a8586d6a94f1f3}{Draw}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List) const
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a47cba961889aebbd471e14a0217cba63}{Draw\+Instanced}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, uint32\+\_\+t instance\+Count, uint32\+\_\+t start\+Instance=0) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf}{Draw\+Mesh\+Parts}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&mesh\+Parts)
+\item 
+static void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad6469b5004b21cc8a8869353965cd575}{Draw\+Mesh\+Parts}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&mesh\+Parts, \+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}} \texorpdfstring{$\ast$}{*}effect)
+\item 
+static void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a2827c9ed24ac846bb2e0d1b053e28b05}{Draw\+Mesh\+Parts}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&mesh\+Parts, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4}{Draw\+Callback}} callback)
+\item 
+{\footnotesize template$<$typename TEffect\+Iterator, typename TEffect\+Iterator\+Category = typename TEffect\+Iterator::\+iterator\+\_\+category$>$ }\\static void \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a43fa657e90462aa46edd39646e9cf4cf}{Draw\+Mesh\+Parts}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&mesh\+Parts, TEffect\+Iterator part\+Effects)
+\item 
+{\footnotesize template$<$typename TEffect\+Iterator, typename TEffect\+Iterator\+Category = typename TEffect\+Iterator::\+iterator\+\_\+category$>$ }\\static void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_addb5e5fc0753fc6b587d233d3880b464}{Draw\+Mesh\+Parts}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&mesh\+Parts, FXMMATRIX world, TEffect\+Iterator part\+Effects)
+\item 
+{\footnotesize template$<$typename TEffect\+Iterator, typename TEffect\+Iterator\+Category = typename TEffect\+Iterator::\+iterator\+\_\+category$>$ }\\static void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1304e55ecdc54595813d53f660b25953}{Draw\+Skinned\+Mesh\+Parts}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh}{Model\+Mesh}} \&mesh, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&mesh\+Parts, size\+\_\+t nbones, \+\_\+\+In\+\_\+reads\+\_\+(nbones) const XMMATRIX \texorpdfstring{$\ast$}{*}bone\+Transforms, FXMMATRIX world, TEffect\+Iterator part\+Effects)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1697a24505d81401ceff947a45bc1344}{part\+Index}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_af40e10ad476c251a0ea91ba57d417a66}{material\+Index}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6d3a5254b88cec36fa072f429926312f}{index\+Count}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a9a17210da15953e629a8de565a0c20b1}{start\+Index}}
+\item 
+int32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_abe1cb05c21bc9bf5447646e93386cc3b}{vertex\+Offset}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a382fd0cfa07a3a39649a050207da4924}{vertex\+Stride}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a46d3e68d3887636adc87c1cd02255096}{vertex\+Count}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a8e3bc7375064c57ea4f6f99a6051e0e2}{index\+Buffer\+Size}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6cda1121ae0d2a4bd45484acbda745a1}{vertex\+Buffer\+Size}}
+\item 
+D3\+D\+\_\+\+PRIMITIVE\+\_\+\+TOPOLOGY \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a93f85761c3ade05211e0f066300be6aa}{primitive\+Type}}
+\item 
+DXGI\+\_\+\+FORMAT \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3b138f49637a69ba5d07b379662ec7b4}{index\+Format}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{Shared\+Graphics\+Resource}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a74dbc92e2b14f4187af4257c54b3fda1}{index\+Buffer}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{Shared\+Graphics\+Resource}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a942a34fb93240fa20276b6a1be92ecb3}{vertex\+Buffer}}
+\item 
+Microsoft::\+\+WRL::\+\+Com\+Ptr$<$ ID3\+D12\+Resource $>$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acf8ec9493bd403821be034f891fb72c9}{static\+Index\+Buffer}}
+\item 
+Microsoft::\+\+WRL::\+\+Com\+Ptr$<$ ID3\+D12\+Resource $>$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1bbe70e48964dd620208d05d703be792}{static\+Vertex\+Buffer}}
+\item 
+std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acaa99c62bfb509ea82372a6816d74005}{Input\+Layout\+Collection}} $>$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3d82a64edfad33b64547973624fa23fd}{vb\+Decl}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_doc-typedef-members}
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!Collection@{Collection}}
+\index{Collection@{Collection}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{Collection}{Collection}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Collection}} = std::\+vector$<$std::\+unique\+\_\+ptr$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}}$>$$>$}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawCallback@{DrawCallback}}
+\index{DrawCallback@{DrawCallback}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawCallback}{DrawCallback}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4}{Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Callback}} = std::\+function$<$void(\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List\texorpdfstring{$\ast$}{*} command\+List, const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}}\& part)$>$}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acaa99c62bfb509ea82372a6816d74005}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!InputLayoutCollection@{InputLayoutCollection}}
+\index{InputLayoutCollection@{InputLayoutCollection}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{InputLayoutCollection}{InputLayoutCollection}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acaa99c62bfb509ea82372a6816d74005} 
+using \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acaa99c62bfb509ea82372a6816d74005}{Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Input\+Layout\+Collection}} = std::\+vector$<$D3\+D12\+\_\+\+INPUT\+\_\+\+ELEMENT\+\_\+\+DESC$>$}
+
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!ModelMeshPart@{ModelMeshPart}}
+\index{ModelMeshPart@{ModelMeshPart}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{ModelMeshPart()}{ModelMeshPart()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d} 
+Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Model\+Mesh\+Part (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{part\+Index}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a18fc608d097a8663a1181abe1849fb00}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!ModelMeshPart@{ModelMeshPart}}
+\index{ModelMeshPart@{ModelMeshPart}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{ModelMeshPart()}{ModelMeshPart()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a18fc608d097a8663a1181abe1849fb00} 
+Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Model\+Mesh\+Part (\begin{DoxyParamCaption}\item[{Model\+Mesh\+Part \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a88f6c78ed30f29487859fa51d8c77bb0}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!ModelMeshPart@{ModelMeshPart}}
+\index{ModelMeshPart@{ModelMeshPart}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{ModelMeshPart()}{ModelMeshPart()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a88f6c78ed30f29487859fa51d8c77bb0} 
+Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Model\+Mesh\+Part (\begin{DoxyParamCaption}\item[{Model\+Mesh\+Part const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_aa973acaaa510621e7eb1318c31528908}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!````~ModelMeshPart@{\texorpdfstring{$\sim$}{\string~}ModelMeshPart}}
+\index{````~ModelMeshPart@{\texorpdfstring{$\sim$}{\string~}ModelMeshPart}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}ModelMeshPart()}{\string~ModelMeshPart()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_aa973acaaa510621e7eb1318c31528908} 
+virtual Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\texorpdfstring{$\sim$}{\string~}\+Model\+Mesh\+Part (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a4c9dc3384513ba75d7a8586d6a94f1f3}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a4c9dc3384513ba75d7a8586d6a94f1f3} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a47cba961889aebbd471e14a0217cba63}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawInstanced@{DrawInstanced}}
+\index{DrawInstanced@{DrawInstanced}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawInstanced()}{DrawInstanced()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a47cba961889aebbd471e14a0217cba63} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Instanced (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{uint32\+\_\+t}]{instance\+Count}{, }\item[{uint32\+\_\+t}]{start\+Instance}{ = {\ttfamily 0}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawMeshParts@{DrawMeshParts}}
+\index{DrawMeshParts@{DrawMeshParts}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawMeshParts()}{DrawMeshParts()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Mesh\+Parts (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&}]{mesh\+Parts}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad6469b5004b21cc8a8869353965cd575}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawMeshParts@{DrawMeshParts}}
+\index{DrawMeshParts@{DrawMeshParts}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawMeshParts()}{DrawMeshParts()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad6469b5004b21cc8a8869353965cd575} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Mesh\+Parts (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&}]{mesh\+Parts}{, }\item[{\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}} \texorpdfstring{$\ast$}{*}}]{effect}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a2827c9ed24ac846bb2e0d1b053e28b05}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawMeshParts@{DrawMeshParts}}
+\index{DrawMeshParts@{DrawMeshParts}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawMeshParts()}{DrawMeshParts()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a2827c9ed24ac846bb2e0d1b053e28b05} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Mesh\+Parts (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&}]{mesh\+Parts}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4}{Draw\+Callback}}}]{callback}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_addb5e5fc0753fc6b587d233d3880b464}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawMeshParts@{DrawMeshParts}}
+\index{DrawMeshParts@{DrawMeshParts}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawMeshParts()}{DrawMeshParts()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_addb5e5fc0753fc6b587d233d3880b464} 
+template$<$typename TEffect\+Iterator, typename TEffect\+Iterator\+Category = typename TEffect\+Iterator::\+iterator\+\_\+category$>$ \\
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Mesh\+Parts (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&}]{mesh\+Parts}{, }\item[{FXMMATRIX}]{world}{, }\item[{TEffect\+Iterator}]{part\+Effects}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a43fa657e90462aa46edd39646e9cf4cf}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawMeshParts@{DrawMeshParts}}
+\index{DrawMeshParts@{DrawMeshParts}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawMeshParts()}{DrawMeshParts()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a43fa657e90462aa46edd39646e9cf4cf} 
+template$<$typename TEffect\+Iterator, typename TEffect\+Iterator\+Category = typename TEffect\+Iterator::\+iterator\+\_\+category$>$ \\
+void Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Mesh\+Parts (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&}]{mesh\+Parts}{, }\item[{TEffect\+Iterator}]{part\+Effects}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1304e55ecdc54595813d53f660b25953}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!DrawSkinnedMeshParts@{DrawSkinnedMeshParts}}
+\index{DrawSkinnedMeshParts@{DrawSkinnedMeshParts}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{DrawSkinnedMeshParts()}{DrawSkinnedMeshParts()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1304e55ecdc54595813d53f660b25953} 
+template$<$typename TEffect\+Iterator, typename TEffect\+Iterator\+Category$>$ \\
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+\+Draw\+Skinned\+Mesh\+Parts (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh}{Model\+Mesh}} \&}]{mesh}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}} \&}]{mesh\+Parts}{, }\item[{size\+\_\+t}]{nbones}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+(nbones) const XMMATRIX \texorpdfstring{$\ast$}{*}}]{bone\+Transforms}{, }\item[{FXMMATRIX}]{world}{, }\item[{TEffect\+Iterator}]{part\+Effects}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a9eb31e438559ca9230be8f0bf547b086}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a9eb31e438559ca9230be8f0bf547b086} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} \& Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a830956548f257bd17f5a7f481c098c0f}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a830956548f257bd17f5a7f481c098c0f} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} \& Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{Model\+Mesh\+Part}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a74dbc92e2b14f4187af4257c54b3fda1}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!indexBuffer@{indexBuffer}}
+\index{indexBuffer@{indexBuffer}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{indexBuffer}{indexBuffer}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a74dbc92e2b14f4187af4257c54b3fda1} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{Shared\+Graphics\+Resource}} Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+index\+Buffer}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a8e3bc7375064c57ea4f6f99a6051e0e2}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!indexBufferSize@{indexBufferSize}}
+\index{indexBufferSize@{indexBufferSize}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{indexBufferSize}{indexBufferSize}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a8e3bc7375064c57ea4f6f99a6051e0e2} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+index\+Buffer\+Size}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6d3a5254b88cec36fa072f429926312f}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!indexCount@{indexCount}}
+\index{indexCount@{indexCount}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{indexCount}{indexCount}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6d3a5254b88cec36fa072f429926312f} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+index\+Count}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3b138f49637a69ba5d07b379662ec7b4}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!indexFormat@{indexFormat}}
+\index{indexFormat@{indexFormat}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{indexFormat}{indexFormat}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3b138f49637a69ba5d07b379662ec7b4} 
+DXGI\+\_\+\+FORMAT Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+index\+Format}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_af40e10ad476c251a0ea91ba57d417a66}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!materialIndex@{materialIndex}}
+\index{materialIndex@{materialIndex}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{materialIndex}{materialIndex}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_af40e10ad476c251a0ea91ba57d417a66} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+material\+Index}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1697a24505d81401ceff947a45bc1344}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!partIndex@{partIndex}}
+\index{partIndex@{partIndex}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{partIndex}{partIndex}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1697a24505d81401ceff947a45bc1344} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+part\+Index}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a93f85761c3ade05211e0f066300be6aa}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!primitiveType@{primitiveType}}
+\index{primitiveType@{primitiveType}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{primitiveType}{primitiveType}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a93f85761c3ade05211e0f066300be6aa} 
+D3\+D\+\_\+\+PRIMITIVE\+\_\+\+TOPOLOGY Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+primitive\+Type}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a9a17210da15953e629a8de565a0c20b1}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!startIndex@{startIndex}}
+\index{startIndex@{startIndex}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{startIndex}{startIndex}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a9a17210da15953e629a8de565a0c20b1} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+start\+Index}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acf8ec9493bd403821be034f891fb72c9}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!staticIndexBuffer@{staticIndexBuffer}}
+\index{staticIndexBuffer@{staticIndexBuffer}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{staticIndexBuffer}{staticIndexBuffer}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acf8ec9493bd403821be034f891fb72c9} 
+Microsoft::\+\+WRL::\+\+Com\+Ptr$<$ID3\+D12\+Resource$>$ Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+static\+Index\+Buffer}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1bbe70e48964dd620208d05d703be792}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!staticVertexBuffer@{staticVertexBuffer}}
+\index{staticVertexBuffer@{staticVertexBuffer}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{staticVertexBuffer}{staticVertexBuffer}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1bbe70e48964dd620208d05d703be792} 
+Microsoft::\+\+WRL::\+\+Com\+Ptr$<$ID3\+D12\+Resource$>$ Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+static\+Vertex\+Buffer}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3d82a64edfad33b64547973624fa23fd}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!vbDecl@{vbDecl}}
+\index{vbDecl@{vbDecl}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{vbDecl}{vbDecl}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3d82a64edfad33b64547973624fa23fd} 
+std::\+shared\+\_\+ptr$<$\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acaa99c62bfb509ea82372a6816d74005}{Input\+Layout\+Collection}}$>$ Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+vb\+Decl}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a942a34fb93240fa20276b6a1be92ecb3}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!vertexBuffer@{vertexBuffer}}
+\index{vertexBuffer@{vertexBuffer}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{vertexBuffer}{vertexBuffer}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a942a34fb93240fa20276b6a1be92ecb3} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{Shared\+Graphics\+Resource}} Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+vertex\+Buffer}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6cda1121ae0d2a4bd45484acbda745a1}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!vertexBufferSize@{vertexBufferSize}}
+\index{vertexBufferSize@{vertexBufferSize}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{vertexBufferSize}{vertexBufferSize}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6cda1121ae0d2a4bd45484acbda745a1} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+vertex\+Buffer\+Size}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a46d3e68d3887636adc87c1cd02255096}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!vertexCount@{vertexCount}}
+\index{vertexCount@{vertexCount}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{vertexCount}{vertexCount}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a46d3e68d3887636adc87c1cd02255096} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+vertex\+Count}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_abe1cb05c21bc9bf5447646e93386cc3b}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!vertexOffset@{vertexOffset}}
+\index{vertexOffset@{vertexOffset}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{vertexOffset}{vertexOffset}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_abe1cb05c21bc9bf5447646e93386cc3b} 
+int32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+vertex\+Offset}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a382fd0cfa07a3a39649a050207da4924}\index{DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}!vertexStride@{vertexStride}}
+\index{vertexStride@{vertexStride}!DirectX::DX12::ModelMeshPart@{DirectX::DX12::ModelMeshPart}}
+\doxysubsubsection{\texorpdfstring{vertexStride}{vertexStride}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a382fd0cfa07a3a39649a050207da4924} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Mesh\+Part::\+vertex\+Stride}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_model_8h}{Model.\+h}}\end{DoxyCompactItemize}

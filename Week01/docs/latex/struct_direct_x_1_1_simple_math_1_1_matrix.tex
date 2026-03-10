@@ -1,0 +1,641 @@
+\doxysection{DirectX::\+Simple\+Math::\+Matrix Struct Reference}
+\hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix}{}\label{struct_direct_x_1_1_simple_math_1_1_matrix}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+
+
+{\ttfamily \+\#include $<$Simple\+Math.\+h$>$}
+
+Inheritance diagram for DirectX::\+Simple\+Math::\+Matrix:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{struct_direct_x_1_1_simple_math_1_1_matrix}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} () noexcept
+\item 
+constexpr \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a0869ab4575496e6a4239483055aa8e96}{Matrix}} (float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a9efd3ed0ae8cc8701830f1f8b33cd75a}{Matrix}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&r0, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&r1, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&r2) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a51e878779068b05707413191fb84b7c6}{Matrix}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&r0, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&r1, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&r2, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&r3) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac9d339760249f3b5c9e936c7fc54bab8}{Matrix}} (const XMFLOAT4\+X4 \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a2f20dfd9f9c6c6dc0a44b1bf07ba2e14}{Matrix}} (const XMFLOAT3\+X3 \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ad35c097d20f644dcf72d660ef15e91ff}{Matrix}} (const XMFLOAT4\+X3 \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_af7bdcc4c301b86ff6dcbf1564880c40d}{Matrix}} (\+\_\+\+In\+\_\+reads\+\_\+(16) const float \texorpdfstring{$\ast$}{*}p\+Array) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a221254fdc05aaf31cbb2208623e6446a}{Matrix}} (CXMMATRIX M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aae64161546758768f32daaa86f1c9b2e}{Matrix}} (const Matrix \&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a26c2b22ae297f2a980a4ab7e6164c139}{operator=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a150a2290e221d8bdd97485b18831c13e}{Matrix}} (Matrix \&\&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a9c1ee6708c2f2ddb11ce94aff3c1e62c}{operator=}} (\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ae462f4afe1484b23120d8cba7ece477c}{operator XMMATRIX}} () const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a5fc2ae3d3d6d0524d48fd05da51dc851}{operator==}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a714086176b7711abe7dc57c74c4f28f7}{operator!=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M) const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ae940270797ef58e321a3ff2fe01e6fb0}{operator=}} (const XMFLOAT3\+X3 \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ad19b39efa72e28d0ed33d2d18bff4acd}{operator=}} (const XMFLOAT4\+X3 \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a69a1be06e7125297229ad8976121ac4d}{operator+=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ab1d18489e304aa70804099fc61072c6d}{operator-\/=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aeb52d88d85c029710d75811f22f8d6fc}{operator\texorpdfstring{$\ast$}{*}=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_acdf201d52ae94fb5c2eb8869cc6375cb}{operator\texorpdfstring{$\ast$}{*}=}} (float S) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aea92a6102ce4c044e81197e562b13766}{operator/\+=}} (float S) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aaf8299bedd005dc9786cc72297683fef}{operator/\+=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ade8995a09bb9e108608492c082d66281}{operator+}} () const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_af3274d371ddb29db3bed566a54b91372}{operator-\/}} () const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a3e5a1c7c87c23a46086207e203c265fc}{Up}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a449ec891c3cd2e1fa16fe0c1dd4fb8c6}{Up}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&v) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a64d6ab85ffa228b4a32924272d15182f}{Down}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a9ff9a6d4fcc8c7dab4ef5c3efb4eb455}{Down}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&v) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ad5f4972942cf0537a1149352d8762829}{Right}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a5be520e4a9112a10207f4e94e9d6117e}{Right}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&v) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a07d1f1087387b09750e4ef69220ede31}{Left}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a602ba09ed9c2e97ca20191039335c3b3}{Left}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&v) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a0672a32e7fb87375c063290cb2cc1b5a}{Forward}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ae20324226fdb31c160a694b2087ef235}{Forward}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&v) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ad201c1e507ff07ad312465f61c6dd8fe}{Backward}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aadd3eac19673d2c97a5e0141f943c6dd}{Backward}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&v) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a931bcdb356a6bbaccceaa1138617ac78}{Translation}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a0f49bfb234628f3293800bfd0f2ba44b}{Translation}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&v) noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a7c3e68b4bdc0f7446745337c8803f15f}{Decompose}} (\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&scale, \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&rotation, \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&translation) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a5dec56cb99045c0f2a25e46ec2217a03}{Transpose}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_afd836aa704c38b2d748b50abf4957a6e}{Transpose}} (\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&result) const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a9f0237153ed98deada2112c4a7042417}{Invert}} () const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a93c08a6199a0f7feb0c7c9fddeff6039}{Invert}} (\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&result) const noexcept
+\item 
+float \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a1983925aa7017bff5e37006d3b1876e9}{Determinant}} () const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aa83bd06081f500da326976cb3f8f3f51}{To\+Euler}} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a1f01b0c0610215ae362fef9a8c67f265}{Create\+Billboard}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&object, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&camera\+Position, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&camera\+Up, \+\_\+\+In\+\_\+opt\+\_\+ const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \texorpdfstring{$\ast$}{*}camera\+Forward=nullptr) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aac4d2e33208b0fd2041f79d216695beb}{Create\+Constrained\+Billboard}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&object, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&camera\+Position, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&rotate\+Axis, \+\_\+\+In\+\_\+opt\+\_\+ const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \texorpdfstring{$\ast$}{*}camera\+Forward=nullptr, \+\_\+\+In\+\_\+opt\+\_\+ const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \texorpdfstring{$\ast$}{*}object\+Forward=nullptr) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a5f54f99146b15ccbe36005df7d4f84ab}{Create\+Translation}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&position) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a10e2d1afb18f1efc09cfe27465de974a}{Create\+Translation}} (float x, float y, float z) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a2940326d72bf9d778d81f4cff95a0fa7}{Create\+Scale}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&scales) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_abf121ccfead180cb843a406e3f990ee8}{Create\+Scale}} (float xs, float ys, float zs) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aaafe7521eda90cd3a5bcb344b83debca}{Create\+Scale}} (float scale) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aa9bd9c853f3e3caffcc0011511ca0fd8}{Create\+RotationX}} (float radians) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_afd7f117dc48ccc5c000836abc56fc8be}{Create\+RotationY}} (float radians) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ab820fdfcb86b8c3506b5e2cd9b58668a}{Create\+RotationZ}} (float radians) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a5b9800987ce998dcdacc3aef1596c88c}{Create\+From\+Axis\+Angle}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&axis, float angle) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a93ea331d62cd5134e67ca1fb9fd49aff}{Create\+Perspective\+Field\+Of\+View}} (float fov, float aspect\+Ratio, float near\+Plane, float far\+Plane) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a25c3ad3c03c3603b5bc67a1ba97b077f}{Create\+Perspective}} (float width, float height, float near\+Plane, float far\+Plane) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac7362cbd2eb3d37fb82dbb560d907f8c}{Create\+Perspective\+Off\+Center}} (float left, float right, float bottom, float top, float near\+Plane, float far\+Plane) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a879509c110b45cbd5b29b17027046ef7}{Create\+Orthographic}} (float width, float height, float z\+Near\+Plane, float z\+Far\+Plane) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a7e80290a5937678c3724eb8c50d0eafa}{Create\+Orthographic\+Off\+Center}} (float left, float right, float bottom, float top, float z\+Near\+Plane, float z\+Far\+Plane) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a002502df4ff4c94853f9961dddba4fa8}{Create\+Look\+At}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&position, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&target, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&up) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_aa89362b32d651d85a2efffe4ff93181a}{Create\+World}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&position, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&forward, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&up) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a19fb803a5f2935263a8cdcf670ecd23c}{Create\+From\+Quaternion}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&quat) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a1c7d7122464c457ab7017ffcc24c714b}{Create\+From\+Yaw\+Pitch\+Roll}} (float yaw, float pitch, float roll) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a9eb2630319aa93f8b41d491edf2f9cd2}{Create\+From\+Yaw\+Pitch\+Roll}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&angles) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a3943d851c34e417c1d77b63ce2bde2cf}{Create\+Shadow}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&light\+Dir, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane}{Plane}} \&plane) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a825f25f11b56e4a6da8b04bb3dbf9b10}{Create\+Reflection}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane}{Plane}} \&plane) noexcept
+\item 
+static void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ae5c6f27c46b72761788ac551cb720db2}{Lerp}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M1, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M2, float t, \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&result) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a61de9feea512ee4e09eb92e41cd6660e}{Lerp}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M1, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M2, float t) noexcept
+\item 
+static void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ab3d35b8222db74b81e75639967839d70}{Transform}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&rotation, \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&result) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a8bab293414754c78c670909cf6c4e666}{Transform}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&M, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&rotation) noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_a424bb2e6d0f2c1933681919dc7c3bf75}{Identity}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a0869ab4575496e6a4239483055aa8e96}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a0869ab4575496e6a4239483055aa8e96} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{float}]{m00}{, }\item[{float}]{m01}{, }\item[{float}]{m02}{, }\item[{float}]{m03}{, }\item[{float}]{m10}{, }\item[{float}]{m11}{, }\item[{float}]{m12}{, }\item[{float}]{m13}{, }\item[{float}]{m20}{, }\item[{float}]{m21}{, }\item[{float}]{m22}{, }\item[{float}]{m23}{, }\item[{float}]{m30}{, }\item[{float}]{m31}{, }\item[{float}]{m32}{, }\item[{float}]{m33}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a9efd3ed0ae8cc8701830f1f8b33cd75a}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [3/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a9efd3ed0ae8cc8701830f1f8b33cd75a} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{r0}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{r1}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{r2}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a51e878779068b05707413191fb84b7c6}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [4/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a51e878779068b05707413191fb84b7c6} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&}]{r0}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&}]{r1}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&}]{r2}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector4}{Vector4}} \&}]{r3}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ac9d339760249f3b5c9e936c7fc54bab8}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [5/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ac9d339760249f3b5c9e936c7fc54bab8} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{const XMFLOAT4\+X4 \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a2f20dfd9f9c6c6dc0a44b1bf07ba2e14}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [6/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a2f20dfd9f9c6c6dc0a44b1bf07ba2e14} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{const XMFLOAT3\+X3 \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ad35c097d20f644dcf72d660ef15e91ff}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [7/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ad35c097d20f644dcf72d660ef15e91ff} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{const XMFLOAT4\+X3 \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_af7bdcc4c301b86ff6dcbf1564880c40d}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [8/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_af7bdcc4c301b86ff6dcbf1564880c40d} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+reads\+\_\+(16) const float \texorpdfstring{$\ast$}{*}}]{p\+Array}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a221254fdc05aaf31cbb2208623e6446a}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [9/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a221254fdc05aaf31cbb2208623e6446a} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{CXMMATRIX}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aae64161546758768f32daaa86f1c9b2e}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [10/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aae64161546758768f32daaa86f1c9b2e} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{const Matrix \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a150a2290e221d8bdd97485b18831c13e}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [11/11]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a150a2290e221d8bdd97485b18831c13e} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Matrix (\begin{DoxyParamCaption}\item[{Matrix \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ad201c1e507ff07ad312465f61c6dd8fe}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Backward@{Backward}}
+\index{Backward@{Backward}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Backward()}{Backward()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ad201c1e507ff07ad312465f61c6dd8fe} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Backward (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aadd3eac19673d2c97a5e0141f943c6dd}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Backward@{Backward}}
+\index{Backward@{Backward}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Backward()}{Backward()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aadd3eac19673d2c97a5e0141f943c6dd} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Backward (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a1f01b0c0610215ae362fef9a8c67f265}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateBillboard@{CreateBillboard}}
+\index{CreateBillboard@{CreateBillboard}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateBillboard()}{CreateBillboard()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a1f01b0c0610215ae362fef9a8c67f265} 
+\+\_\+\+Use\+\_\+decl\+\_\+annotations\+\_\+ \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Billboard (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{object}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{camera\+Position}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{camera\+Up}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \texorpdfstring{$\ast$}{*}}]{camera\+Forward}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aac4d2e33208b0fd2041f79d216695beb}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateConstrainedBillboard@{CreateConstrainedBillboard}}
+\index{CreateConstrainedBillboard@{CreateConstrainedBillboard}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateConstrainedBillboard()}{CreateConstrainedBillboard()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aac4d2e33208b0fd2041f79d216695beb} 
+\+\_\+\+Use\+\_\+decl\+\_\+annotations\+\_\+ \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Constrained\+Billboard (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{object}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{camera\+Position}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{rotate\+Axis}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \texorpdfstring{$\ast$}{*}}]{camera\+Forward}{ = {\ttfamily nullptr}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \texorpdfstring{$\ast$}{*}}]{object\+Forward}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a5b9800987ce998dcdacc3aef1596c88c}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateFromAxisAngle@{CreateFromAxisAngle}}
+\index{CreateFromAxisAngle@{CreateFromAxisAngle}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateFromAxisAngle()}{CreateFromAxisAngle()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a5b9800987ce998dcdacc3aef1596c88c} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+From\+Axis\+Angle (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{axis}{, }\item[{float}]{angle}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a19fb803a5f2935263a8cdcf670ecd23c}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateFromQuaternion@{CreateFromQuaternion}}
+\index{CreateFromQuaternion@{CreateFromQuaternion}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateFromQuaternion()}{CreateFromQuaternion()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a19fb803a5f2935263a8cdcf670ecd23c} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+From\+Quaternion (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&}]{quat}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a9eb2630319aa93f8b41d491edf2f9cd2}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateFromYawPitchRoll@{CreateFromYawPitchRoll}}
+\index{CreateFromYawPitchRoll@{CreateFromYawPitchRoll}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateFromYawPitchRoll()}{CreateFromYawPitchRoll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a9eb2630319aa93f8b41d491edf2f9cd2} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+From\+Yaw\+Pitch\+Roll (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{angles}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a1c7d7122464c457ab7017ffcc24c714b}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateFromYawPitchRoll@{CreateFromYawPitchRoll}}
+\index{CreateFromYawPitchRoll@{CreateFromYawPitchRoll}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateFromYawPitchRoll()}{CreateFromYawPitchRoll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a1c7d7122464c457ab7017ffcc24c714b} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+From\+Yaw\+Pitch\+Roll (\begin{DoxyParamCaption}\item[{float}]{yaw}{, }\item[{float}]{pitch}{, }\item[{float}]{roll}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a002502df4ff4c94853f9961dddba4fa8}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateLookAt@{CreateLookAt}}
+\index{CreateLookAt@{CreateLookAt}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateLookAt()}{CreateLookAt()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a002502df4ff4c94853f9961dddba4fa8} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Look\+At (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{position}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{target}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{up}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a879509c110b45cbd5b29b17027046ef7}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateOrthographic@{CreateOrthographic}}
+\index{CreateOrthographic@{CreateOrthographic}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateOrthographic()}{CreateOrthographic()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a879509c110b45cbd5b29b17027046ef7} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Orthographic (\begin{DoxyParamCaption}\item[{float}]{width}{, }\item[{float}]{height}{, }\item[{float}]{z\+Near\+Plane}{, }\item[{float}]{z\+Far\+Plane}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a7e80290a5937678c3724eb8c50d0eafa}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateOrthographicOffCenter@{CreateOrthographicOffCenter}}
+\index{CreateOrthographicOffCenter@{CreateOrthographicOffCenter}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateOrthographicOffCenter()}{CreateOrthographicOffCenter()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a7e80290a5937678c3724eb8c50d0eafa} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Orthographic\+Off\+Center (\begin{DoxyParamCaption}\item[{float}]{left}{, }\item[{float}]{right}{, }\item[{float}]{bottom}{, }\item[{float}]{top}{, }\item[{float}]{z\+Near\+Plane}{, }\item[{float}]{z\+Far\+Plane}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a25c3ad3c03c3603b5bc67a1ba97b077f}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreatePerspective@{CreatePerspective}}
+\index{CreatePerspective@{CreatePerspective}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreatePerspective()}{CreatePerspective()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a25c3ad3c03c3603b5bc67a1ba97b077f} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Perspective (\begin{DoxyParamCaption}\item[{float}]{width}{, }\item[{float}]{height}{, }\item[{float}]{near\+Plane}{, }\item[{float}]{far\+Plane}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a93ea331d62cd5134e67ca1fb9fd49aff}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreatePerspectiveFieldOfView@{CreatePerspectiveFieldOfView}}
+\index{CreatePerspectiveFieldOfView@{CreatePerspectiveFieldOfView}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreatePerspectiveFieldOfView()}{CreatePerspectiveFieldOfView()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a93ea331d62cd5134e67ca1fb9fd49aff} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Perspective\+Field\+Of\+View (\begin{DoxyParamCaption}\item[{float}]{fov}{, }\item[{float}]{aspect\+Ratio}{, }\item[{float}]{near\+Plane}{, }\item[{float}]{far\+Plane}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ac7362cbd2eb3d37fb82dbb560d907f8c}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreatePerspectiveOffCenter@{CreatePerspectiveOffCenter}}
+\index{CreatePerspectiveOffCenter@{CreatePerspectiveOffCenter}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreatePerspectiveOffCenter()}{CreatePerspectiveOffCenter()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ac7362cbd2eb3d37fb82dbb560d907f8c} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Perspective\+Off\+Center (\begin{DoxyParamCaption}\item[{float}]{left}{, }\item[{float}]{right}{, }\item[{float}]{bottom}{, }\item[{float}]{top}{, }\item[{float}]{near\+Plane}{, }\item[{float}]{far\+Plane}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a825f25f11b56e4a6da8b04bb3dbf9b10}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateReflection@{CreateReflection}}
+\index{CreateReflection@{CreateReflection}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateReflection()}{CreateReflection()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a825f25f11b56e4a6da8b04bb3dbf9b10} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Reflection (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane}{Plane}} \&}]{plane}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aa9bd9c853f3e3caffcc0011511ca0fd8}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateRotationX@{CreateRotationX}}
+\index{CreateRotationX@{CreateRotationX}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateRotationX()}{CreateRotationX()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aa9bd9c853f3e3caffcc0011511ca0fd8} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+RotationX (\begin{DoxyParamCaption}\item[{float}]{radians}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_afd7f117dc48ccc5c000836abc56fc8be}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateRotationY@{CreateRotationY}}
+\index{CreateRotationY@{CreateRotationY}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateRotationY()}{CreateRotationY()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_afd7f117dc48ccc5c000836abc56fc8be} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+RotationY (\begin{DoxyParamCaption}\item[{float}]{radians}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ab820fdfcb86b8c3506b5e2cd9b58668a}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateRotationZ@{CreateRotationZ}}
+\index{CreateRotationZ@{CreateRotationZ}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateRotationZ()}{CreateRotationZ()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ab820fdfcb86b8c3506b5e2cd9b58668a} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+RotationZ (\begin{DoxyParamCaption}\item[{float}]{radians}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a2940326d72bf9d778d81f4cff95a0fa7}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateScale@{CreateScale}}
+\index{CreateScale@{CreateScale}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateScale()}{CreateScale()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a2940326d72bf9d778d81f4cff95a0fa7} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Scale (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{scales}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aaafe7521eda90cd3a5bcb344b83debca}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateScale@{CreateScale}}
+\index{CreateScale@{CreateScale}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateScale()}{CreateScale()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aaafe7521eda90cd3a5bcb344b83debca} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Scale (\begin{DoxyParamCaption}\item[{float}]{scale}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_abf121ccfead180cb843a406e3f990ee8}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateScale@{CreateScale}}
+\index{CreateScale@{CreateScale}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateScale()}{CreateScale()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_abf121ccfead180cb843a406e3f990ee8} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Scale (\begin{DoxyParamCaption}\item[{float}]{xs}{, }\item[{float}]{ys}{, }\item[{float}]{zs}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a3943d851c34e417c1d77b63ce2bde2cf}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateShadow@{CreateShadow}}
+\index{CreateShadow@{CreateShadow}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateShadow()}{CreateShadow()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a3943d851c34e417c1d77b63ce2bde2cf} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Shadow (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{light\+Dir}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane}{Plane}} \&}]{plane}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a5f54f99146b15ccbe36005df7d4f84ab}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateTranslation@{CreateTranslation}}
+\index{CreateTranslation@{CreateTranslation}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateTranslation()}{CreateTranslation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a5f54f99146b15ccbe36005df7d4f84ab} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Translation (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{position}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a10e2d1afb18f1efc09cfe27465de974a}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateTranslation@{CreateTranslation}}
+\index{CreateTranslation@{CreateTranslation}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateTranslation()}{CreateTranslation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a10e2d1afb18f1efc09cfe27465de974a} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+Translation (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{float}]{z}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aa89362b32d651d85a2efffe4ff93181a}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!CreateWorld@{CreateWorld}}
+\index{CreateWorld@{CreateWorld}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{CreateWorld()}{CreateWorld()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aa89362b32d651d85a2efffe4ff93181a} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Create\+World (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{position}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{forward}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{up}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a7c3e68b4bdc0f7446745337c8803f15f}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Decompose@{Decompose}}
+\index{Decompose@{Decompose}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Decompose()}{Decompose()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a7c3e68b4bdc0f7446745337c8803f15f} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Decompose (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{scale}{, }\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&}]{rotation}{, }\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{translation}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a1983925aa7017bff5e37006d3b1876e9}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Determinant@{Determinant}}
+\index{Determinant@{Determinant}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Determinant()}{Determinant()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a1983925aa7017bff5e37006d3b1876e9} 
+float Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Determinant (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a64d6ab85ffa228b4a32924272d15182f}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Down@{Down}}
+\index{Down@{Down}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Down()}{Down()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a64d6ab85ffa228b4a32924272d15182f} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Down (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a9ff9a6d4fcc8c7dab4ef5c3efb4eb455}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Down@{Down}}
+\index{Down@{Down}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Down()}{Down()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a9ff9a6d4fcc8c7dab4ef5c3efb4eb455} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Down (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a0672a32e7fb87375c063290cb2cc1b5a}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Forward@{Forward}}
+\index{Forward@{Forward}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Forward()}{Forward()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a0672a32e7fb87375c063290cb2cc1b5a} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Forward (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ae20324226fdb31c160a694b2087ef235}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Forward@{Forward}}
+\index{Forward@{Forward}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Forward()}{Forward()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ae20324226fdb31c160a694b2087ef235} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Forward (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a9f0237153ed98deada2112c4a7042417}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Invert@{Invert}}
+\index{Invert@{Invert}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Invert()}{Invert()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a9f0237153ed98deada2112c4a7042417} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Invert (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a93c08a6199a0f7feb0c7c9fddeff6039}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Invert@{Invert}}
+\index{Invert@{Invert}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Invert()}{Invert()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a93c08a6199a0f7feb0c7c9fddeff6039} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Invert (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{result}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a07d1f1087387b09750e4ef69220ede31}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Left@{Left}}
+\index{Left@{Left}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Left()}{Left()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a07d1f1087387b09750e4ef69220ede31} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Left (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a602ba09ed9c2e97ca20191039335c3b3}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Left@{Left}}
+\index{Left@{Left}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Left()}{Left()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a602ba09ed9c2e97ca20191039335c3b3} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Left (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a61de9feea512ee4e09eb92e41cd6660e}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Lerp@{Lerp}}
+\index{Lerp@{Lerp}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Lerp()}{Lerp()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a61de9feea512ee4e09eb92e41cd6660e} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Lerp (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M1}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M2}{, }\item[{float}]{t}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ae5c6f27c46b72761788ac551cb720db2}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Lerp@{Lerp}}
+\index{Lerp@{Lerp}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Lerp()}{Lerp()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ae5c6f27c46b72761788ac551cb720db2} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Lerp (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M1}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M2}{, }\item[{float}]{t}{, }\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{result}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ae462f4afe1484b23120d8cba7ece477c}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator XMMATRIX@{operator XMMATRIX}}
+\index{operator XMMATRIX@{operator XMMATRIX}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator XMMATRIX()}{operator XMMATRIX()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ae462f4afe1484b23120d8cba7ece477c} 
+Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator XMMATRIX (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a714086176b7711abe7dc57c74c4f28f7}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a714086176b7711abe7dc57c74c4f28f7} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator!= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aeb52d88d85c029710d75811f22f8d6fc}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aeb52d88d85c029710d75811f22f8d6fc} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_acdf201d52ae94fb5c2eb8869cc6375cb}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_acdf201d52ae94fb5c2eb8869cc6375cb} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{float}]{S}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ade8995a09bb9e108608492c082d66281}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator+@{operator+}}
+\index{operator+@{operator+}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator+()}{operator+()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ade8995a09bb9e108608492c082d66281} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator+ (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a69a1be06e7125297229ad8976121ac4d}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator+=()}{operator+=()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a69a1be06e7125297229ad8976121ac4d} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator+= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_af3274d371ddb29db3bed566a54b91372}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator-\/()}{operator-()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_af3274d371ddb29db3bed566a54b91372} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator-\/ (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ab1d18489e304aa70804099fc61072c6d}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator-\/=()}{operator-=()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ab1d18489e304aa70804099fc61072c6d} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator-\/= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aaf8299bedd005dc9786cc72297683fef}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator/=@{operator/=}}
+\index{operator/=@{operator/=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator/=()}{operator/=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aaf8299bedd005dc9786cc72297683fef} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator/\+= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aea92a6102ce4c044e81197e562b13766}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator/=@{operator/=}}
+\index{operator/=@{operator/=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator/=()}{operator/=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aea92a6102ce4c044e81197e562b13766} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator/\+= (\begin{DoxyParamCaption}\item[{float}]{S}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a26c2b22ae297f2a980a4ab7e6164c139}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a26c2b22ae297f2a980a4ab7e6164c139} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ae940270797ef58e321a3ff2fe01e6fb0}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ae940270797ef58e321a3ff2fe01e6fb0} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator= (\begin{DoxyParamCaption}\item[{const XMFLOAT3\+X3 \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ad19b39efa72e28d0ed33d2d18bff4acd}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ad19b39efa72e28d0ed33d2d18bff4acd} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator= (\begin{DoxyParamCaption}\item[{const XMFLOAT4\+X3 \&}]{M}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a9c1ee6708c2f2ddb11ce94aff3c1e62c}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a9c1ee6708c2f2ddb11ce94aff3c1e62c} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \& Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a5fc2ae3d3d6d0524d48fd05da51dc851}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!operator==@{operator==}}
+\index{operator==@{operator==}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a5fc2ae3d3d6d0524d48fd05da51dc851} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+operator== (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ad5f4972942cf0537a1149352d8762829}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Right@{Right}}
+\index{Right@{Right}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Right()}{Right()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ad5f4972942cf0537a1149352d8762829} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Right (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a5be520e4a9112a10207f4e94e9d6117e}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Right@{Right}}
+\index{Right@{Right}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Right()}{Right()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a5be520e4a9112a10207f4e94e9d6117e} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Right (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_aa83bd06081f500da326976cb3f8f3f51}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!ToEuler@{ToEuler}}
+\index{ToEuler@{ToEuler}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{ToEuler()}{ToEuler()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_aa83bd06081f500da326976cb3f8f3f51} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+To\+Euler (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a8bab293414754c78c670909cf6c4e666}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Transform@{Transform}}
+\index{Transform@{Transform}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Transform()}{Transform()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a8bab293414754c78c670909cf6c4e666} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Transform (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&}]{rotation}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_ab3d35b8222db74b81e75639967839d70}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Transform@{Transform}}
+\index{Transform@{Transform}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Transform()}{Transform()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_ab3d35b8222db74b81e75639967839d70} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Transform (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{M}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_quaternion}{Quaternion}} \&}]{rotation}{, }\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{result}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a931bcdb356a6bbaccceaa1138617ac78}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Translation@{Translation}}
+\index{Translation@{Translation}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Translation()}{Translation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a931bcdb356a6bbaccceaa1138617ac78} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Translation (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a0f49bfb234628f3293800bfd0f2ba44b}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Translation@{Translation}}
+\index{Translation@{Translation}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Translation()}{Translation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a0f49bfb234628f3293800bfd0f2ba44b} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Translation (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a5dec56cb99045c0f2a25e46ec2217a03}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Transpose@{Transpose}}
+\index{Transpose@{Transpose}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Transpose()}{Transpose()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a5dec56cb99045c0f2a25e46ec2217a03} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Transpose (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_afd836aa704c38b2d748b50abf4957a6e}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Transpose@{Transpose}}
+\index{Transpose@{Transpose}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Transpose()}{Transpose()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_afd836aa704c38b2d748b50abf4957a6e} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Transpose (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} \&}]{result}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a3e5a1c7c87c23a46086207e203c265fc}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Up@{Up}}
+\index{Up@{Up}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Up()}{Up()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a3e5a1c7c87c23a46086207e203c265fc} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Up (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a449ec891c3cd2e1fa16fe0c1dd4fb8c6}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Up@{Up}}
+\index{Up@{Up}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Up()}{Up()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a449ec891c3cd2e1fa16fe0c1dd4fb8c6} 
+void Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Up (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_matrix_a424bb2e6d0f2c1933681919dc7c3bf75}\index{DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}!Identity@{Identity}}
+\index{Identity@{Identity}!DirectX::SimpleMath::Matrix@{DirectX::SimpleMath::Matrix}}
+\doxysubsubsection{\texorpdfstring{Identity}{Identity}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_matrix_a424bb2e6d0f2c1933681919dc7c3bf75} 
+const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_matrix_ac1a65e9789836c380d0a3bae6bc052c9}{Matrix}} Direct\+X::\+\+Simple\+Math::\+\+Matrix::\+\+Identity\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_simple_math_8h}{Simple\+Math.\+h}}\end{DoxyCompactItemize}

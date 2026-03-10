@@ -1,0 +1,291 @@
+\doxysection{DirectX::\+Simple\+Math::\+Rectangle Struct Reference}
+\hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle}{}\label{struct_direct_x_1_1_simple_math_1_1_rectangle}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+
+
+{\ttfamily \+\#include $<$Simple\+Math.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} () noexcept
+\item 
+constexpr \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a29ca4f1893a73d1f0e9f3b28666b279c}{Rectangle}} (long ix, long iy, long iw, long ih) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a37c1de64825bcdcd277ef57156d1b8c4}{Rectangle}} (const RECT \&rct) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a83b8676686ca459ad7d0c05c2ea8cecd}{Rectangle}} (const Rectangle \&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ac93b07000a2b4f5f8f2dadaddf2ce383}{operator=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a343d6fc8e5cedfb522765bcbba18975b}{Rectangle}} (Rectangle \&\&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a0613fd1d9c5b3faf6818ee58d51352e0}{operator=}} (\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&\&)=default
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_acb1b7b74c4de4cac7dc0feec24ac310a}{operator RECT}} () noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a379c9326ed88c7d37ce13f4e072c7b0c}{operator==}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&r) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_aae05b7e2b8a4612ad419aef238e4add4}{operator!=}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&r) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ae3dedb351c2a93df7e47d12c91d3ed9c}{operator==}} (const RECT \&rct) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a948cc273b0f62d2e6ba49f3dce668665}{operator!=}} (const RECT \&rct) const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \& \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ada01f3b168b9990e24a09a2ae5217a46}{operator=}} (\+\_\+\+In\+\_\+ const RECT \&rct) noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector2}{Vector2}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_adce6265dfcbb836564393df19fa9eede}{Location}} () const noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector2}{Vector2}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a418583cfe9492924059657db08d797db}{Center}} () const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ab4eaa12256395b46884d72b2aac299ef}{Is\+Empty}} () const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a44e6c810cac88bf0a7b2adbb8d3412ee}{Contains}} (long ix, long iy) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a421e3787be6dcf9cbd91344c7b13b805}{Contains}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector2}{Vector2}} \&point) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a415d60d6fd04d1a2661590e222f25e37}{Contains}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&r) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_aeb81ec6965d1bd7dcaa083ee8d4386bc}{Contains}} (const RECT \&rct) const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ab88a63f654e64eb552cc0e005dcd916b}{Inflate}} (long horiz\+Amount, long vert\+Amount) noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_aa50e9e88779d73eedfd6c128fac7cff9}{Intersects}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&r) const noexcept
+\item 
+bool \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a35896da536677be5c1af6ef805a45de2}{Intersects}} (const RECT \&rct) const noexcept
+\item 
+void \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a54ae1cb6842e8ce2d341ae374a58c68f}{Offset}} (long ox, long oy) noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_aa78d4f577bd64cd4d0b11863aa9d79e0}{Intersect}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&ra, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&rb) noexcept
+\item 
+static RECT \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a7791b288251d6346d918695b232bfdd2}{Intersect}} (const RECT \&rcta, const RECT \&rctb) noexcept
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_af4ad4ab4f13101b5c17ddb4a8754a445}{Union}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&ra, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&rb) noexcept
+\item 
+static RECT \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad25285d25bae45afd24c2415d7513edd}{Union}} (const RECT \&rcta, const RECT \&rctb) noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+long \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a169e2daba63fde069542c56890c12376}{x}}
+\item 
+long \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_aaa506dc0eb10b13efdef2a1ead87455d}{y}}
+\item 
+long \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a83f3129326f0d8262b8d165a6d5b3a9f}{width}}
+\item 
+long \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_a956a3103bcb383bf1f21e045a49a880c}{height}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Rectangle@{Rectangle}}
+\index{Rectangle@{Rectangle}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Rectangle()}{Rectangle()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199} 
+Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Rectangle (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a29ca4f1893a73d1f0e9f3b28666b279c}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Rectangle@{Rectangle}}
+\index{Rectangle@{Rectangle}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Rectangle()}{Rectangle()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a29ca4f1893a73d1f0e9f3b28666b279c} 
+Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Rectangle (\begin{DoxyParamCaption}\item[{long}]{ix}{, }\item[{long}]{iy}{, }\item[{long}]{iw}{, }\item[{long}]{ih}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a37c1de64825bcdcd277ef57156d1b8c4}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Rectangle@{Rectangle}}
+\index{Rectangle@{Rectangle}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Rectangle()}{Rectangle()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a37c1de64825bcdcd277ef57156d1b8c4} 
+Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Rectangle (\begin{DoxyParamCaption}\item[{const RECT \&}]{rct}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a83b8676686ca459ad7d0c05c2ea8cecd}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Rectangle@{Rectangle}}
+\index{Rectangle@{Rectangle}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Rectangle()}{Rectangle()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a83b8676686ca459ad7d0c05c2ea8cecd} 
+Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Rectangle (\begin{DoxyParamCaption}\item[{const Rectangle \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a343d6fc8e5cedfb522765bcbba18975b}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Rectangle@{Rectangle}}
+\index{Rectangle@{Rectangle}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Rectangle()}{Rectangle()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a343d6fc8e5cedfb522765bcbba18975b} 
+Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Rectangle (\begin{DoxyParamCaption}\item[{Rectangle \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a418583cfe9492924059657db08d797db}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Center@{Center}}
+\index{Center@{Center}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Center()}{Center()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a418583cfe9492924059657db08d797db} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector2}{Vector2}} Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Center (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_aeb81ec6965d1bd7dcaa083ee8d4386bc}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Contains@{Contains}}
+\index{Contains@{Contains}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Contains()}{Contains()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_aeb81ec6965d1bd7dcaa083ee8d4386bc} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Contains (\begin{DoxyParamCaption}\item[{const RECT \&}]{rct}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a415d60d6fd04d1a2661590e222f25e37}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Contains@{Contains}}
+\index{Contains@{Contains}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Contains()}{Contains()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a415d60d6fd04d1a2661590e222f25e37} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Contains (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{r}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a421e3787be6dcf9cbd91344c7b13b805}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Contains@{Contains}}
+\index{Contains@{Contains}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Contains()}{Contains()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a421e3787be6dcf9cbd91344c7b13b805} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Contains (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector2}{Vector2}} \&}]{point}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a44e6c810cac88bf0a7b2adbb8d3412ee}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Contains@{Contains}}
+\index{Contains@{Contains}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Contains()}{Contains()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a44e6c810cac88bf0a7b2adbb8d3412ee} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Contains (\begin{DoxyParamCaption}\item[{long}]{ix}{, }\item[{long}]{iy}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_ab88a63f654e64eb552cc0e005dcd916b}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Inflate@{Inflate}}
+\index{Inflate@{Inflate}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Inflate()}{Inflate()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_ab88a63f654e64eb552cc0e005dcd916b} 
+void Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Inflate (\begin{DoxyParamCaption}\item[{long}]{horiz\+Amount}{, }\item[{long}]{vert\+Amount}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a7791b288251d6346d918695b232bfdd2}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Intersect@{Intersect}}
+\index{Intersect@{Intersect}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Intersect()}{Intersect()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a7791b288251d6346d918695b232bfdd2} 
+RECT Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Intersect (\begin{DoxyParamCaption}\item[{const RECT \&}]{rcta}{, }\item[{const RECT \&}]{rctb}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_aa78d4f577bd64cd4d0b11863aa9d79e0}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Intersect@{Intersect}}
+\index{Intersect@{Intersect}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Intersect()}{Intersect()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_aa78d4f577bd64cd4d0b11863aa9d79e0} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Intersect (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{ra}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{rb}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a35896da536677be5c1af6ef805a45de2}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Intersects()}{Intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a35896da536677be5c1af6ef805a45de2} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Intersects (\begin{DoxyParamCaption}\item[{const RECT \&}]{rct}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_aa50e9e88779d73eedfd6c128fac7cff9}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Intersects()}{Intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_aa50e9e88779d73eedfd6c128fac7cff9} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Intersects (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{r}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_ab4eaa12256395b46884d72b2aac299ef}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!IsEmpty@{IsEmpty}}
+\index{IsEmpty@{IsEmpty}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{IsEmpty()}{IsEmpty()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_ab4eaa12256395b46884d72b2aac299ef} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Is\+Empty (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_adce6265dfcbb836564393df19fa9eede}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Location@{Location}}
+\index{Location@{Location}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Location()}{Location()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_adce6265dfcbb836564393df19fa9eede} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector2}{Vector2}} Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Location (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a54ae1cb6842e8ce2d341ae374a58c68f}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Offset@{Offset}}
+\index{Offset@{Offset}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Offset()}{Offset()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a54ae1cb6842e8ce2d341ae374a58c68f} 
+void Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Offset (\begin{DoxyParamCaption}\item[{long}]{ox}{, }\item[{long}]{oy}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_acb1b7b74c4de4cac7dc0feec24ac310a}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator RECT@{operator RECT}}
+\index{operator RECT@{operator RECT}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator RECT()}{operator RECT()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_acb1b7b74c4de4cac7dc0feec24ac310a} 
+Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator RECT (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a948cc273b0f62d2e6ba49f3dce668665}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a948cc273b0f62d2e6ba49f3dce668665} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator!= (\begin{DoxyParamCaption}\item[{const RECT \&}]{rct}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_aae05b7e2b8a4612ad419aef238e4add4}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_aae05b7e2b8a4612ad419aef238e4add4} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator!= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{r}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_ada01f3b168b9990e24a09a2ae5217a46}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_ada01f3b168b9990e24a09a2ae5217a46} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \& Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator= (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ const RECT \&}]{rct}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_ac93b07000a2b4f5f8f2dadaddf2ce383}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_ac93b07000a2b4f5f8f2dadaddf2ce383} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \& Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a0613fd1d9c5b3faf6818ee58d51352e0}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a0613fd1d9c5b3faf6818ee58d51352e0} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \& Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_ae3dedb351c2a93df7e47d12c91d3ed9c}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator==@{operator==}}
+\index{operator==@{operator==}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_ae3dedb351c2a93df7e47d12c91d3ed9c} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator== (\begin{DoxyParamCaption}\item[{const RECT \&}]{rct}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a379c9326ed88c7d37ce13f4e072c7b0c}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!operator==@{operator==}}
+\index{operator==@{operator==}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a379c9326ed88c7d37ce13f4e072c7b0c} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+operator== (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{r}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_ad25285d25bae45afd24c2415d7513edd}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Union@{Union}}
+\index{Union@{Union}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Union()}{Union()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_ad25285d25bae45afd24c2415d7513edd} 
+RECT Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Union (\begin{DoxyParamCaption}\item[{const RECT \&}]{rcta}{, }\item[{const RECT \&}]{rctb}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_af4ad4ab4f13101b5c17ddb4a8754a445}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!Union@{Union}}
+\index{Union@{Union}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{Union()}{Union()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_af4ad4ab4f13101b5c17ddb4a8754a445} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+\+Union (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{ra}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_rectangle_ad308eac8dea6c240e1c1135f7e682199}{Rectangle}} \&}]{rb}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a956a3103bcb383bf1f21e045a49a880c}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!height@{height}}
+\index{height@{height}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{height}{height}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a956a3103bcb383bf1f21e045a49a880c} 
+long Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+height}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a83f3129326f0d8262b8d165a6d5b3a9f}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!width@{width}}
+\index{width@{width}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{width}{width}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a83f3129326f0d8262b8d165a6d5b3a9f} 
+long Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+width}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_a169e2daba63fde069542c56890c12376}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!x@{x}}
+\index{x@{x}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_a169e2daba63fde069542c56890c12376} 
+long Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+x}
+
+\Hypertarget{struct_direct_x_1_1_simple_math_1_1_rectangle_aaa506dc0eb10b13efdef2a1ead87455d}\index{DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}!y@{y}}
+\index{y@{y}!DirectX::SimpleMath::Rectangle@{DirectX::SimpleMath::Rectangle}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_simple_math_1_1_rectangle_aaa506dc0eb10b13efdef2a1ead87455d} 
+long Direct\+X::\+\+Simple\+Math::\+\+Rectangle::\+y}
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_simple_math_8h}{Simple\+Math.\+h}}\end{DoxyCompactItemize}

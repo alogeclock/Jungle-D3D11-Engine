@@ -1,0 +1,413 @@
+\doxysection{Direct\+XHelpers.\+h}
+\hypertarget{_direct_x_helpers_8h_source}{}\label{_direct_x_helpers_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DirectXHelpers.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DirectXHelpers.h}}
+\doxymbox{\hyperlink{_direct_x_helpers_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ DirectXHelpers.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <initializer\_list>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <wrl/client.h>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#if\ !defined(\_GAMING\_XBOX)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#pragma\ comment(lib,"{}dxguid.lib"{})}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#pragma\ warning(push)}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#pragma\ warning(disable\ :\ 4251)}}
+\DoxyCodeLine{00058\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{comment}{//}}
+\DoxyCodeLine{00062\ \textcolor{comment}{//\ The\ d3dx12.h\ header\ includes\ the\ following\ helper\ C++\ classes\ and\ functions}}
+\DoxyCodeLine{00063\ \textcolor{comment}{//\ \ CD3DX12\_RECT}}
+\DoxyCodeLine{00064\ \textcolor{comment}{//\ \ CD3DX12\_VIEWPORT}}
+\DoxyCodeLine{00065\ \textcolor{comment}{//\ \ CD3DX12\_BOX}}
+\DoxyCodeLine{00066\ \textcolor{comment}{//\ \ CD3DX12\_DEPTH\_STENCIL\_DESC\ /\ CD3DX12\_DEPTH\_STENCIL\_DESC1\ /\ CD3DX12\_DEPTH\_STENCIL\_DESC2}}
+\DoxyCodeLine{00067\ \textcolor{comment}{//\ \ CD3DX12\_BLEND\_DESC}}
+\DoxyCodeLine{00068\ \textcolor{comment}{//\ \ CD3DX12\_RASTERIZER\_DESC\ /\ CD3DX12\_RASTERIZER\_DESC1}}
+\DoxyCodeLine{00069\ \textcolor{comment}{//\ \ CD3DX12\_RESOURCE\_ALLOCATION\_INFO}}
+\DoxyCodeLine{00070\ \textcolor{comment}{//\ \ CD3DX12\_HEAP\_PROPERTIES}}
+\DoxyCodeLine{00071\ \textcolor{comment}{//\ \ CD3DX12\_HEAP\_DESC}}
+\DoxyCodeLine{00072\ \textcolor{comment}{//\ \ CD3DX12\_CLEAR\_VALUE}}
+\DoxyCodeLine{00073\ \textcolor{comment}{//\ \ CD3DX12\_RANGE}}
+\DoxyCodeLine{00074\ \textcolor{comment}{//\ \ CD3DX12\_RANGE\_UINT64}}
+\DoxyCodeLine{00075\ \textcolor{comment}{//\ \ CD3DX12\_SUBRESOURCE\_RANGE\_UINT64}}
+\DoxyCodeLine{00076\ \textcolor{comment}{//\ \ CD3DX12\_SHADER\_BYTECODE}}
+\DoxyCodeLine{00077\ \textcolor{comment}{//\ \ CD3DX12\_TILED\_RESOURCE\_COORDINATE}}
+\DoxyCodeLine{00078\ \textcolor{comment}{//\ \ CD3DX12\_TILE\_REGION\_SIZE}}
+\DoxyCodeLine{00079\ \textcolor{comment}{//\ \ CD3DX12\_SUBRESOURCE\_TILING}}
+\DoxyCodeLine{00080\ \textcolor{comment}{//\ \ CD3DX12\_TILE\_SHAPE}}
+\DoxyCodeLine{00081\ \textcolor{comment}{//\ \ CD3DX12\_RESOURCE\_BARRIER}}
+\DoxyCodeLine{00082\ \textcolor{comment}{//\ \ CD3DX12\_PACKED\_MIP\_INFO}}
+\DoxyCodeLine{00083\ \textcolor{comment}{//\ \ CD3DX12\_SUBRESOURCE\_FOOTPRINT}}
+\DoxyCodeLine{00084\ \textcolor{comment}{//\ \ CD3DX12\_TEXTURE\_COPY\_LOCATION}}
+\DoxyCodeLine{00085\ \textcolor{comment}{//\ \ CD3DX12\_DESCRIPTOR\_RANGE\ /\ CD3DX12\_DESCRIPTOR\_RANGE1}}
+\DoxyCodeLine{00086\ \textcolor{comment}{//\ \ CD3DX12\_ROOT\_DESCRIPTOR\_TABLE\ /\ CD3DX12\_ROOT\_DESCRIPTOR\_TABLE1}}
+\DoxyCodeLine{00087\ \textcolor{comment}{//\ \ CD3DX12\_ROOT\_CONSTANTS}}
+\DoxyCodeLine{00088\ \textcolor{comment}{//\ \ CD3DX12\_ROOT\_DESCRIPTOR\ /\ CD3DX12\_ROOT\_DESCRIPTOR1}}
+\DoxyCodeLine{00089\ \textcolor{comment}{//\ \ CD3DX12\_ROOT\_PARAMETER\ /\ CD3DX12\_ROOT\_PARAMETER1}}
+\DoxyCodeLine{00090\ \textcolor{comment}{//\ \ CD3DX12\_STATIC\_SAMPLER\_DESC}}
+\DoxyCodeLine{00091\ \textcolor{comment}{//\ \ CD3DX12\_ROOT\_SIGNATURE\_DESC}}
+\DoxyCodeLine{00092\ \textcolor{comment}{//\ \ CD3DX12\_VERSIONED\_ROOT\_SIGNATURE\_DESC}}
+\DoxyCodeLine{00093\ \textcolor{comment}{//\ \ CD3DX12\_CPU\_DESCRIPTOR\_HANDLE}}
+\DoxyCodeLine{00094\ \textcolor{comment}{//\ \ CD3DX12\_GPU\_DESCRIPTOR\_HANDLE}}
+\DoxyCodeLine{00095\ \textcolor{comment}{//\ \ CD3DX12\_RESOURCE\_DESC\ /\ CD3DX12\_RESOURCE\_DESC1}}
+\DoxyCodeLine{00096\ \textcolor{comment}{//\ \ CD3DX12\_VIEW\_INSTANCING\_DESC}}
+\DoxyCodeLine{00097\ \textcolor{comment}{//\ \ CD3DX12\_RT\_FORMAT\_ARRAY}}
+\DoxyCodeLine{00098\ \textcolor{comment}{//\ \ CD3DX12\_MESH\_SHADER\_PIPELINE\_STATE\_DESC}}
+\DoxyCodeLine{00099\ \textcolor{comment}{//\ \ CD3DX12\_PIPELINE\_STATE\_STREAM\ -\/\ CD3DX12\_PIPELINE\_STATE\_STREAM4}}
+\DoxyCodeLine{00100\ \textcolor{comment}{//\ \ CD3DX12\_PIPELINE\_MESH\_STATE\_STREAM}}
+\DoxyCodeLine{00101\ \textcolor{comment}{//\ \ CD3DX12\_PIPELINE\_STATE\_STREAM\_PARSE\_HELPER\ -\/\ CD3DX12\_PIPELINE\_STATE\_STREAM4\_PARSE\_HELPER}}
+\DoxyCodeLine{00102\ \textcolor{comment}{//\ \ D3D12CalcSubresource}}
+\DoxyCodeLine{00103\ \textcolor{comment}{//\ \ D3D12DecomposeSubresource}}
+\DoxyCodeLine{00104\ \textcolor{comment}{//\ \ D3D12GetFormatPlaneCount}}
+\DoxyCodeLine{00105\ \textcolor{comment}{//\ \ MemcpySubresource}}
+\DoxyCodeLine{00106\ \textcolor{comment}{//\ \ GetRequiredIntermediateSize}}
+\DoxyCodeLine{00107\ \textcolor{comment}{//\ \ UpdateSubresources}}
+\DoxyCodeLine{00108\ \textcolor{comment}{//\ \ D3D12IsLayoutOpaque}}
+\DoxyCodeLine{00109\ \textcolor{comment}{//\ \ CommandListCast}}
+\DoxyCodeLine{00110\ \textcolor{comment}{//\ \ D3DX12SerializeVersionedRootSignature}}
+\DoxyCodeLine{00111\ \textcolor{comment}{//\ \ D3DX12GetBaseSubobjectType}}
+\DoxyCodeLine{00112\ \textcolor{comment}{//\ \ D3DX12ParsePipelineStream}}
+\DoxyCodeLine{00113\ \textcolor{comment}{//}}
+\DoxyCodeLine{00114\ \textcolor{comment}{//\ \ CD3DX12\_STATE\_OBJECT\_DESC}}
+\DoxyCodeLine{00115\ \textcolor{comment}{//\ \ CD3DX12\_DXIL\_LIBRARY\_SUBOBJECT}}
+\DoxyCodeLine{00116\ \textcolor{comment}{//\ \ CD3DX12\_EXISTING\_COLLECTION\_SUBOBJECT}}
+\DoxyCodeLine{00117\ \textcolor{comment}{//\ \ CD3DX12\_SUBOBJECT\_TO\_EXPORTS\_ASSOCIATION\_SUBOBJECT}}
+\DoxyCodeLine{00118\ \textcolor{comment}{//\ \ CD3DX12\_DXIL\_SUBOBJECT\_TO\_EXPORTS\_ASSOCIATION}}
+\DoxyCodeLine{00119\ \textcolor{comment}{//\ \ CD3DX12\_HIT\_GROUP\_SUBOBJECT}}
+\DoxyCodeLine{00120\ \textcolor{comment}{//\ \ CD3DX12\_RAYTRACING\_SHADER\_CONFIG\_SUBOBJECT}}
+\DoxyCodeLine{00121\ \textcolor{comment}{//\ \ CD3DX12\_RAYTRACING\_PIPELINE\_CONFIG\_SUBOBJECT\ //\ CD3DX12\_RAYTRACING\_PIPELINE\_CONFIG1\_SUBOBJECT}}
+\DoxyCodeLine{00122\ \textcolor{comment}{//\ \ CD3DX12\_GLOBAL\_ROOT\_SIGNATURE\_SUBOBJECT}}
+\DoxyCodeLine{00123\ \textcolor{comment}{//\ \ CD3DX12\_LOCAL\_ROOT\_SIGNATURE\_SUBOBJECT}}
+\DoxyCodeLine{00124\ \textcolor{comment}{//\ \ CD3DX12\_STATE\_OBJECT\_CONFIG\_SUBOBJECT}}
+\DoxyCodeLine{00125\ \textcolor{comment}{//\ \ CD3DX12\_NODE\_MASK\_SUBOBJECT}}
+\DoxyCodeLine{00126\ \textcolor{comment}{//}}
+\DoxyCodeLine{00127\ \textcolor{comment}{//\ \ CD3DX12\_BARRIER\_SUBRESOURCE\_RANGE}}
+\DoxyCodeLine{00128\ \textcolor{comment}{//\ \ CD3DX12\_GLOBAL\_BARRIER}}
+\DoxyCodeLine{00129\ \textcolor{comment}{//\ \ CD3DX12\_BUFFER\_BARRIER}}
+\DoxyCodeLine{00130\ \textcolor{comment}{//\ \ CD3DX12\_TEXTURE\_BARRIER}}
+\DoxyCodeLine{00131\ \textcolor{comment}{//\ \ CD3DX12\_BARRIER\_GROUP}}
+\DoxyCodeLine{00132\ \textcolor{comment}{//}}
+\DoxyCodeLine{00133\ \textcolor{comment}{//\ \ CD3DX12FeatureSupport}}
+\DoxyCodeLine{00134\ \textcolor{comment}{//}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \textcolor{preprocessor}{\#ifndef\ IID\_GRAPHICS\_PPV\_ARGS}}
+\DoxyCodeLine{00137\ \textcolor{preprocessor}{\#define\ IID\_GRAPHICS\_PPV\_ARGS(x)\ IID\_PPV\_ARGS(x)}}
+\DoxyCodeLine{00138\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00141\ \{}
+\DoxyCodeLine{00142\ \textcolor{preprocessor}{\#if\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keyword}{constexpr}\ D3D12\_RESOURCE\_STATES\ \doxymbox{\hyperlink{namespace_direct_x_ae4d94b48ac2759b7081a4331d2824c85}{c\_initialCopyTargetState}}\ =\ D3D12\_RESOURCE\_STATE\_COPY\_DEST;}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keyword}{constexpr}\ D3D12\_RESOURCE\_STATES\ \doxymbox{\hyperlink{namespace_direct_x_a9064ab5e03901fc909333e410e7c41bf}{c\_initialReadTargetState}}\ =\ D3D12\_RESOURCE\_STATE\_GENERIC\_READ;}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keyword}{constexpr}\ D3D12\_RESOURCE\_STATES\ \doxymbox{\hyperlink{namespace_direct_x_a88acb4b55d88de27f80ccd2e948b9574}{c\_initialUAVTargetState}}\ =\ D3D12\_RESOURCE\_STATE\_UNORDERED\_ACCESS;}
+\DoxyCodeLine{00146\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keyword}{constexpr}\ D3D12\_RESOURCE\_STATES\ \doxymbox{\hyperlink{namespace_direct_x_ae4d94b48ac2759b7081a4331d2824c85}{c\_initialCopyTargetState}}\ =\ D3D12\_RESOURCE\_STATE\_COMMON;}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keyword}{constexpr}\ D3D12\_RESOURCE\_STATES\ \doxymbox{\hyperlink{namespace_direct_x_a9064ab5e03901fc909333e410e7c41bf}{c\_initialReadTargetState}}\ =\ D3D12\_RESOURCE\_STATE\_COMMON;}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keyword}{constexpr}\ D3D12\_RESOURCE\_STATES\ \doxymbox{\hyperlink{namespace_direct_x_a88acb4b55d88de27f80ccd2e948b9574}{c\_initialUAVTargetState}}\ =\ D3D12\_RESOURCE\_STATE\_COMMON;}
+\DoxyCodeLine{00150\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keyword}{constexpr}\ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ \doxymbox{\hyperlink{namespace_direct_x_a7284c4321ed9c865b2eb88b21f8c56f7}{D3D12\_CPU\_DESCRIPTOR\_HANDLE\_ZERO}}\ =\ \{\};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{comment}{//\ Creates\ a\ shader\ resource\ view\ from\ an\ arbitrary\ resource}}
+\DoxyCodeLine{00155\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_afdd2bc1f37c97afc83d5f877650b66cf}{CreateShaderResourceView}}(}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ tex,}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ srvDescriptor,}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ isCubeMap\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Creates\ an\ unordered\ access\ view\ from\ an\ arbitrary\ resource}}
+\DoxyCodeLine{00163\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_ad3f4237f497e4ea79f30eedc71c06564}{CreateUnorderedAccessView}}(}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ tex,}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ uavDescriptor,}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ mipLevel\ =\ 0);}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Creates\ an\ render\ target\ view\ from\ an\ arbitrary\ resource}}
+\DoxyCodeLine{00171\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a70fa0d4abab01a14e738c30bc77facaa}{CreateRenderTargetView}}(}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ tex,}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ rtvDescriptor,}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ mipLevel\ =\ 0);}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Creates\ a\ shader\ resource\ view\ from\ a\ buffer\ resource}}
+\DoxyCodeLine{00179\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_ab7bf92ae10c45a360e3eab8fd3a77635}{CreateBufferShaderResourceView}}(}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ buffer,}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ srvDescriptor,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ stride\ =\ 0);}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Creates\ a\ unordered\ access\ view\ from\ a\ buffer\ resource}}
+\DoxyCodeLine{00187\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a7532fa9fa8d777fa7855d338fa91828f}{CreateBufferUnorderedAccessView}}(}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ buffer,}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ uavDescriptor,}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ stride,}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_BUFFER\_UAV\_FLAGS\ flag\ =\ D3D12\_BUFFER\_UAV\_FLAG\_NONE,}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ counterOffset\ =\ 0,}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Resource*\ counterResource\ =\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Shorthand\ for\ creating\ a\ root\ signature}}
+\DoxyCodeLine{00198\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ HRESULT\ \doxymbox{\hyperlink{namespace_direct_x_aa06c6f2d3bc8b5ab53cf817d4f533f4e}{CreateRootSignature}}(}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keyword}{const}\ D3D12\_ROOT\_SIGNATURE\_DESC*\ rootSignatureDesc,}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_\ ID3D12RootSignature**\ rootSignature)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00203\ \ \ \ \ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!device\ ||\ !rootSignatureDesc\ ||\ !rootSignature)}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ E\_INVALIDARG;}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ Microsoft::WRL::ComPtr<ID3DBlob>\ pSignature;}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ Microsoft::WRL::ComPtr<ID3DBlob>\ pError;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ HRESULT\ hr\ =\ D3D12SerializeRootSignature(rootSignatureDesc,\ D3D\_ROOT\_SIGNATURE\_VERSION\_1,\ pSignature.GetAddressOf(),\ pError.GetAddressOf());}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (SUCCEEDED(hr))}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ hr\ =\ device-\/>CreateRootSignature(0,\ pSignature-\/>GetBufferPointer(),\ pSignature-\/>GetBufferSize(),}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_direct_x_helpers_8h_ad9046b3b41fef28b160f030dfaa2e872}{IID\_GRAPHICS\_PPV\_ARGS}}(rootSignature)}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hr;}
+\DoxyCodeLine{00217\ \ \ \ \ \}}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{comment}{//\ Helper\ for\ obtaining\ texture\ size}}
+\DoxyCodeLine{00220\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ XMUINT2\ \doxymbox{\hyperlink{namespace_direct_x_abae2b146b30c55622ac82b008ad4b800}{GetTextureSize}}(\_In\_\ ID3D12Resource*\ tex)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00222\ \ \ \ \ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!tex)}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ XMUINT2(0,\ 0);}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \textcolor{preprocessor}{\ \ \ \ \#if\ defined(\_MSC\_VER)\ ||\ !defined(\_WIN32)}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ desc\ =\ tex-\/>GetDesc();}
+\DoxyCodeLine{00228\ \textcolor{preprocessor}{\ \ \ \ \#else}}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_DESC\ tmpDesc;}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ desc\ =\ *tex-\/>GetDesc(\&tmpDesc);}
+\DoxyCodeLine{00231\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ XMUINT2(\textcolor{keyword}{static\_cast<}uint32\_t\textcolor{keyword}{>}(desc.Width),\ \textcolor{keyword}{static\_cast<}uint32\_t\textcolor{keyword}{>}(desc.Height));}
+\DoxyCodeLine{00233\ \ \ \ \ \}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \textcolor{preprocessor}{\#if\ defined(\_PIX\_H\_)\ ||\ defined(\_PIX3\_H\_)}}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{comment}{//\ Scoped\ PIX\ event.}}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keyword}{class\ }ScopedPixEvent}
+\DoxyCodeLine{00238\ \ \ \ \ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ ScopedPixEvent(\_In\_\ ID3D12GraphicsCommandList*\ pCommandList,\ UINT64\ \textcolor{comment}{/*metadata*/},\ PCWSTR\ pFormat)\ noexcept}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ :\ mCommandList(pCommandList)}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ PIXBeginEvent(pCommandList,\ 0,\ pFormat);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \string~ScopedPixEvent()}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ PIXEndEvent(mCommandList);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ ID3D12GraphicsCommandList*\ mCommandList;}
+\DoxyCodeLine{00252\ \ \ \ \ \};}
+\DoxyCodeLine{00253\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{comment}{//\ Helper\ sets\ a\ D3D\ resource\ name\ string\ (used\ by\ PIX\ and\ debug\ layer\ leak\ reporting).}}
+\DoxyCodeLine{00256\ \textcolor{preprocessor}{\#if\ !defined(NO\_D3D12\_DEBUG\_NAME)\ \&\&\ (defined(\_DEBUG)\ ||\ defined(PROFILE))}}
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keyword}{template}<UINT\ TNameLength>}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{namespace_direct_x_aaf59581c448b3b0dbc93da7c7827625b}{SetDebugObjectName}}(\_In\_\ ID3D12DeviceChild*\ resource,\ \_In\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}(\&name)[TNameLength])\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00259\ \ \ \ \ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{wchar\_t}\ wname[MAX\_PATH];}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ result\ =\ MultiByteToWideChar(CP\_UTF8,\ 0,\ name,\ TNameLength,\ wname,\ MAX\_PATH);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (result\ >\ 0)}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ resource-\/>SetName(wname);}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00266\ \ \ \ \ \}}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keyword}{template}<UINT\ TNameLength>}
+\DoxyCodeLine{00269\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{namespace_direct_x_aaf59581c448b3b0dbc93da7c7827625b}{SetDebugObjectName}}(\_In\_\ ID3D12DeviceChild*\ resource,\ \_In\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{wchar\_t}(\&name)[TNameLength])\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00270\ \ \ \ \ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ resource-\/>SetName(name);}
+\DoxyCodeLine{00272\ \ \ \ \ \}}
+\DoxyCodeLine{00273\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00274\ \ \ \ \ \textcolor{keyword}{template}<UINT\ TNameLength>}
+\DoxyCodeLine{00275\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{namespace_direct_x_aaf59581c448b3b0dbc93da7c7827625b}{SetDebugObjectName}}(\_In\_\ ID3D12DeviceChild*,\ \_In\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}(\&)[TNameLength])\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00276\ \ \ \ \ \{\}}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \ \ \textcolor{keyword}{template}<UINT\ TNameLength>}
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{namespace_direct_x_aaf59581c448b3b0dbc93da7c7827625b}{SetDebugObjectName}}(\_In\_\ ID3D12DeviceChild*,\ \_In\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{wchar\_t}(\&)[TNameLength])\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00280\ \ \ \ \ \{\}}
+\DoxyCodeLine{00281\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \textcolor{comment}{//\ Helper\ for\ resource\ barrier.}}
+\DoxyCodeLine{00284\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{namespace_direct_x_af92c8b72aa4c7e7b9fbdb5c9db37ddc9}{TransitionResource}}(}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ resource,}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateBefore,}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateAfter)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00290\ \ \ \ \ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ assert(commandList\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ assert(resource\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (stateBefore\ ==\ stateAfter)}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_BARRIER\ desc\ =\ \{\};}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ desc.Type\ =\ D3D12\_RESOURCE\_BARRIER\_TYPE\_TRANSITION;}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ desc.Transition.pResource\ =\ resource;}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ desc.Transition.Subresource\ =\ D3D12\_RESOURCE\_BARRIER\_ALL\_SUBRESOURCES;}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ desc.Transition.StateBefore\ =\ stateBefore;}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ desc.Transition.StateAfter\ =\ stateAfter;}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ commandList-\/>ResourceBarrier(1,\ \&desc);}
+\DoxyCodeLine{00305\ \ \ \ \ \}}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{comment}{//\ Helper\ which\ applies\ one\ or\ more\ resources\ barriers\ and\ then\ reverses\ them\ on\ destruction.}}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}}
+\DoxyCodeLine{00309\ \ \ \ \ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}(}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ std::initializer\_list<D3D12\_RESOURCE\_BARRIER>\ barriers)\ \textcolor{keyword}{noexcept}(\textcolor{keyword}{false})}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ :\ mCommandList(commandList),}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ mBarriers(barriers)}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ assert(mBarriers.size()\ <=\ UINT32\_MAX);}
+\DoxyCodeLine{00318\ }
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ barriers}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ mCommandList-\/>ResourceBarrier(\textcolor{keyword}{static\_cast<}UINT\textcolor{keyword}{>}(mBarriers.size()),\ mBarriers.data());}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_a56a02386324feda7438cb2321afcac96}{ScopedBarrier}}(}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(count)\ \textcolor{keyword}{const}\ D3D12\_RESOURCE\_BARRIER\ *barriers,}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count)\ \textcolor{keyword}{noexcept}(\textcolor{keyword}{false})}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ :\ mCommandList(commandList),}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ mBarriers(barriers,\ barriers\ +\ count)}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ assert(count\ <=\ UINT32\_MAX);}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ barriers}}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ mCommandList-\/>ResourceBarrier(\textcolor{keyword}{static\_cast<}UINT\textcolor{keyword}{>}(mBarriers.size()),\ mBarriers.data());}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keywordtype}{size\_t}\ TBarrierLength>}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_a3b02b768e777c633ed89f66ebbd2ad2e}{ScopedBarrier}}(}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_RESOURCE\_BARRIER(\&barriers)[TBarrierLength])\ \textcolor{keyword}{noexcept}(\textcolor{keyword}{false})}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ :\ mCommandList(commandList),}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ mBarriers(barriers,\ barriers\ +\ TBarrierLength)}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ assert(TBarrierLength\ <=\ UINT32\_MAX);}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ barriers}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ mCommandList-\/>ResourceBarrier(\textcolor{keyword}{static\_cast<}UINT\textcolor{keyword}{>}(mBarriers.size()),\ mBarriers.data());}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_af67adbfd254056d4a17f8524fdc1ef2f}{ScopedBarrier}}(\doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00351\ }
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_a77e36e35107bd3da45e9b587d2b62e16}{ScopedBarrier}}(\doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_aae69c3eebaa585dab96674a6f0d696ff}{ScopedBarrier}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier_a0a47c1bad4a36a468797f080512dc55a}{\string~ScopedBarrier}}()}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reverse\ barrier\ inputs\ and\ outputs}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ b\ :\ mBarriers)}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::swap(b.Transition.StateAfter,\ b.Transition.StateBefore);}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ barriers}}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ mCommandList-\/>ResourceBarrier(\textcolor{keyword}{static\_cast<}UINT\textcolor{keyword}{>}(mBarriers.size()),\ mBarriers.data());}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00366\ }
+\DoxyCodeLine{00367\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ ID3D12GraphicsCommandList*\ mCommandList;}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ std::vector<D3D12\_RESOURCE\_BARRIER>\ mBarriers;}
+\DoxyCodeLine{00370\ \ \ \ \ \};}
+\DoxyCodeLine{00371\ }
+\DoxyCodeLine{00372\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }DX12}
+\DoxyCodeLine{00373\ \ \ \ \ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Helper\ to\ check\ for\ power-\/of-\/2}}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ae424be92aa718222f81dfda0ff7af9b4}{IsPowerOf2}}(T\ x)\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ ((x\ !=\ 0)\ \&\&\ !(x\ \&\ (x\ -\/\ 1)));\ \}}
+\DoxyCodeLine{00377\ }
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Helpers\ for\ aligning\ values\ by\ a\ power\ of\ 2}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ T\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a0bfc33449a0fbb6855b89ac9f9dec6c6}{AlignDown}}(T\ size,\ \textcolor{keywordtype}{size\_t}\ alignment)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (alignment\ >\ 0)}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(((alignment\ -\/\ 1)\ \&\ alignment)\ ==\ 0);}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mask\ =\ \textcolor{keyword}{static\_cast<}T\textcolor{keyword}{>}(alignment\ -\/\ 1);}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ size\ \&\ \string~mask;}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ size;}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00390\ }
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ T\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ae7486a73de313bec4d5b46f851ad94d3}{AlignUp}}(T\ size,\ \textcolor{keywordtype}{size\_t}\ alignment)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (alignment\ >\ 0)}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(((alignment\ -\/\ 1)\ \&\ alignment)\ ==\ 0);}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mask\ =\ \textcolor{keyword}{static\_cast<}T\textcolor{keyword}{>}(alignment\ -\/\ 1);}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (size\ +\ mask)\ \&\ \string~mask;}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ size;}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00402\ \ \ \ \ \}}
+\DoxyCodeLine{00403\ \}}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00406\ \textcolor{preprocessor}{\#pragma\ warning(pop)}}
+\DoxyCodeLine{00407\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}
