@@ -31,6 +31,14 @@ enum class EDirection
     Right
 };
 
+enum class ETileValue
+{
+    Path  = 0,
+    Wall  = 1,
+    Outer = 2,
+    Goal  = 3
+};
+
 enum class EBeatJudge
 {
     Good,

@@ -13,7 +13,7 @@ void FCreditPopup::Update(FGameContext& Context) {}
 void FCreditPopup::Render(FGameContext& Context)
 {
 	if (!bIsOpen)
-		return; // ImGui 창 시작
+		return;
 
 	if (ImGui::Begin("Credits", &bIsOpen, ImGuiWindowFlags_AlwaysAutoResize))
 	{

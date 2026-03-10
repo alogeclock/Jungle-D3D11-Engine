@@ -50,7 +50,13 @@ PS_INPUT mainVS(VS_INPUT input)
 
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
-    float4 color = input.color;
+    float4 color = SimpleTexture.Sample(SimpleSampler, input.UV);
 
-    return SimpleTexture.Sample(SimpleSampler, input.UV);
+    // 투명 픽셀은 버림
+    if (color.a < 0.01f)
+    {
+        discard;
+    }
+
+    return color;
 }

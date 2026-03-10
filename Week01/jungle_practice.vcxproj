@@ -160,6 +160,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="UI\PopupManager.cpp" />
+    <ClCompile Include="UI\GameplayHUDWidget.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Core\Renderer.cpp" />
