@@ -1,6 +1,6 @@
 #include "Game.h"
 
-void UGame::Init(URenderer* InRenderer, HWND InHWnd)
+void UGame::Init(FRenderer* InRenderer, HWND InHWnd)
 {
 	Renderer = InRenderer;
 	hWnd = InHWnd;

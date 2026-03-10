@@ -57,7 +57,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #pragma endregion //윈도우 생성
 
 #pragma region Renderer 및 ImGui 초기화
-	URenderer renderer;
+	FRenderer renderer;
 	renderer.Create(hWnd);
 	renderer.CreateShader();
 	renderer.CreateConstantBuffer();

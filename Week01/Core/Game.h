@@ -19,13 +19,13 @@ enum class EGamePhase
 class UGame
 {
 public:
-	URenderer* Renderer;
+	FRenderer* Renderer;
 	HWND hWnd;
 	EGamePhase Phase;
 
 	UGame() : Renderer(nullptr), hWnd(nullptr), Phase(EGamePhase::Title) {}
 
-	void Init(URenderer* InRenderer, HWND InHWnd);
+	void Init(FRenderer* InRenderer, HWND InHWnd);
 	void Update(float deltaTime);
 	void Render();
 	void Release();
