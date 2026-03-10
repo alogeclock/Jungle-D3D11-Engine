@@ -17,9 +17,7 @@
 #include "ScoreSystem.h"
 #include "SpriteInfo.h"
 
-using namespace DirectX;
-
-FStage::~FStage() { ReleaseRenderResources(); }
+FStage::~FStage() = default;
 
 bool FStage::Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InTextures)
 {
@@ -86,9 +84,6 @@ bool FStage::Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InText
 	// 스프라이트 리소스 로드 + 엔티티에 스프라이트 할당
 	LoadSpriteResources();
 
-	// 렌더링 리소스 생성
-	CreateRenderResources();
-
 	// 비트 시스템 초기화 (스테이지 BPM 적용)
 	BeatSystem->SetBpm(static_cast<float>(Map->GetBpm()));
 	BeatSystem->Reset();
@@ -96,7 +91,7 @@ bool FStage::Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InText
 
 	// BGM 재생
 	FAudioSystem::Get().StopAll();
-	const std::string &MusicPath = Map->GetMusicPath();
+	const std::string& MusicPath = Map->GetMusicPath();
 	if (!MusicPath.empty())
 	{
 		std::string BgmKey = "bgm_stage" + std::to_string(StageIndex);
@@ -243,30 +238,25 @@ void FStage::Update(float DeltaTime, FGameContext& Context)
 
 void FStage::Render()
 {
-	if (!Renderer || !QuadVB || !SpriteCB)
+	if (!Renderer || !Textures)
 		return;
 
-	// View/Projection 행렬 갱신
-	UpdateViewProjection();
+	// Renderer에 카메라 설정
+	Renderer->SetCamera(*Camera);
 
-	// 버텍스 버퍼, 상수 버퍼, 샘플러 바인딩
-	UINT stride = sizeof(FSpriteVertex);
-	UINT offset = 0;
-	Renderer->DeviceContext->IASetVertexBuffers(0, 1, &QuadVB, &stride, &offset);
-	Renderer->DeviceContext->VSSetConstantBuffers(0, 1, &SpriteCB);
-	Renderer->DeviceContext->PSSetConstantBuffers(0, 1, &SpriteCB);
-	if (Renderer->SamplerState)
-	{
-		Renderer->DeviceContext->PSSetSamplers(0, 1, &Renderer->SamplerState);
-	}
+	// 텍스처 룩업 헬퍼
+	auto GetTex = [&](const std::string& Key) -> FTexture*
+		{
+			return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr;
+		};
 
 	// 바닥 타일 렌더링
 	for (const auto& Tile : Tiles)
 	{
 		float WorldX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
 		float WorldY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
-		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, Tile.GetSprite());
-		Renderer->DrawTextureInWorld(Textures->Get("tile_floor"), WorldX, WorldY, TileSize, TileSize, GetCamera());
+		const FSpriteInfo& Spr = Tile.GetSprite();
+		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
 	}
 
 	// 벽 렌더링
@@ -276,8 +266,8 @@ void FStage::Render()
 			continue;
 		float WorldX = W.GetRenderX(TileSize) + TileSize * 0.5f;
 		float WorldY = W.GetRenderY(TileSize) + TileSize * 0.5f;
-		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, W.GetSprite());
-		Renderer->DrawTextureInWorld(Textures->Get("wall"), WorldX, WorldY, TileSize, TileSize, GetCamera());
+		const FSpriteInfo& Spr = W.GetSprite();
+		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
 	}
 
 	// 몬스터 렌더링
@@ -287,93 +277,23 @@ void FStage::Render()
 			continue;
 		float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
 		float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
-		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, Mon->GetSprite());
-		Renderer->DrawTextureInWorld(Textures->Get("monster"), WorldX, WorldY, TileSize, TileSize, GetCamera());
+		const FSpriteInfo& Spr = Mon->GetSprite();
+		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
 	}
 
 	// 플레이어 렌더링 (가장 위에 그림)
+	if (!Player->IsDead())
 	{
-		if (Player->IsDead())
-			return;
 		float WorldX = Player->GetRenderX() + TileSize * 0.5f;
 		float WorldY = Player->GetRenderY() + TileSize * 0.5f;
-		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, Player->GetSprite());
-		Renderer->DrawTextureInWorld(Textures->Get("player"), WorldX, WorldY, TileSize, TileSize, GetCamera());
+		const FSpriteInfo& Spr = Player->GetSprite();
+		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
 	}
 }
 
 // ============================================================
-// 렌더링 리소스 관리
+// 스프라이트 리소스 관리
 // ============================================================
-
-void FStage::CreateRenderResources()
-{
-	ReleaseRenderResources();
-
-	auto* Device = Renderer->Device;
-
-	// 단위 쿼드 버텍스 버퍼 생성 (중심 기준 -0.5 ~ 0.5, UV 포함)
-	FSpriteVertex Vertices[] = {
-		{-0.5f, -0.5f, 0.0f, 0.0f, 0.0f}, // 좌상
-		{0.5f, -0.5f, 0.0f, 1.0f, 0.0f},  // 우상
-		{0.5f, 0.5f, 0.0f, 1.0f, 1.0f},   // 우하
-
-		{-0.5f, -0.5f, 0.0f, 0.0f, 0.0f}, // 좌상
-		{0.5f, 0.5f, 0.0f, 1.0f, 1.0f},   // 우하
-		{-0.5f, 0.5f, 0.0f, 0.0f, 1.0f},  // 좌하
-	};
-
-	D3D11_BUFFER_DESC vbDesc = {};
-	vbDesc.ByteWidth = sizeof(Vertices);
-	vbDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-	D3D11_SUBRESOURCE_DATA vbData = { Vertices };
-	Device->CreateBuffer(&vbDesc, &vbData, &QuadVB);
-
-	// 스프라이트 상수 버퍼 생성
-	D3D11_BUFFER_DESC cbDesc = {};
-	cbDesc.ByteWidth = (sizeof(FSpriteConstants) + 0xF) & ~0xF; // 16바이트 정렬
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	Device->CreateBuffer(&cbDesc, nullptr, &SpriteCB);
-}
-
-void FStage::ReleaseRenderResources()
-{
-	if (QuadVB)
-	{
-		QuadVB->Release();
-		QuadVB = nullptr;
-	}
-	if (SpriteCB)
-	{
-		SpriteCB->Release();
-		SpriteCB = nullptr;
-	}
-}
-
-void FStage::UpdateViewProjection()
-{
-	FVec2 CamPos = Camera->GetPosition();
-	float Zoom = Camera->GetZoom();
-	float VpW = Renderer->ViewportInfo.Width;
-	float VpH = Renderer->ViewportInfo.Height;
-
-	// View: 카메라 위치만큼 이동 (줌은 Projection에서 처리하거나 View에서 처리)
-	// 카메라 좌표 빼기 → 줌 스케일링
-	XMMATRIX View =
-		XMMatrixTranslation(-CamPos.X, -CamPos.Y, 0.0f) * XMMatrixScaling(Zoom, Zoom, 1.0f);
-
-	// Projection: 직교 투영 (픽셀 좌표 → NDC)
-	// Left=0, Right=VpW, Bottom=VpH, Top=0 → Y 아래로 증가 (2D 게임 좌표계)
-	XMMATRIX Proj = XMMatrixOrthographicOffCenterLH(0.0f, VpW, VpH, 0.0f, 0.0f, 1.0f);
-
-	XMStoreFloat4x4(&CachedView, XMMatrixTranspose(View));
-	XMStoreFloat4x4(&CachedProjection, XMMatrixTranspose(Proj));
-}
 
 void FStage::LoadSpriteResources()
 {
@@ -430,47 +350,6 @@ void FStage::LoadSpriteResources()
 		Info.SpriteSize = { TileSize, TileSize };
 		Mon->SetSprite(Info);
 	}
-}
-
-void FStage::DrawSpriteAtWorld(float WorldCenterX, float WorldCenterY, float Width, float Height,
-	const FSpriteInfo& Sprite)
-{
-	// 텍스처 바인딩
-	XMFLOAT2 TexSize = { 1.0f, 1.0f };
-
-	if (Textures && !Sprite.TextureKey.empty())
-	{
-		FTexture* Tex = Textures->Get(Sprite.TextureKey);
-		if (Tex && Tex->GetTextureSRV())
-		{
-			ID3D11ShaderResourceView* SRV = Tex->GetTextureSRV();
-			Renderer->DeviceContext->PSSetShaderResources(0, 1, &SRV);
-			TexSize = { static_cast<float>(Tex->Width), static_cast<float>(Tex->Height) };
-		}
-	}
-
-	// World 행렬: 크기 스케일링 → 월드 위치로 이동
-	XMMATRIX World = XMMatrixScaling(Width, Height, 1.0f) *
-		XMMatrixTranslation(WorldCenterX, WorldCenterY, 0.0f);
-
-	// 상수 버퍼 업데이트
-	FSpriteConstants CB = {};
-	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(World));
-	CB.View = CachedView;
-	CB.Projection = CachedProjection;
-	// sprite atlas를 사용하지 않으므로 전체 텍스처 UV 사용
-	CB.SpriteSize = TexSize;
-	CB.TextureSize = TexSize;
-	CB.SpriteOffset = Sprite.SpriteOffset;
-	CB.IsMirrored = Sprite.bIsMirrored ? 1.0f : 0.0f;
-
-	D3D11_MAPPED_SUBRESOURCE Mapped;
-	Renderer->DeviceContext->Map(SpriteCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
-	memcpy(Mapped.pData, &CB, sizeof(CB));
-	Renderer->DeviceContext->Unmap(SpriteCB, 0);
-
-	// 드로우
-	Renderer->DeviceContext->Draw(6, 0);
 }
 
 bool FStage::IsWalkable(int X, int Y) const
