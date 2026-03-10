@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "ScoreboardPopup.h"
 #include "Core/GameContext.h"
 #include "imgui/imgui.h"

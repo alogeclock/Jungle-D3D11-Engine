@@ -1,17 +1,18 @@
+#include "pch.h"
 #include "Stage.h"
+#include "BeatSystem.h"
+#include "Camera2D.h"
 #include "Core/GameContext.h"
 #include "Core/Input.h"
 #include "Core/Logger.h"
-#include "BeatSystem.h"
-#include "Camera2D.h"
-#include "Render/Renderer.h"
-#include "Render/Texture.h"
-#include "Render/TextureManager.h"
-#include "Data/MapLoader.h"
 #include "Data/MapData.h"
+#include "Data/MapLoader.h"
 #include "IO/ImageLoader.h"
 #include "Monster.h"
 #include "Player.h"
+#include "Render/Renderer.h"
+#include "Render/Texture.h"
+#include "Render/TextureManager.h"
 #include "ScoreSystem.h"
 #include "SpriteInfo.h"
 
@@ -52,7 +53,7 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     {
         for (int X = 0; X < Map->GetWidth(); X++)
         {
-            int TileVal = Map->GetTile(X, Y);
+            int        TileVal = Map->GetTile(X, Y);
             ETileValue TV = static_cast<ETileValue>(TileVal);
 
             switch (TV)
@@ -78,7 +79,7 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     Player->SetPosition(StageInfo.PlayerSpawn.X, StageInfo.PlayerSpawn.Y, TileSize);
 
     // 메타데이터 기반 몬스터 스폰
-    for (const auto& Spawn : StageInfo.MonsterSpawns)
+    for (const auto &Spawn : StageInfo.MonsterSpawns)
     {
         auto Mon = std::make_unique<FMonster>();
         Mon->SetPosition(Spawn.X, Spawn.Y, TileSize);
@@ -162,7 +163,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         int CurrentBeatIndex =
             static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
 
-        if (BeatSystem->JudgeInput() == EBeatJudge::Good) //
+        if (BeatSystem->JudgeInput() == EBeatJudge::Good)
         {
             Logger::Log("Good Input");
             if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
@@ -172,8 +173,8 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             else
             {
                 // 즉시 이동 처리
-                Player->QueueInput(MoveDir); //
-                Player->OnBeat(*this);       //
+                Player->QueueInput(MoveDir);
+                Player->OnBeat(*this);
                 Player->SetLastMovedBeatIndex(CurrentBeatIndex);
             }
         }
@@ -181,6 +182,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         {
             Logger::Log("Miss Input");
             Player->Damage(1); // 엇박자 입력 시 데미지
+            Player->SetLastMovedBeatIndex(CurrentBeatIndex);
         }
     }
 
@@ -198,14 +200,14 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
             {
                 Logger::Log("No Input Detected - Player Damaged");
-                Player->Damage(1); //
+                Player->Damage(1);
             }
         }
 
         // 몬스터 이동
         for (auto &Mon : Monsters)
         {
-            Mon->OnBeat(*this); //
+            Mon->OnBeat(*this);
         }
     }
 
@@ -355,12 +357,13 @@ void FStage::LoadSpriteResources()
         return;
 
     // 스프라이트 텍스처 로드 (파일이 없으면 셰이더 폴백 색상 사용)
-    auto LoadTex = [&](const std::string& Key, const std::string& Path)
+    auto LoadTex = [&](const std::string &Key, const std::string &Path)
     {
         if (!Textures->Has(Key))
         {
             auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
-            if (Tex) Textures->Register(Key, std::move(Tex));
+            if (Tex)
+                Textures->Register(Key, std::move(Tex));
         }
     };
     LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
@@ -416,7 +419,7 @@ void FStage::DrawSpriteAtWorld(float WorldCenterX, float WorldCenterY, float Wid
         FTexture *Tex = Textures->Get(Sprite.TextureKey);
         if (Tex && Tex->GetTextureSRV())
         {
-            ID3D11ShaderResourceView* SRV = Tex->GetTextureSRV();
+            ID3D11ShaderResourceView *SRV = Tex->GetTextureSRV();
             Renderer->DeviceContext->PSSetShaderResources(0, 1, &SRV);
             TexSize = {static_cast<float>(Tex->Width), static_cast<float>(Tex->Height)};
         }
@@ -570,4 +573,4 @@ bool FStage::IsCleared() const { return bIsCleared; }
 
 int FStage::GetCurrentStageIndex() const { return CurrentStageIndex; }
 
-const std::string& FStage::GetStageName() const { return StageName; }
+const std::string &FStage::GetStageName() const { return StageName; }
