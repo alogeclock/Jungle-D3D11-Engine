@@ -1,0 +1,210 @@
+\doxysection{Core/\+\+Types.h File Reference}
+\hypertarget{_types_8h}{}\label{_types_8h}\index{Core/Types.h@{Core/Types.h}}
+{\ttfamily \+\#include $<$string$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_f_vertex_simple}{FVertex\+Simple}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_vector}{FVector}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_score_record}{FScore\+Record}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} \{ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9ab78a3223503896721cca1303f776159b}{Title}}
+, \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9ade3c731be5633838089a07179d301d7b}{Play}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} \{ \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a258f49887ef8d14ac268c92b02503aaa}{Up}}
+, \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53}{Down}}
+, \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a945d5e233cf7d6240f6b783b36a374ff}{Left}}
+, \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a92b09c7c48c520c3c55e497875da437c}{Right}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}} \{ \doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063a0c6ad70beb3a7e76c3fc7adab7c46acc}{Good}}
+, \doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063ae7ddb7cd777b59610b220bcfa80bd95f}{Miss}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActor\+Type}} \{ \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68a636da1d35e805b00eae0fcd8333f9234}{Player}}
+, \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68a243a3afa44aed85d504dbd53fd9804e9}{Monster}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}} \{ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa6d2df4f36109179e13d94939678dd050}{Chase\+Player}}
+, \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa3ca08d8818a56b7341a19f236290adec}{Random\+Move}}
+, \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234afadf7a8712303eeadde5d19f0e2955085c}{Patrol}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64}{EKey\+Code}} \{ \newline
+\doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a258f49887ef8d14ac268c92b02503aaa}{Up}}
+, \doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a08a38277b0309070706f6652eeae9a53}{Down}}
+, \doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a945d5e233cf7d6240f6b783b36a374ff}{Left}}
+, \doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a92b09c7c48c520c3c55e497875da437c}{Right}}
+, \newline
+\doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64ae93f994f01c537c4e2f7d8528c3eb5e9}{Count}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{_types_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_types_8h_ad914e65c956dae027f9a1765ac337c68}\index{Types.h@{Types.h}!EActorType@{EActorType}}
+\index{EActorType@{EActorType}!Types.h@{Types.h}}
+\doxysubsubsection{\texorpdfstring{EActorType}{EActorType}}
+{\footnotesize\ttfamily \label{_types_8h_ad914e65c956dae027f9a1765ac337c68} 
+enum class \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActor\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Player@{Player}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Player@{Player}}
+}\Hypertarget{_types_8h_ad914e65c956dae027f9a1765ac337c68a636da1d35e805b00eae0fcd8333f9234}\label{_types_8h_ad914e65c956dae027f9a1765ac337c68a636da1d35e805b00eae0fcd8333f9234} 
+Player&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Monster@{Monster}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Monster@{Monster}}
+}\Hypertarget{_types_8h_ad914e65c956dae027f9a1765ac337c68a243a3afa44aed85d504dbd53fd9804e9}\label{_types_8h_ad914e65c956dae027f9a1765ac337c68a243a3afa44aed85d504dbd53fd9804e9} 
+Monster&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}\index{Types.h@{Types.h}!EBeatJudge@{EBeatJudge}}
+\index{EBeatJudge@{EBeatJudge}!Types.h@{Types.h}}
+\doxysubsubsection{\texorpdfstring{EBeatJudge}{EBeatJudge}}
+{\footnotesize\ttfamily \label{_types_8h_a9395470b121c3a8c4ca82eb6db81f063} 
+enum class \doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Good@{Good}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Good@{Good}}
+}\Hypertarget{_types_8h_a9395470b121c3a8c4ca82eb6db81f063a0c6ad70beb3a7e76c3fc7adab7c46acc}\label{_types_8h_a9395470b121c3a8c4ca82eb6db81f063a0c6ad70beb3a7e76c3fc7adab7c46acc} 
+Good&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Miss@{Miss}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Miss@{Miss}}
+}\Hypertarget{_types_8h_a9395470b121c3a8c4ca82eb6db81f063ae7ddb7cd777b59610b220bcfa80bd95f}\label{_types_8h_a9395470b121c3a8c4ca82eb6db81f063ae7ddb7cd777b59610b220bcfa80bd95f} 
+Miss&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}\index{Types.h@{Types.h}!EDirection@{EDirection}}
+\index{EDirection@{EDirection}!Types.h@{Types.h}}
+\doxysubsubsection{\texorpdfstring{EDirection}{EDirection}}
+{\footnotesize\ttfamily \label{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42} 
+enum class \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Up@{Up}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Up@{Up}}
+}\Hypertarget{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a258f49887ef8d14ac268c92b02503aaa}\label{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a258f49887ef8d14ac268c92b02503aaa} 
+Up&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Down@{Down}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Down@{Down}}
+}\Hypertarget{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53}\label{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53} 
+Down&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Left@{Left}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Left@{Left}}
+}\Hypertarget{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a945d5e233cf7d6240f6b783b36a374ff}\label{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a945d5e233cf7d6240f6b783b36a374ff} 
+Left&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Right@{Right}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Right@{Right}}
+}\Hypertarget{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a92b09c7c48c520c3c55e497875da437c}\label{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a92b09c7c48c520c3c55e497875da437c} 
+Right&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_types_8h_aa67133a8a9762ae46eca5395ef73cd64}\index{Types.h@{Types.h}!EKeyCode@{EKeyCode}}
+\index{EKeyCode@{EKeyCode}!Types.h@{Types.h}}
+\doxysubsubsection{\texorpdfstring{EKeyCode}{EKeyCode}}
+{\footnotesize\ttfamily \label{_types_8h_aa67133a8a9762ae46eca5395ef73cd64} 
+enum class \doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64}{EKey\+Code}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Up@{Up}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Up@{Up}}
+}\Hypertarget{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a258f49887ef8d14ac268c92b02503aaa}\label{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a258f49887ef8d14ac268c92b02503aaa} 
+Up&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Down@{Down}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Down@{Down}}
+}\Hypertarget{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a08a38277b0309070706f6652eeae9a53}\label{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a08a38277b0309070706f6652eeae9a53} 
+Down&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Left@{Left}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Left@{Left}}
+}\Hypertarget{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a945d5e233cf7d6240f6b783b36a374ff}\label{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a945d5e233cf7d6240f6b783b36a374ff} 
+Left&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Right@{Right}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Right@{Right}}
+}\Hypertarget{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a92b09c7c48c520c3c55e497875da437c}\label{_types_8h_aa67133a8a9762ae46eca5395ef73cd64a92b09c7c48c520c3c55e497875da437c} 
+Right&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Count@{Count}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Count@{Count}}
+}\Hypertarget{_types_8h_aa67133a8a9762ae46eca5395ef73cd64ae93f994f01c537c4e2f7d8528c3eb5e9}\label{_types_8h_aa67133a8a9762ae46eca5395ef73cd64ae93f994f01c537c4e2f7d8528c3eb5e9} 
+Count&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}\index{Types.h@{Types.h}!EMonsterAIType@{EMonsterAIType}}
+\index{EMonsterAIType@{EMonsterAIType}!Types.h@{Types.h}}
+\doxysubsubsection{\texorpdfstring{EMonsterAIType}{EMonsterAIType}}
+{\footnotesize\ttfamily \label{_types_8h_a5950ad5ea571cdaa0468f4494c9234af} 
+enum class \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ChasePlayer@{ChasePlayer}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!ChasePlayer@{ChasePlayer}}
+}\Hypertarget{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa6d2df4f36109179e13d94939678dd050}\label{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa6d2df4f36109179e13d94939678dd050} 
+Chase\+Player&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RandomMove@{RandomMove}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!RandomMove@{RandomMove}}
+}\Hypertarget{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa3ca08d8818a56b7341a19f236290adec}\label{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa3ca08d8818a56b7341a19f236290adec} 
+Random\+Move&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Patrol@{Patrol}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Patrol@{Patrol}}
+}\Hypertarget{_types_8h_a5950ad5ea571cdaa0468f4494c9234afadf7a8712303eeadde5d19f0e2955085c}\label{_types_8h_a5950ad5ea571cdaa0468f4494c9234afadf7a8712303eeadde5d19f0e2955085c} 
+Patrol&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_types_8h_ab6949df4214b79a5795967590fe95bc9}\index{Types.h@{Types.h}!ESceneType@{ESceneType}}
+\index{ESceneType@{ESceneType}!Types.h@{Types.h}}
+\doxysubsubsection{\texorpdfstring{ESceneType}{ESceneType}}
+{\footnotesize\ttfamily \label{_types_8h_ab6949df4214b79a5795967590fe95bc9} 
+enum class \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Title@{Title}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Title@{Title}}
+}\Hypertarget{_types_8h_ab6949df4214b79a5795967590fe95bc9ab78a3223503896721cca1303f776159b}\label{_types_8h_ab6949df4214b79a5795967590fe95bc9ab78a3223503896721cca1303f776159b} 
+Title&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Play@{Play}!Types.h@{Types.h}}
+\index{Types.h@{Types.h}!Play@{Play}}
+}\Hypertarget{_types_8h_ab6949df4214b79a5795967590fe95bc9ade3c731be5633838089a07179d301d7b}\label{_types_8h_ab6949df4214b79a5795967590fe95bc9ade3c731be5633838089a07179d301d7b} 
+Play&\\
+\hline
+
+\end{DoxyEnumFields}

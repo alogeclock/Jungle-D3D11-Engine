@@ -1,0 +1,134 @@
+\doxysection{Stage.\+h}
+\hypertarget{_stage_8h_source}{}\label{_stage_8h_source}\index{Gameplay/Stage.h@{Gameplay/Stage.h}}
+\doxymbox{\hyperlink{_stage_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_map_data_8h}{MapData.h}}"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_player_8h}{Player.h}}"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_monster_8h}{Monster.h}}"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_tile_8h}{Tile.h}}"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_wall_8h}{Wall.h}}"{}}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_beat_system_8h}{BeatSystem.h}}"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_camera2_d_8h}{Camera2D.h}}"{}}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_score_system_8h}{ScoreSystem.h}}"{}}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_actor}{FActor}};}
+\DoxyCodeLine{00018\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_renderer}{FRenderer}};}
+\DoxyCodeLine{00019\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}};}
+\DoxyCodeLine{00020\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}};}
+\DoxyCodeLine{00021\ \textcolor{keyword}{struct\ }ID3D11Buffer;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{//\ 스프라이트\ 셰이더\ 상수\ 버퍼\ 레이아웃}}
+\DoxyCodeLine{00024\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_sprite_constants}{FSpriteConstants}}}
+\DoxyCodeLine{00025\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ DirectX::XMFLOAT4X4\ \doxymbox{\hyperlink{struct_f_sprite_constants_aaa3f9e4d5424b4a0e2aa0997bbfe4977}{World}};}
+\DoxyCodeLine{00027\ \ \ \ \ DirectX::XMFLOAT4X4\ \doxymbox{\hyperlink{struct_f_sprite_constants_a565fe78d7f5396c3af6c518ff6c43d9e}{View}};}
+\DoxyCodeLine{00028\ \ \ \ \ DirectX::XMFLOAT4X4\ \doxymbox{\hyperlink{struct_f_sprite_constants_a51987a3911e0c6547fce8f54f6a968a9}{Projection}};}
+\DoxyCodeLine{00029\ \ \ \ \ DirectX::XMFLOAT2\ \doxymbox{\hyperlink{struct_f_sprite_constants_a0c79349a7256572fd552e4d6ad109613}{SpriteSize}};}
+\DoxyCodeLine{00030\ \ \ \ \ DirectX::XMFLOAT2\ \doxymbox{\hyperlink{struct_f_sprite_constants_aec7d58368f712bbcc745c3908018dac3}{TextureSize}};}
+\DoxyCodeLine{00031\ \ \ \ \ DirectX::XMFLOAT2\ \doxymbox{\hyperlink{struct_f_sprite_constants_a58c54dcff532deca28996db6f78b5d3e}{SpriteOffset}};}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_sprite_constants_ad55345c2d8c80ad77ba85a15f9ef4215}{IsMirrored}};}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_sprite_constants_a73580328d04f791fa5ea42670d96fd83}{Pad}};}
+\DoxyCodeLine{00034\ \};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{//\ 스프라이트\ 버텍스\ (위치\ +\ UV)}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_sprite_vertex}{FSpriteVertex}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_sprite_vertex_aa4c4ef7992b4fcf60dbc6e8aa3d0e72d}{X}},\ \doxymbox{\hyperlink{struct_f_sprite_vertex_a23c43234804677396fbaa3474370eddc}{Y}},\ \doxymbox{\hyperlink{struct_f_sprite_vertex_a7ceb5a5b966dd75589c961d3a891b7a6}{Z}};}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_sprite_vertex_a20a69872b767136431cf2044c1416b5a}{U}},\ \doxymbox{\hyperlink{struct_f_sprite_vertex_acebc4dfdf86271734a957a1b1d995346}{V}};}
+\DoxyCodeLine{00041\ \};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_stage}{FStage}}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ \ \ \doxymbox{\hyperlink{class_f_stage_a3deb7aa7822e14c77d581281f158b1f5}{\string~FStage}}();}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_a6b9b55fb555351448d756040db699bab}{Load}}(\textcolor{keyword}{const}\ std::string\&\ MapPath,\ \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}*\ InRenderer,\ \doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}*\ InTextures);}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_stage_a18e3f47a7d25eb986d485f0da9401d8e}{Reset}}();}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_stage_af24ab76b10df5b903ab7d3308e2b32b7}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime);}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_stage_a0a53cc9eca76cbc9779ee31ed4d8cc3a}{Render}}();}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_a7a614cf2e6fa87b4e3026e5f155463b5}{IsWalkable}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_aa02a0643c7fb4f471047f9441234c0c2}{IsOccupied}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_a090be5bc82bfa3dabac5ab816cf1fab1}{CanMoveTo}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \doxymbox{\hyperlink{class_f_actor}{FActor}}*\ \doxymbox{\hyperlink{class_f_stage_a4258242cb0f98a6b891c55bcffd24c57}{FindActorAt}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y);}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_actor}{FActor}}*\ \doxymbox{\hyperlink{class_f_stage_a4258242cb0f98a6b891c55bcffd24c57}{FindActorAt}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \doxymbox{\hyperlink{class_f_player}{FPlayer}}\&\ \doxymbox{\hyperlink{class_f_stage_a394110153304fa270b756a8a6e000835}{GetPlayer}}();}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_player}{FPlayer}}\&\ \doxymbox{\hyperlink{class_f_stage_a394110153304fa270b756a8a6e000835}{GetPlayer}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_stage_a5d80d6f2e6dc548196fe507dc44d17cd}{AddMonster}}(std::unique\_ptr<FMonster>\ \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68a243a3afa44aed85d504dbd53fd9804e9}{Monster}});}
+\DoxyCodeLine{00065\ \ \ \ \ std::vector<std::unique\_ptr<FMonster>>\&\ \doxymbox{\hyperlink{class_f_stage_add5dec470918bf0d595f6fe806a5db5f}{GetMonsters}}();}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::unique\_ptr<FMonster>>\&\ \doxymbox{\hyperlink{class_f_stage_add5dec470918bf0d595f6fe806a5db5f}{GetMonsters}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ std::vector<FTile>\&\ \doxymbox{\hyperlink{class_f_stage_a9b1eb473c7e907084b94f01942c034f7}{GetTiles}}();}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<FTile>\&\ \doxymbox{\hyperlink{class_f_stage_a9b1eb473c7e907084b94f01942c034f7}{GetTiles}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ std::vector<FWall>\&\ \doxymbox{\hyperlink{class_f_stage_aac409d9fcc35456f935e34b9b9455fc5}{GetWalls}}();}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<FWall>\&\ \doxymbox{\hyperlink{class_f_stage_aac409d9fcc35456f935e34b9b9455fc5}{GetWalls}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00073\ \ \ \ \ \doxymbox{\hyperlink{class_f_wall}{FWall}}*\ \doxymbox{\hyperlink{class_f_stage_ae99f7c1cf46815e489df0e3ab6b44321}{FindWallAt}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y);}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_stage_a1031a6bffb83d9b925b3b75fd77eae5c}{RemoveDestroyedWalls}}();}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ \doxymbox{\hyperlink{class_f_map_data}{FMapData}}\&\ \doxymbox{\hyperlink{class_f_stage_ae42b96e32d1c4c985ccd995f90b228bd}{GetMap}}();}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_map_data}{FMapData}}\&\ \doxymbox{\hyperlink{class_f_stage_ae42b96e32d1c4c985ccd995f90b228bd}{GetMap}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \doxymbox{\hyperlink{class_f_beat_system}{FBeatSystem}}\&\ \doxymbox{\hyperlink{class_f_stage_ac62d59d0647f196f7ca04dd5e99d8ab2}{GetBeatSystem}}();}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_beat_system}{FBeatSystem}}\&\ \doxymbox{\hyperlink{class_f_stage_ac62d59d0647f196f7ca04dd5e99d8ab2}{GetBeatSystem}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}}\&\ \doxymbox{\hyperlink{class_f_stage_ae42ee4896d533a24b59cdb188c80044e}{GetCamera}}();}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}}\&\ \doxymbox{\hyperlink{class_f_stage_ae42ee4896d533a24b59cdb188c80044e}{GetCamera}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \doxymbox{\hyperlink{class_f_score_system}{FScoreSystem}}\&\ \doxymbox{\hyperlink{class_f_stage_a3d1166c59f61a4d9b719d1fd1d15cdd0}{GetScoreSystem}}();}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_score_system}{FScoreSystem}}\&\ \doxymbox{\hyperlink{class_f_stage_a3d1166c59f61a4d9b719d1fd1d15cdd0}{GetScoreSystem}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_stage_a91e4ca712cbfb0da1f64e8dd8b20d97c}{GetTileSize}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_a016d3ebf8555e9fd8589f03ba07ead43}{IsGameOver}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_stage_acae64b4e60b86d1c07313675f48ec41a}{IsCleared}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00094\ \ \ \ \ std::unique\_ptr<FMapData>\ Map;}
+\DoxyCodeLine{00095\ \ \ \ \ std::unique\_ptr<FPlayer>\ Player;}
+\DoxyCodeLine{00096\ \ \ \ \ std::vector<std::unique\_ptr<FMonster>>\ Monsters;}
+\DoxyCodeLine{00097\ \ \ \ \ std::vector<FTile>\ Tiles;}
+\DoxyCodeLine{00098\ \ \ \ \ std::vector<FWall>\ Walls;}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ std::unique\_ptr<FBeatSystem>\ BeatSystem;}
+\DoxyCodeLine{00101\ \ \ \ \ std::unique\_ptr<FCamera2D>\ Camera;}
+\DoxyCodeLine{00102\ \ \ \ \ std::unique\_ptr<FScoreSystem>\ ScoreSystem;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{float}\ TileSize\ =\ 96.0f;}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsGameOver\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsCleared\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}*\ Renderer\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00110\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}*\ Textures\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{//\ 렌더링\ 리소스}}
+\DoxyCodeLine{00113\ \ \ \ \ ID3D11Buffer*\ QuadVB\ =\ \textcolor{keyword}{nullptr};\ \ \ \ \ \ \textcolor{comment}{//\ 공유\ 쿼드\ 버텍스\ 버퍼\ (단위\ 사각형)}}
+\DoxyCodeLine{00114\ \ \ \ \ ID3D11Buffer*\ SpriteCB\ =\ \textcolor{keyword}{nullptr};\ \ \ \ \textcolor{comment}{//\ 스프라이트\ 상수\ 버퍼}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ 캐시된\ View/Projection\ 행렬}}
+\DoxyCodeLine{00117\ \ \ \ \ DirectX::XMFLOAT4X4\ CachedView;}
+\DoxyCodeLine{00118\ \ \ \ \ DirectX::XMFLOAT4X4\ CachedProjection;}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordtype}{void}\ CreateRenderResources();}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordtype}{void}\ ReleaseRenderResources();}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordtype}{void}\ LoadSpriteResources();}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateViewProjection();}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ 스프라이트\ 정보를\ 기반으로\ 텍스처를\ 바인딩하고\ 그리기}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawSpriteAtWorld(\textcolor{keywordtype}{float}\ WorldCenterX,\ \textcolor{keywordtype}{float}\ WorldCenterY,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ Width,\ \textcolor{keywordtype}{float}\ Height,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}}\&\ Sprite);}
+\DoxyCodeLine{00128\ \};}
+
+\end{DoxyCode}

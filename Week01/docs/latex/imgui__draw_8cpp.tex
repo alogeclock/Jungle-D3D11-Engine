@@ -1,0 +1,958 @@
+\doxysection{imgui/\+imgui\+\_\+draw.cpp File Reference}
+\hypertarget{imgui__draw_8cpp}{}\label{imgui__draw_8cpp}\index{imgui/imgui\_draw.cpp@{imgui/imgui\_draw.cpp}}
+{\ttfamily \+\#include "{}imgui.\+h"{}}\newline
+{\ttfamily \+\#include "{}imgui\+\_\+internal.\+h"{}}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include "{}imstb\+\_\+rectpack.\+h"{}}\newline
+{\ttfamily \+\#include "{}imstb\+\_\+truetype.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_im_triangulator_node}{Im\+Triangulator\+Node}}
+\item 
+struct \doxymbox{\hyperlink{struct_im_triangulator_node_span}{Im\+Triangulator\+Node\+Span}}
+\item 
+struct \doxymbox{\hyperlink{struct_im_triangulator}{Im\+Triangulator}}
+\item 
+struct \doxymbox{\hyperlink{struct_im_gui___impl_stb_true_type___font_src_data}{Im\+Gui\+\_\+\+Impl\+Stb\+True\+Type\+\_\+\+Font\+Src\+Data}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_adf4d73301961430d50d7edd96f92ce38}{IMGUI\+\_\+\+DEFINE\+\_\+\+MATH\+\_\+\+OPERATORS}}
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_aebe589aefd15ba7289a47168e31b5e45}{STBRP\+\_\+\+STATIC}}
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a9592e63d0df8b6f0712e8da3aea5db23}{STBRP\+\_\+\+ASSERT}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a152aa757fb023d39f16dd537e66b60f0}{STBRP\+\_\+\+SORT}}~\doxymbox{\hyperlink{imgui__internal_8h_aad1d96ea4d4f19dd44782b42185a0a7b}{Im\+Qsort}}
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a0791e69f0dcd58efa795dd50eb8c6cd0}{STB\+\_\+\+RECT\+\_\+\+PACK\+\_\+\+IMPLEMENTATION}}
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a8f6734fe0cb6d6aa09e494602afa96be}{STBTT\+\_\+malloc}}(x,  u)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a357d3564409e68f1b694e06f7beeca7e}{STBTT\+\_\+free}}(x,  u)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a1123d905f512c19c8d796a6d294a3a84}{STBTT\+\_\+assert}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_ab937f3c3c6d0c2c126c50bb32e379f02}{STBTT\+\_\+fmod}}(x,  y)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_ace1fcbebd394a5bed76bc9b97dbe8d5a}{STBTT\+\_\+sqrt}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a20c159e8e6985b92a96497881709659a}{STBTT\+\_\+pow}}(x,  y)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a2b639a5c1ed39bb9e223a78b743f3769}{STBTT\+\_\+fabs}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a37ec4d14918346d3451d4f44f24d4710}{STBTT\+\_\+ifloor}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a284a26aeebf87bc1688d38b3b16c7248}{STBTT\+\_\+iceil}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a0b2bbef30e7d325cb68c3fb033863b3e}{STBTT\+\_\+strlen}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_adb252cc9576591994fdf2f89baddc630}{STBTT\+\_\+\+STATIC}}
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_afaa2f2d0d9d6726cfae6da070e736347}{STB\+\_\+\+TRUETYPE\+\_\+\+IMPLEMENTATION}}
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a36c70a3a9dfec20d02bbb18e00a42ee1}{Im\+Draw\+Cmd\+\_\+\+Header\+Size}}~(offsetof(\doxymbox{\hyperlink{struct_im_draw_cmd}{Im\+Draw\+Cmd}}, Vtx\+Offset) + sizeof(unsigned int))
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_ac140465795cda6fa747579fc0b1b29d0}{Im\+Draw\+Cmd\+\_\+\+Header\+Compare}}(CMD\+\_\+\+LHS,  CMD\+\_\+\+RHS)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a13d0eca12c1e2df442519a1a80d8cdaa}{Im\+Draw\+Cmd\+\_\+\+Header\+Copy}}(CMD\+\_\+\+DST,  CMD\+\_\+\+SRC)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_acbac18638b9456aa07cd48452f074eeb}{Im\+Draw\+Cmd\+\_\+\+Are\+Sequential\+Idx\+Offset}}(CMD\+\_\+0,  CMD\+\_\+1)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_aa595f4d7f5dca6ca04e5b1648e84f0d6}{IM\+\_\+\+NORMALIZE2\+F\+\_\+\+OVER\+\_\+\+ZERO}}(VX,  VY)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_ae801e54afba24c14221f81e1564615ef}{IM\+\_\+\+FIXNORMAL2\+F\+\_\+\+MAX\+\_\+\+INVLEN2}}~100.\+0f
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a4df703825e073b91ea24956d6021ee59}{IM\+\_\+\+FIXNORMAL2F}}(VX,  VY)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a29e07f1735be59dadedeb13c6da90907}{IM\+\_\+\+FONTGLYPH\+\_\+\+INDEX\+\_\+\+UNUSED}}~((\doxymbox{\hyperlink{imgui_8h_a788d84b86cbaed7de12d6e58ab630e07}{Im\+U16}})-\/1)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a7fa472315872f6fd89bcc760a3bf6ce3}{IM\+\_\+\+FONTGLYPH\+\_\+\+INDEX\+\_\+\+NOT\+\_\+\+FOUND}}~((\doxymbox{\hyperlink{imgui_8h_a788d84b86cbaed7de12d6e58ab630e07}{Im\+U16}})-\/2)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a938848da23a2210dac3a4657512c8276}{Im\+Text\+Classifier\+Get}}(\+\_\+\+BITS,  \+\_\+\+CHAR\+\_\+\+OFFSET)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a8abf98f5e58a4b3dbbdf35bb1d5ee872}{stb\+\_\+\+\_\+in2}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_acdc23c4b28788003d2841185775661ff}{stb\+\_\+\+\_\+in3}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{imgui__draw_8cpp_a26702caa0fd7846cb92e8ba4d80446c3}{stb\+\_\+\+\_\+in4}}(x)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1}{Im\+Triangulator\+Node\+Type}} \{ \doxymbox{\hyperlink{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1ab8cc7128a30e52524e246c2a2c03d5e3}{Im\+Triangulator\+Node\+Type\+\_\+\+Convex}}
+, \doxymbox{\hyperlink{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1a3db2870cb703f62291b6867ab6f4d1f7}{Im\+Triangulator\+Node\+Type\+\_\+\+Ear}}
+, \doxymbox{\hyperlink{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1a4a388d52b599f34cc670250513263f54}{Im\+Triangulator\+Node\+Type\+\_\+\+Reflex}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \doxymbox{\hyperlink{imgui__draw_8cpp_a313bb9d47244a5d27a5aeb4cd74f94a3}{Im\+Bezier\+Cubic\+Calc}} (const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&p1, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&p2, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&p3, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&p4, float t)
+\item 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \doxymbox{\hyperlink{imgui__draw_8cpp_a9b3ec0353c3a10709ad21985942613da}{Im\+Bezier\+Quadratic\+Calc}} (const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&p1, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&p2, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&p3, float t)
+\item 
+int \doxymbox{\hyperlink{imgui__draw_8cpp_ab03ee823701d6a6b8b0d95d8ff56be73}{Im\+Texture\+Data\+Get\+Format\+Bytes\+Per\+Pixel}} (\doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}} format)
+\item 
+const char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_ab27135b67e12a347342cb1b6fd2633f5}{Im\+Texture\+Data\+Get\+Status\+Name}} (\doxymbox{\hyperlink{imgui_8h_a5c1fe5a7adf4a423ab5044dfdabf7dec}{Im\+Texture\+Status}} status)
+\item 
+const char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a8fcdf3356536ea679f1aa04ad80f0147}{Im\+Texture\+Data\+Get\+Format\+Name}} (\doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}} format)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a3f94172dde65426b52f7e137a899afb1}{Im\+Font\+Atlas\+Update\+New\+Frame}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, int frame\+\_\+count, bool renderer\+\_\+has\+\_\+textures)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ad09f72a150e0ca5f54f0971099b9c2e6}{Im\+Font\+Atlas\+Texture\+Block\+Convert}} (const unsigned char \texorpdfstring{$\ast$}{*}src\+\_\+pixels, \doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}} src\+\_\+fmt, int src\+\_\+pitch, unsigned char \texorpdfstring{$\ast$}{*}dst\+\_\+pixels, \doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}} dst\+\_\+fmt, int dst\+\_\+pitch, int w, int h)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a3e1a542c0cc52e9e9c7226147a363b35}{Im\+Font\+Atlas\+Texture\+Block\+Post\+Process}} (\doxymbox{\hyperlink{struct_im_font_atlas_post_process_data}{Im\+Font\+Atlas\+Post\+Process\+Data}} \texorpdfstring{$\ast$}{*}data)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ac6609aa9ce31f3607d744ea9d000b38b}{Im\+Font\+Atlas\+Texture\+Block\+Post\+Process\+Multiply}} (\doxymbox{\hyperlink{struct_im_font_atlas_post_process_data}{Im\+Font\+Atlas\+Post\+Process\+Data}} \texorpdfstring{$\ast$}{*}data, float multiply\+\_\+factor)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a96d74910e32c7f965f3a845b6b3adfa1}{Im\+Font\+Atlas\+Texture\+Block\+Fill}} (\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}dst\+\_\+tex, int dst\+\_\+x, int dst\+\_\+y, int w, int h, \doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}} col)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a0438e0b3d9708f5fd9f7213631bd540b}{Im\+Font\+Atlas\+Texture\+Block\+Copy}} (\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}src\+\_\+tex, int src\+\_\+x, int src\+\_\+y, \doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}dst\+\_\+tex, int dst\+\_\+x, int dst\+\_\+y, int w, int h)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a4361bba2b60ded70d35f43c4f4a3ac41}{Im\+Font\+Atlas\+Texture\+Block\+Queue\+Upload}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}tex, int x, int y, int w, int h)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ad350f588248bffe3405be098a2fc5ddf}{Im\+Font\+Atlas\+Build\+Notify\+Set\+Font}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}old\+\_\+font, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}new\+\_\+font)
+\item 
+bool \doxymbox{\hyperlink{imgui__draw_8cpp_a3f6a8379f3c0b4fe882ec673cf62e8f4}{Im\+Font\+Atlas\+Get\+Mouse\+Cursor\+Tex\+Data}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{imgui_8h_a9223d6c82bb5d12c2eab5f829ca520ef}{Im\+Gui\+Mouse\+Cursor}} cursor\+\_\+type, \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \texorpdfstring{$\ast$}{*}out\+\_\+offset, \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \texorpdfstring{$\ast$}{*}out\+\_\+size, \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} out\+\_\+uv\+\_\+border\+[2]\+, \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} out\+\_\+uv\+\_\+fill\+[2]\+)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a2ed1c49f29c1635abb9d187846311e43}{Im\+Font\+Atlas\+Build\+Main}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a2f95da190b053827e48cbd80f1f6cdf4}{Im\+Font\+Atlas\+Build\+Get\+Oversample\+Factors}} (\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, int \texorpdfstring{$\ast$}{*}out\+\_\+oversample\+\_\+h, int \texorpdfstring{$\ast$}{*}out\+\_\+oversample\+\_\+v)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a19d7fb37c8bf850f4996965eaf4c7986}{Im\+Font\+Atlas\+Build\+Setup\+Font\+Loader}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, const \doxymbox{\hyperlink{struct_im_font_loader}{Im\+Font\+Loader}} \texorpdfstring{$\ast$}{*}font\+\_\+loader)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_abd1950f96c48e04b73b586942c94918d}{Im\+Font\+Atlas\+Build\+Legacy\+Preload\+All\+Glyph\+Ranges}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a5bc852b30a75c2601a2bbea053210069}{Im\+Font\+Atlas\+Build\+Update\+Pointers}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_afb984dfe621aaf80f49b6f0af469330f}{Im\+Font\+Atlas\+Build\+Render\+Bitmap\+From\+String}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, int x, int y, int w, int h, const char \texorpdfstring{$\ast$}{*}in\+\_\+str, char in\+\_\+marker\+\_\+char)
+\item 
+bool \doxymbox{\hyperlink{imgui__draw_8cpp_acaca487a93adf4285b2594c4dc861f78}{Im\+Font\+Atlas\+Font\+Init\+Output}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_af583742e2268ebaef124cba2fa666e6b}{Im\+Font\+Atlas\+Font\+Destroy\+Output}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a2a1d9e825eb0acf13bd19c8583e20040}{Im\+Font\+Atlas\+Font\+Rebuild\+Output}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font)
+\item 
+bool \doxymbox{\hyperlink{imgui__draw_8cpp_ae7037d4e1f56bf54c9abef109d1090ce}{Im\+Font\+Atlas\+Font\+Source\+Init}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a40343d000f6a2a940bb414d883aca81f}{Im\+Font\+Atlas\+Font\+Source\+Add\+To\+Font}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_aa690609367a4f1b7ec458ad86a11657d}{Im\+Font\+Atlas\+Font\+Destroy\+Source\+Data}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_af416fb50007acafd154c44e3f0802572}{Im\+Font\+Atlas\+Build\+Setup\+Font\+Special\+Glyphs}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ab705fc4a6bbc81adc7ab6086bfcde692}{Im\+Font\+Atlas\+Baked\+Discard\+Font\+Glyph}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}glyph)
+\item 
+\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a664ece5afb972dbbf75434f405adf8b8}{Im\+Font\+Atlas\+Baked\+Add}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, float font\+\_\+size, float font\+\_\+rasterizer\+\_\+density, \doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}} baked\+\_\+id)
+\item 
+\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_ae609b8a5b7435384bd3ba05ce11e76ff}{Im\+Font\+Atlas\+Baked\+Get\+Closest\+Match}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, float font\+\_\+size, float font\+\_\+rasterizer\+\_\+density)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a5b545ff603b726dfe58fb1a673a19c11}{Im\+Font\+Atlas\+Baked\+Discard}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a26822b1d734b4d10c08e64983024e600}{Im\+Font\+Atlas\+Font\+Discard\+Bakes}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, int unused\+\_\+frames)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a7c23c7c6d5ca50deabb79f717eeab1b7}{Im\+Font\+Atlas\+Build\+Discard\+Bakes}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, int unused\+\_\+frames)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a8e3063e58e1ed849ed68cb7d0214432d}{Im\+Font\+Atlas\+Add\+Draw\+List\+Shared\+Data}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_draw_list_shared_data}{Im\+Draw\+List\+Shared\+Data}} \texorpdfstring{$\ast$}{*}data)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a01f50a0915e094baaa8b883f05e74946}{Im\+Font\+Atlas\+Remove\+Draw\+List\+Shared\+Data}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_draw_list_shared_data}{Im\+Draw\+List\+Shared\+Data}} \texorpdfstring{$\ast$}{*}data)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a2e42a220e1f4f691b02e9d27159a9b48}{Im\+Font\+Atlas\+Update\+Draw\+Lists\+Textures}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_texture_ref}{Im\+Texture\+Ref}} old\+\_\+tex, \doxymbox{\hyperlink{struct_im_texture_ref}{Im\+Texture\+Ref}} new\+\_\+tex)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ad83271ddd5cf9c02c9cc72fb33299369}{Im\+Font\+Atlas\+Update\+Draw\+Lists\+Shared\+Data}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a5279b1dafad68a1ab42121440c59ce0f}{Im\+Font\+Atlas\+Texture\+Add}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, int w, int h)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a774e74d2f6e0b33b6e6b85d4d5c5b3da}{Im\+Font\+Atlas\+Texture\+Repack}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, int w, int h)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ad574da8343f063ce995d922236480aac}{Im\+Font\+Atlas\+Texture\+Grow}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, int old\+\_\+tex\+\_\+w, int old\+\_\+tex\+\_\+h)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ab6db3feee2a9236c83a4cfa35cd8b044}{Im\+Font\+Atlas\+Texture\+Make\+Space}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+\doxymbox{\hyperlink{struct_im_vec2i}{Im\+Vec2i}} \doxymbox{\hyperlink{imgui__draw_8cpp_ac1de9fff83244136935700a8ae67a7c9}{Im\+Font\+Atlas\+Texture\+Get\+Size\+Estimate}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a9d1efb82d7bc3af7b4ee436ea5d776a9}{Im\+Font\+Atlas\+Build\+Clear}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_af11c1114c44b7a339be338065a28412b}{Im\+Font\+Atlas\+Texture\+Compact}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_ac050ff181df43cec0b63d834b6039c3f}{Im\+Font\+Atlas\+Build\+Init}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a3feab149778d739a3fb681a0c9c16f7a}{Im\+Font\+Atlas\+Build\+Destroy}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a352dcf39de7ba575d8e1c1db1f11c45a}{Im\+Font\+Atlas\+Pack\+Init}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a53458cee397384163c40b3042561aa87}{Im\+Font\+Atlas\+Pack\+Discard\+Rect}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} id)
+\item 
+\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} \doxymbox{\hyperlink{imgui__draw_8cpp_a0033358c6425323b29be68b3f5af3aa9}{Im\+Font\+Atlas\+Pack\+Add\+Rect}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, int w, int h, \doxymbox{\hyperlink{struct_im_font_atlas_rect_entry}{Im\+Font\+Atlas\+Rect\+Entry}} \texorpdfstring{$\ast$}{*}overwrite\+\_\+entry)
+\item 
+\doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a0c336a0e5d743ff3c8d40351d125d1bb}{Im\+Font\+Atlas\+Pack\+Get\+Rect}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} id)
+\item 
+\doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_ac554b588bab2aa85e6f6d6969b8224e4}{Im\+Font\+Atlas\+Pack\+Get\+Rect\+Safe}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} id)
+\item 
+\doxymbox{\hyperlink{imgui_8h_acf027918eb6b13ca59634b6630cd3450}{IM\+\_\+\+MSVC\+\_\+\+RUNTIME\+\_\+\+CHECKS\+\_\+\+RESTORE}} void \doxymbox{\hyperlink{imgui__draw_8cpp_a7629b82e6041ad9a4b677422d2ee7a7e}{Im\+Font\+Atlas\+Debug\+Log\+Texture\+Requests}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+const \doxymbox{\hyperlink{struct_im_font_loader}{Im\+Font\+Loader}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a2445ec6272ab6f7597ad4012e178a5d6}{Im\+Font\+Atlas\+Get\+Font\+Loader\+For\+Stb\+Truetype}} ()
+\item 
+\doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a0aca2c316ccea9c5fa07039224d4a41a}{Im\+Font\+Atlas\+Baked\+Add\+Font\+Glyph}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, const \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}in\+\_\+glyph)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a3b5b9528a5e29a11352fdd8ff0e62d1a}{Im\+Font\+Atlas\+Baked\+Add\+Font\+Glyph\+AdvancedX}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} codepoint, float advance\+\_\+x)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_af9bb9baf259d78887086d048324b8657}{Im\+Font\+Atlas\+Baked\+Set\+Font\+Glyph\+Bitmap}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}glyph, \doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}} \texorpdfstring{$\ast$}{*}r, const unsigned char \texorpdfstring{$\ast$}{*}src\+\_\+pixels, \doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}} src\+\_\+fmt, int src\+\_\+pitch)
+\item 
+\doxymbox{\hyperlink{imgui_8h_acf027918eb6b13ca59634b6630cd3450}{IM\+\_\+\+MSVC\+\_\+\+RUNTIME\+\_\+\+CHECKS\+\_\+\+RESTORE}} \doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}} \doxymbox{\hyperlink{imgui__draw_8cpp_afcf5d4f446f3dc0411abd7b5374afaea}{Im\+Font\+Atlas\+Baked\+Get\+Id}} (\doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}} font\+\_\+id, float baked\+\_\+size, float rasterizer\+\_\+density)
+\item 
+\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a58a2aab4435ade7b1ad6ada67f0a509f}{Im\+Font\+Atlas\+Baked\+Get\+Or\+Add}} (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, float font\+\_\+size, float font\+\_\+rasterizer\+\_\+density)
+\item 
+const char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a318c827c416f9b92c4b662ac1e2441d0}{Im\+Text\+Calc\+Word\+Wrap\+Next\+Line\+Start}} (const char \texorpdfstring{$\ast$}{*}text, const char \texorpdfstring{$\ast$}{*}text\+\_\+end, \doxymbox{\hyperlink{imgui_8h_a0bb290a6a1c9c777c2f38296c39ee565}{Im\+Draw\+Text\+Flags}} flags)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_acb87f6bbdf4abf3e105c3c1a43d475df}{Im\+Text\+Classifier\+Clear}} (\doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}} \texorpdfstring{$\ast$}{*}bits, unsigned int codepoint\+\_\+min, unsigned int codepoint\+\_\+end, \doxymbox{\hyperlink{imgui__internal_8h_a58bc4028ace5418227516d6302929233}{Im\+Wchar\+Class}} char\+\_\+class)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a9e50b480216f6da1470c05c260e4b757}{Im\+Text\+Classifier\+Set\+Char\+Class}} (\doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}} \texorpdfstring{$\ast$}{*}bits, unsigned int codepoint\+\_\+min, unsigned int codepoint\+\_\+end, \doxymbox{\hyperlink{imgui__internal_8h_a58bc4028ace5418227516d6302929233}{Im\+Wchar\+Class}} char\+\_\+class, unsigned int c)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a024a37754715a46df344fbb2adec28c3}{Im\+Text\+Classifier\+Set\+Char\+Class\+From\+Str}} (\doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}} \texorpdfstring{$\ast$}{*}bits, unsigned int codepoint\+\_\+min, unsigned int codepoint\+\_\+end, \doxymbox{\hyperlink{imgui__internal_8h_a58bc4028ace5418227516d6302929233}{Im\+Wchar\+Class}} char\+\_\+class, const char \texorpdfstring{$\ast$}{*}s)
+\item 
+void \doxymbox{\hyperlink{imgui__draw_8cpp_a67d60a9a93ea69e575050463781fc7e4}{Im\+Text\+Init\+Classifiers}} ()
+\item 
+const char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{imgui__draw_8cpp_a6d4e2446ce7049fbf6ad63d97977fd67}{Im\+Font\+Calc\+Word\+Wrap\+Position\+Ex}} (\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, float size, const char \texorpdfstring{$\ast$}{*}text, const char \texorpdfstring{$\ast$}{*}text\+\_\+end, float wrap\+\_\+width, \doxymbox{\hyperlink{imgui_8h_a0bb290a6a1c9c777c2f38296c39ee565}{Im\+Draw\+Text\+Flags}} flags)
+\item 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \doxymbox{\hyperlink{imgui__draw_8cpp_a47e70269878d020fb7ee90170a76b7d7}{Im\+Font\+Calc\+Text\+Size\+Ex}} (\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}font, float size, float max\+\_\+width, float wrap\+\_\+width, const char \texorpdfstring{$\ast$}{*}text\+\_\+begin, const char \texorpdfstring{$\ast$}{*}text\+\_\+end\+\_\+display, const char \texorpdfstring{$\ast$}{*}text\+\_\+end, const char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}out\+\_\+remaining, \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \texorpdfstring{$\ast$}{*}out\+\_\+offset, \doxymbox{\hyperlink{imgui_8h_a0bb290a6a1c9c777c2f38296c39ee565}{Im\+Draw\+Text\+Flags}} flags)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const int \doxymbox{\hyperlink{imgui__draw_8cpp_adf518fea7357febbb14eeecb692a8d95}{FONT\+\_\+\+ATLAS\+\_\+\+DEFAULT\+\_\+\+TEX\+\_\+\+DATA\+\_\+W}} = 122
+\item 
+const int \doxymbox{\hyperlink{imgui__draw_8cpp_a2c96fc3febbe9f4f6c042a2f975a5b1d}{FONT\+\_\+\+ATLAS\+\_\+\+DEFAULT\+\_\+\+TEX\+\_\+\+DATA\+\_\+H}} = 27
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{imgui__draw_8cpp_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{imgui__draw_8cpp_a4df703825e073b91ea24956d6021ee59}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!IM\_FIXNORMAL2F@{IM\_FIXNORMAL2F}}
+\index{IM\_FIXNORMAL2F@{IM\_FIXNORMAL2F}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{IM\_FIXNORMAL2F}{IM\_FIXNORMAL2F}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a4df703825e073b91ea24956d6021ee59} 
+\+\#define IM\+\_\+\+FIXNORMAL2F(\begin{DoxyParamCaption}\item[{}]{VX}{, }\item[{}]{VY}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{\ \textcolor{keywordtype}{float}\ d2\ =\ VX*VX\ +\ VY*VY;\ \textcolor{keywordflow}{if}\ (d2\ >\ 0.000001f)\ \{\ \textcolor{keywordtype}{float}\ inv\_len2\ =\ 1.0f\ /\ d2;\ \textcolor{keywordflow}{if}\ (inv\_len2\ >\ \doxymbox{\hyperlink{imgui__draw_8cpp_ae801e54afba24c14221f81e1564615ef}{IM\_FIXNORMAL2F\_MAX\_INVLEN2}})\ inv\_len2\ =\ \doxymbox{\hyperlink{imgui__draw_8cpp_ae801e54afba24c14221f81e1564615ef}{IM\_FIXNORMAL2F\_MAX\_INVLEN2}};\ VX\ *=\ inv\_len2;\ VY\ *=\ inv\_len2;\ \}\ \}\ (void)0}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_ae801e54afba24c14221f81e1564615ef}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!IM\_FIXNORMAL2F\_MAX\_INVLEN2@{IM\_FIXNORMAL2F\_MAX\_INVLEN2}}
+\index{IM\_FIXNORMAL2F\_MAX\_INVLEN2@{IM\_FIXNORMAL2F\_MAX\_INVLEN2}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{IM\_FIXNORMAL2F\_MAX\_INVLEN2}{IM\_FIXNORMAL2F\_MAX\_INVLEN2}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ae801e54afba24c14221f81e1564615ef} 
+\+\#define IM\+\_\+\+FIXNORMAL2\+F\+\_\+\+MAX\+\_\+\+INVLEN2~100.\+0f}
+
+\Hypertarget{imgui__draw_8cpp_a7fa472315872f6fd89bcc760a3bf6ce3}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!IM\_FONTGLYPH\_INDEX\_NOT\_FOUND@{IM\_FONTGLYPH\_INDEX\_NOT\_FOUND}}
+\index{IM\_FONTGLYPH\_INDEX\_NOT\_FOUND@{IM\_FONTGLYPH\_INDEX\_NOT\_FOUND}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{IM\_FONTGLYPH\_INDEX\_NOT\_FOUND}{IM\_FONTGLYPH\_INDEX\_NOT\_FOUND}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a7fa472315872f6fd89bcc760a3bf6ce3} 
+\+\#define IM\+\_\+\+FONTGLYPH\+\_\+\+INDEX\+\_\+\+NOT\+\_\+\+FOUND~((\doxymbox{\hyperlink{imgui_8h_a788d84b86cbaed7de12d6e58ab630e07}{Im\+U16}})-\/2)}
+
+\Hypertarget{imgui__draw_8cpp_a29e07f1735be59dadedeb13c6da90907}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!IM\_FONTGLYPH\_INDEX\_UNUSED@{IM\_FONTGLYPH\_INDEX\_UNUSED}}
+\index{IM\_FONTGLYPH\_INDEX\_UNUSED@{IM\_FONTGLYPH\_INDEX\_UNUSED}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{IM\_FONTGLYPH\_INDEX\_UNUSED}{IM\_FONTGLYPH\_INDEX\_UNUSED}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a29e07f1735be59dadedeb13c6da90907} 
+\+\#define IM\+\_\+\+FONTGLYPH\+\_\+\+INDEX\+\_\+\+UNUSED~((\doxymbox{\hyperlink{imgui_8h_a788d84b86cbaed7de12d6e58ab630e07}{Im\+U16}})-\/1)}
+
+\Hypertarget{imgui__draw_8cpp_aa595f4d7f5dca6ca04e5b1648e84f0d6}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!IM\_NORMALIZE2F\_OVER\_ZERO@{IM\_NORMALIZE2F\_OVER\_ZERO}}
+\index{IM\_NORMALIZE2F\_OVER\_ZERO@{IM\_NORMALIZE2F\_OVER\_ZERO}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{IM\_NORMALIZE2F\_OVER\_ZERO}{IM\_NORMALIZE2F\_OVER\_ZERO}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_aa595f4d7f5dca6ca04e5b1648e84f0d6} 
+\+\#define IM\+\_\+\+NORMALIZE2\+F\+\_\+\+OVER\+\_\+\+ZERO(\begin{DoxyParamCaption}\item[{}]{VX}{, }\item[{}]{VY}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{\ \textcolor{keywordtype}{float}\ d2\ =\ VX*VX\ +\ VY*VY;\ \textcolor{keywordflow}{if}\ (d2\ >\ 0.0f)\ \{\ \textcolor{keywordtype}{float}\ inv\_len\ =\ \doxymbox{\hyperlink{imgui__internal_8h_a162a5874c5e104514a344550137c0f2b}{ImRsqrt}}(d2);\ VX\ *=\ inv\_len;\ VY\ *=\ inv\_len;\ \}\ \}\ (void)0}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_acbac18638b9456aa07cd48452f074eeb}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImDrawCmd\_AreSequentialIdxOffset@{ImDrawCmd\_AreSequentialIdxOffset}}
+\index{ImDrawCmd\_AreSequentialIdxOffset@{ImDrawCmd\_AreSequentialIdxOffset}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImDrawCmd\_AreSequentialIdxOffset}{ImDrawCmd\_AreSequentialIdxOffset}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_acbac18638b9456aa07cd48452f074eeb} 
+\+\#define Im\+Draw\+Cmd\+\_\+\+Are\+Sequential\+Idx\+Offset(\begin{DoxyParamCaption}\item[{}]{CMD\+\_\+0}{, }\item[{}]{CMD\+\_\+1}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(CMD\_0-\/>IdxOffset\ +\ CMD\_0-\/>ElemCount\ ==\ CMD\_1-\/>IdxOffset)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_ac140465795cda6fa747579fc0b1b29d0}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImDrawCmd\_HeaderCompare@{ImDrawCmd\_HeaderCompare}}
+\index{ImDrawCmd\_HeaderCompare@{ImDrawCmd\_HeaderCompare}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImDrawCmd\_HeaderCompare}{ImDrawCmd\_HeaderCompare}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ac140465795cda6fa747579fc0b1b29d0} 
+\+\#define Im\+Draw\+Cmd\+\_\+\+Header\+Compare(\begin{DoxyParamCaption}\item[{}]{CMD\+\_\+\+LHS}{, }\item[{}]{CMD\+\_\+\+RHS}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(memcmp(CMD\_LHS,\ CMD\_RHS,\ \doxymbox{\hyperlink{imgui__draw_8cpp_a36c70a3a9dfec20d02bbb18e00a42ee1}{ImDrawCmd\_HeaderSize}}))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a13d0eca12c1e2df442519a1a80d8cdaa}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImDrawCmd\_HeaderCopy@{ImDrawCmd\_HeaderCopy}}
+\index{ImDrawCmd\_HeaderCopy@{ImDrawCmd\_HeaderCopy}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImDrawCmd\_HeaderCopy}{ImDrawCmd\_HeaderCopy}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a13d0eca12c1e2df442519a1a80d8cdaa} 
+\+\#define Im\+Draw\+Cmd\+\_\+\+Header\+Copy(\begin{DoxyParamCaption}\item[{}]{CMD\+\_\+\+DST}{, }\item[{}]{CMD\+\_\+\+SRC}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(memcpy(CMD\_DST,\ CMD\_SRC,\ \doxymbox{\hyperlink{imgui__draw_8cpp_a36c70a3a9dfec20d02bbb18e00a42ee1}{ImDrawCmd\_HeaderSize}}))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a36c70a3a9dfec20d02bbb18e00a42ee1}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImDrawCmd\_HeaderSize@{ImDrawCmd\_HeaderSize}}
+\index{ImDrawCmd\_HeaderSize@{ImDrawCmd\_HeaderSize}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImDrawCmd\_HeaderSize}{ImDrawCmd\_HeaderSize}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a36c70a3a9dfec20d02bbb18e00a42ee1} 
+\+\#define Im\+Draw\+Cmd\+\_\+\+Header\+Size~(offsetof(\doxymbox{\hyperlink{struct_im_draw_cmd}{Im\+Draw\+Cmd}}, Vtx\+Offset) + sizeof(unsigned int))}
+
+\Hypertarget{imgui__draw_8cpp_adf4d73301961430d50d7edd96f92ce38}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!IMGUI\_DEFINE\_MATH\_OPERATORS@{IMGUI\_DEFINE\_MATH\_OPERATORS}}
+\index{IMGUI\_DEFINE\_MATH\_OPERATORS@{IMGUI\_DEFINE\_MATH\_OPERATORS}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{IMGUI\_DEFINE\_MATH\_OPERATORS}{IMGUI\_DEFINE\_MATH\_OPERATORS}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_adf4d73301961430d50d7edd96f92ce38} 
+\+\#define IMGUI\+\_\+\+DEFINE\+\_\+\+MATH\+\_\+\+OPERATORS}
+
+\Hypertarget{imgui__draw_8cpp_a938848da23a2210dac3a4657512c8276}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextClassifierGet@{ImTextClassifierGet}}
+\index{ImTextClassifierGet@{ImTextClassifierGet}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextClassifierGet}{ImTextClassifierGet}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a938848da23a2210dac3a4657512c8276} 
+\+\#define Im\+Text\+Classifier\+Get(\begin{DoxyParamCaption}\item[{}]{\+\_\+\+BITS}{, }\item[{}]{\+\_\+\+CHAR\+\_\+\+OFFSET}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((\_BITS[(\_CHAR\_OFFSET)\ >>\ 4]\ >>\ (((\_CHAR\_OFFSET)\ \&\ 15)\ <<\ 1))\ \&\ 0x03)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a8abf98f5e58a4b3dbbdf35bb1d5ee872}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!stb\_\_in2@{stb\_\_in2}}
+\index{stb\_\_in2@{stb\_\_in2}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{stb\_\_in2}{stb\_\_in2}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a8abf98f5e58a4b3dbbdf35bb1d5ee872} 
+\+\#define stb\+\_\+\+\_\+in2(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((i[x]\ <<\ 8)\ +\ i[(x)+1])}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_acdc23c4b28788003d2841185775661ff}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!stb\_\_in3@{stb\_\_in3}}
+\index{stb\_\_in3@{stb\_\_in3}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{stb\_\_in3}{stb\_\_in3}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_acdc23c4b28788003d2841185775661ff} 
+\+\#define stb\+\_\+\+\_\+in3(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((i[x]\ <<\ 16)\ +\ \doxymbox{\hyperlink{imgui__draw_8cpp_a8abf98f5e58a4b3dbbdf35bb1d5ee872}{stb\_\_in2}}((x)+1))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a26702caa0fd7846cb92e8ba4d80446c3}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!stb\_\_in4@{stb\_\_in4}}
+\index{stb\_\_in4@{stb\_\_in4}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{stb\_\_in4}{stb\_\_in4}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a26702caa0fd7846cb92e8ba4d80446c3} 
+\+\#define stb\+\_\+\+\_\+in4(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((i[x]\ <<\ 24)\ +\ \doxymbox{\hyperlink{imgui__draw_8cpp_acdc23c4b28788003d2841185775661ff}{stb\_\_in3}}((x)+1))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a0791e69f0dcd58efa795dd50eb8c6cd0}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STB\_RECT\_PACK\_IMPLEMENTATION@{STB\_RECT\_PACK\_IMPLEMENTATION}}
+\index{STB\_RECT\_PACK\_IMPLEMENTATION@{STB\_RECT\_PACK\_IMPLEMENTATION}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STB\_RECT\_PACK\_IMPLEMENTATION}{STB\_RECT\_PACK\_IMPLEMENTATION}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a0791e69f0dcd58efa795dd50eb8c6cd0} 
+\+\#define STB\+\_\+\+RECT\+\_\+\+PACK\+\_\+\+IMPLEMENTATION}
+
+\Hypertarget{imgui__draw_8cpp_afaa2f2d0d9d6726cfae6da070e736347}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STB\_TRUETYPE\_IMPLEMENTATION@{STB\_TRUETYPE\_IMPLEMENTATION}}
+\index{STB\_TRUETYPE\_IMPLEMENTATION@{STB\_TRUETYPE\_IMPLEMENTATION}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STB\_TRUETYPE\_IMPLEMENTATION}{STB\_TRUETYPE\_IMPLEMENTATION}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_afaa2f2d0d9d6726cfae6da070e736347} 
+\+\#define STB\+\_\+\+TRUETYPE\+\_\+\+IMPLEMENTATION}
+
+\Hypertarget{imgui__draw_8cpp_a9592e63d0df8b6f0712e8da3aea5db23}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBRP\_ASSERT@{STBRP\_ASSERT}}
+\index{STBRP\_ASSERT@{STBRP\_ASSERT}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBRP\_ASSERT}{STBRP\_ASSERT}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a9592e63d0df8b6f0712e8da3aea5db23} 
+\+\#define STBRP\+\_\+\+ASSERT(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordflow}{do}\ \{\ \doxymbox{\hyperlink{imgui_8h_acb09e7dc42e8e3cefb0ecaa197978920}{IM\_ASSERT}}(x);\ \}\ \textcolor{keywordflow}{while}\ (0)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a152aa757fb023d39f16dd537e66b60f0}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBRP\_SORT@{STBRP\_SORT}}
+\index{STBRP\_SORT@{STBRP\_SORT}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBRP\_SORT}{STBRP\_SORT}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a152aa757fb023d39f16dd537e66b60f0} 
+\+\#define STBRP\+\_\+\+SORT~\doxymbox{\hyperlink{imgui__internal_8h_aad1d96ea4d4f19dd44782b42185a0a7b}{Im\+Qsort}}}
+
+\Hypertarget{imgui__draw_8cpp_aebe589aefd15ba7289a47168e31b5e45}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBRP\_STATIC@{STBRP\_STATIC}}
+\index{STBRP\_STATIC@{STBRP\_STATIC}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBRP\_STATIC}{STBRP\_STATIC}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_aebe589aefd15ba7289a47168e31b5e45} 
+\+\#define STBRP\+\_\+\+STATIC}
+
+\Hypertarget{imgui__draw_8cpp_a1123d905f512c19c8d796a6d294a3a84}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_assert@{STBTT\_assert}}
+\index{STBTT\_assert@{STBTT\_assert}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_assert}{STBTT\_assert}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a1123d905f512c19c8d796a6d294a3a84} 
+\+\#define STBTT\+\_\+assert(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordflow}{do}\ \{\ \doxymbox{\hyperlink{imgui_8h_acb09e7dc42e8e3cefb0ecaa197978920}{IM\_ASSERT}}(x);\ \}\ \textcolor{keywordflow}{while}(0)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a2b639a5c1ed39bb9e223a78b743f3769}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_fabs@{STBTT\_fabs}}
+\index{STBTT\_fabs@{STBTT\_fabs}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_fabs}{STBTT\_fabs}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a2b639a5c1ed39bb9e223a78b743f3769} 
+\+\#define STBTT\+\_\+fabs(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{imgui__internal_8h_aa886f20aead1a15ce961ac6fa361b044}{ImFabs}}(x)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_ab937f3c3c6d0c2c126c50bb32e379f02}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_fmod@{STBTT\_fmod}}
+\index{STBTT\_fmod@{STBTT\_fmod}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_fmod}{STBTT\_fmod}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ab937f3c3c6d0c2c126c50bb32e379f02} 
+\+\#define STBTT\+\_\+fmod(\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{imgui__internal_8h_ab31c49c24dd5d51dd629a56b5d11a85e}{ImFmod}}(x,y)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a357d3564409e68f1b694e06f7beeca7e}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_free@{STBTT\_free}}
+\index{STBTT\_free@{STBTT\_free}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_free}{STBTT\_free}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a357d3564409e68f1b694e06f7beeca7e} 
+\+\#define STBTT\+\_\+free(\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{u}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((void)(u),\ \doxymbox{\hyperlink{imgui_8h_ac24040f4c2d54ba3216c829703498ebb}{IM\_FREE}}(x))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a284a26aeebf87bc1688d38b3b16c7248}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_iceil@{STBTT\_iceil}}
+\index{STBTT\_iceil@{STBTT\_iceil}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_iceil}{STBTT\_iceil}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a284a26aeebf87bc1688d38b3b16c7248} 
+\+\#define STBTT\+\_\+iceil(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((int)\doxymbox{\hyperlink{imgui__internal_8h_a09170e101a72d70544ae6edfe495ee8f}{ImCeil}}(x))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a37ec4d14918346d3451d4f44f24d4710}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_ifloor@{STBTT\_ifloor}}
+\index{STBTT\_ifloor@{STBTT\_ifloor}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_ifloor}{STBTT\_ifloor}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a37ec4d14918346d3451d4f44f24d4710} 
+\+\#define STBTT\+\_\+ifloor(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((int)\doxymbox{\hyperlink{imgui__internal_8h_abdcefbb33d95328c48024e937977e0d8}{ImFloor}}(x))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a8f6734fe0cb6d6aa09e494602afa96be}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_malloc@{STBTT\_malloc}}
+\index{STBTT\_malloc@{STBTT\_malloc}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_malloc}{STBTT\_malloc}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a8f6734fe0cb6d6aa09e494602afa96be} 
+\+\#define STBTT\+\_\+malloc(\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{u}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((void)(u),\ \doxymbox{\hyperlink{imgui_8h_a40113fb128e7035c8d4aaeeed565e7aa}{IM\_ALLOC}}(x))}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_a20c159e8e6985b92a96497881709659a}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_pow@{STBTT\_pow}}
+\index{STBTT\_pow@{STBTT\_pow}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_pow}{STBTT\_pow}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a20c159e8e6985b92a96497881709659a} 
+\+\#define STBTT\+\_\+pow(\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{imgui__internal_8h_acb334699cb3bfa69f50851cc14cac70c}{ImPow}}(x,y)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_ace1fcbebd394a5bed76bc9b97dbe8d5a}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_sqrt@{STBTT\_sqrt}}
+\index{STBTT\_sqrt@{STBTT\_sqrt}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_sqrt}{STBTT\_sqrt}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ace1fcbebd394a5bed76bc9b97dbe8d5a} 
+\+\#define STBTT\+\_\+sqrt(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{imgui__internal_8h_af45b12e2af4037adec57b0a9488b45c2}{ImSqrt}}(x)}
+
+\end{DoxyCode}
+\Hypertarget{imgui__draw_8cpp_adb252cc9576591994fdf2f89baddc630}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_STATIC@{STBTT\_STATIC}}
+\index{STBTT\_STATIC@{STBTT\_STATIC}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_STATIC}{STBTT\_STATIC}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_adb252cc9576591994fdf2f89baddc630} 
+\+\#define STBTT\+\_\+\+STATIC}
+
+\Hypertarget{imgui__draw_8cpp_a0b2bbef30e7d325cb68c3fb033863b3e}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!STBTT\_strlen@{STBTT\_strlen}}
+\index{STBTT\_strlen@{STBTT\_strlen}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{STBTT\_strlen}{STBTT\_strlen}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a0b2bbef30e7d325cb68c3fb033863b3e} 
+\+\#define STBTT\+\_\+strlen(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{imgui__internal_8h_aa7b18f2ca3bca9aefb8cc3ef92884600}{ImStrlen}}(x)}
+
+\end{DoxyCode}
+
+
+\label{doc-enum-members}
+\Hypertarget{imgui__draw_8cpp_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTriangulatorNodeType@{ImTriangulatorNodeType}}
+\index{ImTriangulatorNodeType@{ImTriangulatorNodeType}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTriangulatorNodeType}{ImTriangulatorNodeType}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1} 
+enum \doxymbox{\hyperlink{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1}{Im\+Triangulator\+Node\+Type}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ImTriangulatorNodeType\_Convex@{ImTriangulatorNodeType\_Convex}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTriangulatorNodeType\_Convex@{ImTriangulatorNodeType\_Convex}}
+}\Hypertarget{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1ab8cc7128a30e52524e246c2a2c03d5e3}\label{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1ab8cc7128a30e52524e246c2a2c03d5e3} 
+Im\+Triangulator\+Node\+Type\+\_\+\+Convex&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ImTriangulatorNodeType\_Ear@{ImTriangulatorNodeType\_Ear}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTriangulatorNodeType\_Ear@{ImTriangulatorNodeType\_Ear}}
+}\Hypertarget{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1a3db2870cb703f62291b6867ab6f4d1f7}\label{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1a3db2870cb703f62291b6867ab6f4d1f7} 
+Im\+Triangulator\+Node\+Type\+\_\+\+Ear&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ImTriangulatorNodeType\_Reflex@{ImTriangulatorNodeType\_Reflex}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTriangulatorNodeType\_Reflex@{ImTriangulatorNodeType\_Reflex}}
+}\Hypertarget{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1a4a388d52b599f34cc670250513263f54}\label{imgui__draw_8cpp_aec9f81584384ed8dacf676d9a8bc98e1a4a388d52b599f34cc670250513263f54} 
+Im\+Triangulator\+Node\+Type\+\_\+\+Reflex&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-func-members}
+\Hypertarget{imgui__draw_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{imgui__draw_8cpp_a313bb9d47244a5d27a5aeb4cd74f94a3}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImBezierCubicCalc@{ImBezierCubicCalc}}
+\index{ImBezierCubicCalc@{ImBezierCubicCalc}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImBezierCubicCalc()}{ImBezierCubicCalc()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a313bb9d47244a5d27a5aeb4cd74f94a3} 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} Im\+Bezier\+Cubic\+Calc (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{p1}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{p2}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{p3}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{p4}{, }\item[{float}]{t}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a9b3ec0353c3a10709ad21985942613da}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImBezierQuadraticCalc@{ImBezierQuadraticCalc}}
+\index{ImBezierQuadraticCalc@{ImBezierQuadraticCalc}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImBezierQuadraticCalc()}{ImBezierQuadraticCalc()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a9b3ec0353c3a10709ad21985942613da} 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} Im\+Bezier\+Quadratic\+Calc (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{p1}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{p2}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{p3}{, }\item[{float}]{t}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a8e3063e58e1ed849ed68cb7d0214432d}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasAddDrawListSharedData@{ImFontAtlasAddDrawListSharedData}}
+\index{ImFontAtlasAddDrawListSharedData@{ImFontAtlasAddDrawListSharedData}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasAddDrawListSharedData()}{ImFontAtlasAddDrawListSharedData()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a8e3063e58e1ed849ed68cb7d0214432d} 
+void Im\+Font\+Atlas\+Add\+Draw\+List\+Shared\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_draw_list_shared_data}{Im\+Draw\+List\+Shared\+Data}} \texorpdfstring{$\ast$}{*}}]{data}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a664ece5afb972dbbf75434f405adf8b8}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedAdd@{ImFontAtlasBakedAdd}}
+\index{ImFontAtlasBakedAdd@{ImFontAtlasBakedAdd}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedAdd()}{ImFontAtlasBakedAdd()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a664ece5afb972dbbf75434f405adf8b8} 
+\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Baked\+Add (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{float}]{font\+\_\+size}{, }\item[{float}]{font\+\_\+rasterizer\+\_\+density}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}}}]{baked\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a0aca2c316ccea9c5fa07039224d4a41a}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedAddFontGlyph@{ImFontAtlasBakedAddFontGlyph}}
+\index{ImFontAtlasBakedAddFontGlyph@{ImFontAtlasBakedAddFontGlyph}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedAddFontGlyph()}{ImFontAtlasBakedAddFontGlyph()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a0aca2c316ccea9c5fa07039224d4a41a} 
+\doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Baked\+Add\+Font\+Glyph (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}}]{baked}{, }\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{, }\item[{const \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}}]{in\+\_\+glyph}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a3b5b9528a5e29a11352fdd8ff0e62d1a}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedAddFontGlyphAdvancedX@{ImFontAtlasBakedAddFontGlyphAdvancedX}}
+\index{ImFontAtlasBakedAddFontGlyphAdvancedX@{ImFontAtlasBakedAddFontGlyphAdvancedX}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedAddFontGlyphAdvancedX()}{ImFontAtlasBakedAddFontGlyphAdvancedX()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a3b5b9528a5e29a11352fdd8ff0e62d1a} 
+void Im\+Font\+Atlas\+Baked\+Add\+Font\+Glyph\+AdvancedX (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}}]{baked}{, }\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}}}]{codepoint}{, }\item[{float}]{advance\+\_\+x}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a5b545ff603b726dfe58fb1a673a19c11}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedDiscard@{ImFontAtlasBakedDiscard}}
+\index{ImFontAtlasBakedDiscard@{ImFontAtlasBakedDiscard}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedDiscard()}{ImFontAtlasBakedDiscard()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a5b545ff603b726dfe58fb1a673a19c11} 
+void Im\+Font\+Atlas\+Baked\+Discard (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}}]{baked}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ab705fc4a6bbc81adc7ab6086bfcde692}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedDiscardFontGlyph@{ImFontAtlasBakedDiscardFontGlyph}}
+\index{ImFontAtlasBakedDiscardFontGlyph@{ImFontAtlasBakedDiscardFontGlyph}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedDiscardFontGlyph()}{ImFontAtlasBakedDiscardFontGlyph()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ab705fc4a6bbc81adc7ab6086bfcde692} 
+void Im\+Font\+Atlas\+Baked\+Discard\+Font\+Glyph (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}}]{baked}{, }\item[{\doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}}]{glyph}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ae609b8a5b7435384bd3ba05ce11e76ff}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedGetClosestMatch@{ImFontAtlasBakedGetClosestMatch}}
+\index{ImFontAtlasBakedGetClosestMatch@{ImFontAtlasBakedGetClosestMatch}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedGetClosestMatch()}{ImFontAtlasBakedGetClosestMatch()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ae609b8a5b7435384bd3ba05ce11e76ff} 
+\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Baked\+Get\+Closest\+Match (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{float}]{font\+\_\+size}{, }\item[{float}]{font\+\_\+rasterizer\+\_\+density}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_afcf5d4f446f3dc0411abd7b5374afaea}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedGetId@{ImFontAtlasBakedGetId}}
+\index{ImFontAtlasBakedGetId@{ImFontAtlasBakedGetId}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedGetId()}{ImFontAtlasBakedGetId()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_afcf5d4f446f3dc0411abd7b5374afaea} 
+\doxymbox{\hyperlink{imgui_8h_acf027918eb6b13ca59634b6630cd3450}{IM\+\_\+\+MSVC\+\_\+\+RUNTIME\+\_\+\+CHECKS\+\_\+\+RESTORE}} \doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}} Im\+Font\+Atlas\+Baked\+Get\+Id (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}}}]{font\+\_\+id}{, }\item[{float}]{baked\+\_\+size}{, }\item[{float}]{rasterizer\+\_\+density}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a58a2aab4435ade7b1ad6ada67f0a509f}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedGetOrAdd@{ImFontAtlasBakedGetOrAdd}}
+\index{ImFontAtlasBakedGetOrAdd@{ImFontAtlasBakedGetOrAdd}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedGetOrAdd()}{ImFontAtlasBakedGetOrAdd()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a58a2aab4435ade7b1ad6ada67f0a509f} 
+\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Baked\+Get\+Or\+Add (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{float}]{font\+\_\+size}{, }\item[{float}]{font\+\_\+rasterizer\+\_\+density}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_af9bb9baf259d78887086d048324b8657}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBakedSetFontGlyphBitmap@{ImFontAtlasBakedSetFontGlyphBitmap}}
+\index{ImFontAtlasBakedSetFontGlyphBitmap@{ImFontAtlasBakedSetFontGlyphBitmap}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBakedSetFontGlyphBitmap()}{ImFontAtlasBakedSetFontGlyphBitmap()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_af9bb9baf259d78887086d048324b8657} 
+void Im\+Font\+Atlas\+Baked\+Set\+Font\+Glyph\+Bitmap (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}}]{baked}{, }\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{, }\item[{\doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}}]{glyph}{, }\item[{\doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}} \texorpdfstring{$\ast$}{*}}]{r}{, }\item[{const unsigned char \texorpdfstring{$\ast$}{*}}]{src\+\_\+pixels}{, }\item[{\doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}}}]{src\+\_\+fmt}{, }\item[{int}]{src\+\_\+pitch}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a9d1efb82d7bc3af7b4ee436ea5d776a9}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildClear@{ImFontAtlasBuildClear}}
+\index{ImFontAtlasBuildClear@{ImFontAtlasBuildClear}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildClear()}{ImFontAtlasBuildClear()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a9d1efb82d7bc3af7b4ee436ea5d776a9} 
+void Im\+Font\+Atlas\+Build\+Clear (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a3feab149778d739a3fb681a0c9c16f7a}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildDestroy@{ImFontAtlasBuildDestroy}}
+\index{ImFontAtlasBuildDestroy@{ImFontAtlasBuildDestroy}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildDestroy()}{ImFontAtlasBuildDestroy()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a3feab149778d739a3fb681a0c9c16f7a} 
+void Im\+Font\+Atlas\+Build\+Destroy (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a7c23c7c6d5ca50deabb79f717eeab1b7}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildDiscardBakes@{ImFontAtlasBuildDiscardBakes}}
+\index{ImFontAtlasBuildDiscardBakes@{ImFontAtlasBuildDiscardBakes}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildDiscardBakes()}{ImFontAtlasBuildDiscardBakes()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a7c23c7c6d5ca50deabb79f717eeab1b7} 
+void Im\+Font\+Atlas\+Build\+Discard\+Bakes (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{int}]{unused\+\_\+frames}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a2f95da190b053827e48cbd80f1f6cdf4}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildGetOversampleFactors@{ImFontAtlasBuildGetOversampleFactors}}
+\index{ImFontAtlasBuildGetOversampleFactors@{ImFontAtlasBuildGetOversampleFactors}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildGetOversampleFactors()}{ImFontAtlasBuildGetOversampleFactors()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a2f95da190b053827e48cbd80f1f6cdf4} 
+void Im\+Font\+Atlas\+Build\+Get\+Oversample\+Factors (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{, }\item[{\doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}}]{baked}{, }\item[{int \texorpdfstring{$\ast$}{*}}]{out\+\_\+oversample\+\_\+h}{, }\item[{int \texorpdfstring{$\ast$}{*}}]{out\+\_\+oversample\+\_\+v}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ac050ff181df43cec0b63d834b6039c3f}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildInit@{ImFontAtlasBuildInit}}
+\index{ImFontAtlasBuildInit@{ImFontAtlasBuildInit}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildInit()}{ImFontAtlasBuildInit()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ac050ff181df43cec0b63d834b6039c3f} 
+void Im\+Font\+Atlas\+Build\+Init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_abd1950f96c48e04b73b586942c94918d}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildLegacyPreloadAllGlyphRanges@{ImFontAtlasBuildLegacyPreloadAllGlyphRanges}}
+\index{ImFontAtlasBuildLegacyPreloadAllGlyphRanges@{ImFontAtlasBuildLegacyPreloadAllGlyphRanges}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildLegacyPreloadAllGlyphRanges()}{ImFontAtlasBuildLegacyPreloadAllGlyphRanges()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_abd1950f96c48e04b73b586942c94918d} 
+void Im\+Font\+Atlas\+Build\+Legacy\+Preload\+All\+Glyph\+Ranges (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a2ed1c49f29c1635abb9d187846311e43}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildMain@{ImFontAtlasBuildMain}}
+\index{ImFontAtlasBuildMain@{ImFontAtlasBuildMain}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildMain()}{ImFontAtlasBuildMain()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a2ed1c49f29c1635abb9d187846311e43} 
+void Im\+Font\+Atlas\+Build\+Main (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ad350f588248bffe3405be098a2fc5ddf}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildNotifySetFont@{ImFontAtlasBuildNotifySetFont}}
+\index{ImFontAtlasBuildNotifySetFont@{ImFontAtlasBuildNotifySetFont}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildNotifySetFont()}{ImFontAtlasBuildNotifySetFont()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ad350f588248bffe3405be098a2fc5ddf} 
+void Im\+Font\+Atlas\+Build\+Notify\+Set\+Font (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{old\+\_\+font}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{new\+\_\+font}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_afb984dfe621aaf80f49b6f0af469330f}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildRenderBitmapFromString@{ImFontAtlasBuildRenderBitmapFromString}}
+\index{ImFontAtlasBuildRenderBitmapFromString@{ImFontAtlasBuildRenderBitmapFromString}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildRenderBitmapFromString()}{ImFontAtlasBuildRenderBitmapFromString()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_afb984dfe621aaf80f49b6f0af469330f} 
+void Im\+Font\+Atlas\+Build\+Render\+Bitmap\+From\+String (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{int}]{x}{, }\item[{int}]{y}{, }\item[{int}]{w}{, }\item[{int}]{h}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{in\+\_\+str}{, }\item[{char}]{in\+\_\+marker\+\_\+char}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a19d7fb37c8bf850f4996965eaf4c7986}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildSetupFontLoader@{ImFontAtlasBuildSetupFontLoader}}
+\index{ImFontAtlasBuildSetupFontLoader@{ImFontAtlasBuildSetupFontLoader}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildSetupFontLoader()}{ImFontAtlasBuildSetupFontLoader()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a19d7fb37c8bf850f4996965eaf4c7986} 
+void Im\+Font\+Atlas\+Build\+Setup\+Font\+Loader (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{const \doxymbox{\hyperlink{struct_im_font_loader}{Im\+Font\+Loader}} \texorpdfstring{$\ast$}{*}}]{font\+\_\+loader}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_af416fb50007acafd154c44e3f0802572}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildSetupFontSpecialGlyphs@{ImFontAtlasBuildSetupFontSpecialGlyphs}}
+\index{ImFontAtlasBuildSetupFontSpecialGlyphs@{ImFontAtlasBuildSetupFontSpecialGlyphs}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildSetupFontSpecialGlyphs()}{ImFontAtlasBuildSetupFontSpecialGlyphs()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_af416fb50007acafd154c44e3f0802572} 
+void Im\+Font\+Atlas\+Build\+Setup\+Font\+Special\+Glyphs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a5bc852b30a75c2601a2bbea053210069}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasBuildUpdatePointers@{ImFontAtlasBuildUpdatePointers}}
+\index{ImFontAtlasBuildUpdatePointers@{ImFontAtlasBuildUpdatePointers}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasBuildUpdatePointers()}{ImFontAtlasBuildUpdatePointers()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a5bc852b30a75c2601a2bbea053210069} 
+void Im\+Font\+Atlas\+Build\+Update\+Pointers (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a7629b82e6041ad9a4b677422d2ee7a7e}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasDebugLogTextureRequests@{ImFontAtlasDebugLogTextureRequests}}
+\index{ImFontAtlasDebugLogTextureRequests@{ImFontAtlasDebugLogTextureRequests}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasDebugLogTextureRequests()}{ImFontAtlasDebugLogTextureRequests()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a7629b82e6041ad9a4b677422d2ee7a7e} 
+\doxymbox{\hyperlink{imgui_8h_acf027918eb6b13ca59634b6630cd3450}{IM\+\_\+\+MSVC\+\_\+\+RUNTIME\+\_\+\+CHECKS\+\_\+\+RESTORE}} void Im\+Font\+Atlas\+Debug\+Log\+Texture\+Requests (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_af583742e2268ebaef124cba2fa666e6b}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasFontDestroyOutput@{ImFontAtlasFontDestroyOutput}}
+\index{ImFontAtlasFontDestroyOutput@{ImFontAtlasFontDestroyOutput}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasFontDestroyOutput()}{ImFontAtlasFontDestroyOutput()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_af583742e2268ebaef124cba2fa666e6b} 
+void Im\+Font\+Atlas\+Font\+Destroy\+Output (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_aa690609367a4f1b7ec458ad86a11657d}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasFontDestroySourceData@{ImFontAtlasFontDestroySourceData}}
+\index{ImFontAtlasFontDestroySourceData@{ImFontAtlasFontDestroySourceData}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasFontDestroySourceData()}{ImFontAtlasFontDestroySourceData()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_aa690609367a4f1b7ec458ad86a11657d} 
+void Im\+Font\+Atlas\+Font\+Destroy\+Source\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a26822b1d734b4d10c08e64983024e600}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasFontDiscardBakes@{ImFontAtlasFontDiscardBakes}}
+\index{ImFontAtlasFontDiscardBakes@{ImFontAtlasFontDiscardBakes}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasFontDiscardBakes()}{ImFontAtlasFontDiscardBakes()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a26822b1d734b4d10c08e64983024e600} 
+void Im\+Font\+Atlas\+Font\+Discard\+Bakes (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{int}]{unused\+\_\+frames}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_acaca487a93adf4285b2594c4dc861f78}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasFontInitOutput@{ImFontAtlasFontInitOutput}}
+\index{ImFontAtlasFontInitOutput@{ImFontAtlasFontInitOutput}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasFontInitOutput()}{ImFontAtlasFontInitOutput()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_acaca487a93adf4285b2594c4dc861f78} 
+bool Im\+Font\+Atlas\+Font\+Init\+Output (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a2a1d9e825eb0acf13bd19c8583e20040}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasFontRebuildOutput@{ImFontAtlasFontRebuildOutput}}
+\index{ImFontAtlasFontRebuildOutput@{ImFontAtlasFontRebuildOutput}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasFontRebuildOutput()}{ImFontAtlasFontRebuildOutput()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a2a1d9e825eb0acf13bd19c8583e20040} 
+void Im\+Font\+Atlas\+Font\+Rebuild\+Output (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a40343d000f6a2a940bb414d883aca81f}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasFontSourceAddToFont@{ImFontAtlasFontSourceAddToFont}}
+\index{ImFontAtlasFontSourceAddToFont@{ImFontAtlasFontSourceAddToFont}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasFontSourceAddToFont()}{ImFontAtlasFontSourceAddToFont()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a40343d000f6a2a940bb414d883aca81f} 
+void Im\+Font\+Atlas\+Font\+Source\+Add\+To\+Font (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ae7037d4e1f56bf54c9abef109d1090ce}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasFontSourceInit@{ImFontAtlasFontSourceInit}}
+\index{ImFontAtlasFontSourceInit@{ImFontAtlasFontSourceInit}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasFontSourceInit()}{ImFontAtlasFontSourceInit()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ae7037d4e1f56bf54c9abef109d1090ce} 
+bool Im\+Font\+Atlas\+Font\+Source\+Init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}}]{src}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a2445ec6272ab6f7597ad4012e178a5d6}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasGetFontLoaderForStbTruetype@{ImFontAtlasGetFontLoaderForStbTruetype}}
+\index{ImFontAtlasGetFontLoaderForStbTruetype@{ImFontAtlasGetFontLoaderForStbTruetype}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasGetFontLoaderForStbTruetype()}{ImFontAtlasGetFontLoaderForStbTruetype()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a2445ec6272ab6f7597ad4012e178a5d6} 
+const \doxymbox{\hyperlink{struct_im_font_loader}{Im\+Font\+Loader}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Get\+Font\+Loader\+For\+Stb\+Truetype (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a3f6a8379f3c0b4fe882ec673cf62e8f4}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasGetMouseCursorTexData@{ImFontAtlasGetMouseCursorTexData}}
+\index{ImFontAtlasGetMouseCursorTexData@{ImFontAtlasGetMouseCursorTexData}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasGetMouseCursorTexData()}{ImFontAtlasGetMouseCursorTexData()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a3f6a8379f3c0b4fe882ec673cf62e8f4} 
+bool Im\+Font\+Atlas\+Get\+Mouse\+Cursor\+Tex\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a9223d6c82bb5d12c2eab5f829ca520ef}{Im\+Gui\+Mouse\+Cursor}}}]{cursor\+\_\+type}{, }\item[{\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \texorpdfstring{$\ast$}{*}}]{out\+\_\+offset}{, }\item[{\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \texorpdfstring{$\ast$}{*}}]{out\+\_\+size}{, }\item[{\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}}}]{out\+\_\+uv\+\_\+border}{\+[2]\+, }\item[{\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}}}]{out\+\_\+uv\+\_\+fill}{\+[2]\+}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a0033358c6425323b29be68b3f5af3aa9}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasPackAddRect@{ImFontAtlasPackAddRect}}
+\index{ImFontAtlasPackAddRect@{ImFontAtlasPackAddRect}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasPackAddRect()}{ImFontAtlasPackAddRect()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a0033358c6425323b29be68b3f5af3aa9} 
+\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}} Im\+Font\+Atlas\+Pack\+Add\+Rect (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{int}]{w}{, }\item[{int}]{h}{, }\item[{\doxymbox{\hyperlink{struct_im_font_atlas_rect_entry}{Im\+Font\+Atlas\+Rect\+Entry}} \texorpdfstring{$\ast$}{*}}]{overwrite\+\_\+entry}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a53458cee397384163c40b3042561aa87}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasPackDiscardRect@{ImFontAtlasPackDiscardRect}}
+\index{ImFontAtlasPackDiscardRect@{ImFontAtlasPackDiscardRect}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasPackDiscardRect()}{ImFontAtlasPackDiscardRect()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a53458cee397384163c40b3042561aa87} 
+void Im\+Font\+Atlas\+Pack\+Discard\+Rect (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}}}]{id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a0c336a0e5d743ff3c8d40351d125d1bb}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasPackGetRect@{ImFontAtlasPackGetRect}}
+\index{ImFontAtlasPackGetRect@{ImFontAtlasPackGetRect}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasPackGetRect()}{ImFontAtlasPackGetRect()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a0c336a0e5d743ff3c8d40351d125d1bb} 
+\doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Pack\+Get\+Rect (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}}}]{id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ac554b588bab2aa85e6f6d6969b8224e4}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasPackGetRectSafe@{ImFontAtlasPackGetRectSafe}}
+\index{ImFontAtlasPackGetRectSafe@{ImFontAtlasPackGetRectSafe}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasPackGetRectSafe()}{ImFontAtlasPackGetRectSafe()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ac554b588bab2aa85e6f6d6969b8224e4} 
+\doxymbox{\hyperlink{struct_im_texture_rect}{Im\+Texture\+Rect}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Pack\+Get\+Rect\+Safe (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a05c52f1e5aa4d0360a8173e0e05767d1}{Im\+Font\+Atlas\+Rect\+Id}}}]{id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a352dcf39de7ba575d8e1c1db1f11c45a}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasPackInit@{ImFontAtlasPackInit}}
+\index{ImFontAtlasPackInit@{ImFontAtlasPackInit}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasPackInit()}{ImFontAtlasPackInit()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a352dcf39de7ba575d8e1c1db1f11c45a} 
+void Im\+Font\+Atlas\+Pack\+Init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a01f50a0915e094baaa8b883f05e74946}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasRemoveDrawListSharedData@{ImFontAtlasRemoveDrawListSharedData}}
+\index{ImFontAtlasRemoveDrawListSharedData@{ImFontAtlasRemoveDrawListSharedData}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasRemoveDrawListSharedData()}{ImFontAtlasRemoveDrawListSharedData()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a01f50a0915e094baaa8b883f05e74946} 
+void Im\+Font\+Atlas\+Remove\+Draw\+List\+Shared\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_draw_list_shared_data}{Im\+Draw\+List\+Shared\+Data}} \texorpdfstring{$\ast$}{*}}]{data}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a5279b1dafad68a1ab42121440c59ce0f}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureAdd@{ImFontAtlasTextureAdd}}
+\index{ImFontAtlasTextureAdd@{ImFontAtlasTextureAdd}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureAdd()}{ImFontAtlasTextureAdd()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a5279b1dafad68a1ab42121440c59ce0f} 
+\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*} Im\+Font\+Atlas\+Texture\+Add (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{int}]{w}{, }\item[{int}]{h}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ad09f72a150e0ca5f54f0971099b9c2e6}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureBlockConvert@{ImFontAtlasTextureBlockConvert}}
+\index{ImFontAtlasTextureBlockConvert@{ImFontAtlasTextureBlockConvert}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureBlockConvert()}{ImFontAtlasTextureBlockConvert()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ad09f72a150e0ca5f54f0971099b9c2e6} 
+void Im\+Font\+Atlas\+Texture\+Block\+Convert (\begin{DoxyParamCaption}\item[{const unsigned char \texorpdfstring{$\ast$}{*}}]{src\+\_\+pixels}{, }\item[{\doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}}}]{src\+\_\+fmt}{, }\item[{int}]{src\+\_\+pitch}{, }\item[{unsigned char \texorpdfstring{$\ast$}{*}}]{dst\+\_\+pixels}{, }\item[{\doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}}}]{dst\+\_\+fmt}{, }\item[{int}]{dst\+\_\+pitch}{, }\item[{int}]{w}{, }\item[{int}]{h}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a0438e0b3d9708f5fd9f7213631bd540b}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureBlockCopy@{ImFontAtlasTextureBlockCopy}}
+\index{ImFontAtlasTextureBlockCopy@{ImFontAtlasTextureBlockCopy}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureBlockCopy()}{ImFontAtlasTextureBlockCopy()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a0438e0b3d9708f5fd9f7213631bd540b} 
+void Im\+Font\+Atlas\+Texture\+Block\+Copy (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}}]{src\+\_\+tex}{, }\item[{int}]{src\+\_\+x}{, }\item[{int}]{src\+\_\+y}{, }\item[{\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}}]{dst\+\_\+tex}{, }\item[{int}]{dst\+\_\+x}{, }\item[{int}]{dst\+\_\+y}{, }\item[{int}]{w}{, }\item[{int}]{h}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a96d74910e32c7f965f3a845b6b3adfa1}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureBlockFill@{ImFontAtlasTextureBlockFill}}
+\index{ImFontAtlasTextureBlockFill@{ImFontAtlasTextureBlockFill}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureBlockFill()}{ImFontAtlasTextureBlockFill()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a96d74910e32c7f965f3a845b6b3adfa1} 
+void Im\+Font\+Atlas\+Texture\+Block\+Fill (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}}]{dst\+\_\+tex}{, }\item[{int}]{dst\+\_\+x}{, }\item[{int}]{dst\+\_\+y}{, }\item[{int}]{w}{, }\item[{int}]{h}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}}}]{col}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a3e1a542c0cc52e9e9c7226147a363b35}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureBlockPostProcess@{ImFontAtlasTextureBlockPostProcess}}
+\index{ImFontAtlasTextureBlockPostProcess@{ImFontAtlasTextureBlockPostProcess}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureBlockPostProcess()}{ImFontAtlasTextureBlockPostProcess()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a3e1a542c0cc52e9e9c7226147a363b35} 
+void Im\+Font\+Atlas\+Texture\+Block\+Post\+Process (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas_post_process_data}{Im\+Font\+Atlas\+Post\+Process\+Data}} \texorpdfstring{$\ast$}{*}}]{data}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ac6609aa9ce31f3607d744ea9d000b38b}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureBlockPostProcessMultiply@{ImFontAtlasTextureBlockPostProcessMultiply}}
+\index{ImFontAtlasTextureBlockPostProcessMultiply@{ImFontAtlasTextureBlockPostProcessMultiply}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureBlockPostProcessMultiply()}{ImFontAtlasTextureBlockPostProcessMultiply()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ac6609aa9ce31f3607d744ea9d000b38b} 
+void Im\+Font\+Atlas\+Texture\+Block\+Post\+Process\+Multiply (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas_post_process_data}{Im\+Font\+Atlas\+Post\+Process\+Data}} \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{float}]{multiply\+\_\+factor}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a4361bba2b60ded70d35f43c4f4a3ac41}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureBlockQueueUpload@{ImFontAtlasTextureBlockQueueUpload}}
+\index{ImFontAtlasTextureBlockQueueUpload@{ImFontAtlasTextureBlockQueueUpload}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureBlockQueueUpload()}{ImFontAtlasTextureBlockQueueUpload()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a4361bba2b60ded70d35f43c4f4a3ac41} 
+void Im\+Font\+Atlas\+Texture\+Block\+Queue\+Upload (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_texture_data}{Im\+Texture\+Data}} \texorpdfstring{$\ast$}{*}}]{tex}{, }\item[{int}]{x}{, }\item[{int}]{y}{, }\item[{int}]{w}{, }\item[{int}]{h}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_af11c1114c44b7a339be338065a28412b}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureCompact@{ImFontAtlasTextureCompact}}
+\index{ImFontAtlasTextureCompact@{ImFontAtlasTextureCompact}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureCompact()}{ImFontAtlasTextureCompact()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_af11c1114c44b7a339be338065a28412b} 
+void Im\+Font\+Atlas\+Texture\+Compact (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ac1de9fff83244136935700a8ae67a7c9}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureGetSizeEstimate@{ImFontAtlasTextureGetSizeEstimate}}
+\index{ImFontAtlasTextureGetSizeEstimate@{ImFontAtlasTextureGetSizeEstimate}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureGetSizeEstimate()}{ImFontAtlasTextureGetSizeEstimate()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ac1de9fff83244136935700a8ae67a7c9} 
+\doxymbox{\hyperlink{struct_im_vec2i}{Im\+Vec2i}} Im\+Font\+Atlas\+Texture\+Get\+Size\+Estimate (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ad574da8343f063ce995d922236480aac}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureGrow@{ImFontAtlasTextureGrow}}
+\index{ImFontAtlasTextureGrow@{ImFontAtlasTextureGrow}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureGrow()}{ImFontAtlasTextureGrow()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ad574da8343f063ce995d922236480aac} 
+void Im\+Font\+Atlas\+Texture\+Grow (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{int}]{old\+\_\+tex\+\_\+w}{, }\item[{int}]{old\+\_\+tex\+\_\+h}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ab6db3feee2a9236c83a4cfa35cd8b044}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureMakeSpace@{ImFontAtlasTextureMakeSpace}}
+\index{ImFontAtlasTextureMakeSpace@{ImFontAtlasTextureMakeSpace}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureMakeSpace()}{ImFontAtlasTextureMakeSpace()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ab6db3feee2a9236c83a4cfa35cd8b044} 
+void Im\+Font\+Atlas\+Texture\+Make\+Space (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a774e74d2f6e0b33b6e6b85d4d5c5b3da}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasTextureRepack@{ImFontAtlasTextureRepack}}
+\index{ImFontAtlasTextureRepack@{ImFontAtlasTextureRepack}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasTextureRepack()}{ImFontAtlasTextureRepack()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a774e74d2f6e0b33b6e6b85d4d5c5b3da} 
+void Im\+Font\+Atlas\+Texture\+Repack (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{int}]{w}{, }\item[{int}]{h}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ad83271ddd5cf9c02c9cc72fb33299369}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasUpdateDrawListsSharedData@{ImFontAtlasUpdateDrawListsSharedData}}
+\index{ImFontAtlasUpdateDrawListsSharedData@{ImFontAtlasUpdateDrawListsSharedData}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasUpdateDrawListsSharedData()}{ImFontAtlasUpdateDrawListsSharedData()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ad83271ddd5cf9c02c9cc72fb33299369} 
+void Im\+Font\+Atlas\+Update\+Draw\+Lists\+Shared\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a2e42a220e1f4f691b02e9d27159a9b48}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasUpdateDrawListsTextures@{ImFontAtlasUpdateDrawListsTextures}}
+\index{ImFontAtlasUpdateDrawListsTextures@{ImFontAtlasUpdateDrawListsTextures}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasUpdateDrawListsTextures()}{ImFontAtlasUpdateDrawListsTextures()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a2e42a220e1f4f691b02e9d27159a9b48} 
+void Im\+Font\+Atlas\+Update\+Draw\+Lists\+Textures (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{\doxymbox{\hyperlink{struct_im_texture_ref}{Im\+Texture\+Ref}}}]{old\+\_\+tex}{, }\item[{\doxymbox{\hyperlink{struct_im_texture_ref}{Im\+Texture\+Ref}}}]{new\+\_\+tex}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a3f94172dde65426b52f7e137a899afb1}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontAtlasUpdateNewFrame@{ImFontAtlasUpdateNewFrame}}
+\index{ImFontAtlasUpdateNewFrame@{ImFontAtlasUpdateNewFrame}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontAtlasUpdateNewFrame()}{ImFontAtlasUpdateNewFrame()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a3f94172dde65426b52f7e137a899afb1} 
+void Im\+Font\+Atlas\+Update\+New\+Frame (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}}]{atlas}{, }\item[{int}]{frame\+\_\+count}{, }\item[{bool}]{renderer\+\_\+has\+\_\+textures}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a47e70269878d020fb7ee90170a76b7d7}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontCalcTextSizeEx@{ImFontCalcTextSizeEx}}
+\index{ImFontCalcTextSizeEx@{ImFontCalcTextSizeEx}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontCalcTextSizeEx()}{ImFontCalcTextSizeEx()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a47e70269878d020fb7ee90170a76b7d7} 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} Im\+Font\+Calc\+Text\+Size\+Ex (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{float}]{size}{, }\item[{float}]{max\+\_\+width}{, }\item[{float}]{wrap\+\_\+width}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{text\+\_\+begin}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{text\+\_\+end\+\_\+display}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{text\+\_\+end}{, }\item[{const char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{out\+\_\+remaining}{, }\item[{\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \texorpdfstring{$\ast$}{*}}]{out\+\_\+offset}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a0bb290a6a1c9c777c2f38296c39ee565}{Im\+Draw\+Text\+Flags}}}]{flags}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a6d4e2446ce7049fbf6ad63d97977fd67}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImFontCalcWordWrapPositionEx@{ImFontCalcWordWrapPositionEx}}
+\index{ImFontCalcWordWrapPositionEx@{ImFontCalcWordWrapPositionEx}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImFontCalcWordWrapPositionEx()}{ImFontCalcWordWrapPositionEx()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a6d4e2446ce7049fbf6ad63d97977fd67} 
+const char \texorpdfstring{$\ast$}{*} Im\+Font\+Calc\+Word\+Wrap\+Position\+Ex (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*}}]{font}{, }\item[{float}]{size}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{text}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{text\+\_\+end}{, }\item[{float}]{wrap\+\_\+width}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a0bb290a6a1c9c777c2f38296c39ee565}{Im\+Draw\+Text\+Flags}}}]{flags}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a318c827c416f9b92c4b662ac1e2441d0}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextCalcWordWrapNextLineStart@{ImTextCalcWordWrapNextLineStart}}
+\index{ImTextCalcWordWrapNextLineStart@{ImTextCalcWordWrapNextLineStart}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextCalcWordWrapNextLineStart()}{ImTextCalcWordWrapNextLineStart()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a318c827c416f9b92c4b662ac1e2441d0} 
+const char \texorpdfstring{$\ast$}{*} Im\+Text\+Calc\+Word\+Wrap\+Next\+Line\+Start (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{text}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{text\+\_\+end}{, }\item[{\doxymbox{\hyperlink{imgui_8h_a0bb290a6a1c9c777c2f38296c39ee565}{Im\+Draw\+Text\+Flags}}}]{flags}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_acb87f6bbdf4abf3e105c3c1a43d475df}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextClassifierClear@{ImTextClassifierClear}}
+\index{ImTextClassifierClear@{ImTextClassifierClear}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextClassifierClear()}{ImTextClassifierClear()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_acb87f6bbdf4abf3e105c3c1a43d475df} 
+void Im\+Text\+Classifier\+Clear (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}} \texorpdfstring{$\ast$}{*}}]{bits}{, }\item[{unsigned int}]{codepoint\+\_\+min}{, }\item[{unsigned int}]{codepoint\+\_\+end}{, }\item[{\doxymbox{\hyperlink{imgui__internal_8h_a58bc4028ace5418227516d6302929233}{Im\+Wchar\+Class}}}]{char\+\_\+class}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a9e50b480216f6da1470c05c260e4b757}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextClassifierSetCharClass@{ImTextClassifierSetCharClass}}
+\index{ImTextClassifierSetCharClass@{ImTextClassifierSetCharClass}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextClassifierSetCharClass()}{ImTextClassifierSetCharClass()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a9e50b480216f6da1470c05c260e4b757} 
+void Im\+Text\+Classifier\+Set\+Char\+Class (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}} \texorpdfstring{$\ast$}{*}}]{bits}{, }\item[{unsigned int}]{codepoint\+\_\+min}{, }\item[{unsigned int}]{codepoint\+\_\+end}{, }\item[{\doxymbox{\hyperlink{imgui__internal_8h_a58bc4028ace5418227516d6302929233}{Im\+Wchar\+Class}}}]{char\+\_\+class}{, }\item[{unsigned int}]{c}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a024a37754715a46df344fbb2adec28c3}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextClassifierSetCharClassFromStr@{ImTextClassifierSetCharClassFromStr}}
+\index{ImTextClassifierSetCharClassFromStr@{ImTextClassifierSetCharClassFromStr}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextClassifierSetCharClassFromStr()}{ImTextClassifierSetCharClassFromStr()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a024a37754715a46df344fbb2adec28c3} 
+void Im\+Text\+Classifier\+Set\+Char\+Class\+From\+Str (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a118cff4eeb8d00e7d07ce3d6460eed36}{Im\+U32}} \texorpdfstring{$\ast$}{*}}]{bits}{, }\item[{unsigned int}]{codepoint\+\_\+min}{, }\item[{unsigned int}]{codepoint\+\_\+end}{, }\item[{\doxymbox{\hyperlink{imgui__internal_8h_a58bc4028ace5418227516d6302929233}{Im\+Wchar\+Class}}}]{char\+\_\+class}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{s}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a67d60a9a93ea69e575050463781fc7e4}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextInitClassifiers@{ImTextInitClassifiers}}
+\index{ImTextInitClassifiers@{ImTextInitClassifiers}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextInitClassifiers()}{ImTextInitClassifiers()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a67d60a9a93ea69e575050463781fc7e4} 
+void Im\+Text\+Init\+Classifiers (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ab03ee823701d6a6b8b0d95d8ff56be73}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextureDataGetFormatBytesPerPixel@{ImTextureDataGetFormatBytesPerPixel}}
+\index{ImTextureDataGetFormatBytesPerPixel@{ImTextureDataGetFormatBytesPerPixel}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextureDataGetFormatBytesPerPixel()}{ImTextureDataGetFormatBytesPerPixel()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ab03ee823701d6a6b8b0d95d8ff56be73} 
+int Im\+Texture\+Data\+Get\+Format\+Bytes\+Per\+Pixel (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}}}]{format}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_a8fcdf3356536ea679f1aa04ad80f0147}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextureDataGetFormatName@{ImTextureDataGetFormatName}}
+\index{ImTextureDataGetFormatName@{ImTextureDataGetFormatName}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextureDataGetFormatName()}{ImTextureDataGetFormatName()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a8fcdf3356536ea679f1aa04ad80f0147} 
+const char \texorpdfstring{$\ast$}{*} Im\+Texture\+Data\+Get\+Format\+Name (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_af1081cd8c3420a0f8e54208377732dc4}{Im\+Texture\+Format}}}]{format}{}\end{DoxyParamCaption})}
+
+\Hypertarget{imgui__draw_8cpp_ab27135b67e12a347342cb1b6fd2633f5}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!ImTextureDataGetStatusName@{ImTextureDataGetStatusName}}
+\index{ImTextureDataGetStatusName@{ImTextureDataGetStatusName}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{ImTextureDataGetStatusName()}{ImTextureDataGetStatusName()}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_ab27135b67e12a347342cb1b6fd2633f5} 
+const char \texorpdfstring{$\ast$}{*} Im\+Texture\+Data\+Get\+Status\+Name (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a5c1fe5a7adf4a423ab5044dfdabf7dec}{Im\+Texture\+Status}}}]{status}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-var-members}
+\Hypertarget{imgui__draw_8cpp_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{imgui__draw_8cpp_a2c96fc3febbe9f4f6c042a2f975a5b1d}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_H@{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_H}}
+\index{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_H@{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_H}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_H}{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_H}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_a2c96fc3febbe9f4f6c042a2f975a5b1d} 
+const int FONT\+\_\+\+ATLAS\+\_\+\+DEFAULT\+\_\+\+TEX\+\_\+\+DATA\+\_\+H = 27}
+
+\Hypertarget{imgui__draw_8cpp_adf518fea7357febbb14eeecb692a8d95}\index{imgui\_draw.cpp@{imgui\_draw.cpp}!FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_W@{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_W}}
+\index{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_W@{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_W}!imgui\_draw.cpp@{imgui\_draw.cpp}}
+\doxysubsubsection{\texorpdfstring{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_W}{FONT\_ATLAS\_DEFAULT\_TEX\_DATA\_W}}
+{\footnotesize\ttfamily \label{imgui__draw_8cpp_adf518fea7357febbb14eeecb692a8d95} 
+const int FONT\+\_\+\+ATLAS\+\_\+\+DEFAULT\+\_\+\+TEX\+\_\+\+DATA\+\_\+W = 122}
+

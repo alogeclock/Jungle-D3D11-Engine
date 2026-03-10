@@ -1,0 +1,30 @@
+\doxysection{Monster.\+h}
+\hypertarget{_monster_8h_source}{}\label{_monster_8h_source}\index{Gameplay/Monster.h@{Gameplay/Monster.h}}
+\doxymbox{\hyperlink{_monster_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_actor_8h}{Actor.h}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_monster}{FMonster}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_actor}{FActor}}}
+\DoxyCodeLine{00007\ \{}
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActorType}}\ \doxymbox{\hyperlink{class_f_monster_a8d9e57fc0fbce15a135045329bb042be}{GetActorType}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_monster_a9361e0047f38b61acd842fc445589f70}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_monster_a52648e30a33904f0e417483607c00e85}{OnBeat}}(\doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_monster_ac05ba03c3564bdf723b4bb7941bf491a}{SetAiType}}(\doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ InAiType);}
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ \doxymbox{\hyperlink{class_f_monster_a65963fc01a9144a68db4fb3b3e0485c8}{GetAiType}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}\ \doxymbox{\hyperlink{class_f_monster_a8e3f39148b9461ff77ef1a332bdd8319}{DecideNextMove}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00020\ \ \ \ \ std::optional<EDirection>\ SearchPlayer(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonsterAIType}}\ AiType\ =\ \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234afa3ca08d8818a56b7341a19f236290adec}{EMonsterAIType::RandomMove}};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ SearchRange\ =\ 20;\ \textcolor{comment}{//\ 플레이어 탐색 최대 범위 (20스텝)}}
+\DoxyCodeLine{00024\ \};}
+
+\end{DoxyCode}

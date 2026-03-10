@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Core/GameContext.h"
-#include "../Gameplay/BeatSystem.h"
+#include "Core/GameContext.h"
+#include "Gameplay/BeatSystem.h"
 #include "UIWidget.h"
 
 class FBeatHUDWidget : public IUIWidget

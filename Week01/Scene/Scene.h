@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/Types.h"
+#include "Core/Types.h"
 
 struct FGameContext;
 

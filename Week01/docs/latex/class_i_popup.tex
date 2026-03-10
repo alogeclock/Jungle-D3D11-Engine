@@ -1,0 +1,98 @@
+\doxysection{IPopup Class Reference}
+\hypertarget{class_i_popup}{}\label{class_i_popup}\index{IPopup@{IPopup}}
+
+
+{\ttfamily \+\#include $<$Popup.\+h$>$}
+
+Inheritance diagram for IPopup:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i_popup}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_i_popup_a29edccd2511d9ac447a6ac98d32a1977}{\texorpdfstring{$\sim$}{\string~}\+IPopup}} ()=default
+\item 
+virtual void \doxymbox{\hyperlink{class_i_popup_ac1a7830c5a4675e93e58fbfe76d4afc2}{Open}} ()=0
+\item 
+virtual void \doxymbox{\hyperlink{class_i_popup_ab7ae3c25f664da8cf13af5a5c7bafd08}{Close}} ()=0
+\item 
+virtual bool \doxymbox{\hyperlink{class_i_popup_afcc453c7ca33e24b61da2744c9c14954}{Is\+Open}} () const =0
+\item 
+virtual void \doxymbox{\hyperlink{class_i_popup_a2659ff83c4cd7c7d4ed8398eb806ab4f}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_i_popup_a617ad981447a397199275f896e15296a}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_i_popup_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_i_popup_a29edccd2511d9ac447a6ac98d32a1977}\index{IPopup@{IPopup}!````~IPopup@{\texorpdfstring{$\sim$}{\string~}IPopup}}
+\index{````~IPopup@{\texorpdfstring{$\sim$}{\string~}IPopup}!IPopup@{IPopup}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}IPopup()}{\string~IPopup()}}
+{\footnotesize\ttfamily \label{class_i_popup_a29edccd2511d9ac447a6ac98d32a1977} 
+virtual IPopup::\+\texorpdfstring{$\sim$}{\string~}\+IPopup (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_i_popup_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_i_popup_ab7ae3c25f664da8cf13af5a5c7bafd08}\index{IPopup@{IPopup}!Close@{Close}}
+\index{Close@{Close}!IPopup@{IPopup}}
+\doxysubsubsection{\texorpdfstring{Close()}{Close()}}
+{\footnotesize\ttfamily \label{class_i_popup_ab7ae3c25f664da8cf13af5a5c7bafd08} 
+virtual void IPopup::\+\+Close (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_credit_popup_a2e0485cd8fb7677f526e7ad8e7b93a51}{FCredit\+Popup}}, and \doxymbox{\hyperlink{class_f_scoreboard_popup_adb35aaa4eb15526de27e07ca38e39cd7}{FScoreboard\+Popup}}.
+
+\Hypertarget{class_i_popup_afcc453c7ca33e24b61da2744c9c14954}\index{IPopup@{IPopup}!IsOpen@{IsOpen}}
+\index{IsOpen@{IsOpen}!IPopup@{IPopup}}
+\doxysubsubsection{\texorpdfstring{IsOpen()}{IsOpen()}}
+{\footnotesize\ttfamily \label{class_i_popup_afcc453c7ca33e24b61da2744c9c14954} 
+virtual bool IPopup::\+\+Is\+Open (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_credit_popup_add2878c4991fb8acc9ad1aad7c07d9af}{FCredit\+Popup}}, and \doxymbox{\hyperlink{class_f_scoreboard_popup_ace2f4bbcc12ddb0f544bbfaea2a12ed7}{FScoreboard\+Popup}}.
+
+\Hypertarget{class_i_popup_ac1a7830c5a4675e93e58fbfe76d4afc2}\index{IPopup@{IPopup}!Open@{Open}}
+\index{Open@{Open}!IPopup@{IPopup}}
+\doxysubsubsection{\texorpdfstring{Open()}{Open()}}
+{\footnotesize\ttfamily \label{class_i_popup_ac1a7830c5a4675e93e58fbfe76d4afc2} 
+virtual void IPopup::\+\+Open (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_credit_popup_ab18ccc2b84070ec7d2eadb4f0b351ab6}{FCredit\+Popup}}, and \doxymbox{\hyperlink{class_f_scoreboard_popup_a41054b1b2eebaafc37c990eec8916298}{FScoreboard\+Popup}}.
+
+\Hypertarget{class_i_popup_a617ad981447a397199275f896e15296a}\index{IPopup@{IPopup}!Render@{Render}}
+\index{Render@{Render}!IPopup@{IPopup}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_i_popup_a617ad981447a397199275f896e15296a} 
+virtual void IPopup::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_credit_popup_a32b2c3ed3fdf556852601b311cbe54bf}{FCredit\+Popup}}, and \doxymbox{\hyperlink{class_f_scoreboard_popup_aca91fa2443e4102e08f3f5af2a4278be}{FScoreboard\+Popup}}.
+
+\Hypertarget{class_i_popup_a2659ff83c4cd7c7d4ed8398eb806ab4f}\index{IPopup@{IPopup}!Update@{Update}}
+\index{Update@{Update}!IPopup@{IPopup}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_i_popup_a2659ff83c4cd7c7d4ed8398eb806ab4f} 
+virtual void IPopup::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_credit_popup_a0f9e151f259c6432319ac91ebd571621}{FCredit\+Popup}}, and \doxymbox{\hyperlink{class_f_scoreboard_popup_a06ee8b8f05ee498666b607cf276291c7}{FScoreboard\+Popup}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+UI/\+\doxymbox{\hyperlink{_popup_8h}{Popup.\+h}}\end{DoxyCompactItemize}

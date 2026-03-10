@@ -1,10 +1,10 @@
 #pragma once
 
 #include <memory>
-#include "../Core/Types.h"
+#include "Core/Types.h"
+#include "Scene.h"
 
 struct FGameContext;
-class IScene;
 
 class FSceneManager
 {

@@ -5,6 +5,7 @@ Jungle_W.*/
 .vs/
 *.vcxproj.user
 .claude/
+CLAUDE.md
 
 # Custom
 Windows/

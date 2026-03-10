@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "Popup.h"
-#include "../Core/Types.h"
+#include "UI/Popup.h"
+#include "Core/Types.h"
 
 class FScoreboardPopup : public IPopup
 {

@@ -1,0 +1,33 @@
+\doxysection{Scene.\+h}
+\hypertarget{_scene_8h_source}{}\label{_scene_8h_source}\index{Scene/Scene.h@{Scene/Scene.h}}
+\doxymbox{\hyperlink{_scene_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Core/Types.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keyword}{virtual}\ \doxymbox{\hyperlink{class_i_scene_a146b1101069efb7a46b3bb6e419bc2bc}{\string~IScene}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_scene_ad827b093764ba24f33a6490b2ce568f4}{Enter}}()\ =\ 0;}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_scene_ad91db1340cc6f0e4dbff45fe8c802d9b}{Exit}}()\ =\ 0;}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_scene_aaac68ad3611a9ef3cad7697b87dd92f4}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\&\ Context)\ =\ 0;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_scene_ace723c09a94c7febce67b45c8aef49c1}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\&\ Context)\ =\ 0;}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_i_scene_a2cbbb0b3c57d330c35a937c81824614b}{HasSceneChangeRequest}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00018\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ \doxymbox{\hyperlink{class_i_scene_abbbbb84f448a83b56850ec7626b47dc8}{GetRequestedScene}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_scene_a8e8c10be01bdfc78bb2e7501fdec3bdd}{ClearSceneChangeRequest}}();}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_scene_a9f77c1641bee42ccb8eeeb7a51ae71a4}{RequestSceneChange}}(\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ SceneType);}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{bool}\ bHasSceneChangeRequest\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00026\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ RequestedScene\ =\ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9ab78a3223503896721cca1303f776159b}{ESceneType::Title}};}
+\DoxyCodeLine{00027\ \};}
+
+\end{DoxyCode}

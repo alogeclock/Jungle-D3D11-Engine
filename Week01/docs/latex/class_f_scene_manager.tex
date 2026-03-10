@@ -1,0 +1,84 @@
+\doxysection{FScene\+Manager Class Reference}
+\hypertarget{class_f_scene_manager}{}\label{class_f_scene_manager}\index{FSceneManager@{FSceneManager}}
+
+
+{\ttfamily \+\#include $<$Scene\+Manager.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_f_scene_manager_afc36a35489419db2745cc68001bd2251}{Initialize}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \texorpdfstring{$\ast$}{*}In\+Game\+Context)
+\item 
+void \doxymbox{\hyperlink{class_f_scene_manager_a3ab46437e85bb3317e3c13dbcc10ca2b}{Request\+Change\+Scene}} (\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Scene\+Type)
+\item 
+void \doxymbox{\hyperlink{class_f_scene_manager_a49c0737b78fe2798a5fe69712da3c3e9}{Change\+Scene\+Immediately}} (\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Scene\+Type)
+\item 
+void \doxymbox{\hyperlink{class_f_scene_manager_a2ee87dfe03c875a272bcee41dfb5a304}{Update}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_scene_manager_a673fae32eff6203ea229a010be8902e8}{Render}} ()
+\item 
+\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} \doxymbox{\hyperlink{class_f_scene_manager_a242f0832993b0caf18ac61b47e11be36}{Get\+Current\+Scene\+Type}} () const
+\item 
+\doxymbox{\hyperlink{class_i_scene}{IScene}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_scene_manager_af45d03aa54c2e549c1aa3400ae7e9e28}{Get\+Current\+Scene}} ()
+\item 
+const \doxymbox{\hyperlink{class_i_scene}{IScene}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_scene_manager_a30f122a3433aeadfd4cd06aeb20b595c}{Get\+Current\+Scene}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_scene_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_scene_manager_a49c0737b78fe2798a5fe69712da3c3e9}\index{FSceneManager@{FSceneManager}!ChangeSceneImmediately@{ChangeSceneImmediately}}
+\index{ChangeSceneImmediately@{ChangeSceneImmediately}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{ChangeSceneImmediately()}{ChangeSceneImmediately()}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_a49c0737b78fe2798a5fe69712da3c3e9} 
+void FScene\+Manager::\+\+Change\+Scene\+Immediately (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}}}]{Scene\+Type}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_scene_manager_af45d03aa54c2e549c1aa3400ae7e9e28}\index{FSceneManager@{FSceneManager}!GetCurrentScene@{GetCurrentScene}}
+\index{GetCurrentScene@{GetCurrentScene}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{GetCurrentScene()}{GetCurrentScene()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_af45d03aa54c2e549c1aa3400ae7e9e28} 
+\doxymbox{\hyperlink{class_i_scene}{IScene}} \texorpdfstring{$\ast$}{*} FScene\+Manager::\+\+Get\+Current\+Scene (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_scene_manager_a30f122a3433aeadfd4cd06aeb20b595c}\index{FSceneManager@{FSceneManager}!GetCurrentScene@{GetCurrentScene}}
+\index{GetCurrentScene@{GetCurrentScene}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{GetCurrentScene()}{GetCurrentScene()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_a30f122a3433aeadfd4cd06aeb20b595c} 
+const \doxymbox{\hyperlink{class_i_scene}{IScene}} \texorpdfstring{$\ast$}{*} FScene\+Manager::\+\+Get\+Current\+Scene (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_scene_manager_a242f0832993b0caf18ac61b47e11be36}\index{FSceneManager@{FSceneManager}!GetCurrentSceneType@{GetCurrentSceneType}}
+\index{GetCurrentSceneType@{GetCurrentSceneType}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{GetCurrentSceneType()}{GetCurrentSceneType()}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_a242f0832993b0caf18ac61b47e11be36} 
+\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} FScene\+Manager::\+\+Get\+Current\+Scene\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_scene_manager_afc36a35489419db2745cc68001bd2251}\index{FSceneManager@{FSceneManager}!Initialize@{Initialize}}
+\index{Initialize@{Initialize}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{Initialize()}{Initialize()}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_afc36a35489419db2745cc68001bd2251} 
+void FScene\+Manager::\+\+Initialize (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \texorpdfstring{$\ast$}{*}}]{In\+Game\+Context}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_scene_manager_a673fae32eff6203ea229a010be8902e8}\index{FSceneManager@{FSceneManager}!Render@{Render}}
+\index{Render@{Render}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_a673fae32eff6203ea229a010be8902e8} 
+void FScene\+Manager::\+\+Render (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_scene_manager_a3ab46437e85bb3317e3c13dbcc10ca2b}\index{FSceneManager@{FSceneManager}!RequestChangeScene@{RequestChangeScene}}
+\index{RequestChangeScene@{RequestChangeScene}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{RequestChangeScene()}{RequestChangeScene()}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_a3ab46437e85bb3317e3c13dbcc10ca2b} 
+void FScene\+Manager::\+\+Request\+Change\+Scene (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}}}]{Scene\+Type}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_scene_manager_a2ee87dfe03c875a272bcee41dfb5a304}\index{FSceneManager@{FSceneManager}!Update@{Update}}
+\index{Update@{Update}!FSceneManager@{FSceneManager}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_scene_manager_a2ee87dfe03c875a272bcee41dfb5a304} 
+void FScene\+Manager::\+\+Update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Scene/\+\doxymbox{\hyperlink{_scene_manager_8h}{Scene\+Manager.\+h}}\item 
+Scene/\+\doxymbox{\hyperlink{_scene_manager_8cpp}{Scene\+Manager.\+cpp}}\end{DoxyCompactItemize}

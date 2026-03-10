@@ -5,7 +5,7 @@
 #include "GameContext.h"
 #include "Input.h"
 #include "Renderer.h"
-#include "SceneManager.h"
+#include "Scene/SceneManager.h"
 #include "TextureManager.h"
 #include "Time.h"
 
@@ -14,7 +14,7 @@ struct FGameContext;
 class FApplication
 {
   public:
-    bool Initialize(void *WindowHandle, int ScreenWidth, int ScreenHeight);
+    bool Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeight);
     void Run();
     void Shutdown();
 

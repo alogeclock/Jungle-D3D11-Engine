@@ -1,0 +1,105 @@
+\doxysection{FTile Class Reference}
+\hypertarget{class_f_tile}{}\label{class_f_tile}\index{FTile@{FTile}}
+
+
+{\ttfamily \+\#include $<$Tile.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_f_tile_a043071ffe6fc7ac27516f2710c231c1e}{FTile}} ()=default
+\item 
+\doxymbox{\hyperlink{class_f_tile_ae66e5737cc0efc31ded07f92d44d1856}{FTile}} (int In\+TileX, int In\+TileY, \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETile\+Type}} In\+Type=\doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9caf3f6d0343d56ce88ce7958170ed05cb3}{ETile\+Type::\+\+Floor}})
+\item 
+int \doxymbox{\hyperlink{class_f_tile_a1dafcc57e243458e3d5a1b63d8a6c8f2}{Get\+TileX}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_tile_ad77c5fbf934fdae2ee68c4de5dd6b7bd}{Get\+TileY}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_tile_af41bcfa6d4b3bc214d3f943d58810e0a}{Get\+RenderX}} (float Tile\+Size) const
+\item 
+float \doxymbox{\hyperlink{class_f_tile_a5b64bead69f0a6acf538508006eccb11}{Get\+RenderY}} (float Tile\+Size) const
+\item 
+void \doxymbox{\hyperlink{class_f_tile_a6d3447e131b19af54632f5c6f0305380}{Set\+Type}} (\doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETile\+Type}} In\+Type)
+\item 
+\doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETile\+Type}} \doxymbox{\hyperlink{class_f_tile_a7bb2cd2cc7e8f3454a7fbf7d30a391dc}{Get\+Type}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_tile_ac34778016f30fad04d7c79283c3522a1}{Set\+Sprite}} (const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&In\+Sprite)
+\item 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& \doxymbox{\hyperlink{class_f_tile_a432fc3080c680e57422632977341cd4a}{Get\+Sprite}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_tile_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_tile_a043071ffe6fc7ac27516f2710c231c1e}\index{FTile@{FTile}!FTile@{FTile}}
+\index{FTile@{FTile}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{FTile()}{FTile()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_tile_a043071ffe6fc7ac27516f2710c231c1e} 
+FTile::\+\+FTile (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_f_tile_ae66e5737cc0efc31ded07f92d44d1856}\index{FTile@{FTile}!FTile@{FTile}}
+\index{FTile@{FTile}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{FTile()}{FTile()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_tile_ae66e5737cc0efc31ded07f92d44d1856} 
+FTile::\+\+FTile (\begin{DoxyParamCaption}\item[{int}]{In\+TileX}{, }\item[{int}]{In\+TileY}{, }\item[{\doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETile\+Type}}}]{In\+Type}{ = {\ttfamily \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9caf3f6d0343d56ce88ce7958170ed05cb3}{ETile\+Type::\+\+Floor}}}}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_tile_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_tile_af41bcfa6d4b3bc214d3f943d58810e0a}\index{FTile@{FTile}!GetRenderX@{GetRenderX}}
+\index{GetRenderX@{GetRenderX}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{GetRenderX()}{GetRenderX()}}
+{\footnotesize\ttfamily \label{class_f_tile_af41bcfa6d4b3bc214d3f943d58810e0a} 
+float FTile::\+\+Get\+RenderX (\begin{DoxyParamCaption}\item[{float}]{Tile\+Size}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_tile_a5b64bead69f0a6acf538508006eccb11}\index{FTile@{FTile}!GetRenderY@{GetRenderY}}
+\index{GetRenderY@{GetRenderY}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{GetRenderY()}{GetRenderY()}}
+{\footnotesize\ttfamily \label{class_f_tile_a5b64bead69f0a6acf538508006eccb11} 
+float FTile::\+\+Get\+RenderY (\begin{DoxyParamCaption}\item[{float}]{Tile\+Size}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_tile_a432fc3080c680e57422632977341cd4a}\index{FTile@{FTile}!GetSprite@{GetSprite}}
+\index{GetSprite@{GetSprite}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{GetSprite()}{GetSprite()}}
+{\footnotesize\ttfamily \label{class_f_tile_a432fc3080c680e57422632977341cd4a} 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& FTile::\+\+Get\+Sprite (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_tile_a1dafcc57e243458e3d5a1b63d8a6c8f2}\index{FTile@{FTile}!GetTileX@{GetTileX}}
+\index{GetTileX@{GetTileX}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{GetTileX()}{GetTileX()}}
+{\footnotesize\ttfamily \label{class_f_tile_a1dafcc57e243458e3d5a1b63d8a6c8f2} 
+int FTile::\+\+Get\+TileX (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_tile_ad77c5fbf934fdae2ee68c4de5dd6b7bd}\index{FTile@{FTile}!GetTileY@{GetTileY}}
+\index{GetTileY@{GetTileY}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{GetTileY()}{GetTileY()}}
+{\footnotesize\ttfamily \label{class_f_tile_ad77c5fbf934fdae2ee68c4de5dd6b7bd} 
+int FTile::\+\+Get\+TileY (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_tile_a7bb2cd2cc7e8f3454a7fbf7d30a391dc}\index{FTile@{FTile}!GetType@{GetType}}
+\index{GetType@{GetType}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{GetType()}{GetType()}}
+{\footnotesize\ttfamily \label{class_f_tile_a7bb2cd2cc7e8f3454a7fbf7d30a391dc} 
+\doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETile\+Type}} FTile::\+\+Get\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_tile_ac34778016f30fad04d7c79283c3522a1}\index{FTile@{FTile}!SetSprite@{SetSprite}}
+\index{SetSprite@{SetSprite}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{SetSprite()}{SetSprite()}}
+{\footnotesize\ttfamily \label{class_f_tile_ac34778016f30fad04d7c79283c3522a1} 
+void FTile::\+\+Set\+Sprite (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&}]{In\+Sprite}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_tile_a6d3447e131b19af54632f5c6f0305380}\index{FTile@{FTile}!SetType@{SetType}}
+\index{SetType@{SetType}!FTile@{FTile}}
+\doxysubsubsection{\texorpdfstring{SetType()}{SetType()}}
+{\footnotesize\ttfamily \label{class_f_tile_a6d3447e131b19af54632f5c6f0305380} 
+void FTile::\+\+Set\+Type (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETile\+Type}}}]{In\+Type}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Gameplay/\+\doxymbox{\hyperlink{_tile_8h}{Tile.\+h}}\item 
+Gameplay/\+\doxymbox{\hyperlink{_tile_8cpp}{Tile.\+cpp}}\end{DoxyCompactItemize}

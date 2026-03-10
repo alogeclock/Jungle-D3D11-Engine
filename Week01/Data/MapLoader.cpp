@@ -2,6 +2,9 @@
 #include "MapData.h"
 #include "MapLoader.h"
 
+#include <fstream>
+#include <sstream>
+
 using json = nlohmann::json;
 
 namespace

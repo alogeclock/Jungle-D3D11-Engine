@@ -1,0 +1,108 @@
+\doxysection{FBeat\+System Class Reference}
+\hypertarget{class_f_beat_system}{}\label{class_f_beat_system}\index{FBeatSystem@{FBeatSystem}}
+
+
+{\ttfamily \+\#include $<$Beat\+System.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_f_beat_system_ad4f58cb0b055a769b6c517285c3c1646}{Reset}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_beat_system_ad57c67aeec7fa317d1afc6bc608db61b}{Update}} (float Delta\+Time)
+\item 
+void \doxymbox{\hyperlink{class_f_beat_system_a6bdbe624efca00d193fba995221a9b35}{Set\+Bpm}} (float In\+Bpm)
+\item 
+float \doxymbox{\hyperlink{class_f_beat_system_a5a0e2c316575782e539c02add2b38cec}{Get\+Bpm}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_beat_system_ac6d48788df3316f54a2c24e9003781a5}{Get\+Beat\+Interval}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_beat_system_a706b54901b68bf0becba95bb6b938beb}{Set\+Judge\+Windows}} (float In\+Perfect\+Window, float In\+Good\+Window)
+\item 
+\doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}} \doxymbox{\hyperlink{class_f_beat_system_aaa0e13fea098d8598594e7f7da0e5749}{Judge\+Input}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_beat_system_aebc93633bbfb37d871d277e8570c39f2}{Is\+Beat\+Just\+Triggered}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_beat_system_a7a85f6add305295886abc6927c14b8d7}{Consume\+Beat}} ()
+\item 
+float \doxymbox{\hyperlink{class_f_beat_system_a405820b752e971ecfb1fb16bb4f88da4}{Get\+Elapsed\+Time}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_beat_system_abf7d6ae3e7881dccab5de88d936e1be4}{Get\+Time\+To\+Next\+Beat}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_beat_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_beat_system_a7a85f6add305295886abc6927c14b8d7}\index{FBeatSystem@{FBeatSystem}!ConsumeBeat@{ConsumeBeat}}
+\index{ConsumeBeat@{ConsumeBeat}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{ConsumeBeat()}{ConsumeBeat()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_a7a85f6add305295886abc6927c14b8d7} 
+bool FBeat\+System::\+\+Consume\+Beat (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_beat_system_ac6d48788df3316f54a2c24e9003781a5}\index{FBeatSystem@{FBeatSystem}!GetBeatInterval@{GetBeatInterval}}
+\index{GetBeatInterval@{GetBeatInterval}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{GetBeatInterval()}{GetBeatInterval()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_ac6d48788df3316f54a2c24e9003781a5} 
+float FBeat\+System::\+\+Get\+Beat\+Interval (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_beat_system_a5a0e2c316575782e539c02add2b38cec}\index{FBeatSystem@{FBeatSystem}!GetBpm@{GetBpm}}
+\index{GetBpm@{GetBpm}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{GetBpm()}{GetBpm()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_a5a0e2c316575782e539c02add2b38cec} 
+float FBeat\+System::\+\+Get\+Bpm (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_beat_system_a405820b752e971ecfb1fb16bb4f88da4}\index{FBeatSystem@{FBeatSystem}!GetElapsedTime@{GetElapsedTime}}
+\index{GetElapsedTime@{GetElapsedTime}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{GetElapsedTime()}{GetElapsedTime()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_a405820b752e971ecfb1fb16bb4f88da4} 
+float FBeat\+System::\+\+Get\+Elapsed\+Time (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_beat_system_abf7d6ae3e7881dccab5de88d936e1be4}\index{FBeatSystem@{FBeatSystem}!GetTimeToNextBeat@{GetTimeToNextBeat}}
+\index{GetTimeToNextBeat@{GetTimeToNextBeat}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{GetTimeToNextBeat()}{GetTimeToNextBeat()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_abf7d6ae3e7881dccab5de88d936e1be4} 
+float FBeat\+System::\+\+Get\+Time\+To\+Next\+Beat (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_beat_system_aebc93633bbfb37d871d277e8570c39f2}\index{FBeatSystem@{FBeatSystem}!IsBeatJustTriggered@{IsBeatJustTriggered}}
+\index{IsBeatJustTriggered@{IsBeatJustTriggered}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{IsBeatJustTriggered()}{IsBeatJustTriggered()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_aebc93633bbfb37d871d277e8570c39f2} 
+bool FBeat\+System::\+\+Is\+Beat\+Just\+Triggered (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_beat_system_aaa0e13fea098d8598594e7f7da0e5749}\index{FBeatSystem@{FBeatSystem}!JudgeInput@{JudgeInput}}
+\index{JudgeInput@{JudgeInput}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{JudgeInput()}{JudgeInput()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_aaa0e13fea098d8598594e7f7da0e5749} 
+\doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}} FBeat\+System::\+\+Judge\+Input (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_beat_system_ad4f58cb0b055a769b6c517285c3c1646}\index{FBeatSystem@{FBeatSystem}!Reset@{Reset}}
+\index{Reset@{Reset}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_ad4f58cb0b055a769b6c517285c3c1646} 
+void FBeat\+System::\+\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_beat_system_a6bdbe624efca00d193fba995221a9b35}\index{FBeatSystem@{FBeatSystem}!SetBpm@{SetBpm}}
+\index{SetBpm@{SetBpm}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{SetBpm()}{SetBpm()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_a6bdbe624efca00d193fba995221a9b35} 
+void FBeat\+System::\+\+Set\+Bpm (\begin{DoxyParamCaption}\item[{float}]{In\+Bpm}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_beat_system_a706b54901b68bf0becba95bb6b938beb}\index{FBeatSystem@{FBeatSystem}!SetJudgeWindows@{SetJudgeWindows}}
+\index{SetJudgeWindows@{SetJudgeWindows}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{SetJudgeWindows()}{SetJudgeWindows()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_a706b54901b68bf0becba95bb6b938beb} 
+void FBeat\+System::\+\+Set\+Judge\+Windows (\begin{DoxyParamCaption}\item[{float}]{In\+Perfect\+Window}{, }\item[{float}]{In\+Good\+Window}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_beat_system_ad57c67aeec7fa317d1afc6bc608db61b}\index{FBeatSystem@{FBeatSystem}!Update@{Update}}
+\index{Update@{Update}!FBeatSystem@{FBeatSystem}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_beat_system_ad57c67aeec7fa317d1afc6bc608db61b} 
+void FBeat\+System::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Gameplay/\+\doxymbox{\hyperlink{_beat_system_8h}{Beat\+System.\+h}}\item 
+Gameplay/\+\doxymbox{\hyperlink{_beat_system_8cpp}{Beat\+System.\+cpp}}\end{DoxyCompactItemize}

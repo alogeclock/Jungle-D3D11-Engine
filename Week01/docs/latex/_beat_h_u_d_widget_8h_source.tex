@@ -1,0 +1,25 @@
+\doxysection{Beat\+HUDWidget.\+h}
+\hypertarget{_beat_h_u_d_widget_8h_source}{}\label{_beat_h_u_d_widget_8h_source}\index{UI/BeatHUDWidget.h@{UI/BeatHUDWidget.h}}
+\doxymbox{\hyperlink{_beat_h_u_d_widget_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_game_context_8h}{Core/GameContext.h}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_beat_system_8h}{Gameplay/BeatSystem.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_widget_8h}{UIWidget.h}}"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_beat_h_u_d_widget}{FBeatHUDWidget}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_i_u_i_widget}{IUIWidget}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a571ec09b93fc6206cc2f8ac501bd019b}{BindBeatSystem}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_beat_system}{FBeatSystem}}\ *BeatSystem);}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a2508e279b528556a0c4129d0536e8f98}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a9d1f3a65882c0a3797f0d9745555396c}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_beat_system}{FBeatSystem}}\ *BeatSystem\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \ \ \ FlashTimer\ =\ 0.0f;}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \ \ \ FlashDuration\ =\ 0.08f;}
+\DoxyCodeLine{00019\ \};}
+
+\end{DoxyCode}

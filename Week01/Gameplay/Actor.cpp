@@ -124,3 +124,13 @@ bool FActor::IsMoving() const
 {
 	return bIsMoving;
 }
+
+void FActor::SetSprite(const FSpriteInfo& InSprite)
+{
+	Sprite = InSprite;
+}
+
+const FSpriteInfo& FActor::GetSprite() const
+{
+	return Sprite;
+}

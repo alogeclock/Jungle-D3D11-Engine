@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/GameContext.h"
+#include "Core/GameContext.h"
 #include "UIWidget.h"
 
 struct FStage;

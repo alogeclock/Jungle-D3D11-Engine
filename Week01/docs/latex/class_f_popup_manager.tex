@@ -1,0 +1,92 @@
+\doxysection{FPopup\+Manager Class Reference}
+\hypertarget{class_f_popup_manager}{}\label{class_f_popup_manager}\index{FPopupManager@{FPopupManager}}
+
+
+{\ttfamily \+\#include $<$Popup\+Manager.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_f_popup_manager_a9620cc6c72dbacd7d93e1fdc0ff8e62e}{Add\+Popup}} (const std::\+string \&Id, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_i_popup}{IPopup}} $>$ Popup)
+\item 
+void \doxymbox{\hyperlink{class_f_popup_manager_a86f8a717d3fa5e957384397fde8c6ae6}{Open}} (const std::\+string \&Id)
+\item 
+void \doxymbox{\hyperlink{class_f_popup_manager_acb3bef14bb2ae5b7e45fe2b9a6ba7331}{Close}} (const std::\+string \&Id)
+\item 
+void \doxymbox{\hyperlink{class_f_popup_manager_a53606808db1ea22aad310472481eb293}{Close\+All}} ()
+\item 
+bool \doxymbox{\hyperlink{class_f_popup_manager_af6a0b4a6855eb29abf6aaca1a34f2461}{Is\+Open}} (const std::\+string \&Id) const
+\item 
+\doxymbox{\hyperlink{class_i_popup}{IPopup}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_popup_manager_a77353bb347db15310af55337077d4d75}{Get\+Popup}} (const std::\+string \&Id)
+\item 
+const \doxymbox{\hyperlink{class_i_popup}{IPopup}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_popup_manager_addd37f7ceb1ee96c8b671d04e27b80a5}{Get\+Popup}} (const std::\+string \&Id) const
+\item 
+void \doxymbox{\hyperlink{class_f_popup_manager_a73b864e3da351a743641514c1fa770a3}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)
+\item 
+void \doxymbox{\hyperlink{class_f_popup_manager_a8705329f2cd1fceacc3d1659d411f35d}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_popup_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_popup_manager_a9620cc6c72dbacd7d93e1fdc0ff8e62e}\index{FPopupManager@{FPopupManager}!AddPopup@{AddPopup}}
+\index{AddPopup@{AddPopup}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{AddPopup()}{AddPopup()}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_a9620cc6c72dbacd7d93e1fdc0ff8e62e} 
+void FPopup\+Manager::\+\+Add\+Popup (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Id}{, }\item[{std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_i_popup}{IPopup}} $>$}]{Popup}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_popup_manager_acb3bef14bb2ae5b7e45fe2b9a6ba7331}\index{FPopupManager@{FPopupManager}!Close@{Close}}
+\index{Close@{Close}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{Close()}{Close()}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_acb3bef14bb2ae5b7e45fe2b9a6ba7331} 
+void FPopup\+Manager::\+\+Close (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_popup_manager_a53606808db1ea22aad310472481eb293}\index{FPopupManager@{FPopupManager}!CloseAll@{CloseAll}}
+\index{CloseAll@{CloseAll}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{CloseAll()}{CloseAll()}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_a53606808db1ea22aad310472481eb293} 
+void FPopup\+Manager::\+\+Close\+All (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_popup_manager_a77353bb347db15310af55337077d4d75}\index{FPopupManager@{FPopupManager}!GetPopup@{GetPopup}}
+\index{GetPopup@{GetPopup}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{GetPopup()}{GetPopup()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_a77353bb347db15310af55337077d4d75} 
+\doxymbox{\hyperlink{class_i_popup}{IPopup}} \texorpdfstring{$\ast$}{*} FPopup\+Manager::\+\+Get\+Popup (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_popup_manager_addd37f7ceb1ee96c8b671d04e27b80a5}\index{FPopupManager@{FPopupManager}!GetPopup@{GetPopup}}
+\index{GetPopup@{GetPopup}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{GetPopup()}{GetPopup()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_addd37f7ceb1ee96c8b671d04e27b80a5} 
+const \doxymbox{\hyperlink{class_i_popup}{IPopup}} \texorpdfstring{$\ast$}{*} FPopup\+Manager::\+\+Get\+Popup (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Id}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_popup_manager_af6a0b4a6855eb29abf6aaca1a34f2461}\index{FPopupManager@{FPopupManager}!IsOpen@{IsOpen}}
+\index{IsOpen@{IsOpen}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{IsOpen()}{IsOpen()}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_af6a0b4a6855eb29abf6aaca1a34f2461} 
+bool FPopup\+Manager::\+\+Is\+Open (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Id}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_popup_manager_a86f8a717d3fa5e957384397fde8c6ae6}\index{FPopupManager@{FPopupManager}!Open@{Open}}
+\index{Open@{Open}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{Open()}{Open()}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_a86f8a717d3fa5e957384397fde8c6ae6} 
+void FPopup\+Manager::\+\+Open (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_popup_manager_a8705329f2cd1fceacc3d1659d411f35d}\index{FPopupManager@{FPopupManager}!Render@{Render}}
+\index{Render@{Render}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_a8705329f2cd1fceacc3d1659d411f35d} 
+void FPopup\+Manager::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_popup_manager_a73b864e3da351a743641514c1fa770a3}\index{FPopupManager@{FPopupManager}!Update@{Update}}
+\index{Update@{Update}!FPopupManager@{FPopupManager}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_popup_manager_a73b864e3da351a743641514c1fa770a3} 
+void FPopup\+Manager::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+UI/\+\doxymbox{\hyperlink{_popup_manager_8h}{Popup\+Manager.\+h}}\item 
+UI/\+\doxymbox{\hyperlink{_popup_manager_8cpp}{Popup\+Manager.\+cpp}}\end{DoxyCompactItemize}
