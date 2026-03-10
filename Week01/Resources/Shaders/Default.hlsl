@@ -61,11 +61,9 @@ float4 mainPS(PixelInput input) : SV_TARGET
 {
     float4 color = sprite_texture.Sample(sprite_sampler, input.uv);
 
-    // 텍스처가 바인딩되지 않았을 때 (alpha=0) 디버그용 폴백 색상
-    // UV 좌표를 색상으로 표시하여 위치 확인 가능
     if (color.a < 0.01f)
     {
-        color = float4(input.uv.x, 0.3f, input.uv.y, 1.0f);
+        discard;
     }
 
     return color;

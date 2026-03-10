@@ -41,6 +41,7 @@ enum class ETileValue
 
 enum class EBeatJudge
 {
+    Perfect,
     Good,
     Miss
 };

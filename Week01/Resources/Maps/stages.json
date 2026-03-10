@@ -17,7 +17,8 @@
                 "spawn_point": {
                     "x": 2,
                     "y": 2
-                }
+                },
+                "time_limit": 30
             },
             "layers": [
                 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
@@ -47,7 +48,8 @@
                         "x": 7,
                         "y": 3
                     }
-                ]
+                ],
+                "time_limit": 45
             },
             "layers": [
                 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
@@ -71,7 +73,8 @@
                 "spawn_point": {
                     "x": 2,
                     "y": 2
-                }
+                },
+                "time_limit": 60
             },
 
             "layers": [
@@ -98,7 +101,8 @@
                 "spawn_point": {
                     "x": 2,
                     "y": 2
-                }
+                },
+                "time_limit": 120
             },
 
             "layers": [

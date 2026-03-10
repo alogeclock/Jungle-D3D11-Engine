@@ -25,6 +25,7 @@ public:
 
     void StartNewGame(int StageIndex = 0);
     void RestartGame();
+    void SaveScore();
 
 private:
 	std::unique_ptr<FStage> Stage;
@@ -37,4 +38,5 @@ private:
     bool bIsGameOverPopupOpened = false;
 
     int CurrentStageIndex = 0;
+    int PendingStageIndex = -1;
 };

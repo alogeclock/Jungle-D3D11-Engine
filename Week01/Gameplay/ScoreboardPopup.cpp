@@ -1,11 +1,19 @@
 #include "pch.h"
 #include "ScoreboardPopup.h"
 #include "Core/GameContext.h"
+#include "Data/ScoreRepository.h"
 #include "imgui/imgui.h"
 
 void FScoreboardPopup::SetScores(const std::vector<FScoreRecord> &InScores) { Scores = InScores; }
 
-void FScoreboardPopup::Open() { bIsOpen = true; }
+void FScoreboardPopup::Open()
+{
+    bIsOpen = true;
+
+    FScoreRepository Repo;
+    Scores = Repo.Load("Save/scoreboard.json");
+    Repo.SortDescending(Scores);
+}
 
 void FScoreboardPopup::Close() { bIsOpen = false; }
 
@@ -26,7 +34,10 @@ void FScoreboardPopup::Render(FGameContext &Context)
         // 저장된 점수 기록들 출력
         for (size_t i = 0; i < Scores.size(); ++i)
         {
-            ImGui::Text("%d. %s : %d", static_cast<int>(i + 1), Scores[i].Name.c_str(),
+            ImGui::Text("%d. %s  Stage:%d  Score:%d",
+                        static_cast<int>(i + 1),
+                        Scores[i].Name.c_str(),
+                        Scores[i].Stage,
                         Scores[i].Score);
         }
 

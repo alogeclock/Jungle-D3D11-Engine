@@ -10,10 +10,12 @@ public:
 	void AddMoveScore();
 	void AddBeatBonus(EBeatJudge Judge);
 	void AddEnemyDefeatBonus();
+	void AddTimeBonus(float RemainingTime, float TimeLimit);
 
 	void BreakCombo();
 
 	int GetScore() const;
+	void SetScore(int InScore);
 	int GetCombo() const;
 
 private:
