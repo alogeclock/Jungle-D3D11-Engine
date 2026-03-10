@@ -192,12 +192,11 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     float      Interval = BeatSystem->GetBeatInterval();
     float      CurrentTime = BeatSystem->GetElapsedTime();
 
-    // 현재 박자의 정점에서 0.25초(GoodWindow 0.2초 + 여유 0.05초)가 지났는지 확인
+    // 현재 박자의 정점에서 0.2초가 지났는지 확인
     int   CurrentBeatIndex = static_cast<int>(CurrentTime / Interval);
     float TimeInBeat = fmod(CurrentTime, Interval);
 
-    // 판정창(+0.2s)이 확실히 닫힌 시점(예: +0.25s)에 지난 박자를 심판합니다.
-    if (TimeInBeat > 0.25f && LastCheckedBeat < CurrentBeatIndex)
+    if (TimeInBeat > 0.2f && LastCheckedBeat < CurrentBeatIndex)
     {
         if (Player->GetLastMovedBeatIndex() < CurrentBeatIndex)
         {
