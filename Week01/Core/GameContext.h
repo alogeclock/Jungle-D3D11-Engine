@@ -7,8 +7,8 @@ class FTextureManager;
 
 struct FGameContext
 {
-	FTime& Time;
-	FInput& Input;
-	FRenderer& Renderer;
-	FTextureManager& Textures;
+    FTime           &Time;
+    FInput          &Input;
+    FRenderer       &Renderer;
+    FTextureManager &Textures;
 };
