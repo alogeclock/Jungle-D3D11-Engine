@@ -15,14 +15,14 @@ void FScoreboardPopup::Update(FGameContext &Context) {}
 void FScoreboardPopup::Render(FGameContext &Context)
 {
     if (!bIsOpen)
-        return; // ImGui â ����
+        return; // ImGui 창 시작
 
     if (ImGui::Begin("Scoreboard", &bIsOpen, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::Text("--- High Scores ---");
         ImGui::Separator();
 
-        // ����� ���� ��ϵ� ���
+        // 저장된 점수 기록들 출력
         for (size_t i = 0; i < Scores.size(); ++i)
         {
             ImGui::Text("%d. %s : %d", static_cast<int>(i + 1), Scores[i].Name.c_str(),
@@ -36,7 +36,7 @@ void FScoreboardPopup::Render(FGameContext &Context)
 
         ImGui::Separator();
 
-        // �ϴ� �ݱ� ��ư
+        // 하단 닫기 버튼
         if (ImGui::Button("Close", ImVec2(120, 0)))
         {
             Close();
