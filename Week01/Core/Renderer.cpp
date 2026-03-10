@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-void FRenderer::UpdateConstant(FVector Offset, float Scale, float Angle, float ChargeSign)
+void FRenderer::UpdateConstant(FVector Offset, float ScaleX, float ScaleY, float Angle, float ChargeSign)
 {
 	if (ConstantBuffer)
 	{
@@ -10,7 +10,9 @@ void FRenderer::UpdateConstant(FVector Offset, float Scale, float Angle, float C
 		FConstants* constants = (FConstants*)constantbufferMSR.pData;
 		{
 			constants->Offset = Offset;
-			constants->Scale = Scale;
+			constants->ScaleX = ScaleX;
+			constants->ScaleY = ScaleY;
+			constants->ScreenSize = { (float)ScreenWidth, (float)ScreenHeight };
 			constants->Angle = Angle;
 			constants->ChargeSign = ChargeSign;
 		}
@@ -44,12 +46,21 @@ void FRenderer::PrepareShader()
 	}
 }
 
-void FRenderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
+void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 {
 	UINT offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
-
-	DeviceContext->Draw(numVertices, 0);
+	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
+	DeviceContext->PSSetSamplers(0, 1, &SamplerState); // 0 = shader register 0 // THINK ABOUT : Maybe this line can be in BeginFrame()
+	for (const FRenderObject& RenderObject : RenderObjects)
+	{
+		if (RenderObject.Texture && RenderObject.Texture->TextureSRV)
+		{
+			DeviceContext->PSSetShaderResources(0, 1, &RenderObject.Texture->TextureSRV);
+		}
+		FVector Offset(RenderObject.Position.X, RenderObject.Position.Y, 0.f);
+		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y, 0.f, 0.f);
+		DeviceContext->Draw(sizeof(quadVertices) / sizeof(FVertexSimple), 0);
+	}
 }
 
 void FRenderer::CreateShader()
@@ -69,6 +80,7 @@ void FRenderer::CreateShader()
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	Device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
@@ -105,6 +117,8 @@ void FRenderer::Create(HWND hWindow)
 	CreateDeviceAndSwapChain(hWindow);
 	CreateFrameBuffer();
 	CreateRasterizerState();
+	CreateSimpleQuad();
+	//CreateSamplerState();
 }
 
 void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -129,7 +143,10 @@ void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)
 
 	SwapChain->GetDesc(&swapchaindesc);
 
-	ViewportInfo = { 0.0f, 0.0f, (float)swapchaindesc.BufferDesc.Width, (float)swapchaindesc.BufferDesc.Height, 0.0f, 1.0f };
+	ScreenWidth = swapchaindesc.BufferDesc.Width;
+	ScreenHeight = swapchaindesc.BufferDesc.Height;
+
+	ViewportInfo = { 0.0f, 0.0f, (float)ScreenWidth, (float)ScreenHeight, 0.0f, 1.0f };
 }
 
 void FRenderer::ReleaseDeviceAndSwapChain()
@@ -217,6 +234,42 @@ void FRenderer::SwapBuffer()
 	SwapChain->Present(1, 0);
 }
 
+void FRenderer::CreateSamplerState()
+{
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	Device->CreateSamplerState(&samplerDesc, &SamplerState);
+}
+
+void FRenderer::CreateSimpleQuad()
+{
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.ByteWidth = sizeof(quadVertices);
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = quadVertices;
+
+	Device->CreateBuffer(
+		&bufferDesc,
+		&initData,
+		&QuadBuffer
+	);
+}
+
 ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
 {
 	D3D11_BUFFER_DESC vertexbufferdesc = {};
@@ -256,4 +309,35 @@ void FRenderer::ReleaseConstantBuffer()
 		ConstantBuffer->Release();
 		ConstantBuffer = nullptr;
 	}
+}
+
+void FRenderer::BeginFrame()
+{
+}
+
+void FRenderer::EndFrame()
+{
+	RenderObjects.clear();
+}
+
+void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screenY, float width, float height)
+{
+	FRenderObject RenderObject;
+	RenderObject.Texture = texture;
+	RenderObject.Position.X = screenX;
+	RenderObject.Position.Y = screenY;
+	RenderObject.Size.X = width;
+	RenderObject.Size.Y = height;
+	RenderObjects.push_back(RenderObject);
+}
+
+void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FCamera2D& camera)
+{
+	FRenderObject RenderObject;
+	RenderObject.Texture = texture;
+	RenderObject.Position.X = worldX - camera.GetPosition().X;
+	RenderObject.Position.Y = worldY - camera.GetPosition().Y;
+	RenderObject.Size.X = width;
+	RenderObject.Size.Y = height;
+	RenderObjects.push_back(RenderObject);
 }

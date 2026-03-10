@@ -1,39 +1,50 @@
-// ShaderW0.hlsl
-
 cbuffer constants : register(b0)
 {
     float3 Offset;
-    float Scale;
+    float ScaleX;
+    float2 ScreenSize;
+    float ScaleY;
     float Angle;
-    float ChargeSign; // +1, -1, or 0 (자력 비활성화 시)
+    float ChargeSign;
+    float3 Padding;
 }
+
+Texture2D SimpleTexture : register(t0);
+SamplerState SimpleSampler : register(s0);
 
 struct VS_INPUT
 {
     float4 position : POSITION;
     float4 color : COLOR;
+    float2 UV : TEXCOORD0;
 };
 
 struct PS_INPUT
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
+    float2 UV : TEXCOORD0;
 };
 
 PS_INPUT mainVS(VS_INPUT input)
 {
     PS_INPUT output;
 
-    // Z축 기준 2D 회전
-    float cosA = cos(Angle);
-    float sinA = sin(Angle);
-    float3 rotated;
-    rotated.x = input.position.x * cosA - input.position.y * sinA;
-    rotated.y = input.position.x * sinA + input.position.y * cosA;
-    rotated.z = input.position.z;
+    // 적용: Scale 및 Offset
+    float4 worldPos = input.position;
+    worldPos.x *= ScaleX;
+    worldPos.y *= ScaleY;
+    worldPos.xyz += Offset;
 
-    output.position = float4(rotated * Scale + Offset, 1.0f);
+    // 2D NDC 변환 (Screen Space to NDC)
+    // Screen (0,0) -> NDC (-1, 1)
+    // Screen (Width, Height) -> NDC (1, -1)
+    float x_ndc = (worldPos.x / ScreenSize.x) * 2.0f - 1.0f;
+    float y_ndc = 1.0f - (worldPos.y / ScreenSize.y) * 2.0f;
+
+    output.position = float4(x_ndc, y_ndc, 0.f, 1.f);
     output.color = input.color;
+    output.UV = input.UV;
     return output;
 }
 
@@ -41,11 +52,5 @@ float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     float4 color = input.color;
 
-    // 자력 극성에 따른 색상 틴트 (N극: 붉은 계열, S극: 푸른 계열)
-    if (ChargeSign > 0.5f)
-        color.rgb = color.rgb * 0.4f + float3(0.6f, 0.15f, 0.1f);
-    else if (ChargeSign < -0.5f)
-        color.rgb = color.rgb * 0.4f + float3(0.1f, 0.15f, 0.6f);
-
-    return color;
+    return SimpleTexture.Sample(SimpleSampler, input.UV);
 }

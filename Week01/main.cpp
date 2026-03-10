@@ -71,7 +71,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	UGame game;
 	game.Init(&renderer, hWnd);
-
 	// FPS 제한
 	const int targetFPS = 60;
 	const double targetFrameTime = 1000.0 / targetFPS;
@@ -116,6 +115,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// ---- 게임 업데이트 및 렌더링 ----
 		game.Update(deltaTime);
+		//--------------TEST BEGIN----------
+		renderer.DrawTexture(nullptr, 0, 0, 100, 100);
+		renderer.DrawTexture(nullptr, 100, 100, 100, 100);
+		//--------------TEST END----------
 		game.Render();
 
 		// ---- FPS 제한 ----

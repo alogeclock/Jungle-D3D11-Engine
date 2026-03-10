@@ -3,7 +3,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include "../Gameplay/Camera2D.h"
-#include "Texture.h"
+#include "RenderObject.h"
 #include "Types.h"
 
 class FRenderer
@@ -34,11 +34,13 @@ public:
 public:
 	struct FConstants
 	{
-		FVector Offset;
-		float Scale;
-		float Angle;
-		float ChargeSign;
-		float Pad[2];
+		FVector Offset;    // 12 bytes
+		float ScaleX;      // 4 bytes (Total 16)
+		FVec2 ScreenSize;  // 8 bytes
+		float ScaleY;      // 4 bytes
+		float Angle;       // 4 bytes (Total 16)
+		float ChargeSign;  // 4 bytes
+		float Padding[3];  // 12 bytes (Total 16)
 	};
 
 	ID3D11Device* Device = nullptr;
@@ -49,6 +51,7 @@ public:
 	ID3D11RenderTargetView* FrameBufferRTV = nullptr;
 	ID3D11RasterizerState* RasterizerState = nullptr;
 	ID3D11Buffer* ConstantBuffer = nullptr;
+	ID3D11Buffer* QuadBuffer = nullptr;
 
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	D3D11_VIEWPORT ViewportInfo;
@@ -58,10 +61,12 @@ public:
 	ID3D11InputLayout* SimpleInputLayout;
 	unsigned int Stride;
 
-	void UpdateConstant(FVector Offset, float Scale = 1.0f, float Angle = 0.0f, float ChargeSign = 0.0f);
+	ID3D11SamplerState* SamplerState = nullptr;
+
+	void UpdateConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f, float Angle = 0.0f, float ChargeSign = 0.0f);
 	void Prepare();
 	void PrepareShader();
-	void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices);
+	void Render();
 	void CreateShader();
 	void ReleaseShader();
 
@@ -74,9 +79,25 @@ public:
 	void ReleaseRasterizerState();
 	void Release();
 	void SwapBuffer();
+	void CreateSamplerState();
+	void CreateSimpleQuad();
 
 	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 	void CreateConstantBuffer();
 	void ReleaseConstantBuffer();
+
+
+private:
+	std::vector<FRenderObject> RenderObjects;
+	const FVertexSimple quadVertices[6] =
+	{
+		{ -0.5f, -0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   0.f, 0.f },
+		{  0.5f, -0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   1.f, 0.f },
+		{  0.5f,  0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   1.f, 1.f },
+
+		{ -0.5f, -0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   0.f, 0.f },
+		{  0.5f,  0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   1.f, 1.f },
+		{ -0.5f,  0.5f, 0.f,     1.f, 0.f, 0.f, 1.f,   0.f, 1.f }
+	};
 };

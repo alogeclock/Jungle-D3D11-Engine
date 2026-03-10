@@ -33,15 +33,18 @@ void UGame::Update(float deltaTime)
 
 void UGame::Render()
 {
+	Renderer->BeginFrame();
 	Renderer->Prepare();
 	Renderer->PrepareShader();
 
 	// TODO: 게임 오브젝트 렌더링
+	Renderer->Render();
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	Renderer->SwapBuffer();
+	Renderer->EndFrame();
 }
 
 void UGame::Release()
