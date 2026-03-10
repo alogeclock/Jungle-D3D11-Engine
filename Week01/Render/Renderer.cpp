@@ -1,4 +1,7 @@
 #include "Renderer.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 void FRenderer::UpdateConstant(FVector Offset, float ScaleX, float ScaleY, float Angle, float ChargeSign)
 {
@@ -64,16 +67,98 @@ void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 	}
 }
 
+bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
+{
+	ID3DBlob* VsBlob = nullptr;
+	ID3DBlob* PsBlob = nullptr;
+	ID3DBlob* ErrorBlob = nullptr;
+
+	HRESULT Hr = D3DCompileFromFile(Path.c_str(), nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VsBlob, &ErrorBlob);
+	if (FAILED(Hr))
+	{
+		if (ErrorBlob) ErrorBlob->Release();
+		if (VsBlob) VsBlob->Release();
+		return false;
+	}
+
+	Hr = D3DCompileFromFile(Path.c_str(), nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &PsBlob, &ErrorBlob);
+	if (FAILED(Hr))
+	{
+		if (ErrorBlob) ErrorBlob->Release();
+		if (PsBlob) PsBlob->Release();
+		VsBlob->Release();
+		return false;
+	}
+
+	ID3D11VertexShader* NewVS = nullptr;
+	ID3D11PixelShader* NewPS = nullptr;
+	ID3D11InputLayout* NewIL = nullptr;
+
+	Device->CreateVertexShader(VsBlob->GetBufferPointer(), VsBlob->GetBufferSize(), nullptr, &NewVS);
+	Device->CreatePixelShader(PsBlob->GetBufferPointer(), PsBlob->GetBufferSize(), nullptr, &NewPS);
+
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	Device->CreateInputLayout(layout, ARRAYSIZE(layout), VsBlob->GetBufferPointer(), VsBlob->GetBufferSize(), &NewIL);
+
+	VsBlob->Release();
+	PsBlob->Release();
+
+	if (!NewVS || !NewPS || !NewIL)
+	{
+		if (NewVS) NewVS->Release();
+		if (NewPS) NewPS->Release();
+		if (NewIL) NewIL->Release();
+		return false;
+	}
+
+	ReleaseShader();
+	SimpleVertexShader = NewVS;
+	SimplePixelShader = NewPS;
+	SimpleInputLayout = NewIL;
+
+	// 파일명 추출하여 현재 셰이더 이름 저장
+	fs::path FsPath(Path);
+	CurrentShaderName = FsPath.stem().string();
+
+	return true;
+}
+
+std::vector<std::string> FRenderer::GetAvailableShaders() const
+{
+	std::vector<std::string> Names;
+	const std::string ShaderDir = "Resources/Shaders";
+	if (fs::exists(ShaderDir) && fs::is_directory(ShaderDir))
+	{
+		for (const auto& Entry : fs::directory_iterator(ShaderDir))
+		{
+			if (Entry.path().extension() == ".hlsl")
+			{
+				Names.push_back(Entry.path().stem().string());
+			}
+		}
+	}
+	return Names;
+}
+
+const std::string& FRenderer::GetCurrentShaderName() const
+{
+	return CurrentShaderName;
+}
+
 void FRenderer::CreateShader()
 {
 	ID3DBlob* vertexshaderCSO;
 	ID3DBlob* pixelshaderCSO;
 
-	D3DCompileFromFile(L"Resources/Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
+	D3DCompileFromFile(L"Resources/Shaders/Default.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
 
 	Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
-	D3DCompileFromFile(L"Resources/Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
+	D3DCompileFromFile(L"Resources/Shaders/Default.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
 
 	Device->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
 
