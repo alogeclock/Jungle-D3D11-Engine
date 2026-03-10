@@ -2,10 +2,10 @@
 
 struct FGameContext;
 
-class IPopup
+class IUIPopup
 {
   public:
-    virtual ~IPopup() = default;
+    virtual ~IUIPopup() = default;
 
     virtual void Open() = 0;
     virtual void Close() = 0;

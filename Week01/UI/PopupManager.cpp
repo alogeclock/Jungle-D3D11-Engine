@@ -1,8 +1,8 @@
-#include "pch.h"
-#include "Popup.h"
 #include "PopupManager.h"
+#include "UIPopup.h"
+#include "pch.h"
 
-void FPopupManager::AddPopup(const std::string &Id, std::unique_ptr<IPopup> Popup)
+void FPopupManager::AddPopup(const std::string &Id, std::unique_ptr<IUIPopup> Popup)
 {
     PopupMap[Id] = std::move(Popup);
 }
@@ -44,7 +44,7 @@ bool FPopupManager::IsOpen(const std::string &Id) const
     return false;
 }
 
-IPopup *FPopupManager::GetPopup(const std::string &Id)
+IUIPopup *FPopupManager::GetPopup(const std::string &Id)
 {
     auto It = PopupMap.find(Id);
     if (It != PopupMap.end())
@@ -55,7 +55,7 @@ IPopup *FPopupManager::GetPopup(const std::string &Id)
     return nullptr;
 }
 
-const IPopup *FPopupManager::GetPopup(const std::string &Id) const
+const IUIPopup *FPopupManager::GetPopup(const std::string &Id) const
 {
     auto It = PopupMap.find(Id);
     if (It != PopupMap.end())
