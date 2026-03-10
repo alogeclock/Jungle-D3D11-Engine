@@ -25,6 +25,13 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     // TODO
     // TextureManager->Initialize(Renderer->Device);
 
+    // ImGui 초기화
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplWin32_Init(WindowHandle);
+    ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext);
+
     GameContext.emplace(FGameContext{*Time, *Input, *Renderer, *TextureManager});
 
     SceneManager->Initialize(&GameContext.value());
@@ -68,7 +75,10 @@ void FApplication::Run()
 
 void FApplication::Shutdown()
 {
-    // TODO: 씬 매니저, 렌더러 등 정리
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+
     Window.Shutdown();
 }
 
