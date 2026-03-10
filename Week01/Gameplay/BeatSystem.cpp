@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "BeatSystem.h"
 #include <cmath>
 
@@ -54,6 +54,17 @@ bool FBeatSystem::ConsumeBeat()
     if (bIsBeatJustTriggered)
     {
         bIsBeatJustTriggered = false;
+        bIsBeatJustConsumed = true;
+        return true;
+    }
+    return false;
+}
+
+bool FBeatSystem::IsBeatSkipped()
+{
+    if (bIsBeatJustConsumed && fmodf(ElapsedTime, BeatInterval) >= GoodWindow)
+    {
+        bIsBeatJustConsumed = false;
         return true;
     }
     return false;

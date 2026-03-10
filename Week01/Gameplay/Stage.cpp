@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Stage.h"
 #include "BeatSystem.h"
 #include "Camera2D.h"
@@ -192,27 +192,28 @@ void FStage::Update(float DeltaTime, FGameContext& Context)
 	}
 
 	// 3. 비트 시작 시 처리 (박자가 넘어가는 순간에만 1회 수행)
-	if (BeatSystem->ConsumeBeat()) //
+	if (BeatSystem->ConsumeBeat())
+	{
+		// 몬스터 이동
+		for (auto& Mon : Monsters)
+		{
+			Mon->OnBeat(*this);
+		}
+	}
+
+	// 비트 스킵 시 미입력 데미지
+	if (BeatSystem->IsBeatSkipped())
 	{
 		int CurrentBeatIndex =
 			static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
 
-		// 가만히 있으면 데미지 로직: 이전 박자 동안 이동 기록이 없으면 데미지
 		if (!Player->IsDead() && CurrentBeatIndex > 0)
 		{
-			// bHasInput은 현재 프레임의 상태일 뿐, "이전 박자 동안 움직였는가"는 Index로만
-			// 판단합니다.
 			if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
 			{
 				Logger::Log("No Input Detected - Player Damaged");
 				Player->Damage(1);
 			}
-		}
-
-		// 몬스터 이동
-		for (auto& Mon : Monsters)
-		{
-			Mon->OnBeat(*this);
 		}
 	}
 
