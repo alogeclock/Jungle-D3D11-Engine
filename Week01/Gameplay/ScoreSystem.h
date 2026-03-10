@@ -10,6 +10,7 @@ public:
 	void AddMoveScore();
 	void AddBeatBonus(EBeatJudge Judge);
 	void AddEnemyDefeatBonus();
+	void AddTimeBonus(float RemainingSeconds);
 
 	void BreakCombo();
 

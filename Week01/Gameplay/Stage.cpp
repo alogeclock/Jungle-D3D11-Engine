@@ -18,7 +18,7 @@ FStage::~FStage()
 	ReleaseRenderResources();
 }
 
-bool FStage::Load(const std::string& MapPath, FRenderer* InRenderer, FTextureManager* InTextures)
+bool FStage::Load(const std::string& MapPath, int StageIndex, FRenderer* InRenderer, FTextureManager* InTextures)
 {
 	Renderer = InRenderer;
 	Textures = InTextures;
@@ -29,48 +29,66 @@ bool FStage::Load(const std::string& MapPath, FRenderer* InRenderer, FTextureMan
 	Camera = std::make_unique<FCamera2D>();
 	ScoreSystem = std::make_unique<FScoreSystem>();
 
-	// MapLoader로 맵 파일 로드
+	// MapLoader로 JSON 맵 파일 로드
 	FMapLoader Loader;
-	if (!Loader.LoadFromFile(MapPath, *Map))
+	if (!Loader.LoadFromFile(MapPath))
 	{
 		return false;
 	}
 
+	FStageInfo StageInfo;
+	if (!Loader.LoadStage(StageIndex, *Map, StageInfo))
+	{
+		return false;
+	}
+
+	CurrentStageIndex = StageIndex;
+	StageName = StageInfo.Name;
+
 	// 타일값 기반으로 오브젝트 배치
-	// 0=바닥, 1=벽, 2=플레이어 스폰, 3=몬스터 스폰
+	// 0=PATH, 1=WALL, 2=OUTER, 3=GOAL
 	Monsters.clear();
 	Tiles.clear();
 	Walls.clear();
+	GoalX = -1;
+	GoalY = -1;
 
 	for (int Y = 0; Y < Map->GetHeight(); Y++)
 	{
 		for (int X = 0; X < Map->GetWidth(); X++)
 		{
-			int Tile = Map->GetTile(X, Y);
+			int TileVal = Map->GetTile(X, Y);
+			ETileValue TV = static_cast<ETileValue>(TileVal);
 
-			if (Tile == 0)
+			switch (TV)
 			{
+			case ETileValue::Path:
 				Tiles.emplace_back(X, Y, ETileType::Floor);
-			}
-			else if (Tile == 1)
-			{
+				break;
+			case ETileValue::Wall:
 				Walls.emplace_back(X, Y, EWallType::Normal);
-			}
-			else if (Tile == 2)
-			{
-				Tiles.emplace_back(X, Y, ETileType::Floor);
-				Player->SetPosition(X, Y, TileSize);
-				Map->SetTile(X, Y, 0);
-			}
-			else if (Tile == 3)
-			{
-				Tiles.emplace_back(X, Y, ETileType::Floor);
-				auto Monster = std::make_unique<FMonster>();
-				Monster->SetPosition(X, Y, TileSize);
-				Monsters.push_back(std::move(Monster));
-				Map->SetTile(X, Y, 0);
+				break;
+			case ETileValue::Outer:
+				// 여백 — 렌더링하지 않음, 이동 불가
+				break;
+			case ETileValue::Goal:
+				Tiles.emplace_back(X, Y, ETileType::Goal);
+				GoalX = X;
+				GoalY = Y;
+				break;
 			}
 		}
+	}
+
+	// 메타데이터 기반 플레이어 스폰
+	Player->SetPosition(StageInfo.PlayerSpawn.X, StageInfo.PlayerSpawn.Y, TileSize);
+
+	// 메타데이터 기반 몬스터 스폰
+	for (const auto& Spawn : StageInfo.MonsterSpawns)
+	{
+		auto Mon = std::make_unique<FMonster>();
+		Mon->SetPosition(Spawn.X, Spawn.Y, TileSize);
+		Monsters.push_back(std::move(Mon));
 	}
 
 	// 카메라 설정
@@ -93,6 +111,7 @@ bool FStage::Load(const std::string& MapPath, FRenderer* InRenderer, FTextureMan
 	BeatSystem->Reset();
 	ScoreSystem->Reset();
 
+	ElapsedTime = 0.0f;
 	bIsGameOver = false;
 	bIsCleared = false;
 
@@ -107,12 +126,24 @@ void FStage::Reset()
 	if (BeatSystem) BeatSystem->Reset();
 	if (Camera) Camera->Reset();
 	if (ScoreSystem) ScoreSystem->Reset();
+	ElapsedTime = 0.0f;
 	bIsGameOver = false;
 	bIsCleared = false;
 }
 
 void FStage::Update(float DeltaTime)
 {
+	if (bIsGameOver || bIsCleared) return;
+
+	// 타이머 업데이트
+	ElapsedTime += DeltaTime;
+	if (ElapsedTime >= TimeLimit)
+	{
+		ElapsedTime = TimeLimit;
+		bIsGameOver = true;
+		return;
+	}
+
 	// 비트 시스템 업데이트
 	BeatSystem->Update(DeltaTime);
 
@@ -121,6 +152,15 @@ void FStage::Update(float DeltaTime)
 	for (auto& Mon : Monsters)
 	{
 		Mon->Update(DeltaTime);
+	}
+
+	// 골인 지점 도달 체크
+	if (GoalX >= 0 && Player->GetTileX() == GoalX && Player->GetTileY() == GoalY)
+	{
+		float Remaining = TimeLimit - ElapsedTime;
+		ScoreSystem->AddTimeBonus(Remaining);
+		bIsCleared = true;
+		return;
 	}
 
 	// 카메라가 플레이어를 추적
@@ -251,6 +291,7 @@ void FStage::LoadSpriteResources()
 
 	// 스프라이트 텍스처 로드 (파일이 없으면 셰이더 폴백 색상 사용)
 	Textures->Load("tile_floor", "Resources/Sprites/tile_floor.png");
+	Textures->Load("goal",       "Resources/Sprites/goal.png");
 	Textures->Load("wall",       "Resources/Sprites/wall.png");
 	Textures->Load("player",     "Resources/Sprites/player.png");
 	Textures->Load("monster",    "Resources/Sprites/monster.png");
@@ -259,7 +300,7 @@ void FStage::LoadSpriteResources()
 	for (auto& Tile : Tiles)
 	{
 		FSpriteInfo Info;
-		Info.TextureKey = "tile_floor";
+		Info.TextureKey = (Tile.GetType() == ETileType::Goal) ? "goal" : "tile_floor";
 		Info.SpriteSize = { TileSize, TileSize };
 		Tile.SetSprite(Info);
 	}
@@ -514,4 +555,25 @@ bool FStage::IsGameOver() const
 bool FStage::IsCleared() const
 {
 	return bIsCleared;
+}
+
+float FStage::GetRemainingTime() const
+{
+	float Remaining = TimeLimit - ElapsedTime;
+	return Remaining > 0.0f ? Remaining : 0.0f;
+}
+
+float FStage::GetTimeLimit() const
+{
+	return TimeLimit;
+}
+
+int FStage::GetCurrentStageIndex() const
+{
+	return CurrentStageIndex;
+}
+
+const std::string& FStage::GetStageName() const
+{
+	return StageName;
 }
