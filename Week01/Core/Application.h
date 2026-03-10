@@ -13,31 +13,31 @@ struct FGameContext;
 
 class FApplication
 {
-  public:
-    bool Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeight);
-    void Run();
-    void Shutdown();
+public:
+	bool Initialize(HWND hWindow, int ScreenWidth, int ScreenHeight);
+	void Run();
+	void Shutdown();
 
-    void RequestQuit();
-    bool IsRunning() const;
+	void RequestQuit();
+	bool IsRunning() const;
 
-    FTime           &GetTime();
-    FInput          &GetInput();
-    FRenderer       &GetRenderer();
-    FTextureManager &GetTextureManager();
-    FSceneManager   &GetSceneManager();
+	FTime& GetTime();
+	FInput& GetInput();
+	FRenderer& GetRenderer();
+	FTextureManager& GetTextureManager();
+	FSceneManager& GetSceneManager();
 
-  private:
-    bool bIsRunning = true;
-    HWND HWnd = nullptr;
+private:
+	bool bIsRunning = true;
+	HWND HWnd = nullptr;
 
-    std::unique_ptr<FTime>           Time;
-    std::unique_ptr<FInput>          Input;
-    std::unique_ptr<FRenderer>       Renderer;
-    std::unique_ptr<FTextureManager> TextureManager;
-    std::unique_ptr<FSceneManager>   SceneManager;
-    std::optional<FGameContext>      GameContext;
+	std::unique_ptr<FTime>           Time;
+	std::unique_ptr<FInput>          Input;
+	std::unique_ptr<FRenderer>       Renderer;
+	std::unique_ptr<FTextureManager> TextureManager;
+	std::unique_ptr<FSceneManager>   SceneManager;
+	std::optional<FGameContext>      GameContext;
 
-  private:
-    bool ProcessWindowMessages();
+private:
+	bool ProcessWindowMessages();
 };

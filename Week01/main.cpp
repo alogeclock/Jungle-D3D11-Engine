@@ -58,8 +58,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplDX11_Init(App.GetRenderer().Device, App.GetRenderer().DeviceContext);
 
 	//--------------TEST BEGIN----------
-	renderer.DrawTexture(nullptr, 0, 0, 100, 100);
-	renderer.DrawTexture(nullptr, 100, 100, 100, 100);
+	//renderer.DrawTexture(nullptr, 0, 0, 100, 100);
+	//renderer.DrawTexture(nullptr, 100, 100, 100, 100);
 	//--------------TEST END----------
 	App.Run();
 	App.Shutdown();

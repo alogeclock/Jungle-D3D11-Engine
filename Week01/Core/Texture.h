@@ -16,11 +16,11 @@ public:
 	int GetHeight() const;
 
 	ID3D11ShaderResourceView* GetSRV() const;
+	ID3D11Texture2D* Texture2D = nullptr;
+	ID3D11ShaderResourceView* SRV = nullptr;
 
 private:
 	int Width = 0;
 	int Height = 0;
 
-	ID3D11Texture2D* Texture2D = nullptr;
-	ID3D11ShaderResourceView* SRV = nullptr;
 };

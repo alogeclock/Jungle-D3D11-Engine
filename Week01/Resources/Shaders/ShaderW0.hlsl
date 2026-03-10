@@ -1,70 +1,56 @@
-// ShaderW0.hlsl
-// 스프라이트 렌더링 셰이더 (World-View-Projection + 스프라이트 아틀라스 UV)
-
-// FSpriteConstants와 1:1 매칭되는 상수 버퍼
-cbuffer SpriteConstants : register(b0)
+cbuffer constants : register(b0)
 {
-    matrix world;
-    matrix view;
-    matrix projection;
-    float2 sprite_size;
-    float2 texture_size;
-    float2 sprite_offset;
-    float is_mirrored;
-    float pad;
+    float3 Offset;
+    float ScaleX;
+    float2 ScreenSize;
+    float ScaleY;
+    float Angle;
+    float ChargeSign;
+    float3 Padding;
 }
 
-Texture2D sprite_texture : register(t0);
-SamplerState sprite_sampler : register(s0);
+Texture2D SimpleTexture : register(t0);
+SamplerState SimpleSampler : register(s0);
 
-struct VertexInput
+struct VS_INPUT
 {
     float4 position : POSITION;
-    float2 uv : TEXCOORD;
+    float4 color : COLOR;
+    float2 UV : TEXCOORD0;
 };
 
-struct PixelInput
+struct PS_INPUT
 {
     float4 position : SV_POSITION;
-    float2 uv : TEXCOORD;
+    float4 color : COLOR;
+    float2 UV : TEXCOORD0;
 };
 
-PixelInput mainVS(VertexInput input)
+PS_INPUT mainVS(VS_INPUT input)
 {
-    PixelInput output;
+    PS_INPUT output;
 
-    output.position = mul(input.position, world);
-    output.position = mul(output.position, view);
-    output.position = mul(output.position, projection);
+    // 적용: Scale 및 Offset
+    float4 worldPos = input.position;
+    worldPos.x *= ScaleX;
+    worldPos.y *= ScaleY;
+    worldPos.xyz += Offset;
 
-    // 좌우 반전 처리
-    if (is_mirrored == 1.0f)
-    {
-        output.uv.x = 1.0f - input.uv.x;
-        output.uv.y = input.uv.y;
-    }
-    else
-    {
-        output.uv = input.uv;
-    }
+    // 2D NDC 변환 (Screen Space to NDC)
+    // Screen (0,0) -> NDC (-1, 1)
+    // Screen (Width, Height) -> NDC (1, -1)
+    float x_ndc = (worldPos.x / ScreenSize.x) * 2.0f - 1.0f;
+    float y_ndc = 1.0f - (worldPos.y / ScreenSize.y) * 2.0f;
 
-    // 스프라이트 아틀라스 UV 변환
-    output.uv *= sprite_size / texture_size;
-    output.uv += sprite_offset / texture_size;
-
+    output.position = float4(x_ndc, y_ndc, 0.f, 1.f);
+    output.color = input.color;
+    output.UV = input.UV;
     return output;
 }
 
-float4 mainPS(PixelInput input) : SV_TARGET
+float4 mainPS(PS_INPUT input) : SV_TARGET
 {
-    float4 color = sprite_texture.Sample(sprite_sampler, input.uv);
+    float4 color = input.color;
 
-    // 텍스처가 바인딩되지 않았을 때 (alpha=0) 디버그용 폴백 색상
-    // UV 좌표를 색상으로 표시하여 위치 확인 가능
-    if (color.a < 0.01f)
-    {
-        color = float4(input.uv.x, 0.3f, input.uv.y, 1.0f);
-    }
-
-    return color;
+    return SimpleTexture.Sample(SimpleSampler, input.UV);
 }

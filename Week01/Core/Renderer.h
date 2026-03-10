@@ -15,7 +15,7 @@ public:
 	void* RenderTargetView = nullptr;
 
 public:
-	bool Initialize(void* windowHandle, int screenWidth, int screenHeight);
+	bool Initialize(HWND windowHandle, int screenWidth, int screenHeight);
 	void Shutdown();
 
 	void BeginFrame();
