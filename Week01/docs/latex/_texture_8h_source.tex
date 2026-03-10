@@ -1,0 +1,32 @@
+\doxysection{Texture.\+h}
+\hypertarget{_texture_8h_source}{}\label{_texture_8h_source}\index{Core/Texture.h@{Core/Texture.h}}
+\doxymbox{\hyperlink{_texture_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <d3d11.h>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture}{FTexture}}}
+\DoxyCodeLine{00007\ \{}
+\DoxyCodeLine{00008\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_afde9c452c0c031e5f429b9fbd77c0c40}{\string~FTexture}}();}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{comment}{//\ WIC를\ 사용하여\ 이미지\ 파일에서\ 텍스처\ 생성\ (PNG,\ BMP,\ JPG\ 지원)}}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_texture_a4ed57d0fce470395005364f095237c0a}{LoadFromFile}}(ID3D11Device*\ Device,\ \textcolor{keyword}{const}\ std::string\&\ Path);}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_af9dbfbfaf7ada4781891999cdbf08baa}{Release}}();}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_texture_a1a43d0757e6af5f476e48da94ceb2ee1}{GetWidth}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_texture_a7245bc000bc0f6deb81282857756f281}{GetHeight}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ ID3D11ShaderResourceView*\ \doxymbox{\hyperlink{class_f_texture_a0964e09a6508224570fbef1dd3802b2b}{GetSRV}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{int}\ Width\ =\ 0;}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{int}\ Height\ =\ 0;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ ID3D11Texture2D*\ Texture2D\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00025\ \ \ \ \ ID3D11ShaderResourceView*\ SRV\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00026\ \};}
+
+\end{DoxyCode}

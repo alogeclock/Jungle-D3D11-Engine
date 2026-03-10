@@ -1,0 +1,94 @@
+\doxysection{IUIWidget Class Reference}
+\hypertarget{class_i_u_i_widget}{}\label{class_i_u_i_widget}\index{IUIWidget@{IUIWidget}}
+
+
+{\ttfamily \+\#include $<$UIWidget.\+h$>$}
+
+Inheritance diagram for IUIWidget:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i_u_i_widget}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_i_u_i_widget_ad69f73e9d6632b87cb5c98cd113bc777}{\texorpdfstring{$\sim$}{\string~}\+IUIWidget}} ()=default
+\item 
+virtual void \doxymbox{\hyperlink{class_i_u_i_widget_a550065e70237fac75b7c61ab81e969ea}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_i_u_i_widget_ae700b3bb9392cd080853fb6427befc43}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
+\item 
+void \doxymbox{\hyperlink{class_i_u_i_widget_ac308cc817ab57ad96af22323e4b538c5}{Set\+Visible}} (bool b\+Visible)
+\item 
+bool \doxymbox{\hyperlink{class_i_u_i_widget_aa82d6de865326ac99d99644d78a095c2}{Is\+Visible}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}{b\+Is\+Visible}} = true
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_i_u_i_widget_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_i_u_i_widget_ad69f73e9d6632b87cb5c98cd113bc777}\index{IUIWidget@{IUIWidget}!````~IUIWidget@{\texorpdfstring{$\sim$}{\string~}IUIWidget}}
+\index{````~IUIWidget@{\texorpdfstring{$\sim$}{\string~}IUIWidget}!IUIWidget@{IUIWidget}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}IUIWidget()}{\string~IUIWidget()}}
+{\footnotesize\ttfamily \label{class_i_u_i_widget_ad69f73e9d6632b87cb5c98cd113bc777} 
+virtual IUIWidget::\+\texorpdfstring{$\sim$}{\string~}\+IUIWidget (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_i_u_i_widget_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_i_u_i_widget_aa82d6de865326ac99d99644d78a095c2}\index{IUIWidget@{IUIWidget}!IsVisible@{IsVisible}}
+\index{IsVisible@{IsVisible}!IUIWidget@{IUIWidget}}
+\doxysubsubsection{\texorpdfstring{IsVisible()}{IsVisible()}}
+{\footnotesize\ttfamily \label{class_i_u_i_widget_aa82d6de865326ac99d99644d78a095c2} 
+bool IUIWidget::\+\+Is\+Visible (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_i_u_i_widget_ae700b3bb9392cd080853fb6427befc43}\index{IUIWidget@{IUIWidget}!Render@{Render}}
+\index{Render@{Render}!IUIWidget@{IUIWidget}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_i_u_i_widget_ae700b3bb9392cd080853fb6427befc43} 
+virtual void IUIWidget::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a9d1f3a65882c0a3797f0d9745555396c}{FBeat\+HUDWidget}}, and \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_aa3e1ccef3c6cfd616bde2a85da5b6518}{FGameplay\+HUDWidget}}.
+
+\Hypertarget{class_i_u_i_widget_ac308cc817ab57ad96af22323e4b538c5}\index{IUIWidget@{IUIWidget}!SetVisible@{SetVisible}}
+\index{SetVisible@{SetVisible}!IUIWidget@{IUIWidget}}
+\doxysubsubsection{\texorpdfstring{SetVisible()}{SetVisible()}}
+{\footnotesize\ttfamily \label{class_i_u_i_widget_ac308cc817ab57ad96af22323e4b538c5} 
+void IUIWidget::\+\+Set\+Visible (\begin{DoxyParamCaption}\item[{bool}]{b\+Visible}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_i_u_i_widget_a550065e70237fac75b7c61ab81e969ea}\index{IUIWidget@{IUIWidget}!Update@{Update}}
+\index{Update@{Update}!IUIWidget@{IUIWidget}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_i_u_i_widget_a550065e70237fac75b7c61ab81e969ea} 
+virtual void IUIWidget::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a2508e279b528556a0c4129d0536e8f98}{FBeat\+HUDWidget}}, and \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_a55e6b3bc68f1c15212fa69ad3320fc12}{FGameplay\+HUDWidget}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_i_u_i_widget_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}\index{IUIWidget@{IUIWidget}!bIsVisible@{bIsVisible}}
+\index{bIsVisible@{bIsVisible}!IUIWidget@{IUIWidget}}
+\doxysubsubsection{\texorpdfstring{bIsVisible}{bIsVisible}}
+{\footnotesize\ttfamily \label{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09} 
+bool IUIWidget::\+b\+Is\+Visible = true\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+UI/\+\doxymbox{\hyperlink{_u_i_widget_8h}{UIWidget.\+h}}\end{DoxyCompactItemize}

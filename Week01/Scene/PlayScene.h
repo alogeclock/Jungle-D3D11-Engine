@@ -1,29 +1,40 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include "Scene.h"
+#include "UI/UIManager.h"
 
 class FStage;
-class FPopupManager;
+class FRenderer;
+class FTextureManager;
 
 class FPlayScene : public IScene
 {
 public:
+	~FPlayScene() override;
+
+	void SetRenderer(FRenderer* InRenderer);
+	void SetTextureManager(FTextureManager* InTextures);
+
 	void Enter() override;
 	void Exit() override;
 
-	void Update(FGameContext& Context) override;
-	void Render(FGameContext& Context) override;
+    void Update(FGameContext &Context) override;
+    void Render(FGameContext &Context) override;
 
-	void StartNewGame(const std::string& MapPath);
-	void RestartGame();
+    void StartNewGame(const std::string &MapPath);
+    void RestartGame();
 
 private:
-	FStage* Stage = nullptr;
-	FPopupManager* PopupManager = nullptr;
+	std::unique_ptr<FStage> Stage;
+	FUIManager UIManager;
 
-	bool bIsPaused = false;
-	bool bIsGameOverPopupOpened = false;
+	FRenderer* Renderer = nullptr;
+	FTextureManager* Textures = nullptr;
 
-	std::string CurrentMapPath;
+    bool bIsPaused = false;
+    bool bIsGameOverPopupOpened = false;
+
+    std::string CurrentMapPath;
 };

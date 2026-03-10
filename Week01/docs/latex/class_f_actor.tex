@@ -1,0 +1,331 @@
+\doxysection{FActor Class Reference}
+\hypertarget{class_f_actor}{}\label{class_f_actor}\index{FActor@{FActor}}
+
+
+{\ttfamily \+\#include $<$Actor.\+h$>$}
+
+Inheritance diagram for FActor:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_f_actor}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_f_actor_aad1e02b0db6bcdd5d3c6a0430050c848}{\texorpdfstring{$\sim$}{\string~}\+FActor}} ()=default
+\item 
+virtual \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActor\+Type}} \doxymbox{\hyperlink{class_f_actor_aacfa923eb1d70916869e858aa897097e}{Get\+Actor\+Type}} () const =0
+\item 
+virtual void \doxymbox{\hyperlink{class_f_actor_a1a55fa9c80cb537ed6b701de1bf01d5f}{Update}} (float Delta\+Time)
+\item 
+virtual void \doxymbox{\hyperlink{class_f_actor_a88bccdf6676b7fff8414a48d9cec2cc5}{On\+Beat}} (\doxymbox{\hyperlink{class_f_stage}{FStage}} \&Stage)=0
+\item 
+void \doxymbox{\hyperlink{class_f_actor_aa4e2ef6e4886ce328bcf1d9c12b30bcf}{Set\+Position}} (int In\+TileX, int In\+TileY, float Tile\+Size)
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a7d444ecb3ee3be5c675d5b616b8e204d}{Try\+Move}} (\doxymbox{\hyperlink{class_f_stage}{FStage}} \&Stage, \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} \doxymbox{\hyperlink{class_f_actor_a713cc90aceb283518cfc654a60659f5c}{Direction}})
+\item 
+void \doxymbox{\hyperlink{class_f_actor_aa9f89c25dd0d63501a27a2a8178211b4}{Start\+Move\+To}} (int In\+TileX, int In\+TileY, float Tile\+Size)
+\item 
+int \doxymbox{\hyperlink{class_f_actor_a72f895694aed4522e6510c1ff45d2184}{Get\+TileX}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_actor_ae3259f96cd675ee8d38618b2fa5b8c1d}{Get\+TileY}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_actor_a04efb95be8f5f4d36a6ddd552e6e50a2}{Get\+RenderX}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_actor_afb04f4fbe65d632a12ec136550d0af82}{Get\+RenderY}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_actor_a051ff2e846b7c7df29237969a64098b7}{Set\+Direction}} (\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} In\+Direction)
+\item 
+\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} \doxymbox{\hyperlink{class_f_actor_abf82029b6feefe52d27c4597ab8bba6c}{Get\+Direction}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_actor_a68595bdd34cbe511ae5a21193037da90}{Set\+Hp}} (int In\+Hp)
+\item 
+int \doxymbox{\hyperlink{class_f_actor_a43b436e481db08d4675554ec09fa8287}{Get\+Hp}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b}{Damage}} (int Amount)
+\item 
+void \doxymbox{\hyperlink{class_f_actor_a279cf6d77a0343648e2dece3f1eb1801}{Heal}} (int Amount)
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a4e8f828e5728dc61a99878afcd02fe4d}{Is\+Dead}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_adc0348f0969c577bd049e44dcec1e840}{Is\+Moving}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_actor_a0382ed1b6c73a2a6d5649440dd992e7f}{Set\+Sprite}} (const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&In\+Sprite)
+\item 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& \doxymbox{\hyperlink{class_f_actor_abf4308febfabb82b0dc4a3bf349f1ddc}{Get\+Sprite}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \doxymbox{\hyperlink{class_f_actor_af1e2fe5fc426e11cbc8b141601a45d09}{TileX}} = 0
+\item 
+int \doxymbox{\hyperlink{class_f_actor_a7ae85f3d8ceba37d2441f6a1319ea93e}{TileY}} = 0
+\item 
+float \doxymbox{\hyperlink{class_f_actor_a200e89f6255c46ed1e8669d5af3ef2d2}{RenderX}} = 0.\+0f
+\item 
+float \doxymbox{\hyperlink{class_f_actor_a9aceaf647fb5b86ac7ac887913ac67db}{RenderY}} = 0.\+0f
+\item 
+\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} \doxymbox{\hyperlink{class_f_actor_a713cc90aceb283518cfc654a60659f5c}{Direction}} = \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53}{EDirection::\+\+Down}}
+\item 
+int \doxymbox{\hyperlink{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239}{Hp}} = 1
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a1423baf579ad4798e911df3cf2ed3ee7}{b\+Is\+Moving}} = false
+\item 
+float \doxymbox{\hyperlink{class_f_actor_a98c8bf23f5550dfdbb14f4ae866de705}{Move\+Timer}} = 0.\+0f
+\item 
+float \doxymbox{\hyperlink{class_f_actor_ae10f80275dcedb0653f3255c1c28ba4c}{Move\+Duration}} = 0.\+12f
+\item 
+float \doxymbox{\hyperlink{class_f_actor_a8124564c3cb9ef66d04f0061443bb06b}{Move\+StartX}} = 0.\+0f
+\item 
+float \doxymbox{\hyperlink{class_f_actor_a9525223f40806433c13e94f52e71c867}{Move\+StartY}} = 0.\+0f
+\item 
+float \doxymbox{\hyperlink{class_f_actor_aee38cb6ce1961fafc673aea488d97663}{Move\+TargetX}} = 0.\+0f
+\item 
+float \doxymbox{\hyperlink{class_f_actor_a24b13b3de3279f0f13b67fa7ea38b24e}{Move\+TargetY}} = 0.\+0f
+\item 
+\doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \doxymbox{\hyperlink{class_f_actor_a43a92b36260e21ac6f3123d3d31c369f}{Sprite}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_actor_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_actor_aad1e02b0db6bcdd5d3c6a0430050c848}\index{FActor@{FActor}!````~FActor@{\texorpdfstring{$\sim$}{\string~}FActor}}
+\index{````~FActor@{\texorpdfstring{$\sim$}{\string~}FActor}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}FActor()}{\string~FActor()}}
+{\footnotesize\ttfamily \label{class_f_actor_aad1e02b0db6bcdd5d3c6a0430050c848} 
+virtual FActor::\+\texorpdfstring{$\sim$}{\string~}\+FActor (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_actor_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b}\index{FActor@{FActor}!Damage@{Damage}}
+\index{Damage@{Damage}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{Damage()}{Damage()}}
+{\footnotesize\ttfamily \label{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b} 
+void FActor::\+\+Damage (\begin{DoxyParamCaption}\item[{int}]{Amount}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_aacfa923eb1d70916869e858aa897097e}\index{FActor@{FActor}!GetActorType@{GetActorType}}
+\index{GetActorType@{GetActorType}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetActorType()}{GetActorType()}}
+{\footnotesize\ttfamily \label{class_f_actor_aacfa923eb1d70916869e858aa897097e} 
+virtual \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActor\+Type}} FActor::\+\+Get\+Actor\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_monster_a8d9e57fc0fbce15a135045329bb042be}{FMonster}}, and \doxymbox{\hyperlink{class_f_player_adbfdd6076c0f584103d116fb1ce220cd}{FPlayer}}.
+
+\Hypertarget{class_f_actor_abf82029b6feefe52d27c4597ab8bba6c}\index{FActor@{FActor}!GetDirection@{GetDirection}}
+\index{GetDirection@{GetDirection}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetDirection()}{GetDirection()}}
+{\footnotesize\ttfamily \label{class_f_actor_abf82029b6feefe52d27c4597ab8bba6c} 
+\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} FActor::\+\+Get\+Direction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_a43b436e481db08d4675554ec09fa8287}\index{FActor@{FActor}!GetHp@{GetHp}}
+\index{GetHp@{GetHp}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetHp()}{GetHp()}}
+{\footnotesize\ttfamily \label{class_f_actor_a43b436e481db08d4675554ec09fa8287} 
+int FActor::\+\+Get\+Hp (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_a04efb95be8f5f4d36a6ddd552e6e50a2}\index{FActor@{FActor}!GetRenderX@{GetRenderX}}
+\index{GetRenderX@{GetRenderX}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetRenderX()}{GetRenderX()}}
+{\footnotesize\ttfamily \label{class_f_actor_a04efb95be8f5f4d36a6ddd552e6e50a2} 
+float FActor::\+\+Get\+RenderX (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_afb04f4fbe65d632a12ec136550d0af82}\index{FActor@{FActor}!GetRenderY@{GetRenderY}}
+\index{GetRenderY@{GetRenderY}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetRenderY()}{GetRenderY()}}
+{\footnotesize\ttfamily \label{class_f_actor_afb04f4fbe65d632a12ec136550d0af82} 
+float FActor::\+\+Get\+RenderY (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_abf4308febfabb82b0dc4a3bf349f1ddc}\index{FActor@{FActor}!GetSprite@{GetSprite}}
+\index{GetSprite@{GetSprite}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetSprite()}{GetSprite()}}
+{\footnotesize\ttfamily \label{class_f_actor_abf4308febfabb82b0dc4a3bf349f1ddc} 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& FActor::\+\+Get\+Sprite (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_a72f895694aed4522e6510c1ff45d2184}\index{FActor@{FActor}!GetTileX@{GetTileX}}
+\index{GetTileX@{GetTileX}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetTileX()}{GetTileX()}}
+{\footnotesize\ttfamily \label{class_f_actor_a72f895694aed4522e6510c1ff45d2184} 
+int FActor::\+\+Get\+TileX (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_ae3259f96cd675ee8d38618b2fa5b8c1d}\index{FActor@{FActor}!GetTileY@{GetTileY}}
+\index{GetTileY@{GetTileY}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetTileY()}{GetTileY()}}
+{\footnotesize\ttfamily \label{class_f_actor_ae3259f96cd675ee8d38618b2fa5b8c1d} 
+int FActor::\+\+Get\+TileY (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_a279cf6d77a0343648e2dece3f1eb1801}\index{FActor@{FActor}!Heal@{Heal}}
+\index{Heal@{Heal}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{Heal()}{Heal()}}
+{\footnotesize\ttfamily \label{class_f_actor_a279cf6d77a0343648e2dece3f1eb1801} 
+void FActor::\+\+Heal (\begin{DoxyParamCaption}\item[{int}]{Amount}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_a4e8f828e5728dc61a99878afcd02fe4d}\index{FActor@{FActor}!IsDead@{IsDead}}
+\index{IsDead@{IsDead}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{IsDead()}{IsDead()}}
+{\footnotesize\ttfamily \label{class_f_actor_a4e8f828e5728dc61a99878afcd02fe4d} 
+bool FActor::\+\+Is\+Dead (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_adc0348f0969c577bd049e44dcec1e840}\index{FActor@{FActor}!IsMoving@{IsMoving}}
+\index{IsMoving@{IsMoving}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{IsMoving()}{IsMoving()}}
+{\footnotesize\ttfamily \label{class_f_actor_adc0348f0969c577bd049e44dcec1e840} 
+bool FActor::\+\+Is\+Moving (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_a88bccdf6676b7fff8414a48d9cec2cc5}\index{FActor@{FActor}!OnBeat@{OnBeat}}
+\index{OnBeat@{OnBeat}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{OnBeat()}{OnBeat()}}
+{\footnotesize\ttfamily \label{class_f_actor_a88bccdf6676b7fff8414a48d9cec2cc5} 
+virtual void FActor::\+\+On\+Beat (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_stage}{FStage}} \&}]{Stage}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_monster_a52648e30a33904f0e417483607c00e85}{FMonster}}, and \doxymbox{\hyperlink{class_f_player_adcd7cdbac7af1cc688a9b3ec8fb6bcfb}{FPlayer}}.
+
+\Hypertarget{class_f_actor_a051ff2e846b7c7df29237969a64098b7}\index{FActor@{FActor}!SetDirection@{SetDirection}}
+\index{SetDirection@{SetDirection}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{SetDirection()}{SetDirection()}}
+{\footnotesize\ttfamily \label{class_f_actor_a051ff2e846b7c7df29237969a64098b7} 
+void FActor::\+\+Set\+Direction (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}}]{In\+Direction}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_a68595bdd34cbe511ae5a21193037da90}\index{FActor@{FActor}!SetHp@{SetHp}}
+\index{SetHp@{SetHp}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{SetHp()}{SetHp()}}
+{\footnotesize\ttfamily \label{class_f_actor_a68595bdd34cbe511ae5a21193037da90} 
+void FActor::\+\+Set\+Hp (\begin{DoxyParamCaption}\item[{int}]{In\+Hp}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_aa4e2ef6e4886ce328bcf1d9c12b30bcf}\index{FActor@{FActor}!SetPosition@{SetPosition}}
+\index{SetPosition@{SetPosition}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{SetPosition()}{SetPosition()}}
+{\footnotesize\ttfamily \label{class_f_actor_aa4e2ef6e4886ce328bcf1d9c12b30bcf} 
+void FActor::\+\+Set\+Position (\begin{DoxyParamCaption}\item[{int}]{In\+TileX}{, }\item[{int}]{In\+TileY}{, }\item[{float}]{Tile\+Size}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_a0382ed1b6c73a2a6d5649440dd992e7f}\index{FActor@{FActor}!SetSprite@{SetSprite}}
+\index{SetSprite@{SetSprite}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{SetSprite()}{SetSprite()}}
+{\footnotesize\ttfamily \label{class_f_actor_a0382ed1b6c73a2a6d5649440dd992e7f} 
+void FActor::\+\+Set\+Sprite (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&}]{In\+Sprite}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_aa9f89c25dd0d63501a27a2a8178211b4}\index{FActor@{FActor}!StartMoveTo@{StartMoveTo}}
+\index{StartMoveTo@{StartMoveTo}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{StartMoveTo()}{StartMoveTo()}}
+{\footnotesize\ttfamily \label{class_f_actor_aa9f89c25dd0d63501a27a2a8178211b4} 
+void FActor::\+\+Start\+Move\+To (\begin{DoxyParamCaption}\item[{int}]{In\+TileX}{, }\item[{int}]{In\+TileY}{, }\item[{float}]{Tile\+Size}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_a7d444ecb3ee3be5c675d5b616b8e204d}\index{FActor@{FActor}!TryMove@{TryMove}}
+\index{TryMove@{TryMove}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{TryMove()}{TryMove()}}
+{\footnotesize\ttfamily \label{class_f_actor_a7d444ecb3ee3be5c675d5b616b8e204d} 
+bool FActor::\+\+Try\+Move (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_stage}{FStage}} \&}]{Stage}{, }\item[{\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}}]{Direction}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_a1a55fa9c80cb537ed6b701de1bf01d5f}\index{FActor@{FActor}!Update@{Update}}
+\index{Update@{Update}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_actor_a1a55fa9c80cb537ed6b701de1bf01d5f} 
+void FActor::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_f_monster_a9361e0047f38b61acd842fc445589f70}{FMonster}}, and \doxymbox{\hyperlink{class_f_player_a10c8bb94f4a4680a32119c48a05fa017}{FPlayer}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_f_actor_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_f_actor_a1423baf579ad4798e911df3cf2ed3ee7}\index{FActor@{FActor}!bIsMoving@{bIsMoving}}
+\index{bIsMoving@{bIsMoving}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{bIsMoving}{bIsMoving}}
+{\footnotesize\ttfamily \label{class_f_actor_a1423baf579ad4798e911df3cf2ed3ee7} 
+bool FActor::\+b\+Is\+Moving = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a713cc90aceb283518cfc654a60659f5c}\index{FActor@{FActor}!Direction@{Direction}}
+\index{Direction@{Direction}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{Direction}{Direction}}
+{\footnotesize\ttfamily \label{class_f_actor_a713cc90aceb283518cfc654a60659f5c} 
+\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} FActor::\+\+Direction = \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53}{EDirection::\+\+Down}}\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239}\index{FActor@{FActor}!Hp@{Hp}}
+\index{Hp@{Hp}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{Hp}{Hp}}
+{\footnotesize\ttfamily \label{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239} 
+int FActor::\+\+Hp = 1\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_ae10f80275dcedb0653f3255c1c28ba4c}\index{FActor@{FActor}!MoveDuration@{MoveDuration}}
+\index{MoveDuration@{MoveDuration}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{MoveDuration}{MoveDuration}}
+{\footnotesize\ttfamily \label{class_f_actor_ae10f80275dcedb0653f3255c1c28ba4c} 
+float FActor::\+\+Move\+Duration = 0.\+12f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a8124564c3cb9ef66d04f0061443bb06b}\index{FActor@{FActor}!MoveStartX@{MoveStartX}}
+\index{MoveStartX@{MoveStartX}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{MoveStartX}{MoveStartX}}
+{\footnotesize\ttfamily \label{class_f_actor_a8124564c3cb9ef66d04f0061443bb06b} 
+float FActor::\+\+Move\+StartX = 0.\+0f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a9525223f40806433c13e94f52e71c867}\index{FActor@{FActor}!MoveStartY@{MoveStartY}}
+\index{MoveStartY@{MoveStartY}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{MoveStartY}{MoveStartY}}
+{\footnotesize\ttfamily \label{class_f_actor_a9525223f40806433c13e94f52e71c867} 
+float FActor::\+\+Move\+StartY = 0.\+0f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_aee38cb6ce1961fafc673aea488d97663}\index{FActor@{FActor}!MoveTargetX@{MoveTargetX}}
+\index{MoveTargetX@{MoveTargetX}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{MoveTargetX}{MoveTargetX}}
+{\footnotesize\ttfamily \label{class_f_actor_aee38cb6ce1961fafc673aea488d97663} 
+float FActor::\+\+Move\+TargetX = 0.\+0f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a24b13b3de3279f0f13b67fa7ea38b24e}\index{FActor@{FActor}!MoveTargetY@{MoveTargetY}}
+\index{MoveTargetY@{MoveTargetY}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{MoveTargetY}{MoveTargetY}}
+{\footnotesize\ttfamily \label{class_f_actor_a24b13b3de3279f0f13b67fa7ea38b24e} 
+float FActor::\+\+Move\+TargetY = 0.\+0f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a98c8bf23f5550dfdbb14f4ae866de705}\index{FActor@{FActor}!MoveTimer@{MoveTimer}}
+\index{MoveTimer@{MoveTimer}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{MoveTimer}{MoveTimer}}
+{\footnotesize\ttfamily \label{class_f_actor_a98c8bf23f5550dfdbb14f4ae866de705} 
+float FActor::\+\+Move\+Timer = 0.\+0f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a200e89f6255c46ed1e8669d5af3ef2d2}\index{FActor@{FActor}!RenderX@{RenderX}}
+\index{RenderX@{RenderX}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{RenderX}{RenderX}}
+{\footnotesize\ttfamily \label{class_f_actor_a200e89f6255c46ed1e8669d5af3ef2d2} 
+float FActor::\+\+RenderX = 0.\+0f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a9aceaf647fb5b86ac7ac887913ac67db}\index{FActor@{FActor}!RenderY@{RenderY}}
+\index{RenderY@{RenderY}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{RenderY}{RenderY}}
+{\footnotesize\ttfamily \label{class_f_actor_a9aceaf647fb5b86ac7ac887913ac67db} 
+float FActor::\+\+RenderY = 0.\+0f\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a43a92b36260e21ac6f3123d3d31c369f}\index{FActor@{FActor}!Sprite@{Sprite}}
+\index{Sprite@{Sprite}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{Sprite}{Sprite}}
+{\footnotesize\ttfamily \label{class_f_actor_a43a92b36260e21ac6f3123d3d31c369f} 
+\doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} FActor::\+\+Sprite\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_af1e2fe5fc426e11cbc8b141601a45d09}\index{FActor@{FActor}!TileX@{TileX}}
+\index{TileX@{TileX}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{TileX}{TileX}}
+{\footnotesize\ttfamily \label{class_f_actor_af1e2fe5fc426e11cbc8b141601a45d09} 
+int FActor::\+\+TileX = 0\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a7ae85f3d8ceba37d2441f6a1319ea93e}\index{FActor@{FActor}!TileY@{TileY}}
+\index{TileY@{TileY}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{TileY}{TileY}}
+{\footnotesize\ttfamily \label{class_f_actor_a7ae85f3d8ceba37d2441f6a1319ea93e} 
+int FActor::\+\+TileY = 0\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Gameplay/\+\doxymbox{\hyperlink{_actor_8h}{Actor.\+h}}\item 
+Gameplay/\+\doxymbox{\hyperlink{_actor_8cpp}{Actor.\+cpp}}\end{DoxyCompactItemize}

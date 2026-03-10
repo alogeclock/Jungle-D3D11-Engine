@@ -1,0 +1,129 @@
+\doxysection{FWall Class Reference}
+\hypertarget{class_f_wall}{}\label{class_f_wall}\index{FWall@{FWall}}
+
+
+{\ttfamily \+\#include $<$Wall.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_f_wall_a762413ecb795b67a98be0697d50d27e3}{FWall}} ()=default
+\item 
+\doxymbox{\hyperlink{class_f_wall_ad0905655ee5e67d237b1cd0dc8e99718}{FWall}} (int In\+TileX, int In\+TileY, \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWall\+Type}} In\+Type=\doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565faa960b44c579bc2f6818d2daaf9e4c16f0}{EWall\+Type::\+\+Normal}})
+\item 
+int \doxymbox{\hyperlink{class_f_wall_af7fefd2a48d6cc9e49c998e6032adea3}{Get\+TileX}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_wall_ae7f02eeaf05ac1f4fc042c9270db3a5f}{Get\+TileY}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_wall_a989373ac7e4ede3bdfbf4716553b9686}{Get\+RenderX}} (float Tile\+Size) const
+\item 
+float \doxymbox{\hyperlink{class_f_wall_a810190d83e7bb62aa25d7b32536a0571}{Get\+RenderY}} (float Tile\+Size) const
+\item 
+void \doxymbox{\hyperlink{class_f_wall_ac0897d483decc1e68ed400a294ef2b00}{Set\+Type}} (\doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWall\+Type}} In\+Type)
+\item 
+\doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWall\+Type}} \doxymbox{\hyperlink{class_f_wall_aa889c51127c578f20a50555725f6a6fd}{Get\+Type}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_wall_a9c1cf62b21facb27d8463176994a9988}{Is\+Breakable}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_wall_a174e47330ddaa94ab6a38c185363b541}{Destroy}} ()
+\item 
+bool \doxymbox{\hyperlink{class_f_wall_a56cb248e38a3caabd43769c60b687e71}{Is\+Destroyed}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_wall_a351d8b5119e973e7cb437bafa591a36d}{Set\+Sprite}} (const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&In\+Sprite)
+\item 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& \doxymbox{\hyperlink{class_f_wall_a9ada61555c291ccca3af0fe168c043d0}{Get\+Sprite}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_wall_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_wall_a762413ecb795b67a98be0697d50d27e3}\index{FWall@{FWall}!FWall@{FWall}}
+\index{FWall@{FWall}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{FWall()}{FWall()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_wall_a762413ecb795b67a98be0697d50d27e3} 
+FWall::\+\+FWall (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_f_wall_ad0905655ee5e67d237b1cd0dc8e99718}\index{FWall@{FWall}!FWall@{FWall}}
+\index{FWall@{FWall}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{FWall()}{FWall()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_wall_ad0905655ee5e67d237b1cd0dc8e99718} 
+FWall::\+\+FWall (\begin{DoxyParamCaption}\item[{int}]{In\+TileX}{, }\item[{int}]{In\+TileY}{, }\item[{\doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWall\+Type}}}]{In\+Type}{ = {\ttfamily \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565faa960b44c579bc2f6818d2daaf9e4c16f0}{EWall\+Type::\+\+Normal}}}}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_wall_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_wall_a174e47330ddaa94ab6a38c185363b541}\index{FWall@{FWall}!Destroy@{Destroy}}
+\index{Destroy@{Destroy}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{Destroy()}{Destroy()}}
+{\footnotesize\ttfamily \label{class_f_wall_a174e47330ddaa94ab6a38c185363b541} 
+void FWall::\+\+Destroy (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_wall_a989373ac7e4ede3bdfbf4716553b9686}\index{FWall@{FWall}!GetRenderX@{GetRenderX}}
+\index{GetRenderX@{GetRenderX}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{GetRenderX()}{GetRenderX()}}
+{\footnotesize\ttfamily \label{class_f_wall_a989373ac7e4ede3bdfbf4716553b9686} 
+float FWall::\+\+Get\+RenderX (\begin{DoxyParamCaption}\item[{float}]{Tile\+Size}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_a810190d83e7bb62aa25d7b32536a0571}\index{FWall@{FWall}!GetRenderY@{GetRenderY}}
+\index{GetRenderY@{GetRenderY}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{GetRenderY()}{GetRenderY()}}
+{\footnotesize\ttfamily \label{class_f_wall_a810190d83e7bb62aa25d7b32536a0571} 
+float FWall::\+\+Get\+RenderY (\begin{DoxyParamCaption}\item[{float}]{Tile\+Size}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_a9ada61555c291ccca3af0fe168c043d0}\index{FWall@{FWall}!GetSprite@{GetSprite}}
+\index{GetSprite@{GetSprite}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{GetSprite()}{GetSprite()}}
+{\footnotesize\ttfamily \label{class_f_wall_a9ada61555c291ccca3af0fe168c043d0} 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& FWall::\+\+Get\+Sprite (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_af7fefd2a48d6cc9e49c998e6032adea3}\index{FWall@{FWall}!GetTileX@{GetTileX}}
+\index{GetTileX@{GetTileX}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{GetTileX()}{GetTileX()}}
+{\footnotesize\ttfamily \label{class_f_wall_af7fefd2a48d6cc9e49c998e6032adea3} 
+int FWall::\+\+Get\+TileX (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_ae7f02eeaf05ac1f4fc042c9270db3a5f}\index{FWall@{FWall}!GetTileY@{GetTileY}}
+\index{GetTileY@{GetTileY}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{GetTileY()}{GetTileY()}}
+{\footnotesize\ttfamily \label{class_f_wall_ae7f02eeaf05ac1f4fc042c9270db3a5f} 
+int FWall::\+\+Get\+TileY (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_aa889c51127c578f20a50555725f6a6fd}\index{FWall@{FWall}!GetType@{GetType}}
+\index{GetType@{GetType}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{GetType()}{GetType()}}
+{\footnotesize\ttfamily \label{class_f_wall_aa889c51127c578f20a50555725f6a6fd} 
+\doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWall\+Type}} FWall::\+\+Get\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_a9c1cf62b21facb27d8463176994a9988}\index{FWall@{FWall}!IsBreakable@{IsBreakable}}
+\index{IsBreakable@{IsBreakable}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{IsBreakable()}{IsBreakable()}}
+{\footnotesize\ttfamily \label{class_f_wall_a9c1cf62b21facb27d8463176994a9988} 
+bool FWall::\+\+Is\+Breakable (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_a56cb248e38a3caabd43769c60b687e71}\index{FWall@{FWall}!IsDestroyed@{IsDestroyed}}
+\index{IsDestroyed@{IsDestroyed}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{IsDestroyed()}{IsDestroyed()}}
+{\footnotesize\ttfamily \label{class_f_wall_a56cb248e38a3caabd43769c60b687e71} 
+bool FWall::\+\+Is\+Destroyed (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_wall_a351d8b5119e973e7cb437bafa591a36d}\index{FWall@{FWall}!SetSprite@{SetSprite}}
+\index{SetSprite@{SetSprite}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{SetSprite()}{SetSprite()}}
+{\footnotesize\ttfamily \label{class_f_wall_a351d8b5119e973e7cb437bafa591a36d} 
+void FWall::\+\+Set\+Sprite (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&}]{In\+Sprite}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_wall_ac0897d483decc1e68ed400a294ef2b00}\index{FWall@{FWall}!SetType@{SetType}}
+\index{SetType@{SetType}!FWall@{FWall}}
+\doxysubsubsection{\texorpdfstring{SetType()}{SetType()}}
+{\footnotesize\ttfamily \label{class_f_wall_ac0897d483decc1e68ed400a294ef2b00} 
+void FWall::\+\+Set\+Type (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWall\+Type}}}]{In\+Type}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Gameplay/\+\doxymbox{\hyperlink{_wall_8h}{Wall.\+h}}\item 
+Gameplay/\+\doxymbox{\hyperlink{_wall_8cpp}{Wall.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,33 @@
+\doxysection{Map\+Data.\+h}
+\hypertarget{_map_data_8h_source}{}\label{_map_data_8h_source}\index{Gameplay/MapData.h@{Gameplay/MapData.h}}
+\doxymbox{\hyperlink{_map_data_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_map_data}{FMapData}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_map_data_a1248625a6e5c0faefee513b12f66a876}{Clear}}();}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_map_data_ac92c31669f14b1b7344e63480399be4e}{Resize}}(\textcolor{keywordtype}{int}\ InWidth,\ \textcolor{keywordtype}{int}\ InHeight);}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_map_data_aaa300525303f3ffaeeece8ebe7cade4c}{SetTile}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y,\ \textcolor{keywordtype}{int}\ Value);}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_map_data_ab7ac4ce9f65b64424330a8827e180431}{GetTile}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_map_data_ae8fe506265a39d9ef83d69af5360f58b}{IsInside}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_map_data_ae5edd1ef5d8824c6e337b159690088fc}{IsWalkable}}(\textcolor{keywordtype}{int}\ X,\ \textcolor{keywordtype}{int}\ Y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_map_data_a300f87f76851c40726ffb8507e025f80}{GetWidth}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_map_data_a2b6ede62efd5bca07489007c93210aa2}{GetHeight}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_map_data_aced5ddc2c9aae6a7f8fb62c6e6a698f3}{GetWorldWidth}}(\textcolor{keywordtype}{float}\ TileSize)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_map_data_a007a9cb0bca4404d9b49ec33d04142f1}{GetWorldHeight}}(\textcolor{keywordtype}{float}\ TileSize)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ std::vector<std::vector<int>>\ Tiles;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{int}\ Width\ =\ 0;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{int}\ Height\ =\ 0;}
+\DoxyCodeLine{00027\ \};}
+
+\end{DoxyCode}

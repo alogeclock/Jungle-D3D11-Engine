@@ -1,0 +1,105 @@
+\doxysection{FTexture\+Manager Class Reference}
+\hypertarget{class_f_texture_manager}{}\label{class_f_texture_manager}\index{FTextureManager@{FTextureManager}}
+
+
+{\ttfamily \+\#include $<$Texture\+Manager.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_f_texture_manager_a4d386635666ef24ce0d750e78615a955}{\texorpdfstring{$\sim$}{\string~}\+FTexture\+Manager}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_texture_manager_aef3eb923880a1f465e755440684677db}{Initialize}} (ID3\+D11\+Device \texorpdfstring{$\ast$}{*}In\+Device)
+\item 
+bool \doxymbox{\hyperlink{class_f_texture_manager_ac8f52449c14074dbd48135e0d1dbab6e}{Load}} (const std::\+string \&Key, const std::\+string \&Path)
+\item 
+\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_texture_manager_ad199aa919e2a3c376b20a50e29bb96df}{Get}} (const std::\+string \&Key) const
+\item 
+bool \doxymbox{\hyperlink{class_f_texture_manager_af59626fa5964275f29727319443d08b6}{Has}} (const std::\+string \&Key) const
+\item 
+void \doxymbox{\hyperlink{class_f_texture_manager_a1602f407f67129a27f085cb2a6978ae6}{Unload}} (const std::\+string \&Key)
+\item 
+void \doxymbox{\hyperlink{class_f_texture_manager_a2afe883588b90d2f5eff5159a64abf25}{Clear}} ()
+\item 
+ID3\+D11\+Sampler\+State \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_texture_manager_a9d21ab5e8a7c460b388af9c500506ecc}{Get\+Default\+Sampler}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_texture_manager_a4fa1dbf13aab4df4d55f20d56036276a}{Bind}} (const std::\+string \&Key, ID3\+D11\+Device\+Context \texorpdfstring{$\ast$}{*}Context, unsigned int Slot=0) const
+\item 
+void \doxymbox{\hyperlink{class_f_texture_manager_af974ebf9477dc2a84ff4c3819a673b47}{Unbind}} (ID3\+D11\+Device\+Context \texorpdfstring{$\ast$}{*}Context, unsigned int Slot=0) const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_texture_manager_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_texture_manager_a4d386635666ef24ce0d750e78615a955}\index{FTextureManager@{FTextureManager}!````~FTextureManager@{\texorpdfstring{$\sim$}{\string~}FTextureManager}}
+\index{````~FTextureManager@{\texorpdfstring{$\sim$}{\string~}FTextureManager}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}FTextureManager()}{\string~FTextureManager()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_a4d386635666ef24ce0d750e78615a955} 
+FTexture\+Manager::\+\texorpdfstring{$\sim$}{\string~}\+FTexture\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_texture_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_texture_manager_a4fa1dbf13aab4df4d55f20d56036276a}\index{FTextureManager@{FTextureManager}!Bind@{Bind}}
+\index{Bind@{Bind}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Bind()}{Bind()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_a4fa1dbf13aab4df4d55f20d56036276a} 
+void FTexture\+Manager::\+\+Bind (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{, }\item[{ID3\+D11\+Device\+Context \texorpdfstring{$\ast$}{*}}]{Context}{, }\item[{unsigned int}]{Slot}{ = {\ttfamily 0}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_texture_manager_a2afe883588b90d2f5eff5159a64abf25}\index{FTextureManager@{FTextureManager}!Clear@{Clear}}
+\index{Clear@{Clear}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Clear()}{Clear()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_a2afe883588b90d2f5eff5159a64abf25} 
+void FTexture\+Manager::\+\+Clear (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_texture_manager_ad199aa919e2a3c376b20a50e29bb96df}\index{FTextureManager@{FTextureManager}!Get@{Get}}
+\index{Get@{Get}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_ad199aa919e2a3c376b20a50e29bb96df} 
+\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*} FTexture\+Manager::\+\+Get (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_texture_manager_a9d21ab5e8a7c460b388af9c500506ecc}\index{FTextureManager@{FTextureManager}!GetDefaultSampler@{GetDefaultSampler}}
+\index{GetDefaultSampler@{GetDefaultSampler}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{GetDefaultSampler()}{GetDefaultSampler()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_a9d21ab5e8a7c460b388af9c500506ecc} 
+ID3\+D11\+Sampler\+State \texorpdfstring{$\ast$}{*} FTexture\+Manager::\+\+Get\+Default\+Sampler (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_texture_manager_af59626fa5964275f29727319443d08b6}\index{FTextureManager@{FTextureManager}!Has@{Has}}
+\index{Has@{Has}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Has()}{Has()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_af59626fa5964275f29727319443d08b6} 
+bool FTexture\+Manager::\+\+Has (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_texture_manager_aef3eb923880a1f465e755440684677db}\index{FTextureManager@{FTextureManager}!Initialize@{Initialize}}
+\index{Initialize@{Initialize}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Initialize()}{Initialize()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_aef3eb923880a1f465e755440684677db} 
+void FTexture\+Manager::\+\+Initialize (\begin{DoxyParamCaption}\item[{ID3\+D11\+Device \texorpdfstring{$\ast$}{*}}]{In\+Device}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_texture_manager_ac8f52449c14074dbd48135e0d1dbab6e}\index{FTextureManager@{FTextureManager}!Load@{Load}}
+\index{Load@{Load}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Load()}{Load()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_ac8f52449c14074dbd48135e0d1dbab6e} 
+bool FTexture\+Manager::\+\+Load (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{, }\item[{const std::\+string \&}]{Path}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_texture_manager_af974ebf9477dc2a84ff4c3819a673b47}\index{FTextureManager@{FTextureManager}!Unbind@{Unbind}}
+\index{Unbind@{Unbind}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Unbind()}{Unbind()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_af974ebf9477dc2a84ff4c3819a673b47} 
+void FTexture\+Manager::\+\+Unbind (\begin{DoxyParamCaption}\item[{ID3\+D11\+Device\+Context \texorpdfstring{$\ast$}{*}}]{Context}{, }\item[{unsigned int}]{Slot}{ = {\ttfamily 0}}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_texture_manager_a1602f407f67129a27f085cb2a6978ae6}\index{FTextureManager@{FTextureManager}!Unload@{Unload}}
+\index{Unload@{Unload}!FTextureManager@{FTextureManager}}
+\doxysubsubsection{\texorpdfstring{Unload()}{Unload()}}
+{\footnotesize\ttfamily \label{class_f_texture_manager_a1602f407f67129a27f085cb2a6978ae6} 
+void FTexture\+Manager::\+\+Unload (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Core/\+\doxymbox{\hyperlink{_texture_manager_8h}{Texture\+Manager.\+h}}\item 
+Core/\+\doxymbox{\hyperlink{_texture_manager_8cpp}{Texture\+Manager.\+cpp}}\end{DoxyCompactItemize}

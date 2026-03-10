@@ -1,37 +1,43 @@
 #pragma once
 
 #include <memory>
+#include <optional>
+#include "GameContext.h"
+#include "Input.h"
+#include "Renderer.h"
+#include "Scene/SceneManager.h"
+#include "TextureManager.h"
+#include "Time.h"
 
-class FTime;
-class FInput;
-class FRenderer;
-class FTextureManager;
-class FSceneManager;
 struct FGameContext;
 
 class FApplication
 {
-public:
-	bool Initialize(void* WindowHandle, int ScreenWidth, int ScreenHeight);
-	void Run();
-	void Shutdown();
+  public:
+    bool Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeight);
+    void Run();
+    void Shutdown();
 
-	void RequestQuit();
-	bool IsRunning() const;
+    void RequestQuit();
+    bool IsRunning() const;
 
-	FTime& GetTime();
-	FInput& GetInput();
-	FRenderer& GetRenderer();
-	FTextureManager& GetTextureManager();
-	FSceneManager& GetSceneManager();
+    FTime           &GetTime();
+    FInput          &GetInput();
+    FRenderer       &GetRenderer();
+    FTextureManager &GetTextureManager();
+    FSceneManager   &GetSceneManager();
 
-private:
-	bool bIsRunning = true;
+  private:
+    bool bIsRunning = true;
+    HWND HWnd = nullptr;
 
-	std::unique_ptr<FTime> Time;
-	std::unique_ptr<FInput> Input;
-	std::unique_ptr<FRenderer> Renderer;
-	std::unique_ptr<FTextureManager> TextureManager;
-	std::unique_ptr<FSceneManager> SceneManager;
-	std::unique_ptr<FGameContext> GameContext;
+    std::unique_ptr<FTime>           Time;
+    std::unique_ptr<FInput>          Input;
+    std::unique_ptr<FRenderer>       Renderer;
+    std::unique_ptr<FTextureManager> TextureManager;
+    std::unique_ptr<FSceneManager>   SceneManager;
+    std::optional<FGameContext>      GameContext;
+
+  private:
+    bool ProcessWindowMessages();
 };

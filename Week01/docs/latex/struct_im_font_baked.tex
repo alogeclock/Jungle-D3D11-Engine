@@ -1,0 +1,217 @@
+\doxysection{Im\+Font\+Baked Struct Reference}
+\hypertarget{struct_im_font_baked}{}\label{struct_im_font_baked}\index{ImFontBaked@{ImFontBaked}}
+
+
+{\ttfamily \+\#include $<$imgui.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{imgui_8h_a43829975e84e45d1149597467a14bbf5}{IMGUI\+\_\+\+API}} \doxymbox{\hyperlink{struct_im_font_baked_ab801595c8add49feb043537caf09f265}{Im\+Font\+Baked}} ()
+\item 
+\doxymbox{\hyperlink{imgui_8h_a43829975e84e45d1149597467a14bbf5}{IMGUI\+\_\+\+API}} void \doxymbox{\hyperlink{struct_im_font_baked_ab97e16ef7ce03a16d79bceffd409b762}{Clear\+Output\+Data}} ()
+\item 
+\doxymbox{\hyperlink{imgui_8h_a43829975e84e45d1149597467a14bbf5}{IMGUI\+\_\+\+API}} \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_baked_a785a4f3372cd8258f17ede065ee3cbad}{Find\+Glyph}} (\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} c)
+\item 
+\doxymbox{\hyperlink{imgui_8h_a43829975e84e45d1149597467a14bbf5}{IMGUI\+\_\+\+API}} \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_baked_a3669f0bfbacc00ac7d4982c07f40824b}{Find\+Glyph\+No\+Fallback}} (\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} c)
+\item 
+\doxymbox{\hyperlink{imgui_8h_a43829975e84e45d1149597467a14bbf5}{IMGUI\+\_\+\+API}} float \doxymbox{\hyperlink{struct_im_font_baked_a4aa1c5f921bd4c0c90458b8613f6a51c}{Get\+Char\+Advance}} (\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} c)
+\item 
+\doxymbox{\hyperlink{imgui_8h_a43829975e84e45d1149597467a14bbf5}{IMGUI\+\_\+\+API}} bool \doxymbox{\hyperlink{struct_im_font_baked_a0492533ff66e22262532a384efac4116}{Is\+Glyph\+Loaded}} (\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} c)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$ float $>$ \doxymbox{\hyperlink{struct_im_font_baked_a37b9de4acb80914d7b8824ccb3ac92ef}{Index\+AdvanceX}}
+\item 
+float \doxymbox{\hyperlink{struct_im_font_baked_aa695e190c4f0c2b8dac14473f9fa0671}{Fallback\+AdvanceX}}
+\item 
+float \doxymbox{\hyperlink{struct_im_font_baked_a7e6fa03b5efe75c2817b88f73392837c}{Size}}
+\item 
+float \doxymbox{\hyperlink{struct_im_font_baked_a0f5240ec3a2074111c6159c4731e99b6}{Rasterizer\+Density}}
+\item 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$ \doxymbox{\hyperlink{imgui_8h_a788d84b86cbaed7de12d6e58ab630e07}{Im\+U16}} $>$ \doxymbox{\hyperlink{struct_im_font_baked_aebb4a92afcafbc6fbd1c99f4f253874f}{Index\+Lookup}}
+\item 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$ \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} $>$ \doxymbox{\hyperlink{struct_im_font_baked_a42c8a11e68fd31a3dba9d676a6a3275c}{Glyphs}}
+\item 
+int \doxymbox{\hyperlink{struct_im_font_baked_aaf04ebab6eb1991b7c7cf84f5b136dea}{Fallback\+Glyph\+Index}}
+\item 
+float \doxymbox{\hyperlink{struct_im_font_baked_a691d399162e486390e24fbd27bb9739e}{Ascent}}
+\item 
+float \doxymbox{\hyperlink{struct_im_font_baked_abbb5072bae93cb08364ed22284604cb5}{Descent}}
+\item 
+unsigned int \doxymbox{\hyperlink{struct_im_font_baked_a16c0f97d7f790bdb32263cd837b71d32}{Metrics\+Total\+Surface}}:\+26
+\item 
+unsigned int \doxymbox{\hyperlink{struct_im_font_baked_a1e0839bf39f125ec5e40966a157d0d8b}{Want\+Destroy}}:\+1
+\item 
+unsigned int \doxymbox{\hyperlink{struct_im_font_baked_aaec3b9e1f7bf7a999b1b79da9ce47fb1}{Load\+No\+Fallback}}:\+1
+\item 
+unsigned int \doxymbox{\hyperlink{struct_im_font_baked_a5325b5b45fdc2bb2f52296002b4ea31f}{Load\+No\+Render\+On\+Layout}}:\+1
+\item 
+int \doxymbox{\hyperlink{struct_im_font_baked_a9ada02bc5f43115d83b1f71d155474ef}{Last\+Used\+Frame}}
+\item 
+\doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}} \doxymbox{\hyperlink{struct_im_font_baked_a513f8cce38945b233e9645987b2d547b}{Baked\+Id}}
+\item 
+\doxymbox{\hyperlink{struct_im_font}{Im\+Font}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_baked_ae15ee1d965099e538d8174f83deb0912}{Owner\+Font}}
+\item 
+void \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_baked_ab31828ccb1cadb2e9185ae3292cdc6e5}{Font\+Loader\+Datas}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_im_font_baked_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_im_font_baked_ab801595c8add49feb043537caf09f265}\index{ImFontBaked@{ImFontBaked}!ImFontBaked@{ImFontBaked}}
+\index{ImFontBaked@{ImFontBaked}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{ImFontBaked()}{ImFontBaked()}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_ab801595c8add49feb043537caf09f265} 
+Im\+Font\+Baked::\+\+Im\+Font\+Baked (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{struct_im_font_baked_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_im_font_baked_ab97e16ef7ce03a16d79bceffd409b762}\index{ImFontBaked@{ImFontBaked}!ClearOutputData@{ClearOutputData}}
+\index{ClearOutputData@{ClearOutputData}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{ClearOutputData()}{ClearOutputData()}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_ab97e16ef7ce03a16d79bceffd409b762} 
+void Im\+Font\+Baked::\+\+Clear\+Output\+Data (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_im_font_baked_a785a4f3372cd8258f17ede065ee3cbad}\index{ImFontBaked@{ImFontBaked}!FindGlyph@{FindGlyph}}
+\index{FindGlyph@{FindGlyph}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{FindGlyph()}{FindGlyph()}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a785a4f3372cd8258f17ede065ee3cbad} 
+\doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*} Im\+Font\+Baked::\+\+Find\+Glyph (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}}}]{c}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_im_font_baked_a3669f0bfbacc00ac7d4982c07f40824b}\index{ImFontBaked@{ImFontBaked}!FindGlyphNoFallback@{FindGlyphNoFallback}}
+\index{FindGlyphNoFallback@{FindGlyphNoFallback}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{FindGlyphNoFallback()}{FindGlyphNoFallback()}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a3669f0bfbacc00ac7d4982c07f40824b} 
+\doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*} Im\+Font\+Baked::\+\+Find\+Glyph\+No\+Fallback (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}}}]{c}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_im_font_baked_a4aa1c5f921bd4c0c90458b8613f6a51c}\index{ImFontBaked@{ImFontBaked}!GetCharAdvance@{GetCharAdvance}}
+\index{GetCharAdvance@{GetCharAdvance}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{GetCharAdvance()}{GetCharAdvance()}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a4aa1c5f921bd4c0c90458b8613f6a51c} 
+\doxymbox{\hyperlink{imgui_8h_a78ef28aaeac1f421e6dea354c687e03d}{IM\+\_\+\+MSVC\+\_\+\+RUNTIME\+\_\+\+CHECKS\+\_\+\+OFF}} float Im\+Font\+Baked::\+\+Get\+Char\+Advance (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}}}]{c}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_im_font_baked_a0492533ff66e22262532a384efac4116}\index{ImFontBaked@{ImFontBaked}!IsGlyphLoaded@{IsGlyphLoaded}}
+\index{IsGlyphLoaded@{IsGlyphLoaded}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{IsGlyphLoaded()}{IsGlyphLoaded()}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a0492533ff66e22262532a384efac4116} 
+bool Im\+Font\+Baked::\+\+Is\+Glyph\+Loaded (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}}}]{c}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_im_font_baked_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_im_font_baked_a691d399162e486390e24fbd27bb9739e}\index{ImFontBaked@{ImFontBaked}!Ascent@{Ascent}}
+\index{Ascent@{Ascent}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{Ascent}{Ascent}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a691d399162e486390e24fbd27bb9739e} 
+float Im\+Font\+Baked::\+\+Ascent}
+
+\Hypertarget{struct_im_font_baked_a513f8cce38945b233e9645987b2d547b}\index{ImFontBaked@{ImFontBaked}!BakedId@{BakedId}}
+\index{BakedId@{BakedId}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{BakedId}{BakedId}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a513f8cce38945b233e9645987b2d547b} 
+\doxymbox{\hyperlink{imgui_8h_a1785c9b6f4e16406764a85f32582236f}{Im\+Gui\+ID}} Im\+Font\+Baked::\+\+Baked\+Id}
+
+\Hypertarget{struct_im_font_baked_abbb5072bae93cb08364ed22284604cb5}\index{ImFontBaked@{ImFontBaked}!Descent@{Descent}}
+\index{Descent@{Descent}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{Descent}{Descent}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_abbb5072bae93cb08364ed22284604cb5} 
+float Im\+Font\+Baked::\+\+Descent}
+
+\Hypertarget{struct_im_font_baked_aa695e190c4f0c2b8dac14473f9fa0671}\index{ImFontBaked@{ImFontBaked}!FallbackAdvanceX@{FallbackAdvanceX}}
+\index{FallbackAdvanceX@{FallbackAdvanceX}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{FallbackAdvanceX}{FallbackAdvanceX}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_aa695e190c4f0c2b8dac14473f9fa0671} 
+float Im\+Font\+Baked::\+\+Fallback\+AdvanceX}
+
+\Hypertarget{struct_im_font_baked_aaf04ebab6eb1991b7c7cf84f5b136dea}\index{ImFontBaked@{ImFontBaked}!FallbackGlyphIndex@{FallbackGlyphIndex}}
+\index{FallbackGlyphIndex@{FallbackGlyphIndex}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{FallbackGlyphIndex}{FallbackGlyphIndex}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_aaf04ebab6eb1991b7c7cf84f5b136dea} 
+int Im\+Font\+Baked::\+\+Fallback\+Glyph\+Index}
+
+\Hypertarget{struct_im_font_baked_ab31828ccb1cadb2e9185ae3292cdc6e5}\index{ImFontBaked@{ImFontBaked}!FontLoaderDatas@{FontLoaderDatas}}
+\index{FontLoaderDatas@{FontLoaderDatas}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{FontLoaderDatas}{FontLoaderDatas}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_ab31828ccb1cadb2e9185ae3292cdc6e5} 
+void\texorpdfstring{$\ast$}{*} Im\+Font\+Baked::\+\+Font\+Loader\+Datas}
+
+\Hypertarget{struct_im_font_baked_a42c8a11e68fd31a3dba9d676a6a3275c}\index{ImFontBaked@{ImFontBaked}!Glyphs@{Glyphs}}
+\index{Glyphs@{Glyphs}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{Glyphs}{Glyphs}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a42c8a11e68fd31a3dba9d676a6a3275c} 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$\doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}}$>$ Im\+Font\+Baked::\+\+Glyphs}
+
+\Hypertarget{struct_im_font_baked_a37b9de4acb80914d7b8824ccb3ac92ef}\index{ImFontBaked@{ImFontBaked}!IndexAdvanceX@{IndexAdvanceX}}
+\index{IndexAdvanceX@{IndexAdvanceX}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{IndexAdvanceX}{IndexAdvanceX}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a37b9de4acb80914d7b8824ccb3ac92ef} 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$float$>$ Im\+Font\+Baked::\+\+Index\+AdvanceX}
+
+\Hypertarget{struct_im_font_baked_aebb4a92afcafbc6fbd1c99f4f253874f}\index{ImFontBaked@{ImFontBaked}!IndexLookup@{IndexLookup}}
+\index{IndexLookup@{IndexLookup}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{IndexLookup}{IndexLookup}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_aebb4a92afcafbc6fbd1c99f4f253874f} 
+\doxymbox{\hyperlink{struct_im_vector}{Im\+Vector}}$<$\doxymbox{\hyperlink{imgui_8h_a788d84b86cbaed7de12d6e58ab630e07}{Im\+U16}}$>$ Im\+Font\+Baked::\+\+Index\+Lookup}
+
+\Hypertarget{struct_im_font_baked_a9ada02bc5f43115d83b1f71d155474ef}\index{ImFontBaked@{ImFontBaked}!LastUsedFrame@{LastUsedFrame}}
+\index{LastUsedFrame@{LastUsedFrame}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{LastUsedFrame}{LastUsedFrame}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a9ada02bc5f43115d83b1f71d155474ef} 
+int Im\+Font\+Baked::\+\+Last\+Used\+Frame}
+
+\Hypertarget{struct_im_font_baked_aaec3b9e1f7bf7a999b1b79da9ce47fb1}\index{ImFontBaked@{ImFontBaked}!LoadNoFallback@{LoadNoFallback}}
+\index{LoadNoFallback@{LoadNoFallback}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{LoadNoFallback}{LoadNoFallback}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_aaec3b9e1f7bf7a999b1b79da9ce47fb1} 
+unsigned int Im\+Font\+Baked::\+\+Load\+No\+Fallback}
+
+\Hypertarget{struct_im_font_baked_a5325b5b45fdc2bb2f52296002b4ea31f}\index{ImFontBaked@{ImFontBaked}!LoadNoRenderOnLayout@{LoadNoRenderOnLayout}}
+\index{LoadNoRenderOnLayout@{LoadNoRenderOnLayout}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{LoadNoRenderOnLayout}{LoadNoRenderOnLayout}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a5325b5b45fdc2bb2f52296002b4ea31f} 
+unsigned int Im\+Font\+Baked::\+\+Load\+No\+Render\+On\+Layout}
+
+\Hypertarget{struct_im_font_baked_a16c0f97d7f790bdb32263cd837b71d32}\index{ImFontBaked@{ImFontBaked}!MetricsTotalSurface@{MetricsTotalSurface}}
+\index{MetricsTotalSurface@{MetricsTotalSurface}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{MetricsTotalSurface}{MetricsTotalSurface}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a16c0f97d7f790bdb32263cd837b71d32} 
+unsigned int Im\+Font\+Baked::\+\+Metrics\+Total\+Surface}
+
+\Hypertarget{struct_im_font_baked_ae15ee1d965099e538d8174f83deb0912}\index{ImFontBaked@{ImFontBaked}!OwnerFont@{OwnerFont}}
+\index{OwnerFont@{OwnerFont}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{OwnerFont}{OwnerFont}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_ae15ee1d965099e538d8174f83deb0912} 
+\doxymbox{\hyperlink{struct_im_font}{Im\+Font}}\texorpdfstring{$\ast$}{*} Im\+Font\+Baked::\+\+Owner\+Font}
+
+\Hypertarget{struct_im_font_baked_a0f5240ec3a2074111c6159c4731e99b6}\index{ImFontBaked@{ImFontBaked}!RasterizerDensity@{RasterizerDensity}}
+\index{RasterizerDensity@{RasterizerDensity}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{RasterizerDensity}{RasterizerDensity}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a0f5240ec3a2074111c6159c4731e99b6} 
+float Im\+Font\+Baked::\+\+Rasterizer\+Density}
+
+\Hypertarget{struct_im_font_baked_a7e6fa03b5efe75c2817b88f73392837c}\index{ImFontBaked@{ImFontBaked}!Size@{Size}}
+\index{Size@{Size}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{Size}{Size}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a7e6fa03b5efe75c2817b88f73392837c} 
+float Im\+Font\+Baked::\+\+Size}
+
+\Hypertarget{struct_im_font_baked_a1e0839bf39f125ec5e40966a157d0d8b}\index{ImFontBaked@{ImFontBaked}!WantDestroy@{WantDestroy}}
+\index{WantDestroy@{WantDestroy}!ImFontBaked@{ImFontBaked}}
+\doxysubsubsection{\texorpdfstring{WantDestroy}{WantDestroy}}
+{\footnotesize\ttfamily \label{struct_im_font_baked_a1e0839bf39f125ec5e40966a157d0d8b} 
+unsigned int Im\+Font\+Baked::\+\+Want\+Destroy}
+
+
+
+The documentation for this struct was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+imgui/\+\doxymbox{\hyperlink{imgui_8h}{imgui.\+h}}\item 
+imgui/\+\doxymbox{\hyperlink{imgui__draw_8cpp}{imgui\+\_\+draw.\+cpp}}\end{DoxyCompactItemize}

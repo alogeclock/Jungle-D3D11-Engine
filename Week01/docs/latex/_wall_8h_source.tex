@@ -1,0 +1,47 @@
+\doxysection{Wall.\+h}
+\hypertarget{_wall_8h_source}{}\label{_wall_8h_source}\index{Gameplay/Wall.h@{Gameplay/Wall.h}}
+\doxymbox{\hyperlink{_wall_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_sprite_info_8h}{SpriteInfo.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWallType}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \ \ \ \ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565faa960b44c579bc2f6818d2daaf9e4c16f0}{Normal}},}
+\DoxyCodeLine{00008\ \ \ \ \ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565faa61495d909be4d86fc53104966f33af84}{Breakable}},}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565faae234de581c9c5ef91322f1469a585f9e}{Boundary}}}
+\DoxyCodeLine{00010\ \};}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_wall_a762413ecb795b67a98be0697d50d27e3}{FWall}}}
+\DoxyCodeLine{00013\ \{}
+\DoxyCodeLine{00014\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{class_f_wall_a762413ecb795b67a98be0697d50d27e3}{FWall}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00016\ \ \ \ \ \doxymbox{\hyperlink{class_f_wall_a762413ecb795b67a98be0697d50d27e3}{FWall}}(\textcolor{keywordtype}{int}\ InTileX,\ \textcolor{keywordtype}{int}\ InTileY,\ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWallType}}\ InType\ =\ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565faa960b44c579bc2f6818d2daaf9e4c16f0}{EWallType::Normal}});}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_wall_af7fefd2a48d6cc9e49c998e6032adea3}{GetTileX}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_wall_ae7f02eeaf05ac1f4fc042c9270db3a5f}{GetTileY}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_wall_a989373ac7e4ede3bdfbf4716553b9686}{GetRenderX}}(\textcolor{keywordtype}{float}\ TileSize)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_wall_a810190d83e7bb62aa25d7b32536a0571}{GetRenderY}}(\textcolor{keywordtype}{float}\ TileSize)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_wall_ac0897d483decc1e68ed400a294ef2b00}{SetType}}(\doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWallType}}\ InType);}
+\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWallType}}\ \doxymbox{\hyperlink{class_f_wall_aa889c51127c578f20a50555725f6a6fd}{GetType}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_wall_a9c1cf62b21facb27d8463176994a9988}{IsBreakable}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_wall_a174e47330ddaa94ab6a38c185363b541}{Destroy}}();}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_wall_a56cb248e38a3caabd43769c60b687e71}{IsDestroyed}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_wall_a351d8b5119e973e7cb437bafa591a36d}{SetSprite}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}}\&\ InSprite);}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}}\&\ \doxymbox{\hyperlink{class_f_wall_a9ada61555c291ccca3af0fe168c043d0}{GetSprite}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{int}\ TileX\ =\ 0;}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{int}\ TileY\ =\ 0;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565fa}{EWallType}}\ Type\ =\ \doxymbox{\hyperlink{_wall_8h_aad77b227821e34e0a81c7694f14565faa960b44c579bc2f6818d2daaf9e4c16f0}{EWallType::Normal}};}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsDestroyed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00040\ \ \ \ \ \doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}}\ Sprite;}
+\DoxyCodeLine{00041\ \};}
+
+\end{DoxyCode}

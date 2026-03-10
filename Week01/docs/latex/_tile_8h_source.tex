@@ -1,0 +1,42 @@
+\doxysection{Tile.\+h}
+\hypertarget{_tile_8h_source}{}\label{_tile_8h_source}\index{Gameplay/Tile.h@{Gameplay/Tile.h}}
+\doxymbox{\hyperlink{_tile_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_sprite_info_8h}{SpriteInfo.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETileType}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \ \ \ \ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9caf3f6d0343d56ce88ce7958170ed05cb3}{Floor}},}
+\DoxyCodeLine{00008\ \ \ \ \ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9ca01d02e67374273af80ed14d9a96b28cf}{Spike}},}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9caf357105e6becc3076a3da9b43465051a}{Heal}}}
+\DoxyCodeLine{00010\ \};}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_tile_a043071ffe6fc7ac27516f2710c231c1e}{FTile}}}
+\DoxyCodeLine{00013\ \{}
+\DoxyCodeLine{00014\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{class_f_tile_a043071ffe6fc7ac27516f2710c231c1e}{FTile}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00016\ \ \ \ \ \doxymbox{\hyperlink{class_f_tile_a043071ffe6fc7ac27516f2710c231c1e}{FTile}}(\textcolor{keywordtype}{int}\ InTileX,\ \textcolor{keywordtype}{int}\ InTileY,\ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETileType}}\ InType\ =\ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9caf3f6d0343d56ce88ce7958170ed05cb3}{ETileType::Floor}});}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_tile_a1dafcc57e243458e3d5a1b63d8a6c8f2}{GetTileX}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_tile_ad77c5fbf934fdae2ee68c4de5dd6b7bd}{GetTileY}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_tile_af41bcfa6d4b3bc214d3f943d58810e0a}{GetRenderX}}(\textcolor{keywordtype}{float}\ TileSize)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_tile_a5b64bead69f0a6acf538508006eccb11}{GetRenderY}}(\textcolor{keywordtype}{float}\ TileSize)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_tile_a6d3447e131b19af54632f5c6f0305380}{SetType}}(\doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETileType}}\ InType);}
+\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETileType}}\ \doxymbox{\hyperlink{class_f_tile_a7bb2cd2cc7e8f3454a7fbf7d30a391dc}{GetType}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_tile_ac34778016f30fad04d7c79283c3522a1}{SetSprite}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}}\&\ InSprite);}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}}\&\ \doxymbox{\hyperlink{class_f_tile_a432fc3080c680e57422632977341cd4a}{GetSprite}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{int}\ TileX\ =\ 0;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{int}\ TileY\ =\ 0;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9c}{ETileType}}\ Type\ =\ \doxymbox{\hyperlink{_tile_8h_a4ab07f47fd4c98bb6f33a35a4b55ae9caf3f6d0343d56ce88ce7958170ed05cb3}{ETileType::Floor}};}
+\DoxyCodeLine{00035\ \ \ \ \ \doxymbox{\hyperlink{struct_f_sprite_info}{FSpriteInfo}}\ Sprite;}
+\DoxyCodeLine{00036\ \};}
+
+\end{DoxyCode}

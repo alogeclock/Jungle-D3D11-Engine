@@ -1,18 +1,24 @@
 #pragma once
 
+#include <memory>
 #include "Scene.h"
-
-class FPopupManager;
+#include "UI/UIManager.h"
 
 class FTitleScene : public IScene
 {
 public:
+	~FTitleScene() override;
+
 	void Enter() override;
 	void Exit() override;
 
-	void Update(FGameContext& Context) override;
-	void Render(FGameContext& Context) override;
+    void Update(FGameContext &Context) override;
+    void Render(FGameContext &Context) override;
 
 private:
-	FPopupManager* PopupManager = nullptr;
+	void StartGame();
+	void ShowCredit();
+	void ShowScore();
+
+	FUIManager UIManager;
 };

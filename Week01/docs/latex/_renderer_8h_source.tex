@@ -1,0 +1,71 @@
+\doxysection{Renderer.\+h}
+\hypertarget{_renderer_8h_source}{}\label{_renderer_8h_source}\index{Core/Renderer.h@{Core/Renderer.h}}
+\doxymbox{\hyperlink{_renderer_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <d3d11.h>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <d3dcompiler.h>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Types.h}}"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_renderer}{FRenderer}}}
+\DoxyCodeLine{00009\ \{}
+\DoxyCodeLine{00010\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants}{FConstants}}}
+\DoxyCodeLine{00012\ \ \ \ \ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_f_vector}{FVector}}\ \doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants_a2461eab175a78a01073b5c57006f09b5}{Offset}};}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants_abad4dff2ecd13f4b29bdd3b4e5613902}{Scale}};}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants_ae5f84d7997b8a6a75c669e6b42192f84}{Angle}};}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants_af43dea22dc212b4d188b3444bd6738cf}{ChargeSign}};}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants_a914d66a801501aea1b27ff35f87f9e46}{Pad}}[2];}
+\DoxyCodeLine{00018\ \ \ \ \ \};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ ID3D11Device*\ \doxymbox{\hyperlink{class_f_renderer_aa91c441dfab665464b6ff0e5d55eff8e}{Device}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00021\ \ \ \ \ ID3D11DeviceContext*\ \doxymbox{\hyperlink{class_f_renderer_a80bf993f5dfb1dfb6d71bbe64ff8d33a}{DeviceContext}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00022\ \ \ \ \ IDXGISwapChain*\ \doxymbox{\hyperlink{class_f_renderer_adc6b6908cdf5f1c2c6e490d1212c735d}{SwapChain}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ ID3D11Texture2D*\ \doxymbox{\hyperlink{class_f_renderer_a275265418cd66f565fe5280345323da4}{FrameBuffer}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00025\ \ \ \ \ ID3D11RenderTargetView*\ \doxymbox{\hyperlink{class_f_renderer_a282159348f7b94981f01a52f48319383}{FrameBufferRTV}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00026\ \ \ \ \ ID3D11RasterizerState*\ \doxymbox{\hyperlink{class_f_renderer_ac6d2054a9e668d568d0c22803269605a}{RasterizerState}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00027\ \ \ \ \ ID3D11Buffer*\ \doxymbox{\hyperlink{class_f_renderer_aae93072832e144b488f89bb514271539}{ConstantBuffer}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ FLOAT\ \doxymbox{\hyperlink{class_f_renderer_aeb697690f506f4f49f165a852e31b3a5}{ClearColor}}[4]\ =\ \{\ 0.025f,\ 0.025f,\ 0.025f,\ 1.0f\ \};}
+\DoxyCodeLine{00030\ \ \ \ \ D3D11\_VIEWPORT\ \doxymbox{\hyperlink{class_f_renderer_a989ef474fc7d8e8da1665570c8d267e0}{ViewportInfo}};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ ID3D11VertexShader*\ \doxymbox{\hyperlink{class_f_renderer_aca4731a66e925fc171cfa0bb530f501d}{SimpleVertexShader}};}
+\DoxyCodeLine{00033\ \ \ \ \ ID3D11PixelShader*\ \doxymbox{\hyperlink{class_f_renderer_adb6f76a8b474c252b829ebce4d88d8c4}{SimplePixelShader}};}
+\DoxyCodeLine{00034\ \ \ \ \ ID3D11InputLayout*\ \doxymbox{\hyperlink{class_f_renderer_ad902c36c4292f2578080fa1ef1fb0caa}{SimpleInputLayout}};}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_renderer_a71466a0e85aa51bf272507cd1988f24e}{Stride}};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a584aceddb677a96eaf287af83ec750e5}{UpdateConstant}}(\doxymbox{\hyperlink{struct_f_vector}{FVector}}\ Offset,\ \textcolor{keywordtype}{float}\ Scale\ =\ 1.0f,\ \textcolor{keywordtype}{float}\ Angle\ =\ 0.0f,\ \textcolor{keywordtype}{float}\ ChargeSign\ =\ 0.0f);}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a379425a7bcf35e75a417f9794c721854}{Prepare}}();}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_aca9ed1d06f30c88bb6ffe1ee8073cb94}{PrepareShader}}();}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_aef78e92fb61d1355da795ce38205ea8a}{RenderPrimitive}}(ID3D11Buffer*\ pBuffer,\ UINT\ numVertices);}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a8e0f8ca6aa503a239efe1ff6bee91834}{CreateShader}}();}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a20493b87cf19df2aa96e47c599db7cab}{ReleaseShader}}();}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a859092e1a53c21075ddc452e348e0e4e}{Create}}(HWND\ hWindow);}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_ade9de6e0157ad5874822faa06128cbb2}{CreateDeviceAndSwapChain}}(HWND\ hWindow);}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_ad7da62513bce7d3967307716999f5654}{ReleaseDeviceAndSwapChain}}();}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_af9b5bbcb9f42fe1bb1cd0b3d9270d083}{CreateFrameBuffer}}();}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a17cf2c2c67224e2f42676cef7608d59c}{ReleaseFrameBuffer}}();}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_aa72f7321817228ddf42fada19216f1b8}{CreateRasterizerState}}();}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a333d3e16a819f62cbeb44b9d35c79ff1}{ReleaseRasterizerState}}();}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a13b91f03ae70387083472a4867f01694}{Release}}();}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a3b10265b3f2c5f7179fcbc505dc97603}{SwapBuffer}}();}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ ID3D11Buffer*\ \doxymbox{\hyperlink{class_f_renderer_af6eaca2705740537f55bc2494c7b3273}{CreateVertexBuffer}}(\doxymbox{\hyperlink{struct_f_vertex_simple}{FVertexSimple}}*\ vertices,\ UINT\ byteWidth);}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a1b4c8626568135305c30a8121a1c1505}{ReleaseVertexBuffer}}(ID3D11Buffer*\ vertexBuffer);}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a8b4ac4a903068dbdd0659741969c5aaa}{CreateConstantBuffer}}();}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_ae79d9f85b715273e9e4d95f920156abb}{ReleaseConstantBuffer}}();}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_renderer_a85fb25576542fa9e591e33342b6ad1f0}{Initialize}}(HWND\ hWindow,\ \textcolor{keywordtype}{int}\ ScreenWidth,\ \textcolor{keywordtype}{int}\ ScreenHeight);}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_a0e1d7559e2106cb434c4889fe892f057}{BeginFrame}}();}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_renderer_ae13409ebc376fe5e7a54afb0e8d1b541}{EndFrame}}();}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_renderer_addba53f722a0bfe3457b5121ea337f9c}{GetScreenWidth}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_f_renderer_a525287c8a1947323cfbd5cd6799df8a2}{GetScreenHeight}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00065\ \};}
+
+\end{DoxyCode}

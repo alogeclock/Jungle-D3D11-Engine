@@ -6,15 +6,14 @@
 
 struct FVertexSimple
 {
-	float x, y, z;    // Position
-	float r, g, b, a; // Color
-	float u, v;
+    float x, y, z;    // Position
+    float r, g, b, a; // Color
 };
 
 struct FVector
 {
-	float x, y, z;
-	FVector(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
+    float x, y, z;
+    FVector(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
 };
 
 
@@ -22,56 +21,54 @@ struct FVector
 
 enum class ESceneType
 {
-	Title,
-	Play
+    Title,
+    Play
 };
 
 enum class EDirection
 {
-	Up,
-	Down,
-	Left,
-	Right
+    Up,
+    Down,
+    Left,
+    Right
 };
 
 enum class EBeatJudge
 {
-	Perfect,
-	Good,
-	Miss
+    Good,
+    Miss
 };
 
 enum class EActorType
 {
-	Player,
-	Monster
+    Player,
+    Monster
 };
 
 enum class EMonsterAIType
 {
-	ChasePlayer,
-	RandomMove,
-	Patrol
+    ChasePlayer,
+    RandomMove,
+    Patrol
 };
 
 enum class EKeyCode
 {
-	Up,
-	Down,
-	Left,
-	Right,
-	Enter,
-	Esc
+    Up,
+    Down,
+    Left,
+    Right,
+    Count
 };
 
 struct FVec2
 {
-	float X = 0.0f;
-	float Y = 0.0f;
+    float X = 0.0f;
+    float Y = 0.0f;
 };
 
 struct FScoreRecord
 {
-	std::string Name;
-	int Score = 0;
+    std::string Name;
+    int         Score = 0;
 };

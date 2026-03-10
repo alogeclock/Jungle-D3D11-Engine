@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/Types.h"
+#include "Core/Types.h"
 
 class FCamera2D
 {
@@ -34,6 +34,6 @@ private:
 	float WorldWidth = 0.0f;
 	float WorldHeight = 0.0f;
 
-	float Zoom = 1.25f;
+	float Zoom = 1.07f;
 	float FollowSpeed = 10.0f;
 };

@@ -1,0 +1,28 @@
+\doxysection{Scoreboard\+Popup.\+h}
+\hypertarget{_scoreboard_popup_8h_source}{}\label{_scoreboard_popup_8h_source}\index{Gameplay/ScoreboardPopup.h@{Gameplay/ScoreboardPopup.h}}
+\doxymbox{\hyperlink{_scoreboard_popup_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_popup_8h}{UI/Popup.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Core/Types.h}}"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_scoreboard_popup}{FScoreboardPopup}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_i_popup}{IPopup}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scoreboard_popup_ad14509cca8442654fa3102d6af1e5a67}{SetScores}}(\textcolor{keyword}{const}\ std::vector<FScoreRecord>\&\ InScores);}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scoreboard_popup_a41054b1b2eebaafc37c990eec8916298}{Open}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scoreboard_popup_adb35aaa4eb15526de27e07ca38e39cd7}{Close}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_scoreboard_popup_ace2f4bbcc12ddb0f544bbfaea2a12ed7}{IsOpen}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scoreboard_popup_a06ee8b8f05ee498666b607cf276291c7}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\&\ Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scoreboard_popup_aca91fa2443e4102e08f3f5af2a4278be}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\&\ Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsOpen\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00021\ \ \ \ \ std::vector<FScoreRecord>\ Scores;}
+\DoxyCodeLine{00022\ \};}
+
+\end{DoxyCode}

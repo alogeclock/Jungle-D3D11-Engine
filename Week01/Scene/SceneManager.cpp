@@ -2,11 +2,13 @@
 #include "Scene.h"
 #include "TitleScene.h"
 #include "PlayScene.h"
-#include "../Core/GameContext.h"
+#include "Core/GameContext.h"
+#include "Gameplay/Stage.h"
 
 void FSceneManager::Initialize(FGameContext* InGameContext)
 {
 	GameContext = InGameContext;
+	ChangeSceneImmediately(ESceneType::Title);
 }
 
 void FSceneManager::RequestChangeScene(ESceneType SceneType)
@@ -86,7 +88,15 @@ std::unique_ptr<IScene> FSceneManager::CreateScene(ESceneType SceneType)
 	case ESceneType::Title:
 		return std::make_unique<FTitleScene>();
 	case ESceneType::Play:
-		return std::make_unique<FPlayScene>();
+	{
+		auto Scene = std::make_unique<FPlayScene>();
+		if (GameContext)
+		{
+			Scene->SetRenderer(&GameContext->Renderer);
+			Scene->SetTextureManager(&GameContext->Textures);
+		}
+		return Scene;
+	}
 	default:
 		return nullptr;
 	}

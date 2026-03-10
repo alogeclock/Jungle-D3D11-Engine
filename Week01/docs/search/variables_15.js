@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['v_0',['V',['../struct_f_sprite_vertex.html#acebc4dfdf86271734a957a1b1d995346',1,'FSpriteVertex']]],
+  ['v0_1',['V0',['../struct_im_font_glyph.html#a26b7b7b9ee43ab67e98af9ea1131ce20',1,'ImFontGlyph']]],
+  ['v1_2',['V1',['../struct_im_font_glyph.html#a3d28904aad639835cdff3e4416663d7c',1,'ImFontGlyph']]],
+  ['v_5foversample_3',['v_oversample',['../structstbtt__pack__range.html#a6288f14006e257544db3d015c32b4113',1,'stbtt_pack_range::v_oversample'],['../structstbtt__pack__context.html#a4b55efa27ef36e7f258afe92921784c0',1,'stbtt_pack_context::v_oversample']]],
+  ['val_5ff_4',['val_f',['../struct_im_gui_storage_pair.html#ad8b3bb75a961c70534af42bcd6d5420b',1,'ImGuiStoragePair']]],
+  ['val_5fi_5',['val_i',['../struct_im_gui_storage_pair.html#a79df2bb7a82e77674c2df36469e00c3c',1,'ImGuiStoragePair']]],
+  ['val_5fp_6',['val_p',['../struct_im_gui_storage_pair.html#a79184d133fd2b7807f4157fbec93ea32',1,'ImGuiStoragePair']]],
+  ['valid_7',['Valid',['../struct_im_draw_data.html#ad01ab9ce5e8843b7860ccbb3eb9a6554',1,'ImDrawData']]],
+  ['value_8',['Value',['../struct_im_color.html#a4cf43bd58e30decaa0248f839fc85e95',1,'ImColor']]],
+  ['values_9',['Values',['../struct_im_gui_plot_array_getter_data.html#aa40ff2e945549744fc622891089ae0fd',1,'ImGuiPlotArrayGetterData']]],
+  ['varidx_10',['VarIdx',['../struct_im_gui_style_mod.html#ab23c55941dbd0e156ce640a8fecb2feb',1,'ImGuiStyleMod']]],
+  ['vertexbuffersize_11',['VertexBufferSize',['../struct_im_gui___impl_d_x11___data.html#a356854ee727216fab041b77a80afff1e',1,'ImGui_ImplDX11_Data']]],
+  ['vertexconstantbuffer_12',['VertexConstantBuffer',['../struct_im_gui___impl_d_x11___render_state.html#a0649b20a4a249e4af8a111b8a5cb1dc0',1,'ImGui_ImplDX11_RenderState']]],
+  ['view_13',['View',['../struct_f_sprite_constants.html#a565fe78d7f5396c3af6c518ff6c43d9e',1,'FSpriteConstants']]],
+  ['viewport_14',['Viewport',['../struct_im_gui_window.html#ab48fb3ce73e23f55ba883e368e20c607',1,'ImGuiWindow']]],
+  ['viewportid_15',['ViewportId',['../struct_im_gui_platform_ime_data.html#a614de493a1235a73161edb0e970258ff',1,'ImGuiPlatformImeData']]],
+  ['viewportinfo_16',['ViewportInfo',['../class_f_renderer.html#a989ef474fc7d8e8da1665570c8d267e0',1,'FRenderer']]],
+  ['viewports_17',['Viewports',['../struct_im_gui_context.html#aa8958dc7c05b83d00ad6439f3d539c44',1,'ImGuiContext']]],
+  ['visible_18',['Visible',['../struct_im_font_glyph.html#a4e7d64945eeb9cf823c2ce7bb66a1e85',1,'ImFontGlyph']]],
+  ['visiblemaskbyindex_19',['VisibleMaskByIndex',['../struct_im_gui_table.html#a076c23b1ad25cb17474ae2a8926205b9',1,'ImGuiTable']]],
+  ['visiblenode_20',['VisibleNode',['../struct_example_app_property_editor.html#a64af9750a9b32fe8f5b51f07a585c39c',1,'ExampleAppPropertyEditor']]],
+  ['visibletabid_21',['VisibleTabId',['../struct_im_gui_tab_bar.html#a1716495ecb746feb37f0b736edb50c89',1,'ImGuiTabBar']]],
+  ['visibletabwassubmitted_22',['VisibleTabWasSubmitted',['../struct_im_gui_tab_bar.html#a9112067953a14bc707d2660dc1cf93b0',1,'ImGuiTabBar']]],
+  ['vtxbuffer_23',['VtxBuffer',['../struct_im_draw_list.html#aa8ff4aee39cf3c3791b7e29a7b4264be',1,'ImDrawList']]],
+  ['vtxoffset_24',['VtxOffset',['../struct_im_draw_cmd.html#a604086d3c94a18b3a79f171ee37edabb',1,'ImDrawCmd::VtxOffset'],['../struct_im_draw_cmd_header.html#a88b7d50043b0a8b299aaa94a9a3cf121',1,'ImDrawCmdHeader::VtxOffset']]]
+];

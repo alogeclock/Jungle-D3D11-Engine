@@ -68,19 +68,18 @@ void FRenderer::CreateShader()
 	ID3DBlob* vertexshaderCSO;
 	ID3DBlob* pixelshaderCSO;
 
-	D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
+	D3DCompileFromFile(L"Resources/Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
 
 	Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
-	D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
+	D3DCompileFromFile(L"Resources/Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
 
 	Device->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	Device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
@@ -311,14 +310,6 @@ void FRenderer::ReleaseConstantBuffer()
 	}
 }
 
-void FRenderer::BeginFrame()
-{
-}
-
-void FRenderer::EndFrame()
-{
-	RenderObjects.clear();
-}
 
 void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screenY, float width, float height)
 {
@@ -340,4 +331,34 @@ void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float 
 	RenderObject.Size.X = width;
 	RenderObject.Size.Y = height;
 	RenderObjects.push_back(RenderObject);
+}
+
+bool FRenderer::Initialize(HWND hWindow, int ScreenWidth, int ScreenHeight)
+{
+	Create(hWindow);
+	CreateShader();
+	CreateConstantBuffer();
+	return Device != nullptr;
+}
+
+void FRenderer::BeginFrame()
+{
+	Prepare();
+	PrepareShader();
+}
+
+void FRenderer::EndFrame()
+{
+	SwapBuffer();
+	RenderObjects.clear();
+}
+
+int FRenderer::GetScreenWidth() const
+{
+	return static_cast<int>(ViewportInfo.Width);
+}
+
+int FRenderer::GetScreenHeight() const
+{
+	return static_cast<int>(ViewportInfo.Height);
 }
