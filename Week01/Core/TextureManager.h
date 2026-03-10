@@ -7,7 +7,8 @@
 struct ID3D11Device;
 struct ID3D11SamplerState;
 struct ID3D11DeviceContext;
-class FTexture;
+
+#include "Texture.h"
 
 class FTextureManager
 {

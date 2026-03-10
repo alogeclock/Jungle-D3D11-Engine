@@ -89,7 +89,15 @@ std::unique_ptr<IScene> FSceneManager::CreateScene(ESceneType SceneType)
 	case ESceneType::Title:
 		return std::make_unique<FTitleScene>();
 	case ESceneType::Play:
-		return std::make_unique<FPlayScene>();
+	{
+		auto Scene = std::make_unique<FPlayScene>();
+		if (GameContext)
+		{
+			Scene->SetRenderer(&GameContext->Renderer);
+			Scene->SetTextureManager(&GameContext->Textures);
+		}
+		return Scene;
+	}
 	default:
 		return nullptr;
 	}

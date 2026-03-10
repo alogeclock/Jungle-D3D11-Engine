@@ -18,7 +18,7 @@ FStage::~FStage()
 	ReleaseRenderResources();
 }
 
-bool FStage::Load(const std::string& MapPath, URenderer* InRenderer, FTextureManager* InTextures)
+bool FStage::Load(const std::string& MapPath, FRenderer* InRenderer, FTextureManager* InTextures)
 {
 	Renderer = InRenderer;
 	Textures = InTextures;

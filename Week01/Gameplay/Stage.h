@@ -15,7 +15,7 @@
 #include "ScoreSystem.h"
 
 class FActor;
-class URenderer;
+class FRenderer;
 class FTextureManager;
 struct FSpriteInfo;
 struct ID3D11Buffer;
@@ -45,7 +45,7 @@ class FStage
 public:
 	~FStage();
 
-	bool Load(const std::string& MapPath, URenderer* InRenderer, FTextureManager* InTextures);
+	bool Load(const std::string& MapPath, FRenderer* InRenderer, FTextureManager* InTextures);
 	void Reset();
 
 	void Update(float DeltaTime);
@@ -106,7 +106,7 @@ private:
 	bool bIsGameOver = false;
 	bool bIsCleared = false;
 
-	URenderer* Renderer = nullptr;
+	FRenderer* Renderer = nullptr;
 	FTextureManager* Textures = nullptr;
 
 	// 렌더링 리소스

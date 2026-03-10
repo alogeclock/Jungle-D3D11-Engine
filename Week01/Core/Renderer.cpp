@@ -257,3 +257,32 @@ void FRenderer::ReleaseConstantBuffer()
 		ConstantBuffer = nullptr;
 	}
 }
+
+bool FRenderer::Initialize(HWND hWindow, int ScreenWidth, int ScreenHeight)
+{
+	Create(hWindow);
+	CreateShader();
+	CreateConstantBuffer();
+	return Device != nullptr;
+}
+
+void FRenderer::BeginFrame()
+{
+	Prepare();
+	PrepareShader();
+}
+
+void FRenderer::EndFrame()
+{
+	SwapBuffer();
+}
+
+int FRenderer::GetScreenWidth() const
+{
+	return static_cast<int>(ViewportInfo.Width);
+}
+
+int FRenderer::GetScreenHeight() const
+{
+	return static_cast<int>(ViewportInfo.Height);
+}

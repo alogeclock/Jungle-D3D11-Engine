@@ -158,7 +158,6 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Core\Renderer.cpp" />
-    <ClCompile Include="Core\Game.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
@@ -192,6 +191,7 @@
     <ClInclude Include="Gameplay\ScoreSystem.h" />
     <ClInclude Include="Gameplay\Stage.h" />
     <ClInclude Include="Gameplay\Tile.h" />
+    <ClInclude Include="Gameplay\SpriteInfo.h" />
     <ClInclude Include="Gameplay\Wall.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -205,10 +205,8 @@
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\TitleScene.h" />
-    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Core\Types.h" />
     <ClInclude Include="Core\Renderer.h" />
-    <ClInclude Include="Core\Game.h" />
     <ClInclude Include="Core\Logger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

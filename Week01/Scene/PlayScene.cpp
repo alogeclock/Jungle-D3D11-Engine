@@ -6,7 +6,7 @@
 
 FPlayScene::~FPlayScene() = default;
 
-void FPlayScene::SetRenderer(URenderer* InRenderer)
+void FPlayScene::SetRenderer(FRenderer* InRenderer)
 {
 	Renderer = InRenderer;
 }

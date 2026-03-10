@@ -1,12 +1,12 @@
 #include "Application.h"
-#include "imGui/imgui_impl_dx11.h"
-#include "imGui/imgui_impl_win32.h"
-#include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
+#include "../imgui/imgui_impl_dx11.h"
+#include "../imgui/imgui_impl_win32.h"
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_internal.h"
 
-bool FApplication::Initialize(void *WindowHandle, int ScreenWidth, int ScreenHeight)
+bool FApplication::Initialize(HWND WindowHandle, int ScreenWidth, int ScreenHeight)
 {
-    HWnd = static_cast<HWND>(WindowHandle);
+    HWnd = WindowHandle;
 
     Time = std::make_unique<FTime>();
     Input = std::make_unique<FInput>();
@@ -17,10 +17,14 @@ bool FApplication::Initialize(void *WindowHandle, int ScreenWidth, int ScreenHei
     if (!Renderer->Initialize(HWnd, ScreenWidth, ScreenHeight))
         return false;
 
+    TextureManager->Initialize(Renderer->Device);
+
     GameContext.emplace(FGameContext{*Time, *Input, *Renderer, *TextureManager});
 
     SceneManager->Initialize(&GameContext.value());
     SceneManager->ChangeSceneImmediately(ESceneType::Title);
+
+    return true;
 }
 
 /*
