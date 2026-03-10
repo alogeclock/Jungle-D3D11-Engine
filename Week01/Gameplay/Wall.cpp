@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Wall.h"
 
 FWall::FWall(int InTileX, int InTileY, EWallType InType)

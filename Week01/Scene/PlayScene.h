@@ -23,7 +23,7 @@ public:
     void Update(FGameContext &Context) override;
     void Render(FGameContext &Context) override;
 
-    void StartNewGame(const std::string &MapPath, int StageIndex = 0);
+    void StartNewGame(int StageIndex = 0);
     void RestartGame();
 
 private:
@@ -36,6 +36,5 @@ private:
     bool bIsPaused = false;
     bool bIsGameOverPopupOpened = false;
 
-    std::string CurrentMapPath;
     int CurrentStageIndex = 0;
 };

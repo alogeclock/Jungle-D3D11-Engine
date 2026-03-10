@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Monster.h"
 #include "Player.h"
 #include "Stage.h"
@@ -79,7 +80,7 @@ std::optional<EDirection> FMonster::SearchPlayer(const FStage &Stage) const
     std::queue<FNode> Queue;
 
     // 방문 여부 확인을 위한 맵 정보 가져오기
-    const FMapData &Map = Stage.GetMap();
+    const FStageData &Map = Stage.GetMap();
     int             MapWidth = Map.GetWidth();
     int             MapHeight = Map.GetHeight();
 

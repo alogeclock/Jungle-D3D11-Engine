@@ -1,17 +1,18 @@
+#include "pch.h"
 #include "Stage.h"
+#include "BeatSystem.h"
+#include "Camera2D.h"
 #include "Core/GameContext.h"
 #include "Core/Input.h"
 #include "Core/Logger.h"
-#include "BeatSystem.h"
-#include "Camera2D.h"
-#include "Render/Renderer.h"
-#include "Render/Texture.h"
-#include "Render/TextureManager.h"
-#include "Data/MapLoader.h"
-#include "Data/MapData.h"
+#include "Data/StageData.h"
+#include "Data/StageLoader.h"
 #include "IO/ImageLoader.h"
 #include "Monster.h"
 #include "Player.h"
+#include "Render/Renderer.h"
+#include "Render/Texture.h"
+#include "Render/TextureManager.h"
 #include "ScoreSystem.h"
 #include "SpriteInfo.h"
 
@@ -19,32 +20,25 @@ using namespace DirectX;
 
 FStage::~FStage() { ReleaseRenderResources(); }
 
-bool FStage::Load(const std::string &MapPath, int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures)
+bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures)
 {
     Renderer = InRenderer;
     Textures = InTextures;
 
-    Map = std::make_unique<FMapData>();
+    Map = std::make_unique<FStageData>();
     Player = std::make_unique<FPlayer>();
     BeatSystem = std::make_unique<FBeatSystem>();
     Camera = std::make_unique<FCamera2D>();
     ScoreSystem = std::make_unique<FScoreSystem>();
 
-    // JSON MapLoader로 맵 파일 로드
-    FMapLoader Loader;
-    if (!Loader.LoadFromFile(MapPath))
-    {
-        return false;
-    }
-
-    FStageInfo StageInfo;
-    if (!Loader.LoadStage(StageIndex, *Map, StageInfo))
+    // 싱글턴 StageLoader에서 스테이지 로드
+    if (!FStageLoader::Get().LoadStageById(StageIndex, *Map))
     {
         return false;
     }
 
     CurrentStageIndex = StageIndex;
-    StageName = StageInfo.Name;
+    StageName = Map->GetStageName();
 
     // 타일값 기반으로 오브젝트 배치
     // 0=PATH, 1=WALL, 2=OUTER, 3=GOAL
@@ -58,7 +52,7 @@ bool FStage::Load(const std::string &MapPath, int StageIndex, FRenderer *InRende
     {
         for (int X = 0; X < Map->GetWidth(); X++)
         {
-            int TileVal = Map->GetTile(X, Y);
+            int        TileVal = Map->GetTile(X, Y);
             ETileValue TV = static_cast<ETileValue>(TileVal);
 
             switch (TV)
@@ -81,15 +75,8 @@ bool FStage::Load(const std::string &MapPath, int StageIndex, FRenderer *InRende
     }
 
     // 메타데이터 기반 플레이어 스폰
-    Player->SetPosition(StageInfo.PlayerSpawn.X, StageInfo.PlayerSpawn.Y, TileSize);
-
-    // 메타데이터 기반 몬스터 스폰
-    for (const auto& Spawn : StageInfo.MonsterSpawns)
-    {
-        auto Mon = std::make_unique<FMonster>();
-        Mon->SetPosition(Spawn.X, Spawn.Y, TileSize);
-        Monsters.push_back(std::move(Mon));
-    }
+    FSpawnPoint Spawn = Map->GetSpawnPoint();
+    Player->SetPosition(Spawn.X, Spawn.Y, TileSize);
 
     // 카메라 설정
     Camera->SetWorldBounds(Map->GetWorldWidth(TileSize), Map->GetWorldHeight(TileSize));
@@ -168,7 +155,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         int CurrentBeatIndex =
             static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
 
-        if (BeatSystem->JudgeInput() == EBeatJudge::Good) //
+        if (BeatSystem->JudgeInput() == EBeatJudge::Good)
         {
             Logger::Log("Good Input");
             if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
@@ -178,8 +165,8 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             else
             {
                 // 즉시 이동 처리
-                Player->QueueInput(MoveDir); //
-                Player->OnBeat(*this);       //
+                Player->QueueInput(MoveDir);
+                Player->OnBeat(*this);
                 Player->SetLastMovedBeatIndex(CurrentBeatIndex);
             }
         }
@@ -187,6 +174,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         {
             Logger::Log("Miss Input");
             Player->Damage(1); // 엇박자 입력 시 데미지
+            Player->SetLastMovedBeatIndex(CurrentBeatIndex);
         }
     }
 
@@ -204,14 +192,14 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
             {
                 Logger::Log("No Input Detected - Player Damaged");
-                Player->Damage(1); //
+                Player->Damage(1);
             }
         }
 
         // 몬스터 이동
         for (auto &Mon : Monsters)
         {
-            Mon->OnBeat(*this); //
+            Mon->OnBeat(*this);
         }
     }
 
@@ -237,12 +225,16 @@ void FStage::Render()
     // View/Projection 행렬 갱신
     UpdateViewProjection();
 
-    // 버텍스 버퍼, 상수 버퍼 바인딩
+    // 버텍스 버퍼, 상수 버퍼, 샘플러 바인딩
     UINT stride = sizeof(FSpriteVertex);
     UINT offset = 0;
     Renderer->DeviceContext->IASetVertexBuffers(0, 1, &QuadVB, &stride, &offset);
     Renderer->DeviceContext->VSSetConstantBuffers(0, 1, &SpriteCB);
     Renderer->DeviceContext->PSSetConstantBuffers(0, 1, &SpriteCB);
+    if (Renderer->SamplerState)
+    {
+        Renderer->DeviceContext->PSSetSamplers(0, 1, &Renderer->SamplerState);
+    }
 
     // 바닥 타일 렌더링
     for (const auto &Tile : Tiles)
@@ -361,12 +353,13 @@ void FStage::LoadSpriteResources()
         return;
 
     // 스프라이트 텍스처 로드 (파일이 없으면 셰이더 폴백 색상 사용)
-    auto LoadTex = [&](const std::string& Key, const std::string& Path)
+    auto LoadTex = [&](const std::string &Key, const std::string &Path)
     {
         if (!Textures->Has(Key))
         {
             auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
-            if (Tex) Textures->Register(Key, std::move(Tex));
+            if (Tex)
+                Textures->Register(Key, std::move(Tex));
         }
     };
     LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
@@ -422,7 +415,7 @@ void FStage::DrawSpriteAtWorld(float WorldCenterX, float WorldCenterY, float Wid
         FTexture *Tex = Textures->Get(Sprite.TextureKey);
         if (Tex && Tex->GetTextureSRV())
         {
-            ID3D11ShaderResourceView* SRV = Tex->GetTextureSRV();
+            ID3D11ShaderResourceView *SRV = Tex->GetTextureSRV();
             Renderer->DeviceContext->PSSetShaderResources(0, 1, &SRV);
             TexSize = {static_cast<float>(Tex->Width), static_cast<float>(Tex->Height)};
         }
@@ -552,9 +545,9 @@ void FStage::RemoveDestroyedWalls()
     }
 }
 
-FMapData &FStage::GetMap() { return *Map; }
+FStageData &FStage::GetMap() { return *Map; }
 
-const FMapData &FStage::GetMap() const { return *Map; }
+const FStageData &FStage::GetMap() const { return *Map; }
 
 FBeatSystem &FStage::GetBeatSystem() { return *BeatSystem; }
 
@@ -576,4 +569,4 @@ bool FStage::IsCleared() const { return bIsCleared; }
 
 int FStage::GetCurrentStageIndex() const { return CurrentStageIndex; }
 
-const std::string& FStage::GetStageName() const { return StageName; }
+const std::string &FStage::GetStageName() const { return StageName; }

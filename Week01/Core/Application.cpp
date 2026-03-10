@@ -1,4 +1,6 @@
+#include "pch.h"
 #include "Application.h"
+#include "Data/StageLoader.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
@@ -35,12 +37,15 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	// TODO
 	// TextureManager->Initialize(Renderer->Device);
 
-	// ImGui 초기화
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(WindowHandle);
-	ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext);
+    // 스테이지 데이터 로드
+    FStageLoader::Get().Initialize("Resources/Maps/stages.json");
+
+    // ImGui 초기화
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplWin32_Init(WindowHandle);
+    ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext);
 
 	GameContext.emplace(FGameContext{ *Time, *Input, *Renderer, *TextureManager });
 

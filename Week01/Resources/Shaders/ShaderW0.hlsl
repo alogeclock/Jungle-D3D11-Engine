@@ -35,8 +35,6 @@ PS_INPUT mainVS(VS_INPUT input)
     worldPos.xyz += Offset;
 
     // 2D NDC 변환 (Screen Space to NDC)
-    // Screen (0,0) -> NDC (-1, 1)
-    // Screen (Width, Height) -> NDC (1, -1)
     float x_ndc = (worldPos.x / ScreenSize.x) * 2.0f - 1.0f;
     float y_ndc = 1.0f - (worldPos.y / ScreenSize.y) * 2.0f;
 

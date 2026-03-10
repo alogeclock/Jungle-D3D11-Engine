@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "UIManager.h"
 
 void FUIManager::AddWidget(const std::string& Id, std::unique_ptr<IUIWidget> Widget)

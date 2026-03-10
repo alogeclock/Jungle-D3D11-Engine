@@ -63,7 +63,7 @@
     <ClCompile Include="Gameplay\CreditPopup.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Gameplay\MapData.cpp">
+    <ClCompile Include="Gameplay\StageData.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Gameplay\Monster.cpp">
@@ -87,7 +87,7 @@
     <ClCompile Include="Data\FileManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Data\MapLoader.cpp">
+    <ClCompile Include="Data\StageLoader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Data\ScoreRepository.cpp">
@@ -181,7 +181,7 @@
     <ClInclude Include="Gameplay\CreditPopup.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Gameplay\MapData.h">
+    <ClInclude Include="Gameplay\StageData.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Gameplay\Monster.h">
@@ -205,7 +205,7 @@
     <ClInclude Include="Data\FileManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Data\MapLoader.h">
+    <ClInclude Include="Data\StageLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Data\ScoreRepository.h">
