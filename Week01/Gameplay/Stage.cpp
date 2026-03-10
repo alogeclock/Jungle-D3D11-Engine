@@ -1,15 +1,28 @@
 #include "Stage.h"
+#include "SpriteInfo.h"
 #include "MapData.h"
 #include "Player.h"
 #include "Monster.h"
 #include "BeatSystem.h"
 #include "Camera2D.h"
 #include "ScoreSystem.h"
-#include "../Core/GameContext.h"
+#include "../Core/Renderer.h"
+#include "../Core/Texture.h"
+#include "../Core/TextureManager.h"
 #include "../Data/MapLoader.h"
 
-bool FStage::Load(const std::string& MapPath)
+using namespace DirectX;
+
+FStage::~FStage()
 {
+	ReleaseRenderResources();
+}
+
+bool FStage::Load(const std::string& MapPath, URenderer* InRenderer, FTextureManager* InTextures)
+{
+	Renderer = InRenderer;
+	Textures = InTextures;
+
 	Map = std::make_unique<FMapData>();
 	Player = std::make_unique<FPlayer>();
 	BeatSystem = std::make_unique<FBeatSystem>();
@@ -60,11 +73,21 @@ bool FStage::Load(const std::string& MapPath)
 		}
 	}
 
-	// 카메라 월드 범위 설정
+	// 카메라 설정
 	Camera->SetWorldBounds(
 		Map->GetWorldWidth(TileSize),
 		Map->GetWorldHeight(TileSize)
 	);
+	Camera->SetViewportSize(
+		Renderer->ViewportInfo.Width,
+		Renderer->ViewportInfo.Height
+	);
+
+	// 스프라이트 리소스 로드 + 엔티티에 스프라이트 할당
+	LoadSpriteResources();
+
+	// 렌더링 리소스 생성
+	CreateRenderResources();
 
 	// 비트 시스템 초기화
 	BeatSystem->Reset();
@@ -88,12 +111,224 @@ void FStage::Reset()
 	bIsCleared = false;
 }
 
-void FStage::Update(FGameContext& Context)
+void FStage::Update(float DeltaTime)
 {
+	// 비트 시스템 업데이트
+	BeatSystem->Update(DeltaTime);
+
+	// 액터 이동 보간 업데이트
+	Player->Update(DeltaTime);
+	for (auto& Mon : Monsters)
+	{
+		Mon->Update(DeltaTime);
+	}
+
+	// 카메라가 플레이어를 추적
+	FVec2 PlayerCenter;
+	PlayerCenter.X = Player->GetRenderX() + TileSize * 0.5f;
+	PlayerCenter.Y = Player->GetRenderY() + TileSize * 0.5f;
+	Camera->SetTargetCenter(PlayerCenter);
+	Camera->Update(DeltaTime);
 }
 
-void FStage::Render(FGameContext& Context)
+void FStage::Render()
 {
+	if (!Renderer || !QuadVB || !SpriteCB) return;
+
+	// View/Projection 행렬 갱신
+	UpdateViewProjection();
+
+	// 버텍스 버퍼, 상수 버퍼 바인딩
+	UINT stride = sizeof(FSpriteVertex);
+	UINT offset = 0;
+	Renderer->DeviceContext->IASetVertexBuffers(0, 1, &QuadVB, &stride, &offset);
+	Renderer->DeviceContext->VSSetConstantBuffers(0, 1, &SpriteCB);
+	Renderer->DeviceContext->PSSetConstantBuffers(0, 1, &SpriteCB);
+
+	// 바닥 타일 렌더링
+	for (const auto& Tile : Tiles)
+	{
+		float WorldX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
+		float WorldY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
+		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, Tile.GetSprite());
+	}
+
+	// 벽 렌더링
+	for (const auto& W : Walls)
+	{
+		if (W.IsDestroyed()) continue;
+		float WorldX = W.GetRenderX(TileSize) + TileSize * 0.5f;
+		float WorldY = W.GetRenderY(TileSize) + TileSize * 0.5f;
+		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, W.GetSprite());
+	}
+
+	// 몬스터 렌더링
+	for (const auto& Mon : Monsters)
+	{
+		if (Mon->IsDead()) continue;
+		float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
+		float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
+		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, Mon->GetSprite());
+	}
+
+	// 플레이어 렌더링 (가장 위에 그림)
+	{
+		float WorldX = Player->GetRenderX() + TileSize * 0.5f;
+		float WorldY = Player->GetRenderY() + TileSize * 0.5f;
+		DrawSpriteAtWorld(WorldX, WorldY, TileSize, TileSize, Player->GetSprite());
+	}
+}
+
+// ============================================================
+// 렌더링 리소스 관리
+// ============================================================
+
+void FStage::CreateRenderResources()
+{
+	ReleaseRenderResources();
+
+	auto* Device = Renderer->Device;
+
+	// 단위 쿼드 버텍스 버퍼 생성 (중심 기준 -0.5 ~ 0.5, UV 포함)
+	FSpriteVertex Vertices[] =
+	{
+		{ -0.5f, -0.5f, 0.0f,  0.0f, 0.0f },  // 좌상
+		{  0.5f, -0.5f, 0.0f,  1.0f, 0.0f },  // 우상
+		{  0.5f,  0.5f, 0.0f,  1.0f, 1.0f },  // 우하
+
+		{ -0.5f, -0.5f, 0.0f,  0.0f, 0.0f },  // 좌상
+		{  0.5f,  0.5f, 0.0f,  1.0f, 1.0f },  // 우하
+		{ -0.5f,  0.5f, 0.0f,  0.0f, 1.0f },  // 좌하
+	};
+
+	D3D11_BUFFER_DESC vbDesc = {};
+	vbDesc.ByteWidth = sizeof(Vertices);
+	vbDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA vbData = { Vertices };
+	Device->CreateBuffer(&vbDesc, &vbData, &QuadVB);
+
+	// 스프라이트 상수 버퍼 생성
+	D3D11_BUFFER_DESC cbDesc = {};
+	cbDesc.ByteWidth = (sizeof(FSpriteConstants) + 0xF) & ~0xF;  // 16바이트 정렬
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	Device->CreateBuffer(&cbDesc, nullptr, &SpriteCB);
+}
+
+void FStage::ReleaseRenderResources()
+{
+	if (QuadVB) { QuadVB->Release(); QuadVB = nullptr; }
+	if (SpriteCB) { SpriteCB->Release(); SpriteCB = nullptr; }
+}
+
+void FStage::UpdateViewProjection()
+{
+	FVec2 CamPos = Camera->GetPosition();
+	float Zoom = Camera->GetZoom();
+	float VpW = Renderer->ViewportInfo.Width;
+	float VpH = Renderer->ViewportInfo.Height;
+
+	// View: 카메라 위치만큼 이동 (줌은 Projection에서 처리하거나 View에서 처리)
+	// 카메라 좌표 빼기 → 줌 스케일링
+	XMMATRIX View = XMMatrixTranslation(-CamPos.X, -CamPos.Y, 0.0f)
+		* XMMatrixScaling(Zoom, Zoom, 1.0f);
+
+	// Projection: 직교 투영 (픽셀 좌표 → NDC)
+	// Left=0, Right=VpW, Bottom=VpH, Top=0 → Y 아래로 증가 (2D 게임 좌표계)
+	XMMATRIX Proj = XMMatrixOrthographicOffCenterLH(0.0f, VpW, VpH, 0.0f, 0.0f, 1.0f);
+
+	XMStoreFloat4x4(&CachedView, XMMatrixTranspose(View));
+	XMStoreFloat4x4(&CachedProjection, XMMatrixTranspose(Proj));
+}
+
+void FStage::LoadSpriteResources()
+{
+	if (!Textures) return;
+
+	// 스프라이트 텍스처 로드 (파일이 없으면 셰이더 폴백 색상 사용)
+	Textures->Load("tile_floor", "Resources/Sprites/tile_floor.png");
+	Textures->Load("wall",       "Resources/Sprites/wall.png");
+	Textures->Load("player",     "Resources/Sprites/player.png");
+	Textures->Load("monster",    "Resources/Sprites/monster.png");
+
+	// 타일에 스프라이트 할당
+	for (auto& Tile : Tiles)
+	{
+		FSpriteInfo Info;
+		Info.TextureKey = "tile_floor";
+		Info.SpriteSize = { TileSize, TileSize };
+		Tile.SetSprite(Info);
+	}
+
+	// 벽에 스프라이트 할당
+	for (auto& W : Walls)
+	{
+		FSpriteInfo Info;
+		Info.TextureKey = "wall";
+		Info.SpriteSize = { TileSize, TileSize };
+		W.SetSprite(Info);
+	}
+
+	// 플레이어 스프라이트
+	{
+		FSpriteInfo Info;
+		Info.TextureKey = "player";
+		Info.SpriteSize = { TileSize, TileSize };
+		Player->SetSprite(Info);
+	}
+
+	// 몬스터 스프라이트
+	for (auto& Mon : Monsters)
+	{
+		FSpriteInfo Info;
+		Info.TextureKey = "monster";
+		Info.SpriteSize = { TileSize, TileSize };
+		Mon->SetSprite(Info);
+	}
+}
+
+void FStage::DrawSpriteAtWorld(float WorldCenterX, float WorldCenterY,
+	float Width, float Height, const FSpriteInfo& Sprite)
+{
+	// 텍스처 바인딩
+	XMFLOAT2 TexSize = { 1.0f, 1.0f };
+
+	if (Textures && !Sprite.TextureKey.empty())
+	{
+		FTexture* Tex = Textures->Get(Sprite.TextureKey);
+		if (Tex && Tex->GetSRV())
+		{
+			Textures->Bind(Sprite.TextureKey, Renderer->DeviceContext, 0);
+			TexSize = { static_cast<float>(Tex->GetWidth()),
+			            static_cast<float>(Tex->GetHeight()) };
+		}
+	}
+
+	// World 행렬: 크기 스케일링 → 월드 위치로 이동
+	XMMATRIX World = XMMatrixScaling(Width, Height, 1.0f)
+		* XMMatrixTranslation(WorldCenterX, WorldCenterY, 0.0f);
+
+	// 상수 버퍼 업데이트
+	FSpriteConstants CB = {};
+	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(World));
+	CB.View = CachedView;
+	CB.Projection = CachedProjection;
+	CB.SpriteSize = Sprite.SpriteSize;
+	CB.TextureSize = TexSize;
+	CB.SpriteOffset = Sprite.SpriteOffset;
+	CB.IsMirrored = Sprite.bIsMirrored ? 1.0f : 0.0f;
+
+	D3D11_MAPPED_SUBRESOURCE Mapped;
+	Renderer->DeviceContext->Map(SpriteCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
+	memcpy(Mapped.pData, &CB, sizeof(CB));
+	Renderer->DeviceContext->Unmap(SpriteCB, 0);
+
+	// 드로우
+	Renderer->DeviceContext->Draw(6, 0);
 }
 
 bool FStage::IsWalkable(int X, int Y) const

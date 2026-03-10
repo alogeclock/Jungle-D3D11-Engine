@@ -1,14 +1,25 @@
 #include "PlayScene.h"
 #include "../Core/GameContext.h"
+#include "../Core/Time.h"
 #include "../Gameplay/Stage.h"
 #include "../Gameplay/PopupManager.h"
 
 FPlayScene::~FPlayScene() = default;
 
+void FPlayScene::SetRenderer(URenderer* InRenderer)
+{
+	Renderer = InRenderer;
+}
+
+void FPlayScene::SetTextureManager(FTextureManager* InTextures)
+{
+	Textures = InTextures;
+}
+
 void FPlayScene::Enter()
 {
 	PopupManager = std::make_unique<FPopupManager>();
-	StartNewGame("maps/default.map");
+	StartNewGame("Resources/Maps/default.map");
 }
 
 void FPlayScene::Exit()
@@ -21,7 +32,7 @@ void FPlayScene::Update(FGameContext& Context)
 {
 	if (Stage && !bIsPaused)
 	{
-		Stage->Update(Context);
+		Stage->Update(Context.Time.GetDeltaTime());
 	}
 
 	if (PopupManager)
@@ -34,7 +45,7 @@ void FPlayScene::Render(FGameContext& Context)
 {
 	if (Stage)
 	{
-		Stage->Render(Context);
+		Stage->Render();
 	}
 
 	if (PopupManager)
@@ -48,7 +59,7 @@ void FPlayScene::StartNewGame(const std::string& MapPath)
 	CurrentMapPath = MapPath;
 
 	Stage = std::make_unique<FStage>();
-	Stage->Load(CurrentMapPath);
+	Stage->Load(CurrentMapPath, Renderer, Textures);
 }
 
 void FPlayScene::RestartGame()

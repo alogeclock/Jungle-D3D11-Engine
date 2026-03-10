@@ -34,3 +34,13 @@ ETileType FTile::GetType() const
 {
 	return Type;
 }
+
+void FTile::SetSprite(const FSpriteInfo& InSprite)
+{
+	Sprite = InSprite;
+}
+
+const FSpriteInfo& FTile::GetSprite() const
+{
+	return Sprite;
+}

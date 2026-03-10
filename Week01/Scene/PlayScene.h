@@ -6,11 +6,16 @@
 
 class FStage;
 class FPopupManager;
+class URenderer;
+class FTextureManager;
 
 class FPlayScene : public IScene
 {
 public:
 	~FPlayScene() override;
+
+	void SetRenderer(URenderer* InRenderer);
+	void SetTextureManager(FTextureManager* InTextures);
 
 	void Enter() override;
 	void Exit() override;
@@ -24,6 +29,9 @@ public:
 private:
 	std::unique_ptr<FStage> Stage;
 	std::unique_ptr<FPopupManager> PopupManager;
+
+	URenderer* Renderer = nullptr;
+	FTextureManager* Textures = nullptr;
 
 	bool bIsPaused = false;
 	bool bIsGameOverPopupOpened = false;

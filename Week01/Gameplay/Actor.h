@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Core/Types.h"
+#include "SpriteInfo.h"
 
 class FStage;
 
@@ -36,6 +37,9 @@ public:
 
 	bool IsMoving() const;
 
+	void SetSprite(const FSpriteInfo& InSprite);
+	const FSpriteInfo& GetSprite() const;
+
 protected:
 	int TileX = 0;
 	int TileY = 0;
@@ -55,4 +59,6 @@ protected:
 	float MoveStartY = 0.0f;
 	float MoveTargetX = 0.0f;
 	float MoveTargetY = 0.0f;
+
+	FSpriteInfo Sprite;
 };

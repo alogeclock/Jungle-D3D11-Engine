@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SpriteInfo.h"
+
 enum class EWallType
 {
 	Normal,
@@ -26,10 +28,14 @@ public:
 	void Destroy();
 	bool IsDestroyed() const;
 
+	void SetSprite(const FSpriteInfo& InSprite);
+	const FSpriteInfo& GetSprite() const;
+
 private:
 	int TileX = 0;
 	int TileY = 0;
 
 	EWallType Type = EWallType::Normal;
 	bool bIsDestroyed = false;
+	FSpriteInfo Sprite;
 };

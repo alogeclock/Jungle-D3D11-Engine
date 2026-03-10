@@ -52,3 +52,13 @@ bool FWall::IsDestroyed() const
 {
 	return bIsDestroyed;
 }
+
+void FWall::SetSprite(const FSpriteInfo& InSprite)
+{
+	Sprite = InSprite;
+}
+
+const FSpriteInfo& FWall::GetSprite() const
+{
+	return Sprite;
+}

@@ -1,51 +1,70 @@
 // ShaderW0.hlsl
+// 스프라이트 렌더링 셰이더 (World-View-Projection + 스프라이트 아틀라스 UV)
 
-cbuffer constants : register(b0)
+// FSpriteConstants와 1:1 매칭되는 상수 버퍼
+cbuffer SpriteConstants : register(b0)
 {
-    float3 Offset;
-    float Scale;
-    float Angle;
-    float ChargeSign; // +1, -1, or 0 (자력 비활성화 시)
+    matrix world;
+    matrix view;
+    matrix projection;
+    float2 sprite_size;
+    float2 texture_size;
+    float2 sprite_offset;
+    float is_mirrored;
+    float pad;
 }
 
-struct VS_INPUT
+Texture2D sprite_texture : register(t0);
+SamplerState sprite_sampler : register(s0);
+
+struct VertexInput
 {
     float4 position : POSITION;
-    float4 color : COLOR;
+    float2 uv : TEXCOORD;
 };
 
-struct PS_INPUT
+struct PixelInput
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float2 uv : TEXCOORD;
 };
 
-PS_INPUT mainVS(VS_INPUT input)
+PixelInput mainVS(VertexInput input)
 {
-    PS_INPUT output;
+    PixelInput output;
 
-    // Z축 기준 2D 회전
-    float cosA = cos(Angle);
-    float sinA = sin(Angle);
-    float3 rotated;
-    rotated.x = input.position.x * cosA - input.position.y * sinA;
-    rotated.y = input.position.x * sinA + input.position.y * cosA;
-    rotated.z = input.position.z;
+    output.position = mul(input.position, world);
+    output.position = mul(output.position, view);
+    output.position = mul(output.position, projection);
 
-    output.position = float4(rotated * Scale + Offset, 1.0f);
-    output.color = input.color;
+    // 좌우 반전 처리
+    if (is_mirrored == 1.0f)
+    {
+        output.uv.x = 1.0f - input.uv.x;
+        output.uv.y = input.uv.y;
+    }
+    else
+    {
+        output.uv = input.uv;
+    }
+
+    // 스프라이트 아틀라스 UV 변환
+    output.uv *= sprite_size / texture_size;
+    output.uv += sprite_offset / texture_size;
+
     return output;
 }
 
-float4 mainPS(PS_INPUT input) : SV_TARGET
+float4 mainPS(PixelInput input) : SV_TARGET
 {
-    float4 color = input.color;
+    float4 color = sprite_texture.Sample(sprite_sampler, input.uv);
 
-    // 자력 극성에 따른 색상 틴트 (N극: 붉은 계열, S극: 푸른 계열)
-    if (ChargeSign > 0.5f)
-        color.rgb = color.rgb * 0.4f + float3(0.6f, 0.15f, 0.1f);
-    else if (ChargeSign < -0.5f)
-        color.rgb = color.rgb * 0.4f + float3(0.1f, 0.15f, 0.6f);
+    // 텍스처가 바인딩되지 않았을 때 (alpha=0) 디버그용 폴백 색상
+    // UV 좌표를 색상으로 표시하여 위치 확인 가능
+    if (color.a < 0.01f)
+    {
+        color = float4(input.uv.x, 0.3f, input.uv.y, 1.0f);
+    }
 
     return color;
 }
