@@ -77,8 +77,6 @@ void FTitleScene::Render(FGameContext& Context)
 	ImGui::End();
 
 	UIManager.Render(Context);
-
-	Context.Renderer.DrawTexture(Context.Textures.Get("Floor"), 100, 100, 100, 100);
 }
 
 void FTitleScene::StartGame()

@@ -42,6 +42,7 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	LoadTex("wall", "Resources/Sprites/wall.png");
 	LoadTex("player", "Resources/Sprites/player.png");
 	LoadTex("monster", "Resources/Sprites/monster.png");
+	LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
 
 
 
