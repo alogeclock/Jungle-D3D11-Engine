@@ -1,4 +1,3 @@
-#include "IO/JsonFile.h"
 #include "MapData.h"
 #include "MapLoader.h"
 
@@ -8,8 +7,17 @@
 
 using json = nlohmann::json;
 
-bool FMapLoader::LoadFromFile(const std::string& Path)
+FMapLoader& FMapLoader::Get()
 {
+	static FMapLoader Instance;
+	return Instance;
+}
+
+bool FMapLoader::Initialize(const std::string& Path)
+{
+	if (bLoaded)
+		return true;
+
 	std::ifstream File(Path);
 	if (!File.is_open())
 		return false;
@@ -19,6 +27,11 @@ bool FMapLoader::LoadFromFile(const std::string& Path)
 	FileContent = Buffer.str();
 	bLoaded = true;
 	return true;
+}
+
+bool FMapLoader::IsLoaded() const
+{
+	return bLoaded;
 }
 
 int FMapLoader::GetStageCount() const

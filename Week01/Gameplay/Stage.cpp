@@ -19,7 +19,7 @@ using namespace DirectX;
 
 FStage::~FStage() { ReleaseRenderResources(); }
 
-bool FStage::Load(const std::string &MapPath, int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures)
+bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures)
 {
     Renderer = InRenderer;
     Textures = InTextures;
@@ -30,15 +30,9 @@ bool FStage::Load(const std::string &MapPath, int StageIndex, FRenderer *InRende
     Camera = std::make_unique<FCamera2D>();
     ScoreSystem = std::make_unique<FScoreSystem>();
 
-    // JSON MapLoader로 맵 파일 로드
-    FMapLoader Loader;
-    if (!Loader.LoadFromFile(MapPath))
-    {
-        return false;
-    }
-
+    // 싱글턴 MapLoader에서 스테이지 로드
     FStageInfo StageInfo;
-    if (!Loader.LoadStage(StageIndex, *Map, StageInfo))
+    if (!FMapLoader::Get().LoadStage(StageIndex, *Map, StageInfo))
     {
         return false;
     }

@@ -1,4 +1,7 @@
 #include "FWindow.h"
+#include "imgui/imgui_impl_win32.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // TODO: 클래스 네임, 창 제목 변경
 
@@ -103,6 +106,9 @@ LRESULT CALLBACK FWindow::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
 
 LRESULT FWindow::HandleMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam))
+        return true;
+
     switch (Msg)
     {
     case WM_CLOSE:

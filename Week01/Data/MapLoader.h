@@ -25,12 +25,17 @@ struct FStageInfo
 class FMapLoader
 {
 public:
-	bool LoadFromFile(const std::string& Path);
+	static FMapLoader& Get();
+
+	bool Initialize(const std::string& Path);
+	bool IsLoaded() const;
 
 	int GetStageCount() const;
 	bool LoadStage(int StageIndex, FMapData& OutMap, FStageInfo& OutInfo) const;
 
 private:
+	FMapLoader() = default;
+
 	std::string FileContent;
 	bool bLoaded = false;
 };

@@ -10,7 +10,7 @@ void FPlayScene::SetRenderer(FRenderer *InRenderer) { Renderer = InRenderer; }
 
 void FPlayScene::SetTextureManager(FTextureManager *InTextures) { Textures = InTextures; }
 
-void FPlayScene::Enter() { StartNewGame("Resources/Maps/stages.json", 0); }
+void FPlayScene::Enter() { StartNewGame(0); }
 
 void FPlayScene::Exit()
 {
@@ -38,13 +38,12 @@ void FPlayScene::Render(FGameContext &Context)
     UIManager.Render(Context);
 }
 
-void FPlayScene::StartNewGame(const std::string &MapPath, int StageIndex)
+void FPlayScene::StartNewGame(int StageIndex)
 {
-    CurrentMapPath = MapPath;
     CurrentStageIndex = StageIndex;
 
     Stage = std::make_unique<FStage>();
-    Stage->Load(CurrentMapPath, CurrentStageIndex, Renderer, Textures);
+    Stage->Load(CurrentStageIndex, Renderer, Textures);
 
     // HUD 위젯 등록
     UIManager.ClearAll();
@@ -53,4 +52,4 @@ void FPlayScene::StartNewGame(const std::string &MapPath, int StageIndex)
     UIManager.AddWidget("GameplayHUD", std::move(HUD));
 }
 
-void FPlayScene::RestartGame() { StartNewGame(CurrentMapPath, CurrentStageIndex); }
+void FPlayScene::RestartGame() { StartNewGame(CurrentStageIndex); }

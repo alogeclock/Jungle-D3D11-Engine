@@ -44,7 +44,7 @@ class FStage
   public:
     ~FStage();
 
-    bool Load(const std::string &MapPath, int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures);
+    bool Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures);
     void Reset();
 
     void Update(float DeltaTime, FGameContext &Context);
