@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-void URenderer::UpdateConstant(FVector Offset, float Scale, float Angle, float ChargeSign)
+void FRenderer::UpdateConstant(FVector Offset, float Scale, float Angle, float ChargeSign)
 {
 	if (ConstantBuffer)
 	{
@@ -18,7 +18,7 @@ void URenderer::UpdateConstant(FVector Offset, float Scale, float Angle, float C
 	}
 }
 
-void URenderer::Prepare()
+void FRenderer::Prepare()
 {
 	DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
 
@@ -31,7 +31,7 @@ void URenderer::Prepare()
 	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
-void URenderer::PrepareShader()
+void FRenderer::PrepareShader()
 {
 	DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
 	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
@@ -44,7 +44,7 @@ void URenderer::PrepareShader()
 	}
 }
 
-void URenderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
+void FRenderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
 {
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
@@ -52,7 +52,7 @@ void URenderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
 	DeviceContext->Draw(numVertices, 0);
 }
 
-void URenderer::CreateShader()
+void FRenderer::CreateShader()
 {
 	ID3DBlob* vertexshaderCSO;
 	ID3DBlob* pixelshaderCSO;
@@ -79,7 +79,7 @@ void URenderer::CreateShader()
 	pixelshaderCSO->Release();
 }
 
-void URenderer::ReleaseShader()
+void FRenderer::ReleaseShader()
 {
 	if (SimpleInputLayout)
 	{
@@ -100,14 +100,14 @@ void URenderer::ReleaseShader()
 	}
 }
 
-void URenderer::Create(HWND hWindow)
+void FRenderer::Create(HWND hWindow)
 {
 	CreateDeviceAndSwapChain(hWindow);
 	CreateFrameBuffer();
 	CreateRasterizerState();
 }
 
-void URenderer::CreateDeviceAndSwapChain(HWND hWindow)
+void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)
 {
 	D3D_FEATURE_LEVEL featurelevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
@@ -132,7 +132,7 @@ void URenderer::CreateDeviceAndSwapChain(HWND hWindow)
 	ViewportInfo = { 0.0f, 0.0f, (float)swapchaindesc.BufferDesc.Width, (float)swapchaindesc.BufferDesc.Height, 0.0f, 1.0f };
 }
 
-void URenderer::ReleaseDeviceAndSwapChain()
+void FRenderer::ReleaseDeviceAndSwapChain()
 {
 	if (DeviceContext)
 	{
@@ -158,7 +158,7 @@ void URenderer::ReleaseDeviceAndSwapChain()
 	}
 }
 
-void URenderer::CreateFrameBuffer()
+void FRenderer::CreateFrameBuffer()
 {
 	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&FrameBuffer);
 
@@ -169,7 +169,7 @@ void URenderer::CreateFrameBuffer()
 	Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
 }
 
-void URenderer::ReleaseFrameBuffer()
+void FRenderer::ReleaseFrameBuffer()
 {
 	if (FrameBuffer)
 	{
@@ -184,7 +184,7 @@ void URenderer::ReleaseFrameBuffer()
 	}
 }
 
-void URenderer::CreateRasterizerState()
+void FRenderer::CreateRasterizerState()
 {
 	D3D11_RASTERIZER_DESC rasterizerdesc = {};
 	rasterizerdesc.FillMode = D3D11_FILL_SOLID;
@@ -193,7 +193,7 @@ void URenderer::CreateRasterizerState()
 	Device->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
 }
 
-void URenderer::ReleaseRasterizerState()
+void FRenderer::ReleaseRasterizerState()
 {
 	if (RasterizerState)
 	{
@@ -202,7 +202,7 @@ void URenderer::ReleaseRasterizerState()
 	}
 }
 
-void URenderer::Release()
+void FRenderer::Release()
 {
 	RasterizerState->Release();
 
@@ -212,12 +212,12 @@ void URenderer::Release()
 	ReleaseDeviceAndSwapChain();
 }
 
-void URenderer::SwapBuffer()
+void FRenderer::SwapBuffer()
 {
 	SwapChain->Present(1, 0);
 }
 
-ID3D11Buffer* URenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
+ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
 {
 	D3D11_BUFFER_DESC vertexbufferdesc = {};
 	vertexbufferdesc.ByteWidth = byteWidth;
@@ -233,12 +233,12 @@ ID3D11Buffer* URenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWi
 	return vertexBuffer;
 }
 
-void URenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
+void FRenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
 	vertexBuffer->Release();
 }
 
-void URenderer::CreateConstantBuffer()
+void FRenderer::CreateConstantBuffer()
 {
 	D3D11_BUFFER_DESC constantbufferdesc = {};
 	constantbufferdesc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0;
@@ -249,7 +249,7 @@ void URenderer::CreateConstantBuffer()
 	Device->CreateBuffer(&constantbufferdesc, nullptr, &ConstantBuffer);
 }
 
-void URenderer::ReleaseConstantBuffer()
+void FRenderer::ReleaseConstantBuffer()
 {
 	if (ConstantBuffer)
 	{
