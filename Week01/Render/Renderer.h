@@ -11,6 +11,14 @@
 
 struct FSpriteInfo;
 
+// 정적 배치 (타일, 벽 등 한번에 DrawIndexed)
+struct FStaticBatch
+{
+	ID3D11Buffer* VertexBuffer = nullptr;
+	ID3D11Buffer* IndexBuffer = nullptr;
+	UINT IndexCount = 0;
+};
+
 // Default.hlsl의 SpriteConstants cbuffer와 1:1 매칭
 struct FSpriteConstants
 {
@@ -49,6 +57,15 @@ public:
 	void DrawTexture(const FTexture* texture, float screenX, float screenY,
 		float width, float height);
 
+	// 암흑 시야 오버레이 (알파 블렌딩으로 전체 화면에 렌더)
+	void DrawDarknessOverlay(const FTexture* Texture, float ScreenCenterX, float ScreenCenterY);
+
+	// 정적 배치 생성/해제/렌더
+	FStaticBatch CreateStaticBatch(const FVertexSimple* Vertices, UINT VertexCount,
+		const UINT* Indices, UINT IndexCount);
+	void ReleaseStaticBatch(FStaticBatch& Batch);
+	void DrawBatch(const FStaticBatch& Batch, const FTexture* Texture);
+
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
 
@@ -74,6 +91,7 @@ public:
 	void Release();
 	void SwapBuffer();
 	void CreateSamplerState();
+	void CreateBlendState();
 	void CreateSimpleQuad();
 
 	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
@@ -100,6 +118,7 @@ public:
 	unsigned int Stride;
 
 	ID3D11SamplerState* SamplerState = nullptr;
+	ID3D11BlendState* AlphaBlendState = nullptr;
 
 private:
 	std::string CurrentShaderName = "Default";

@@ -14,12 +14,11 @@
 #include "Render/Renderer.h"
 #include "Render/Texture.h"
 #include "Render/TextureManager.h"
+#include <cmath>
 #include "ScoreSystem.h"
 #include "SpriteInfo.h"
-#include "Stage.h"
-#include "pch.h"
 
-FStage::~FStage() = default;
+FStage::~FStage() { ReleaseStaticBatches(); }
 
 bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures)
 {
@@ -86,23 +85,33 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     // 스프라이트 리소스 로드 + 엔티티에 스프라이트 할당
     LoadSpriteResources();
 
-	// 비트 시스템 초기화 (스테이지 BPM 적용)
-	BeatSystem->SetBpm(static_cast<float>(Map->GetBpm()));
-	BeatSystem->Reset();
-	ScoreSystem->Reset();
+    // 정적 배치 생성 (타일/벽을 텍스처별로 묶어 DrawIndexed)
+    BuildStaticBatches();
 
-	// BGM 재생
-	FAudioSystem::Get().StopAll();
-	const std::string& MusicPath = Map->GetMusicPath();
-	if (!MusicPath.empty())
-	{
-		std::string BgmKey = "bgm_stage" + std::to_string(StageIndex);
-		FAudioSystem::Get().LoadWav(BgmKey, MusicPath);
-		FAudioSystem::Get().Play(BgmKey, true);
-	}
+    // 암흑 시야 텍스처 생성
+    CreateDarknessTexture();
 
-	bIsGameOver = false;
-	bIsCleared = false;
+    // 제한시간 설정
+    TimeLimit = Map->GetTimeLimit();
+    RemainingTime = TimeLimit;
+
+    // 비트 시스템 초기화 (스테이지 BPM 적용)
+    BeatSystem->SetBpm(static_cast<float>(Map->GetBpm()));
+    BeatSystem->Reset();
+    ScoreSystem->Reset();
+
+    // BGM 재생
+    FAudioSystem::Get().StopAll();
+    const std::string &MusicPath = Map->GetMusicPath();
+    if (!MusicPath.empty())
+    {
+        std::string BgmKey = "bgm_stage" + std::to_string(StageIndex);
+        FAudioSystem::Get().LoadWav(BgmKey, MusicPath);
+        FAudioSystem::Get().Play(BgmKey, true);
+    }
+
+    bIsGameOver = false;
+    bIsCleared = false;
 
     return true;
 }
@@ -124,6 +133,16 @@ void FStage::Reset()
 
 void FStage::Update(float DeltaTime, FGameContext &Context)
 {
+    // 제한시간 갱신
+    if (!bTimeFrozen)
+        RemainingTime -= DeltaTime;
+    if (RemainingTime <= 0.0f)
+    {
+        RemainingTime = 0.0f;
+        bIsGameOver = true;
+        return;
+    }
+
     // 비트 시스템 업데이트
     BeatSystem->Update(DeltaTime, Context);
 
@@ -137,51 +156,71 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     EDirection MoveDir;
     bool       bHasInput = false;
 
-	if (Context.Input.GetKeyDown(EKeyCode::Up))
-	{
-		MoveDir = EDirection::Up;
-		bHasInput = true;
-	}
-	else if (Context.Input.GetKeyDown(EKeyCode::Down))
-	{
-		MoveDir = EDirection::Down;
-		bHasInput = true;
-	}
-	else if (Context.Input.GetKeyDown(EKeyCode::Left))
-	{
-		MoveDir = EDirection::Left;
-		bHasInput = true;
-		FSpriteInfo Spr = Player->GetSprite();
-		Spr.bIsMirrored = false;
-		Player->SetSprite(Spr);
-	}
-	else if (Context.Input.GetKeyDown(EKeyCode::Right))
-	{
-		MoveDir = EDirection::Right;
-		bHasInput = true;
-		FSpriteInfo Spr = Player->GetSprite();
-		Spr.bIsMirrored = true;
-		Player->SetSprite(Spr);
-	}
+    if (Context.Input.GetKeyDown(EKeyCode::Up))
+    {
+        MoveDir = EDirection::Up;
+        bHasInput = true;
+    }
+    else if (Context.Input.GetKeyDown(EKeyCode::Down))
+    {
+        MoveDir = EDirection::Down;
+        bHasInput = true;
+    }
+    else if (Context.Input.GetKeyDown(EKeyCode::Left))
+    {
+        MoveDir = EDirection::Left;
+        bHasInput = true;
+        FSpriteInfo Spr = Player->GetSprite();
+        Spr.bIsMirrored = false;
+        Player->SetSprite(Spr);
+    }
+    else if (Context.Input.GetKeyDown(EKeyCode::Right))
+    {
+        MoveDir = EDirection::Right;
+        bHasInput = true;
+        FSpriteInfo Spr = Player->GetSprite();
+        Spr.bIsMirrored = true;
+        Player->SetSprite(Spr);
+    }
 
     if (!Player->IsDead() && bHasInput)
     {
         // 입력이 들어온 현재 시점의 박자 인덱스
         int CurrentBeatIndex =
             static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
+        EBeatJudge Judge = BeatSystem->JudgeInput();
 
-        if (BeatSystem->JudgeInput() == EBeatJudge::Good)
+        if (Judge == EBeatJudge::Perfect)
         {
-            Logger::Log("Good Input");
+            Logger::Log("Perfect Input");
             if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
             {
                 Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
+                ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
             }
             else
             {
                 // 즉시 이동 처리
                 Player->QueueInput(MoveDir);
                 Player->OnBeat(*this);
+                ScoreSystem->AddBeatBonus(Judge);
+                Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+            }
+        }
+        else if (Judge == EBeatJudge::Good)
+        {
+            Logger::Log("Good Input");
+            if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
+            {
+                Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
+                ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
+            }
+            else
+            {
+                // 즉시 이동 처리
+                Player->QueueInput(MoveDir);
+                Player->OnBeat(*this);
+                ScoreSystem->AddBeatBonus(Judge);
                 Player->SetLastMovedBeatIndex(CurrentBeatIndex);
             }
         }
@@ -189,35 +228,36 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         {
             Logger::Log("Miss Input");
             Player->Damage(1); // 엇박자 입력 시 데미지
+            ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
             Player->SetLastMovedBeatIndex(CurrentBeatIndex);
         }
     }
 
-	// 3. 비트 시작 시 처리 (박자가 넘어가는 순간에만 1회 수행)
-	if (BeatSystem->ConsumeBeat())
-	{
-		// 몬스터 이동
-		for (auto& Mon : Monsters)
-		{
-			Mon->OnBeat(*this);
-		}
-	}
+    // 3. 비트 시작 시 처리 (박자가 넘어가는 순간에만 1회 수행)
+    if (BeatSystem->ConsumeBeat())
+    {
+        // 몬스터 이동
+        for (auto &Mon : Monsters)
+        {
+            Mon->OnBeat(*this);
+        }
+    }
 
-	// 비트 스킵 시 미입력 데미지
-	if (BeatSystem->IsBeatSkipped())
-	{
-		int CurrentBeatIndex =
-			static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
+    // 비트 스킵 시 미입력 데미지
+    if (BeatSystem->IsBeatSkipped())
+    {
+        int CurrentBeatIndex =
+            static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
 
-		if (!Player->IsDead() && CurrentBeatIndex > 0)
-		{
-			if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
-			{
-				Logger::Log("No Input Detected - Player Damaged");
-				Player->Damage(1);
-			}
-		}
-	}
+        if (!Player->IsDead() && CurrentBeatIndex > 0)
+        {
+            if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
+            {
+                Logger::Log("No Input Detected - Player Damaged");
+                Player->Damage(1);
+            }
+        }
+    }
 
     // 플레이어 사망 체크
     if (Player->IsDead())
@@ -228,6 +268,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     // 골인 지점 도달 체크
     if (GoalX >= 0 && Player->GetTileX() == GoalX && Player->GetTileY() == GoalY)
     {
+        ScoreSystem->AddTimeBonus(RemainingTime, TimeLimit);
         bIsCleared = true;
     }
 
@@ -241,57 +282,245 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
 
 void FStage::Render()
 {
-	if (!Renderer || !Textures)
-		return;
+    if (!Renderer || !Textures)
+        return;
 
-	// Renderer에 카메라 설정
-	Renderer->SetCamera(*Camera);
+    // Renderer에 카메라 설정
+    Renderer->SetCamera(*Camera);
 
-	// 텍스처 룩업 헬퍼
-	auto GetTex = [&](const std::string& Key) -> FTexture*
-		{
-			return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr;
-		};
+    // 정적 배치 렌더링 (타일/벽 — DrawIndexed 1회씩)
+    Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor"));
+    Renderer->DrawBatch(GoalBatch, Textures->Get("goal"));
+    Renderer->DrawBatch(WallBatch, Textures->Get("wall"));
 
-	// 바닥 타일 렌더링
-	for (const auto& Tile : Tiles)
-	{
-		float WorldX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
-		float WorldY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
-		const FSpriteInfo& Spr = Tile.GetSprite();
-		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
-	}
+    // 텍스처 룩업 헬퍼
+    auto GetTex = [&](const std::string& Key) -> FTexture*
+        {
+            return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr;
+        };
 
-	// 벽 렌더링
-	for (const auto& W : Walls)
-	{
-		if (W.IsDestroyed())
-			continue;
-		float WorldX = W.GetRenderX(TileSize) + TileSize * 0.5f;
-		float WorldY = W.GetRenderY(TileSize) + TileSize * 0.5f;
-		const FSpriteInfo& Spr = W.GetSprite();
-		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
-	}
+    // 몬스터 렌더링
+    for (const auto& Mon : Monsters)
+    {
+        if (Mon->IsDead())
+            continue;
+        float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
+        float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
+        const FSpriteInfo& Spr = Mon->GetSprite();
+        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
+    }
 
-	// 몬스터 렌더링
-	for (const auto& Mon : Monsters)
-	{
-		if (Mon->IsDead())
-			continue;
-		float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
-		float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
-		const FSpriteInfo& Spr = Mon->GetSprite();
-		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
-	}
+    // 플레이어 렌더링 (가장 위에 그림)
+    if (!Player->IsDead())
+    {
+        float WorldX = Player->GetRenderX() + TileSize * 0.5f;
+        float WorldY = Player->GetRenderY() + TileSize * 0.5f;
+        const FSpriteInfo& Spr = Player->GetSprite();
+        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
+    }
 
-	// 플레이어 렌더링 (가장 위에 그림)
-	if (!Player->IsDead())
-	{
-		float WorldX = Player->GetRenderX() + TileSize * 0.5f;
-		float WorldY = Player->GetRenderY() + TileSize * 0.5f;
-		const FSpriteInfo& Spr = Player->GetSprite();
-		Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
-	}
+    // 큐에 쌓인 RenderObjects를 먼저 처리한 뒤 암흑 오버레이
+    Renderer->Render();
+    if (DarknessTexture && Player && !Player->IsDead())
+    {
+        FVec2 PlayerWorld;
+        PlayerWorld.X = Player->GetRenderX() + TileSize * 0.5f;
+        PlayerWorld.Y = Player->GetRenderY() + TileSize * 0.5f;
+        FVec2 PlayerScreen = Camera->WorldToScreen(PlayerWorld);
+        Renderer->DrawDarknessOverlay(DarknessTexture.get(), PlayerScreen.X, PlayerScreen.Y);
+    }
+}
+
+// ============================================================
+// 암흑 시야 텍스처 (방사형 그라데이션)
+// ============================================================
+
+static constexpr float DarknessInnerRatios[5] = { 0.05f, 0.07f, 0.10f, 0.12f, 0.15f };
+static constexpr float DarknessOuterRatios[5] = { 0.10f, 0.13f, 0.15f, 0.17f, 0.20f };
+
+void FStage::CreateDarknessTexture()
+{
+    if (!Renderer || !Renderer->Device) return;
+
+    DarknessTexture.reset();
+
+    const int Size = 512;
+    const float Center = Size * 0.5f;
+    const float InnerRadius = Size * DarknessInnerRatios[DarknessLevel];
+    const float OuterRadius = Size * DarknessOuterRatios[DarknessLevel];
+
+    std::vector<uint8_t> Pixels(Size * Size * 4);
+
+    for (int Y = 0; Y < Size; ++Y)
+    {
+        for (int X = 0; X < Size; ++X)
+        {
+            float DX = X - Center;
+            float DY = Y - Center;
+            float Dist = sqrtf(DX * DX + DY * DY);
+
+            float Alpha = 0.0f;
+            if (Dist <= InnerRadius)
+                Alpha = 0.0f;
+            else if (Dist >= OuterRadius)
+                Alpha = 1.0f;
+            else
+                Alpha = (Dist - InnerRadius) / (OuterRadius - InnerRadius);
+
+            // smoothstep
+            Alpha = Alpha * Alpha * (3.0f - 2.0f * Alpha);
+
+            int Idx = (Y * Size + X) * 4;
+            Pixels[Idx + 0] = 0;   // R
+            Pixels[Idx + 1] = 0;   // G
+            Pixels[Idx + 2] = 0;   // B
+            Pixels[Idx + 3] = static_cast<uint8_t>(Alpha * 255.0f);
+        }
+    }
+
+    ID3D11Texture2D* Tex2D = nullptr;
+    ID3D11ShaderResourceView* SRV = nullptr;
+
+    D3D11_TEXTURE2D_DESC Desc = {};
+    Desc.Width = Size;
+    Desc.Height = Size;
+    Desc.MipLevels = 1;
+    Desc.ArraySize = 1;
+    Desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    Desc.SampleDesc.Count = 1;
+    Desc.Usage = D3D11_USAGE_DEFAULT;
+    Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+    D3D11_SUBRESOURCE_DATA InitData = {};
+    InitData.pSysMem = Pixels.data();
+    InitData.SysMemPitch = Size * 4;
+
+    if (FAILED(Renderer->Device->CreateTexture2D(&Desc, &InitData, &Tex2D)))
+        return;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+    SRVDesc.Format = Desc.Format;
+    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    SRVDesc.Texture2D.MipLevels = 1;
+
+    if (FAILED(Renderer->Device->CreateShaderResourceView(Tex2D, &SRVDesc, &SRV)))
+    {
+        Tex2D->Release();
+        return;
+    }
+
+    DarknessTexture = std::make_unique<FTexture>(Size, Size, Tex2D, SRV);
+}
+
+// ============================================================
+// 정적 배치 (타일/벽을 텍스처별로 묶어 DrawIndexed)
+// ============================================================
+
+static void BuildQuadBatch(
+    const std::vector<std::pair<float, float>>& Centers,
+    float Size,
+    std::vector<FVertexSimple>& OutVertices,
+    std::vector<UINT>& OutIndices)
+{
+    float Half = Size * 0.5f;
+    OutVertices.reserve(Centers.size() * 4);
+    OutIndices.reserve(Centers.size() * 6);
+
+    for (size_t i = 0; i < Centers.size(); ++i)
+    {
+        float CX = Centers[i].first;
+        float CY = Centers[i].second;
+        UINT Base = static_cast<UINT>(i * 4);
+
+        OutVertices.push_back({ CX - Half, CY - Half, 0.0f, 0.0f, 0.0f }); // 좌상
+        OutVertices.push_back({ CX + Half, CY - Half, 0.0f, 1.0f, 0.0f }); // 우상
+        OutVertices.push_back({ CX + Half, CY + Half, 0.0f, 1.0f, 1.0f }); // 우하
+        OutVertices.push_back({ CX - Half, CY + Half, 0.0f, 0.0f, 1.0f }); // 좌하
+
+        OutIndices.push_back(Base + 0);
+        OutIndices.push_back(Base + 1);
+        OutIndices.push_back(Base + 2);
+        OutIndices.push_back(Base + 0);
+        OutIndices.push_back(Base + 2);
+        OutIndices.push_back(Base + 3);
+    }
+}
+
+void FStage::BuildStaticBatches()
+{
+    ReleaseStaticBatches();
+
+    // 타일을 텍스처별로 분류
+    std::vector<std::pair<float, float>> FloorCenters;
+    std::vector<std::pair<float, float>> GoalCenters;
+
+    for (const auto& Tile : Tiles)
+    {
+        float CX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
+        float CY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
+
+        if (Tile.GetType() == ETileType::Goal)
+            GoalCenters.emplace_back(CX, CY);
+        else
+            FloorCenters.emplace_back(CX, CY);
+    }
+
+    // Floor 배치
+    if (!FloorCenters.empty())
+    {
+        std::vector<FVertexSimple> Verts;
+        std::vector<UINT> Idxs;
+        BuildQuadBatch(FloorCenters, TileSize, Verts, Idxs);
+        FloorBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
+            Idxs.data(), (UINT)Idxs.size());
+    }
+
+    // Goal 배치
+    if (!GoalCenters.empty())
+    {
+        std::vector<FVertexSimple> Verts;
+        std::vector<UINT> Idxs;
+        BuildQuadBatch(GoalCenters, TileSize, Verts, Idxs);
+        GoalBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
+            Idxs.data(), (UINT)Idxs.size());
+    }
+
+    // Wall 배치
+    RebuildWallBatch();
+}
+
+void FStage::RebuildWallBatch()
+{
+    Renderer->ReleaseStaticBatch(WallBatch);
+
+    std::vector<std::pair<float, float>> WallCenters;
+    for (const auto& W : Walls)
+    {
+        if (W.IsDestroyed())
+            continue;
+        float CX = W.GetRenderX(TileSize) + TileSize * 0.5f;
+        float CY = W.GetRenderY(TileSize) + TileSize * 0.5f;
+        WallCenters.emplace_back(CX, CY);
+    }
+
+    if (!WallCenters.empty())
+    {
+        std::vector<FVertexSimple> Verts;
+        std::vector<UINT> Idxs;
+        BuildQuadBatch(WallCenters, TileSize, Verts, Idxs);
+        WallBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
+            Idxs.data(), (UINT)Idxs.size());
+    }
+}
+
+void FStage::ReleaseStaticBatches()
+{
+    if (Renderer)
+    {
+        Renderer->ReleaseStaticBatch(FloorBatch);
+        Renderer->ReleaseStaticBatch(GoalBatch);
+        Renderer->ReleaseStaticBatch(WallBatch);
+    }
 }
 
 // ============================================================
@@ -437,6 +666,7 @@ FWall *FStage::FindWallAt(int X, int Y)
 
 void FStage::RemoveDestroyedWalls()
 {
+    bool bRemoved = false;
     for (auto It = Walls.begin(); It != Walls.end();)
     {
         if (It->IsDestroyed())
@@ -447,11 +677,17 @@ void FStage::RemoveDestroyedWalls()
                 Map->SetTile(It->GetTileX(), It->GetTileY(), 0);
             }
             It = Walls.erase(It);
+            bRemoved = true;
         }
         else
         {
             ++It;
         }
+    }
+
+    if (bRemoved)
+    {
+        RebuildWallBatch();
     }
 }
 
@@ -478,6 +714,24 @@ float FStage::GetTileSize() const { return TileSize; }
 bool FStage::IsGameOver() const { return bIsGameOver; }
 
 bool FStage::IsCleared() const { return bIsCleared; }
+
+float FStage::GetRemainingTime() const { return RemainingTime; }
+
+float FStage::GetTimeLimit() const { return TimeLimit; }
+
+int FStage::GetDarknessLevel() const { return DarknessLevel; }
+
+void FStage::SetDarknessLevel(int Level)
+{
+    Level = (Level < 0) ? 0 : (Level > 4) ? 4 : Level;
+    if (Level == DarknessLevel) return;
+    DarknessLevel = Level;
+    CreateDarknessTexture();
+}
+
+bool FStage::IsTimeFrozen() const { return bTimeFrozen; }
+
+void FStage::SetTimeFrozen(bool bFrozen) { bTimeFrozen = bFrozen; }
 
 int FStage::GetCurrentStageIndex() const { return CurrentStageIndex; }
 

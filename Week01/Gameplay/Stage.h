@@ -8,15 +8,13 @@
 #include "Data/StageData.h"
 #include "Monster.h"
 #include "Player.h"
+#include "Render/Renderer.h"
+#include "Render/Texture.h"
 #include "ScoreSystem.h"
 #include "Tile.h"
 #include "Wall.h"
-#include <memory>
-#include <string>
-#include <vector>
 
 class FActor;
-class FRenderer;
 class FTextureManager;
 
 class FStage
@@ -70,6 +68,15 @@ class FStage
     bool IsGameOver() const;
     bool IsCleared() const;
 
+    float GetRemainingTime() const;
+    float GetTimeLimit() const;
+
+    int  GetDarknessLevel() const;
+    void SetDarknessLevel(int Level);
+
+    bool IsTimeFrozen() const;
+    void SetTimeFrozen(bool bFrozen);
+
     int                GetCurrentStageIndex() const;
     const std::string &GetStageName() const;
 
@@ -85,6 +92,11 @@ class FStage
     std::unique_ptr<FScoreSystem> ScoreSystem;
 
     float TileSize = 96.0f;
+    float RemainingTime = 60.0f;
+    float TimeLimit = 60.0f;
+
+    int  DarknessLevel = 2; // 0~4 (5단계)
+    bool bTimeFrozen = false;
 
     bool bIsGameOver = false;
     bool bIsCleared = false;
@@ -97,5 +109,16 @@ class FStage
     FRenderer       *Renderer = nullptr;
     FTextureManager *Textures = nullptr;
 
-	void LoadSpriteResources();
+    // 정적 배치 (타일/벽을 텍스처별로 묶어 DrawIndexed)
+    FStaticBatch FloorBatch;
+    FStaticBatch GoalBatch;
+    FStaticBatch WallBatch;
+
+    void LoadSpriteResources();
+    void CreateDarknessTexture();
+    void BuildStaticBatches();
+    void ReleaseStaticBatches();
+    void RebuildWallBatch();
+
+    std::unique_ptr<FTexture> DarknessTexture;
 };

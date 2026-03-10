@@ -31,6 +31,7 @@ float FBeatSystem::GetBeatInterval() const { return BeatInterval; }
 
 void FBeatSystem::SetJudgeWindows(float InPerfectWindow, float InGoodWindow)
 {
+    PerfectWindow = InPerfectWindow;
     GoodWindow = InGoodWindow;
 }
 
@@ -40,6 +41,10 @@ EBeatJudge FBeatSystem::JudgeInput() const
     float TimeSinceLast = BeatInterval - TimeToNext;
     float Distance = (TimeToNext < TimeSinceLast) ? TimeToNext : TimeSinceLast;
 
+    if (Distance <= PerfectWindow)
+    {
+        return EBeatJudge::Perfect;
+    }
     if (Distance <= GoodWindow)
     {
         return EBeatJudge::Good;

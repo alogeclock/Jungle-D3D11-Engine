@@ -1,13 +1,13 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "PlayScene.h"
 #include "Core/AudioSystem.h"
 #include <memory>
 #include <string>
 #include "Core/GameContext.h"
 #include "Core/Time.h"
+#include "Data/ScoreRepository.h"
 #include "Data/StageLoader.h"
 #include "Gameplay/Stage.h"
-#include "PlayScene.h"
 #include "Scene/SceneCommand.h"
 #include "Scene/SceneType.h"
 #include "UI/popup/GameOverPopup.h"
@@ -28,6 +28,18 @@ void FPlayScene::Update(FGameContext &Context)
         bStageLoaded = true;
     }
 
+    // 지연된 스테이지 변경 처리 (UI 순회 중 안전하게)
+    if (PendingStageIndex >= 0)
+    {
+        FSceneCommand Command;
+        Command.Type = ESceneCommandType::ChangeScene;
+        Command.NextScene = ESceneType::Play;
+        Command.NextStageIndex = PendingStageIndex;
+        PendingStageIndex = -1;
+        SetSceneCommand(Command);
+        return;
+    }
+
     FPopupManager &PopupManager = UIManager.GetPopupManager();
 
     bIsPaused = PopupManager.HasOpenPopup();
@@ -40,7 +52,7 @@ void FPlayScene::Update(FGameContext &Context)
 
     UIManager.Update(Context);
     HandlePopupResult(Context);
-    PopupManager.RemoveClosedPopup(); 
+    PopupManager.RemoveClosedPopup();
 
     if (bOpenSaveScorePopupNextFrame && !PopupManager.HasOpenPopup())
     {
@@ -77,6 +89,8 @@ void FPlayScene::LoadStage(FGameContext &Context)
 
     auto Debug = std::make_unique<FDebugWidget>();
     Debug->BindStage(Stage.get());
+    Debug->SetTotalStages(FStageLoader::Get().GetStageCount());
+    Debug->SetStageChangeCallback([this](int Index) { PendingStageIndex = Index; });
     UIManager.AddWidget("Debug", std::move(Debug));
 }
 

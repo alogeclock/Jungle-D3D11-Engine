@@ -42,6 +42,9 @@ struct FStageData
     void               SetMusicPath(const std::string &InPath);
     const std::string &GetMusicPath() const;
 
+    void  SetTimeLimit(float InTimeLimit);
+    float GetTimeLimit() const;
+
   private:
     // 해석은 TileType enum값 대로
     std::vector<std::vector<int>> Tiles;
@@ -54,4 +57,5 @@ struct FStageData
     FSpawnPoint PlayerSpawn;
     int         Bpm = 120;
     std::string MusicPath;
+    float       TimeLimit = 60.0f;
 };

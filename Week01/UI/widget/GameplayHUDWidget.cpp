@@ -4,28 +4,19 @@
 #include "Core/Time.h"
 #include "Render/Renderer.h"
 
-void FGameplayHUDWidget::BindStage(const FStage* InStage)
-{
-	Stage = InStage;
-}
+void FGameplayHUDWidget::BindStage(const FStage *InStage) { Stage = InStage; }
 
-void FGameplayHUDWidget::BindPauseFlag(bool *InPauseFlag)
-{
-	PauseFlag = InPauseFlag;
-}
+void FGameplayHUDWidget::BindPauseFlag(bool *InPauseFlag) { PauseFlag = InPauseFlag; }
 
-void FGameplayHUDWidget::ResetPlayTime()
-{
-	PlayTime = 0.0f;
-}
+void FGameplayHUDWidget::ResetPlayTime() { PlayTime = 0.0f; }
 
-void FGameplayHUDWidget::Update(FGameContext& Context)
+void FGameplayHUDWidget::Update(FGameContext &Context)
 {
-	bool bPaused = PauseFlag && *PauseFlag;
-	if (!bPaused)
-	{
-		PlayTime += Context.Time.GetDeltaTime();
-	}
+    bool bPaused = PauseFlag && *PauseFlag;
+    if (!bPaused)
+    {
+        PlayTime += Context.Time.GetDeltaTime();
+    }
 }
 
 void FGameplayHUDWidget::Render(FGameContext& Context)
@@ -48,11 +39,15 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 
 	if (ImGui::Begin("##HUD", nullptr, Flags))
 	{
-		int Minutes = static_cast<int>(PlayTime) / 60;
-		int Seconds = static_cast<int>(PlayTime) % 60;
+		float Remaining = Stage->GetRemainingTime();
+		int Minutes = static_cast<int>(Remaining) / 60;
+		int Seconds = static_cast<int>(Remaining) % 60;
 
 		ImGui::Text("HP    %d", HP);
-		ImGui::Text("Time  %d:%02d", Minutes, Seconds);
+		if (Remaining <= 10.0f)
+			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Time  %d:%02d", Minutes, Seconds);
+		else
+			ImGui::Text("Time  %d:%02d", Minutes, Seconds);
 		ImGui::Text("Score %d", Score);
 		if (Combo > 0)
 		{

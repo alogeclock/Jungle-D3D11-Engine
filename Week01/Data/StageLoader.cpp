@@ -118,6 +118,7 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
 
         OutStage.SetBpm(Meta.value("bpm", 120));
         OutStage.SetMusicPath(Meta.value("music", std::string{}));
+        OutStage.SetTimeLimit(Meta.value("time_limit", 60.0f));
 
         if (Meta.contains("spawn_point") && Meta["spawn_point"].is_object())
         {

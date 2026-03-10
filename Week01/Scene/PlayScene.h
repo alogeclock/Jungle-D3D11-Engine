@@ -28,4 +28,6 @@ class FPlayScene : public IScene
     bool bIsPaused = false;
     bool bStageLoaded = false;
     bool bOpenSaveScorePopupNextFrame = false;
+
+    int PendingStageIndex = -1;
 };

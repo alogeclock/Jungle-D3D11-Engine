@@ -7,7 +7,19 @@
 void FDebugWidget::BindStage(FStage *InStage)
 {
     Stage = InStage;
+    if (Stage)
+    {
+        DarknessLevel = Stage->GetDarknessLevel();
+        bTimeFrozen = Stage->IsTimeFrozen();
+    }
 }
+
+void FDebugWidget::SetStageChangeCallback(std::function<void(int)> Callback)
+{
+    OnStageChange = std::move(Callback);
+}
+
+void FDebugWidget::SetTotalStages(int Count) { TotalStages = Count; }
 
 void FDebugWidget::Update(FGameContext &Context)
 {
@@ -24,11 +36,17 @@ void FDebugWidget::Render(FGameContext &Context)
 
     if (ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
+        // --- Cheats (체크박스) ---
         if (ImGui::Checkbox("Invincible", &bInvincible))
         {
             Stage->GetPlayer().SetInvincible(bInvincible);
         }
+        if (ImGui::Checkbox("Freeze Time", &bTimeFrozen))
+        {
+            Stage->SetTimeFrozen(bTimeFrozen);
+        }
 
+        // --- Settings ---
         ImGui::Separator();
         ImGui::Text("BPM: %.1f", Stage->GetBeatSystem().GetBpm());
         if (ImGui::SliderFloat("TimeScale", &TimeScale, 0.2f, 2.0f, "%.2f"))
@@ -36,11 +54,51 @@ void FDebugWidget::Render(FGameContext &Context)
             Stage->GetBeatSystem().SetTimeScale(TimeScale);
             FAudioSystem::Get().SetAllPlaybackRate(TimeScale);
         }
-        if (ImGui::Button("Reset##TimeScale"))
+
+        int DisplayLevel = DarknessLevel + 1;
+        if (ImGui::SliderInt("Darkness", &DisplayLevel, 1, 5))
         {
+            DarknessLevel = DisplayLevel - 1;
+            Stage->SetDarknessLevel(DarknessLevel);
+        }
+
+        // --- Reset All ---
+        ImGui::Separator();
+        if (ImGui::Button("Reset All"))
+        {
+            bInvincible = false;
+            Stage->GetPlayer().SetInvincible(false);
+
+            bTimeFrozen = false;
+            Stage->SetTimeFrozen(false);
+
             TimeScale = 1.0f;
             Stage->GetBeatSystem().SetTimeScale(1.0f);
             FAudioSystem::Get().SetAllPlaybackRate(1.0f);
+
+            DarknessLevel = 2;
+            Stage->SetDarknessLevel(2);
+        }
+
+        // --- Stage Select ---
+        if (OnStageChange)
+        {
+            ImGui::Separator();
+            ImGui::Text("Stage");
+            int CurrentStage = Stage->GetCurrentStageIndex();
+            for (int i = 0; i < TotalStages; ++i)
+            {
+                ImGui::SameLine();
+                char Label[16];
+                snprintf(Label, sizeof(Label), "%d", i + 1);
+                bool bCurrent = (i == CurrentStage);
+                if (bCurrent) ImGui::BeginDisabled();
+                if (ImGui::Button(Label, ImVec2(30, 0)))
+                {
+                    OnStageChange(i);
+                }
+                if (bCurrent) ImGui::EndDisabled();
+            }
         }
     }
     ImGui::End();
