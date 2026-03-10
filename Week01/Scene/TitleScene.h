@@ -1,24 +1,24 @@
 #pragma once
 
-#include <memory>
-#include "Scene.h"
+#include "Scene/Scene.h"
 #include "UI/UIManager.h"
+
+struct FGameContext;
 
 class FTitleScene : public IScene
 {
-public:
-	~FTitleScene() override;
-
-	void Enter() override;
-	void Exit() override;
+  public:
+    FTitleScene() = default;
+    ~FTitleScene() override = default;
 
     void Update(FGameContext &Context) override;
     void Render(FGameContext &Context) override;
 
-private:
-	void StartGame();
-	void ShowCredit();
-	void ShowScore();
+  private:
+    void HandleMenuCommand();
+    void OpenCreditPopup();
+    void OpenScoreboardPopup();
 
-	FUIManager UIManager;
+  private:
+    FUIManager UIManager;
 };

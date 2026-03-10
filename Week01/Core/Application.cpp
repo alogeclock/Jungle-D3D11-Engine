@@ -1,12 +1,15 @@
+﻿#include "pch.h"
+#include <memory>
 #include "Application.h"
 #include "AudioSystem.h"
+#include "Core/Input.h"
+#include "Core/Time.h"
 #include "Data/StageLoader.h"
 #include "IO/ImageLoader.h"
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_dx11.h"
-#include "imgui/imgui_impl_win32.h"
-#include "imgui/imgui_internal.h"
-#include "pch.h"
+#include "Render/Renderer.h"
+#include "Render/TextureManager.h"
+#include "Scene/SceneManager.h"
+
 
 bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHeight)
 {
@@ -28,27 +31,27 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 
     // TEST Register
 
-	auto LoadTex = [&](const std::string& Key, const std::string& Path)
-		{
-			if (!TextureManager->Has(Key))
-			{
-				auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
-				if (Tex)
-					TextureManager->Register(Key, std::move(Tex));
-			}
-		};
-	LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
-	LoadTex("goal", "Resources/Sprites/goal.png");
-	LoadTex("wall", "Resources/Sprites/wall.png");
-	LoadTex("player", "Resources/Sprites/player.png");
-	LoadTex("monster", "Resources/Sprites/monster.png");
-	LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
+    auto LoadTex = [&](const std::string &Key, const std::string &Path)
+    {
+        if (!TextureManager->Has(Key))
+        {
+            auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
+            if (Tex)
+                TextureManager->Register(Key, std::move(Tex));
+        }
+    };
+    LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
+    LoadTex("goal", "Resources/Sprites/goal.png");
+    LoadTex("wall", "Resources/Sprites/wall.png");
+    LoadTex("player", "Resources/Sprites/player.png");
+    LoadTex("monster", "Resources/Sprites/monster.png");
+    LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
 
-	// 오디오 초기화
-	FAudioSystem::Get().Initialize();
+    // 오디오 초기화
+    FAudioSystem::Get().Initialize();
 
-	// 스테이지 데이터 로드
-	FStageLoader::Get().Initialize("Resources/Maps/stages.json");
+    // 스테이지 데이터 로드
+    FStageLoader::Get().Initialize("Resources/Maps/stages.json");
 
     // TODO
     // TextureManager->Initialize(Renderer->Device);
@@ -103,11 +106,11 @@ void FApplication::Run()
 
 void FApplication::Shutdown()
 {
-	FAudioSystem::Get().Shutdown();
+    FAudioSystem::Get().Shutdown();
 
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
 
     Window.Shutdown();
 }

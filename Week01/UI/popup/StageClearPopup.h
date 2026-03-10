@@ -21,6 +21,7 @@ class FStageClearPopup : public FUIPopupBase
     EStageClearPopupAction ConsumeAction();
 
     void Render(FGameContext &Context) override;
+    void Update(FGameContext &Context) override {}
 
   private:
     bool                   bAllCleared = false;

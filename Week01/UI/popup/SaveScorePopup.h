@@ -2,7 +2,7 @@
 
 #include <array>
 #include <string>
-#include "GameContext.h"
+#include "Core/GameContext.h"
 #include "UIPopupBase.h"
 
 // TODO
@@ -31,6 +31,7 @@ class FSaveScorePopup : public FUIPopupBase
     FSaveScorePopupResult ConsumeResult();
 
     void Render(FGameContext &Context) override;
+    void Update(FGameContext &Context) override {}
 
   private:
     std::array<char, MAX_NICKNAME_LENGTH + 1> NicknameBuffer{};

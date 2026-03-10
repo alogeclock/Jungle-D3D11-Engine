@@ -1,95 +1,103 @@
 #include "pch.h"
-#include "TitleScene.h"
+#include <memory>
+#include <string>
 #include "Core/GameContext.h"
 #include "Render/Renderer.h"
-#include "Gameplay/CreditPopup.h"
-#include "Gameplay/ScoreboardPopup.h"
+#include "Scene/SceneCommand.h"
+#include "Scene/SceneType.h"
+#include "TitleScene.h"
+#include "UI/popup/CreditPopup.h"
+#include "UI/popup/PopupManager.h"
+#include "UI/popup/ScoreboardPopup.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
-#include "imgui/imgui_impl_dx11.h"
-#include "imgui/imgui_impl_win32.h"
-#include "Render/Renderer.h"
-#include "Render/TextureManager.h"
-FTitleScene::~FTitleScene() = default;
-
-void FTitleScene::Enter()
+void FTitleScene::Update(FGameContext &Context)
 {
-	UIManager.GetPopupManager().AddPopup("Credit", std::make_unique<FCreditPopup>());
-	UIManager.GetPopupManager().AddPopup("Scoreboard", std::make_unique<FScoreboardPopup>());
+    UIManager.Update(Context);
+    UIManager.GetPopupManager().RemoveClosedPopup();
 }
 
-void FTitleScene::Exit()
+void FTitleScene::Render(FGameContext &Context)
 {
-	UIManager.ClearAll();
-}
-
-void FTitleScene::Update(FGameContext& Context)
-{
-	UIManager.Update(Context);
-}
-
-void FTitleScene::Render(FGameContext& Context)
-{
-	ImGui::Begin("Main Menu");
-
-	if (ImGui::Button("Start"))
-	{
-		StartGame();
-	}
-
-	if (ImGui::Button("Credit"))
-	{
-		ShowCredit();
-	}
-
-	if (ImGui::Button("Score"))
-	{
-		ShowScore();
-	}
+    HandleMenuCommand();
+    UIManager.Render(Context);
 
 #ifdef DEBUG
-	ImGui::Separator();
-	ImGui::Text("Shader: %s", Context.Renderer.GetCurrentShaderName().c_str());
+    ImGui::Begin("Debug Shader");
 
-	auto Shaders = Context.Renderer.GetAvailableShaders();
-	for (const auto& Name : Shaders)
-	{
-		bool bIsCurrent = (Name == Context.Renderer.GetCurrentShaderName());
-		if (bIsCurrent)
-		{
-			ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "> %s", Name.c_str());
-		}
-		else if (ImGui::Button(Name.c_str()))
-		{
-			std::wstring Path = L"Resources/Shaders/" + std::wstring(Name.begin(), Name.end()) + L".hlsl";
-			Context.Renderer.LoadShaderFromFile(Path);
-		}
-	}
+    ImGui::Text("Shader: %s", Context.Renderer.GetCurrentShaderName().c_str());
 
-	const auto& Error = Context.Renderer.GetShaderError();
-	if (!Error.empty())
-	{
-		ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Error: %s", Error.c_str());
-	}
+    const auto Shaders = Context.Renderer.GetAvailableShaders();
+    for (const auto &Name : Shaders)
+    {
+        const bool bIsCurrent = (Name == Context.Renderer.GetCurrentShaderName());
+
+        if (bIsCurrent)
+        {
+            ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "> %s", Name.c_str());
+        }
+        else if (ImGui::Button(Name.c_str()))
+        {
+            std::wstring Path =
+                L"Resources/Shaders/" + std::wstring(Name.begin(), Name.end()) + L".hlsl";
+            Context.Renderer.LoadShaderFromFile(Path);
+        }
+    }
+
+    const std::string &Error = Context.Renderer.GetShaderError();
+    if (!Error.empty())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Error: %s", Error.c_str());
+    }
+
+    ImGui::End();
 #endif
-
-	ImGui::End();
-
-	UIManager.Render(Context);
 }
 
-void FTitleScene::StartGame()
+void FTitleScene::HandleMenuCommand()
 {
-	RequestSceneChange(ESceneType::Play);
+    ImGui::Begin("Main Menu");
+
+    FPopupManager &PopupManager = UIManager.GetPopupManager();
+    const bool     bHasOpenPopup = PopupManager.HasOpenPopup();
+
+    if (bHasOpenPopup)
+    {
+        ImGui::BeginDisabled();
+    }
+
+    if (ImGui::Button("Start"))
+    {
+        FSceneCommand Command;
+        Command.Type = ESceneCommandType::ChangeScene;
+        Command.NextScene = ESceneType::Play;
+        Command.NextStageIndex = 0;
+        SetSceneCommand(Command);
+    }
+
+    if (ImGui::Button("Credit"))
+    {
+        OpenCreditPopup();
+    }
+
+    if (ImGui::Button("Score"))
+    {
+        OpenScoreboardPopup();
+    }
+
+    if (bHasOpenPopup)
+    {
+        ImGui::EndDisabled();
+    }
+
+    ImGui::End();
 }
 
-void FTitleScene::ShowCredit()
+void FTitleScene::OpenCreditPopup()
 {
-	UIManager.GetPopupManager().Open("Credit");
+    UIManager.GetPopupManager().Open(std::make_unique<FCreditPopup>());
 }
 
-void FTitleScene::ShowScore()
+void FTitleScene::OpenScoreboardPopup()
 {
-	UIManager.GetPopupManager().Open("Scoreboard");
+    UIManager.GetPopupManager().Open(std::make_unique<FScoreboardPopup>());
 }

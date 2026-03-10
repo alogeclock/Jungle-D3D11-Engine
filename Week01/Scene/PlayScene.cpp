@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "PlayScene.h"
 #include "Core/AudioSystem.h"
 #include <memory>
@@ -40,7 +40,7 @@ void FPlayScene::Update(FGameContext &Context)
 
     UIManager.Update(Context);
     HandlePopupResult(Context);
-    PopupManager.RemoveClosedPopup();
+    PopupManager.RemoveClosedPopup(); 
 
     if (bOpenSaveScorePopupNextFrame && !PopupManager.HasOpenPopup())
     {

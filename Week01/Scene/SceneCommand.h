@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SceneType.h"
+
 enum class ESceneCommandType
 {
     None,

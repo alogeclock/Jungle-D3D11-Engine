@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "PlayScene.h"
 #include "SceneManager.h"
 #include "SceneType.h"

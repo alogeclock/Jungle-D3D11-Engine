@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include "PopupManager.h"
-#include "UIWidget.h"
+#include "./popup/PopupManager.h"
+#include "./widget/UIWidget.h"
 
 struct FGameContext;
 

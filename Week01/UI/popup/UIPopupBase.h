@@ -1,27 +1,27 @@
 #pragma once
 
-#include "UIPopup.h"
-#include "imgui/imgui.h"
-#include "imgui_impl_win32.h"
+#include "pch.h"
 
-class FUIPopupBase : public IUIPopup
+class FUIPopupBase
 {
   public:
-    void Open() override
+    void Open()
     {
         bOpenRequested = true;
         bIsOpen = true;
     }
 
-    void Close() override
+    void Close()
     {
         bIsOpen = false;
         bOpenRequested = false;
     }
 
-    bool IsOpen() const override { return bIsOpen; }
+    bool IsOpen() const { return bIsOpen; }
+    bool IsClosed() const { return !bIsOpen; }
 
-    void Update(FGameContext &Context) override {}
+    virtual void Update(FGameContext &Context) = 0;
+    virtual void Render(FGameContext &Context) = 0;
 
   protected:
     bool ConsumeOpenRequest()

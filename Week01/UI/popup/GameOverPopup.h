@@ -13,6 +13,7 @@ class FGameOverPopup : public FUIPopupBase
   public:
     EGameOverPopupAction ConsumeAction();
     void                 Render(FGameContext &Context) override;
+    void                 Update(FGameContext &Context) override {}
 
   private:
     EGameOverPopupAction PendingAction = EGameOverPopupAction::None;

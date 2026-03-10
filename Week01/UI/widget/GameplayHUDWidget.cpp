@@ -3,7 +3,6 @@
 #include "Gameplay/Stage.h"
 #include "Core/Time.h"
 #include "Render/Renderer.h"
-#include "imgui/imgui.h"
 
 void FGameplayHUDWidget::BindStage(const FStage* InStage)
 {

@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <type_traits>
-#include "UIPopup.h"
-#include "GameContext.h"
+#include "Core/GameContext.h"
+#include "UIPopupBase.h"
 
 class FPopupManager
 {
@@ -14,16 +14,16 @@ class FPopupManager
     bool HasOpenPopup() const;
     bool IsPopupClosed() const;
 
-    void Open(std::unique_ptr<IUIPopup> InPopup);
+    void Open(std::unique_ptr<FUIPopupBase> InPopup);
     void RemoveClosedPopup();
 
     template <typename T>
     T *GetPopup()
     {
-        static_assert(std::is_base_of_v<IUIPopup, T>, "T must derive from IUIPopup");
+        static_assert(std::is_base_of_v<FUIPopupBase, T>, "T must derive from FUIPopupBase");
         return dynamic_cast<T *>(CurrentPopup.get());
     }
 
   private:
-    std::unique_ptr<IUIPopup> CurrentPopup;
+    std::unique_ptr<FUIPopupBase> CurrentPopup;
 };

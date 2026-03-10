@@ -10,6 +10,7 @@ class FCreditPopup : public FUIPopupBase
     void SetCredits(const std::vector<std::string> &InCredits) { Credits = InCredits; }
 
     void Render(FGameContext &Context) override;
+    void Update(FGameContext &Context) override {}
 
   private:
     std::vector<std::string> Credits = {"Test1", "Test2", "Test3"};

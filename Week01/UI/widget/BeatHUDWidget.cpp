@@ -3,7 +3,6 @@
 #include "Core/Time.h"
 #include "Render/Renderer.h"
 #include "Render/TextureManager.h"
-#include "imgui/imgui.h"
 #include <cmath>
 
 void FBeatHUDWidget::BindBeatSystem(const FBeatSystem* InBeatSystem)

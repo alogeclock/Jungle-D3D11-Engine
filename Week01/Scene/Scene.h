@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scene/SceneCommand.h"
+#include "SceneCommand.h"
 
 struct FGameContext;
 

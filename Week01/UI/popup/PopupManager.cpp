@@ -1,4 +1,5 @@
-#include "GameContext.h"
+#include "pch.h"
+#include "Core/GameContext.h"
 #include "PopupManager.h"
 
 void FPopupManager::Update(FGameContext &Context)
@@ -27,7 +28,10 @@ bool FPopupManager::IsPopupClosed() const
     return CurrentPopup->IsClosed();
 }
 
-void FPopupManager::Open(std::unique_ptr<IUIPopup> InPopup) { CurrentPopup = std::move(InPopup); }
+void FPopupManager::Open(std::unique_ptr<FUIPopupBase> InPopup)
+{
+    CurrentPopup = std::move(InPopup);
+}
 
 void FPopupManager::RemoveClosedPopup()
 {

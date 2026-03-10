@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "ScoreRecord.h"
+#include "Data/ScoreRecord.h"
 #include "UIPopupBase.h"
 
 class FScoreboardPopup : public FUIPopupBase
@@ -10,6 +10,7 @@ class FScoreboardPopup : public FUIPopupBase
     void SetRecords(const std::vector<FScoreRecord> &InRecords) { Records = InRecords; }
 
     void Render(FGameContext &Context) override;
+    void Update(FGameContext &Context) override {}
 
   private:
     std::vector<FScoreRecord> Records;

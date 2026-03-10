@@ -3,7 +3,6 @@
 #include "Core/AudioSystem.h"
 #include "Gameplay/BeatSystem.h"
 #include "Gameplay/Stage.h"
-#include "imgui/imgui.h"
 
 void FDebugWidget::BindStage(FStage *InStage)
 {
