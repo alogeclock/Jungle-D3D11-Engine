@@ -9,7 +9,7 @@
 #include "Render/Texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "ThridParty/stb_image.h"
+#include "ThirdParty/stb_image.h"
 
 namespace
 {
