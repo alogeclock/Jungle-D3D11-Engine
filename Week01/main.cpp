@@ -6,7 +6,7 @@
 
 #include "core/Application.h"
 
-// todo
+// TODO: 맨 처음에 텍스처 한번에 로드
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 1024
 
