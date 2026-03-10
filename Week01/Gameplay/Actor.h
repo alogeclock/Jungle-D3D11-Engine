@@ -36,6 +36,9 @@ class FActor
     void Heal(int Amount);
     bool IsDead() const;
 
+    void SetInvincible(bool bEnable);
+    bool IsInvincible() const;
+
     bool IsMoving() const;
 
     void               SetSprite(const FSpriteInfo &InSprite);
@@ -50,7 +53,8 @@ class FActor
 
     EDirection Direction = EDirection::Down;
 
-    int Hp = 5;
+    int  Hp = 5;
+    bool bIsInvincible = false;
 
     bool  bIsMoving = false;
     float MoveTimer = 0.0f;

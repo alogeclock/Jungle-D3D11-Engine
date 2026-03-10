@@ -93,10 +93,16 @@ int FActor::GetHp() const { return Hp; }
 
 void FActor::Damage(int Amount)
 {
+    if (bIsInvincible)
+        return;
     Hp -= Amount;
     if (Hp < 0)
         Hp = 0;
 }
+
+void FActor::SetInvincible(bool bEnable) { bIsInvincible = bEnable; }
+
+bool FActor::IsInvincible() const { return bIsInvincible; }
 
 void FActor::Heal(int Amount) { Hp += Amount; }
 
