@@ -3,9 +3,9 @@
 #include <memory>
 #include <string>
 #include "Scene.h"
+#include "../UI/UIManager.h"
 
 class FStage;
-class FPopupManager;
 class FRenderer;
 class FTextureManager;
 
@@ -20,21 +20,21 @@ public:
 	void Enter() override;
 	void Exit() override;
 
-	void Update(FGameContext& Context) override;
-	void Render(FGameContext& Context) override;
+    void Update(FGameContext &Context) override;
+    void Render(FGameContext &Context) override;
 
-	void StartNewGame(const std::string& MapPath);
-	void RestartGame();
+    void StartNewGame(const std::string &MapPath);
+    void RestartGame();
 
 private:
 	std::unique_ptr<FStage> Stage;
-	std::unique_ptr<FPopupManager> PopupManager;
+	FUIManager UIManager;
 
 	FRenderer* Renderer = nullptr;
 	FTextureManager* Textures = nullptr;
 
-	bool bIsPaused = false;
-	bool bIsGameOverPopupOpened = false;
+    bool bIsPaused = false;
+    bool bIsGameOverPopupOpened = false;
 
-	std::string CurrentMapPath;
+    std::string CurrentMapPath;
 };

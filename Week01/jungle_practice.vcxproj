@@ -143,7 +143,6 @@
     <ClCompile Include="Gameplay\MapData.cpp" />
     <ClCompile Include="Gameplay\Monster.cpp" />
     <ClCompile Include="Gameplay\Player.cpp" />
-    <ClCompile Include="Gameplay\PopupManager.cpp" />
     <ClCompile Include="Gameplay\ScoreboardPopup.cpp" />
     <ClCompile Include="Gameplay\ScoreSystem.cpp" />
     <ClCompile Include="Gameplay\Stage.cpp" />
@@ -156,6 +155,8 @@
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="UI\PopupManager.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Core\Renderer.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
@@ -185,8 +186,6 @@
     <ClInclude Include="Gameplay\MapData.h" />
     <ClInclude Include="Gameplay\Monster.h" />
     <ClInclude Include="Gameplay\Player.h" />
-    <ClInclude Include="Gameplay\Popup.h" />
-    <ClInclude Include="Gameplay\PopupManager.h" />
     <ClInclude Include="Gameplay\ScoreboardPopup.h" />
     <ClInclude Include="Gameplay\ScoreSystem.h" />
     <ClInclude Include="Gameplay\Stage.h" />
@@ -208,6 +207,12 @@
     <ClInclude Include="Core\Types.h" />
     <ClInclude Include="Core\Renderer.h" />
     <ClInclude Include="Core\Logger.h" />
+    <ClInclude Include="UI\BeatHUDWidget.h" />
+    <ClInclude Include="UI\GameplayHUDWidget.h" />
+    <ClInclude Include="UI\Popup.h" />
+    <ClInclude Include="UI\PopupManager.h" />
+    <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="UI\UIWidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

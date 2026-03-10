@@ -1,6 +1,5 @@
 #include "TitleScene.h"
 #include "../Core/GameContext.h"
-#include "../Gameplay/PopupManager.h"
 #include "../Gameplay/CreditPopup.h"
 #include "../Gameplay/ScoreboardPopup.h"
 
@@ -13,22 +12,18 @@ FTitleScene::~FTitleScene() = default;
 
 void FTitleScene::Enter()
 {
-	PopupManager = std::make_unique<FPopupManager>();
-	PopupManager->AddPopup("Credit", std::make_unique<FCreditPopup>());
-	PopupManager->AddPopup("Scoreboard", std::make_unique<FScoreboardPopup>());
+	UIManager.GetPopupManager().AddPopup("Credit", std::make_unique<FCreditPopup>());
+	UIManager.GetPopupManager().AddPopup("Scoreboard", std::make_unique<FScoreboardPopup>());
 }
 
 void FTitleScene::Exit()
 {
-	PopupManager.reset();
+	UIManager.ClearAll();
 }
 
 void FTitleScene::Update(FGameContext& Context)
 {
-	if (PopupManager)
-	{
-		PopupManager->Update(Context);
-	}
+	UIManager.Update(Context);
 }
 
 void FTitleScene::Render(FGameContext& Context)
@@ -52,10 +47,7 @@ void FTitleScene::Render(FGameContext& Context)
 
 	ImGui::End();
 
-	if (PopupManager)
-	{
-		PopupManager->Render(Context);
-	}
+	UIManager.Render(Context);
 }
 
 void FTitleScene::StartGame()
@@ -65,16 +57,10 @@ void FTitleScene::StartGame()
 
 void FTitleScene::ShowCredit()
 {
-	if (PopupManager)
-	{
-		PopupManager->Open("Credit");
-	}
+	UIManager.GetPopupManager().Open("Credit");
 }
 
 void FTitleScene::ShowScore()
 {
-	if (PopupManager)
-	{
-		PopupManager->Open("Scoreboard");
-	}
+	UIManager.GetPopupManager().Open("Scoreboard");
 }

@@ -2,7 +2,6 @@
 #include "../Core/GameContext.h"
 #include "../Core/Time.h"
 #include "../Gameplay/Stage.h"
-#include "../Gameplay/PopupManager.h"
 
 FPlayScene::~FPlayScene() = default;
 
@@ -18,14 +17,13 @@ void FPlayScene::SetTextureManager(FTextureManager* InTextures)
 
 void FPlayScene::Enter()
 {
-	PopupManager = std::make_unique<FPopupManager>();
 	StartNewGame("Resources/Maps/default.map");
 }
 
 void FPlayScene::Exit()
 {
 	Stage.reset();
-	PopupManager.reset();
+	UIManager.ClearAll();
 }
 
 void FPlayScene::Update(FGameContext& Context)
@@ -35,10 +33,7 @@ void FPlayScene::Update(FGameContext& Context)
 		Stage->Update(Context.Time.GetDeltaTime());
 	}
 
-	if (PopupManager)
-	{
-		PopupManager->Update(Context);
-	}
+	UIManager.Update(Context);
 }
 
 void FPlayScene::Render(FGameContext& Context)
@@ -48,10 +43,7 @@ void FPlayScene::Render(FGameContext& Context)
 		Stage->Render();
 	}
 
-	if (PopupManager)
-	{
-		PopupManager->Render(Context);
-	}
+	UIManager.Render(Context);
 }
 
 void FPlayScene::StartNewGame(const std::string& MapPath)

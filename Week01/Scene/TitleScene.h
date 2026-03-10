@@ -2,8 +2,7 @@
 
 #include <memory>
 #include "Scene.h"
-
-class FPopupManager;
+#include "../UI/UIManager.h"
 
 class FTitleScene : public IScene
 {
@@ -13,13 +12,13 @@ public:
 	void Enter() override;
 	void Exit() override;
 
-	void Update(FGameContext& Context) override;
-	void Render(FGameContext& Context) override;
+    void Update(FGameContext &Context) override;
+    void Render(FGameContext &Context) override;
 
 private:
 	void StartGame();
 	void ShowCredit();
 	void ShowScore();
 
-	std::unique_ptr<FPopupManager> PopupManager;
+	FUIManager UIManager;
 };
