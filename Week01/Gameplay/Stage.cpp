@@ -317,7 +317,8 @@ void FStage::DrawSpriteAtWorld(float WorldCenterX, float WorldCenterY,
 	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(World));
 	CB.View = CachedView;
 	CB.Projection = CachedProjection;
-	CB.SpriteSize = Sprite.SpriteSize;
+	// sprite atlas를 사용하지 않으므로 전체 텍스처 UV 사용
+	CB.SpriteSize = TexSize;
 	CB.TextureSize = TexSize;
 	CB.SpriteOffset = Sprite.SpriteOffset;
 	CB.IsMirrored = Sprite.bIsMirrored ? 1.0f : 0.0f;
