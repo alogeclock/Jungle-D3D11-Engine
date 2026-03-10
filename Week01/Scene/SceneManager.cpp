@@ -1,104 +1,67 @@
-#include "pch.h"
-#include "SceneManager.h"
-#include "Scene.h"
-#include "TitleScene.h"
 #include "PlayScene.h"
-#include "Core/GameContext.h"
-#include "Gameplay/Stage.h"
+#include "SceneManager.h"
+#include "SceneType.h"
+#include "TitleScene.h"
 
-void FSceneManager::Initialize(FGameContext* InGameContext)
+
+void FSceneManager::Initialize() { ChangeSceneInternal(ESceneType::Title); }
+
+ESceneManagerUpdateResult FSceneManager::Update(FGameContext &Context)
 {
-	GameContext = InGameContext;
-	ChangeSceneImmediately(ESceneType::Title);
+    if (!CurrentScene)
+        return ESceneManagerUpdateResult::None;
+
+    CurrentScene->Update(Context);
+
+    const FSceneCommand Command = CurrentScene->ConsumeCommand();
+
+    if (Command.Type == ESceneCommandType::QuitGame)
+        return ESceneManagerUpdateResult::QuitGame;
+
+    HandleSceneCommand(Command);
+    return ESceneManagerUpdateResult::None;
 }
 
-void FSceneManager::RequestChangeScene(ESceneType SceneType)
+void FSceneManager::Render(FGameContext &Context)
 {
-	PendingSceneType = SceneType;
-	bHasPendingSceneChange = true;
+    if (!CurrentScene)
+        return;
+    CurrentScene->Render(Context);
 }
 
-void FSceneManager::ChangeSceneImmediately(ESceneType SceneType)
+void FSceneManager::HandleSceneCommand(const FSceneCommand &Command)
 {
-	if (CurrentScene)
-	{
-		CurrentScene->Exit();
-	}
+    switch (Command.Type)
+    {
+    case ESceneCommandType::None:
+        break;
 
-	CurrentScene = CreateScene(SceneType);
-	CurrentSceneType = SceneType;
+    case ESceneCommandType::ChangeScene:
+        ChangeSceneInternal(Command.NextScene, Command.NextStageIndex);
+        break;
 
-	if (CurrentScene)
-	{
-		CurrentScene->Enter();
-	}
+    case ESceneCommandType::QuitGame:
+        break;
+
+    default:
+        break;
+    }
 }
 
-void FSceneManager::Update()
+void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex)
 {
-	ApplyPendingSceneChange();
+    switch (SceneType)
+    {
+    case ESceneType::Title:
+        CurrentScene = std::make_unique<FTitleScene>();
+        break;
 
-	if (CurrentScene && GameContext)
-	{
-		CurrentScene->Update(*GameContext);
+    case ESceneType::Play:
+        CurrentScene = std::make_unique<FPlayScene>(StageIndex);
+        break;
 
-		if (CurrentScene->HasSceneChangeRequest())
-		{
-			RequestChangeScene(CurrentScene->GetRequestedScene());
-			CurrentScene->ClearSceneChangeRequest();
-		}
-	}
-}
-
-void FSceneManager::Render()
-{
-	if (CurrentScene && GameContext)
-	{
-		CurrentScene->Render(*GameContext);
-	}
-}
-
-ESceneType FSceneManager::GetCurrentSceneType() const
-{
-	return CurrentSceneType;
-}
-
-IScene* FSceneManager::GetCurrentScene()
-{
-	return CurrentScene.get();
-}
-
-const IScene* FSceneManager::GetCurrentScene() const
-{
-	return CurrentScene.get();
-}
-
-void FSceneManager::ApplyPendingSceneChange()
-{
-	if (bHasPendingSceneChange)
-	{
-		bHasPendingSceneChange = false;
-		ChangeSceneImmediately(PendingSceneType);
-	}
-}
-
-std::unique_ptr<IScene> FSceneManager::CreateScene(ESceneType SceneType)
-{
-	switch (SceneType)
-	{
-	case ESceneType::Title:
-		return std::make_unique<FTitleScene>();
-	case ESceneType::Play:
-	{
-		auto Scene = std::make_unique<FPlayScene>();
-		if (GameContext)
-		{
-			Scene->SetRenderer(&GameContext->Renderer);
-			Scene->SetTextureManager(&GameContext->Textures);
-		}
-		return Scene;
-	}
-	default:
-		return nullptr;
-	}
+    default:
+        CurrentScene.reset();
+        break;
+    }
 }

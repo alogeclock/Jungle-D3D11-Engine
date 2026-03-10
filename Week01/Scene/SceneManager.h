@@ -1,37 +1,26 @@
 #pragma once
 
 #include <memory>
-#include "Core/Types.h"
 #include "Scene.h"
+#include "SceneCommand.h"
 
-struct FGameContext;
+enum class ESceneManagerUpdateResult
+{
+    None,
+    QuitGame
+};
 
 class FSceneManager
 {
-public:
-	void Initialize(FGameContext* InGameContext);
+  public:
+    void                      Initialize();
+    ESceneManagerUpdateResult Update(FGameContext &Context);
+    void                      Render(FGameContext &Context);
 
-	void RequestChangeScene(ESceneType SceneType);
-	void ChangeSceneImmediately(ESceneType SceneType);
+  private:
+    void HandleSceneCommand(const FSceneCommand &Command);
+    void ChangeSceneInternal(ESceneType SceneType, int StageIndex = -1);
 
-	void Update();
-	void Render();
-
-	ESceneType GetCurrentSceneType() const;
-	IScene* GetCurrentScene();
-	const IScene* GetCurrentScene() const;
-
-private:
-	void ApplyPendingSceneChange();
-	std::unique_ptr<IScene> CreateScene(ESceneType SceneType);
-
-private:
-	FGameContext* GameContext = nullptr;
-
-	std::unique_ptr<IScene> CurrentScene;
-
-	ESceneType CurrentSceneType = ESceneType::Title;
-	ESceneType PendingSceneType = ESceneType::Title;
-
-	bool bHasPendingSceneChange = false;
+  private:
+    std::unique_ptr<IScene> CurrentScene;
 };

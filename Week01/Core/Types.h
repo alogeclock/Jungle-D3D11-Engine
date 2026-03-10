@@ -17,12 +17,6 @@ struct FVector
     FVector(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
 };
 
-enum class ESceneType
-{
-    Title,
-    Play
-};
-
 enum class EDirection
 {
     Up,
@@ -71,13 +65,6 @@ struct FVec2
 {
     float X = 0.0f;
     float Y = 0.0f;
-};
-
-struct FScoreRecord
-{
-    std::string Name;
-    int         Stage = 0;
-    int         Score = 0;
 };
 
 enum class TileType : int
