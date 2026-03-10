@@ -228,7 +228,7 @@ void FRenderer::Create(HWND hWindow)
 	CreateFrameBuffer();
 	CreateRasterizerState();
 	CreateSimpleQuad();
-	//CreateSamplerState();
+	CreateSamplerState();
 }
 
 void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)

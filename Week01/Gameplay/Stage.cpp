@@ -5,8 +5,8 @@
 #include "Core/GameContext.h"
 #include "Core/Input.h"
 #include "Core/Logger.h"
-#include "Data/MapData.h"
-#include "Data/MapLoader.h"
+#include "Data/StageData.h"
+#include "Data/StageLoader.h"
 #include "IO/ImageLoader.h"
 #include "Monster.h"
 #include "Player.h"
@@ -25,21 +25,20 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     Renderer = InRenderer;
     Textures = InTextures;
 
-    Map = std::make_unique<FMapData>();
+    Map = std::make_unique<FStageData>();
     Player = std::make_unique<FPlayer>();
     BeatSystem = std::make_unique<FBeatSystem>();
     Camera = std::make_unique<FCamera2D>();
     ScoreSystem = std::make_unique<FScoreSystem>();
 
-    // 싱글턴 MapLoader에서 스테이지 로드
-    FStageInfo StageInfo;
-    if (!FMapLoader::Get().LoadStage(StageIndex, *Map, StageInfo))
+    // 싱글턴 StageLoader에서 스테이지 로드
+    if (!FStageLoader::Get().LoadStageById(StageIndex, *Map))
     {
         return false;
     }
 
     CurrentStageIndex = StageIndex;
-    StageName = StageInfo.Name;
+    StageName = Map->GetStageName();
 
     // 타일값 기반으로 오브젝트 배치
     // 0=PATH, 1=WALL, 2=OUTER, 3=GOAL
@@ -76,15 +75,8 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     }
 
     // 메타데이터 기반 플레이어 스폰
-    Player->SetPosition(StageInfo.PlayerSpawn.X, StageInfo.PlayerSpawn.Y, TileSize);
-
-    // 메타데이터 기반 몬스터 스폰
-    for (const auto &Spawn : StageInfo.MonsterSpawns)
-    {
-        auto Mon = std::make_unique<FMonster>();
-        Mon->SetPosition(Spawn.X, Spawn.Y, TileSize);
-        Monsters.push_back(std::move(Mon));
-    }
+    FSpawnPoint Spawn = Map->GetSpawnPoint();
+    Player->SetPosition(Spawn.X, Spawn.Y, TileSize);
 
     // 카메라 설정
     Camera->SetWorldBounds(Map->GetWorldWidth(TileSize), Map->GetWorldHeight(TileSize));
@@ -233,12 +225,16 @@ void FStage::Render()
     // View/Projection 행렬 갱신
     UpdateViewProjection();
 
-    // 버텍스 버퍼, 상수 버퍼 바인딩
+    // 버텍스 버퍼, 상수 버퍼, 샘플러 바인딩
     UINT stride = sizeof(FSpriteVertex);
     UINT offset = 0;
     Renderer->DeviceContext->IASetVertexBuffers(0, 1, &QuadVB, &stride, &offset);
     Renderer->DeviceContext->VSSetConstantBuffers(0, 1, &SpriteCB);
     Renderer->DeviceContext->PSSetConstantBuffers(0, 1, &SpriteCB);
+    if (Renderer->SamplerState)
+    {
+        Renderer->DeviceContext->PSSetSamplers(0, 1, &Renderer->SamplerState);
+    }
 
     // 바닥 타일 렌더링
     for (const auto &Tile : Tiles)
@@ -549,9 +545,9 @@ void FStage::RemoveDestroyedWalls()
     }
 }
 
-FMapData &FStage::GetMap() { return *Map; }
+FStageData &FStage::GetMap() { return *Map; }
 
-const FMapData &FStage::GetMap() const { return *Map; }
+const FStageData &FStage::GetMap() const { return *Map; }
 
 FBeatSystem &FStage::GetBeatSystem() { return *BeatSystem; }
 

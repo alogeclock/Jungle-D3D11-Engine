@@ -4,7 +4,7 @@
 #include <vector>
 #include "Core/Types.h"
 
-class FStageData;
+struct FStageData;
 
 class FStageLoader
 {

@@ -27,7 +27,8 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     // TODO: 텍스처 모두 로드
     // TextureManager->Initialize(Renderer->Device);
 
-    // TODO: 스테이지 로더 세팅
+    // 스테이지 데이터 로드
+    FStageLoader::Get().Initialize("Resources/Maps/stages.json");
 
     // ImGui 초기화
     IMGUI_CHECKVERSION();
