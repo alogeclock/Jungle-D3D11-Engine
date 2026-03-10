@@ -24,15 +24,6 @@ void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
 
 void FScoreSystem::AddEnemyDefeatBonus() { Score += 100; }
 
-void FScoreSystem::AddTimeBonus(float RemainingSeconds)
-{
-	int Bonus = static_cast<int>(RemainingSeconds * 50);
-	if (Bonus > 0)
-	{
-		Score += Bonus;
-	}
-}
-
 void FScoreSystem::BreakCombo() { Combo = 0; }
 
 int FScoreSystem::GetScore() const { return Score; }

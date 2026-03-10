@@ -7,7 +7,7 @@ void FBeatSystem::Reset()
     bIsBeatJustTriggered = false;
 }
 
-void FBeatSystem::Update(float DeltaTime)
+void FBeatSystem::Update(float DeltaTime, FGameContext &Context)
 {
     float PreviousTime = ElapsedTime;
     ElapsedTime += DeltaTime;

@@ -6,63 +6,50 @@
 
 FPlayScene::~FPlayScene() = default;
 
-void FPlayScene::SetRenderer(FRenderer* InRenderer)
-{
-	Renderer = InRenderer;
-}
+void FPlayScene::SetRenderer(FRenderer *InRenderer) { Renderer = InRenderer; }
 
-void FPlayScene::SetTextureManager(FTextureManager* InTextures)
-{
-	Textures = InTextures;
-}
+void FPlayScene::SetTextureManager(FTextureManager *InTextures) { Textures = InTextures; }
 
-void FPlayScene::Enter()
-{
-	StartNewGame("Resources/Maps/stages.json", 0);
-}
+void FPlayScene::Enter() { StartNewGame("Resources/Maps/default.map"); }
 
 void FPlayScene::Exit()
 {
-	Stage.reset();
-	UIManager.ClearAll();
+    Stage.reset();
+    UIManager.ClearAll();
 }
 
-void FPlayScene::Update(FGameContext& Context)
+void FPlayScene::Update(FGameContext &Context)
 {
-	if (Stage && !bIsPaused)
-	{
-		Stage->Update(Context.Time.GetDeltaTime());
-	}
+    if (Stage && !bIsPaused)
+    {
+        Stage->Update(Context.Time.GetDeltaTime(), Context);
+    }
 
-	UIManager.Update(Context);
+    UIManager.Update(Context);
 }
 
-void FPlayScene::Render(FGameContext& Context)
+void FPlayScene::Render(FGameContext &Context)
 {
-	if (Stage)
-	{
-		Stage->Render();
-	}
+    if (Stage)
+    {
+        Stage->Render();
+    }
 
-	UIManager.Render(Context);
+    UIManager.Render(Context);
 }
 
-void FPlayScene::StartNewGame(const std::string& MapPath, int StageIndex)
+void FPlayScene::StartNewGame(const std::string &MapPath)
 {
-	CurrentMapPath = MapPath;
-	CurrentStageIndex = StageIndex;
+    CurrentMapPath = MapPath;
 
-	Stage = std::make_unique<FStage>();
-	Stage->Load(CurrentMapPath, CurrentStageIndex, Renderer, Textures);
+    Stage = std::make_unique<FStage>();
+    Stage->Load(CurrentMapPath, Renderer, Textures);
 
-	// HUD 위젯 등록
-	UIManager.ClearAll();
-	auto HUD = std::make_unique<FGameplayHUDWidget>();
-	HUD->BindStage(Stage.get());
-	UIManager.AddWidget("GameplayHUD", std::move(HUD));
+    // HUD 위젯 등록
+    UIManager.ClearAll();
+    auto HUD = std::make_unique<FGameplayHUDWidget>();
+    HUD->BindStage(Stage.get());
+    UIManager.AddWidget("GameplayHUD", std::move(HUD));
 }
 
-void FPlayScene::RestartGame()
-{
-	StartNewGame(CurrentMapPath, CurrentStageIndex);
-}
+void FPlayScene::RestartGame() { StartNewGame(CurrentMapPath); }
