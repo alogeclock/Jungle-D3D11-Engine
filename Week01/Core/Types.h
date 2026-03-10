@@ -73,13 +73,6 @@ struct FVec2
     float Y = 0.0f;
 };
 
-struct FScoreRecord
-{
-    std::string Name;
-    int         Stage = 0;
-    int         Score = 0;
-};
-
 enum class TileType : int
 {
     Path = 0,  // 이동 가능 (캐릭터가 서 있을 수 있는 곳)
