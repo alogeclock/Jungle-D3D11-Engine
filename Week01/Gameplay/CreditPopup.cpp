@@ -1,6 +1,6 @@
 #include "CreditPopup.h"
-#include "../Core/GameContext.h"
-#include "../imgui/imgui.h"
+#include "Core/GameContext.h"
+#include "imgui/imgui.h"
 
 void FCreditPopup::Open() { bIsOpen = true; }
 
@@ -13,15 +13,15 @@ void FCreditPopup::Update(FGameContext &Context) {}
 void FCreditPopup::Render(FGameContext &Context)
 {
     if (!bIsOpen)
-        return; // ImGui Ã¢ ½ÃÀÛ
+        return; // ImGui Ã¢ ï¿½ï¿½ï¿½ï¿½
 
     if (ImGui::Begin("Credits", &bIsOpen, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::Text("--- Credits ---");
         ImGui::Separator();
-        ImGui::Text("ÄÚ¾î + ÆÄÀÏ Ã³¸®: ±è¿¬ÇÏ");
-        ImGui::Text("·»´õ/UI: ÀÌÈ£Áø");
-        ImGui::Text("°ÔÀÓÇÃ·¹ÀÌ: ÀüÇö±æ, ½É¿ìÁø");
+        ImGui::Text("ï¿½Ú¾ï¿½ + ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½: ï¿½è¿¬ï¿½ï¿½");
+        ImGui::Text("ï¿½ï¿½ï¿½ï¿½/UI: ï¿½ï¿½È£ï¿½ï¿½");
+        ImGui::Text("ï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½É¿ï¿½ï¿½ï¿½");
 
         ImGui::End();
     }

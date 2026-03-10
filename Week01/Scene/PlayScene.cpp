@@ -1,7 +1,7 @@
 #include "PlayScene.h"
-#include "../Core/GameContext.h"
-#include "../Core/Time.h"
-#include "../Gameplay/Stage.h"
+#include "Core/GameContext.h"
+#include "Core/Time.h"
+#include "Gameplay/Stage.h"
 
 FPlayScene::~FPlayScene() = default;
 

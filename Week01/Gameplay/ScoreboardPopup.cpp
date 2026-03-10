@@ -1,6 +1,6 @@
 #include "ScoreboardPopup.h"
-#include "../Core/GameContext.h"
-#include "../imgui/imgui.h"
+#include "Core/GameContext.h"
+#include "imgui/imgui.h"
 
 void FScoreboardPopup::SetScores(const std::vector<FScoreRecord> &InScores) { Scores = InScores; }
 
@@ -15,14 +15,14 @@ void FScoreboardPopup::Update(FGameContext &Context) {}
 void FScoreboardPopup::Render(FGameContext &Context)
 {
     if (!bIsOpen)
-        return; // ImGui Ã¢ ½ÃÀÛ
+        return; // ImGui Ã¢ ï¿½ï¿½ï¿½ï¿½
 
     if (ImGui::Begin("Scoreboard", &bIsOpen, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::Text("--- High Scores ---");
         ImGui::Separator();
 
-        // ÀúÀåµÈ Á¡¼ö ±â·Ïµé Ãâ·Â
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ïµï¿½ ï¿½ï¿½ï¿½
         for (size_t i = 0; i < Scores.size(); ++i)
         {
             ImGui::Text("%d. %s : %d", static_cast<int>(i + 1), Scores[i].Name.c_str(),
@@ -36,7 +36,7 @@ void FScoreboardPopup::Render(FGameContext &Context)
 
         ImGui::Separator();
 
-        // ÇÏ´Ü ´Ý±â ¹öÆ°
+        // ï¿½Ï´ï¿½ ï¿½Ý±ï¿½ ï¿½ï¿½Æ°
         if (ImGui::Button("Close", ImVec2(120, 0)))
         {
             Close();

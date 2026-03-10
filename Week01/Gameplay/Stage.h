@@ -101,7 +101,7 @@ private:
 	std::unique_ptr<FCamera2D> Camera;
 	std::unique_ptr<FScoreSystem> ScoreSystem;
 
-	float TileSize = 32.0f;
+	float TileSize = 96.0f;
 
 	bool bIsGameOver = false;
 	bool bIsCleared = false;

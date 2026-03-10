@@ -2,8 +2,8 @@
 #include "Scene.h"
 #include "TitleScene.h"
 #include "PlayScene.h"
-#include "../Core/GameContext.h"
-#include "../Gameplay/Stage.h"
+#include "Core/GameContext.h"
+#include "Gameplay/Stage.h"
 
 void FSceneManager::Initialize(FGameContext* InGameContext)
 {

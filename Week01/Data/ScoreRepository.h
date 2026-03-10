@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "../Core/Types.h"
+#include "Core/Types.h"
 
 class FScoreRepository
 {

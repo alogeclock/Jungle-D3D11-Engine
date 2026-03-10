@@ -6,10 +6,10 @@
 #include "BeatSystem.h"
 #include "Camera2D.h"
 #include "ScoreSystem.h"
-#include "../Core/Renderer.h"
-#include "../Core/Texture.h"
-#include "../Core/TextureManager.h"
-#include "../Data/MapLoader.h"
+#include "Core/Renderer.h"
+#include "Core/Texture.h"
+#include "Core/TextureManager.h"
+#include "Data/MapLoader.h"
 
 using namespace DirectX;
 

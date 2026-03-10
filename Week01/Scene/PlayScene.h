@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include "Scene.h"
-#include "../UI/UIManager.h"
+#include "UI/UIManager.h"
 
 class FStage;
 class FRenderer;

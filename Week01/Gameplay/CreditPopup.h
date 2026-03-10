@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../UI/Popup.h"
+#include "UI/Popup.h"
 
 class FCreditPopup : public IPopup
 {

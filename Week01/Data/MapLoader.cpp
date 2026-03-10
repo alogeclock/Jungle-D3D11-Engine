@@ -1,5 +1,5 @@
 #include "MapLoader.h"
-#include "../Gameplay/MapData.h"
+#include "Gameplay/MapData.h"
 
 #include <fstream>
 #include <sstream>

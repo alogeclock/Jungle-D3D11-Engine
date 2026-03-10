@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "Scene.h"
-#include "../UI/UIManager.h"
+#include "UI/UIManager.h"
 
 class FTitleScene : public IScene
 {

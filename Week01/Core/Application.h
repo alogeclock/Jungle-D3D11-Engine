@@ -5,7 +5,7 @@
 #include "GameContext.h"
 #include "Input.h"
 #include "Renderer.h"
-#include "../Scene/SceneManager.h"
+#include "Scene/SceneManager.h"
 #include "TextureManager.h"
 #include "Time.h"
 
