@@ -3,7 +3,7 @@
 #include "Core/GameContext.h"
 #include "UIWidget.h"
 
-struct FStage;
+class FStage;
 
 class FGameplayHUDWidget : public IUIWidget
 {

@@ -2,6 +2,7 @@
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Gameplay/Stage.h"
+#include "UI/GameplayHUDWidget.h"
 
 FPlayScene::~FPlayScene() = default;
 
@@ -53,6 +54,12 @@ void FPlayScene::StartNewGame(const std::string& MapPath, int StageIndex)
 
 	Stage = std::make_unique<FStage>();
 	Stage->Load(CurrentMapPath, CurrentStageIndex, Renderer, Textures);
+
+	// HUD 위젯 등록
+	UIManager.ClearAll();
+	auto HUD = std::make_unique<FGameplayHUDWidget>();
+	HUD->BindStage(Stage.get());
+	UIManager.AddWidget("GameplayHUD", std::move(HUD));
 }
 
 void FPlayScene::RestartGame()
