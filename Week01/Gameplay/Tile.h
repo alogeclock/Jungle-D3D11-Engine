@@ -5,6 +5,7 @@
 enum class ETileType
 {
 	Floor,
+	Goal,
 	Spike,
 	Heal
 };

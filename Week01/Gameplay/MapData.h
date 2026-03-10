@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "Core/Types.h"
 
 class FMapData
 {
@@ -13,6 +14,7 @@ public:
 
 	bool IsInside(int X, int Y) const;
 	bool IsWalkable(int X, int Y) const;
+	bool IsGoal(int X, int Y) const;
 
 	int GetWidth() const;
 	int GetHeight() const;

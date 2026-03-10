@@ -44,7 +44,7 @@ class FStage
   public:
     ~FStage();
 
-    bool Load(const std::string &MapPath, FRenderer *InRenderer, FTextureManager *InTextures);
+    bool Load(const std::string &MapPath, int StageIndex, FRenderer *InRenderer, FTextureManager *InTextures);
     void Reset();
 
     void Update(float DeltaTime, FGameContext &Context);
@@ -89,6 +89,9 @@ class FStage
     bool IsGameOver() const;
     bool IsCleared() const;
 
+    int GetCurrentStageIndex() const;
+    const std::string& GetStageName() const;
+
   private:
     std::unique_ptr<FMapData>              Map;
     std::unique_ptr<FPlayer>               Player;
@@ -104,6 +107,11 @@ class FStage
 
     bool bIsGameOver = false;
     bool bIsCleared = false;
+
+    int GoalX = -1;
+    int GoalY = -1;
+    int CurrentStageIndex = 0;
+    std::string StageName;
 
     FRenderer       *Renderer = nullptr;
     FTextureManager *Textures = nullptr;
