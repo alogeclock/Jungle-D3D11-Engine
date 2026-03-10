@@ -3,6 +3,7 @@
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Gameplay/Stage.h"
+#include "UI/BeatHUDWidget.h"
 #include "UI/GameplayHUDWidget.h"
 
 FPlayScene::~FPlayScene() = default;
@@ -51,6 +52,10 @@ void FPlayScene::StartNewGame(int StageIndex)
     auto HUD = std::make_unique<FGameplayHUDWidget>();
     HUD->BindStage(Stage.get());
     UIManager.AddWidget("GameplayHUD", std::move(HUD));
+
+    auto BeatHUD = std::make_unique<FBeatHUDWidget>();
+    BeatHUD->BindBeatSystem(&Stage->GetBeatSystem());
+    UIManager.AddWidget("BeatHUD", std::move(BeatHUD));
 }
 
 void FPlayScene::RestartGame() { StartNewGame(CurrentStageIndex); }

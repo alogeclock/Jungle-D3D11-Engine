@@ -66,3 +66,5 @@ float FBeatSystem::GetTimeToNextBeat() const
     float NextBeatTime = (static_cast<int>(ElapsedTime / BeatInterval) + 1) * BeatInterval;
     return NextBeatTime - ElapsedTime;
 }
+
+float FBeatSystem::GetGoodWindow() const { return GoodWindow; }

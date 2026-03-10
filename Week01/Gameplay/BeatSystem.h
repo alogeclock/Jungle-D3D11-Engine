@@ -23,6 +23,7 @@ class FBeatSystem
 
     float GetElapsedTime() const;
     float GetTimeToNextBeat() const;
+    float GetGoodWindow() const;
 
   private:
     float Bpm = 120.0f;
