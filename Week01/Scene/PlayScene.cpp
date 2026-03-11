@@ -1,15 +1,15 @@
 ﻿#include "pch.h"
 #include "PlayScene.h"
-#include "Core/AudioSystem.h"
 #include <memory>
 #include <string>
+
 #include "Core/AudioSystem.h"
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Data/ScoreRepository.h"
+#include "Data/StageData.h"   
 #include "Data/StageLoader.h"
 #include "Gameplay/Stage.h"
-#include "PlayScene.h"
 #include "Scene/SceneCommand.h"
 #include "Scene/SceneType.h"
 #include "UI/popup/GameOverPopup.h"
@@ -17,6 +17,7 @@
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/SaveScorePopup.h"
 #include "UI/popup/StageClearPopup.h"
+#include "UI/popup/StageIntroPopup.h"
 #include "UI/popup/UIPopupAction.h"
 #include "UI/widget/BeatHUDWidget.h"
 #include "UI/widget/DebugWidget.h"
@@ -36,8 +37,6 @@ void FPlayScene::Update(FGameContext &Context)
         bStageLoaded = true;
     }
 
-    // TODO: 지연된 업데이트 필요하나?
-    // 필요하다고 해도 ChangeScene 커맨드로 간략화하여 코드 수정할 것
     if (PendingStageIndex >= 0)
     {
         FSceneCommand Command;
@@ -52,7 +51,7 @@ void FPlayScene::Update(FGameContext &Context)
 
     FPopupManager &PopupManager = UIManager.GetPopupManager();
 
-    bIsPaused = PopupManager.HasOpenPopup();
+    bIsPaused = bWaitingForStageStart || PopupManager.HasOpenPopup();
 
     if (Stage && !bIsPaused)
     {
@@ -88,25 +87,27 @@ void FPlayScene::LoadStage(FGameContext &Context)
 
     Stage = std::make_unique<FStage>();
     Stage->Load(CurrentStageIndex, &Context.Renderer, &Context.Textures);
-    Stage->StartBGM();
     Stage->GetScoreSystem().SetScore(AccumulatedScore);
 
     bIsPaused = false;
+    bWaitingForStageStart = true;
 
-    // HUD 위젯 등록
     UIManager.ClearAll();
+
     auto HUD = std::make_unique<FGameplayHUDWidget>();
     HUD->SetTextures(Context);
     HUD->BindStage(Stage.get());
     HUD->BindPauseFlag(&bIsPaused);
-    // 콜백 연동: ScoreSystem에서 판정이 일어나면 HUD의 OnBeatJudged를 호출하도록 바인딩 ---
     UIManager.AddWidget("GameplayHUD", std::move(HUD));
 
     auto BeatHUD = std::make_unique<FBeatHUDWidget>();
     BeatHUD->SetTextures(Context);
     BeatHUD->BindBeatSystem(&Stage->GetBeatSystem());
-    Stage->GetScoreSystem().SetJudgeCallback([HUDPtr = BeatHUD.get()](EBeatJudge Judge)
-                                             { HUDPtr->OnBeatJudged(Judge); });
+    Stage->GetScoreSystem().SetJudgeCallback(
+        [HUDPtr = BeatHUD.get()](EBeatJudge Judge)
+        {
+            HUDPtr->OnBeatJudged(Judge);
+        });
     UIManager.AddWidget("BeatHUD", std::move(BeatHUD));
 
     auto Minimap = std::make_unique<FMinimapWidget>();
@@ -118,6 +119,16 @@ void FPlayScene::LoadStage(FGameContext &Context)
     Debug->SetTotalStages(FStageLoader::Get().GetStageCount());
     Debug->SetStageChangeCallback([this](int Index) { PendingStageIndex = Index; });
     UIManager.AddWidget("Debug", std::move(Debug));
+
+    FStageData StageData;
+    if (FStageLoader::Get().LoadStageById(CurrentStageIndex, StageData))
+    {
+        OpenStageIntroPopup(StageData.GetIntroMessage());
+    }
+    else
+    {
+        OpenStageIntroPopup("");
+    }
 }
 
 void FPlayScene::HandleStageResult(FGameContext &Context)
@@ -156,6 +167,14 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
     }
 }
 
+void FPlayScene::OpenStageIntroPopup(const std::string &Message)
+{
+    std::unique_ptr<FStageIntroPopup> Popup = std::make_unique<FStageIntroPopup>();
+    Popup->SetData(CurrentStageIndex + 1, Message);
+    Popup->Open();
+    UIManager.GetPopupManager().Open(std::move(Popup));
+}
+
 void FPlayScene::OpenGoToTitlePopup()
 {
     std::unique_ptr<FGoToTitlePopup> Popup = std::make_unique<FGoToTitlePopup>();
@@ -166,6 +185,12 @@ void FPlayScene::OpenGoToTitlePopup()
 void FPlayScene::HandlePopupResult(FGameContext &Context)
 {
     FPopupManager &PopupManager = UIManager.GetPopupManager();
+
+    if (FStageIntroPopup *Popup = PopupManager.GetPopup<FStageIntroPopup>())
+    {
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
+    }
 
     if (FStageClearPopup *Popup = PopupManager.GetPopup<FStageClearPopup>())
     {
@@ -199,6 +224,13 @@ bool FPlayScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup
 
     switch (Action)
     {
+    case EUIPopupAction::StartStage:
+        Popup.Close();
+        bWaitingForStageStart = false;
+        if (Stage)
+            Stage->StartBGM();
+        return true;
+
     case EUIPopupAction::OpenSaveScorePopup:
         Popup.Close();
         bOpenSaveScorePopupNextFrame = true;
