@@ -4,6 +4,7 @@
 #include "Render/TextureManager.h"
 #include "Core/Time.h"
 #include "Core/Input.h"
+#include "Render/FontManager.h"
 
 struct FGameContext
 {
