@@ -78,6 +78,34 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     FSpawnPoint Spawn = Map->GetSpawnPoint();
     Player->SetPosition(Spawn.X, Spawn.Y, TileSize);
 
+    int SpawnMonsterCount = Map->GetMonsterCount();
+    int MaxTries = 1000; // 타일 탐색 시 무한 루프 방지용
+
+    for (int i = 0; i < SpawnMonsterCount; ++i)
+    {
+        int Tries = 0;
+        while (Tries < MaxTries)
+        {
+            // 랜덤한 X, Y 좌표 획득
+            int RandX = std::rand() % Map->GetWidth();
+            int RandY = std::rand() % Map->GetHeight();
+
+            // 해당 타일이 이동 가능(바닥)하고, 다른 액터(플레이어/다른 몬스터)가 없는지 확인
+            if (CanMoveTo(RandX, RandY) && !IsOccupied(RandX, RandY))
+            {
+                auto NewMonster = std::make_unique<FMonster>();
+                NewMonster->SetPosition(RandX, RandY, TileSize);
+
+                // 필요하다면 여기서 AI 종류나 이동 주기를 설정할 수 있습니다.
+                NewMonster->SetAiType(EMonsterAIType::ChasePlayer);
+
+                AddMonster(std::move(NewMonster));
+                break; // 스폰 성공 시 다음 몬스터 생성으로 넘어감
+            }
+            Tries++;
+        }
+    }
+
     // 카메라 설정
     Camera->SetWorldBounds(Map->GetWorldWidth(TileSize), Map->GetWorldHeight(TileSize));
     Camera->SetViewportSize(Renderer->ViewportInfo.Width, Renderer->ViewportInfo.Height);
@@ -265,7 +293,34 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             {
                 Logger::Log("No Input Detected - Player Damaged");
                 Player->Damage(1);
+                FAudioSystem::Get().Play("sfx_miss", false);
             }
+        }
+    }
+
+    if (!Player->IsDead())
+    {
+        int px = Player->GetTileX();
+        int py = Player->GetTileY();
+
+        for (auto Mon = Monsters.begin(); Mon != Monsters.end();)
+        {
+            int mx = (*Mon)->GetTileX();
+            int my = (*Mon)->GetTileY();
+
+            if (!(*Mon)->IsDead() && mx == px && my == py)
+            {
+                // 1. 플레이어에게 데미지 1 적용
+                Player->Damage(1);
+
+                // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
+                (*Mon)->Damage((*Mon)->GetHp());
+            }
+
+            if ((*Mon)->IsDead())
+                Mon = Monsters.erase(Mon);
+            else
+                ++Mon;
         }
     }
 

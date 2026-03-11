@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Core/Types.h"
 #include "StageData.h"
 
@@ -87,6 +87,10 @@ void FStageData::SetStageId(int InStageId) { StageId = InStageId; }
 int FStageData::GetStageId() const { return StageId; }
 
 void FStageData::SetStageName(const std::string &InStageName) { StageName = InStageName; }
+
+int FStageData::GetMonsterCount() const { return MonsterCount; }
+
+void FStageData::SetMonsterCount(int InMonsterCount) { MonsterCount = InMonsterCount; }
 
 const std::string &FStageData::GetStageName() const { return StageName; }
 
