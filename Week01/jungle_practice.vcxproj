@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Data\CreditLoader.cpp" />
     <ClCompile Include="IO\BitmapFontLoader.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -220,6 +221,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Data\CreditLoader.h" />
     <ClInclude Include="IO\BitmapFontLoader.h" />
     <ClInclude Include="Data\ScoreRecord.h" />
     <ClInclude Include="pch.h" />
