@@ -36,7 +36,7 @@ struct FStageData
     void SetMonsterCount(int InMonsterCount);
 
     void AddMonsterType(EMonsterType InType);
-    const std::vector<EMonsterType>& GetMonsterTypes() const;
+    const std::vector<EMonsterType> &GetMonsterTypes() const;
     void ClearMonsterTypes();
 
     void               SetStageName(const std::string &InStageName);
@@ -51,8 +51,10 @@ struct FStageData
     void               SetMusicPath(const std::string &InPath);
     const std::string &GetMusicPath() const;
 
-    void               SetIntroMessage(const std::string &msg);
-    const std::string &GetIntroMessage() const;
+    void                            AddIntroMessage(const std::string &InMessage);
+    void                            SetIntroMessages(const std::vector<std::string> &InMessages);
+    const std::vector<std::string> &GetIntroMessages() const;
+    void                            ClearIntroMessages();
 
     void  SetTimeLimit(float InTimeLimit);
     float GetTimeLimit() const;
@@ -78,11 +80,11 @@ struct FStageData
     int         Bpm = 120;
     std::string MusicPath;
     float       TimeLimit = 60.0f;
-    float       AngryTime = 0.0f;      // 남은 시간이 이 값 이하일 때 Angry 모드 발동 (0 = 없음)
+    float       AngryTime = 0.0f;       // 남은 시간이 이 값 이하일 때 Angry 모드 발동 (0 = 없음)
     float       AngryTimeScale = 1.3f;  // Angry 모드 시 BeatSystem TimeScale
     int         MonsterCount = 0;
-    std::string IntroMessage;
 
+    std::vector<std::string> IntroMessages;
     std::vector<EMonsterType> MonsterTypes;
     std::vector<FItemData>    Items;
 };

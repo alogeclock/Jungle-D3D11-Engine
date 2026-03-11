@@ -1,19 +1,31 @@
 #include "pch.h"
-#include "Core/Types.h"
 #include "StageData.h"
+
+void FStageData::Clear()
+{
+    Tiles.clear();
+
+    Width = 0;
+    Height = 0;
+    StageId = 0;
+    StageName.clear();
+
+    PlayerSpawn = {};
+    Bpm = 120;
+    MusicPath.clear();
+
+    TimeLimit = 60.0f;
+    AngryTime = 0.0f;
+    AngryTimeScale = 1.3f;
+    MonsterCount = 0;
+
+    IntroMessages.clear();
+    MonsterTypes.clear();
+    Items.clear();
+}
 
 void FStageData::Resize(int InWidth, int InHeight)
 {
-    if (InWidth < 0)
-    {
-        InWidth = 0;
-    }
-
-    if (InHeight < 0)
-    {
-        InHeight = 0;
-    }
-
     Width = InWidth;
     Height = InHeight;
     Tiles.assign(Height, std::vector<int>(Width, 0));
@@ -21,20 +33,22 @@ void FStageData::Resize(int InWidth, int InHeight)
 
 void FStageData::SetTile(int X, int Y, int Value)
 {
-    if (IsInside(X, Y))
+    if (!IsInside(X, Y))
     {
-        Tiles[Y][X] = Value;
+        return;
     }
+
+    Tiles[Y][X] = Value;
 }
 
 int FStageData::GetTile(int X, int Y) const
 {
-    if (IsInside(X, Y))
+    if (!IsInside(X, Y))
     {
-        return Tiles[Y][X];
+        return -1;
     }
 
-    return -1;
+    return Tiles[Y][X];
 }
 
 bool FStageData::IsInside(int X, int Y) const
@@ -49,16 +63,19 @@ bool FStageData::IsWalkable(int X, int Y) const
         return false;
     }
 
-    const int TileValue = Tiles[Y][X];
-
-    return TileValue == static_cast<int>(ETileValue::Path) ||
-           TileValue == static_cast<int>(ETileValue::Goal) ||
-           TileValue == static_cast<int>(ETileValue::Item);
+    const int Tile = GetTile(X, Y);
+    return Tile == 0 || Tile == 3 || Tile == 4;
 }
 
-int FStageData::GetWidth() const { return Width; }
+int FStageData::GetWidth() const
+{
+    return Width;
+}
 
-int FStageData::GetHeight() const { return Height; }
+int FStageData::GetHeight() const
+{
+    return Height;
+}
 
 float FStageData::GetWorldWidth(float TileSize) const
 {
@@ -70,71 +87,24 @@ float FStageData::GetWorldHeight(float TileSize) const
     return static_cast<float>(Height) * TileSize;
 }
 
-void FStageData::SetStageId(int InStageId) { StageId = InStageId; }
-
-int FStageData::GetStageId() const { return StageId; }
-
-void FStageData::SetStageName(const std::string &InStageName) { StageName = InStageName; }
-
-int FStageData::GetMonsterCount() const { return MonsterCount; }
-
-void FStageData::SetMonsterCount(int InMonsterCount) { MonsterCount = InMonsterCount; }
-
-const std::string &FStageData::GetStageName() const { return StageName; }
-
-void FStageData::SetSpawnPoint(int InSpawnX, int InSpawnY)
+void FStageData::SetStageId(int InStageId)
 {
-    PlayerSpawn.X = InSpawnX;
-    PlayerSpawn.Y = InSpawnY;
+    StageId = InStageId;
 }
 
-FSpawnPoint FStageData::GetSpawnPoint() const { return PlayerSpawn; }
-
-void FStageData::SetBpm(int InBpm) { Bpm = InBpm; }
-
-int FStageData::GetBpm() const { return Bpm; }
-
-void FStageData::SetMusicPath(const std::string &InPath) { MusicPath = InPath; }
-
-const std::string &FStageData::GetMusicPath() const { return MusicPath; }
-
-void               FStageData::SetIntroMessage(const std::string &msg) {IntroMessage = msg;}
-const std::string &FStageData::GetIntroMessage() const {return IntroMessage;}
-
-void FStageData::SetTimeLimit(float InTimeLimit) { TimeLimit = InTimeLimit; }
-
-float FStageData::GetTimeLimit() const { return TimeLimit; }
-
-void FStageData::SetAngryTime(float InAngryTime) { AngryTime = InAngryTime; }
-
-float FStageData::GetAngryTime() const { return AngryTime; }
-
-void FStageData::SetAngryTimeScale(float InScale) { AngryTimeScale = InScale; }
-
-float FStageData::GetAngryTimeScale() const { return AngryTimeScale; }
-
-void FStageData::AddItem(const FItemData &Item) { Items.push_back(Item); }
-
-const std::vector<FItemData> &FStageData::GetItems() const { return Items; }
-
-void FStageData::ClearItems() { Items.clear(); }
-
-void FStageData::Clear()
+int FStageData::GetStageId() const
 {
-    Tiles.clear();
-    Width = 0;
-    Height = 0;
-    StageId = 0;
-    StageName.clear();
-    PlayerSpawn = {};
-    Bpm = 120;
-    MusicPath.clear();
-    TimeLimit = 60.0f;
-    AngryTime = 0.0f;
-    AngryTimeScale = 1.3f;
-    MonsterCount = 0;
-    ClearMonsterTypes();
-    ClearItems();
+    return StageId;
+}
+
+int FStageData::GetMonsterCount() const
+{
+    return MonsterCount;
+}
+
+void FStageData::SetMonsterCount(int InMonsterCount)
+{
+    MonsterCount = InMonsterCount;
 }
 
 void FStageData::AddMonsterType(EMonsterType InType)
@@ -142,7 +112,7 @@ void FStageData::AddMonsterType(EMonsterType InType)
     MonsterTypes.push_back(InType);
 }
 
-const std::vector<EMonsterType>& FStageData::GetMonsterTypes() const
+const std::vector<EMonsterType> &FStageData::GetMonsterTypes() const
 {
     return MonsterTypes;
 }
@@ -150,4 +120,110 @@ const std::vector<EMonsterType>& FStageData::GetMonsterTypes() const
 void FStageData::ClearMonsterTypes()
 {
     MonsterTypes.clear();
+}
+
+void FStageData::SetStageName(const std::string &InStageName)
+{
+    StageName = InStageName;
+}
+
+const std::string &FStageData::GetStageName() const
+{
+    return StageName;
+}
+
+void FStageData::SetSpawnPoint(int InSpawnX, int InSpawnY)
+{
+    PlayerSpawn.X = InSpawnX;
+    PlayerSpawn.Y = InSpawnY;
+}
+
+FSpawnPoint FStageData::GetSpawnPoint() const
+{
+    return PlayerSpawn;
+}
+
+void FStageData::SetBpm(int InBpm)
+{
+    Bpm = InBpm;
+}
+
+int FStageData::GetBpm() const
+{
+    return Bpm;
+}
+
+void FStageData::SetMusicPath(const std::string &InPath)
+{
+    MusicPath = InPath;
+}
+
+const std::string &FStageData::GetMusicPath() const
+{
+    return MusicPath;
+}
+
+void FStageData::AddIntroMessage(const std::string &InMessage)
+{
+    IntroMessages.push_back(InMessage);
+}
+
+void FStageData::SetIntroMessages(const std::vector<std::string> &InMessages)
+{
+    IntroMessages = InMessages;
+}
+
+const std::vector<std::string> &FStageData::GetIntroMessages() const
+{
+    return IntroMessages;
+}
+
+void FStageData::ClearIntroMessages()
+{
+    IntroMessages.clear();
+}
+
+void FStageData::SetTimeLimit(float InTimeLimit)
+{
+    TimeLimit = InTimeLimit;
+}
+
+float FStageData::GetTimeLimit() const
+{
+    return TimeLimit;
+}
+
+void FStageData::SetAngryTime(float InAngryTime)
+{
+    AngryTime = InAngryTime;
+}
+
+float FStageData::GetAngryTime() const
+{
+    return AngryTime;
+}
+
+void FStageData::SetAngryTimeScale(float InScale)
+{
+    AngryTimeScale = InScale;
+}
+
+float FStageData::GetAngryTimeScale() const
+{
+    return AngryTimeScale;
+}
+
+void FStageData::AddItem(const FItemData &Item)
+{
+    Items.push_back(Item);
+}
+
+const std::vector<FItemData> &FStageData::GetItems() const
+{
+    return Items;
+}
+
+void FStageData::ClearItems()
+{
+    Items.clear();
 }
