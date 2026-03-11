@@ -112,6 +112,9 @@ void FStageData::SetMusicPath(const std::string &InPath) { MusicPath = InPath; }
 
 const std::string &FStageData::GetMusicPath() const { return MusicPath; }
 
+void               FStageData::SetIntroMessage(const std::string &msg) {IntroMessage = msg;}
+const std::string &FStageData::GetIntroMessage() const {return IntroMessage;}
+
 void FStageData::SetTimeLimit(float InTimeLimit) { TimeLimit = InTimeLimit; }
 
 float FStageData::GetTimeLimit() const { return TimeLimit; }

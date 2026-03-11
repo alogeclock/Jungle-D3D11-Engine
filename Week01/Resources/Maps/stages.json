@@ -23,7 +23,8 @@
                     { "x": 6, "y": 4, "type": "time_freeze", "duration": 5.0 }
                 ],
                 "time_limit": 30,
-                "monster_count": 0
+                "monster_count": 0,
+                "intro_message": "정글을 탐험하던 중 몬스터가 나타났다!\n가능한 무시무시한 몬스터들을 피하면서 골인 지점에 도달하자.\n리듬에 맞춰 움직이는 것을 잊지 말도록!"
             },
             "layers": [
                 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
@@ -60,7 +61,8 @@
                     { "x": 5, "y": 5, "type": "time_freeze", "duration": 5.0 }
                 ],
                 "time_limit": 45,
-                "monster_count": 1
+                "monster_count": 1,
+                "intro_message": "정글의 깊은 숲에 도달했다.\n더욱 무시무시한 몬스터가 나올 것만 같다..."
             },
             "layers": [
                 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
@@ -91,7 +93,8 @@
                     { "x": 5, "y": 8, "type": "darkness_down" }
                 ],
                 "time_limit": 60,
-                "monster_count": 2
+                "monster_count": 2,
+                "intro_message": "이곳은 대체...?"
             },
 
             "layers": [
