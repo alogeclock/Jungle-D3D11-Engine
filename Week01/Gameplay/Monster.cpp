@@ -19,7 +19,12 @@ void FMonster::OnBeat(FStage &Stage)
     {
         // 비트에 따라 각 몬스터들의 다음 이동 방향 결정
         EDirection Dir = DecideNextMove(Stage);
-        TryMove(Stage, Dir);
+        int        TryCount = 0;
+        while (!TryMove(Stage, Dir) && TryCount < 50)
+        {
+            DecideNextMove(Stage);
+            TryCount++;
+        }
         MoveFrequencyOffset = 0;
     }
 }
