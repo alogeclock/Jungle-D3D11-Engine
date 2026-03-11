@@ -70,6 +70,7 @@ bool FApplication::LoadFontResources()
         return false;
 
     FontManager->Register("basic_font", std::string(BitmapFontFntPath), std::move(FontTexture));
+
     return true;
 }
 
@@ -115,6 +116,7 @@ bool FApplication::LoadSpriteResources()
         {"monster_firegolem", "monster_firegolem.png"},
         {"monster_firegolem_angry", "monster_firegolem_angry.png"},
         {"beat_bar", "beat_bar.png"},
+        {"beat_bar_width", "beat_bar_width.png"},
         {"beat_heart", "beat_heart.png"},
         {"title_background", "title_background.png"},
         {"life_heart", "life_heart.png"},

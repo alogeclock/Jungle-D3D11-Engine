@@ -61,6 +61,10 @@ class FApplication
     static constexpr std::string_view ImGuiFontPath = "Resources/Fonts/Galmuri11.ttf";
     static constexpr std::string_view BitmapFontFntPath = "Resources/Fonts/bmFont.fnt";
     static constexpr std::string_view BitmapFontPngPath = "Resources/Fonts/bmFont.png";
+    static constexpr std::string_view BMKIRANGHAERANGFontFntPath =
+        "Resources/Fonts/BMKIRANGHAERANG.fnt";
+    static constexpr std::string_view BMKIRANGHAERANGFontPngPath =
+        "Resources/Fonts/BMKIRANGHAERANG.png";
 
   private:
     bool bIsRunning = true;

@@ -24,6 +24,33 @@ void FGameplayHUDWidget::Update(FGameContext &Context)
     {
         PlayTime += Context.Time.GetDeltaTime();
     }
+
+    // Score 애니메이션 업데이트
+    if (Stage)
+    {
+        int ActualScore = Stage->GetScoreSystem().GetScore();
+        if (ActualScore != TargetScore)
+        {
+            ScoreAnimStart = DisplayScore;
+            TargetScore = ActualScore;
+            ScoreAnimTimer = 0.0f;
+        }
+
+        if (DisplayScore != TargetScore)
+        {
+            ScoreAnimTimer += Context.Time.GetDeltaTime();
+            float T = ScoreAnimTimer / ScoreAnimDuration;
+            if (T >= 1.0f)
+            {
+                T = 1.0f;
+                DisplayScore = TargetScore;
+            }
+            else
+            {
+                DisplayScore = ScoreAnimStart + static_cast<int>((TargetScore - ScoreAnimStart) * T);
+            }
+        }
+    }
 }
 
 void FGameplayHUDWidget::Render(FGameContext &Context)
@@ -74,7 +101,7 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         snprintf(TimeBuf, sizeof(TimeBuf), "Time %03d", IRemaining);
 
         char ScoreBuf[32];
-        snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
+        snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", DisplayScore);
 
         Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 120,
                                   50);

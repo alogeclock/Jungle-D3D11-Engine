@@ -58,13 +58,13 @@ void FBeatHUDWidget::Render(FGameContext &Context)
     float Margin = 20.0f;
     float AdormentXScale = Context.Renderer.GetScreenWidth() * 2 - Margin * 2.0f;
 
-    Context.Renderer.DrawTexture(BarTexture, Context.Renderer.GetScreenWidth() / 2.0f, Heart.Y,
+    Context.Renderer.DrawTexture(BarWidthTexture, Context.Renderer.GetScreenWidth() / 2.0f, Heart.Y,
                                  AdormentXScale, 20);
     Context.Renderer.DrawTexture(BarTexture, LeftBarX, Ypos, 20, 100);
     Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
     Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
 
-    FontTexPair *FTPair = Context.FontManager.Get("basic_font");
+    FontTexPair *FTPair = Context.FontManager.Get("BMKIRANGHAERANG_font");
     if (Combo != 0)
         Context.Renderer.DrawFont("Combo x" + std::to_string(Combo), FTPair->Font.get(),
                                   FTPair->Tex.get(), Heart.X - 120, Heart.Y + 100, 75);
@@ -85,6 +85,10 @@ void FBeatHUDWidget::SetTextures(FGameContext &Context)
     if (!BarTexture)
     {
         BarTexture = Context.Textures.Get("beat_bar");
+    }
+    if (!BarWidthTexture)
+    {
+        BarWidthTexture = Context.Textures.Get("beat_bar_width");
     }
     if (!HeartTexture)
     {

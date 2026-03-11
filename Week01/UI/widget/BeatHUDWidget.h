@@ -33,6 +33,7 @@ class FBeatHUDWidget : public IUIWidget
     float              HeartYScale = OrgHeartYScale;
 
     FTexture *HeartTexture = nullptr;
+    FTexture *BarWidthTexture = nullptr;
     FTexture *BarTexture = nullptr;
     FTexture *PerfectTexture = nullptr;
     FTexture *GoodTexture = nullptr;

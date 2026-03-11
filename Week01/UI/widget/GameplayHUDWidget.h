@@ -29,4 +29,11 @@ private:
 	FTexture* LifeDeadTexture = nullptr;
 	FVec2 HPTextPos = { 700.0f, 20.0f };
 	float HeartScale = 50.f;
+
+	// Score 애니메이션
+	int   DisplayScore = 0;
+	int   TargetScore = 0;
+	int   ScoreAnimStart = 0;
+	float ScoreAnimTimer = 0.0f;
+	float ScoreAnimDuration = 1.0f;
 };
