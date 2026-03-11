@@ -33,6 +33,9 @@ void FPlayScene::Update(FGameContext &Context)
     if (!bStageLoaded)
     {
         LoadStage(Context);
+        FAudioSystem::Get().LoadWav("sfx_stage_clear", "Resources/Sounds/stage_clear.wav");
+        FAudioSystem::Get().LoadWav("sfx_game_clear", "Resources/Sounds/game_clear.wav");
+        FAudioSystem::Get().LoadWav("sfx_gameover", "Resources/Sounds/gameover.wav");
         bStageLoaded = true;
     }
 
@@ -135,6 +138,8 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
     {
         FAudioSystem::Get().StopAll();
 
+        FAudioSystem::Get().Play("sfx_gameover", false);
+
         std::unique_ptr<FGameOverPopup> Popup = std::make_unique<FGameOverPopup>();
         Popup->Open();
         PopupManager.Open(std::move(Popup));
@@ -148,6 +153,15 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
         const int  NextIndex = CurrentStageIndex + 1;
         const int  TotalStages = FStageLoader::Get().GetStageCount();
         const bool bAllCleared = (NextIndex >= TotalStages);
+
+        if (bAllCleared)
+        {
+            FAudioSystem::Get().Play("sfx_game_clear", false);
+        }
+        else
+        {
+            FAudioSystem::Get().Play("sfx_stage_clear", false);
+        }
 
         std::unique_ptr<FStageClearPopup> Popup = std::make_unique<FStageClearPopup>();
         Popup->SetData(bAllCleared, CurrentStageIndex + 1);

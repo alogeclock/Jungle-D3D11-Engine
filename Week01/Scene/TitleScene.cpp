@@ -38,7 +38,7 @@ void FTitleScene::Render(FGameContext &Context)
     HandlePopupResult(Context);
     UIManager.GetPopupManager().RemoveClosedPopup();
 
-#ifdef DEBUG
+#ifdef _DEBUG
     ImGui::Begin("Debug Shader");
 
     ImGui::Text("Shader: %s", Context.Renderer.GetCurrentShaderName().c_str());
@@ -146,7 +146,7 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
         OpenScoreboardPopup();
     }
 
-#ifdef DEBUG
+#ifdef _DEBUG
     ImGui::SetCursorPos(ImVec2(StartX, StartY + (ButtonSize.y + ButtonSpacing) * 3.0f));
     if (ImGui::Button("Test Scene", ButtonSize))
     {

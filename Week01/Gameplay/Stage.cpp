@@ -153,8 +153,6 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
     FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
     FAudioSystem::Get().LoadWav("sfx_get_hit", "Resources/Sounds/get_hit.wav");
-    FAudioSystem::Get().LoadWav("sfx_stage_clear", "Resources/Sounds/stage_clear.wav");
-    FAudioSystem::Get().LoadWav("sfx_game_clear", "Resources/Sounds/game_clear.wav");
 
     // BGM은 LoadStage 측에서 StartBGM()으로 명시적 호출
     const std::string &MusicPath = Map->GetMusicPath();
@@ -356,7 +354,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     if (Player->IsDead())
     {
         bIsGameOver = true;
-        FAudioSystem::Get().Play("sfx_get_hit", false);
     }
 
     // 골인 지점 도달 체크
@@ -364,13 +361,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     {
         ScoreSystem->AddTimeBonus(RemainingTime, TimeLimit);
         bIsCleared = true;
-
-        int TotalStages = FStageLoader::Get().GetStageCount();
-
-        if (CurrentStageIndex + 1 >= TotalStages)
-            FAudioSystem::Get().Play("sfx_stage_clear", false);
-        else
-            FAudioSystem::Get().Play("sfx_game_clear", false);
     }
 
     // 카메라가 플레이어를 추적
