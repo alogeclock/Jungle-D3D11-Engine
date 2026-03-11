@@ -4,6 +4,7 @@
 #include "SceneType.h"
 #include "TestScene.h"
 #include "TitleScene.h"
+#include "EndingScene.h"
 
 void FSceneManager::Initialize() { ChangeSceneInternal(ESceneType::Title); }
 
@@ -65,6 +66,10 @@ void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex, in
 
     case ESceneType::Play:
         CurrentScene = std::make_unique<FPlayScene>(StageIndex, AccumulatedScore, PlayerSkinKey);
+        break;
+
+    case ESceneType::Ending:
+        CurrentScene = std::make_unique<FEndingScene>();
         break;
 
     default:
