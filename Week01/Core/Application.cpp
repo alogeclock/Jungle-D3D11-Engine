@@ -47,6 +47,7 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	LoadTex("wall", "Resources/Sprites/wall.png");
 	LoadTex("player", "Resources/Sprites/player.png");
 	LoadTex("monster", "Resources/Sprites/monster.png");
+	LoadTex("monster1", "Resources/Sprites/monster1.png");
 	LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
 	LoadTex("title_background", "Resources/Sprites/title_background.png");
 	LoadTex("life_heart", "Resources/Sprites/life_heart.png");
@@ -56,6 +57,16 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 	LoadTex("effect_great", "Resources/Sprites/effect_great.png");
 	LoadTex("effect_good", "Resources/Sprites/effect_good.png");
 	LoadTex("effect_miss", "Resources/Sprites/effect_miss.png");
+
+	LoadTex("item_invincibility", "Resources/Sprites/item_invincibility.png");
+	LoadTex("item_time_scale_up", "Resources/Sprites/item_time_scale_up.png");
+	LoadTex("item_time_scale_down", "Resources/Sprites/item_time_scale_down.png");
+	LoadTex("item_darkness_up", "Resources/Sprites/item_darkness_up.png");
+	LoadTex("item_darkness_down", "Resources/Sprites/item_darkness_down.png");
+	LoadTex("item_time_freeze", "Resources/Sprites/item_time_freeze.png");
+
+	LoadTex("compass", "Resources/Sprites/compass.png");
+	LoadTex("compass_needle", "Resources/Sprites/compass_needle.png");
 
 	//Font
 	auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, "Resources/Fonts/bmFont.png");

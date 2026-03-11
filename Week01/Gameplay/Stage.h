@@ -90,6 +90,9 @@ class FStage
     int                GetCurrentStageIndex() const;
     const std::string &GetStageName() const;
 
+    int GetGoalX() const;
+    int GetGoalY() const;
+
   private:
     std::unique_ptr<FStageData>            Map;
     std::unique_ptr<FPlayer>               Player;

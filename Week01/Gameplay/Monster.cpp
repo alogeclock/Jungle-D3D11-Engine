@@ -33,9 +33,9 @@ void FMonster::SetAiType(EMonsterAIType InAiType) { AiType = InAiType; }
 
 EMonsterAIType FMonster::GetAiType() const { return AiType; }
 
-void FMonster::SetMonsterType(int InMonType) { MonsterType = InMonType; }
+void FMonster::SetMonsterType(EMonsterType InMonsterType) { MonsterType = InMonsterType; }
 
-int FMonster::GetMonsterType() const { return MonsterType; }
+EMonsterType FMonster::GetMonsterType() const { return MonsterType; }
 
 void FMonster::SetSearchRange(int InSearchRange) { SearchRange = InSearchRange; }
 
@@ -170,4 +170,17 @@ std::optional<EDirection> FMonster::SearchPlayer(const FStage &Stage) const
     }
 
     return std::nullopt; // 20스텝 이내에 플레이어를 찾지 못함
+}
+
+std::string FMonster::GetMonsterTextureKey(EMonsterType Type)
+{
+    switch (Type)
+    {
+    case EMonsterType::StoneGolem:
+        return "monster_stonegolem";
+    case EMonsterType::FireGolem:
+        return "monster_firegolem";
+    default:
+        return "monster_stonegolem";
+    }
 }

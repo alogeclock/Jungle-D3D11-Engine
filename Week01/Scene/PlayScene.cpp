@@ -17,6 +17,7 @@
 #include "UI/widget/BeatHUDWidget.h"
 #include "UI/widget/DebugWidget.h"
 #include "UI/widget/GameplayHUDWidget.h"
+#include "UI/widget/MinimapWidget.h"
 
 FPlayScene::FPlayScene(int InStageIndex) : CurrentStageIndex(InStageIndex) {}
 
@@ -91,6 +92,10 @@ void FPlayScene::LoadStage(FGameContext& Context)
 	Stage->GetScoreSystem().SetJudgeCallback([HUDPtr = BeatHUD.get()](EBeatJudge Judge)
 		{ HUDPtr->OnBeatJudged(Judge); });
 	UIManager.AddWidget("BeatHUD", std::move(BeatHUD));
+
+	auto Minimap = std::make_unique<FMinimapWidget>();
+	Minimap->BindStage(Stage.get());
+	UIManager.AddWidget("Minimap", std::move(Minimap));
 
 	auto Debug = std::make_unique<FDebugWidget>();
 	Debug->BindStage(Stage.get());

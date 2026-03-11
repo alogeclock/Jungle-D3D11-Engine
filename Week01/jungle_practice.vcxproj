@@ -201,6 +201,7 @@
     <ClCompile Include="UI\widget\BeatHUDWidget.cpp" />
     <ClCompile Include="UI\widget\DebugWidget.cpp" />
     <ClCompile Include="UI\widget\GameplayHUDWidget.cpp" />
+    <ClCompile Include="UI\widget\MinimapWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\Default.hlsl">
@@ -274,6 +275,7 @@
     <ClInclude Include="UI\widget\BeatHUDWidget.h" />
     <ClInclude Include="UI\widget\DebugWidget.h" />
     <ClInclude Include="UI\widget\GameplayHUDWidget.h" />
+    <ClInclude Include="UI\widget\MinimapWidget.h" />
     <ClInclude Include="UI\widget\UIWidget.h" />
   </ItemGroup>
   <ItemGroup>
