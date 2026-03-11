@@ -87,12 +87,13 @@ void FRenderer::DrawSprite(const FTexture* Texture, float WorldX, float WorldY,
 	{
 		XMFLOAT2 TexSize = { static_cast<float>(Texture->Width), static_cast<float>(Texture->Height) };
 		Obj.TextureSize = TexSize;
-		// 아틀라스 미사용 시 전체 텍스처 UV 사용 (SpriteSize == TextureSize → 비율 1.0)
 		Obj.SpriteSize = TexSize;
 	}
 
 	Obj.bScreenSpace = false;
+	int Idx = static_cast<int>(RenderObjects.size());
 	RenderObjects.push_back(Obj);
+	RenderCommands.push_back({ ERenderCmdType::Sprite, Idx });
 }
 
 void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screenY,
@@ -112,7 +113,9 @@ void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screen
 	}
 
 	Obj.bScreenSpace = true;
+	int Idx = static_cast<int>(RenderObjects.size());
 	RenderObjects.push_back(Obj);
+	RenderCommands.push_back({ ERenderCmdType::Sprite, Idx });
 }
 
 FStaticBatch FRenderer::CreateStaticBatch(const FVertexSimple* Vertices, UINT VertexCount,
@@ -150,84 +153,40 @@ void FRenderer::DrawBatch(const FStaticBatch& Batch, const FTexture* Texture)
 	if (!Batch.VertexBuffer || !Batch.IndexBuffer || Batch.IndexCount == 0)
 		return;
 
-	PrepareShader();
-
-	UINT stride = Stride;
-	UINT offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &Batch.VertexBuffer, &stride, &offset);
-	DeviceContext->IASetIndexBuffer(Batch.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
-
-	if (Texture && Texture->GetTextureSRV())
-	{
-		ID3D11ShaderResourceView* SRV = Texture->GetTextureSRV();
-		DeviceContext->PSSetShaderResources(0, 1, &SRV);
-	}
-
-	// World = identity, 정점에 월드 좌표가 이미 bake 됨
-	FSpriteConstants CB = {};
-	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(XMMatrixIdentity()));
-	CB.View = CachedView;
-	CB.Projection = CachedProjection;
-	if (Texture)
-	{
-		XMFLOAT2 TexSize = { (float)Texture->Width, (float)Texture->Height };
-		CB.SpriteSize = TexSize;
-		CB.TextureSize = TexSize;
-	}
-
-	D3D11_MAPPED_SUBRESOURCE Mapped;
-	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
-	memcpy(Mapped.pData, &CB, sizeof(CB));
-	DeviceContext->Unmap(ConstantBuffer, 0);
-
-	DeviceContext->DrawIndexed(Batch.IndexCount, 0, 0);
+	int Idx = static_cast<int>(BatchRenderCmds.size());
+	BatchRenderCmds.push_back({ &Batch, Texture});
+	RenderCommands.push_back({ ERenderCmdType::Batch, Idx });
 }
 
 void FRenderer::Render()
 {
-	if (RenderObjects.empty() && FontRenderObjects.empty())
+	if (RenderCommands.empty() && FontRenderObjects.empty())
 		return;
 
-	PrepareShader();
-
-	UINT offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
-	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
-
-	// 스크린 스페이스용 View/Projection
+	// 스크린 스페이스용 View/Projection (캐시)
 	XMFLOAT4X4 ScreenView, ScreenProjection;
 	XMStoreFloat4x4(&ScreenView, XMMatrixTranspose(XMMatrixIdentity()));
 	XMStoreFloat4x4(&ScreenProjection, XMMatrixTranspose(
 		XMMatrixOrthographicOffCenterLH(0.0f, (float)ScreenWidth, (float)ScreenHeight, 0.0f, 0.0f, 1.0f)));
 
-	for (const FRenderObject& Obj : RenderObjects)
+	// 통합 커맨드 큐 순회
+	for (const FRenderCommand& Cmd : RenderCommands)
 	{
-		if (Obj.Texture && Obj.Texture->GetTextureSRV())
+		switch (Cmd.Type)
 		{
-			ID3D11ShaderResourceView* SRV = Obj.Texture->GetTextureSRV();
-			DeviceContext->PSSetShaderResources(0, 1, &SRV);
+		case ERenderCmdType::Batch:
+			ExecuteBatch(BatchRenderCmds[Cmd.Index]);
+			break;
+		case ERenderCmdType::Sprite:
+			ExecuteSprite(RenderObjects[Cmd.Index]);
+			break;
+		case ERenderCmdType::DarknessOverlay:
+			ExecuteDarkness(DarknessRenderCmds[Cmd.Index]);
+			break;
 		}
-
-		FSpriteConstants CB = {};
-		CB.World = Obj.World;
-		CB.View = Obj.bScreenSpace ? ScreenView : CachedView;
-		CB.Projection = Obj.bScreenSpace ? ScreenProjection : CachedProjection;
-		CB.SpriteSize = Obj.SpriteSize;
-		CB.TextureSize = Obj.TextureSize;
-		CB.SpriteOffset = Obj.SpriteOffset;
-		CB.IsMirrored = Obj.IsMirrored;
-		CB.Pad = 0.0f;
-
-		D3D11_MAPPED_SUBRESOURCE Mapped;
-		DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
-		memcpy(Mapped.pData, &CB, sizeof(CB));
-		DeviceContext->Unmap(ConstantBuffer, 0);
-
-		DeviceContext->Draw(6, 0);
 	}
 
-	// Font rendering (UI shader)
+	// Font rendering (UI shader) — 항상 최후에 렌더
 	if (!FontRenderObjects.empty())
 	{
 		BindShader(EShaderType::UI);
@@ -248,13 +207,13 @@ void FRenderer::Render()
 
 			FVertexSimple textVertices[6] =
 			{
-				{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
-				{  0.5f, -0.5f, 0.f, UV1.X, UV0.Y }, // 우하단
-				{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
+				{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y },
+				{  0.5f, -0.5f, 0.f, UV1.X, UV0.Y },
+				{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y },
 
-				{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
-				{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
-				{ -0.5f,  0.5f, 0.f, UV0.X, UV1.Y }, // 좌상단
+				{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y },
+				{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y },
+				{ -0.5f,  0.5f, 0.f, UV0.X, UV1.Y },
 			};
 
 			UpdateTextQuadBuffer(textVertices);
@@ -263,6 +222,124 @@ void FRenderer::Render()
 			DeviceContext->Draw(6, 0);
 		}
 	}
+}
+
+// ============================================================
+// Execute helpers (통합 렌더 큐에서 호출)
+// ============================================================
+
+void FRenderer::ExecuteBatch(const FBatchRenderCmd& Cmd)
+{
+	PrepareShader();
+
+	UINT stride = Stride;
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, &Cmd.pBatch->VertexBuffer, &stride, &offset);
+	DeviceContext->IASetIndexBuffer(Cmd.pBatch->IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
+
+	if (Cmd.Texture && Cmd.Texture->GetTextureSRV())
+	{
+		ID3D11ShaderResourceView* SRV = Cmd.Texture->GetTextureSRV();
+		DeviceContext->PSSetShaderResources(0, 1, &SRV);
+	}
+
+	FSpriteConstants CB = {};
+	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(XMMatrixIdentity()));
+	CB.View = CachedView;
+	CB.Projection = CachedProjection;
+	if (Cmd.Texture)
+	{
+		XMFLOAT2 TexSize = { (float)Cmd.Texture->Width, (float)Cmd.Texture->Height };
+		CB.SpriteSize = TexSize;
+		CB.TextureSize = TexSize;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE Mapped;
+	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
+	memcpy(Mapped.pData, &CB, sizeof(CB));
+	DeviceContext->Unmap(ConstantBuffer, 0);
+
+	DeviceContext->DrawIndexed(Cmd.pBatch->IndexCount, 0, 0);
+}
+
+void FRenderer::ExecuteSprite(const FRenderObject& Obj)
+{
+	PrepareShader();
+
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
+	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
+
+	if (Obj.Texture && Obj.Texture->GetTextureSRV())
+	{
+		ID3D11ShaderResourceView* SRV = Obj.Texture->GetTextureSRV();
+		DeviceContext->PSSetShaderResources(0, 1, &SRV);
+	}
+
+	// 스크린 스페이스용 View/Projection
+	XMFLOAT4X4 ScreenView, ScreenProjection;
+	XMStoreFloat4x4(&ScreenView, XMMatrixTranspose(XMMatrixIdentity()));
+	XMStoreFloat4x4(&ScreenProjection, XMMatrixTranspose(
+		XMMatrixOrthographicOffCenterLH(0.0f, (float)ScreenWidth, (float)ScreenHeight, 0.0f, 0.0f, 1.0f)));
+
+	FSpriteConstants CB = {};
+	CB.World = Obj.World;
+	CB.View = Obj.bScreenSpace ? ScreenView : CachedView;
+	CB.Projection = Obj.bScreenSpace ? ScreenProjection : CachedProjection;
+	CB.SpriteSize = Obj.SpriteSize;
+	CB.TextureSize = Obj.TextureSize;
+	CB.SpriteOffset = Obj.SpriteOffset;
+	CB.IsMirrored = Obj.IsMirrored;
+	CB.Pad = 0.0f;
+
+	D3D11_MAPPED_SUBRESOURCE Mapped;
+	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
+	memcpy(Mapped.pData, &CB, sizeof(CB));
+	DeviceContext->Unmap(ConstantBuffer, 0);
+
+	DeviceContext->Draw(6, 0);
+}
+
+void FRenderer::ExecuteDarkness(const FDarknessRenderCmd& Cmd)
+{
+	// 알파 블렌딩 활성화
+	DeviceContext->OMSetBlendState(AlphaBlendState, nullptr, 0xffffffff);
+
+	PrepareShader();
+
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
+	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
+
+	ID3D11ShaderResourceView* SRV = Cmd.Texture->GetTextureSRV();
+	DeviceContext->PSSetShaderResources(0, 1, &SRV);
+
+	float W = ViewportInfo.Width;
+	float H = ViewportInfo.Height;
+	float QW = W * 2.0f;
+	float QH = H * 2.0f;
+
+	FSpriteConstants CB = {};
+	XMMATRIX World = XMMatrixScaling(QW, QH, 1.0f)
+		* XMMatrixTranslation(Cmd.ScreenCenterX, Cmd.ScreenCenterY, 0.0f);
+	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(World));
+	XMStoreFloat4x4(&CB.View, XMMatrixTranspose(XMMatrixIdentity()));
+	XMStoreFloat4x4(&CB.Projection, XMMatrixTranspose(
+		XMMatrixOrthographicOffCenterLH(0.0f, W, H, 0.0f, 0.0f, 1.0f)));
+	XMFLOAT2 TexSize = { (float)Cmd.Texture->Width, (float)Cmd.Texture->Height };
+	CB.SpriteSize = TexSize;
+	CB.TextureSize = TexSize;
+
+	D3D11_MAPPED_SUBRESOURCE Mapped;
+	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
+	memcpy(Mapped.pData, &CB, sizeof(CB));
+	DeviceContext->Unmap(ConstantBuffer, 0);
+
+	DeviceContext->Draw(6, 0);
+
+	// 블렌딩 해제
+	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
 bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
@@ -640,44 +717,9 @@ void FRenderer::DrawDarknessOverlay(const FTexture* Texture, float ScreenCenterX
 {
 	if (!Texture || !Texture->GetTextureSRV()) return;
 
-	// 알파 블렌딩 활성화
-	DeviceContext->OMSetBlendState(AlphaBlendState, nullptr, 0xffffffff);
-
-	PrepareShader();
-
-	UINT offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
-	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
-
-	ID3D11ShaderResourceView* SRV = Texture->GetTextureSRV();
-	DeviceContext->PSSetShaderResources(0, 1, &SRV);
-
-	// 플레이어 화면 좌표를 중심으로, 화면 전체를 덮을 크기의 쿼드 (2배)
-	float W = ViewportInfo.Width;
-	float H = ViewportInfo.Height;
-	float QW = W * 2.0f;
-	float QH = H * 2.0f;
-
-	FSpriteConstants CB = {};
-	XMMATRIX World = XMMatrixScaling(QW, QH, 1.0f)
-		* XMMatrixTranslation(ScreenCenterX, ScreenCenterY, 0.0f);
-	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(World));
-	XMStoreFloat4x4(&CB.View, XMMatrixTranspose(XMMatrixIdentity()));
-	XMStoreFloat4x4(&CB.Projection, XMMatrixTranspose(
-		XMMatrixOrthographicOffCenterLH(0.0f, W, H, 0.0f, 0.0f, 1.0f)));
-	XMFLOAT2 TexSize = { (float)Texture->Width, (float)Texture->Height };
-	CB.SpriteSize = TexSize;
-	CB.TextureSize = TexSize;
-
-	D3D11_MAPPED_SUBRESOURCE Mapped;
-	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
-	memcpy(Mapped.pData, &CB, sizeof(CB));
-	DeviceContext->Unmap(ConstantBuffer, 0);
-
-	DeviceContext->Draw(6, 0);
-
-	// 블렌딩 해제
-	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+	int Idx = static_cast<int>(DarknessRenderCmds.size());
+	DarknessRenderCmds.push_back({ Texture, ScreenCenterX, ScreenCenterY });
+	RenderCommands.push_back({ ERenderCmdType::DarknessOverlay, Idx });
 }
 
 void FRenderer::CreateSimpleQuad()
@@ -798,6 +840,9 @@ bool FRenderer::Initialize(HWND hWindow, int InScreenWidth, int InScreenHeight)
 		XMMatrixOrthographicOffCenterLH(0.0f, (float)ScreenWidth, (float)ScreenHeight, 0.0f, 0.0f, 1.0f)));
 
 	RenderObjects.reserve(256);
+	RenderCommands.reserve(256);
+	BatchRenderCmds.reserve(16);
+	DarknessRenderCmds.reserve(4);
 
 	return Device != nullptr;
 }
@@ -810,7 +855,10 @@ void FRenderer::BeginFrame()
 void FRenderer::EndFrame()
 {
 	SwapBuffer();
+	RenderCommands.clear();
 	RenderObjects.clear();
+	BatchRenderCmds.clear();
+	DarknessRenderCmds.clear();
 	FontRenderObjects.clear();
 }
 

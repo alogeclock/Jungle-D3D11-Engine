@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Monster.h"
 #include "Player.h"
 #include "Stage.h"
@@ -32,6 +32,14 @@ int FMonster::GetMoveFrequency() const { return MoveFrequency; }
 void FMonster::SetAiType(EMonsterAIType InAiType) { AiType = InAiType; }
 
 EMonsterAIType FMonster::GetAiType() const { return AiType; }
+
+void FMonster::SetMonsterType(int InMonType) { MonsterType = InMonType; }
+
+int FMonster::GetMonsterType() const { return MonsterType; }
+
+void FMonster::SetSearchRange(int InSearchRange) { SearchRange = InSearchRange; }
+
+int FMonster::GetSearchRange() const { return SearchRange; }
 
 EDirection FMonster::DecideNextMove(const FStage &Stage) const
 {
@@ -81,8 +89,8 @@ std::optional<EDirection> FMonster::SearchPlayer(const FStage &Stage) const
 
     // 방문 여부 확인을 위한 맵 정보 가져오기
     const FStageData &Map = Stage.GetMap();
-    int             MapWidth = Map.GetWidth();
-    int             MapHeight = Map.GetHeight();
+    int               MapWidth = Map.GetWidth();
+    int               MapHeight = Map.GetHeight();
 
     // 1차원 인덱스로 방문 체크 (중복 방문 방지)
     std::vector<bool> Visited(MapWidth * MapHeight, false);

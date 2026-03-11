@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Stage.h"
 #include "BeatSystem.h"
 #include "Camera2D.h"
@@ -70,13 +70,49 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
                 GoalX = X;
                 GoalY = Y;
                 break;
+            case ETileValue::Item:
+                Tiles.emplace_back(X, Y, ETileType::Floor);
+                break;
             }
         }
     }
 
+    // 아이템 데이터 복사
+    Items = Map->GetItems();
+
     // 메타데이터 기반 플레이어 스폰
     FSpawnPoint Spawn = Map->GetSpawnPoint();
     Player->SetPosition(Spawn.X, Spawn.Y, TileSize);
+
+    int SpawnMonsterCount = Map->GetMonsterCount();
+    int MaxTries = 1000; // 타일 탐색 시 무한 루프 방지용
+
+    for (int i = 0; i < SpawnMonsterCount; ++i)
+    {
+        int Tries = 0;
+        while (Tries < MaxTries)
+        {
+            // 랜덤한 X, Y 좌표 획득
+            int RandX = std::rand() % Map->GetWidth();
+            int RandY = std::rand() % Map->GetHeight();
+
+            // 해당 타일이 이동 가능(바닥)하고, 다른 액터(플레이어/다른 몬스터)가 없는지 확인
+            if (CanMoveTo(RandX, RandY) && !IsOccupied(RandX, RandY))
+            {
+                auto NewMonster = std::make_unique<FMonster>();
+                NewMonster->SetPosition(RandX, RandY, TileSize);
+
+                int MonsterType = std::rand() % 2;
+                NewMonster->SetMonsterType(MonsterType);
+                NewMonster->SetMoveFrequency(4 - 2 * MonsterType);
+                NewMonster->SetSearchRange(3 + 3 * MonsterType);
+
+                AddMonster(std::move(NewMonster));
+                break; // 스폰 성공 시 다음 몬스터 생성으로 넘어감
+            }
+            Tries++;
+        }
+    }
 
     // 카메라 설정
     Camera->SetWorldBounds(Map->GetWorldWidth(TileSize), Map->GetWorldHeight(TileSize));
@@ -110,6 +146,11 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
         FAudioSystem::Get().Play(BgmKey, true);
     }
 
+    // 효과음 로드
+    FAudioSystem::Get().LoadWav("sfx_perfect", "Resources/Sounds/perfect.wav");
+    FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
+    FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
+
     bIsGameOver = false;
     bIsCleared = false;
 
@@ -121,6 +162,7 @@ void FStage::Reset()
     Monsters.clear();
     Tiles.clear();
     Walls.clear();
+    Items.clear();
     if (BeatSystem)
         BeatSystem->Reset();
     if (Camera)
@@ -142,6 +184,9 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         bIsGameOver = true;
         return;
     }
+
+    // 아이템 효과 업데이트
+    UpdateActiveEffects(DeltaTime);
 
     // 비트 시스템 업데이트
     BeatSystem->Update(DeltaTime, Context);
@@ -195,8 +240,10 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             Logger::Log("Perfect Input");
             if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
             {
-                Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
+                FAudioSystem::Get().Play("sfx_miss", false);
             }
             else
             {
@@ -205,6 +252,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 Player->OnBeat(*this);
                 ScoreSystem->AddBeatBonus(Judge);
                 Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+                FAudioSystem::Get().Play("sfx_perfect", false);
             }
         }
         else if (Judge == EBeatJudge::Good)
@@ -212,8 +260,10 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             Logger::Log("Good Input");
             if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
             {
-                Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
+                FAudioSystem::Get().Play("sfx_miss", false);
             }
             else
             {
@@ -222,14 +272,30 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 Player->OnBeat(*this);
                 ScoreSystem->AddBeatBonus(Judge);
                 Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+                FAudioSystem::Get().Play("sfx_good", false);
             }
         }
         else
         {
             Logger::Log("Miss Input");
-            Player->Damage(1); // 엇박자 입력 시 데미지
+            if (!Player->ConsumeInvincibility())
+                Player->Damage(1);
             ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
             Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+            FAudioSystem::Get().Play("sfx_miss", false);
+        }
+    }
+
+    // 아이템 획득 체크
+    for (auto &Item : Items)
+    {
+        if (!Item.bPickedUp && Player->GetTileX() == Item.X && Player->GetTileY() == Item.Y)
+        {
+            Item.bPickedUp = true;
+            ApplyItem(Item);
+            // Change tile back to PATH
+            if (Map)
+                Map->SetTile(Item.X, Item.Y, 0);
         }
     }
 
@@ -254,8 +320,36 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
             {
                 Logger::Log("No Input Detected - Player Damaged");
-                Player->Damage(1);
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
+                FAudioSystem::Get().Play("sfx_miss", false);
             }
+        }
+    }
+
+    if (!Player->IsDead())
+    {
+        int px = Player->GetTileX();
+        int py = Player->GetTileY();
+
+        for (auto Mon = Monsters.begin(); Mon != Monsters.end();)
+        {
+            int mx = (*Mon)->GetTileX();
+            int my = (*Mon)->GetTileY();
+
+            if (!(*Mon)->IsDead() && mx == px && my == py)
+            {
+                // 1. 플레이어에게 데미지 1 적용
+                Player->Damage(1);
+
+                // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
+                (*Mon)->Damage((*Mon)->GetHp());
+            }
+
+            if ((*Mon)->IsDead())
+                Mon = Monsters.erase(Mon);
+            else
+                ++Mon;
         }
     }
 
@@ -294,33 +388,48 @@ void FStage::Render()
     Renderer->DrawBatch(WallBatch, Textures->Get("wall"));
 
     // 텍스처 룩업 헬퍼
-    auto GetTex = [&](const std::string& Key) -> FTexture*
+    auto GetTex = [&](const std::string &Key) -> FTexture *
+    { return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr; };
+
+    // 아이템 렌더링
+    for (const auto& Item : Items)
+    {
+        if (Item.bPickedUp)
+            continue;
+        float WorldX = Item.X * TileSize + TileSize * 0.5f;
+        float WorldY = Item.Y * TileSize + TileSize * 0.5f;
+        std::string TexKey = GetItemTextureKey(Item.Type);
+        FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
+        if (Tex)
         {
-            return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr;
-        };
+            FSpriteInfo Spr;
+            Spr.TextureKey = TexKey;
+            Spr.SpriteSize = { TileSize * 0.6f, TileSize * 0.6f };
+            Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize * 0.6f, TileSize * 0.6f, Spr);
+        }
+    }
 
     // 몬스터 렌더링
-    for (const auto& Mon : Monsters)
+    for (const auto &Mon : Monsters)
     {
         if (Mon->IsDead())
             continue;
-        float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
-        float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
-        const FSpriteInfo& Spr = Mon->GetSprite();
+        float              WorldX = Mon->GetRenderX() + TileSize * 0.5f;
+        float              WorldY = Mon->GetRenderY() + TileSize * 0.5f;
+        const FSpriteInfo &Spr = Mon->GetSprite();
         Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
     }
 
     // 플레이어 렌더링 (가장 위에 그림)
     if (!Player->IsDead())
     {
-        float WorldX = Player->GetRenderX() + TileSize * 0.5f;
-        float WorldY = Player->GetRenderY() + TileSize * 0.5f;
-        const FSpriteInfo& Spr = Player->GetSprite();
+        float              WorldX = Player->GetRenderX() + TileSize * 0.5f;
+        float              WorldY = Player->GetRenderY() + TileSize * 0.5f;
+        const FSpriteInfo &Spr = Player->GetSprite();
         Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
     }
 
-    // 큐에 쌓인 RenderObjects를 먼저 처리한 뒤 암흑 오버레이
-    Renderer->Render();
+    // 암흑 오버레이 큐잉 (스프라이트 위에 렌더)
     if (DarknessTexture && !bDarknessDisabled && Player && !Player->IsDead())
     {
         FVec2 PlayerWorld;
@@ -329,22 +438,24 @@ void FStage::Render()
         FVec2 PlayerScreen = Camera->WorldToScreen(PlayerWorld);
         Renderer->DrawDarknessOverlay(DarknessTexture.get(), PlayerScreen.X, PlayerScreen.Y);
     }
+    // Render()는 Application에서 통합 호출
 }
 
 // ============================================================
 // 암흑 시야 텍스처 (방사형 그라데이션)
 // ============================================================
 
-static constexpr float DarknessInnerRatios[5] = { 0.05f, 0.07f, 0.10f, 0.12f, 0.15f };
-static constexpr float DarknessOuterRatios[5] = { 0.10f, 0.13f, 0.15f, 0.17f, 0.20f };
+static constexpr float DarknessInnerRatios[5] = {0.05f, 0.07f, 0.10f, 0.12f, 0.15f};
+static constexpr float DarknessOuterRatios[5] = {0.10f, 0.13f, 0.15f, 0.17f, 0.20f};
 
 void FStage::CreateDarknessTexture()
 {
-    if (!Renderer || !Renderer->Device) return;
+    if (!Renderer || !Renderer->Device)
+        return;
 
     DarknessTexture.reset();
 
-    const int Size = 512;
+    const int   Size = 512;
     const float Center = Size * 0.5f;
     const float InnerRadius = Size * DarknessInnerRatios[DarknessLevel];
     const float OuterRadius = Size * DarknessOuterRatios[DarknessLevel];
@@ -371,15 +482,15 @@ void FStage::CreateDarknessTexture()
             Alpha = Alpha * Alpha * (3.0f - 2.0f * Alpha);
 
             int Idx = (Y * Size + X) * 4;
-            Pixels[Idx + 0] = 0;   // R
-            Pixels[Idx + 1] = 0;   // G
-            Pixels[Idx + 2] = 0;   // B
+            Pixels[Idx + 0] = 0; // R
+            Pixels[Idx + 1] = 0; // G
+            Pixels[Idx + 2] = 0; // B
             Pixels[Idx + 3] = static_cast<uint8_t>(Alpha * 255.0f);
         }
     }
 
-    ID3D11Texture2D* Tex2D = nullptr;
-    ID3D11ShaderResourceView* SRV = nullptr;
+    ID3D11Texture2D          *Tex2D = nullptr;
+    ID3D11ShaderResourceView *SRV = nullptr;
 
     D3D11_TEXTURE2D_DESC Desc = {};
     Desc.Width = Size;
@@ -416,11 +527,8 @@ void FStage::CreateDarknessTexture()
 // 정적 배치 (타일/벽을 텍스처별로 묶어 DrawIndexed)
 // ============================================================
 
-static void BuildQuadBatch(
-    const std::vector<std::pair<float, float>>& Centers,
-    float Size,
-    std::vector<FVertexSimple>& OutVertices,
-    std::vector<UINT>& OutIndices)
+static void BuildQuadBatch(const std::vector<std::pair<float, float>> &Centers, float Size,
+                           std::vector<FVertexSimple> &OutVertices, std::vector<UINT> &OutIndices)
 {
     float Half = Size * 0.5f;
     OutVertices.reserve(Centers.size() * 4);
@@ -430,12 +538,12 @@ static void BuildQuadBatch(
     {
         float CX = Centers[i].first;
         float CY = Centers[i].second;
-        UINT Base = static_cast<UINT>(i * 4);
+        UINT  Base = static_cast<UINT>(i * 4);
 
-        OutVertices.push_back({ CX - Half, CY - Half, 0.0f, 0.0f, 0.0f }); // 좌상
-        OutVertices.push_back({ CX + Half, CY - Half, 0.0f, 1.0f, 0.0f }); // 우상
-        OutVertices.push_back({ CX + Half, CY + Half, 0.0f, 1.0f, 1.0f }); // 우하
-        OutVertices.push_back({ CX - Half, CY + Half, 0.0f, 0.0f, 1.0f }); // 좌하
+        OutVertices.push_back({CX - Half, CY - Half, 0.0f, 0.0f, 0.0f}); // 좌상
+        OutVertices.push_back({CX + Half, CY - Half, 0.0f, 1.0f, 0.0f}); // 우상
+        OutVertices.push_back({CX + Half, CY + Half, 0.0f, 1.0f, 1.0f}); // 우하
+        OutVertices.push_back({CX - Half, CY + Half, 0.0f, 0.0f, 1.0f}); // 좌하
 
         OutIndices.push_back(Base + 0);
         OutIndices.push_back(Base + 1);
@@ -454,7 +562,7 @@ void FStage::BuildStaticBatches()
     std::vector<std::pair<float, float>> FloorCenters;
     std::vector<std::pair<float, float>> GoalCenters;
 
-    for (const auto& Tile : Tiles)
+    for (const auto &Tile : Tiles)
     {
         float CX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
         float CY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
@@ -469,20 +577,20 @@ void FStage::BuildStaticBatches()
     if (!FloorCenters.empty())
     {
         std::vector<FVertexSimple> Verts;
-        std::vector<UINT> Idxs;
+        std::vector<UINT>          Idxs;
         BuildQuadBatch(FloorCenters, TileSize, Verts, Idxs);
-        FloorBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
-            Idxs.data(), (UINT)Idxs.size());
+        FloorBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
+                                                 (UINT)Idxs.size());
     }
 
     // Goal 배치
     if (!GoalCenters.empty())
     {
         std::vector<FVertexSimple> Verts;
-        std::vector<UINT> Idxs;
+        std::vector<UINT>          Idxs;
         BuildQuadBatch(GoalCenters, TileSize, Verts, Idxs);
-        GoalBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
-            Idxs.data(), (UINT)Idxs.size());
+        GoalBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
+                                                (UINT)Idxs.size());
     }
 
     // Wall 배치
@@ -494,7 +602,7 @@ void FStage::RebuildWallBatch()
     Renderer->ReleaseStaticBatch(WallBatch);
 
     std::vector<std::pair<float, float>> WallCenters;
-    for (const auto& W : Walls)
+    for (const auto &W : Walls)
     {
         if (W.IsDestroyed())
             continue;
@@ -506,10 +614,10 @@ void FStage::RebuildWallBatch()
     if (!WallCenters.empty())
     {
         std::vector<FVertexSimple> Verts;
-        std::vector<UINT> Idxs;
+        std::vector<UINT>          Idxs;
         BuildQuadBatch(WallCenters, TileSize, Verts, Idxs);
-        WallBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
-            Idxs.data(), (UINT)Idxs.size());
+        WallBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
+                                                (UINT)Idxs.size());
     }
 }
 
@@ -547,6 +655,13 @@ void FStage::LoadSpriteResources()
     LoadTex("wall", "Resources/Sprites/wall.png");
     LoadTex("player", "Resources/Sprites/player.png");
     LoadTex("monster", "Resources/Sprites/monster.png");
+    LoadTex("monster1", "Resources/Sprites/monster1.png");
+    LoadTex("item_invincibility", "Resources/Sprites/item_invincibility.png");
+    LoadTex("item_time_scale_up", "Resources/Sprites/item_time_scale_up.png");
+    LoadTex("item_time_scale_down", "Resources/Sprites/item_time_scale_down.png");
+    LoadTex("item_darkness_up", "Resources/Sprites/item_darkness_up.png");
+    LoadTex("item_darkness_down", "Resources/Sprites/item_darkness_down.png");
+    LoadTex("item_time_freeze", "Resources/Sprites/item_time_freeze.png");
 
     // 타일에 스프라이트 할당
     for (auto &Tile : Tiles)
@@ -578,7 +693,13 @@ void FStage::LoadSpriteResources()
     for (auto &Mon : Monsters)
     {
         FSpriteInfo Info;
-        Info.TextureKey = "monster";
+        int         MonsterType = Mon->GetMonsterType();
+
+        if (MonsterType == 0)
+            Info.TextureKey = "monster";
+        else
+            Info.TextureKey = "monster1";
+
         Info.SpriteSize = {TileSize, TileSize};
         Mon->SetSprite(Info);
     }
@@ -724,7 +845,8 @@ int FStage::GetDarknessLevel() const { return DarknessLevel; }
 void FStage::SetDarknessLevel(int Level)
 {
     Level = (Level < 0) ? 0 : (Level > 4) ? 4 : Level;
-    if (Level == DarknessLevel) return;
+    if (Level == DarknessLevel)
+        return;
     DarknessLevel = Level;
     CreateDarknessTexture();
 }
@@ -740,3 +862,61 @@ void FStage::SetDarknessDisabled(bool bDisabled) { bDarknessDisabled = bDisabled
 int FStage::GetCurrentStageIndex() const { return CurrentStageIndex; }
 
 const std::string &FStage::GetStageName() const { return StageName; }
+
+void FStage::ApplyItem(const FItemData &Item)
+{
+    switch (Item.Type)
+    {
+    // 플레이어 전용 효과 → Player에 위임
+    case EItemType::Invincibility:
+        if (!Player->HasActiveEffect(EItemType::Invincibility))
+            Player->AddEffect({EItemType::Invincibility, 0.0f});
+        break;
+    case EItemType::TimeScaleUp:
+        Player->AddEffect({EItemType::TimeScaleUp, Item.Duration});
+        break;
+    case EItemType::TimeScaleDown:
+        Player->AddEffect({EItemType::TimeScaleDown, Item.Duration});
+        break;
+
+    // 스테이지 전역 효과
+    case EItemType::TimeFreeze:
+        bTimeFrozen = true;
+        TimeFreezeRemaining = Item.Duration;
+        break;
+    case EItemType::DarknessUp:
+    {
+        // 어두워짐: 레벨 -1 (항상 상대값)
+        SetDarknessLevel(DarknessLevel - 1);
+        break;
+    }
+    case EItemType::DarknessDown:
+    {
+        // 밝아짐: 레벨 +1 (항상 상대값)
+        SetDarknessLevel(DarknessLevel + 1);
+        break;
+    }
+    }
+}
+
+void FStage::UpdateActiveEffects(float DeltaTime)
+{
+    // 플레이어 효과 업데이트
+    if (Player)
+        Player->UpdateActiveEffects(DeltaTime);
+
+    // 스테이지 TimeFreeze 타이머
+    if (bTimeFrozen && TimeFreezeRemaining > 0.0f)
+    {
+        TimeFreezeRemaining -= DeltaTime;
+        if (TimeFreezeRemaining <= 0.0f)
+        {
+            TimeFreezeRemaining = 0.0f;
+            bTimeFrozen = false;
+        }
+    }
+}
+
+const std::vector<FItemData> &FStage::GetItems() const { return Items; }
+
+float FStage::GetTimeFreezeRemaining() const { return TimeFreezeRemaining; }

@@ -6,6 +6,7 @@
 #include "BeatSystem.h"
 #include "Camera2D.h"
 #include "Data/StageData.h"
+#include "Item.h"
 #include "Monster.h"
 #include "Player.h"
 #include "Render/Renderer.h"
@@ -75,11 +76,16 @@ class FStage
     int  GetDarknessLevel() const;
     void SetDarknessLevel(int Level);
 
-    bool IsTimeFrozen() const;
-    void SetTimeFrozen(bool bFrozen);
+    bool  IsTimeFrozen() const;
+    void  SetTimeFrozen(bool bFrozen);
+    float GetTimeFreezeRemaining() const;
 
     bool IsDarknessDisabled() const;
     void SetDarknessDisabled(bool bDisabled);
+
+    void                          ApplyItem(const FItemData &Item);
+    void                          UpdateActiveEffects(float DeltaTime);
+    const std::vector<FItemData> &GetItems() const;
 
     int                GetCurrentStageIndex() const;
     const std::string &GetStageName() const;
@@ -90,6 +96,7 @@ class FStage
     std::vector<std::unique_ptr<FMonster>> Monsters;
     std::vector<FTile>                     Tiles;
     std::vector<FWall>                     Walls;
+    std::vector<FItemData>                 Items;
 
     std::unique_ptr<FBeatSystem>  BeatSystem;
     std::unique_ptr<FCamera2D>    Camera;
@@ -100,7 +107,8 @@ class FStage
     float TimeLimit = 60.0f;
 
     int  DarknessLevel = 2; // 0~4 (5단계)
-    bool bTimeFrozen = false;
+    bool  bTimeFrozen = false;
+    float TimeFreezeRemaining = 0.0f;
     bool bDarknessDisabled = false;
 
     bool bIsGameOver = false;

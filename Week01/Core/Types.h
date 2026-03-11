@@ -27,10 +27,11 @@ enum class EDirection
 
 enum class ETileValue
 {
-	Path = 0,
-	Wall = 1,
-	Outer = 2,
-	Goal = 3
+    Path = 0,
+    Wall = 1,
+    Outer = 2,
+    Goal = 3,
+    Item = 4
 };
 
 enum class EBeatJudge
@@ -72,9 +73,10 @@ struct FVec2
 
 enum class TileType : int
 {
-	Path = 0,  // 이동 가능 (캐릭터가 서 있을 수 있는 곳)
-	Wall = 1,  // 이동 불가 (벽)
-	Outer = 2, // 이동 불가 (바깥 여백/낭떠러지 등)
-	Goal = 3,  // 스테이지 클리어 지점 (도착 시 다음 맵으로)
-	Count = 4
+    Path = 0,  // 이동 가능 (캐릭터가 서 있을 수 있는 곳)
+    Wall = 1,  // 이동 불가 (벽)
+    Outer = 2, // 이동 불가 (바깥 여백/낭떠러지 등)
+    Goal = 3,  // 스테이지 클리어 지점 (도착 시 다음 맵으로)
+    Item = 4,  // 아이템 (이동 가능, 플레이어가 밟으면 획득)
+    Count = 5
 };

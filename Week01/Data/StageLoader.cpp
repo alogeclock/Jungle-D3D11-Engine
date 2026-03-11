@@ -1,10 +1,9 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include <fstream>
 #include <sstream>
 #include "StageData.h"
 #include "StageLoader.h"
 #include "ThirdParty/nlohmann/json.hpp"
-
 
 using json = nlohmann::json;
 
@@ -119,6 +118,7 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
         OutStage.SetBpm(Meta.value("bpm", 120));
         OutStage.SetMusicPath(Meta.value("music", std::string{}));
         OutStage.SetTimeLimit(Meta.value("time_limit", 60.0f));
+        OutStage.SetMonsterCount(Meta.value("monster_count", 0.0f));
 
         if (Meta.contains("spawn_point") && Meta["spawn_point"].is_object())
         {
@@ -130,6 +130,35 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
         else
         {
             OutStage.SetSpawnPoint(0, 0);
+        }
+
+        if (Meta.contains("items") && Meta["items"].is_array())
+        {
+            for (const auto &ItemJson : Meta["items"])
+            {
+                FItemData Item;
+                Item.X = ItemJson.value("x", 0);
+                Item.Y = ItemJson.value("y", 0);
+
+                std::string TypeStr = ItemJson.value("type", std::string{});
+                if (TypeStr == "invincibility")
+                    Item.Type = EItemType::Invincibility;
+                else if (TypeStr == "time_scale_up")
+                    Item.Type = EItemType::TimeScaleUp;
+                else if (TypeStr == "time_scale_down")
+                    Item.Type = EItemType::TimeScaleDown;
+                else if (TypeStr == "time_freeze")
+                    Item.Type = EItemType::TimeFreeze;
+                else if (TypeStr == "darkness_up")
+                    Item.Type = EItemType::DarknessUp;
+                else if (TypeStr == "darkness_down")
+                    Item.Type = EItemType::DarknessDown;
+
+                Item.Duration = ItemJson.value("duration", 5.0f);
+                Item.Level = ItemJson.value("level", 0);
+
+                OutStage.AddItem(Item);
+            }
         }
 
         for (int Y = 0; Y < Height; ++Y)

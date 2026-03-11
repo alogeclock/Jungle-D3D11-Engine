@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Core/Types.h"
 #include "StageData.h"
 
@@ -13,6 +13,7 @@ void FStageData::Clear()
     Bpm = 120;
     MusicPath.clear();
     TimeLimit = 60.0f;
+    ClearItems();
 }
 
 void FStageData::Resize(int InWidth, int InHeight)
@@ -65,7 +66,8 @@ bool FStageData::IsWalkable(int X, int Y) const
     const int TileValue = Tiles[Y][X];
 
     return TileValue == static_cast<int>(ETileValue::Path) ||
-           TileValue == static_cast<int>(ETileValue::Goal);
+           TileValue == static_cast<int>(ETileValue::Goal) ||
+           TileValue == static_cast<int>(ETileValue::Item);
 }
 
 int FStageData::GetWidth() const { return Width; }
@@ -88,6 +90,10 @@ int FStageData::GetStageId() const { return StageId; }
 
 void FStageData::SetStageName(const std::string &InStageName) { StageName = InStageName; }
 
+int FStageData::GetMonsterCount() const { return MonsterCount; }
+
+void FStageData::SetMonsterCount(int InMonsterCount) { MonsterCount = InMonsterCount; }
+
 const std::string &FStageData::GetStageName() const { return StageName; }
 
 void FStageData::SetSpawnPoint(int InSpawnX, int InSpawnY)
@@ -109,3 +115,9 @@ const std::string &FStageData::GetMusicPath() const { return MusicPath; }
 void FStageData::SetTimeLimit(float InTimeLimit) { TimeLimit = InTimeLimit; }
 
 float FStageData::GetTimeLimit() const { return TimeLimit; }
+
+void FStageData::AddItem(const FItemData &Item) { Items.push_back(Item); }
+
+const std::vector<FItemData> &FStageData::GetItems() const { return Items; }
+
+void FStageData::ClearItems() { Items.clear(); }

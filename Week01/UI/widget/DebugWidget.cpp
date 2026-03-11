@@ -2,6 +2,7 @@
 #include "DebugWidget.h"
 #include "Core/AudioSystem.h"
 #include "Gameplay/BeatSystem.h"
+#include "Gameplay/Item.h"
 #include "Gameplay/Stage.h"
 
 void FDebugWidget::BindStage(FStage* InStage)
@@ -61,19 +62,94 @@ void FDebugWidget::Render(FGameContext& Context)
 			FAudioSystem::Get().SetAllPlaybackRate(TimeScale);
 		}
 
-		int DisplayLevel = DarknessLevel + 1;
-		if (ImGui::SliderInt("Darkness", &DisplayLevel, 1, 5))
-		{
-			DarknessLevel = DisplayLevel - 1;
-			Stage->SetDarknessLevel(DarknessLevel);
-		}
+        DarknessLevel = Stage->GetDarknessLevel();
+        int DisplayLevel = DarknessLevel + 1;
+        if (ImGui::SliderInt("Darkness", &DisplayLevel, 1, 5))
+        {
+            DarknessLevel = DisplayLevel - 1;
+            Stage->SetDarknessLevel(DarknessLevel);
+        }
 
-		// --- Reset All ---
-		ImGui::Separator();
-		if (ImGui::Button("Reset All"))
-		{
-			bInvincible = false;
-			Stage->GetPlayer().SetInvincible(false);
+        // --- Item Cheats ---
+        ImGui::Separator();
+        ImGui::Text("Item Cheats");
+
+        if (ImGui::Button("Invincibility"))
+        {
+            FItemData Item;
+            Item.Type = EItemType::Invincibility;
+            Stage->ApplyItem(Item);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Time Freeze"))
+        {
+            FItemData Item;
+            Item.Type = EItemType::TimeFreeze;
+            Item.Duration = 5.0f;
+            Stage->ApplyItem(Item);
+        }
+
+        if (ImGui::Button("TimeScale Up"))
+        {
+            FItemData Item;
+            Item.Type = EItemType::TimeScaleUp;
+            Item.Duration = 6.0f;
+            Stage->ApplyItem(Item);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("TimeScale Down"))
+        {
+            FItemData Item;
+            Item.Type = EItemType::TimeScaleDown;
+            Item.Duration = 6.0f;
+            Stage->ApplyItem(Item);
+        }
+
+        if (ImGui::Button("Darkness Up"))
+        {
+            FItemData Item;
+            Item.Type = EItemType::DarknessUp;
+            Stage->ApplyItem(Item);
+            DarknessLevel = Stage->GetDarknessLevel();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Darkness Down"))
+        {
+            FItemData Item;
+            Item.Type = EItemType::DarknessDown;
+            Stage->ApplyItem(Item);
+            DarknessLevel = Stage->GetDarknessLevel();
+        }
+
+        // Active Effects 표시
+        const auto& PlayerEffects = Stage->GetPlayer().GetActiveEffects();
+        float FreezeRemaining = Stage->GetTimeFreezeRemaining();
+        bool bHasEffects = !PlayerEffects.empty() || Stage->IsTimeFrozen();
+        if (bHasEffects)
+        {
+            ImGui::Text("Active: ");
+            for (const auto& Eff : PlayerEffects)
+            {
+                switch (Eff.Type)
+                {
+                case EItemType::Invincibility:  ImGui::SameLine(); ImGui::TextColored(ImVec4(1,1,0,1), "[Invincible]"); break;
+                case EItemType::TimeScaleUp:    ImGui::SameLine(); ImGui::TextColored(ImVec4(1,0.5f,0,1), "[Speed+] %.1fs", Eff.RemainingTime); break;
+                case EItemType::TimeScaleDown:  ImGui::SameLine(); ImGui::TextColored(ImVec4(0,0.8f,1,1), "[Speed-] %.1fs", Eff.RemainingTime); break;
+                default: break;
+                }
+            }
+            if (Stage->IsTimeFrozen())
+            {
+                ImGui::SameLine(); ImGui::TextColored(ImVec4(0,1,1,1), "[Freeze] %.1fs", FreezeRemaining);
+            }
+        }
+
+        // --- Reset All ---
+        ImGui::Separator();
+        if (ImGui::Button("Reset All"))
+        {
+            bInvincible = false;
+            Stage->GetPlayer().SetInvincible(false);
 
 			bTimeFrozen = false;
 			Stage->SetTimeFrozen(false);
