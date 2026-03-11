@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <algorithm>
+#include <filesystem>
 #include "IO/JsonFile.h"
 #include "ScoreRepository.h"
 #include "ThirdParty/nlohmann/json.hpp"
@@ -83,6 +84,10 @@ std::vector<FScoreRecord> ScoreRepository::LoadSorted()
 
 bool ScoreRepository::Save(const std::vector<FScoreRecord> &Records)
 {
+    std::filesystem::path Dir = std::filesystem::path(DefaultPath).parent_path();
+    if (!Dir.empty())
+        std::filesystem::create_directories(Dir);
+
     FJsonFile JsonFile;
     nlohmann::json &Root = JsonFile.GetRoot();
 
