@@ -194,6 +194,7 @@
     <ClCompile Include="UI\popup\SaveScorePopup.cpp" />
     <ClCompile Include="UI\popup\ScoreboardPopup.cpp" />
     <ClCompile Include="UI\popup\StageClearPopup.cpp" />
+    <ClCompile Include="UI\popup\StageIntroPopup.cpp" />
     <ClCompile Include="UI\popup\UIPopupBase.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -281,6 +282,7 @@
     <ClInclude Include="UI\popup\SaveScorePopup.h" />
     <ClInclude Include="UI\popup\ScoreboardPopup.h" />
     <ClInclude Include="UI\popup\StageClearPopup.h" />
+    <ClInclude Include="UI\popup\StageIntroPopup.h" />
     <ClInclude Include="UI\popup\UIPopupAction.h" />
     <ClInclude Include="UI\popup\UIPopupBase.h" />
     <ClInclude Include="UI\UIManager.h" />

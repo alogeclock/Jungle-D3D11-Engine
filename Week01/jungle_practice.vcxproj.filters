@@ -1,414 +1,145 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{cf9f8c16-146a-41fb-947b-f81b928e6f75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Imgui">
-      <UniqueIdentifier>{4e79e565-4784-476c-b178-eb0d70986eb4}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imgui\imgui.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imgui\imgui_draw.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imgui\imgui_tables.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imgui\imgui_widgets.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imgui\imgui_impl_dx11.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imgui\imgui_impl_win32.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Actor.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\BeatSystem.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Camera2D.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Monster.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Player.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\ScoreSystem.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Stage.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\StageLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\ScoreRepository.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Time.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Application.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Input.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\PlayScene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\SceneManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\TitleScene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\AudioSystem.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\FWindow.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\StageData.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Tile.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Wall.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Renderer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Texture.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\TextureManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\FileIO.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\ImageLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\JsonFile.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\popup\PopupManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\widget\BeatHUDWidget.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\widget\DebugWidget.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\widget\GameplayHUDWidget.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\BitmapFontLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\FontManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\TextQuad.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\widget\MinimapWidget.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\SpriteAnimation.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\widget\BeatEffect.cpp">
-    <ClCompile Include="UI\popup\CreditPopup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\popup\ScoreboardPopup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\popup\UIPopupBase.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\popup\GameOverPopup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\popup\StageClearPopup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\popup\SaveScorePopup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\TestScene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\popup\GoToTitlePopup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="Resources\Shaders\Default.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ThirdParty\imgui\imconfig.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\imgui\imgui.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\imgui\imgui_internal.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\imgui\imstb_rectpack.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\imgui\imstb_textedit.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\imgui\imstb_truetype.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\imgui\imgui_impl_dx11.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\imgui\imgui_impl_win32.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="core\Types.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="core\Logger.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Stage.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Actor.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\BeatSystem.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Camera2D.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Monster.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Player.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\ScoreSystem.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\StageLoader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\ScoreRepository.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Time.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Input.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Application.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\GameContext.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\PlayScene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\SceneManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\TitleScene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Vec2.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\AudioSystem.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\FWindow.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\StageData.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Tile.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\SpriteInfo.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Wall.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Renderer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Texture.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\TextureManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\RenderObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\FileIO.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\ImageLoader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\JsonFile.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Popup.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\UIManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\CreditPopup.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\GameOverPopup.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\PopupManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\SaveScorePopup.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\ScoreboardPopup.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\StageClearPopup.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\UIPopupBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\widget\BeatHUDWidget.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\widget\DebugWidget.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\widget\GameplayHUDWidget.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\widget\MinimapWidget.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\SpriteAnimation.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\widget\UIWidget.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\stb_image.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\nlohmann\json.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\SceneType.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\SceneCommand.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\ScoreRecord.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\Scene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\BitmapFontLoader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\BitmapFont.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\FontManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\FontRenderObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\TextQuad.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Glyph.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\widget\BeatEffect.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
+    <ClCompile Include="IO\BitmapFontLoader.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Core\AudioSystem.cpp" />
+    <ClCompile Include="Core\Application.cpp" />
+    <ClCompile Include="Core\Input.cpp" />
+    <ClCompile Include="Core\FWindow.cpp" />
+    <ClCompile Include="Core\Time.cpp" />
+    <ClCompile Include="Data\StageLoader.cpp" />
+    <ClCompile Include="Data\ScoreRepository.cpp" />
+    <ClCompile Include="Gameplay\Actor.cpp" />
+    <ClCompile Include="Gameplay\BeatSystem.cpp" />
+    <ClCompile Include="Gameplay\Camera2D.cpp" />
+    <ClCompile Include="Data\StageData.cpp" />
+    <ClCompile Include="Gameplay\Monster.cpp" />
+    <ClCompile Include="Gameplay\Player.cpp" />
+    <ClCompile Include="Gameplay\ScoreSystem.cpp" />
+    <ClCompile Include="Gameplay\Stage.cpp" />
+    <ClCompile Include="Gameplay\Tile.cpp" />
+    <ClCompile Include="Gameplay\Wall.cpp" />
+    <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="Scene\TestScene.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Render\FontManager.cpp" />
+    <ClCompile Include="Render\TextQuad.cpp" />
+    <ClCompile Include="UI\popup\CreditPopup.cpp" />
+    <ClCompile Include="UI\popup\GameOverPopup.cpp" />
+    <ClCompile Include="UI\popup\GoToTitlePopup.cpp" />
+    <ClCompile Include="UI\popup\PopupManager.cpp" />
+    <ClCompile Include="UI\popup\SaveScorePopup.cpp" />
+    <ClCompile Include="UI\popup\ScoreboardPopup.cpp" />
+    <ClCompile Include="UI\popup\StageClearPopup.cpp" />
+    <ClCompile Include="UI\popup\UIPopupBase.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Render\Renderer.cpp" />
+    <ClCompile Include="Render\Texture.cpp" />
+    <ClCompile Include="Render\TextureManager.cpp" />
+    <ClCompile Include="IO\FileIO.cpp" />
+    <ClCompile Include="IO\ImageLoader.cpp" />
+    <ClCompile Include="IO\JsonFile.cpp" />
+    <ClCompile Include="Scene\PlayScene.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\widget\BeatEffect.cpp" />
+    <ClCompile Include="UI\widget\BeatHUDWidget.cpp" />
+    <ClCompile Include="UI\widget\DebugWidget.cpp" />
+    <ClCompile Include="UI\widget\GameplayHUDWidget.cpp" />
+    <ClCompile Include="UI\widget\MinimapWidget.cpp" />
+    <ClCompile Include="Gameplay\SpriteAnimation.cpp" />
+    <ClCompile Include="UI\popup\StageIntroPopup.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\Fonts\bmFont.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
+    <ClInclude Include="IO\BitmapFontLoader.h" />
+    <ClInclude Include="Data\ScoreRecord.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Core\AudioSystem.h" />
+    <ClInclude Include="Core\Application.h" />
+    <ClInclude Include="Core\GameContext.h" />
+    <ClInclude Include="Core\Input.h" />
+    <ClInclude Include="Core\FWindow.h" />
+    <ClInclude Include="Core\Time.h" />
+    <ClInclude Include="Core\Vec2.h" />
+    <ClInclude Include="Data\StageLoader.h" />
+    <ClInclude Include="Data\ScoreRepository.h" />
+    <ClInclude Include="Gameplay\Actor.h" />
+    <ClInclude Include="Gameplay\BeatSystem.h" />
+    <ClInclude Include="Gameplay\Camera2D.h" />
+    <ClInclude Include="Data\StageData.h" />
+    <ClInclude Include="Gameplay\Monster.h" />
+    <ClInclude Include="Gameplay\Player.h" />
+    <ClInclude Include="Gameplay\ScoreSystem.h" />
+    <ClInclude Include="Gameplay\Stage.h" />
+    <ClInclude Include="Gameplay\Tile.h" />
+    <ClInclude Include="Gameplay\SpriteInfo.h" />
+    <ClInclude Include="Gameplay\Wall.h" />
+    <ClInclude Include="Scene\TestScene.h" />
+    <ClInclude Include="Scene\Scene.h" />
+    <ClInclude Include="Scene\SceneCommand.h" />
+    <ClInclude Include="Scene\SceneType.h" />
+    <ClInclude Include="ThirdParty\imgui\imconfig.h" />
+    <ClInclude Include="ThirdParty\imgui\imgui.h" />
+    <ClInclude Include="ThirdParty\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="ThirdParty\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="ThirdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="ThirdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="ThirdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="ThirdParty\imgui\imstb_truetype.h" />
+    <ClInclude Include="Render\BitmapFont.h" />
+    <ClInclude Include="Render\FontManager.h" />
+    <ClInclude Include="Render\FontRenderObject.h" />
+    <ClInclude Include="Render\TextQuad.h" />
+    <ClInclude Include="Render\Glyph.h" />
+    <ClInclude Include="Render\Renderer.h" />
+    <ClInclude Include="Render\Texture.h" />
+    <ClInclude Include="Render\TextureManager.h" />
+    <ClInclude Include="Render\RenderObject.h" />
+    <ClInclude Include="IO\FileIO.h" />
+    <ClInclude Include="IO\ImageLoader.h" />
+    <ClInclude Include="IO\JsonFile.h" />
+    <ClInclude Include="Scene\PlayScene.h" />
+    <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="Core\Types.h" />
+    <ClInclude Include="Core\Logger.h" />
+    <ClInclude Include="ThirdParty\nlohmann\json.hpp" />
+    <ClInclude Include="ThirdParty\stb_image.h" />
+    <ClInclude Include="UI\Popup.h" />
+    <ClInclude Include="UI\popup\CreditPopup.h" />
+    <ClInclude Include="UI\popup\GameOverPopup.h" />
+    <ClInclude Include="UI\popup\GoToTitlePopup.h" />
+    <ClInclude Include="UI\popup\PopupManager.h" />
+    <ClInclude Include="UI\popup\SaveScorePopup.h" />
+    <ClInclude Include="UI\popup\ScoreboardPopup.h" />
+    <ClInclude Include="UI\popup\StageClearPopup.h" />
+    <ClInclude Include="UI\popup\UIPopupAction.h" />
+    <ClInclude Include="UI\popup\UIPopupBase.h" />
+    <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="UI\widget\BeatEffect.h" />
+    <ClInclude Include="UI\widget\BeatHUDWidget.h" />
+    <ClInclude Include="UI\widget\DebugWidget.h" />
+    <ClInclude Include="UI\widget\GameplayHUDWidget.h" />
+    <ClInclude Include="UI\widget\MinimapWidget.h" />
+    <ClInclude Include="Gameplay\SpriteAnimation.h" />
+    <ClInclude Include="UI\widget\UIWidget.h" />
+    <ClInclude Include="UI\popup\StageIntroPopup.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Fonts\bmFont.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\bmFont.fnt" />
-    <ClInclude Include="UI\popup\UIPopupAction.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\TestScene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\popup\GoToTitlePopup.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
