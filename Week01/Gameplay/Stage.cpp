@@ -102,22 +102,22 @@ bool FStage::Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InText
 				auto NewMonster = std::make_unique<FMonster>();
 				NewMonster->SetPosition(RandX, RandY, TileSize);
 
-                int MonsterType = std::rand() % 2;
+				int MonsterType = std::rand() % 2;
 
-                switch (MonsterType)
-                {
-                case 0:
-                    NewMonster->SetMonsterType(EMonsterType::StoneGolem);
-                    break;
-                case 1:
-                    NewMonster->SetMonsterType(EMonsterType::FireGolem);
-                    break;
-                default:
-                    NewMonster->SetMonsterType(EMonsterType::StoneGolem);
-                }
+				switch (MonsterType)
+				{
+				case 0:
+					NewMonster->SetMonsterType(EMonsterType::StoneGolem);
+					break;
+				case 1:
+					NewMonster->SetMonsterType(EMonsterType::FireGolem);
+					break;
+				default:
+					NewMonster->SetMonsterType(EMonsterType::StoneGolem);
+				}
 
-                NewMonster->SetMoveFrequency(4 - 2 * MonsterType);
-                NewMonster->SetSearchRange(3 + 3 * MonsterType);
+				NewMonster->SetMoveFrequency(4 - 2 * MonsterType);
+				NewMonster->SetSearchRange(3 + 3 * MonsterType);
 
 				AddMonster(std::move(NewMonster));
 				break; // 스폰 성공 시 다음 몬스터 생성으로 넘어감
@@ -158,11 +158,11 @@ bool FStage::Load(int StageIndex, FRenderer* InRenderer, FTextureManager* InText
 		FAudioSystem::Get().Play(BgmKey, true);
 	}
 
-    // 효과음 로드
-    FAudioSystem::Get().LoadWav("sfx_perfect", "Resources/Sounds/perfect.wav");
-    FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
-    FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
-    FAudioSystem::Get().LoadWav("sfx_get_hit", "Resources/Sounds/get_hit.wav");
+	// 효과음 로드
+	FAudioSystem::Get().LoadWav("sfx_perfect", "Resources/Sounds/perfect.wav");
+	FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
+	FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
+	FAudioSystem::Get().LoadWav("sfx_get_hit", "Resources/Sounds/get_hit.wav");
 
 	bIsGameOver = false;
 	bIsCleared = false;
@@ -350,14 +350,14 @@ void FStage::Update(float DeltaTime, FGameContext& Context)
 			int mx = (*Mon)->GetTileX();
 			int my = (*Mon)->GetTileY();
 
-            if (!(*Mon)->IsDead() && mx == px && my == py)
-            {
-                // 1. 플레이어에게 데미지 1 적용
-                Player->Damage(1);
-                // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
-                (*Mon)->Damage((*Mon)->GetHp());
-                FAudioSystem::Get().Play("sfx_get_hit", false);
-            }
+			if (!(*Mon)->IsDead() && mx == px && my == py)
+			{
+				// 1. 플레이어에게 데미지 1 적용
+				Player->Damage(1);
+				// 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
+				(*Mon)->Damage((*Mon)->GetHp());
+				FAudioSystem::Get().Play("sfx_get_hit", false);
+			}
 
 			if ((*Mon)->IsDead())
 				Mon = Monsters.erase(Mon);
@@ -404,23 +404,23 @@ void FStage::Render()
 	auto GetTex = [&](const std::string& Key) -> FTexture*
 		{ return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr; };
 
-    // 아이템 렌더링
-    for (const auto &Item : Items)
-    {
-        if (Item.bPickedUp)
-            continue;
-        float       WorldX = Item.X * TileSize + TileSize * 0.5f;
-        float       WorldY = Item.Y * TileSize + TileSize * 0.5f;
-        std::string TexKey = GetItemTextureKey(Item.Type);
-        FTexture   *Tex = Textures ? Textures->Get(TexKey) : nullptr;
-        if (Tex)
-        {
-            FSpriteInfo Spr;
-            Spr.TextureKey = TexKey;
-            Spr.SpriteSize = {TileSize * 0.6f, TileSize * 0.6f};
-            Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize * 0.6f, TileSize * 0.6f, Spr);
-        }
-    }
+	// 아이템 렌더링
+	for (const auto& Item : Items)
+	{
+		if (Item.bPickedUp)
+			continue;
+		float       WorldX = Item.X * TileSize + TileSize * 0.5f;
+		float       WorldY = Item.Y * TileSize + TileSize * 0.5f;
+		std::string TexKey = GetItemTextureKey(Item.Type);
+		FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
+		if (Tex)
+		{
+			FSpriteInfo Spr;
+			Spr.TextureKey = TexKey;
+			Spr.SpriteSize = { TileSize * 0.6f, TileSize * 0.6f };
+			Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize * 0.6f, TileSize * 0.6f, Spr);
+		}
+	}
 
 	// 몬스터 렌더링
 	for (const auto& Mon : Monsters)
@@ -650,34 +650,6 @@ void FStage::ReleaseStaticBatches()
 
 void FStage::LoadSpriteResources()
 {
-	//if (!Textures)
-	//	return;
-
-    // 스프라이트 텍스처 로드 (파일이 없으면 셰이더 폴백 색상 사용)
-    auto LoadTex = [&](const std::string &Key, const std::string &Path)
-    {
-        if (!Textures->Has(Key))
-        {
-            auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
-            if (Tex)
-                Textures->Register(Key, std::move(Tex));
-        }
-    };
-    LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
-    LoadTex("goal", "Resources/Sprites/goal.png");
-    LoadTex("wall", "Resources/Sprites/wall.png");
-    LoadTex("player", "Resources/Sprites/player.png");
-    LoadTex("monster_stonegolem", "Resources/Sprites/monster_stonegolem.png");
-    LoadTex("monster_firegolem", "Resources/Sprites/monster_firegolem.png");
-    LoadTex("item_invincibility", "Resources/Sprites/item_invincibility.png");
-    LoadTex("item_time_scale_up", "Resources/Sprites/item_time_scale_up.png");
-    LoadTex("item_time_scale_down", "Resources/Sprites/item_time_scale_down.png");
-    LoadTex("item_darkness_up", "Resources/Sprites/item_darkness_up.png");
-    LoadTex("item_darkness_down", "Resources/Sprites/item_darkness_down.png");
-    LoadTex("item_time_freeze", "Resources/Sprites/item_time_freeze.png");
-    LoadTex("compass", "Resources/Sprites/compass.png");
-    LoadTex("compass_needle", "Resources/Sprites/compass_needle.png");
-
 	// 타일에 스프라이트 할당
 	for (auto& Tile : Tiles)
 	{
@@ -704,14 +676,14 @@ void FStage::LoadSpriteResources()
 		Player->SetSprite(Info);
 	}
 
-    // 몬스터 스프라이트
-    for (auto &Mon : Monsters)
-    {
-        FSpriteInfo Info;
-        Info.TextureKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
-        Info.SpriteSize = {TileSize, TileSize};
-        Mon->SetSprite(Info);
-    }
+	// 몬스터 스프라이트
+	for (auto& Mon : Monsters)
+	{
+		FSpriteInfo Info;
+		Info.TextureKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
+		Info.SpriteSize = { TileSize, TileSize };
+		Mon->SetSprite(Info);
+	}
 }
 
 bool FStage::IsWalkable(int X, int Y) const
