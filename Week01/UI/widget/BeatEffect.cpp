@@ -3,16 +3,24 @@
 #include "Render/Renderer.h"
 void BeatEffect::Update(float DeltaTime)
 {
-	LifeTime -= DeltaTime;
-	Y -= Speed * DeltaTime;
+    LifeTime -= DeltaTime;
+    Y -= Speed * DeltaTime;
 }
 
-bool BeatEffect::IsAlive() const
+bool BeatEffect::IsAlive() const { return LifeTime >= 0.f; }
+
+void BeatEffect::Reset(FTexture *InTexture, float StartX, float StartY, float inLifeTime)
 {
-	return LifeTime >= 0.f;
+    Texture = InTexture;
+    X = StartX;
+    Y = StartY;
+    LifeTime = inLifeTime;
 }
 
-void BeatEffect::Render(FGameContext& Context)
+void BeatEffect::Render(FGameContext &Context)
 {
-	Context.Renderer.DrawTexture(Texture, X, Y, 200, 100);
+    if (IsAlive())
+    {
+        Context.Renderer.DrawTexture(Texture, X, Y, 200, 100);
+    }
 }

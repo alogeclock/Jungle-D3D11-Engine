@@ -3,21 +3,21 @@
 #include "Render/Texture.h"
 struct BeatEffect
 {
-	BeatEffect() {}
-	BeatEffect(FTexture* InTexture, float StartX, float StartY) :
-		Texture(InTexture), X(StartX), Y(StartY) {
-	}
-	void Update(float DeltaTime);
-	bool IsAlive() const;
+    BeatEffect() {}
+    BeatEffect(FTexture *InTexture, float StartX, float StartY)
+        : Texture(InTexture), X(StartX), Y(StartY)
+    {
+    }
+    void Update(float DeltaTime);
+    bool IsAlive() const;
+    void Reset(FTexture *InTexture, float StartX, float StartY, float inLifeTime);
+    void Render(FGameContext &Context);
 
-	void Render(FGameContext& Context);
+    const FTexture *Texture = nullptr;
+    float           X = 0.f;
+    float           Y = 0.f;
+    float           LifeTime = -1.f;
 
-
-
-	const FTexture* Texture;
-	float X = 0.f;
-	float Y = 0.f;
-private:
-	float LifeTime = 0.3f;
-	float Speed = 100.f;
+  private:
+    float Speed = 100.f;
 };
