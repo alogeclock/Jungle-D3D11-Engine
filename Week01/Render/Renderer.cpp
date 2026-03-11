@@ -85,9 +85,11 @@ void FRenderer::DrawSprite(const FTexture* Texture, float WorldX, float WorldY,
 
 	if (Texture)
 	{
-		XMFLOAT2 TexSize = { static_cast<float>(Texture->Width), static_cast<float>(Texture->Height) };
-		Obj.TextureSize = TexSize;
-		Obj.SpriteSize = TexSize;
+		Obj.TextureSize = { static_cast<float>(Texture->Width), static_cast<float>(Texture->Height) };
+		if (Sprite.SpriteSize.x > 0.0f && Sprite.SpriteSize.y > 0.0f)
+			Obj.SpriteSize = Sprite.SpriteSize;
+		else
+			Obj.SpriteSize = Obj.TextureSize;
 	}
 
 	Obj.bScreenSpace = false;

@@ -229,7 +229,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         MoveDir = EDirection::Left;
         bHasInput = true;
         FSpriteInfo Spr = Player->GetSprite();
-        Spr.bIsMirrored = false;
+        Spr.bIsMirrored = !Player->GetDefaultMirrored();
         Player->SetSprite(Spr);
     }
     else if (Context.Input.GetKeyDown(EKeyCode::Right))
@@ -237,7 +237,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         MoveDir = EDirection::Right;
         bHasInput = true;
         FSpriteInfo Spr = Player->GetSprite();
-        Spr.bIsMirrored = true;
+        Spr.bIsMirrored = Player->GetDefaultMirrored();
         Player->SetSprite(Spr);
     }
 
@@ -403,7 +403,6 @@ void FStage::Render()
         {
             FSpriteInfo Spr;
             Spr.TextureKey = TexKey;
-            Spr.SpriteSize = {TileSize * 0.6f, TileSize * 0.6f};
             Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize * 0.6f, TileSize * 0.6f, Spr);
         }
     }
@@ -662,21 +661,59 @@ void FStage::LoadSpriteResources()
         W.SetSprite(Info);
     }
 
-    // 플레이어 스프라이트
+    // 액터에 스프라이트 + JSON 애니메이션 로드 헬퍼
+    auto SetupActorAnim = [&](FActor* Actor, const std::string& TexKey)
     {
         FSpriteInfo Info;
-        Info.TextureKey = "player";
-        Info.SpriteSize = {TileSize, TileSize};
-        Player->SetSprite(Info);
-    }
+        Info.TextureKey = TexKey;
 
-    // 몬스터 스프라이트
-    for (auto &Mon : Monsters)
+        // JSON 애니메이션 파일 탐색: Resources/Sprites/Animation/{TexKey}.json
+        std::string AnimPath = "Resources/Sprites/Animation/" + TexKey + ".json";
+        bool bDefaultMirrored = false;
+        if (LoadAnimationsFromJson(AnimPath, Actor->GetAnimator(), bDefaultMirrored))
+        {
+            Info.bIsMirrored = bDefaultMirrored;
+            Actor->SetDefaultMirrored(bDefaultMirrored);
+            // JSON 로드 성공 → 첫 번째 애니메이션의 첫 프레임으로 SpriteSize 설정
+            const FKeyframe* KF = Actor->GetAnimator().GetCurrentKeyframe();
+            if (!KF)
+            {
+                // 아직 Play되지 않았으면 idle 시도
+                Actor->GetAnimator().Play("idle");
+                KF = Actor->GetAnimator().GetCurrentKeyframe();
+            }
+            if (KF)
+            {
+                Info.SpriteSize = { KF->OffsetMax.x - KF->OffsetMin.x, KF->OffsetMax.y - KF->OffsetMin.y };
+            }
+            else
+            {
+                FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
+                Info.SpriteSize = Tex
+                    ? DirectX::XMFLOAT2{ static_cast<float>(Tex->Width), static_cast<float>(Tex->Height) }
+                    : DirectX::XMFLOAT2{ TileSize, TileSize };
+            }
+        }
+        else
+        {
+            // JSON 없음 → 텍스처 전체를 1프레임으로 사용 (기존 동작)
+            FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
+            Info.SpriteSize = Tex
+                ? DirectX::XMFLOAT2{ static_cast<float>(Tex->Width), static_cast<float>(Tex->Height) }
+                : DirectX::XMFLOAT2{ TileSize, TileSize };
+        }
+
+        Actor->SetSprite(Info);
+    };
+
+    // 플레이어 스프라이트 + 애니메이션
+    SetupActorAnim(Player.get(), "player");
+
+    // 몬스터 스프라이트 + 애니메이션
+    for (auto& Mon : Monsters)
     {
-        FSpriteInfo Info;
-        Info.TextureKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
-        Info.SpriteSize = {TileSize, TileSize};
-        Mon->SetSprite(Info);
+        std::string TexKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
+        SetupActorAnim(Mon.get(), TexKey);
     }
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Types.h"
+#include "SpriteAnimation.h"
 #include "SpriteInfo.h"
 
 class FStage;
@@ -44,6 +45,12 @@ class FActor
     void               SetSprite(const FSpriteInfo &InSprite);
     const FSpriteInfo &GetSprite() const;
 
+    FSpriteAnimator       &GetAnimator();
+    const FSpriteAnimator &GetAnimator() const;
+
+    void SetDefaultMirrored(bool bMirrored);
+    bool GetDefaultMirrored() const;
+
   protected:
     int TileX = 0;
     int TileY = 0;
@@ -65,5 +72,7 @@ class FActor
     float MoveTargetX = 0.0f;
     float MoveTargetY = 0.0f;
 
-    FSpriteInfo Sprite;
+    FSpriteInfo      Sprite;
+    FSpriteAnimator  Animator;
+    bool             bDefaultMirrored = false;
 };

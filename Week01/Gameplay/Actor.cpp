@@ -19,6 +19,8 @@ void FActor::Update(float DeltaTime, FGameContext &Context)
         RenderX = MoveStartX + (MoveTargetX - MoveStartX) * Alpha;
         RenderY = MoveStartY + (MoveTargetY - MoveStartY) * Alpha;
     }
+
+    Animator.Update(DeltaTime);
 }
 
 void FActor::SetPosition(int InTileX, int InTileY, float TileSize)
@@ -112,4 +114,27 @@ bool FActor::IsMoving() const { return bIsMoving; }
 
 void FActor::SetSprite(const FSpriteInfo &InSprite) { Sprite = InSprite; }
 
-const FSpriteInfo &FActor::GetSprite() const { return Sprite; }
+const FSpriteInfo &FActor::GetSprite() const
+{
+    // Animator가 활성 상태면 현재 프레임의 UV 영역을 반영
+    if (Animator.IsPlaying())
+    {
+        const FKeyframe *KF = Animator.GetCurrentKeyframe();
+        if (KF)
+        {
+            FSpriteInfo &MutableSprite = const_cast<FSpriteInfo &>(Sprite);
+            MutableSprite.SpriteOffset = KF->OffsetMin;
+            MutableSprite.SpriteSize = {KF->OffsetMax.x - KF->OffsetMin.x,
+                                        KF->OffsetMax.y - KF->OffsetMin.y};
+        }
+    }
+    return Sprite;
+}
+
+FSpriteAnimator &FActor::GetAnimator() { return Animator; }
+
+const FSpriteAnimator &FActor::GetAnimator() const { return Animator; }
+
+void FActor::SetDefaultMirrored(bool bMirrored) { bDefaultMirrored = bMirrored; }
+
+bool FActor::GetDefaultMirrored() const { return bDefaultMirrored; }
