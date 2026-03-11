@@ -10,7 +10,6 @@ EUIPopupAction FCreditPopup::ConsumeAction()
 
 void FCreditPopup::Render(FGameContext &Context)
 {
-    ImGui::TextUnformatted("김연하");
     FPopupFrameLayout Layout;
     if (!BeginPopupWindow("Credits", "Credits", ImVec2(DefaultPopupWidth, DefaultPopupHeight),
                           Layout))
