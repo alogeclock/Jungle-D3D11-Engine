@@ -253,6 +253,42 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         Player->SetSprite(Spr);
     }
 
+    if (BeatSystem->ConsumeBeat())
+    {
+        // 몬스터 이동
+        for (auto &Mon : Monsters)
+        {
+            Mon->OnBeat(*this);
+        }
+    }
+
+    if (!Player->IsDead())
+    {
+        int px = Player->GetTileX();
+        int py = Player->GetTileY();
+
+        for (auto Mon = Monsters.begin(); Mon != Monsters.end();)
+        {
+            int mx = (*Mon)->GetTileX();
+            int my = (*Mon)->GetTileY();
+
+            if (!(*Mon)->IsDead() && mx == px && my == py)
+            {
+                // 1. 플레이어에게 데미지 1 적용
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
+                // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
+                (*Mon)->Damage((*Mon)->GetHp());
+                FAudioSystem::Get().Play("sfx_get_hit", false);
+            }
+
+            if ((*Mon)->IsDead())
+                Mon = Monsters.erase(Mon);
+            else
+                ++Mon;
+        }
+    }
+
     if (!Player->IsDead() && bHasInput)
     {
         // 입력이 들어온 현재 시점의 박자 인덱스
@@ -310,16 +346,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         }
     }
 
-    // 3. 비트 시작 시 처리 (박자가 넘어가는 순간에만 1회 수행)
-    if (BeatSystem->ConsumeBeat())
-    {
-        // 몬스터 이동
-        for (auto &Mon : Monsters)
-        {
-            Mon->OnBeat(*this);
-        }
-    }
-
     // 비트 스킵 시 미입력 데미지
     if (BeatSystem->IsBeatSkipped())
     {
@@ -335,32 +361,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                     Player->Damage(1);
                 FAudioSystem::Get().Play("sfx_miss", false);
             }
-        }
-    }
-
-    if (!Player->IsDead())
-    {
-        int px = Player->GetTileX();
-        int py = Player->GetTileY();
-
-        for (auto Mon = Monsters.begin(); Mon != Monsters.end();)
-        {
-            int mx = (*Mon)->GetTileX();
-            int my = (*Mon)->GetTileY();
-
-            if (!(*Mon)->IsDead() && mx == px && my == py)
-            {
-                // 1. 플레이어에게 데미지 1 적용
-                Player->Damage(1);
-                // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
-                (*Mon)->Damage((*Mon)->GetHp());
-                FAudioSystem::Get().Play("sfx_get_hit", false);
-            }
-
-            if ((*Mon)->IsDead())
-                Mon = Monsters.erase(Mon);
-            else
-                ++Mon;
         }
     }
 
