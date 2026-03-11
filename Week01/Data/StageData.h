@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Gameplay/Item.h"
+#include "Gameplay/Monster.h"
 
 struct FSpawnPoint
 {
@@ -32,7 +33,11 @@ struct FStageData
     int  GetStageId() const;
 
     int  GetMonsterCount() const;
-    void SetMonsterCount(int MonsterCount);
+    void SetMonsterCount(int InMonsterCount);
+
+    void AddMonsterType(EMonsterType InType);
+    const std::vector<EMonsterType>& GetMonsterTypes() const;
+    void ClearMonsterTypes();
 
     void               SetStageName(const std::string &InStageName);
     const std::string &GetStageName() const;
@@ -54,10 +59,8 @@ struct FStageData
     void                          ClearItems();
 
   private:
-    // 해석은 TileType enum값 대로
     std::vector<std::vector<int>> Tiles;
 
-    // metadata
     int         Width = 0;
     int         Height = 0;
     int         StageId = 0;
@@ -68,5 +71,6 @@ struct FStageData
     float       TimeLimit = 60.0f;
     int         MonsterCount = 0;
 
-    std::vector<FItemData> Items;
+    std::vector<EMonsterType> MonsterTypes;
+    std::vector<FItemData>    Items;
 };

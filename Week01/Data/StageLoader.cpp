@@ -7,6 +7,26 @@
 
 using json = nlohmann::json;
 
+namespace
+{
+	bool ParseMonsterType(const std::string& TypeStr, EMonsterType& OutType)
+	{
+		if (TypeStr == "stone_golem")
+		{
+			OutType = EMonsterType::StoneGolem;
+			return true;
+		}
+
+		if (TypeStr == "fire_golem")
+		{
+			OutType = EMonsterType::FireGolem;
+			return true;
+		}
+
+		return false;
+	}
+}
+
 FStageLoader& FStageLoader::Get()
 {
 	static FStageLoader Instance;
@@ -130,6 +150,30 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData& OutStage) const
 		else
 		{
 			OutStage.SetSpawnPoint(0, 0);
+		}
+
+		if (Meta.contains("monster_types"))
+		{
+			if (!Meta["monster_types"].is_array())
+			{
+				return false;
+			}
+
+			for (const auto& TypeJson : Meta["monster_types"])
+			{
+				if (!TypeJson.is_string())
+				{
+					return false;
+				}
+
+				EMonsterType MonsterType;
+				if (!ParseMonsterType(TypeJson.get<std::string>(), MonsterType))
+				{
+					return false;
+				}
+
+				OutStage.AddMonsterType(MonsterType);
+			}
 		}
 
 		if (Meta.contains("items") && Meta["items"].is_array())

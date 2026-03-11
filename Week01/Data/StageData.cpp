@@ -1,20 +1,6 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "Core/Types.h"
 #include "StageData.h"
-
-void FStageData::Clear()
-{
-    Tiles.clear();
-    Width = 0;
-    Height = 0;
-    StageId = 0;
-    StageName.clear();
-    PlayerSpawn = {};
-    Bpm = 120;
-    MusicPath.clear();
-    TimeLimit = 60.0f;
-    ClearItems();
-}
 
 void FStageData::Resize(int InWidth, int InHeight)
 {
@@ -121,3 +107,34 @@ void FStageData::AddItem(const FItemData &Item) { Items.push_back(Item); }
 const std::vector<FItemData> &FStageData::GetItems() const { return Items; }
 
 void FStageData::ClearItems() { Items.clear(); }
+
+void FStageData::Clear()
+{
+    Tiles.clear();
+    Width = 0;
+    Height = 0;
+    StageId = 0;
+    StageName.clear();
+    PlayerSpawn = {};
+    Bpm = 120;
+    MusicPath.clear();
+    TimeLimit = 60.0f;
+    MonsterCount = 0;
+    ClearMonsterTypes();
+    ClearItems();
+}
+
+void FStageData::AddMonsterType(EMonsterType InType)
+{
+    MonsterTypes.push_back(InType);
+}
+
+const std::vector<EMonsterType>& FStageData::GetMonsterTypes() const
+{
+    return MonsterTypes;
+}
+
+void FStageData::ClearMonsterTypes()
+{
+    MonsterTypes.clear();
+}
