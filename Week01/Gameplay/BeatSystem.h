@@ -34,8 +34,8 @@ class FBeatSystem
     float BeatInterval = 0.5f;
     float ElapsedTime = 0.0f;
 
-    float PerfectWindow = 0.08f;
-    float GoodWindow = 0.2f;
+    float PerfectWindow = 0.07f;
+    float GoodWindow = 0.14f;
 
     float TimeScale = 1.0f;
 
