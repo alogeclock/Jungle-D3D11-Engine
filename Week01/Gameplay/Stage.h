@@ -93,6 +93,9 @@ class FStage
     int GetGoalX() const;
     int GetGoalY() const;
 
+    void StartBGM();
+    void StopBGM();
+
   private:
     std::unique_ptr<FStageData>            Map;
     std::unique_ptr<FPlayer>               Player;
@@ -129,6 +132,8 @@ class FStage
     FStaticBatch FloorBatch;
     FStaticBatch GoalBatch;
     FStaticBatch WallBatch;
+
+    std::string BgmKey;
 
     void LoadSpriteResources();
     void CreateDarknessTexture();

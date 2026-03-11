@@ -17,6 +17,7 @@ class FTitleScene : public IScene
     void Render(FGameContext &Context) override;
 
   private:
+    bool bInitialized = false;
     void RenderBackground(FGameContext &Context);
     void RenderTitleMenu(FGameContext &Context);
     void HandleMenuCommand(FGameContext &Context);

@@ -5,7 +5,7 @@
 
 namespace ScoreRepository
 {
-    inline constexpr const char *DefaultPath = "Resources/Data/scoreboard.json";
+    inline constexpr const char *DefaultPath = "Save/scoreboard.json";
 
     std::vector<FScoreRecord> Load();
     std::vector<FScoreRecord> LoadSorted();
@@ -14,4 +14,4 @@ namespace ScoreRepository
     bool AppendRecord(const FScoreRecord &Record);
 
     void SortDescending(std::vector<FScoreRecord> &Records);
-}
+} // namespace ScoreRepository
