@@ -251,14 +251,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         if (Judge == EBeatJudge::Perfect)
         {
             Logger::Log("Perfect Input");
-            if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
-            {
-                if (!Player->ConsumeInvincibility())
-                    Player->Damage(1);
-                ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
-                FAudioSystem::Get().Play("sfx_miss", false);
-            }
-            else
+            if (Player->GetLastMovedBeatIndex() != CurrentBeatIndex)
             {
                 // 즉시 이동 처리
                 Player->QueueInput(MoveDir);
@@ -271,14 +264,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         else if (Judge == EBeatJudge::Good)
         {
             Logger::Log("Good Input");
-            if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
-            {
-                if (!Player->ConsumeInvincibility())
-                    Player->Damage(1);
-                ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
-                FAudioSystem::Get().Play("sfx_miss", false);
-            }
-            else
+            if (Player->GetLastMovedBeatIndex() != CurrentBeatIndex)
             {
                 // 즉시 이동 처리
                 Player->QueueInput(MoveDir);
