@@ -151,6 +151,7 @@
             "stage": 1
         },
         {
+<<<<<<< HEAD
             "nickname": "CLEAR",
             "score": 1459,
             "stage": 4
@@ -169,6 +170,16 @@
             "nickname": "SCORE",
             "score": 40,
             "stage": 2
+=======
+            "nickname": "HJLEE",
+            "score": 2612,
+            "stage": 4
+        },
+        {
+            "nickname": "HOJIN",
+            "score": 85,
+            "stage": 4
+>>>>>>> fix/UI_Fix
         }
     ]
 }
