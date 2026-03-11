@@ -6,6 +6,7 @@
 #include "Core/Input.h"
 #include "Core/Time.h"
 #include "Data/StageLoader.h"
+#include "Data/CreditLoader.h"
 #include "IO/BitmapFontLoader.h"
 #include "IO/ImageLoader.h"
 #include "Render/Renderer.h"
@@ -55,14 +56,6 @@ bool FApplication::InitializeResources()
         return false;
 
     if (!LoadSpriteResources())
-        return false;
-
-    return true;
-}
-
-bool FApplication::LoadDataResources()
-{
-    if (!FStageLoader::Get().Initialize(std::string(StageDataPath)))
         return false;
 
     return true;
@@ -136,6 +129,17 @@ bool FApplication::LoadTextureResource(const std::string &Key, const std::string
         return false;
 
     TextureManager->Register(Key, std::move(Texture));
+    return true;
+}
+
+bool FApplication::LoadDataResources()
+{
+    if (!FStageLoader::Get().Initialize(std::string(StageDataPath)))
+        return false;
+
+    if (!FCreditLoader::Get().Initialize(std::string(CreditDataPath)))
+        return false;
+
     return true;
 }
 
