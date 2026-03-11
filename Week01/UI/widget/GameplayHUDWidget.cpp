@@ -76,7 +76,8 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         char ScoreBuf[32];
         snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
 
-        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 30, HPTextPos.Y + 50, 50);
+        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 120,
+                                  50);
 
         // Angry 모드: 타이머 텍스트 scale 펄싱 (1.0 ~ 1.15, 1초 주기)
         float TimeScale = 50.0f;
@@ -85,12 +86,12 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
             float Pulse = (sinf(PlayTime * 2.0f * 3.14159f) + 1.0f) * 0.5f; // 0~1, 1초 주기
             TimeScale = 50.0f * (1.0f + 0.15f * Pulse);
         }
-        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 50,
+        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 70,
                                   TimeScale);
         std::string StageName = Stage->GetStageName();
         auto        iter = StageName.find(':');
         std::string StageIdx = StageName.substr(0, iter);
-        Context.Renderer.DrawFont(StageIdx, Font, FontTex, 30, HPTextPos.Y, 50);
+        Context.Renderer.DrawFont(StageIdx, Font, FontTex, 50, HPTextPos.Y, 50);
         // Context.Renderer.DrawFont("HP", Font, FontTex, HPTextPos.X, HPTextPos.Y, 35);
     }
     for (int i = 0; i < HP; i++)

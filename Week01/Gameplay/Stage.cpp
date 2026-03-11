@@ -207,6 +207,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     {
         bIsAngry = true;
         BeatSystem->SetTimeScale(AngryTimeScale);
+        FAudioSystem::Get().SetAllPlaybackRate(AngryTimeScale);
         CreateAngryOverlayTexture();
     }
 

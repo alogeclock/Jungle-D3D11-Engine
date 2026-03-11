@@ -54,13 +54,20 @@ void FBeatHUDWidget::Render(FGameContext &Context)
 
     float LeftBarX = Heart.X - Distance;
     float RightBarX = Heart.X + Distance;
+
+    float Margin = 20.0f;
+    float AdormentXScale = Context.Renderer.GetScreenWidth() * 2 - Margin * 2.0f;
+
+    Context.Renderer.DrawTexture(BarTexture, Context.Renderer.GetScreenWidth() / 2.0f, Heart.Y,
+                                 AdormentXScale, 20);
     Context.Renderer.DrawTexture(BarTexture, LeftBarX, Ypos, 20, 100);
     Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
     Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
 
     FontTexPair *FTPair = Context.FontManager.Get("basic_font");
-    Context.Renderer.DrawFont("x" + std::to_string(Combo), FTPair->Font.get(), FTPair->Tex.get(),
-                              Heart.X - 40, Heart.Y + 100, 75);
+    if (Combo != 0)
+        Context.Renderer.DrawFont("Combo x" + std::to_string(Combo), FTPair->Font.get(),
+                                  FTPair->Tex.get(), Heart.X - 120, Heart.Y + 100, 75);
     /*
      * 이펙트 그리기
      */
