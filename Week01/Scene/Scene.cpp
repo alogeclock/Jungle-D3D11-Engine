@@ -22,13 +22,15 @@ void IScene::ChangeScene(ESceneType NextScene)
     SetSceneCommand(Command);
 }
 
-void IScene::ChangeScene(ESceneType NextScene, int NextStageIndex, int AccumulatedScore)
+void IScene::ChangeScene(ESceneType NextScene, int NextStageIndex, int AccumulatedScore,
+                         const std::string &PlayerSkinKey)
 {
     FSceneCommand Command;
     Command.Type = ESceneCommandType::ChangeScene;
     Command.NextScene = NextScene;
     Command.NextStageIndex = NextStageIndex;
     Command.AccumulatedScore = AccumulatedScore;
+    Command.PlayerSkinKey = PlayerSkinKey;
     SetSceneCommand(Command);
 }
 

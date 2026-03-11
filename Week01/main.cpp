@@ -14,18 +14,18 @@
 #ifdef DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #else
-#pragma comment(linker, "/subsystem:windows")
+#pragma comment(linker, "/entry:WinMainCRTStartup")
 #endif
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	FApplication App;
+    FApplication App;
 
-	if (!App.Initialize(hInstance, WIN_WIDTH, WIN_HEIGHT))
-		return -1;
+    if (!App.Initialize(hInstance, WIN_WIDTH, WIN_HEIGHT))
+        return -1;
 
-	App.Run();
-	App.Shutdown();
+    App.Run();
+    App.Shutdown();
 
-	return 0;
+    return 0;
 }

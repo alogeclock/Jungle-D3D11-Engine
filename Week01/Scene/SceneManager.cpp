@@ -38,7 +38,8 @@ void FSceneManager::HandleSceneCommand(const FSceneCommand &Command)
         break;
 
     case ESceneCommandType::ChangeScene:
-        ChangeSceneInternal(Command.NextScene, Command.NextStageIndex, Command.AccumulatedScore);
+        ChangeSceneInternal(Command.NextScene, Command.NextStageIndex, Command.AccumulatedScore,
+                            Command.PlayerSkinKey);
         break;
 
     case ESceneCommandType::QuitGame:
@@ -49,7 +50,8 @@ void FSceneManager::HandleSceneCommand(const FSceneCommand &Command)
     }
 }
 
-void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex, int AccumulatedScore)
+void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex, int AccumulatedScore,
+                                        const std::string &PlayerSkinKey)
 {
     switch (SceneType)
     {
@@ -62,7 +64,7 @@ void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex, in
         break;
 
     case ESceneType::Play:
-        CurrentScene = std::make_unique<FPlayScene>(StageIndex, AccumulatedScore);
+        CurrentScene = std::make_unique<FPlayScene>(StageIndex, AccumulatedScore, PlayerSkinKey);
         break;
 
     default:

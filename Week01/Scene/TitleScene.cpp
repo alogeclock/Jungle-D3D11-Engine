@@ -128,10 +128,18 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
         ImGui::BeginDisabled();
     }
 
+    // 캐릭터 선택
+    static const char *SkinNames[] = {"Otaku", "Bunnie"};
+    static const char *SkinKeys[] = {"player_otaku", "player_bunnie"};
+
+    ImGui::SetCursorPos(ImVec2(StartX, StartY - 50.0f));
+    ImGui::SetNextItemWidth(ButtonSize.x);
+    ImGui::Combo("##PlayerSkin", &SelectedPlayerSkin, SkinNames, IM_ARRAYSIZE(SkinNames));
+
     ImGui::SetCursorPos(ImVec2(StartX, StartY));
     if (ImGui::Button("START", ButtonSize))
     {
-        ChangeScene(ESceneType::Play, 0);
+        ChangeScene(ESceneType::Play, 0, 0, SkinKeys[SelectedPlayerSkin]);
     }
 
     ImGui::SetCursorPos(ImVec2(StartX, StartY + ButtonSize.y + ButtonSpacing));

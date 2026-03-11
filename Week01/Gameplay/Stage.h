@@ -96,6 +96,9 @@ class FStage
     void StartBGM();
     void StopBGM();
 
+    void               SetPlayerSkinKey(const std::string &Key);
+    const std::string &GetPlayerSkinKey() const;
+
   private:
     std::unique_ptr<FStageData>            Map;
     std::unique_ptr<FPlayer>               Player;
@@ -134,6 +137,7 @@ class FStage
     FStaticBatch WallBatch;
 
     std::string BgmKey;
+    std::string PlayerSkinKey = "player_otaku";
 
     void LoadSpriteResources();
     void CreateDarknessTexture();

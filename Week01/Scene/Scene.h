@@ -21,7 +21,8 @@ class IScene
     void SetSceneCommand(const FSceneCommand &Command);
 
     void ChangeScene(ESceneType NextScene);
-    void ChangeScene(ESceneType NextScene, int NextStageIndex, int AccumulatedScore = 0);
+    void ChangeScene(ESceneType NextScene, int NextStageIndex, int AccumulatedScore = 0,
+                     const std::string &PlayerSkinKey = "");
     void QuitGame();
 
     void DispatchPopupAction(FGameContext &Context, FUIPopupBase &Popup, EUIPopupAction Action);

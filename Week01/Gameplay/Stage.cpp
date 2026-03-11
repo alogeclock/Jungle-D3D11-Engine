@@ -706,7 +706,7 @@ void FStage::LoadSpriteResources()
     };
 
     // 플레이어 스프라이트 + 애니메이션
-    SetupActorAnim(Player.get(), "player");
+    SetupActorAnim(Player.get(), PlayerSkinKey);
 
     // 몬스터 스프라이트 + 애니메이션
     for (auto &Mon : Monsters)
@@ -946,3 +946,7 @@ void FStage::StopBGM()
     if (!BgmKey.empty())
         FAudioSystem::Get().Stop(BgmKey);
 }
+
+void FStage::SetPlayerSkinKey(const std::string &Key) { PlayerSkinKey = Key; }
+
+const std::string &FStage::GetPlayerSkinKey() const { return PlayerSkinKey; }

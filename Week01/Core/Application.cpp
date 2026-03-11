@@ -44,7 +44,8 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
     LoadTex("goal", "Resources/Sprites/goal.png");
     LoadTex("wall", "Resources/Sprites/wall.png");
-    LoadTex("player", "Resources/Sprites/player_bunnie.png");
+    LoadTex("player_bunnie", "Resources/Sprites/player_bunnie.png");
+    LoadTex("player_otaku", "Resources/Sprites/player_otaku.png");
     LoadTex("monster_stonegolem", "Resources/Sprites/monster_stonegolem.png");
     LoadTex("monster_firegolem", "Resources/Sprites/monster_firegolem.png");
     LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
