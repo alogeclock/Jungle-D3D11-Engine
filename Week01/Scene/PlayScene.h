@@ -12,7 +12,8 @@ enum class EUIPopupAction;
 class FPlayScene : public IScene
 {
   public:
-    explicit FPlayScene(int InStageIndex, int InAccumulatedScore = 0);
+    explicit FPlayScene(int InStageIndex, int InAccumulatedScore = 0,
+                        const std::string &InPlayerSkinKey = "player_otaku");
 
     void Update(FGameContext &Context) override;
     void Render(FGameContext &Context) override;
@@ -30,9 +31,10 @@ class FPlayScene : public IScene
     FUIManager              UIManager;
     std::unique_ptr<FStage> Stage;
 
-    int  CurrentStageIndex = 0;
-    int  PendingStageIndex = -1;
-    int  AccumulatedScore = 0;
+    int         CurrentStageIndex = 0;
+    int         PendingStageIndex = -1;
+    int         AccumulatedScore = 0;
+    std::string PlayerSkinKey;
     bool bStageLoaded = false;
     bool bIsPaused = false;
     bool bOpenSaveScorePopupNextFrame = false;

@@ -23,8 +23,9 @@
 #include "UI/widget/GameplayHUDWidget.h"
 #include "UI/widget/MinimapWidget.h"
 
-FPlayScene::FPlayScene(int InStageIndex, int InAccumulatedScore)
-    : CurrentStageIndex(InStageIndex), AccumulatedScore(InAccumulatedScore)
+FPlayScene::FPlayScene(int InStageIndex, int InAccumulatedScore, const std::string &InPlayerSkinKey)
+    : CurrentStageIndex(InStageIndex), AccumulatedScore(InAccumulatedScore),
+      PlayerSkinKey(InPlayerSkinKey.empty() ? "player_otaku" : InPlayerSkinKey)
 {
 }
 
@@ -90,6 +91,7 @@ void FPlayScene::LoadStage(FGameContext &Context)
     FAudioSystem::Get().StopAll();
 
     Stage = std::make_unique<FStage>();
+    Stage->SetPlayerSkinKey(PlayerSkinKey);
     Stage->Load(CurrentStageIndex, &Context.Renderer, &Context.Textures);
     Stage->StartBGM();
     Stage->GetScoreSystem().SetScore(AccumulatedScore);
@@ -222,7 +224,7 @@ bool FPlayScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup
     case EUIPopupAction::GoToNextStage:
         Popup.Close();
         AccumulatedScore = Stage ? Stage->GetScore() : 0;
-        ChangeScene(ESceneType::Play, CurrentStageIndex + 1, AccumulatedScore);
+        ChangeScene(ESceneType::Play, CurrentStageIndex + 1, AccumulatedScore, PlayerSkinKey);
         return true;
 
     case EUIPopupAction::ConfirmSaveScore:
