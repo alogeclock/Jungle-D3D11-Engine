@@ -163,6 +163,7 @@
     <ClCompile Include="Gameplay\Stage.cpp" />
     <ClCompile Include="Gameplay\Tile.cpp" />
     <ClCompile Include="Gameplay\Wall.cpp" />
+    <ClCompile Include="Scene\EndingScene.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Scene\TestScene.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp">
@@ -189,6 +190,7 @@
     <ClCompile Include="Render\FontManager.cpp" />
     <ClCompile Include="Render\TextQuad.cpp" />
     <ClCompile Include="UI\popup\CreditPopup.cpp" />
+    <ClCompile Include="UI\popup\EndingPopup.cpp" />
     <ClCompile Include="UI\popup\GameOverPopup.cpp" />
     <ClCompile Include="UI\popup\GoToTitlePopup.cpp" />
     <ClCompile Include="UI\popup\PopupManager.cpp" />
@@ -245,6 +247,7 @@
     <ClInclude Include="Gameplay\Tile.h" />
     <ClInclude Include="Gameplay\SpriteInfo.h" />
     <ClInclude Include="Gameplay\Wall.h" />
+    <ClInclude Include="Scene\EndingScene.h" />
     <ClInclude Include="Scene\TestScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneCommand.h" />
@@ -278,6 +281,7 @@
     <ClInclude Include="ThirdParty\stb_image.h" />
     <ClInclude Include="UI\Popup.h" />
     <ClInclude Include="UI\popup\CreditPopup.h" />
+    <ClInclude Include="UI\popup\EndingPopup.h" />
     <ClInclude Include="UI\popup\GameOverPopup.h" />
     <ClInclude Include="UI\popup\GoToTitlePopup.h" />
     <ClInclude Include="UI\popup\PopupManager.h" />

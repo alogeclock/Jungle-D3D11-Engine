@@ -60,6 +60,9 @@
     <ClCompile Include="UI\widget\MinimapWidget.cpp" />
     <ClCompile Include="Gameplay\SpriteAnimation.cpp" />
     <ClCompile Include="UI\popup\StageIntroPopup.cpp" />
+    <ClCompile Include="Data\CreditLoader.cpp" />
+    <ClCompile Include="UI\popup\EndingPopup.cpp" />
+    <ClCompile Include="Scene\EndingScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IO\BitmapFontLoader.h" />
@@ -135,6 +138,9 @@
     <ClInclude Include="Gameplay\SpriteAnimation.h" />
     <ClInclude Include="UI\widget\UIWidget.h" />
     <ClInclude Include="UI\popup\StageIntroPopup.h" />
+    <ClInclude Include="Data\CreditLoader.h" />
+    <ClInclude Include="UI\popup\EndingPopup.h" />
+    <ClInclude Include="Scene\EndingScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Fonts\bmFont.png" />
