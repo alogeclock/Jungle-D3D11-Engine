@@ -15,6 +15,8 @@ void FDebugWidget::BindStage(FStage* InStage)
 	}
 }
 
+void FDebugWidget::BindPauseFlag(bool* InPauseFlag) { PauseFlag = InPauseFlag; }
+
 void FDebugWidget::SetStageChangeCallback(std::function<void(int)> Callback)
 {
 	OnStageChange = std::move(Callback);
@@ -39,6 +41,14 @@ void FDebugWidget::Render(FGameContext& Context)
 
 	if (ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
+		// --- Pause ---
+		if (ImGui::Checkbox("Pause", &bDebugPaused))
+		{
+			if (PauseFlag)
+				*PauseFlag = bDebugPaused;
+		}
+
+		ImGui::Separator();
 		// --- Cheats (체크박스) ---
 		if (ImGui::Checkbox("Invincible", &bInvincible))
 		{
