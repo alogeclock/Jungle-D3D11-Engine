@@ -5,8 +5,8 @@
 #include "Core/Input.h"
 #include "Core/Time.h"
 #include "Data/StageLoader.h"
-#include "IO/ImageLoader.h"
 #include "IO/BitmapFontLoader.h"
+#include "IO/ImageLoader.h"
 #include "Render/Renderer.h"
 #include "Render/TextureManager.h"
 #include "Scene/SceneManager.h"
@@ -30,17 +30,32 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     if (!Renderer->Initialize(WindowHandle, ScreenWidth, ScreenHeight))
         return false;
 
-    // TEST Register
+    if (!InitializeResources())
+        return false;
 
+    if (!InitializeImGui(WindowHandle))
+        return false;
+
+    GameContext.emplace(FGameContext{*Time, *Input, *Renderer, *TextureManager, *FontManager});
+    SceneManager->Initialize();
+
+    return true;
+}
+
+bool FApplication::InitializeResources()
+{
     auto LoadTex = [&](const std::string &Key, const std::string &Path)
     {
         if (!TextureManager->Has(Key))
         {
             auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
             if (Tex)
+            {
                 TextureManager->Register(Key, std::move(Tex));
+            }
         }
     };
+
     LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
     LoadTex("goal", "Resources/Sprites/goal.png");
     LoadTex("wall", "Resources/Sprites/wall.png");
@@ -68,28 +83,44 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     LoadTex("compass", "Resources/Sprites/compass.png");
     LoadTex("compass_needle", "Resources/Sprites/compass_needle.png");
 
-    // Font
-    auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, "Resources/Fonts/bmFont.png");
-    FontManager->Register("basic_font", "Resources/Fonts/bmFont.fnt", std::move(Tex));
+    auto FontTexture = FImageLoader::LoadAsTexture(Renderer->Device, "Resources/Fonts/bmFont.png");
+    if (!FontTexture)
+        return false;
 
-    // 오디오 초기화
+    FontManager->Register("basic_font", "Resources/Fonts/bmFont.fnt", std::move(FontTexture));
+
     FAudioSystem::Get().Initialize();
 
-    // 스테이지 데이터 로드
-    FStageLoader::Get().Initialize("Resources/Maps/stages.json");
+    if (!FStageLoader::Get().Initialize("Resources/Maps/stages.json"))
+        return false;
 
-    // TODO
-    // TextureManager->Initialize(Renderer->Device);
+    return true;
+}
 
-    // ImGui 초기화
+bool FApplication::InitializeImGui(HWND WindowHandle)
+{
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGui_ImplWin32_Init(WindowHandle);
-    ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext);
 
-    GameContext.emplace(FGameContext{*Time, *Input, *Renderer, *TextureManager, *FontManager});
-    SceneManager->Initialize();
+    ImGuiIO &Io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+
+    ImFont *KoreanFont = Io.Fonts->AddFontFromFileTTF(
+       "Resources/Fonts/Galmuri11.ttf",
+        18.0f,
+        nullptr,
+        Io.Fonts->GetGlyphRangesKorean());
+
+    if (KoreanFont != nullptr)
+    {
+        Io.FontDefault = KoreanFont;
+    }
+
+    if (!ImGui_ImplWin32_Init(WindowHandle))
+        return false;
+
+    if (!ImGui_ImplDX11_Init(Renderer->Device, Renderer->DeviceContext))
+        return false;
 
     return true;
 }
@@ -104,19 +135,15 @@ void FApplication::Run()
 {
     while (bIsRunning && Window.ProcessMessages())
     {
-        // Input, Time 업데이트
         Input->Update();
         Time->Update();
 
-        // 프레임 렌더 준비
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // Scene 업데이트
         SceneManager->Update(*GameContext);
 
-        // Scene 렌더
         Renderer->BeginFrame();
         SceneManager->Render(*GameContext);
         ImGui::Render();

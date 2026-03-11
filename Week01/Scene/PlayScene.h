@@ -23,6 +23,7 @@ class FPlayScene : public IScene
     void HandleStageResult(FGameContext &Context);
     void HandlePopupResult(FGameContext &Context);
     void OpenGoToTitlePopup() override;
+    void OpenStageIntroPopup(const std::string &Message);
 
     bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
                               EUIPopupAction Action) override;
@@ -38,4 +39,5 @@ class FPlayScene : public IScene
     bool bStageLoaded = false;
     bool bIsPaused = false;
     bool bOpenSaveScorePopupNextFrame = false;
+    bool bWaitingForStageStart = false;
 };

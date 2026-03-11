@@ -51,6 +51,9 @@ struct FStageData
     void               SetMusicPath(const std::string &InPath);
     const std::string &GetMusicPath() const;
 
+    void               SetIntroMessage(const std::string &msg);
+    const std::string &GetIntroMessage() const;
+
     void  SetTimeLimit(float InTimeLimit);
     float GetTimeLimit() const;
 
@@ -70,6 +73,7 @@ struct FStageData
     std::string MusicPath;
     float       TimeLimit = 60.0f;
     int         MonsterCount = 0;
+    std::string IntroMessage;
 
     std::vector<EMonsterType> MonsterTypes;
     std::vector<FItemData>    Items;
