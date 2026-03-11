@@ -217,6 +217,8 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
                     Item.Type = EItemType::DarknessUp;
                 else if (TypeStr == "darkness_down")
                     Item.Type = EItemType::DarknessDown;
+                else if (TypeStr == "hp_up")
+                    Item.Type = EItemType::HpUp;
 
                 Item.Duration = ItemJson.value("duration", 5.0f);
                 Item.Level = ItemJson.value("level", 0);
@@ -229,27 +231,6 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
         {
             const json &Row = Layers[Y];
 
-		// render_layers 파싱
-		if (Stage.contains("render_layers") && Stage["render_layers"].is_array())
-		{
-			const json& RL = Stage["render_layers"];
-			OutStage.ResizeRenderLayers(Width, Height);
-
-			for (int Y = 0; Y < Height && Y < static_cast<int>(RL.size()); ++Y)
-			{
-				const json& Row = RL[Y];
-				if (!Row.is_array())
-					continue;
-
-				for (int X = 0; X < Width && X < static_cast<int>(Row.size()); ++X)
-				{
-					if (Row[X].is_number_integer())
-					{
-						OutStage.SetRenderLayer(X, Y, Row[X].get<int>());
-					}
-				}
-			}
-		}
             if (!Row.is_array() || static_cast<int>(Row.size()) != Width)
             {
                 return false;
@@ -264,8 +245,31 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
 
                 OutStage.SetTile(X, Y, Row[X].get<int>());
             }
-		return true;
-	}
+        }
+
+        // render_layers 파싱
+        if (Stage.contains("render_layers") && Stage["render_layers"].is_array())
+        {
+            const json &RL = Stage["render_layers"];
+            OutStage.ResizeRenderLayers(Width, Height);
+
+            for (int Y = 0; Y < Height && Y < static_cast<int>(RL.size()); ++Y)
+            {
+                const json &Row = RL[Y];
+                if (!Row.is_array())
+                    continue;
+
+                for (int X = 0; X < Width && X < static_cast<int>(Row.size()); ++X)
+                {
+                    if (Row[X].is_number_integer())
+                    {
+                        OutStage.SetRenderLayer(X, Y, Row[X].get<int>());
+                    }
+                }
+            }
+        }
+
+        return true;
     }
     catch (...)
     {

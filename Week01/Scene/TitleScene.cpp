@@ -86,51 +86,80 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
     const float StartX = (ScreenWidth - ButtonSize.x) * 0.5f;
     const float StartY = (ScreenHeight - TotalHeight) * 0.5f;
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.10f, 0.10f, 0.10f, 0.75f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.20f, 0.20f, 0.90f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.30f, 0.30f, 0.30f, 0.95f));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.00f, 1.00f, 1.00f, 1.00f));
+    // --- 공통 스타일 ---
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 16.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.5f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 8.0f));
 
     if (bHasOpenPopup)
     {
         ImGui::BeginDisabled();
     }
 
-    // 캐릭터 선택
+    // 캐릭터 선택 Combo
     static const char *SkinNames[] = {"Otaku", "Bunnie"};
     static const char *SkinKeys[] = {"player_otaku", "player_bunnie"};
 
-    ImGui::SetCursorPos(ImVec2(StartX, StartY - 50.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.08f, 0.08f, 0.12f, 0.85f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.15f, 0.15f, 0.22f, 0.90f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.45f, 0.40f, 0.70f, 0.60f));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.92f, 1.00f, 1.00f));
+    ImGui::SetCursorPos(ImVec2(StartX, StartY - 55.0f));
     ImGui::SetNextItemWidth(ButtonSize.x);
     ImGui::Combo("##PlayerSkin", &SelectedPlayerSkin, SkinNames, IM_ARRAYSIZE(SkinNames));
+    ImGui::PopStyleColor(4);
 
+    // --- START 버튼 (강조색) ---
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.18f, 0.12f, 0.35f, 0.90f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.20f, 0.55f, 0.95f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.40f, 0.28f, 0.65f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.55f, 0.45f, 0.85f, 0.80f));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.00f, 0.95f, 0.70f, 1.00f));
     ImGui::SetCursorPos(ImVec2(StartX, StartY));
-    if (ImGui::Button("START", ButtonSize))
+    if (ImGui::Button("[ START GAME ]", ButtonSize))
     {
         ChangeScene(ESceneType::Play, 0, 0, SkinKeys[SelectedPlayerSkin]);
     }
+    ImGui::PopStyleColor(5);
 
+    // --- CREDIT 버튼 ---
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.10f, 0.10f, 0.18f, 0.85f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.18f, 0.32f, 0.92f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.28f, 0.25f, 0.42f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.40f, 0.38f, 0.60f, 0.50f));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.85f, 0.95f, 1.00f));
     ImGui::SetCursorPos(ImVec2(StartX, StartY + ButtonSize.y + ButtonSpacing));
     if (ImGui::Button("CREDIT", ButtonSize))
     {
         OpenCreditPopup();
     }
+    ImGui::PopStyleColor(5);
 
+    // --- SCORE 버튼 ---
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.10f, 0.10f, 0.18f, 0.85f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.18f, 0.32f, 0.92f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.28f, 0.25f, 0.42f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.40f, 0.38f, 0.60f, 0.50f));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.85f, 0.95f, 1.00f));
     ImGui::SetCursorPos(ImVec2(StartX, StartY + (ButtonSize.y + ButtonSpacing) * 2.0f));
     if (ImGui::Button("SCORE", ButtonSize))
     {
         OpenScoreboardPopup();
     }
+    ImGui::PopStyleColor(5);
 
 #ifdef _DEBUG
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.08f, 0.08f, 0.80f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.15f, 0.15f, 0.90f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.40f, 0.20f, 0.20f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.60f, 0.30f, 0.30f, 0.50f));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.00f, 0.60f, 0.60f, 1.00f));
     ImGui::SetCursorPos(ImVec2(StartX, StartY + (ButtonSize.y + ButtonSpacing) * 3.0f));
     if (ImGui::Button("Test Scene", ButtonSize))
     {
         ChangeScene(ESceneType::Test);
     }
+    ImGui::PopStyleColor(5);
 #endif
 
     if (bHasOpenPopup)
@@ -138,8 +167,7 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
         ImGui::EndDisabled();
     }
 
-    ImGui::PopStyleColor(4);
-    ImGui::PopStyleVar(2);
+    ImGui::PopStyleVar(3);
 }
 
 void FTitleScene::HandlePopupResult(FGameContext &Context)
