@@ -106,10 +106,12 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
 
                 // 배열을 하나씩 순회하면서 현재 생성할 몬스터를 결정
                 std::vector<EMonsterType> MonsterTypeVector = Map->GetMonsterTypes();
-                EMonsterType MonsterType = EMonsterType::StoneGolem;
+                EMonsterType              MonsterType = EMonsterType::StoneGolem;
+
                 if (!MonsterTypeVector.empty())
                 {
-                    MonsterTypeIndex = MonsterTypeIndex % static_cast<int>(MonsterTypeVector.size());
+                    MonsterTypeIndex =
+                        MonsterTypeIndex % static_cast<int>(MonsterTypeVector.size());
                     MonsterType = MonsterTypeVector[MonsterTypeIndex];
                 }
 
@@ -118,6 +120,7 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
                 NewMonster->SetSearchRange(3 + 3 * MonsterTypeIndex);
 
                 AddMonster(std::move(NewMonster));
+                MonsterTypeIndex++;
                 break; // 스폰 성공 시 다음 몬스터 생성으로 넘어감
             }
             Tries++;
