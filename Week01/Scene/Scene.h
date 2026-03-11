@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "SceneCommand.h"
 
@@ -21,7 +21,7 @@ class IScene
     void SetSceneCommand(const FSceneCommand &Command);
 
     void ChangeScene(ESceneType NextScene);
-    void ChangeScene(ESceneType NextScene, int NextStageIndex);
+    void ChangeScene(ESceneType NextScene, int NextStageIndex, int AccumulatedScore = 0);
     void QuitGame();
 
     void DispatchPopupAction(FGameContext &Context, FUIPopupBase &Popup, EUIPopupAction Action);

@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "PlayScene.h"
 #include "Core/AudioSystem.h"
 #include <memory>
@@ -23,16 +23,18 @@
 #include "UI/widget/GameplayHUDWidget.h"
 #include "UI/widget/MinimapWidget.h"
 
-
-FPlayScene::FPlayScene(int InStageIndex) : CurrentStageIndex(InStageIndex) {}
-
-void FPlayScene::Update(FGameContext& Context)
+FPlayScene::FPlayScene(int InStageIndex, int InAccumulatedScore)
+    : CurrentStageIndex(InStageIndex), AccumulatedScore(InAccumulatedScore)
 {
-	if (!bStageLoaded)
-	{
-		LoadStage(Context);
-		bStageLoaded = true;
-	}
+}
+
+void FPlayScene::Update(FGameContext &Context)
+{
+    if (!bStageLoaded)
+    {
+        LoadStage(Context);
+        bStageLoaded = true;
+    }
 
     // TODO: 지연된 업데이트 필요하나?
     // 필요하다고 해도 ChangeScene 커맨드로 간략화하여 코드 수정할 것
@@ -42,24 +44,25 @@ void FPlayScene::Update(FGameContext& Context)
         Command.Type = ESceneCommandType::ChangeScene;
         Command.NextScene = ESceneType::Play;
         Command.NextStageIndex = PendingStageIndex;
+        Command.AccumulatedScore = Stage ? Stage->GetScore() : 0;
         PendingStageIndex = -1;
         SetSceneCommand(Command);
         return;
     }
 
-	FPopupManager& PopupManager = UIManager.GetPopupManager();
+    FPopupManager &PopupManager = UIManager.GetPopupManager();
 
-	bIsPaused = PopupManager.HasOpenPopup();
+    bIsPaused = PopupManager.HasOpenPopup();
 
-	if (Stage && !bIsPaused)
-	{
-		Stage->Update(Context.Time.GetDeltaTime(), Context);
-		HandleStageResult(Context);
-	}
+    if (Stage && !bIsPaused)
+    {
+        Stage->Update(Context.Time.GetDeltaTime(), Context);
+        HandleStageResult(Context);
+    }
 
-	UIManager.Update(Context);
-	HandlePopupResult(Context);
-	PopupManager.RemoveClosedPopup();
+    UIManager.Update(Context);
+    HandlePopupResult(Context);
+    PopupManager.RemoveClosedPopup();
 
     if (bOpenSaveScorePopupNextFrame && !PopupManager.HasOpenPopup())
     {
@@ -71,7 +74,7 @@ void FPlayScene::Update(FGameContext& Context)
     }
 }
 
-void FPlayScene::Render(FGameContext& Context)
+void FPlayScene::Render(FGameContext &Context)
 {
     if (Stage)
         Stage->Render();
@@ -79,49 +82,50 @@ void FPlayScene::Render(FGameContext& Context)
     UIManager.Render(Context);
 }
 
-void FPlayScene::LoadStage(FGameContext& Context)
+void FPlayScene::LoadStage(FGameContext &Context)
 {
-	Stage = std::make_unique<FStage>();
-	Stage->Load(CurrentStageIndex, &Context.Renderer, &Context.Textures);
+    Stage = std::make_unique<FStage>();
+    Stage->Load(CurrentStageIndex, &Context.Renderer, &Context.Textures);
+    Stage->GetScoreSystem().SetScore(AccumulatedScore);
 
-	bIsPaused = false;
+    bIsPaused = false;
 
-	// HUD 위젯 등록
-	UIManager.ClearAll();
-	auto HUD = std::make_unique<FGameplayHUDWidget>();
-	HUD->SetTextures(Context);
-	HUD->BindStage(Stage.get());
-	HUD->BindPauseFlag(&bIsPaused);
-	// 콜백 연동: ScoreSystem에서 판정이 일어나면 HUD의 OnBeatJudged를 호출하도록 바인딩 ---
-	UIManager.AddWidget("GameplayHUD", std::move(HUD));
+    // HUD 위젯 등록
+    UIManager.ClearAll();
+    auto HUD = std::make_unique<FGameplayHUDWidget>();
+    HUD->SetTextures(Context);
+    HUD->BindStage(Stage.get());
+    HUD->BindPauseFlag(&bIsPaused);
+    // 콜백 연동: ScoreSystem에서 판정이 일어나면 HUD의 OnBeatJudged를 호출하도록 바인딩 ---
+    UIManager.AddWidget("GameplayHUD", std::move(HUD));
 
-	auto BeatHUD = std::make_unique<FBeatHUDWidget>();
-	BeatHUD->SetTextures(Context);
-	BeatHUD->BindBeatSystem(&Stage->GetBeatSystem());
-	Stage->GetScoreSystem().SetJudgeCallback([HUDPtr = BeatHUD.get()](EBeatJudge Judge)
-		{ HUDPtr->OnBeatJudged(Judge); });
-	UIManager.AddWidget("BeatHUD", std::move(BeatHUD));
+    auto BeatHUD = std::make_unique<FBeatHUDWidget>();
+    BeatHUD->SetTextures(Context);
+    BeatHUD->BindBeatSystem(&Stage->GetBeatSystem());
+    Stage->GetScoreSystem().SetJudgeCallback([HUDPtr = BeatHUD.get()](EBeatJudge Judge)
+                                             { HUDPtr->OnBeatJudged(Judge); });
+    UIManager.AddWidget("BeatHUD", std::move(BeatHUD));
 
-	auto Minimap = std::make_unique<FMinimapWidget>();
-	Minimap->BindStage(Stage.get());
-	UIManager.AddWidget("Minimap", std::move(Minimap));
+    auto Minimap = std::make_unique<FMinimapWidget>();
+    Minimap->BindStage(Stage.get());
+    UIManager.AddWidget("Minimap", std::move(Minimap));
 
-	auto Debug = std::make_unique<FDebugWidget>();
-	Debug->BindStage(Stage.get());
-	Debug->SetTotalStages(FStageLoader::Get().GetStageCount());
-	Debug->SetStageChangeCallback([this](int Index) { PendingStageIndex = Index; });
-	UIManager.AddWidget("Debug", std::move(Debug));
+    auto Debug = std::make_unique<FDebugWidget>();
+    Debug->BindStage(Stage.get());
+    Debug->SetTotalStages(FStageLoader::Get().GetStageCount());
+    Debug->SetStageChangeCallback([this](int Index) { PendingStageIndex = Index; });
+    UIManager.AddWidget("Debug", std::move(Debug));
 }
 
-void FPlayScene::HandleStageResult(FGameContext& Context)
+void FPlayScene::HandleStageResult(FGameContext &Context)
 {
-	if (!Stage)
-		return;
+    if (!Stage)
+        return;
 
-	FPopupManager& PopupManager = UIManager.GetPopupManager();
+    FPopupManager &PopupManager = UIManager.GetPopupManager();
 
-	if (PopupManager.HasOpenPopup())
-		return;
+    if (PopupManager.HasOpenPopup())
+        return;
 
     if (Stage->IsGameOver())
     {
@@ -131,11 +135,11 @@ void FPlayScene::HandleStageResult(FGameContext& Context)
         return;
     }
 
-	if (Stage->IsCleared())
-	{
-		const int  NextIndex = CurrentStageIndex + 1;
-		const int  TotalStages = FStageLoader::Get().GetStageCount();
-		const bool bAllCleared = (NextIndex >= TotalStages);
+    if (Stage->IsCleared())
+    {
+        const int  NextIndex = CurrentStageIndex + 1;
+        const int  TotalStages = FStageLoader::Get().GetStageCount();
+        const bool bAllCleared = (NextIndex >= TotalStages);
 
         std::unique_ptr<FStageClearPopup> Popup = std::make_unique<FStageClearPopup>();
         Popup->SetData(bAllCleared, CurrentStageIndex + 1);
@@ -154,7 +158,7 @@ void FPlayScene::OpenGoToTitlePopup()
 
 void FPlayScene::HandlePopupResult(FGameContext &Context)
 {
-	FPopupManager& PopupManager = UIManager.GetPopupManager();
+    FPopupManager &PopupManager = UIManager.GetPopupManager();
 
     if (FStageClearPopup *Popup = PopupManager.GetPopup<FStageClearPopup>())
     {
@@ -184,6 +188,8 @@ void FPlayScene::HandlePopupResult(FGameContext &Context)
 bool FPlayScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
                                       EUIPopupAction Action)
 {
+    int AccumulatedScore;
+
     switch (Action)
     {
     case EUIPopupAction::OpenSaveScorePopup:
@@ -193,7 +199,8 @@ bool FPlayScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup
 
     case EUIPopupAction::GoToNextStage:
         Popup.Close();
-        ChangeScene(ESceneType::Play, CurrentStageIndex + 1);
+        AccumulatedScore = Stage ? Stage->GetScore() : 0;
+        ChangeScene(ESceneType::Play, CurrentStageIndex + 1, AccumulatedScore);
         return true;
 
     case EUIPopupAction::ConfirmSaveScore:

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 #include "Scene/Scene.h"
@@ -12,10 +12,10 @@ enum class EUIPopupAction;
 class FPlayScene : public IScene
 {
   public:
-    explicit FPlayScene(int InStageIndex);
+    explicit FPlayScene(int InStageIndex, int InAccumulatedScore = 0);
 
-	void Update(FGameContext& Context) override;
-	void Render(FGameContext& Context) override;
+    void Update(FGameContext &Context) override;
+    void Render(FGameContext &Context) override;
 
   private:
     void LoadStage(FGameContext &Context);
@@ -32,6 +32,7 @@ class FPlayScene : public IScene
 
     int  CurrentStageIndex = 0;
     int  PendingStageIndex = -1;
+    int  AccumulatedScore = 0;
     bool bStageLoaded = false;
     bool bIsPaused = false;
     bool bOpenSaveScorePopupNextFrame = false;

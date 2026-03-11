@@ -1,4 +1,4 @@
-
+﻿
 #include "pch.h"
 #include "Scene.h"
 #include "SceneType.h"
@@ -12,10 +12,7 @@ FSceneCommand IScene::ConsumeCommand()
     return Result;
 }
 
-void IScene::SetSceneCommand(const FSceneCommand &Command)
-{
-    PendingCommand = Command;
-}
+void IScene::SetSceneCommand(const FSceneCommand &Command) { PendingCommand = Command; }
 
 void IScene::ChangeScene(ESceneType NextScene)
 {
@@ -25,12 +22,13 @@ void IScene::ChangeScene(ESceneType NextScene)
     SetSceneCommand(Command);
 }
 
-void IScene::ChangeScene(ESceneType NextScene, int NextStageIndex)
+void IScene::ChangeScene(ESceneType NextScene, int NextStageIndex, int AccumulatedScore)
 {
     FSceneCommand Command;
     Command.Type = ESceneCommandType::ChangeScene;
     Command.NextScene = NextScene;
     Command.NextStageIndex = NextStageIndex;
+    Command.AccumulatedScore = AccumulatedScore;
     SetSceneCommand(Command);
 }
 
@@ -71,12 +69,9 @@ void IScene::DispatchPopupAction(FGameContext &Context, FUIPopupBase &Popup, EUI
     HandleOwnPopupAction(Context, Popup, Action);
 }
 
-bool IScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
-                                  EUIPopupAction Action)
+bool IScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup, EUIPopupAction Action)
 {
     return false;
 }
 
-void IScene::OnPopupActionDispatched(EUIPopupAction Action)
-{
-}
+void IScene::OnPopupActionDispatched(EUIPopupAction Action) {}

@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "CreditPopup.h"
 
 EUIPopupAction FCreditPopup::ConsumeAction()
@@ -33,7 +33,7 @@ void FCreditPopup::DrawCredits(const FPopupFrameLayout &Layout)
     ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
 
     const float LineHeight = ImGui::GetTextLineHeight();
-    float BlockHeight = 0.0f;
+    float       BlockHeight = 0.0f;
 
     if (!Credits.empty())
     {
@@ -45,7 +45,7 @@ void FCreditPopup::DrawCredits(const FPopupFrameLayout &Layout)
     if (StartY < Layout.ContentTop)
         StartY = Layout.ContentTop;
 
-    const char *PipeText = "|";
+    const char  *PipeText = "|";
     const ImVec2 PipeSize = ImGui::CalcTextSize(PipeText);
 
     for (std::size_t i = 0; i < Credits.size(); ++i)

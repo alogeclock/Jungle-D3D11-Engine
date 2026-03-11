@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 #include "Scene.h"
@@ -19,7 +19,7 @@ class FSceneManager
 
   private:
     void HandleSceneCommand(const FSceneCommand &Command);
-    void ChangeSceneInternal(ESceneType SceneType, int StageIndex = -1);
+    void ChangeSceneInternal(ESceneType SceneType, int StageIndex = -1, int AccumulatedScore = 0);
 
   private:
     std::unique_ptr<IScene> CurrentScene;

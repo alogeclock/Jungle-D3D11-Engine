@@ -1,154 +1,174 @@
 {
-  "scoreboard": [
-    {
-      "nickname": "Aaaa",
-      "stage": 1,
-      "score": 12500
-    },
-    {
-      "nickname": "BB",
-      "stage": 2,
-      "score": 11800
-    },
-    {
-      "nickname": "CAT",
-      "stage": 3,
-      "score": 11200
-    },
-    {
-      "nickname": "DOGE",
-      "stage": 2,
-      "score": 10900
-    },
-    {
-      "nickname": "ECHO5",
-      "stage": 4,
-      "score": 10450
-    },
-    {
-      "nickname": "FOX777",
-      "stage": 5,
-      "score": 10000
-    },
-    {
-      "nickname": "G",
-      "stage": 1,
-      "score": 9650
-    },
-    {
-      "nickname": "HI",
-      "stage": 3,
-      "score": 9400
-    },
-    {
-      "nickname": "ICE",
-      "stage": 4,
-      "score": 9150
-    },
-    {
-      "nickname": "JAZZ",
-      "stage": 2,
-      "score": 8900
-    },
-    {
-      "nickname": "KILO5",
-      "stage": 6,
-      "score": 8700
-    },
-    {
-      "nickname": "LMN123",
-      "stage": 7,
-      "score": 8450
-    },
-    {
-      "nickname": "M",
-      "stage": 2,
-      "score": 8300
-    },
-    {
-      "nickname": "NO",
-      "stage": 5,
-      "score": 8100
-    },
-    {
-      "nickname": "OWL",
-      "stage": 3,
-      "score": 7900
-    },
-    {
-      "nickname": "PINK",
-      "stage": 4,
-      "score": 7700
-    },
-    {
-      "nickname": "QWER5",
-      "stage": 6,
-      "score": 7550
-    },
-    {
-      "nickname": "RABBIT",
-      "stage": 7,
-      "score": 7400
-    },
-    {
-      "nickname": "S",
-      "stage": 1,
-      "score": 7200
-    },
-    {
-      "nickname": "TT",
-      "stage": 2,
-      "score": 7050
-    },
-    {
-      "nickname": "UNO",
-      "stage": 3,
-      "score": 6900
-    },
-    {
-      "nickname": "VOLT",
-      "stage": 5,
-      "score": 6700
-    },
-    {
-      "nickname": "WAVE9",
-      "stage": 6,
-      "score": 6550
-    },
-    {
-      "nickname": "XYZ123",
-      "stage": 7,
-      "score": 6400
-    },
-    {
-      "nickname": "Y",
-      "stage": 2,
-      "score": 6200
-    },
-    {
-      "nickname": "ZZ",
-      "stage": 4,
-      "score": 6050
-    },
-    {
-      "nickname": "AAA",
-      "stage": 5,
-      "score": 5900
-    },
-    {
-      "nickname": "BING",
-      "stage": 3,
-      "score": 5750
-    },
-    {
-      "nickname": "CLOUD5",
-      "stage": 6,
-      "score": 5600
-    },
-    {
-      "nickname": "D",
-      "stage": 1,
-      "score": 5450
-    }
-  ]
+    "scoreboard": [
+        {
+            "nickname": "Aaaa",
+            "score": 12500,
+            "stage": 1
+        },
+        {
+            "nickname": "BB",
+            "score": 11800,
+            "stage": 2
+        },
+        {
+            "nickname": "CAT",
+            "score": 11200,
+            "stage": 3
+        },
+        {
+            "nickname": "DOGE",
+            "score": 10900,
+            "stage": 2
+        },
+        {
+            "nickname": "ECHO5",
+            "score": 10450,
+            "stage": 4
+        },
+        {
+            "nickname": "FOX777",
+            "score": 10000,
+            "stage": 5
+        },
+        {
+            "nickname": "G",
+            "score": 9650,
+            "stage": 1
+        },
+        {
+            "nickname": "HI",
+            "score": 9400,
+            "stage": 3
+        },
+        {
+            "nickname": "ICE",
+            "score": 9150,
+            "stage": 4
+        },
+        {
+            "nickname": "JAZZ",
+            "score": 8900,
+            "stage": 2
+        },
+        {
+            "nickname": "KILO5",
+            "score": 8700,
+            "stage": 6
+        },
+        {
+            "nickname": "LMN123",
+            "score": 8450,
+            "stage": 7
+        },
+        {
+            "nickname": "M",
+            "score": 8300,
+            "stage": 2
+        },
+        {
+            "nickname": "NO",
+            "score": 8100,
+            "stage": 5
+        },
+        {
+            "nickname": "OWL",
+            "score": 7900,
+            "stage": 3
+        },
+        {
+            "nickname": "PINK",
+            "score": 7700,
+            "stage": 4
+        },
+        {
+            "nickname": "QWER5",
+            "score": 7550,
+            "stage": 6
+        },
+        {
+            "nickname": "RABBIT",
+            "score": 7400,
+            "stage": 7
+        },
+        {
+            "nickname": "S",
+            "score": 7200,
+            "stage": 1
+        },
+        {
+            "nickname": "TT",
+            "score": 7050,
+            "stage": 2
+        },
+        {
+            "nickname": "UNO",
+            "score": 6900,
+            "stage": 3
+        },
+        {
+            "nickname": "VOLT",
+            "score": 6700,
+            "stage": 5
+        },
+        {
+            "nickname": "WAVE9",
+            "score": 6550,
+            "stage": 6
+        },
+        {
+            "nickname": "XYZ123",
+            "score": 6400,
+            "stage": 7
+        },
+        {
+            "nickname": "Y",
+            "score": 6200,
+            "stage": 2
+        },
+        {
+            "nickname": "ZZ",
+            "score": 6050,
+            "stage": 4
+        },
+        {
+            "nickname": "AAA",
+            "score": 5900,
+            "stage": 5
+        },
+        {
+            "nickname": "BING",
+            "score": 5750,
+            "stage": 3
+        },
+        {
+            "nickname": "CLOUD5",
+            "score": 5600,
+            "stage": 6
+        },
+        {
+            "nickname": "D",
+            "score": 5450,
+            "stage": 1
+        },
+        {
+            "nickname": "CLEAR",
+            "score": 1459,
+            "stage": 4
+        },
+        {
+            "nickname": "GASGA",
+            "score": 1111,
+            "stage": 3
+        },
+        {
+            "nickname": "",
+            "score": 540,
+            "stage": 2
+        },
+        {
+            "nickname": "SCORE",
+            "score": 40,
+            "stage": 2
+        }
+    ]
 }

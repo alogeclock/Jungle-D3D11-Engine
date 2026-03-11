@@ -32,7 +32,7 @@ void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
     }
 }
 
-void FScoreSystem::AddEnemyDefeatBonus() { Score += 100; }
+void FScoreSystem::AddEnemyDefeatBonus() { Score += 500; }
 
 void FScoreSystem::AddTimeBonus(float RemainingTime, float TimeLimit)
 {

@@ -1,15 +1,11 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "PlayScene.h"
 #include "SceneManager.h"
 #include "SceneType.h"
 #include "TestScene.h"
 #include "TitleScene.h"
 
-
-void FSceneManager::Initialize()
-{
-    ChangeSceneInternal(ESceneType::Title);
-}
+void FSceneManager::Initialize() { ChangeSceneInternal(ESceneType::Title); }
 
 ESceneManagerUpdateResult FSceneManager::Update(FGameContext &Context)
 {
@@ -42,7 +38,7 @@ void FSceneManager::HandleSceneCommand(const FSceneCommand &Command)
         break;
 
     case ESceneCommandType::ChangeScene:
-        ChangeSceneInternal(Command.NextScene, Command.NextStageIndex);
+        ChangeSceneInternal(Command.NextScene, Command.NextStageIndex, Command.AccumulatedScore);
         break;
 
     case ESceneCommandType::QuitGame:
@@ -53,7 +49,7 @@ void FSceneManager::HandleSceneCommand(const FSceneCommand &Command)
     }
 }
 
-void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex)
+void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex, int AccumulatedScore)
 {
     switch (SceneType)
     {
@@ -66,7 +62,7 @@ void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex)
         break;
 
     case ESceneType::Play:
-        CurrentScene = std::make_unique<FPlayScene>(StageIndex);
+        CurrentScene = std::make_unique<FPlayScene>(StageIndex, AccumulatedScore);
         break;
 
     default:
