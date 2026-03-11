@@ -9,6 +9,7 @@ class FDebugWidget : public IUIWidget
 {
 public:
 	void BindStage(FStage* InStage);
+	void BindPauseFlag(bool* InPauseFlag);
 	void SetStageChangeCallback(std::function<void(int)> Callback);
 	void SetTotalStages(int Count);
 	virtual void SetTextures(FGameContext& Context) override;
@@ -18,6 +19,8 @@ public:
 
 private:
 	FStage* Stage = nullptr;
+	bool*   PauseFlag = nullptr;
+	bool    bDebugPaused = false;
 	bool    bInvincible = false;
 	bool    bTimeFrozen = false;
 	bool    bDarknessDisabled = false;

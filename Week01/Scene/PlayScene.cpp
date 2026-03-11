@@ -52,7 +52,7 @@ void FPlayScene::Update(FGameContext &Context)
 
     FPopupManager &PopupManager = UIManager.GetPopupManager();
 
-    bIsPaused = PopupManager.HasOpenPopup();
+    bIsPaused = PopupManager.HasOpenPopup() || bIsPaused;
 
     if (Stage && !bIsPaused)
     {
@@ -115,6 +115,7 @@ void FPlayScene::LoadStage(FGameContext &Context)
 
     auto Debug = std::make_unique<FDebugWidget>();
     Debug->BindStage(Stage.get());
+    Debug->BindPauseFlag(&bIsPaused);
     Debug->SetTotalStages(FStageLoader::Get().GetStageCount());
     Debug->SetStageChangeCallback([this](int Index) { PendingStageIndex = Index; });
     UIManager.AddWidget("Debug", std::move(Debug));

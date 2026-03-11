@@ -153,6 +153,8 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
     FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
     FAudioSystem::Get().LoadWav("sfx_get_hit", "Resources/Sounds/get_hit.wav");
+    FAudioSystem::Get().LoadWav("sfx_stage_clear", "Resources/Sounds/stage_clear.wav");
+    FAudioSystem::Get().LoadWav("sfx_game_clear", "Resources/Sounds/game_clear.wav");
 
     // BGM은 LoadStage 측에서 StartBGM()으로 명시적 호출
     const std::string &MusicPath = Map->GetMusicPath();
@@ -354,6 +356,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     if (Player->IsDead())
     {
         bIsGameOver = true;
+        FAudioSystem::Get().Play("sfx_get_hit", false);
     }
 
     // 골인 지점 도달 체크
@@ -361,6 +364,13 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     {
         ScoreSystem->AddTimeBonus(RemainingTime, TimeLimit);
         bIsCleared = true;
+
+        int TotalStages = FStageLoader::Get().GetStageCount();
+
+        if (CurrentStageIndex + 1 >= TotalStages)
+            FAudioSystem::Get().Play("sfx_stage_clear", false);
+        else
+            FAudioSystem::Get().Play("sfx_game_clear", false);
     }
 
     // 카메라가 플레이어를 추적
@@ -660,20 +670,20 @@ void FStage::LoadSpriteResources()
     }
 
     // 액터에 스프라이트 + JSON 애니메이션 로드 헬퍼
-    auto SetupActorAnim = [&](FActor* Actor, const std::string& TexKey)
+    auto SetupActorAnim = [&](FActor *Actor, const std::string &TexKey)
     {
         FSpriteInfo Info;
         Info.TextureKey = TexKey;
 
         // JSON 애니메이션 파일 탐색: Resources/Sprites/Animation/{TexKey}.json
         std::string AnimPath = "Resources/Sprites/Animation/" + TexKey + ".json";
-        bool bDefaultMirrored = false;
+        bool        bDefaultMirrored = false;
         if (LoadAnimationsFromJson(AnimPath, Actor->GetAnimator(), bDefaultMirrored))
         {
             Info.bIsMirrored = bDefaultMirrored;
             Actor->SetDefaultMirrored(bDefaultMirrored);
             // JSON 로드 성공 → 첫 번째 애니메이션의 첫 프레임으로 SpriteSize 설정
-            const FKeyframe* KF = Actor->GetAnimator().GetCurrentKeyframe();
+            const FKeyframe *KF = Actor->GetAnimator().GetCurrentKeyframe();
             if (!KF)
             {
                 // 아직 Play되지 않았으면 idle 시도
@@ -682,23 +692,24 @@ void FStage::LoadSpriteResources()
             }
             if (KF)
             {
-                Info.SpriteSize = { KF->OffsetMax.x - KF->OffsetMin.x, KF->OffsetMax.y - KF->OffsetMin.y };
+                Info.SpriteSize = {KF->OffsetMax.x - KF->OffsetMin.x,
+                                   KF->OffsetMax.y - KF->OffsetMin.y};
             }
             else
             {
-                FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
-                Info.SpriteSize = Tex
-                    ? DirectX::XMFLOAT2{ static_cast<float>(Tex->Width), static_cast<float>(Tex->Height) }
-                    : DirectX::XMFLOAT2{ TileSize, TileSize };
+                FTexture *Tex = Textures ? Textures->Get(TexKey) : nullptr;
+                Info.SpriteSize = Tex ? DirectX::XMFLOAT2{static_cast<float>(Tex->Width),
+                                                          static_cast<float>(Tex->Height)}
+                                      : DirectX::XMFLOAT2{TileSize, TileSize};
             }
         }
         else
         {
             // JSON 없음 → 텍스처 전체를 1프레임으로 사용 (기존 동작)
-            FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
-            Info.SpriteSize = Tex
-                ? DirectX::XMFLOAT2{ static_cast<float>(Tex->Width), static_cast<float>(Tex->Height) }
-                : DirectX::XMFLOAT2{ TileSize, TileSize };
+            FTexture *Tex = Textures ? Textures->Get(TexKey) : nullptr;
+            Info.SpriteSize = Tex ? DirectX::XMFLOAT2{static_cast<float>(Tex->Width),
+                                                      static_cast<float>(Tex->Height)}
+                                  : DirectX::XMFLOAT2{TileSize, TileSize};
         }
 
         Actor->SetSprite(Info);
@@ -708,7 +719,7 @@ void FStage::LoadSpriteResources()
     SetupActorAnim(Player.get(), "player");
 
     // 몬스터 스프라이트 + 애니메이션
-    for (auto& Mon : Monsters)
+    for (auto &Mon : Monsters)
     {
         std::string TexKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
         SetupActorAnim(Mon.get(), TexKey);
