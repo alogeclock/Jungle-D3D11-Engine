@@ -84,8 +84,11 @@ void FPlayScene::Render(FGameContext &Context)
 
 void FPlayScene::LoadStage(FGameContext &Context)
 {
+    FAudioSystem::Get().StopAll();
+
     Stage = std::make_unique<FStage>();
     Stage->Load(CurrentStageIndex, &Context.Renderer, &Context.Textures);
+    Stage->StartBGM();
     Stage->GetScoreSystem().SetScore(AccumulatedScore);
 
     bIsPaused = false;
@@ -129,6 +132,8 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
 
     if (Stage->IsGameOver())
     {
+        FAudioSystem::Get().StopAll();
+
         std::unique_ptr<FGameOverPopup> Popup = std::make_unique<FGameOverPopup>();
         Popup->Open();
         PopupManager.Open(std::move(Popup));
@@ -137,6 +142,8 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
 
     if (Stage->IsCleared())
     {
+        FAudioSystem::Get().StopAll();
+
         const int  NextIndex = CurrentStageIndex + 1;
         const int  TotalStages = FStageLoader::Get().GetStageCount();
         const bool bAllCleared = (NextIndex >= TotalStages);

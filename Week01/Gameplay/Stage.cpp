@@ -148,21 +148,19 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     BeatSystem->Reset();
     ScoreSystem->Reset();
 
-    // BGM 재생
-    FAudioSystem::Get().StopAll();
-    const std::string &MusicPath = Map->GetMusicPath();
-    if (!MusicPath.empty())
-    {
-        std::string BgmKey = "bgm_stage" + std::to_string(StageIndex);
-        FAudioSystem::Get().LoadWav(BgmKey, MusicPath);
-        FAudioSystem::Get().Play(BgmKey, true);
-    }
-
     // 효과음 로드
     FAudioSystem::Get().LoadWav("sfx_perfect", "Resources/Sounds/perfect.wav");
     FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
     FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
     FAudioSystem::Get().LoadWav("sfx_get_hit", "Resources/Sounds/get_hit.wav");
+
+    // BGM은 LoadStage 측에서 StartBGM()으로 명시적 호출
+    const std::string &MusicPath = Map->GetMusicPath();
+    if (!MusicPath.empty())
+    {
+        BgmKey = "bgm_stage" + std::to_string(StageIndex);
+        FAudioSystem::Get().LoadWav(BgmKey, MusicPath);
+    }
 
     bIsGameOver = false;
     bIsCleared = false;
@@ -935,3 +933,15 @@ void FStage::UpdateActiveEffects(float DeltaTime)
 const std::vector<FItemData> &FStage::GetItems() const { return Items; }
 
 float FStage::GetTimeFreezeRemaining() const { return TimeFreezeRemaining; }
+
+void FStage::StartBGM()
+{
+    if (!BgmKey.empty())
+        FAudioSystem::Get().Play(BgmKey, true);
+}
+
+void FStage::StopBGM()
+{
+    if (!BgmKey.empty())
+        FAudioSystem::Get().Stop(BgmKey);
+}

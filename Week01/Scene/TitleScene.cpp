@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <memory>
 #include <string>
+#include "Core/AudioSystem.h"
 #include "Core/GameContext.h"
 #include "Data/ScoreRepository.h"
 #include "Render/Renderer.h"
@@ -15,7 +16,18 @@
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 1024
 
-void FTitleScene::Update(FGameContext &Context) { UIManager.Update(Context); }
+void FTitleScene::Update(FGameContext &Context)
+{
+    if (!bInitialized)
+    {
+        FAudioSystem::Get().StopAll();
+        FAudioSystem::Get().LoadWav("bgm_title", "Resources/Sounds/title.wav");
+        FAudioSystem::Get().Play("bgm_title", true);
+        bInitialized = true;
+    }
+
+    UIManager.Update(Context);
+}
 
 void FTitleScene::Render(FGameContext &Context)
 {
