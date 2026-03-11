@@ -124,31 +124,32 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 			ImGui::End();
 		}
 	}
+}
 
-	void FGameplayHUDWidget::SetTextures(FGameContext & Context)
+void FGameplayHUDWidget::SetTextures(FGameContext& Context)
+{
+	if (!LifeTexture)
 	{
-		if (!LifeTexture)
-		{
-			LifeTexture = Context.Textures.Get("life_heart");
-		}
-		if (!LifeDeadTexture)
-		{
-			LifeDeadTexture = Context.Textures.Get("life_dead");
-		}
+		LifeTexture = Context.Textures.Get("life_heart");
 	}
+	if (!LifeDeadTexture)
+	{
+		LifeDeadTexture = Context.Textures.Get("life_dead");
+	}
+}
 
-	void FGameplayHUDWidget::OnBeatJudged(EBeatJudge Judge)
+void FGameplayHUDWidget::OnBeatJudged(EBeatJudge Judge)
+{
+	switch (Judge)
 	{
-		switch (Judge)
-		{
-		case EBeatJudge::Perfect:
-			Logger::Log("Perfect! (in HUDWidget)");
-			break;
-		case EBeatJudge::Good:
-			Logger::Log("Good! (in HUDWidget)");
-			break;
-		case EBeatJudge::Miss:
-			Logger::Log("Miss! (in HUDWidget)");
-			break;
-		}
+	case EBeatJudge::Perfect:
+		Logger::Log("Perfect! (in HUDWidget)");
+		break;
+	case EBeatJudge::Good:
+		Logger::Log("Good! (in HUDWidget)");
+		break;
+	case EBeatJudge::Miss:
+		Logger::Log("Miss! (in HUDWidget)");
+		break;
 	}
+}
