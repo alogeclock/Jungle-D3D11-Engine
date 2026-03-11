@@ -5,7 +5,6 @@
 #include "Data/ScoreRepository.h"
 #include "Render/Renderer.h"
 #include "Render/TextureManager.h"
-#include "Scene/SceneCommand.h"
 #include "Scene/SceneType.h"
 #include "TitleScene.h"
 #include "UI/popup/CreditPopup.h"
@@ -13,7 +12,13 @@
 #include "UI/popup/ScoreboardPopup.h"
 #include "UI/popup/UIPopupAction.h"
 
-void FTitleScene::Update(FGameContext &Context) { UIManager.Update(Context); }
+#define WIN_WIDTH 1024
+#define WIN_HEIGHT 1024
+
+void FTitleScene::Update(FGameContext &Context)
+{
+    UIManager.Update(Context);
+}
 
 void FTitleScene::Render(FGameContext &Context)
 {
@@ -56,9 +61,6 @@ void FTitleScene::Render(FGameContext &Context)
 #endif
 }
 
-#define WIN_WIDTH 1024
-#define WIN_HEIGHT 1024
-
 void FTitleScene::RenderBackground(FGameContext &Context)
 {
     Context.Renderer.DrawTexture(Context.Textures.Get("title_background"), 0.0f, 0.0f, WIN_WIDTH,
@@ -91,15 +93,15 @@ void FTitleScene::RenderTitleMenu(FGameContext &Context)
 void FTitleScene::HandleMenuCommand(FGameContext &Context)
 {
     FPopupManager &PopupManager = UIManager.GetPopupManager();
-    const bool     bHasOpenPopup = PopupManager.HasOpenPopup();
+    const bool bHasOpenPopup = PopupManager.HasOpenPopup();
 
-    ImGuiIO    &Io = ImGui::GetIO();
+    ImGuiIO &Io = ImGui::GetIO();
     const float ScreenWidth = Io.DisplaySize.x;
     const float ScreenHeight = Io.DisplaySize.y;
 
     const ImVec2 ButtonSize(320.0f, 80.0f);
-    const float  ButtonSpacing = 20.0f;
-    const float  TotalHeight = ButtonSize.y * 3.0f + ButtonSpacing * 2.0f;
+    const float ButtonSpacing = 20.0f;
+    const float TotalHeight = ButtonSize.y * 3.0f + ButtonSpacing * 2.0f;
 
     const float StartX = (ScreenWidth - ButtonSize.x) * 0.5f;
     const float StartY = (ScreenHeight - TotalHeight) * 0.5f;
@@ -126,11 +128,7 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
     ImGui::SetCursorPos(ImVec2(StartX, StartY));
     if (ImGui::Button("START", ButtonSize))
     {
-        FSceneCommand Command;
-        Command.Type = ESceneCommandType::ChangeScene;
-        Command.NextScene = ESceneType::Play;
-        Command.NextStageIndex = 0;
-        SetSceneCommand(Command);
+        ChangeScene(ESceneType::Play, 0);
     }
 
     ImGui::SetCursorPos(ImVec2(StartX, StartY + ButtonSize.y + ButtonSpacing));
@@ -145,10 +143,13 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
         OpenScoreboardPopup();
     }
 
-    // DEBUG
+#ifdef DEBUG
     ImGui::SetCursorPos(ImVec2(StartX, StartY + (ButtonSize.y + ButtonSpacing) * 3.0f));
     if (ImGui::Button("Test Scene", ButtonSize))
-        SetChangeSceneCommand(ESceneType::Test);
+    {
+        ChangeScene(ESceneType::Test);
+    }
+#endif
 
     if (bHasOpenPopup)
     {
@@ -165,53 +166,21 @@ void FTitleScene::HandlePopupResult(FGameContext &Context)
 
     if (FCreditPopup *Popup = PopupManager.GetPopup<FCreditPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            Popup->Close();
-            SetChangeSceneCommand(ESceneType::Title);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FScoreboardPopup *Popup = PopupManager.GetPopup<FScoreboardPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            Popup->Close();
-            SetChangeSceneCommand(ESceneType::Title);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
+}
+
+bool FTitleScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                                       EUIPopupAction Action)
+{
+    return false;
 }
 
 void FTitleScene::OpenCreditPopup()
@@ -223,10 +192,8 @@ void FTitleScene::OpenCreditPopup()
 
 void FTitleScene::OpenScoreboardPopup()
 {
-    FScoreRepository Repository;
-
     std::unique_ptr<FScoreboardPopup> Popup = std::make_unique<FScoreboardPopup>();
-    Popup->SetEntries(Repository.LoadSorted());
+    Popup->SetEntries(ScoreRepository::LoadSorted());
     Popup->ResetPage();
     Popup->Open();
 

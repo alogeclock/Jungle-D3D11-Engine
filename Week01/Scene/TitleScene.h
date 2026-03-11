@@ -4,6 +4,8 @@
 #include "UI/UIManager.h"
 
 struct FGameContext;
+class FUIPopupBase;
+enum class EUIPopupAction;
 
 class FTitleScene : public IScene
 {
@@ -19,8 +21,12 @@ class FTitleScene : public IScene
     void RenderTitleMenu(FGameContext &Context);
     void HandleMenuCommand(FGameContext &Context);
     void HandlePopupResult(FGameContext &Context);
+
     void OpenCreditPopup();
     void OpenScoreboardPopup();
+
+    bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                              EUIPopupAction Action) override;
 
   private:
     FUIManager UIManager;

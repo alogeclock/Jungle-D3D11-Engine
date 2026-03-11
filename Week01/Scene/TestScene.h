@@ -5,13 +5,12 @@
 #include "UI/UIManager.h"
 
 struct FGameContext;
+class FUIPopupBase;
+enum class EUIPopupAction;
 
 class FTestScene : public IScene
 {
   public:
-    FTestScene() = default;
-    ~FTestScene() override = default;
-
     void Update(FGameContext &Context) override;
     void Render(FGameContext &Context) override;
 
@@ -26,9 +25,14 @@ class FTestScene : public IScene
     void OpenGameOverPopup();
     void OpenStageClearPopup(bool bAllCleared);
     void OpenSaveScorePopup();
-    void OpenGoToTitlePopup();
+    void OpenGoToTitlePopup() override;
 
-    void SetLastActionText(const char *Text);
+    bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                              EUIPopupAction Action) override;
+    void OnPopupActionDispatched(EUIPopupAction Action) override;
+
+    void               SetLastActionText(const char *Text);
+    static const char *ToActionText(EUIPopupAction Action);
 
   private:
     FUIManager  UIManager;

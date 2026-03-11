@@ -11,6 +11,5 @@ enum class EUIPopupAction
 
     OpenSaveScorePopup,
     OpenGoToTitlePopup,
-    ConfirmSaveScore,
-    CancelSaveScore
+    ConfirmSaveScore
 };

@@ -3,6 +3,9 @@
 #include "SceneCommand.h"
 
 struct FGameContext;
+class FUIPopupBase;
+enum class EUIPopupAction;
+enum class ESceneType;
 
 class IScene
 {
@@ -12,22 +15,23 @@ class IScene
     virtual void Update(FGameContext &Context) = 0;
     virtual void Render(FGameContext &Context) = 0;
 
-    virtual FSceneCommand ConsumeCommand()
-    {
-        FSceneCommand Command = PendingCommand;
-        PendingCommand = {};
-        return Command;
-    }
+    FSceneCommand ConsumeCommand();
 
   protected:
-    void SetSceneCommand(const FSceneCommand &Command) { PendingCommand = Command; }
-    void SetChangeSceneCommand(ESceneType type)
-    {
-        FSceneCommand Command;
-        Command.Type = ESceneCommandType::ChangeScene;
-        Command.NextScene = type;
-        SetSceneCommand(Command);
-    }
+    void SetSceneCommand(const FSceneCommand &Command);
+
+    void ChangeScene(ESceneType NextScene);
+    void ChangeScene(ESceneType NextScene, int NextStageIndex);
+    void QuitGame();
+
+    void DispatchPopupAction(FGameContext &Context, FUIPopupBase &Popup, EUIPopupAction Action);
+
+    virtual bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                                      EUIPopupAction Action);
+
+    virtual void OnPopupActionDispatched(EUIPopupAction Action);
+
+    virtual void OpenGoToTitlePopup() {}
 
   private:
     FSceneCommand PendingCommand;

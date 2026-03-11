@@ -161,6 +161,8 @@
     <ClCompile Include="Gameplay\Stage.cpp" />
     <ClCompile Include="Gameplay\Tile.cpp" />
     <ClCompile Include="Gameplay\Wall.cpp" />
+    <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="Scene\TestScene.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -182,7 +184,14 @@
     <ClCompile Include="ThirdParty\imgui\imgui_widgets.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="UI\popup\CreditPopup.cpp" />
+    <ClCompile Include="UI\popup\GameOverPopup.cpp" />
+    <ClCompile Include="UI\popup\GoToTitlePopup.cpp" />
     <ClCompile Include="UI\popup\PopupManager.cpp" />
+    <ClCompile Include="UI\popup\SaveScorePopup.cpp" />
+    <ClCompile Include="UI\popup\ScoreboardPopup.cpp" />
+    <ClCompile Include="UI\popup\StageClearPopup.cpp" />
+    <ClCompile Include="UI\popup\UIPopupBase.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render\Renderer.cpp" />
@@ -226,6 +235,7 @@
     <ClInclude Include="Gameplay\Tile.h" />
     <ClInclude Include="Gameplay\SpriteInfo.h" />
     <ClInclude Include="Gameplay\Wall.h" />
+    <ClInclude Include="Scene\TestScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneCommand.h" />
     <ClInclude Include="Scene\SceneType.h" />
@@ -254,10 +264,12 @@
     <ClInclude Include="UI\Popup.h" />
     <ClInclude Include="UI\popup\CreditPopup.h" />
     <ClInclude Include="UI\popup\GameOverPopup.h" />
+    <ClInclude Include="UI\popup\GoToTitlePopup.h" />
     <ClInclude Include="UI\popup\PopupManager.h" />
     <ClInclude Include="UI\popup\SaveScorePopup.h" />
     <ClInclude Include="UI\popup\ScoreboardPopup.h" />
     <ClInclude Include="UI\popup\StageClearPopup.h" />
+    <ClInclude Include="UI\popup\UIPopupAction.h" />
     <ClInclude Include="UI\popup\UIPopupBase.h" />
     <ClInclude Include="UI\UIManager.h" />
     <ClInclude Include="UI\widget\BeatHUDWidget.h" />
