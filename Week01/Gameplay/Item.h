@@ -7,7 +7,8 @@ enum class EItemType
     TimeScaleDown,
     DarknessUp,
     DarknessDown,
-    TimeFreeze
+    TimeFreeze,
+    HpUp
 };
 
 struct FItemData
@@ -35,6 +36,7 @@ inline std::string GetItemTextureKey(EItemType Type)
     case EItemType::DarknessUp:     return "item_darkness_up";
     case EItemType::DarknessDown:   return "item_darkness_down";
     case EItemType::TimeFreeze:     return "item_time_freeze";
+    case EItemType::HpUp:           return "item_hp_up";
     default:                        return "item_invincibility";
     }
 }

@@ -124,8 +124,10 @@ bool FApplication::LoadSpriteResources()
         {"item_darkness_up", "item_darkness_up.png"},
         {"item_darkness_down", "item_darkness_down.png"},
         {"item_time_freeze", "item_time_freeze.png"},
+        {"item_hp_up", "item_hp_up.png"},
         {"compass", "compass.png"},
         {"compass_needle", "compass_needle.png"},
+        {"logo", "logo.png"},
     };
 
     for (const FTextureResourceDesc &Resource : SpriteResources)

@@ -194,7 +194,6 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
                 {
                     return false;
                 }
-
                 OutStage.AddMonsterType(MonsterType);
             }
         }
