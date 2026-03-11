@@ -86,6 +86,7 @@ bool FApplication::LoadSpriteResources()
 {
     static constexpr FTextureResourceDesc SpriteResources[] = {
         {"goal", "goal.png"},
+        {"goal_end", "goal_end.png"},
         // Map resources (6 per stage × 3 stages)
         {"map_1_1", "Map/MapResource_1_1.png"},
         {"map_1_2", "Map/MapResource_1_2.png"},

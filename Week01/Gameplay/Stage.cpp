@@ -403,7 +403,8 @@ void FStage::Render()
             Renderer->DrawBatch(RenderBatches[i], Tex);
     }
 
-    Renderer->DrawBatch(GoalBatch, Textures->Get("goal"));
+    bool bIsLastStage = (CurrentStageIndex == FStageLoader::Get().GetStageCount() - 1);
+    Renderer->DrawBatch(GoalBatch, Textures->Get(bIsLastStage ? "goal_end" : "goal"));
 
     // 텍스처 룩업 헬퍼
     auto GetTex = [&](const std::string &Key) -> FTexture *
@@ -771,7 +772,10 @@ void FStage::LoadSpriteResources()
         int         RL = Map->GetRenderLayer(Tile.GetTileX(), Tile.GetTileY());
 
         if (Tile.GetType() == ETileType::Goal)
-            Info.TextureKey = "goal";
+        {
+            bool bLastStage = (CurrentStageIndex == FStageLoader::Get().GetStageCount() - 1);
+            Info.TextureKey = bLastStage ? "goal_end" : "goal";
+        }
         else if (RL >= 0)
             Info.TextureKey = "map_" + std::to_string(StageNum) + "_" + std::to_string(RL + 1);
 
