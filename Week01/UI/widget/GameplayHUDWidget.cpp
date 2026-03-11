@@ -90,12 +90,12 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         char ScoreBuf[32];
         snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
 
-        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 0, HPTextPos.Y + 50, 50);
+        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 30, HPTextPos.Y + 50, 50);
         Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 50, 50);
         std::string StageName = Stage->GetStageName();
         auto        iter = StageName.find(':');
         std::string StageIdx = StageName.substr(0, iter);
-        Context.Renderer.DrawFont(StageIdx, Font, FontTex, 0, HPTextPos.Y, 50);
+        Context.Renderer.DrawFont(StageIdx, Font, FontTex, 30, HPTextPos.Y, 50);
         // Context.Renderer.DrawFont("HP", Font, FontTex, HPTextPos.X, HPTextPos.Y, 35);
     }
     for (int i = 0; i < HP; i++)

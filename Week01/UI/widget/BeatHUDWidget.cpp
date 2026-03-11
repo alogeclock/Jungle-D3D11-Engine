@@ -6,124 +6,127 @@
 #include <cmath>
 #include "Core/Logger.h"
 
-void FBeatHUDWidget::BindBeatSystem(const FBeatSystem* InBeatSystem)
+void FBeatHUDWidget::BindBeatSystem(const FBeatSystem *InBeatSystem)
 {
-	BeatSystem = InBeatSystem;
-	Ypos = 800.f;
-	Heart.X = 500.f;
-	Heart.Y = Ypos;
+    BeatSystem = InBeatSystem;
+    Ypos = 800.f;
+    Heart.X = 500.f;
+    Heart.Y = Ypos;
 
-	HeartXScale = OrgHeartXScale;
-	HeartYScale = OrgHeartYScale;
-
+    HeartXScale = OrgHeartXScale;
+    HeartYScale = OrgHeartYScale;
 }
 
-void FBeatHUDWidget::Update(FGameContext& Context)
+void FBeatHUDWidget::Update(FGameContext &Context)
 {
 
-	float DeltaTime = Context.Time.GetDeltaTime();
+    float DeltaTime = Context.Time.GetDeltaTime();
 
-	for (BeatEffect& Effect : BeatEffects)
-	{
-		Effect.Update(DeltaTime);
-	}
+    for (BeatEffect &Effect : BeatEffects)
+    {
+        if (Effect.IsAlive())
+        {
+            Effect.Update(DeltaTime);
+        }
+    }
+    float RecoverSpeed = 10.0f;
 
-	BeatEffects.erase(
-		std::remove_if(
-			BeatEffects.begin(),
-			BeatEffects.end(),
-			[](const BeatEffect& e)
-			{
-				return !e.IsAlive();
-			}),
-		BeatEffects.end()
-	);
-
-	float RecoverSpeed = 10.0f;
-
-	HeartXScale += (OrgHeartXScale - HeartXScale) * RecoverSpeed * DeltaTime;
-	HeartYScale += (OrgHeartYScale - HeartYScale) * RecoverSpeed * DeltaTime;
-
+    HeartXScale += (OrgHeartXScale - HeartXScale) * RecoverSpeed * DeltaTime;
+    HeartYScale += (OrgHeartYScale - HeartYScale) * RecoverSpeed * DeltaTime;
 }
 
-void FBeatHUDWidget::Render(FGameContext& Context)
+void FBeatHUDWidget::Render(FGameContext &Context)
 {
 
-	if (!BeatSystem) return;
-	/*
-	* 진행바랑 하트 렌더링
-	*/
-	float BeatInterval = BeatSystem->GetBeatInterval();
-	//이전박자 ----- 현재 ----- 이후박자
-	//    ElapsedTime   RemainedTime
-	float RemainedTime = BeatSystem->GetTimeToNextBeat(); //거리계산에 사용
-	float ElapsedTime = BeatInterval - RemainedTime;
-	float DistanceRatio = RemainedTime / BeatInterval;
-	float Distance = MaxDistance * DistanceRatio;
+    if (!BeatSystem)
+        return;
+    /*
+     * 진행바랑 하트 렌더링
+     */
+    float BeatInterval = BeatSystem->GetBeatInterval();
+    // 이전박자 ----- 현재 ----- 이후박자
+    //     ElapsedTime   RemainedTime
+    float RemainedTime = BeatSystem->GetTimeToNextBeat(); // 거리계산에 사용
+    float ElapsedTime = BeatInterval - RemainedTime;
+    float DistanceRatio = RemainedTime / BeatInterval;
+    float Distance = MaxDistance * DistanceRatio;
 
-	float LeftBarX = Heart.X - Distance;
-	float RightBarX = Heart.X + Distance;
-	Context.Renderer.DrawTexture(BarTexture, LeftBarX, Ypos, 20, 100);
-	Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
-	Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
+    float LeftBarX = Heart.X - Distance;
+    float RightBarX = Heart.X + Distance;
+    Context.Renderer.DrawTexture(BarTexture, LeftBarX, Ypos, 20, 100);
+    Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
+    Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
 
-
-	/*
-	* 이펙트 그리기
-	*/
-	for (BeatEffect& Effect : BeatEffects)
-	{
-		Effect.Render(Context);
-	}
-
-
+    /*
+     * 이펙트 그리기
+     */
+    for (BeatEffect &Effect : BeatEffects)
+    {
+        if (Effect.IsAlive())
+        {
+            Effect.Render(Context);
+        }
+    }
 }
 
-void FBeatHUDWidget::SetTextures(FGameContext& Context)
+void FBeatHUDWidget::SetTextures(FGameContext &Context)
 {
-	if (!BarTexture)
-	{
-		BarTexture = Context.Textures.Get("beat_bar");
-	}
-	if (!HeartTexture)
-	{
-		HeartTexture = Context.Textures.Get("beat_heart");
-	}
-	if (!PerfectTexture)
-	{
-		PerfectTexture = Context.Textures.Get("effect_perfect");
-	}
-	if (!GoodTexture)
-	{
-		GoodTexture = Context.Textures.Get("effect_good");
-	}
-	if (!MissTexture)
-	{
-		MissTexture = Context.Textures.Get("effect_miss");
-	}
+    if (!BarTexture)
+    {
+        BarTexture = Context.Textures.Get("beat_bar");
+    }
+    if (!HeartTexture)
+    {
+        HeartTexture = Context.Textures.Get("beat_heart");
+    }
+    if (!PerfectTexture)
+    {
+        PerfectTexture = Context.Textures.Get("effect_perfect");
+    }
+    if (!GoodTexture)
+    {
+        GoodTexture = Context.Textures.Get("effect_good");
+    }
+    if (!MissTexture)
+    {
+        MissTexture = Context.Textures.Get("effect_miss");
+    }
 }
 
 void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge)
 {
-	switch (Judge)
-	{
-	case EBeatJudge::Perfect:
-		BeatEffects.emplace_back(BeatEffect(PerfectTexture, Heart.X, Heart.Y - 100));
-		HeartXScale = OrgHeartXScale * 1.3;
-		HeartYScale = OrgHeartYScale * 1.2;
-		Logger::Log("Perfect! (in HUDWidget)");
-		break;
-	case EBeatJudge::Good:
-		BeatEffects.emplace_back(BeatEffect(GoodTexture, Heart.X, Heart.Y - 100));
-		HeartXScale = OrgHeartXScale * 1.15;
-		HeartYScale = OrgHeartYScale * 1.1;
-		Logger::Log("Good! (in HUDWidget)");
-		break;
-	case EBeatJudge::Miss:
-		BeatEffects.emplace_back(BeatEffect(MissTexture, Heart.X, Heart.Y - 100));
-		HeartXScale = OrgHeartXScale * 0.9;
-		HeartYScale = OrgHeartYScale * 0.95;
-		Logger::Log("Miss! (in HUDWidget)");
-		break;
-	}
+    switch (Judge)
+    {
+    case EBeatJudge::Perfect:
+        GetFromPool(PerfectTexture, Heart.X, Heart.Y - 100, 0.3f);
+        HeartXScale = OrgHeartXScale * 1.3;
+        HeartYScale = OrgHeartYScale * 1.2;
+        Logger::Log("Perfect! (in HUDWidget)");
+        break;
+    case EBeatJudge::Good:
+        GetFromPool(GoodTexture, Heart.X, Heart.Y - 100, 0.3f);
+        HeartXScale = OrgHeartXScale * 1.15;
+        HeartYScale = OrgHeartYScale * 1.1;
+        Logger::Log("Good! (in HUDWidget)");
+        break;
+    case EBeatJudge::Miss:
+        GetFromPool(MissTexture, Heart.X, Heart.Y - 100, 0.3f);
+        HeartXScale = OrgHeartXScale * 0.9;
+        HeartYScale = OrgHeartYScale * 0.95;
+        Logger::Log("Miss! (in HUDWidget)");
+        break;
+    }
+}
+
+BeatEffect *FBeatHUDWidget::GetFromPool(FTexture *Texture, float PosX, float PosY, float InLifetime)
+{
+    for (BeatEffect &Effect : BeatEffects)
+    {
+        if (!Effect.IsAlive())
+        {
+            Effect.Reset(Texture, PosX, PosY, InLifetime);
+            return &Effect;
+        }
+    }
+    return nullptr;
 }
