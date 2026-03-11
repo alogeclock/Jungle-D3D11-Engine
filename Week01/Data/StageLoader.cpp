@@ -1,10 +1,9 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include <fstream>
 #include <sstream>
 #include "StageData.h"
 #include "StageLoader.h"
 #include "ThirdParty/nlohmann/json.hpp"
-
 
 using json = nlohmann::json;
 
@@ -119,6 +118,7 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
         OutStage.SetBpm(Meta.value("bpm", 120));
         OutStage.SetMusicPath(Meta.value("music", std::string{}));
         OutStage.SetTimeLimit(Meta.value("time_limit", 60.0f));
+        OutStage.SetMonsterCount(Meta.value("monster_count", 0.0f));
 
         if (Meta.contains("spawn_point") && Meta["spawn_point"].is_object())
         {

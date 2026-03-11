@@ -22,7 +22,8 @@
                 "items": [
                     { "x": 6, "y": 4, "type": "time_freeze", "duration": 5.0 }
                 ],
-                "time_limit": 30
+                "time_limit": 30,
+                "monster_count": 0
             },
             "layers": [
                 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
@@ -58,7 +59,8 @@
                     { "x": 6, "y": 3, "type": "darkness_down" },
                     { "x": 5, "y": 5, "type": "time_freeze", "duration": 5.0 }
                 ],
-                "time_limit": 45
+                "time_limit": 45,
+                "monster_count": 1
             },
             "layers": [
                 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
@@ -88,7 +90,8 @@
                     { "x": 6, "y": 6, "type": "invincibility" },
                     { "x": 5, "y": 8, "type": "darkness_down" }
                 ],
-                "time_limit": 60
+                "time_limit": 60,
+                "monster_count": 2
             },
 
             "layers": [
@@ -123,7 +126,8 @@
                     { "x": 53, "y": 10, "type": "darkness_down" },
                     { "x": 60, "y": 20, "type": "time_scale_up", "duration": 6.0 }
                 ],
-                "time_limit": 120
+                "time_limit": 120,
+                "monster_count": 5
             },
 
             "layers": [

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <vector>
@@ -30,6 +30,9 @@ struct FStageData
 
     void SetStageId(int InStageId);
     int  GetStageId() const;
+
+    int  GetMonsterCount() const;
+    void SetMonsterCount(int MonsterCount);
 
     void               SetStageName(const std::string &InStageName);
     const std::string &GetStageName() const;
@@ -63,6 +66,7 @@ struct FStageData
     int         Bpm = 120;
     std::string MusicPath;
     float       TimeLimit = 60.0f;
+    int         MonsterCount = 0;
 
     std::vector<FItemData> Items;
 };
