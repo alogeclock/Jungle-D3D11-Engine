@@ -120,7 +120,7 @@ class FUIPopupBase
     static constexpr float DimBgAlpha = 0.35f;
 
     static constexpr float TitleFontScale = 1.8f;
-    static constexpr float TitleTopOffset = 10.0f;
+    static constexpr float TitleTopOffset = 18.0f;
     static constexpr float TitleToDividerGap = 10.0f;
     static constexpr float DividerInsetX = 8.0f;
     static constexpr float DividerThickness = 1.0f;
