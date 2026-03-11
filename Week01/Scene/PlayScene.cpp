@@ -164,11 +164,11 @@ void FPlayScene::LoadStage(FGameContext &Context)
     FStageData StageData;
     if (FStageLoader::Get().LoadStageById(CurrentStageIndex, StageData))
     {
-        OpenStageIntroPopup(StageData.GetIntroMessage());
+        OpenStageIntroPopup(StageData.GetIntroMessages());
     }
     else
     {
-        OpenStageIntroPopup("");
+        OpenStageIntroPopup(std::vector<std::string>{""});
     }
 }
 
@@ -219,10 +219,10 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
     }
 }
 
-void FPlayScene::OpenStageIntroPopup(const std::string &Message)
+void FPlayScene::OpenStageIntroPopup(const std::vector<std::string> &Messages)
 {
     std::unique_ptr<FStageIntroPopup> Popup = std::make_unique<FStageIntroPopup>();
-    Popup->SetData(CurrentStageIndex + 1, Message);
+    Popup->SetData(CurrentStageIndex + 1, Messages);
     Popup->Open();
     UIManager.GetPopupManager().Open(std::move(Popup));
 }
