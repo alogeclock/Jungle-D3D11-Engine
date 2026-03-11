@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include <memory>
+#include <string>
 #include "Application.h"
 #include "AudioSystem.h"
 #include "Core/Input.h"
@@ -44,56 +45,97 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 
 bool FApplication::InitializeResources()
 {
-    auto LoadTex = [&](const std::string &Key, const std::string &Path)
-    {
-        if (!TextureManager->Has(Key))
-        {
-            auto Tex = FImageLoader::LoadAsTexture(Renderer->Device, Path);
-            if (Tex)
-            {
-                TextureManager->Register(Key, std::move(Tex));
-            }
-        }
-    };
+    if (!LoadDataResources())
+        return false;
 
-    LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
-    LoadTex("goal", "Resources/Sprites/goal.png");
-    LoadTex("wall", "Resources/Sprites/wall.png");
-    LoadTex("player_bunnie", "Resources/Sprites/player_bunnie.png");
-    LoadTex("player_otaku", "Resources/Sprites/player_otaku.png");
-    LoadTex("monster_stonegolem", "Resources/Sprites/monster_stonegolem.png");
-    LoadTex("monster_firegolem", "Resources/Sprites/monster_firegolem.png");
-    LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
-    LoadTex("title_background", "Resources/Sprites/title_background.png");
-    LoadTex("life_heart", "Resources/Sprites/life_heart.png");
-    LoadTex("used_heart", "Resources/Sprites/used_heart.png");
-    LoadTex("beat_heart", "Resources/Sprites/beat_heart.png");
-    LoadTex("effect_perfect", "Resources/Sprites/effect_perfect.png");
-    LoadTex("effect_great", "Resources/Sprites/effect_great.png");
-    LoadTex("effect_good", "Resources/Sprites/effect_good.png");
-    LoadTex("effect_miss", "Resources/Sprites/effect_miss.png");
+    if (!LoadFontResources())
+        return false;
 
-    LoadTex("item_invincibility", "Resources/Sprites/item_invincibility.png");
-    LoadTex("item_time_scale_up", "Resources/Sprites/item_time_scale_up.png");
-    LoadTex("item_time_scale_down", "Resources/Sprites/item_time_scale_down.png");
-    LoadTex("item_darkness_up", "Resources/Sprites/item_darkness_up.png");
-    LoadTex("item_darkness_down", "Resources/Sprites/item_darkness_down.png");
-    LoadTex("item_time_freeze", "Resources/Sprites/item_time_freeze.png");
+    if (!LoadSoundResources())
+        return false;
 
-    LoadTex("compass", "Resources/Sprites/compass.png");
-    LoadTex("compass_needle", "Resources/Sprites/compass_needle.png");
+    if (!LoadSpriteResources())
+        return false;
 
-    auto FontTexture = FImageLoader::LoadAsTexture(Renderer->Device, "Resources/Fonts/bmFont.png");
+    return true;
+}
+
+bool FApplication::LoadDataResources()
+{
+    if (!FStageLoader::Get().Initialize(std::string(StageDataPath)))
+        return false;
+
+    return true;
+}
+
+bool FApplication::LoadFontResources()
+{
+    auto FontTexture = FImageLoader::LoadAsTexture(Renderer->Device, std::string(BitmapFontPngPath));
     if (!FontTexture)
         return false;
 
-    FontManager->Register("basic_font", "Resources/Fonts/bmFont.fnt", std::move(FontTexture));
+    FontManager->Register("basic_font", std::string(BitmapFontFntPath), std::move(FontTexture));
+    return true;
+}
 
+bool FApplication::LoadSoundResources()
+{
     FAudioSystem::Get().Initialize();
 
-    if (!FStageLoader::Get().Initialize("Resources/Maps/stages.json"))
+    // 현재 구조상 사운드는 AudioSystem 초기화만 하고,
+    // 개별 wav는 필요 시 재생 시점에 경로로 접근하는 방식이면 여기까지면 충분함.
+    // 추후 프리로드 구조가 생기면 여기에서 한 번에 등록하면 됨.
+    return true;
+}
+
+bool FApplication::LoadSpriteResources()
+{
+    static constexpr FTextureResourceDesc SpriteResources[] = {
+        {"tile_floor", "tile_floor.png"},
+        {"goal", "goal.png"},
+        {"wall", "wall.png"},
+        {"player_bunnie", "player_bunnie.png"},
+        {"player_otaku", "player_otaku.png"},
+        {"monster_stonegolem", "monster_stonegolem.png"},
+        {"monster_firegolem", "monster_firegolem.png"},
+        {"beat_bar", "beat_bar.png"},
+        {"beat_heart", "beat_heart.png"},
+        {"title_background", "title_background.png"},
+        {"life_heart", "life_heart.png"},
+        {"life_dead", "life_dead.png"},
+        {"effect_perfect", "effect_perfect.png"},
+        {"effect_great", "effect_great.png"},
+        {"effect_good", "effect_good.png"},
+        {"effect_miss", "effect_miss.png"},
+        {"item_invincibility", "item_Invincibility.png"},
+        {"item_time_scale_up", "item_time_scale_up.png"},
+        {"item_time_scale_down", "item_time_scale_down.png"},
+        {"item_darkness_up", "item_darkness_up.png"},
+        {"item_darkness_down", "item_darkness_down.png"},
+        {"item_time_freeze", "item_time_freeze.png"},
+        {"compass", "compass.png"},
+        {"compass_needle", "compass_needle.png"},
+    };
+
+    for (const FTextureResourceDesc &Resource : SpriteResources)
+    {
+        if (!LoadTextureResource(Resource.Key, std::string(SpriteDir) + Resource.FileName))
+            return false;
+    }
+
+    return true;
+}
+
+bool FApplication::LoadTextureResource(const std::string &Key, const std::string &Path)
+{
+    if (TextureManager->Has(Key))
+        return true;
+
+    auto Texture = FImageLoader::LoadAsTexture(Renderer->Device, Path);
+    if (!Texture)
         return false;
 
+    TextureManager->Register(Key, std::move(Texture));
     return true;
 }
 
@@ -106,7 +148,7 @@ bool FApplication::InitializeImGui(HWND WindowHandle)
     ImGui::StyleColorsDark();
 
     ImFont *KoreanFont = Io.Fonts->AddFontFromFileTTF(
-       "Resources/Fonts/Galmuri11.ttf",
+        std::string(ImGuiFontPath).c_str(),
         18.0f,
         nullptr,
         Io.Fonts->GetGlyphRangesKorean());
