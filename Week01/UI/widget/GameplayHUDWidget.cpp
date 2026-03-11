@@ -1,11 +1,13 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "GameplayHUDWidget.h"
 #include "Gameplay/Stage.h"
+#include "Gameplay/Item.h"
 #include "Core/Time.h"
+#include "Core/Logger.h"
 #include "Render/Renderer.h"
 #include "Render/FontManager.h"
+#include "Render/Texture.h"
 #include "Render/TextureManager.h"
-#include "Core/Logger.h"
 
 void FGameplayHUDWidget::BindStage(const FStage* InStage) { Stage = InStage; }
 
@@ -93,16 +95,71 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 		Context.Renderer.DrawTexture(LifeTexture, xPos, HPTextPos.Y + 30, HeartScale, HeartScale);
 	}
 
-	// 일시정지 오버레이
-	if (bPaused)
-	{
-		float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
-		float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
-		// 일시정지 오버레이
-		if (bPaused)
-		{
-			float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
-			float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
+    // 버프 아이콘 (우상단, 셰이더 렌더링)
+    {
+        float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+        const float IconSize = 40.0f;
+        const float IconPadding = 8.0f;
+        const float MarginRight = 20.0f;
+        const float MarginTop = 20.0f;
+        const float FontSize = 20.0f;
+
+        struct FBuffDisplay { std::string TexKey; std::string Label; };
+        std::vector<FBuffDisplay> Buffs;
+
+        const auto& PlayerEffects = Stage->GetPlayer().GetActiveEffects();
+        for (const auto& Eff : PlayerEffects)
+        {
+            char Buf[32];
+            switch (Eff.Type)
+            {
+            case EItemType::Invincibility:
+                Buffs.push_back({ GetItemTextureKey(Eff.Type), "INV" });
+                break;
+            case EItemType::TimeScaleUp:
+                snprintf(Buf, sizeof(Buf), "%.1fs", Eff.RemainingTime);
+                Buffs.push_back({ GetItemTextureKey(Eff.Type), Buf });
+                break;
+            case EItemType::TimeScaleDown:
+                snprintf(Buf, sizeof(Buf), "%.1fs", Eff.RemainingTime);
+                Buffs.push_back({ GetItemTextureKey(Eff.Type), Buf });
+                break;
+            default: break;
+            }
+        }
+
+        if (Stage->IsTimeFrozen())
+        {
+            char Buf[32];
+            snprintf(Buf, sizeof(Buf), "%.1fs", Stage->GetTimeFreezeRemaining());
+            Buffs.push_back({ "item_time_freeze", Buf });
+        }
+
+        for (int i = 0; i < static_cast<int>(Buffs.size()); ++i)
+        {
+            FTexture* Tex = Context.Textures.Get(Buffs[i].TexKey);
+            if (!Tex) continue;
+
+            float X = ScreenW - MarginRight - IconSize * 0.5f - (IconSize + IconPadding) * i;
+            float Y = MarginTop + IconSize * 0.5f;
+
+            Context.Renderer.DrawTexture(Tex, X, Y, IconSize, IconSize);
+
+            if (FontTexPair* Pair = Context.FontManager.Get("basic_font"))
+            {
+                float TextX = X - FontSize * Buffs[i].Label.size() * 0.25f;
+                float TextY = Y + IconSize * 0.5f + 4.0f;
+                Context.Renderer.DrawFont(Buffs[i].Label, Pair->Font.get(), Pair->Tex.get(),
+                    TextX, TextY, FontSize);
+            }
+        }
+    }
+
+    // 일시정지 오버레이
+    if (bPaused)
+    {
+        float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+        float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
 
 			ImGui::SetNextWindowPos(ImVec2(ScreenW * 0.5f, ScreenH * 0.5f), ImGuiCond_Always,
 				ImVec2(0.5f, 0.5f));
