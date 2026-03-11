@@ -1,68 +1,44 @@
 #pragma once
 
+#include <string>
 #include <vector>
-#include "Data/ScoreRecord.h"
+#include "UIPopupAction.h"
 #include "UIPopupBase.h"
+#include "Data/ScoreRecord.h"
 
 class FScoreboardPopup : public FUIPopupBase
 {
   public:
-    void SetRecords(const std::vector<FScoreRecord> &InRecords) { Records = InRecords; }
+    void SetEntries(const std::vector<FScoreRecord> &InEntries);
+    void GoToNextPage();
+    void ResetPage();
 
-    void Render(FGameContext &Context) override;
-    void Update(FGameContext &Context) override {}
+    EUIPopupAction ConsumeAction();
+    void           Render(FGameContext &Context) override;
+    void           Update(FGameContext &Context) override {};
 
   private:
-    std::vector<FScoreRecord> Records;
+    int  GetTotalPages() const;
+    int  GetPageStartIndex() const;
+    int  GetPageEntryCount() const;
+    void DrawEntries(const FPopupFrameLayout &Layout);
+    void DrawPageText(const FPopupFrameLayout &Layout);
+    void DrawBottomButtons(const FPopupFrameLayout &Layout, bool bHasPrevPage, bool bHasNextPage);
+
+  private:
+    static constexpr EUIPopupContentTextSize ContentTextSize = EUIPopupContentTextSize::Big;
+    static constexpr int                     MaxRowsPerColumn = 4;
+    static constexpr int                     ColumnCount = 2;
+    static constexpr int                     EntriesPerPage = MaxRowsPerColumn * ColumnCount;
+    static constexpr float                   ColumnGap = 36.0f;
+    static constexpr float                   RowGap = 8.0f;
+
+    static constexpr float RankColumnWidth = 42.0f;
+    static constexpr float NameColumnWidth = 90.0f;
+    static constexpr float StageColumnWidth = 90.0f;
+
+  private:
+    std::vector<FScoreRecord> Entries;
+    int                       CurrentPage = 0;
+    EUIPopupAction            PendingAction = EUIPopupAction::None;
 };
-
-// =============================================================================
-
-void FScoreboardPopup::Render(FGameContext &Context)
-{
-    if (ConsumeOpenRequest())
-    {
-        ImGui::OpenPopup("Scoreboard");
-    }
-
-    if (!bIsOpen)
-        return;
-
-    if (ImGui::BeginPopupModal("Scoreboard", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        ImGui::Text("Scoreboard");
-        ImGui::Separator();
-
-        if (ImGui::BeginTable("ScoreTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
-        {
-            ImGui::TableSetupColumn("Nickname");
-            ImGui::TableSetupColumn("Stage");
-            ImGui::TableSetupColumn("Score");
-            ImGui::TableHeadersRow();
-
-            for (const FScoreRecord &Record : Records)
-            {
-                ImGui::TableNextRow();
-
-                ImGui::TableSetColumnIndex(0);
-                ImGui::Text("%s", Record.Name.c_str());
-
-                ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%d", Record.Stage);
-
-                ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%d", Record.Score);
-            }
-
-            ImGui::EndTable();
-        }
-
-        if (ImGui::Button("Close", ImVec2(300, 0)))
-        {
-            ImGui::CloseCurrentPopup();
-            Close();
-        }
-
-        ImGui::EndPopup();
-    }
-}
