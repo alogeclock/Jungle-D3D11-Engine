@@ -85,27 +85,28 @@ bool FApplication::LoadSoundResources()
 bool FApplication::LoadSpriteResources()
 {
     static constexpr FTextureResourceDesc SpriteResources[] = {
-        {"goal", "goal.png"},
-        {"goal_end", "goal_end.png"},
-        // Map resources (6 per stage × 3 stages)
+        // Map resources (7 per stage × 3 stages)
         {"map_1_1", "Map/MapResource_1_1.png"},
         {"map_1_2", "Map/MapResource_1_2.png"},
         {"map_1_3", "Map/MapResource_1_3.png"},
         {"map_1_4", "Map/MapResource_1_4.png"},
         {"map_1_5", "Map/MapResource_1_5.png"},
         {"map_1_6", "Map/MapResource_1_6.png"},
+        {"map_1_7", "Map/MapResource_1_7.png"},
         {"map_2_1", "Map/MapResource_2_1.png"},
         {"map_2_2", "Map/MapResource_2_2.png"},
         {"map_2_3", "Map/MapResource_2_3.png"},
         {"map_2_4", "Map/MapResource_2_4.png"},
         {"map_2_5", "Map/MapResource_2_5.png"},
         {"map_2_6", "Map/MapResource_2_6.png"},
+        {"map_2_7", "Map/MapResource_2_7.png"},
         {"map_3_1", "Map/MapResource_3_1.png"},
         {"map_3_2", "Map/MapResource_3_2.png"},
         {"map_3_3", "Map/MapResource_3_3.png"},
         {"map_3_4", "Map/MapResource_3_4.png"},
         {"map_3_5", "Map/MapResource_3_5.png"},
         {"map_3_6", "Map/MapResource_3_6.png"},
+        {"map_3_7", "Map/MapResource_3_7.png"},
         {"player_bunnie", "player_bunnie.png"},
         {"player_otaku", "player_otaku.png"},
         {"monster_stonegolem", "monster_stonegolem.png"},

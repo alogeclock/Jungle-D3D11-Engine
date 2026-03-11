@@ -138,9 +138,8 @@ class FStage
     FTextureManager *Textures = nullptr;
 
     // 정적 배치 (render_layers 값별로 묶어 DrawIndexed)
-    static constexpr int MaxRenderResources = 6;
+    static constexpr int MaxRenderResources = 7;
     FStaticBatch         RenderBatches[MaxRenderResources];
-    FStaticBatch         GoalBatch;
 
     std::string BgmKey;
     std::string PlayerSkinKey = "player_otaku";
