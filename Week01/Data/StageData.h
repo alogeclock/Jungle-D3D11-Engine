@@ -67,8 +67,13 @@ struct FStageData
     const std::vector<FItemData> &GetItems() const;
     void                          ClearItems();
 
+    void ResizeRenderLayers(int InWidth, int InHeight);
+    void SetRenderLayer(int X, int Y, int Value);
+    int  GetRenderLayer(int X, int Y) const;
+
   private:
     std::vector<std::vector<int>> Tiles;
+    std::vector<std::vector<int>> RenderLayers;
 
     int         Width = 0;
     int         Height = 0;

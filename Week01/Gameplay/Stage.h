@@ -137,10 +137,10 @@ class FStage
     FRenderer       *Renderer = nullptr;
     FTextureManager *Textures = nullptr;
 
-    // 정적 배치 (타일/벽을 텍스처별로 묶어 DrawIndexed)
-    FStaticBatch FloorBatch;
-    FStaticBatch GoalBatch;
-    FStaticBatch WallBatch;
+    // 정적 배치 (render_layers 값별로 묶어 DrawIndexed)
+    static constexpr int MaxRenderResources = 6;
+    FStaticBatch         RenderBatches[MaxRenderResources];
+    FStaticBatch         GoalBatch;
 
     std::string BgmKey;
     std::string PlayerSkinKey = "player_otaku";
@@ -150,7 +150,7 @@ class FStage
     void CreateAngryOverlayTexture();
     void BuildStaticBatches();
     void ReleaseStaticBatches();
-    void RebuildWallBatch();
+    void RebuildRenderBatches();
 
     std::unique_ptr<FTexture> DarknessTexture;
     std::unique_ptr<FTexture> AngryOverlayTexture;

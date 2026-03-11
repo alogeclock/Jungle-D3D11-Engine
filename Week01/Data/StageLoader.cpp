@@ -226,6 +226,28 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData& OutStage) const
 			}
 		}
 
+		// render_layers 파싱
+		if (Stage.contains("render_layers") && Stage["render_layers"].is_array())
+		{
+			const json& RL = Stage["render_layers"];
+			OutStage.ResizeRenderLayers(Width, Height);
+
+			for (int Y = 0; Y < Height && Y < static_cast<int>(RL.size()); ++Y)
+			{
+				const json& Row = RL[Y];
+				if (!Row.is_array())
+					continue;
+
+				for (int X = 0; X < Width && X < static_cast<int>(Row.size()); ++X)
+				{
+					if (Row[X].is_number_integer())
+					{
+						OutStage.SetRenderLayer(X, Y, Row[X].get<int>());
+					}
+				}
+			}
+		}
+
 		return true;
 	}
 	catch (...)

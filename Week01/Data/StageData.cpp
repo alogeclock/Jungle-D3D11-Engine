@@ -119,9 +119,35 @@ const std::vector<FItemData> &FStageData::GetItems() const { return Items; }
 
 void FStageData::ClearItems() { Items.clear(); }
 
+void FStageData::ResizeRenderLayers(int InWidth, int InHeight)
+{
+    RenderLayers.assign(InHeight < 0 ? 0 : InHeight,
+                        std::vector<int>(InWidth < 0 ? 0 : InWidth, -1));
+}
+
+void FStageData::SetRenderLayer(int X, int Y, int Value)
+{
+    if (IsInside(X, Y) && Y < static_cast<int>(RenderLayers.size()) &&
+        X < static_cast<int>(RenderLayers[Y].size()))
+    {
+        RenderLayers[Y][X] = Value;
+    }
+}
+
+int FStageData::GetRenderLayer(int X, int Y) const
+{
+    if (IsInside(X, Y) && Y < static_cast<int>(RenderLayers.size()) &&
+        X < static_cast<int>(RenderLayers[Y].size()))
+    {
+        return RenderLayers[Y][X];
+    }
+    return -1;
+}
+
 void FStageData::Clear()
 {
     Tiles.clear();
+    RenderLayers.clear();
     Width = 0;
     Height = 0;
     StageId = 0;

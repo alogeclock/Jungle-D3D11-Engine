@@ -253,6 +253,42 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         Player->SetSprite(Spr);
     }
 
+    if (BeatSystem->ConsumeBeat())
+    {
+        // 몬스터 이동
+        for (auto &Mon : Monsters)
+        {
+            Mon->OnBeat(*this);
+        }
+    }
+
+    if (!Player->IsDead())
+    {
+        int px = Player->GetTileX();
+        int py = Player->GetTileY();
+
+        for (auto Mon = Monsters.begin(); Mon != Monsters.end();)
+        {
+            int mx = (*Mon)->GetTileX();
+            int my = (*Mon)->GetTileY();
+
+            if (!(*Mon)->IsDead() && mx == px && my == py)
+            {
+                // 1. 플레이어에게 데미지 1 적용
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
+                // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
+                (*Mon)->Damage((*Mon)->GetHp());
+                FAudioSystem::Get().Play("sfx_get_hit", false);
+            }
+
+            if ((*Mon)->IsDead())
+                Mon = Monsters.erase(Mon);
+            else
+                ++Mon;
+        }
+    }
+
     if (!Player->IsDead() && bHasInput)
     {
         // 입력이 들어온 현재 시점의 박자 인덱스
@@ -310,16 +346,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         }
     }
 
-    // 3. 비트 시작 시 처리 (박자가 넘어가는 순간에만 1회 수행)
-    if (BeatSystem->ConsumeBeat())
-    {
-        // 몬스터 이동
-        for (auto &Mon : Monsters)
-        {
-            Mon->OnBeat(*this);
-        }
-    }
-
     // 비트 스킵 시 미입력 데미지
     if (BeatSystem->IsBeatSkipped())
     {
@@ -335,32 +361,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                     Player->Damage(1);
                 FAudioSystem::Get().Play("sfx_miss", false);
             }
-        }
-    }
-
-    if (!Player->IsDead())
-    {
-        int px = Player->GetTileX();
-        int py = Player->GetTileY();
-
-        for (auto Mon = Monsters.begin(); Mon != Monsters.end();)
-        {
-            int mx = (*Mon)->GetTileX();
-            int my = (*Mon)->GetTileY();
-
-            if (!(*Mon)->IsDead() && mx == px && my == py)
-            {
-                // 1. 플레이어에게 데미지 1 적용
-                Player->Damage(1);
-                // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
-                (*Mon)->Damage((*Mon)->GetHp());
-                FAudioSystem::Get().Play("sfx_get_hit", false);
-            }
-
-            if ((*Mon)->IsDead())
-                Mon = Monsters.erase(Mon);
-            else
-                ++Mon;
         }
     }
 
@@ -393,29 +393,18 @@ void FStage::Render()
     // Renderer에 카메라 설정
     Renderer->SetCamera(*Camera);
 
-    // 정적 배치 렌더링 (타일/벽 — DrawIndexed 1회씩)
-
-    switch (GetCurrentStageIndex())
+    // 정적 배치 렌더링 (render_layers 값별 배치)
+    int StageNum = GetCurrentStageIndex() + 1;
+    for (int i = 0; i < MaxRenderResources; ++i)
     {
-    case 0:
-        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor1"));
-        Renderer->DrawBatch(WallBatch, Textures->Get("wall1"));
-        break;
-    case 1:
-        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor2"));
-        Renderer->DrawBatch(WallBatch, Textures->Get("wall2"));
-        break;
-    case 2:
-        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor3"));
-        Renderer->DrawBatch(WallBatch, Textures->Get("wall3"));
-        break;
-    default:
-        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor1"));
-        Renderer->DrawBatch(WallBatch, Textures->Get("wall1"));
-        break;
+        std::string Key = "map_" + std::to_string(StageNum) + "_" + std::to_string(i + 1);
+        FTexture   *Tex = Textures->Get(Key);
+        if (Tex)
+            Renderer->DrawBatch(RenderBatches[i], Tex);
     }
 
-    Renderer->DrawBatch(GoalBatch, Textures->Get("goal"));
+    bool bIsLastStage = (CurrentStageIndex == FStageLoader::Get().GetStageCount() - 1);
+    Renderer->DrawBatch(GoalBatch, Textures->Get(bIsLastStage ? "goal_end" : "goal"));
 
     // 텍스처 룩업 헬퍼
     auto GetTex = [&](const std::string &Key) -> FTexture *
@@ -670,32 +659,47 @@ void FStage::BuildStaticBatches()
 {
     ReleaseStaticBatches();
 
-    // 타일을 텍스처별로 분류
-    std::vector<std::pair<float, float>> FloorCenters;
-    std::vector<std::pair<float, float>> GoalCenters;
+    // render_layers 값별로 셀을 분류 (0~5)
+    std::vector<std::pair<float, float>> ResourceCenters[MaxRenderResources];
 
+    for (int Y = 0; Y < Map->GetHeight(); ++Y)
+    {
+        for (int X = 0; X < Map->GetWidth(); ++X)
+        {
+            int RL = Map->GetRenderLayer(X, Y);
+            if (RL < 0 || RL >= MaxRenderResources)
+                continue;
+
+            float CX = X * TileSize + TileSize * 0.5f;
+            float CY = Y * TileSize + TileSize * 0.5f;
+            ResourceCenters[RL].emplace_back(CX, CY);
+        }
+    }
+
+    for (int i = 0; i < MaxRenderResources; ++i)
+    {
+        if (!ResourceCenters[i].empty())
+        {
+            std::vector<FVertexSimple> Verts;
+            std::vector<UINT>          Idxs;
+            BuildQuadBatch(ResourceCenters[i], TileSize, Verts, Idxs);
+            RenderBatches[i] = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
+                                                           Idxs.data(), (UINT)Idxs.size());
+        }
+    }
+
+    // Goal 배치 (별도 텍스처)
+    std::vector<std::pair<float, float>> GoalCenters;
     for (const auto &Tile : Tiles)
     {
-        float CX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
-        float CY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
-
         if (Tile.GetType() == ETileType::Goal)
+        {
+            float CX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
+            float CY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
             GoalCenters.emplace_back(CX, CY);
-        else
-            FloorCenters.emplace_back(CX, CY);
+        }
     }
 
-    // Floor 배치
-    if (!FloorCenters.empty())
-    {
-        std::vector<FVertexSimple> Verts;
-        std::vector<UINT>          Idxs;
-        BuildQuadBatch(FloorCenters, TileSize, Verts, Idxs);
-        FloorBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
-                                                 (UINT)Idxs.size());
-    }
-
-    // Goal 배치
     if (!GoalCenters.empty())
     {
         std::vector<FVertexSimple> Verts;
@@ -704,32 +708,42 @@ void FStage::BuildStaticBatches()
         GoalBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
                                                 (UINT)Idxs.size());
     }
-
-    // Wall 배치
-    RebuildWallBatch();
 }
 
-void FStage::RebuildWallBatch()
+void FStage::RebuildRenderBatches()
 {
-    Renderer->ReleaseStaticBatch(WallBatch);
+    if (!Renderer)
+        return;
 
-    std::vector<std::pair<float, float>> WallCenters;
-    for (const auto &W : Walls)
+    for (int i = 0; i < MaxRenderResources; ++i)
+        Renderer->ReleaseStaticBatch(RenderBatches[i]);
+
+    std::vector<std::pair<float, float>> ResourceCenters[MaxRenderResources];
+
+    for (int Y = 0; Y < Map->GetHeight(); ++Y)
     {
-        if (W.IsDestroyed())
-            continue;
-        float CX = W.GetRenderX(TileSize) + TileSize * 0.5f;
-        float CY = W.GetRenderY(TileSize) + TileSize * 0.5f;
-        WallCenters.emplace_back(CX, CY);
+        for (int X = 0; X < Map->GetWidth(); ++X)
+        {
+            int RL = Map->GetRenderLayer(X, Y);
+            if (RL < 0 || RL >= MaxRenderResources)
+                continue;
+
+            float CX = X * TileSize + TileSize * 0.5f;
+            float CY = Y * TileSize + TileSize * 0.5f;
+            ResourceCenters[RL].emplace_back(CX, CY);
+        }
     }
 
-    if (!WallCenters.empty())
+    for (int i = 0; i < MaxRenderResources; ++i)
     {
-        std::vector<FVertexSimple> Verts;
-        std::vector<UINT>          Idxs;
-        BuildQuadBatch(WallCenters, TileSize, Verts, Idxs);
-        WallBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
-                                                (UINT)Idxs.size());
+        if (!ResourceCenters[i].empty())
+        {
+            std::vector<FVertexSimple> Verts;
+            std::vector<UINT>          Idxs;
+            BuildQuadBatch(ResourceCenters[i], TileSize, Verts, Idxs);
+            RenderBatches[i] = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
+                                                           Idxs.data(), (UINT)Idxs.size());
+        }
     }
 }
 
@@ -737,9 +751,9 @@ void FStage::ReleaseStaticBatches()
 {
     if (Renderer)
     {
-        Renderer->ReleaseStaticBatch(FloorBatch);
+        for (int i = 0; i < MaxRenderResources; ++i)
+            Renderer->ReleaseStaticBatch(RenderBatches[i]);
         Renderer->ReleaseStaticBatch(GoalBatch);
-        Renderer->ReleaseStaticBatch(WallBatch);
     }
 }
 
@@ -749,57 +763,32 @@ void FStage::ReleaseStaticBatches()
 
 void FStage::LoadSpriteResources()
 {
-    // 타일에 스프라이트 할당
+    // 타일/벽 스프라이트 — render_layers 기반 배치이므로 개별 TextureKey는 참조용
+    int StageNum = GetCurrentStageIndex() + 1;
+
     for (auto &Tile : Tiles)
     {
         FSpriteInfo Info;
+        int         RL = Map->GetRenderLayer(Tile.GetTileX(), Tile.GetTileY());
 
         if (Tile.GetType() == ETileType::Goal)
-            Info.TextureKey = "goal";
-
-        else
         {
-            switch (GetCurrentStageIndex())
-            {
-            case 0:
-                Info.TextureKey = "tile_floor1";
-                break;
-            case 1:
-                Info.TextureKey = "tile_floor2";
-                break;
-            case 2:
-                Info.TextureKey = "tile_floor3";
-                break;
-            default:
-                Info.TextureKey = "tile_floor1";
-                break;
-            }
+            bool bLastStage = (CurrentStageIndex == FStageLoader::Get().GetStageCount() - 1);
+            Info.TextureKey = bLastStage ? "goal_end" : "goal";
         }
+        else if (RL >= 0)
+            Info.TextureKey = "map_" + std::to_string(StageNum) + "_" + std::to_string(RL + 1);
 
         Info.SpriteSize = {TileSize, TileSize};
         Tile.SetSprite(Info);
     }
 
-    // 벽에 스프라이트 할당
     for (auto &W : Walls)
     {
         FSpriteInfo Info;
-        Info.TextureKey = "wall";
-        switch (GetCurrentStageIndex())
-        {
-        case 0:
-            Info.TextureKey = "wall1";
-            break;
-        case 1:
-            Info.TextureKey = "wall2";
-            break;
-        case 2:
-            Info.TextureKey = "wall3";
-            break;
-        default:
-            Info.TextureKey = "wall1";
-            break;
-        }
+        int         RL = Map->GetRenderLayer(W.GetTileX(), W.GetTileY());
+        if (RL >= 0)
+            Info.TextureKey = "map_" + std::to_string(StageNum) + "_" + std::to_string(RL + 1);
 
         Info.SpriteSize = {TileSize, TileSize};
         W.SetSprite(Info);
@@ -949,10 +938,11 @@ void FStage::RemoveDestroyedWalls()
     {
         if (It->IsDestroyed())
         {
-            // MapData도 바닥으로 변경
+            // MapData도 바닥으로 변경, render_layer도 제거
             if (Map)
             {
                 Map->SetTile(It->GetTileX(), It->GetTileY(), 0);
+                Map->SetRenderLayer(It->GetTileX(), It->GetTileY(), -1);
             }
             It = Walls.erase(It);
             bRemoved = true;
@@ -965,7 +955,7 @@ void FStage::RemoveDestroyedWalls()
 
     if (bRemoved)
     {
-        RebuildWallBatch();
+        RebuildRenderBatches();
     }
 }
 
