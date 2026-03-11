@@ -198,6 +198,8 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData& OutStage) const
 					Item.Type = EItemType::DarknessUp;
 				else if (TypeStr == "darkness_down")
 					Item.Type = EItemType::DarknessDown;
+				else if (TypeStr == "hp_up")
+					Item.Type = EItemType::HpUp;
 
 				Item.Duration = ItemJson.value("duration", 5.0f);
 				Item.Level = ItemJson.value("level", 0);

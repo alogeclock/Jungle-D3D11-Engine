@@ -1045,6 +1045,9 @@ void FStage::ApplyItem(const FItemData &Item)
         SetDarknessLevel(DarknessLevel + 1);
         break;
     }
+    case EItemType::HpUp:
+        Player->Heal(1);
+        break;
     }
 }
 
