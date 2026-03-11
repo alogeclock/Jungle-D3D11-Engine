@@ -413,10 +413,18 @@ void FStage::Render()
     {
         if (Mon->IsDead())
             continue;
-        float              WorldX = Mon->GetRenderX() + TileSize * 0.5f;
-        float              WorldY = Mon->GetRenderY() + TileSize * 0.5f;
-        const FSpriteInfo &Spr = Mon->GetSprite();
-        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
+        float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
+        float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
+
+        std::string TexKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
+        FTexture   *Tex = Textures ? Textures->Get(TexKey) : nullptr;
+        if (Tex)
+        {
+            FSpriteInfo Spr;
+            Spr.TextureKey = TexKey;
+            Spr.SpriteSize = {TileSize * 0.6f, TileSize * 0.6f};
+            Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize, TileSize, Spr);
+        }
     }
 
     // 플레이어 렌더링 (가장 위에 그림)
