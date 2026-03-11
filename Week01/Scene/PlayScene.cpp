@@ -71,6 +71,7 @@ void FPlayScene::Update(FGameContext &Context)
     {
         std::unique_ptr<FSaveScorePopup> Popup = std::make_unique<FSaveScorePopup>();
         Popup->SetScore(Stage ? Stage->GetScore() : 0);
+        Popup->SetStage(Stage ? (Stage->GetCurrentStageIndex() + 1) : 42);
         Popup->Open();
         PopupManager.Open(std::move(Popup));
         bOpenSaveScorePopupNextFrame = false;
