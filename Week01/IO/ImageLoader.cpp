@@ -61,7 +61,7 @@ std::unique_ptr<FTexture> FImageLoader::LoadAsTexture(ID3D11Device *Device, cons
     TextureDesc.Height = static_cast<UINT>(Height);
     TextureDesc.MipLevels = 1;
     TextureDesc.ArraySize = 1;
-    TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     TextureDesc.SampleDesc.Count = 1;
     TextureDesc.SampleDesc.Quality = 0;
     TextureDesc.Usage = D3D11_USAGE_DEFAULT;

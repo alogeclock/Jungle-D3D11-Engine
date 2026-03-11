@@ -15,10 +15,7 @@
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 1024
 
-void FTitleScene::Update(FGameContext &Context)
-{
-    UIManager.Update(Context);
-}
+void FTitleScene::Update(FGameContext &Context) { UIManager.Update(Context); }
 
 void FTitleScene::Render(FGameContext &Context)
 {
@@ -63,8 +60,8 @@ void FTitleScene::Render(FGameContext &Context)
 
 void FTitleScene::RenderBackground(FGameContext &Context)
 {
-    Context.Renderer.DrawTexture(Context.Textures.Get("title_background"), 0.0f, 0.0f, WIN_WIDTH,
-                                 WIN_HEIGHT);
+    Context.Renderer.DrawTexture(Context.Textures.Get("title_background"), (WIN_WIDTH / 2.f),
+                                 (WIN_HEIGHT / 2.f), WIN_WIDTH, WIN_HEIGHT);
 }
 
 void FTitleScene::RenderTitleMenu(FGameContext &Context)
@@ -93,24 +90,18 @@ void FTitleScene::RenderTitleMenu(FGameContext &Context)
 void FTitleScene::HandleMenuCommand(FGameContext &Context)
 {
     FPopupManager &PopupManager = UIManager.GetPopupManager();
-    const bool bHasOpenPopup = PopupManager.HasOpenPopup();
+    const bool     bHasOpenPopup = PopupManager.HasOpenPopup();
 
-    ImGuiIO &Io = ImGui::GetIO();
+    ImGuiIO    &Io = ImGui::GetIO();
     const float ScreenWidth = Io.DisplaySize.x;
     const float ScreenHeight = Io.DisplaySize.y;
 
     const ImVec2 ButtonSize(320.0f, 80.0f);
-    const float ButtonSpacing = 20.0f;
-    const float TotalHeight = ButtonSize.y * 3.0f + ButtonSpacing * 2.0f;
+    const float  ButtonSpacing = 20.0f;
+    const float  TotalHeight = ButtonSize.y * 3.0f + ButtonSpacing * 2.0f;
 
     const float StartX = (ScreenWidth - ButtonSize.x) * 0.5f;
     const float StartY = (ScreenHeight - TotalHeight) * 0.5f;
-
-    const char *TitleText = "MY GAME";
-    ImGui::SetCursorPos(ImVec2((ScreenWidth - 300.0f) * 0.5f, StartY - 120.0f));
-    ImGui::PushFont(nullptr);
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", TitleText);
-    ImGui::PopFont();
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
