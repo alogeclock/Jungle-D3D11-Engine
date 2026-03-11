@@ -70,9 +70,15 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
                 GoalX = X;
                 GoalY = Y;
                 break;
+            case ETileValue::Item:
+                Tiles.emplace_back(X, Y, ETileType::Floor);
+                break;
             }
         }
     }
+
+    // 아이템 데이터 복사
+    Items = Map->GetItems();
 
     // 메타데이터 기반 플레이어 스폰
     FSpawnPoint Spawn = Map->GetSpawnPoint();
@@ -121,6 +127,7 @@ void FStage::Reset()
     Monsters.clear();
     Tiles.clear();
     Walls.clear();
+    Items.clear();
     if (BeatSystem)
         BeatSystem->Reset();
     if (Camera)
@@ -142,6 +149,9 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         bIsGameOver = true;
         return;
     }
+
+    // 아이템 효과 업데이트
+    UpdateActiveEffects(DeltaTime);
 
     // 비트 시스템 업데이트
     BeatSystem->Update(DeltaTime, Context);
@@ -195,7 +205,8 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             Logger::Log("Perfect Input");
             if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
             {
-                Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
             }
             else
@@ -212,7 +223,8 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             Logger::Log("Good Input");
             if (Player->GetLastMovedBeatIndex() == CurrentBeatIndex)
             {
-                Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
             }
             else
@@ -227,9 +239,23 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         else
         {
             Logger::Log("Miss Input");
-            Player->Damage(1); // 엇박자 입력 시 데미지
+            if (!Player->ConsumeInvincibility())
+                Player->Damage(1);
             ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
             Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+        }
+    }
+
+    // 아이템 획득 체크
+    for (auto &Item : Items)
+    {
+        if (!Item.bPickedUp && Player->GetTileX() == Item.X && Player->GetTileY() == Item.Y)
+        {
+            Item.bPickedUp = true;
+            ApplyItem(Item);
+            // Change tile back to PATH
+            if (Map)
+                Map->SetTile(Item.X, Item.Y, 0);
         }
     }
 
@@ -254,7 +280,8 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             if (Player->GetLastMovedBeatIndex() < (CurrentBeatIndex - 1))
             {
                 Logger::Log("No Input Detected - Player Damaged");
-                Player->Damage(1);
+                if (!Player->ConsumeInvincibility())
+                    Player->Damage(1);
             }
         }
     }
@@ -299,6 +326,24 @@ void FStage::Render()
             return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr;
         };
 
+    // 아이템 렌더링
+    for (const auto& Item : Items)
+    {
+        if (Item.bPickedUp)
+            continue;
+        float WorldX = Item.X * TileSize + TileSize * 0.5f;
+        float WorldY = Item.Y * TileSize + TileSize * 0.5f;
+        std::string TexKey = GetItemTextureKey(Item.Type);
+        FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
+        if (Tex)
+        {
+            FSpriteInfo Spr;
+            Spr.TextureKey = TexKey;
+            Spr.SpriteSize = { TileSize * 0.6f, TileSize * 0.6f };
+            Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize * 0.6f, TileSize * 0.6f, Spr);
+        }
+    }
+
     // 몬스터 렌더링
     for (const auto& Mon : Monsters)
     {
@@ -319,8 +364,7 @@ void FStage::Render()
         Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
     }
 
-    // 큐에 쌓인 RenderObjects를 먼저 처리한 뒤 암흑 오버레이
-    Renderer->Render();
+    // 암흑 오버레이 큐잉 (스프라이트 위에 렌더)
     if (DarknessTexture && !bDarknessDisabled && Player && !Player->IsDead())
     {
         FVec2 PlayerWorld;
@@ -329,6 +373,7 @@ void FStage::Render()
         FVec2 PlayerScreen = Camera->WorldToScreen(PlayerWorld);
         Renderer->DrawDarknessOverlay(DarknessTexture.get(), PlayerScreen.X, PlayerScreen.Y);
     }
+    // Render()는 Application에서 통합 호출
 }
 
 // ============================================================
@@ -547,6 +592,12 @@ void FStage::LoadSpriteResources()
     LoadTex("wall", "Resources/Sprites/wall.png");
     LoadTex("player", "Resources/Sprites/player.png");
     LoadTex("monster", "Resources/Sprites/monster.png");
+    LoadTex("item_invincibility", "Resources/Sprites/item_invincibility.png");
+    LoadTex("item_time_scale_up", "Resources/Sprites/item_time_scale_up.png");
+    LoadTex("item_time_scale_down", "Resources/Sprites/item_time_scale_down.png");
+    LoadTex("item_darkness_up", "Resources/Sprites/item_darkness_up.png");
+    LoadTex("item_darkness_down", "Resources/Sprites/item_darkness_down.png");
+    LoadTex("item_time_freeze", "Resources/Sprites/item_time_freeze.png");
 
     // 타일에 스프라이트 할당
     for (auto &Tile : Tiles)
@@ -740,3 +791,61 @@ void FStage::SetDarknessDisabled(bool bDisabled) { bDarknessDisabled = bDisabled
 int FStage::GetCurrentStageIndex() const { return CurrentStageIndex; }
 
 const std::string &FStage::GetStageName() const { return StageName; }
+
+void FStage::ApplyItem(const FItemData &Item)
+{
+    switch (Item.Type)
+    {
+    // 플레이어 전용 효과 → Player에 위임
+    case EItemType::Invincibility:
+        if (!Player->HasActiveEffect(EItemType::Invincibility))
+            Player->AddEffect({EItemType::Invincibility, 0.0f});
+        break;
+    case EItemType::TimeScaleUp:
+        Player->AddEffect({EItemType::TimeScaleUp, Item.Duration});
+        break;
+    case EItemType::TimeScaleDown:
+        Player->AddEffect({EItemType::TimeScaleDown, Item.Duration});
+        break;
+
+    // 스테이지 전역 효과
+    case EItemType::TimeFreeze:
+        bTimeFrozen = true;
+        TimeFreezeRemaining = Item.Duration;
+        break;
+    case EItemType::DarknessUp:
+    {
+        // 어두워짐: 레벨 -1 (항상 상대값)
+        SetDarknessLevel(DarknessLevel - 1);
+        break;
+    }
+    case EItemType::DarknessDown:
+    {
+        // 밝아짐: 레벨 +1 (항상 상대값)
+        SetDarknessLevel(DarknessLevel + 1);
+        break;
+    }
+    }
+}
+
+void FStage::UpdateActiveEffects(float DeltaTime)
+{
+    // 플레이어 효과 업데이트
+    if (Player)
+        Player->UpdateActiveEffects(DeltaTime);
+
+    // 스테이지 TimeFreeze 타이머
+    if (bTimeFrozen && TimeFreezeRemaining > 0.0f)
+    {
+        TimeFreezeRemaining -= DeltaTime;
+        if (TimeFreezeRemaining <= 0.0f)
+        {
+            TimeFreezeRemaining = 0.0f;
+            bTimeFrozen = false;
+        }
+    }
+}
+
+const std::vector<FItemData> &FStage::GetItems() const { return Items; }
+
+float FStage::GetTimeFreezeRemaining() const { return TimeFreezeRemaining; }

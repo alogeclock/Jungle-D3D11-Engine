@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "Gameplay/Item.h"
 
 struct FSpawnPoint
 {
@@ -45,6 +46,10 @@ struct FStageData
     void  SetTimeLimit(float InTimeLimit);
     float GetTimeLimit() const;
 
+    void                          AddItem(const FItemData &Item);
+    const std::vector<FItemData> &GetItems() const;
+    void                          ClearItems();
+
   private:
     // 해석은 TileType enum값 대로
     std::vector<std::vector<int>> Tiles;
@@ -58,4 +63,6 @@ struct FStageData
     int         Bpm = 120;
     std::string MusicPath;
     float       TimeLimit = 60.0f;
+
+    std::vector<FItemData> Items;
 };

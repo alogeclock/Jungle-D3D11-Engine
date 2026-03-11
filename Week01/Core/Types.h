@@ -30,7 +30,8 @@ enum class ETileValue
     Path = 0,
     Wall = 1,
     Outer = 2,
-    Goal = 3
+    Goal = 3,
+    Item = 4
 };
 
 enum class EBeatJudge
@@ -74,5 +75,6 @@ enum class TileType : int
     Wall = 1,  // 이동 불가 (벽)
     Outer = 2, // 이동 불가 (바깥 여백/낭떠러지 등)
     Goal = 3,  // 스테이지 클리어 지점 (도착 시 다음 맵으로)
-    Count = 4
+    Item = 4,  // 아이템 (이동 가능, 플레이어가 밟으면 획득)
+    Count = 5
 };

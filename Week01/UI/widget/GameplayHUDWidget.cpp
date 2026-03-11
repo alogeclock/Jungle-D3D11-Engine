@@ -72,8 +72,9 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 		FBitmapFont* Font = Pair->Font.get();
 		FTexture* FontTex = Pair->Tex.get();
 
-		int Minutes = static_cast<int>(PlayTime) / 60;
-		int Seconds = static_cast<int>(PlayTime) % 60;
+		float Remaining = Stage->GetRemainingTime();
+		int Minutes = static_cast<int>(Remaining) / 60;
+		int Seconds = static_cast<int>(Remaining) % 60;
 
 		char TimeBuf[32];
 		snprintf(TimeBuf, sizeof(TimeBuf), "Time %d:%02d", Minutes, Seconds);

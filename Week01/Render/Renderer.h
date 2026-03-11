@@ -27,6 +27,33 @@ struct FStaticBatch
 	UINT IndexCount = 0;
 };
 
+// 렌더 커맨드 타입 (통합 렌더 큐용)
+enum class ERenderCmdType
+{
+	Batch,
+	Sprite,
+	DarknessOverlay,
+};
+
+struct FBatchRenderCmd
+{
+	const FStaticBatch* pBatch;
+	const FTexture* Texture;
+};
+
+struct FDarknessRenderCmd
+{
+	const FTexture* Texture;
+	float ScreenCenterX;
+	float ScreenCenterY;
+};
+
+struct FRenderCommand
+{
+	ERenderCmdType Type;
+	int Index;
+};
+
 // Default.hlsl의 SpriteConstants cbuffer와 1:1 매칭
 struct FSpriteConstants
 {
@@ -160,6 +187,15 @@ private:
 	std::string ShaderError;
 	std::vector<FRenderObject> RenderObjects;
 	std::vector<FFontRenderObject> FontRenderObjects;
+
+	// 통합 렌더 커맨드 큐
+	std::vector<FRenderCommand> RenderCommands;
+	std::vector<FBatchRenderCmd> BatchRenderCmds;
+	std::vector<FDarknessRenderCmd> DarknessRenderCmds;
+
+	void ExecuteBatch(const FBatchRenderCmd& Cmd);
+	void ExecuteSprite(const FRenderObject& Obj);
+	void ExecuteDarkness(const FDarknessRenderCmd& Cmd);
 
 	// 캐시된 View/Projection 행렬 (SetCamera에서 갱신)
 	DirectX::XMFLOAT4X4 CachedView;

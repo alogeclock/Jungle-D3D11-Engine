@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Actor.h"
+#include "Item.h"
 #include <optional>
+#include <vector>
 
 class FPlayer : public FActor
 {
@@ -17,9 +19,18 @@ class FPlayer : public FActor
     void ClearQueuedInput();
     bool HasQueuedInput() const;
 
+    // 플레이어 전용 아이템 효과 (Invincibility, TimeScaleUp/Down)
+    void                             AddEffect(const FActiveEffect &Effect);
+    void                             UpdateActiveEffects(float DeltaTime);
+    const std::vector<FActiveEffect>&GetActiveEffects() const;
+    bool                             HasActiveEffect(EItemType Type) const;
+    bool                             ConsumeInvincibility();
+
   private:
     std::optional<EDirection> QueuedInput;
 
     // 한 비트 내 중복 이동 방지용
     int LastMovedBeatIndex = -1;
+
+    std::vector<FActiveEffect> ActiveEffects;
 };
