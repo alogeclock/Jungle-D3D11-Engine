@@ -1,36 +1,37 @@
 #pragma once
 
 #include <string>
-#include "UIPopupAction.h"
 #include "UIPopupBase.h"
+
+struct FGameContext;
 
 class FSaveScorePopup : public FUIPopupBase
 {
   public:
     FSaveScorePopup();
 
+    void SetNickname(const std::string &InNickname);
     void SetScore(int InScore) { Score = InScore; }
     void SetStage(int InStage) { Stage = InStage; }
-    void SetNickname(const std::string &InNickname);
+
     const std::string &GetNickname() const { return Nickname; }
 
     EUIPopupAction ConsumeAction();
-    void Render(FGameContext &Context) override;
-    void Update(FGameContext &Context) override {}
-
-  private:
-    static constexpr EUIPopupContentAlign ContentAlign = EUIPopupContentAlign::Center;
-    static constexpr EUIPopupContentTextSize ContentTextSize = EUIPopupContentTextSize::Medium;
-    static constexpr int MaxNicknameLength = 6;
+    void            Render(FGameContext &Context);
+    void Update(FGameContext &Context) {}
 
   private:
     void SyncBufferFromNickname();
     void SyncNicknameFromBuffer();
+    bool IsValidNickname() const;
 
   private:
-    int Score = 0;
-    int Stage = 0;
-    std::string Nickname = "";
-    char NicknameBuffer[MaxNicknameLength + 1];
+    static constexpr int MaxNicknameLength = 6;
+
+    std::string    Nickname;
+    char           NicknameBuffer[MaxNicknameLength + 1]{};
+    int            Score = 0;
+    int            Stage = 0;
     EUIPopupAction PendingAction = EUIPopupAction::None;
+    bool           bShowValidationMessage = false;
 };
