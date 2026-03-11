@@ -22,32 +22,12 @@ namespace
     }
 }
 
-FScoreRepository::FScoreRepository()
-    : Path(DefaultPath)
-{
-}
-
-FScoreRepository::FScoreRepository(const std::string &InPath)
-    : Path(InPath)
-{
-}
-
-void FScoreRepository::SetPath(const std::string &InPath)
-{
-    Path = InPath;
-}
-
-const std::string &FScoreRepository::GetPath() const
-{
-    return Path;
-}
-
-std::vector<FScoreRecord> FScoreRepository::Load()
+std::vector<FScoreRecord> ScoreRepository::Load()
 {
     std::vector<FScoreRecord> Records;
 
     FJsonFile JsonFile;
-    if (!JsonFile.LoadFromFile(Path))
+    if (!JsonFile.LoadFromFile(DefaultPath))
     {
         return Records;
     }
@@ -94,23 +74,23 @@ std::vector<FScoreRecord> FScoreRepository::Load()
     return Records;
 }
 
-std::vector<FScoreRecord> FScoreRepository::LoadSorted()
+std::vector<FScoreRecord> ScoreRepository::LoadSorted()
 {
     std::vector<FScoreRecord> Records = Load();
     SortDescending(Records);
     return Records;
 }
 
-bool FScoreRepository::Save(const std::vector<FScoreRecord> &Records)
+bool ScoreRepository::Save(const std::vector<FScoreRecord> &Records)
 {
     FJsonFile JsonFile;
     nlohmann::json &Root = JsonFile.GetRoot();
 
     WriteScoreboardArray(Root, Records);
-    return JsonFile.SaveToFile(Path);
+    return JsonFile.SaveToFile(DefaultPath);
 }
 
-bool FScoreRepository::AppendRecord(const FScoreRecord &Record)
+bool ScoreRepository::AppendRecord(const FScoreRecord &Record)
 {
     std::vector<FScoreRecord> Records = Load();
 
@@ -120,7 +100,7 @@ bool FScoreRepository::AppendRecord(const FScoreRecord &Record)
     return Save(Records);
 }
 
-void FScoreRepository::SortDescending(std::vector<FScoreRecord> &Records)
+void ScoreRepository::SortDescending(std::vector<FScoreRecord> &Records)
 {
     std::sort(Records.begin(), Records.end(),
               [](const FScoreRecord &A, const FScoreRecord &B)
