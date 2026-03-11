@@ -13,17 +13,19 @@ void FBeatHUDWidget::BindBeatSystem(const FBeatSystem* InBeatSystem)
 	Heart.X = 500.f;
 	Heart.Y = Ypos;
 
+	HeartXScale = OrgHeartXScale;
+	HeartYScale = OrgHeartYScale;
+
 }
 
 void FBeatHUDWidget::Update(FGameContext& Context)
 {
-	if (FlashTimer > 0.0f)
-	{
-		FlashTimer -= Context.Time.GetDeltaTime();
-	}
+
+	float DeltaTime = Context.Time.GetDeltaTime();
+
 	for (BeatEffect& Effect : BeatEffects)
 	{
-		Effect.Update(Context.Time.GetDeltaTime());
+		Effect.Update(DeltaTime);
 	}
 
 	BeatEffects.erase(
@@ -36,6 +38,12 @@ void FBeatHUDWidget::Update(FGameContext& Context)
 			}),
 		BeatEffects.end()
 	);
+
+	float RecoverSpeed = 10.0f;
+
+	HeartXScale += (OrgHeartXScale - HeartXScale) * RecoverSpeed * DeltaTime;
+	HeartYScale += (OrgHeartYScale - HeartYScale) * RecoverSpeed * DeltaTime;
+
 }
 
 void FBeatHUDWidget::Render(FGameContext& Context)
@@ -57,7 +65,7 @@ void FBeatHUDWidget::Render(FGameContext& Context)
 	float RightBarX = Heart.X + Distance;
 	Context.Renderer.DrawTexture(BarTexture, LeftBarX, Ypos, 20, 100);
 	Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
-	Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, 120, 150);
+	Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
 
 
 	/*
@@ -101,14 +109,20 @@ void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge)
 	{
 	case EBeatJudge::Perfect:
 		BeatEffects.emplace_back(BeatEffect(PerfectTexture, Heart.X, Heart.Y - 100));
+		HeartXScale = OrgHeartXScale * 1.3;
+		HeartYScale = OrgHeartYScale * 1.2;
 		Logger::Log("Perfect! (in HUDWidget)");
 		break;
 	case EBeatJudge::Good:
 		BeatEffects.emplace_back(BeatEffect(GoodTexture, Heart.X, Heart.Y - 100));
+		HeartXScale = OrgHeartXScale * 1.15;
+		HeartYScale = OrgHeartYScale * 1.1;
 		Logger::Log("Good! (in HUDWidget)");
 		break;
 	case EBeatJudge::Miss:
 		BeatEffects.emplace_back(BeatEffect(MissTexture, Heart.X, Heart.Y - 100));
+		HeartXScale = OrgHeartXScale * 0.9;
+		HeartYScale = OrgHeartYScale * 0.95;
 		Logger::Log("Miss! (in HUDWidget)");
 		break;
 	}
