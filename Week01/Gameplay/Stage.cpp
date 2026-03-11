@@ -103,7 +103,19 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
                 NewMonster->SetPosition(RandX, RandY, TileSize);
 
                 int MonsterType = std::rand() % 2;
-                NewMonster->SetMonsterType(MonsterType);
+
+                switch (MonsterType)
+                {
+                case 0:
+                    NewMonster->SetMonsterType(EMonsterType::StoneGolem);
+                    break;
+                case 1:
+                    NewMonster->SetMonsterType(EMonsterType::FireGolem);
+                    break;
+                default:
+                    NewMonster->SetMonsterType(EMonsterType::StoneGolem);
+                }
+
                 NewMonster->SetMoveFrequency(4 - 2 * MonsterType);
                 NewMonster->SetSearchRange(3 + 3 * MonsterType);
 
@@ -392,19 +404,19 @@ void FStage::Render()
     { return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr; };
 
     // 아이템 렌더링
-    for (const auto& Item : Items)
+    for (const auto &Item : Items)
     {
         if (Item.bPickedUp)
             continue;
-        float WorldX = Item.X * TileSize + TileSize * 0.5f;
-        float WorldY = Item.Y * TileSize + TileSize * 0.5f;
+        float       WorldX = Item.X * TileSize + TileSize * 0.5f;
+        float       WorldY = Item.Y * TileSize + TileSize * 0.5f;
         std::string TexKey = GetItemTextureKey(Item.Type);
-        FTexture* Tex = Textures ? Textures->Get(TexKey) : nullptr;
+        FTexture   *Tex = Textures ? Textures->Get(TexKey) : nullptr;
         if (Tex)
         {
             FSpriteInfo Spr;
             Spr.TextureKey = TexKey;
-            Spr.SpriteSize = { TileSize * 0.6f, TileSize * 0.6f };
+            Spr.SpriteSize = {TileSize * 0.6f, TileSize * 0.6f};
             Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize * 0.6f, TileSize * 0.6f, Spr);
         }
     }
@@ -654,8 +666,8 @@ void FStage::LoadSpriteResources()
     LoadTex("goal", "Resources/Sprites/goal.png");
     LoadTex("wall", "Resources/Sprites/wall.png");
     LoadTex("player", "Resources/Sprites/player.png");
-    LoadTex("monster", "Resources/Sprites/monster.png");
-    LoadTex("monster1", "Resources/Sprites/monster1.png");
+    LoadTex("monster_stonegolem", "Resources/Sprites/monster_stonegolem.png");
+    LoadTex("monster_firegolem", "Resources/Sprites/monster_firegolem.png");
     LoadTex("item_invincibility", "Resources/Sprites/item_invincibility.png");
     LoadTex("item_time_scale_up", "Resources/Sprites/item_time_scale_up.png");
     LoadTex("item_time_scale_down", "Resources/Sprites/item_time_scale_down.png");
@@ -693,13 +705,7 @@ void FStage::LoadSpriteResources()
     for (auto &Mon : Monsters)
     {
         FSpriteInfo Info;
-        int         MonsterType = Mon->GetMonsterType();
-
-        if (MonsterType == 0)
-            Info.TextureKey = "monster";
-        else
-            Info.TextureKey = "monster1";
-
+        Info.TextureKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
         Info.SpriteSize = {TileSize, TileSize};
         Mon->SetSprite(Info);
     }

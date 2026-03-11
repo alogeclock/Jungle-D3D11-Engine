@@ -6,6 +6,12 @@
 
 struct FGameContext;
 
+enum class EMonsterType
+{
+    StoneGolem,
+    FireGolem
+};
+
 class FMonster : public FActor
 {
   public:
@@ -18,10 +24,11 @@ class FMonster : public FActor
     int            GetMoveFrequency() const;
     void           SetAiType(EMonsterAIType InAiType);
     EMonsterAIType GetAiType() const;
-    void           SetMonsterType(int InMonType);
-    int            GetMonsterType() const;
+    void           SetMonsterType(EMonsterType InMonsterType);
+    EMonsterType   GetMonsterType() const;
     void           SetSearchRange(int InSearchRange);
     int            GetSearchRange() const;
+    std::string    GetMonsterTextureKey(EMonsterType Type);
 
     EDirection DecideNextMove(const FStage &Stage) const;
 
@@ -29,9 +36,9 @@ class FMonster : public FActor
     std::optional<EDirection> SearchPlayer(const FStage &Stage) const;
 
     EMonsterAIType AiType = EMonsterAIType::RandomMove;
-    int            MonsterType = 0;
+    EMonsterType   MonsterType = EMonsterType::StoneGolem;
     int            MoveFrequency = 2;
     int            MoveFrequencyOffset = 0;
     int            BeatCount = 0;
-    int            SearchRange = 5; // ÇÃ·¹ÀÌ¾î Å½»ö ÃÖ´ë ¹üÀ§ (20½ºÅÜ)
+    int            SearchRange = 5; // 탐색 반경 (BFS 검색을 수행할 최대 범위)
 };
