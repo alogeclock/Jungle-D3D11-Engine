@@ -1,20 +1,15 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "UIPopupBase.h"
 #include "imgui/imgui.h"
 #include <initializer_list>
+#include "Core/AudioSystem.h"
 
 namespace
 {
-    float GetActualButtonHeight()
-    {
-        return ImGui::GetFrameHeight();
-    }
+    float GetActualButtonHeight() { return ImGui::GetFrameHeight(); }
 
-    float GetScaledTextHeight(float FontScale)
-    {
-        return ImGui::GetFontSize() * FontScale;
-    }
-}
+    float GetScaledTextHeight(float FontScale) { return ImGui::GetFontSize() * FontScale; }
+} // namespace
 
 void FUIPopupBase::Open()
 {
@@ -37,7 +32,7 @@ bool FUIPopupBase::ConsumeOpenRequest()
 
 void FUIPopupBase::SetupPopupWindow(const char *PopupId, const ImVec2 &PopupSize)
 {
-    ImGuiIO &Io = ImGui::GetIO();
+    ImGuiIO     &Io = ImGui::GetIO();
     const ImVec2 PopupPos(Io.DisplaySize.x * 0.5f, Io.DisplaySize.y * 0.5f);
 
     if (ConsumeOpenRequest())
@@ -45,6 +40,9 @@ void FUIPopupBase::SetupPopupWindow(const char *PopupId, const ImVec2 &PopupSize
         ImGui::SetNextWindowSize(PopupSize, ImGuiCond_Appearing);
         ImGui::SetNextWindowPos(PopupPos, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
         ImGui::OpenPopup(PopupId);
+
+        FAudioSystem::Get().LoadWav("PopupSound", "Resources/Sounds/Popup.wav");
+        FAudioSystem::Get().Play("PopupSound");
     }
 
     ImGui::SetNextWindowSize(PopupSize, ImGuiCond_Appearing);
@@ -65,7 +63,8 @@ bool FUIPopupBase::BeginPopupWindow(const char *PopupId, const char *Title, cons
 
     if (!ImGui::BeginPopupModal(PopupId, nullptr,
                                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                    ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+                                    ImGuiWindowFlags_NoScrollbar |
+                                    ImGuiWindowFlags_NoScrollWithMouse))
     {
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor();
@@ -86,9 +85,9 @@ void FUIPopupBase::EndPopupWindow()
 
 void FUIPopupBase::BuildFrameLayout(const char *Title, FPopupFrameLayout &OutLayout) const
 {
-    ImGuiStyle &Style = ImGui::GetStyle();
+    ImGuiStyle  &Style = ImGui::GetStyle();
     const ImVec2 WindowSize = ImGui::GetWindowSize();
-    const float ActualButtonHeight = GetActualButtonHeight();
+    const float  ActualButtonHeight = GetActualButtonHeight();
 
     OutLayout.InnerLeft = Style.WindowPadding.x;
     OutLayout.InnerTop = Style.WindowPadding.y;
@@ -128,9 +127,9 @@ void FUIPopupBase::DrawTitleAndDivider(const char *Title, const FPopupFrameLayou
     ImGui::SetWindowFontScale(1.0f);
 
     const ImVec2 WindowPos = ImGui::GetWindowPos();
-    const float DividerStartX = WindowPos.x + Layout.InnerLeft + DividerInsetX;
-    const float DividerEndX = WindowPos.x + Layout.ContentRight - DividerInsetX;
-    const float DividerY = WindowPos.y + Layout.DividerY;
+    const float  DividerStartX = WindowPos.x + Layout.InnerLeft + DividerInsetX;
+    const float  DividerEndX = WindowPos.x + Layout.ContentRight - DividerInsetX;
+    const float  DividerY = WindowPos.y + Layout.DividerY;
 
     ImDrawList *DrawList = ImGui::GetWindowDrawList();
     DrawList->AddLine(ImVec2(DividerStartX, DividerY), ImVec2(DividerEndX, DividerY),
@@ -173,9 +172,8 @@ ImVec2 FUIPopupBase::GetBottomButtonPosition(const FPopupFrameLayout &Layout, in
     const float ActualButtonHeight =
         (InButtonHeight > 0.0f) ? InButtonHeight : GetActualButtonHeight();
 
-    const float TotalWidth =
-        ActualButtonWidth * static_cast<float>(ButtonCount) +
-        InButtonGap * static_cast<float>(ButtonCount - 1);
+    const float TotalWidth = ActualButtonWidth * static_cast<float>(ButtonCount) +
+                             InButtonGap * static_cast<float>(ButtonCount - 1);
 
     const float StartX = Layout.ButtonAreaLeft + (Layout.InnerWidth - TotalWidth) * 0.5f;
     const float X = StartX + static_cast<float>(ButtonIndex) * (ActualButtonWidth + InButtonGap);
@@ -197,11 +195,17 @@ bool FUIPopupBase::DrawBottomButton(const FPopupFrameLayout &Layout, const char 
     const float ActualButtonWidth =
         GetBottomButtonWidth(Layout, ButtonCount, ButtonWidth, ButtonGap);
 
-    const ImVec2 ButtonPos =
-        GetBottomButtonPosition(Layout, ButtonIndex, ButtonCount, ButtonWidth, ButtonHeight, ButtonGap);
+    const ImVec2 ButtonPos = GetBottomButtonPosition(Layout, ButtonIndex, ButtonCount, ButtonWidth,
+                                                     ButtonHeight, ButtonGap);
 
     ImGui::SetCursorPos(ButtonPos);
     const bool bPressed = ImGui::Button(Label, ImVec2(ActualButtonWidth, ButtonHeight));
+
+    if (bPressed)
+    {
+        FAudioSystem::Get().LoadWav("PopupSound", "Resources/Sounds/Popup.wav");
+        FAudioSystem::Get().Play("PopupSound");
+    }
 
     ImGui::SetWindowFontScale(1.0f);
     return bPressed;
@@ -252,7 +256,7 @@ float FUIPopupBase::GetTextBlockHeight(const char *const *Lines, int LineCount, 
     for (int i = 0; i < LineCount; ++i)
     {
         const char *Line = Lines[i] ? Lines[i] : "";
-        ImVec2 LineSize = ImGui::CalcTextSize(Line);
+        ImVec2      LineSize = ImGui::CalcTextSize(Line);
 
         if (LineSize.y < GetScaledTextHeight(FontScale))
             LineSize.y = GetScaledTextHeight(FontScale);
@@ -267,9 +271,9 @@ float FUIPopupBase::GetTextBlockHeight(const char *const *Lines, int LineCount, 
     return TotalHeight;
 }
 
-void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *const *Lines, int LineCount,
-                                 float LineGap, EUIPopupContentAlign HorizontalAlign,
-                                 EUIPopupContentTextSize TextSize,
+void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *const *Lines,
+                                 int LineCount, float LineGap, EUIPopupContentAlign HorizontalAlign,
+                                 EUIPopupContentTextSize      TextSize,
                                  EUIPopupContentVerticalAlign VerticalAlign) const
 {
     if (Lines == nullptr || LineCount <= 0)
@@ -286,9 +290,9 @@ void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *co
 
     for (int i = 0; i < LineCount; ++i)
     {
-        const char *Line = Lines[i] ? Lines[i] : "";
+        const char  *Line = Lines[i] ? Lines[i] : "";
         const ImVec2 LineSize = ImGui::CalcTextSize(Line);
-        const float X = GetAlignedX(Layout, LineSize.x, HorizontalAlign);
+        const float  X = GetAlignedX(Layout, LineSize.x, HorizontalAlign);
 
         if (i == 0)
         {
@@ -310,15 +314,15 @@ void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *co
     ImGui::SetWindowFontScale(1.0f);
 }
 
-void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout,
-                                 std::initializer_list<const char *> Lines,
-                                 float LineGap, EUIPopupContentAlign HorizontalAlign,
-                                 EUIPopupContentTextSize TextSize,
+void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout            &Layout,
+                                 std::initializer_list<const char *> Lines, float LineGap,
+                                 EUIPopupContentAlign         HorizontalAlign,
+                                 EUIPopupContentTextSize      TextSize,
                                  EUIPopupContentVerticalAlign VerticalAlign) const
 {
     if (Lines.size() == 0)
         return;
 
-    DrawTextBlock(Layout, Lines.begin(), static_cast<int>(Lines.size()), LineGap,
-                  HorizontalAlign, TextSize, VerticalAlign);
+    DrawTextBlock(Layout, Lines.begin(), static_cast<int>(Lines.size()), LineGap, HorizontalAlign,
+                  TextSize, VerticalAlign);
 }
