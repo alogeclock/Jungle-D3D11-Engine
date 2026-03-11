@@ -1,0 +1,69 @@
+{
+  "scoreboard": [
+    {
+      "nickname": "AAA",
+      "stage": 2,
+      "score": 870
+    },
+    {
+      "nickname": "ABCDEF",
+      "stage": 1,
+      "score": 540
+    },
+    {
+      "nickname": "ZZZZZ",
+      "stage": 3,
+      "score": 920
+    },
+    {
+      "nickname": "BBBB",
+      "stage": 2,
+      "score": 310
+    },
+    {
+      "nickname": "Q",
+      "stage": 1,
+      "score": 760
+    },
+    {
+      "nickname": "TT",
+      "stage": 3,
+      "score": 480
+    },
+    {
+      "nickname": "CAT",
+      "stage": 2,
+      "score": 650
+    },
+    {
+      "nickname": "DOGE",
+      "stage": 1,
+      "score": 220
+    },
+    {
+      "nickname": "EAGLE",
+      "stage": 3,
+      "score": 990
+    },
+    {
+      "nickname": "FROST",
+      "stage": 2,
+      "score": 140
+    },
+    {
+      "nickname": "GALAXY",
+      "stage": 1,
+      "score": 830
+    },
+    {
+      "nickname": "HI",
+      "stage": 3,
+      "score": 570
+    },
+    {
+      "nickname": "ICE",
+      "stage": 2,
+      "score": 400
+    }
+  ]
+}
