@@ -42,7 +42,7 @@ std::vector<FScoreRecord> FScoreRepository::Load(const std::string &Path)
         }
 
         FScoreRecord Record;
-        Record.Name = Item["nickname"].get<std::string>();
+        Record.Nickname = Item["nickname"].get<std::string>();
         Record.Stage = Item["stage"].get<int>();
         Record.Score = Item["score"].get<int>();
 
@@ -63,7 +63,7 @@ bool FScoreRepository::Save(const std::string &Path, const std::vector<FScoreRec
     for (const FScoreRecord &Record : Records)
     {
         Root["scoreboard"].push_back(
-            {{"nickname", Record.Name}, {"stage", Record.Stage}, {"score", Record.Score}});
+            {{"nickname", Record.Nickname}, {"stage", Record.Stage}, {"score", Record.Score}});
     }
 
     return JsonFile.SaveToFile(Path);
