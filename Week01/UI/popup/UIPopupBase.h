@@ -135,6 +135,8 @@ class FUIPopupBase
     static constexpr float ButtonTextFontScale = 1.3f;
     static constexpr float MinButtonWidthWhenMulti = 80.0f;
 
+    static constexpr float DefaultContentLineGap = 6.0f;
+
   private:
     bool bIsOpen = false;
     bool bOpenRequested = false;

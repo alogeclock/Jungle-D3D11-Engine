@@ -284,24 +284,27 @@ void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *co
 
     ImGui::SetWindowFontScale(FontScale);
 
-    float CurrentY = StartY;
-
     for (int i = 0; i < LineCount; ++i)
     {
         const char *Line = Lines[i] ? Lines[i] : "";
-        ImVec2 LineSize = ImGui::CalcTextSize(Line);
-
-        if (LineSize.y < GetScaledTextHeight(FontScale))
-            LineSize.y = GetScaledTextHeight(FontScale);
-
+        const ImVec2 LineSize = ImGui::CalcTextSize(Line);
         const float X = GetAlignedX(Layout, LineSize.x, HorizontalAlign);
 
-        ImGui::SetCursorPos(ImVec2(X, CurrentY));
+        if (i == 0)
+        {
+            ImGui::SetCursorPos(ImVec2(X, StartY));
+        }
+        else
+        {
+            ImGui::SetCursorPosX(X);
+        }
+
         ImGui::TextUnformatted(Line);
 
-        CurrentY += LineSize.y;
         if (i + 1 < LineCount)
-            CurrentY += LineGap;
+        {
+            ImGui::Dummy(ImVec2(0.0f, LineGap));
+        }
     }
 
     ImGui::SetWindowFontScale(1.0f);
