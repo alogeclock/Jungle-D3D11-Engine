@@ -1,0 +1,1292 @@
+\doxysection{DirectX::\+Keyboard Class Reference}
+\hypertarget{class_direct_x_1_1_keyboard}{}\label{class_direct_x_1_1_keyboard}\index{DirectX::Keyboard@{DirectX::Keyboard}}
+
+
+{\ttfamily \+\#include $<$Keyboard.\+h$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker}{Keyboard\+State\+Tracker}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}{Keys}} :\+ unsigned char \{ \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36de47c4bdff940d74d9e6bda9290b2e}{None}} = 0
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafb841d462535c59905be9be233575aff}{Back}} = 0x8
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8140c574ac3a622e9fdeefa2612b7ec7}{Tab}} = 0x9
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ada165d7fedc46eaff392d2058982ff}{Enter}} = 0xd
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7d57d236fbce72a3c74f118036e2dda0}{Pause}} = 0x13
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5a59e982936b44c885b707b17a91a9a5}{Caps\+Lock}} = 0x14
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba51af16035f72424236304b22c8d5382b}{Kana}} = 0x15
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafd5824335dada338e9e8879a82819312}{Ime\+On}} = 0x16
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecaee879216d6a04f3a5f11ec1a1e67}{Kanji}} = 0x19
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0a63a0d9982a8f72c51609a2dffc9a40}{Ime\+Off}} = 0x1a
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ba690fe8505e129267930cd900fb63d}{Escape}} = 0x1b
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6467214f1284bdd7e3d761a988f757e8}{Ime\+Convert}} = 0x1c
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba331d68bff67ec2b507ab8798fb25d420}{Ime\+No\+Convert}} = 0x1d
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5748401507d1db08296574468f4fda21}{Space}} = 0x20
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba416eaae0f9172eb3965b52054de64f56}{Page\+Up}} = 0x21
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b95b18c75b902d234c2b542fcc8d6a0}{Page\+Down}} = 0x22
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dab9eb3d4f21b0d04af6338dd5509e1}{End}} = 0x23
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac3e13e36418bd16cbfb2ea937de8cf96}{Home}} = 0x24
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed8f7a12123af9d77963b3c62bcf531d}{Left}} = 0x25
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab9c600e1a28d2d533d610d4f3057286a}{Up}} = 0x26
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed835348bd1dc4d6ce8e8ee6ff7b1f24}{Right}} = 0x27
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9220187add54b45a87f3d17e56397f6}{Down}} = 0x28
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba08de428d906b6338788135d8df2c7d62}{Select}} = 0x29
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baf5814a5437d10f6679365016405fac30}{Print}} = 0x2a
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dd743a0980fb8d095060091dbd581c2}{Execute}} = 0x2b
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba66e4fa94d4c65cf8c945e86364813cf0}{Print\+Screen}} = 0x2c
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa38c9e2451c674f9a7cd5444838a2d04}{Insert}} = 0x2d
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba67fc94a0f7cce096306f3e2ff0acbb41}{Delete}} = 0x2e
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9df718f00f23d250363904a3322a26d}{Help}} = 0x2f
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3244917ff2edcd72310d1c22699a0050}{D0}} = 0x30
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baabed8fa999a7d6c486614891234ee3d0}{D1}} = 0x31
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa2dd5ae9f46ea4eee0ccc4b39756e95f}{D2}} = 0x32
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4e9a6c6f8d81e14a40b3d296cb3f531c}{D3}} = 0x33
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba409ad308f433a0006f8b5187300cc4b6}{D4}} = 0x34
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babfb314936e36e738c7af05378b7d1d1a}{D5}} = 0x35
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac163a6677843bd9981d7f1a737f6fdc3}{D6}} = 0x36
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8578b7f1d8a159b9325555d20e39d8c4}{D7}} = 0x37
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8e5393044edaf53c072e9a210ed9c902}{D8}} = 0x38
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba052abb5b95806c16d0de1dd0adae42e0}{D9}} = 0x39
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baad33e1ce549b2c3b25072494524cfd5e}{A}} = 0x41
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9308fe7d69420156ff5f6cf993186dfa}{B}} = 0x42
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1499513ba868c5031c73e68d37c36c07}{C}} = 0x43
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e8c51463f3b98d5e7551f1f396d9e9c}{D}} = 0x44
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6025e9719249c44bb9d0f492cf96c862}{E}} = 0x45
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba340bfeb12c6418eb05d3206769ad9a80}{F}} = 0x46
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2ab7c578739b89bc16c5db3731ca9663}{G}} = 0x47
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f670ed2873fe9e62469ae3df5dc8149}{H}} = 0x48
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3226641aaee94e140f31b8adc76d5b83}{I}} = 0x49
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a564b8e477e1e326b94acae064568fd}{J}} = 0x4a
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafffea8984fca95991d22cb1e0df39e8a}{K}} = 0x4b
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa4f93c3b04003040fb0d661dd43fb641}{L}} = 0x4c
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b2584ec67c560d836fa3eaefaf65b60}{M}} = 0x4d
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7aab89b61930a873b192626ec0724b64}{N}} = 0x4e
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0028d3a27c5ff41937feade3824ae90d}{O}} = 0x4f
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94953842972baf4d450bc72a33f36e3e}{P}} = 0x50
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba61a729e43e259b5a29bb58d43dfe802d}{Q}} = 0x51
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dfce83e89063b804fe19b75f32d2e1}{R}} = 0x52
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baffbd3ace107232ae0a9c79d2d0a1df6d}{S}} = 0x53
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3199f6bc282b683e3432085f579bbd03}{T}} = 0x54
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41698204d6160bd454cb06fbb360d8f8}{U}} = 0x55
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab4390bf904f1feaa81f6e6bc94ab765d}{V}} = 0x56
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4579618023a68244ca5c619ad3694a06}{W}} = 0x57
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baafc7da31c7ec6b414d7b3baa3929e1b4}{X}} = 0x58
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba577a3825a64bdc1b10ab1db6970d5686}{Y}} = 0x59
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41527a5125191e6e72f097bc39f87e9d}{Z}} = 0x5a
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba02b2acf5a29decbcaa2fd15f9037d1b5}{Left\+Windows}} = 0x5b
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8efa02d5c709c3069c60a8404d74c136}{Right\+Windows}} = 0x5c
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff5b5f7bee150bc7787e28704fd9bbb8}{Apps}} = 0x5d
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad2de94fbde7011992731ad43995e3dbb}{Sleep}} = 0x5f
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba00604944b597d44b7f2cf560bbc91617}{Num\+Pad0}} = 0x60
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9bff3169490ce84086a9c9dafa6a1613}{Num\+Pad1}} = 0x61
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e75c9cdd524a13025f002c23f4345c3}{Num\+Pad2}} = 0x62
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e98cba4333f56c9c4dcfdd7b62c180e}{Num\+Pad3}} = 0x63
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babe688b648f8dda55c4b06456f1c574db}{Num\+Pad4}} = 0x64
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac269a3d22c5aab230b15891d68e4aded}{Num\+Pad5}} = 0x65
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba162f4018639ec2385d8df6228d5997a8}{Num\+Pad6}} = 0x66
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2d6b46f805f7fe093cefd8865867c7b3}{Num\+Pad7}} = 0x67
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba001c043e884ce17a0fa09db658e91576}{Num\+Pad8}} = 0x68
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba446843c4e8259e04e6515e9020f95d56}{Num\+Pad9}} = 0x69
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baea735b5ae86b438aab9af892f493c02e}{Multiply}} = 0x6a
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dba455b0c5fd7d0a2e7e033becd37c}{Add}} = 0x6b
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba547903bf97536a4924e9799a3c9b8ff2}{Separator}} = 0x6c
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1846395a84b1cd0623a026c478fdf489}{Subtract}} = 0x6d
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba478a97b7936698072dc84c226e0dc4a5}{Decimal}} = 0x6e
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafa6c1fbf8cb27318e0327b0ad9052edf}{Divide}} = 0x6f
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8390e761ff5e179568d71ca71b44c1a}{F1}} = 0x70
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba50a5c815e9720dc9ae59b04c0b3a31af}{F2}} = 0x71
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac049ab3c2454a3973cf6441a4608f597}{F3}} = 0x72
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba319d143679ddf69e6f24b318944f7420}{F4}} = 0x73
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae62ecf96ebcd188adf3870ec3a96e252}{F5}} = 0x74
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8581b38f46c2a5873a95e079939a6516}{F6}} = 0x75
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba75540963ded3c6ae102e2041cb2523c6}{F7}} = 0x76
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0b683f259af00ad12f8daf05464fe047}{F8}} = 0x77
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babd50afbe655022fc3bc8c1a90b54b07f}{F9}} = 0x78
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba097e86a8b8328599bc39288ed4885a20}{F10}} = 0x79
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeea6b916de9520191b50e2ff9f263a33}{F11}} = 0x7a
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad4199b5c5e3f888ecfdb2ae4dff2b677}{F12}} = 0x7b
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba276817c9c6087a01edf8738461dfb0f0}{F13}} = 0x7c
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf5661650c0f1eb8c1b26b85490c52c6}{F14}} = 0x7d
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7badad3ece67cdec41fef8c7a316bb414d6}{F15}} = 0x7e
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b977cb75631dc70d99d5462e1caeb5e}{F16}} = 0x7f
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1deb4612474ae1b8832323ceec642d03}{F17}} = 0x80
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36106aad401b1d2f03098c5ff73cd022}{F18}} = 0x81
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba69ee5ae808f4ef2b65beb2e2d45a4138}{F19}} = 0x82
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba15edaa41a5c26939a13470d1f32f8569}{F20}} = 0x83
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a706eec808b1c604f06478aa2944e59}{F21}} = 0x84
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9f2a2ce98119ca9ce6af6e610d49c2e2}{F22}} = 0x85
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecfa08dc7c5db482c4eb0eb7e3a3e82}{F23}} = 0x86
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5a43c0e9e9faceefd85963ac29b4449}{F24}} = 0x87
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac387fac0e9c9baf75dccbce36d840e05}{Num\+Lock}} = 0x90
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6be2de25031d9c95ceeaae38f4461e65}{Scroll}} = 0x91
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba29b8f9e25650a42218f5d9b22eb4427b}{Left\+Shift}} = 0xa0
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7c3fb0447a52a9f947f509ab250dde0f}{Right\+Shift}} = 0xa1
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ab8bf1c9878e4e58efe47cd3baefc61}{Left\+Control}} = 0xa2
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba287cc539d9d788712dee083510347c32}{Right\+Control}} = 0xa3
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba065a54cb626496c3aa86b617b1bc2514}{Left\+Alt}} = 0xa4
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf61ee21d899aa6bcc86d381b83ef43b}{Right\+Alt}} = 0xa5
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae938e0ad7e4d625ab0493a3f83f1382d}{Browser\+Back}} = 0xa6
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c1e07806ea260c11013a9ba567cbc88}{Browser\+Forward}} = 0xa7
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacecec848d28e860b82491280fa645731}{Browser\+Refresh}} = 0xa8
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba93518d8fba1bd7a947a4436fbe9f66fb}{Browser\+Stop}} = 0xa9
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac304690f3582caefbcc523e11ee5024d}{Browser\+Search}} = 0xaa
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4bb0fa89b701099d1c5c6a8d1c71b157}{Browser\+Favorites}} = 0xab
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad27d65f9c54ef3ddc3740cc3e82f20d2}{Browser\+Home}} = 0xac
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e1066eda7005f1dbf4f98a0729b903d}{Volume\+Mute}} = 0xad
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5aae913001269ad66c76c86588277e3}{Volume\+Down}} = 0xae
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba537650a69e33f08c9c3caf58e59d105d}{Volume\+Up}} = 0xaf
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacb938181a2849de13aa036511740931d}{Media\+Next\+Track}} = 0xb0
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0e94469f85bff8fe6c166d3db35e31c3}{Media\+Previous\+Track}} = 0xb1
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba046864dbb0d4aec2fd37bbd32761b3ce}{Media\+Stop}} = 0xb2
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff22ad840d58021fe4ae7c5927605d9c}{Media\+Play\+Pause}} = 0xb3
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae0e753be8ce0aecebded4102a254a5ab}{Launch\+Mail}} = 0xb4
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1252b2dcb5887ec23fd98289f3de236e}{Select\+Media}} = 0xb5
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba286478c5225805be584d97d610b014d0}{Launch\+Application1}} = 0xb6
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7ad13e708a1c75341a6e7b58ab4ce865}{Launch\+Application2}} = 0xb7
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6d951815b1df2258f9578e32e17a2a8a}{Oem\+Semicolon}} = 0xba
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7b39a29cac5376195a1cb79c139f5f00}{Oem\+Plus}} = 0xbb
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baca8b6109faa27d6c40209be45acc45da}{Oem\+Comma}} = 0xbc
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1d0cebe730d82cfac2b214c08024314d}{Oem\+Minus}} = 0xbd
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5f4d579095e7f7a2f8173cb5663643c8}{Oem\+Period}} = 0xbe
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8fb11a9a220195590ef46d4667bd027}{Oem\+Question}} = 0xbf
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bade8a82fea5a1c2baaad1bfcbfed65fce}{Oem\+Tilde}} = 0xc0
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3d3f867938357a280bf0625963f47602}{Oem\+Open\+Brackets}} = 0xdb
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f02ad03c83a7f0de2cd2f54048c0682}{Oem\+Pipe}} = 0xdc
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2c57b422bd80d61d32675dc57c42e9dc}{Oem\+Close\+Brackets}} = 0xdd
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac6da74a7c896e1fee84423fdfc8072d5}{Oem\+Quotes}} = 0xde
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf4decad4c04e8e75de7cda23e4d050b}{Oem8}} = 0xdf
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba42c2f5285c4ffaf57e6e8dc516ef517b}{Oem\+Backslash}} = 0xe2
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b5810d75f6cbe02676eb2e26e0a6dff}{Process\+Key}} = 0xe5
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94e186200bd71397379ca7c5b641a037}{Oem\+Copy}} = 0xf2
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baab89e9cef74a637878e8d3c06c205b3e}{Oem\+Auto}} = 0xf3
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ae030d179b7d5c618ba6a9f1e6a462f}{Oem\+EnlW}} = 0xf4
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa9235d9904b58d4d8d3199f7a555a47d}{Attn}} = 0xf6
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9603d931233200d3f7161ed344fca8fa}{Crsel}} = 0xf7
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba576111b711bcef27acfbf8b3362dd755}{Exsel}} = 0xf8
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeba15189d29f673069ae28670ae627fb}{Erase\+Eof}} = 0xf9
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba71265de423a4dba2b2eee75c8f19a534}{Play}} = 0xfa
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9cf54bd1fad2b515049cf67418c74768}{Zoom}} = 0xfb
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6db649c33d1e0cfc468c98b04ad6a505}{Pa1}} = 0xfd
+, \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c4bb24c51a839ea41aa52d0a1d5349e}{Oem\+Clear}} = 0xfe
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} () noexcept(false)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_ae1cd7a40412fffbad7bb410e8259ab42}{Keyboard}} (Keyboard \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \& \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a4bc4da42d022af9f55588cbf86b0755f}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a364da4330c1955fa016a2a9808fca90c}{Keyboard}} (Keyboard const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \& \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_ac149bc83491b8e2696f99babe6dd7b34}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a41fa4339cb3de86b9074e59d43693975}{\texorpdfstring{$\sim$}{\string~}\+Keyboard}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_aeb5f44d46943aa6cb5ae59378fea86f8}{Get\+State}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_ad361e6a187b66304873799d729ae9985}{Reset}} () noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a09bda28f2af7b83e08a7b818431084fd}{Is\+Connected}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \&\+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_ab2d46681204b8a7e9488d37d227cee74}{Get}} ()
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_keyboard_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}\index{DirectX::Keyboard@{DirectX::Keyboard}!Keys@{Keys}}
+\index{Keys@{Keys}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{Keys}{Keys}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}{Direct\+X::\+\+Keyboard::\+\+Keys}} :\+ unsigned char}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{None@{None}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!None@{None}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36de47c4bdff940d74d9e6bda9290b2e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36de47c4bdff940d74d9e6bda9290b2e} 
+None&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Back@{Back}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Back@{Back}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafb841d462535c59905be9be233575aff}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafb841d462535c59905be9be233575aff} 
+Back&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Tab@{Tab}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Tab@{Tab}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8140c574ac3a622e9fdeefa2612b7ec7}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8140c574ac3a622e9fdeefa2612b7ec7} 
+Tab&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Enter@{Enter}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Enter@{Enter}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ada165d7fedc46eaff392d2058982ff}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ada165d7fedc46eaff392d2058982ff} 
+Enter&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Pause@{Pause}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Pause@{Pause}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7d57d236fbce72a3c74f118036e2dda0}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7d57d236fbce72a3c74f118036e2dda0} 
+Pause&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CapsLock@{CapsLock}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!CapsLock@{CapsLock}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5a59e982936b44c885b707b17a91a9a5}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5a59e982936b44c885b707b17a91a9a5} 
+Caps\+Lock&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Kana@{Kana}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Kana@{Kana}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba51af16035f72424236304b22c8d5382b}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba51af16035f72424236304b22c8d5382b} 
+Kana&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ImeOn@{ImeOn}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!ImeOn@{ImeOn}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafd5824335dada338e9e8879a82819312}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafd5824335dada338e9e8879a82819312} 
+Ime\+On&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Kanji@{Kanji}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Kanji@{Kanji}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecaee879216d6a04f3a5f11ec1a1e67}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecaee879216d6a04f3a5f11ec1a1e67} 
+Kanji&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ImeOff@{ImeOff}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!ImeOff@{ImeOff}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0a63a0d9982a8f72c51609a2dffc9a40}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0a63a0d9982a8f72c51609a2dffc9a40} 
+Ime\+Off&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Escape@{Escape}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Escape@{Escape}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ba690fe8505e129267930cd900fb63d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ba690fe8505e129267930cd900fb63d} 
+Escape&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ImeConvert@{ImeConvert}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!ImeConvert@{ImeConvert}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6467214f1284bdd7e3d761a988f757e8}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6467214f1284bdd7e3d761a988f757e8} 
+Ime\+Convert&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ImeNoConvert@{ImeNoConvert}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!ImeNoConvert@{ImeNoConvert}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba331d68bff67ec2b507ab8798fb25d420}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba331d68bff67ec2b507ab8798fb25d420} 
+Ime\+No\+Convert&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Space@{Space}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Space@{Space}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5748401507d1db08296574468f4fda21}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5748401507d1db08296574468f4fda21} 
+Space&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PageUp@{PageUp}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!PageUp@{PageUp}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba416eaae0f9172eb3965b52054de64f56}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba416eaae0f9172eb3965b52054de64f56} 
+Page\+Up&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PageDown@{PageDown}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!PageDown@{PageDown}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b95b18c75b902d234c2b542fcc8d6a0}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b95b18c75b902d234c2b542fcc8d6a0} 
+Page\+Down&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{End@{End}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!End@{End}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dab9eb3d4f21b0d04af6338dd5509e1}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dab9eb3d4f21b0d04af6338dd5509e1} 
+End&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Home@{Home}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Home@{Home}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac3e13e36418bd16cbfb2ea937de8cf96}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac3e13e36418bd16cbfb2ea937de8cf96} 
+Home&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Left@{Left}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Left@{Left}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed8f7a12123af9d77963b3c62bcf531d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed8f7a12123af9d77963b3c62bcf531d} 
+Left&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Up@{Up}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Up@{Up}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab9c600e1a28d2d533d610d4f3057286a}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab9c600e1a28d2d533d610d4f3057286a} 
+Up&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Right@{Right}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Right@{Right}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed835348bd1dc4d6ce8e8ee6ff7b1f24}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed835348bd1dc4d6ce8e8ee6ff7b1f24} 
+Right&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Down@{Down}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Down@{Down}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9220187add54b45a87f3d17e56397f6}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9220187add54b45a87f3d17e56397f6} 
+Down&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Select@{Select}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Select@{Select}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba08de428d906b6338788135d8df2c7d62}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba08de428d906b6338788135d8df2c7d62} 
+Select&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Print@{Print}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Print@{Print}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baf5814a5437d10f6679365016405fac30}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baf5814a5437d10f6679365016405fac30} 
+Print&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Execute@{Execute}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Execute@{Execute}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dd743a0980fb8d095060091dbd581c2}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dd743a0980fb8d095060091dbd581c2} 
+Execute&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PrintScreen@{PrintScreen}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!PrintScreen@{PrintScreen}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba66e4fa94d4c65cf8c945e86364813cf0}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba66e4fa94d4c65cf8c945e86364813cf0} 
+Print\+Screen&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Insert@{Insert}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Insert@{Insert}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa38c9e2451c674f9a7cd5444838a2d04}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa38c9e2451c674f9a7cd5444838a2d04} 
+Insert&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Delete@{Delete}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Delete@{Delete}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba67fc94a0f7cce096306f3e2ff0acbb41}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba67fc94a0f7cce096306f3e2ff0acbb41} 
+Delete&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Help@{Help}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Help@{Help}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9df718f00f23d250363904a3322a26d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9df718f00f23d250363904a3322a26d} 
+Help&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D0@{D0}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D0@{D0}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3244917ff2edcd72310d1c22699a0050}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3244917ff2edcd72310d1c22699a0050} 
+D0&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D1@{D1}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D1@{D1}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baabed8fa999a7d6c486614891234ee3d0}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baabed8fa999a7d6c486614891234ee3d0} 
+D1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D2@{D2}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D2@{D2}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa2dd5ae9f46ea4eee0ccc4b39756e95f}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa2dd5ae9f46ea4eee0ccc4b39756e95f} 
+D2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D3@{D3}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D3@{D3}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4e9a6c6f8d81e14a40b3d296cb3f531c}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4e9a6c6f8d81e14a40b3d296cb3f531c} 
+D3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D4@{D4}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D4@{D4}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba409ad308f433a0006f8b5187300cc4b6}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba409ad308f433a0006f8b5187300cc4b6} 
+D4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D5@{D5}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D5@{D5}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babfb314936e36e738c7af05378b7d1d1a}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babfb314936e36e738c7af05378b7d1d1a} 
+D5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D6@{D6}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D6@{D6}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac163a6677843bd9981d7f1a737f6fdc3}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac163a6677843bd9981d7f1a737f6fdc3} 
+D6&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D7@{D7}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D7@{D7}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8578b7f1d8a159b9325555d20e39d8c4}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8578b7f1d8a159b9325555d20e39d8c4} 
+D7&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D8@{D8}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D8@{D8}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8e5393044edaf53c072e9a210ed9c902}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8e5393044edaf53c072e9a210ed9c902} 
+D8&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D9@{D9}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D9@{D9}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba052abb5b95806c16d0de1dd0adae42e0}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba052abb5b95806c16d0de1dd0adae42e0} 
+D9&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{A@{A}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!A@{A}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baad33e1ce549b2c3b25072494524cfd5e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baad33e1ce549b2c3b25072494524cfd5e} 
+A&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{B@{B}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!B@{B}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9308fe7d69420156ff5f6cf993186dfa}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9308fe7d69420156ff5f6cf993186dfa} 
+B&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C@{C}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!C@{C}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1499513ba868c5031c73e68d37c36c07}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1499513ba868c5031c73e68d37c36c07} 
+C&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D@{D}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!D@{D}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e8c51463f3b98d5e7551f1f396d9e9c}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e8c51463f3b98d5e7551f1f396d9e9c} 
+D&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{E@{E}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!E@{E}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6025e9719249c44bb9d0f492cf96c862}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6025e9719249c44bb9d0f492cf96c862} 
+E&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F@{F}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F@{F}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba340bfeb12c6418eb05d3206769ad9a80}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba340bfeb12c6418eb05d3206769ad9a80} 
+F&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{G@{G}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!G@{G}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2ab7c578739b89bc16c5db3731ca9663}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2ab7c578739b89bc16c5db3731ca9663} 
+G&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{H@{H}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!H@{H}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f670ed2873fe9e62469ae3df5dc8149}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f670ed2873fe9e62469ae3df5dc8149} 
+H&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{I@{I}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!I@{I}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3226641aaee94e140f31b8adc76d5b83}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3226641aaee94e140f31b8adc76d5b83} 
+I&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{J@{J}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!J@{J}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a564b8e477e1e326b94acae064568fd}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a564b8e477e1e326b94acae064568fd} 
+J&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{K@{K}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!K@{K}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafffea8984fca95991d22cb1e0df39e8a}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafffea8984fca95991d22cb1e0df39e8a} 
+K&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{L@{L}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!L@{L}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa4f93c3b04003040fb0d661dd43fb641}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa4f93c3b04003040fb0d661dd43fb641} 
+L&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M@{M}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!M@{M}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b2584ec67c560d836fa3eaefaf65b60}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b2584ec67c560d836fa3eaefaf65b60} 
+M&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{N@{N}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!N@{N}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7aab89b61930a873b192626ec0724b64}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7aab89b61930a873b192626ec0724b64} 
+N&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{O@{O}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!O@{O}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0028d3a27c5ff41937feade3824ae90d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0028d3a27c5ff41937feade3824ae90d} 
+O&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P@{P}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!P@{P}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94953842972baf4d450bc72a33f36e3e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94953842972baf4d450bc72a33f36e3e} 
+P&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Q@{Q}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Q@{Q}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba61a729e43e259b5a29bb58d43dfe802d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba61a729e43e259b5a29bb58d43dfe802d} 
+Q&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{R@{R}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!R@{R}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dfce83e89063b804fe19b75f32d2e1}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dfce83e89063b804fe19b75f32d2e1} 
+R&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{S@{S}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!S@{S}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baffbd3ace107232ae0a9c79d2d0a1df6d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baffbd3ace107232ae0a9c79d2d0a1df6d} 
+S&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{T@{T}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!T@{T}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3199f6bc282b683e3432085f579bbd03}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3199f6bc282b683e3432085f579bbd03} 
+T&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{U@{U}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!U@{U}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41698204d6160bd454cb06fbb360d8f8}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41698204d6160bd454cb06fbb360d8f8} 
+U&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{V@{V}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!V@{V}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab4390bf904f1feaa81f6e6bc94ab765d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab4390bf904f1feaa81f6e6bc94ab765d} 
+V&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{W@{W}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!W@{W}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4579618023a68244ca5c619ad3694a06}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4579618023a68244ca5c619ad3694a06} 
+W&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{X@{X}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!X@{X}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baafc7da31c7ec6b414d7b3baa3929e1b4}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baafc7da31c7ec6b414d7b3baa3929e1b4} 
+X&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Y@{Y}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Y@{Y}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba577a3825a64bdc1b10ab1db6970d5686}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba577a3825a64bdc1b10ab1db6970d5686} 
+Y&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Z@{Z}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Z@{Z}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41527a5125191e6e72f097bc39f87e9d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41527a5125191e6e72f097bc39f87e9d} 
+Z&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LeftWindows@{LeftWindows}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!LeftWindows@{LeftWindows}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba02b2acf5a29decbcaa2fd15f9037d1b5}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba02b2acf5a29decbcaa2fd15f9037d1b5} 
+Left\+Windows&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RightWindows@{RightWindows}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!RightWindows@{RightWindows}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8efa02d5c709c3069c60a8404d74c136}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8efa02d5c709c3069c60a8404d74c136} 
+Right\+Windows&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Apps@{Apps}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Apps@{Apps}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff5b5f7bee150bc7787e28704fd9bbb8}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff5b5f7bee150bc7787e28704fd9bbb8} 
+Apps&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Sleep@{Sleep}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Sleep@{Sleep}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad2de94fbde7011992731ad43995e3dbb}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad2de94fbde7011992731ad43995e3dbb} 
+Sleep&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad0@{NumPad0}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad0@{NumPad0}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba00604944b597d44b7f2cf560bbc91617}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba00604944b597d44b7f2cf560bbc91617} 
+Num\+Pad0&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad1@{NumPad1}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad1@{NumPad1}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9bff3169490ce84086a9c9dafa6a1613}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9bff3169490ce84086a9c9dafa6a1613} 
+Num\+Pad1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad2@{NumPad2}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad2@{NumPad2}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e75c9cdd524a13025f002c23f4345c3}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e75c9cdd524a13025f002c23f4345c3} 
+Num\+Pad2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad3@{NumPad3}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad3@{NumPad3}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e98cba4333f56c9c4dcfdd7b62c180e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e98cba4333f56c9c4dcfdd7b62c180e} 
+Num\+Pad3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad4@{NumPad4}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad4@{NumPad4}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babe688b648f8dda55c4b06456f1c574db}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babe688b648f8dda55c4b06456f1c574db} 
+Num\+Pad4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad5@{NumPad5}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad5@{NumPad5}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac269a3d22c5aab230b15891d68e4aded}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac269a3d22c5aab230b15891d68e4aded} 
+Num\+Pad5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad6@{NumPad6}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad6@{NumPad6}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba162f4018639ec2385d8df6228d5997a8}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba162f4018639ec2385d8df6228d5997a8} 
+Num\+Pad6&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad7@{NumPad7}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad7@{NumPad7}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2d6b46f805f7fe093cefd8865867c7b3}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2d6b46f805f7fe093cefd8865867c7b3} 
+Num\+Pad7&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad8@{NumPad8}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad8@{NumPad8}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba001c043e884ce17a0fa09db658e91576}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba001c043e884ce17a0fa09db658e91576} 
+Num\+Pad8&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumPad9@{NumPad9}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumPad9@{NumPad9}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba446843c4e8259e04e6515e9020f95d56}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba446843c4e8259e04e6515e9020f95d56} 
+Num\+Pad9&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Multiply@{Multiply}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Multiply@{Multiply}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baea735b5ae86b438aab9af892f493c02e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baea735b5ae86b438aab9af892f493c02e} 
+Multiply&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Add@{Add}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Add@{Add}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dba455b0c5fd7d0a2e7e033becd37c}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dba455b0c5fd7d0a2e7e033becd37c} 
+Add&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Separator@{Separator}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Separator@{Separator}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba547903bf97536a4924e9799a3c9b8ff2}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba547903bf97536a4924e9799a3c9b8ff2} 
+Separator&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Subtract@{Subtract}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Subtract@{Subtract}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1846395a84b1cd0623a026c478fdf489}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1846395a84b1cd0623a026c478fdf489} 
+Subtract&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Decimal@{Decimal}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Decimal@{Decimal}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba478a97b7936698072dc84c226e0dc4a5}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba478a97b7936698072dc84c226e0dc4a5} 
+Decimal&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Divide@{Divide}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Divide@{Divide}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafa6c1fbf8cb27318e0327b0ad9052edf}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafa6c1fbf8cb27318e0327b0ad9052edf} 
+Divide&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F1@{F1}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F1@{F1}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8390e761ff5e179568d71ca71b44c1a}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8390e761ff5e179568d71ca71b44c1a} 
+F1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F2@{F2}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F2@{F2}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba50a5c815e9720dc9ae59b04c0b3a31af}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba50a5c815e9720dc9ae59b04c0b3a31af} 
+F2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F3@{F3}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F3@{F3}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac049ab3c2454a3973cf6441a4608f597}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac049ab3c2454a3973cf6441a4608f597} 
+F3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F4@{F4}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F4@{F4}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba319d143679ddf69e6f24b318944f7420}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba319d143679ddf69e6f24b318944f7420} 
+F4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F5@{F5}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F5@{F5}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae62ecf96ebcd188adf3870ec3a96e252}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae62ecf96ebcd188adf3870ec3a96e252} 
+F5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F6@{F6}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F6@{F6}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8581b38f46c2a5873a95e079939a6516}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8581b38f46c2a5873a95e079939a6516} 
+F6&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F7@{F7}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F7@{F7}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba75540963ded3c6ae102e2041cb2523c6}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba75540963ded3c6ae102e2041cb2523c6} 
+F7&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F8@{F8}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F8@{F8}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0b683f259af00ad12f8daf05464fe047}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0b683f259af00ad12f8daf05464fe047} 
+F8&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F9@{F9}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F9@{F9}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babd50afbe655022fc3bc8c1a90b54b07f}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babd50afbe655022fc3bc8c1a90b54b07f} 
+F9&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F10@{F10}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F10@{F10}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba097e86a8b8328599bc39288ed4885a20}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba097e86a8b8328599bc39288ed4885a20} 
+F10&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F11@{F11}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F11@{F11}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeea6b916de9520191b50e2ff9f263a33}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeea6b916de9520191b50e2ff9f263a33} 
+F11&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F12@{F12}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F12@{F12}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad4199b5c5e3f888ecfdb2ae4dff2b677}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad4199b5c5e3f888ecfdb2ae4dff2b677} 
+F12&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F13@{F13}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F13@{F13}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba276817c9c6087a01edf8738461dfb0f0}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba276817c9c6087a01edf8738461dfb0f0} 
+F13&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F14@{F14}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F14@{F14}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf5661650c0f1eb8c1b26b85490c52c6}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf5661650c0f1eb8c1b26b85490c52c6} 
+F14&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F15@{F15}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F15@{F15}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7badad3ece67cdec41fef8c7a316bb414d6}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7badad3ece67cdec41fef8c7a316bb414d6} 
+F15&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F16@{F16}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F16@{F16}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b977cb75631dc70d99d5462e1caeb5e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b977cb75631dc70d99d5462e1caeb5e} 
+F16&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F17@{F17}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F17@{F17}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1deb4612474ae1b8832323ceec642d03}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1deb4612474ae1b8832323ceec642d03} 
+F17&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F18@{F18}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F18@{F18}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36106aad401b1d2f03098c5ff73cd022}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36106aad401b1d2f03098c5ff73cd022} 
+F18&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F19@{F19}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F19@{F19}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba69ee5ae808f4ef2b65beb2e2d45a4138}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba69ee5ae808f4ef2b65beb2e2d45a4138} 
+F19&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F20@{F20}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F20@{F20}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba15edaa41a5c26939a13470d1f32f8569}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba15edaa41a5c26939a13470d1f32f8569} 
+F20&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F21@{F21}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F21@{F21}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a706eec808b1c604f06478aa2944e59}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a706eec808b1c604f06478aa2944e59} 
+F21&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F22@{F22}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F22@{F22}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9f2a2ce98119ca9ce6af6e610d49c2e2}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9f2a2ce98119ca9ce6af6e610d49c2e2} 
+F22&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F23@{F23}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F23@{F23}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecfa08dc7c5db482c4eb0eb7e3a3e82}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecfa08dc7c5db482c4eb0eb7e3a3e82} 
+F23&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{F24@{F24}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!F24@{F24}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5a43c0e9e9faceefd85963ac29b4449}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5a43c0e9e9faceefd85963ac29b4449} 
+F24&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NumLock@{NumLock}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!NumLock@{NumLock}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac387fac0e9c9baf75dccbce36d840e05}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac387fac0e9c9baf75dccbce36d840e05} 
+Num\+Lock&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Scroll@{Scroll}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Scroll@{Scroll}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6be2de25031d9c95ceeaae38f4461e65}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6be2de25031d9c95ceeaae38f4461e65} 
+Scroll&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LeftShift@{LeftShift}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!LeftShift@{LeftShift}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba29b8f9e25650a42218f5d9b22eb4427b}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba29b8f9e25650a42218f5d9b22eb4427b} 
+Left\+Shift&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RightShift@{RightShift}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!RightShift@{RightShift}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7c3fb0447a52a9f947f509ab250dde0f}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7c3fb0447a52a9f947f509ab250dde0f} 
+Right\+Shift&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LeftControl@{LeftControl}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!LeftControl@{LeftControl}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ab8bf1c9878e4e58efe47cd3baefc61}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ab8bf1c9878e4e58efe47cd3baefc61} 
+Left\+Control&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RightControl@{RightControl}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!RightControl@{RightControl}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba287cc539d9d788712dee083510347c32}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba287cc539d9d788712dee083510347c32} 
+Right\+Control&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LeftAlt@{LeftAlt}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!LeftAlt@{LeftAlt}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba065a54cb626496c3aa86b617b1bc2514}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba065a54cb626496c3aa86b617b1bc2514} 
+Left\+Alt&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RightAlt@{RightAlt}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!RightAlt@{RightAlt}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf61ee21d899aa6bcc86d381b83ef43b}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf61ee21d899aa6bcc86d381b83ef43b} 
+Right\+Alt&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BrowserBack@{BrowserBack}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!BrowserBack@{BrowserBack}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae938e0ad7e4d625ab0493a3f83f1382d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae938e0ad7e4d625ab0493a3f83f1382d} 
+Browser\+Back&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BrowserForward@{BrowserForward}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!BrowserForward@{BrowserForward}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c1e07806ea260c11013a9ba567cbc88}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c1e07806ea260c11013a9ba567cbc88} 
+Browser\+Forward&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BrowserRefresh@{BrowserRefresh}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!BrowserRefresh@{BrowserRefresh}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacecec848d28e860b82491280fa645731}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacecec848d28e860b82491280fa645731} 
+Browser\+Refresh&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BrowserStop@{BrowserStop}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!BrowserStop@{BrowserStop}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba93518d8fba1bd7a947a4436fbe9f66fb}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba93518d8fba1bd7a947a4436fbe9f66fb} 
+Browser\+Stop&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BrowserSearch@{BrowserSearch}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!BrowserSearch@{BrowserSearch}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac304690f3582caefbcc523e11ee5024d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac304690f3582caefbcc523e11ee5024d} 
+Browser\+Search&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BrowserFavorites@{BrowserFavorites}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!BrowserFavorites@{BrowserFavorites}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4bb0fa89b701099d1c5c6a8d1c71b157}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4bb0fa89b701099d1c5c6a8d1c71b157} 
+Browser\+Favorites&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BrowserHome@{BrowserHome}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!BrowserHome@{BrowserHome}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad27d65f9c54ef3ddc3740cc3e82f20d2}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad27d65f9c54ef3ddc3740cc3e82f20d2} 
+Browser\+Home&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VolumeMute@{VolumeMute}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!VolumeMute@{VolumeMute}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e1066eda7005f1dbf4f98a0729b903d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e1066eda7005f1dbf4f98a0729b903d} 
+Volume\+Mute&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VolumeDown@{VolumeDown}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!VolumeDown@{VolumeDown}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5aae913001269ad66c76c86588277e3}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5aae913001269ad66c76c86588277e3} 
+Volume\+Down&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VolumeUp@{VolumeUp}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!VolumeUp@{VolumeUp}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba537650a69e33f08c9c3caf58e59d105d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba537650a69e33f08c9c3caf58e59d105d} 
+Volume\+Up&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MediaNextTrack@{MediaNextTrack}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!MediaNextTrack@{MediaNextTrack}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacb938181a2849de13aa036511740931d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacb938181a2849de13aa036511740931d} 
+Media\+Next\+Track&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MediaPreviousTrack@{MediaPreviousTrack}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!MediaPreviousTrack@{MediaPreviousTrack}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0e94469f85bff8fe6c166d3db35e31c3}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0e94469f85bff8fe6c166d3db35e31c3} 
+Media\+Previous\+Track&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MediaStop@{MediaStop}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!MediaStop@{MediaStop}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba046864dbb0d4aec2fd37bbd32761b3ce}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba046864dbb0d4aec2fd37bbd32761b3ce} 
+Media\+Stop&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MediaPlayPause@{MediaPlayPause}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!MediaPlayPause@{MediaPlayPause}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff22ad840d58021fe4ae7c5927605d9c}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff22ad840d58021fe4ae7c5927605d9c} 
+Media\+Play\+Pause&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LaunchMail@{LaunchMail}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!LaunchMail@{LaunchMail}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae0e753be8ce0aecebded4102a254a5ab}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae0e753be8ce0aecebded4102a254a5ab} 
+Launch\+Mail&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SelectMedia@{SelectMedia}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!SelectMedia@{SelectMedia}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1252b2dcb5887ec23fd98289f3de236e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1252b2dcb5887ec23fd98289f3de236e} 
+Select\+Media&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LaunchApplication1@{LaunchApplication1}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!LaunchApplication1@{LaunchApplication1}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba286478c5225805be584d97d610b014d0}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba286478c5225805be584d97d610b014d0} 
+Launch\+Application1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LaunchApplication2@{LaunchApplication2}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!LaunchApplication2@{LaunchApplication2}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7ad13e708a1c75341a6e7b58ab4ce865}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7ad13e708a1c75341a6e7b58ab4ce865} 
+Launch\+Application2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemSemicolon@{OemSemicolon}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemSemicolon@{OemSemicolon}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6d951815b1df2258f9578e32e17a2a8a}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6d951815b1df2258f9578e32e17a2a8a} 
+Oem\+Semicolon&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemPlus@{OemPlus}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemPlus@{OemPlus}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7b39a29cac5376195a1cb79c139f5f00}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7b39a29cac5376195a1cb79c139f5f00} 
+Oem\+Plus&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemComma@{OemComma}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemComma@{OemComma}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baca8b6109faa27d6c40209be45acc45da}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baca8b6109faa27d6c40209be45acc45da} 
+Oem\+Comma&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemMinus@{OemMinus}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemMinus@{OemMinus}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1d0cebe730d82cfac2b214c08024314d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1d0cebe730d82cfac2b214c08024314d} 
+Oem\+Minus&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemPeriod@{OemPeriod}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemPeriod@{OemPeriod}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5f4d579095e7f7a2f8173cb5663643c8}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5f4d579095e7f7a2f8173cb5663643c8} 
+Oem\+Period&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemQuestion@{OemQuestion}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemQuestion@{OemQuestion}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8fb11a9a220195590ef46d4667bd027}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8fb11a9a220195590ef46d4667bd027} 
+Oem\+Question&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemTilde@{OemTilde}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemTilde@{OemTilde}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bade8a82fea5a1c2baaad1bfcbfed65fce}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bade8a82fea5a1c2baaad1bfcbfed65fce} 
+Oem\+Tilde&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemOpenBrackets@{OemOpenBrackets}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemOpenBrackets@{OemOpenBrackets}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3d3f867938357a280bf0625963f47602}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3d3f867938357a280bf0625963f47602} 
+Oem\+Open\+Brackets&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemPipe@{OemPipe}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemPipe@{OemPipe}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f02ad03c83a7f0de2cd2f54048c0682}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f02ad03c83a7f0de2cd2f54048c0682} 
+Oem\+Pipe&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemCloseBrackets@{OemCloseBrackets}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemCloseBrackets@{OemCloseBrackets}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2c57b422bd80d61d32675dc57c42e9dc}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2c57b422bd80d61d32675dc57c42e9dc} 
+Oem\+Close\+Brackets&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemQuotes@{OemQuotes}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemQuotes@{OemQuotes}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac6da74a7c896e1fee84423fdfc8072d5}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac6da74a7c896e1fee84423fdfc8072d5} 
+Oem\+Quotes&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Oem8@{Oem8}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Oem8@{Oem8}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf4decad4c04e8e75de7cda23e4d050b}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf4decad4c04e8e75de7cda23e4d050b} 
+Oem8&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemBackslash@{OemBackslash}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemBackslash@{OemBackslash}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba42c2f5285c4ffaf57e6e8dc516ef517b}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba42c2f5285c4ffaf57e6e8dc516ef517b} 
+Oem\+Backslash&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ProcessKey@{ProcessKey}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!ProcessKey@{ProcessKey}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b5810d75f6cbe02676eb2e26e0a6dff}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b5810d75f6cbe02676eb2e26e0a6dff} 
+Process\+Key&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemCopy@{OemCopy}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemCopy@{OemCopy}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94e186200bd71397379ca7c5b641a037}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94e186200bd71397379ca7c5b641a037} 
+Oem\+Copy&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemAuto@{OemAuto}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemAuto@{OemAuto}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baab89e9cef74a637878e8d3c06c205b3e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baab89e9cef74a637878e8d3c06c205b3e} 
+Oem\+Auto&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemEnlW@{OemEnlW}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemEnlW@{OemEnlW}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ae030d179b7d5c618ba6a9f1e6a462f}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ae030d179b7d5c618ba6a9f1e6a462f} 
+Oem\+EnlW&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Attn@{Attn}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Attn@{Attn}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa9235d9904b58d4d8d3199f7a555a47d}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa9235d9904b58d4d8d3199f7a555a47d} 
+Attn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Crsel@{Crsel}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Crsel@{Crsel}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9603d931233200d3f7161ed344fca8fa}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9603d931233200d3f7161ed344fca8fa} 
+Crsel&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Exsel@{Exsel}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Exsel@{Exsel}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba576111b711bcef27acfbf8b3362dd755}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba576111b711bcef27acfbf8b3362dd755} 
+Exsel&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EraseEof@{EraseEof}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!EraseEof@{EraseEof}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeba15189d29f673069ae28670ae627fb}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeba15189d29f673069ae28670ae627fb} 
+Erase\+Eof&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Play@{Play}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Play@{Play}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba71265de423a4dba2b2eee75c8f19a534}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba71265de423a4dba2b2eee75c8f19a534} 
+Play&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Zoom@{Zoom}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Zoom@{Zoom}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9cf54bd1fad2b515049cf67418c74768}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9cf54bd1fad2b515049cf67418c74768} 
+Zoom&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Pa1@{Pa1}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!Pa1@{Pa1}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6db649c33d1e0cfc468c98b04ad6a505}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6db649c33d1e0cfc468c98b04ad6a505} 
+Pa1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OemClear@{OemClear}!DirectX::Keyboard@{DirectX::Keyboard}}
+\index{DirectX::Keyboard@{DirectX::Keyboard}!OemClear@{OemClear}}
+}\Hypertarget{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c4bb24c51a839ea41aa52d0a1d5349e}\label{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c4bb24c51a839ea41aa52d0a1d5349e} 
+Oem\+Clear&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_keyboard_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}\index{DirectX::Keyboard@{DirectX::Keyboard}!Keyboard@{Keyboard}}
+\index{Keyboard@{Keyboard}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{Keyboard()}{Keyboard()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Keyboard::\+\+Keyboard (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_keyboard_ae1cd7a40412fffbad7bb410e8259ab42}\index{DirectX::Keyboard@{DirectX::Keyboard}!Keyboard@{Keyboard}}
+\index{Keyboard@{Keyboard}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{Keyboard()}{Keyboard()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_ae1cd7a40412fffbad7bb410e8259ab42} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Keyboard::\+\+Keyboard (\begin{DoxyParamCaption}\item[{Keyboard \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_keyboard_a364da4330c1955fa016a2a9808fca90c}\index{DirectX::Keyboard@{DirectX::Keyboard}!Keyboard@{Keyboard}}
+\index{Keyboard@{Keyboard}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{Keyboard()}{Keyboard()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_a364da4330c1955fa016a2a9808fca90c} 
+Direct\+X::\+\+Keyboard::\+\+Keyboard (\begin{DoxyParamCaption}\item[{Keyboard const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_keyboard_a41fa4339cb3de86b9074e59d43693975}\index{DirectX::Keyboard@{DirectX::Keyboard}!````~Keyboard@{\texorpdfstring{$\sim$}{\string~}Keyboard}}
+\index{````~Keyboard@{\texorpdfstring{$\sim$}{\string~}Keyboard}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Keyboard()}{\string~Keyboard()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_a41fa4339cb3de86b9074e59d43693975} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Keyboard::\+\texorpdfstring{$\sim$}{\string~}\+Keyboard (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_keyboard_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_keyboard_ab2d46681204b8a7e9488d37d227cee74}\index{DirectX::Keyboard@{DirectX::Keyboard}!Get@{Get}}
+\index{Get@{Get}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_ab2d46681204b8a7e9488d37d227cee74} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \&\+\_\+\+\_\+cdecl Direct\+X::\+\+Keyboard::\+\+Get (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_keyboard_aeb5f44d46943aa6cb5ae59378fea86f8}\index{DirectX::Keyboard@{DirectX::Keyboard}!GetState@{GetState}}
+\index{GetState@{GetState}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{GetState()}{GetState()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_aeb5f44d46943aa6cb5ae59378fea86f8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}} \+\_\+\+\_\+cdecl Direct\+X::\+\+Keyboard::\+\+Get\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_keyboard_a09bda28f2af7b83e08a7b818431084fd}\index{DirectX::Keyboard@{DirectX::Keyboard}!IsConnected@{IsConnected}}
+\index{IsConnected@{IsConnected}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{IsConnected()}{IsConnected()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_a09bda28f2af7b83e08a7b818431084fd} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl Direct\+X::\+\+Keyboard::\+\+Is\+Connected (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_keyboard_a4bc4da42d022af9f55588cbf86b0755f}\index{DirectX::Keyboard@{DirectX::Keyboard}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_a4bc4da42d022af9f55588cbf86b0755f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \& Direct\+X::\+\+Keyboard::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_keyboard_ac149bc83491b8e2696f99babe6dd7b34}\index{DirectX::Keyboard@{DirectX::Keyboard}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_ac149bc83491b8e2696f99babe6dd7b34} 
+\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} \& Direct\+X::\+\+Keyboard::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_keyboard_ad361e6a187b66304873799d729ae9985}\index{DirectX::Keyboard@{DirectX::Keyboard}!Reset@{Reset}}
+\index{Reset@{Reset}!DirectX::Keyboard@{DirectX::Keyboard}}
+\doxysubsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_keyboard_ad361e6a187b66304873799d729ae9985} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Keyboard::\+\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_keyboard_8h}{Keyboard.\+h}}\end{DoxyCompactItemize}

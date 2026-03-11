@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 #include <string>
 #include <vector>
 #include "Gameplay/Camera2D.h"
@@ -16,6 +17,29 @@ enum class EShaderType
 	UI,
 };
 
+struct FSpriteInfo;
+
+// 정적 배치 (타일, 벽 등 한번에 DrawIndexed)
+struct FStaticBatch
+{
+	ID3D11Buffer* VertexBuffer = nullptr;
+	ID3D11Buffer* IndexBuffer = nullptr;
+	UINT IndexCount = 0;
+};
+
+// Default.hlsl의 SpriteConstants cbuffer와 1:1 매칭
+struct FSpriteConstants
+{
+	DirectX::XMFLOAT4X4 World;
+	DirectX::XMFLOAT4X4 View;
+	DirectX::XMFLOAT4X4 Projection;
+	DirectX::XMFLOAT2   SpriteSize;
+	DirectX::XMFLOAT2   TextureSize;
+	DirectX::XMFLOAT2   SpriteOffset;
+	float               IsMirrored;
+	float               Pad;
+};
+
 class FRenderer
 {
 public:
@@ -26,18 +50,29 @@ public:
 
 public:
 	bool Initialize(HWND windowHandle, int screenWidth, int screenHeight);
-	void Shutdown();
 
 	void BeginFrame();
 	void EndFrame();
 
-	void DrawTexture(const FTexture* texture, float screenX, float screenY, float width,
-		float height);
+	// 카메라 설정 (월드 스페이스 렌더링용 View/Projection 갱신)
+	void SetCamera(const FCamera2D& Camera);
 
-	void DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width,
-		float height, const FCamera2D& camera);
+	// 월드 스페이스 스프라이트 큐잉
+	void DrawSprite(const FTexture* Texture, float WorldX, float WorldY,
+		float Width, float Height, const FSpriteInfo& Sprite);
 
-	void DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FVec2& Position);
+	// 스크린 스페이스 렌더링 큐잉
+	void DrawTexture(const FTexture* texture, float screenX, float screenY,
+		float width, float height);
+
+	// 암흑 시야 오버레이 (알파 블렌딩으로 전체 화면에 렌더)
+	void DrawDarknessOverlay(const FTexture* Texture, float ScreenCenterX, float ScreenCenterY);
+
+	// 정적 배치 생성/해제/렌더
+	FStaticBatch CreateStaticBatch(const FVertexSimple* Vertices, UINT VertexCount,
+		const UINT* Indices, UINT IndexCount);
+	void ReleaseStaticBatch(FStaticBatch& Batch);
+	void DrawBatch(const FStaticBatch& Batch, const FTexture* Texture);
 
 	void DrawFont(const std::string& text, const FBitmapFont* Font, const FTexture* texture,
 		float screenX, float screenY, float scale);
@@ -45,8 +80,8 @@ public:
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
 
-
 public:
+	// UI/Font 상수 버퍼용 구조체 (UI.hlsl cbuffer와 1:1 매칭)
 	struct FConstants
 	{
 		FVector Offset;    // 12 bytes
@@ -55,6 +90,42 @@ public:
 		float ScaleY;      // 4 bytes
 		float Padding;     // 4 bytes (Total 16)
 	};
+
+	bool LoadShaderFromFile(const std::wstring& Path);
+	std::vector<std::string> GetAvailableShaders() const;
+	const std::string& GetCurrentShaderName() const;
+	const std::string& GetShaderError() const;
+
+	void UpdateFontConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f);
+	void BindShader(EShaderType Type);
+	void Prepare();
+	void PrepareShader();
+	void Render();
+	void CreateShader();
+	void CreateFontShader();
+	void ReleaseFontShader();
+	void ReleaseShader();
+
+	void Create(HWND hWindow);
+	void CreateDeviceAndSwapChain(HWND hWindow);
+	void ReleaseDeviceAndSwapChain();
+	void CreateFrameBuffer();
+	void ReleaseFrameBuffer();
+	void CreateRasterizerState();
+	void ReleaseRasterizerState();
+	void Release();
+	void SwapBuffer();
+	void CreateSamplerState();
+	void CreateBlendState();
+	void CreateSimpleQuad();
+	void CreateTextQuadBuffer();
+	void UpdateTextQuadBuffer(FVertexSimple* textVertices);
+
+	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
+	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
+	void CreateConstantBuffer();
+	void CreateFontConstantBuffer();
+	void ReleaseConstantBuffer();
 
 	ID3D11Device* Device = nullptr;
 	ID3D11DeviceContext* DeviceContext = nullptr;
@@ -82,78 +153,26 @@ public:
 	ID3D11Buffer* FontConstantBuffer = nullptr;
 
 	ID3D11SamplerState* SamplerState = nullptr;
-
-	bool LoadShaderFromFile(const std::wstring& Path);
-	std::vector<std::string> GetAvailableShaders() const;
-	const std::string& GetCurrentShaderName() const;
-	const std::string& GetShaderError() const;
-
-	void UpdateConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f);
-	void UpdateFontConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f);
-	void BindShader(EShaderType Type);
-	void Prepare();
-	void PrepareShader();
-	void Render();
-	void CreateShader();
-	void CreateFontShader();
-	void ReleaseFontShader();
-	void ReleaseShader();
-
-	void Create(HWND hWindow);
-	void CreateDeviceAndSwapChain(HWND hWindow);
-	void ReleaseDeviceAndSwapChain();
-	void CreateFrameBuffer();
-	void ReleaseFrameBuffer();
-	void CreateRasterizerState();
-	void ReleaseRasterizerState();
-	void Release();
-	void SwapBuffer();
-	void CreateSamplerState();
-
-	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
-
-	void CreateSimpleQuad();
-	void CreateTextQuadBuffer();
-	void UpdateTextQuadBuffer(FVertexSimple* textVertices);
-
-	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
-	void CreateConstantBuffer();
-	void CreateFontConstantBuffer();
-	void ReleaseConstantBuffer();
-
+	ID3D11BlendState* AlphaBlendState = nullptr;
 
 private:
 	std::string CurrentShaderName = "Default";
 	std::string ShaderError;
 	std::vector<FRenderObject> RenderObjects;
 	std::vector<FFontRenderObject> FontRenderObjects;
-	FVertexSimple quadVertices[6] =
+
+	// 캐시된 View/Projection 행렬 (SetCamera에서 갱신)
+	DirectX::XMFLOAT4X4 CachedView;
+	DirectX::XMFLOAT4X4 CachedProjection;
+
+	const FVertexSimple quadVertices[6] =
 	{
-		//CCW
-		//{ -0.5f, -0.5f, 0.f, 0.f, 1.f },//좌하단
-		//{  0.5f, -0.5f, 0.f, 1.f, 1.f },//우하단
-		//{  0.5f,  0.5f, 0.f, 1.f, 0.f },//우상단
+		{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
+		{  0.5f, -0.5f, 0.f, 1.f, 0.f },
+		{  0.5f,  0.5f, 0.f, 1.f, 1.f },
 
-		//{ -0.5f, -0.5f, 0.f, 0.f, 1.f },//좌하단
-		//{  0.5f,  0.5f, 0.f, 1.f, 0.f },//우상단
-		//{ -0.5f,  0.5f, 0.f, 0.f, 0.f } //좌상단
-
-
-		{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
-		{  0.5f, -0.5f, 0.f, 1.f, 0.f }, // 우하단
-		{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
-
-		{ -0.5f, -0.5f, 0.f, 0.f, 0.f }, // 좌하단
-		{  0.5f,  0.5f, 0.f, 1.f, 1.f }, // 우상단
-		{ -0.5f,  0.5f, 0.f, 0.f, 1.f }  // 좌상단
-
-		//CW
-		//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
-		//{  -0.5f, 0.5f, 0.f, 1.f, 0.f },
-		//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
-
-		//{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
-		//{  0.5f,  0.5f, 0.f, 1.f, 1.f },
-		//{  0.5f,  -0.5f, 0.f, 0.f, 1.f }
+		{ -0.5f, -0.5f, 0.f, 0.f, 0.f },
+		{  0.5f,  0.5f, 0.f, 1.f, 1.f },
+		{ -0.5f,  0.5f, 0.f, 0.f, 1.f }
 	};
 };

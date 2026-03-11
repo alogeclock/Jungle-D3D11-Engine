@@ -1,27 +1,13 @@
 #include "pch.h"
 #include "Renderer.h"
 #include "FontManager.h"
+#include "Texture.h"
+#include "Gameplay/SpriteInfo.h"
+#include <cmath>
 #include <filesystem>
 
 namespace fs = std::filesystem;
-
-void FRenderer::UpdateConstant(FVector Offset, float ScaleX, float ScaleY)
-{
-	if (ConstantBuffer)
-	{
-		D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
-
-		DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
-		FConstants* constants = (FConstants*)constantbufferMSR.pData;
-		{
-			constants->Offset = Offset;
-			constants->ScaleX = ScaleX;
-			constants->ScaleY = ScaleY;
-			constants->ScreenSize = { (float)ScreenWidth, (float)ScreenHeight };
-		}
-		DeviceContext->Unmap(ConstantBuffer, 0);
-	}
-}
+using namespace DirectX;
 
 void FRenderer::Prepare()
 {
@@ -69,56 +55,213 @@ void FRenderer::PrepareShader()
 	BindShader(EShaderType::Default);
 }
 
-void FRenderer::Render() //Maybe There can be some Optimazation , well do later
+void FRenderer::SetCamera(const FCamera2D& Camera)
 {
-	PrepareShader();
-	UINT offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
-	DeviceContext->PSSetSamplers(0, 1, &SamplerState); // 0 = shader register 0 // THINK ABOUT : Maybe this line can be in BeginFrame()
-	for (const FRenderObject& RenderObject : RenderObjects)
+	FVec2 CamPos = Camera.GetPosition();
+	float Zoom = Camera.GetZoom();
+	float VpW = ViewportInfo.Width;
+	float VpH = ViewportInfo.Height;
+
+	XMMATRIX View = XMMatrixTranslation(-CamPos.X, -CamPos.Y, 0.0f)
+		* XMMatrixScaling(Zoom, Zoom, 1.0f);
+	XMMATRIX Proj = XMMatrixOrthographicOffCenterLH(0.0f, VpW, VpH, 0.0f, 0.0f, 1.0f);
+
+	XMStoreFloat4x4(&CachedView, XMMatrixTranspose(View));
+	XMStoreFloat4x4(&CachedProjection, XMMatrixTranspose(Proj));
+}
+
+void FRenderer::DrawSprite(const FTexture* Texture, float WorldX, float WorldY,
+	float Width, float Height, const FSpriteInfo& Sprite)
+{
+	FRenderObject Obj;
+	Obj.Texture = Texture;
+
+	XMMATRIX World = XMMatrixScaling(Width, Height, 1.0f)
+		* XMMatrixTranslation(WorldX, WorldY, 0.0f);
+	XMStoreFloat4x4(&Obj.World, XMMatrixTranspose(World));
+
+	Obj.SpriteOffset = Sprite.SpriteOffset;
+	Obj.IsMirrored = Sprite.bIsMirrored ? 1.0f : 0.0f;
+
+	if (Texture)
 	{
-		if (RenderObject.Texture && RenderObject.Texture->GetTextureSRV())
-		{
-			ID3D11ShaderResourceView* SRV = RenderObject.Texture->GetTextureSRV();
-			DeviceContext->PSSetShaderResources(0, 1, &SRV);
-		}
-		FVector Offset(RenderObject.Position.X, RenderObject.Position.Y, 0.f);
-		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y);
-		DeviceContext->Draw(sizeof(quadVertices) / sizeof(FVertexSimple), 0);
+		XMFLOAT2 TexSize = { static_cast<float>(Texture->Width), static_cast<float>(Texture->Height) };
+		Obj.TextureSize = TexSize;
+		// 아틀라스 미사용 시 전체 텍스처 UV 사용 (SpriteSize == TextureSize → 비율 1.0)
+		Obj.SpriteSize = TexSize;
 	}
 
+	Obj.bScreenSpace = false;
+	RenderObjects.push_back(Obj);
+}
 
-	BindShader(EShaderType::UI);
+void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screenY,
+	float width, float height)
+{
+	FRenderObject Obj;
+	Obj.Texture = texture;
 
-	for (const FFontRenderObject& RenderObject : FontRenderObjects)
+	XMMATRIX World = XMMatrixScaling(width, height, 1.0f)
+		* XMMatrixTranslation(screenX, screenY, 0.0f);
+	XMStoreFloat4x4(&Obj.World, XMMatrixTranspose(World));
+
+	if (texture)
 	{
-		if (RenderObject.Texture && RenderObject.Texture->GetTextureSRV())
+		Obj.TextureSize = { static_cast<float>(texture->Width), static_cast<float>(texture->Height) };
+		Obj.SpriteSize = Obj.TextureSize;
+	}
+
+	Obj.bScreenSpace = true;
+	RenderObjects.push_back(Obj);
+}
+
+FStaticBatch FRenderer::CreateStaticBatch(const FVertexSimple* Vertices, UINT VertexCount,
+	const UINT* Indices, UINT IndexCount)
+{
+	FStaticBatch Batch;
+
+	D3D11_BUFFER_DESC vbDesc = {};
+	vbDesc.ByteWidth = sizeof(FVertexSimple) * VertexCount;
+	vbDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	D3D11_SUBRESOURCE_DATA vbData = { Vertices };
+	Device->CreateBuffer(&vbDesc, &vbData, &Batch.VertexBuffer);
+
+	D3D11_BUFFER_DESC ibDesc = {};
+	ibDesc.ByteWidth = sizeof(UINT) * IndexCount;
+	ibDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	D3D11_SUBRESOURCE_DATA ibData = { Indices };
+	Device->CreateBuffer(&ibDesc, &ibData, &Batch.IndexBuffer);
+
+	Batch.IndexCount = IndexCount;
+	return Batch;
+}
+
+void FRenderer::ReleaseStaticBatch(FStaticBatch& Batch)
+{
+	if (Batch.VertexBuffer) { Batch.VertexBuffer->Release(); Batch.VertexBuffer = nullptr; }
+	if (Batch.IndexBuffer) { Batch.IndexBuffer->Release(); Batch.IndexBuffer = nullptr; }
+	Batch.IndexCount = 0;
+}
+
+void FRenderer::DrawBatch(const FStaticBatch& Batch, const FTexture* Texture)
+{
+	if (!Batch.VertexBuffer || !Batch.IndexBuffer || Batch.IndexCount == 0)
+		return;
+
+	PrepareShader();
+
+	UINT stride = Stride;
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, &Batch.VertexBuffer, &stride, &offset);
+	DeviceContext->IASetIndexBuffer(Batch.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
+
+	if (Texture && Texture->GetTextureSRV())
+	{
+		ID3D11ShaderResourceView* SRV = Texture->GetTextureSRV();
+		DeviceContext->PSSetShaderResources(0, 1, &SRV);
+	}
+
+	// World = identity, 정점에 월드 좌표가 이미 bake 됨
+	FSpriteConstants CB = {};
+	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(XMMatrixIdentity()));
+	CB.View = CachedView;
+	CB.Projection = CachedProjection;
+	if (Texture)
+	{
+		XMFLOAT2 TexSize = { (float)Texture->Width, (float)Texture->Height };
+		CB.SpriteSize = TexSize;
+		CB.TextureSize = TexSize;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE Mapped;
+	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
+	memcpy(Mapped.pData, &CB, sizeof(CB));
+	DeviceContext->Unmap(ConstantBuffer, 0);
+
+	DeviceContext->DrawIndexed(Batch.IndexCount, 0, 0);
+}
+
+void FRenderer::Render()
+{
+	if (RenderObjects.empty() && FontRenderObjects.empty())
+		return;
+
+	PrepareShader();
+
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
+	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
+
+	// 스크린 스페이스용 View/Projection
+	XMFLOAT4X4 ScreenView, ScreenProjection;
+	XMStoreFloat4x4(&ScreenView, XMMatrixTranspose(XMMatrixIdentity()));
+	XMStoreFloat4x4(&ScreenProjection, XMMatrixTranspose(
+		XMMatrixOrthographicOffCenterLH(0.0f, (float)ScreenWidth, (float)ScreenHeight, 0.0f, 0.0f, 1.0f)));
+
+	for (const FRenderObject& Obj : RenderObjects)
+	{
+		if (Obj.Texture && Obj.Texture->GetTextureSRV())
 		{
-			ID3D11ShaderResourceView* SRV = RenderObject.Texture->GetTextureSRV();
+			ID3D11ShaderResourceView* SRV = Obj.Texture->GetTextureSRV();
 			DeviceContext->PSSetShaderResources(0, 1, &SRV);
 		}
 
-		FVector Offset(RenderObject.Offset.X, RenderObject.Offset.Y, 0.f);
-		UpdateFontConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y);
+		FSpriteConstants CB = {};
+		CB.World = Obj.World;
+		CB.View = Obj.bScreenSpace ? ScreenView : CachedView;
+		CB.Projection = Obj.bScreenSpace ? ScreenProjection : CachedProjection;
+		CB.SpriteSize = Obj.SpriteSize;
+		CB.TextureSize = Obj.TextureSize;
+		CB.SpriteOffset = Obj.SpriteOffset;
+		CB.IsMirrored = Obj.IsMirrored;
+		CB.Pad = 0.0f;
 
-		FVec2 UV0 = RenderObject.UV0;
-		FVec2 UV1 = RenderObject.UV1;
+		D3D11_MAPPED_SUBRESOURCE Mapped;
+		DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
+		memcpy(Mapped.pData, &CB, sizeof(CB));
+		DeviceContext->Unmap(ConstantBuffer, 0);
 
-		FVertexSimple textVertices[6] =
+		DeviceContext->Draw(6, 0);
+	}
+
+	// Font rendering (UI shader)
+	if (!FontRenderObjects.empty())
+	{
+		BindShader(EShaderType::UI);
+
+		for (const FFontRenderObject& RenderObject : FontRenderObjects)
 		{
-			{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
-			{  0.5f, -0.5f, 0.f, UV1.X, UV0.Y }, // 우하단
-			{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
+			if (RenderObject.Texture && RenderObject.Texture->GetTextureSRV())
+			{
+				ID3D11ShaderResourceView* SRV = RenderObject.Texture->GetTextureSRV();
+				DeviceContext->PSSetShaderResources(0, 1, &SRV);
+			}
 
-			{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
-			{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
-			{ -0.5f,  0.5f, 0.f, UV0.X, UV1.Y }, // 좌상단
-		};
+			FVector Offset(RenderObject.Offset.X, RenderObject.Offset.Y, 0.f);
+			UpdateFontConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y);
 
-		UpdateTextQuadBuffer(textVertices);
-		UINT offset = 0;
-		DeviceContext->IASetVertexBuffers(0, 1, &TextQuadBuffer, &Stride, &offset);
-		DeviceContext->Draw(sizeof(quadVertices) / sizeof(FVertexSimple), 0);
+			FVec2 UV0 = RenderObject.UV0;
+			FVec2 UV1 = RenderObject.UV1;
+
+			FVertexSimple textVertices[6] =
+			{
+				{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
+				{  0.5f, -0.5f, 0.f, UV1.X, UV0.Y }, // 우하단
+				{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
+
+				{ -0.5f, -0.5f, 0.f, UV0.X, UV0.Y }, // 좌하단
+				{  0.5f,  0.5f, 0.f, UV1.X, UV1.Y }, // 우상단
+				{ -0.5f,  0.5f, 0.f, UV0.X, UV1.Y }, // 좌상단
+			};
+
+			UpdateTextQuadBuffer(textVertices);
+			UINT fontOffset = 0;
+			DeviceContext->IASetVertexBuffers(0, 1, &TextQuadBuffer, &Stride, &fontOffset);
+			DeviceContext->Draw(6, 0);
+		}
 	}
 }
 
@@ -342,6 +485,7 @@ void FRenderer::Create(HWND hWindow)
 	CreateSimpleQuad();
 	CreateTextQuadBuffer();
 	CreateSamplerState();
+	CreateBlendState();
 }
 
 void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -445,6 +589,7 @@ void FRenderer::ReleaseRasterizerState()
 void FRenderer::Release()
 {
 	ReleaseFontShader();
+	if (AlphaBlendState) { AlphaBlendState->Release(); AlphaBlendState = nullptr; }
 	RasterizerState->Release();
 
 	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
@@ -475,6 +620,64 @@ void FRenderer::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	Device->CreateSamplerState(&samplerDesc, &SamplerState);
+}
+
+void FRenderer::CreateBlendState()
+{
+	D3D11_BLEND_DESC Desc = {};
+	Desc.RenderTarget[0].BlendEnable = TRUE;
+	Desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	Desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	Desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	Desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	Desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	Desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	Desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	Device->CreateBlendState(&Desc, &AlphaBlendState);
+}
+
+void FRenderer::DrawDarknessOverlay(const FTexture* Texture, float ScreenCenterX, float ScreenCenterY)
+{
+	if (!Texture || !Texture->GetTextureSRV()) return;
+
+	// 알파 블렌딩 활성화
+	DeviceContext->OMSetBlendState(AlphaBlendState, nullptr, 0xffffffff);
+
+	PrepareShader();
+
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, &QuadBuffer, &Stride, &offset);
+	DeviceContext->PSSetSamplers(0, 1, &SamplerState);
+
+	ID3D11ShaderResourceView* SRV = Texture->GetTextureSRV();
+	DeviceContext->PSSetShaderResources(0, 1, &SRV);
+
+	// 플레이어 화면 좌표를 중심으로, 화면 전체를 덮을 크기의 쿼드 (2배)
+	float W = ViewportInfo.Width;
+	float H = ViewportInfo.Height;
+	float QW = W * 2.0f;
+	float QH = H * 2.0f;
+
+	FSpriteConstants CB = {};
+	XMMATRIX World = XMMatrixScaling(QW, QH, 1.0f)
+		* XMMatrixTranslation(ScreenCenterX, ScreenCenterY, 0.0f);
+	XMStoreFloat4x4(&CB.World, XMMatrixTranspose(World));
+	XMStoreFloat4x4(&CB.View, XMMatrixTranspose(XMMatrixIdentity()));
+	XMStoreFloat4x4(&CB.Projection, XMMatrixTranspose(
+		XMMatrixOrthographicOffCenterLH(0.0f, W, H, 0.0f, 0.0f, 1.0f)));
+	XMFLOAT2 TexSize = { (float)Texture->Width, (float)Texture->Height };
+	CB.SpriteSize = TexSize;
+	CB.TextureSize = TexSize;
+
+	D3D11_MAPPED_SUBRESOURCE Mapped;
+	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);
+	memcpy(Mapped.pData, &CB, sizeof(CB));
+	DeviceContext->Unmap(ConstantBuffer, 0);
+
+	DeviceContext->Draw(6, 0);
+
+	// 블렌딩 해제
+	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
 void FRenderer::CreateSimpleQuad()
@@ -537,7 +740,7 @@ void FRenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 void FRenderer::CreateConstantBuffer()
 {
 	D3D11_BUFFER_DESC constantbufferdesc = {};
-	constantbufferdesc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0;
+	constantbufferdesc.ByteWidth = (sizeof(FSpriteConstants) + 0xf) & 0xfffffff0;
 	constantbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
 	constantbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	constantbufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -552,40 +755,6 @@ void FRenderer::ReleaseConstantBuffer()
 		ConstantBuffer->Release();
 		ConstantBuffer = nullptr;
 	}
-}
-
-
-void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screenY, float width, float height)
-{
-	FRenderObject RenderObject;
-	RenderObject.Texture = texture;
-	RenderObject.Position.X = screenX;
-	RenderObject.Position.Y = screenY;
-	RenderObject.Size.X = width;
-	RenderObject.Size.Y = height;
-	RenderObjects.push_back(RenderObject);
-}
-
-void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FCamera2D& camera)
-{
-	FRenderObject RenderObject;
-	RenderObject.Texture = texture;
-	RenderObject.Position.X = worldX - camera.GetPosition().X;
-	RenderObject.Position.Y = worldY - camera.GetPosition().Y;
-	RenderObject.Size.X = width;
-	RenderObject.Size.Y = height;
-	RenderObjects.push_back(RenderObject);
-}
-
-void FRenderer::DrawTextureInWorld(const FTexture* texture, float worldX, float worldY, float width, float height, const FVec2& Position)
-{
-	FRenderObject RenderObject;
-	RenderObject.Texture = texture;
-	RenderObject.Position.X = worldX - Position.X;
-	RenderObject.Position.Y = worldY - Position.Y;
-	RenderObject.Size.X = width;
-	RenderObject.Size.Y = height;
-	RenderObjects.push_back(RenderObject);
 }
 
 void FRenderer::DrawFont(const std::string& text, const FBitmapFont* Font, const FTexture* texture,
@@ -615,20 +784,27 @@ void FRenderer::DrawFont(const std::string& text, const FBitmapFont* Font, const
 	}
 }
 
-bool FRenderer::Initialize(HWND hWindow, int ScreenWidth, int ScreenHeight)
+bool FRenderer::Initialize(HWND hWindow, int InScreenWidth, int InScreenHeight)
 {
 	Create(hWindow);
 	CreateShader();
 	CreateConstantBuffer();
 	CreateFontShader();
 	CreateFontConstantBuffer();
+
+	// CachedView/Projection 초기화 (기본값: identity / screen ortho)
+	XMStoreFloat4x4(&CachedView, XMMatrixTranspose(XMMatrixIdentity()));
+	XMStoreFloat4x4(&CachedProjection, XMMatrixTranspose(
+		XMMatrixOrthographicOffCenterLH(0.0f, (float)ScreenWidth, (float)ScreenHeight, 0.0f, 0.0f, 1.0f)));
+
+	RenderObjects.reserve(256);
+
 	return Device != nullptr;
 }
 
 void FRenderer::BeginFrame()
 {
 	Prepare();
-	PrepareShader();
 }
 
 void FRenderer::EndFrame()

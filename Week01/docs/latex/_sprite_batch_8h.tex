@@ -1,0 +1,42 @@
+\doxysection{packages/\+directxtk12\+\_\+desktop\+\_\+2019.2025.10.28.1/\+include/\+\+Sprite\+Batch.h File Reference}
+\hypertarget{_sprite_batch_8h}{}\label{_sprite_batch_8h}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/SpriteBatch.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/SpriteBatch.h}}
+{\ttfamily \+\#include $<$d3d12.\+h$>$}\newline
+{\ttfamily \+\#include $<$dxgi1\+\_\+4.\+h$>$}\newline
+{\ttfamily \+\#include $<$cstdint$>$}\newline
+{\ttfamily \+\#include $<$functional$>$}\newline
+{\ttfamily \+\#include $<$memory$>$}\newline
+{\ttfamily \+\#include $<$Direct\+XMath.\+h$>$}\newline
+{\ttfamily \+\#include $<$Direct\+XColors.\+h$>$}\newline
+{\ttfamily \+\#include "{}Render\+Target\+State.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description}{Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{Direct\+X::\+\+DX12::\+\+Sprite\+Batch}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x}{DirectX}}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{Direct\+X::\+\+DX12}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0a}{Direct\+X::\+\+DX12::\+\+Sprite\+Sort\+Mode}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaab3dd1729fdf98c7fa33715ef3c1ad68}{Direct\+X::\+\+DX12::\+\+Sprite\+Sort\+Mode\+\_\+\+Deferred}}
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aa38e916792d1675c9c69e9aa1dc7ad4fe}{Direct\+X::\+\+DX12::\+\+Sprite\+Sort\+Mode\+\_\+\+Immediate}}
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaf67150087454da02c27acac6f860c44c}{Direct\+X::\+\+DX12::\+\+Sprite\+Sort\+Mode\+\_\+\+Texture}}
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aaf1a1f4d06c0362bf92d72dbc1f37b3f4}{Direct\+X::\+\+DX12::\+\+Sprite\+Sort\+Mode\+\_\+\+Back\+To\+Front}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ac035d6ca1afa2270af5bc30247014a0aa205c6d6dea1f11fadac02033e63dd1be}{Direct\+X::\+\+DX12::\+\+Sprite\+Sort\+Mode\+\_\+\+Front\+To\+Back}}
+ \}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{Direct\+X::\+\+DX12::\+\+Sprite\+Effects}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{Direct\+X::\+\+DX12::\+\+Sprite\+Effects\+\_\+\+None}} = 0
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a7413ea8611fccc35fa9fe0b8a1969a4a}{Direct\+X::\+\+DX12::\+\+Sprite\+Effects\+\_\+\+Flip\+Horizontally}} = 1
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9aa3e0316040c35b4819812d13dd40edd2}{Direct\+X::\+\+DX12::\+\+Sprite\+Effects\+\_\+\+Flip\+Vertically}} = 2
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a7d821ddb8c2640956a1f170c97476c89}{Direct\+X::\+\+DX12::\+\+Sprite\+Effects\+\_\+\+Flip\+Both}} = Sprite\+Effects\+\_\+\+Flip\+Horizontally \texorpdfstring{$\vert$}{|} Sprite\+Effects\+\_\+\+Flip\+Vertically
+ \}
+\end{DoxyCompactItemize}

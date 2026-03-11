@@ -1,0 +1,30 @@
+\doxysection{FWindow.\+h}
+\hypertarget{_f_window_8h_source}{}\label{_f_window_8h_source}\index{Core/FWindow.h@{Core/FWindow.h}}
+\doxymbox{\hyperlink{_f_window_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <windows.h>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_window}{FWindow}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_window_ac29f0d3ccbb27db24a4e84c548a0bdc8}{Initialize}}(HINSTANCE\ InInstance,\ \textcolor{keywordtype}{int}\ InWidth,\ \textcolor{keywordtype}{int}\ InHeight,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{wchar\_t}\ *InTitle);}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_window_aacd1fcc11d31a69c4887610d2e48039e}{Shutdown}}();}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_window_a73975c3e0c82e2e88963ef3af9edf0d7}{ProcessMessages}}();}
+\DoxyCodeLine{00012\ \ \ \ \ HWND\ \doxymbox{\hyperlink{class_f_window_af781dc4617db170a3dc45591f9f5bf5a}{GetHandle}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{static}\ LRESULT\ CALLBACK\ WindowProc(HWND\ hWnd,\ UINT\ Msg,\ WPARAM\ wParam,\ LPARAM\ lParam);}
+\DoxyCodeLine{00016\ \ \ \ \ LRESULT\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HandleMessage(HWND\ hWnd,\ UINT\ Msg,\ WPARAM\ wParam,\ LPARAM\ lParam);}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00019\ \ \ \ \ HINSTANCE\ InstanceHandle\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00020\ \ \ \ \ HWND\ \ \ \ \ \ WindowHandle\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ Width\ =\ 0;}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ Height\ =\ 0;}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ bShouldClose\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00024\ \};}
+
+\end{DoxyCode}

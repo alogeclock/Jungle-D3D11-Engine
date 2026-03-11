@@ -1,0 +1,200 @@
+\doxysection{Mouse.\+h}
+\hypertarget{_mouse_8h_source}{}\label{_mouse_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Mouse.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Mouse.h}}
+\doxymbox{\hyperlink{_mouse_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ Mouse.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkId=248929}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#if\ !defined(USING\_XINPUT)\ \&\&\ !defined(USING\_GAMEINPUT)\ \&\&\ !defined(USING\_COREWINDOW)}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_DESKTOP}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <grdk.h>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#if\ (defined(WINAPI\_FAMILY)\ \&\&\ (WINAPI\_FAMILY\ ==\ WINAPI\_FAMILY\_GAMES))\ ||\ (defined(\_GAMING\_DESKTOP)\ \&\&\ (\_GRDK\_EDITION\ >=\ 220600))}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#define\ USING\_GAMEINPUT}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#elif\ (defined(WINAPI\_FAMILY)\ \&\&\ (WINAPI\_FAMILY\ ==\ WINAPI\_FAMILY\_APP))\ ||\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#define\ USING\_COREWINDOW}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ !USING\_XINPUT\ \&\&\ !USING\_GAMEINPUT\ \&\&\ !USING\_WINDOWS\_GAMING\_INPUT}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#ifdef\ USING\_GAMEINPUT}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <GameInput.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#if\ defined(\_MSC\_VER)\ \&\&\ (defined(\_GAMING\_XBOX)\ ||\ defined(GAMEINPUT\_API\_VERSION))}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#pragma\ comment(lib,"{}gameinput.lib"{})}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#ifdef\ USING\_COREWINDOW}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }ABI\ \{\ \textcolor{keyword}{namespace\ }Windows\ \{\ \textcolor{keyword}{namespace\ }UI\ \{\ \textcolor{keyword}{namespace\ }Core\ \{\ \textcolor{keyword}{struct\ }ICoreWindow;\ \}\ \}\ \}\ \}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00054\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ push}}
+\DoxyCodeLine{00061\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ ignored\ "{}-\/Wunknown-\/pragmas"{}}}
+\DoxyCodeLine{00062\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}}
+\DoxyCodeLine{00068\ \ \ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}()\ noexcept(false);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}(\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}\&\&)\ noexcept;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}\&\&)\ noexcept;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}(\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}\&\ operator=(\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}();}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ enum\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}{Mode}}\ :\ uint32\_t}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8facf005bf64d1ca284abf9bd9c33879df3}{MODE\_ABSOLUTE}}\ =\ 0,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8fa98d4231da442dc8c22ffef7537019f34}{MODE\_RELATIVE}},}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_ab2653883f131c4b6a1173d6a980f8c45}{leftButton}};}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_a34320a804ea932a1428df91e17bfcea4}{middleButton}};}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_a0ac9361e775a961b318086410e4e4625}{rightButton}};}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_a3acb8c1739513179a987cca34de87bf6}{xButton1}};}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_a3213d24e22d2a56967b8923943f37714}{xButton2}};}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_af2982f573ac3b5382d1b2944c2760e78}{x}};}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_a0227ab84a6c5a8d11c7f2f0faefcc02a}{y}};}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_a215682ddf85a2e305bfbf4c648a5c618}{scrollWheelValue}};}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}{Mode}}\ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state_abf414e540c6e17c1b58092b51d20a0cd}{positionMode}};}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a4494095bb7a04e1631343d4d8018d7c0}{ButtonStateTracker}}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3}{ButtonState}}\ :\ uint32\_t}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3aacdb628793e926bfb45a1063125a2cf8}{UP}}\ =\ 0,\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Button\ is\ up}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3a240d238ea78ea677f7a4ef0708e0515f}{HELD}}\ =\ 1,\ \ \ \ \ \ \ \textcolor{comment}{//\ Button\ is\ held\ down}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3a1f6d8f5f351c033b51c2a3ec2e6c7326}{RELEASED}}\ =\ 2,\ \ \ \textcolor{comment}{//\ Button\ was\ just\ released}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3a707de3d63fa381ec33fe037495132972}{PRESSED}}\ =\ 3,\ \ \ \ \textcolor{comment}{//\ Buton\ was\ just\ pressed}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3}{ButtonState}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_abf1a8faf22f41fd833143b5f4f41d7f4}{leftButton}};}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3}{ButtonState}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_af49ade856ec31e62a8a5e8539eb3e56c}{middleButton}};}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3}{ButtonState}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_ab1ca0ef4d6a2b445d779d968638e635c}{rightButton}};}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3}{ButtonState}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_ae7ddca4a9758e9fa7bf2ff3c82d8d7c2}{xButton1}};}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a38f184a2a7f0c7ebc8dbb574cab596e3}{ButtonState}}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a3d210f7236d62189159092a0d9c32d5f}{xButton2}};}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifdef\ \_PREFAST\_}}
+\DoxyCodeLine{00117\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ prefast(push)}}
+\DoxyCodeLine{00118\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ prefast(disable\ :\ 26495,\ "{}Reset()\ performs\ the\ initialization"{})}}
+\DoxyCodeLine{00119\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a4494095bb7a04e1631343d4d8018d7c0}{ButtonStateTracker}}()\ noexcept\ \{\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a4c76c0082304c25c97c81147c52b0bad}{Reset}}();\ \}}
+\DoxyCodeLine{00121\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifdef\ \_PREFAST\_}}
+\DoxyCodeLine{00122\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ prefast(pop)}}
+\DoxyCodeLine{00123\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a6b7cb45611c30743c8abfe8e60e8d5f9}{Update}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}}\&\ state)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_a4c76c0082304c25c97c81147c52b0bad}{Reset}}()\ noexcept;}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker_aa2b568b323cd540d534c5946ebca06dd}{GetLastState}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ lastState;\ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}}\ lastState;}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Retrieve\ the\ current\ state\ of\ the\ mouse}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a128372e8ad36d467e8d6cfdf2aa8808a}{GetState}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Resets\ the\ accumulated\ scroll\ wheel\ value}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_abf5a97f5b758543581870eb4503d0fc5}{ResetScrollWheelValue}}()\ noexcept;}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sets\ mouse\ mode\ (defaults\ to\ absolute)}}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_ad77ae23a73f02b4c5e4f69e4b06177f9}{SetMode}}(\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}{Mode}}\ mode);}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Signals\ the\ end\ of\ frame\ (recommended,\ but\ optional)}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_af37955658bc0e93d27c8e97b70c0fd33}{EndOfInputFrame}}()\ noexcept;}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Feature\ detection}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a8b0c141251eba429fd572c561fb79680}{IsConnected}}()\ const;}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Cursor\ visibility}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_ac664c00ca95b29e3c60ab965aca86ef8}{IsVisible}}()\ const\ noexcept;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a643846b121cfea0df5ace87f973283f5}{SetVisible}}(\textcolor{keywordtype}{bool}\ visible);}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{preprocessor}{\#ifdef\ USING\_COREWINDOW}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetWindow(ABI::Windows::UI::Core::ICoreWindow*\ window);}
+\DoxyCodeLine{00156\ \textcolor{preprocessor}{\ \ \ \ \#ifdef\ \_\_cplusplus\_winrt}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetWindow(Windows::UI::Core::CoreWindow\string^\ window)}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ See\ https://msdn.microsoft.com/en-\/us/library/hh755802.aspx}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ SetWindow(\textcolor{keyword}{reinterpret\_cast<}ABI::Windows::UI::Core::ICoreWindow*\textcolor{keyword}{>}(window));}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00163\ \textcolor{preprocessor}{\ \ \ \ \#ifdef\ CPPWINRT\_VERSION}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetWindow(winrt::Windows::UI::Core::CoreWindow\ window)}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ See\ https://docs.microsoft.com/en-\/us/windows/uwp/cpp-\/and-\/winrt-\/apis/interop-\/winrt-\/abi}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ SetWindow(\textcolor{keyword}{reinterpret\_cast<}ABI::Windows::UI::Core::ICoreWindow*\textcolor{keyword}{>}(winrt::get\_abi(window)));}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00169\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetDpi(\textcolor{keywordtype}{float}\ dpi);}
+\DoxyCodeLine{00172\ \textcolor{preprocessor}{\ \ \ \ \#elif\ defined(WM\_USER)}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetWindow(HWND\ window);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ ProcessMessage(UINT\ message,\ WPARAM\ wParam,\ LPARAM\ lParam);}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \textcolor{preprocessor}{\ \ \ \ \#ifdef\ \_GAMING\_XBOX}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetResolution(\textcolor{keywordtype}{float}\ scale);}
+\DoxyCodeLine{00178\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00179\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Singleton}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}}\&\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_acd13a0cf557d21f71c831975fbfb21c4}{Get}}();}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }Impl;}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ std::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00189\ \ \ \ \ \};}
+\DoxyCodeLine{00190\ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00193\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ pop}}
+\DoxyCodeLine{00194\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

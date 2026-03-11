@@ -1,0 +1,264 @@
+\doxysection{Graphics\+Memory.\+h}
+\hypertarget{_graphics_memory_8h_source}{}\label{_graphics_memory_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/GraphicsMemory.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/GraphicsMemory.h}}
+\doxymbox{\hyperlink{_graphics_memory_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ GraphicsMemory.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <gxdk.h>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#if\ defined(\_GAMING\_XBOX)\ \&\&\ (defined(\_DEBUG)\ ||\ defined(PROFILE))\ \&\&\ (\_GXDK\_VER\ >=\ 0x585D073C)\ }\textcolor{comment}{/*\ GDK\ Edition\ 221000\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ USING\_PIX\_CUSTOM\_MEMORY\_EVENTS}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <tuple>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#pragma\ warning(push)}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#pragma\ warning(disable\ :\ 4251)}}
+\DoxyCodeLine{00058\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00062\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{class\ }LinearAllocatorPage;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }DX12}
+\DoxyCodeLine{00066\ \ \ \ \ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ Works\ a\ little\ like\ a\ smart\ pointer.\ The\ memory\ will\ only\ be\ fenced\ by\ the\ GPU\ once\ the\ pointer}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ has\ been\ invalidated\ or\ the\ user\ explicitly\ marks\ it\ for\ fencing.}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}()\ noexcept;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}(}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ LinearAllocatorPage*\ page,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ D3D12\_GPU\_VIRTUAL\_ADDRESS\ gpuAddress,}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ resource,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keywordtype}{void}*\ memory,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keywordtype}{size\_t}\ offset,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keywordtype}{size\_t}\ size)\ noexcept;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}\&\&\ other)\ noexcept;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}\&\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}\&\&)\ noexcept;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}(const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}\&)\ =\ delete;}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}\&\ operator=\ (const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}\&)\ =\ delete;}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}();}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_VIRTUAL\_ADDRESS\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a08f102bbf05192422a82f2cb6a1ef5d5}{GpuAddress}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mGpuAddress;\ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ ID3D12Resource*\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_aaa1f97148fed475bf6ba080f0714c16a}{Resource}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mResource;\ \}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_af4b82ba00c4fcbef13ecdb2a3a412698}{Memory}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mMemory;\ \}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ac8210e952a2a5e1a6db0751583a82e51}{ResourceOffset}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mBufferOffset;\ \}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ace8ab026cc2454b9d9672ebe534635f4}{Size}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mSize;\ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{operator}\ bool()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mResource\ !=\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Clear\ the\ pointer.\ Using\ operator\ -\/>\ will\ produce\ bad\ results.}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_acbaad2db656e3f9efac31498fcd2a009}{Reset}}()\ noexcept;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_acbaad2db656e3f9efac31498fcd2a009}{Reset}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{GraphicsResource}}\&\&)\ noexcept;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ private:}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ LinearAllocatorPage*\ \ \ \ \ \ \ \ mPage;}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_VIRTUAL\_ADDRESS\ \ \ mGpuAddress;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ ID3D12Resource*\ \ \ \ \ \ \ \ \ \ \ \ \ mResource;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mMemory;}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mBufferOffset;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mSize;}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ class\ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}()\ noexcept;}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\&)\ noexcept;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\&)\ noexcept;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\&\&);}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\&\&);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}(const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&)\ noexcept;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\ operator=\ (const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&)\ noexcept;}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}(const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\&)\ =\ delete;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\ operator=\ (const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\&)\ =\ delete;}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}();}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_VIRTUAL\_ADDRESS\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a0fb68543d0c6e8421202e520dbf28461}{GpuAddress}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mSharedResource-\/>GpuAddress();\ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ ID3D12Resource*\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a657937c500ee29e25abddd002216a230}{Resource}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mSharedResource-\/>Resource();\ \}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a68f01f94af9a2142c0df89295e5727aa}{Memory}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mSharedResource-\/>Memory();\ \}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_af2994b37ab01b0564466c8db6fd3a4c9}{ResourceOffset}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mSharedResource-\/>ResourceOffset();\ \}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a9d478fdc511c892c219a5873fc4d6573}{Size}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mSharedResource-\/>Size();\ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{operator}\ bool()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ mSharedResource\ !=\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ operator\ ==\ (\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\ other)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ mSharedResource.get()\ ==\ other.mSharedResource.get();\ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ operator\ !=\ (\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\ other)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ mSharedResource.get()\ !=\ other.mSharedResource.get();\ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Clear\ the\ pointer.\ Using\ operator\ -\/>\ will\ produce\ bad\ results.}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_aabbd44b7a82d1a283ec8c48bb1abe115}{Reset}}()\ noexcept;}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_aabbd44b7a82d1a283ec8c48bb1abe115}{Reset}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\&\&);}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_aabbd44b7a82d1a283ec8c48bb1abe115}{Reset}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\&)\ noexcept;}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_aabbd44b7a82d1a283ec8c48bb1abe115}{Reset}}(const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource_a1338f9bae4794bb00ea1c3a17ee3715a}{SharedGraphicsResource}}\&\ resource)\ noexcept;}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ private:}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::shared\_ptr<\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}>\ mSharedResource;}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ struct\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics}{GraphicsMemoryStatistics}}}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics_af2de5856722ac77768dbf2ff6640be5c}{committedMemory}};\ \ \ \ \ \textcolor{comment}{//\ Bytes\ of\ memory\ currently\ committed/in-\/flight}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics_a1c6fef569415c4cf4cb93e0627a1c2be}{totalMemory}};\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Total\ bytes\ of\ memory\ used\ by\ the\ allocators}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics_a8dc7f02d689716042277e7b4f2010376}{totalPages}};\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Total\ page\ count}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics_a98fc4e8e8a19292e207f98ddd57fb7a8}{peakCommitedMemory}};\ \ \textcolor{comment}{//\ Peak\ commited\ memory\ value\ since\ last\ reset}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics_a4d0757891d19c2eeb19e434e0ed730f2}{peakTotalMemory}};\ \ \ \ \ \textcolor{comment}{//\ Peak\ total\ bytes}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics_a0d971af0a7c649b3e981f9d8393e15d4}{peakTotalPages}};\ \ \ \ \ \ \textcolor{comment}{//\ Peak\ total\ page\ count}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2}{Tag}}\ :\ uint32\_t}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a55f5525bc535085c3ef0530daee36cac}{TAG\_GENERIC}}\ =\ 0,}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2abd7cd4c332a88011220a8bfce2cdd202}{TAG\_CONSTANT}},}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a89071c3e07b0c2fac2bc23bdae0e98cc}{TAG\_VERTEX}},}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2ae233f58c54e5d9aa7917ed1375c32b31}{TAG\_INDEX}},}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a1b117a18962142c932f94ac4d3ac366e}{TAG\_SPRITES}},}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a0fda46a24ef504004dee9ee364960efc}{TAG\_TEXTURE}},}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a145d926ef132be06fafa4d8e9f400d4d}{TAG\_COMPUTE}},}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{explicit}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}(\_In\_\ ID3D12Device*\ device);}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a211e2e917549975170397f4d9b6c6eb6}{GraphicsMemory}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}\&\&)\ noexcept;}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}\&\&)\ noexcept;}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}\&\ operator=(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}();}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Make\ sure\ to\ keep\ the\ GraphicsResource\ handle\ alive\ as\ long\ as\ you\ need\ to\ access}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ the\ memory\ on\ the\ CPU.\ For\ example,\ do\ not\ simply\ cache\ GpuAddress()\ and\ discard}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ the\ GraphicsResource\ object,\ or\ your\ memory\ may\ be\ overwritten\ later.}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ inline\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a9fc7f00fbbf97c67875b314686540d64}{Allocate}}(\textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keywordtype}{size\_t}\ alignment\ =\ 16,\ uint32\_t\ tag\ =\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a55f5525bc535085c3ef0530daee36cac}{TAG\_GENERIC}})}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ alloc\ =\ AllocateImpl(size,\ alignment);}
+\DoxyCodeLine{00192\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#ifdef\ USING\_PIX\_CUSTOM\_MEMORY\_EVENTS}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::ignore\ =\ ReportCustomMemoryAlloc(alloc.Memory(),\ alloc.Size(),\ tag);}
+\DoxyCodeLine{00194\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#else}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ UNREFERENCED\_PARAMETER(tag);}
+\DoxyCodeLine{00196\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ alloc;}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Version\ of\ Allocate\ that\ aligns\ to\ D3D12\ constant\ buffer\ requirements}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a5348241f83a5c262666536d3921b6ff2}{AllocateConstant}}()}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ alignment\ =\ D3D12\_CONSTANT\_BUFFER\_DATA\_PLACEMENT\_ALIGNMENT;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ alignedSize\ =\ (\textcolor{keyword}{sizeof}(T)\ +\ alignment\ -\/\ 1)\ \&\ \string~(alignment\ -\/\ 1);}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ alloc\ =\ AllocateImpl(alignedSize,\ alignment);}
+\DoxyCodeLine{00206\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#ifdef\ USING\_PIX\_CUSTOM\_MEMORY\_EVENTS}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ cast\ is\ needed\ to\ capture\ the\ type\ information\ in\ the\ PDB}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::ignore\ =\ \textcolor{keyword}{reinterpret\_cast<}T*\textcolor{keyword}{>}(ReportCustomMemoryAlloc(alloc.Memory(),\ alloc.Size(),\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2abd7cd4c332a88011220a8bfce2cdd202}{TAG\_CONSTANT}}));}
+\DoxyCodeLine{00209\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ alloc;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_acc6c81ef9aa07d4a4b39e25350242d5c}{AllocateConstant}}(\textcolor{keyword}{const}\ T\&\ setData)}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\ alloc\ =\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a5348241f83a5c262666536d3921b6ff2}{AllocateConstant<T>}}();}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ memcpy(alloc.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_af4b82ba00c4fcbef13ecdb2a3a412698}{Memory}}(),\ \&setData,\ \textcolor{keyword}{sizeof}(T));}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ alloc;}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Submits\ all\ the\ pending\ one-\/shot\ memory\ to\ the\ GPU.}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ memory\ will\ be\ recycled\ once\ the\ GPU\ is\ done\ with\ it.}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a4ee8fcc92d1466980766d4c2e5715c0b}{Commit}}(\_In\_\ ID3D12CommandQueue*\ commandQueue);}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ frees\ up\ any\ unused\ memory.}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ you\ want\ to\ make\ sure\ all\ memory\ is\ reclaimed,\ idle\ the\ GPU\ before\ calling\ this.}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ It\ is\ not\ recommended\ that\ you\ call\ this\ unless\ absolutely\ necessary\ (e.g.\ your}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ memory\ budget\ changes\ at\ run-\/time,\ or\ perhaps\ you're\ changing\ levels\ in\ your\ game.)}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_ad45050767c508827c43f2f7837591216}{GarbageCollect}}();}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Memory\ statistics}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics}{GraphicsMemoryStatistics}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a80d40258ccc2bbe0bdc403ed325bd261}{GetStatistics}}();}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aae457b622ad063c3e2e923f28db566b6}{ResetStatistics}}();}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Properties}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ ID3D12Device*\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aad0f5856a9e0fa0f2b65eb23a55a6fe5}{GetDevice}}()\ const\ noexcept;}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Singleton}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Should\ only\ use\ nullptr\ for\ single\ GPU\ scenarios;\ mGPU\ requires\ a\ specific\ device}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ static\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{GraphicsMemory}}\&\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a733be46cca4cc2a0009d027e63d9f0f9}{Get}}(\_In\_opt\_\ ID3D12Device*\ device\ =\ \textcolor{keywordtype}{nullptr});}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ private:}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ class\ Impl;}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{GraphicsResource}}\ \_\_cdecl\ AllocateImpl(\textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keywordtype}{size\_t}\ alignment);}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{preprocessor}{\#ifdef\ USING\_PIX\_CUSTOM\_MEMORY\_EVENTS}}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ declspec\ is\ required\ to\ ensure\ the\ proper\ information\ is\ captured\ in\ the\ PDB}}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \_\_declspec(allocator)\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}*\ \_\_cdecl\ ReportCustomMemoryAlloc(\textcolor{keywordtype}{void}*\ pMem,\ \textcolor{keywordtype}{size\_t}\ size,\ UINT64\ metadata);}
+\DoxyCodeLine{00249\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00253\ \ \ \ \ \}}
+\DoxyCodeLine{00254\ \}}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00257\ \textcolor{preprocessor}{\#pragma\ warning(pop)}}
+\DoxyCodeLine{00258\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

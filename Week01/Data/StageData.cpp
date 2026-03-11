@@ -10,7 +10,9 @@ void FStageData::Clear()
     StageId = 0;
     StageName.clear();
     PlayerSpawn = {};
-    Bpm = 60;
+    Bpm = 120;
+    MusicPath.clear();
+    TimeLimit = 60.0f;
 }
 
 void FStageData::Resize(int InWidth, int InHeight)
@@ -95,3 +97,15 @@ void FStageData::SetSpawnPoint(int InSpawnX, int InSpawnY)
 }
 
 FSpawnPoint FStageData::GetSpawnPoint() const { return PlayerSpawn; }
+
+void FStageData::SetBpm(int InBpm) { Bpm = InBpm; }
+
+int FStageData::GetBpm() const { return Bpm; }
+
+void FStageData::SetMusicPath(const std::string &InPath) { MusicPath = InPath; }
+
+const std::string &FStageData::GetMusicPath() const { return MusicPath; }
+
+void FStageData::SetTimeLimit(float InTimeLimit) { TimeLimit = InTimeLimit; }
+
+float FStageData::GetTimeLimit() const { return TimeLimit; }

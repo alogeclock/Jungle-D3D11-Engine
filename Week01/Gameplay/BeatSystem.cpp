@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "BeatSystem.h"
 #include <cmath>
 
@@ -11,7 +11,7 @@ void FBeatSystem::Reset()
 void FBeatSystem::Update(float DeltaTime, FGameContext &Context)
 {
     float PreviousTime = ElapsedTime;
-    ElapsedTime += DeltaTime;
+    ElapsedTime += DeltaTime * TimeScale;
 
     int PreviousBeat = static_cast<int>(PreviousTime / BeatInterval);
     int CurrentBeat = static_cast<int>(ElapsedTime / BeatInterval);
@@ -31,6 +31,7 @@ float FBeatSystem::GetBeatInterval() const { return BeatInterval; }
 
 void FBeatSystem::SetJudgeWindows(float InPerfectWindow, float InGoodWindow)
 {
+    PerfectWindow = InPerfectWindow;
     GoodWindow = InGoodWindow;
 }
 
@@ -40,6 +41,10 @@ EBeatJudge FBeatSystem::JudgeInput() const
     float TimeSinceLast = BeatInterval - TimeToNext;
     float Distance = (TimeToNext < TimeSinceLast) ? TimeToNext : TimeSinceLast;
 
+    if (Distance <= PerfectWindow)
+    {
+        return EBeatJudge::Perfect;
+    }
     if (Distance <= GoodWindow)
     {
         return EBeatJudge::Good;
@@ -54,6 +59,17 @@ bool FBeatSystem::ConsumeBeat()
     if (bIsBeatJustTriggered)
     {
         bIsBeatJustTriggered = false;
+        bIsBeatJustConsumed = true;
+        return true;
+    }
+    return false;
+}
+
+bool FBeatSystem::IsBeatSkipped()
+{
+    if (bIsBeatJustConsumed && fmodf(ElapsedTime, BeatInterval) >= GoodWindow)
+    {
+        bIsBeatJustConsumed = false;
         return true;
     }
     return false;
@@ -68,3 +84,7 @@ float FBeatSystem::GetTimeToNextBeat() const
 }
 
 float FBeatSystem::GetGoodWindow() const { return GoodWindow; }
+
+void FBeatSystem::SetTimeScale(float InScale) { TimeScale = InScale; }
+
+float FBeatSystem::GetTimeScale() const { return TimeScale; }

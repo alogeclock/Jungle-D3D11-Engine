@@ -7,67 +7,115 @@
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
+\doxymbox{\hyperlink{class_f_texture_a86feef52c0554227dddd79d00777d7d2}{FTexture}} ()=default
+\item 
+\doxymbox{\hyperlink{class_f_texture_a27f65abec6d6e2d4e3f4f182cdd78545}{FTexture}} (int In\+Width, int In\+Height, ID3\+D11\+Texture2D \texorpdfstring{$\ast$}{*}In\+Texture2D, ID3\+D11\+Shader\+Resource\+View \texorpdfstring{$\ast$}{*}In\+Texture\+SRV)
+\item 
 \doxymbox{\hyperlink{class_f_texture_afde9c452c0c031e5f429b9fbd77c0c40}{\texorpdfstring{$\sim$}{\string~}\+FTexture}} ()
 \item 
-bool \doxymbox{\hyperlink{class_f_texture_a4ed57d0fce470395005364f095237c0a}{Load\+From\+File}} (ID3\+D11\+Device \texorpdfstring{$\ast$}{*}Device, const std::\+string \&Path)
+\doxymbox{\hyperlink{class_f_texture_aaafc29c2c73971e2ae7461c6b889837a}{FTexture}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \&)=delete
 \item 
-void \doxymbox{\hyperlink{class_f_texture_af9dbfbfaf7ada4781891999cdbf08baa}{Release}} ()
+\doxymbox{\hyperlink{class_f_texture}{FTexture}} \& \doxymbox{\hyperlink{class_f_texture_ab7811372ef0e5e8ff5635abb4c825415}{operator=}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \&)=delete
 \item 
-int \doxymbox{\hyperlink{class_f_texture_a1a43d0757e6af5f476e48da94ceb2ee1}{Get\+Width}} () const
+\doxymbox{\hyperlink{class_f_texture_aa722989060eb18da66f2cdfe66e4ac52}{FTexture}} (\doxymbox{\hyperlink{class_f_texture}{FTexture}} \&\&Other) noexcept
 \item 
-int \doxymbox{\hyperlink{class_f_texture_a7245bc000bc0f6deb81282857756f281}{Get\+Height}} () const
+\doxymbox{\hyperlink{class_f_texture}{FTexture}} \& \doxymbox{\hyperlink{class_f_texture_a1b8cf735f3d0028cae762affe73d2933}{operator=}} (\doxymbox{\hyperlink{class_f_texture}{FTexture}} \&\&Other) noexcept
 \item 
-ID3\+D11\+Shader\+Resource\+View \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_texture_a0964e09a6508224570fbef1dd3802b2b}{Get\+SRV}} () const
+ID3\+D11\+Texture2D \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_texture_a920edd7bff479a0537e17bbd1161f17a}{Get\+Texture2D}} () const
+\item 
+ID3\+D11\+Shader\+Resource\+View \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_texture_ac786bade1ad736d2d7dede1f34e6e15b}{Get\+Texture\+SRV}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \doxymbox{\hyperlink{class_f_texture_abade208d8819fff1346a0184720b4411}{Width}} = 0
+\item 
+int \doxymbox{\hyperlink{class_f_texture_a9ad844b03ff11fa59e22552d7675e348}{Height}} = 0
 \end{DoxyCompactItemize}
 
 
 \label{doc-constructors}
 \Hypertarget{class_f_texture_doc-constructors}
 \doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_texture_a86feef52c0554227dddd79d00777d7d2}\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{FTexture()}{FTexture()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{class_f_texture_a86feef52c0554227dddd79d00777d7d2} 
+FTexture::\+\+FTexture (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_f_texture_a27f65abec6d6e2d4e3f4f182cdd78545}\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{FTexture()}{FTexture()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{class_f_texture_a27f65abec6d6e2d4e3f4f182cdd78545} 
+FTexture::\+\+FTexture (\begin{DoxyParamCaption}\item[{int}]{In\+Width}{, }\item[{int}]{In\+Height}{, }\item[{ID3\+D11\+Texture2D \texorpdfstring{$\ast$}{*}}]{In\+Texture2D}{, }\item[{ID3\+D11\+Shader\+Resource\+View \texorpdfstring{$\ast$}{*}}]{In\+Texture\+SRV}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_texture_afde9c452c0c031e5f429b9fbd77c0c40}\index{FTexture@{FTexture}!````~FTexture@{\texorpdfstring{$\sim$}{\string~}FTexture}}
 \index{````~FTexture@{\texorpdfstring{$\sim$}{\string~}FTexture}!FTexture@{FTexture}}
 \doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}FTexture()}{\string~FTexture()}}
 {\footnotesize\ttfamily \label{class_f_texture_afde9c452c0c031e5f429b9fbd77c0c40} 
 FTexture::\+\texorpdfstring{$\sim$}{\string~}\+FTexture (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_texture_aaafc29c2c73971e2ae7461c6b889837a}\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{FTexture()}{FTexture()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{class_f_texture_aaafc29c2c73971e2ae7461c6b889837a} 
+FTexture::\+\+FTexture (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_f_texture_aa722989060eb18da66f2cdfe66e4ac52}\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\index{FTexture@{FTexture}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{FTexture()}{FTexture()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{class_f_texture_aa722989060eb18da66f2cdfe66e4ac52} 
+FTexture::\+\+FTexture (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_texture}{FTexture}} \&\&}]{Other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
 
 
 \label{doc-func-members}
 \Hypertarget{class_f_texture_doc-func-members}
 \doxysubsection{Member Function Documentation}
-\Hypertarget{class_f_texture_a7245bc000bc0f6deb81282857756f281}\index{FTexture@{FTexture}!GetHeight@{GetHeight}}
-\index{GetHeight@{GetHeight}!FTexture@{FTexture}}
-\doxysubsubsection{\texorpdfstring{GetHeight()}{GetHeight()}}
-{\footnotesize\ttfamily \label{class_f_texture_a7245bc000bc0f6deb81282857756f281} 
-int FTexture::\+\+Get\+Height (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+\Hypertarget{class_f_texture_a920edd7bff479a0537e17bbd1161f17a}\index{FTexture@{FTexture}!GetTexture2D@{GetTexture2D}}
+\index{GetTexture2D@{GetTexture2D}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{GetTexture2D()}{GetTexture2D()}}
+{\footnotesize\ttfamily \label{class_f_texture_a920edd7bff479a0537e17bbd1161f17a} 
+ID3\+D11\+Texture2D \texorpdfstring{$\ast$}{*} FTexture::\+\+Get\+Texture2D (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
-\Hypertarget{class_f_texture_a0964e09a6508224570fbef1dd3802b2b}\index{FTexture@{FTexture}!GetSRV@{GetSRV}}
-\index{GetSRV@{GetSRV}!FTexture@{FTexture}}
-\doxysubsubsection{\texorpdfstring{GetSRV()}{GetSRV()}}
-{\footnotesize\ttfamily \label{class_f_texture_a0964e09a6508224570fbef1dd3802b2b} 
-ID3\+D11\+Shader\+Resource\+View \texorpdfstring{$\ast$}{*} FTexture::\+\+Get\+SRV (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+\Hypertarget{class_f_texture_ac786bade1ad736d2d7dede1f34e6e15b}\index{FTexture@{FTexture}!GetTextureSRV@{GetTextureSRV}}
+\index{GetTextureSRV@{GetTextureSRV}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{GetTextureSRV()}{GetTextureSRV()}}
+{\footnotesize\ttfamily \label{class_f_texture_ac786bade1ad736d2d7dede1f34e6e15b} 
+ID3\+D11\+Shader\+Resource\+View \texorpdfstring{$\ast$}{*} FTexture::\+\+Get\+Texture\+SRV (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
-\Hypertarget{class_f_texture_a1a43d0757e6af5f476e48da94ceb2ee1}\index{FTexture@{FTexture}!GetWidth@{GetWidth}}
-\index{GetWidth@{GetWidth}!FTexture@{FTexture}}
-\doxysubsubsection{\texorpdfstring{GetWidth()}{GetWidth()}}
-{\footnotesize\ttfamily \label{class_f_texture_a1a43d0757e6af5f476e48da94ceb2ee1} 
-int FTexture::\+\+Get\+Width (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+\Hypertarget{class_f_texture_ab7811372ef0e5e8ff5635abb4c825415}\index{FTexture@{FTexture}!operator=@{operator=}}
+\index{operator=@{operator=}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_texture_ab7811372ef0e5e8ff5635abb4c825415} 
+\doxymbox{\hyperlink{class_f_texture}{FTexture}} \& FTexture::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
 
-\Hypertarget{class_f_texture_a4ed57d0fce470395005364f095237c0a}\index{FTexture@{FTexture}!LoadFromFile@{LoadFromFile}}
-\index{LoadFromFile@{LoadFromFile}!FTexture@{FTexture}}
-\doxysubsubsection{\texorpdfstring{LoadFromFile()}{LoadFromFile()}}
-{\footnotesize\ttfamily \label{class_f_texture_a4ed57d0fce470395005364f095237c0a} 
-bool FTexture::\+\+Load\+From\+File (\begin{DoxyParamCaption}\item[{ID3\+D11\+Device \texorpdfstring{$\ast$}{*}}]{Device}{, }\item[{const std::\+string \&}]{Path}{}\end{DoxyParamCaption})}
+\Hypertarget{class_f_texture_a1b8cf735f3d0028cae762affe73d2933}\index{FTexture@{FTexture}!operator=@{operator=}}
+\index{operator=@{operator=}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_texture_a1b8cf735f3d0028cae762affe73d2933} 
+\doxymbox{\hyperlink{class_f_texture}{FTexture}} \& FTexture::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_texture}{FTexture}} \&\&}]{Other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
 
-\Hypertarget{class_f_texture_af9dbfbfaf7ada4781891999cdbf08baa}\index{FTexture@{FTexture}!Release@{Release}}
-\index{Release@{Release}!FTexture@{FTexture}}
-\doxysubsubsection{\texorpdfstring{Release()}{Release()}}
-{\footnotesize\ttfamily \label{class_f_texture_af9dbfbfaf7ada4781891999cdbf08baa} 
-void FTexture::\+\+Release (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+\label{doc-variable-members}
+\Hypertarget{class_f_texture_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_f_texture_a9ad844b03ff11fa59e22552d7675e348}\index{FTexture@{FTexture}!Height@{Height}}
+\index{Height@{Height}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{Height}{Height}}
+{\footnotesize\ttfamily \label{class_f_texture_a9ad844b03ff11fa59e22552d7675e348} 
+int FTexture::\+\+Height = 0}
+
+\Hypertarget{class_f_texture_abade208d8819fff1346a0184720b4411}\index{FTexture@{FTexture}!Width@{Width}}
+\index{Width@{Width}!FTexture@{FTexture}}
+\doxysubsubsection{\texorpdfstring{Width}{Width}}
+{\footnotesize\ttfamily \label{class_f_texture_abade208d8819fff1346a0184720b4411} 
+int FTexture::\+\+Width = 0}
 
 
 
 The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
 \item 
-Core/\+\doxymbox{\hyperlink{_texture_8h}{Texture.\+h}}\item 
-Core/\+\doxymbox{\hyperlink{_texture_8cpp}{Texture.\+cpp}}\end{DoxyCompactItemize}
+Render/\+\doxymbox{\hyperlink{_texture_8h}{Texture.\+h}}\item 
+Render/\+\doxymbox{\hyperlink{_texture_8cpp}{Texture.\+cpp}}\end{DoxyCompactItemize}

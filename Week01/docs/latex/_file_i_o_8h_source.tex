@@ -1,0 +1,20 @@
+\doxysection{File\+IO.\+h}
+\hypertarget{_file_i_o_8h_source}{}\label{_file_i_o_8h_source}\index{IO/FileIO.h@{IO/FileIO.h}}
+\doxymbox{\hyperlink{_file_i_o_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_file_i_o}{FFileIO}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_file_i_o_ab2d8926d596e20b5ed6bb88c0b609c8f}{Exists}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_file_i_o_a5e319bbce969efa9ec98440ef26f04a9}{ReadAllText}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_file_i_o_aa8cbfed8d4962567c1b5112ebaa616cd}{WriteAllText}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}},\ \textcolor{keyword}{const}\ std::string\ \&Text);}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<std::uint8\_t>\ \doxymbox{\hyperlink{class_f_file_i_o_a011213d7ca6858984f66987e6d45075d}{ReadAllBytes}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00014\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,99 @@
+\doxysection{DirectX::\+DX12::\+Sprite\+Batch\+Pipeline\+State\+Description Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description}{}\label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+
+
+{\ttfamily \+\#include $<$Sprite\+Batch.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aec8937a6cd8d181a2c79c82709ee31ca}{Sprite\+Batch\+Pipeline\+State\+Description}} (const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&render\+Target, \+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC \texorpdfstring{$\ast$}{*}blend=nullptr, \+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \texorpdfstring{$\ast$}{*}depth\+Stencil=nullptr, \+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC \texorpdfstring{$\ast$}{*}rasterizer=nullptr, \+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \texorpdfstring{$\ast$}{*}isampler\+Descriptor=nullptr) noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+D3\+D12\+\_\+\+BLEND\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_abf96d9469b6bbc88d5b77b5a6faa38ce}{blend\+Desc}}
+\item 
+D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_adaa2a9c12eaafc0672ae18bc7c41d731}{depth\+Stencil\+Desc}}
+\item 
+D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aa0a44b2214ccc9f7a5ae772ca007d3d0}{rasterizer\+Desc}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a0d1d825622124580e8d8e5760378231e}{render\+Target\+State}}
+\item 
+D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a6be447046a5a5434a8b0702b1e3bf0ae}{sampler\+Descriptor}}
+\item 
+ID3\+D12\+Root\+Signature \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a4240f6770afd8a08365696e1328f7a28}{custom\+Root\+Signature}}
+\item 
+D3\+D12\+\_\+\+SHADER\+\_\+\+BYTECODE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8952af62c9c291f18b9da3c737ed4e68}{custom\+Vertex\+Shader}}
+\item 
+D3\+D12\+\_\+\+SHADER\+\_\+\+BYTECODE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8203ca6decc4f8de8a8eb4387d890d9f}{custom\+Pixel\+Shader}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aec8937a6cd8d181a2c79c82709ee31ca}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!SpriteBatchPipelineStateDescription@{SpriteBatchPipelineStateDescription}}
+\index{SpriteBatchPipelineStateDescription@{SpriteBatchPipelineStateDescription}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{SpriteBatchPipelineStateDescription()}{SpriteBatchPipelineStateDescription()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aec8937a6cd8d181a2c79c82709ee31ca} 
+Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+\+Sprite\+Batch\+Pipeline\+State\+Description (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&}]{render\+Target}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC \texorpdfstring{$\ast$}{*}}]{blend}{ = {\ttfamily nullptr}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \texorpdfstring{$\ast$}{*}}]{depth\+Stencil}{ = {\ttfamily nullptr}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC \texorpdfstring{$\ast$}{*}}]{rasterizer}{ = {\ttfamily nullptr}, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ const D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \texorpdfstring{$\ast$}{*}}]{isampler\+Descriptor}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_abf96d9469b6bbc88d5b77b5a6faa38ce}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!blendDesc@{blendDesc}}
+\index{blendDesc@{blendDesc}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{blendDesc}{blendDesc}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_abf96d9469b6bbc88d5b77b5a6faa38ce} 
+D3\+D12\+\_\+\+BLEND\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+blend\+Desc}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8203ca6decc4f8de8a8eb4387d890d9f}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!customPixelShader@{customPixelShader}}
+\index{customPixelShader@{customPixelShader}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{customPixelShader}{customPixelShader}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8203ca6decc4f8de8a8eb4387d890d9f} 
+D3\+D12\+\_\+\+SHADER\+\_\+\+BYTECODE Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+custom\+Pixel\+Shader}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a4240f6770afd8a08365696e1328f7a28}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!customRootSignature@{customRootSignature}}
+\index{customRootSignature@{customRootSignature}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{customRootSignature}{customRootSignature}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a4240f6770afd8a08365696e1328f7a28} 
+ID3\+D12\+Root\+Signature\texorpdfstring{$\ast$}{*} Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+custom\+Root\+Signature}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8952af62c9c291f18b9da3c737ed4e68}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!customVertexShader@{customVertexShader}}
+\index{customVertexShader@{customVertexShader}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{customVertexShader}{customVertexShader}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a8952af62c9c291f18b9da3c737ed4e68} 
+D3\+D12\+\_\+\+SHADER\+\_\+\+BYTECODE Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+custom\+Vertex\+Shader}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_adaa2a9c12eaafc0672ae18bc7c41d731}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!depthStencilDesc@{depthStencilDesc}}
+\index{depthStencilDesc@{depthStencilDesc}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{depthStencilDesc}{depthStencilDesc}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_adaa2a9c12eaafc0672ae18bc7c41d731} 
+D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+depth\+Stencil\+Desc}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aa0a44b2214ccc9f7a5ae772ca007d3d0}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!rasterizerDesc@{rasterizerDesc}}
+\index{rasterizerDesc@{rasterizerDesc}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{rasterizerDesc}{rasterizerDesc}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_aa0a44b2214ccc9f7a5ae772ca007d3d0} 
+D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+rasterizer\+Desc}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a0d1d825622124580e8d8e5760378231e}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!renderTargetState@{renderTargetState}}
+\index{renderTargetState@{renderTargetState}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{renderTargetState}{renderTargetState}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a0d1d825622124580e8d8e5760378231e} 
+\doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+render\+Target\+State}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a6be447046a5a5434a8b0702b1e3bf0ae}\index{DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}!samplerDescriptor@{samplerDescriptor}}
+\index{samplerDescriptor@{samplerDescriptor}!DirectX::DX12::SpriteBatchPipelineStateDescription@{DirectX::DX12::SpriteBatchPipelineStateDescription}}
+\doxysubsubsection{\texorpdfstring{samplerDescriptor}{samplerDescriptor}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_sprite_batch_pipeline_state_description_a6be447046a5a5434a8b0702b1e3bf0ae} 
+D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE Direct\+X::\+\+DX12::\+\+Sprite\+Batch\+Pipeline\+State\+Description::\+sampler\+Descriptor}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_sprite_batch_8h}{Sprite\+Batch.\+h}}\end{DoxyCompactItemize}

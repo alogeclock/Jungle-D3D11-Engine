@@ -1,0 +1,25 @@
+\doxysection{Debug\+Widget.\+h}
+\hypertarget{_debug_widget_8h_source}{}\label{_debug_widget_8h_source}\index{UI/DebugWidget.h@{UI/DebugWidget.h}}
+\doxymbox{\hyperlink{_debug_widget_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_widget_8h}{UIWidget.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_stage}{FStage}};}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_debug_widget}{FDebugWidget}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_i_u_i_widget}{IUIWidget}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_debug_widget_abfc23e3196db81919ac5ff48cd650d55}{BindStage}}(\doxymbox{\hyperlink{class_f_stage}{FStage}}\ *InStage);}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_debug_widget_a66a18155b0da3134609f0b979eebfbd1}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_debug_widget_af75d43451483249d327debb69c76225c}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00016\ \ \ \ \ \doxymbox{\hyperlink{class_f_stage}{FStage}}\ *Stage\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ bInvincible\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ TimeScale\ =\ 1.0f;}
+\DoxyCodeLine{00019\ \};}
+
+\end{DoxyCode}

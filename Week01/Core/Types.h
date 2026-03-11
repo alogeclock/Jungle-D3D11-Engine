@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 
@@ -17,12 +17,6 @@ struct FVector
     FVector(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
 };
 
-enum class ESceneType
-{
-    Title,
-    Play
-};
-
 enum class EDirection
 {
     Up,
@@ -33,14 +27,15 @@ enum class EDirection
 
 enum class ETileValue
 {
-    Path  = 0,
-    Wall  = 1,
+    Path = 0,
+    Wall = 1,
     Outer = 2,
-    Goal  = 3
+    Goal = 3
 };
 
 enum class EBeatJudge
 {
+    Perfect,
     Good,
     Miss
 };
@@ -71,13 +66,6 @@ struct FVec2
 {
     float X = 0.0f;
     float Y = 0.0f;
-};
-
-struct FScoreRecord
-{
-    std::string Name;
-    int         Stage = 0;
-    int         Score = 0;
 };
 
 enum class TileType : int

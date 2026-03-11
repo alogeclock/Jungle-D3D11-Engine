@@ -1,11 +1,14 @@
 #pragma once
-#include <vector>
-#include <string>
-#include "Core/Types.h"
+#include <DirectXMath.h>
 #include "Texture.h"
+
 struct FRenderObject
 {
-	FVec2 Position;
-	FVec2 Size;
-	const FTexture* Texture;
+	const FTexture* Texture = nullptr;
+	DirectX::XMFLOAT4X4 World = {};
+	DirectX::XMFLOAT2 SpriteSize = { 1.0f, 1.0f };
+	DirectX::XMFLOAT2 TextureSize = { 1.0f, 1.0f };
+	DirectX::XMFLOAT2 SpriteOffset = { 0.0f, 0.0f };
+	float IsMirrored = 0.0f;
+	bool bScreenSpace = false;
 };

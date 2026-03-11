@@ -1,0 +1,180 @@
+\doxysection{DirectX::\+DX12::\+Dual\+Post\+Process Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process}{}\label{class_direct_x_1_1_d_x12_1_1_dual_post_process}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+
+
+{\ttfamily \+\#include $<$Post\+Process.\+h$>$}
+
+Inheritance diagram for DirectX::\+DX12::\+Dual\+Post\+Process:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_direct_x_1_1_d_x12_1_1_dual_post_process}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a}{Effect}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa2f9111c85f21b2ceedf7e5d4acb7512e}{Merge}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa027b21c9cec4edd06319bf2f4bd0c542}{Bloom\+Combine}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aaccf2e67c6bf43545ed39bb4dbcfc608f}{Effect\+\_\+\+Max}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&rt\+State, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a}{Effect}} fx)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_afde2068b26c78b6883dbe9a2f6032653}{Dual\+Post\+Process}} (Dual\+Post\+Process \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a993fe386a959943eb657d9fcdd4ef36f}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a940ed8b83e2cbc681449bf79e2b35f9f}{Dual\+Post\+Process}} (Dual\+Post\+Process const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a237995edb00b08f384df139ccf5efb93}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} const \&)=delete
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a7bddeb5354c9c5be8a5c74a582cb8847}{\texorpdfstring{$\sim$}{\string~}\+Dual\+Post\+Process}} () override
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac021ac3e605e20925a0b61bbaff1923e}{Process}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List) override
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_aed01b4f0408c3194ea521e28489ad97b}{Set\+Source\+Texture}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE srv\+Descriptor)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_af7fb3e5c7930c8100ba00e1f7d003062}{Set\+Source\+Texture2}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE srv\+Descriptor)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_acecf19769fbaf2dc1187b5b14b3ef57b}{Set\+Merge\+Parameters}} (float weight1, float weight2)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a38d0e9388c0f1288a773654b41059063}{Set\+Bloom\+Combine\+Parameters}} (float bloom, float base, float bloom\+Saturation, float base\+Saturation)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a88d7426b2bcbd31d8543ed2a92bb9403}{\texorpdfstring{$\sim$}{\string~}\+IPost\+Process}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} (const IPost\+Process \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_abf2d8d22ffba95bad598b9145d4fc41a}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \&)=delete
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_af22622d3da9ccb795b93de730316da3c}{IPost\+Process}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a287f201fdfeaae729e0ede71006236dd}{IPost\+Process}} (IPost\+Process \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a501cfda19e0c3a407ac34e18036ba1d0}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \&\&)=default
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!Effect@{Effect}}
+\index{Effect@{Effect}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{Effect}{Effect}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a}{Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Effect}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Merge@{Merge}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!Merge@{Merge}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa2f9111c85f21b2ceedf7e5d4acb7512e}\label{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa2f9111c85f21b2ceedf7e5d4acb7512e} 
+Merge&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BloomCombine@{BloomCombine}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!BloomCombine@{BloomCombine}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa027b21c9cec4edd06319bf2f4bd0c542}\label{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aa027b21c9cec4edd06319bf2f4bd0c542} 
+Bloom\+Combine&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Effect\_Max@{Effect\_Max}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!Effect\_Max@{Effect\_Max}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aaccf2e67c6bf43545ed39bb4dbcfc608f}\label{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47aaccf2e67c6bf43545ed39bb4dbcfc608f} 
+Effect\+\_\+\+Max&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!DualPostProcess@{DualPostProcess}}
+\index{DualPostProcess@{DualPostProcess}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{DualPostProcess()}{DualPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Dual\+Post\+Process (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&}]{rt\+State}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac8aa4fd544d3e5a63993c044faa9d47a}{Effect}}}]{fx}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_afde2068b26c78b6883dbe9a2f6032653}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!DualPostProcess@{DualPostProcess}}
+\index{DualPostProcess@{DualPostProcess}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{DualPostProcess()}{DualPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_afde2068b26c78b6883dbe9a2f6032653} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Dual\+Post\+Process (\begin{DoxyParamCaption}\item[{Dual\+Post\+Process \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_a940ed8b83e2cbc681449bf79e2b35f9f}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!DualPostProcess@{DualPostProcess}}
+\index{DualPostProcess@{DualPostProcess}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{DualPostProcess()}{DualPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_a940ed8b83e2cbc681449bf79e2b35f9f} 
+Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Dual\+Post\+Process (\begin{DoxyParamCaption}\item[{Dual\+Post\+Process const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_a7bddeb5354c9c5be8a5c74a582cb8847}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!````~DualPostProcess@{\texorpdfstring{$\sim$}{\string~}DualPostProcess}}
+\index{````~DualPostProcess@{\texorpdfstring{$\sim$}{\string~}DualPostProcess}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}DualPostProcess()}{\string~DualPostProcess()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_a7bddeb5354c9c5be8a5c74a582cb8847} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\texorpdfstring{$\sim$}{\string~}\+Dual\+Post\+Process (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_a993fe386a959943eb657d9fcdd4ef36f}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_a993fe386a959943eb657d9fcdd4ef36f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} \& Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_a237995edb00b08f384df139ccf5efb93}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_a237995edb00b08f384df139ccf5efb93} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} \& Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_dual_post_process_a5d53c291311bfcdc4d9e702cbd80ae17}{Dual\+Post\+Process}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac021ac3e605e20925a0b61bbaff1923e}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!Process@{Process}}
+\index{Process@{Process}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{Process()}{Process()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_ac021ac3e605e20925a0b61bbaff1923e} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Process (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a082ac1a25e3f4ea45101b50999bbb3f8}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}.
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_a38d0e9388c0f1288a773654b41059063}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!SetBloomCombineParameters@{SetBloomCombineParameters}}
+\index{SetBloomCombineParameters@{SetBloomCombineParameters}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetBloomCombineParameters()}{SetBloomCombineParameters()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_a38d0e9388c0f1288a773654b41059063} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Set\+Bloom\+Combine\+Parameters (\begin{DoxyParamCaption}\item[{float}]{bloom}{, }\item[{float}]{base}{, }\item[{float}]{bloom\+Saturation}{, }\item[{float}]{base\+Saturation}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_acecf19769fbaf2dc1187b5b14b3ef57b}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!SetMergeParameters@{SetMergeParameters}}
+\index{SetMergeParameters@{SetMergeParameters}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetMergeParameters()}{SetMergeParameters()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_acecf19769fbaf2dc1187b5b14b3ef57b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Set\+Merge\+Parameters (\begin{DoxyParamCaption}\item[{float}]{weight1}{, }\item[{float}]{weight2}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_aed01b4f0408c3194ea521e28489ad97b}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!SetSourceTexture@{SetSourceTexture}}
+\index{SetSourceTexture@{SetSourceTexture}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetSourceTexture()}{SetSourceTexture()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_aed01b4f0408c3194ea521e28489ad97b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Set\+Source\+Texture (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{srv\+Descriptor}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_dual_post_process_af7fb3e5c7930c8100ba00e1f7d003062}\index{DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}!SetSourceTexture2@{SetSourceTexture2}}
+\index{SetSourceTexture2@{SetSourceTexture2}!DirectX::DX12::DualPostProcess@{DirectX::DX12::DualPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetSourceTexture2()}{SetSourceTexture2()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_dual_post_process_af7fb3e5c7930c8100ba00e1f7d003062} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Dual\+Post\+Process::\+\+Set\+Source\+Texture2 (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{srv\+Descriptor}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_post_process_8h}{Post\+Process.\+h}}\end{DoxyCompactItemize}

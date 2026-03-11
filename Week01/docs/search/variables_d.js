@@ -1,13 +1,23 @@
 var searchData=
 [
-  ['scale_0',['Scale',['../struct_f_renderer_1_1_f_constants.html#abad4dff2ecd13f4b29bdd3b4e5613902',1,'FRenderer::FConstants']]],
-  ['score_1',['Score',['../struct_f_score_record.html#af16d17a79e0ba6bbf39dc2b7a1ff9271',1,'FScoreRecord']]],
-  ['simpleinputlayout_2',['SimpleInputLayout',['../class_f_renderer.html#ad902c36c4292f2578080fa1ef1fb0caa',1,'FRenderer']]],
-  ['simplepixelshader_3',['SimplePixelShader',['../class_f_renderer.html#adb6f76a8b474c252b829ebce4d88d8c4',1,'FRenderer']]],
-  ['simplevertexshader_4',['SimpleVertexShader',['../class_f_renderer.html#aca4731a66e925fc171cfa0bb530f501d',1,'FRenderer']]],
-  ['sprite_5',['Sprite',['../class_f_actor.html#a43a92b36260e21ac6f3123d3d31c369f',1,'FActor']]],
-  ['spriteoffset_6',['SpriteOffset',['../struct_f_sprite_info.html#a60591f400e287d7f3e159a26614a58fb',1,'FSpriteInfo::SpriteOffset'],['../struct_f_sprite_constants.html#a58c54dcff532deca28996db6f78b5d3e',1,'FSpriteConstants::SpriteOffset']]],
-  ['spritesize_7',['SpriteSize',['../struct_f_sprite_info.html#ad61dec61a71255eed8f39f126c906b62',1,'FSpriteInfo::SpriteSize'],['../struct_f_sprite_constants.html#a0c79349a7256572fd552e4d6ad109613',1,'FSpriteConstants::SpriteSize']]],
-  ['stride_8',['Stride',['../class_f_renderer.html#a71466a0e85aa51bf272507cd1988f24e',1,'FRenderer']]],
-  ['swapchain_9',['SwapChain',['../class_f_renderer.html#adc6b6908cdf5f1c2c6e490d1212c735d',1,'FRenderer']]]
+  ['n_0',['N',['../struct_direct_x_1_1_keyboard_1_1_state.html#a8d87d3fe22d41ebfac4bfdaa23882a94',1,'DirectX::Keyboard::State']]],
+  ['name_1',['Name',['../struct_f_score_record.html#a642690c3269c6c0dd8ac886d6d594d2b',1,'FScoreRecord']]],
+  ['name_2',['name',['../struct_direct_x_1_1_d_x12_1_1_i_effect_factory_1_1_effect_info.html#a6f1fdc98ee618732fab74268f4115508',1,'DirectX::DX12::IEffectFactory::EffectInfo::name'],['../struct_direct_x_1_1_d_x12_1_1_model_bone.html#a6501b5eb393d2e6fb3cc8c72d9bc29fe',1,'DirectX::DX12::ModelBone::name'],['../class_direct_x_1_1_d_x12_1_1_model_mesh.html#a8502708147515e737084c7cf8be53111',1,'DirectX::DX12::ModelMesh::name'],['../class_direct_x_1_1_d_x12_1_1_model.html#a09887669c7398289b230c7a1cd5acd3f',1,'DirectX::DX12::Model::name']]],
+  ['nodemask_3',['nodeMask',['../class_direct_x_1_1_render_target_state.html#abd5108963553dfdd60ccf138726b2736',1,'DirectX::RenderTargetState']]],
+  ['none_4',['None',['../namespace_direct_x_1_1_d_x12_1_1_effect_flags.html#a7e66487adadc7867d18ea82cfc23ba40',1,'DirectX::DX12::EffectFlags']]],
+  ['nonpremultiplied_5',['NonPremultiplied',['../class_direct_x_1_1_d_x12_1_1_common_states.html#ada1ef2de19266ef178058128e858a22d',1,'DirectX::DX12::CommonStates']]],
+  ['normal_6',['normal',['../struct_direct_x_1_1_d_x12_1_1_vertex_position_normal.html#a5c04c5ba1e2dfdba9569b63af10c1698',1,'DirectX::DX12::VertexPositionNormal::normal'],['../struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color.html#a235dc68996743bdf20c4393293f77ae2',1,'DirectX::DX12::VertexPositionNormalColor::normal'],['../struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture.html#ab111e825b9b1586c07fb6c6b63015a3e',1,'DirectX::DX12::VertexPositionNormalTexture::normal'],['../struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture.html#a83b0278663ff6a108a4a235f120d245c',1,'DirectX::DX12::VertexPositionNormalColorTexture::normal']]],
+  ['normaltextureindex_7',['normalTextureIndex',['../struct_direct_x_1_1_d_x12_1_1_i_effect_factory_1_1_effect_info.html#a5696d8131eb9feebf478b377467bb1e8',1,'DirectX::DX12::IEffectFactory::EffectInfo']]],
+  ['numlock_8',['NumLock',['../struct_direct_x_1_1_keyboard_1_1_state.html#a08a45e861290341dda6f5944cd85f0e0',1,'DirectX::Keyboard::State']]],
+  ['numpad0_9',['NumPad0',['../struct_direct_x_1_1_keyboard_1_1_state.html#a8622508792d7ebbb5af37efb2ca28a29',1,'DirectX::Keyboard::State']]],
+  ['numpad1_10',['NumPad1',['../struct_direct_x_1_1_keyboard_1_1_state.html#a046dc77627979c0da5a49f990422f036',1,'DirectX::Keyboard::State']]],
+  ['numpad2_11',['NumPad2',['../struct_direct_x_1_1_keyboard_1_1_state.html#a12ae058161c5b0fc0ce0052a1a36940c',1,'DirectX::Keyboard::State']]],
+  ['numpad3_12',['NumPad3',['../struct_direct_x_1_1_keyboard_1_1_state.html#adddebb3f86dff4f890ae473afd4615c4',1,'DirectX::Keyboard::State']]],
+  ['numpad4_13',['NumPad4',['../struct_direct_x_1_1_keyboard_1_1_state.html#ac0fb39d367327878dba482bf1a17bd1b',1,'DirectX::Keyboard::State']]],
+  ['numpad5_14',['NumPad5',['../struct_direct_x_1_1_keyboard_1_1_state.html#afec768ea2ab313c85c4d34332f6ce19b',1,'DirectX::Keyboard::State']]],
+  ['numpad6_15',['NumPad6',['../struct_direct_x_1_1_keyboard_1_1_state.html#a386203a82bf502bd00ec2f9f4b4c96bb',1,'DirectX::Keyboard::State']]],
+  ['numpad7_16',['NumPad7',['../struct_direct_x_1_1_keyboard_1_1_state.html#a768f54ea466c3a20149243527b1d0889',1,'DirectX::Keyboard::State']]],
+  ['numpad8_17',['NumPad8',['../struct_direct_x_1_1_keyboard_1_1_state.html#a4444abc0cfd00ec541d5f0b87ec7ff0f',1,'DirectX::Keyboard::State']]],
+  ['numpad9_18',['NumPad9',['../struct_direct_x_1_1_keyboard_1_1_state.html#a06c0b1b2417f8f11083cae75a4b56c11',1,'DirectX::Keyboard::State']]],
+  ['numrendertargets_19',['numRenderTargets',['../class_direct_x_1_1_render_target_state.html#a3105aca3343f6667ecd48244f0c418a6',1,'DirectX::RenderTargetState']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['monitor_5fdpi_5ftype_0',['MONITOR_DPI_TYPE',['../imgui__impl__win32_8cpp.html#a6d3b6e6160452fd0315bf529461dadcf',1,'imgui_impl_win32.cpp']]]
+  ['colorprimaryrotation_0',['ColorPrimaryRotation',['../class_direct_x_1_1_d_x12_1_1_tone_map_post_process.html#a8d181c26da66993b48f6160e2620a0b3',1,'DirectX::DX12::ToneMapPostProcess']]]
 ];

@@ -1,0 +1,145 @@
+\doxysection{Render\+Target\+State.\+h}
+\hypertarget{_render_target_state_8h_source}{}\label{_render_target_state_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/RenderTargetState.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/RenderTargetState.h}}
+\doxymbox{\hyperlink{_render_target_state_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ RenderTargetState.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#ifdef\ USING\_DIRECTX\_HEADERS}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <dxgi1\_4.h>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00048\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ Encapsulates\ all\ render\ target\ state\ when\ creating\ pipeline\ state\ objects}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}}
+\DoxyCodeLine{00051\ \ \ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}()\ noexcept}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_ad463d935507128cbf9a191ed647f9800}{sampleMask}}(\string~0U)}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a3105aca3343f6667ecd48244f0c418a6}{numRenderTargets}}(0)}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a5af08951a101aefb5bc5fee7d10d95f8}{rtvFormats}}\{\}}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ dsvFormat(DXGI\_FORMAT\_UNKNOWN)}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ sampleDesc\{\}}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ nodeMask(0)}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a8a667eba3db58d652079bdeb76954ad5}{RenderTargetState}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a9134f6b15d33d4d5d23115863ede1d9b}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a08fbc757bd90e2b731ed4cd8eda43861}{RenderTargetState}}(\doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_ad9403091b45799980f9e59a46129d208}{operator=}}(\doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_af5f175f5f4bc1bccd9ee8e1b7295070f}{RenderTargetState}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Single\ render\ target\ convenience\ constructor}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a0f54c7995ffa0a7d64311938fc801e5f}{RenderTargetState}}(}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ DXGI\_FORMAT\ rtFormat,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ DXGI\_FORMAT\ dsFormat)\ noexcept}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_ad463d935507128cbf9a191ed647f9800}{sampleMask}}(UINT\_MAX)}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a3105aca3343f6667ecd48244f0c418a6}{numRenderTargets}}(1)}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a5af08951a101aefb5bc5fee7d10d95f8}{rtvFormats}}\{\}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ dsvFormat(dsFormat)}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ sampleDesc\{\}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ nodeMask(0)}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ sampleDesc.Count\ =\ 1;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ rtvFormats[0]\ =\ rtFormat;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ MSAA\ single\ render\ target\ convenience\ constructor}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a15269808dfca9bb529be2516abf8c99a}{RenderTargetState}}(}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ DXGI\_FORMAT\ rtFormat,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ DXGI\_FORMAT\ dsFormat,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ uint32\_t\ sampleCount,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ uint32\_t\ quality\ =\ 0)\ noexcept}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_ad463d935507128cbf9a191ed647f9800}{sampleMask}}(UINT\_MAX)}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a3105aca3343f6667ecd48244f0c418a6}{numRenderTargets}}(1)}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a5af08951a101aefb5bc5fee7d10d95f8}{rtvFormats}}\{\}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ dsvFormat(dsFormat)}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ sampleDesc\{\ sampleCount,\ quality\ \}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ nodeMask(0)}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ rtvFormats[0]\ =\ rtFormat;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Convenience\ constructors\ converting\ from\ DXGI\_SWAPCHAIN\_DESC}}
+\DoxyCodeLine{00100\ \textcolor{preprocessor}{\ \ \ \ \#if\ defined(\_\_dxgi\_h\_\_)\ ||\ defined(\_\_d3d11\_x\_h\_\_)\ ||\ defined(\_\_d3d12\_x\_h\_\_)\ ||\ defined(\_\_XBOX\_D3D12\_X\_\_)}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ RenderTargetState(}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keyword}{const}\ DXGI\_SWAP\_CHAIN\_DESC*\ desc,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ DXGI\_FORMAT\ dsFormat)\ noexcept}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ :\ sampleMask(UINT\_MAX)}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ numRenderTargets(1)}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ rtvFormats\{\}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ dsvFormat(dsFormat)}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ sampleDesc\{\}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ nodeMask(0)}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ rtvFormats[0]\ =\ desc-\/>BufferDesc.Format;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ sampleDesc\ =\ desc-\/>SampleDesc;}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00114\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \textcolor{preprocessor}{\ \ \ \ \#if\ defined(\_\_dxgi1\_2\_h\_\_)\ ||\ defined(\_\_d3d11\_x\_h\_\_)\ ||\ defined(\_\_d3d12\_x\_h\_\_)\ ||\ defined(\_\_XBOX\_D3D12\_X\_\_)}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ RenderTargetState(}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keyword}{const}\ DXGI\_SWAP\_CHAIN\_DESC1*\ desc,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ DXGI\_FORMAT\ dsFormat)\ noexcept}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ :\ sampleMask(UINT\_MAX)}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ numRenderTargets(1)}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ rtvFormats\{\}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ dsvFormat(dsFormat)}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ sampleDesc\{\}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ ,\ nodeMask(0)}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ rtvFormats[0]\ =\ desc-\/>Format;}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ sampleDesc\ =\ desc-\/>SampleDesc;}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_ad463d935507128cbf9a191ed647f9800}{sampleMask}};}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a3105aca3343f6667ecd48244f0c418a6}{numRenderTargets}};}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ DXGI\_FORMAT\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a5af08951a101aefb5bc5fee7d10d95f8}{rtvFormats}}[D3D12\_SIMULTANEOUS\_RENDER\_TARGET\_COUNT];}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ DXGI\_FORMAT\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_ae4045c465a7e1d87f98b8974f2c8ab65}{dsvFormat}};}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ DXGI\_SAMPLE\_DESC\ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_a1864a2f80d89789a7cb7109f610d048c}{sampleDesc}};}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state_abd5108963553dfdd60ccf138726b2736}{nodeMask}};}
+\DoxyCodeLine{00138\ \ \ \ \ \};}
+\DoxyCodeLine{00139\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,105 @@
+\doxysection{DirectX::\+DX12::\+Private::\+Primitive\+Batch\+Base Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base}{}\label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+
+
+{\ttfamily \+\#include $<$Primitive\+Batch.\+h$>$}
+
+Inheritance diagram for DirectX::\+DX12::\+Private::\+Primitive\+Batch\+Base:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ad1486b176a333690426c3ca19b704155}{Begin}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}cmd\+List)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ab28943c6ca8f70d92a714d038815ee3c}{End}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, size\+\_\+t max\+Indices, size\+\_\+t max\+Vertices, size\+\_\+t vertex\+Size)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ae24a68e5292e6c5c978a6a07c4d1034d}{Primitive\+Batch\+Base}} (Primitive\+Batch\+Base \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ac0c9a0e9af32830aa0a519a7a5f578df}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a22446b73f6859dbf589db341663043ba}{Primitive\+Batch\+Base}} (Primitive\+Batch\+Base const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a3b72258bcc095bf977ec19c3cd1408a8}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2a1bcc10db8abb302db7646dcad97a7d}{\texorpdfstring{$\sim$}{\string~}\+Primitive\+Batch\+Base}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}{Draw}} (D3\+D\+\_\+\+PRIMITIVE\+\_\+\+TOPOLOGY topology, bool is\+Indexed, \+\_\+\+In\+\_\+opt\+\_\+count\+\_\+(index\+Count) uint16\+\_\+t const \texorpdfstring{$\ast$}{*}indices, size\+\_\+t index\+Count, size\+\_\+t vertex\+Count, \+\_\+\+Outptr\+\_\+ void \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Mapped\+Vertices)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!PrimitiveBatchBase@{PrimitiveBatchBase}}
+\index{PrimitiveBatchBase@{PrimitiveBatchBase}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{PrimitiveBatchBase()}{PrimitiveBatchBase()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+\+Primitive\+Batch\+Base (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{size\+\_\+t}]{max\+Indices}{, }\item[{size\+\_\+t}]{max\+Vertices}{, }\item[{size\+\_\+t}]{vertex\+Size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ae24a68e5292e6c5c978a6a07c4d1034d}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!PrimitiveBatchBase@{PrimitiveBatchBase}}
+\index{PrimitiveBatchBase@{PrimitiveBatchBase}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{PrimitiveBatchBase()}{PrimitiveBatchBase()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ae24a68e5292e6c5c978a6a07c4d1034d} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+\+Primitive\+Batch\+Base (\begin{DoxyParamCaption}\item[{Primitive\+Batch\+Base \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a22446b73f6859dbf589db341663043ba}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!PrimitiveBatchBase@{PrimitiveBatchBase}}
+\index{PrimitiveBatchBase@{PrimitiveBatchBase}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{PrimitiveBatchBase()}{PrimitiveBatchBase()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a22446b73f6859dbf589db341663043ba} 
+Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+\+Primitive\+Batch\+Base (\begin{DoxyParamCaption}\item[{Primitive\+Batch\+Base const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2a1bcc10db8abb302db7646dcad97a7d}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!````~PrimitiveBatchBase@{\texorpdfstring{$\sim$}{\string~}PrimitiveBatchBase}}
+\index{````~PrimitiveBatchBase@{\texorpdfstring{$\sim$}{\string~}PrimitiveBatchBase}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}PrimitiveBatchBase()}{\string~PrimitiveBatchBase()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2a1bcc10db8abb302db7646dcad97a7d} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+\texorpdfstring{$\sim$}{\string~}\+Primitive\+Batch\+Base (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ad1486b176a333690426c3ca19b704155}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!Begin@{Begin}}
+\index{Begin@{Begin}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{Begin()}{Begin()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ad1486b176a333690426c3ca19b704155} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+\+Begin (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{cmd\+List}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!Draw@{Draw}}
+\index{Draw@{Draw}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+\+Draw (\begin{DoxyParamCaption}\item[{D3\+D\+\_\+\+PRIMITIVE\+\_\+\+TOPOLOGY}]{topology}{, }\item[{bool}]{is\+Indexed}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+count\+\_\+(index\+Count) uint16\+\_\+t const \texorpdfstring{$\ast$}{*}}]{indices}{, }\item[{size\+\_\+t}]{index\+Count}{, }\item[{size\+\_\+t}]{vertex\+Count}{, }\item[{\+\_\+\+Outptr\+\_\+ void \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{p\+Mapped\+Vertices}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ab28943c6ca8f70d92a714d038815ee3c}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!End@{End}}
+\index{End@{End}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{End()}{End()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ab28943c6ca8f70d92a714d038815ee3c} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+\+End (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ac0c9a0e9af32830aa0a519a7a5f578df}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ac0c9a0e9af32830aa0a519a7a5f578df} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} \& Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a3b72258bcc095bf977ec19c3cd1408a8}\index{DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::Private::PrimitiveBatchBase@{DirectX::DX12::Private::PrimitiveBatchBase}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a3b72258bcc095bf977ec19c3cd1408a8} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} \& Direct\+X::\+\+DX12::\+\+Private::\+\+Primitive\+Batch\+Base::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{Primitive\+Batch\+Base}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [delete]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_primitive_batch_8h}{Primitive\+Batch.\+h}}\end{DoxyCompactItemize}

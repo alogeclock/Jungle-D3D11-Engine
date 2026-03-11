@@ -1,0 +1,225 @@
+\doxysection{DirectX::\+DX12::\+Basic\+Post\+Process Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process}{}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+
+
+{\ttfamily \+\#include $<$Post\+Process.\+h$>$}
+
+Inheritance diagram for DirectX::\+DX12::\+Basic\+Post\+Process:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_direct_x_1_1_d_x12_1_1_basic_post_process}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28}{Effect}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a8443405f420f19885ffe9d6639ed2b59}{Copy}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5a01e9550bd0d1ff42915915cd6e74ab}{Monochrome}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae3e2f48713da87b79cbac0c79ac90dde}{Sepia}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ac878ca9f8328fc0b87678db5c92afbcb}{Down\+Scale\+\_\+2x2}}
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a4b9f4f085a93d27f05e3c9e8b4d48a83}{Down\+Scale\+\_\+4x4}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a7d022ef19532949a3512473f62870a8d}{Gaussian\+Blur\+\_\+5x5}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a73da1a984c53b86bd4c4f300e73c5a40}{Bloom\+Extract}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5cf64042281e9a5cee9b8919de28a2a5}{Bloom\+Blur}}
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae93698b1388389c5281a3b1e60f5ae62}{Effect\+\_\+\+Max}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&rt\+State, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28}{Effect}} fx)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_acc8c26193e1cc368dd85c37cb3032808}{Basic\+Post\+Process}} (Basic\+Post\+Process \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a2a77c86f63da7b1a2d29d50e8d7640ed}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af9999808ac306d4d87136429d38d9800}{Basic\+Post\+Process}} (Basic\+Post\+Process const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af8e40ee88824244589683c1f68fff455}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} const \&)=delete
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af752f2da49e17803a07d8f4ab4b6ce2a}{\texorpdfstring{$\sim$}{\string~}\+Basic\+Post\+Process}} () override
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_aba66c948e73d5b57080c6c6e253ab0e6}{Process}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List) override
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a65da1c6c471880e0ab88dd074f757876}{Set\+Source\+Texture}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE srv\+Descriptor, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}resource)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a210a959b5a48b0f567566d88edb28482}{Set\+Gaussian\+Parameter}} (float multiplier)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_ac6fbdd552d6336f14ff08ce552756225}{Set\+Bloom\+Extract\+Parameter}} (float threshold)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af18c96836ac3e7f946e16607bd5368d0}{Set\+Bloom\+Blur\+Parameters}} (bool horizontal, float size, float brightness)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a88d7426b2bcbd31d8543ed2a92bb9403}{\texorpdfstring{$\sim$}{\string~}\+IPost\+Process}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} (const IPost\+Process \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_abf2d8d22ffba95bad598b9145d4fc41a}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \&)=delete
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_af22622d3da9ccb795b93de730316da3c}{IPost\+Process}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a287f201fdfeaae729e0ede71006236dd}{IPost\+Process}} (IPost\+Process \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a501cfda19e0c3a407ac34e18036ba1d0}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \&\&)=default
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!Effect@{Effect}}
+\index{Effect@{Effect}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{Effect}{Effect}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28}{Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Effect}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Copy@{Copy}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!Copy@{Copy}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a8443405f420f19885ffe9d6639ed2b59}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a8443405f420f19885ffe9d6639ed2b59} 
+Copy&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Monochrome@{Monochrome}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!Monochrome@{Monochrome}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5a01e9550bd0d1ff42915915cd6e74ab}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5a01e9550bd0d1ff42915915cd6e74ab} 
+Monochrome&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Sepia@{Sepia}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!Sepia@{Sepia}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae3e2f48713da87b79cbac0c79ac90dde}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae3e2f48713da87b79cbac0c79ac90dde} 
+Sepia&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DownScale\_2x2@{DownScale\_2x2}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!DownScale\_2x2@{DownScale\_2x2}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ac878ca9f8328fc0b87678db5c92afbcb}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ac878ca9f8328fc0b87678db5c92afbcb} 
+Down\+Scale\+\_\+2x2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DownScale\_4x4@{DownScale\_4x4}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!DownScale\_4x4@{DownScale\_4x4}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a4b9f4f085a93d27f05e3c9e8b4d48a83}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a4b9f4f085a93d27f05e3c9e8b4d48a83} 
+Down\+Scale\+\_\+4x4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GaussianBlur\_5x5@{GaussianBlur\_5x5}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!GaussianBlur\_5x5@{GaussianBlur\_5x5}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a7d022ef19532949a3512473f62870a8d}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a7d022ef19532949a3512473f62870a8d} 
+Gaussian\+Blur\+\_\+5x5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BloomExtract@{BloomExtract}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!BloomExtract@{BloomExtract}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a73da1a984c53b86bd4c4f300e73c5a40}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a73da1a984c53b86bd4c4f300e73c5a40} 
+Bloom\+Extract&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BloomBlur@{BloomBlur}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!BloomBlur@{BloomBlur}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5cf64042281e9a5cee9b8919de28a2a5}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28a5cf64042281e9a5cee9b8919de28a2a5} 
+Bloom\+Blur&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Effect\_Max@{Effect\_Max}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!Effect\_Max@{Effect\_Max}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae93698b1388389c5281a3b1e60f5ae62}\label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28ae93698b1388389c5281a3b1e60f5ae62} 
+Effect\+\_\+\+Max&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!BasicPostProcess@{BasicPostProcess}}
+\index{BasicPostProcess@{BasicPostProcess}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{BasicPostProcess()}{BasicPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Basic\+Post\+Process (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&}]{rt\+State}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_af33cd02f09c26012551fe5157609fe28}{Effect}}}]{fx}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_acc8c26193e1cc368dd85c37cb3032808}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!BasicPostProcess@{BasicPostProcess}}
+\index{BasicPostProcess@{BasicPostProcess}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{BasicPostProcess()}{BasicPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_acc8c26193e1cc368dd85c37cb3032808} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Basic\+Post\+Process (\begin{DoxyParamCaption}\item[{Basic\+Post\+Process \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af9999808ac306d4d87136429d38d9800}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!BasicPostProcess@{BasicPostProcess}}
+\index{BasicPostProcess@{BasicPostProcess}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{BasicPostProcess()}{BasicPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af9999808ac306d4d87136429d38d9800} 
+Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Basic\+Post\+Process (\begin{DoxyParamCaption}\item[{Basic\+Post\+Process const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af752f2da49e17803a07d8f4ab4b6ce2a}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!````~BasicPostProcess@{\texorpdfstring{$\sim$}{\string~}BasicPostProcess}}
+\index{````~BasicPostProcess@{\texorpdfstring{$\sim$}{\string~}BasicPostProcess}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}BasicPostProcess()}{\string~BasicPostProcess()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af752f2da49e17803a07d8f4ab4b6ce2a} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\texorpdfstring{$\sim$}{\string~}\+Basic\+Post\+Process (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_a2a77c86f63da7b1a2d29d50e8d7640ed}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_a2a77c86f63da7b1a2d29d50e8d7640ed} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} \& Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af8e40ee88824244589683c1f68fff455}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af8e40ee88824244589683c1f68fff455} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} \& Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_basic_post_process_a55f361008abdc45e65f4914b5d284575}{Basic\+Post\+Process}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_aba66c948e73d5b57080c6c6e253ab0e6}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!Process@{Process}}
+\index{Process@{Process}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{Process()}{Process()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_aba66c948e73d5b57080c6c6e253ab0e6} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Process (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a082ac1a25e3f4ea45101b50999bbb3f8}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}.
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_af18c96836ac3e7f946e16607bd5368d0}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!SetBloomBlurParameters@{SetBloomBlurParameters}}
+\index{SetBloomBlurParameters@{SetBloomBlurParameters}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetBloomBlurParameters()}{SetBloomBlurParameters()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_af18c96836ac3e7f946e16607bd5368d0} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Set\+Bloom\+Blur\+Parameters (\begin{DoxyParamCaption}\item[{bool}]{horizontal}{, }\item[{float}]{size}{, }\item[{float}]{brightness}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_ac6fbdd552d6336f14ff08ce552756225}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!SetBloomExtractParameter@{SetBloomExtractParameter}}
+\index{SetBloomExtractParameter@{SetBloomExtractParameter}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetBloomExtractParameter()}{SetBloomExtractParameter()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_ac6fbdd552d6336f14ff08ce552756225} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Set\+Bloom\+Extract\+Parameter (\begin{DoxyParamCaption}\item[{float}]{threshold}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_a210a959b5a48b0f567566d88edb28482}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!SetGaussianParameter@{SetGaussianParameter}}
+\index{SetGaussianParameter@{SetGaussianParameter}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetGaussianParameter()}{SetGaussianParameter()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_a210a959b5a48b0f567566d88edb28482} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Set\+Gaussian\+Parameter (\begin{DoxyParamCaption}\item[{float}]{multiplier}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_basic_post_process_a65da1c6c471880e0ab88dd074f757876}\index{DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}!SetSourceTexture@{SetSourceTexture}}
+\index{SetSourceTexture@{SetSourceTexture}!DirectX::DX12::BasicPostProcess@{DirectX::DX12::BasicPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetSourceTexture()}{SetSourceTexture()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_basic_post_process_a65da1c6c471880e0ab88dd074f757876} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Basic\+Post\+Process::\+\+Set\+Source\+Texture (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{srv\+Descriptor}{, }\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}}]{resource}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_post_process_8h}{Post\+Process.\+h}}\end{DoxyCompactItemize}

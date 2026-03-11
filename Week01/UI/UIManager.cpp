@@ -87,5 +87,5 @@ const FPopupManager& FUIManager::GetPopupManager() const
 void FUIManager::ClearAll()
 {
     WidgetMap.clear();
-    PopupManager.CloseAll();
+    PopupManager.RemoveClosedPopup(); // TODO
 }

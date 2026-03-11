@@ -1,0 +1,119 @@
+\doxysection{FAudio\+System Class Reference}
+\hypertarget{class_f_audio_system}{}\label{class_f_audio_system}\index{FAudioSystem@{FAudioSystem}}
+
+
+{\ttfamily \+\#include $<$Audio\+System.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_f_audio_system_aae7f34646f38b8194b559927fdc8faa1}{Initialize}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_audio_system_a677fe730f99df5bb39b2d26a171a1b7c}{Shutdown}} ()
+\item 
+bool \doxymbox{\hyperlink{class_f_audio_system_a707ad416f8a553dae2dbaccba0ee086e}{Load\+Wav}} (const std::\+string \&Key, const std::\+string \&File\+Path)
+\item 
+bool \doxymbox{\hyperlink{class_f_audio_system_accc0c9ca589632744435814921274f82}{Play}} (const std::\+string \&Key, bool b\+Loop=false)
+\item 
+void \doxymbox{\hyperlink{class_f_audio_system_aa8455741ff5bc8cf75db7ad0f05fccd6}{Stop}} (const std::\+string \&Key)
+\item 
+void \doxymbox{\hyperlink{class_f_audio_system_a65252f4342bea1ca01111ae98660cd47}{Stop\+All}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_audio_system_a4c1767d3b5fdf261b8eccdf464e39808}{Set\+Volume}} (const std::\+string \&Key, float Volume)
+\item 
+void \doxymbox{\hyperlink{class_f_audio_system_aeea6a5dc32d0974c0d8d4e1a86e56460}{Set\+Master\+Volume}} (float Volume)
+\item 
+void \doxymbox{\hyperlink{class_f_audio_system_a10ea8a91ff45b871f8d6801dc4b6ff91}{Set\+Playback\+Rate}} (const std::\+string \&Key, float Rate)
+\item 
+void \doxymbox{\hyperlink{class_f_audio_system_af070c31db19634576488bba16f76783f}{Set\+All\+Playback\+Rate}} (float Rate)
+\item 
+bool \doxymbox{\hyperlink{class_f_audio_system_aced10bd6c9b27cc1eaa0878e95ec3a34}{Is\+Playing}} (const std::\+string \&Key) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{class_f_audio_system}{FAudio\+System}} \& \doxymbox{\hyperlink{class_f_audio_system_aa0f3afaa0c3dec49dbaaf4f2e35a69c0}{Get}} ()
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_audio_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_audio_system_aa0f3afaa0c3dec49dbaaf4f2e35a69c0}\index{FAudioSystem@{FAudioSystem}!Get@{Get}}
+\index{Get@{Get}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_aa0f3afaa0c3dec49dbaaf4f2e35a69c0} 
+\doxymbox{\hyperlink{class_f_audio_system}{FAudio\+System}} \& FAudio\+System::\+\+Get (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_f_audio_system_aae7f34646f38b8194b559927fdc8faa1}\index{FAudioSystem@{FAudioSystem}!Initialize@{Initialize}}
+\index{Initialize@{Initialize}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{Initialize()}{Initialize()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_aae7f34646f38b8194b559927fdc8faa1} 
+bool FAudio\+System::\+\+Initialize (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_aced10bd6c9b27cc1eaa0878e95ec3a34}\index{FAudioSystem@{FAudioSystem}!IsPlaying@{IsPlaying}}
+\index{IsPlaying@{IsPlaying}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{IsPlaying()}{IsPlaying()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_aced10bd6c9b27cc1eaa0878e95ec3a34} 
+bool FAudio\+System::\+\+Is\+Playing (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_audio_system_a707ad416f8a553dae2dbaccba0ee086e}\index{FAudioSystem@{FAudioSystem}!LoadWav@{LoadWav}}
+\index{LoadWav@{LoadWav}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{LoadWav()}{LoadWav()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_a707ad416f8a553dae2dbaccba0ee086e} 
+bool FAudio\+System::\+\+Load\+Wav (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{, }\item[{const std::\+string \&}]{File\+Path}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_accc0c9ca589632744435814921274f82}\index{FAudioSystem@{FAudioSystem}!Play@{Play}}
+\index{Play@{Play}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{Play()}{Play()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_accc0c9ca589632744435814921274f82} 
+bool FAudio\+System::\+\+Play (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{, }\item[{bool}]{b\+Loop}{ = {\ttfamily false}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_af070c31db19634576488bba16f76783f}\index{FAudioSystem@{FAudioSystem}!SetAllPlaybackRate@{SetAllPlaybackRate}}
+\index{SetAllPlaybackRate@{SetAllPlaybackRate}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{SetAllPlaybackRate()}{SetAllPlaybackRate()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_af070c31db19634576488bba16f76783f} 
+void FAudio\+System::\+\+Set\+All\+Playback\+Rate (\begin{DoxyParamCaption}\item[{float}]{Rate}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_aeea6a5dc32d0974c0d8d4e1a86e56460}\index{FAudioSystem@{FAudioSystem}!SetMasterVolume@{SetMasterVolume}}
+\index{SetMasterVolume@{SetMasterVolume}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{SetMasterVolume()}{SetMasterVolume()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_aeea6a5dc32d0974c0d8d4e1a86e56460} 
+void FAudio\+System::\+\+Set\+Master\+Volume (\begin{DoxyParamCaption}\item[{float}]{Volume}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_a10ea8a91ff45b871f8d6801dc4b6ff91}\index{FAudioSystem@{FAudioSystem}!SetPlaybackRate@{SetPlaybackRate}}
+\index{SetPlaybackRate@{SetPlaybackRate}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{SetPlaybackRate()}{SetPlaybackRate()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_a10ea8a91ff45b871f8d6801dc4b6ff91} 
+void FAudio\+System::\+\+Set\+Playback\+Rate (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{, }\item[{float}]{Rate}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_a4c1767d3b5fdf261b8eccdf464e39808}\index{FAudioSystem@{FAudioSystem}!SetVolume@{SetVolume}}
+\index{SetVolume@{SetVolume}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{SetVolume()}{SetVolume()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_a4c1767d3b5fdf261b8eccdf464e39808} 
+void FAudio\+System::\+\+Set\+Volume (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{, }\item[{float}]{Volume}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_a677fe730f99df5bb39b2d26a171a1b7c}\index{FAudioSystem@{FAudioSystem}!Shutdown@{Shutdown}}
+\index{Shutdown@{Shutdown}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{Shutdown()}{Shutdown()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_a677fe730f99df5bb39b2d26a171a1b7c} 
+void FAudio\+System::\+\+Shutdown (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_aa8455741ff5bc8cf75db7ad0f05fccd6}\index{FAudioSystem@{FAudioSystem}!Stop@{Stop}}
+\index{Stop@{Stop}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{Stop()}{Stop()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_aa8455741ff5bc8cf75db7ad0f05fccd6} 
+void FAudio\+System::\+\+Stop (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_audio_system_a65252f4342bea1ca01111ae98660cd47}\index{FAudioSystem@{FAudioSystem}!StopAll@{StopAll}}
+\index{StopAll@{StopAll}!FAudioSystem@{FAudioSystem}}
+\doxysubsubsection{\texorpdfstring{StopAll()}{StopAll()}}
+{\footnotesize\ttfamily \label{class_f_audio_system_a65252f4342bea1ca01111ae98660cd47} 
+void FAudio\+System::\+\+Stop\+All (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Core/\+\doxymbox{\hyperlink{_audio_system_8h}{Audio\+System.\+h}}\item 
+Core/\+\doxymbox{\hyperlink{_audio_system_8cpp}{Audio\+System.\+cpp}}\end{DoxyCompactItemize}

@@ -15,9 +15,13 @@ Inheritance diagram for FMonster:\+\begin{figure}[H]
 \item 
 \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActor\+Type}} \doxymbox{\hyperlink{class_f_monster_a8d9e57fc0fbce15a135045329bb042be}{Get\+Actor\+Type}} () const override
 \item 
-void \doxymbox{\hyperlink{class_f_monster_a9361e0047f38b61acd842fc445589f70}{Update}} (float Delta\+Time) override
+void \doxymbox{\hyperlink{class_f_monster_ab99ea1e9983cf0533ac2ce78efb35cce}{Update}} (float Delta\+Time, \doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
 \item 
 void \doxymbox{\hyperlink{class_f_monster_a52648e30a33904f0e417483607c00e85}{On\+Beat}} (\doxymbox{\hyperlink{class_f_stage}{FStage}} \&Stage) override
+\item 
+void \doxymbox{\hyperlink{class_f_monster_a61085fbafcefad2fcf277660ddedf5f9}{Set\+Move\+Frequency}} (int In\+Freq)
+\item 
+int \doxymbox{\hyperlink{class_f_monster_a09ebcec17395797acd1b61704e10cbf9}{Get\+Move\+Frequency}} () const
 \item 
 void \doxymbox{\hyperlink{class_f_monster_ac05ba03c3564bdf723b4bb7941bf491a}{Set\+Ai\+Type}} (\doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}} In\+Ai\+Type)
 \item 
@@ -58,6 +62,10 @@ void \doxymbox{\hyperlink{class_f_actor_a279cf6d77a0343648e2dece3f1eb1801}{Heal}
 \item 
 bool \doxymbox{\hyperlink{class_f_actor_a4e8f828e5728dc61a99878afcd02fe4d}{Is\+Dead}} () const
 \item 
+void \doxymbox{\hyperlink{class_f_actor_ae30eefecc73f1ae6a57d9a146db2de43}{Set\+Invincible}} (bool b\+Enable)
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a2f466aae61cd1e033a6d9fc7c73c3667}{Is\+Invincible}} () const
+\item 
 bool \doxymbox{\hyperlink{class_f_actor_adc0348f0969c577bd049e44dcec1e840}{Is\+Moving}} () const
 \item 
 void \doxymbox{\hyperlink{class_f_actor_a0382ed1b6c73a2a6d5649440dd992e7f}{Set\+Sprite}} (const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&In\+Sprite)
@@ -78,7 +86,9 @@ float \doxymbox{\hyperlink{class_f_actor_a9aceaf647fb5b86ac7ac887913ac67db}{Rend
 \item 
 \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} \doxymbox{\hyperlink{class_f_actor_a713cc90aceb283518cfc654a60659f5c}{Direction}} = \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42a08a38277b0309070706f6652eeae9a53}{EDirection::\+\+Down}}
 \item 
-int \doxymbox{\hyperlink{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239}{Hp}} = 1
+int \doxymbox{\hyperlink{class_f_actor_a76d0af9467bf9ec1b559deef9dea7239}{Hp}} = 5
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a78d706532c3fa04982ca6722ea22309f}{b\+Is\+Invincible}} = false
 \item 
 bool \doxymbox{\hyperlink{class_f_actor_a1423baf579ad4798e911df3cf2ed3ee7}{b\+Is\+Moving}} = false
 \item 
@@ -123,6 +133,12 @@ Implements \doxymbox{\hyperlink{class_f_actor_aacfa923eb1d70916869e858aa897097e}
 {\footnotesize\ttfamily \label{class_f_monster_a65963fc01a9144a68db4fb3b3e0485c8} 
 \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}} FMonster::\+\+Get\+Ai\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{class_f_monster_a09ebcec17395797acd1b61704e10cbf9}\index{FMonster@{FMonster}!GetMoveFrequency@{GetMoveFrequency}}
+\index{GetMoveFrequency@{GetMoveFrequency}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{GetMoveFrequency()}{GetMoveFrequency()}}
+{\footnotesize\ttfamily \label{class_f_monster_a09ebcec17395797acd1b61704e10cbf9} 
+int FMonster::\+\+Get\+Move\+Frequency (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{class_f_monster_a52648e30a33904f0e417483607c00e85}\index{FMonster@{FMonster}!OnBeat@{OnBeat}}
 \index{OnBeat@{OnBeat}!FMonster@{FMonster}}
 \doxysubsubsection{\texorpdfstring{OnBeat()}{OnBeat()}}
@@ -139,15 +155,21 @@ Implements \doxymbox{\hyperlink{class_f_actor_a88bccdf6676b7fff8414a48d9cec2cc5}
 {\footnotesize\ttfamily \label{class_f_monster_ac05ba03c3564bdf723b4bb7941bf491a} 
 void FMonster::\+\+Set\+Ai\+Type (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}}}]{In\+Ai\+Type}{}\end{DoxyParamCaption})}
 
-\Hypertarget{class_f_monster_a9361e0047f38b61acd842fc445589f70}\index{FMonster@{FMonster}!Update@{Update}}
+\Hypertarget{class_f_monster_a61085fbafcefad2fcf277660ddedf5f9}\index{FMonster@{FMonster}!SetMoveFrequency@{SetMoveFrequency}}
+\index{SetMoveFrequency@{SetMoveFrequency}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{SetMoveFrequency()}{SetMoveFrequency()}}
+{\footnotesize\ttfamily \label{class_f_monster_a61085fbafcefad2fcf277660ddedf5f9} 
+void FMonster::\+\+Set\+Move\+Frequency (\begin{DoxyParamCaption}\item[{int}]{In\+Freq}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_monster_ab99ea1e9983cf0533ac2ce78efb35cce}\index{FMonster@{FMonster}!Update@{Update}}
 \index{Update@{Update}!FMonster@{FMonster}}
 \doxysubsubsection{\texorpdfstring{Update()}{Update()}}
-{\footnotesize\ttfamily \label{class_f_monster_a9361e0047f38b61acd842fc445589f70} 
-void FMonster::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily \label{class_f_monster_ab99ea1e9983cf0533ac2ce78efb35cce} 
+void FMonster::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{, }\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
 
 
 
-Reimplemented from \doxymbox{\hyperlink{class_f_actor_a1a55fa9c80cb537ed6b701de1bf01d5f}{FActor}}.
+Reimplemented from \doxymbox{\hyperlink{class_f_actor_a9b8bdf8a83131a5c626b070534d851f6}{FActor}}.
 
 
 

@@ -27,7 +27,7 @@
 \DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_afd49d1c64f2553201b96c70884366ca7}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
 \DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_a0c45ecd9ee46d0766898ec84f32c26a5}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
 \DoxyCodeLine{00025\ }
-\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_ae667d69faeb1021925b6ee715352db63}{StartNewGame}}(\textcolor{keyword}{const}\ std::string\ \&MapPath);}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_a007f28bfa551b4b029125c515fe153cf}{StartNewGame}}(\textcolor{keywordtype}{int}\ StageIndex\ =\ 0);}
 \DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_play_scene_ac0495f4bfbeb1f0c8922d1937f5b4037}{RestartGame}}();}
 \DoxyCodeLine{00028\ }
 \DoxyCodeLine{00029\ \textcolor{keyword}{private}:}
@@ -40,7 +40,7 @@
 \DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsPaused\ =\ \textcolor{keyword}{false};}
 \DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsGameOverPopupOpened\ =\ \textcolor{keyword}{false};}
 \DoxyCodeLine{00038\ }
-\DoxyCodeLine{00039\ \ \ \ \ std::string\ CurrentMapPath;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{int}\ CurrentStageIndex\ =\ 0;}
 \DoxyCodeLine{00040\ \};}
 
 \end{DoxyCode}

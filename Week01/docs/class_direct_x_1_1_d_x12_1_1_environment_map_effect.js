@@ -1,0 +1,36 @@
+var class_direct_x_1_1_d_x12_1_1_environment_map_effect =
+[
+    [ "Mapping", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#acdcbc2408f2ef28d460e9671df52dbb0", [
+      [ "Mapping_Cube", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#acdcbc2408f2ef28d460e9671df52dbb0a1750442bd5ce0d28e205b9842ea4276b", null ],
+      [ "Mapping_Sphere", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#acdcbc2408f2ef28d460e9671df52dbb0a625eb1ea736f6052fd948a9968234d4f", null ],
+      [ "Mapping_DualParabola", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#acdcbc2408f2ef28d460e9671df52dbb0a58bc75603edcec265e6780d4c3204573", null ]
+    ] ],
+    [ "EnvironmentMapEffect", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ae3db9765ee4de0b7aaaf37b9a59e10b1", null ],
+    [ "EnvironmentMapEffect", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a8482ed13e9f887d7c84a1c8a55e4ea27", null ],
+    [ "EnvironmentMapEffect", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ab5eccd6de3e0326d28e9f20bbf61753f", null ],
+    [ "~EnvironmentMapEffect", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#aecceb4c807098699adbc78de14b9b60d", null ],
+    [ "Apply", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#afb5b2836433db5413ef34a617adb8c22", null ],
+    [ "EnableDefaultLighting", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a21caa2ea4815a7d27ed003cc1cc42e5f", null ],
+    [ "operator=", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#abfd36411a2b3e3823782bb0d1ca32d27", null ],
+    [ "operator=", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a197e07828e1b1ca8dbebc4cdc0bc834e", null ],
+    [ "SetAlpha", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a43565e3e3fa721e615d249f549a65bca", null ],
+    [ "SetAmbientLightColor", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a2e752f899753050a3be15bad7bd840bc", null ],
+    [ "SetColorAndAlpha", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a54ff74ce9c1fb5ab94b7634bb64f558a", null ],
+    [ "SetDiffuseColor", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ab202f1d419b58bf81d3c197b7efe6312", null ],
+    [ "SetEmissiveColor", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#abd6cd5355f6ef9822a8dfb7fb5e98c1c", null ],
+    [ "SetEnvironmentMap", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a74d91e8f2b1aec16c39f6430c9e97527", null ],
+    [ "SetEnvironmentMapAmount", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ad04cc5249e5b6e028b730cd409b7439b", null ],
+    [ "SetEnvironmentMapSpecular", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#aa6047e298e14f73201df98c99bf4ba81", null ],
+    [ "SetFogColor", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ab40d34dbe6ab7cfbd4542d181d286bf0", null ],
+    [ "SetFogEnd", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#af47fcc24801346ba2f6da5d69a639cbe", null ],
+    [ "SetFogStart", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#af86173314ad741d6bdc57a35f11407cf", null ],
+    [ "SetFresnelFactor", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#aff1970f7817bac9144770bbc88acc187", null ],
+    [ "SetLightDiffuseColor", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ac12c5c0cd800f8aadd6d3d3e52d2efc3", null ],
+    [ "SetLightDirection", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ab7c26e046efa38c7c802672aa9756464", null ],
+    [ "SetLightEnabled", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#ab4510d89ace8ec870a453ec105acf5d7", null ],
+    [ "SetMatrices", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a013b66e9fefd02ce7823cc3805e5147e", null ],
+    [ "SetProjection", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a3f886c9a18309340b5043b94a9b788ce", null ],
+    [ "SetTexture", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#aa5508dc98eda7b67e6865955479a6baf", null ],
+    [ "SetView", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a2eda7d5394558cd12c2d423f9872de66", null ],
+    [ "SetWorld", "class_direct_x_1_1_d_x12_1_1_environment_map_effect.html#a5a06c91518b5c5fc2e1d9e656906648a", null ]
+];

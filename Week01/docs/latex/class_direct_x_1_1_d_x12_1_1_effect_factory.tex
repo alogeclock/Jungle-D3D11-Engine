@@ -1,0 +1,173 @@
+\doxysection{DirectX::\+DX12::\+Effect\+Factory Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory}{}\label{class_direct_x_1_1_d_x12_1_1_effect_factory}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+
+
+{\ttfamily \+\#include $<$Effects.\+h$>$}
+
+Inheritance diagram for DirectX::\+DX12::\+Effect\+Factory:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_direct_x_1_1_d_x12_1_1_effect_factory}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a3f26432ec634f66b57b074134c15c208}{Effect\+Factory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}texture\+Descriptors, \+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}sampler\+Descriptors)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a35727af3a73ba2dc7ab6669f9dfda1f1}{Effect\+Factory}} (Effect\+Factory \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a09e36ddf65b0014fb24cfeeef5d83332}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a60ab626d70234be9d6b1acceb6f234e5}{Effect\+Factory}} (Effect\+Factory const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a56990422455e38db0976250b7a3818b0}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} const \&)=delete
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_afa5a689c1fb0b62cbe2f2218ceacca15}{\texorpdfstring{$\sim$}{\string~}\+Effect\+Factory}} () override
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a51806f83299aa71e6d657993a998b552}{Create\+Effect}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_i_effect_factory_1_1_effect_info}{Effect\+Info}} \&info, const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&opaque\+Pipeline\+State, const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&alpha\+Pipeline\+State, const D3\+D12\+\_\+\+INPUT\+\_\+\+LAYOUT\+\_\+\+DESC \&input\+Layout, int texture\+Descriptor\+Offset=0, int sampler\+Descriptor\+Offset=0) override
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a0739309a6816f77631f0fff6cfbe5842}{Release\+Cache}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a4a2ec314486ddc4ec51e81b06a61ff42}{Set\+Sharing}} (bool enabled) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a1bc444297897112074d2427b75d30564}{Enable\+Lighting}} (bool enabled) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a1074e9820c7b4fdd8af5879a2891b1bf}{Enable\+Per\+Pixel\+Lighting}} (bool enabled) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a76f17741fb37167bdd6ff5312e0d6344}{Enable\+Normal\+Map\+Effect}} (bool enabled) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a094ee7bab79b1091232a7e9e3d2d5e18}{Enable\+Fogging}} (bool enabled) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a46fe37e5596b5b86b59f6c2532d51d77}{Enable\+Instancing}} (bool enabled) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{Direct\+X::\+\+DX12::\+\+IEffect\+Factory}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_aa44c1830ff3ee92262bbb476eca82d2b}{\texorpdfstring{$\sim$}{\string~}\+IEffect\+Factory}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_af95c8416e4b1d213205f23f4834ebc9f}{IEffect\+Factory}} (const IEffect\+Factory \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_af95c8416e4b1d213205f23f4834ebc9f}{IEffect\+Factory}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_a0485959063f942a1fb684cea3389f3a0}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_af95c8416e4b1d213205f23f4834ebc9f}{IEffect\+Factory}} \&)=delete
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{Direct\+X::\+\+DX12::\+\+IEffect\+Factory}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_a7423d54e6c40fefe59709a43319bbfe3}{IEffect\+Factory}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_a23ca087e85f94a9fc67227a9bcb6ed64}{IEffect\+Factory}} (IEffect\+Factory \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_af95c8416e4b1d213205f23f4834ebc9f}{IEffect\+Factory}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_a4b42d2ef3f50a3cbb821dde8fdf648e4}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_af95c8416e4b1d213205f23f4834ebc9f}{IEffect\+Factory}} \&\&)=default
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EffectFactory@{EffectFactory}}
+\index{EffectFactory@{EffectFactory}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EffectFactory()}{EffectFactory()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Effect\+Factory (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a3f26432ec634f66b57b074134c15c208}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EffectFactory@{EffectFactory}}
+\index{EffectFactory@{EffectFactory}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EffectFactory()}{EffectFactory()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a3f26432ec634f66b57b074134c15c208} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Effect\+Factory (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}}]{texture\+Descriptors}{, }\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*}}]{sampler\+Descriptors}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a35727af3a73ba2dc7ab6669f9dfda1f1}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EffectFactory@{EffectFactory}}
+\index{EffectFactory@{EffectFactory}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EffectFactory()}{EffectFactory()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a35727af3a73ba2dc7ab6669f9dfda1f1} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Effect\+Factory (\begin{DoxyParamCaption}\item[{Effect\+Factory \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a60ab626d70234be9d6b1acceb6f234e5}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EffectFactory@{EffectFactory}}
+\index{EffectFactory@{EffectFactory}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EffectFactory()}{EffectFactory()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a60ab626d70234be9d6b1acceb6f234e5} 
+Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Effect\+Factory (\begin{DoxyParamCaption}\item[{Effect\+Factory const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_afa5a689c1fb0b62cbe2f2218ceacca15}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!````~EffectFactory@{\texorpdfstring{$\sim$}{\string~}EffectFactory}}
+\index{````~EffectFactory@{\texorpdfstring{$\sim$}{\string~}EffectFactory}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}EffectFactory()}{\string~EffectFactory()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_afa5a689c1fb0b62cbe2f2218ceacca15} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\texorpdfstring{$\sim$}{\string~}\+Effect\+Factory (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a51806f83299aa71e6d657993a998b552}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!CreateEffect@{CreateEffect}}
+\index{CreateEffect@{CreateEffect}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{CreateEffect()}{CreateEffect()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a51806f83299aa71e6d657993a998b552} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Create\+Effect (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_i_effect_factory_1_1_effect_info}{Effect\+Info}} \&}]{info}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&}]{opaque\+Pipeline\+State}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{Effect\+Pipeline\+State\+Description}} \&}]{alpha\+Pipeline\+State}{, }\item[{const D3\+D12\+\_\+\+INPUT\+\_\+\+LAYOUT\+\_\+\+DESC \&}]{input\+Layout}{, }\item[{int}]{texture\+Descriptor\+Offset}{ = {\ttfamily 0}, }\item[{int}]{sampler\+Descriptor\+Offset}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory_a2e171df07571d3104e874a1003faf84b}{Direct\+X::\+\+DX12::\+\+IEffect\+Factory}}.
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a094ee7bab79b1091232a7e9e3d2d5e18}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EnableFogging@{EnableFogging}}
+\index{EnableFogging@{EnableFogging}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EnableFogging()}{EnableFogging()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a094ee7bab79b1091232a7e9e3d2d5e18} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Enable\+Fogging (\begin{DoxyParamCaption}\item[{bool}]{enabled}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a46fe37e5596b5b86b59f6c2532d51d77}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EnableInstancing@{EnableInstancing}}
+\index{EnableInstancing@{EnableInstancing}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EnableInstancing()}{EnableInstancing()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a46fe37e5596b5b86b59f6c2532d51d77} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Enable\+Instancing (\begin{DoxyParamCaption}\item[{bool}]{enabled}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a1bc444297897112074d2427b75d30564}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EnableLighting@{EnableLighting}}
+\index{EnableLighting@{EnableLighting}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EnableLighting()}{EnableLighting()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a1bc444297897112074d2427b75d30564} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Enable\+Lighting (\begin{DoxyParamCaption}\item[{bool}]{enabled}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a76f17741fb37167bdd6ff5312e0d6344}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EnableNormalMapEffect@{EnableNormalMapEffect}}
+\index{EnableNormalMapEffect@{EnableNormalMapEffect}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EnableNormalMapEffect()}{EnableNormalMapEffect()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a76f17741fb37167bdd6ff5312e0d6344} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Enable\+Normal\+Map\+Effect (\begin{DoxyParamCaption}\item[{bool}]{enabled}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a1074e9820c7b4fdd8af5879a2891b1bf}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!EnablePerPixelLighting@{EnablePerPixelLighting}}
+\index{EnablePerPixelLighting@{EnablePerPixelLighting}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{EnablePerPixelLighting()}{EnablePerPixelLighting()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a1074e9820c7b4fdd8af5879a2891b1bf} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Enable\+Per\+Pixel\+Lighting (\begin{DoxyParamCaption}\item[{bool}]{enabled}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a09e36ddf65b0014fb24cfeeef5d83332}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a09e36ddf65b0014fb24cfeeef5d83332} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} \& Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a56990422455e38db0976250b7a3818b0}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a56990422455e38db0976250b7a3818b0} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} \& Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_effect_factory_a8a055b6aa3a5bec18f67641c8a03181b}{Effect\+Factory}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a0739309a6816f77631f0fff6cfbe5842}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!ReleaseCache@{ReleaseCache}}
+\index{ReleaseCache@{ReleaseCache}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{ReleaseCache()}{ReleaseCache()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a0739309a6816f77631f0fff6cfbe5842} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Release\+Cache (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_effect_factory_a4a2ec314486ddc4ec51e81b06a61ff42}\index{DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}!SetSharing@{SetSharing}}
+\index{SetSharing@{SetSharing}!DirectX::DX12::EffectFactory@{DirectX::DX12::EffectFactory}}
+\doxysubsubsection{\texorpdfstring{SetSharing()}{SetSharing()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_effect_factory_a4a2ec314486ddc4ec51e81b06a61ff42} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Effect\+Factory::\+\+Set\+Sharing (\begin{DoxyParamCaption}\item[{bool}]{enabled}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_effects_8h}{Effects.\+h}}\end{DoxyCompactItemize}

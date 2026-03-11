@@ -1,0 +1,334 @@
+\doxysection{DirectX::\+Game\+Pad::\+Button\+State\+Tracker Class Reference}
+\hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker}{}\label{class_direct_x_1_1_game_pad_1_1_button_state_tracker}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+
+
+{\ttfamily \+\#include $<$Game\+Pad.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a2a6c2c32ae1dcd050771b9ead270bf33}{UP}} = 0
+, \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a2058154d51327ce2d83b38bda4f42bb5}{HELD}} = 1
+, \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a707f424c0a268e4a5e71871f50c2f46c}{RELEASED}} = 2
+, \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8abe4bd5a582e5abfcff04cad6ce630d32}{PRESSED}} = 3
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a7e2287dd475d6011f7cfca12b246e955}{Button\+State\+Tracker}} () noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abda8e5166e7ce59f61fb5ad9db05b631}{Update}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_state}{State}} \&state) noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a953263630309e7619f07284515dd8817}{Reset}} () noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_state}{State}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a130c30785eddd181736aae1c9eb39f0d}{Get\+Last\+State}} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ab184eb852da996b4bd10c4f088dc2d19}{a}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a081a15ea8e55c83ffc75151afd5739db}{b}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abca73f81d6a07b9d89bd1eefe689f830}{x}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_af49f65cdc82e109e731621515175db7b}{y}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aecc15c968d03eeb32ac089510707bd2c}{left\+Stick}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aafe790b0de711d6bea36572984868c24}{right\+Stick}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ac66e613bc23fce71c6d5f8a6df865c0a}{left\+Shoulder}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a72a9472e972f37e7a2b8096a94480cb3}{right\+Shoulder}}
+\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{ButtonState}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_affb50f192df0a1078b0e9575d15745e4}{back}}\\
+\>\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{ButtonState}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_af44f286f45138307ff3a889e6306d5ff}{view}}\\
+\}; \\
+
+\end{tabbing}\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{ButtonState}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a3659d4a3a4e239e94756e232f2573c68}{start}}\\
+\>\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{ButtonState}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a5c4fa14aaf672a6960fd5acc59efd850}{menu}}\\
+\}; \\
+
+\end{tabbing}\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a30f51af5bc2fd06cf9c5033cb3cf4c91}{dpad\+Up}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_acd6f44282a79150cb5fd2ddf5a9e508f}{dpad\+Down}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a2914796d4852f58dc15e35657dafc441}{dpad\+Left}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a6e1af55b960ed653b350a2f6d9d27073}{dpad\+Right}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a5543fb47f90cbfcac7eb392c5ce92d18}{left\+Stick\+Up}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a4c2a47f444a8acabbf059582ac09c165}{left\+Stick\+Down}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a57d9cd95202475557028970e33d8bfeb}{left\+Stick\+Left}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abe248073b74e54cbee53010746568aea}{left\+Stick\+Right}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a56d43897c64eedc4a0bc18c2289eebcd}{right\+Stick\+Up}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a54e181c9591287507121c5cfb9711db8}{right\+Stick\+Down}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ae75d0e75f2a4c4ce93bfcb63afe409ab}{right\+Stick\+Left}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aeb5fc8d252f044c281a4fa612e95e612}{right\+Stick\+Right}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a9a061d5164a7dd392c73f655f0104bd1}{left\+Trigger}}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a37dadd27403d3b29cca160bc76be2c8a}{right\+Trigger}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!ButtonState@{ButtonState}}
+\index{ButtonState@{ButtonState}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{ButtonState}{ButtonState}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+\+Button\+State}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{UP@{UP}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!UP@{UP}}
+}\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a2a6c2c32ae1dcd050771b9ead270bf33}\label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a2a6c2c32ae1dcd050771b9ead270bf33} 
+UP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HELD@{HELD}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!HELD@{HELD}}
+}\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a2058154d51327ce2d83b38bda4f42bb5}\label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a2058154d51327ce2d83b38bda4f42bb5} 
+HELD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RELEASED@{RELEASED}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!RELEASED@{RELEASED}}
+}\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a707f424c0a268e4a5e71871f50c2f46c}\label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8a707f424c0a268e4a5e71871f50c2f46c} 
+RELEASED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PRESSED@{PRESSED}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!PRESSED@{PRESSED}}
+}\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8abe4bd5a582e5abfcff04cad6ce630d32}\label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8abe4bd5a582e5abfcff04cad6ce630d32} 
+PRESSED&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a7e2287dd475d6011f7cfca12b246e955}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!ButtonStateTracker@{ButtonStateTracker}}
+\index{ButtonStateTracker@{ButtonStateTracker}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{ButtonStateTracker()}{ButtonStateTracker()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a7e2287dd475d6011f7cfca12b246e955} 
+Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+\+Button\+State\+Tracker (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a130c30785eddd181736aae1c9eb39f0d}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!GetLastState@{GetLastState}}
+\index{GetLastState@{GetLastState}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{GetLastState()}{GetLastState()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a130c30785eddd181736aae1c9eb39f0d} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_state}{State}} \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+\+Get\+Last\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a953263630309e7619f07284515dd8817}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!Reset@{Reset}}
+\index{Reset@{Reset}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a953263630309e7619f07284515dd8817} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abda8e5166e7ce59f61fb5ad9db05b631}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!Update@{Update}}
+\index{Update@{Update}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abda8e5166e7ce59f61fb5ad9db05b631} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+\+Update (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_state}{State}} \&}]{state}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_afd24135b02951836746b63eea71d6704}\doxysubsubsection{\texorpdfstring{[union]}{[union]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_afd24135b02951836746b63eea71d6704} 
+union  \{ ... \}  \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker}{Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker}}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a96666ab74375fd6190689833b30f7eef}\doxysubsubsection{\texorpdfstring{[union]}{[union]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a96666ab74375fd6190689833b30f7eef} 
+union  \{ ... \}  \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker}{Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker}}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ab184eb852da996b4bd10c4f088dc2d19}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!a@{a}}
+\index{a@{a}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{a}{a}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ab184eb852da996b4bd10c4f088dc2d19} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+a}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a081a15ea8e55c83ffc75151afd5739db}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!b@{b}}
+\index{b@{b}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{b}{b}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a081a15ea8e55c83ffc75151afd5739db} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+b}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_affb50f192df0a1078b0e9575d15745e4}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!back@{back}}
+\index{back@{back}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{back}{back}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_affb50f192df0a1078b0e9575d15745e4} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+back}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_acd6f44282a79150cb5fd2ddf5a9e508f}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!dpadDown@{dpadDown}}
+\index{dpadDown@{dpadDown}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{dpadDown}{dpadDown}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_acd6f44282a79150cb5fd2ddf5a9e508f} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+dpad\+Down}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a2914796d4852f58dc15e35657dafc441}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!dpadLeft@{dpadLeft}}
+\index{dpadLeft@{dpadLeft}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{dpadLeft}{dpadLeft}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a2914796d4852f58dc15e35657dafc441} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+dpad\+Left}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a6e1af55b960ed653b350a2f6d9d27073}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!dpadRight@{dpadRight}}
+\index{dpadRight@{dpadRight}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{dpadRight}{dpadRight}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a6e1af55b960ed653b350a2f6d9d27073} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+dpad\+Right}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a30f51af5bc2fd06cf9c5033cb3cf4c91}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!dpadUp@{dpadUp}}
+\index{dpadUp@{dpadUp}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{dpadUp}{dpadUp}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a30f51af5bc2fd06cf9c5033cb3cf4c91} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+dpad\+Up}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ac66e613bc23fce71c6d5f8a6df865c0a}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!leftShoulder@{leftShoulder}}
+\index{leftShoulder@{leftShoulder}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{leftShoulder}{leftShoulder}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ac66e613bc23fce71c6d5f8a6df865c0a} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+left\+Shoulder}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aecc15c968d03eeb32ac089510707bd2c}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!leftStick@{leftStick}}
+\index{leftStick@{leftStick}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{leftStick}{leftStick}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aecc15c968d03eeb32ac089510707bd2c} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+left\+Stick}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a4c2a47f444a8acabbf059582ac09c165}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!leftStickDown@{leftStickDown}}
+\index{leftStickDown@{leftStickDown}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{leftStickDown}{leftStickDown}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a4c2a47f444a8acabbf059582ac09c165} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+left\+Stick\+Down}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a57d9cd95202475557028970e33d8bfeb}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!leftStickLeft@{leftStickLeft}}
+\index{leftStickLeft@{leftStickLeft}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{leftStickLeft}{leftStickLeft}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a57d9cd95202475557028970e33d8bfeb} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+left\+Stick\+Left}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abe248073b74e54cbee53010746568aea}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!leftStickRight@{leftStickRight}}
+\index{leftStickRight@{leftStickRight}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{leftStickRight}{leftStickRight}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abe248073b74e54cbee53010746568aea} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+left\+Stick\+Right}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a5543fb47f90cbfcac7eb392c5ce92d18}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!leftStickUp@{leftStickUp}}
+\index{leftStickUp@{leftStickUp}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{leftStickUp}{leftStickUp}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a5543fb47f90cbfcac7eb392c5ce92d18} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+left\+Stick\+Up}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a9a061d5164a7dd392c73f655f0104bd1}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!leftTrigger@{leftTrigger}}
+\index{leftTrigger@{leftTrigger}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{leftTrigger}{leftTrigger}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a9a061d5164a7dd392c73f655f0104bd1} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+left\+Trigger}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a5c4fa14aaf672a6960fd5acc59efd850}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!menu@{menu}}
+\index{menu@{menu}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{menu}{menu}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a5c4fa14aaf672a6960fd5acc59efd850} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+menu}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a72a9472e972f37e7a2b8096a94480cb3}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!rightShoulder@{rightShoulder}}
+\index{rightShoulder@{rightShoulder}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{rightShoulder}{rightShoulder}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a72a9472e972f37e7a2b8096a94480cb3} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+right\+Shoulder}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aafe790b0de711d6bea36572984868c24}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!rightStick@{rightStick}}
+\index{rightStick@{rightStick}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{rightStick}{rightStick}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aafe790b0de711d6bea36572984868c24} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+right\+Stick}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a54e181c9591287507121c5cfb9711db8}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!rightStickDown@{rightStickDown}}
+\index{rightStickDown@{rightStickDown}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{rightStickDown}{rightStickDown}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a54e181c9591287507121c5cfb9711db8} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+right\+Stick\+Down}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ae75d0e75f2a4c4ce93bfcb63afe409ab}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!rightStickLeft@{rightStickLeft}}
+\index{rightStickLeft@{rightStickLeft}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{rightStickLeft}{rightStickLeft}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ae75d0e75f2a4c4ce93bfcb63afe409ab} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+right\+Stick\+Left}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aeb5fc8d252f044c281a4fa612e95e612}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!rightStickRight@{rightStickRight}}
+\index{rightStickRight@{rightStickRight}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{rightStickRight}{rightStickRight}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_aeb5fc8d252f044c281a4fa612e95e612} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+right\+Stick\+Right}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a56d43897c64eedc4a0bc18c2289eebcd}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!rightStickUp@{rightStickUp}}
+\index{rightStickUp@{rightStickUp}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{rightStickUp}{rightStickUp}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a56d43897c64eedc4a0bc18c2289eebcd} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+right\+Stick\+Up}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a37dadd27403d3b29cca160bc76be2c8a}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!rightTrigger@{rightTrigger}}
+\index{rightTrigger@{rightTrigger}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{rightTrigger}{rightTrigger}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a37dadd27403d3b29cca160bc76be2c8a} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+right\+Trigger}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a3659d4a3a4e239e94756e232f2573c68}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!start@{start}}
+\index{start@{start}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{start}{start}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_a3659d4a3a4e239e94756e232f2573c68} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+start}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_af44f286f45138307ff3a889e6306d5ff}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!view@{view}}
+\index{view@{view}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{view}{view}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_af44f286f45138307ff3a889e6306d5ff} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+view}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abca73f81d6a07b9d89bd1eefe689f830}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!x@{x}}
+\index{x@{x}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_abca73f81d6a07b9d89bd1eefe689f830} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+x}
+
+\Hypertarget{class_direct_x_1_1_game_pad_1_1_button_state_tracker_af49f65cdc82e109e731621515175db7b}\index{DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}!y@{y}}
+\index{y@{y}!DirectX::GamePad::ButtonStateTracker@{DirectX::GamePad::ButtonStateTracker}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_1_1_button_state_tracker_af49f65cdc82e109e731621515175db7b} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker_ad94b5cafba20a7ba76a8c578acfb7ac8}{Button\+State}} Direct\+X::\+\+Game\+Pad::\+\+Button\+State\+Tracker::\+y}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_game_pad_8h}{Game\+Pad.\+h}}\end{DoxyCompactItemize}

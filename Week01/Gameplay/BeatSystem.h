@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/Types.h"
 
@@ -20,10 +20,14 @@ class FBeatSystem
 
     bool IsBeatJustTriggered() const;
     bool ConsumeBeat();
+    bool IsBeatSkipped();
 
     float GetElapsedTime() const;
     float GetTimeToNextBeat() const;
     float GetGoodWindow() const;
+
+    void  SetTimeScale(float InScale);
+    float GetTimeScale() const;
 
   private:
     float Bpm = 120.0f;
@@ -33,5 +37,8 @@ class FBeatSystem
     float PerfectWindow = 0.08f;
     float GoodWindow = 0.2f;
 
+    float TimeScale = 1.0f;
+
     bool bIsBeatJustTriggered = false;
+    bool bIsBeatJustConsumed = false;
 };

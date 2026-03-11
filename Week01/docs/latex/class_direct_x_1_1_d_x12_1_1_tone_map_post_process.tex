@@ -1,0 +1,273 @@
+\doxysection{DirectX::\+DX12::\+Tone\+Map\+Post\+Process Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process}{}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+
+
+{\ttfamily \+\#include $<$Post\+Process.\+h$>$}
+
+Inheritance diagram for DirectX::\+DX12::\+Tone\+Map\+Post\+Process:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_direct_x_1_1_d_x12_1_1_tone_map_post_process}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0}{Operator}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a05df23e93a83ae4e75c2d9055981d652}{None}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a84da42665fc2d49f40a26fe44ab6c589}{Saturate}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a6b8bd084d4e99a3e460117d5393b2be5}{Reinhard}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0aace320dc780ebd3556f2b7873c815228}{ACESFilmic}}
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0af6fc94f4b292549a4e76ec0256e8244a}{Operator\+\_\+\+Max}}
+ \}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8}{Transfer\+Function}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8ad24b09003658bb2814b146b0336c1398}{Linear}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8affa5f1c2b82e6ed8a2c9f94cf1fbc3ae}{SRGB}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a0cfe544ad2b77e81fc7c6e916f1a79c8}{ST2084}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a5e837d47d5c46b4fa106df7de16fa64d}{Transfer\+Function\+\_\+\+Max}}
+ \}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3}{Color\+Primary\+Rotation}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a9f64055f83e3e06c071726865bbae8f4}{HDTV\+\_\+to\+\_\+\+UHDTV}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a245de84d862a358b36b7af1fb41491ce}{DCI\+\_\+\+P3\+\_\+\+D65\+\_\+to\+\_\+\+UHDTV}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a0b0d84f24b347f033f8adb58df87b82c}{HDTV\+\_\+to\+\_\+\+DCI\+\_\+\+P3\+\_\+\+D65}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&rt\+State, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0}{Operator}} op, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8}{Transfer\+Function}} func)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac775f6fc84ca1e6adc566629635bc7fb}{Tone\+Map\+Post\+Process}} (Tone\+Map\+Post\+Process \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac07911809efa449a2f73382949a52414}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a4fa358f98420dff7c0c6c4d14c1d1ec3}{Tone\+Map\+Post\+Process}} (Tone\+Map\+Post\+Process const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_af07f238628ec386d8d857909b303797e}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} const \&)=delete
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac057c40d2a2399085570d670ff33e085}{\texorpdfstring{$\sim$}{\string~}\+Tone\+Map\+Post\+Process}} () override
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aea3aedd0cb15ae03418bc0e020081e45}{Process}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List) override
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a476814d5b6666d7e8008f31bac844f00}{Set\+HDRSource\+Texture}} (D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE srv\+Descriptor)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44cf6e564240fca73726d2ba7c12a75f}{Set\+Color\+Rotation}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3}{Color\+Primary\+Rotation}} value)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a9bf6c76f6c35ff9d1177fa2bbe3d3756}{Set\+Color\+Rotation}} (CXMMATRIX value)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_abcd9c19a84db4c11a5558d7de62c7372}{Set\+Exposure}} (float exposure\+Value)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aa03d310cc4bf80af65118832cbc12ad7}{Set\+ST2084\+Parameter}} (float paper\+White\+Nits)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a88d7426b2bcbd31d8543ed2a92bb9403}{\texorpdfstring{$\sim$}{\string~}\+IPost\+Process}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} (const IPost\+Process \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_abf2d8d22ffba95bad598b9145d4fc41a}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \&)=delete
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_af22622d3da9ccb795b93de730316da3c}{IPost\+Process}} ()=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a287f201fdfeaae729e0ede71006236dd}{IPost\+Process}} (IPost\+Process \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a501cfda19e0c3a407ac34e18036ba1d0}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_ac0a1d3172aebe33e7a281461ca1d5437}{IPost\+Process}} \&\&)=default
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!ColorPrimaryRotation@{ColorPrimaryRotation}}
+\index{ColorPrimaryRotation@{ColorPrimaryRotation}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{ColorPrimaryRotation}{ColorPrimaryRotation}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3}{Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Color\+Primary\+Rotation}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HDTV\_to\_UHDTV@{HDTV\_to\_UHDTV}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!HDTV\_to\_UHDTV@{HDTV\_to\_UHDTV}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a9f64055f83e3e06c071726865bbae8f4}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a9f64055f83e3e06c071726865bbae8f4} 
+HDTV\+\_\+to\+\_\+\+UHDTV&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DCI\_P3\_D65\_to\_UHDTV@{DCI\_P3\_D65\_to\_UHDTV}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!DCI\_P3\_D65\_to\_UHDTV@{DCI\_P3\_D65\_to\_UHDTV}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a245de84d862a358b36b7af1fb41491ce}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a245de84d862a358b36b7af1fb41491ce} 
+DCI\+\_\+\+P3\+\_\+\+D65\+\_\+to\+\_\+\+UHDTV&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HDTV\_to\_DCI\_P3\_D65@{HDTV\_to\_DCI\_P3\_D65}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!HDTV\_to\_DCI\_P3\_D65@{HDTV\_to\_DCI\_P3\_D65}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a0b0d84f24b347f033f8adb58df87b82c}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3a0b0d84f24b347f033f8adb58df87b82c} 
+HDTV\+\_\+to\+\_\+\+DCI\+\_\+\+P3\+\_\+\+D65&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!Operator@{Operator}}
+\index{Operator@{Operator}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{Operator}{Operator}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0}{Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Operator}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{None@{None}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!None@{None}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a05df23e93a83ae4e75c2d9055981d652}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a05df23e93a83ae4e75c2d9055981d652} 
+None&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Saturate@{Saturate}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!Saturate@{Saturate}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a84da42665fc2d49f40a26fe44ab6c589}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a84da42665fc2d49f40a26fe44ab6c589} 
+Saturate&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Reinhard@{Reinhard}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!Reinhard@{Reinhard}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a6b8bd084d4e99a3e460117d5393b2be5}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0a6b8bd084d4e99a3e460117d5393b2be5} 
+Reinhard&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACESFilmic@{ACESFilmic}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!ACESFilmic@{ACESFilmic}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0aace320dc780ebd3556f2b7873c815228}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0aace320dc780ebd3556f2b7873c815228} 
+ACESFilmic&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Operator\_Max@{Operator\_Max}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!Operator\_Max@{Operator\_Max}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0af6fc94f4b292549a4e76ec0256e8244a}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0af6fc94f4b292549a4e76ec0256e8244a} 
+Operator\+\_\+\+Max&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!TransferFunction@{TransferFunction}}
+\index{TransferFunction@{TransferFunction}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{TransferFunction}{TransferFunction}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8}{Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Transfer\+Function}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Linear@{Linear}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!Linear@{Linear}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8ad24b09003658bb2814b146b0336c1398}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8ad24b09003658bb2814b146b0336c1398} 
+Linear&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SRGB@{SRGB}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!SRGB@{SRGB}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8affa5f1c2b82e6ed8a2c9f94cf1fbc3ae}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8affa5f1c2b82e6ed8a2c9f94cf1fbc3ae} 
+SRGB&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ST2084@{ST2084}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!ST2084@{ST2084}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a0cfe544ad2b77e81fc7c6e916f1a79c8}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a0cfe544ad2b77e81fc7c6e916f1a79c8} 
+ST2084&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TransferFunction\_Max@{TransferFunction\_Max}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!TransferFunction\_Max@{TransferFunction\_Max}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a5e837d47d5c46b4fa106df7de16fa64d}\label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8a5e837d47d5c46b4fa106df7de16fa64d} 
+Transfer\+Function\+\_\+\+Max&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!ToneMapPostProcess@{ToneMapPostProcess}}
+\index{ToneMapPostProcess@{ToneMapPostProcess}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{ToneMapPostProcess()}{ToneMapPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Tone\+Map\+Post\+Process (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{, }\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{Render\+Target\+State}} \&}]{rt\+State}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44e3f93b029a225c4e7ec75c1f263ed0}{Operator}}}]{op}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a60c5caeda820a87f789f81eeb3e61cb8}{Transfer\+Function}}}]{func}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac775f6fc84ca1e6adc566629635bc7fb}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!ToneMapPostProcess@{ToneMapPostProcess}}
+\index{ToneMapPostProcess@{ToneMapPostProcess}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{ToneMapPostProcess()}{ToneMapPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac775f6fc84ca1e6adc566629635bc7fb} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Tone\+Map\+Post\+Process (\begin{DoxyParamCaption}\item[{Tone\+Map\+Post\+Process \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a4fa358f98420dff7c0c6c4d14c1d1ec3}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!ToneMapPostProcess@{ToneMapPostProcess}}
+\index{ToneMapPostProcess@{ToneMapPostProcess}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{ToneMapPostProcess()}{ToneMapPostProcess()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a4fa358f98420dff7c0c6c4d14c1d1ec3} 
+Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Tone\+Map\+Post\+Process (\begin{DoxyParamCaption}\item[{Tone\+Map\+Post\+Process const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac057c40d2a2399085570d670ff33e085}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!````~ToneMapPostProcess@{\texorpdfstring{$\sim$}{\string~}ToneMapPostProcess}}
+\index{````~ToneMapPostProcess@{\texorpdfstring{$\sim$}{\string~}ToneMapPostProcess}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}ToneMapPostProcess()}{\string~ToneMapPostProcess()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac057c40d2a2399085570d670ff33e085} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\texorpdfstring{$\sim$}{\string~}\+Tone\+Map\+Post\+Process (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac07911809efa449a2f73382949a52414}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_ac07911809efa449a2f73382949a52414} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} \& Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_af07f238628ec386d8d857909b303797e}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_af07f238628ec386d8d857909b303797e} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} \& Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_adf9633a5b0405a32f6c752bff82fab53}{Tone\+Map\+Post\+Process}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aea3aedd0cb15ae03418bc0e020081e45}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!Process@{Process}}
+\index{Process@{Process}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{Process()}{Process()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aea3aedd0cb15ae03418bc0e020081e45} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Process (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}}]{command\+List}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_post_process_a082ac1a25e3f4ea45101b50999bbb3f8}{Direct\+X::\+\+DX12::\+\+IPost\+Process}}.
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44cf6e564240fca73726d2ba7c12a75f}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!SetColorRotation@{SetColorRotation}}
+\index{SetColorRotation@{SetColorRotation}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetColorRotation()}{SetColorRotation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a44cf6e564240fca73726d2ba7c12a75f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Set\+Color\+Rotation (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a8d181c26da66993b48f6160e2620a0b3}{Color\+Primary\+Rotation}}}]{value}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a9bf6c76f6c35ff9d1177fa2bbe3d3756}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!SetColorRotation@{SetColorRotation}}
+\index{SetColorRotation@{SetColorRotation}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetColorRotation()}{SetColorRotation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a9bf6c76f6c35ff9d1177fa2bbe3d3756} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Set\+Color\+Rotation (\begin{DoxyParamCaption}\item[{CXMMATRIX}]{value}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_abcd9c19a84db4c11a5558d7de62c7372}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!SetExposure@{SetExposure}}
+\index{SetExposure@{SetExposure}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetExposure()}{SetExposure()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_abcd9c19a84db4c11a5558d7de62c7372} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Set\+Exposure (\begin{DoxyParamCaption}\item[{float}]{exposure\+Value}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a476814d5b6666d7e8008f31bac844f00}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!SetHDRSourceTexture@{SetHDRSourceTexture}}
+\index{SetHDRSourceTexture@{SetHDRSourceTexture}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetHDRSourceTexture()}{SetHDRSourceTexture()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_a476814d5b6666d7e8008f31bac844f00} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Set\+HDRSource\+Texture (\begin{DoxyParamCaption}\item[{D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE}]{srv\+Descriptor}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aa03d310cc4bf80af65118832cbc12ad7}\index{DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}!SetST2084Parameter@{SetST2084Parameter}}
+\index{SetST2084Parameter@{SetST2084Parameter}!DirectX::DX12::ToneMapPostProcess@{DirectX::DX12::ToneMapPostProcess}}
+\doxysubsubsection{\texorpdfstring{SetST2084Parameter()}{SetST2084Parameter()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_tone_map_post_process_aa03d310cc4bf80af65118832cbc12ad7} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Tone\+Map\+Post\+Process::\+\+Set\+ST2084\+Parameter (\begin{DoxyParamCaption}\item[{float}]{paper\+White\+Nits}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_post_process_8h}{Post\+Process.\+h}}\end{DoxyCompactItemize}

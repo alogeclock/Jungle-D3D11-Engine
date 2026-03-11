@@ -1,0 +1,144 @@
+\doxysection{DirectX::\+Simple\+Math::\+Ray Class Reference}
+\hypertarget{class_direct_x_1_1_simple_math_1_1_ray}{}\label{class_direct_x_1_1_simple_math_1_1_ray}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+
+
+{\ttfamily \+\#include $<$Simple\+Math.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} () noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a60e23de459124630a9e97b03ee68e5a0}{Ray}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&pos, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&dir) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a7d109323db538cec7066770d11c67b9a}{Ray}} (const Ray \&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \& \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_ab27a2e40ddd90b484d531ee6ad7f68f9}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_ac7c294b46a4430e4cabdb5f75a7ab3eb}{Ray}} (Ray \&\&)=default
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \& \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_aa9014c25f421635e4926471ff312d75b}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&\&)=default
+\item 
+bool \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a43d42754533c63258cb0c90a9f7f79de}{operator==}} (const \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&r) const noexcept
+\item 
+bool \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a4f14345bfe016020e24635f7403ab100}{operator!=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&r) const noexcept
+\item 
+bool \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a0391e770b8766bf52a738cf923c6bacc}{Intersects}} (const Bounding\+Sphere \&sphere, \+\_\+\+Out\+\_\+ float \&Dist) const noexcept
+\item 
+bool \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a795473edb3a39b6008420be130f8acff}{Intersects}} (const Bounding\+Box \&box, \+\_\+\+Out\+\_\+ float \&Dist) const noexcept
+\item 
+bool \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_aee4ce43aaf4f3c1787eb8e05abf154e3}{Intersects}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&tri0, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&tri1, const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&tri2, \+\_\+\+Out\+\_\+ float \&Dist) const noexcept
+\item 
+bool \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a07c0ae96cc143641c60c9f91e9e597a5}{Intersects}} (const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane}{Plane}} \&plane, \+\_\+\+Out\+\_\+ float \&Dist) const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a25a50dc1fe4a77af6e8ce8c7461cf93b}{position}}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_ad11358c6d9b624da293fb4f2f94d6ce8}{direction}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Ray@{Ray}}
+\index{Ray@{Ray}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Ray()}{Ray()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33} 
+Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Ray (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a60e23de459124630a9e97b03ee68e5a0}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Ray@{Ray}}
+\index{Ray@{Ray}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Ray()}{Ray()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a60e23de459124630a9e97b03ee68e5a0} 
+Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Ray (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{pos}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{dir}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a7d109323db538cec7066770d11c67b9a}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Ray@{Ray}}
+\index{Ray@{Ray}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Ray()}{Ray()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a7d109323db538cec7066770d11c67b9a} 
+Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Ray (\begin{DoxyParamCaption}\item[{const Ray \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_ac7c294b46a4430e4cabdb5f75a7ab3eb}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Ray@{Ray}}
+\index{Ray@{Ray}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Ray()}{Ray()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_ac7c294b46a4430e4cabdb5f75a7ab3eb} 
+Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Ray (\begin{DoxyParamCaption}\item[{Ray \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a795473edb3a39b6008420be130f8acff}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Intersects()}{Intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a795473edb3a39b6008420be130f8acff} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Intersects (\begin{DoxyParamCaption}\item[{const Bounding\+Box \&}]{box}{, }\item[{\+\_\+\+Out\+\_\+ float \&}]{Dist}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a0391e770b8766bf52a738cf923c6bacc}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Intersects()}{Intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a0391e770b8766bf52a738cf923c6bacc} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Intersects (\begin{DoxyParamCaption}\item[{const Bounding\+Sphere \&}]{sphere}{, }\item[{\+\_\+\+Out\+\_\+ float \&}]{Dist}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a07c0ae96cc143641c60c9f91e9e597a5}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Intersects()}{Intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a07c0ae96cc143641c60c9f91e9e597a5} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Intersects (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_plane}{Plane}} \&}]{plane}{, }\item[{\+\_\+\+Out\+\_\+ float \&}]{Dist}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_aee4ce43aaf4f3c1787eb8e05abf154e3}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{Intersects()}{Intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_aee4ce43aaf4f3c1787eb8e05abf154e3} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Ray::\+\+Intersects (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{tri0}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{tri1}{, }\item[{const \doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} \&}]{tri2}{, }\item[{\+\_\+\+Out\+\_\+ float \&}]{Dist}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a4f14345bfe016020e24635f7403ab100}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a4f14345bfe016020e24635f7403ab100} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Ray::\+operator!= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&}]{r}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_ab27a2e40ddd90b484d531ee6ad7f68f9}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_ab27a2e40ddd90b484d531ee6ad7f68f9} 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \& Direct\+X::\+\+Simple\+Math::\+\+Ray::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_aa9014c25f421635e4926471ff312d75b}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_aa9014c25f421635e4926471ff312d75b} 
+\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \& Direct\+X::\+\+Simple\+Math::\+\+Ray::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a43d42754533c63258cb0c90a9f7f79de}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!operator==@{operator==}}
+\index{operator==@{operator==}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a43d42754533c63258cb0c90a9f7f79de} 
+bool Direct\+X::\+\+Simple\+Math::\+\+Ray::\+operator== (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_simple_math_1_1_ray_a40679db5ec3ff1f456b3f01bf0dd1b33}{Ray}} \&}]{r}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_ad11358c6d9b624da293fb4f2f94d6ce8}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!direction@{direction}}
+\index{direction@{direction}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{direction}{direction}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_ad11358c6d9b624da293fb4f2f94d6ce8} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Ray::\+direction}
+
+\Hypertarget{class_direct_x_1_1_simple_math_1_1_ray_a25a50dc1fe4a77af6e8ce8c7461cf93b}\index{DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}!position@{position}}
+\index{position@{position}!DirectX::SimpleMath::Ray@{DirectX::SimpleMath::Ray}}
+\doxysubsubsection{\texorpdfstring{position}{position}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_simple_math_1_1_ray_a25a50dc1fe4a77af6e8ce8c7461cf93b} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_simple_math_1_1_vector3}{Vector3}} Direct\+X::\+\+Simple\+Math::\+\+Ray::\+position}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_simple_math_8h}{Simple\+Math.\+h}}\end{DoxyCompactItemize}

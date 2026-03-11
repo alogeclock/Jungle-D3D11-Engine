@@ -1,27 +1,27 @@
 #pragma once
 
-#include "Core/Types.h"
+#include "SceneCommand.h"
 
 struct FGameContext;
 
 class IScene
 {
-public:
-	virtual ~IScene() = default;
+  public:
+    virtual ~IScene() = default;
 
-	virtual void Enter() = 0;
-	virtual void Exit() = 0;
-	virtual void Update(FGameContext& Context) = 0;
-	virtual void Render(FGameContext& Context) = 0;
+    virtual void Update(FGameContext &Context) = 0;
+    virtual void Render(FGameContext &Context) = 0;
 
-	bool HasSceneChangeRequest() const;
-	ESceneType GetRequestedScene() const;
-	void ClearSceneChangeRequest();
+    virtual FSceneCommand ConsumeCommand()
+    {
+        FSceneCommand Command = PendingCommand;
+        PendingCommand = {};
+        return Command;
+    }
 
-protected:
-	void RequestSceneChange(ESceneType SceneType);
+  protected:
+    void SetSceneCommand(const FSceneCommand &Command) { PendingCommand = Command; }
 
-private:
-	bool bHasSceneChangeRequest = false;
-	ESceneType RequestedScene = ESceneType::Title;
+  private:
+    FSceneCommand PendingCommand;
 };
