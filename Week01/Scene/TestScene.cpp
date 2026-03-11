@@ -164,226 +164,37 @@ void FTestScene::HandlePopupResult(FGameContext &Context)
 
     if (FCreditPopup *Popup = PopupManager.GetPopup<FCreditPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            SetLastActionText("ClosePopup");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            SetLastActionText("GoToTitleScene");
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FScoreboardPopup *Popup = PopupManager.GetPopup<FScoreboardPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            SetLastActionText("ClosePopup");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            SetLastActionText("GoToTitleScene");
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FGameOverPopup *Popup = PopupManager.GetPopup<FGameOverPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            SetLastActionText("ClosePopup");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::OpenGoToTitlePopup:
-            SetLastActionText("OpenGoToTitlePopup");
-            Popup->Close();
-            OpenGoToTitlePopup();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            SetLastActionText("GoToTitleScene");
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FStageClearPopup *Popup = PopupManager.GetPopup<FStageClearPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            SetLastActionText("ClosePopup");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::OpenSaveScorePopup:
-            SetLastActionText("OpenSaveScorePopup");
-            Popup->Close();
-            OpenSaveScorePopup();
-            break;
-
-        case EUIPopupAction::OpenGoToTitlePopup:
-            SetLastActionText("OpenGoToTitlePopup");
-            Popup->Close();
-            OpenGoToTitlePopup();
-            break;
-
-        case EUIPopupAction::GoToNextStage:
-            SetLastActionText("GoToNextStage");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            SetLastActionText("GoToTitleScene");
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FSaveScorePopup *Popup = PopupManager.GetPopup<FSaveScorePopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            SetLastActionText("ClosePopup");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::ConfirmSaveScore:
-            SetLastActionText("ConfirmSaveScore");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::CancelSaveScore:
-            SetLastActionText("CancelSaveScore");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::OpenGoToTitlePopup:
-            SetLastActionText("OpenGoToTitlePopup");
-            Popup->Close();
-            OpenGoToTitlePopup();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            SetLastActionText("GoToTitleScene");
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FGoToTitlePopup *Popup = PopupManager.GetPopup<FGoToTitlePopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            SetLastActionText("ClosePopup");
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            SetLastActionText("GoToTitleScene");
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 }
@@ -397,10 +208,8 @@ void FTestScene::OpenCreditPopup()
 
 void FTestScene::OpenScoreboardPopup()
 {
-    FScoreRepository Repository;
-
     std::unique_ptr<FScoreboardPopup> Popup = std::make_unique<FScoreboardPopup>();
-    Popup->SetEntries(Repository.LoadSorted());
+    Popup->SetEntries(ScoreRepository::LoadSorted());
     Popup->ResetPage();
     Popup->Open();
 
@@ -440,3 +249,69 @@ void FTestScene::OpenGoToTitlePopup()
 }
 
 void FTestScene::SetLastActionText(const char *Text) { LastActionText = Text; }
+
+bool FTestScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                                      EUIPopupAction Action)
+{
+    switch (Action)
+    {
+    case EUIPopupAction::OpenSaveScorePopup:
+        Popup.Close();
+        OpenSaveScorePopup();
+        return true;
+
+    case EUIPopupAction::GoToNextStage:
+        Popup.Close();
+        ChangeScene(ESceneType::Play, 1);
+        return true;
+
+
+    case EUIPopupAction::ConfirmSaveScore:
+    {
+        Popup.Close();
+
+        FSaveScorePopup *SavePopup = dynamic_cast<FSaveScorePopup *>(&Popup);
+        if (!SavePopup)
+            return true;
+
+        const std::string Nickname = SavePopup->GetNickname();
+        const int         ClearedStage = 42;
+        const int         Score = 99999;
+
+        ScoreRepository::AppendRecord({Nickname, ClearedStage, Score});
+        OpenGoToTitlePopup();
+        return true;
+    }
+
+    default:
+        return false;
+    }
+}
+
+void FTestScene::OnPopupActionDispatched(EUIPopupAction Action)
+{
+    SetLastActionText(ToActionText(Action));
+}
+
+const char *FTestScene::ToActionText(EUIPopupAction Action)
+{
+    switch (Action)
+    {
+    case EUIPopupAction::None:
+        return "None";
+    case EUIPopupAction::ClosePopup:
+        return "ClosePopup";
+    case EUIPopupAction::OpenSaveScorePopup:
+        return "OpenSaveScorePopup";
+    case EUIPopupAction::ConfirmSaveScore:
+        return "ConfirmSaveScore";
+    case EUIPopupAction::OpenGoToTitlePopup:
+        return "OpenGoToTitlePopup";
+    case EUIPopupAction::GoToNextStage:
+        return "GoToNextStage";
+    case EUIPopupAction::GoToTitleScene:
+        return "GoToTitleScene";
+    default:
+        return "Unknown";
+    }
+}

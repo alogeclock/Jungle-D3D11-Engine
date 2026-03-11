@@ -8,8 +8,7 @@
 
 void FSceneManager::Initialize()
 {
-    ChangeSceneInternal(ESceneType::Test);
-    // ChangeSceneInternal(ESceneType::Title);
+    ChangeSceneInternal(ESceneType::Title);
 }
 
 ESceneManagerUpdateResult FSceneManager::Update(FGameContext &Context)

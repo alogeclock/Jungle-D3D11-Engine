@@ -4,13 +4,15 @@
 #include "Scene/Scene.h"
 #include "UI/UIManager.h"
 
+struct FGameContext;
 class FStage;
+class FUIPopupBase;
+enum class EUIPopupAction;
 
 class FPlayScene : public IScene
 {
   public:
-    explicit FPlayScene(int InStageIndex = 0);
-    ~FPlayScene() override = default;
+    explicit FPlayScene(int InStageIndex);
 
     void Update(FGameContext &Context) override;
     void Render(FGameContext &Context) override;
@@ -19,16 +21,18 @@ class FPlayScene : public IScene
     void LoadStage(FGameContext &Context);
     void HandleStageResult(FGameContext &Context);
     void HandlePopupResult(FGameContext &Context);
-    void OpenGoToTitlePopup();
+    void OpenGoToTitlePopup() override;
+
+    bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                              EUIPopupAction Action) override;
 
   private:
-    std::unique_ptr<FStage> Stage;
     FUIManager              UIManager;
+    std::unique_ptr<FStage> Stage;
 
     int  CurrentStageIndex = 0;
-    bool bIsPaused = false;
+    int  PendingStageIndex = -1;
     bool bStageLoaded = false;
+    bool bIsPaused = false;
     bool bOpenSaveScorePopupNextFrame = false;
-
-    int PendingStageIndex = -1;
 };

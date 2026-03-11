@@ -1,13 +1,13 @@
-﻿#include "pch.h"
-#include "PlayScene.h"
-#include "Core/AudioSystem.h"
+#include "pch.h"
 #include <memory>
 #include <string>
+#include "Core/AudioSystem.h"
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Data/ScoreRepository.h"
 #include "Data/StageLoader.h"
 #include "Gameplay/Stage.h"
+#include "PlayScene.h"
 #include "Scene/SceneCommand.h"
 #include "Scene/SceneType.h"
 #include "UI/popup/GameOverPopup.h"
@@ -19,7 +19,7 @@
 #include "UI/widget/BeatHUDWidget.h"
 #include "UI/widget/DebugWidget.h"
 #include "UI/widget/GameplayHUDWidget.h"
-#include "debug.h"
+
 
 FPlayScene::FPlayScene(int InStageIndex) : CurrentStageIndex(InStageIndex) {}
 
@@ -119,8 +119,8 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
 
     if (Stage->IsCleared())
     {
-        const int NextIndex = CurrentStageIndex + 1;
-        const int TotalStages = FStageLoader::Get().GetStageCount();
+        const int  NextIndex = CurrentStageIndex + 1;
+        const int  TotalStages = FStageLoader::Get().GetStageCount();
         const bool bAllCleared = (NextIndex >= TotalStages);
 
         std::unique_ptr<FStageClearPopup> Popup = std::make_unique<FStageClearPopup>();
@@ -144,171 +144,62 @@ void FPlayScene::HandlePopupResult(FGameContext &Context)
 
     if (FStageClearPopup *Popup = PopupManager.GetPopup<FStageClearPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::OpenSaveScorePopup:
-            Popup->Close();
-            bOpenSaveScorePopupNextFrame = true;
-            break;
-
-        case EUIPopupAction::OpenGoToTitlePopup:
-            Popup->Close();
-            OpenGoToTitlePopup();
-            break;
-
-        case EUIPopupAction::GoToNextStage:
-        {
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Play;
-            Command.NextStageIndex = CurrentStageIndex + 1;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FGameOverPopup *Popup = PopupManager.GetPopup<FGameOverPopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::OpenGoToTitlePopup:
-            Popup->Close();
-            OpenGoToTitlePopup();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FSaveScorePopup *Popup = PopupManager.GetPopup<FSaveScorePopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::ConfirmSaveScore:
-        {
-            Popup->Close();
-
-            Console("What");
-
-            const std::string Nickname = Popup->GetNickname();
-            const int ClearedStage = CurrentStageIndex + 1;
-            const int Score = Stage ? Stage->GetScore() : 0;
-
-            FScoreRepository Repository;
-            Repository.AppendRecord({Nickname, ClearedStage, Score});
-
-            OpenGoToTitlePopup();
-            break;
-        }
-
-        case EUIPopupAction::CancelSaveScore:
-            Popup->Close();
-            OpenGoToTitlePopup();
-            break;
-
-        case EUIPopupAction::OpenGoToTitlePopup:
-            Popup->Close();
-            OpenGoToTitlePopup();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
     }
 
     if (FGoToTitlePopup *Popup = PopupManager.GetPopup<FGoToTitlePopup>())
     {
-        switch (Popup->ConsumeAction())
-        {
-        case EUIPopupAction::None:
-            break;
-
-        case EUIPopupAction::ClosePopup:
-            Popup->Close();
-            break;
-
-        case EUIPopupAction::GoToTitleScene:
-        {
-            Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
         return;
+    }
+}
+
+bool FPlayScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                                      EUIPopupAction Action)
+{
+    switch (Action)
+    {
+    case EUIPopupAction::OpenSaveScorePopup:
+        Popup.Close();
+        bOpenSaveScorePopupNextFrame = true;
+        return true;
+
+    case EUIPopupAction::GoToNextStage:
+        Popup.Close();
+        ChangeScene(ESceneType::Play, CurrentStageIndex + 1);
+        return true;
+
+    case EUIPopupAction::ConfirmSaveScore:
+    {
+        Popup.Close();
+
+        FSaveScorePopup *SavePopup = dynamic_cast<FSaveScorePopup *>(&Popup);
+        if (!SavePopup)
+            return true;
+
+        const std::string Nickname = SavePopup->GetNickname();
+        const int         ClearedStage = CurrentStageIndex + 1;
+        const int         Score = Stage ? Stage->GetScore() : 0;
+
+        ScoreRepository::AppendRecord({Nickname, ClearedStage, Score});
+        OpenGoToTitlePopup();
+        return true;
+    }
+
+    default:
+        return false;
     }
 }

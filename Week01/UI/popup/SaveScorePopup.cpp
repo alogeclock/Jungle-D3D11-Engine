@@ -31,7 +31,9 @@ void FSaveScorePopup::Render(FGameContext &Context)
     }
 
     char ScoreText[64]{};
+    char StageText[64]{};
     std::snprintf(ScoreText, sizeof(ScoreText), "Score : %d", Score);
+    std::snprintf(StageText, sizeof(StageText), "Stage : %d", Stage);
 
     ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
 
@@ -73,7 +75,7 @@ void FSaveScorePopup::Render(FGameContext &Context)
 
     if (DrawBottomButton(Layout, "Cancel", 1, 2))
     {
-        PendingAction = EUIPopupAction::CancelSaveScore;
+        PendingAction = EUIPopupAction::OpenGoToTitlePopup;
     }
 
     EndPopupWindow();
