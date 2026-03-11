@@ -33,6 +33,14 @@ void FMonster::SetAiType(EMonsterAIType InAiType) { AiType = InAiType; }
 
 EMonsterAIType FMonster::GetAiType() const { return AiType; }
 
+void FMonster::SetMonsterType(int InMonType) { MonsterType = InMonType; }
+
+int FMonster::GetMonsterType() const { return MonsterType; }
+
+void FMonster::SetSearchRange(int InSearchRange) { SearchRange = InSearchRange; }
+
+int FMonster::GetSearchRange() const { return SearchRange; }
+
 EDirection FMonster::DecideNextMove(const FStage &Stage) const
 {
     // 1. BFS 탐색을 통해 플레이어를 추적하는 최단 경로 방향을 찾음

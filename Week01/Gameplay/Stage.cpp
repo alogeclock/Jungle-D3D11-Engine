@@ -96,8 +96,10 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
                 auto NewMonster = std::make_unique<FMonster>();
                 NewMonster->SetPosition(RandX, RandY, TileSize);
 
-                // 필요하다면 여기서 AI 종류나 이동 주기를 설정할 수 있습니다.
-                NewMonster->SetAiType(EMonsterAIType::ChasePlayer);
+                int MonsterType = std::rand() % 2;
+                NewMonster->SetMonsterType(MonsterType);
+                NewMonster->SetMoveFrequency(4 - 2 * MonsterType);
+                NewMonster->SetSearchRange(3 + 3 * MonsterType);
 
                 AddMonster(std::move(NewMonster));
                 break; // 스폰 성공 시 다음 몬스터 생성으로 넘어감
@@ -608,6 +610,7 @@ void FStage::LoadSpriteResources()
     LoadTex("wall", "Resources/Sprites/wall.png");
     LoadTex("player", "Resources/Sprites/player.png");
     LoadTex("monster", "Resources/Sprites/monster.png");
+    LoadTex("monster1", "Resources/Sprites/monster1.png");
 
     // 타일에 스프라이트 할당
     for (auto &Tile : Tiles)
@@ -639,7 +642,13 @@ void FStage::LoadSpriteResources()
     for (auto &Mon : Monsters)
     {
         FSpriteInfo Info;
-        Info.TextureKey = "monster";
+        int         MonsterType = Mon->GetMonsterType();
+
+        if (MonsterType == 0)
+            Info.TextureKey = "monster";
+        else
+            Info.TextureKey = "monster1";
+
         Info.SpriteSize = {TileSize, TileSize};
         Mon->SetSprite(Info);
     }

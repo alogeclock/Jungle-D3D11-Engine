@@ -18,6 +18,10 @@ class FMonster : public FActor
     int            GetMoveFrequency() const;
     void           SetAiType(EMonsterAIType InAiType);
     EMonsterAIType GetAiType() const;
+    void           SetMonsterType(int InMonType);
+    int            GetMonsterType() const;
+    void           SetSearchRange(int InSearchRange);
+    int            GetSearchRange() const;
 
     EDirection DecideNextMove(const FStage &Stage) const;
 
@@ -25,6 +29,7 @@ class FMonster : public FActor
     std::optional<EDirection> SearchPlayer(const FStage &Stage) const;
 
     EMonsterAIType AiType = EMonsterAIType::RandomMove;
+    int            MonsterType = 0;
     int            MoveFrequency = 2;
     int            MoveFrequencyOffset = 0;
     int            BeatCount = 0;
