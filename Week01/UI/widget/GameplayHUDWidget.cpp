@@ -4,20 +4,21 @@
 #include "Core/Time.h"
 #include "Render/Renderer.h"
 #include "Render/FontManager.h"
+#include "Render/TextureManager.h"
 
-void FGameplayHUDWidget::BindStage(const FStage *InStage) { Stage = InStage; }
+void FGameplayHUDWidget::BindStage(const FStage* InStage) { Stage = InStage; }
 
-void FGameplayHUDWidget::BindPauseFlag(bool *InPauseFlag) { PauseFlag = InPauseFlag; }
+void FGameplayHUDWidget::BindPauseFlag(bool* InPauseFlag) { PauseFlag = InPauseFlag; }
 
 void FGameplayHUDWidget::ResetPlayTime() { PlayTime = 0.0f; }
 
-void FGameplayHUDWidget::Update(FGameContext &Context)
+void FGameplayHUDWidget::Update(FGameContext& Context)
 {
-    bool bPaused = PauseFlag && *PauseFlag;
-    if (!bPaused)
-    {
-        PlayTime += Context.Time.GetDeltaTime();
-    }
+	bool bPaused = PauseFlag && *PauseFlag;
+	if (!bPaused)
+	{
+		PlayTime += Context.Time.GetDeltaTime();
+	}
 }
 
 void FGameplayHUDWidget::Render(FGameContext& Context)
@@ -28,6 +29,7 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 
 	int Score = Stage->GetScoreSystem().GetScore();
 	int Combo = Stage->GetScoreSystem().GetCombo();
+	float ReaminingTime = Stage->GetRemainingTime();
 	int HP = Stage->GetPlayer().GetHp();
 
 	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
@@ -72,8 +74,8 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 		FBitmapFont* Font = Pair->Font.get();
 		FTexture* FontTex = Pair->Tex.get();
 
-		int Minutes = static_cast<int>(PlayTime) / 60;
-		int Seconds = static_cast<int>(PlayTime) % 60;
+		int Minutes = static_cast<int>(ReaminingTime) / 60;
+		int Seconds = static_cast<int>(ReaminingTime) % 60;
 
 		char TimeBuf[32];
 		snprintf(TimeBuf, sizeof(TimeBuf), "Time %d:%02d", Minutes, Seconds);
@@ -81,8 +83,14 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 		char ScoreBuf[32];
 		snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
 
-		Context.Renderer.DrawFont(TimeBuf, Font, FontTex, 100, 100, 50);
-		Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 100, 160, 50);
+		Context.Renderer.DrawFont(TimeBuf, Font, FontTex, 180, HPTextPos.Y, 50);
+		Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 450, HPTextPos.Y, 50);
+		Context.Renderer.DrawFont("HP", Font, FontTex, HPTextPos.X, HPTextPos.Y, 35);
+	}
+	for (int i = 0;i < HP;i++)
+	{
+		float xPos = (HPTextPos.X + 80) + (HeartScale * i);
+		Context.Renderer.DrawTexture(LifeTexture, xPos, HPTextPos.Y + 30, HeartScale, HeartScale);
 	}
 
 	// 일시정지 오버레이
@@ -108,5 +116,17 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 			}
 		}
 		ImGui::End();
+	}
+}
+
+void FGameplayHUDWidget::SetTextures(FGameContext& Context)
+{
+	if (!LifeTexture)
+	{
+		LifeTexture = Context.Textures.Get("life_heart");
+	}
+	if (!LifeDeadTexture)
+	{
+		LifeDeadTexture = Context.Textures.Get("life_dead");
 	}
 }

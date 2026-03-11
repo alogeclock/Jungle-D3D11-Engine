@@ -197,6 +197,7 @@
     <ClCompile Include="Scene\PlayScene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\widget\BeatEffect.cpp" />
     <ClCompile Include="UI\widget\BeatHUDWidget.cpp" />
     <ClCompile Include="UI\widget\DebugWidget.cpp" />
     <ClCompile Include="UI\widget\GameplayHUDWidget.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="UI\popup\StageClearPopup.h" />
     <ClInclude Include="UI\popup\UIPopupBase.h" />
     <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="UI\widget\BeatEffect.h" />
     <ClInclude Include="UI\widget\BeatHUDWidget.h" />
     <ClInclude Include="UI\widget\DebugWidget.h" />
     <ClInclude Include="UI\widget\GameplayHUDWidget.h" />

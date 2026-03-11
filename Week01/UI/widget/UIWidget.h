@@ -4,15 +4,16 @@
 
 class IUIWidget
 {
-  public:
-    virtual ~IUIWidget() = default;
+public:
+	virtual ~IUIWidget() = default;
 
-    virtual void Update(FGameContext &Context) = 0;
-    virtual void Render(FGameContext &Context) = 0;
+	virtual void Update(FGameContext& Context) = 0;
+	virtual void Render(FGameContext& Context) = 0;
+	virtual void SetTextures(FGameContext& Context) = 0;
 
-    void SetVisible(bool bVisible) { bIsVisible = bVisible; }
-    bool IsVisible() const { return bIsVisible; }
+	void SetVisible(bool bVisible) { bIsVisible = bVisible; }
+	bool IsVisible() const { return bIsVisible; }
 
-  protected:
-    bool bIsVisible = true;
+protected:
+	bool bIsVisible = true;
 };

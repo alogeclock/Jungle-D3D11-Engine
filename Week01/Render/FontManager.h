@@ -54,7 +54,7 @@ static std::vector<FTextQuad> BuildQuads(const FBitmapFont& Font,
 		Quad.U1 = (Glyph->X + Glyph->Width) / static_cast<float>(Font.ScaleW);
 		Quad.V1 = (Glyph->Y + Glyph->Height) / static_cast<float>(Font.ScaleH);
 
-		Cursor.X += static_cast<float>(Glyph->XAdvance) * ScaleFactor;
+		Cursor.X += static_cast<float>(Glyph->XAdvance) * ScaleFactor + Font.ThickNess * ScaleFactor;
 
 		Quads.push_back(Quad);
 	}

@@ -118,6 +118,7 @@ void FBitmapFontLoader::ParseCommon(const std::string& Line, FBitmapFont& OutFon
 	OutFont.Base = ToInt(KV, "base");
 	OutFont.ScaleW = ToInt(KV, "scaleW");
 	OutFont.ScaleH = ToInt(KV, "scaleH");
+	OutFont.ThickNess = ToInt(KV, "thickness");
 }
 
 /*

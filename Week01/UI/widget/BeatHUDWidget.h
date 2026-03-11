@@ -12,7 +12,7 @@ public:
 
 	void Update(FGameContext& Context) override;
 	void Render(FGameContext& Context) override;
-
+	virtual void SetTextures(FGameContext& Context) override;
 private:
 	const FBeatSystem* BeatSystem = nullptr;
 	float              FlashTimer = 0.0f;
