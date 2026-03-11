@@ -403,9 +403,6 @@ void FStage::Render()
             Renderer->DrawBatch(RenderBatches[i], Tex);
     }
 
-    bool bIsLastStage = (CurrentStageIndex == FStageLoader::Get().GetStageCount() - 1);
-    Renderer->DrawBatch(GoalBatch, Textures->Get(bIsLastStage ? "goal_end" : "goal"));
-
     // 텍스처 룩업 헬퍼
     auto GetTex = [&](const std::string &Key) -> FTexture *
     { return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr; };
@@ -688,26 +685,6 @@ void FStage::BuildStaticBatches()
         }
     }
 
-    // Goal 배치 (별도 텍스처)
-    std::vector<std::pair<float, float>> GoalCenters;
-    for (const auto &Tile : Tiles)
-    {
-        if (Tile.GetType() == ETileType::Goal)
-        {
-            float CX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
-            float CY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
-            GoalCenters.emplace_back(CX, CY);
-        }
-    }
-
-    if (!GoalCenters.empty())
-    {
-        std::vector<FVertexSimple> Verts;
-        std::vector<UINT>          Idxs;
-        BuildQuadBatch(GoalCenters, TileSize, Verts, Idxs);
-        GoalBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
-                                                (UINT)Idxs.size());
-    }
 }
 
 void FStage::RebuildRenderBatches()
@@ -753,7 +730,6 @@ void FStage::ReleaseStaticBatches()
     {
         for (int i = 0; i < MaxRenderResources; ++i)
             Renderer->ReleaseStaticBatch(RenderBatches[i]);
-        Renderer->ReleaseStaticBatch(GoalBatch);
     }
 }
 
@@ -771,12 +747,7 @@ void FStage::LoadSpriteResources()
         FSpriteInfo Info;
         int         RL = Map->GetRenderLayer(Tile.GetTileX(), Tile.GetTileY());
 
-        if (Tile.GetType() == ETileType::Goal)
-        {
-            bool bLastStage = (CurrentStageIndex == FStageLoader::Get().GetStageCount() - 1);
-            Info.TextureKey = bLastStage ? "goal_end" : "goal";
-        }
-        else if (RL >= 0)
+        if (RL >= 0)
             Info.TextureKey = "map_" + std::to_string(StageNum) + "_" + std::to_string(RL + 1);
 
         Info.SpriteSize = {TileSize, TileSize};
