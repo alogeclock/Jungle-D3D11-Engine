@@ -18,6 +18,7 @@ class FTitleScene : public IScene
     void RenderBackground(FGameContext &Context);
     void RenderTitleMenu(FGameContext &Context);
     void HandleMenuCommand(FGameContext &Context);
+    void HandlePopupResult(FGameContext &Context);
     void OpenCreditPopup();
     void OpenScoreboardPopup();
 
