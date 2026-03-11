@@ -18,10 +18,7 @@ public:
 	void Render(FGameContext& Context) override;
 	virtual void SetTextures(FGameContext& Context) override;
 
-    // 판정 결과를 외부에서 주입받는 함수 추가
-    void OnBeatJudged(EBeatJudge Judge);
-
-    void ResetPlayTime();
+	void ResetPlayTime();
 
 private:
 	const FStage* Stage = nullptr;
@@ -32,6 +29,4 @@ private:
 	FTexture* LifeDeadTexture = nullptr;
 	FVec2 HPTextPos = { 700.0f, 20.0f };
 	float HeartScale = 50.f;
-
-	std::vector<BeatEffect> BeatEffects;
 };

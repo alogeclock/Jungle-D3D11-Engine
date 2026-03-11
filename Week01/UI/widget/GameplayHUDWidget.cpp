@@ -8,6 +8,7 @@
 #include "Render/FontManager.h"
 #include "Render/Texture.h"
 #include "Render/TextureManager.h"
+#include <algorithm>
 
 void FGameplayHUDWidget::BindStage(const FStage* InStage) { Stage = InStage; }
 
@@ -191,21 +192,5 @@ void FGameplayHUDWidget::SetTextures(FGameContext& Context)
 	if (!LifeDeadTexture)
 	{
 		LifeDeadTexture = Context.Textures.Get("life_dead");
-	}
-}
-
-void FGameplayHUDWidget::OnBeatJudged(EBeatJudge Judge)
-{
-	switch (Judge)
-	{
-	case EBeatJudge::Perfect:
-		Logger::Log("Perfect! (in HUDWidget)");
-		break;
-	case EBeatJudge::Good:
-		Logger::Log("Good! (in HUDWidget)");
-		break;
-	case EBeatJudge::Miss:
-		Logger::Log("Miss! (in HUDWidget)");
-		break;
 	}
 }

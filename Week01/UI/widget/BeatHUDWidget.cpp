@@ -4,6 +4,7 @@
 #include "Render/Renderer.h"
 #include "Render/TextureManager.h"
 #include <cmath>
+#include "Core/Logger.h"
 
 void FBeatHUDWidget::BindBeatSystem(const FBeatSystem* InBeatSystem)
 {
@@ -20,13 +21,30 @@ void FBeatHUDWidget::Update(FGameContext& Context)
 	{
 		FlashTimer -= Context.Time.GetDeltaTime();
 	}
+	for (BeatEffect& Effect : BeatEffects)
+	{
+		Effect.Update(Context.Time.GetDeltaTime());
+	}
+
+	BeatEffects.erase(
+		std::remove_if(
+			BeatEffects.begin(),
+			BeatEffects.end(),
+			[](const BeatEffect& e)
+			{
+				return !e.IsAlive();
+			}),
+		BeatEffects.end()
+	);
 }
 
 void FBeatHUDWidget::Render(FGameContext& Context)
 {
 
 	if (!BeatSystem) return;
-
+	/*
+	* 진행바랑 하트 렌더링
+	*/
 	float BeatInterval = BeatSystem->GetBeatInterval();
 	//이전박자 ----- 현재 ----- 이후박자
 	//    ElapsedTime   RemainedTime
@@ -40,6 +58,17 @@ void FBeatHUDWidget::Render(FGameContext& Context)
 	Context.Renderer.DrawTexture(BarTexture, LeftBarX, Ypos, 20, 100);
 	Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
 	Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, 120, 150);
+
+
+	/*
+	* 이펙트 그리기
+	*/
+	for (BeatEffect& Effect : BeatEffects)
+	{
+		Effect.Render(Context);
+	}
+
+
 }
 
 void FBeatHUDWidget::SetTextures(FGameContext& Context)
@@ -51,5 +80,36 @@ void FBeatHUDWidget::SetTextures(FGameContext& Context)
 	if (!HeartTexture)
 	{
 		HeartTexture = Context.Textures.Get("beat_heart");
+	}
+	if (!PerfectTexture)
+	{
+		PerfectTexture = Context.Textures.Get("effect_perfect");
+	}
+	if (!GoodTexture)
+	{
+		GoodTexture = Context.Textures.Get("effect_good");
+	}
+	if (!MissTexture)
+	{
+		MissTexture = Context.Textures.Get("effect_miss");
+	}
+}
+
+void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge)
+{
+	switch (Judge)
+	{
+	case EBeatJudge::Perfect:
+		BeatEffects.emplace_back(BeatEffect(PerfectTexture, Heart.X, Heart.Y - 100));
+		Logger::Log("Perfect! (in HUDWidget)");
+		break;
+	case EBeatJudge::Good:
+		BeatEffects.emplace_back(BeatEffect(GoodTexture, Heart.X, Heart.Y - 100));
+		Logger::Log("Good! (in HUDWidget)");
+		break;
+	case EBeatJudge::Miss:
+		BeatEffects.emplace_back(BeatEffect(MissTexture, Heart.X, Heart.Y - 100));
+		Logger::Log("Miss! (in HUDWidget)");
+		break;
 	}
 }
