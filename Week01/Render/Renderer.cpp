@@ -118,6 +118,29 @@ void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screen
 	RenderCommands.push_back({ ERenderCmdType::Sprite, Idx });
 }
 
+void FRenderer::DrawTexture(const FTexture* texture, float screenX, float screenY,
+	float width, float height, float rotationRad)
+{
+	FRenderObject Obj;
+	Obj.Texture = texture;
+
+	XMMATRIX World = XMMatrixScaling(width, height, 1.0f)
+		* XMMatrixRotationZ(rotationRad)
+		* XMMatrixTranslation(screenX, screenY, 0.0f);
+	XMStoreFloat4x4(&Obj.World, XMMatrixTranspose(World));
+
+	if (texture)
+	{
+		Obj.TextureSize = { static_cast<float>(texture->Width), static_cast<float>(texture->Height) };
+		Obj.SpriteSize = Obj.TextureSize;
+	}
+
+	Obj.bScreenSpace = true;
+	int Idx = static_cast<int>(RenderObjects.size());
+	RenderObjects.push_back(Obj);
+	RenderCommands.push_back({ ERenderCmdType::Sprite, Idx });
+}
+
 FStaticBatch FRenderer::CreateStaticBatch(const FVertexSimple* Vertices, UINT VertexCount,
 	const UINT* Indices, UINT IndexCount)
 {

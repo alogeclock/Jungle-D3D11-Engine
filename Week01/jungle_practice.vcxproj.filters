@@ -141,6 +141,9 @@
     <ClCompile Include="UI\widget\GameplayHUDWidget.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="UI\widget\MinimapWidget.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\Default.hlsl" />
@@ -303,6 +306,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="UI\widget\GameplayHUDWidget.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\widget\MinimapWidget.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="UI\widget\UIWidget.h">
