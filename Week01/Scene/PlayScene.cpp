@@ -229,14 +229,14 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
         if (bAllCleared)
         {
             FAudioSystem::Get().Play("sfx_game_clear", false);
-        }
-        else
-        {
-            FAudioSystem::Get().Play("sfx_stage_clear", false);
+            ChangeScene(ESceneType::Ending);
+            return;
         }
 
+        FAudioSystem::Get().Play("sfx_stage_clear", false);
+
         std::unique_ptr<FStageClearPopup> Popup = std::make_unique<FStageClearPopup>();
-        Popup->SetData(bAllCleared, CurrentStageIndex + 1);
+        Popup->SetData(false, CurrentStageIndex + 1);
         Popup->Open();
         PopupManager.Open(std::move(Popup));
         return;
