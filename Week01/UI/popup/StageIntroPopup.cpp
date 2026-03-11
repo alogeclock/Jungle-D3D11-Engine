@@ -58,16 +58,16 @@ std::vector<std::string> FStageIntroPopup::SplitMessageLines(const std::string &
 int FStageIntroPopup::GetTotalPages() const
 {
     if (Messages.empty())
+    {
         return 1;
+    }
 
-    const int TotalPages = static_cast<int>(Messages.size());
-    return TotalPages > 0 ? TotalPages : 1;
+    return static_cast<int>(Messages.size());
 }
 
 void FStageIntroPopup::GoToNextPage()
 {
-    const int TotalPages = GetTotalPages();
-    const int LastPageIndex = TotalPages - 1;
+    const int LastPageIndex = GetTotalPages() - 1;
 
     if (CurrentPage < LastPageIndex)
     {
@@ -77,14 +77,17 @@ void FStageIntroPopup::GoToNextPage()
 
 void FStageIntroPopup::ResetPage()
 {
-    const int TotalPages = GetTotalPages();
-    const int LastPageIndex = TotalPages - 1;
+    const int LastPageIndex = GetTotalPages() - 1;
 
     if (CurrentPage < 0)
+    {
         CurrentPage = 0;
+    }
 
     if (CurrentPage > LastPageIndex)
+    {
         CurrentPage = LastPageIndex;
+    }
 }
 
 const std::string &FStageIntroPopup::GetCurrentPageMessage() const
@@ -92,78 +95,36 @@ const std::string &FStageIntroPopup::GetCurrentPageMessage() const
     static const std::string EmptyMessage;
 
     if (Messages.empty())
+    {
         return EmptyMessage;
+    }
 
     if (CurrentPage < 0 || CurrentPage >= static_cast<int>(Messages.size()))
+    {
         return EmptyMessage;
+    }
 
     return Messages[CurrentPage];
 }
 
-void FStageIntroPopup::DrawBottomButtons(const FPopupFrameLayout &Layout,
-                                         bool bHasPrevPage, bool bHasNextPage)
+void FStageIntroPopup::DrawBottomButtonArea(const FPopupFrameLayout &Layout)
 {
-    if (bHasNextPage)
-    {
-        if (bHasPrevPage)
-        {
-            if (DrawBottomButton(Layout, "Prev", 0, 2))
-            {
-                --CurrentPage;
-            }
+    const bool bIsLastPage = (CurrentPage + 1) >= GetTotalPages();
 
-            if (DrawBottomButton(Layout, "Next", 1, 2))
-            {
-                ++CurrentPage;
-            }
-        }
-        else
+    if (!bIsLastPage)
+    {
+        if (DrawBottomButton(Layout, "Next"))
         {
-            if (DrawBottomButton(Layout, "Next", 0, 1))
-            {
-                ++CurrentPage;
-            }
+            GoToNextPage();
         }
 
         return;
     }
 
-    if (bHasPrevPage)
+    if (DrawBottomButton(Layout, "OK, Start!"))
     {
-        if (DrawBottomButton(Layout, "Prev", 0, 2))
-        {
-            --CurrentPage;
-        }
-
-        if (DrawBottomButton(Layout, "OK, Start!", 1, 2))
-        {
-            PendingAction = EUIPopupAction::StartStage;
-        }
+        PendingAction = EUIPopupAction::StartStage;
     }
-    else
-    {
-        if (DrawBottomButton(Layout, "OK, Start!", 0, 1))
-        {
-            PendingAction = EUIPopupAction::StartStage;
-        }
-    }
-}
-
-void FStageIntroPopup::DrawPageText(const FPopupFrameLayout &Layout)
-{
-    ImGui::SetWindowFontScale(GetContentFontScale(EUIPopupContentTextSize::Small));
-
-    char PageBuffer[32]{};
-    std::snprintf(PageBuffer, sizeof(PageBuffer), "Page %d / %d", CurrentPage + 1, GetTotalPages());
-
-    const ImVec2 PageSize = ImGui::CalcTextSize(PageBuffer);
-    const float X = GetAlignedX(Layout, PageSize.x, EUIPopupContentAlign::Center);
-    const float Y = Layout.ContentBottom - PageSize.y - 4.0f;
-
-    ImGui::SetCursorPos(ImVec2(X, Y));
-    ImGui::TextUnformatted(PageBuffer);
-
-    ImGui::SetWindowFontScale(1.0f);
 }
 
 void FStageIntroPopup::Render(FGameContext &Context)
@@ -198,13 +159,7 @@ void FStageIntroPopup::Render(FGameContext &Context)
                   ContentTextSize,
                   ContentVerticalAlign);
 
-    DrawPageText(Layout);
-
-    const int TotalPages = GetTotalPages();
-    const bool bHasPrevPage = CurrentPage > 0;
-    const bool bHasNextPage = (CurrentPage + 1) < TotalPages;
-
-    DrawBottomButtons(Layout, bHasPrevPage, bHasNextPage);
+    DrawBottomButtonArea(Layout);
 
     ResetPage();
 

@@ -39,9 +39,7 @@ class FStageIntroPopup : public FUIPopupBase
     void               GoToNextPage();
     void               ResetPage();
     const std::string &GetCurrentPageMessage() const;
-    void               DrawBottomButtons(const FPopupFrameLayout &Layout,
-                                         bool bHasPrevPage, bool bHasNextPage);
-    void               DrawPageText(const FPopupFrameLayout &Layout);
+    void               DrawBottomButtonArea(const FPopupFrameLayout &Layout);
 
   private:
     int                      StageNumber = 1;
