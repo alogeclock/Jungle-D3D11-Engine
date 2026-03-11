@@ -116,8 +116,8 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
                 }
 
                 NewMonster->SetMonsterType(MonsterType);
-                NewMonster->SetMoveFrequency(3 - MonsterTypeIndex);
-                NewMonster->SetSearchRange(3 + 3 * MonsterTypeIndex);
+                NewMonster->SetMoveFrequency(3 - static_cast<int>(MonsterType));
+                NewMonster->SetSearchRange(3 + 3 * static_cast<int>(MonsterType));
 
                 AddMonster(std::move(NewMonster));
                 MonsterTypeIndex++;
