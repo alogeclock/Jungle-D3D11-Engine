@@ -162,6 +162,7 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     FAudioSystem::Get().LoadWav("sfx_perfect", "Resources/Sounds/perfect.wav");
     FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
     FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
+    FAudioSystem::Get().LoadWav("sfx_get_hit", "Resources/Sounds/get_hit.wav");
 
     bIsGameOver = false;
     bIsCleared = false;
@@ -353,9 +354,9 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             {
                 // 1. 플레이어에게 데미지 1 적용
                 Player->Damage(1);
-
                 // 2. 몬스터 소멸 (남은 HP만큼 데미지를 주어 IsDead() 상태로 만듦)
                 (*Mon)->Damage((*Mon)->GetHp());
+                FAudioSystem::Get().Play("sfx_get_hit", false);
             }
 
             if ((*Mon)->IsDead())
