@@ -59,7 +59,7 @@ void FBeatHUDWidget::Render(FGameContext &Context)
     Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
 
     FontTexPair *FTPair = Context.FontManager.Get("basic_font");
-    Context.Renderer.DrawFont("X" + std::to_string(Combo), FTPair->Font.get(), FTPair->Tex.get(),
+    Context.Renderer.DrawFont("x" + std::to_string(Combo), FTPair->Font.get(), FTPair->Tex.get(),
                               Heart.X - 40, Heart.Y + 100, 75);
     /*
      * 이펙트 그리기
