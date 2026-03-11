@@ -82,6 +82,8 @@ class FStage
     bool IsDarknessDisabled() const;
     void SetDarknessDisabled(bool bDisabled);
 
+    bool IsAngry() const;
+
     void                          ApplyItem(const FItemData &Item);
     void                          UpdateActiveEffects(float DeltaTime);
     const std::vector<FItemData> &GetItems() const;
@@ -119,6 +121,11 @@ class FStage
     float TimeFreezeRemaining = 0.0f;
     bool  bDarknessDisabled = false;
 
+    // Angry 모드
+    bool  bIsAngry = false;
+    float AngryTime = 0.0f;       // 이 시간 이하일 때 Angry 발동
+    float AngryTimeScale = 1.3f;  // Angry 시 TimeScale
+
     bool bIsGameOver = false;
     bool bIsCleared = false;
 
@@ -140,9 +147,11 @@ class FStage
 
     void LoadSpriteResources();
     void CreateDarknessTexture();
+    void CreateAngryOverlayTexture();
     void BuildStaticBatches();
     void ReleaseStaticBatches();
     void RebuildWallBatch();
 
     std::unique_ptr<FTexture> DarknessTexture;
+    std::unique_ptr<FTexture> AngryOverlayTexture;
 };

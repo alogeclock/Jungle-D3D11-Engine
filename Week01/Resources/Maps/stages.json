@@ -1,0 +1,121 @@
+{
+    "tile_definition": {
+        "0": "PATH",
+        "1": "WALL",
+        "2": "OUTER",
+        "3": "GOAL",
+        "4": "ITEM"
+    },
+    "stages": [
+        {
+            "metadata": {
+                "id": 1,
+                "name": "Stage 1: Rhythm Beginnings",
+                "bpm": 93,
+                "music": "Resources/Sounds/stage1.wav",
+                "width": 10,
+                "height": 8,
+                "spawn_point": {
+                    "x": 2,
+                    "y": 2
+                },
+                "items": [
+                    { "x": 6, "y": 4, "type": "time_freeze", "duration": 5.0 },
+                    { "x": 4, "y": 3, "type": "darkness_down" },
+                    { "x": 7, "y": 2, "type": "time_scale_down", "duration": 5.0 }
+                ],
+                "time_limit": 30,
+                "angry_time": 10,
+                "angry_time_scale": 1.3,
+                "monster_count": 0,
+                "intro_message": "정글을 탐험하던 중 몬스터가 나타났다!\n가능한 무시무시한 몬스터들을 피하면서 골인 지점에 도달하자.\n리듬에 맞춰 움직이는 것을 잊지 말도록!"
+            },
+            "layers": [
+                [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+                [ 2, 1, 1, 1, 1, 1, 1, 1, 1, 2 ],
+                [ 2, 1, 0, 0, 0, 1, 0, 4, 1, 2 ],
+                [ 2, 1, 0, 1, 4, 1, 0, 1, 1, 2 ],
+                [ 2, 1, 0, 1, 0, 0, 4, 0, 1, 2 ],
+                [ 2, 1, 0, 1, 1, 1, 1, 3, 1, 2 ],
+                [ 2, 1, 1, 1, 1, 1, 1, 1, 1, 2 ],
+                [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+            ]
+        },
+        {
+            "metadata": {
+                "id": 2,
+                "name": "Stage 2: Shield of Light",
+                "bpm": 121,
+                "music": "Resources/Sounds/stage2.wav",
+                "width": 10,
+                "height": 8,
+                "spawn_point": {
+                    "x": 1,
+                    "y": 1
+                },
+                "monster_spawns": [
+                    { "x": 7, "y": 3 }
+                ],
+                "items": [
+                    { "x": 3, "y": 3, "type": "invincibility" },
+                    { "x": 5, "y": 5, "type": "invincibility" },
+                    { "x": 6, "y": 3, "type": "darkness_down" },
+                    { "x": 8, "y": 1, "type": "invincibility" }
+                ],
+                "time_limit": 60,
+                "angry_time": 20,
+                "angry_time_scale": 1.3,
+                "monster_count": 2,
+                "intro_message": "정글의 깊은 숲에 도달했다.\n무적 아이템을 잘 활용하여 몬스터를 피하자!"
+            },
+            "layers": [
+                [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+                [ 2, 0, 0, 0, 0, 0, 0, 0, 4, 2 ],
+                [ 2, 1, 1, 1, 1, 1, 1, 0, 1, 2 ],
+                [ 2, 1, 0, 4, 0, 0, 4, 0, 1, 2 ],
+                [ 2, 1, 0, 1, 1, 1, 1, 1, 1, 2 ],
+                [ 2, 1, 0, 0, 0, 4, 0, 3, 1, 2 ],
+                [ 2, 1, 1, 1, 1, 1, 1, 1, 1, 2 ],
+                [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+            ]
+        },
+        {
+            "metadata": {
+                "id": 3,
+                "name": "Stage 3: Jungle Labyrinth",
+                "bpm": 140,
+                "music": "Resources/Sounds/stage3.wav",
+                "width": 12,
+                "height": 10,
+                "spawn_point": {
+                    "x": 2,
+                    "y": 2
+                },
+                "items": [
+                    { "x": 4, "y": 4, "type": "time_scale_down", "duration": 6.0 },
+                    { "x": 6, "y": 6, "type": "invincibility" },
+                    { "x": 5, "y": 8, "type": "darkness_down" },
+                    { "x": 9, "y": 2, "type": "time_freeze", "duration": 5.0 },
+                    { "x": 10, "y": 8, "type": "invincibility" }
+                ],
+                "time_limit": 80,
+                "angry_time": 25,
+                "angry_time_scale": 1.4,
+                "monster_count": 3,
+                "intro_message": "이곳은 대체...?\n모든 것을 종합하여 최후의 미로를 돌파하라!"
+            },
+            "layers": [
+                [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+                [ 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2 ],
+                [ 2, 1, 0, 0, 0, 1, 0, 0, 0, 4, 1, 2 ],
+                [ 2, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 2 ],
+                [ 2, 1, 0, 1, 4, 0, 0, 1, 0, 0, 1, 2 ],
+                [ 2, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 2 ],
+                [ 2, 1, 0, 0, 0, 1, 4, 0, 0, 0, 1, 2 ],
+                [ 2, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 2 ],
+                [ 2, 1, 0, 0, 0, 4, 0, 0, 1, 3, 4, 2 ],
+                [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+            ]
+        }
+    ]
+}

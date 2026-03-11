@@ -138,6 +138,8 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData& OutStage) const
 		OutStage.SetBpm(Meta.value("bpm", 120));
 		OutStage.SetMusicPath(Meta.value("music", std::string{}));
 		OutStage.SetTimeLimit(Meta.value("time_limit", 60.0f));
+		OutStage.SetAngryTime(Meta.value("angry_time", 0.0f));
+		OutStage.SetAngryTimeScale(Meta.value("angry_time_scale", 1.3f));
 		OutStage.SetMonsterCount(Meta.value("monster_count", 0));
         OutStage.SetIntroMessage(Meta.value("intro_message", std::string{}));
 
@@ -188,8 +190,6 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData& OutStage) const
 				std::string TypeStr = ItemJson.value("type", std::string{});
 				if (TypeStr == "invincibility")
 					Item.Type = EItemType::Invincibility;
-				else if (TypeStr == "time_scale_up")
-					Item.Type = EItemType::TimeScaleUp;
 				else if (TypeStr == "time_scale_down")
 					Item.Type = EItemType::TimeScaleDown;
 				else if (TypeStr == "time_freeze")

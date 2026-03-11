@@ -19,7 +19,7 @@ class FPlayer : public FActor
     void ClearQueuedInput();
     bool HasQueuedInput() const;
 
-    // 플레이어 전용 아이템 효과 (Invincibility, TimeScaleUp/Down)
+    // 플레이어 전용 아이템 효과 (Invincibility, TimeScaleDown)
     void                             AddEffect(const FActiveEffect &Effect);
     void                             UpdateActiveEffects(float DeltaTime);
     const std::vector<FActiveEffect>&GetActiveEffects() const;

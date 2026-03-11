@@ -137,6 +137,11 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     TimeLimit = Map->GetTimeLimit();
     RemainingTime = TimeLimit;
 
+    // Angry 모드 메타데이터
+    AngryTime = Map->GetAngryTime();
+    AngryTimeScale = Map->GetAngryTimeScale();
+    bIsAngry = false;
+
     // 비트 시스템 초기화 (스테이지 BPM 적용)
     BeatSystem->SetBpm(static_cast<float>(Map->GetBpm()));
     BeatSystem->Reset();
@@ -188,6 +193,14 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         RemainingTime = 0.0f;
         bIsGameOver = true;
         return;
+    }
+
+    // Angry 모드 체크
+    if (!bIsAngry && AngryTime > 0.0f && RemainingTime <= AngryTime)
+    {
+        bIsAngry = true;
+        BeatSystem->SetTimeScale(AngryTimeScale);
+        CreateAngryOverlayTexture();
     }
 
     // 아이템 효과 업데이트
@@ -399,7 +412,11 @@ void FStage::Render()
         }
     }
 
-    // 몬스터 렌더링
+    // 몬스터 렌더링 (Angry 모드 시 빨간색 틴트)
+    DirectX::XMFLOAT4 MonsterTint = bIsAngry
+        ? DirectX::XMFLOAT4{1.5f, 0.4f, 0.4f, 1.0f}
+        : DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f};
+
     for (const auto &Mon : Monsters)
     {
         if (Mon->IsDead())
@@ -408,7 +425,7 @@ void FStage::Render()
         float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
 
         const FSpriteInfo &Spr = Mon->GetSprite();
-        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
+        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr, MonsterTint);
     }
 
     // 플레이어 렌더링 (가장 위에 그림)
@@ -428,6 +445,14 @@ void FStage::Render()
         PlayerWorld.Y = Player->GetRenderY() + TileSize * 0.5f;
         FVec2 PlayerScreen = Camera->WorldToScreen(PlayerWorld);
         Renderer->DrawDarknessOverlay(DarknessTexture.get(), PlayerScreen.X, PlayerScreen.Y);
+    }
+
+    // Angry 모드 오버레이 (빨간 반투명 화면 전체)
+    if (bIsAngry && AngryOverlayTexture)
+    {
+        float ScreenCX = Renderer->GetScreenWidth() * 0.5f;
+        float ScreenCY = Renderer->GetScreenHeight() * 0.5f;
+        Renderer->DrawDarknessOverlay(AngryOverlayTexture.get(), ScreenCX, ScreenCY);
     }
     // Render()는 Application에서 통합 호출
 }
@@ -512,6 +537,76 @@ void FStage::CreateDarknessTexture()
     }
 
     DarknessTexture = std::make_unique<FTexture>(Size, Size, Tex2D, SRV);
+}
+
+void FStage::CreateAngryOverlayTexture()
+{
+    if (!Renderer || !Renderer->Device)
+        return;
+
+    AngryOverlayTexture.reset();
+
+    // 방사형 그라데이션: 중앙 투명 → 가장자리 빨간색 (max alpha 0.5)
+    const int   Size = 512;
+    const float Center = Size * 0.5f;
+    const float MaxAlpha = 0.5f;
+
+    std::vector<uint8_t> Pixels(Size * Size * 4);
+
+    for (int Y = 0; Y < Size; ++Y)
+    {
+        for (int X = 0; X < Size; ++X)
+        {
+            float DX = (X - Center) / Center; // -1 ~ 1
+            float DY = (Y - Center) / Center; // -1 ~ 1
+            float Dist = sqrtf(DX * DX + DY * DY);
+            if (Dist > 1.0f)
+                Dist = 1.0f;
+
+            // smoothstep
+            float Alpha = Dist * Dist * (3.0f - 2.0f * Dist);
+            Alpha *= MaxAlpha;
+
+            int Idx = (Y * Size + X) * 4;
+            Pixels[Idx + 0] = 180; // R
+            Pixels[Idx + 1] = 20;  // G
+            Pixels[Idx + 2] = 20;  // B
+            Pixels[Idx + 3] = static_cast<uint8_t>(Alpha * 255.0f);
+        }
+    }
+
+    ID3D11Texture2D          *Tex2D = nullptr;
+    ID3D11ShaderResourceView *SRV = nullptr;
+
+    D3D11_TEXTURE2D_DESC Desc = {};
+    Desc.Width = Size;
+    Desc.Height = Size;
+    Desc.MipLevels = 1;
+    Desc.ArraySize = 1;
+    Desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    Desc.SampleDesc.Count = 1;
+    Desc.Usage = D3D11_USAGE_DEFAULT;
+    Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+    D3D11_SUBRESOURCE_DATA InitData = {};
+    InitData.pSysMem = Pixels.data();
+    InitData.SysMemPitch = Size * 4;
+
+    if (FAILED(Renderer->Device->CreateTexture2D(&Desc, &InitData, &Tex2D)))
+        return;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+    SRVDesc.Format = Desc.Format;
+    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    SRVDesc.Texture2D.MipLevels = 1;
+
+    if (FAILED(Renderer->Device->CreateShaderResourceView(Tex2D, &SRVDesc, &SRV)))
+    {
+        Tex2D->Release();
+        return;
+    }
+
+    AngryOverlayTexture = std::make_unique<FTexture>(Size, Size, Tex2D, SRV);
 }
 
 // ============================================================
@@ -857,6 +952,8 @@ bool FStage::IsDarknessDisabled() const { return bDarknessDisabled; }
 
 void FStage::SetDarknessDisabled(bool bDisabled) { bDarknessDisabled = bDisabled; }
 
+bool FStage::IsAngry() const { return bIsAngry; }
+
 int FStage::GetCurrentStageIndex() const { return CurrentStageIndex; }
 
 const std::string &FStage::GetStageName() const { return StageName; }
@@ -872,9 +969,6 @@ void FStage::ApplyItem(const FItemData &Item)
     case EItemType::Invincibility:
         if (!Player->HasActiveEffect(EItemType::Invincibility))
             Player->AddEffect({EItemType::Invincibility, 0.0f});
-        break;
-    case EItemType::TimeScaleUp:
-        Player->AddEffect({EItemType::TimeScaleUp, Item.Duration});
         break;
     case EItemType::TimeScaleDown:
         Player->AddEffect({EItemType::TimeScaleDown, Item.Duration});

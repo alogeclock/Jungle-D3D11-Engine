@@ -99,14 +99,6 @@ void FDebugWidget::Render(FGameContext& Context)
             Stage->ApplyItem(Item);
         }
 
-        if (ImGui::Button("TimeScale Up"))
-        {
-            FItemData Item;
-            Item.Type = EItemType::TimeScaleUp;
-            Item.Duration = 6.0f;
-            Stage->ApplyItem(Item);
-        }
-        ImGui::SameLine();
         if (ImGui::Button("TimeScale Down"))
         {
             FItemData Item;
@@ -143,7 +135,6 @@ void FDebugWidget::Render(FGameContext& Context)
                 switch (Eff.Type)
                 {
                 case EItemType::Invincibility:  ImGui::SameLine(); ImGui::TextColored(ImVec4(1,1,0,1), "[Invincible]"); break;
-                case EItemType::TimeScaleUp:    ImGui::SameLine(); ImGui::TextColored(ImVec4(1,0.5f,0,1), "[Speed+] %.1fs", Eff.RemainingTime); break;
                 case EItemType::TimeScaleDown:  ImGui::SameLine(); ImGui::TextColored(ImVec4(0,0.8f,1,1), "[Speed-] %.1fs", Eff.RemainingTime); break;
                 default: break;
                 }

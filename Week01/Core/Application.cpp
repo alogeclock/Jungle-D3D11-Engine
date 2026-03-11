@@ -108,7 +108,6 @@ bool FApplication::LoadSpriteResources()
         {"effect_good", "effect_good.png"},
         {"effect_miss", "effect_miss.png"},
         {"item_invincibility", "item_Invincibility.png"},
-        {"item_time_scale_up", "item_time_scale_up.png"},
         {"item_time_scale_down", "item_time_scale_down.png"},
         {"item_darkness_up", "item_darkness_up.png"},
         {"item_darkness_down", "item_darkness_down.png"},

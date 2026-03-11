@@ -71,7 +71,7 @@ void FRenderer::SetCamera(const FCamera2D& Camera)
 }
 
 void FRenderer::DrawSprite(const FTexture* Texture, float WorldX, float WorldY,
-	float Width, float Height, const FSpriteInfo& Sprite)
+	float Width, float Height, const FSpriteInfo& Sprite, const DirectX::XMFLOAT4& ColorTint)
 {
 	FRenderObject Obj;
 	Obj.Texture = Texture;
@@ -82,6 +82,7 @@ void FRenderer::DrawSprite(const FTexture* Texture, float WorldX, float WorldY,
 
 	Obj.SpriteOffset = Sprite.SpriteOffset;
 	Obj.IsMirrored = Sprite.bIsMirrored ? 1.0f : 0.0f;
+	Obj.ColorTint = ColorTint;
 
 	if (Texture)
 	{
@@ -317,6 +318,7 @@ void FRenderer::ExecuteSprite(const FRenderObject& Obj)
 	CB.SpriteOffset = Obj.SpriteOffset;
 	CB.IsMirrored = Obj.IsMirrored;
 	CB.Pad = 0.0f;
+	CB.ColorTint = Obj.ColorTint;
 
 	D3D11_MAPPED_SUBRESOURCE Mapped;
 	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped);

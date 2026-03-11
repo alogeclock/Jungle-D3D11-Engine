@@ -65,6 +65,7 @@ struct FSpriteConstants
 	DirectX::XMFLOAT2   SpriteOffset;
 	float               IsMirrored;
 	float               Pad;
+	DirectX::XMFLOAT4   ColorTint; // RGBA tint (0,0,0,0 = no tint, 1,1,1,1 = white)
 };
 
 class FRenderer
@@ -86,7 +87,8 @@ public:
 
 	// 월드 스페이스 스프라이트 큐잉
 	void DrawSprite(const FTexture* Texture, float WorldX, float WorldY,
-		float Width, float Height, const FSpriteInfo& Sprite);
+		float Width, float Height, const FSpriteInfo& Sprite,
+		const DirectX::XMFLOAT4& ColorTint = {0.0f, 0.0f, 0.0f, 0.0f});
 
 	// 스크린 스페이스 렌더링 큐잉
 	void DrawTexture(const FTexture* texture, float screenX, float screenY,
@@ -96,6 +98,7 @@ public:
 
 	// 암흑 시야 오버레이 (알파 블렌딩으로 전체 화면에 렌더)
 	void DrawDarknessOverlay(const FTexture* Texture, float ScreenCenterX, float ScreenCenterY);
+
 
 	// 정적 배치 생성/해제/렌더
 	FStaticBatch CreateStaticBatch(const FVertexSimple* Vertices, UINT VertexCount,

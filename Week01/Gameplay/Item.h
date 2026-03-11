@@ -4,7 +4,6 @@
 enum class EItemType
 {
     Invincibility,
-    TimeScaleUp,
     TimeScaleDown,
     DarknessUp,
     DarknessDown,
@@ -32,7 +31,6 @@ inline std::string GetItemTextureKey(EItemType Type)
     switch (Type)
     {
     case EItemType::Invincibility:  return "item_invincibility";
-    case EItemType::TimeScaleUp:    return "item_time_scale_up";
     case EItemType::TimeScaleDown:  return "item_time_scale_down";
     case EItemType::DarknessUp:     return "item_darkness_up";
     case EItemType::DarknessDown:   return "item_darkness_down";

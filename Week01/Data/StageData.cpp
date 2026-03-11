@@ -105,6 +105,14 @@ void FStageData::SetTimeLimit(float InTimeLimit) { TimeLimit = InTimeLimit; }
 
 float FStageData::GetTimeLimit() const { return TimeLimit; }
 
+void FStageData::SetAngryTime(float InAngryTime) { AngryTime = InAngryTime; }
+
+float FStageData::GetAngryTime() const { return AngryTime; }
+
+void FStageData::SetAngryTimeScale(float InScale) { AngryTimeScale = InScale; }
+
+float FStageData::GetAngryTimeScale() const { return AngryTimeScale; }
+
 void FStageData::AddItem(const FItemData &Item) { Items.push_back(Item); }
 
 const std::vector<FItemData> &FStageData::GetItems() const { return Items; }
@@ -122,6 +130,8 @@ void FStageData::Clear()
     Bpm = 120;
     MusicPath.clear();
     TimeLimit = 60.0f;
+    AngryTime = 0.0f;
+    AngryTimeScale = 1.3f;
     MonsterCount = 0;
     ClearMonsterTypes();
     ClearItems();

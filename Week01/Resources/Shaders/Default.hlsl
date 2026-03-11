@@ -14,6 +14,7 @@ cbuffer SpriteConstants : register(b0)
     float2 sprite_offset;
     float is_mirrored;
     float pad;
+    float4 color_tint; // RGBA color multiplier (1,1,1,1 = no tint)
 }
 
 Texture2D sprite_texture : register(t0);
@@ -64,6 +65,12 @@ float4 mainPS(PixelInput input) : SV_TARGET
     if (color.a < 0.01f)
     {
         discard;
+    }
+
+    // Apply color tint (color_tint == (0,0,0,0) means no tint for backward compat)
+    if (color_tint.a > 0.0f)
+    {
+        color.rgb *= color_tint.rgb;
     }
 
     return color;

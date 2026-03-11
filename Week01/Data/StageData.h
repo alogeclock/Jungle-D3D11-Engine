@@ -57,6 +57,12 @@ struct FStageData
     void  SetTimeLimit(float InTimeLimit);
     float GetTimeLimit() const;
 
+    void  SetAngryTime(float InAngryTime);
+    float GetAngryTime() const;
+
+    void  SetAngryTimeScale(float InScale);
+    float GetAngryTimeScale() const;
+
     void                          AddItem(const FItemData &Item);
     const std::vector<FItemData> &GetItems() const;
     void                          ClearItems();
@@ -72,6 +78,8 @@ struct FStageData
     int         Bpm = 120;
     std::string MusicPath;
     float       TimeLimit = 60.0f;
+    float       AngryTime = 0.0f;      // 남은 시간이 이 값 이하일 때 Angry 모드 발동 (0 = 없음)
+    float       AngryTimeScale = 1.3f;  // Angry 모드 시 BeatSystem TimeScale
     int         MonsterCount = 0;
     std::string IntroMessage;
 

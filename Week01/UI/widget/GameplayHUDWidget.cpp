@@ -9,6 +9,7 @@
 #include "Render/Texture.h"
 #include "Render/TextureManager.h"
 #include <algorithm>
+#include <cmath>
 
 void FGameplayHUDWidget::BindStage(const FStage *InStage) { Stage = InStage; }
 
@@ -76,7 +77,16 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
 
         Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 30, HPTextPos.Y + 50, 50);
-        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 50, 50);
+
+        // Angry 모드: 타이머 텍스트 scale 펄싱 (1.0 ~ 1.15, 1초 주기)
+        float TimeScale = 50.0f;
+        if (Stage->IsAngry())
+        {
+            float Pulse = (sinf(PlayTime * 2.0f * 3.14159f) + 1.0f) * 0.5f; // 0~1, 1초 주기
+            TimeScale = 50.0f * (1.0f + 0.15f * Pulse);
+        }
+        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 50,
+                                  TimeScale);
         std::string StageName = Stage->GetStageName();
         auto        iter = StageName.find(':');
         std::string StageIdx = StageName.substr(0, iter);
@@ -113,10 +123,6 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
             {
             case EItemType::Invincibility:
                 Buffs.push_back({GetItemTextureKey(Eff.Type), "INV"});
-                break;
-            case EItemType::TimeScaleUp:
-                snprintf(Buf, sizeof(Buf), "%.1fs", Eff.RemainingTime);
-                Buffs.push_back({GetItemTextureKey(Eff.Type), Buf});
                 break;
             case EItemType::TimeScaleDown:
                 snprintf(Buf, sizeof(Buf), "%.1fs", Eff.RemainingTime);
