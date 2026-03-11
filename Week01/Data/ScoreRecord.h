@@ -4,7 +4,7 @@
 
 struct FScoreRecord
 {
-    std::string Name;
+    std::string Nickname;
     int         Stage = 0;
     int         Score = 0;
 };

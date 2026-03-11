@@ -1,13 +1,7 @@
 #pragma once
 
+#include "UIPopupAction.h"
 #include "UIPopupBase.h"
-
-enum class EStageClearPopupAction
-{
-    None,
-    NextStage,
-    OpenSaveScorePopup
-};
 
 class FStageClearPopup : public FUIPopupBase
 {
@@ -18,65 +12,21 @@ class FStageClearPopup : public FUIPopupBase
         ClearedStage = InClearedStage;
     }
 
-    EStageClearPopupAction ConsumeAction();
-
+    EUIPopupAction ConsumeAction();
     void Render(FGameContext &Context) override;
     void Update(FGameContext &Context) override {}
 
   private:
-    bool                   bAllCleared = false;
-    int                    ClearedStage = 0;
-    EStageClearPopupAction PendingAction = EStageClearPopupAction::None;
+    static constexpr EUIPopupContentAlign ContentAlign = EUIPopupContentAlign::Center;
+    static constexpr EUIPopupContentTextSize ContentTextSize = EUIPopupContentTextSize::Big;
+    static constexpr float MessageLineGap = 12.0f;
+
+  private:
+    void DrawAllClearedMessage(const FPopupFrameLayout &Layout);
+    void DrawNormalClearMessage(const FPopupFrameLayout &Layout);
+
+  private:
+    bool bAllCleared = false;
+    int ClearedStage = 0;
+    EUIPopupAction PendingAction = EUIPopupAction::None;
 };
-
-// =============================================================================
-
-EStageClearPopupAction FStageClearPopup::ConsumeAction()
-{
-    EStageClearPopupAction Result = PendingAction;
-    PendingAction = EStageClearPopupAction::None;
-    return Result;
-}
-
-void FStageClearPopup::Render(FGameContext &Context)
-{
-    if (ConsumeOpenRequest())
-    {
-        ImGui::OpenPopup("Stage Clear");
-    }
-
-    if (!bIsOpen)
-        return;
-
-    const ImGuiWindowFlags Flags = ImGuiWindowFlags_AlwaysAutoResize;
-    if (ImGui::BeginPopupModal("Stage Clear", nullptr, Flags))
-    {
-        ImGui::Text("Stage %d Clear!", ClearedStage);
-        ImGui::Separator();
-
-        if (bAllCleared)
-        {
-            ImGui::Text("You cleared all stages!");
-
-            if (ImGui::Button("Save Score", ImVec2(280, 0)))
-            {
-                PendingAction = EStageClearPopupAction::OpenSaveScorePopup;
-                ImGui::CloseCurrentPopup();
-                Close();
-            }
-        }
-        else
-        {
-            ImGui::Text("Go to next stage?");
-
-            if (ImGui::Button("Next Stage", ImVec2(280, 0)))
-            {
-                PendingAction = EStageClearPopupAction::NextStage;
-                ImGui::CloseCurrentPopup();
-                Close();
-            }
-        }
-
-        ImGui::EndPopup();
-    }
-}

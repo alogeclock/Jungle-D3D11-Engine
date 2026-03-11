@@ -1,15 +1,17 @@
 #pragma once
 
-#include <string>
 #include <vector>
-#include "Core/Types.h"
 #include "ScoreRecord.h"
 
-class FScoreRepository
+namespace ScoreRepository
 {
-  public:
-    std::vector<FScoreRecord> Load(const std::string &Path);
-    bool Save(const std::string &Path, const std::vector<FScoreRecord> &Records);
-    void AddRecord(std::vector<FScoreRecord> &Records, const FScoreRecord &Record);
+    inline constexpr const char *DefaultPath = "Resources/Data/scoreboard.json";
+
+    std::vector<FScoreRecord> Load();
+    std::vector<FScoreRecord> LoadSorted();
+
+    bool Save(const std::vector<FScoreRecord> &Records);
+    bool AppendRecord(const FScoreRecord &Record);
+
     void SortDescending(std::vector<FScoreRecord> &Records);
-};
+}

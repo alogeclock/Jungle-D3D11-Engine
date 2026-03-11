@@ -1,23 +1,28 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "PlayScene.h"
 #include "Core/AudioSystem.h"
 #include <memory>
 #include <string>
+#include "Core/AudioSystem.h"
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Data/ScoreRepository.h"
 #include "Data/StageLoader.h"
 #include "Gameplay/Stage.h"
+#include "PlayScene.h"
 #include "Scene/SceneCommand.h"
 #include "Scene/SceneType.h"
 #include "UI/popup/GameOverPopup.h"
+#include "UI/popup/GoToTitlePopup.h"
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/SaveScorePopup.h"
 #include "UI/popup/StageClearPopup.h"
+#include "UI/popup/UIPopupAction.h"
 #include "UI/widget/BeatHUDWidget.h"
 #include "UI/widget/DebugWidget.h"
 #include "UI/widget/GameplayHUDWidget.h"
 #include "UI/widget/MinimapWidget.h"
+
 
 FPlayScene::FPlayScene(int InStageIndex) : CurrentStageIndex(InStageIndex) {}
 
@@ -29,17 +34,18 @@ void FPlayScene::Update(FGameContext& Context)
 		bStageLoaded = true;
 	}
 
-	// 지연된 스테이지 변경 처리 (UI 순회 중 안전하게)
-	if (PendingStageIndex >= 0)
-	{
-		FSceneCommand Command;
-		Command.Type = ESceneCommandType::ChangeScene;
-		Command.NextScene = ESceneType::Play;
-		Command.NextStageIndex = PendingStageIndex;
-		PendingStageIndex = -1;
-		SetSceneCommand(Command);
-		return;
-	}
+    // TODO: 지연된 업데이트 필요하나?
+    // 필요하다고 해도 ChangeScene 커맨드로 간략화하여 코드 수정할 것
+    if (PendingStageIndex >= 0)
+    {
+        FSceneCommand Command;
+        Command.Type = ESceneCommandType::ChangeScene;
+        Command.NextScene = ESceneType::Play;
+        Command.NextStageIndex = PendingStageIndex;
+        PendingStageIndex = -1;
+        SetSceneCommand(Command);
+        return;
+    }
 
 	FPopupManager& PopupManager = UIManager.GetPopupManager();
 
@@ -55,19 +61,22 @@ void FPlayScene::Update(FGameContext& Context)
 	HandlePopupResult(Context);
 	PopupManager.RemoveClosedPopup();
 
-	if (bOpenSaveScorePopupNextFrame && !PopupManager.HasOpenPopup())
-	{
-		PopupManager.Open(std::make_unique<FSaveScorePopup>());
-		bOpenSaveScorePopupNextFrame = false;
-	}
+    if (bOpenSaveScorePopupNextFrame && !PopupManager.HasOpenPopup())
+    {
+        std::unique_ptr<FSaveScorePopup> Popup = std::make_unique<FSaveScorePopup>();
+        Popup->SetScore(Stage ? Stage->GetScore() : 0);
+        Popup->Open();
+        PopupManager.Open(std::move(Popup));
+        bOpenSaveScorePopupNextFrame = false;
+    }
 }
 
 void FPlayScene::Render(FGameContext& Context)
 {
-	// TODO: 인자로 컨텍스트 넘겨서 내부 렌더러 호출하도록 변경
-	if (Stage)
-		Stage->Render();
-	UIManager.Render(Context);
+    if (Stage)
+        Stage->Render();
+
+    UIManager.Render(Context);
 }
 
 void FPlayScene::LoadStage(FGameContext& Context)
@@ -114,11 +123,13 @@ void FPlayScene::HandleStageResult(FGameContext& Context)
 	if (PopupManager.HasOpenPopup())
 		return;
 
-	if (Stage->IsGameOver())
-	{
-		PopupManager.Open(std::make_unique<FGameOverPopup>());
-		return;
-	}
+    if (Stage->IsGameOver())
+    {
+        std::unique_ptr<FGameOverPopup> Popup = std::make_unique<FGameOverPopup>();
+        Popup->Open();
+        PopupManager.Open(std::move(Popup));
+        return;
+    }
 
 	if (Stage->IsCleared())
 	{
@@ -126,107 +137,83 @@ void FPlayScene::HandleStageResult(FGameContext& Context)
 		const int  TotalStages = FStageLoader::Get().GetStageCount();
 		const bool bAllCleared = (NextIndex >= TotalStages);
 
-		auto Popup = std::make_unique<FStageClearPopup>();
-		Popup->SetData(bAllCleared, CurrentStageIndex + 1);
-		PopupManager.Open(std::move(Popup));
-		return;
-	}
+        std::unique_ptr<FStageClearPopup> Popup = std::make_unique<FStageClearPopup>();
+        Popup->SetData(bAllCleared, CurrentStageIndex + 1);
+        Popup->Open();
+        PopupManager.Open(std::move(Popup));
+        return;
+    }
 }
 
-void FPlayScene::HandlePopupResult(FGameContext& Context)
+void FPlayScene::OpenGoToTitlePopup()
+{
+    std::unique_ptr<FGoToTitlePopup> Popup = std::make_unique<FGoToTitlePopup>();
+    Popup->Open();
+    UIManager.GetPopupManager().Open(std::move(Popup));
+}
+
+void FPlayScene::HandlePopupResult(FGameContext &Context)
 {
 	FPopupManager& PopupManager = UIManager.GetPopupManager();
 
-	if (FStageClearPopup* Popup = PopupManager.GetPopup<FStageClearPopup>())
-	{
-		switch (Popup->ConsumeAction())
-		{
-		case EStageClearPopupAction::None:
-			break;
+    if (FStageClearPopup *Popup = PopupManager.GetPopup<FStageClearPopup>())
+    {
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
+    }
 
-		case EStageClearPopupAction::NextStage:
-		{
-			FSceneCommand Command;
-			Command.Type = ESceneCommandType::ChangeScene;
-			Command.NextScene = ESceneType::Play;
-			Command.NextStageIndex = CurrentStageIndex + 1;
-			SetSceneCommand(Command);
-			break;
-		}
+    if (FGameOverPopup *Popup = PopupManager.GetPopup<FGameOverPopup>())
+    {
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
+    }
 
-		case EStageClearPopupAction::OpenSaveScorePopup:
-		{
-			bOpenSaveScorePopupNextFrame = true;
-			break;
-		}
+    if (FSaveScorePopup *Popup = PopupManager.GetPopup<FSaveScorePopup>())
+    {
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
+    }
 
-		default:
-			break;
-		}
+    if (FGoToTitlePopup *Popup = PopupManager.GetPopup<FGoToTitlePopup>())
+    {
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
+    }
+}
 
-		return;
-	}
+bool FPlayScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                                      EUIPopupAction Action)
+{
+    switch (Action)
+    {
+    case EUIPopupAction::OpenSaveScorePopup:
+        Popup.Close();
+        bOpenSaveScorePopupNextFrame = true;
+        return true;
 
-	if (FGameOverPopup* Popup = PopupManager.GetPopup<FGameOverPopup>())
-	{
-		switch (Popup->ConsumeAction())
-		{
-		case EGameOverPopupAction::None:
-			break;
+    case EUIPopupAction::GoToNextStage:
+        Popup.Close();
+        ChangeScene(ESceneType::Play, CurrentStageIndex + 1);
+        return true;
 
-		case EGameOverPopupAction::BackToTitle:
-		{
-			FSceneCommand Command;
-			Command.Type = ESceneCommandType::ChangeScene;
-			Command.NextScene = ESceneType::Title;
-			SetSceneCommand(Command);
-			break;
-		}
+    case EUIPopupAction::ConfirmSaveScore:
+    {
+        Popup.Close();
 
-		default:
-			break;
-		}
+        FSaveScorePopup *SavePopup = dynamic_cast<FSaveScorePopup *>(&Popup);
+        if (!SavePopup)
+            return true;
 
-		return;
-	}
+        const std::string Nickname = SavePopup->GetNickname();
+        const int         ClearedStage = CurrentStageIndex + 1;
+        const int         Score = Stage ? Stage->GetScore() : 0;
 
-	if (FSaveScorePopup* Popup = PopupManager.GetPopup<FSaveScorePopup>())
-	{
-		const FSaveScorePopupResult Result = Popup->ConsumeResult();
+        ScoreRepository::AppendRecord({Nickname, ClearedStage, Score});
+        OpenGoToTitlePopup();
+        return true;
+    }
 
-		switch (Result.Action)
-		{
-		case ESaveScorePopupAction::None:
-			break;
-
-		case ESaveScorePopupAction::Submit:
-		{
-			const std::string Nickname = Result.Nickname;
-			const int         ClearedStage = CurrentStageIndex + 1;
-			const int         Score = Stage ? Stage->GetScore() : 0;
-
-			// TODO: 스코어 저장 및 닉네임 예외처리
-
-			FSceneCommand Command;
-			Command.Type = ESceneCommandType::ChangeScene;
-			Command.NextScene = ESceneType::Title;
-			SetSceneCommand(Command);
-			break;
-		}
-
-		case ESaveScorePopupAction::Cancel:
-		{
-			FSceneCommand Command;
-			Command.Type = ESceneCommandType::ChangeScene;
-			Command.NextScene = ESceneType::Title;
-			SetSceneCommand(Command);
-			break;
-		}
-
-		default:
-			break;
-		}
-
-		return;
-	}
+    default:
+        return false;
+    }
 }

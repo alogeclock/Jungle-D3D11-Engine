@@ -42,6 +42,8 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
 					TextureManager->Register(Key, std::move(Tex));
 			}
 		};
+    LoadTex("test", "Resources/Sprites/test.png");
+
 	LoadTex("tile_floor", "Resources/Sprites/tile_floor.png");
 	LoadTex("goal", "Resources/Sprites/goal.png");
 	LoadTex("wall", "Resources/Sprites/wall.png");
