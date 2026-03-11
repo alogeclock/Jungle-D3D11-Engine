@@ -2,9 +2,10 @@
 #include "ScoreboardPopup.h"
 #include <cstdio>
 
-void FScoreboardPopup::SetEntries(const std::vector<FScoreboardEntry> &InEntries)
+void FScoreboardPopup::SetEntries(const std::vector<FScoreRecord> &InEntries)
 {
     Entries = InEntries;
+    CurrentPage = 0;
     ResetPage();
 }
 
@@ -43,7 +44,7 @@ int FScoreboardPopup::GetTotalPages() const
     if (Entries.empty())
         return 1;
 
-    int Count = static_cast<int>(Entries.size());
+    const int Count = static_cast<int>(Entries.size());
     int TotalPages = Count / EntriesPerPage;
     if ((Count % EntriesPerPage) != 0)
         ++TotalPages;
@@ -85,29 +86,66 @@ void FScoreboardPopup::Render(FGameContext &Context)
     DrawPageText(Layout);
 
     const int TotalPages = GetTotalPages();
+    const bool bHasPrevPage = CurrentPage > 0;
     const bool bHasNextPage = (CurrentPage + 1) < TotalPages;
 
-    if (bHasNextPage)
+    DrawBottomButtons(Layout, bHasPrevPage, bHasNextPage);
+
+    ResetPage();
+    EndPopupWindow();
+}
+
+void FScoreboardPopup::DrawBottomButtons(const FPopupFrameLayout &Layout,
+                                         bool bHasPrevPage, bool bHasNextPage)
+{
+    if (bHasPrevPage && bHasNextPage)
     {
-        if (DrawBottomButton(Layout, "Close", 0, 2))
+        if (DrawBottomButton(Layout, "Prev", 0, 3))
+        {
+            --CurrentPage;
+        }
+
+        if (DrawBottomButton(Layout, "Next", 1, 3))
+        {
+            ++CurrentPage;
+        }
+
+        if (DrawBottomButton(Layout, "Close", 2, 3))
         {
             PendingAction = EUIPopupAction::ClosePopup;
         }
-
-        if (DrawBottomButton(Layout, "Next Page", 1, 2))
+    }
+    else if (bHasPrevPage)
+    {
+        if (DrawBottomButton(Layout, "Prev", 0, 2))
         {
-            PendingAction = EUIPopupAction::GoToNextScoreboardPage;
+            --CurrentPage;
+        }
+
+        if (DrawBottomButton(Layout, "Close", 1, 2))
+        {
+            PendingAction = EUIPopupAction::ClosePopup;
+        }
+    }
+    else if (bHasNextPage)
+    {
+        if (DrawBottomButton(Layout, "Next", 0, 2))
+        {
+            ++CurrentPage;
+        }
+
+        if (DrawBottomButton(Layout, "Close", 1, 2))
+        {
+            PendingAction = EUIPopupAction::ClosePopup;
         }
     }
     else
     {
-        if (DrawBottomButton(Layout, "Close"))
+        if (DrawBottomButton(Layout, "Close", 0, 1))
         {
             PendingAction = EUIPopupAction::ClosePopup;
         }
     }
-
-    EndPopupWindow();
 }
 
 void FScoreboardPopup::DrawEntries(const FPopupFrameLayout &Layout)
@@ -124,7 +162,21 @@ void FScoreboardPopup::DrawEntries(const FPopupFrameLayout &Layout)
     const int PageStartIndex = GetPageStartIndex();
     const int PageEntryCount = GetPageEntryCount();
 
+    const float MiddleLineX = Layout.ContentLeft + Layout.ContentWidth * 0.5f;
+    const float TopY = StartY - 2.0f;
+    const float BottomY = StartY + static_cast<float>(MaxRowsPerColumn) * LineHeight +
+                          static_cast<float>(MaxRowsPerColumn - 1) * RowGap + 2.0f;
+
+    ImDrawList *DrawList = ImGui::GetWindowDrawList();
+    const ImVec2 WindowPos = ImGui::GetWindowPos();
+
+    DrawList->AddLine(ImVec2(WindowPos.x + MiddleLineX, WindowPos.y + TopY),
+                      ImVec2(WindowPos.x + MiddleLineX, WindowPos.y + BottomY),
+                      ImGui::GetColorU32(ImGuiCol_Separator), 1.0f);
+
     char RankBuffer[16]{};
+    char NameBuffer[16]{};
+    char StageBuffer[32]{};
     char ScoreBuffer[16]{};
 
     for (int i = 0; i < PageEntryCount; ++i)
@@ -140,17 +192,23 @@ void FScoreboardPopup::DrawEntries(const FPopupFrameLayout &Layout)
         const float Y = StartY + static_cast<float>(RowIndex) * (LineHeight + RowGap);
 
         std::snprintf(RankBuffer, sizeof(RankBuffer), "%2d.", EntryIndex + 1);
+        std::snprintf(NameBuffer, sizeof(NameBuffer), "%-6.6s", Entries[EntryIndex].Nickname.c_str());
+        std::snprintf(StageBuffer, sizeof(StageBuffer), "Stage %-2d", Entries[EntryIndex].Stage);
         std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%6d", Entries[EntryIndex].Score);
 
         const float RankX = BaseX;
         const float NameX = BaseX + RankColumnWidth;
-        const float ScoreX = BaseX + RankColumnWidth + NameColumnWidth;
+        const float StageX = BaseX + RankColumnWidth + NameColumnWidth;
+        const float ScoreX = BaseX + RankColumnWidth + NameColumnWidth + StageColumnWidth;
 
         ImGui::SetCursorPos(ImVec2(RankX, Y));
         ImGui::TextUnformatted(RankBuffer);
 
         ImGui::SetCursorPos(ImVec2(NameX, Y));
-        ImGui::TextUnformatted(Entries[EntryIndex].Name.c_str());
+        ImGui::TextUnformatted(NameBuffer);
+
+        ImGui::SetCursorPos(ImVec2(StageX, Y));
+        ImGui::TextUnformatted(StageBuffer);
 
         ImGui::SetCursorPos(ImVec2(ScoreX, Y));
         ImGui::TextUnformatted(ScoreBuffer);

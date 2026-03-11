@@ -5,50 +5,55 @@
 #include "UIPopupAction.h"
 #include "UIPopupBase.h"
 
-struct FScoreboardEntry
+struct FScoreRecord
 {
-    std::string Name;
-    int Score = 0;
+    std::string Nickname;
+    int         Stage = 0;
+    int         Score = 0;
 };
 
 class FScoreboardPopup : public FUIPopupBase
 {
   public:
-    void SetEntries(const std::vector<FScoreboardEntry> &InEntries);
+    void SetEntries(const std::vector<FScoreRecord> &InEntries);
     void GoToNextPage();
     void ResetPage();
 
     EUIPopupAction ConsumeAction();
-    void Render(FGameContext &Context) override;
+    void           Render(FGameContext &Context) override;
+    void           Update(FGameContext &Context) override {};
 
   private:
-    int GetTotalPages() const;
-    int GetPageStartIndex() const;
-    int GetPageEntryCount() const;
+    int  GetTotalPages() const;
+    int  GetPageStartIndex() const;
+    int  GetPageEntryCount() const;
     void DrawEntries(const FPopupFrameLayout &Layout);
     void DrawPageText(const FPopupFrameLayout &Layout);
+    void DrawBottomButtons(const FPopupFrameLayout &Layout, bool bHasPrevPage, bool bHasNextPage);
 
   private:
-    static constexpr EUIPopupContentTextSize ContentTextSize = EUIPopupContentTextSize::Medium;
-    static constexpr int MaxRowsPerColumn = 7;
-    static constexpr int ColumnCount = 2;
-    static constexpr int EntriesPerPage = MaxRowsPerColumn * ColumnCount;
-    static constexpr float ColumnGap = 36.0f;
-    static constexpr float RowGap = 8.0f;
+    static constexpr EUIPopupContentTextSize ContentTextSize = EUIPopupContentTextSize::Big;
+    static constexpr int                     MaxRowsPerColumn = 4;
+    static constexpr int                     ColumnCount = 2;
+    static constexpr int                     EntriesPerPage = MaxRowsPerColumn * ColumnCount;
+    static constexpr float                   ColumnGap = 36.0f;
+    static constexpr float                   RowGap = 8.0f;
+
     static constexpr float RankColumnWidth = 42.0f;
-    static constexpr float NameColumnWidth = 120.0f;
+    static constexpr float NameColumnWidth = 90.0f;
+    static constexpr float StageColumnWidth = 90.0f;
 
   private:
-    std::vector<FScoreboardEntry> Entries = {
-        {"ALPHA1", 12500}, {"BRAVO2", 11800}, {"CHARL3", 11200}, {"DELTA4", 10900},
-        {"ECHO55", 10450}, {"FOXT66", 10000}, {"GOLF77", 9650},  {"HOTEL8", 9400},
-        {"INDIA9", 9150},  {"JULI10", 8900},  {"KILO11", 8700},  {"LIMA12", 8450},
-        {"MIKE13", 8300},  {"NOVA14", 8100},  {"OSCAR5", 7900},  {"PAPA16", 7700},
-        {"QUE017", 7550},  {"ROMEO8", 7400},  {"SIERA9", 7200},  {"TANGO0", 7050},
-        {"UNIF21", 6900},  {"VICT22", 6700},  {"WHIS23", 6550},  {"XRAY24", 6400},
-        {"YANKE5", 6200},  {"ZULU26", 6050},  {"AAA027", 5900},  {"BBB028", 5750},
-        {"CCC029", 5600},  {"DDD030", 5450}};
+    std::vector<FScoreRecord> Entries = {
+        {"A", 1, 12500},     {"BB", 2, 11800},     {"CAT", 3, 11200},  {"DOGE", 2, 10900},
+        {"ECHO5", 4, 10450}, {"FOX777", 5, 10000}, {"G", 1, 9650},     {"HI", 3, 9400},
+        {"ICE", 4, 9150},    {"JAZZ", 2, 8900},    {"KILO5", 6, 8700}, {"LMN123", 7, 8450},
+        {"M", 2, 8300},      {"NO", 5, 8100},      {"OWL", 3, 7900},   {"PINK", 4, 7700},
+        {"QWER5", 6, 7550},  {"RABBIT", 7, 7400},  {"S", 1, 7200},     {"TT", 2, 7050},
+        {"UNO", 3, 6900},    {"VOLT", 5, 6700},    {"WAVE9", 6, 6550}, {"XYZ123", 7, 6400},
+        {"Y", 2, 6200},      {"ZZ", 4, 6050},      {"AAA", 5, 5900},   {"BING", 3, 5750},
+        {"CLOUD5", 6, 5600}, {"D", 1, 5450}};
 
-    int CurrentPage = 0;
+    int            CurrentPage = 0;
     EUIPopupAction PendingAction = EUIPopupAction::None;
 };
