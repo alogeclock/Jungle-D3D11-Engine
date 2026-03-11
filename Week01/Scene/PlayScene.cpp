@@ -11,6 +11,7 @@
 #include "Scene/SceneCommand.h"
 #include "Scene/SceneType.h"
 #include "UI/popup/GameOverPopup.h"
+#include "UI/popup/GoToTitlePopup.h"
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/SaveScorePopup.h"
 #include "UI/popup/StageClearPopup.h"
@@ -18,6 +19,7 @@
 #include "UI/widget/BeatHUDWidget.h"
 #include "UI/widget/DebugWidget.h"
 #include "UI/widget/GameplayHUDWidget.h"
+#include "debug.h"
 
 FPlayScene::FPlayScene(int InStageIndex) : CurrentStageIndex(InStageIndex) {}
 
@@ -29,7 +31,6 @@ void FPlayScene::Update(FGameContext &Context)
         bStageLoaded = true;
     }
 
-    // 지연된 스테이지 변경 처리 (UI 순회 중 안전하게)
     if (PendingStageIndex >= 0)
     {
         FSceneCommand Command;
@@ -59,6 +60,7 @@ void FPlayScene::Update(FGameContext &Context)
     {
         std::unique_ptr<FSaveScorePopup> Popup = std::make_unique<FSaveScorePopup>();
         Popup->SetScore(Stage ? Stage->GetScore() : 0);
+        Popup->Open();
         PopupManager.Open(std::move(Popup));
         bOpenSaveScorePopupNextFrame = false;
     }
@@ -66,9 +68,9 @@ void FPlayScene::Update(FGameContext &Context)
 
 void FPlayScene::Render(FGameContext &Context)
 {
-    // TODO: 인자로 컨텍스트 넘겨서 내부 렌더러 호출하도록 변경
     if (Stage)
         Stage->Render();
+
     UIManager.Render(Context);
 }
 
@@ -79,7 +81,6 @@ void FPlayScene::LoadStage(FGameContext &Context)
 
     bIsPaused = false;
 
-    // HUD 위젯 등록
     UIManager.ClearAll();
 
     std::unique_ptr<FGameplayHUDWidget> HUD = std::make_unique<FGameplayHUDWidget>();
@@ -110,7 +111,9 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
 
     if (Stage->IsGameOver())
     {
-        PopupManager.Open(std::make_unique<FGameOverPopup>());
+        std::unique_ptr<FGameOverPopup> Popup = std::make_unique<FGameOverPopup>();
+        Popup->Open();
+        PopupManager.Open(std::move(Popup));
         return;
     }
 
@@ -122,17 +125,21 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
 
         std::unique_ptr<FStageClearPopup> Popup = std::make_unique<FStageClearPopup>();
         Popup->SetData(bAllCleared, CurrentStageIndex + 1);
+        Popup->Open();
         PopupManager.Open(std::move(Popup));
         return;
     }
 }
-#include <iostream>
+
+void FPlayScene::OpenGoToTitlePopup()
+{
+    std::unique_ptr<FGoToTitlePopup> Popup = std::make_unique<FGoToTitlePopup>();
+    Popup->Open();
+    UIManager.GetPopupManager().Open(std::move(Popup));
+}
 
 void FPlayScene::HandlePopupResult(FGameContext &Context)
 {
-std::cout << "What\n";
-    
-
     FPopupManager &PopupManager = UIManager.GetPopupManager();
 
     if (FStageClearPopup *Popup = PopupManager.GetPopup<FStageClearPopup>())
@@ -142,12 +149,19 @@ std::cout << "What\n";
         case EUIPopupAction::None:
             break;
 
+        case EUIPopupAction::ClosePopup:
+            Popup->Close();
+            break;
+
         case EUIPopupAction::OpenSaveScorePopup:
-        {
             Popup->Close();
             bOpenSaveScorePopupNextFrame = true;
             break;
-        }
+
+        case EUIPopupAction::OpenGoToTitlePopup:
+            Popup->Close();
+            OpenGoToTitlePopup();
+            break;
 
         case EUIPopupAction::GoToNextStage:
         {
@@ -172,12 +186,6 @@ std::cout << "What\n";
             break;
         }
 
-        case EUIPopupAction::ClosePopup:
-        {
-            Popup->Close();
-            break;
-        }
-
         default:
             break;
         }
@@ -192,17 +200,14 @@ std::cout << "What\n";
         case EUIPopupAction::None:
             break;
 
-        case EUIPopupAction::RetryCurrentStage:
-        {
+        case EUIPopupAction::ClosePopup:
             Popup->Close();
-
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Play;
-            Command.NextStageIndex = CurrentStageIndex;
-            SetSceneCommand(Command);
             break;
-        }
+
+        case EUIPopupAction::OpenGoToTitlePopup:
+            Popup->Close();
+            OpenGoToTitlePopup();
+            break;
 
         case EUIPopupAction::GoToTitleScene:
         {
@@ -212,12 +217,6 @@ std::cout << "What\n";
             Command.Type = ESceneCommandType::ChangeScene;
             Command.NextScene = ESceneType::Title;
             SetSceneCommand(Command);
-            break;
-        }
-
-        case EUIPopupAction::ClosePopup:
-        {
-            Popup->Close();
             break;
         }
 
@@ -235,26 +234,38 @@ std::cout << "What\n";
         case EUIPopupAction::None:
             break;
 
+        case EUIPopupAction::ClosePopup:
+            Popup->Close();
+            break;
+
         case EUIPopupAction::ConfirmSaveScore:
         {
             Popup->Close();
+
+            Console("What");
 
             const std::string Nickname = Popup->GetNickname();
             const int ClearedStage = CurrentStageIndex + 1;
             const int Score = Stage ? Stage->GetScore() : 0;
 
-            // TODO: 스코어 저장 및 닉네임 예외처리
-            // 예:
-            // FScoreRepository::Get().AddScore(Nickname, Score, ClearedStage);
+            FScoreRepository Repository;
+            Repository.AppendRecord({Nickname, ClearedStage, Score});
 
-            FSceneCommand Command;
-            Command.Type = ESceneCommandType::ChangeScene;
-            Command.NextScene = ESceneType::Title;
-            SetSceneCommand(Command);
+            OpenGoToTitlePopup();
             break;
         }
 
         case EUIPopupAction::CancelSaveScore:
+            Popup->Close();
+            OpenGoToTitlePopup();
+            break;
+
+        case EUIPopupAction::OpenGoToTitlePopup:
+            Popup->Close();
+            OpenGoToTitlePopup();
+            break;
+
+        case EUIPopupAction::GoToTitleScene:
         {
             Popup->Close();
 
@@ -265,9 +276,32 @@ std::cout << "What\n";
             break;
         }
 
+        default:
+            break;
+        }
+
+        return;
+    }
+
+    if (FGoToTitlePopup *Popup = PopupManager.GetPopup<FGoToTitlePopup>())
+    {
+        switch (Popup->ConsumeAction())
+        {
+        case EUIPopupAction::None:
+            break;
+
         case EUIPopupAction::ClosePopup:
+            Popup->Close();
+            break;
+
+        case EUIPopupAction::GoToTitleScene:
         {
             Popup->Close();
+
+            FSceneCommand Command;
+            Command.Type = ESceneCommandType::ChangeScene;
+            Command.NextScene = ESceneType::Title;
+            SetSceneCommand(Command);
             break;
         }
 

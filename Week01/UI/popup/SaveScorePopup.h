@@ -10,6 +10,7 @@ class FSaveScorePopup : public FUIPopupBase
     FSaveScorePopup();
 
     void SetScore(int InScore) { Score = InScore; }
+    void SetStage(int InStage) { Stage = InStage; }
     void SetNickname(const std::string &InNickname);
     const std::string &GetNickname() const { return Nickname; }
 
@@ -28,7 +29,8 @@ class FSaveScorePopup : public FUIPopupBase
 
   private:
     int Score = 0;
-    std::string Nickname = "PLAYER";
+    int Stage = 0;
+    std::string Nickname = "";
     char NicknameBuffer[MaxNicknameLength + 1];
     EUIPopupAction PendingAction = EUIPopupAction::None;
 };

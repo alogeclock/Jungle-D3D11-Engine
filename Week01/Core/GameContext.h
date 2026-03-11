@@ -1,9 +1,9 @@
 #pragma once
 
-class FTime;
-class FInput;
-class FRenderer;
-class FTextureManager;
+#include "Render/Renderer.h"
+#include "Render/TextureManager.h"
+#include "Core/Time.h"
+#include "Core/Input.h"
 
 struct FGameContext
 {

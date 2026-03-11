@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UIPopupBase.h"
 #include "imgui/imgui.h"
+#include <initializer_list>
 
 namespace
 {
@@ -98,7 +99,6 @@ void FUIPopupBase::BuildFrameLayout(const char *Title, FPopupFrameLayout &OutLay
     OutLayout.TitleSize = ImGui::CalcTextSize(Title);
     ImGui::SetWindowFontScale(1.0f);
 
-    // CalcTextSize 결과가 작게 잡히는 경우를 보정하기 위해 높이는 스케일 기준으로 보정
     if (OutLayout.TitleSize.y < GetScaledTextHeight(TitleFontScale))
         OutLayout.TitleSize.y = GetScaledTextHeight(TitleFontScale);
 
@@ -236,4 +236,86 @@ float FUIPopupBase::GetAlignedX(const FPopupFrameLayout &Layout, float ItemWidth
     }
 
     return Layout.ContentLeft;
+}
+
+float FUIPopupBase::GetTextBlockHeight(const char *const *Lines, int LineCount, float LineGap,
+                                       EUIPopupContentTextSize TextSize) const
+{
+    if (Lines == nullptr || LineCount <= 0)
+        return 0.0f;
+
+    const float FontScale = GetContentFontScale(TextSize);
+
+    ImGui::SetWindowFontScale(FontScale);
+
+    float TotalHeight = 0.0f;
+    for (int i = 0; i < LineCount; ++i)
+    {
+        const char *Line = Lines[i] ? Lines[i] : "";
+        ImVec2 LineSize = ImGui::CalcTextSize(Line);
+
+        if (LineSize.y < GetScaledTextHeight(FontScale))
+            LineSize.y = GetScaledTextHeight(FontScale);
+
+        TotalHeight += LineSize.y;
+
+        if (i + 1 < LineCount)
+            TotalHeight += LineGap;
+    }
+
+    ImGui::SetWindowFontScale(1.0f);
+    return TotalHeight;
+}
+
+void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *const *Lines, int LineCount,
+                                 float LineGap, EUIPopupContentAlign HorizontalAlign,
+                                 EUIPopupContentTextSize TextSize,
+                                 EUIPopupContentVerticalAlign VerticalAlign) const
+{
+    if (Lines == nullptr || LineCount <= 0)
+        return;
+
+    const float FontScale = GetContentFontScale(TextSize);
+    const float BlockHeight = GetTextBlockHeight(Lines, LineCount, LineGap, TextSize);
+
+    float StartY = Layout.ContentTop;
+    if (VerticalAlign == EUIPopupContentVerticalAlign::Center)
+        StartY = Layout.ContentTop + (Layout.ContentHeight - BlockHeight) * 0.5f;
+
+    ImGui::SetWindowFontScale(FontScale);
+
+    float CurrentY = StartY;
+
+    for (int i = 0; i < LineCount; ++i)
+    {
+        const char *Line = Lines[i] ? Lines[i] : "";
+        ImVec2 LineSize = ImGui::CalcTextSize(Line);
+
+        if (LineSize.y < GetScaledTextHeight(FontScale))
+            LineSize.y = GetScaledTextHeight(FontScale);
+
+        const float X = GetAlignedX(Layout, LineSize.x, HorizontalAlign);
+
+        ImGui::SetCursorPos(ImVec2(X, CurrentY));
+        ImGui::TextUnformatted(Line);
+
+        CurrentY += LineSize.y;
+        if (i + 1 < LineCount)
+            CurrentY += LineGap;
+    }
+
+    ImGui::SetWindowFontScale(1.0f);
+}
+
+void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout,
+                                 std::initializer_list<const char *> Lines,
+                                 float LineGap, EUIPopupContentAlign HorizontalAlign,
+                                 EUIPopupContentTextSize TextSize,
+                                 EUIPopupContentVerticalAlign VerticalAlign) const
+{
+    if (Lines.size() == 0)
+        return;
+
+    DrawTextBlock(Layout, Lines.begin(), static_cast<int>(Lines.size()), LineGap,
+                  HorizontalAlign, TextSize, VerticalAlign);
 }

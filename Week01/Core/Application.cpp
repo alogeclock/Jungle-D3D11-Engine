@@ -47,6 +47,7 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     LoadTex("monster", "Resources/Sprites/monster.png");
     LoadTex("beat_bar", "Resources/Sprites/beat_bar.png");
     LoadTex("title_background", "Resources/Sprites/title_background.png");
+    LoadTex("test", "Resources/Sprites/test.png");
 
     // 오디오 초기화
     FAudioSystem::Get().Initialize();

@@ -19,6 +19,7 @@ class FPlayScene : public IScene
     void LoadStage(FGameContext &Context);
     void HandleStageResult(FGameContext &Context);
     void HandlePopupResult(FGameContext &Context);
+    void OpenGoToTitlePopup();
 
   private:
     std::unique_ptr<FStage> Stage;

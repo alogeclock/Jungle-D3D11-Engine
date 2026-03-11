@@ -30,14 +30,14 @@ void FGameOverPopup::Render(FGameContext &Context)
 
     ImGui::SetWindowFontScale(1.0f);
 
-    if (DrawBottomButton(Layout, "Retry", 0, 2))
+    if (DrawBottomButton(Layout, "Save Score", 0, 2))
     {
-        PendingAction = EUIPopupAction::RetryCurrentStage;
+        PendingAction = EUIPopupAction::OpenSaveScorePopup;
     }
 
     if (DrawBottomButton(Layout, "Go To Title", 1, 2))
     {
-        PendingAction = EUIPopupAction::GoToTitleScene;
+        PendingAction = EUIPopupAction::OpenGoToTitlePopup;
     }
 
     EndPopupWindow();

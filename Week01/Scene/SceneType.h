@@ -3,5 +3,6 @@
 enum class ESceneType
 {
     Title,
-    Play
+    Play,
+    Test
 };

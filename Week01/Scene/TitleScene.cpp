@@ -1,7 +1,8 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include <memory>
 #include <string>
 #include "Core/GameContext.h"
+#include "Data/ScoreRepository.h"
 #include "Render/Renderer.h"
 #include "Render/TextureManager.h"
 #include "Scene/SceneCommand.h"
@@ -11,12 +12,8 @@
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/ScoreboardPopup.h"
 #include "UI/popup/UIPopupAction.h"
-#include "Data/ScoreRepository.h"
 
-void FTitleScene::Update(FGameContext &Context)
-{
-    UIManager.Update(Context);
-}
+void FTitleScene::Update(FGameContext &Context) { UIManager.Update(Context); }
 
 void FTitleScene::Render(FGameContext &Context)
 {
@@ -59,7 +56,6 @@ void FTitleScene::Render(FGameContext &Context)
 #endif
 }
 
-// 임시
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 1024
 
@@ -80,9 +76,8 @@ void FTitleScene::RenderTitleMenu(FGameContext &Context)
     ImGui::SetNextWindowSize(ImVec2(ScreenWidth, ScreenHeight));
 
     ImGuiWindowFlags WindowFlags =
-        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus |
-        ImGuiWindowFlags_NoBackground;
+        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("TitleMenuOverlay", nullptr, WindowFlags);
@@ -96,15 +91,15 @@ void FTitleScene::RenderTitleMenu(FGameContext &Context)
 void FTitleScene::HandleMenuCommand(FGameContext &Context)
 {
     FPopupManager &PopupManager = UIManager.GetPopupManager();
-    const bool bHasOpenPopup = PopupManager.HasOpenPopup();
+    const bool     bHasOpenPopup = PopupManager.HasOpenPopup();
 
-    ImGuiIO &Io = ImGui::GetIO();
+    ImGuiIO    &Io = ImGui::GetIO();
     const float ScreenWidth = Io.DisplaySize.x;
     const float ScreenHeight = Io.DisplaySize.y;
 
     const ImVec2 ButtonSize(320.0f, 80.0f);
-    const float ButtonSpacing = 20.0f;
-    const float TotalHeight = ButtonSize.y * 3.0f + ButtonSpacing * 2.0f;
+    const float  ButtonSpacing = 20.0f;
+    const float  TotalHeight = ButtonSize.y * 3.0f + ButtonSpacing * 2.0f;
 
     const float StartX = (ScreenWidth - ButtonSize.x) * 0.5f;
     const float StartY = (ScreenHeight - TotalHeight) * 0.5f;
@@ -150,6 +145,11 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
         OpenScoreboardPopup();
     }
 
+    // DEBUG
+    ImGui::SetCursorPos(ImVec2(StartX, StartY + (ButtonSize.y + ButtonSpacing) * 3.0f));
+    if (ImGui::Button("Test Scene", ButtonSize))
+        SetChangeSceneCommand(ESceneType::Test);
+
     if (bHasOpenPopup)
     {
         ImGui::EndDisabled();
@@ -174,6 +174,13 @@ void FTitleScene::HandlePopupResult(FGameContext &Context)
             Popup->Close();
             break;
 
+        case EUIPopupAction::GoToTitleScene:
+        {
+            Popup->Close();
+            SetChangeSceneCommand(ESceneType::Title);
+            break;
+        }
+
         default:
             break;
         }
@@ -192,9 +199,12 @@ void FTitleScene::HandlePopupResult(FGameContext &Context)
             Popup->Close();
             break;
 
-        case EUIPopupAction::GoToNextScoreboardPage:
-            Popup->GoToNextPage();
+        case EUIPopupAction::GoToTitleScene:
+        {
+            Popup->Close();
+            SetChangeSceneCommand(ESceneType::Title);
             break;
+        }
 
         default:
             break;
@@ -206,7 +216,9 @@ void FTitleScene::HandlePopupResult(FGameContext &Context)
 
 void FTitleScene::OpenCreditPopup()
 {
-    UIManager.GetPopupManager().Open(std::make_unique<FCreditPopup>());
+    std::unique_ptr<FCreditPopup> Popup = std::make_unique<FCreditPopup>();
+    Popup->Open();
+    UIManager.GetPopupManager().Open(std::move(Popup));
 }
 
 void FTitleScene::OpenScoreboardPopup()

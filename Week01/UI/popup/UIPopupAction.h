@@ -5,13 +5,12 @@ enum class EUIPopupAction
     None,
 
     ClosePopup,
-    GoToNextScoreboardPage,
 
-    RetryCurrentStage,
     GoToTitleScene,
     GoToNextStage,
 
     OpenSaveScorePopup,
+    OpenGoToTitlePopup,
     ConfirmSaveScore,
     CancelSaveScore
 };

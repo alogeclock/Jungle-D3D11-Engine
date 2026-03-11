@@ -2,10 +2,15 @@
 #include "PlayScene.h"
 #include "SceneManager.h"
 #include "SceneType.h"
+#include "TestScene.h"
 #include "TitleScene.h"
 
 
-void FSceneManager::Initialize() { ChangeSceneInternal(ESceneType::Title); }
+void FSceneManager::Initialize()
+{
+    ChangeSceneInternal(ESceneType::Test);
+    // ChangeSceneInternal(ESceneType::Title);
+}
 
 ESceneManagerUpdateResult FSceneManager::Update(FGameContext &Context)
 {
@@ -53,6 +58,10 @@ void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex)
 {
     switch (SceneType)
     {
+    case ESceneType::Test:
+        CurrentScene = std::make_unique<FTestScene>();
+        break;
+
     case ESceneType::Title:
         CurrentScene = std::make_unique<FTitleScene>();
         break;

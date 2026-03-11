@@ -2,6 +2,7 @@
 
 #include "UIPopupAction.h"
 #include "imgui/imgui.h"
+#include <initializer_list>
 
 struct FGameContext;
 
@@ -17,6 +18,12 @@ enum class EUIPopupContentTextSize
     Small,
     Medium,
     Big
+};
+
+enum class EUIPopupContentVerticalAlign
+{
+    Top,
+    Center
 };
 
 struct FPopupFrameLayout
@@ -86,6 +93,22 @@ class FUIPopupBase
     float GetContentFontScale(EUIPopupContentTextSize Size) const;
     float GetAlignedX(const FPopupFrameLayout &Layout, float ItemWidth,
                       EUIPopupContentAlign Align) const;
+
+    float GetTextBlockHeight(const char *const *Lines, int LineCount, float LineGap,
+                             EUIPopupContentTextSize TextSize) const;
+
+    void DrawTextBlock(const FPopupFrameLayout &Layout, const char *const *Lines, int LineCount,
+                       float LineGap, EUIPopupContentAlign HorizontalAlign,
+                       EUIPopupContentTextSize TextSize,
+                       EUIPopupContentVerticalAlign VerticalAlign =
+                           EUIPopupContentVerticalAlign::Center) const;
+
+    void DrawTextBlock(const FPopupFrameLayout &Layout,
+                       std::initializer_list<const char *> Lines,
+                       float LineGap, EUIPopupContentAlign HorizontalAlign,
+                       EUIPopupContentTextSize TextSize,
+                       EUIPopupContentVerticalAlign VerticalAlign =
+                           EUIPopupContentVerticalAlign::Center) const;
 
   protected:
     static constexpr float DefaultPopupWidth = 760.0f;

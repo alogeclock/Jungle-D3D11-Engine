@@ -21,6 +21,13 @@ class IScene
 
   protected:
     void SetSceneCommand(const FSceneCommand &Command) { PendingCommand = Command; }
+    void SetChangeSceneCommand(ESceneType type)
+    {
+        FSceneCommand Command;
+        Command.Type = ESceneCommandType::ChangeScene;
+        Command.NextScene = type;
+        SetSceneCommand(Command);
+    }
 
   private:
     FSceneCommand PendingCommand;
