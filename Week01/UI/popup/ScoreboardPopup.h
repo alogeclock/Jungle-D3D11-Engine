@@ -1,68 +1,38 @@
 #pragma once
 
+#include <string>
 #include <vector>
-#include "Data/ScoreRecord.h"
 #include "UIPopupBase.h"
+
+struct FScoreboardEntry
+{
+    std::string Name;
+    int Score = 0;
+};
 
 class FScoreboardPopup : public FUIPopupBase
 {
   public:
-    void SetRecords(const std::vector<FScoreRecord> &InRecords) { Records = InRecords; }
+    void SetEntries(const std::vector<FScoreboardEntry> &InEntries) { Entries = InEntries; }
 
     void Render(FGameContext &Context) override;
     void Update(FGameContext &Context) override {}
 
   private:
-    std::vector<FScoreRecord> Records;
+    static constexpr EUIPopupContentAlign ContentAlign = EUIPopupContentAlign::Center;
+    static constexpr EUIPopupContentTextSize ContentTextSize = EUIPopupContentTextSize::Medium;
+    static constexpr float ColumnGap = 26.0f;
+    static constexpr float RowGap = 12.0f;
+
+  private:
+    void DrawEntries(const FPopupFrameLayout &Layout);
+    void DrawEmpty(const FPopupFrameLayout &Layout);
+
+  private:
+    std::vector<FScoreboardEntry> Entries = {
+        {"KIM YEONHA", 12500},
+        {"LEE HOJIN", 9800},
+        {"SIM WOOJIN", 8700},
+        {"JEON HYUNGIL", 7600}
+    };
 };
-
-// =============================================================================
-
-void FScoreboardPopup::Render(FGameContext &Context)
-{
-    if (ConsumeOpenRequest())
-    {
-        ImGui::OpenPopup("Scoreboard");
-    }
-
-    if (!bIsOpen)
-        return;
-
-    if (ImGui::BeginPopupModal("Scoreboard", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        ImGui::Text("Scoreboard");
-        ImGui::Separator();
-
-        if (ImGui::BeginTable("ScoreTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
-        {
-            ImGui::TableSetupColumn("Nickname");
-            ImGui::TableSetupColumn("Stage");
-            ImGui::TableSetupColumn("Score");
-            ImGui::TableHeadersRow();
-
-            for (const FScoreRecord &Record : Records)
-            {
-                ImGui::TableNextRow();
-
-                ImGui::TableSetColumnIndex(0);
-                ImGui::Text("%s", Record.Name.c_str());
-
-                ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%d", Record.Stage);
-
-                ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%d", Record.Score);
-            }
-
-            ImGui::EndTable();
-        }
-
-        if (ImGui::Button("Close", ImVec2(300, 0)))
-        {
-            ImGui::CloseCurrentPopup();
-            Close();
-        }
-
-        ImGui::EndPopup();
-    }
-}
