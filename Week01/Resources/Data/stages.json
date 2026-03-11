@@ -74,7 +74,7 @@
                 },
                 "monster_spawns": [
                     {
-                        "x": 7,
+                        "x": 8,
                         "y": 1
                     },
                     {
@@ -178,8 +178,66 @@
                     {
                         "x": 18,
                         "y": 2,
+                        "type": "darkness_down"
+                    },
+                    {
+                        "x": 18,
+                        "y": 4,
                         "type": "time_freeze",
                         "duration": 5.0
+                    },
+                    {
+                        "x": 13,
+                        "y": 7,
+                        "type": "darkness_down"
+                    },
+                    {
+                        "x": 13,
+                        "y": 12,
+                        "type": "time_freeze",
+                        "duration": 5.0
+                    },
+                    {
+                        "x": 7,
+                        "y": 13,
+                        "type": "time_freeze",
+                        "duration": 5.0
+                    },
+                    {
+                        "x": 24,
+                        "y": 17,
+                        "type": "time_freeze",
+                        "duration": 5.0
+                    },
+                    {
+                        "x": 24,
+                        "y": 12,
+                        "type": "invincibility"
+                    },
+                    {
+                        "x": 32,
+                        "y": 12,
+                        "type": "darkness_up"
+                    },
+                    {
+                        "x": 35,
+                        "y": 11,
+                        "type": "darkness_up"
+                    },
+                    {
+                        "x": 31,
+                        "y": 7,
+                        "type": "darkness_down"
+                    },
+                    {
+                        "x": 43,
+                        "y": 7,
+                        "type": "darkness_up"
+                    },
+                    {
+                        "x": 53,
+                        "y": 10,
+                        "type": "invincibility"
                     },
                     {
                         "x": 23,
@@ -205,7 +263,7 @@
                     }
                 ],
                 "time_limit": 80,
-                "monster_count": 5,
+                "monster_count": 10,
                 "monster_types": [ "stone_golem", "fire_golem" ]
             },
 
