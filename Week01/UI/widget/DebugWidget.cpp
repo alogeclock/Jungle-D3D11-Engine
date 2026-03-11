@@ -136,6 +136,10 @@ void FDebugWidget::Render(FGameContext &Context)
             Stage->ApplyItem(Item);
             DarknessLevel = Stage->GetDarknessLevel();
         }
+        if (ImGui::Button("Stage Clear"))
+        {
+            Stage->SetIsCleared(true);
+        }
 
         // Active Effects 표시
         const auto &PlayerEffects = Stage->GetPlayer().GetActiveEffects();

@@ -5,6 +5,7 @@
 #include "AudioSystem.h"
 #include "Core/Input.h"
 #include "Core/Time.h"
+#include "Core/Logger.h"
 #include "Data/StageLoader.h"
 #include "Data/CreditLoader.h"
 #include "IO/BitmapFontLoader.h"
@@ -136,7 +137,10 @@ bool FApplication::LoadSpriteResources()
     for (const FTextureResourceDesc &Resource : SpriteResources)
     {
         if (!LoadTextureResource(Resource.Key, std::string(SpriteDir) + Resource.FileName))
+        {
+            Logger::Error("Failed to load texture resource: " + std::string(Resource.Key));
             return false;
+        }
     }
 
     return true;

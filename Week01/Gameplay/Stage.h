@@ -67,6 +67,7 @@ class FStage
     float GetTileSize() const;
 
     bool IsGameOver() const;
+    void SetIsCleared(bool bIsCleared);
     bool IsCleared() const;
 
     float GetRemainingTime() const;
@@ -124,8 +125,8 @@ class FStage
 
     // Angry 모드
     bool  bIsAngry = false;
-    float AngryTime = 0.0f;       // 이 시간 이하일 때 Angry 발동
-    float AngryTimeScale = 1.3f;  // Angry 시 TimeScale
+    float AngryTime = 0.0f;      // 이 시간 이하일 때 Angry 발동
+    float AngryTimeScale = 1.3f; // Angry 시 TimeScale
 
     bool bIsGameOver = false;
     bool bIsCleared = false;

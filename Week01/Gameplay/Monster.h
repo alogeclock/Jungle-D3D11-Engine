@@ -20,15 +20,16 @@ class FMonster : public FActor
     void Update(float DeltaTime, FGameContext &Context) override;
     void OnBeat(FStage &Stage) override;
 
-    void           SetMoveFrequency(int InFreq);
-    int            GetMoveFrequency() const;
-    void           SetAiType(EMonsterAIType InAiType);
-    EMonsterAIType GetAiType() const;
-    void           SetMonsterType(EMonsterType InMonsterType);
-    EMonsterType   GetMonsterType() const;
-    void           SetSearchRange(int InSearchRange);
-    int            GetSearchRange() const;
-    std::string    GetMonsterTextureKey(EMonsterType Type);
+    void              SetMoveFrequency(int InFreq);
+    int               GetMoveFrequency() const;
+    void              SetAiType(EMonsterAIType InAiType);
+    EMonsterAIType    GetAiType() const;
+    void              SetMonsterType(EMonsterType InMonsterType);
+    EMonsterType      GetMonsterType() const;
+    void              SetSearchRange(int InSearchRange);
+    int               GetSearchRange() const;
+    std::string       GetMonsterTextureKey(EMonsterType Type);
+    const FSpriteInfo GetSpriteAngry() const;
 
     EDirection DecideNextMove(const FStage &Stage) const;
 

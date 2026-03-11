@@ -437,7 +437,7 @@ void FStage::Render()
         float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
         float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
 
-        const FSpriteInfo &Spr = Mon->GetSprite();
+        const FSpriteInfo &Spr = bIsAngry ? Mon->GetSpriteAngry() : Mon->GetSprite();
         Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr,
                              MonsterTint);
     }
@@ -952,6 +952,8 @@ int FStage::GetScore() const { return ScoreSystem->GetScore(); }
 float FStage::GetTileSize() const { return TileSize; }
 
 bool FStage::IsGameOver() const { return bIsGameOver; }
+
+void FStage::SetIsCleared(bool bIsCleared) { this->bIsCleared = bIsCleared; }
 
 bool FStage::IsCleared() const { return bIsCleared; }
 

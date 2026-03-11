@@ -189,3 +189,11 @@ std::string FMonster::GetMonsterTextureKey(EMonsterType Type)
         return "monster_stonegolem";
     }
 }
+
+const FSpriteInfo FMonster::GetSpriteAngry() const
+{
+    FSpriteInfo Sprite = GetSprite();
+    Sprite.TextureKey += "_angry";
+    Sprite.SpriteSize = {0.0f, 0.0f};
+    return Sprite;
+}
