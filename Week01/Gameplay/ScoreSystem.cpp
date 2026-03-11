@@ -11,15 +11,18 @@ void FScoreSystem::AddMoveScore() { Score += 10; }
 
 void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
 {
+    float AdditionScore = 0.f;
     switch (Judge)
     {
     case EBeatJudge::Perfect:
         Combo++;
-        Score += 10 * (1 + Combo / 10);
+        AdditionScore = 10 * (1 + Combo / 10);
+        Score += AdditionScore;
         break;
     case EBeatJudge::Good:
         Combo++;
-        Score += 5 * (1 + Combo / 10);
+        AdditionScore = 5 * (1 + Combo / 10);
+        Score += AdditionScore;
         break;
     case EBeatJudge::Miss:
         BreakCombo();
@@ -28,7 +31,7 @@ void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
 
     if (OnJudgeCallback)
     {
-        OnJudgeCallback(Judge);
+        OnJudgeCallback(Judge, AdditionScore, Combo);
     }
 }
 
@@ -50,7 +53,7 @@ void FScoreSystem::SetScore(int InScore) { Score = InScore; }
 
 int FScoreSystem::GetCombo() const { return Combo; }
 
-void FScoreSystem::SetJudgeCallback(std::function<void(EBeatJudge)> Callback)
+void FScoreSystem::SetJudgeCallback(std::function<void(EBeatJudge, float, int)> Callback)
 {
     OnJudgeCallback = std::move(Callback);
 }

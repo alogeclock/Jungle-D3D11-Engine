@@ -2,6 +2,7 @@
 
 #include "Core/Types.h"
 #include <functional>
+#include "Core/GameContext.h"
 
 class FScoreSystem
 {
@@ -19,10 +20,10 @@ class FScoreSystem
     void SetScore(int InScore);
     int  GetCombo() const;
 
-    void SetJudgeCallback(std::function<void(EBeatJudge)> Callback);
+    void SetJudgeCallback(std::function<void(EBeatJudge, float, int)> Callback);
 
   private:
-    int                             Score = 0;
-    int                             Combo = 0;
-    std::function<void(EBeatJudge)> OnJudgeCallback;
+    int                                         Score = 0;
+    int                                         Combo = 0;
+    std::function<void(EBeatJudge, float, int)> OnJudgeCallback;
 };

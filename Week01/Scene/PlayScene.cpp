@@ -7,7 +7,7 @@
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Data/ScoreRepository.h"
-#include "Data/StageData.h"   
+#include "Data/StageData.h"
 #include "Data/StageLoader.h"
 #include "Gameplay/Stage.h"
 #include "Scene/SceneCommand.h"
@@ -110,10 +110,8 @@ void FPlayScene::LoadStage(FGameContext &Context)
     BeatHUD->SetTextures(Context);
     BeatHUD->BindBeatSystem(&Stage->GetBeatSystem());
     Stage->GetScoreSystem().SetJudgeCallback(
-        [HUDPtr = BeatHUD.get()](EBeatJudge Judge)
-        {
-            HUDPtr->OnBeatJudged(Judge);
-        });
+        [HUDPtr = BeatHUD.get()](EBeatJudge Judge, float Score, int Combo)
+        { HUDPtr->OnBeatJudged(Judge, Score, Combo); });
     UIManager.AddWidget("BeatHUD", std::move(BeatHUD));
 
     auto Minimap = std::make_unique<FMinimapWidget>();
