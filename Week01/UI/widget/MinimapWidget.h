@@ -12,6 +12,7 @@ public:
 
 	void Update(FGameContext& Context) override;
 	void Render(FGameContext& Context) override;
+	void SetTextures(FGameContext& Context) override {}
 
 private:
 	const FStage* Stage = nullptr;
