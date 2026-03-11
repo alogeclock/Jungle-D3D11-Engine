@@ -11,6 +11,7 @@
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/ScoreboardPopup.h"
 #include "UI/popup/UIPopupAction.h"
+#include "Data/ScoreRepository.h"
 
 void FTitleScene::Update(FGameContext &Context)
 {
@@ -210,7 +211,12 @@ void FTitleScene::OpenCreditPopup()
 
 void FTitleScene::OpenScoreboardPopup()
 {
+    FScoreRepository Repository;
+
     std::unique_ptr<FScoreboardPopup> Popup = std::make_unique<FScoreboardPopup>();
+    Popup->SetEntries(Repository.LoadSorted());
     Popup->ResetPage();
+    Popup->Open();
+
     UIManager.GetPopupManager().Open(std::move(Popup));
 }
