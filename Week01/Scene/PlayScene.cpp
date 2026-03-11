@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "PlayScene.h"
 #include "Core/AudioSystem.h"
 #include <memory>
@@ -14,6 +14,7 @@
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/SaveScorePopup.h"
 #include "UI/popup/StageClearPopup.h"
+#include "UI/popup/UIPopupAction.h"
 #include "UI/widget/BeatHUDWidget.h"
 #include "UI/widget/DebugWidget.h"
 #include "UI/widget/GameplayHUDWidget.h"
@@ -56,7 +57,9 @@ void FPlayScene::Update(FGameContext &Context)
 
     if (bOpenSaveScorePopupNextFrame && !PopupManager.HasOpenPopup())
     {
-        PopupManager.Open(std::make_unique<FSaveScorePopup>());
+        std::unique_ptr<FSaveScorePopup> Popup = std::make_unique<FSaveScorePopup>();
+        Popup->SetScore(Stage ? Stage->GetScore() : 0);
+        PopupManager.Open(std::move(Popup));
         bOpenSaveScorePopupNextFrame = false;
     }
 }
@@ -78,16 +81,17 @@ void FPlayScene::LoadStage(FGameContext &Context)
 
     // HUD 위젯 등록
     UIManager.ClearAll();
-    auto HUD = std::make_unique<FGameplayHUDWidget>();
+
+    std::unique_ptr<FGameplayHUDWidget> HUD = std::make_unique<FGameplayHUDWidget>();
     HUD->BindStage(Stage.get());
     HUD->BindPauseFlag(&bIsPaused);
     UIManager.AddWidget("GameplayHUD", std::move(HUD));
 
-    auto BeatHUD = std::make_unique<FBeatHUDWidget>();
+    std::unique_ptr<FBeatHUDWidget> BeatHUD = std::make_unique<FBeatHUDWidget>();
     BeatHUD->BindBeatSystem(&Stage->GetBeatSystem());
     UIManager.AddWidget("BeatHUD", std::move(BeatHUD));
 
-    auto Debug = std::make_unique<FDebugWidget>();
+    std::unique_ptr<FDebugWidget> Debug = std::make_unique<FDebugWidget>();
     Debug->BindStage(Stage.get());
     Debug->SetTotalStages(FStageLoader::Get().GetStageCount());
     Debug->SetStageChangeCallback([this](int Index) { PendingStageIndex = Index; });
@@ -112,30 +116,43 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
 
     if (Stage->IsCleared())
     {
-        const int  NextIndex = CurrentStageIndex + 1;
-        const int  TotalStages = FStageLoader::Get().GetStageCount();
+        const int NextIndex = CurrentStageIndex + 1;
+        const int TotalStages = FStageLoader::Get().GetStageCount();
         const bool bAllCleared = (NextIndex >= TotalStages);
 
-        auto Popup = std::make_unique<FStageClearPopup>();
+        std::unique_ptr<FStageClearPopup> Popup = std::make_unique<FStageClearPopup>();
         Popup->SetData(bAllCleared, CurrentStageIndex + 1);
         PopupManager.Open(std::move(Popup));
         return;
     }
 }
+#include <iostream>
 
 void FPlayScene::HandlePopupResult(FGameContext &Context)
 {
+std::cout << "What\n";
+    
+
     FPopupManager &PopupManager = UIManager.GetPopupManager();
 
     if (FStageClearPopup *Popup = PopupManager.GetPopup<FStageClearPopup>())
     {
         switch (Popup->ConsumeAction())
         {
-        case EStageClearPopupAction::None:
+        case EUIPopupAction::None:
             break;
 
-        case EStageClearPopupAction::NextStage:
+        case EUIPopupAction::OpenSaveScorePopup:
         {
+            Popup->Close();
+            bOpenSaveScorePopupNextFrame = true;
+            break;
+        }
+
+        case EUIPopupAction::GoToNextStage:
+        {
+            Popup->Close();
+
             FSceneCommand Command;
             Command.Type = ESceneCommandType::ChangeScene;
             Command.NextScene = ESceneType::Play;
@@ -144,9 +161,20 @@ void FPlayScene::HandlePopupResult(FGameContext &Context)
             break;
         }
 
-        case EStageClearPopupAction::OpenSaveScorePopup:
+        case EUIPopupAction::GoToTitleScene:
         {
-            bOpenSaveScorePopupNextFrame = true;
+            Popup->Close();
+
+            FSceneCommand Command;
+            Command.Type = ESceneCommandType::ChangeScene;
+            Command.NextScene = ESceneType::Title;
+            SetSceneCommand(Command);
+            break;
+        }
+
+        case EUIPopupAction::ClosePopup:
+        {
+            Popup->Close();
             break;
         }
 
@@ -161,15 +189,35 @@ void FPlayScene::HandlePopupResult(FGameContext &Context)
     {
         switch (Popup->ConsumeAction())
         {
-        case EGameOverPopupAction::None:
+        case EUIPopupAction::None:
             break;
 
-        case EGameOverPopupAction::BackToTitle:
+        case EUIPopupAction::RetryCurrentStage:
         {
+            Popup->Close();
+
+            FSceneCommand Command;
+            Command.Type = ESceneCommandType::ChangeScene;
+            Command.NextScene = ESceneType::Play;
+            Command.NextStageIndex = CurrentStageIndex;
+            SetSceneCommand(Command);
+            break;
+        }
+
+        case EUIPopupAction::GoToTitleScene:
+        {
+            Popup->Close();
+
             FSceneCommand Command;
             Command.Type = ESceneCommandType::ChangeScene;
             Command.NextScene = ESceneType::Title;
             SetSceneCommand(Command);
+            break;
+        }
+
+        case EUIPopupAction::ClosePopup:
+        {
+            Popup->Close();
             break;
         }
 
@@ -182,20 +230,22 @@ void FPlayScene::HandlePopupResult(FGameContext &Context)
 
     if (FSaveScorePopup *Popup = PopupManager.GetPopup<FSaveScorePopup>())
     {
-        const FSaveScorePopupResult Result = Popup->ConsumeResult();
-
-        switch (Result.Action)
+        switch (Popup->ConsumeAction())
         {
-        case ESaveScorePopupAction::None:
+        case EUIPopupAction::None:
             break;
 
-        case ESaveScorePopupAction::Submit:
+        case EUIPopupAction::ConfirmSaveScore:
         {
-            const std::string Nickname = Result.Nickname;
-            const int         ClearedStage = CurrentStageIndex + 1;
-            const int         Score = Stage ? Stage->GetScore() : 0;
+            Popup->Close();
+
+            const std::string Nickname = Popup->GetNickname();
+            const int ClearedStage = CurrentStageIndex + 1;
+            const int Score = Stage ? Stage->GetScore() : 0;
 
             // TODO: 스코어 저장 및 닉네임 예외처리
+            // 예:
+            // FScoreRepository::Get().AddScore(Nickname, Score, ClearedStage);
 
             FSceneCommand Command;
             Command.Type = ESceneCommandType::ChangeScene;
@@ -204,12 +254,20 @@ void FPlayScene::HandlePopupResult(FGameContext &Context)
             break;
         }
 
-        case ESaveScorePopupAction::Cancel:
+        case EUIPopupAction::CancelSaveScore:
         {
+            Popup->Close();
+
             FSceneCommand Command;
             Command.Type = ESceneCommandType::ChangeScene;
             Command.NextScene = ESceneType::Title;
             SetSceneCommand(Command);
+            break;
+        }
+
+        case EUIPopupAction::ClosePopup:
+        {
+            Popup->Close();
             break;
         }
 

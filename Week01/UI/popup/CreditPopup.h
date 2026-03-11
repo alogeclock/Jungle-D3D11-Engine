@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "UIPopupAction.h"
 #include "UIPopupBase.h"
 
 struct FCreditEntry
@@ -15,6 +16,7 @@ class FCreditPopup : public FUIPopupBase
   public:
     void SetCredits(const std::vector<FCreditEntry> &InCredits) { Credits = InCredits; }
 
+    EUIPopupAction ConsumeAction();
     void Render(FGameContext &Context) override;
     void Update(FGameContext &Context) override {}
 
@@ -33,6 +35,7 @@ class FCreditPopup : public FUIPopupBase
         {"KIM YEONHA", "GAME DESIGN"},
         {"LEE HOJIN", "GAMEPLAY PROGRAMMING"},
         {"SIM WOOJIN", "UI DESIGN"},
-        {"JEON HYUNGIL", "LEVEL DESIGN"}
-    };
+        {"JEON HYUNGIL", "LEVEL DESIGN"}};
+
+    EUIPopupAction PendingAction = EUIPopupAction::None;
 };

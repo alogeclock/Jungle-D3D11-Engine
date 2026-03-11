@@ -1,149 +1,177 @@
 #include "pch.h"
-#include <algorithm>
-#include <cstdio>
 #include "ScoreboardPopup.h"
-#include "imgui/imgui.h"
+#include <cstdio>
+
+void FScoreboardPopup::SetEntries(const std::vector<FScoreboardEntry> &InEntries)
+{
+    Entries = InEntries;
+    ResetPage();
+}
+
+void FScoreboardPopup::GoToNextPage()
+{
+    const int TotalPages = GetTotalPages();
+    const int LastPageIndex = TotalPages - 1;
+
+    if (CurrentPage < LastPageIndex)
+    {
+        ++CurrentPage;
+    }
+}
+
+void FScoreboardPopup::ResetPage()
+{
+    const int TotalPages = GetTotalPages();
+    const int LastPageIndex = TotalPages - 1;
+
+    if (CurrentPage < 0)
+        CurrentPage = 0;
+
+    if (CurrentPage > LastPageIndex)
+        CurrentPage = LastPageIndex;
+}
+
+EUIPopupAction FScoreboardPopup::ConsumeAction()
+{
+    EUIPopupAction Result = PendingAction;
+    PendingAction = EUIPopupAction::None;
+    return Result;
+}
+
+int FScoreboardPopup::GetTotalPages() const
+{
+    if (Entries.empty())
+        return 1;
+
+    int Count = static_cast<int>(Entries.size());
+    int TotalPages = Count / EntriesPerPage;
+    if ((Count % EntriesPerPage) != 0)
+        ++TotalPages;
+
+    if (TotalPages <= 0)
+        TotalPages = 1;
+
+    return TotalPages;
+}
+
+int FScoreboardPopup::GetPageStartIndex() const
+{
+    return CurrentPage * EntriesPerPage;
+}
+
+int FScoreboardPopup::GetPageEntryCount() const
+{
+    const int StartIndex = GetPageStartIndex();
+    const int TotalCount = static_cast<int>(Entries.size());
+
+    if (StartIndex >= TotalCount)
+        return 0;
+
+    const int Remaining = TotalCount - StartIndex;
+    return (Remaining < EntriesPerPage) ? Remaining : EntriesPerPage;
+}
 
 void FScoreboardPopup::Render(FGameContext &Context)
 {
     FPopupFrameLayout Layout;
-    if (!BeginPopupWindow("Scoreboard", "SCORE BOARD",
+    if (!BeginPopupWindow("Scoreboard", "Scoreboard",
                           ImVec2(DefaultPopupWidth, DefaultPopupHeight), Layout))
-        return;
-
-    if (Records.empty())
-        DrawEmpty(Layout);
-    else
-        DrawRecords(Layout);
-
-    if (DrawBottomButton(Layout, "Close"))
     {
-        ImGui::CloseCurrentPopup();
-        Close();
+        return;
+    }
+
+    ResetPage();
+    DrawEntries(Layout);
+    DrawPageText(Layout);
+
+    const int TotalPages = GetTotalPages();
+    const bool bHasNextPage = (CurrentPage + 1) < TotalPages;
+
+    if (bHasNextPage)
+    {
+        if (DrawBottomButton(Layout, "Close", 0, 2))
+        {
+            PendingAction = EUIPopupAction::ClosePopup;
+        }
+
+        if (DrawBottomButton(Layout, "Next Page", 1, 2))
+        {
+            PendingAction = EUIPopupAction::GoToNextScoreboardPage;
+        }
+    }
+    else
+    {
+        if (DrawBottomButton(Layout, "Close"))
+        {
+            PendingAction = EUIPopupAction::ClosePopup;
+        }
     }
 
     EndPopupWindow();
 }
 
-void FScoreboardPopup::DrawEmpty(const FPopupFrameLayout &Layout)
+void FScoreboardPopup::DrawEntries(const FPopupFrameLayout &Layout)
 {
-    const float ContentFontScale = GetContentFontScale(ContentTextSize);
-    ImGui::SetWindowFontScale(ContentFontScale);
-
-    const char  *Text = "NO SCORES YET";
-    const ImVec2 TextSize = ImGui::CalcTextSize(Text);
-    const float  X = GetAlignedX(Layout, TextSize.x, ContentAlign);
-    const float  Y = Layout.ContentTop + 4.0f;
-
-    ImGui::SetCursorPos(ImVec2(X, Y));
-    ImGui::TextUnformatted(Text);
-
-    ImGui::SetWindowFontScale(1.0f);
-}
-
-void FScoreboardPopup::DrawRecords(const FPopupFrameLayout &Layout)
-{
-    const float ContentFontScale = GetContentFontScale(ContentTextSize);
-    ImGui::SetWindowFontScale(ContentFontScale);
-
-    std::vector<FScoreRecord> LeftRecords;
-    std::vector<FScoreRecord> RightRecords;
-
-    LeftRecords.reserve(Records.size() < MaxRowsPerColumn ? Records.size() : MaxRowsPerColumn);
-    RightRecords.reserve(Records.size() > MaxRowsPerColumn ? Records.size() - MaxRowsPerColumn : 0);
-
-    for (std::size_t Index = 0; Index < Records.size(); ++Index)
-    {
-        if (Index < MaxRowsPerColumn)
-            LeftRecords.push_back(Records[Index]);
-        else
-            RightRecords.push_back(Records[Index]);
-    }
-
-    const float CenterX = Layout.ContentLeft + Layout.ContentWidth * 0.5f;
-    const float HalfWidth = (Layout.ContentWidth - SectionGap) * 0.5f;
-
-    const float LeftAreaCenterX = Layout.ContentLeft + HalfWidth * 0.5f;
-    const float RightAreaLeft = CenterX + SectionGap * 0.5f;
-    const float RightAreaCenterX = RightAreaLeft + HalfWidth * 0.5f;
-
-    const float StartY = Layout.ContentTop + 4.0f;
-
-    const float DividerTop = Layout.ContentTop + DividerMarginY;
-    const float DividerBottom = Layout.ContentTop + Layout.ContentHeight - DividerMarginY;
-
-    ImDrawList  *DrawList = ImGui::GetWindowDrawList();
-    const ImVec2 WindowPos = ImGui::GetWindowPos();
-
-    DrawList->AddLine(ImVec2(WindowPos.x + CenterX, WindowPos.y + DividerTop),
-                      ImVec2(WindowPos.x + CenterX, WindowPos.y + DividerBottom),
-                      IM_COL32(150, 150, 150, 255), DividerThickness);
-
-    DrawRecordColumn(ImVec2(LeftAreaCenterX, StartY), LeftRecords);
-    DrawRecordColumn(ImVec2(RightAreaCenterX, StartY), RightRecords);
-
-    ImGui::SetWindowFontScale(1.0f);
-}
-
-void FScoreboardPopup::DrawRecordColumn(const ImVec2                    &StartPos,
-                                        const std::vector<FScoreRecord> &ColumnRecords)
-{
-    if (ColumnRecords.empty())
-        return;
-
-    char Buffer[64]{};
-
-    const float FixedNameWidth = ImGui::CalcTextSize("AAAAAA").x;
-
-    float MaxStageWidth = 0.0f;
-    float MaxScoreWidth = 0.0f;
-
-    for (const FScoreRecord &Record : ColumnRecords)
-    {
-        std::snprintf(Buffer, sizeof(Buffer), "STAGE %d", Record.Stage);
-        const ImVec2 StageSize = ImGui::CalcTextSize(Buffer);
-
-        std::snprintf(Buffer, sizeof(Buffer), "%d", Record.Score);
-        const ImVec2 ScoreSize = ImGui::CalcTextSize(Buffer);
-
-        if (StageSize.x > MaxStageWidth)
-            MaxStageWidth = StageSize.x;
-        if (ScoreSize.x > MaxScoreWidth)
-            MaxScoreWidth = ScoreSize.x;
-    }
-
-    const float BlockWidth = FixedNameWidth + ColumnGap + MaxStageWidth + ColumnGap + MaxScoreWidth;
-    const float StartX = StartPos.x - BlockWidth * 0.5f;
-    const float StageX = StartX + FixedNameWidth + ColumnGap;
-    const float ScoreX = StageX + MaxStageWidth + ColumnGap;
+    ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
 
     const float LineHeight = ImGui::GetTextLineHeight();
+    const float ColumnWidth = (Layout.ContentWidth - ColumnGap) * 0.5f;
 
-    for (std::size_t Index = 0; Index < ColumnRecords.size(); ++Index)
+    const float LeftColumnX = Layout.ContentLeft;
+    const float RightColumnX = LeftColumnX + ColumnWidth + ColumnGap;
+
+    const float StartY = Layout.ContentTop + 8.0f;
+    const int PageStartIndex = GetPageStartIndex();
+    const int PageEntryCount = GetPageEntryCount();
+
+    char RankBuffer[16]{};
+    char ScoreBuffer[16]{};
+
+    for (int i = 0; i < PageEntryCount; ++i)
     {
-        const FScoreRecord &Record = ColumnRecords[Index];
-        const float         RowY = StartPos.y + Index * (LineHeight + RowGap);
+        const int EntryIndex = PageStartIndex + i;
+        const int ColumnIndex = i / MaxRowsPerColumn;
+        const int RowIndex = i % MaxRowsPerColumn;
 
-        std::string DisplayName = Record.Nickname;
-        if (DisplayName.size() > 6)
-            DisplayName = DisplayName.substr(0, 6);
+        float BaseX = LeftColumnX;
+        if (ColumnIndex == 1)
+            BaseX = RightColumnX;
 
-        ImGui::SetCursorPos(ImVec2(StartX, RowY));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-        ImGui::TextUnformatted(DisplayName.c_str());
-        ImGui::PopStyleColor();
+        const float Y = StartY + static_cast<float>(RowIndex) * (LineHeight + RowGap);
 
-        std::snprintf(Buffer, sizeof(Buffer), "STAGE %d", Record.Stage);
-        ImGui::SetCursorPos(ImVec2(StageX, RowY));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 0.82f, 1.0f, 1.0f));
-        ImGui::TextUnformatted(Buffer);
-        ImGui::PopStyleColor();
+        std::snprintf(RankBuffer, sizeof(RankBuffer), "%2d.", EntryIndex + 1);
+        std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%6d", Entries[EntryIndex].Score);
 
-        std::snprintf(Buffer, sizeof(Buffer), "%d", Record.Score);
-        const ImVec2 ScoreSize = ImGui::CalcTextSize(Buffer);
-        ImGui::SetCursorPos(ImVec2(ScoreX + MaxScoreWidth - ScoreSize.x, RowY));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.88f, 0.82f, 0.46f, 1.0f));
-        ImGui::TextUnformatted(Buffer);
-        ImGui::PopStyleColor();
+        const float RankX = BaseX;
+        const float NameX = BaseX + RankColumnWidth;
+        const float ScoreX = BaseX + RankColumnWidth + NameColumnWidth;
+
+        ImGui::SetCursorPos(ImVec2(RankX, Y));
+        ImGui::TextUnformatted(RankBuffer);
+
+        ImGui::SetCursorPos(ImVec2(NameX, Y));
+        ImGui::TextUnformatted(Entries[EntryIndex].Name.c_str());
+
+        ImGui::SetCursorPos(ImVec2(ScoreX, Y));
+        ImGui::TextUnformatted(ScoreBuffer);
     }
+
+    ImGui::SetWindowFontScale(1.0f);
+}
+
+void FScoreboardPopup::DrawPageText(const FPopupFrameLayout &Layout)
+{
+    ImGui::SetWindowFontScale(GetContentFontScale(EUIPopupContentTextSize::Small));
+
+    char PageBuffer[32]{};
+    std::snprintf(PageBuffer, sizeof(PageBuffer), "Page %d / %d", CurrentPage + 1, GetTotalPages());
+
+    const ImVec2 PageSize = ImGui::CalcTextSize(PageBuffer);
+    const float X = GetAlignedX(Layout, PageSize.x, EUIPopupContentAlign::Center);
+    const float Y = Layout.ContentBottom - PageSize.y - 4.0f;
+
+    ImGui::SetCursorPos(ImVec2(X, Y));
+    ImGui::TextUnformatted(PageBuffer);
+
+    ImGui::SetWindowFontScale(1.0f);
 }

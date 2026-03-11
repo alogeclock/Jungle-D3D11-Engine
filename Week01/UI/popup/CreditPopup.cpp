@@ -1,20 +1,28 @@
 #include "pch.h"
 #include "CreditPopup.h"
-#include "imgui/imgui.h"
+
+EUIPopupAction FCreditPopup::ConsumeAction()
+{
+    EUIPopupAction Result = PendingAction;
+    PendingAction = EUIPopupAction::None;
+
+    return Result;
+}
 
 void FCreditPopup::Render(FGameContext &Context)
 {
     FPopupFrameLayout Layout;
-    if (!BeginPopupWindow("Credits", "CREDITS", ImVec2(DefaultPopupWidth, DefaultPopupHeight),
+    if (!BeginPopupWindow("Credits", "Credits", ImVec2(DefaultPopupWidth, DefaultPopupHeight),
                           Layout))
+    {
         return;
+    }
 
     DrawCredits(Layout);
 
     if (DrawBottomButton(Layout, "Close"))
     {
-        ImGui::CloseCurrentPopup();
-        Close();
+        PendingAction = EUIPopupAction::ClosePopup;
     }
 
     EndPopupWindow();
@@ -22,54 +30,47 @@ void FCreditPopup::Render(FGameContext &Context)
 
 void FCreditPopup::DrawCredits(const FPopupFrameLayout &Layout)
 {
-    const float ContentFontScale = GetContentFontScale(ContentTextSize);
-    ImGui::SetWindowFontScale(ContentFontScale);
+    ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
 
-    float MaxNameWidth = 0.0f;
-    float MaxRoleWidth = 0.0f;
+    const float LineHeight = ImGui::GetTextLineHeight();
+    float BlockHeight = 0.0f;
 
-    for (const FCreditEntry &Entry : Credits)
+    if (!Credits.empty())
     {
+        BlockHeight = static_cast<float>(Credits.size()) * LineHeight +
+                      static_cast<float>(Credits.size() - 1) * LineGap;
+    }
+
+    float StartY = Layout.ContentTop + (Layout.ContentHeight - BlockHeight) * 0.5f;
+    if (StartY < Layout.ContentTop)
+        StartY = Layout.ContentTop;
+
+    const char *PipeText = "|";
+    const ImVec2 PipeSize = ImGui::CalcTextSize(PipeText);
+
+    for (std::size_t i = 0; i < Credits.size(); ++i)
+    {
+        const FCreditEntry &Entry = Credits[i];
+
         const ImVec2 NameSize = ImGui::CalcTextSize(Entry.Name.c_str());
         const ImVec2 RoleSize = ImGui::CalcTextSize(Entry.Role.c_str());
 
-        if (NameSize.x > MaxNameWidth)
-            MaxNameWidth = NameSize.x;
-        if (RoleSize.x > MaxRoleWidth)
-            MaxRoleWidth = RoleSize.x;
-    }
+        const float TotalWidth = NameSize.x + PipeGap + PipeSize.x + PipeGap + RoleSize.x;
+        const float BaseX = GetAlignedX(Layout, TotalWidth, ContentAlign) + BlockOffsetX;
+        const float Y = StartY + static_cast<float>(i) * (LineHeight + LineGap);
 
-    const float PipeWidth = ImGui::CalcTextSize("|").x;
-    const float LineHeight = ImGui::GetTextLineHeight();
-    const float BlockWidth = MaxNameWidth + PipeGap + PipeWidth + PipeGap + MaxRoleWidth;
-    const float BlockHeight =
-        Credits.empty() ? 0.0f : Credits.size() * LineHeight + (Credits.size() - 1) * LineGap;
+        const float NameX = BaseX;
+        const float PipeX = NameX + NameSize.x + PipeGap;
+        const float RoleX = PipeX + PipeSize.x + PipeGap;
 
-    const float StartX = GetAlignedX(Layout, BlockWidth, ContentAlign) + BlockOffsetX;
-    const float StartY = Layout.ContentTop + (Layout.ContentHeight - BlockHeight) * 0.5f;
-    const float PipeX = StartX + MaxNameWidth + PipeGap;
-    const float RoleX = PipeX + PipeWidth + PipeGap;
-
-    for (std::size_t Index = 0; Index < Credits.size(); ++Index)
-    {
-        const FCreditEntry &Entry = Credits[Index];
-        const ImVec2        NameSize = ImGui::CalcTextSize(Entry.Name.c_str());
-        const float         RowY = StartY + Index * (LineHeight + LineGap);
-
-        ImGui::SetCursorPos(ImVec2(PipeX - PipeGap - NameSize.x, RowY));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        ImGui::SetCursorPos(ImVec2(NameX, Y));
         ImGui::TextUnformatted(Entry.Name.c_str());
-        ImGui::PopStyleColor();
 
-        ImGui::SetCursorPos(ImVec2(PipeX, RowY));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.82f, 0.82f, 0.82f, 1.0f));
-        ImGui::TextUnformatted("|");
-        ImGui::PopStyleColor();
+        ImGui::SetCursorPos(ImVec2(PipeX, Y));
+        ImGui::TextUnformatted(PipeText);
 
-        ImGui::SetCursorPos(ImVec2(RoleX, RowY));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 0.72f, 0.72f, 1.0f));
+        ImGui::SetCursorPos(ImVec2(RoleX, Y));
         ImGui::TextUnformatted(Entry.Role.c_str());
-        ImGui::PopStyleColor();
     }
 
     ImGui::SetWindowFontScale(1.0f);

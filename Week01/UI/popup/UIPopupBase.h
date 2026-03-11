@@ -36,7 +36,10 @@ struct FPopupFrameLayout
     float ContentWidth = 0.0f;
     float ContentHeight = 0.0f;
 
-    float ButtonX = 0.0f;
+    float ButtonAreaLeft = 0.0f;
+    float ButtonAreaRight = 0.0f;
+    float ButtonAreaTop = 0.0f;
+    float ButtonAreaBottom = 0.0f;
     float ButtonY = 0.0f;
 
     ImVec2 TitleSize = ImVec2(0.0f, 0.0f);
@@ -70,6 +73,7 @@ class FUIPopupBase
 
     static constexpr float ButtonWidth = 260.0f;
     static constexpr float ButtonHeight = 48.0f;
+    static constexpr float ButtonGap = 16.0f;
     static constexpr float BottomPadding = 12.0f;
 
     static constexpr float TitleTopOffset = 34.0f;
@@ -85,6 +89,14 @@ class FUIPopupBase
     void EndPopupWindow();
 
     bool DrawBottomButton(const FPopupFrameLayout &Layout, const char *Label);
+    bool DrawBottomButton(const FPopupFrameLayout &Layout, const char *Label, int ButtonIndex,
+                          int ButtonCount);
+
+    ImVec2 GetBottomButtonPosition(const FPopupFrameLayout &Layout, int ButtonIndex,
+                                   int ButtonCount, float InButtonWidth = ButtonWidth,
+                                   float InButtonHeight = ButtonHeight,
+                                   float InButtonGap = ButtonGap) const;
+
     float GetContentFontScale(EUIPopupContentTextSize Size) const;
     float GetAlignedX(const FPopupFrameLayout &Layout, float ItemWidth,
                       EUIPopupContentAlign Align) const;

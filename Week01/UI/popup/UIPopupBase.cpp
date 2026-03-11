@@ -80,9 +80,6 @@ void FUIPopupBase::BuildFrameLayout(const char *Title, FPopupFrameLayout &OutLay
     OutLayout.InnerWidth = WindowSize.x - Style.WindowPadding.x * 2.0f;
     OutLayout.InnerHeight = WindowSize.y - Style.WindowPadding.y * 2.0f;
 
-    OutLayout.ButtonX = OutLayout.InnerLeft + (OutLayout.InnerWidth - ButtonWidth) * 0.5f;
-    OutLayout.ButtonY = OutLayout.InnerTop + OutLayout.InnerHeight - ButtonHeight - BottomPadding;
-
     ImGui::SetWindowFontScale(TitleFontScale);
     OutLayout.TitleSize = ImGui::CalcTextSize(Title);
     ImGui::SetWindowFontScale(1.0f);
@@ -91,10 +88,16 @@ void FUIPopupBase::BuildFrameLayout(const char *Title, FPopupFrameLayout &OutLay
     OutLayout.TitleY = OutLayout.InnerTop + TitleTopOffset;
     OutLayout.DividerY = OutLayout.TitleY + OutLayout.TitleSize.y + TitleToDividerGap;
 
+    OutLayout.ButtonAreaLeft = OutLayout.InnerLeft;
+    OutLayout.ButtonAreaRight = OutLayout.InnerLeft + OutLayout.InnerWidth;
+    OutLayout.ButtonAreaBottom = OutLayout.InnerTop + OutLayout.InnerHeight - BottomPadding;
+    OutLayout.ButtonAreaTop = OutLayout.ButtonAreaBottom - ButtonHeight;
+    OutLayout.ButtonY = OutLayout.ButtonAreaTop;
+
     OutLayout.ContentLeft = OutLayout.InnerLeft;
     OutLayout.ContentRight = OutLayout.InnerLeft + OutLayout.InnerWidth;
     OutLayout.ContentTop = OutLayout.DividerY + DividerThickness + DividerToContentGap;
-    OutLayout.ContentBottom = OutLayout.ButtonY - ContentToButtonGap;
+    OutLayout.ContentBottom = OutLayout.ButtonAreaTop - ContentToButtonGap;
     OutLayout.ContentWidth = OutLayout.ContentRight - OutLayout.ContentLeft;
     OutLayout.ContentHeight = OutLayout.ContentBottom - OutLayout.ContentTop;
 }
@@ -116,11 +119,39 @@ void FUIPopupBase::DrawTitleAndDivider(const char *Title, const FPopupFrameLayou
                       IM_COL32(180, 180, 180, 160), DividerThickness);
 }
 
+ImVec2 FUIPopupBase::GetBottomButtonPosition(const FPopupFrameLayout &Layout, int ButtonIndex,
+                                             int ButtonCount, float InButtonWidth,
+                                             float InButtonHeight, float InButtonGap) const
+{
+    if (ButtonCount <= 0)
+        return ImVec2(Layout.ButtonAreaLeft, Layout.ButtonY);
+
+    const float TotalWidth =
+        InButtonWidth * static_cast<float>(ButtonCount) +
+        InButtonGap * static_cast<float>(ButtonCount - 1);
+
+    const float StartX = Layout.ButtonAreaLeft + (Layout.InnerWidth - TotalWidth) * 0.5f;
+    const float X = StartX + static_cast<float>(ButtonIndex) * (InButtonWidth + InButtonGap);
+    const float Y = Layout.ButtonY + (ButtonHeight - InButtonHeight) * 0.5f;
+
+    return ImVec2(X, Y);
+}
+
 bool FUIPopupBase::DrawBottomButton(const FPopupFrameLayout &Layout, const char *Label)
 {
+    return DrawBottomButton(Layout, Label, 0, 1);
+}
+
+bool FUIPopupBase::DrawBottomButton(const FPopupFrameLayout &Layout, const char *Label,
+                                    int ButtonIndex, int ButtonCount)
+{
     ImGui::SetWindowFontScale(ButtonTextFontScale);
-    ImGui::SetCursorPos(ImVec2(Layout.ButtonX, Layout.ButtonY));
+
+    const ImVec2 ButtonPos = GetBottomButtonPosition(Layout, ButtonIndex, ButtonCount);
+    ImGui::SetCursorPos(ButtonPos);
+
     const bool bPressed = ImGui::Button(Label, ImVec2(ButtonWidth, ButtonHeight));
+
     ImGui::SetWindowFontScale(1.0f);
     return bPressed;
 }
