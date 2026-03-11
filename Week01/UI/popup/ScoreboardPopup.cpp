@@ -45,6 +45,7 @@ int FScoreboardPopup::GetTotalPages() const
         return 1;
 
     const int Count = static_cast<int>(Entries.size());
+
     int TotalPages = Count / EntriesPerPage;
     if ((Count % EntriesPerPage) != 0)
         ++TotalPages;
@@ -158,63 +159,120 @@ void FScoreboardPopup::DrawEntries(const FPopupFrameLayout &Layout)
     const float LeftColumnX = Layout.ContentLeft;
     const float RightColumnX = LeftColumnX + ColumnWidth + ColumnGap;
 
-    const float StartY = Layout.ContentTop + 8.0f;
+    const float StartY = Layout.ContentTop + TableTopOffset;
+    const float HeaderY = StartY;
+    const float RowStartY = HeaderY + LineHeight + HeaderToRowsGap;
+
     const int PageStartIndex = GetPageStartIndex();
     const int PageEntryCount = GetPageEntryCount();
 
+    int LeftCount = PageEntryCount;
+    if (LeftCount > MaxRowsPerColumn)
+        LeftCount = MaxRowsPerColumn;
+
+    int RightCount = PageEntryCount - LeftCount;
+    if (RightCount < 0)
+        RightCount = 0;
+
     const float MiddleLineX = Layout.ContentLeft + Layout.ContentWidth * 0.5f;
-    const float TopY = StartY - 2.0f;
-    const float BottomY = StartY + static_cast<float>(MaxRowsPerColumn) * LineHeight +
-                          static_cast<float>(MaxRowsPerColumn - 1) * RowGap + 2.0f;
+    const float DividerTopY = HeaderY - ColumnDividerPadding;
+    const float DividerBottomY =
+        RowStartY + static_cast<float>(MaxRowsPerColumn) * LineHeight +
+        static_cast<float>(MaxRowsPerColumn - 1) * RowGap + ColumnDividerPadding;
 
-    ImDrawList *DrawList = ImGui::GetWindowDrawList();
     const ImVec2 WindowPos = ImGui::GetWindowPos();
+    ImDrawList *DrawList = ImGui::GetWindowDrawList();
 
-    DrawList->AddLine(ImVec2(WindowPos.x + MiddleLineX, WindowPos.y + TopY),
-                      ImVec2(WindowPos.x + MiddleLineX, WindowPos.y + BottomY),
+    DrawList->AddLine(ImVec2(WindowPos.x + MiddleLineX, WindowPos.y + DividerTopY),
+                      ImVec2(WindowPos.x + MiddleLineX, WindowPos.y + DividerBottomY),
                       ImGui::GetColorU32(ImGuiCol_Separator), 1.0f);
 
-    char RankBuffer[16]{};
-    char NameBuffer[16]{};
-    char StageBuffer[32]{};
-    char ScoreBuffer[16]{};
+    DrawColumnHeader(LeftColumnX, HeaderY);
+    DrawColumnHeader(RightColumnX, HeaderY);
 
-    for (int i = 0; i < PageEntryCount; ++i)
-    {
-        const int EntryIndex = PageStartIndex + i;
-        const int ColumnIndex = i / MaxRowsPerColumn;
-        const int RowIndex = i % MaxRowsPerColumn;
+    const float HeaderLineY = HeaderY + LineHeight + HeaderLineOffset;
+    DrawList->AddLine(ImVec2(WindowPos.x + LeftColumnX, WindowPos.y + HeaderLineY),
+                      ImVec2(WindowPos.x + LeftColumnX + ColumnWidth, WindowPos.y + HeaderLineY),
+                      ImGui::GetColorU32(ImGuiCol_Separator), 1.0f);
 
-        float BaseX = LeftColumnX;
-        if (ColumnIndex == 1)
-            BaseX = RightColumnX;
+    DrawList->AddLine(ImVec2(WindowPos.x + RightColumnX, WindowPos.y + HeaderLineY),
+                      ImVec2(WindowPos.x + RightColumnX + ColumnWidth, WindowPos.y + HeaderLineY),
+                      ImGui::GetColorU32(ImGuiCol_Separator), 1.0f);
 
-        const float Y = StartY + static_cast<float>(RowIndex) * (LineHeight + RowGap);
-
-        std::snprintf(RankBuffer, sizeof(RankBuffer), "%2d.", EntryIndex + 1);
-        std::snprintf(NameBuffer, sizeof(NameBuffer), "%-6.6s", Entries[EntryIndex].Nickname.c_str());
-        std::snprintf(StageBuffer, sizeof(StageBuffer), "Stage %-2d", Entries[EntryIndex].Stage);
-        std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%6d", Entries[EntryIndex].Score);
-
-        const float RankX = BaseX;
-        const float NameX = BaseX + RankColumnWidth;
-        const float StageX = BaseX + RankColumnWidth + NameColumnWidth;
-        const float ScoreX = BaseX + RankColumnWidth + NameColumnWidth + StageColumnWidth;
-
-        ImGui::SetCursorPos(ImVec2(RankX, Y));
-        ImGui::TextUnformatted(RankBuffer);
-
-        ImGui::SetCursorPos(ImVec2(NameX, Y));
-        ImGui::TextUnformatted(NameBuffer);
-
-        ImGui::SetCursorPos(ImVec2(StageX, Y));
-        ImGui::TextUnformatted(StageBuffer);
-
-        ImGui::SetCursorPos(ImVec2(ScoreX, Y));
-        ImGui::TextUnformatted(ScoreBuffer);
-    }
+    DrawColumnBlock(Layout, LeftColumnX, PageStartIndex, LeftCount);
+    DrawColumnBlock(Layout, RightColumnX, PageStartIndex + LeftCount, RightCount);
 
     ImGui::SetWindowFontScale(1.0f);
+}
+
+void FScoreboardPopup::DrawColumnBlock(const FPopupFrameLayout &Layout, float BaseX,
+                                       int StartEntryIndex, int EntryCount)
+{
+    if (EntryCount <= 0)
+        return;
+
+    const float LineHeight = ImGui::GetTextLineHeight();
+    const float HeaderY = Layout.ContentTop + TableTopOffset;
+    const float RowStartY = HeaderY + LineHeight + HeaderToRowsGap;
+
+    for (int i = 0; i < EntryCount; ++i)
+    {
+        const float Y = RowStartY + static_cast<float>(i) * (LineHeight + RowGap);
+        const int EntryIndex = StartEntryIndex + i;
+        const int Rank = EntryIndex + 1;
+
+        DrawRow(BaseX, Y, Rank, Entries[EntryIndex]);
+    }
+}
+
+void FScoreboardPopup::DrawColumnHeader(float BaseX, float Y)
+{
+    const float RankX = BaseX;
+    const float NameX = BaseX + RankColumnWidth;
+    const float StageX = BaseX + RankColumnWidth + NameColumnWidth;
+    const float ScoreX = BaseX + RankColumnWidth + NameColumnWidth + StageColumnWidth;
+
+    ImGui::SetCursorPos(ImVec2(RankX, Y));
+    ImGui::TextUnformatted("RANK");
+
+    ImGui::SetCursorPos(ImVec2(NameX, Y));
+    ImGui::TextUnformatted("NAME");
+
+    ImGui::SetCursorPos(ImVec2(StageX, Y));
+    ImGui::TextUnformatted("STAGE");
+
+    ImGui::SetCursorPos(ImVec2(ScoreX, Y));
+    ImGui::TextUnformatted("SCORE");
+}
+
+void FScoreboardPopup::DrawRow(float BaseX, float Y, int Rank, const FScoreRecord &Entry)
+{
+    char RankBuffer[16]{};
+    char NameBuffer[16]{};
+    char StageBuffer[16]{};
+    char ScoreBuffer[16]{};
+
+    std::snprintf(RankBuffer, sizeof(RankBuffer), "%2d", Rank);
+    std::snprintf(NameBuffer, sizeof(NameBuffer), "%-6.6s", Entry.Nickname.c_str());
+    std::snprintf(StageBuffer, sizeof(StageBuffer), "S-%d", Entry.Stage);
+    std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%04d", Entry.Score);
+
+    const float RankX = BaseX;
+    const float NameX = BaseX + RankColumnWidth;
+    const float StageX = BaseX + RankColumnWidth + NameColumnWidth;
+    const float ScoreX = BaseX + RankColumnWidth + NameColumnWidth + StageColumnWidth;
+
+    ImGui::SetCursorPos(ImVec2(RankX, Y));
+    ImGui::TextUnformatted(RankBuffer);
+
+    ImGui::SetCursorPos(ImVec2(NameX, Y));
+    ImGui::TextUnformatted(NameBuffer);
+
+    ImGui::SetCursorPos(ImVec2(StageX, Y));
+    ImGui::TextUnformatted(StageBuffer);
+
+    ImGui::SetCursorPos(ImVec2(ScoreX, Y));
+    ImGui::TextUnformatted(ScoreBuffer);
 }
 
 void FScoreboardPopup::DrawPageText(const FPopupFrameLayout &Layout)
