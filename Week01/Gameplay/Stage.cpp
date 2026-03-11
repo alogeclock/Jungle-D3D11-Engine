@@ -327,7 +327,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             Logger::Log("Miss Input");
             if (!Player->ConsumeInvincibility())
                 Player->Damage(1);
-            ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
+            ScoreSystem->AddBeatBonus(Judge);
             Player->SetLastMovedBeatIndex(CurrentBeatIndex);
             FAudioSystem::Get().Play("sfx_miss", false);
         }
@@ -356,9 +356,11 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         {
             if (Player->GetLastMovedBeatIndex() < CurrentBeatIndex)
             {
+                EBeatJudge Judge = BeatSystem->JudgeInput();
                 Logger::Log("No Input Detected - Player Damaged");
                 if (!Player->ConsumeInvincibility())
                     Player->Damage(1);
+                ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
                 FAudioSystem::Get().Play("sfx_miss", false);
             }
         }
@@ -684,7 +686,6 @@ void FStage::BuildStaticBatches()
                                                            Idxs.data(), (UINT)Idxs.size());
         }
     }
-
 }
 
 void FStage::RebuildRenderBatches()

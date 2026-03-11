@@ -44,7 +44,7 @@ void FTitleScene::RenderBackground(FGameContext &Context)
     Context.Renderer.DrawTexture(Context.Textures.Get("title_background"), (WIN_WIDTH / 2.f),
                                  (WIN_HEIGHT / 2.f), WIN_WIDTH, WIN_HEIGHT);
     Context.Renderer.DrawTexture(Context.Textures.Get("logo"), (WIN_WIDTH) / 2.f,
-                                 (WIN_HEIGHT) / 5.5f, 500, 250);
+                                 (WIN_HEIGHT) / 5.5f, 550, 250);
 }
 
 void FTitleScene::RenderTitleMenu(FGameContext &Context)
