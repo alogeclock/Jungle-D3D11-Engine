@@ -18,7 +18,6 @@ class FTitleScene : public IScene
 
   private:
     bool bInitialized = false;
-    int  SelectedPlayerSkin = 0;
     void RenderBackground(FGameContext &Context);
     void RenderTitleMenu(FGameContext &Context);
     void HandleMenuCommand(FGameContext &Context);

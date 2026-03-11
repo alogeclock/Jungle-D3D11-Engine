@@ -119,6 +119,7 @@ bool FApplication::LoadSpriteResources()
         {"beat_bar_width", "beat_bar_width.png"},
         {"beat_heart", "beat_heart.png"},
         {"title_background", "title_background.png"},
+        {"ending", "ending.png"},
         {"life_heart", "life_heart.png"},
         {"life_dead", "life_dead.png"},
         {"effect_perfect", "effect_perfect.png"},
