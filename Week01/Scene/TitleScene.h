@@ -15,7 +15,9 @@ class FTitleScene : public IScene
     void Render(FGameContext &Context) override;
 
   private:
-    void HandleMenuCommand();
+    void RenderBackground(FGameContext &Context);
+    void RenderTitleMenu(FGameContext &Context);
+    void HandleMenuCommand(FGameContext &Context);
     void OpenCreditPopup();
     void OpenScoreboardPopup();
 
