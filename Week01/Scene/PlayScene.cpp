@@ -41,6 +41,42 @@ void FPlayScene::Update(FGameContext &Context)
         bStageLoaded = true;
     }
 
+    // 시연용 단축키 (VK 키 직접 판단, Release에서도 동작)
+    if (Stage && !bWaitingForStageStart)
+    {
+        int TotalStages = FStageLoader::Get().GetStageCount();
+
+        // 1~3: 스테이지 변경
+        for (int i = 0; i < TotalStages && i < 3; ++i)
+        {
+            if (GetAsyncKeyState('1' + i) & 0x0001)
+            {
+                if (i != CurrentStageIndex)
+                    PendingStageIndex = i;
+            }
+        }
+
+        // F1: Invincible 토글
+        if (GetAsyncKeyState(VK_F1) & 0x0001)
+        {
+            bool bNow = Stage->GetPlayer().IsInvincible();
+            Stage->GetPlayer().SetInvincible(!bNow);
+        }
+
+        // F2: Time Freeze 토글
+        if (GetAsyncKeyState(VK_F2) & 0x0001)
+        {
+            Stage->SetTimeFrozen(!Stage->IsTimeFrozen());
+        }
+
+        // 0: 타이틀로 돌아가기
+        if (GetAsyncKeyState('0') & 0x0001)
+        {
+            FAudioSystem::Get().StopAll();
+            ChangeScene(ESceneType::Title);
+        }
+    }
+
     if (PendingStageIndex >= 0)
     {
         FSceneCommand Command;
