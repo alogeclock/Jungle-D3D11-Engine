@@ -956,6 +956,8 @@ bool FStage::IsCleared() const { return bIsCleared; }
 
 float FStage::GetRemainingTime() const { return RemainingTime; }
 
+void FStage::SetRemainingTime(float Time) { RemainingTime = Time; }
+
 float FStage::GetTimeLimit() const { return TimeLimit; }
 
 int FStage::GetDarknessLevel() const { return DarknessLevel; }

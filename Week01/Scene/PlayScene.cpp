@@ -120,6 +120,30 @@ void FPlayScene::Render(FGameContext &Context)
         Stage->Render();
 
     UIManager.Render(Context);
+
+    // F1/F2 치트 상태 오버레이 (우측 하단)
+    if (Stage)
+    {
+        bool bInv = Stage->GetPlayer().IsInvincible();
+        bool bFreeze = Stage->IsTimeFrozen();
+
+        if (bInv || bFreeze)
+        {
+            ImGuiIO &Io = ImGui::GetIO();
+            ImGui::SetNextWindowPos(
+                ImVec2(Io.DisplaySize.x - 10.0f, Io.DisplaySize.y - 10.0f),
+                ImGuiCond_Always, ImVec2(1.0f, 1.0f));
+            ImGui::SetNextWindowBgAlpha(0.5f);
+            ImGui::Begin("##CheatStatus", nullptr,
+                         ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs |
+                             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing);
+            if (bInv)
+                ImGui::TextColored(ImVec4(1.0f, 0.9f, 0.2f, 1.0f), "[F1] Invincible ON");
+            if (bFreeze)
+                ImGui::TextColored(ImVec4(0.3f, 0.9f, 1.0f, 1.0f), "[F2] Time Frozen");
+            ImGui::End();
+        }
+    }
 }
 
 void FPlayScene::LoadStage(FGameContext &Context)

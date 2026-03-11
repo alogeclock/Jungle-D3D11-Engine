@@ -105,6 +105,22 @@ void FDebugWidget::Render(FGameContext &Context)
             Stage->ApplyItem(Item);
         }
 
+        if (ImGui::Button("HP Up"))
+        {
+            FItemData Item;
+            Item.Type = EItemType::HpUp;
+            Stage->ApplyItem(Item);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Angry Mode"))
+        {
+            float AngryTime = Stage->GetMap().GetAngryTime();
+            if (AngryTime > 0.0f && !Stage->IsAngry())
+            {
+                Stage->SetRemainingTime(AngryTime - 0.1f);
+            }
+        }
+
         if (ImGui::Button("Darkness Up"))
         {
             FItemData Item;

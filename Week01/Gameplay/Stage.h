@@ -70,6 +70,7 @@ class FStage
     bool IsCleared() const;
 
     float GetRemainingTime() const;
+    void  SetRemainingTime(float Time);
     float GetTimeLimit() const;
 
     int  GetDarknessLevel() const;
