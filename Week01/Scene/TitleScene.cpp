@@ -86,7 +86,6 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
     const float StartX = (ScreenWidth - ButtonSize.x) * 0.5f;
     const float StartY = (ScreenHeight - TotalHeight) * 0.5f + 100;
 
-    // --- 공통 스타일 ---
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 16.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.5f);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 8.0f));
@@ -95,19 +94,6 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
     {
         ImGui::BeginDisabled();
     }
-
-    // 캐릭터 선택 Combo
-    static const char *SkinNames[] = {"Otaku", "Bunnie"};
-    static const char *SkinKeys[] = {"player_otaku", "player_bunnie"};
-
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.08f, 0.08f, 0.12f, 0.85f));
-    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.15f, 0.15f, 0.22f, 0.90f));
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.45f, 0.40f, 0.70f, 0.60f));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.92f, 1.00f, 1.00f));
-    ImGui::SetCursorPos(ImVec2(StartX, StartY - 55.0f));
-    ImGui::SetNextItemWidth(ButtonSize.x);
-    ImGui::Combo("##PlayerSkin", &SelectedPlayerSkin, SkinNames, IM_ARRAYSIZE(SkinNames));
-    ImGui::PopStyleColor(4);
 
     // --- START 버튼 (강조색) ---
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.18f, 0.12f, 0.35f, 0.90f));
@@ -118,7 +104,7 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
     ImGui::SetCursorPos(ImVec2(StartX, StartY));
     if (ImGui::Button("[ START GAME ]", ButtonSize))
     {
-        ChangeScene(ESceneType::Play, 0, 0, SkinKeys[SelectedPlayerSkin]);
+        ChangeScene(ESceneType::Play, 0, 0, "player_otaku");
     }
     ImGui::PopStyleColor(5);
 
