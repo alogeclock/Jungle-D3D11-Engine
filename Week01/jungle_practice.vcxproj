@@ -111,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)/ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -197,9 +197,11 @@
     <ClCompile Include="Scene\PlayScene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\widget\BeatEffect.cpp" />
     <ClCompile Include="UI\widget\BeatHUDWidget.cpp" />
     <ClCompile Include="UI\widget\DebugWidget.cpp" />
     <ClCompile Include="UI\widget\GameplayHUDWidget.cpp" />
+    <ClCompile Include="UI\widget\MinimapWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\Default.hlsl">
@@ -269,9 +271,11 @@
     <ClInclude Include="UI\popup\StageClearPopup.h" />
     <ClInclude Include="UI\popup\UIPopupBase.h" />
     <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="UI\widget\BeatEffect.h" />
     <ClInclude Include="UI\widget\BeatHUDWidget.h" />
     <ClInclude Include="UI\widget\DebugWidget.h" />
     <ClInclude Include="UI\widget\GameplayHUDWidget.h" />
+    <ClInclude Include="UI\widget\MinimapWidget.h" />
     <ClInclude Include="UI\widget\UIWidget.h" />
   </ItemGroup>
   <ItemGroup>

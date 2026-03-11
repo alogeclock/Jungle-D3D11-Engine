@@ -91,6 +91,8 @@ public:
 	// 스크린 스페이스 렌더링 큐잉
 	void DrawTexture(const FTexture* texture, float screenX, float screenY,
 		float width, float height);
+	void DrawTexture(const FTexture* texture, float screenX, float screenY,
+		float width, float height, float rotationRad);
 
 	// 암흑 시야 오버레이 (알파 블렌딩으로 전체 화면에 렌더)
 	void DrawDarknessOverlay(const FTexture* Texture, float ScreenCenterX, float ScreenCenterY);

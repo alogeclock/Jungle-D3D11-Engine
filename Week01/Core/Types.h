@@ -7,22 +7,22 @@
 
 struct FVertexSimple
 {
-    float x, y, z; // Position
-    float u, v;
+	float x, y, z; // Position
+	float u, v;
 };
 
 struct FVector
 {
-    float x, y, z;
-    FVector(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
+	float x, y, z;
+	FVector(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
 };
 
 enum class EDirection
 {
-    Up,
-    Down,
-    Left,
-    Right
+	Up,
+	Down,
+	Left,
+	Right
 };
 
 enum class ETileValue
@@ -36,37 +36,39 @@ enum class ETileValue
 
 enum class EBeatJudge
 {
-    Perfect,
-    Good,
-    Miss
+	Perfect,
+	Good,
+	Miss
 };
 
 enum class EActorType
 {
-    Player,
-    Monster
+	Player,
+	Monster
 };
 
 enum class EMonsterAIType
 {
-    ChasePlayer,
-    RandomMove,
-    Patrol
+	ChasePlayer,
+	RandomMove,
+	Patrol
 };
 
 enum class EKeyCode
 {
-    Up,
-    Down,
-    Left,
-    Right,
-    Count
+	Up,
+	Down,
+	Left,
+	Right,
+	Count
 };
 
 struct FVec2
 {
-    float X = 0.0f;
-    float Y = 0.0f;
+	float X = 0.0f;
+	float Y = 0.0f;
+	FVec2() {}
+	FVec2(float inX, float inY) : X(inX), Y(inY) {}
 };
 
 enum class TileType : int

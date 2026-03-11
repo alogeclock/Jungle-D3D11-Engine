@@ -9,6 +9,7 @@ struct FBitmapFont
 	int Base = 0; //?
 	int ScaleW = 0; // BitmapFont 이미지의 너비
 	int ScaleH = 0; // BitmapFont 이미지의 높이
+	int ThickNess = 0;
 
 	std::unordered_map<int, FGlyph> Glyphs;
 
