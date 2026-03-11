@@ -11,7 +11,7 @@
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 1024
 
-#ifdef DEBUG
+#ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #else
 #pragma comment(linker, "/entry:WinMainCRTStartup")
