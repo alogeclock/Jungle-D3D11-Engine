@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/GameContext.h"
 #include "Actor.h"

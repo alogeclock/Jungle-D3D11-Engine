@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Stage.h"
 #include "BeatSystem.h"
 #include "Camera2D.h"
@@ -110,6 +110,11 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
         FAudioSystem::Get().Play(BgmKey, true);
     }
 
+    // 효과음 로드
+    FAudioSystem::Get().LoadWav("sfx_perfect", "Resources/Sounds/perfect.wav");
+    FAudioSystem::Get().LoadWav("sfx_good", "Resources/Sounds/good.wav");
+    FAudioSystem::Get().LoadWav("sfx_miss", "Resources/Sounds/miss.wav");
+
     bIsGameOver = false;
     bIsCleared = false;
 
@@ -197,6 +202,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             {
                 Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
+                FAudioSystem::Get().Play("sfx_miss", false);
             }
             else
             {
@@ -205,6 +211,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 Player->OnBeat(*this);
                 ScoreSystem->AddBeatBonus(Judge);
                 Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+                FAudioSystem::Get().Play("sfx_perfect", false);
             }
         }
         else if (Judge == EBeatJudge::Good)
@@ -214,6 +221,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             {
                 Player->Damage(1); // 한 박자 내 중복 이동 시 데미지
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
+                FAudioSystem::Get().Play("sfx_miss", false);
             }
             else
             {
@@ -222,6 +230,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 Player->OnBeat(*this);
                 ScoreSystem->AddBeatBonus(Judge);
                 Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+                FAudioSystem::Get().Play("sfx_good", false);
             }
         }
         else
@@ -230,6 +239,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
             Player->Damage(1); // 엇박자 입력 시 데미지
             ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
             Player->SetLastMovedBeatIndex(CurrentBeatIndex);
+            FAudioSystem::Get().Play("sfx_miss", false);
         }
     }
 
@@ -294,28 +304,26 @@ void FStage::Render()
     Renderer->DrawBatch(WallBatch, Textures->Get("wall"));
 
     // 텍스처 룩업 헬퍼
-    auto GetTex = [&](const std::string& Key) -> FTexture*
-        {
-            return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr;
-        };
+    auto GetTex = [&](const std::string &Key) -> FTexture *
+    { return (!Key.empty() && Textures) ? Textures->Get(Key) : nullptr; };
 
     // 몬스터 렌더링
-    for (const auto& Mon : Monsters)
+    for (const auto &Mon : Monsters)
     {
         if (Mon->IsDead())
             continue;
-        float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
-        float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
-        const FSpriteInfo& Spr = Mon->GetSprite();
+        float              WorldX = Mon->GetRenderX() + TileSize * 0.5f;
+        float              WorldY = Mon->GetRenderY() + TileSize * 0.5f;
+        const FSpriteInfo &Spr = Mon->GetSprite();
         Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
     }
 
     // 플레이어 렌더링 (가장 위에 그림)
     if (!Player->IsDead())
     {
-        float WorldX = Player->GetRenderX() + TileSize * 0.5f;
-        float WorldY = Player->GetRenderY() + TileSize * 0.5f;
-        const FSpriteInfo& Spr = Player->GetSprite();
+        float              WorldX = Player->GetRenderX() + TileSize * 0.5f;
+        float              WorldY = Player->GetRenderY() + TileSize * 0.5f;
+        const FSpriteInfo &Spr = Player->GetSprite();
         Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
     }
 
@@ -335,16 +343,17 @@ void FStage::Render()
 // 암흑 시야 텍스처 (방사형 그라데이션)
 // ============================================================
 
-static constexpr float DarknessInnerRatios[5] = { 0.05f, 0.07f, 0.10f, 0.12f, 0.15f };
-static constexpr float DarknessOuterRatios[5] = { 0.10f, 0.13f, 0.15f, 0.17f, 0.20f };
+static constexpr float DarknessInnerRatios[5] = {0.05f, 0.07f, 0.10f, 0.12f, 0.15f};
+static constexpr float DarknessOuterRatios[5] = {0.10f, 0.13f, 0.15f, 0.17f, 0.20f};
 
 void FStage::CreateDarknessTexture()
 {
-    if (!Renderer || !Renderer->Device) return;
+    if (!Renderer || !Renderer->Device)
+        return;
 
     DarknessTexture.reset();
 
-    const int Size = 512;
+    const int   Size = 512;
     const float Center = Size * 0.5f;
     const float InnerRadius = Size * DarknessInnerRatios[DarknessLevel];
     const float OuterRadius = Size * DarknessOuterRatios[DarknessLevel];
@@ -371,15 +380,15 @@ void FStage::CreateDarknessTexture()
             Alpha = Alpha * Alpha * (3.0f - 2.0f * Alpha);
 
             int Idx = (Y * Size + X) * 4;
-            Pixels[Idx + 0] = 0;   // R
-            Pixels[Idx + 1] = 0;   // G
-            Pixels[Idx + 2] = 0;   // B
+            Pixels[Idx + 0] = 0; // R
+            Pixels[Idx + 1] = 0; // G
+            Pixels[Idx + 2] = 0; // B
             Pixels[Idx + 3] = static_cast<uint8_t>(Alpha * 255.0f);
         }
     }
 
-    ID3D11Texture2D* Tex2D = nullptr;
-    ID3D11ShaderResourceView* SRV = nullptr;
+    ID3D11Texture2D          *Tex2D = nullptr;
+    ID3D11ShaderResourceView *SRV = nullptr;
 
     D3D11_TEXTURE2D_DESC Desc = {};
     Desc.Width = Size;
@@ -416,11 +425,8 @@ void FStage::CreateDarknessTexture()
 // 정적 배치 (타일/벽을 텍스처별로 묶어 DrawIndexed)
 // ============================================================
 
-static void BuildQuadBatch(
-    const std::vector<std::pair<float, float>>& Centers,
-    float Size,
-    std::vector<FVertexSimple>& OutVertices,
-    std::vector<UINT>& OutIndices)
+static void BuildQuadBatch(const std::vector<std::pair<float, float>> &Centers, float Size,
+                           std::vector<FVertexSimple> &OutVertices, std::vector<UINT> &OutIndices)
 {
     float Half = Size * 0.5f;
     OutVertices.reserve(Centers.size() * 4);
@@ -430,12 +436,12 @@ static void BuildQuadBatch(
     {
         float CX = Centers[i].first;
         float CY = Centers[i].second;
-        UINT Base = static_cast<UINT>(i * 4);
+        UINT  Base = static_cast<UINT>(i * 4);
 
-        OutVertices.push_back({ CX - Half, CY - Half, 0.0f, 0.0f, 0.0f }); // 좌상
-        OutVertices.push_back({ CX + Half, CY - Half, 0.0f, 1.0f, 0.0f }); // 우상
-        OutVertices.push_back({ CX + Half, CY + Half, 0.0f, 1.0f, 1.0f }); // 우하
-        OutVertices.push_back({ CX - Half, CY + Half, 0.0f, 0.0f, 1.0f }); // 좌하
+        OutVertices.push_back({CX - Half, CY - Half, 0.0f, 0.0f, 0.0f}); // 좌상
+        OutVertices.push_back({CX + Half, CY - Half, 0.0f, 1.0f, 0.0f}); // 우상
+        OutVertices.push_back({CX + Half, CY + Half, 0.0f, 1.0f, 1.0f}); // 우하
+        OutVertices.push_back({CX - Half, CY + Half, 0.0f, 0.0f, 1.0f}); // 좌하
 
         OutIndices.push_back(Base + 0);
         OutIndices.push_back(Base + 1);
@@ -454,7 +460,7 @@ void FStage::BuildStaticBatches()
     std::vector<std::pair<float, float>> FloorCenters;
     std::vector<std::pair<float, float>> GoalCenters;
 
-    for (const auto& Tile : Tiles)
+    for (const auto &Tile : Tiles)
     {
         float CX = Tile.GetRenderX(TileSize) + TileSize * 0.5f;
         float CY = Tile.GetRenderY(TileSize) + TileSize * 0.5f;
@@ -469,20 +475,20 @@ void FStage::BuildStaticBatches()
     if (!FloorCenters.empty())
     {
         std::vector<FVertexSimple> Verts;
-        std::vector<UINT> Idxs;
+        std::vector<UINT>          Idxs;
         BuildQuadBatch(FloorCenters, TileSize, Verts, Idxs);
-        FloorBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
-            Idxs.data(), (UINT)Idxs.size());
+        FloorBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
+                                                 (UINT)Idxs.size());
     }
 
     // Goal 배치
     if (!GoalCenters.empty())
     {
         std::vector<FVertexSimple> Verts;
-        std::vector<UINT> Idxs;
+        std::vector<UINT>          Idxs;
         BuildQuadBatch(GoalCenters, TileSize, Verts, Idxs);
-        GoalBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
-            Idxs.data(), (UINT)Idxs.size());
+        GoalBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
+                                                (UINT)Idxs.size());
     }
 
     // Wall 배치
@@ -494,7 +500,7 @@ void FStage::RebuildWallBatch()
     Renderer->ReleaseStaticBatch(WallBatch);
 
     std::vector<std::pair<float, float>> WallCenters;
-    for (const auto& W : Walls)
+    for (const auto &W : Walls)
     {
         if (W.IsDestroyed())
             continue;
@@ -506,10 +512,10 @@ void FStage::RebuildWallBatch()
     if (!WallCenters.empty())
     {
         std::vector<FVertexSimple> Verts;
-        std::vector<UINT> Idxs;
+        std::vector<UINT>          Idxs;
         BuildQuadBatch(WallCenters, TileSize, Verts, Idxs);
-        WallBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(),
-            Idxs.data(), (UINT)Idxs.size());
+        WallBatch = Renderer->CreateStaticBatch(Verts.data(), (UINT)Verts.size(), Idxs.data(),
+                                                (UINT)Idxs.size());
     }
 }
 
@@ -724,7 +730,8 @@ int FStage::GetDarknessLevel() const { return DarknessLevel; }
 void FStage::SetDarknessLevel(int Level)
 {
     Level = (Level < 0) ? 0 : (Level > 4) ? 4 : Level;
-    if (Level == DarknessLevel) return;
+    if (Level == DarknessLevel)
+        return;
     DarknessLevel = Level;
     CreateDarknessTexture();
 }
