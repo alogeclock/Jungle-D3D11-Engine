@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "StageIntroPopup.h"
 #include <cstdio>
+#include <vector>
 
 EUIPopupAction FStageIntroPopup::ConsumeAction()
 {
@@ -20,6 +21,40 @@ std::string FStageIntroPopup::GetPopupTitle() const
     return std::string(Buffer);
 }
 
+std::vector<std::string> FStageIntroPopup::SplitMessageLines() const
+{
+    std::vector<std::string> Result;
+
+    if (Message.empty())
+    {
+        Result.push_back("");
+        return Result;
+    }
+
+    std::size_t Start = 0;
+
+    while (Start <= Message.size())
+    {
+        const std::size_t End = Message.find('\n', Start);
+
+        if (End == std::string::npos)
+        {
+            Result.push_back(Message.substr(Start));
+            break;
+        }
+
+        Result.push_back(Message.substr(Start, End - Start));
+        Start = End + 1;
+    }
+
+    if (Result.empty())
+    {
+        Result.push_back("");
+    }
+
+    return Result;
+}
+
 void FStageIntroPopup::Render(FGameContext &Context)
 {
     const std::string TitleText = GetPopupTitle();
@@ -31,11 +66,22 @@ void FStageIntroPopup::Render(FGameContext &Context)
         return;
     }
 
-    const char *Lines[] = {
-        Message.c_str(),
-    };
+    const std::vector<std::string> MessageLines = SplitMessageLines();
 
-    DrawTextBlock(Layout, Lines, 1, MessageLineGap, ContentAlign, ContentTextSize,
+    std::vector<const char *> LinePtrs;
+    LinePtrs.reserve(MessageLines.size());
+
+    for (const std::string &Line : MessageLines)
+    {
+        LinePtrs.push_back(Line.c_str());
+    }
+
+    DrawTextBlock(Layout,
+                  LinePtrs.data(),
+                  static_cast<int>(LinePtrs.size()),
+                  MessageLineGap,
+                  ContentAlign,
+                  ContentTextSize,
                   ContentVerticalAlign);
 
     if (DrawBottomButton(Layout, "OK, Start!"))
