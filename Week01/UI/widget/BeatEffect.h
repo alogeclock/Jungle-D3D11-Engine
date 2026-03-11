@@ -10,13 +10,14 @@ struct BeatEffect
     }
     void Update(float DeltaTime);
     bool IsAlive() const;
-    void Reset(FTexture *InTexture, float StartX, float StartY, float inLifeTime);
+    void Reset(FTexture *InTexture, float StartX, float StartY, float inLifeTime, float InScore);
     void Render(FGameContext &Context);
 
     const FTexture *Texture = nullptr;
     float           X = 0.f;
     float           Y = 0.f;
     float           LifeTime = -1.f;
+    float           Score = 0;
 
   private:
     float Speed = 100.f;

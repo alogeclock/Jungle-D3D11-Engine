@@ -18,9 +18,10 @@ class FBeatHUDWidget : public IUIWidget
     virtual void SetTextures(FGameContext &Context) override;
 
     // 판정 결과를 외부에서 주입받는 함수 추가
-    void OnBeatJudged(EBeatJudge Judge);
+    void OnBeatJudged(EBeatJudge Judge, float InScore, int InCombo);
 
-    BeatEffect *GetFromPool(FTexture *Texture, float PosX, float PosY, float InLifetime);
+    BeatEffect *GetFromPool(FTexture *Texture, float PosX, float PosY, float InLifetime,
+                            float InScore, int InCombo);
 
   private:
     const FBeatSystem *BeatSystem = nullptr;
@@ -37,6 +38,8 @@ class FBeatHUDWidget : public IUIWidget
     FTexture *GoodTexture = nullptr;
     FTexture *MissTexture = nullptr;
     float     Ypos = 0;
+
+    int Combo = 0;
 
     std::vector<BeatEffect> BeatEffects;
 };

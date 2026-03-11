@@ -3,6 +3,7 @@
 #include "Core/Time.h"
 #include "Render/Renderer.h"
 #include "Render/TextureManager.h"
+#include "Render/FontManager.h"
 #include <cmath>
 #include "Core/Logger.h"
 
@@ -57,6 +58,9 @@ void FBeatHUDWidget::Render(FGameContext &Context)
     Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
     Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
 
+    FontTexPair *FTPair = Context.FontManager.Get("basic_font");
+    Context.Renderer.DrawFont("X" + std::to_string(Combo), FTPair->Font.get(), FTPair->Tex.get(),
+                              Heart.X - 40, Heart.Y + 100, 75);
     /*
      * 이펙트 그리기
      */
@@ -93,24 +97,25 @@ void FBeatHUDWidget::SetTextures(FGameContext &Context)
     }
 }
 
-void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge)
+void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge, float InScore, int InCombo)
 {
+    Combo = InCombo;
     switch (Judge)
     {
     case EBeatJudge::Perfect:
-        GetFromPool(PerfectTexture, Heart.X, Heart.Y - 100, 0.3f);
+        GetFromPool(PerfectTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
         HeartXScale = OrgHeartXScale * 1.3;
         HeartYScale = OrgHeartYScale * 1.2;
         Logger::Log("Perfect! (in HUDWidget)");
         break;
     case EBeatJudge::Good:
-        GetFromPool(GoodTexture, Heart.X, Heart.Y - 100, 0.3f);
+        GetFromPool(GoodTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
         HeartXScale = OrgHeartXScale * 1.15;
         HeartYScale = OrgHeartYScale * 1.1;
         Logger::Log("Good! (in HUDWidget)");
         break;
     case EBeatJudge::Miss:
-        GetFromPool(MissTexture, Heart.X, Heart.Y - 100, 0.3f);
+        GetFromPool(MissTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
         HeartXScale = OrgHeartXScale * 0.9;
         HeartYScale = OrgHeartYScale * 0.95;
         Logger::Log("Miss! (in HUDWidget)");
@@ -118,13 +123,14 @@ void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge)
     }
 }
 
-BeatEffect *FBeatHUDWidget::GetFromPool(FTexture *Texture, float PosX, float PosY, float InLifetime)
+BeatEffect *FBeatHUDWidget::GetFromPool(FTexture *Texture, float PosX, float PosY, float InLifetime,
+                                        float InScore, int InCombo)
 {
     for (BeatEffect &Effect : BeatEffects)
     {
         if (!Effect.IsAlive())
         {
-            Effect.Reset(Texture, PosX, PosY, InLifetime);
+            Effect.Reset(Texture, PosX, PosY, InLifetime, InScore);
             return &Effect;
         }
     }
