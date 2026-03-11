@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/GameContext.h"
+#include "Core/Types.h"
 #include "UIWidget.h"
 
 class FStage;
@@ -13,6 +14,9 @@ class FGameplayHUDWidget : public IUIWidget
 
     void Update(FGameContext &Context) override;
     void Render(FGameContext &Context) override;
+
+    // 판정 결과를 외부에서 주입받는 함수 추가
+    void OnBeatJudged(EBeatJudge Judge);
 
     void ResetPlayTime();
 

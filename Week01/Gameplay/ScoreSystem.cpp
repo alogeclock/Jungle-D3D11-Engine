@@ -25,13 +25,19 @@ void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
         BreakCombo();
         break;
     }
+
+    if (OnJudgeCallback)
+    {
+        OnJudgeCallback(Judge);
+    }
 }
 
 void FScoreSystem::AddEnemyDefeatBonus() { Score += 100; }
 
 void FScoreSystem::AddTimeBonus(float RemainingTime, float TimeLimit)
 {
-    if (TimeLimit <= 0.0f) return;
+    if (TimeLimit <= 0.0f)
+        return;
     float Ratio = RemainingTime / TimeLimit;
     Score += static_cast<int>(Ratio * 500.0f);
 }
@@ -43,3 +49,8 @@ int FScoreSystem::GetScore() const { return Score; }
 void FScoreSystem::SetScore(int InScore) { Score = InScore; }
 
 int FScoreSystem::GetCombo() const { return Combo; }
+
+void FScoreSystem::SetJudgeCallback(std::function<void(EBeatJudge)> Callback)
+{
+    OnJudgeCallback = std::move(Callback);
+}

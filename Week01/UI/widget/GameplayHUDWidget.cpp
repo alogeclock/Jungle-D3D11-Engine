@@ -1,9 +1,10 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameplayHUDWidget.h"
 #include "Gameplay/Stage.h"
 #include "Core/Time.h"
 #include "Render/Renderer.h"
 #include "Render/FontManager.h"
+#include "Core/Logger.h"
 
 void FGameplayHUDWidget::BindStage(const FStage *InStage) { Stage = InStage; }
 
@@ -20,94 +21,116 @@ void FGameplayHUDWidget::Update(FGameContext &Context)
     }
 }
 
-void FGameplayHUDWidget::Render(FGameContext& Context)
+void FGameplayHUDWidget::Render(FGameContext &Context)
 {
-	if (!Stage) return;
+    if (!Stage)
+        return;
 
-	bool bPaused = PauseFlag && *PauseFlag;
+    bool bPaused = PauseFlag && *PauseFlag;
 
-	int Score = Stage->GetScoreSystem().GetScore();
-	int Combo = Stage->GetScoreSystem().GetCombo();
-	int HP = Stage->GetPlayer().GetHp();
+    int Score = Stage->GetScoreSystem().GetScore();
+    int Combo = Stage->GetScoreSystem().GetCombo();
+    int HP = Stage->GetPlayer().GetHp();
 
-	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
-	ImGui::SetNextWindowBgAlpha(0.5f);
+    ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+    ImGui::SetNextWindowBgAlpha(0.5f);
 
-	ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration
-		| ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoFocusOnAppearing
-		| ImGuiWindowFlags_NoNav;
+    ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+                             ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-	if (ImGui::Begin("##HUD", nullptr, Flags))
-	{
-		float Remaining = Stage->GetRemainingTime();
-		int Minutes = static_cast<int>(Remaining) / 60;
-		int Seconds = static_cast<int>(Remaining) % 60;
+    if (ImGui::Begin("##HUD", nullptr, Flags))
+    {
+        float Remaining = Stage->GetRemainingTime();
+        int   Minutes = static_cast<int>(Remaining) / 60;
+        int   Seconds = static_cast<int>(Remaining) % 60;
 
-		ImGui::Text("HP    %d", HP);
-		if (Remaining <= 10.0f)
-			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Time  %d:%02d", Minutes, Seconds);
-		else
-			ImGui::Text("Time  %d:%02d", Minutes, Seconds);
-		ImGui::Text("Score %d", Score);
-		if (Combo > 0)
-		{
-			ImGui::Text("Combo x%d", Combo);
-		}
+        ImGui::Text("HP    %d", HP);
+        if (Remaining <= 10.0f)
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Time  %d:%02d", Minutes, Seconds);
+        else
+            ImGui::Text("Time  %d:%02d", Minutes, Seconds);
+        ImGui::Text("Score %d", Score);
+        if (Combo > 0)
+        {
+            ImGui::Text("Combo x%d", Combo);
+        }
 
-		ImGui::Separator();
-		if (PauseFlag)
-		{
-			if (ImGui::Button(bPaused ? "Resume" : "Pause", ImVec2(80, 0)))
-			{
-				*PauseFlag = !*PauseFlag;
-			}
-		}
-	}
-	ImGui::End();
+        ImGui::Separator();
+        if (PauseFlag)
+        {
+            if (ImGui::Button(bPaused ? "Resume" : "Pause", ImVec2(80, 0)))
+            {
+                *PauseFlag = !*PauseFlag;
+            }
+        }
+    }
+    ImGui::End();
 
-	// 비트맵 폰트 렌더링
-	if (FontTexPair* Pair = Context.FontManager.Get("basic_font"))
-	{
-		FBitmapFont* Font = Pair->Font.get();
-		FTexture* FontTex = Pair->Tex.get();
+    // 비트맵 폰트 렌더링
+    if (FontTexPair *Pair = Context.FontManager.Get("basic_font"))
+    {
+        FBitmapFont *Font = Pair->Font.get();
+        FTexture    *FontTex = Pair->Tex.get();
 
-		float Remaining = Stage->GetRemainingTime();
-		int Minutes = static_cast<int>(Remaining) / 60;
-		int Seconds = static_cast<int>(Remaining) % 60;
+        float Remaining = Stage->GetRemainingTime();
+        int   Minutes = static_cast<int>(Remaining) / 60;
+        int   Seconds = static_cast<int>(Remaining) % 60;
 
-		char TimeBuf[32];
-		snprintf(TimeBuf, sizeof(TimeBuf), "Time %d:%02d", Minutes, Seconds);
+        char TimeBuf[32];
+        snprintf(TimeBuf, sizeof(TimeBuf), "Time %d:%02d", Minutes, Seconds);
 
-		char ScoreBuf[32];
-		snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
+        char ScoreBuf[32];
+        snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
 
-		Context.Renderer.DrawFont(TimeBuf, Font, FontTex, 100, 100, 50);
-		Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 100, 160, 50);
-	}
+        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, 100, 100, 50);
+        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 100, 160, 50);
+    }
 
-	// 일시정지 오버레이
-	if (bPaused)
-	{
-		float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
-		float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
+    // 일시정지 오버레이
+    if (bPaused)
+    {
+        float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+        float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
+        // 일시정지 오버레이
+        if (bPaused)
+        {
+            float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+            float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
 
-		ImGui::SetNextWindowPos(ImVec2(ScreenW * 0.5f, ScreenH * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-		ImGui::SetNextWindowBgAlpha(0.7f);
+            ImGui::SetNextWindowPos(ImVec2(ScreenW * 0.5f, ScreenH * 0.5f), ImGuiCond_Always,
+                                    ImVec2(0.5f, 0.5f));
+            ImGui::SetNextWindowBgAlpha(0.7f);
 
-		ImGuiWindowFlags PauseFlags = ImGuiWindowFlags_NoDecoration
-			| ImGuiWindowFlags_AlwaysAutoResize
-			| ImGuiWindowFlags_NoNav;
+            ImGuiWindowFlags PauseFlags = ImGuiWindowFlags_NoDecoration |
+                                          ImGuiWindowFlags_AlwaysAutoResize |
+                                          ImGuiWindowFlags_NoNav;
 
-		if (ImGui::Begin("##PauseOverlay", nullptr, PauseFlags))
-		{
-			ImGui::Text("PAUSED");
-			ImGui::Separator();
-			if (ImGui::Button("Resume", ImVec2(120, 0)))
-			{
-				*PauseFlag = false;
-			}
-		}
-		ImGui::End();
-	}
+            if (ImGui::Begin("##PauseOverlay", nullptr, PauseFlags))
+            {
+                ImGui::Text("PAUSED");
+                ImGui::Separator();
+                if (ImGui::Button("Resume", ImVec2(120, 0)))
+                {
+                    *PauseFlag = false;
+                }
+            }
+            ImGui::End();
+        }
+    }
+}
+
+void FGameplayHUDWidget::OnBeatJudged(EBeatJudge Judge)
+{
+    switch (Judge)
+    {
+    case EBeatJudge::Perfect:
+        Logger::Log("Perfect! (in HUDWidget)");
+        break;
+    case EBeatJudge::Good:
+        Logger::Log("Good! (in HUDWidget)");
+        break;
+    case EBeatJudge::Miss:
+        Logger::Log("Miss! (in HUDWidget)");
+        break;
+    }
 }
