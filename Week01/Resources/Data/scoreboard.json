@@ -1,4 +1,4 @@
-{
+﻿{
     "scoreboard": [
         {
             "nickname": "Aaaa",
@@ -151,7 +151,16 @@
             "stage": 1
         },
         {
-<<<<<<< HEAD
+            "nickname": "NORM",
+            "score": 2951,
+            "stage": 4
+        },
+        {
+            "nickname": "SAD",
+            "score": 2300,
+            "stage": 4
+        },
+        {
             "nickname": "CLEAR",
             "score": 1459,
             "stage": 4
