@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include <memory>
 #include <string>
 #include "Core/AudioSystem.h"
@@ -43,8 +43,8 @@ void FTitleScene::RenderBackground(FGameContext &Context)
 {
     Context.Renderer.DrawTexture(Context.Textures.Get("title_background"), (WIN_WIDTH / 2.f),
                                  (WIN_HEIGHT / 2.f), WIN_WIDTH, WIN_HEIGHT);
-    Context.Renderer.DrawTexture(Context.Textures.Get("logo"), (WIN_WIDTH) / 2.f,
-                                 (WIN_HEIGHT) / 5.5f, 550, 250);
+    //Context.Renderer.DrawTexture(Context.Textures.Get("logo"), (WIN_WIDTH) / 2.f,
+    //                             (WIN_HEIGHT) / 5.5f, 550, 250);
 }
 
 void FTitleScene::RenderTitleMenu(FGameContext &Context)
@@ -84,7 +84,7 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
     const float  TotalHeight = ButtonSize.y * 3.0f + ButtonSpacing * 2.0f;
 
     const float StartX = (ScreenWidth - ButtonSize.x) * 0.5f;
-    const float StartY = (ScreenHeight - TotalHeight) * 0.5f;
+    const float StartY = (ScreenHeight - TotalHeight) * 0.5f + 100;
 
     // --- 공통 스타일 ---
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 16.0f);
