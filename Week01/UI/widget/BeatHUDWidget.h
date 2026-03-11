@@ -22,10 +22,13 @@ public:
 
 private:
 	const FBeatSystem* BeatSystem = nullptr;
-	float              FlashTimer = 0.0f;
-	float              FlashDuration = 0.08f;
 	float MaxDistance = 400.f;
 	FVec2 Heart;
+	const float OrgHeartXScale = 120.f;
+	const float OrgHeartYScale = 150.f;
+	float HeartXScale = OrgHeartXScale;
+	float HeartYScale = OrgHeartYScale;
+
 	FTexture* HeartTexture = nullptr;
 	FTexture* BarTexture = nullptr;
 	FTexture* PerfectTexture = nullptr;
