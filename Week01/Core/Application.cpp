@@ -63,7 +63,8 @@ bool FApplication::InitializeResources()
 
 bool FApplication::LoadFontResources()
 {
-    auto FontTexture = FImageLoader::LoadAsTexture(Renderer->Device, std::string(BitmapFontPngPath));
+    auto FontTexture =
+        FImageLoader::LoadAsTexture(Renderer->Device, std::string(BitmapFontPngPath));
     if (!FontTexture)
         return false;
 
@@ -84,9 +85,13 @@ bool FApplication::LoadSoundResources()
 bool FApplication::LoadSpriteResources()
 {
     static constexpr FTextureResourceDesc SpriteResources[] = {
-        {"tile_floor", "tile_floor.png"},
+        {"tile_floor1", "tile_floor1.png"},
+        {"tile_floor2", "tile_floor2.png"},
+        {"tile_floor3", "tile_floor3.png"},
         {"goal", "goal.png"},
-        {"wall", "wall.png"},
+        {"wall1", "wall1.png"},
+        {"wall2", "wall2.png"},
+        {"wall3", "wall3.png"},
         {"player_bunnie", "player_bunnie.png"},
         {"player_otaku", "player_otaku.png"},
         {"monster_stonegolem", "monster_stonegolem.png"},
@@ -150,11 +155,8 @@ bool FApplication::InitializeImGui(HWND WindowHandle)
     ImGuiIO &Io = ImGui::GetIO();
     ImGui::StyleColorsDark();
 
-    ImFont *KoreanFont = Io.Fonts->AddFontFromFileTTF(
-        std::string(ImGuiFontPath).c_str(),
-        18.0f,
-        nullptr,
-        Io.Fonts->GetGlyphRangesKorean());
+    ImFont *KoreanFont = Io.Fonts->AddFontFromFileTTF(std::string(ImGuiFontPath).c_str(), 18.0f,
+                                                      nullptr, Io.Fonts->GetGlyphRangesKorean());
 
     if (KoreanFont != nullptr)
     {

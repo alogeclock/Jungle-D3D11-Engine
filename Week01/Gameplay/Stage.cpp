@@ -391,9 +391,28 @@ void FStage::Render()
     Renderer->SetCamera(*Camera);
 
     // 정적 배치 렌더링 (타일/벽 — DrawIndexed 1회씩)
-    Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor"));
+
+    switch (GetCurrentStageIndex())
+    {
+    case 0:
+        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor1"));
+        Renderer->DrawBatch(WallBatch, Textures->Get("wall1"));
+        break;
+    case 1:
+        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor2"));
+        Renderer->DrawBatch(WallBatch, Textures->Get("wall2"));
+        break;
+    case 2:
+        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor3"));
+        Renderer->DrawBatch(WallBatch, Textures->Get("wall3"));
+        break;
+    default:
+        Renderer->DrawBatch(FloorBatch, Textures->Get("tile_floor1"));
+        Renderer->DrawBatch(WallBatch, Textures->Get("wall1"));
+        break;
+    }
+
     Renderer->DrawBatch(GoalBatch, Textures->Get("goal"));
-    Renderer->DrawBatch(WallBatch, Textures->Get("wall"));
 
     // 텍스처 룩업 헬퍼
     auto GetTex = [&](const std::string &Key) -> FTexture *
@@ -417,9 +436,8 @@ void FStage::Render()
     }
 
     // 몬스터 렌더링 (Angry 모드 시 빨간색 틴트)
-    DirectX::XMFLOAT4 MonsterTint = bIsAngry
-        ? DirectX::XMFLOAT4{1.5f, 0.4f, 0.4f, 1.0f}
-        : DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f};
+    DirectX::XMFLOAT4 MonsterTint = bIsAngry ? DirectX::XMFLOAT4{1.5f, 0.4f, 0.4f, 1.0f}
+                                             : DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f};
 
     for (const auto &Mon : Monsters)
     {
@@ -429,7 +447,8 @@ void FStage::Render()
         float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
 
         const FSpriteInfo &Spr = Mon->GetSprite();
-        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr, MonsterTint);
+        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr,
+                             MonsterTint);
     }
 
     // 플레이어 렌더링 (가장 위에 그림)
@@ -731,7 +750,29 @@ void FStage::LoadSpriteResources()
     for (auto &Tile : Tiles)
     {
         FSpriteInfo Info;
-        Info.TextureKey = (Tile.GetType() == ETileType::Goal) ? "goal" : "tile_floor";
+
+        if (Tile.GetType() == ETileType::Goal)
+            Info.TextureKey = "goal";
+
+        else
+        {
+            switch (GetCurrentStageIndex())
+            {
+            case 0:
+                Info.TextureKey = "tile_floor1";
+                break;
+            case 1:
+                Info.TextureKey = "tile_floor2";
+                break;
+            case 2:
+                Info.TextureKey = "tile_floor3";
+                break;
+            default:
+                Info.TextureKey = "tile_floor1";
+                break;
+            }
+        }
+
         Info.SpriteSize = {TileSize, TileSize};
         Tile.SetSprite(Info);
     }
@@ -741,6 +782,22 @@ void FStage::LoadSpriteResources()
     {
         FSpriteInfo Info;
         Info.TextureKey = "wall";
+        switch (GetCurrentStageIndex())
+        {
+        case 0:
+            Info.TextureKey = "wall1";
+            break;
+        case 1:
+            Info.TextureKey = "wall2";
+            break;
+        case 2:
+            Info.TextureKey = "wall3";
+            break;
+        default:
+            Info.TextureKey = "wall1";
+            break;
+        }
+
         Info.SpriteSize = {TileSize, TileSize};
         W.SetSprite(Info);
     }
