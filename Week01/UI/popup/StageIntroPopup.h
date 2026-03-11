@@ -9,14 +9,22 @@ struct FGameContext;
 class FStageIntroPopup : public FUIPopupBase
 {
   public:
-    void SetData(int InStageNumber, const std::string &InMessage)
+    void SetData(int InStageNumber, const std::vector<std::string> &InMessages)
     {
         StageNumber = InStageNumber;
-        Message = InMessage;
+        Messages = InMessages;
+        CurrentPage = 0;
+        ResetPage();
     }
 
     void SetStageNumber(int InStageNumber) { StageNumber = InStageNumber; }
-    void SetMessage(const std::string &InMessage) { Message = InMessage; }
+
+    void SetMessages(const std::vector<std::string> &InMessages)
+    {
+        Messages = InMessages;
+        CurrentPage = 0;
+        ResetPage();
+    }
 
     EUIPopupAction ConsumeAction();
 
@@ -25,12 +33,21 @@ class FStageIntroPopup : public FUIPopupBase
 
   private:
     std::string              GetPopupTitle() const;
-    std::vector<std::string> SplitMessageLines() const;
+    std::vector<std::string> SplitMessageLines(const std::string &InMessage) const;
+
+    int                GetTotalPages() const;
+    void               GoToNextPage();
+    void               ResetPage();
+    const std::string &GetCurrentPageMessage() const;
+    void               DrawBottomButtons(const FPopupFrameLayout &Layout,
+                                         bool bHasPrevPage, bool bHasNextPage);
+    void               DrawPageText(const FPopupFrameLayout &Layout);
 
   private:
-    int            StageNumber = 1;
-    std::string    Message;
-    EUIPopupAction PendingAction = EUIPopupAction::None;
+    int                      StageNumber = 1;
+    std::vector<std::string> Messages;
+    int                      CurrentPage = 0;
+    EUIPopupAction           PendingAction = EUIPopupAction::None;
 
   private:
     static constexpr EUIPopupContentAlign ContentAlign = EUIPopupContentAlign::Center;

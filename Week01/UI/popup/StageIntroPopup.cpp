@@ -21,11 +21,11 @@ std::string FStageIntroPopup::GetPopupTitle() const
     return std::string(Buffer);
 }
 
-std::vector<std::string> FStageIntroPopup::SplitMessageLines() const
+std::vector<std::string> FStageIntroPopup::SplitMessageLines(const std::string &InMessage) const
 {
     std::vector<std::string> Result;
 
-    if (Message.empty())
+    if (InMessage.empty())
     {
         Result.push_back("");
         return Result;
@@ -33,17 +33,17 @@ std::vector<std::string> FStageIntroPopup::SplitMessageLines() const
 
     std::size_t Start = 0;
 
-    while (Start <= Message.size())
+    while (Start <= InMessage.size())
     {
-        const std::size_t End = Message.find('\n', Start);
+        const std::size_t End = InMessage.find('\n', Start);
 
         if (End == std::string::npos)
         {
-            Result.push_back(Message.substr(Start));
+            Result.push_back(InMessage.substr(Start));
             break;
         }
 
-        Result.push_back(Message.substr(Start, End - Start));
+        Result.push_back(InMessage.substr(Start, End - Start));
         Start = End + 1;
     }
 
@@ -53,6 +53,117 @@ std::vector<std::string> FStageIntroPopup::SplitMessageLines() const
     }
 
     return Result;
+}
+
+int FStageIntroPopup::GetTotalPages() const
+{
+    if (Messages.empty())
+        return 1;
+
+    const int TotalPages = static_cast<int>(Messages.size());
+    return TotalPages > 0 ? TotalPages : 1;
+}
+
+void FStageIntroPopup::GoToNextPage()
+{
+    const int TotalPages = GetTotalPages();
+    const int LastPageIndex = TotalPages - 1;
+
+    if (CurrentPage < LastPageIndex)
+    {
+        ++CurrentPage;
+    }
+}
+
+void FStageIntroPopup::ResetPage()
+{
+    const int TotalPages = GetTotalPages();
+    const int LastPageIndex = TotalPages - 1;
+
+    if (CurrentPage < 0)
+        CurrentPage = 0;
+
+    if (CurrentPage > LastPageIndex)
+        CurrentPage = LastPageIndex;
+}
+
+const std::string &FStageIntroPopup::GetCurrentPageMessage() const
+{
+    static const std::string EmptyMessage;
+
+    if (Messages.empty())
+        return EmptyMessage;
+
+    if (CurrentPage < 0 || CurrentPage >= static_cast<int>(Messages.size()))
+        return EmptyMessage;
+
+    return Messages[CurrentPage];
+}
+
+void FStageIntroPopup::DrawBottomButtons(const FPopupFrameLayout &Layout,
+                                         bool bHasPrevPage, bool bHasNextPage)
+{
+    if (bHasNextPage)
+    {
+        if (bHasPrevPage)
+        {
+            if (DrawBottomButton(Layout, "Prev", 0, 2))
+            {
+                --CurrentPage;
+            }
+
+            if (DrawBottomButton(Layout, "Next", 1, 2))
+            {
+                ++CurrentPage;
+            }
+        }
+        else
+        {
+            if (DrawBottomButton(Layout, "Next", 0, 1))
+            {
+                ++CurrentPage;
+            }
+        }
+
+        return;
+    }
+
+    if (bHasPrevPage)
+    {
+        if (DrawBottomButton(Layout, "Prev", 0, 2))
+        {
+            --CurrentPage;
+        }
+
+        if (DrawBottomButton(Layout, "OK, Start!", 1, 2))
+        {
+            PendingAction = EUIPopupAction::StartStage;
+        }
+    }
+    else
+    {
+        if (DrawBottomButton(Layout, "OK, Start!", 0, 1))
+        {
+            PendingAction = EUIPopupAction::StartStage;
+        }
+    }
+}
+
+void FStageIntroPopup::DrawPageText(const FPopupFrameLayout &Layout)
+{
+    ImGui::SetWindowFontScale(GetContentFontScale(EUIPopupContentTextSize::Small));
+
+    char PageBuffer[32]{};
+    std::snprintf(PageBuffer, sizeof(PageBuffer), "Page %d / %d", CurrentPage + 1, GetTotalPages());
+
+    const ImVec2 PageSize = ImGui::CalcTextSize(PageBuffer);
+    const float X = GetAlignedX(Layout, PageSize.x, EUIPopupContentAlign::Center);
+    const float Y = Layout.ContentBottom - PageSize.y - 4.0f;
+
+    ImGui::SetCursorPos(ImVec2(X, Y));
+    ImGui::TextUnformatted(PageBuffer);
+
+    ImGui::SetWindowFontScale(1.0f);
 }
 
 void FStageIntroPopup::Render(FGameContext &Context)
@@ -66,7 +177,10 @@ void FStageIntroPopup::Render(FGameContext &Context)
         return;
     }
 
-    const std::vector<std::string> MessageLines = SplitMessageLines();
+    ResetPage();
+
+    const std::string &CurrentMessage = GetCurrentPageMessage();
+    const std::vector<std::string> MessageLines = SplitMessageLines(CurrentMessage);
 
     std::vector<const char *> LinePtrs;
     LinePtrs.reserve(MessageLines.size());
@@ -84,9 +198,18 @@ void FStageIntroPopup::Render(FGameContext &Context)
                   ContentTextSize,
                   ContentVerticalAlign);
 
-    if (DrawBottomButton(Layout, "OK, Start!"))
+    DrawPageText(Layout);
+
+    const int TotalPages = GetTotalPages();
+    const bool bHasPrevPage = CurrentPage > 0;
+    const bool bHasNextPage = (CurrentPage + 1) < TotalPages;
+
+    DrawBottomButtons(Layout, bHasPrevPage, bHasNextPage);
+
+    ResetPage();
+
+    if (PendingAction == EUIPopupAction::StartStage)
     {
-        PendingAction = EUIPopupAction::StartStage;
         Close();
     }
 
