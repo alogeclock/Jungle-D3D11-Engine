@@ -12,8 +12,8 @@ class FScoreboardPopup : public FUIPopupBase
     void SetEntries(const std::vector<FScoreRecord> &InEntries);
 
     EUIPopupAction ConsumeAction();
-    void            Render(FGameContext &Context) override;
-    void            Update(FGameContext &Context) override {}
+    void           Render(FGameContext &Context) override;
+    void           Update(FGameContext &Context) override {}
 
     void GoToNextPage();
     void ResetPage();
@@ -46,8 +46,8 @@ class FScoreboardPopup : public FUIPopupBase
 
     static constexpr float RankColumnWidth = 90.0f;
     static constexpr float NameColumnWidth = 90.0f;
+    static constexpr float ScoreColumnWidth = 90.0f;
     static constexpr float StageColumnWidth = 90.0f;
-    static constexpr float ScoreColumnWidth = 84.0f;
 
   private:
     std::vector<FScoreRecord> Entries;

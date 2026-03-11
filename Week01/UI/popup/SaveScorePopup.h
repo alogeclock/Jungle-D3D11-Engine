@@ -26,6 +26,7 @@ class FSaveScorePopup : public FUIPopupBase
     bool IsValidNickname() const;
 
   private:
+    static constexpr EUIPopupContentTextSize ContentTextSize = EUIPopupContentTextSize::Big;
     static constexpr int MaxNicknameLength = 6;
 
     std::string    Nickname;
