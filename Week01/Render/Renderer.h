@@ -10,6 +10,12 @@
 #include "Core/Types.h"
 #include "Render/BitmapFont.h"
 
+enum class EShaderType
+{
+	Default,
+	UI,
+};
+
 class FRenderer
 {
 public:
@@ -47,9 +53,7 @@ public:
 		float ScaleX;      // 4 bytes (Total 16)
 		FVec2 ScreenSize;  // 8 bytes
 		float ScaleY;      // 4 bytes
-		float Angle;       // 4 bytes (Total 16)
-		float ChargeSign;  // 4 bytes
-		float Padding[3];  // 12 bytes (Total 16)
+		float Padding;     // 4 bytes (Total 16)
 	};
 
 	ID3D11Device* Device = nullptr;
@@ -71,6 +75,12 @@ public:
 	ID3D11InputLayout* SimpleInputLayout;
 	unsigned int Stride;
 
+	// UI/Font 전용 셰이더 (UI.hlsl)
+	ID3D11VertexShader* FontVertexShader = nullptr;
+	ID3D11PixelShader* FontPixelShader = nullptr;
+	ID3D11InputLayout* FontInputLayout = nullptr;
+	ID3D11Buffer* FontConstantBuffer = nullptr;
+
 	ID3D11SamplerState* SamplerState = nullptr;
 
 	bool LoadShaderFromFile(const std::wstring& Path);
@@ -78,11 +88,15 @@ public:
 	const std::string& GetCurrentShaderName() const;
 	const std::string& GetShaderError() const;
 
-	void UpdateConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f, float Angle = 0.0f, float ChargeSign = 0.0f);
+	void UpdateConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f);
+	void UpdateFontConstant(FVector Offset, float ScaleX = 1.0f, float ScaleY = 1.0f);
+	void BindShader(EShaderType Type);
 	void Prepare();
 	void PrepareShader();
 	void Render();
 	void CreateShader();
+	void CreateFontShader();
+	void ReleaseFontShader();
 	void ReleaseShader();
 
 	void Create(HWND hWindow);
@@ -104,6 +118,7 @@ public:
 
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 	void CreateConstantBuffer();
+	void CreateFontConstantBuffer();
 	void ReleaseConstantBuffer();
 
 

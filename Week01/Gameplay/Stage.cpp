@@ -245,13 +245,6 @@ void FStage::Render()
 		Renderer->DeviceContext->PSSetSamplers(0, 1, &Renderer->SamplerState);
 	}
 
-	FBitmapFont* Font = FontManager->Get("basic_font")->Font.get();
-	FTexture* FontTex = FontManager->Get("basic_font")->Tex.get();
-	float a = rand();
-	std::string ran = std::to_string(a);
-	std::string str = "helloWorld";
-	Renderer->DrawFont(str + ran, Font, FontTex, 100, 100, 50);
-	Renderer->DrawFont(str + ran, Font, FontTex, 200, 300, 50);
 
 	// 바닥 타일 렌더링
 	for (const auto& Tile : Tiles)

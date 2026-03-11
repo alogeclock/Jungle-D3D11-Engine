@@ -3,6 +3,7 @@
 #include "Gameplay/Stage.h"
 #include "Core/Time.h"
 #include "Render/Renderer.h"
+#include "Render/FontManager.h"
 #include "imgui/imgui.h"
 
 void FGameplayHUDWidget::BindStage(const FStage* InStage)
@@ -70,6 +71,25 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 		}
 	}
 	ImGui::End();
+
+	// 비트맵 폰트 렌더링
+	if (FontTexPair* Pair = Context.FontManager.Get("basic_font"))
+	{
+		FBitmapFont* Font = Pair->Font.get();
+		FTexture* FontTex = Pair->Tex.get();
+
+		int Minutes = static_cast<int>(PlayTime) / 60;
+		int Seconds = static_cast<int>(PlayTime) % 60;
+
+		char TimeBuf[32];
+		snprintf(TimeBuf, sizeof(TimeBuf), "Time %d:%02d", Minutes, Seconds);
+
+		char ScoreBuf[32];
+		snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", Score);
+
+		Context.Renderer.DrawFont(TimeBuf, Font, FontTex, 100, 100, 50);
+		Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, 100, 160, 50);
+	}
 
 	// 일시정지 오버레이
 	if (bPaused)

@@ -5,7 +5,7 @@
 
 namespace fs = std::filesystem;
 
-void FRenderer::UpdateConstant(FVector Offset, float ScaleX, float ScaleY, float Angle, float ChargeSign)
+void FRenderer::UpdateConstant(FVector Offset, float ScaleX, float ScaleY)
 {
 	if (ConstantBuffer)
 	{
@@ -18,8 +18,6 @@ void FRenderer::UpdateConstant(FVector Offset, float ScaleX, float ScaleY, float
 			constants->ScaleX = ScaleX;
 			constants->ScaleY = ScaleY;
 			constants->ScreenSize = { (float)ScreenWidth, (float)ScreenHeight };
-			constants->Angle = Angle;
-			constants->ChargeSign = ChargeSign;
 		}
 		DeviceContext->Unmap(ConstantBuffer, 0);
 	}
@@ -38,17 +36,37 @@ void FRenderer::Prepare()
 	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
+void FRenderer::BindShader(EShaderType Type)
+{
+	switch (Type)
+	{
+	case EShaderType::Default:
+		DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
+		DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
+		DeviceContext->IASetInputLayout(SimpleInputLayout);
+		if (ConstantBuffer)
+		{
+			DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
+			DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
+		}
+		break;
+
+	case EShaderType::UI:
+		DeviceContext->VSSetShader(FontVertexShader, nullptr, 0);
+		DeviceContext->PSSetShader(FontPixelShader, nullptr, 0);
+		DeviceContext->IASetInputLayout(FontInputLayout);
+		if (FontConstantBuffer)
+		{
+			DeviceContext->VSSetConstantBuffers(0, 1, &FontConstantBuffer);
+			DeviceContext->PSSetConstantBuffers(0, 1, &FontConstantBuffer);
+		}
+		break;
+	}
+}
+
 void FRenderer::PrepareShader()
 {
-	DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
-	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
-	DeviceContext->IASetInputLayout(SimpleInputLayout);
-
-	if (ConstantBuffer)
-	{
-		DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
-		DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
-	}
+	BindShader(EShaderType::Default);
 }
 
 void FRenderer::Render() //Maybe There can be some Optimazation , well do later
@@ -65,10 +83,12 @@ void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 			DeviceContext->PSSetShaderResources(0, 1, &SRV);
 		}
 		FVector Offset(RenderObject.Position.X, RenderObject.Position.Y, 0.f);
-		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y, 0.f, 0.f);
+		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y);
 		DeviceContext->Draw(sizeof(quadVertices) / sizeof(FVertexSimple), 0);
 	}
 
+
+	BindShader(EShaderType::UI);
 
 	for (const FFontRenderObject& RenderObject : FontRenderObjects)
 	{
@@ -79,7 +99,7 @@ void FRenderer::Render() //Maybe There can be some Optimazation , well do later
 		}
 
 		FVector Offset(RenderObject.Offset.X, RenderObject.Offset.Y, 0.f);
-		UpdateConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y, 0.f, 0.f);
+		UpdateFontConstant(Offset, RenderObject.Size.X, RenderObject.Size.Y);
 
 		FVec2 UV0 = RenderObject.UV0;
 		FVec2 UV1 = RenderObject.UV1;
@@ -256,6 +276,64 @@ void FRenderer::ReleaseShader()
 	}
 }
 
+void FRenderer::CreateFontShader()
+{
+	ID3DBlob* VsBlob = nullptr;
+	ID3DBlob* PsBlob = nullptr;
+
+	D3DCompileFromFile(L"Resources/Shaders/UI.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VsBlob, nullptr);
+	Device->CreateVertexShader(VsBlob->GetBufferPointer(), VsBlob->GetBufferSize(), nullptr, &FontVertexShader);
+
+	D3DCompileFromFile(L"Resources/Shaders/UI.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &PsBlob, nullptr);
+	Device->CreatePixelShader(PsBlob->GetBufferPointer(), PsBlob->GetBufferSize(), nullptr, &FontPixelShader);
+
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	Device->CreateInputLayout(layout, ARRAYSIZE(layout), VsBlob->GetBufferPointer(), VsBlob->GetBufferSize(), &FontInputLayout);
+
+	VsBlob->Release();
+	PsBlob->Release();
+}
+
+void FRenderer::ReleaseFontShader()
+{
+	if (FontInputLayout) { FontInputLayout->Release(); FontInputLayout = nullptr; }
+	if (FontPixelShader) { FontPixelShader->Release(); FontPixelShader = nullptr; }
+	if (FontVertexShader) { FontVertexShader->Release(); FontVertexShader = nullptr; }
+	if (FontConstantBuffer) { FontConstantBuffer->Release(); FontConstantBuffer = nullptr; }
+}
+
+void FRenderer::CreateFontConstantBuffer()
+{
+	D3D11_BUFFER_DESC desc = {};
+	desc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	Device->CreateBuffer(&desc, nullptr, &FontConstantBuffer);
+}
+
+void FRenderer::UpdateFontConstant(FVector Offset, float ScaleX, float ScaleY)
+{
+	if (FontConstantBuffer)
+	{
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		DeviceContext->Map(FontConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+		FConstants* constants = (FConstants*)mapped.pData;
+		{
+			constants->Offset = Offset;
+			constants->ScaleX = ScaleX;
+			constants->ScaleY = ScaleY;
+			constants->ScreenSize = { (float)ScreenWidth, (float)ScreenHeight };
+		}
+		DeviceContext->Unmap(FontConstantBuffer, 0);
+	}
+}
+
 void FRenderer::Create(HWND hWindow)
 {
 	CreateDeviceAndSwapChain(hWindow);
@@ -366,6 +444,7 @@ void FRenderer::ReleaseRasterizerState()
 
 void FRenderer::Release()
 {
+	ReleaseFontShader();
 	RasterizerState->Release();
 
 	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
@@ -541,6 +620,8 @@ bool FRenderer::Initialize(HWND hWindow, int ScreenWidth, int ScreenHeight)
 	Create(hWindow);
 	CreateShader();
 	CreateConstantBuffer();
+	CreateFontShader();
+	CreateFontConstantBuffer();
 	return Device != nullptr;
 }
 

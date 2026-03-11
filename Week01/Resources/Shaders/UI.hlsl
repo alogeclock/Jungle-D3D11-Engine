@@ -4,9 +4,7 @@ cbuffer constants : register(b0)
     float ScaleX;
     float2 ScreenSize;
     float ScaleY;
-    float Angle;
-    float ChargeSign;
-    float3 Padding;
+    float Padding;
 }
 
 Texture2D SimpleTexture : register(t0);
