@@ -85,7 +85,9 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     Player->SetPosition(Spawn.X, Spawn.Y, TileSize);
 
     int SpawnMonsterCount = Map->GetMonsterCount();
+    Logger::Log("Get Monster Count!" + std::to_string(SpawnMonsterCount));
     int MaxTries = 1000; // 타일 탐색 시 무한 루프 방지용
+    int MonsterTypeIndex = 0;
 
     for (int i = 0; i < SpawnMonsterCount; ++i)
     {
@@ -102,22 +104,14 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
                 auto NewMonster = std::make_unique<FMonster>();
                 NewMonster->SetPosition(RandX, RandY, TileSize);
 
-                int MonsterType = std::rand() % 2;
+                // 배열을 하나씩 순회하면서 현재 생성할 몬스터를 결정
+                std::vector<EMonsterType> MonsterTypeVector = Map->GetMonsterTypes();
+                MonsterTypeIndex = MonsterTypeIndex % MonsterTypeVector.size();
+                EMonsterType MonsterType = MonsterTypeVector[MonsterTypeIndex];
 
-                switch (MonsterType)
-                {
-                case 0:
-                    NewMonster->SetMonsterType(EMonsterType::StoneGolem);
-                    break;
-                case 1:
-                    NewMonster->SetMonsterType(EMonsterType::FireGolem);
-                    break;
-                default:
-                    NewMonster->SetMonsterType(EMonsterType::StoneGolem);
-                }
-
-                NewMonster->SetMoveFrequency(4 - 2 * MonsterType);
-                NewMonster->SetSearchRange(3 + 3 * MonsterType);
+                NewMonster->SetMonsterType(MonsterType);
+                NewMonster->SetMoveFrequency(3 - MonsterTypeIndex);
+                NewMonster->SetSearchRange(3 + 3 * MonsterTypeIndex);
 
                 AddMonster(std::move(NewMonster));
                 break; // 스폰 성공 시 다음 몬스터 생성으로 넘어감
@@ -413,15 +407,8 @@ void FStage::Render()
         float WorldX = Mon->GetRenderX() + TileSize * 0.5f;
         float WorldY = Mon->GetRenderY() + TileSize * 0.5f;
 
-        std::string TexKey = Mon->GetMonsterTextureKey(Mon->GetMonsterType());
-        FTexture   *Tex = Textures ? Textures->Get(TexKey) : nullptr;
-        if (Tex)
-        {
-            FSpriteInfo Spr;
-            Spr.TextureKey = TexKey;
-            Spr.SpriteSize = {TileSize * 0.6f, TileSize * 0.6f};
-            Renderer->DrawSprite(Tex, WorldX, WorldY, TileSize, TileSize, Spr);
-        }
+        const FSpriteInfo &Spr = Mon->GetSprite();
+        Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
     }
 
     // 플레이어 렌더링 (가장 위에 그림)

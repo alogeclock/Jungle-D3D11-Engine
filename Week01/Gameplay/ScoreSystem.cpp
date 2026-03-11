@@ -15,11 +15,11 @@ void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
     {
     case EBeatJudge::Perfect:
         Combo++;
-        Score += 10;
+        Score += 10 * (1 + Combo / 10);
         break;
     case EBeatJudge::Good:
         Combo++;
-        Score += 5;
+        Score += 5 * (1 + Combo / 10);
         break;
     case EBeatJudge::Miss:
         BreakCombo();

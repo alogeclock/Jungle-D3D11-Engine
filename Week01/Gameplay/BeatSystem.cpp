@@ -67,7 +67,7 @@ bool FBeatSystem::ConsumeBeat()
 
 bool FBeatSystem::IsBeatSkipped()
 {
-    if (bIsBeatJustConsumed && fmodf(ElapsedTime, BeatInterval) >= BeatInterval * 0.5f)
+    if (bIsBeatJustConsumed && fmodf(ElapsedTime, BeatInterval) >= GoodWindow)
     {
         bIsBeatJustConsumed = false;
         return true;
