@@ -56,6 +56,7 @@ class FApplication
     static constexpr std::string_view SpriteDir = "Resources/Sprites/";
 
     static constexpr std::string_view StageDataPath = "Resources/Data/stages.json";
+    static constexpr std::string_view CreditDataPath = "Resources/Data/credits.json";
     static constexpr std::string_view ScoreboardPath = "Resources/Data/scoreboard.json";
     static constexpr std::string_view ImGuiFontPath = "Resources/Fonts/Galmuri11.ttf";
     static constexpr std::string_view BitmapFontFntPath = "Resources/Fonts/bmFont.fnt";

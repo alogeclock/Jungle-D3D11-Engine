@@ -2,10 +2,11 @@
 
 #include <vector>
 #include "ScoreRecord.h"
+#include "Core/Application.h"
 
 namespace ScoreRepository
 {
-    inline constexpr const char *DefaultPath = "Save/scoreboard.json";
+    inline constexpr const char *DefaultPath ="Resources/Data/scoreboard.json";
 
     std::vector<FScoreRecord> Load();
     std::vector<FScoreRecord> LoadSorted();

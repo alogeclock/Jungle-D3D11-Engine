@@ -166,6 +166,9 @@ bool FTitleScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popu
 void FTitleScene::OpenCreditPopup()
 {
     std::unique_ptr<FCreditPopup> Popup = std::make_unique<FCreditPopup>();
+    std::vector<FCreditEntry> Credits;
+    if (FCreditLoader::Get().LoadCredits(Credits))
+        Popup->SetCredits(Credits);
     Popup->Open();
     UIManager.GetPopupManager().Open(std::move(Popup));
 }
