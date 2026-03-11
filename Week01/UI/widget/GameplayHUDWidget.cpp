@@ -44,25 +44,9 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
     ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
                              ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
+#ifdef _DEBUG
     if (ImGui::Begin("##HUD", nullptr, Flags))
     {
-        float Remaining = Stage->GetRemainingTime();
-        int   Minutes = static_cast<int>(Remaining) / 60;
-        int   Seconds = static_cast<int>(Remaining) % 60;
-        int   IRemaining = static_cast<int>(Remaining);
-
-        ImGui::Text("HP    %d", HP);
-        if (Remaining <= 10.0f)
-            ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Time  %d:%02d", Minutes, Seconds);
-        else
-            ImGui::Text("Time  %d", Minutes, Seconds);
-        ImGui::Text("Score %d", Score);
-        if (Combo > 0)
-        {
-            ImGui::Text("Combo x%d", Combo);
-        }
-
-        ImGui::Separator();
         if (PauseFlag)
         {
             if (ImGui::Button(bPaused ? "Resume" : "Pause", ImVec2(80, 0)))
@@ -72,6 +56,7 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         }
     }
     ImGui::End();
+#endif
 
     // 비트맵 폰트 렌더링
     if (FontTexPair *Pair = Context.FontManager.Get("basic_font"))
