@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "PlayScene.h"
 #include "Core/AudioSystem.h"
 #include <memory>
@@ -20,7 +20,7 @@
 
 FPlayScene::FPlayScene(int InStageIndex) : CurrentStageIndex(InStageIndex) {}
 
-void FPlayScene::Update(FGameContext& Context)
+void FPlayScene::Update(FGameContext &Context)
 {
 	if (!bStageLoaded)
 	{
@@ -61,7 +61,7 @@ void FPlayScene::Update(FGameContext& Context)
 	}
 }
 
-void FPlayScene::Render(FGameContext& Context)
+void FPlayScene::Render(FGameContext &Context)
 {
 	// TODO: 인자로 컨텍스트 넘겨서 내부 렌더러 호출하도록 변경
 	if (Stage)
@@ -74,7 +74,7 @@ void FPlayScene::LoadStage(FGameContext& Context)
 	Stage = std::make_unique<FStage>();
 	Stage->Load(CurrentStageIndex, &Context.Renderer, &Context.Textures);
 
-	bIsPaused = false;
+    bIsPaused = false;
 
 	// HUD 위젯 등록
 	UIManager.ClearAll();
@@ -82,6 +82,9 @@ void FPlayScene::LoadStage(FGameContext& Context)
 	HUD->SetTextures(Context);
 	HUD->BindStage(Stage.get());
 	HUD->BindPauseFlag(&bIsPaused);
+	// 콜백 연동: ScoreSystem에서 판정이 일어나면 HUD의 OnBeatJudged를 호출하도록 바인딩 ---
+	Stage->GetScoreSystem().SetJudgeCallback([HUDPtr = HUD.get()](EBeatJudge Judge)
+		{ HUDPtr->OnBeatJudged(Judge); });
 	UIManager.AddWidget("GameplayHUD", std::move(HUD));
 
 	auto BeatHUD = std::make_unique<FBeatHUDWidget>();

@@ -1,10 +1,11 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameplayHUDWidget.h"
 #include "Gameplay/Stage.h"
 #include "Core/Time.h"
 #include "Render/Renderer.h"
 #include "Render/FontManager.h"
 #include "Render/TextureManager.h"
+#include "Core/Logger.h"
 
 void FGameplayHUDWidget::BindStage(const FStage* InStage) { Stage = InStage; }
 
@@ -23,7 +24,8 @@ void FGameplayHUDWidget::Update(FGameContext& Context)
 
 void FGameplayHUDWidget::Render(FGameContext& Context)
 {
-	if (!Stage) return;
+	if (!Stage)
+		return;
 
 	bool bPaused = PauseFlag && *PauseFlag;
 
@@ -35,16 +37,14 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
 	ImGui::SetNextWindowBgAlpha(0.5f);
 
-	ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration
-		| ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoFocusOnAppearing
-		| ImGuiWindowFlags_NoNav;
+	ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	if (ImGui::Begin("##HUD", nullptr, Flags))
 	{
 		float Remaining = Stage->GetRemainingTime();
-		int Minutes = static_cast<int>(Remaining) / 60;
-		int Seconds = static_cast<int>(Remaining) % 60;
+		int   Minutes = static_cast<int>(Remaining) / 60;
+		int   Seconds = static_cast<int>(Remaining) % 60;
 
 		ImGui::Text("HP    %d", HP);
 		if (Remaining <= 10.0f)
@@ -98,35 +98,57 @@ void FGameplayHUDWidget::Render(FGameContext& Context)
 	{
 		float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
 		float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
-
-		ImGui::SetNextWindowPos(ImVec2(ScreenW * 0.5f, ScreenH * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-		ImGui::SetNextWindowBgAlpha(0.7f);
-
-		ImGuiWindowFlags PauseFlags = ImGuiWindowFlags_NoDecoration
-			| ImGuiWindowFlags_AlwaysAutoResize
-			| ImGuiWindowFlags_NoNav;
-
-		if (ImGui::Begin("##PauseOverlay", nullptr, PauseFlags))
+		// 일시정지 오버레이
+		if (bPaused)
 		{
-			ImGui::Text("PAUSED");
-			ImGui::Separator();
-			if (ImGui::Button("Resume", ImVec2(120, 0)))
-			{
-				*PauseFlag = false;
-			}
-		}
-		ImGui::End();
-	}
-}
+			float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+			float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
 
-void FGameplayHUDWidget::SetTextures(FGameContext& Context)
-{
-	if (!LifeTexture)
-	{
-		LifeTexture = Context.Textures.Get("life_heart");
+			ImGui::SetNextWindowPos(ImVec2(ScreenW * 0.5f, ScreenH * 0.5f), ImGuiCond_Always,
+				ImVec2(0.5f, 0.5f));
+			ImGui::SetNextWindowBgAlpha(0.7f);
+
+			ImGuiWindowFlags PauseFlags = ImGuiWindowFlags_NoDecoration |
+				ImGuiWindowFlags_AlwaysAutoResize |
+				ImGuiWindowFlags_NoNav;
+
+			if (ImGui::Begin("##PauseOverlay", nullptr, PauseFlags))
+			{
+				ImGui::Text("PAUSED");
+				ImGui::Separator();
+				if (ImGui::Button("Resume", ImVec2(120, 0)))
+				{
+					*PauseFlag = false;
+				}
+			}
+			ImGui::End();
+		}
 	}
-	if (!LifeDeadTexture)
+
+	void FGameplayHUDWidget::SetTextures(FGameContext & Context)
 	{
-		LifeDeadTexture = Context.Textures.Get("life_dead");
+		if (!LifeTexture)
+		{
+			LifeTexture = Context.Textures.Get("life_heart");
+		}
+		if (!LifeDeadTexture)
+		{
+			LifeDeadTexture = Context.Textures.Get("life_dead");
+		}
 	}
-}
+
+	void FGameplayHUDWidget::OnBeatJudged(EBeatJudge Judge)
+	{
+		switch (Judge)
+		{
+		case EBeatJudge::Perfect:
+			Logger::Log("Perfect! (in HUDWidget)");
+			break;
+		case EBeatJudge::Good:
+			Logger::Log("Good! (in HUDWidget)");
+			break;
+		case EBeatJudge::Miss:
+			Logger::Log("Miss! (in HUDWidget)");
+			break;
+		}
+	}

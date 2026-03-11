@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/GameContext.h"
+#include "Core/Types.h"
 #include "UIWidget.h"
 #include "Render/Texture.h"
 #include "Core/Types.h"
@@ -17,7 +18,10 @@ public:
 	void Render(FGameContext& Context) override;
 	virtual void SetTextures(FGameContext& Context) override;
 
-	void ResetPlayTime();
+    // 판정 결과를 외부에서 주입받는 함수 추가
+    void OnBeatJudged(EBeatJudge Judge);
+
+    void ResetPlayTime();
 
 private:
 	const FStage* Stage = nullptr;
