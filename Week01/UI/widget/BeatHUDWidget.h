@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/GameContext.h"
 #include "Gameplay/BeatSystem.h"
@@ -43,4 +43,6 @@ class FBeatHUDWidget : public IUIWidget
     int Combo = 0;
 
     std::vector<BeatEffect> BeatEffects;
+
+    float HeartColorRatio = 0.0f; // 0.0 = 틴트 없음, 1.0 = 최대 주황색 틴트
 };
