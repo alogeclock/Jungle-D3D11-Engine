@@ -11,7 +11,7 @@
             "metadata": {
                 "id": 1,
                 "name": "Stage 1: Rhythm Beginnings",
-                "bpm": 93,
+                "bpm": 70,
                 "music": "Resources/Sounds/stage1.wav",
                 "width": 12,
                 "height": 10,
@@ -97,7 +97,7 @@
             "metadata": {
                 "id": 2,
                 "name": "Stage 2: Double Tempo",
-                "bpm": 121,
+                "bpm": 70,
                 "music": "Resources/Sounds/stage2.wav",
                 "width": 25,
                 "height": 11,
@@ -226,8 +226,8 @@
             "metadata": {
                 "id": 3,
                 "name": "Stage 3: Jungle Echo Maze",
-                "bpm": 160,
-                "music": "Resources/Sounds/stage4.wav",
+                "bpm": 80,
+                "music": "Resources/Sounds/stage3.wav",
                 "width": 77,
                 "height": 24,
                 "spawn_point": {
