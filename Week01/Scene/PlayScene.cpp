@@ -195,11 +195,11 @@ void FPlayScene::LoadStage(FGameContext &Context)
     FStageData StageData;
     if (FStageLoader::Get().LoadStageById(CurrentStageIndex, StageData))
     {
-        OpenStageIntroPopup(StageData.GetIntroMessages());
+        OpenStageIntroPopup(StageData.GetStageName(), StageData.GetIntroMessages());
     }
     else
     {
-        OpenStageIntroPopup(std::vector<std::string>{""});
+        OpenStageIntroPopup("Stage", std::vector<std::string>{""});
     }
 }
 
@@ -236,7 +236,8 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
         if (bAllCleared)
         {
             FAudioSystem::Get().Play("sfx_game_clear", false);
-            ChangeScene(ESceneType::Ending);
+            ChangeScene(ESceneType::Ending, -1, Stage ? Stage->GetScore() : AccumulatedScore,
+                        PlayerSkinKey);
             return;
         }
 
@@ -250,10 +251,11 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
     }
 }
 
-void FPlayScene::OpenStageIntroPopup(const std::vector<std::string> &Messages)
+void FPlayScene::OpenStageIntroPopup(const std::string &Title,
+                                     const std::vector<std::string> &Messages)
 {
     std::unique_ptr<FStageIntroPopup> Popup = std::make_unique<FStageIntroPopup>();
-    Popup->SetData(CurrentStageIndex + 1, Messages);
+    Popup->SetData(Title, Messages);
     Popup->Open();
     UIManager.GetPopupManager().Open(std::move(Popup));
 }

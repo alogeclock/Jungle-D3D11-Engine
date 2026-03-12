@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ScoreboardPopup.h"
 #include <cstdio>
 #include <string>
@@ -254,16 +254,16 @@ void FScoreboardPopup::DrawColumnHeader(float BaseX, float Y)
     const float StageX = BaseX + RankColumnWidth + NameColumnWidth + ScoreColumnWidth;
 
     ImGui::SetCursorPos(ImVec2(RankX, Y));
-    ImGui::TextUnformatted("RANK");
+    TextUnformattedUtf8("RANK");
 
     ImGui::SetCursorPos(ImVec2(NameX, Y));
-    ImGui::TextUnformatted("NAME");
+    TextUnformattedUtf8("NAME");
 
     ImGui::SetCursorPos(ImVec2(ScoreX, Y));
-    ImGui::TextUnformatted("SCORE");
+    TextUnformattedUtf8("SCORE");
 
     ImGui::SetCursorPos(ImVec2(StageX, Y));
-    ImGui::TextUnformatted("STAGE");
+    TextUnformattedUtf8("STAGE");
 }
 
 void FScoreboardPopup::DrawRow(float BaseX, float Y, int Rank, const FScoreRecord &Entry)
@@ -275,7 +275,7 @@ void FScoreboardPopup::DrawRow(float BaseX, float Y, int Rank, const FScoreRecor
 
     std::snprintf(RankBuffer, sizeof(RankBuffer), "%d%s", Rank, GetRankSuffix(Rank));
     std::snprintf(NameBuffer, sizeof(NameBuffer), "%-6.6s", Entry.Nickname.c_str());
-    std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%04d", Entry.Score);
+    std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%05d", Entry.Score);
     std::snprintf(StageBuffer, sizeof(StageBuffer), "S-%d", Entry.Stage);
 
     const float RankX = BaseX;
@@ -284,16 +284,16 @@ void FScoreboardPopup::DrawRow(float BaseX, float Y, int Rank, const FScoreRecor
     const float StageX = BaseX + RankColumnWidth + NameColumnWidth + ScoreColumnWidth;
 
     ImGui::SetCursorPos(ImVec2(RankX, Y));
-    ImGui::TextUnformatted(RankBuffer);
+    TextUnformattedUtf8(RankBuffer);
 
     ImGui::SetCursorPos(ImVec2(NameX, Y));
-    ImGui::TextUnformatted(NameBuffer);
+    TextUnformattedUtf8(NameBuffer);
 
     ImGui::SetCursorPos(ImVec2(ScoreX, Y));
-    ImGui::TextUnformatted(ScoreBuffer);
+    TextUnformattedUtf8(ScoreBuffer);
 
     ImGui::SetCursorPos(ImVec2(StageX, Y));
-    ImGui::TextUnformatted(StageBuffer);
+    TextUnformattedUtf8(StageBuffer);
 }
 
 void FScoreboardPopup::DrawPageText(const FPopupFrameLayout &Layout)
@@ -303,12 +303,12 @@ void FScoreboardPopup::DrawPageText(const FPopupFrameLayout &Layout)
     char PageBuffer[32]{};
     std::snprintf(PageBuffer, sizeof(PageBuffer), "Page %d / %d", CurrentPage + 1, GetTotalPages());
 
-    const ImVec2 PageSize = ImGui::CalcTextSize(PageBuffer);
+    const ImVec2 PageSize = CalcUtf8TextSize(PageBuffer);
     const float X = GetAlignedX(Layout, PageSize.x, EUIPopupContentAlign::Center);
     const float Y = Layout.ContentBottom - PageSize.y - 4.0f;
 
     ImGui::SetCursorPos(ImVec2(X, Y));
-    ImGui::TextUnformatted(PageBuffer);
+    TextUnformattedUtf8(PageBuffer);
 
     ImGui::SetWindowFontScale(1.0f);
 }

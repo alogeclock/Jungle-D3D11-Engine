@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "StageIntroPopup.h"
-#include <cstdio>
 #include <vector>
 
 EUIPopupAction FStageIntroPopup::ConsumeAction()
@@ -12,13 +11,6 @@ EUIPopupAction FStageIntroPopup::ConsumeAction()
 
 void FStageIntroPopup::Update(FGameContext &Context)
 {
-}
-
-std::string FStageIntroPopup::GetPopupTitle() const
-{
-    char Buffer[64]{};
-    std::snprintf(Buffer, sizeof(Buffer), "Stage %d", StageNumber);
-    return std::string(Buffer);
 }
 
 std::vector<std::string> FStageIntroPopup::SplitMessageLines(const std::string &InMessage) const
@@ -129,10 +121,8 @@ void FStageIntroPopup::DrawBottomButtonArea(const FPopupFrameLayout &Layout)
 
 void FStageIntroPopup::Render(FGameContext &Context)
 {
-    const std::string TitleText = GetPopupTitle();
-
     FPopupFrameLayout Layout;
-    if (!BeginPopupWindow("StageIntroPopup", TitleText.c_str(),
+    if (!BeginPopupWindow("StageIntroPopup", Title.c_str(),
                           ImVec2(DefaultPopupWidth, DefaultPopupHeight), Layout))
     {
         return;

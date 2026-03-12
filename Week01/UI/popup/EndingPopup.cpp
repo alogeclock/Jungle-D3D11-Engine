@@ -1,23 +1,6 @@
 ﻿#include "pch.h"
 #include "EndingPopup.h"
-
-#include <algorithm>
 #include <vector>
-#include "Core/GameContext.h"
-
-namespace
-{
-    float GetAlignedContentStartY(const FPopupFrameLayout &Layout, float ContentHeight,
-                                  EUIPopupContentVerticalAlign Align)
-    {
-        if (Align == EUIPopupContentVerticalAlign::Top)
-        {
-            return Layout.ContentTop;
-        }
-
-        return Layout.ContentTop + (Layout.ContentHeight - ContentHeight) * 0.5f;
-    }
-} // namespace
 
 EUIPopupAction FEndingPopup::ConsumeAction()
 {
@@ -26,14 +9,62 @@ EUIPopupAction FEndingPopup::ConsumeAction()
     return Result;
 }
 
-void FEndingPopup::Update(FGameContext &Context) {}
+void FEndingPopup::Update(FGameContext &Context)
+{
+}
+
+std::vector<std::string> FEndingPopup::SplitMessageLines(const std::string &InMessage) const
+{
+    std::vector<std::string> Result;
+
+    if (InMessage.empty())
+    {
+        Result.push_back("");
+        return Result;
+    }
+
+    std::size_t Start = 0;
+
+    while (Start <= InMessage.size())
+    {
+        const std::size_t End = InMessage.find('\n', Start);
+
+        if (End == std::string::npos)
+        {
+            Result.push_back(InMessage.substr(Start));
+            break;
+        }
+
+        Result.push_back(InMessage.substr(Start, End - Start));
+        Start = End + 1;
+    }
+
+    if (Result.empty())
+    {
+        Result.push_back("");
+    }
+
+    return Result;
+}
 
 int FEndingPopup::GetTotalPages() const
 {
-    if (static_cast<int>(Messages.size()) < 1)
+    if (Messages.empty())
+    {
         return 1;
-    else
-        return static_cast<int>(Messages.size());
+    }
+
+    return static_cast<int>(Messages.size());
+}
+
+void FEndingPopup::GoToNextPage()
+{
+    const int LastPageIndex = GetTotalPages() - 1;
+
+    if (CurrentPage < LastPageIndex)
+    {
+        ++CurrentPage;
+    }
 }
 
 void FEndingPopup::ResetPage()
@@ -60,130 +91,72 @@ const std::string &FEndingPopup::GetCurrentPageMessage() const
         return EmptyMessage;
     }
 
+    if (CurrentPage < 0 || CurrentPage >= static_cast<int>(Messages.size()))
+    {
+        return EmptyMessage;
+    }
+
     return Messages[CurrentPage];
 }
 
-std::vector<std::string> FEndingPopup::SplitMessageLines(const std::string &InMessage) const
+void FEndingPopup::DrawBottomButtonArea(const FPopupFrameLayout &Layout)
 {
-    std::vector<std::string> Lines;
-    std::string              CurrentLine;
+    const bool bIsLastPage = (CurrentPage + 1) >= GetTotalPages();
 
-    for (char Ch : InMessage)
+    if (!bIsLastPage)
     {
-        if (Ch == '\n')
+        if (DrawBottomButton(Layout, "Next"))
         {
-            Lines.push_back(CurrentLine);
-            CurrentLine.clear();
+            GoToNextPage();
         }
-        else
-        {
-            CurrentLine.push_back(Ch);
-        }
+
+        return;
     }
 
-    Lines.push_back(CurrentLine);
-
-    if (Lines.empty())
+    if (DrawBottomButton(Layout, "OK"))
     {
-        Lines.push_back("");
+        PendingAction = EUIPopupAction::OpenSaveScorePopup;
     }
-
-    return Lines;
 }
 
 void FEndingPopup::Render(FGameContext &Context)
 {
     FPopupFrameLayout Layout;
-    if (!BeginPopupWindow("EndingPopup", "Ending", ImVec2(DefaultPopupWidth, DefaultPopupHeight),
-                          Layout))
+    if (!BeginPopupWindow("EndingPopup", Title.c_str(),
+                          ImVec2(DefaultPopupWidth, DefaultPopupHeight), Layout))
     {
         return;
     }
 
-    if (bShowSaveConfirm)
+    ResetPage();
+
+    const std::string &CurrentMessage = GetCurrentPageMessage();
+    const std::vector<std::string> MessageLines = SplitMessageLines(CurrentMessage);
+
+    std::vector<const char *> LinePtrs;
+    LinePtrs.reserve(MessageLines.size());
+
+    for (const std::string &Line : MessageLines)
     {
-        DrawSaveConfirmContent(Layout);
+        LinePtrs.push_back(Line.c_str());
     }
-    else
+
+    DrawTextBlock(Layout,
+                  LinePtrs.data(),
+                  static_cast<int>(LinePtrs.size()),
+                  MessageLineGap,
+                  ContentAlign,
+                  ContentTextSize,
+                  ContentVerticalAlign);
+
+    DrawBottomButtonArea(Layout);
+
+    ResetPage();
+
+    if (PendingAction == EUIPopupAction::OpenSaveScorePopup)
     {
-        DrawMessageContent(Layout);
+        Close();
     }
 
     EndPopupWindow();
-}
-
-void FEndingPopup::DrawMessageContent(const FPopupFrameLayout &Layout)
-{
-    const std::vector<std::string> Lines = SplitMessageLines(GetCurrentPageMessage());
-
-    ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
-
-    std::vector<ImVec2> LineSizes;
-    LineSizes.reserve(Lines.size());
-
-    float TotalTextHeight = 0.0f;
-    for (const std::string &Line : Lines)
-    {
-        const ImVec2 Size = ImGui::CalcTextSize(Line.c_str());
-        LineSizes.push_back(Size);
-        TotalTextHeight += Size.y;
-    }
-
-    if (!Lines.empty())
-    {
-        TotalTextHeight += MessageLineGap * static_cast<float>(Lines.size() - 1);
-    }
-
-    const float StartY = GetAlignedContentStartY(Layout, TotalTextHeight, ContentVerticalAlign);
-
-    float CurrentY = StartY;
-    for (size_t i = 0; i < Lines.size(); ++i)
-    {
-        const float X = GetAlignedX(Layout, LineSizes[i].x, ContentAlign);
-        ImGui::SetCursorPos(ImVec2(X, CurrentY));
-        ImGui::TextUnformatted(Lines[i].c_str());
-        CurrentY += LineSizes[i].y + MessageLineGap;
-    }
-
-    ImGui::SetWindowFontScale(1.0f);
-
-    if (DrawBottomButton(Layout, "Next"))
-    {
-        const int LastPageIndex = GetTotalPages() - 1;
-
-        if (CurrentPage < LastPageIndex)
-        {
-            ++CurrentPage;
-        }
-        else
-        {
-            bShowSaveConfirm = true;
-        }
-    }
-}
-
-void FEndingPopup::DrawSaveConfirmContent(const FPopupFrameLayout &Layout)
-{
-    const char *Question = "점수를 저장하시겠습니까?";
-
-    ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
-
-    const ImVec2 TextSize = ImGui::CalcTextSize(Question);
-    const float  TextX = GetAlignedX(Layout, TextSize.x, ContentAlign);
-    const float  TextY = GetAlignedContentStartY(Layout, TextSize.y, ContentVerticalAlign);
-
-    ImGui::SetCursorPos(ImVec2(TextX, TextY));
-    ImGui::TextUnformatted(Question);
-
-    ImGui::SetWindowFontScale(1.0f);
-
-    if (DrawBottomButton(Layout, "예", 0, 2))
-    {
-        PendingAction = EUIPopupAction::OpenSaveScorePopup;
-    }
-
-    if (DrawBottomButton(Layout, "아니오", 1, 2))
-    {
-        PendingAction = EUIPopupAction::OpenGoToTitlePopup;
-    }
 }

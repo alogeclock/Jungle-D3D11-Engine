@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameOverPopup.h"
 
 EUIPopupAction FGameOverPopup::ConsumeAction()
@@ -21,12 +21,12 @@ void FGameOverPopup::Render(FGameContext &Context)
 
     ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
 
-    const ImVec2 TextSize = ImGui::CalcTextSize(Message);
+    const ImVec2 TextSize = CalcUtf8TextSize(Message);
     const float X = GetAlignedX(Layout, TextSize.x, ContentAlign);
     const float Y = Layout.ContentTop + (Layout.ContentHeight - TextSize.y) * 0.5f;
 
     ImGui::SetCursorPos(ImVec2(X, Y));
-    ImGui::TextUnformatted(Message);
+    TextUnformattedUtf8(Message);
 
     ImGui::SetWindowFontScale(1.0f);
 
