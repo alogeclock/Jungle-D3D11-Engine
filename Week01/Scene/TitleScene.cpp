@@ -11,7 +11,6 @@
 #include "UI/popup/CreditPopup.h"
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/ScoreboardPopup.h"
-#include "UI/popup/SettingsPopup.h"
 #include "UI/popup/UIPopupAction.h"
 
 #define WIN_WIDTH 1024
@@ -135,18 +134,18 @@ void FTitleScene::HandleMenuCommand(FGameContext &Context)
     }
     ImGui::PopStyleColor(5);
 
-    // --- SETTINGS 버튼 ---
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.10f, 0.10f, 0.18f, 0.85f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.18f, 0.32f, 0.92f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.28f, 0.25f, 0.42f, 1.00f));
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.40f, 0.38f, 0.60f, 0.50f));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.85f, 0.95f, 1.00f));
-    ImGui::SetCursorPos(ImVec2(StartX, StartY + (ButtonSize.y + ButtonSpacing) * 3.0f));
-    if (ImGui::Button("SETTINGS", ButtonSize))
-    {
-        OpenSettingsPopup();
-    }
-    ImGui::PopStyleColor(5);
+    //// --- SETTINGS 버튼 ---
+    //ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.10f, 0.10f, 0.18f, 0.85f));
+    //ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.18f, 0.32f, 0.92f));
+    //ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.28f, 0.25f, 0.42f, 1.00f));
+    //ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.40f, 0.38f, 0.60f, 0.50f));
+    //ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.85f, 0.95f, 1.00f));
+    //ImGui::SetCursorPos(ImVec2(StartX, StartY + (ButtonSize.y + ButtonSpacing) * 3.0f));
+    //if (ImGui::Button("SETTINGS", ButtonSize))
+    //{
+    //    OpenSettingsPopup();
+    //}
+    //ImGui::PopStyleColor(5);
 
 #ifdef _DEBUG
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.08f, 0.08f, 0.80f));
@@ -186,11 +185,6 @@ void FTitleScene::HandlePopupResult(FGameContext &Context)
         return;
     }
 
-    if (FSettingsPopup *Popup = PopupManager.GetPopup<FSettingsPopup>())
-    {
-        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
-        return;
-    }
 }
 
 bool FTitleScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
@@ -205,14 +199,6 @@ void FTitleScene::OpenCreditPopup()
     std::vector<FCreditEntry>     Credits;
     if (FCreditLoader::Get().LoadCredits(Credits))
         Popup->SetCredits(Credits);
-    Popup->Open();
-    UIManager.GetPopupManager().Open(std::move(Popup));
-}
-
-void FTitleScene::OpenSettingsPopup()
-{
-    auto Popup = std::make_unique<FSettingsPopup>();
-    Popup->LoadCurrentVolumes();
     Popup->Open();
     UIManager.GetPopupManager().Open(std::move(Popup));
 }

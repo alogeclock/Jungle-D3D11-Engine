@@ -124,7 +124,7 @@ void FEndingPopup::DrawMessageContent(const FPopupFrameLayout &Layout)
     float TotalTextHeight = 0.0f;
     for (const std::string &Line : Lines)
     {
-        const ImVec2 Size = ImGui::CalcTextSize(Line.c_str());
+        const ImVec2 Size = CalcUtf8TextSize(Line.c_str());
         LineSizes.push_back(Size);
         TotalTextHeight += Size.y;
     }
@@ -141,7 +141,7 @@ void FEndingPopup::DrawMessageContent(const FPopupFrameLayout &Layout)
     {
         const float X = GetAlignedX(Layout, LineSizes[i].x, ContentAlign);
         ImGui::SetCursorPos(ImVec2(X, CurrentY));
-        ImGui::TextUnformatted(Lines[i].c_str());
+        TextUnformattedUtf8(Lines[i].c_str());
         CurrentY += LineSizes[i].y + MessageLineGap;
     }
 
@@ -168,12 +168,12 @@ void FEndingPopup::DrawSaveConfirmContent(const FPopupFrameLayout &Layout)
 
     ImGui::SetWindowFontScale(GetContentFontScale(ContentTextSize));
 
-    const ImVec2 TextSize = ImGui::CalcTextSize(Question);
+    const ImVec2 TextSize = CalcUtf8TextSize(Question);
     const float  TextX = GetAlignedX(Layout, TextSize.x, ContentAlign);
     const float  TextY = GetAlignedContentStartY(Layout, TextSize.y, ContentVerticalAlign);
 
     ImGui::SetCursorPos(ImVec2(TextX, TextY));
-    ImGui::TextUnformatted(Question);
+    TextUnformattedUtf8(Question);
 
     ImGui::SetWindowFontScale(1.0f);
 

@@ -2,6 +2,10 @@
 #include "UIPopupBase.h"
 #include "imgui/imgui.h"
 #include <initializer_list>
+#include <string>
+#include <string_view>
+#include <vector>
+#include <Windows.h>
 #include "Core/AudioSystem.h"
 
 namespace
@@ -9,7 +13,139 @@ namespace
     float GetActualButtonHeight() { return ImGui::GetFrameHeight(); }
 
     float GetScaledTextHeight(float FontScale) { return ImGui::GetFontSize() * FontScale; }
+
+    bool IsValidUtf8(std::string_view Text)
+    {
+        int RemainingBytes = 0;
+
+        for (unsigned char Ch : Text)
+        {
+            if (RemainingBytes == 0)
+            {
+                if ((Ch & 0x80u) == 0)
+                    continue;
+
+                if ((Ch & 0xE0u) == 0xC0u)
+                {
+                    RemainingBytes = 1;
+                }
+                else if ((Ch & 0xF0u) == 0xE0u)
+                {
+                    RemainingBytes = 2;
+                }
+                else if ((Ch & 0xF8u) == 0xF0u)
+                {
+                    RemainingBytes = 3;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if ((Ch & 0xC0u) != 0x80u)
+                    return false;
+
+                --RemainingBytes;
+            }
+        }
+
+        return RemainingBytes == 0;
+    }
+
+    std::wstring MultiByteToWide(std::string_view Text, UINT CodePage)
+    {
+        if (Text.empty())
+            return {};
+
+        const int RequiredLength =
+            MultiByteToWideChar(CodePage, 0, Text.data(), static_cast<int>(Text.size()), nullptr, 0);
+
+        if (RequiredLength <= 0)
+            return {};
+
+        std::wstring Result(static_cast<std::size_t>(RequiredLength), L'\0');
+
+        MultiByteToWideChar(CodePage, 0, Text.data(), static_cast<int>(Text.size()), Result.data(),
+                            RequiredLength);
+
+        return Result;
+    }
+
+    std::string WideToUtf8(const std::wstring &Text)
+    {
+        if (Text.empty())
+            return {};
+
+        const int RequiredLength =
+            WideCharToMultiByte(CP_UTF8, 0, Text.data(), static_cast<int>(Text.size()), nullptr, 0,
+                                nullptr, nullptr);
+
+        if (RequiredLength <= 0)
+            return {};
+
+        std::string Result(static_cast<std::size_t>(RequiredLength), '\0');
+
+        WideCharToMultiByte(CP_UTF8, 0, Text.data(), static_cast<int>(Text.size()), Result.data(),
+                            RequiredLength, nullptr, nullptr);
+
+        return Result;
+    }
 } // namespace
+
+
+std::string FUIPopupBase::NormalizeToUtf8(std::string_view Text) const
+{
+    if (Text.empty())
+        return {};
+
+    if (IsValidUtf8(Text))
+        return std::string(Text);
+
+    const std::wstring WideText = MultiByteToWide(Text, CP_ACP);
+    if (WideText.empty())
+        return std::string(Text);
+
+    const std::string Utf8Text = WideToUtf8(WideText);
+    if (Utf8Text.empty())
+        return std::string(Text);
+
+    return Utf8Text;
+}
+
+ImVec2 FUIPopupBase::CalcUtf8TextSize(const char *Text) const
+{
+    const std::string Utf8Text = NormalizeToUtf8(Text ? Text : "");
+    return ImGui::CalcTextSize(Utf8Text.c_str());
+}
+
+ImVec2 FUIPopupBase::CalcUtf8TextSize(const std::string &Text) const
+{
+    return CalcUtf8TextSize(Text.c_str());
+}
+
+void FUIPopupBase::TextUnformattedUtf8(const char *Text) const
+{
+    const std::string Utf8Text = NormalizeToUtf8(Text ? Text : "");
+    ImGui::TextUnformatted(Utf8Text.c_str());
+}
+
+void FUIPopupBase::TextUnformattedUtf8(const std::string &Text) const
+{
+    TextUnformattedUtf8(Text.c_str());
+}
+
+bool FUIPopupBase::ButtonUtf8(const char *Label, const ImVec2 &Size) const
+{
+    const std::string Utf8Label = NormalizeToUtf8(Label ? Label : "");
+    return ImGui::Button(Utf8Label.c_str(), Size);
+}
+
+bool FUIPopupBase::ButtonUtf8(const std::string &Label, const ImVec2 &Size) const
+{
+    return ButtonUtf8(Label.c_str(), Size);
+}
 
 void FUIPopupBase::Open()
 {
@@ -95,7 +231,7 @@ void FUIPopupBase::BuildFrameLayout(const char *Title, FPopupFrameLayout &OutLay
     OutLayout.InnerHeight = WindowSize.y - Style.WindowPadding.y * 2.0f;
 
     ImGui::SetWindowFontScale(TitleFontScale);
-    OutLayout.TitleSize = ImGui::CalcTextSize(Title);
+    OutLayout.TitleSize = CalcUtf8TextSize(Title);
     ImGui::SetWindowFontScale(1.0f);
 
     if (OutLayout.TitleSize.y < GetScaledTextHeight(TitleFontScale))
@@ -123,7 +259,7 @@ void FUIPopupBase::DrawTitleAndDivider(const char *Title, const FPopupFrameLayou
 {
     ImGui::SetWindowFontScale(TitleFontScale);
     ImGui::SetCursorPos(ImVec2(Layout.TitleX, Layout.TitleY));
-    ImGui::TextUnformatted(Title);
+    TextUnformattedUtf8(Title);
     ImGui::SetWindowFontScale(1.0f);
 
     const ImVec2 WindowPos = ImGui::GetWindowPos();
@@ -199,7 +335,7 @@ bool FUIPopupBase::DrawBottomButton(const FPopupFrameLayout &Layout, const char 
                                                      ButtonHeight, ButtonGap);
 
     ImGui::SetCursorPos(ButtonPos);
-    const bool bPressed = ImGui::Button(Label, ImVec2(ActualButtonWidth, ButtonHeight));
+    const bool bPressed = ButtonUtf8(Label, ImVec2(ActualButtonWidth, ButtonHeight));
 
     if (bPressed)
     {
@@ -256,7 +392,7 @@ float FUIPopupBase::GetTextBlockHeight(const char *const *Lines, int LineCount, 
     for (int i = 0; i < LineCount; ++i)
     {
         const char *Line = Lines[i] ? Lines[i] : "";
-        ImVec2      LineSize = ImGui::CalcTextSize(Line);
+        ImVec2      LineSize = CalcUtf8TextSize(Line);
 
         if (LineSize.y < GetScaledTextHeight(FontScale))
             LineSize.y = GetScaledTextHeight(FontScale);
@@ -291,7 +427,7 @@ void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *co
     for (int i = 0; i < LineCount; ++i)
     {
         const char  *Line = Lines[i] ? Lines[i] : "";
-        const ImVec2 LineSize = ImGui::CalcTextSize(Line);
+        const ImVec2 LineSize = CalcUtf8TextSize(Line);
         const float  X = GetAlignedX(Layout, LineSize.x, HorizontalAlign);
 
         if (i == 0)
@@ -303,7 +439,7 @@ void FUIPopupBase::DrawTextBlock(const FPopupFrameLayout &Layout, const char *co
             ImGui::SetCursorPosX(X);
         }
 
-        ImGui::TextUnformatted(Line);
+        TextUnformattedUtf8(Line);
 
         if (i + 1 < LineCount)
         {

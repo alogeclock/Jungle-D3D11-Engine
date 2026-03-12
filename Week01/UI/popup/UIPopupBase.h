@@ -1,8 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include "UIPopupAction.h"
 #include "imgui/imgui.h"
 #include <initializer_list>
+#include <string>
+#include <string_view>
 
 struct FGameContext;
 
@@ -91,6 +93,15 @@ class FUIPopupBase
                           int ButtonCount);
 
     float GetContentFontScale(EUIPopupContentTextSize Size) const;
+
+    std::string NormalizeToUtf8(std::string_view Text) const;
+    ImVec2      CalcUtf8TextSize(const char *Text) const;
+    ImVec2      CalcUtf8TextSize(const std::string &Text) const;
+    void        TextUnformattedUtf8(const char *Text) const;
+    void        TextUnformattedUtf8(const std::string &Text) const;
+    bool        ButtonUtf8(const char *Label, const ImVec2 &Size) const;
+    bool        ButtonUtf8(const std::string &Label, const ImVec2 &Size) const;
+
     float GetAlignedX(const FPopupFrameLayout &Layout, float ItemWidth,
                       EUIPopupContentAlign Align) const;
 

@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "SaveScorePopup.h"
 #include <cctype>
 #include <cstring>
@@ -38,8 +38,8 @@ void FSaveScorePopup::Render(FGameContext &Context)
 
     ImGui::SetWindowFontScale(1.0f);
 
-    const ImVec2 ScoreSize = ImGui::CalcTextSize(ScoreText);
-    const ImVec2 StageSize = ImGui::CalcTextSize(StageText);
+    const ImVec2 ScoreSize = CalcUtf8TextSize(ScoreText);
+    const ImVec2 StageSize = CalcUtf8TextSize(StageText);
 
     const float ScoreX = GetAlignedX(Layout, ScoreSize.x, EUIPopupContentAlign::Center);
     const float StageX = GetAlignedX(Layout, StageSize.x, EUIPopupContentAlign::Center);
@@ -48,13 +48,13 @@ void FSaveScorePopup::Render(FGameContext &Context)
     const float StageY = ScoreY + ScoreSize.y + 10.0f;
 
     ImGui::SetCursorPos(ImVec2(ScoreX, ScoreY));
-    ImGui::TextUnformatted(ScoreText);
+    TextUnformattedUtf8(ScoreText);
 
     ImGui::SetCursorPos(ImVec2(StageX, StageY));
-    ImGui::TextUnformatted(StageText);
+    TextUnformattedUtf8(StageText);
 
     const char *Label = "Nickname";
-    const ImVec2 LabelSize = ImGui::CalcTextSize(Label);
+    const ImVec2 LabelSize = CalcUtf8TextSize(Label);
 
     const float InputWidth = 180.0f;
     const float LabelX = Layout.ContentLeft + (Layout.ContentWidth - LabelSize.x) * 0.5f;
@@ -63,7 +63,7 @@ void FSaveScorePopup::Render(FGameContext &Context)
     const float InputY = LabelY + LabelSize.y + 12.0f;
 
     ImGui::SetCursorPos(ImVec2(LabelX, LabelY));
-    ImGui::TextUnformatted(Label);
+    TextUnformattedUtf8(Label);
 
     ImGui::SetCursorPos(ImVec2(InputX, InputY));
     ImGui::PushItemWidth(InputWidth);
@@ -80,14 +80,14 @@ void FSaveScorePopup::Render(FGameContext &Context)
     if (bShowValidationMessage)
     {
         const char *ValidationText = "Letters only, up to 6 characters, cannot be empty.";
-        const ImVec2 ValidationSize = ImGui::CalcTextSize(ValidationText);
+        const ImVec2 ValidationSize = CalcUtf8TextSize(ValidationText);
         const float ValidationX =
             Layout.ContentLeft + (Layout.ContentWidth - ValidationSize.x) * 0.5f;
 
         const float ValidationY = Layout.ContentTop + Layout.ContentHeight - 36.0f;
 
         ImGui::SetCursorPos(ImVec2(ValidationX, ValidationY));
-        ImGui::TextUnformatted(ValidationText);
+        TextUnformattedUtf8(ValidationText);
     }
 
     if (DrawBottomButton(Layout, "Save", 0, 2))

@@ -33,7 +33,7 @@ void FCreditPopup::DrawCredits(const FPopupFrameLayout &Layout)
 
     const float LineHeight = ImGui::GetTextLineHeight();
     const char *PipeText = "|";
-    const ImVec2 PipeSize = ImGui::CalcTextSize(PipeText);
+    const ImVec2 PipeSize = CalcUtf8TextSize(PipeText);
 
     float NameColumnWidth = NameColumnMinWidth;
     float MaxRoleWidth = 0.0f;
@@ -42,8 +42,8 @@ void FCreditPopup::DrawCredits(const FPopupFrameLayout &Layout)
     {
         const FCreditEntry &Entry = Credits[i];
 
-        const ImVec2 NameSize = ImGui::CalcTextSize(Entry.Name.c_str());
-        const ImVec2 RoleSize = ImGui::CalcTextSize(Entry.Role.c_str());
+        const ImVec2 NameSize = CalcUtf8TextSize(Entry.Name.c_str());
+        const ImVec2 RoleSize = CalcUtf8TextSize(Entry.Role.c_str());
 
         if (NameSize.x > NameColumnWidth)
             NameColumnWidth = NameSize.x;
@@ -75,16 +75,16 @@ void FCreditPopup::DrawCredits(const FPopupFrameLayout &Layout)
         const FCreditEntry &Entry = Credits[i];
         const float Y = StartY + static_cast<float>(i) * (LineHeight + LineGap);
 
-        const ImVec2 NameSize = ImGui::CalcTextSize(Entry.Name.c_str());
+        const ImVec2 NameSize = CalcUtf8TextSize(Entry.Name.c_str());
 
         ImGui::SetCursorPos(ImVec2(NameX, Y));
-        ImGui::TextUnformatted(Entry.Name.c_str());
+        TextUnformattedUtf8(Entry.Name.c_str());
 
         ImGui::SetCursorPos(ImVec2(PipeX, Y));
-        ImGui::TextUnformatted(PipeText);
+        TextUnformattedUtf8(PipeText);
 
         ImGui::SetCursorPos(ImVec2(RoleX, Y));
-        ImGui::TextUnformatted(Entry.Role.c_str());
+        TextUnformattedUtf8(Entry.Role.c_str());
     }
 
     ImGui::SetWindowFontScale(1.0f);
