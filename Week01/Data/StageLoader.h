@@ -1,23 +1,26 @@
 #pragma once
 
 #include <string>
-#include "Core/Singleton.h"
-#include "Core/Types.h"
+#include <vector>
 
 struct FStageData;
 
-class FStageLoader : public TSingleton<FStageLoader>
+class FStageLoader
 {
-    friend class TSingleton<FStageLoader>;
-
   public:
+    static FStageLoader &Get();
+
     bool Initialize(const std::string &Path);
     bool IsLoaded() const;
 
     int  GetStageCount() const;
-    bool LoadStageById(int StageIndex, FStageData &OutStage) const;
+    bool LoadStageById(int StageId, FStageData &OutStage) const;
+    bool LoadEndingMessages(std::vector<std::string> &OutMessages) const;
 
   private:
-    std::string FileContent;
+    FStageLoader() = default;
+
+  private:
     bool        bLoaded = false;
+    std::string FileContent;
 };

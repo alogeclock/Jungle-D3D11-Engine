@@ -7,6 +7,12 @@
 
 using json = nlohmann::json;
 
+FStageLoader &FStageLoader::Get()
+{
+    static FStageLoader Instance;
+    return Instance;
+}
+
 namespace
 {
     bool ParseMonsterType(const std::string &TypeStr, EMonsterType &OutType)
@@ -262,6 +268,42 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
                     }
                 }
             }
+        }
+
+        return true;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+bool FStageLoader::LoadEndingMessages(std::vector<std::string> &OutMessages) const
+{
+    if (!bLoaded)
+    {
+        return false;
+    }
+
+    try
+    {
+        const json Doc = json::parse(FileContent);
+
+        if (!Doc.contains("ending_messages") || !Doc["ending_messages"].is_array())
+        {
+            return false;
+        }
+
+        OutMessages.clear();
+
+        for (const auto &MessageJson : Doc["ending_messages"])
+        {
+            if (!MessageJson.is_string())
+            {
+                return false;
+            }
+
+            OutMessages.push_back(MessageJson.get<std::string>());
         }
 
         return true;

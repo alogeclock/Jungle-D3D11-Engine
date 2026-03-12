@@ -9,15 +9,15 @@ struct FGameContext;
 class FStageIntroPopup : public FUIPopupBase
 {
   public:
-    void SetData(int InStageNumber, const std::vector<std::string> &InMessages)
+    void SetData(const std::string &InTitle, const std::vector<std::string> &InMessages)
     {
-        StageNumber = InStageNumber;
+        Title = InTitle;
         Messages = InMessages;
         CurrentPage = 0;
         ResetPage();
     }
 
-    void SetStageNumber(int InStageNumber) { StageNumber = InStageNumber; }
+    void SetTitle(const std::string &InTitle) { Title = InTitle; }
 
     void SetMessages(const std::vector<std::string> &InMessages)
     {
@@ -32,7 +32,6 @@ class FStageIntroPopup : public FUIPopupBase
     void Render(FGameContext &Context) override;
 
   private:
-    std::string              GetPopupTitle() const;
     std::vector<std::string> SplitMessageLines(const std::string &InMessage) const;
 
     int                GetTotalPages() const;
@@ -42,7 +41,7 @@ class FStageIntroPopup : public FUIPopupBase
     void               DrawBottomButtonArea(const FPopupFrameLayout &Layout);
 
   private:
-    int                      StageNumber = 1;
+    std::string              Title = "Stage";
     std::vector<std::string> Messages;
     int                      CurrentPage = 0;
     EUIPopupAction           PendingAction = EUIPopupAction::None;

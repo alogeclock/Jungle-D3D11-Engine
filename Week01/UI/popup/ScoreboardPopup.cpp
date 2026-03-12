@@ -275,7 +275,7 @@ void FScoreboardPopup::DrawRow(float BaseX, float Y, int Rank, const FScoreRecor
 
     std::snprintf(RankBuffer, sizeof(RankBuffer), "%d%s", Rank, GetRankSuffix(Rank));
     std::snprintf(NameBuffer, sizeof(NameBuffer), "%-6.6s", Entry.Nickname.c_str());
-    std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%04d", Entry.Score);
+    std::snprintf(ScoreBuffer, sizeof(ScoreBuffer), "%05d", Entry.Score);
     std::snprintf(StageBuffer, sizeof(StageBuffer), "S-%d", Entry.Stage);
 
     const float RankX = BaseX;

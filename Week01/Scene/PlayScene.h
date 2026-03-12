@@ -23,7 +23,7 @@ class FPlayScene : public IScene
     void HandleStageResult(FGameContext &Context);
     void HandlePopupResult(FGameContext &Context);
     void OpenGoToTitlePopup() override;
-    void OpenStageIntroPopup(const std::vector<std::string> &Messages);
+    void OpenStageIntroPopup(const std::string &Title, const std::vector<std::string> &Messages);
 
     bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
                               EUIPopupAction Action) override;
