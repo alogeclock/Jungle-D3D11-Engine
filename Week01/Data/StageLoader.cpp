@@ -144,6 +144,7 @@ bool FStageLoader::LoadStageById(int StageIndex, FStageData &OutStage) const
         OutStage.SetAngryTime(Meta.value("angry_time", 0.0f));
         OutStage.SetAngryTimeScale(Meta.value("angry_time_scale", 1.3f));
         OutStage.SetMonsterCount(Meta.value("monster_count", 0));
+        OutStage.SetDarknessLevel(Meta.value("darkness_level", 2));
 
         if (Meta.contains("intro_messages"))
         {

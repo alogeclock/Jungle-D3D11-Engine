@@ -19,6 +19,7 @@ void FStageData::Clear()
     AngryTime = 0.0f;
     AngryTimeScale = 1.3f;
     MonsterCount = 0;
+    DarknessLevel = 2;
 
     IntroMessages.clear();
     MonsterTypes.clear();
@@ -212,6 +213,16 @@ const std::vector<std::string> &FStageData::GetIntroMessages() const
 void FStageData::ClearIntroMessages()
 {
     IntroMessages.clear();
+}
+
+void FStageData::SetDarknessLevel(int InLevel)
+{
+    DarknessLevel = InLevel;
+}
+
+int FStageData::GetDarknessLevel() const
+{
+    return DarknessLevel;
 }
 
 void FStageData::AddItem(const FItemData &Item)
