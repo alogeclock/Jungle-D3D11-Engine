@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/Types.h"
 #include "SpriteAnimation.h"
@@ -33,9 +33,9 @@ class FActor
     void SetHp(int InHp);
     int  GetHp() const;
 
-    void Damage(int Amount);
-    void Heal(int Amount);
-    bool IsDead() const;
+    virtual void Damage(int Amount);
+    void         Heal(int Amount);
+    bool         IsDead() const;
 
     void SetInvincible(bool bEnable);
     bool IsInvincible() const;
@@ -72,7 +72,7 @@ class FActor
     float MoveTargetX = 0.0f;
     float MoveTargetY = 0.0f;
 
-    FSpriteInfo      Sprite;
-    FSpriteAnimator  Animator;
-    bool             bDefaultMirrored = false;
+    FSpriteInfo     Sprite;
+    FSpriteAnimator Animator;
+    bool            bDefaultMirrored = false;
 };
