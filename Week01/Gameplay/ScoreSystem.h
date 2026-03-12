@@ -9,7 +9,6 @@ class FScoreSystem
   public:
     void Reset();
 
-    void AddMoveScore();
     void AddBeatBonus(EBeatJudge Judge);
     void AddEnemyDefeatBonus();
     void AddTimeBonus(float RemainingTime, float TimeLimit);
@@ -21,9 +20,13 @@ class FScoreSystem
     int  GetCombo() const;
 
     void SetJudgeCallback(std::function<void(EBeatJudge, float, int)> Callback);
+    void SetJudgeScoreUpdateCallback(std::function<void(int)> Callback);
+    void SetTimerBonusCallback(std::function<void(int)> Callback);
 
   private:
     int                                         Score = 0;
     int                                         Combo = 0;
     std::function<void(EBeatJudge, float, int)> OnJudgeCallback;
+    std::function<void(int)>                    OnJudgeScoreUpdateCallback;
+    std::function<void(int)>                    OnTimerBonusCallback;
 };

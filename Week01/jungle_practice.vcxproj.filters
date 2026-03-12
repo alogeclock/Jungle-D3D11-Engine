@@ -35,6 +35,7 @@
     <ClCompile Include="Render\FontManager.cpp" />
     <ClCompile Include="Render\TextQuad.cpp" />
     <ClCompile Include="UI\popup\CreditPopup.cpp" />
+    <ClCompile Include="UI\popup\SettingsPopup.cpp" />
     <ClCompile Include="UI\popup\GameOverPopup.cpp" />
     <ClCompile Include="UI\popup\GoToTitlePopup.cpp" />
     <ClCompile Include="UI\popup\PopupManager.cpp" />
@@ -115,12 +116,14 @@
     <ClInclude Include="Scene\PlayScene.h" />
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="Core\Singleton.h" />
     <ClInclude Include="Core\Types.h" />
     <ClInclude Include="Core\Logger.h" />
     <ClInclude Include="ThirdParty\nlohmann\json.hpp" />
     <ClInclude Include="ThirdParty\stb_image.h" />
     <ClInclude Include="UI\Popup.h" />
     <ClInclude Include="UI\popup\CreditPopup.h" />
+    <ClInclude Include="UI\popup\SettingsPopup.h" />
     <ClInclude Include="UI\popup\GameOverPopup.h" />
     <ClInclude Include="UI\popup\GoToTitlePopup.h" />
     <ClInclude Include="UI\popup\PopupManager.h" />

@@ -208,7 +208,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     {
         bIsAngry = true;
         BeatSystem->SetTimeScale(AngryTimeScale);
-        FAudioSystem::Get().SetAllPlaybackRate(AngryTimeScale);
+        FAudioSystem::Get().SetChannelPlaybackRate(EAudioChannel::BGM, AngryTimeScale);
         CreateAngryOverlayTexture();
     }
 
@@ -1063,7 +1063,7 @@ float FStage::GetTimeFreezeRemaining() const { return TimeFreezeRemaining; }
 void FStage::StartBGM()
 {
     if (!BgmKey.empty())
-        FAudioSystem::Get().Play(BgmKey, true);
+        FAudioSystem::Get().Play(BgmKey, true, EAudioChannel::BGM);
 }
 
 void FStage::StopBGM()

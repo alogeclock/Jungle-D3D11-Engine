@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "Core/Singleton.h"
 
 struct FCreditEntry
 {
@@ -9,18 +10,15 @@ struct FCreditEntry
     std::string Role;
 };
 
-class FCreditLoader
+class FCreditLoader : public TSingleton<FCreditLoader>
 {
-  public:
-    static FCreditLoader &Get();
+    friend class TSingleton<FCreditLoader>;
 
+  public:
     bool Initialize(const std::string &Path);
     bool IsLoaded() const;
 
     bool LoadCredits(std::vector<FCreditEntry> &OutCredits) const;
-
-  private:
-    FCreditLoader() = default;
 
   private:
     std::string FileContent;
