@@ -1,6 +1,11 @@
 {
     "scoreboard": [
         {
+            "nickname": "CLEAR",
+            "score": 9310,
+            "stage": 3
+        },
+        {
             "nickname": "FAS",
             "score": 4063,
             "stage": 3

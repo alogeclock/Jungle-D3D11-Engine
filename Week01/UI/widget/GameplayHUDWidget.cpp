@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameplayHUDWidget.h"
 #include "Gameplay/Stage.h"
 #include "Gameplay/Item.h"
@@ -134,7 +134,7 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         // Stage 배경
         FTexture *StageBackGroundTexture = Context.Textures.Get("stage_back");
         if (StageBackGroundTexture)
-            Context.Renderer.DrawTexture(StageBackGroundTexture, 125, TopY + 5, 230, 65);
+            Context.Renderer.DrawTexture(StageBackGroundTexture, 125, TopY + 25, 230, 65);
 
         // Stage 이름: 좌측 고정
         std::string StageName = Stage->GetStageName();
