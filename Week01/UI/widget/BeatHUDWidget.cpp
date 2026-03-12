@@ -43,8 +43,10 @@ void FBeatHUDWidget::Update(FGameContext &Context)
 
 void FBeatHUDWidget::Render(FGameContext &Context)
 {
-
     if (!BeatSystem)
+        return;
+
+    if (BeatSystem->GetBeatCount() == 0)
         return;
 
     // 화면 크기에 맞춰 위치 재계산

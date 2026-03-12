@@ -77,6 +77,8 @@ bool FBeatSystem::IsBeatSkipped()
 
 float FBeatSystem::GetElapsedTime() const { return ElapsedTime; }
 
+int FBeatSystem::GetBeatCount() const { return static_cast<int>(ElapsedTime / BeatInterval); }
+
 float FBeatSystem::GetTimeToNextBeat() const
 {
     float NextBeatTime = (static_cast<int>(ElapsedTime / BeatInterval) + 1) * BeatInterval;

@@ -291,7 +291,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         }
     }
 
-    if (!Player->IsDead() && bHasInput)
+    if (!Player->IsDead() && bHasInput && BeatSystem->GetBeatCount() > 1)
     {
         // 입력이 들어온 현재 시점의 박자 인덱스
         int CurrentBeatIndex = static_cast<int>(
@@ -353,7 +353,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
         int CurrentBeatIndex =
             static_cast<int>(BeatSystem->GetElapsedTime() / BeatSystem->GetBeatInterval());
 
-        if (!Player->IsDead() && CurrentBeatIndex > 0)
+        if (!Player->IsDead() && CurrentBeatIndex > 1)
         {
             if (Player->GetLastMovedBeatIndex() < CurrentBeatIndex)
             {

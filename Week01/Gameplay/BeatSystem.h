@@ -23,6 +23,7 @@ class FBeatSystem
     bool IsBeatSkipped();
 
     float GetElapsedTime() const;
+    int   GetBeatCount() const;
     float GetTimeToNextBeat() const;
     float GetGoodWindow() const;
 
