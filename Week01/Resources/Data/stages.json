@@ -10,7 +10,7 @@
     {
       "metadata": {
         "id": 1,
-        "name": "Stage 1: Rhythm Beginnings",
+        "name": "Stage 1: 교육동 407호",
         "bpm": 61,
         "music": "Resources/Sounds/stage1.wav",
         "width": 12,
@@ -102,7 +102,7 @@
     {
       "metadata": {
         "id": 2,
-        "name": "Stage 2: Double Tempo",
+        "name": "Stage 2: 식당",
         "bpm": 72,
         "music": "Resources/Sounds/stage2.wav",
         "width": 25,
@@ -231,7 +231,7 @@
     {
       "metadata": {
         "id": 3,
-        "name": "Stage 3: Jungle Echo Maze",
+        "name": "Stage 3: 정글 캠퍼스 부지",
         "bpm": 80,
         "music": "Resources/Sounds/stage3.wav",
         "width": 77,
