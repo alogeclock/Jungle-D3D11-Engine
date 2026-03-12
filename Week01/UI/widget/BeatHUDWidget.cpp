@@ -64,7 +64,7 @@ void FBeatHUDWidget::Render(FGameContext &Context)
     Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
     Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
 
-    FontTexPair *FTPair = Context.FontManager.Get("BMKIRANGHAERANG_font");
+    FontTexPair *FTPair = Context.FontManager.Get("basic_font");
     if (Combo != 0)
         Context.Renderer.DrawFont("Combo x" + std::to_string(Combo), FTPair->Font.get(),
                                   FTPair->Tex.get(), Heart.X - 120, Heart.Y + 100, 75);
