@@ -16,6 +16,9 @@
 #include "UI/popup/SaveScorePopup.h"
 #include "UI/popup/UIPopupAction.h"
 
+#define WIN_WIDTH 1024
+#define WIN_HEIGHT 1024
+
 void FEndingScene::Update(FGameContext &Context)
 {
     ElapsedTime += Context.Time.GetDeltaTime();
@@ -40,7 +43,8 @@ void FEndingScene::Render(FGameContext &Context)
 
 void FEndingScene::RenderBackground(FGameContext &Context)
 {
-    // 네 기존 엔딩 배경 렌더 코드 유지
+    Context.Renderer.DrawTexture(Context.Textures.Get("ending"), (WIN_WIDTH / 2.f),
+                                 (WIN_HEIGHT / 2.f), WIN_WIDTH, WIN_HEIGHT);
 }
 
 void FEndingScene::OpenEndingPopup()
