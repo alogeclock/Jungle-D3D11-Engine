@@ -140,22 +140,22 @@ void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge, float InScore, int InCombo)
     {
     case EBeatJudge::Perfect:
         GetFromPool(PerfectTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
-        HeartXScale = OrgHeartXScale * 1.5;
-        HeartYScale = OrgHeartYScale * 1.4;
+        HeartXScale = OrgHeartXScale * 1.5f;
+        HeartYScale = OrgHeartYScale * 1.4f;
         HeartColorRatio = 1.0f; // <--- 추가: 주황색으로 번쩍임
         Logger::Log("Perfect! (in HUDWidget)");
         break;
     case EBeatJudge::Good:
         GetFromPool(GoodTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
-        HeartXScale = OrgHeartXScale * 1.25;
-        HeartYScale = OrgHeartYScale * 1.2;
+        HeartXScale = OrgHeartXScale * 1.25f;
+        HeartYScale = OrgHeartYScale * 1.2f;
         HeartColorRatio = 1.0f; // <--- 추가: 주황색으로 번쩍임
         Logger::Log("Good! (in HUDWidget)");
         break;
     case EBeatJudge::Miss:
         GetFromPool(MissTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
-        HeartXScale = OrgHeartXScale * 0.9;
-        HeartYScale = OrgHeartYScale * 0.95;
+        HeartXScale = OrgHeartXScale * 0.9f;
+        HeartYScale = OrgHeartYScale * 0.95f;
         Logger::Log("Miss! (in HUDWidget)");
         break;
     }

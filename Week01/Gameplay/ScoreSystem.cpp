@@ -9,7 +9,7 @@ void FScoreSystem::Reset()
 
 void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
 {
-    float AdditionScore = 0.f;
+    int AdditionScore = 0;
     switch (Judge)
     {
     case EBeatJudge::Perfect:
@@ -29,7 +29,7 @@ void FScoreSystem::AddBeatBonus(EBeatJudge Judge)
 
     if (OnJudgeCallback)
     {
-        OnJudgeCallback(Judge, AdditionScore, Combo);
+        OnJudgeCallback(Judge, static_cast<float>(AdditionScore), Combo);
     }
     if (OnJudgeScoreUpdateCallback)
     {
