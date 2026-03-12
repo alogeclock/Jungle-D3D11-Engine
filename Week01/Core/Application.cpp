@@ -135,7 +135,7 @@ bool FApplication::LoadSpriteResources()
         {"compass", "compass.png"},
         {"compass_needle", "compass_needle.png"},
         {"logo", "logo.png"},
-    };
+        {"stage_back", "stage_back.png"}};
 
     for (const FTextureResourceDesc &Resource : SpriteResources)
     {

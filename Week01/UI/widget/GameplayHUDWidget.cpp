@@ -108,9 +108,16 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         }
         Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 46, HPTextPos.Y + 70,
                                   TimeScale);
+
+        FTexture *StageBackGroundTexture = Context.Textures.Get("stage_back");
+
+        Context.Renderer.DrawTexture(StageBackGroundTexture, 125, HPTextPos.Y + 25, 230,
+                                     65); // Score Back
+
         std::string StageName = Stage->GetStageName();
         auto        iter = StageName.find(':');
         std::string StageIdx = StageName.substr(0, iter);
+
         Context.Renderer.DrawFont(StageIdx, Font, FontTex, 50, HPTextPos.Y, 50);
         // Context.Renderer.DrawFont("HP", Font, FontTex, HPTextPos.X, HPTextPos.Y, 35);
     }
