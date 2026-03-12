@@ -2,6 +2,10 @@
 
 리듬에 맞춰 던전을 탐험하는 2D 비트 액션 게임 (DirectX 11)
 
+## Demo
+
+[![Demo Video](https://img.youtube.com/vi/e3ChT2VRuvk/0.jpg)](https://youtu.be/e3ChT2VRuvk)
+
 ## 빌드 환경
 
 - **IDE**: Visual Studio 2022 (MSVC v143)
