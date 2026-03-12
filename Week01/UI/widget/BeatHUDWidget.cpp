@@ -30,10 +30,15 @@ void FBeatHUDWidget::Update(FGameContext &Context)
             Effect.Update(DeltaTime);
         }
     }
-    float RecoverSpeed = 10.0f;
-
+    float RecoverSpeed = 5.0f;
     HeartXScale += (OrgHeartXScale - HeartXScale) * RecoverSpeed * DeltaTime;
     HeartYScale += (OrgHeartYScale - HeartYScale) * RecoverSpeed * DeltaTime;
+
+    // --- 추가: 색상 복구 로직 ---
+    float ColorRecoverSpeed = 5.0f; // 스케일보다 약간 천천히 색상이 빠지게 연출
+    HeartColorRatio += (0.0f - HeartColorRatio) * ColorRecoverSpeed * DeltaTime;
+    if (HeartColorRatio < 0.0f)
+        HeartColorRatio = 0.0f;
 }
 
 void FBeatHUDWidget::Render(FGameContext &Context)
@@ -70,7 +75,17 @@ void FBeatHUDWidget::Render(FGameContext &Context)
                                  AdormentXScale, 20);
     Context.Renderer.DrawTexture(BarTexture, LeftBarX, Ypos, 20, 100);
     Context.Renderer.DrawTexture(BarTexture, RightBarX, Ypos, 20, 100);
-    Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale);
+
+    // --- 수정: 하트를 그릴 때 ColorTint 계산 후 전달 ---
+    // (0,0,0,0) 이 No Tint 이므로 주황색(R:1.0, G:0.5, B:0.0)에 Ratio를 곱해줌
+    DirectX::XMFLOAT4 HeartTint = {
+        1.0f,                                // Red: 항상 1.0 유지
+        1.0f - (0.5f * HeartColorRatio),     // Green: 1.0 -> 0.5 로 변화
+        1.0f - (1.0f * HeartColorRatio),     // Blue: 1.0 -> 0.0 으로 변화
+        HeartColorRatio > 0.0f ? 1.0f : 0.0f // Alpha (혹은 틴트 강도)
+    };
+    Context.Renderer.DrawTexture(HeartTexture, Heart.X, Heart.Y, HeartXScale, HeartYScale,
+                                 HeartTint);
 
     FontTexPair *FTPair = Context.FontManager.Get("basic_font");
     if (Combo != 0)
@@ -123,14 +138,16 @@ void FBeatHUDWidget::OnBeatJudged(EBeatJudge Judge, float InScore, int InCombo)
     {
     case EBeatJudge::Perfect:
         GetFromPool(PerfectTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
-        HeartXScale = OrgHeartXScale * 1.3;
-        HeartYScale = OrgHeartYScale * 1.2;
+        HeartXScale = OrgHeartXScale * 1.5;
+        HeartYScale = OrgHeartYScale * 1.4;
+        HeartColorRatio = 1.0f; // <--- 추가: 주황색으로 번쩍임
         Logger::Log("Perfect! (in HUDWidget)");
         break;
     case EBeatJudge::Good:
         GetFromPool(GoodTexture, Heart.X, Heart.Y - 100, 0.3f, InScore, InCombo);
-        HeartXScale = OrgHeartXScale * 1.15;
-        HeartYScale = OrgHeartYScale * 1.1;
+        HeartXScale = OrgHeartXScale * 1.25;
+        HeartYScale = OrgHeartYScale * 1.2;
+        HeartColorRatio = 1.0f; // <--- 추가: 주황색으로 번쩍임
         Logger::Log("Good! (in HUDWidget)");
         break;
     case EBeatJudge::Miss:

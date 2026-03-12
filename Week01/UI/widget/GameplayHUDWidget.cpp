@@ -131,6 +131,11 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
         float TimeX = ScreenW - MarginRight - TimeTextW;
         Context.Renderer.DrawFont(TimeBuf, Font, FontTex, TimeX, TopY + 70, TimeScale);
 
+        // Stage 배경
+        FTexture *StageBackGroundTexture = Context.Textures.Get("stage_back");
+        if (StageBackGroundTexture)
+            Context.Renderer.DrawTexture(StageBackGroundTexture, 125, TopY + 5, 230, 65);
+
         // Stage 이름: 좌측 고정
         std::string StageName = Stage->GetStageName();
         auto        iter = StageName.find(':');

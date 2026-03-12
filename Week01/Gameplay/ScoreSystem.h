@@ -22,6 +22,7 @@ class FScoreSystem
     void SetJudgeCallback(std::function<void(EBeatJudge, float, int)> Callback);
     void SetJudgeScoreUpdateCallback(std::function<void(int)> Callback);
     void SetTimerBonusCallback(std::function<void(int)> Callback);
+    void ExecuteTimerBonusCallback(int InScore);
 
   private:
     int                                         Score = 0;
