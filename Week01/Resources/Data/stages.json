@@ -11,7 +11,7 @@
       "metadata": {
         "id": 1,
         "name": "Stage 1: Rhythm Beginnings",
-        "bpm": 59,
+        "bpm": 61,
         "music": "Resources/Sounds/stage1.wav",
         "width": 12,
         "height": 10,
@@ -97,7 +97,7 @@
       "metadata": {
         "id": 2,
         "name": "Stage 2: Double Tempo",
-        "bpm": 70,
+        "bpm": 72,
         "music": "Resources/Sounds/stage2.wav",
         "width": 25,
         "height": 11,
@@ -346,7 +346,7 @@
             "type": "darkness_down"
           }
         ],
-        "time_limit": 80,
+        "time_limit": 90,
         "angry_time": 25,
         "angry_time_scale": 1.4,
         "monster_count": 15,
