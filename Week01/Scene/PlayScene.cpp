@@ -130,13 +130,13 @@ void FPlayScene::Render(FGameContext &Context)
         if (bInv || bFreeze)
         {
             ImGuiIO &Io = ImGui::GetIO();
-            ImGui::SetNextWindowPos(
-                ImVec2(Io.DisplaySize.x - 10.0f, Io.DisplaySize.y - 10.0f),
-                ImGuiCond_Always, ImVec2(1.0f, 1.0f));
+            ImGui::SetNextWindowPos(ImVec2(Io.DisplaySize.x - 10.0f, Io.DisplaySize.y - 10.0f),
+                                    ImGuiCond_Always, ImVec2(1.0f, 1.0f));
             ImGui::SetNextWindowBgAlpha(0.5f);
             ImGui::Begin("##CheatStatus", nullptr,
                          ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs |
-                             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing);
+                             ImGuiWindowFlags_AlwaysAutoResize |
+                             ImGuiWindowFlags_NoFocusOnAppearing);
             if (bInv)
                 ImGui::TextColored(ImVec4(1.0f, 0.9f, 0.2f, 1.0f), "[F1] Invincible ON");
             if (bFreeze)
@@ -178,12 +178,14 @@ void FPlayScene::LoadStage(FGameContext &Context)
     Minimap->BindStage(Stage.get());
     UIManager.AddWidget("Minimap", std::move(Minimap));
 
+#ifdef DEBUG
     auto Debug = std::make_unique<FDebugWidget>();
     Debug->BindStage(Stage.get());
     Debug->BindPauseFlag(&bIsPaused);
     Debug->SetTotalStages(FStageLoader::Get().GetStageCount());
     Debug->SetStageChangeCallback([this](int Index) { PendingStageIndex = Index; });
     UIManager.AddWidget("Debug", std::move(Debug));
+#endif
 
     FStageData StageData;
     if (FStageLoader::Get().LoadStageById(CurrentStageIndex, StageData))

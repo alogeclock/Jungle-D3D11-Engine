@@ -68,7 +68,7 @@ void FDebugWidget::Render(FGameContext &Context)
         if (ImGui::SliderFloat("TimeScale", &TimeScale, 0.2f, 2.0f, "%.2f"))
         {
             Stage->GetBeatSystem().SetTimeScale(TimeScale);
-            FAudioSystem::Get().SetAllPlaybackRate(TimeScale);
+            FAudioSystem::Get().SetChannelPlaybackRate(EAudioChannel::BGM, TimeScale);
         }
 
         if (BpmOverride == 0.0f)
@@ -194,7 +194,7 @@ void FDebugWidget::Render(FGameContext &Context)
 
             TimeScale = 1.0f;
             Stage->GetBeatSystem().SetTimeScale(1.0f);
-            FAudioSystem::Get().SetAllPlaybackRate(1.0f);
+            FAudioSystem::Get().SetChannelPlaybackRate(EAudioChannel::BGM, 1.0f);
 
             BpmOverride = Stage->GetMap().GetBpm();
             Stage->GetBeatSystem().SetBpm(BpmOverride);

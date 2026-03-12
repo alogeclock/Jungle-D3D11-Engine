@@ -30,6 +30,15 @@ bool FAudioSystem::Initialize()
         return false;
     }
 
+    // Submix Voice 생성 (BGM / SFX)
+    Hr = XAudio2->CreateSubmixVoice(&BgmSubmix, 2, 44100);
+    if (FAILED(Hr))
+        BgmSubmix = nullptr;
+
+    Hr = XAudio2->CreateSubmixVoice(&SfxSubmix, 2, 44100);
+    if (FAILED(Hr))
+        SfxSubmix = nullptr;
+
     bInitialized = true;
     return true;
 }
@@ -40,6 +49,18 @@ void FAudioSystem::Shutdown()
         return;
 
     StopAll();
+
+    if (BgmSubmix)
+    {
+        BgmSubmix->DestroyVoice();
+        BgmSubmix = nullptr;
+    }
+
+    if (SfxSubmix)
+    {
+        SfxSubmix->DestroyVoice();
+        SfxSubmix = nullptr;
+    }
 
     if (MasterVoice)
     {
@@ -55,6 +76,11 @@ void FAudioSystem::Shutdown()
 
     LoadedSounds.clear();
     bInitialized = false;
+}
+
+IXAudio2SubmixVoice *FAudioSystem::GetSubmixVoice(EAudioChannel Channel)
+{
+    return (Channel == EAudioChannel::BGM) ? BgmSubmix : SfxSubmix;
 }
 
 // RIFF WAV 파일 파싱
@@ -142,7 +168,7 @@ bool FAudioSystem::LoadWav(const std::string &Key, const std::string &FilePath)
     return true;
 }
 
-bool FAudioSystem::Play(const std::string &Key, bool bLoop)
+bool FAudioSystem::Play(const std::string &Key, bool bLoop, EAudioChannel Channel)
 {
     if (!bInitialized)
         return false;
@@ -156,8 +182,17 @@ bool FAudioSystem::Play(const std::string &Key, bool bLoop)
 
     const FWavData &Data = It->second;
 
+    // Submix Voice로 라우팅
+    IXAudio2SubmixVoice *Submix = GetSubmixVoice(Channel);
+    XAUDIO2_SEND_DESCRIPTOR Send = {};
+    Send.pOutputVoice = Submix;
+    XAUDIO2_VOICE_SENDS SendList = {};
+    SendList.SendCount = 1;
+    SendList.pSends = &Send;
+
     IXAudio2SourceVoice *Voice = nullptr;
-    HRESULT Hr = XAudio2->CreateSourceVoice(&Voice, Data.GetFormat());
+    HRESULT Hr = XAudio2->CreateSourceVoice(&Voice, Data.GetFormat(), 0, XAUDIO2_DEFAULT_FREQ_RATIO,
+                                             nullptr, Submix ? &SendList : nullptr);
     if (FAILED(Hr))
         return false;
 
@@ -182,6 +217,7 @@ bool FAudioSystem::Play(const std::string &Key, bool bLoop)
 
     FPlayingVoice PV;
     PV.Voice = Voice;
+    PV.Channel = Channel;
     PV.bIsPlaying = true;
     PlayingVoices[Key] = PV;
 
@@ -215,6 +251,26 @@ void FAudioSystem::StopAll()
     PlayingVoices.clear();
 }
 
+void FAudioSystem::StopChannel(EAudioChannel Channel)
+{
+    for (auto It = PlayingVoices.begin(); It != PlayingVoices.end(); )
+    {
+        if (It->second.Channel == Channel)
+        {
+            if (It->second.Voice)
+            {
+                It->second.Voice->Stop(0);
+                It->second.Voice->DestroyVoice();
+            }
+            It = PlayingVoices.erase(It);
+        }
+        else
+        {
+            ++It;
+        }
+    }
+}
+
 void FAudioSystem::SetVolume(const std::string &Key, float Volume)
 {
     auto It = PlayingVoices.find(Key);
@@ -232,6 +288,15 @@ void FAudioSystem::SetMasterVolume(float Volume)
     }
 }
 
+void FAudioSystem::SetChannelVolume(EAudioChannel Channel, float Volume)
+{
+    IXAudio2SubmixVoice *Submix = GetSubmixVoice(Channel);
+    if (Submix)
+    {
+        Submix->SetVolume(Volume);
+    }
+}
+
 void FAudioSystem::SetPlaybackRate(const std::string &Key, float Rate)
 {
     auto It = PlayingVoices.find(Key);
@@ -246,6 +311,17 @@ void FAudioSystem::SetAllPlaybackRate(float Rate)
     for (auto &Pair : PlayingVoices)
     {
         if (Pair.second.Voice)
+        {
+            Pair.second.Voice->SetFrequencyRatio(Rate);
+        }
+    }
+}
+
+void FAudioSystem::SetChannelPlaybackRate(EAudioChannel Channel, float Rate)
+{
+    for (auto &Pair : PlayingVoices)
+    {
+        if (Pair.second.Channel == Channel && Pair.second.Voice)
         {
             Pair.second.Voice->SetFrequencyRatio(Rate);
         }
