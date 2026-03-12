@@ -1,109 +1,59 @@
 {
     "scoreboard": [
         {
-            "nickname": "CLEAR",
+            "nickname": "THIS",
             "score": 9310,
             "stage": 3
         },
         {
-            "nickname": "FAS",
+            "nickname": "JUNGLE",
             "score": 4063,
             "stage": 3
         },
         {
-            "nickname": "ASD",
+            "nickname": "MAZE",
             "score": 1650,
             "stage": 3
         },
         {
-            "nickname": "EAGLE",
+            "nickname": "IS",
             "score": 990,
             "stage": 3
         },
         {
-            "nickname": "ZZZZZ",
+            "nickname": "HELL",
             "score": 920,
             "stage": 3
         },
         {
-            "nickname": "AAA",
+            "nickname": "PLEASE",
             "score": 870,
             "stage": 2
         },
         {
-            "nickname": "GALAXY",
+            "nickname": "HELP",
             "score": 830,
             "stage": 1
         },
         {
-            "nickname": "Q",
+            "nickname": "ME",
             "score": 760,
             "stage": 1
         },
         {
-            "nickname": "CAT",
-            "score": 650,
-            "stage": 2
-        },
-        {
-            "nickname": "HI",
-            "score": 570,
-            "stage": 3
-        },
-        {
-            "nickname": "ABCDEF",
-            "score": 540,
+            "nickname": "AAAAAA",
+            "score": 500,
             "stage": 1
         },
         {
-            "nickname": "TT",
-            "score": 480,
-            "stage": 3
-        },
-        {
-            "nickname": "ICE",
-            "score": 400,
+            "nickname": "BBBBBB",
+            "score": 250,
             "stage": 2
         },
         {
-            "nickname": "BBBB",
-            "score": 310,
-            "stage": 2
-        },
-        {
-            "nickname": "DOGE",
-            "score": 220,
-            "stage": 1
-        },
-        {
-            "nickname": "FROST",
-            "score": 140,
-            "stage": 2
-        },
-        {
-            "nickname": "ASD",
-            "score": 30,
+            "nickname": "CCCC",
+            "score": 100,
             "stage": 3
-        },
-        {
-            "nickname": "DD",
-            "score": 0,
-            "stage": 3
-        },
-        {
-            "nickname": "FF",
-            "score": 0,
-            "stage": 3
-        },
-        {
-            "nickname": "RR",
-            "score": 0,
-            "stage": 3
-        },
-        {
-            "nickname": "FDF",
-            "score": 0,
-            "stage": 1
         }
     ]
 }
