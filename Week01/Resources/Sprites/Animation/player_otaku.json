@@ -6,28 +6,28 @@
             "loop": true,
             "frames": [
                 {
-                    "offset_min": [ 204, 1 ],
-                    "offset_max": [ 408, 204 ],
+                    "offset_min": [ 207, 0 ],
+                    "offset_max": [ 407, 200 ],
                     "duration": 0.25
                 },
                 {
-                    "offset_min": [ 408, 1 ],
-                    "offset_max": [ 612, 204 ],
+                    "offset_min": [ 408, 0 ],
+                    "offset_max": [ 608, 200 ],
                     "duration": 0.25
                 },
                 {
-                    "offset_min": [ 0, 205 ],
-                    "offset_max": [ 204, 408 ],
+                    "offset_min": [ 5, 202 ],
+                    "offset_max": [ 205, 402 ],
                     "duration": 0.25
                 },
                 {
-                    "offset_min": [ 204, 205 ],
-                    "offset_max": [ 408, 408 ],
+                    "offset_min": [ 206, 214 ],
+                    "offset_max": [ 406, 414 ],
                     "duration": 0.25
                 },
                 {
-                    "offset_min": [ 408, 205 ],
-                    "offset_max": [ 612, 408 ],
+                    "offset_min": [ 406, 214 ],
+                    "offset_max": [ 606, 414 ],
                     "duration": 0.25
                 }
             ]
