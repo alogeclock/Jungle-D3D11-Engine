@@ -11,6 +11,7 @@ CLAUDE.md
 Windows/
 Save/
 imgui.ini
+Resources/Data/scoreboard.json
 
 # Compiled Object files
 *.slo
