@@ -79,6 +79,26 @@
             "nickname": "ASD",
             "score": 30,
             "stage": 3
+        },
+        {
+            "nickname": "DD",
+            "score": 0,
+            "stage": 3
+        },
+        {
+            "nickname": "FF",
+            "score": 0,
+            "stage": 3
+        },
+        {
+            "nickname": "RR",
+            "score": 0,
+            "stage": 3
+        },
+        {
+            "nickname": "FDF",
+            "score": 0,
+            "stage": 1
         }
     ]
 }
