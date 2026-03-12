@@ -1,13 +1,11 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "SaveScorePopup.h"
 #include <cctype>
 #include <cstring>
 #include <cstdio>
+#include <algorithm>
 
-FSaveScorePopup::FSaveScorePopup()
-{
-    SyncBufferFromNickname();
-}
+FSaveScorePopup::FSaveScorePopup() { SyncBufferFromNickname(); }
 
 void FSaveScorePopup::SetNickname(const std::string &InNickname)
 {
@@ -36,36 +34,52 @@ void FSaveScorePopup::Render(FGameContext &Context)
     std::snprintf(ScoreText, sizeof(ScoreText), "Score : %d", Score);
     std::snprintf(StageText, sizeof(StageText), "Stage : %d", Stage);
 
-    ImGui::SetWindowFontScale(1.0f);
+    const float InfoFontScale = 1.35f;
+    ImGui::SetWindowFontScale(InfoFontScale);
 
     const ImVec2 ScoreSize = CalcUtf8TextSize(ScoreText);
     const ImVec2 StageSize = CalcUtf8TextSize(StageText);
 
-    const float ScoreX = GetAlignedX(Layout, ScoreSize.x, EUIPopupContentAlign::Center);
-    const float StageX = GetAlignedX(Layout, StageSize.x, EUIPopupContentAlign::Center);
+    const float InfoBlockWidth = (ScoreSize.x > StageSize.x) ? ScoreSize.x : StageSize.x;
+    const float InfoStartX = GetAlignedX(Layout, InfoBlockWidth, EUIPopupContentAlign::Center);
 
     const float ScoreY = Layout.ContentTop + 20.0f;
-    const float StageY = ScoreY + ScoreSize.y + 10.0f;
+    const float StageY = ScoreY + ScoreSize.y + 12.0f;
 
-    ImGui::SetCursorPos(ImVec2(ScoreX, ScoreY));
+    ImGui::SetCursorPos(ImVec2(InfoStartX, ScoreY));
     TextUnformattedUtf8(ScoreText);
 
-    ImGui::SetCursorPos(ImVec2(StageX, StageY));
+    ImGui::SetCursorPos(ImVec2(InfoStartX, StageY));
     TextUnformattedUtf8(StageText);
 
-    const char *Label = "Nickname";
-    const ImVec2 LabelSize = CalcUtf8TextSize(Label);
+    ImGui::SetWindowFontScale(1.0f);
 
-    const float InputWidth = 180.0f;
-    const float LabelX = Layout.ContentLeft + (Layout.ContentWidth - LabelSize.x) * 0.5f;
-    const float InputX = Layout.ContentLeft + (Layout.ContentWidth - InputWidth) * 0.5f;
-    const float LabelY = StageY + StageSize.y + 20.0f;
-    const float InputY = LabelY + LabelSize.y + 12.0f;
+    const char *Label = "Nickname: ";
+    const float LabelFontScale = 1.2f;
+    const float InputFontScale = 1.3f;
+    const float InputWidth = 240.0f;
+    const float RowGap = 12.0f;
+
+    ImGui::SetWindowFontScale(LabelFontScale);
+    const ImVec2 LabelSize = CalcUtf8TextSize(Label);
+    ImGui::SetWindowFontScale(1.0f);
+
+    const float RowWidth = LabelSize.x + RowGap + InputWidth;
+    const float RowStartX = Layout.ContentLeft + (Layout.ContentWidth - RowWidth) * 0.5f;
+    const float LabelX = RowStartX;
+    const float InputX = LabelX + LabelSize.x + RowGap;
+
+    const float RowY = StageY + StageSize.y + 24.0f;
+    const float LabelY = RowY + 8.0f;
+    const float InputY = RowY;
 
     ImGui::SetCursorPos(ImVec2(LabelX, LabelY));
+    ImGui::SetWindowFontScale(LabelFontScale);
     TextUnformattedUtf8(Label);
+    ImGui::SetWindowFontScale(1.0f);
 
     ImGui::SetCursorPos(ImVec2(InputX, InputY));
+    ImGui::SetWindowFontScale(InputFontScale);
     ImGui::PushItemWidth(InputWidth);
     if (ImGui::InputText("##NicknameInput", NicknameBuffer, sizeof(NicknameBuffer),
                          ImGuiInputTextFlags_CharsUppercase))
@@ -76,6 +90,7 @@ void FSaveScorePopup::Render(FGameContext &Context)
             bShowValidationMessage = false;
     }
     ImGui::PopItemWidth();
+    ImGui::SetWindowFontScale(1.0f);
 
     if (bShowValidationMessage)
     {
@@ -83,7 +98,6 @@ void FSaveScorePopup::Render(FGameContext &Context)
         const ImVec2 ValidationSize = CalcUtf8TextSize(ValidationText);
         const float ValidationX =
             Layout.ContentLeft + (Layout.ContentWidth - ValidationSize.x) * 0.5f;
-
         const float ValidationY = Layout.ContentTop + Layout.ContentHeight - 36.0f;
 
         ImGui::SetCursorPos(ImVec2(ValidationX, ValidationY));
@@ -130,10 +144,7 @@ void FSaveScorePopup::SyncBufferFromNickname()
     NicknameBuffer[CopyCount] = '\0';
 }
 
-void FSaveScorePopup::SyncNicknameFromBuffer()
-{
-    Nickname = NicknameBuffer;
-}
+void FSaveScorePopup::SyncNicknameFromBuffer() { Nickname = NicknameBuffer; }
 
 bool FSaveScorePopup::IsValidNickname() const
 {
