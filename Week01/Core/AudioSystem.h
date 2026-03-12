@@ -38,9 +38,11 @@ class FAudioSystem : public TSingleton<FAudioSystem>
     void StopChannel(EAudioChannel Channel);
 
     // 볼륨 조절 (0.0 ~ 1.0)
-    void SetVolume(const std::string &Key, float Volume);
-    void SetMasterVolume(float Volume);
-    void SetChannelVolume(EAudioChannel Channel, float Volume);
+    void  SetVolume(const std::string &Key, float Volume);
+    void  SetMasterVolume(float Volume);
+    float GetMasterVolume() const;
+    void  SetChannelVolume(EAudioChannel Channel, float Volume);
+    float GetChannelVolume(EAudioChannel Channel) const;
 
     // 재생 속도 조절 (1.0 = 원래 속도)
     void SetPlaybackRate(const std::string &Key, float Rate);

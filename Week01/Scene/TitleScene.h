@@ -25,6 +25,7 @@ class FTitleScene : public IScene
 
     void OpenCreditPopup();
     void OpenScoreboardPopup();
+    void OpenSettingsPopup();
 
     bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
                               EUIPopupAction Action) override;

@@ -35,6 +35,7 @@
     <ClCompile Include="Render\FontManager.cpp" />
     <ClCompile Include="Render\TextQuad.cpp" />
     <ClCompile Include="UI\popup\CreditPopup.cpp" />
+    <ClCompile Include="UI\popup\SettingsPopup.cpp" />
     <ClCompile Include="UI\popup\GameOverPopup.cpp" />
     <ClCompile Include="UI\popup\GoToTitlePopup.cpp" />
     <ClCompile Include="UI\popup\PopupManager.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="ThirdParty\stb_image.h" />
     <ClInclude Include="UI\Popup.h" />
     <ClInclude Include="UI\popup\CreditPopup.h" />
+    <ClInclude Include="UI\popup\SettingsPopup.h" />
     <ClInclude Include="UI\popup\GameOverPopup.h" />
     <ClInclude Include="UI\popup\GoToTitlePopup.h" />
     <ClInclude Include="UI\popup\PopupManager.h" />

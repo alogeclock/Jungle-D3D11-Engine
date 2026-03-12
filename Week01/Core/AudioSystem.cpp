@@ -288,6 +288,14 @@ void FAudioSystem::SetMasterVolume(float Volume)
     }
 }
 
+float FAudioSystem::GetMasterVolume() const
+{
+    float Volume = 1.0f;
+    if (MasterVoice)
+        MasterVoice->GetVolume(&Volume);
+    return Volume;
+}
+
 void FAudioSystem::SetChannelVolume(EAudioChannel Channel, float Volume)
 {
     IXAudio2SubmixVoice *Submix = GetSubmixVoice(Channel);
@@ -295,6 +303,16 @@ void FAudioSystem::SetChannelVolume(EAudioChannel Channel, float Volume)
     {
         Submix->SetVolume(Volume);
     }
+}
+
+float FAudioSystem::GetChannelVolume(EAudioChannel Channel) const
+{
+    float Volume = 1.0f;
+    IXAudio2SubmixVoice *Submix =
+        (Channel == EAudioChannel::BGM) ? BgmSubmix : SfxSubmix;
+    if (Submix)
+        Submix->GetVolume(&Volume);
+    return Volume;
 }
 
 void FAudioSystem::SetPlaybackRate(const std::string &Key, float Rate)
