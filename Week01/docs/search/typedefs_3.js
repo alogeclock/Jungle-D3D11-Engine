@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['indexcollection_0',['IndexCollection',['../class_direct_x_1_1_d_x12_1_1_geometric_primitive.html#afcdcecf026039b0878c0fbccfa0d33c5',1,'DirectX::DX12::GeometricPrimitive']]],
-  ['indextype_1',['IndexType',['../class_direct_x_1_1_descriptor_pile.html#a7718f4e5bb01ec671e50a8dd57887271',1,'DirectX::DescriptorPile']]],
-  ['inputlayoutcollection_2',['InputLayoutCollection',['../class_direct_x_1_1_d_x12_1_1_model_mesh_part.html#acaa99c62bfb509ea82372a6816d74005',1,'DirectX::DX12::ModelMeshPart']]]
+  ['pfn_5fgetdpiformonitor_0',['PFN_GetDpiForMonitor',['../imgui__impl__win32_8cpp.html#a411247e61a6621babce2d06bb8a434db',1,'imgui_impl_win32.cpp']]],
+  ['pfn_5fsetprocessdpiawareness_1',['PFN_SetProcessDpiAwareness',['../imgui__impl__win32_8cpp.html#a36d30a5f5f7942a50b272fa13058cf96',1,'imgui_impl_win32.cpp']]],
+  ['pfn_5fsetthreaddpiawarenesscontext_2',['PFN_SetThreadDpiAwarenessContext',['../imgui__impl__win32_8cpp.html#ac4fd09e8ec8568aa443549a1286800b1',1,'imgui_impl_win32.cpp']]],
+  ['pfn_5fxinputgetcapabilities_3',['PFN_XInputGetCapabilities',['../imgui__impl__win32_8cpp.html#ab894020cfaceec8e0a7e24a2b8cf003a',1,'imgui_impl_win32.cpp']]],
+  ['pfn_5fxinputgetstate_4',['PFN_XInputGetState',['../imgui__impl__win32_8cpp.html#a0554b333dae0845c369b9d7234c695e9',1,'imgui_impl_win32.cpp']]]
 ];

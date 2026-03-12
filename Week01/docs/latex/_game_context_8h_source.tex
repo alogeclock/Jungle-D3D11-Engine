@@ -4,17 +4,19 @@
 \begin{DoxyCode}{0}
 \DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{00002\ }
-\DoxyCodeLine{00003\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_time}{FTime}};}
-\DoxyCodeLine{00004\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_input}{FInput}};}
-\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_renderer}{FRenderer}};}
-\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}};}
-\DoxyCodeLine{00007\ }
-\DoxyCodeLine{00008\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}}
-\DoxyCodeLine{00009\ \{}
-\DoxyCodeLine{00010\ \ \ \ \ \doxymbox{\hyperlink{class_f_time}{FTime}}\ \ \ \ \ \ \ \ \ \ \ \&\doxymbox{\hyperlink{struct_f_game_context_a32d4d2f5a7e211694d894a25ff5bc69c}{Time}};}
-\DoxyCodeLine{00011\ \ \ \ \ \doxymbox{\hyperlink{class_f_input}{FInput}}\ \ \ \ \ \ \ \ \ \ \&\doxymbox{\hyperlink{struct_f_game_context_a9e04dcf3284b5c71a52c94b0f8fdbc45}{Input}};}
-\DoxyCodeLine{00012\ \ \ \ \ \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}\ \ \ \ \ \ \ \&\doxymbox{\hyperlink{struct_f_game_context_a0bdbd68b5b4afaa56940de568cc54c96}{Renderer}};}
-\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}\ \&\doxymbox{\hyperlink{struct_f_game_context_ab080f64b9c4cd8a144274693f41c9831}{Textures}};}
-\DoxyCodeLine{00014\ \};}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_renderer_8h}{Render/Renderer.h}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_texture_manager_8h}{Render/TextureManager.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_time_8h}{Core/Time.h}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_input_8h}{Core/Input.h}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_font_manager_8h}{Render/FontManager.h}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}}
+\DoxyCodeLine{00010\ \{}
+\DoxyCodeLine{00011\ \ \ \ \ \doxymbox{\hyperlink{class_f_time}{FTime}}\&\ \doxymbox{\hyperlink{struct_f_game_context_a32d4d2f5a7e211694d894a25ff5bc69c}{Time}};}
+\DoxyCodeLine{00012\ \ \ \ \ \doxymbox{\hyperlink{class_f_input}{FInput}}\&\ \doxymbox{\hyperlink{struct_f_game_context_a9e04dcf3284b5c71a52c94b0f8fdbc45}{Input}};}
+\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}\&\ \doxymbox{\hyperlink{struct_f_game_context_a0bdbd68b5b4afaa56940de568cc54c96}{Renderer}};}
+\DoxyCodeLine{00014\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}\&\ \doxymbox{\hyperlink{struct_f_game_context_ab080f64b9c4cd8a144274693f41c9831}{Textures}};}
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{class_f_font_manager}{FFontManager}}\&\ \doxymbox{\hyperlink{struct_f_game_context_a3030a8db12265f86e7e1a20c3c8da612}{FontManager}};}
+\DoxyCodeLine{00016\ \};}
 
 \end{DoxyCode}

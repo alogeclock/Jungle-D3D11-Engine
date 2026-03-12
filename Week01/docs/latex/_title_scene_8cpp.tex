@@ -1,13 +1,40 @@
 \doxysection{Scene/\+\+Title\+Scene.cpp File Reference}
 \hypertarget{_title_scene_8cpp}{}\label{_title_scene_8cpp}\index{Scene/TitleScene.cpp@{Scene/TitleScene.cpp}}
 {\ttfamily \+\#include "{}pch.\+h"{}}\newline
-{\ttfamily \+\#include "{}Title\+Scene.\+h"{}}\newline
+{\ttfamily \+\#include $<$memory$>$}\newline
+{\ttfamily \+\#include $<$string$>$}\newline
+{\ttfamily \+\#include "{}Core/\+\+Audio\+System.\+h"{}}\newline
 {\ttfamily \+\#include "{}Core/\+\+Game\+Context.\+h"{}}\newline
+{\ttfamily \+\#include "{}Data/\+\+Score\+Repository.\+h"{}}\newline
 {\ttfamily \+\#include "{}Render/\+\+Renderer.\+h"{}}\newline
-{\ttfamily \+\#include "{}Gameplay/\+\+Credit\+Popup.\+h"{}}\newline
-{\ttfamily \+\#include "{}Gameplay/\+\+Scoreboard\+Popup.\+h"{}}\newline
-{\ttfamily \+\#include "{}imgui/\+imgui.\+h"{}}\newline
-{\ttfamily \+\#include "{}imgui/\+imgui\+\_\+internal.\+h"{}}\newline
-{\ttfamily \+\#include "{}imgui/\+imgui\+\_\+impl\+\_\+dx11.\+h"{}}\newline
-{\ttfamily \+\#include "{}imgui/\+imgui\+\_\+impl\+\_\+win32.\+h"{}}\newline
 {\ttfamily \+\#include "{}Render/\+\+Texture\+Manager.\+h"{}}\newline
+{\ttfamily \+\#include "{}Scene/\+\+Scene\+Type.\+h"{}}\newline
+{\ttfamily \+\#include "{}Title\+Scene.\+h"{}}\newline
+{\ttfamily \+\#include "{}UI/\+popup/\+\+Credit\+Popup.\+h"{}}\newline
+{\ttfamily \+\#include "{}UI/\+popup/\+\+Popup\+Manager.\+h"{}}\newline
+{\ttfamily \+\#include "{}UI/\+popup/\+\+Scoreboard\+Popup.\+h"{}}\newline
+{\ttfamily \+\#include "{}UI/\+popup/\+\+UIPopup\+Action.\+h"{}}\newline
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{_title_scene_8cpp_a2e6ef411e0ff00ad889788b6cde701b5}{WIN\+\_\+\+WIDTH}}~1024
+\item 
+\+\#define \doxymbox{\hyperlink{_title_scene_8cpp_a0a33b1743038db1adbbf1045aa839b38}{WIN\+\_\+\+HEIGHT}}~1024
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_title_scene_8cpp_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_title_scene_8cpp_a0a33b1743038db1adbbf1045aa839b38}\index{TitleScene.cpp@{TitleScene.cpp}!WIN\_HEIGHT@{WIN\_HEIGHT}}
+\index{WIN\_HEIGHT@{WIN\_HEIGHT}!TitleScene.cpp@{TitleScene.cpp}}
+\doxysubsubsection{\texorpdfstring{WIN\_HEIGHT}{WIN\_HEIGHT}}
+{\footnotesize\ttfamily \label{_title_scene_8cpp_a0a33b1743038db1adbbf1045aa839b38} 
+\+\#define WIN\+\_\+\+HEIGHT~1024}
+
+\Hypertarget{_title_scene_8cpp_a2e6ef411e0ff00ad889788b6cde701b5}\index{TitleScene.cpp@{TitleScene.cpp}!WIN\_WIDTH@{WIN\_WIDTH}}
+\index{WIN\_WIDTH@{WIN\_WIDTH}!TitleScene.cpp@{TitleScene.cpp}}
+\doxysubsubsection{\texorpdfstring{WIN\_WIDTH}{WIN\_WIDTH}}
+{\footnotesize\ttfamily \label{_title_scene_8cpp_a2e6ef411e0ff00ad889788b6cde701b5} 
+\+\#define WIN\+\_\+\+WIDTH~1024}
+

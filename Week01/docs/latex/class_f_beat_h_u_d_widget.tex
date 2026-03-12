@@ -13,11 +13,19 @@ Inheritance diagram for FBeat\+HUDWidget:\+\begin{figure}[H]
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
+\doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a9ab9d94b4948fb40bed1f2827f785221}{FBeat\+HUDWidget}} ()
+\item 
 void \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a571ec09b93fc6206cc2f8ac501bd019b}{Bind\+Beat\+System}} (const \doxymbox{\hyperlink{class_f_beat_system}{FBeat\+System}} \texorpdfstring{$\ast$}{*}Beat\+System)
 \item 
 void \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a2508e279b528556a0c4129d0536e8f98}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
 \item 
 void \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a9d1f3a65882c0a3797f0d9745555396c}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\item 
+virtual void \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_ac51303480d7dfdad8ffe7c5ab49009f0}{Set\+Textures}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\item 
+void \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_ac0df7156d0aebceceb0c013c61a43622}{On\+Beat\+Judged}} (\doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}} Judge, float In\+Score, int In\+Combo)
+\item 
+\doxymbox{\hyperlink{struct_beat_effect}{Beat\+Effect}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a5a01e0a1d2f3e27aaa3411a09783450c}{Get\+From\+Pool}} (\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}Texture, float PosX, float PosY, float In\+Lifetime, float In\+Score, int In\+Combo)
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_i_u_i_widget}{IUIWidget}}}
 \begin{DoxyCompactItemize}
@@ -36,6 +44,17 @@ bool \doxymbox{\hyperlink{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}{
 \end{DoxyCompactItemize}
 
 
+\label{doc-constructors}
+\Hypertarget{class_f_beat_h_u_d_widget_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_beat_h_u_d_widget_a9ab9d94b4948fb40bed1f2827f785221}\index{FBeatHUDWidget@{FBeatHUDWidget}!FBeatHUDWidget@{FBeatHUDWidget}}
+\index{FBeatHUDWidget@{FBeatHUDWidget}!FBeatHUDWidget@{FBeatHUDWidget}}
+\doxysubsubsection{\texorpdfstring{FBeatHUDWidget()}{FBeatHUDWidget()}}
+{\footnotesize\ttfamily \label{class_f_beat_h_u_d_widget_a9ab9d94b4948fb40bed1f2827f785221} 
+FBeat\+HUDWidget::\+\+FBeat\+HUDWidget (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
 \label{doc-func-members}
 \Hypertarget{class_f_beat_h_u_d_widget_doc-func-members}
 \doxysubsection{Member Function Documentation}
@@ -44,6 +63,18 @@ bool \doxymbox{\hyperlink{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}{
 \doxysubsubsection{\texorpdfstring{BindBeatSystem()}{BindBeatSystem()}}
 {\footnotesize\ttfamily \label{class_f_beat_h_u_d_widget_a571ec09b93fc6206cc2f8ac501bd019b} 
 void FBeat\+HUDWidget::\+\+Bind\+Beat\+System (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_beat_system}{FBeat\+System}} \texorpdfstring{$\ast$}{*}}]{Beat\+System}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_beat_h_u_d_widget_a5a01e0a1d2f3e27aaa3411a09783450c}\index{FBeatHUDWidget@{FBeatHUDWidget}!GetFromPool@{GetFromPool}}
+\index{GetFromPool@{GetFromPool}!FBeatHUDWidget@{FBeatHUDWidget}}
+\doxysubsubsection{\texorpdfstring{GetFromPool()}{GetFromPool()}}
+{\footnotesize\ttfamily \label{class_f_beat_h_u_d_widget_a5a01e0a1d2f3e27aaa3411a09783450c} 
+\doxymbox{\hyperlink{struct_beat_effect}{Beat\+Effect}} \texorpdfstring{$\ast$}{*} FBeat\+HUDWidget::\+\+Get\+From\+Pool (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{Texture}{, }\item[{float}]{PosX}{, }\item[{float}]{PosY}{, }\item[{float}]{In\+Lifetime}{, }\item[{float}]{In\+Score}{, }\item[{int}]{In\+Combo}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_beat_h_u_d_widget_ac0df7156d0aebceceb0c013c61a43622}\index{FBeatHUDWidget@{FBeatHUDWidget}!OnBeatJudged@{OnBeatJudged}}
+\index{OnBeatJudged@{OnBeatJudged}!FBeatHUDWidget@{FBeatHUDWidget}}
+\doxysubsubsection{\texorpdfstring{OnBeatJudged()}{OnBeatJudged()}}
+{\footnotesize\ttfamily \label{class_f_beat_h_u_d_widget_ac0df7156d0aebceceb0c013c61a43622} 
+void FBeat\+HUDWidget::\+\+On\+Beat\+Judged (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}}}]{Judge}{, }\item[{float}]{In\+Score}{, }\item[{int}]{In\+Combo}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_beat_h_u_d_widget_a9d1f3a65882c0a3797f0d9745555396c}\index{FBeatHUDWidget@{FBeatHUDWidget}!Render@{Render}}
 \index{Render@{Render}!FBeatHUDWidget@{FBeatHUDWidget}}
@@ -54,6 +85,16 @@ void FBeat\+HUDWidget::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyp
 
 
 Implements \doxymbox{\hyperlink{class_i_u_i_widget_ae700b3bb9392cd080853fb6427befc43}{IUIWidget}}.
+
+\Hypertarget{class_f_beat_h_u_d_widget_ac51303480d7dfdad8ffe7c5ab49009f0}\index{FBeatHUDWidget@{FBeatHUDWidget}!SetTextures@{SetTextures}}
+\index{SetTextures@{SetTextures}!FBeatHUDWidget@{FBeatHUDWidget}}
+\doxysubsubsection{\texorpdfstring{SetTextures()}{SetTextures()}}
+{\footnotesize\ttfamily \label{class_f_beat_h_u_d_widget_ac51303480d7dfdad8ffe7c5ab49009f0} 
+void FBeat\+HUDWidget::\+\+Set\+Textures (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_u_i_widget_abe9665fcd1afef16bf899c4d7eea062e}{IUIWidget}}.
 
 \Hypertarget{class_f_beat_h_u_d_widget_a2508e279b528556a0c4129d0536e8f98}\index{FBeatHUDWidget@{FBeatHUDWidget}!Update@{Update}}
 \index{Update@{Update}!FBeatHUDWidget@{FBeatHUDWidget}}
@@ -69,5 +110,5 @@ Implements \doxymbox{\hyperlink{class_i_u_i_widget_a550065e70237fac75b7c61ab81e9
 
 The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
 \item 
-UI/\+\doxymbox{\hyperlink{_beat_h_u_d_widget_8h}{Beat\+HUDWidget.\+h}}\item 
-UI/\+\doxymbox{\hyperlink{_beat_h_u_d_widget_8cpp}{Beat\+HUDWidget.\+cpp}}\end{DoxyCompactItemize}
+UI/\+widget/\+\doxymbox{\hyperlink{_beat_h_u_d_widget_8h}{Beat\+HUDWidget.\+h}}\item 
+UI/\+widget/\+\doxymbox{\hyperlink{_beat_h_u_d_widget_8cpp}{Beat\+HUDWidget.\+cpp}}\end{DoxyCompactItemize}

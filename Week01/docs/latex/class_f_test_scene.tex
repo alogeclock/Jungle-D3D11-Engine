@@ -1,0 +1,71 @@
+\doxysection{FTest\+Scene Class Reference}
+\hypertarget{class_f_test_scene}{}\label{class_f_test_scene}\index{FTestScene@{FTestScene}}
+
+
+{\ttfamily \+\#include $<$Test\+Scene.\+h$>$}
+
+Inheritance diagram for FTest\+Scene:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_f_test_scene}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_f_test_scene_a51694c009b2c0dd288051b742c7856a1}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\item 
+void \doxymbox{\hyperlink{class_f_test_scene_a6252f166d504f9e4dd2327e6fe353fd5}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_i_scene_a146b1101069efb7a46b3bb6e419bc2bc}{\texorpdfstring{$\sim$}{\string~}\+IScene}} ()=default
+\item 
+\doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \doxymbox{\hyperlink{class_i_scene_a7316409ac97b08fba543cd523e555121}{Consume\+Command}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_i_scene_ade55669e20b8ab34674321ee7964d9d0}{Set\+Scene\+Command}} (const \doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \&Command)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a6e2f65a65fff325dd5ce68f8e418d17b}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a535b76f8dfa4a7fa4f6e9a9c6097111a}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene, int Next\+Stage\+Index, int Accumulated\+Score=0, const std::\+string \&Player\+Skin\+Key="{}"{})
+\item 
+void \doxymbox{\hyperlink{class_i_scene_aab3356a84a89d0ae8bd011e55d25a010}{Quit\+Game}} ()
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a373ea6b6ebf14d0bfa5224727cb0e95b}{Dispatch\+Popup\+Action}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context, \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}} \&Popup, \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_test_scene_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_test_scene_a6252f166d504f9e4dd2327e6fe353fd5}\index{FTestScene@{FTestScene}!Render@{Render}}
+\index{Render@{Render}!FTestScene@{FTestScene}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_f_test_scene_a6252f166d504f9e4dd2327e6fe353fd5} 
+void FTest\+Scene::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_scene_ace723c09a94c7febce67b45c8aef49c1}{IScene}}.
+
+\Hypertarget{class_f_test_scene_a51694c009b2c0dd288051b742c7856a1}\index{FTestScene@{FTestScene}!Update@{Update}}
+\index{Update@{Update}!FTestScene@{FTestScene}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_test_scene_a51694c009b2c0dd288051b742c7856a1} 
+void FTest\+Scene::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_scene_aaac68ad3611a9ef3cad7697b87dd92f4}{IScene}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Scene/\+\doxymbox{\hyperlink{_test_scene_8h}{Test\+Scene.\+h}}\item 
+Scene/\+\doxymbox{\hyperlink{_test_scene_8cpp}{Test\+Scene.\+cpp}}\end{DoxyCompactItemize}

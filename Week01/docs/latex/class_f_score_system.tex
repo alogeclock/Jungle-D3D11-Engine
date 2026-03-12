@@ -9,17 +9,27 @@
 \item 
 void \doxymbox{\hyperlink{class_f_score_system_a79a6a0577ac1ad99f1c524f6d3b5a868}{Reset}} ()
 \item 
-void \doxymbox{\hyperlink{class_f_score_system_a38de03bc1d7077d59bb71ed4d8e930e5}{Add\+Move\+Score}} ()
-\item 
 void \doxymbox{\hyperlink{class_f_score_system_a2c31cf6b3af1aef26012809cb0d8b7c3}{Add\+Beat\+Bonus}} (\doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}} Judge)
 \item 
 void \doxymbox{\hyperlink{class_f_score_system_a93854970f8c7e591ca81a11e3f1eba17}{Add\+Enemy\+Defeat\+Bonus}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_score_system_a119a61bf252d893737988f07c7fb4de6}{Add\+Time\+Bonus}} (float Remaining\+Time, float Time\+Limit)
 \item 
 void \doxymbox{\hyperlink{class_f_score_system_aaec0a22462f2ec5e34eea17f60c232c7}{Break\+Combo}} ()
 \item 
 int \doxymbox{\hyperlink{class_f_score_system_a6a1d6beaf3792864a8f1eb68a613f107}{Get\+Score}} () const
 \item 
+void \doxymbox{\hyperlink{class_f_score_system_ac2ca19e59348b568181b01648abd2874}{Set\+Score}} (int In\+Score)
+\item 
 int \doxymbox{\hyperlink{class_f_score_system_a28c9d6cd1cd8aff32020edea1c82f407}{Get\+Combo}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_score_system_a2a104981e817483bd9c8dbbee4821951}{Set\+Judge\+Callback}} (std::\+function$<$ void(\doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}}, float, int)$>$ Callback)
+\item 
+void \doxymbox{\hyperlink{class_f_score_system_a3a1256c745fdc3e00d059dbf3a3af423}{Set\+Judge\+Score\+Update\+Callback}} (std::\+function$<$ void(int)$>$ Callback)
+\item 
+void \doxymbox{\hyperlink{class_f_score_system_ae83fe9a4e354ae71373fa792c1d5cf71}{Set\+Timer\+Bonus\+Callback}} (std::\+function$<$ void(int)$>$ Callback)
+\item 
+void \doxymbox{\hyperlink{class_f_score_system_a22c0b912979efd7bbf5c88d50f3c9a99}{Execute\+Timer\+Bonus\+Callback}} (int In\+Score)
 \end{DoxyCompactItemize}
 
 
@@ -38,17 +48,23 @@ void FScore\+System::\+\+Add\+Beat\+Bonus (\begin{DoxyParamCaption}\item[{\doxym
 {\footnotesize\ttfamily \label{class_f_score_system_a93854970f8c7e591ca81a11e3f1eba17} 
 void FScore\+System::\+\+Add\+Enemy\+Defeat\+Bonus (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
-\Hypertarget{class_f_score_system_a38de03bc1d7077d59bb71ed4d8e930e5}\index{FScoreSystem@{FScoreSystem}!AddMoveScore@{AddMoveScore}}
-\index{AddMoveScore@{AddMoveScore}!FScoreSystem@{FScoreSystem}}
-\doxysubsubsection{\texorpdfstring{AddMoveScore()}{AddMoveScore()}}
-{\footnotesize\ttfamily \label{class_f_score_system_a38de03bc1d7077d59bb71ed4d8e930e5} 
-void FScore\+System::\+\+Add\+Move\+Score (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+\Hypertarget{class_f_score_system_a119a61bf252d893737988f07c7fb4de6}\index{FScoreSystem@{FScoreSystem}!AddTimeBonus@{AddTimeBonus}}
+\index{AddTimeBonus@{AddTimeBonus}!FScoreSystem@{FScoreSystem}}
+\doxysubsubsection{\texorpdfstring{AddTimeBonus()}{AddTimeBonus()}}
+{\footnotesize\ttfamily \label{class_f_score_system_a119a61bf252d893737988f07c7fb4de6} 
+void FScore\+System::\+\+Add\+Time\+Bonus (\begin{DoxyParamCaption}\item[{float}]{Remaining\+Time}{, }\item[{float}]{Time\+Limit}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_score_system_aaec0a22462f2ec5e34eea17f60c232c7}\index{FScoreSystem@{FScoreSystem}!BreakCombo@{BreakCombo}}
 \index{BreakCombo@{BreakCombo}!FScoreSystem@{FScoreSystem}}
 \doxysubsubsection{\texorpdfstring{BreakCombo()}{BreakCombo()}}
 {\footnotesize\ttfamily \label{class_f_score_system_aaec0a22462f2ec5e34eea17f60c232c7} 
 void FScore\+System::\+\+Break\+Combo (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_score_system_a22c0b912979efd7bbf5c88d50f3c9a99}\index{FScoreSystem@{FScoreSystem}!ExecuteTimerBonusCallback@{ExecuteTimerBonusCallback}}
+\index{ExecuteTimerBonusCallback@{ExecuteTimerBonusCallback}!FScoreSystem@{FScoreSystem}}
+\doxysubsubsection{\texorpdfstring{ExecuteTimerBonusCallback()}{ExecuteTimerBonusCallback()}}
+{\footnotesize\ttfamily \label{class_f_score_system_a22c0b912979efd7bbf5c88d50f3c9a99} 
+void FScore\+System::\+\+Execute\+Timer\+Bonus\+Callback (\begin{DoxyParamCaption}\item[{int}]{In\+Score}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_score_system_a28c9d6cd1cd8aff32020edea1c82f407}\index{FScoreSystem@{FScoreSystem}!GetCombo@{GetCombo}}
 \index{GetCombo@{GetCombo}!FScoreSystem@{FScoreSystem}}
@@ -67,6 +83,30 @@ int FScore\+System::\+\+Get\+Score (\begin{DoxyParamCaption}{}{}\end{DoxyParamCa
 \doxysubsubsection{\texorpdfstring{Reset()}{Reset()}}
 {\footnotesize\ttfamily \label{class_f_score_system_a79a6a0577ac1ad99f1c524f6d3b5a868} 
 void FScore\+System::\+\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_score_system_a2a104981e817483bd9c8dbbee4821951}\index{FScoreSystem@{FScoreSystem}!SetJudgeCallback@{SetJudgeCallback}}
+\index{SetJudgeCallback@{SetJudgeCallback}!FScoreSystem@{FScoreSystem}}
+\doxysubsubsection{\texorpdfstring{SetJudgeCallback()}{SetJudgeCallback()}}
+{\footnotesize\ttfamily \label{class_f_score_system_a2a104981e817483bd9c8dbbee4821951} 
+void FScore\+System::\+\+Set\+Judge\+Callback (\begin{DoxyParamCaption}\item[{std::\+function$<$ void(\doxymbox{\hyperlink{_types_8h_a9395470b121c3a8c4ca82eb6db81f063}{EBeat\+Judge}}, float, int)$>$}]{Callback}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_score_system_a3a1256c745fdc3e00d059dbf3a3af423}\index{FScoreSystem@{FScoreSystem}!SetJudgeScoreUpdateCallback@{SetJudgeScoreUpdateCallback}}
+\index{SetJudgeScoreUpdateCallback@{SetJudgeScoreUpdateCallback}!FScoreSystem@{FScoreSystem}}
+\doxysubsubsection{\texorpdfstring{SetJudgeScoreUpdateCallback()}{SetJudgeScoreUpdateCallback()}}
+{\footnotesize\ttfamily \label{class_f_score_system_a3a1256c745fdc3e00d059dbf3a3af423} 
+void FScore\+System::\+\+Set\+Judge\+Score\+Update\+Callback (\begin{DoxyParamCaption}\item[{std::\+function$<$ void(int)$>$}]{Callback}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_score_system_ac2ca19e59348b568181b01648abd2874}\index{FScoreSystem@{FScoreSystem}!SetScore@{SetScore}}
+\index{SetScore@{SetScore}!FScoreSystem@{FScoreSystem}}
+\doxysubsubsection{\texorpdfstring{SetScore()}{SetScore()}}
+{\footnotesize\ttfamily \label{class_f_score_system_ac2ca19e59348b568181b01648abd2874} 
+void FScore\+System::\+\+Set\+Score (\begin{DoxyParamCaption}\item[{int}]{In\+Score}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_score_system_ae83fe9a4e354ae71373fa792c1d5cf71}\index{FScoreSystem@{FScoreSystem}!SetTimerBonusCallback@{SetTimerBonusCallback}}
+\index{SetTimerBonusCallback@{SetTimerBonusCallback}!FScoreSystem@{FScoreSystem}}
+\doxysubsubsection{\texorpdfstring{SetTimerBonusCallback()}{SetTimerBonusCallback()}}
+{\footnotesize\ttfamily \label{class_f_score_system_ae83fe9a4e354ae71373fa792c1d5cf71} 
+void FScore\+System::\+\+Set\+Timer\+Bonus\+Callback (\begin{DoxyParamCaption}\item[{std::\+function$<$ void(int)$>$}]{Callback}{}\end{DoxyParamCaption})}
 
 
 

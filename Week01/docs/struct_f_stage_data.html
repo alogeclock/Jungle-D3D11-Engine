@@ -108,6 +108,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6dae99cdd89a7aaa30164b737d846a94" id="r_a6dae99cdd89a7aaa30164b737d846a94"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a6dae99cdd89a7aaa30164b737d846a94">GetWorldHeight</a> (float TileSize) const</td></tr>
 <tr class="memitem:a76f7db37f77cf18f4ff6528a08a4f477" id="r_a76f7db37f77cf18f4ff6528a08a4f477"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a76f7db37f77cf18f4ff6528a08a4f477">SetStageId</a> (int InStageId)</td></tr>
 <tr class="memitem:afbf566992e9655ea852889245a4bbe9d" id="r_afbf566992e9655ea852889245a4bbe9d"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#afbf566992e9655ea852889245a4bbe9d">GetStageId</a> () const</td></tr>
+<tr class="memitem:a08d68ae111730fdb14f192b2bbc16163" id="r_a08d68ae111730fdb14f192b2bbc16163"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a08d68ae111730fdb14f192b2bbc16163">GetMonsterCount</a> () const</td></tr>
+<tr class="memitem:a0d2e0e209884c13a3374b13da60fc049" id="r_a0d2e0e209884c13a3374b13da60fc049"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0d2e0e209884c13a3374b13da60fc049">SetMonsterCount</a> (int InMonsterCount)</td></tr>
+<tr class="memitem:aaf6f593435d51d2bf743faf6357bd4f0" id="r_aaf6f593435d51d2bf743faf6357bd4f0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aaf6f593435d51d2bf743faf6357bd4f0">AddMonsterType</a> (<a class="el" href="_monster_8h.html#a2f5ac0bac53fc504ced40c0686aaecae">EMonsterType</a> InType)</td></tr>
+<tr class="memitem:a844173f2deca801c6d7d2a3bb5dc936b" id="r_a844173f2deca801c6d7d2a3bb5dc936b"><td class="memItemLeft">const std::vector&lt; <a class="el" href="_monster_8h.html#a2f5ac0bac53fc504ced40c0686aaecae">EMonsterType</a> &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a844173f2deca801c6d7d2a3bb5dc936b">GetMonsterTypes</a> () const</td></tr>
+<tr class="memitem:aea7a626c11a13581b597e5e6cab55588" id="r_aea7a626c11a13581b597e5e6cab55588"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aea7a626c11a13581b597e5e6cab55588">ClearMonsterTypes</a> ()</td></tr>
 <tr class="memitem:a5375020360c092d24165b49397936d5d" id="r_a5375020360c092d24165b49397936d5d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5375020360c092d24165b49397936d5d">SetStageName</a> (const std::string &amp;InStageName)</td></tr>
 <tr class="memitem:a738ee9f89ad5ce21270ccfba4577eaa3" id="r_a738ee9f89ad5ce21270ccfba4577eaa3"><td class="memItemLeft">const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a738ee9f89ad5ce21270ccfba4577eaa3">GetStageName</a> () const</td></tr>
 <tr class="memitem:a1afa0a6a5210a35accf86e2715ae2fa1" id="r_a1afa0a6a5210a35accf86e2715ae2fa1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1afa0a6a5210a35accf86e2715ae2fa1">SetSpawnPoint</a> (int InSpawnX, int InSpawnY)</td></tr>
@@ -116,8 +121,77 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1b4e416c60227a387ab0d79b3494e2ff" id="r_a1b4e416c60227a387ab0d79b3494e2ff"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a1b4e416c60227a387ab0d79b3494e2ff">GetBpm</a> () const</td></tr>
 <tr class="memitem:aaa994d8714bcadfc28ab5ea3db77ce2c" id="r_aaa994d8714bcadfc28ab5ea3db77ce2c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aaa994d8714bcadfc28ab5ea3db77ce2c">SetMusicPath</a> (const std::string &amp;InPath)</td></tr>
 <tr class="memitem:a8b1b667f556beb43b0fa6cc7c9adede4" id="r_a8b1b667f556beb43b0fa6cc7c9adede4"><td class="memItemLeft">const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a8b1b667f556beb43b0fa6cc7c9adede4">GetMusicPath</a> () const</td></tr>
+<tr class="memitem:a0917bd83492c4f75dd8e94aa722a50f3" id="r_a0917bd83492c4f75dd8e94aa722a50f3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0917bd83492c4f75dd8e94aa722a50f3">AddIntroMessage</a> (const std::string &amp;InMessage)</td></tr>
+<tr class="memitem:a2a3af2d4fa8dcd94b154e709e06f1cfb" id="r_a2a3af2d4fa8dcd94b154e709e06f1cfb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2a3af2d4fa8dcd94b154e709e06f1cfb">SetIntroMessages</a> (const std::vector&lt; std::string &gt; &amp;InMessages)</td></tr>
+<tr class="memitem:a1cedea9da4d989495d6f99f839d99a67" id="r_a1cedea9da4d989495d6f99f839d99a67"><td class="memItemLeft">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a1cedea9da4d989495d6f99f839d99a67">GetIntroMessages</a> () const</td></tr>
+<tr class="memitem:ae3a2afae3e26de8326e421a42d5c101a" id="r_ae3a2afae3e26de8326e421a42d5c101a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae3a2afae3e26de8326e421a42d5c101a">ClearIntroMessages</a> ()</td></tr>
+<tr class="memitem:ae520e6112c988803b0481cb909f4486d" id="r_ae520e6112c988803b0481cb909f4486d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae520e6112c988803b0481cb909f4486d">SetTimeLimit</a> (float InTimeLimit)</td></tr>
+<tr class="memitem:a7a226c1c2cca753f28a52f81e2aabade" id="r_a7a226c1c2cca753f28a52f81e2aabade"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a7a226c1c2cca753f28a52f81e2aabade">GetTimeLimit</a> () const</td></tr>
+<tr class="memitem:a59d7f9fcdc338c23f39839b3b03ba9e9" id="r_a59d7f9fcdc338c23f39839b3b03ba9e9"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a59d7f9fcdc338c23f39839b3b03ba9e9">SetAngryTime</a> (float InAngryTime)</td></tr>
+<tr class="memitem:a5aead92b852861a433b754ae6a7590c1" id="r_a5aead92b852861a433b754ae6a7590c1"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a5aead92b852861a433b754ae6a7590c1">GetAngryTime</a> () const</td></tr>
+<tr class="memitem:a2de9e6724a4b30a572697e95a0052340" id="r_a2de9e6724a4b30a572697e95a0052340"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2de9e6724a4b30a572697e95a0052340">SetAngryTimeScale</a> (float InScale)</td></tr>
+<tr class="memitem:a47c17c8cd0b2499ce5043d54695719b9" id="r_a47c17c8cd0b2499ce5043d54695719b9"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a47c17c8cd0b2499ce5043d54695719b9">GetAngryTimeScale</a> () const</td></tr>
+<tr class="memitem:a2f15dd38d1b36a6fd7852a65897ebdae" id="r_a2f15dd38d1b36a6fd7852a65897ebdae"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2f15dd38d1b36a6fd7852a65897ebdae">SetDarknessLevel</a> (int InLevel)</td></tr>
+<tr class="memitem:a102c33783ac47f45b7b62f5957a47256" id="r_a102c33783ac47f45b7b62f5957a47256"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a102c33783ac47f45b7b62f5957a47256">GetDarknessLevel</a> () const</td></tr>
+<tr class="memitem:a8150e2a12d2d2db4b3e394185d60458e" id="r_a8150e2a12d2d2db4b3e394185d60458e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8150e2a12d2d2db4b3e394185d60458e">AddItem</a> (const <a class="el" href="struct_f_item_data.html">FItemData</a> &amp;Item)</td></tr>
+<tr class="memitem:a3db4c7d2c8413b2cb88c5e0a1e3ee083" id="r_a3db4c7d2c8413b2cb88c5e0a1e3ee083"><td class="memItemLeft">const std::vector&lt; <a class="el" href="struct_f_item_data.html">FItemData</a> &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a3db4c7d2c8413b2cb88c5e0a1e3ee083">GetItems</a> () const</td></tr>
+<tr class="memitem:a126de97293f6fb62b60a429fe2f1ea8d" id="r_a126de97293f6fb62b60a429fe2f1ea8d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a126de97293f6fb62b60a429fe2f1ea8d">ClearItems</a> ()</td></tr>
+<tr class="memitem:a20d90b1efd2605a790d846f9d5386972" id="r_a20d90b1efd2605a790d846f9d5386972"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a20d90b1efd2605a790d846f9d5386972">ResizeRenderLayers</a> (int InWidth, int InHeight)</td></tr>
+<tr class="memitem:a55839b96cda4bd428923783bab62058e" id="r_a55839b96cda4bd428923783bab62058e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a55839b96cda4bd428923783bab62058e">SetRenderLayer</a> (int X, int Y, int Value)</td></tr>
+<tr class="memitem:a0a7188b6f77a270a1279b6520d21cc16" id="r_a0a7188b6f77a270a1279b6520d21cc16"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a0a7188b6f77a270a1279b6520d21cc16">GetRenderLayer</a> (int X, int Y) const</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a0917bd83492c4f75dd8e94aa722a50f3" name="a0917bd83492c4f75dd8e94aa722a50f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0917bd83492c4f75dd8e94aa722a50f3">&#9670;&#160;</a></span>AddIntroMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::AddIntroMessage </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>InMessage</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8150e2a12d2d2db4b3e394185d60458e" name="a8150e2a12d2d2db4b3e394185d60458e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8150e2a12d2d2db4b3e394185d60458e">&#9670;&#160;</a></span>AddItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::AddItem </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_f_item_data.html">FItemData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Item</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf6f593435d51d2bf743faf6357bd4f0" name="aaf6f593435d51d2bf743faf6357bd4f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf6f593435d51d2bf743faf6357bd4f0">&#9670;&#160;</a></span>AddMonsterType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::AddMonsterType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_monster_8h.html#a2f5ac0bac53fc504ced40c0686aaecae">EMonsterType</a></td>          <td class="paramname"><span class="paramname"><em>InType</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aba9c28e4a70e5b1aa93bd8fc334ec420" name="aba9c28e4a70e5b1aa93bd8fc334ec420"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aba9c28e4a70e5b1aa93bd8fc334ec420">&#9670;&#160;</a></span>Clear()</h2>
 
@@ -135,6 +209,91 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ae3a2afae3e26de8326e421a42d5c101a" name="ae3a2afae3e26de8326e421a42d5c101a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3a2afae3e26de8326e421a42d5c101a">&#9670;&#160;</a></span>ClearIntroMessages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::ClearIntroMessages </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a126de97293f6fb62b60a429fe2f1ea8d" name="a126de97293f6fb62b60a429fe2f1ea8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a126de97293f6fb62b60a429fe2f1ea8d">&#9670;&#160;</a></span>ClearItems()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::ClearItems </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aea7a626c11a13581b597e5e6cab55588" name="aea7a626c11a13581b597e5e6cab55588"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea7a626c11a13581b597e5e6cab55588">&#9670;&#160;</a></span>ClearMonsterTypes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::ClearMonsterTypes </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5aead92b852861a433b754ae6a7590c1" name="a5aead92b852861a433b754ae6a7590c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aead92b852861a433b754ae6a7590c1">&#9670;&#160;</a></span>GetAngryTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float FStageData::GetAngryTime </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a47c17c8cd0b2499ce5043d54695719b9" name="a47c17c8cd0b2499ce5043d54695719b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47c17c8cd0b2499ce5043d54695719b9">&#9670;&#160;</a></span>GetAngryTimeScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float FStageData::GetAngryTimeScale </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a1b4e416c60227a387ab0d79b3494e2ff" name="a1b4e416c60227a387ab0d79b3494e2ff"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1b4e416c60227a387ab0d79b3494e2ff">&#9670;&#160;</a></span>GetBpm()</h2>
 
@@ -143,6 +302,23 @@ Public Member Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">int FStageData::GetBpm </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a102c33783ac47f45b7b62f5957a47256" name="a102c33783ac47f45b7b62f5957a47256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a102c33783ac47f45b7b62f5957a47256">&#9670;&#160;</a></span>GetDarknessLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int FStageData::GetDarknessLevel </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -169,6 +345,74 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a1cedea9da4d989495d6f99f839d99a67" name="a1cedea9da4d989495d6f99f839d99a67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cedea9da4d989495d6f99f839d99a67">&#9670;&#160;</a></span>GetIntroMessages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; FStageData::GetIntroMessages </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3db4c7d2c8413b2cb88c5e0a1e3ee083" name="a3db4c7d2c8413b2cb88c5e0a1e3ee083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3db4c7d2c8413b2cb88c5e0a1e3ee083">&#9670;&#160;</a></span>GetItems()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="struct_f_item_data.html">FItemData</a> &gt; &amp; FStageData::GetItems </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a08d68ae111730fdb14f192b2bbc16163" name="a08d68ae111730fdb14f192b2bbc16163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08d68ae111730fdb14f192b2bbc16163">&#9670;&#160;</a></span>GetMonsterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int FStageData::GetMonsterCount </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a844173f2deca801c6d7d2a3bb5dc936b" name="a844173f2deca801c6d7d2a3bb5dc936b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a844173f2deca801c6d7d2a3bb5dc936b">&#9670;&#160;</a></span>GetMonsterTypes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="_monster_8h.html#a2f5ac0bac53fc504ced40c0686aaecae">EMonsterType</a> &gt; &amp; FStageData::GetMonsterTypes </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a8b1b667f556beb43b0fa6cc7c9adede4" name="a8b1b667f556beb43b0fa6cc7c9adede4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8b1b667f556beb43b0fa6cc7c9adede4">&#9670;&#160;</a></span>GetMusicPath()</h2>
 
@@ -180,6 +424,27 @@ Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0a7188b6f77a270a1279b6520d21cc16" name="a0a7188b6f77a270a1279b6520d21cc16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a7188b6f77a270a1279b6520d21cc16">&#9670;&#160;</a></span>GetRenderLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int FStageData::GetRenderLayer </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>X</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>Y</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -252,6 +517,23 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>Y</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7a226c1c2cca753f28a52f81e2aabade" name="a7a226c1c2cca753f28a52f81e2aabade"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a226c1c2cca753f28a52f81e2aabade">&#9670;&#160;</a></span>GetTimeLimit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float FStageData::GetTimeLimit </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -372,6 +654,61 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a20d90b1efd2605a790d846f9d5386972" name="a20d90b1efd2605a790d846f9d5386972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20d90b1efd2605a790d846f9d5386972">&#9670;&#160;</a></span>ResizeRenderLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::ResizeRenderLayers </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InWidth</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InHeight</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59d7f9fcdc338c23f39839b3b03ba9e9" name="a59d7f9fcdc338c23f39839b3b03ba9e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59d7f9fcdc338c23f39839b3b03ba9e9">&#9670;&#160;</a></span>SetAngryTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::SetAngryTime </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>InAngryTime</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2de9e6724a4b30a572697e95a0052340" name="a2de9e6724a4b30a572697e95a0052340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2de9e6724a4b30a572697e95a0052340">&#9670;&#160;</a></span>SetAngryTimeScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::SetAngryTimeScale </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>InScale</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ae74919a991d569a74fd2012864342851" name="ae74919a991d569a74fd2012864342851"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae74919a991d569a74fd2012864342851">&#9670;&#160;</a></span>SetBpm()</h2>
 
@@ -382,6 +719,57 @@ Public Member Functions</h2></td></tr>
           <td class="memname">void FStageData::SetBpm </td>
           <td>(</td>
           <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InBpm</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2f15dd38d1b36a6fd7852a65897ebdae" name="a2f15dd38d1b36a6fd7852a65897ebdae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f15dd38d1b36a6fd7852a65897ebdae">&#9670;&#160;</a></span>SetDarknessLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::SetDarknessLevel </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InLevel</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a3af2d4fa8dcd94b154e709e06f1cfb" name="a2a3af2d4fa8dcd94b154e709e06f1cfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a3af2d4fa8dcd94b154e709e06f1cfb">&#9670;&#160;</a></span>SetIntroMessages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::SetIntroMessages </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>InMessages</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0d2e0e209884c13a3374b13da60fc049" name="a0d2e0e209884c13a3374b13da60fc049"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d2e0e209884c13a3374b13da60fc049">&#9670;&#160;</a></span>SetMonsterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::SetMonsterCount </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InMonsterCount</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -400,6 +788,32 @@ Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>InPath</em></span></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a55839b96cda4bd428923783bab62058e" name="a55839b96cda4bd428923783bab62058e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55839b96cda4bd428923783bab62058e">&#9670;&#160;</a></span>SetRenderLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::SetRenderLayer </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>X</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>Y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>Value</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -481,6 +895,23 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>Value</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae520e6112c988803b0481cb909f4486d" name="ae520e6112c988803b0481cb909f4486d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae520e6112c988803b0481cb909f4486d">&#9670;&#160;</a></span>SetTimeLimit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FStageData::SetTimeLimit </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>InTimeLimit</em></span></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -1,15 +1,7 @@
 var dir_53ff6e473d46d4e442ba5a7ce9f895e3 =
 [
-    [ "BeatHUDWidget.cpp", "_beat_h_u_d_widget_8cpp.html", null ],
-    [ "BeatHUDWidget.h", "_beat_h_u_d_widget_8h.html", "_beat_h_u_d_widget_8h" ],
-    [ "DebugWidget.cpp", "_debug_widget_8cpp.html", null ],
-    [ "DebugWidget.h", "_debug_widget_8h.html", "_debug_widget_8h" ],
-    [ "GameplayHUDWidget.cpp", "_gameplay_h_u_d_widget_8cpp.html", null ],
-    [ "GameplayHUDWidget.h", "_gameplay_h_u_d_widget_8h.html", "_gameplay_h_u_d_widget_8h" ],
-    [ "Popup.h", "_popup_8h.html", "_popup_8h" ],
-    [ "PopupManager.cpp", "_popup_manager_8cpp.html", null ],
-    [ "PopupManager.h", "_popup_manager_8h.html", "_popup_manager_8h" ],
+    [ "popup", "dir_cd8c8fb1b7f793e251cfeaa015784d13.html", "dir_cd8c8fb1b7f793e251cfeaa015784d13" ],
+    [ "widget", "dir_a20b9100055922f354e26aac75fc133e.html", "dir_a20b9100055922f354e26aac75fc133e" ],
     [ "UIManager.cpp", "_u_i_manager_8cpp.html", null ],
-    [ "UIManager.h", "_u_i_manager_8h.html", "_u_i_manager_8h" ],
-    [ "UIWidget.h", "_u_i_widget_8h.html", "_u_i_widget_8h" ]
+    [ "UIManager.h", "_u_i_manager_8h.html", "_u_i_manager_8h" ]
 ];

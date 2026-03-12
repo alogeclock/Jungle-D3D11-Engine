@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['modelmaterialinfo_0',['ModelMaterialInfo',['../class_direct_x_1_1_d_x12_1_1_model.html#ae7a6941d19f2d0f6bd7f39521655c4db',1,'DirectX::DX12::Model']]],
-  ['modelmaterialinfocollection_1',['ModelMaterialInfoCollection',['../class_direct_x_1_1_d_x12_1_1_model.html#a1f07215b2f2552d3465c849be6b3b28f',1,'DirectX::DX12::Model']]]
+  ['value_5ftype_0',['value_type',['../struct_im_vector.html#a8bd77e4e7581d8e5f9e98d7c2f3c2a80',1,'ImVector']]]
 ];

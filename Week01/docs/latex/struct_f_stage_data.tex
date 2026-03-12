@@ -31,6 +31,16 @@ void \doxymbox{\hyperlink{struct_f_stage_data_a76f7db37f77cf18f4ff6528a08a4f477}
 \item 
 int \doxymbox{\hyperlink{struct_f_stage_data_afbf566992e9655ea852889245a4bbe9d}{Get\+Stage\+Id}} () const
 \item 
+int \doxymbox{\hyperlink{struct_f_stage_data_a08d68ae111730fdb14f192b2bbc16163}{Get\+Monster\+Count}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a0d2e0e209884c13a3374b13da60fc049}{Set\+Monster\+Count}} (int In\+Monster\+Count)
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_aaf6f593435d51d2bf743faf6357bd4f0}{Add\+Monster\+Type}} (\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}} In\+Type)
+\item 
+const std::\+vector$<$ \doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}} $>$ \& \doxymbox{\hyperlink{struct_f_stage_data_a844173f2deca801c6d7d2a3bb5dc936b}{Get\+Monster\+Types}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_aea7a626c11a13581b597e5e6cab55588}{Clear\+Monster\+Types}} ()
+\item 
 void \doxymbox{\hyperlink{struct_f_stage_data_a5375020360c092d24165b49397936d5d}{Set\+Stage\+Name}} (const std::\+string \&In\+Stage\+Name)
 \item 
 const std::\+string \& \doxymbox{\hyperlink{struct_f_stage_data_a738ee9f89ad5ce21270ccfba4577eaa3}{Get\+Stage\+Name}} () const
@@ -46,17 +56,101 @@ int \doxymbox{\hyperlink{struct_f_stage_data_a1b4e416c60227a387ab0d79b3494e2ff}{
 void \doxymbox{\hyperlink{struct_f_stage_data_aaa994d8714bcadfc28ab5ea3db77ce2c}{Set\+Music\+Path}} (const std::\+string \&In\+Path)
 \item 
 const std::\+string \& \doxymbox{\hyperlink{struct_f_stage_data_a8b1b667f556beb43b0fa6cc7c9adede4}{Get\+Music\+Path}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a0917bd83492c4f75dd8e94aa722a50f3}{Add\+Intro\+Message}} (const std::\+string \&In\+Message)
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a2a3af2d4fa8dcd94b154e709e06f1cfb}{Set\+Intro\+Messages}} (const std::\+vector$<$ std::\+string $>$ \&In\+Messages)
+\item 
+const std::\+vector$<$ std::\+string $>$ \& \doxymbox{\hyperlink{struct_f_stage_data_a1cedea9da4d989495d6f99f839d99a67}{Get\+Intro\+Messages}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_ae3a2afae3e26de8326e421a42d5c101a}{Clear\+Intro\+Messages}} ()
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_ae520e6112c988803b0481cb909f4486d}{Set\+Time\+Limit}} (float In\+Time\+Limit)
+\item 
+float \doxymbox{\hyperlink{struct_f_stage_data_a7a226c1c2cca753f28a52f81e2aabade}{Get\+Time\+Limit}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a59d7f9fcdc338c23f39839b3b03ba9e9}{Set\+Angry\+Time}} (float In\+Angry\+Time)
+\item 
+float \doxymbox{\hyperlink{struct_f_stage_data_a5aead92b852861a433b754ae6a7590c1}{Get\+Angry\+Time}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a2de9e6724a4b30a572697e95a0052340}{Set\+Angry\+Time\+Scale}} (float In\+Scale)
+\item 
+float \doxymbox{\hyperlink{struct_f_stage_data_a47c17c8cd0b2499ce5043d54695719b9}{Get\+Angry\+Time\+Scale}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a2f15dd38d1b36a6fd7852a65897ebdae}{Set\+Darkness\+Level}} (int In\+Level)
+\item 
+int \doxymbox{\hyperlink{struct_f_stage_data_a102c33783ac47f45b7b62f5957a47256}{Get\+Darkness\+Level}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a8150e2a12d2d2db4b3e394185d60458e}{Add\+Item}} (const \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} \&Item)
+\item 
+const std::\+vector$<$ \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} $>$ \& \doxymbox{\hyperlink{struct_f_stage_data_a3db4c7d2c8413b2cb88c5e0a1e3ee083}{Get\+Items}} () const
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a126de97293f6fb62b60a429fe2f1ea8d}{Clear\+Items}} ()
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a20d90b1efd2605a790d846f9d5386972}{Resize\+Render\+Layers}} (int In\+Width, int In\+Height)
+\item 
+void \doxymbox{\hyperlink{struct_f_stage_data_a55839b96cda4bd428923783bab62058e}{Set\+Render\+Layer}} (int X, int Y, int Value)
+\item 
+int \doxymbox{\hyperlink{struct_f_stage_data_a0a7188b6f77a270a1279b6520d21cc16}{Get\+Render\+Layer}} (int X, int Y) const
 \end{DoxyCompactItemize}
 
 
 \label{doc-func-members}
 \Hypertarget{struct_f_stage_data_doc-func-members}
 \doxysubsection{Member Function Documentation}
+\Hypertarget{struct_f_stage_data_a0917bd83492c4f75dd8e94aa722a50f3}\index{FStageData@{FStageData}!AddIntroMessage@{AddIntroMessage}}
+\index{AddIntroMessage@{AddIntroMessage}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{AddIntroMessage()}{AddIntroMessage()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a0917bd83492c4f75dd8e94aa722a50f3} 
+void FStage\+Data::\+\+Add\+Intro\+Message (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{In\+Message}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a8150e2a12d2d2db4b3e394185d60458e}\index{FStageData@{FStageData}!AddItem@{AddItem}}
+\index{AddItem@{AddItem}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{AddItem()}{AddItem()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a8150e2a12d2d2db4b3e394185d60458e} 
+void FStage\+Data::\+\+Add\+Item (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} \&}]{Item}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_aaf6f593435d51d2bf743faf6357bd4f0}\index{FStageData@{FStageData}!AddMonsterType@{AddMonsterType}}
+\index{AddMonsterType@{AddMonsterType}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{AddMonsterType()}{AddMonsterType()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_aaf6f593435d51d2bf743faf6357bd4f0} 
+void FStage\+Data::\+\+Add\+Monster\+Type (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}}}]{In\+Type}{}\end{DoxyParamCaption})}
+
 \Hypertarget{struct_f_stage_data_aba9c28e4a70e5b1aa93bd8fc334ec420}\index{FStageData@{FStageData}!Clear@{Clear}}
 \index{Clear@{Clear}!FStageData@{FStageData}}
 \doxysubsubsection{\texorpdfstring{Clear()}{Clear()}}
 {\footnotesize\ttfamily \label{struct_f_stage_data_aba9c28e4a70e5b1aa93bd8fc334ec420} 
 void FStage\+Data::\+\+Clear (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_ae3a2afae3e26de8326e421a42d5c101a}\index{FStageData@{FStageData}!ClearIntroMessages@{ClearIntroMessages}}
+\index{ClearIntroMessages@{ClearIntroMessages}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{ClearIntroMessages()}{ClearIntroMessages()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_ae3a2afae3e26de8326e421a42d5c101a} 
+void FStage\+Data::\+\+Clear\+Intro\+Messages (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a126de97293f6fb62b60a429fe2f1ea8d}\index{FStageData@{FStageData}!ClearItems@{ClearItems}}
+\index{ClearItems@{ClearItems}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{ClearItems()}{ClearItems()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a126de97293f6fb62b60a429fe2f1ea8d} 
+void FStage\+Data::\+\+Clear\+Items (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_aea7a626c11a13581b597e5e6cab55588}\index{FStageData@{FStageData}!ClearMonsterTypes@{ClearMonsterTypes}}
+\index{ClearMonsterTypes@{ClearMonsterTypes}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{ClearMonsterTypes()}{ClearMonsterTypes()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_aea7a626c11a13581b597e5e6cab55588} 
+void FStage\+Data::\+\+Clear\+Monster\+Types (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a5aead92b852861a433b754ae6a7590c1}\index{FStageData@{FStageData}!GetAngryTime@{GetAngryTime}}
+\index{GetAngryTime@{GetAngryTime}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetAngryTime()}{GetAngryTime()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a5aead92b852861a433b754ae6a7590c1} 
+float FStage\+Data::\+\+Get\+Angry\+Time (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{struct_f_stage_data_a47c17c8cd0b2499ce5043d54695719b9}\index{FStageData@{FStageData}!GetAngryTimeScale@{GetAngryTimeScale}}
+\index{GetAngryTimeScale@{GetAngryTimeScale}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetAngryTimeScale()}{GetAngryTimeScale()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a47c17c8cd0b2499ce5043d54695719b9} 
+float FStage\+Data::\+\+Get\+Angry\+Time\+Scale (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{struct_f_stage_data_a1b4e416c60227a387ab0d79b3494e2ff}\index{FStageData@{FStageData}!GetBpm@{GetBpm}}
 \index{GetBpm@{GetBpm}!FStageData@{FStageData}}
@@ -64,17 +158,53 @@ void FStage\+Data::\+\+Clear (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}
 {\footnotesize\ttfamily \label{struct_f_stage_data_a1b4e416c60227a387ab0d79b3494e2ff} 
 int FStage\+Data::\+\+Get\+Bpm (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{struct_f_stage_data_a102c33783ac47f45b7b62f5957a47256}\index{FStageData@{FStageData}!GetDarknessLevel@{GetDarknessLevel}}
+\index{GetDarknessLevel@{GetDarknessLevel}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetDarknessLevel()}{GetDarknessLevel()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a102c33783ac47f45b7b62f5957a47256} 
+int FStage\+Data::\+\+Get\+Darkness\+Level (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{struct_f_stage_data_a280d6ddcc1b495a0d68b8b1a46124175}\index{FStageData@{FStageData}!GetHeight@{GetHeight}}
 \index{GetHeight@{GetHeight}!FStageData@{FStageData}}
 \doxysubsubsection{\texorpdfstring{GetHeight()}{GetHeight()}}
 {\footnotesize\ttfamily \label{struct_f_stage_data_a280d6ddcc1b495a0d68b8b1a46124175} 
 int FStage\+Data::\+\+Get\+Height (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{struct_f_stage_data_a1cedea9da4d989495d6f99f839d99a67}\index{FStageData@{FStageData}!GetIntroMessages@{GetIntroMessages}}
+\index{GetIntroMessages@{GetIntroMessages}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetIntroMessages()}{GetIntroMessages()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a1cedea9da4d989495d6f99f839d99a67} 
+const std::\+vector$<$ std::\+string $>$ \& FStage\+Data::\+\+Get\+Intro\+Messages (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{struct_f_stage_data_a3db4c7d2c8413b2cb88c5e0a1e3ee083}\index{FStageData@{FStageData}!GetItems@{GetItems}}
+\index{GetItems@{GetItems}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetItems()}{GetItems()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a3db4c7d2c8413b2cb88c5e0a1e3ee083} 
+const std::\+vector$<$ \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} $>$ \& FStage\+Data::\+\+Get\+Items (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{struct_f_stage_data_a08d68ae111730fdb14f192b2bbc16163}\index{FStageData@{FStageData}!GetMonsterCount@{GetMonsterCount}}
+\index{GetMonsterCount@{GetMonsterCount}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetMonsterCount()}{GetMonsterCount()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a08d68ae111730fdb14f192b2bbc16163} 
+int FStage\+Data::\+\+Get\+Monster\+Count (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{struct_f_stage_data_a844173f2deca801c6d7d2a3bb5dc936b}\index{FStageData@{FStageData}!GetMonsterTypes@{GetMonsterTypes}}
+\index{GetMonsterTypes@{GetMonsterTypes}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetMonsterTypes()}{GetMonsterTypes()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a844173f2deca801c6d7d2a3bb5dc936b} 
+const std::\+vector$<$ \doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}} $>$ \& FStage\+Data::\+\+Get\+Monster\+Types (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{struct_f_stage_data_a8b1b667f556beb43b0fa6cc7c9adede4}\index{FStageData@{FStageData}!GetMusicPath@{GetMusicPath}}
 \index{GetMusicPath@{GetMusicPath}!FStageData@{FStageData}}
 \doxysubsubsection{\texorpdfstring{GetMusicPath()}{GetMusicPath()}}
 {\footnotesize\ttfamily \label{struct_f_stage_data_a8b1b667f556beb43b0fa6cc7c9adede4} 
 const std::\+string \& FStage\+Data::\+\+Get\+Music\+Path (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{struct_f_stage_data_a0a7188b6f77a270a1279b6520d21cc16}\index{FStageData@{FStageData}!GetRenderLayer@{GetRenderLayer}}
+\index{GetRenderLayer@{GetRenderLayer}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetRenderLayer()}{GetRenderLayer()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a0a7188b6f77a270a1279b6520d21cc16} 
+int FStage\+Data::\+\+Get\+Render\+Layer (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{struct_f_stage_data_a9a6868433299131172a276591da365bc}\index{FStageData@{FStageData}!GetSpawnPoint@{GetSpawnPoint}}
 \index{GetSpawnPoint@{GetSpawnPoint}!FStageData@{FStageData}}
@@ -99,6 +229,12 @@ const std::\+string \& FStage\+Data::\+\+Get\+Stage\+Name (\begin{DoxyParamCapti
 \doxysubsubsection{\texorpdfstring{GetTile()}{GetTile()}}
 {\footnotesize\ttfamily \label{struct_f_stage_data_a0bfeb0ab35eec07c0451857d140fb102} 
 int FStage\+Data::\+\+Get\+Tile (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{struct_f_stage_data_a7a226c1c2cca753f28a52f81e2aabade}\index{FStageData@{FStageData}!GetTimeLimit@{GetTimeLimit}}
+\index{GetTimeLimit@{GetTimeLimit}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{GetTimeLimit()}{GetTimeLimit()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a7a226c1c2cca753f28a52f81e2aabade} 
+float FStage\+Data::\+\+Get\+Time\+Limit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{struct_f_stage_data_a9d61fbb361ec15d1596f6f8385804896}\index{FStageData@{FStageData}!GetWidth@{GetWidth}}
 \index{GetWidth@{GetWidth}!FStageData@{FStageData}}
@@ -136,17 +272,59 @@ bool FStage\+Data::\+\+Is\+Walkable (\begin{DoxyParamCaption}\item[{int}]{X}{, }
 {\footnotesize\ttfamily \label{struct_f_stage_data_ac1977395c755e8f280b5fd2f18ea00ed} 
 void FStage\+Data::\+\+Resize (\begin{DoxyParamCaption}\item[{int}]{In\+Width}{, }\item[{int}]{In\+Height}{}\end{DoxyParamCaption})}
 
+\Hypertarget{struct_f_stage_data_a20d90b1efd2605a790d846f9d5386972}\index{FStageData@{FStageData}!ResizeRenderLayers@{ResizeRenderLayers}}
+\index{ResizeRenderLayers@{ResizeRenderLayers}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{ResizeRenderLayers()}{ResizeRenderLayers()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a20d90b1efd2605a790d846f9d5386972} 
+void FStage\+Data::\+\+Resize\+Render\+Layers (\begin{DoxyParamCaption}\item[{int}]{In\+Width}{, }\item[{int}]{In\+Height}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a59d7f9fcdc338c23f39839b3b03ba9e9}\index{FStageData@{FStageData}!SetAngryTime@{SetAngryTime}}
+\index{SetAngryTime@{SetAngryTime}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{SetAngryTime()}{SetAngryTime()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a59d7f9fcdc338c23f39839b3b03ba9e9} 
+void FStage\+Data::\+\+Set\+Angry\+Time (\begin{DoxyParamCaption}\item[{float}]{In\+Angry\+Time}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a2de9e6724a4b30a572697e95a0052340}\index{FStageData@{FStageData}!SetAngryTimeScale@{SetAngryTimeScale}}
+\index{SetAngryTimeScale@{SetAngryTimeScale}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{SetAngryTimeScale()}{SetAngryTimeScale()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a2de9e6724a4b30a572697e95a0052340} 
+void FStage\+Data::\+\+Set\+Angry\+Time\+Scale (\begin{DoxyParamCaption}\item[{float}]{In\+Scale}{}\end{DoxyParamCaption})}
+
 \Hypertarget{struct_f_stage_data_ae74919a991d569a74fd2012864342851}\index{FStageData@{FStageData}!SetBpm@{SetBpm}}
 \index{SetBpm@{SetBpm}!FStageData@{FStageData}}
 \doxysubsubsection{\texorpdfstring{SetBpm()}{SetBpm()}}
 {\footnotesize\ttfamily \label{struct_f_stage_data_ae74919a991d569a74fd2012864342851} 
 void FStage\+Data::\+\+Set\+Bpm (\begin{DoxyParamCaption}\item[{int}]{In\+Bpm}{}\end{DoxyParamCaption})}
 
+\Hypertarget{struct_f_stage_data_a2f15dd38d1b36a6fd7852a65897ebdae}\index{FStageData@{FStageData}!SetDarknessLevel@{SetDarknessLevel}}
+\index{SetDarknessLevel@{SetDarknessLevel}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{SetDarknessLevel()}{SetDarknessLevel()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a2f15dd38d1b36a6fd7852a65897ebdae} 
+void FStage\+Data::\+\+Set\+Darkness\+Level (\begin{DoxyParamCaption}\item[{int}]{In\+Level}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a2a3af2d4fa8dcd94b154e709e06f1cfb}\index{FStageData@{FStageData}!SetIntroMessages@{SetIntroMessages}}
+\index{SetIntroMessages@{SetIntroMessages}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{SetIntroMessages()}{SetIntroMessages()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a2a3af2d4fa8dcd94b154e709e06f1cfb} 
+void FStage\+Data::\+\+Set\+Intro\+Messages (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ std::\+string $>$ \&}]{In\+Messages}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a0d2e0e209884c13a3374b13da60fc049}\index{FStageData@{FStageData}!SetMonsterCount@{SetMonsterCount}}
+\index{SetMonsterCount@{SetMonsterCount}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{SetMonsterCount()}{SetMonsterCount()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a0d2e0e209884c13a3374b13da60fc049} 
+void FStage\+Data::\+\+Set\+Monster\+Count (\begin{DoxyParamCaption}\item[{int}]{In\+Monster\+Count}{}\end{DoxyParamCaption})}
+
 \Hypertarget{struct_f_stage_data_aaa994d8714bcadfc28ab5ea3db77ce2c}\index{FStageData@{FStageData}!SetMusicPath@{SetMusicPath}}
 \index{SetMusicPath@{SetMusicPath}!FStageData@{FStageData}}
 \doxysubsubsection{\texorpdfstring{SetMusicPath()}{SetMusicPath()}}
 {\footnotesize\ttfamily \label{struct_f_stage_data_aaa994d8714bcadfc28ab5ea3db77ce2c} 
 void FStage\+Data::\+\+Set\+Music\+Path (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{In\+Path}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_a55839b96cda4bd428923783bab62058e}\index{FStageData@{FStageData}!SetRenderLayer@{SetRenderLayer}}
+\index{SetRenderLayer@{SetRenderLayer}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{SetRenderLayer()}{SetRenderLayer()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_a55839b96cda4bd428923783bab62058e} 
+void FStage\+Data::\+\+Set\+Render\+Layer (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{, }\item[{int}]{Value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{struct_f_stage_data_a1afa0a6a5210a35accf86e2715ae2fa1}\index{FStageData@{FStageData}!SetSpawnPoint@{SetSpawnPoint}}
 \index{SetSpawnPoint@{SetSpawnPoint}!FStageData@{FStageData}}
@@ -171,6 +349,12 @@ void FStage\+Data::\+\+Set\+Stage\+Name (\begin{DoxyParamCaption}\item[{const st
 \doxysubsubsection{\texorpdfstring{SetTile()}{SetTile()}}
 {\footnotesize\ttfamily \label{struct_f_stage_data_aaa029a7aabb22af31d725111dec93ada} 
 void FStage\+Data::\+\+Set\+Tile (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{, }\item[{int}]{Value}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_f_stage_data_ae520e6112c988803b0481cb909f4486d}\index{FStageData@{FStageData}!SetTimeLimit@{SetTimeLimit}}
+\index{SetTimeLimit@{SetTimeLimit}!FStageData@{FStageData}}
+\doxysubsubsection{\texorpdfstring{SetTimeLimit()}{SetTimeLimit()}}
+{\footnotesize\ttfamily \label{struct_f_stage_data_ae520e6112c988803b0481cb909f4486d} 
+void FStage\+Data::\+\+Set\+Time\+Limit (\begin{DoxyParamCaption}\item[{float}]{In\+Time\+Limit}{}\end{DoxyParamCaption})}
 
 
 

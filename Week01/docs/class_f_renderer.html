@@ -94,24 +94,39 @@ $(function(){initNavTree('class_f_renderer.html','','class_f_renderer-members');
 
 <p><code>#include &lt;<a class="el" href="_renderer_8h_source.html">Renderer.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:FConstants" id="r_FConstants"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="struct_f_renderer_1_1_f_constants.html">FConstants</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a66ebed1d24273a4173999aa00850b3d6" id="r_a66ebed1d24273a4173999aa00850b3d6"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a66ebed1d24273a4173999aa00850b3d6">Initialize</a> (HWND windowHandle, int screenWidth, int screenHeight)</td></tr>
 <tr class="memitem:a0e1d7559e2106cb434c4889fe892f057" id="r_a0e1d7559e2106cb434c4889fe892f057"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0e1d7559e2106cb434c4889fe892f057">BeginFrame</a> ()</td></tr>
 <tr class="memitem:ae13409ebc376fe5e7a54afb0e8d1b541" id="r_ae13409ebc376fe5e7a54afb0e8d1b541"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae13409ebc376fe5e7a54afb0e8d1b541">EndFrame</a> ()</td></tr>
 <tr class="memitem:a183d538ff00573183be945c105589efc" id="r_a183d538ff00573183be945c105589efc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a183d538ff00573183be945c105589efc">SetCamera</a> (const <a class="el" href="class_f_camera2_d.html">FCamera2D</a> &amp;Camera)</td></tr>
-<tr class="memitem:adaef37126cc3dc1ab6e3dbfe205e4162" id="r_adaef37126cc3dc1ab6e3dbfe205e4162"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adaef37126cc3dc1ab6e3dbfe205e4162">DrawSprite</a> (const <a class="el" href="class_f_texture.html">FTexture</a> *Texture, float WorldX, float WorldY, float Width, float Height, const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;Sprite)</td></tr>
-<tr class="memitem:a39df37f16da9a396cc311e3c931b22d3" id="r_a39df37f16da9a396cc311e3c931b22d3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a39df37f16da9a396cc311e3c931b22d3">DrawTexture</a> (const <a class="el" href="class_f_texture.html">FTexture</a> *texture, float screenX, float screenY, float width, float height)</td></tr>
+<tr class="memitem:a6b3d3315418651a46c226429f5fdef05" id="r_a6b3d3315418651a46c226429f5fdef05"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6b3d3315418651a46c226429f5fdef05">DrawSprite</a> (const <a class="el" href="class_f_texture.html">FTexture</a> *Texture, float WorldX, float WorldY, float Width, float Height, const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;Sprite, const DirectX::XMFLOAT4 &amp;ColorTint={0.0f, 0.0f, 0.0f, 0.0f})</td></tr>
+<tr class="memitem:a2acae9e20d2489885fe68bb85fe44ebe" id="r_a2acae9e20d2489885fe68bb85fe44ebe"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2acae9e20d2489885fe68bb85fe44ebe">DrawTexture</a> (const <a class="el" href="class_f_texture.html">FTexture</a> *texture, float screenX, float screenY, float width, float height, const DirectX::XMFLOAT4 &amp;ColorTint={0.0f, 0.0f, 0.0f, 0.0f})</td></tr>
+<tr class="memitem:a03b0a8dcf1ab244c621f6727f8b22495" id="r_a03b0a8dcf1ab244c621f6727f8b22495"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a03b0a8dcf1ab244c621f6727f8b22495">DrawTexture</a> (const <a class="el" href="class_f_texture.html">FTexture</a> *texture, float screenX, float screenY, float width, float height, float rotationRad, const DirectX::XMFLOAT4 &amp;ColorTint={0.0f, 0.0f, 0.0f, 0.0f})</td></tr>
+<tr class="memitem:af52637f3ce29bea23d4584ce46eeaa9e" id="r_af52637f3ce29bea23d4584ce46eeaa9e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af52637f3ce29bea23d4584ce46eeaa9e">DrawDarknessOverlay</a> (const <a class="el" href="class_f_texture.html">FTexture</a> *Texture, float ScreenCenterX, float ScreenCenterY)</td></tr>
+<tr class="memitem:a2086c0f6f78df82ed31961427b3a8c10" id="r_a2086c0f6f78df82ed31961427b3a8c10"><td class="memItemLeft"><a class="el" href="struct_f_static_batch.html">FStaticBatch</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2086c0f6f78df82ed31961427b3a8c10">CreateStaticBatch</a> (const <a class="el" href="struct_f_vertex_simple.html">FVertexSimple</a> *Vertices, UINT VertexCount, const UINT *Indices, UINT IndexCount)</td></tr>
+<tr class="memitem:ab83a5098e30404bd44af27ffda20492a" id="r_ab83a5098e30404bd44af27ffda20492a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab83a5098e30404bd44af27ffda20492a">ReleaseStaticBatch</a> (<a class="el" href="struct_f_static_batch.html">FStaticBatch</a> &amp;Batch)</td></tr>
+<tr class="memitem:ab8ff902e5b32be00b847f502773d0997" id="r_ab8ff902e5b32be00b847f502773d0997"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab8ff902e5b32be00b847f502773d0997">DrawBatch</a> (const <a class="el" href="struct_f_static_batch.html">FStaticBatch</a> &amp;Batch, const <a class="el" href="class_f_texture.html">FTexture</a> *Texture)</td></tr>
+<tr class="memitem:a9dc7f7119485bb0d858731f91a7611cc" id="r_a9dc7f7119485bb0d858731f91a7611cc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9dc7f7119485bb0d858731f91a7611cc">DrawFont</a> (const std::string &amp;text, const <a class="el" href="struct_f_bitmap_font.html">FBitmapFont</a> *Font, const <a class="el" href="class_f_texture.html">FTexture</a> *texture, float screenX, float screenY, float scale)</td></tr>
 <tr class="memitem:addba53f722a0bfe3457b5121ea337f9c" id="r_addba53f722a0bfe3457b5121ea337f9c"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#addba53f722a0bfe3457b5121ea337f9c">GetScreenWidth</a> () const</td></tr>
 <tr class="memitem:a525287c8a1947323cfbd5cd6799df8a2" id="r_a525287c8a1947323cfbd5cd6799df8a2"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a525287c8a1947323cfbd5cd6799df8a2">GetScreenHeight</a> () const</td></tr>
+<tr class="memitem:ac929aa53e1243bf987c00fa975faaa5f" id="r_ac929aa53e1243bf987c00fa975faaa5f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac929aa53e1243bf987c00fa975faaa5f">OnResize</a> (int NewWidth, int NewHeight)</td></tr>
 <tr class="memitem:a8c91fdea0d6c5eeaeaf48e1b405376ce" id="r_a8c91fdea0d6c5eeaeaf48e1b405376ce"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a8c91fdea0d6c5eeaeaf48e1b405376ce">LoadShaderFromFile</a> (const std::wstring &amp;Path)</td></tr>
 <tr class="memitem:a188b42df9e4c6d359d24cdce87bbe226" id="r_a188b42df9e4c6d359d24cdce87bbe226"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a188b42df9e4c6d359d24cdce87bbe226">GetAvailableShaders</a> () const</td></tr>
 <tr class="memitem:a4fa0b75f0009a5f31952493d19db4083" id="r_a4fa0b75f0009a5f31952493d19db4083"><td class="memItemLeft">const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a4fa0b75f0009a5f31952493d19db4083">GetCurrentShaderName</a> () const</td></tr>
 <tr class="memitem:aba38d5b26c2b71a2bea24a9d54ce3cf5" id="r_aba38d5b26c2b71a2bea24a9d54ce3cf5"><td class="memItemLeft">const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aba38d5b26c2b71a2bea24a9d54ce3cf5">GetShaderError</a> () const</td></tr>
+<tr class="memitem:adf8d11f99a0049ed63bdc043795bfe60" id="r_adf8d11f99a0049ed63bdc043795bfe60"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adf8d11f99a0049ed63bdc043795bfe60">UpdateFontConstant</a> (<a class="el" href="struct_f_vector.html">FVector</a> Offset, float ScaleX=1.0f, float ScaleY=1.0f)</td></tr>
+<tr class="memitem:a33219235e7b79ef8adfe090fad77cd3f" id="r_a33219235e7b79ef8adfe090fad77cd3f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a33219235e7b79ef8adfe090fad77cd3f">BindShader</a> (<a class="el" href="_renderer_8h.html#a73311d3c753c341dc5d32561a39659a0">EShaderType</a> Type)</td></tr>
 <tr class="memitem:a379425a7bcf35e75a417f9794c721854" id="r_a379425a7bcf35e75a417f9794c721854"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a379425a7bcf35e75a417f9794c721854">Prepare</a> ()</td></tr>
 <tr class="memitem:aca9ed1d06f30c88bb6ffe1ee8073cb94" id="r_aca9ed1d06f30c88bb6ffe1ee8073cb94"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aca9ed1d06f30c88bb6ffe1ee8073cb94">PrepareShader</a> ()</td></tr>
 <tr class="memitem:a98a009965b63919b8155f8f16bcf59f7" id="r_a98a009965b63919b8155f8f16bcf59f7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a98a009965b63919b8155f8f16bcf59f7">Render</a> ()</td></tr>
 <tr class="memitem:a8e0f8ca6aa503a239efe1ff6bee91834" id="r_a8e0f8ca6aa503a239efe1ff6bee91834"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8e0f8ca6aa503a239efe1ff6bee91834">CreateShader</a> ()</td></tr>
+<tr class="memitem:af2a6ea631431636d7251c037933c0e51" id="r_af2a6ea631431636d7251c037933c0e51"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af2a6ea631431636d7251c037933c0e51">CreateFontShader</a> ()</td></tr>
+<tr class="memitem:a55f1df1ffc59075136f17b5b363de252" id="r_a55f1df1ffc59075136f17b5b363de252"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a55f1df1ffc59075136f17b5b363de252">ReleaseFontShader</a> ()</td></tr>
 <tr class="memitem:a20493b87cf19df2aa96e47c599db7cab" id="r_a20493b87cf19df2aa96e47c599db7cab"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a20493b87cf19df2aa96e47c599db7cab">ReleaseShader</a> ()</td></tr>
 <tr class="memitem:a859092e1a53c21075ddc452e348e0e4e" id="r_a859092e1a53c21075ddc452e348e0e4e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a859092e1a53c21075ddc452e348e0e4e">Create</a> (HWND hWindow)</td></tr>
 <tr class="memitem:ade9de6e0157ad5874822faa06128cbb2" id="r_ade9de6e0157ad5874822faa06128cbb2"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ade9de6e0157ad5874822faa06128cbb2">CreateDeviceAndSwapChain</a> (HWND hWindow)</td></tr>
@@ -123,10 +138,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a13b91f03ae70387083472a4867f01694" id="r_a13b91f03ae70387083472a4867f01694"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a13b91f03ae70387083472a4867f01694">Release</a> ()</td></tr>
 <tr class="memitem:a3b10265b3f2c5f7179fcbc505dc97603" id="r_a3b10265b3f2c5f7179fcbc505dc97603"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3b10265b3f2c5f7179fcbc505dc97603">SwapBuffer</a> ()</td></tr>
 <tr class="memitem:a5db710f7a9ab0a9de13aeb9d11a56828" id="r_a5db710f7a9ab0a9de13aeb9d11a56828"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5db710f7a9ab0a9de13aeb9d11a56828">CreateSamplerState</a> ()</td></tr>
+<tr class="memitem:a88370a3efc23c818a6ba2e7a8c37ae34" id="r_a88370a3efc23c818a6ba2e7a8c37ae34"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a88370a3efc23c818a6ba2e7a8c37ae34">CreateBlendState</a> ()</td></tr>
 <tr class="memitem:aece136ed48896a80dec803af3241c71c" id="r_aece136ed48896a80dec803af3241c71c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aece136ed48896a80dec803af3241c71c">CreateSimpleQuad</a> ()</td></tr>
+<tr class="memitem:afd23b6785c403130f5f97cb404609a0e" id="r_afd23b6785c403130f5f97cb404609a0e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afd23b6785c403130f5f97cb404609a0e">CreateTextQuadBuffer</a> ()</td></tr>
+<tr class="memitem:a2b46431750e7d18d6e62f76bf647784f" id="r_a2b46431750e7d18d6e62f76bf647784f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2b46431750e7d18d6e62f76bf647784f">UpdateTextQuadBuffer</a> (<a class="el" href="struct_f_vertex_simple.html">FVertexSimple</a> *textVertices)</td></tr>
 <tr class="memitem:af6eaca2705740537f55bc2494c7b3273" id="r_af6eaca2705740537f55bc2494c7b3273"><td class="memItemLeft">ID3D11Buffer *&#160;</td><td class="memItemRight"><a class="el" href="#af6eaca2705740537f55bc2494c7b3273">CreateVertexBuffer</a> (<a class="el" href="struct_f_vertex_simple.html">FVertexSimple</a> *vertices, UINT byteWidth)</td></tr>
 <tr class="memitem:a1b4c8626568135305c30a8121a1c1505" id="r_a1b4c8626568135305c30a8121a1c1505"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1b4c8626568135305c30a8121a1c1505">ReleaseVertexBuffer</a> (ID3D11Buffer *vertexBuffer)</td></tr>
 <tr class="memitem:a8b4ac4a903068dbdd0659741969c5aaa" id="r_a8b4ac4a903068dbdd0659741969c5aaa"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8b4ac4a903068dbdd0659741969c5aaa">CreateConstantBuffer</a> ()</td></tr>
+<tr class="memitem:a66ceae126b1fbdf496e67013e408d051" id="r_a66ceae126b1fbdf496e67013e408d051"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a66ceae126b1fbdf496e67013e408d051">CreateFontConstantBuffer</a> ()</td></tr>
 <tr class="memitem:ae79d9f85b715273e9e4d95f920156abb" id="r_ae79d9f85b715273e9e4d95f920156abb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae79d9f85b715273e9e4d95f920156abb">ReleaseConstantBuffer</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -142,13 +161,19 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ac6d2054a9e668d568d0c22803269605a" id="r_ac6d2054a9e668d568d0c22803269605a"><td class="memItemLeft">ID3D11RasterizerState *&#160;</td><td class="memItemRight"><a class="el" href="#ac6d2054a9e668d568d0c22803269605a">RasterizerState</a> = nullptr</td></tr>
 <tr class="memitem:aae93072832e144b488f89bb514271539" id="r_aae93072832e144b488f89bb514271539"><td class="memItemLeft">ID3D11Buffer *&#160;</td><td class="memItemRight"><a class="el" href="#aae93072832e144b488f89bb514271539">ConstantBuffer</a> = nullptr</td></tr>
 <tr class="memitem:a31743944269d38ebb4c4c0ae0f526f02" id="r_a31743944269d38ebb4c4c0ae0f526f02"><td class="memItemLeft">ID3D11Buffer *&#160;</td><td class="memItemRight"><a class="el" href="#a31743944269d38ebb4c4c0ae0f526f02">QuadBuffer</a> = nullptr</td></tr>
-<tr class="memitem:aeb697690f506f4f49f165a852e31b3a5" id="r_aeb697690f506f4f49f165a852e31b3a5"><td class="memItemLeft">FLOAT&#160;</td><td class="memItemRight"><a class="el" href="#aeb697690f506f4f49f165a852e31b3a5">ClearColor</a> [4] = { 0.025f, 0.025f, 0.025f, 1.0f }</td></tr>
+<tr class="memitem:acd22ed5bf9c8fa4d4f659a2395baa758" id="r_acd22ed5bf9c8fa4d4f659a2395baa758"><td class="memItemLeft">ID3D11Buffer *&#160;</td><td class="memItemRight"><a class="el" href="#acd22ed5bf9c8fa4d4f659a2395baa758">TextQuadBuffer</a> = nullptr</td></tr>
+<tr class="memitem:aeb697690f506f4f49f165a852e31b3a5" id="r_aeb697690f506f4f49f165a852e31b3a5"><td class="memItemLeft">FLOAT&#160;</td><td class="memItemRight"><a class="el" href="#aeb697690f506f4f49f165a852e31b3a5">ClearColor</a> [4] = {0.025f, 0.025f, 0.025f, 1.0f}</td></tr>
 <tr class="memitem:a989ef474fc7d8e8da1665570c8d267e0" id="r_a989ef474fc7d8e8da1665570c8d267e0"><td class="memItemLeft">D3D11_VIEWPORT&#160;</td><td class="memItemRight"><a class="el" href="#a989ef474fc7d8e8da1665570c8d267e0">ViewportInfo</a></td></tr>
 <tr class="memitem:aca4731a66e925fc171cfa0bb530f501d" id="r_aca4731a66e925fc171cfa0bb530f501d"><td class="memItemLeft">ID3D11VertexShader *&#160;</td><td class="memItemRight"><a class="el" href="#aca4731a66e925fc171cfa0bb530f501d">SimpleVertexShader</a></td></tr>
 <tr class="memitem:adb6f76a8b474c252b829ebce4d88d8c4" id="r_adb6f76a8b474c252b829ebce4d88d8c4"><td class="memItemLeft">ID3D11PixelShader *&#160;</td><td class="memItemRight"><a class="el" href="#adb6f76a8b474c252b829ebce4d88d8c4">SimplePixelShader</a></td></tr>
 <tr class="memitem:ad902c36c4292f2578080fa1ef1fb0caa" id="r_ad902c36c4292f2578080fa1ef1fb0caa"><td class="memItemLeft">ID3D11InputLayout *&#160;</td><td class="memItemRight"><a class="el" href="#ad902c36c4292f2578080fa1ef1fb0caa">SimpleInputLayout</a></td></tr>
 <tr class="memitem:a71466a0e85aa51bf272507cd1988f24e" id="r_a71466a0e85aa51bf272507cd1988f24e"><td class="memItemLeft">unsigned int&#160;</td><td class="memItemRight"><a class="el" href="#a71466a0e85aa51bf272507cd1988f24e">Stride</a></td></tr>
+<tr class="memitem:ab70cc7329e6c68b6540dc53d098a6043" id="r_ab70cc7329e6c68b6540dc53d098a6043"><td class="memItemLeft">ID3D11VertexShader *&#160;</td><td class="memItemRight"><a class="el" href="#ab70cc7329e6c68b6540dc53d098a6043">FontVertexShader</a> = nullptr</td></tr>
+<tr class="memitem:a4e4601de1ba69d2ed1aa3cadbd60e78f" id="r_a4e4601de1ba69d2ed1aa3cadbd60e78f"><td class="memItemLeft">ID3D11PixelShader *&#160;</td><td class="memItemRight"><a class="el" href="#a4e4601de1ba69d2ed1aa3cadbd60e78f">FontPixelShader</a> = nullptr</td></tr>
+<tr class="memitem:ae6828e32e019b658446ae63d8676ed9b" id="r_ae6828e32e019b658446ae63d8676ed9b"><td class="memItemLeft">ID3D11InputLayout *&#160;</td><td class="memItemRight"><a class="el" href="#ae6828e32e019b658446ae63d8676ed9b">FontInputLayout</a> = nullptr</td></tr>
+<tr class="memitem:a985175d09dcf50cf8f2c97aeae86e1c4" id="r_a985175d09dcf50cf8f2c97aeae86e1c4"><td class="memItemLeft">ID3D11Buffer *&#160;</td><td class="memItemRight"><a class="el" href="#a985175d09dcf50cf8f2c97aeae86e1c4">FontConstantBuffer</a> = nullptr</td></tr>
 <tr class="memitem:a6192b383970a37fac5614d22a5d26f50" id="r_a6192b383970a37fac5614d22a5d26f50"><td class="memItemLeft">ID3D11SamplerState *&#160;</td><td class="memItemRight"><a class="el" href="#a6192b383970a37fac5614d22a5d26f50">SamplerState</a> = nullptr</td></tr>
+<tr class="memitem:aca088331d3db84cf317dda6596a52ea5" id="r_aca088331d3db84cf317dda6596a52ea5"><td class="memItemLeft">ID3D11BlendState *&#160;</td><td class="memItemRight"><a class="el" href="#aca088331d3db84cf317dda6596a52ea5">AlphaBlendState</a> = nullptr</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a0e1d7559e2106cb434c4889fe892f057" name="a0e1d7559e2106cb434c4889fe892f057"></a>
@@ -168,6 +193,23 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a33219235e7b79ef8adfe090fad77cd3f" name="a33219235e7b79ef8adfe090fad77cd3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33219235e7b79ef8adfe090fad77cd3f">&#9670;&#160;</a></span>BindShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::BindShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_renderer_8h.html#a73311d3c753c341dc5d32561a39659a0">EShaderType</a></td>          <td class="paramname"><span class="paramname"><em>Type</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a859092e1a53c21075ddc452e348e0e4e" name="a859092e1a53c21075ddc452e348e0e4e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a859092e1a53c21075ddc452e348e0e4e">&#9670;&#160;</a></span>Create()</h2>
 
@@ -178,6 +220,23 @@ Public Attributes</h2></td></tr>
           <td class="memname">void FRenderer::Create </td>
           <td>(</td>
           <td class="paramtype">HWND</td>          <td class="paramname"><span class="paramname"><em>hWindow</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a88370a3efc23c818a6ba2e7a8c37ae34" name="a88370a3efc23c818a6ba2e7a8c37ae34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88370a3efc23c818a6ba2e7a8c37ae34">&#9670;&#160;</a></span>CreateBlendState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::CreateBlendState </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -212,6 +271,40 @@ Public Attributes</h2></td></tr>
           <td class="memname">void FRenderer::CreateDeviceAndSwapChain </td>
           <td>(</td>
           <td class="paramtype">HWND</td>          <td class="paramname"><span class="paramname"><em>hWindow</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66ceae126b1fbdf496e67013e408d051" name="a66ceae126b1fbdf496e67013e408d051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ceae126b1fbdf496e67013e408d051">&#9670;&#160;</a></span>CreateFontConstantBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::CreateFontConstantBuffer </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af2a6ea631431636d7251c037933c0e51" name="af2a6ea631431636d7251c037933c0e51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a6ea631431636d7251c037933c0e51">&#9670;&#160;</a></span>CreateFontShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::CreateFontShader </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -304,6 +397,54 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a2086c0f6f78df82ed31961427b3a8c10" name="a2086c0f6f78df82ed31961427b3a8c10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2086c0f6f78df82ed31961427b3a8c10">&#9670;&#160;</a></span>CreateStaticBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_f_static_batch.html">FStaticBatch</a> FRenderer::CreateStaticBatch </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_f_vertex_simple.html">FVertexSimple</a> *</td>          <td class="paramname"><span class="paramname"><em>Vertices</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">UINT</td>          <td class="paramname"><span class="paramname"><em>VertexCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const UINT *</td>          <td class="paramname"><span class="paramname"><em>Indices</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">UINT</td>          <td class="paramname"><span class="paramname"><em>IndexCount</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd23b6785c403130f5f97cb404609a0e" name="afd23b6785c403130f5f97cb404609a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd23b6785c403130f5f97cb404609a0e">&#9670;&#160;</a></span>CreateTextQuadBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::CreateTextQuadBuffer </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af6eaca2705740537f55bc2494c7b3273" name="af6eaca2705740537f55bc2494c7b3273"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af6eaca2705740537f55bc2494c7b3273">&#9670;&#160;</a></span>CreateVertexBuffer()</h2>
 
@@ -325,8 +466,96 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="adaef37126cc3dc1ab6e3dbfe205e4162" name="adaef37126cc3dc1ab6e3dbfe205e4162"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adaef37126cc3dc1ab6e3dbfe205e4162">&#9670;&#160;</a></span>DrawSprite()</h2>
+<a id="ab8ff902e5b32be00b847f502773d0997" name="ab8ff902e5b32be00b847f502773d0997"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8ff902e5b32be00b847f502773d0997">&#9670;&#160;</a></span>DrawBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::DrawBatch </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_f_static_batch.html">FStaticBatch</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Batch</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_f_texture.html">FTexture</a> *</td>          <td class="paramname"><span class="paramname"><em>Texture</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af52637f3ce29bea23d4584ce46eeaa9e" name="af52637f3ce29bea23d4584ce46eeaa9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af52637f3ce29bea23d4584ce46eeaa9e">&#9670;&#160;</a></span>DrawDarknessOverlay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::DrawDarknessOverlay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_f_texture.html">FTexture</a> *</td>          <td class="paramname"><span class="paramname"><em>Texture</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>ScreenCenterX</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>ScreenCenterY</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9dc7f7119485bb0d858731f91a7611cc" name="a9dc7f7119485bb0d858731f91a7611cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dc7f7119485bb0d858731f91a7611cc">&#9670;&#160;</a></span>DrawFont()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::DrawFont </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>text</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_f_bitmap_font.html">FBitmapFont</a> *</td>          <td class="paramname"><span class="paramname"><em>Font</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_f_texture.html">FTexture</a> *</td>          <td class="paramname"><span class="paramname"><em>texture</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>screenX</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>screenY</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>scale</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b3d3315418651a46c226429f5fdef05" name="a6b3d3315418651a46c226429f5fdef05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b3d3315418651a46c226429f5fdef05">&#9670;&#160;</a></span>DrawSprite()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -359,15 +588,20 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Sprite</em></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Sprite</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const DirectX::XMFLOAT4 &amp;</td>          <td class="paramname"><span class="paramname"><em>ColorTint</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{0.0f,&#160;0.0f,&#160;0.0f,&#160;0.0f}</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a39df37f16da9a396cc311e3c931b22d3" name="a39df37f16da9a396cc311e3c931b22d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39df37f16da9a396cc311e3c931b22d3">&#9670;&#160;</a></span>DrawTexture()</h2>
+<a id="a2acae9e20d2489885fe68bb85fe44ebe" name="a2acae9e20d2489885fe68bb85fe44ebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2acae9e20d2489885fe68bb85fe44ebe">&#9670;&#160;</a></span>DrawTexture() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -395,7 +629,58 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>height</em></span>&#160;)</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>height</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const DirectX::XMFLOAT4 &amp;</td>          <td class="paramname"><span class="paramname"><em>ColorTint</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{0.0f,&#160;0.0f,&#160;0.0f,&#160;0.0f}</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a03b0a8dcf1ab244c621f6727f8b22495" name="a03b0a8dcf1ab244c621f6727f8b22495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03b0a8dcf1ab244c621f6727f8b22495">&#9670;&#160;</a></span>DrawTexture() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::DrawTexture </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_f_texture.html">FTexture</a> *</td>          <td class="paramname"><span class="paramname"><em>texture</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>screenX</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>screenY</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>width</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>height</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>rotationRad</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const DirectX::XMFLOAT4 &amp;</td>          <td class="paramname"><span class="paramname"><em>ColorTint</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{0.0f,&#160;0.0f,&#160;0.0f,&#160;0.0f}</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -547,6 +832,27 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ac929aa53e1243bf987c00fa975faaa5f" name="ac929aa53e1243bf987c00fa975faaa5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac929aa53e1243bf987c00fa975faaa5f">&#9670;&#160;</a></span>OnResize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::OnResize </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>NewWidth</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>NewHeight</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a379425a7bcf35e75a417f9794c721854" name="a379425a7bcf35e75a417f9794c721854"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a379425a7bcf35e75a417f9794c721854">&#9670;&#160;</a></span>Prepare()</h2>
 
@@ -632,6 +938,23 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a55f1df1ffc59075136f17b5b363de252" name="a55f1df1ffc59075136f17b5b363de252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55f1df1ffc59075136f17b5b363de252">&#9670;&#160;</a></span>ReleaseFontShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::ReleaseFontShader </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a17cf2c2c67224e2f42676cef7608d59c" name="a17cf2c2c67224e2f42676cef7608d59c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a17cf2c2c67224e2f42676cef7608d59c">&#9670;&#160;</a></span>ReleaseFrameBuffer()</h2>
 
@@ -676,6 +999,23 @@ Public Attributes</h2></td></tr>
           <td class="memname">void FRenderer::ReleaseShader </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab83a5098e30404bd44af27ffda20492a" name="ab83a5098e30404bd44af27ffda20492a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab83a5098e30404bd44af27ffda20492a">&#9670;&#160;</a></span>ReleaseStaticBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::ReleaseStaticBatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_static_batch.html">FStaticBatch</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Batch</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -751,7 +1091,64 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="adf8d11f99a0049ed63bdc043795bfe60" name="adf8d11f99a0049ed63bdc043795bfe60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf8d11f99a0049ed63bdc043795bfe60">&#9670;&#160;</a></span>UpdateFontConstant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::UpdateFontConstant </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_vector.html">FVector</a></td>          <td class="paramname"><span class="paramname"><em>Offset</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>ScaleX</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1.0f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>ScaleY</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1.0f</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2b46431750e7d18d6e62f76bf647784f" name="a2b46431750e7d18d6e62f76bf647784f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b46431750e7d18d6e62f76bf647784f">&#9670;&#160;</a></span>UpdateTextQuadBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FRenderer::UpdateTextQuadBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_vertex_simple.html">FVertexSimple</a> *</td>          <td class="paramname"><span class="paramname"><em>textVertices</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="aca088331d3db84cf317dda6596a52ea5" name="aca088331d3db84cf317dda6596a52ea5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca088331d3db84cf317dda6596a52ea5">&#9670;&#160;</a></span>AlphaBlendState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ID3D11BlendState* FRenderer::AlphaBlendState = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aeb697690f506f4f49f165a852e31b3a5" name="aeb697690f506f4f49f165a852e31b3a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeb697690f506f4f49f165a852e31b3a5">&#9670;&#160;</a></span>ClearColor</h2>
 
@@ -759,7 +1156,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">FLOAT FRenderer::ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }</td>
+          <td class="memname">FLOAT FRenderer::ClearColor[4] = {0.025f, 0.025f, 0.025f, 1.0f}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -802,6 +1199,62 @@ Public Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">ID3D11DeviceContext* FRenderer::DeviceContext = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a985175d09dcf50cf8f2c97aeae86e1c4" name="a985175d09dcf50cf8f2c97aeae86e1c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a985175d09dcf50cf8f2c97aeae86e1c4">&#9670;&#160;</a></span>FontConstantBuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ID3D11Buffer* FRenderer::FontConstantBuffer = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6828e32e019b658446ae63d8676ed9b" name="ae6828e32e019b658446ae63d8676ed9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6828e32e019b658446ae63d8676ed9b">&#9670;&#160;</a></span>FontInputLayout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ID3D11InputLayout* FRenderer::FontInputLayout = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4e4601de1ba69d2ed1aa3cadbd60e78f" name="a4e4601de1ba69d2ed1aa3cadbd60e78f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e4601de1ba69d2ed1aa3cadbd60e78f">&#9670;&#160;</a></span>FontPixelShader</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ID3D11PixelShader* FRenderer::FontPixelShader = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab70cc7329e6c68b6540dc53d098a6043" name="ab70cc7329e6c68b6540dc53d098a6043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab70cc7329e6c68b6540dc53d098a6043">&#9670;&#160;</a></span>FontVertexShader</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ID3D11VertexShader* FRenderer::FontVertexShader = nullptr</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -984,6 +1437,20 @@ Public Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">IDXGISwapChain* FRenderer::SwapChain = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acd22ed5bf9c8fa4d4f659a2395baa758" name="acd22ed5bf9c8fa4d4f659a2395baa758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd22ed5bf9c8fa4d4f659a2395baa758">&#9670;&#160;</a></span>TextQuadBuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ID3D11Buffer* FRenderer::TextQuadBuffer = nullptr</td>
         </tr>
       </table>
 </div><div class="memdoc">

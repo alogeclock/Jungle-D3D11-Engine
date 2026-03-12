@@ -102,6 +102,7 @@ Inheritance diagram for IUIWidget:</div>
 <area href="class_f_beat_h_u_d_widget.html" alt="FBeatHUDWidget" shape="rect" coords="0,56,140,80"/>
 <area href="class_f_debug_widget.html" alt="FDebugWidget" shape="rect" coords="150,56,290,80"/>
 <area href="class_f_gameplay_h_u_d_widget.html" alt="FGameplayHUDWidget" shape="rect" coords="300,56,440,80"/>
+<area href="class_f_minimap_widget.html" alt="FMinimapWidget" shape="rect" coords="450,56,590,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -110,6 +111,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad69f73e9d6632b87cb5c98cd113bc777" id="r_ad69f73e9d6632b87cb5c98cd113bc777"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#ad69f73e9d6632b87cb5c98cd113bc777">~IUIWidget</a> ()=default</td></tr>
 <tr class="memitem:a550065e70237fac75b7c61ab81e969ea" id="r_a550065e70237fac75b7c61ab81e969ea"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a550065e70237fac75b7c61ab81e969ea">Update</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context)=0</td></tr>
 <tr class="memitem:ae700b3bb9392cd080853fb6427befc43" id="r_ae700b3bb9392cd080853fb6427befc43"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ae700b3bb9392cd080853fb6427befc43">Render</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context)=0</td></tr>
+<tr class="memitem:abe9665fcd1afef16bf899c4d7eea062e" id="r_abe9665fcd1afef16bf899c4d7eea062e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#abe9665fcd1afef16bf899c4d7eea062e">SetTextures</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context)=0</td></tr>
 <tr class="memitem:ac308cc817ab57ad96af22323e4b538c5" id="r_ac308cc817ab57ad96af22323e4b538c5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac308cc817ab57ad96af22323e4b538c5">SetVisible</a> (bool bVisible)</td></tr>
 <tr class="memitem:aa82d6de865326ac99d99644d78a095c2" id="r_aa82d6de865326ac99d99644d78a095c2"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aa82d6de865326ac99d99644d78a095c2">IsVisible</a> () const</td></tr>
 </table><table class="memberdecls">
@@ -192,7 +194,34 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_f_beat_h_u_d_widget.html#a9d1f3a65882c0a3797f0d9745555396c">FBeatHUDWidget</a>, <a class="el" href="class_f_debug_widget.html#af75d43451483249d327debb69c76225c">FDebugWidget</a>, and <a class="el" href="class_f_gameplay_h_u_d_widget.html#aa3e1ccef3c6cfd616bde2a85da5b6518">FGameplayHUDWidget</a>.</p>
+<p>Implemented in <a class="el" href="class_f_beat_h_u_d_widget.html#a9d1f3a65882c0a3797f0d9745555396c">FBeatHUDWidget</a>, <a class="el" href="class_f_debug_widget.html#af75d43451483249d327debb69c76225c">FDebugWidget</a>, <a class="el" href="class_f_gameplay_h_u_d_widget.html#aa3e1ccef3c6cfd616bde2a85da5b6518">FGameplayHUDWidget</a>, and <a class="el" href="class_f_minimap_widget.html#ac31901b21fe062fc8cb6b0e373118265">FMinimapWidget</a>.</p>
+
+</div>
+</div>
+<a id="abe9665fcd1afef16bf899c4d7eea062e" name="abe9665fcd1afef16bf899c4d7eea062e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe9665fcd1afef16bf899c4d7eea062e">&#9670;&#160;</a></span>SetTextures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void IUIWidget::SetTextures </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_f_beat_h_u_d_widget.html#ac51303480d7dfdad8ffe7c5ab49009f0">FBeatHUDWidget</a>, <a class="el" href="class_f_debug_widget.html#a24631a7ed019ce0d475755a96c40be23">FDebugWidget</a>, <a class="el" href="class_f_gameplay_h_u_d_widget.html#a629cf8280f1c5ff6d89242902a633aa9">FGameplayHUDWidget</a>, and <a class="el" href="class_f_minimap_widget.html#a4b8542e618d881c40d8c95cb2ca71a68">FMinimapWidget</a>.</p>
 
 </div>
 </div>
@@ -244,7 +273,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_f_beat_h_u_d_widget.html#a2508e279b528556a0c4129d0536e8f98">FBeatHUDWidget</a>, <a class="el" href="class_f_debug_widget.html#a66a18155b0da3134609f0b979eebfbd1">FDebugWidget</a>, and <a class="el" href="class_f_gameplay_h_u_d_widget.html#a55e6b3bc68f1c15212fa69ad3320fc12">FGameplayHUDWidget</a>.</p>
+<p>Implemented in <a class="el" href="class_f_beat_h_u_d_widget.html#a2508e279b528556a0c4129d0536e8f98">FBeatHUDWidget</a>, <a class="el" href="class_f_debug_widget.html#a66a18155b0da3134609f0b979eebfbd1">FDebugWidget</a>, <a class="el" href="class_f_gameplay_h_u_d_widget.html#a55e6b3bc68f1c15212fa69ad3320fc12">FGameplayHUDWidget</a>, and <a class="el" href="class_f_minimap_widget.html#a57a8fe6a11c390199732ba5cbfa9433e">FMinimapWidget</a>.</p>
 
 </div>
 </div>
@@ -272,7 +301,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>UI/<a class="el" href="_u_i_widget_8h_source.html">UIWidget.h</a></li>
+<li>UI/widget/<a class="el" href="_u_i_widget_8h_source.html">UIWidget.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

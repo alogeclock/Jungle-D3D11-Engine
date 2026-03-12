@@ -105,9 +105,13 @@ Inheritance diagram for FBeatHUDWidget:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a9ab9d94b4948fb40bed1f2827f785221" id="r_a9ab9d94b4948fb40bed1f2827f785221"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a9ab9d94b4948fb40bed1f2827f785221">FBeatHUDWidget</a> ()</td></tr>
 <tr class="memitem:a571ec09b93fc6206cc2f8ac501bd019b" id="r_a571ec09b93fc6206cc2f8ac501bd019b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a571ec09b93fc6206cc2f8ac501bd019b">BindBeatSystem</a> (const <a class="el" href="class_f_beat_system.html">FBeatSystem</a> *BeatSystem)</td></tr>
 <tr class="memitem:a2508e279b528556a0c4129d0536e8f98" id="r_a2508e279b528556a0c4129d0536e8f98"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2508e279b528556a0c4129d0536e8f98">Update</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context) override</td></tr>
 <tr class="memitem:a9d1f3a65882c0a3797f0d9745555396c" id="r_a9d1f3a65882c0a3797f0d9745555396c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9d1f3a65882c0a3797f0d9745555396c">Render</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context) override</td></tr>
+<tr class="memitem:ac51303480d7dfdad8ffe7c5ab49009f0" id="r_ac51303480d7dfdad8ffe7c5ab49009f0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ac51303480d7dfdad8ffe7c5ab49009f0">SetTextures</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context) override</td></tr>
+<tr class="memitem:ac0df7156d0aebceceb0c013c61a43622" id="r_ac0df7156d0aebceceb0c013c61a43622"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac0df7156d0aebceceb0c013c61a43622">OnBeatJudged</a> (<a class="el" href="_types_8h.html#a9395470b121c3a8c4ca82eb6db81f063">EBeatJudge</a> Judge, float InScore, int InCombo)</td></tr>
+<tr class="memitem:a5a01e0a1d2f3e27aaa3411a09783450c" id="r_a5a01e0a1d2f3e27aaa3411a09783450c"><td class="memItemLeft"><a class="el" href="struct_beat_effect.html">BeatEffect</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a5a01e0a1d2f3e27aaa3411a09783450c">GetFromPool</a> (<a class="el" href="class_f_texture.html">FTexture</a> *Texture, float PosX, float PosY, float InLifetime, float InScore, int InCombo)</td></tr>
 <tr class="inherit_header pub_methods_class_i_u_i_widget"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_u_i_widget')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_i_u_i_widget.html">IUIWidget</a></td></tr>
 <tr class="memitem:ad69f73e9d6632b87cb5c98cd113bc777 inherit pub_methods_class_i_u_i_widget" id="r_ad69f73e9d6632b87cb5c98cd113bc777"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="class_i_u_i_widget.html#ad69f73e9d6632b87cb5c98cd113bc777">~IUIWidget</a> ()=default</td></tr>
 <tr class="memitem:ac308cc817ab57ad96af22323e4b538c5 inherit pub_methods_class_i_u_i_widget" id="r_ac308cc817ab57ad96af22323e4b538c5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_u_i_widget.html#ac308cc817ab57ad96af22323e4b538c5">SetVisible</a> (bool bVisible)</td></tr>
@@ -118,6 +122,32 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_class_i_u_i_widget"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_i_u_i_widget')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="class_i_u_i_widget.html">IUIWidget</a></td></tr>
 <tr class="memitem:a1ac3d6c564caddead36a060ace629b09 inherit pro_attribs_class_i_u_i_widget" id="r_a1ac3d6c564caddead36a060ace629b09"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_i_u_i_widget.html#a1ac3d6c564caddead36a060ace629b09">bIsVisible</a> = true</td></tr>
 </table>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9ab9d94b4948fb40bed1f2827f785221" name="a9ab9d94b4948fb40bed1f2827f785221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ab9d94b4948fb40bed1f2827f785221">&#9670;&#160;</a></span>FBeatHUDWidget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">FBeatHUDWidget::FBeatHUDWidget </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a571ec09b93fc6206cc2f8ac501bd019b" name="a571ec09b93fc6206cc2f8ac501bd019b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a571ec09b93fc6206cc2f8ac501bd019b">&#9670;&#160;</a></span>BindBeatSystem()</h2>
@@ -130,6 +160,73 @@ Additional Inherited Members</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="class_f_beat_system.html">FBeatSystem</a> *</td>          <td class="paramname"><span class="paramname"><em>BeatSystem</em></span></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5a01e0a1d2f3e27aaa3411a09783450c" name="a5a01e0a1d2f3e27aaa3411a09783450c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a01e0a1d2f3e27aaa3411a09783450c">&#9670;&#160;</a></span>GetFromPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_beat_effect.html">BeatEffect</a> * FBeatHUDWidget::GetFromPool </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_f_texture.html">FTexture</a> *</td>          <td class="paramname"><span class="paramname"><em>Texture</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>PosX</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>PosY</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>InLifetime</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>InScore</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InCombo</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac0df7156d0aebceceb0c013c61a43622" name="ac0df7156d0aebceceb0c013c61a43622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0df7156d0aebceceb0c013c61a43622">&#9670;&#160;</a></span>OnBeatJudged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FBeatHUDWidget::OnBeatJudged </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_types_8h.html#a9395470b121c3a8c4ca82eb6db81f063">EBeatJudge</a></td>          <td class="paramname"><span class="paramname"><em>Judge</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>InScore</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InCombo</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -163,6 +260,33 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="ac51303480d7dfdad8ffe7c5ab49009f0" name="ac51303480d7dfdad8ffe7c5ab49009f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac51303480d7dfdad8ffe7c5ab49009f0">&#9670;&#160;</a></span>SetTextures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FBeatHUDWidget::SetTextures </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="class_i_u_i_widget.html#abe9665fcd1afef16bf899c4d7eea062e">IUIWidget</a>.</p>
+
+</div>
+</div>
 <a id="a2508e279b528556a0c4129d0536e8f98" name="a2508e279b528556a0c4129d0536e8f98"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2508e279b528556a0c4129d0536e8f98">&#9670;&#160;</a></span>Update()</h2>
 
@@ -191,8 +315,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>UI/<a class="el" href="_beat_h_u_d_widget_8h_source.html">BeatHUDWidget.h</a></li>
-<li>UI/<a class="el" href="_beat_h_u_d_widget_8cpp.html">BeatHUDWidget.cpp</a></li>
+<li>UI/widget/<a class="el" href="_beat_h_u_d_widget_8h_source.html">BeatHUDWidget.h</a></li>
+<li>UI/widget/<a class="el" href="_beat_h_u_d_widget_8cpp.html">BeatHUDWidget.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

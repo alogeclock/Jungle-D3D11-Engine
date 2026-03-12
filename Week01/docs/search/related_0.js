@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['soundeffect_3a_3acreateinstance_0',['CreateInstance',['../class_direct_x_1_1_sound_effect_instance.html#a11d6f8d4d1131d8a9b4e3315f1603c88',1,'DirectX::SoundEffectInstance']]]
+  ['tsingleton_3c_20faudiosystem_20_3e_0',['TSingleton&lt; FAudioSystem &gt;',['../class_f_audio_system.html#a0de5c560266197b5180451d2b588b8fd',1,'FAudioSystem']]],
+  ['tsingleton_3c_20fcreditloader_20_3e_1',['TSingleton&lt; FCreditLoader &gt;',['../class_f_credit_loader.html#a0f506ee43ad838d3a99e41dfa6ffc518',1,'FCreditLoader']]]
 ];

@@ -43,7 +43,7 @@ void \doxymbox{\hyperlink{class_f_actor_a68595bdd34cbe511ae5a21193037da90}{Set\+
 \item 
 int \doxymbox{\hyperlink{class_f_actor_a43b436e481db08d4675554ec09fa8287}{Get\+Hp}} () const
 \item 
-void \doxymbox{\hyperlink{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b}{Damage}} (int Amount)
+virtual void \doxymbox{\hyperlink{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b}{Damage}} (int Amount)
 \item 
 void \doxymbox{\hyperlink{class_f_actor_a279cf6d77a0343648e2dece3f1eb1801}{Heal}} (int Amount)
 \item 
@@ -58,6 +58,14 @@ bool \doxymbox{\hyperlink{class_f_actor_adc0348f0969c577bd049e44dcec1e840}{Is\+M
 void \doxymbox{\hyperlink{class_f_actor_a0382ed1b6c73a2a6d5649440dd992e7f}{Set\+Sprite}} (const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&In\+Sprite)
 \item 
 const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& \doxymbox{\hyperlink{class_f_actor_abf4308febfabb82b0dc4a3bf349f1ddc}{Get\+Sprite}} () const
+\item 
+\doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \& \doxymbox{\hyperlink{class_f_actor_a1141daa9f2f604282274fdfc21700fc7}{Get\+Animator}} ()
+\item 
+const \doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \& \doxymbox{\hyperlink{class_f_actor_a74765cd157241180001c3e43d7dde2b3}{Get\+Animator}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_actor_a9c81f5b8c75ed26676ee2be9278394fc}{Set\+Default\+Mirrored}} (bool b\+Mirrored)
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_aea22b6ce1c5342bfe614bff73b7099cf}{Get\+Default\+Mirrored}} () const
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
@@ -91,6 +99,10 @@ float \doxymbox{\hyperlink{class_f_actor_aee38cb6ce1961fafc673aea488d97663}{Move
 float \doxymbox{\hyperlink{class_f_actor_a24b13b3de3279f0f13b67fa7ea38b24e}{Move\+TargetY}} = 0.\+0f
 \item 
 \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \doxymbox{\hyperlink{class_f_actor_a43a92b36260e21ac6f3123d3d31c369f}{Sprite}}
+\item 
+\doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \doxymbox{\hyperlink{class_f_actor_ae838b8d9bb305983b93d02e829d3a507}{Animator}}
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a8f8eaf81fa1f15bece45c1864b66e068}{b\+Default\+Mirrored}} = false
 \end{DoxyCompactItemize}
 
 
@@ -112,7 +124,11 @@ virtual FActor::\+\texorpdfstring{$\sim$}{\string~}\+FActor (\begin{DoxyParamCap
 \index{Damage@{Damage}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{Damage()}{Damage()}}
 {\footnotesize\ttfamily \label{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b} 
-void FActor::\+\+Damage (\begin{DoxyParamCaption}\item[{int}]{Amount}{}\end{DoxyParamCaption})}
+void FActor::\+\+Damage (\begin{DoxyParamCaption}\item[{int}]{Amount}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_f_player_ab94f5314af8e42e8d8b378cd246db67b}{FPlayer}}.
 
 \Hypertarget{class_f_actor_aacfa923eb1d70916869e858aa897097e}\index{FActor@{FActor}!GetActorType@{GetActorType}}
 \index{GetActorType@{GetActorType}!FActor@{FActor}}
@@ -123,6 +139,24 @@ virtual \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActor
 
 
 Implemented in \doxymbox{\hyperlink{class_f_monster_a8d9e57fc0fbce15a135045329bb042be}{FMonster}}, and \doxymbox{\hyperlink{class_f_player_adbfdd6076c0f584103d116fb1ce220cd}{FPlayer}}.
+
+\Hypertarget{class_f_actor_a1141daa9f2f604282274fdfc21700fc7}\index{FActor@{FActor}!GetAnimator@{GetAnimator}}
+\index{GetAnimator@{GetAnimator}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetAnimator()}{GetAnimator()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_actor_a1141daa9f2f604282274fdfc21700fc7} 
+\doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \& FActor::\+\+Get\+Animator (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_actor_a74765cd157241180001c3e43d7dde2b3}\index{FActor@{FActor}!GetAnimator@{GetAnimator}}
+\index{GetAnimator@{GetAnimator}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetAnimator()}{GetAnimator()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_actor_a74765cd157241180001c3e43d7dde2b3} 
+const \doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \& FActor::\+\+Get\+Animator (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_actor_aea22b6ce1c5342bfe614bff73b7099cf}\index{FActor@{FActor}!GetDefaultMirrored@{GetDefaultMirrored}}
+\index{GetDefaultMirrored@{GetDefaultMirrored}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{GetDefaultMirrored()}{GetDefaultMirrored()}}
+{\footnotesize\ttfamily \label{class_f_actor_aea22b6ce1c5342bfe614bff73b7099cf} 
+bool FActor::\+\+Get\+Default\+Mirrored (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{class_f_actor_abf82029b6feefe52d27c4597ab8bba6c}\index{FActor@{FActor}!GetDirection@{GetDirection}}
 \index{GetDirection@{GetDirection}!FActor@{FActor}}
@@ -200,6 +234,12 @@ virtual void FActor::\+\+On\+Beat (\begin{DoxyParamCaption}\item[{\doxymbox{\hyp
 
 Implemented in \doxymbox{\hyperlink{class_f_monster_a52648e30a33904f0e417483607c00e85}{FMonster}}, and \doxymbox{\hyperlink{class_f_player_adcd7cdbac7af1cc688a9b3ec8fb6bcfb}{FPlayer}}.
 
+\Hypertarget{class_f_actor_a9c81f5b8c75ed26676ee2be9278394fc}\index{FActor@{FActor}!SetDefaultMirrored@{SetDefaultMirrored}}
+\index{SetDefaultMirrored@{SetDefaultMirrored}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{SetDefaultMirrored()}{SetDefaultMirrored()}}
+{\footnotesize\ttfamily \label{class_f_actor_a9c81f5b8c75ed26676ee2be9278394fc} 
+void FActor::\+\+Set\+Default\+Mirrored (\begin{DoxyParamCaption}\item[{bool}]{b\+Mirrored}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_actor_a051ff2e846b7c7df29237969a64098b7}\index{FActor@{FActor}!SetDirection@{SetDirection}}
 \index{SetDirection@{SetDirection}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{SetDirection()}{SetDirection()}}
@@ -257,6 +297,18 @@ Reimplemented in \doxymbox{\hyperlink{class_f_monster_ab99ea1e9983cf0533ac2ce78e
 \label{doc-variable-members}
 \Hypertarget{class_f_actor_doc-variable-members}
 \doxysubsection{Member Data Documentation}
+\Hypertarget{class_f_actor_ae838b8d9bb305983b93d02e829d3a507}\index{FActor@{FActor}!Animator@{Animator}}
+\index{Animator@{Animator}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{Animator}{Animator}}
+{\footnotesize\ttfamily \label{class_f_actor_ae838b8d9bb305983b93d02e829d3a507} 
+\doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} FActor::\+\+Animator\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_actor_a8f8eaf81fa1f15bece45c1864b66e068}\index{FActor@{FActor}!bDefaultMirrored@{bDefaultMirrored}}
+\index{bDefaultMirrored@{bDefaultMirrored}!FActor@{FActor}}
+\doxysubsubsection{\texorpdfstring{bDefaultMirrored}{bDefaultMirrored}}
+{\footnotesize\ttfamily \label{class_f_actor_a8f8eaf81fa1f15bece45c1864b66e068} 
+bool FActor::\+b\+Default\+Mirrored = false\hspace{0.3cm}{\ttfamily [protected]}}
+
 \Hypertarget{class_f_actor_a78d706532c3fa04982ca6722ea22309f}\index{FActor@{FActor}!bIsInvincible@{bIsInvincible}}
 \index{bIsInvincible@{bIsInvincible}!FActor@{FActor}}
 \doxysubsubsection{\texorpdfstring{bIsInvincible}{bIsInvincible}}

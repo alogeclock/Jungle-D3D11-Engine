@@ -4,17 +4,21 @@
 \begin{DoxyCode}{0}
 \DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{00002\ }
-\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
-\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
-\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Core/Types.h}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_score_record_8h}{ScoreRecord.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_application_8h}{Core/Application.h}}"{}}}
 \DoxyCodeLine{00006\ }
-\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_score_repository}{FScoreRepository}}}
+\DoxyCodeLine{00007\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_score_repository}{ScoreRepository}}}
 \DoxyCodeLine{00008\ \{}
-\DoxyCodeLine{00009\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00010\ \ \ \ \ std::vector<FScoreRecord>\ \doxymbox{\hyperlink{class_f_score_repository_a55d16c77982235140482289fed56bd2a}{Load}}(\textcolor{keyword}{const}\ std::string\&\ \doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
-\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_score_repository_ae9a3cd67b61dfea9961ce68cf9eb928b}{Save}}(\textcolor{keyword}{const}\ std::string\&\ \doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}},\ \textcolor{keyword}{const}\ std::vector<FScoreRecord>\&\ Records);}
-\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_score_repository_a6e54fe2b73af507a9ec600e472890fe8}{AddRecord}}(std::vector<FScoreRecord>\&\ Records,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_score_record}{FScoreRecord}}\&\ Record);}
-\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_score_repository_a3cfb19eb34963a779b0c7b614f9ed2c2}{SortDescending}}(std::vector<FScoreRecord>\&\ Records);}
-\DoxyCodeLine{00014\ \};}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\doxymbox{\hyperlink{namespace_score_repository_a2b2f11dda74d2304071107576007e4cf}{DefaultPath}}\ =\textcolor{stringliteral}{"{}Resources/Data/scoreboard.json"{}};}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ std::vector<FScoreRecord>\ \doxymbox{\hyperlink{namespace_score_repository_a074e0babd9e3dce2a37ca366ad83d862}{Load}}();}
+\DoxyCodeLine{00012\ \ \ \ \ std::vector<FScoreRecord>\ \doxymbox{\hyperlink{namespace_score_repository_a6c7b7641205e83fd08fa99c33da4b8ef}{LoadSorted}}();}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{namespace_score_repository_a5ee4eff274b1308cc091ad0ff7349d47}{Save}}(\textcolor{keyword}{const}\ std::vector<FScoreRecord>\ \&Records);}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{namespace_score_repository_aa9faa3025c50f9c01d22144f00d8407c}{AppendRecord}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_score_record}{FScoreRecord}}\ \&Record);}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{namespace_score_repository_a0e46f695ab6f0efb1d77d672ab049bbf}{SortDescending}}(std::vector<FScoreRecord>\ \&Records);}
+\DoxyCodeLine{00018\ \}\ \textcolor{comment}{//\ namespace\ ScoreRepository}}
 
 \end{DoxyCode}

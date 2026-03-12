@@ -1,0 +1,121 @@
+\doxysection{Beat\+Effect Struct Reference}
+\hypertarget{struct_beat_effect}{}\label{struct_beat_effect}\index{BeatEffect@{BeatEffect}}
+
+
+{\ttfamily \+\#include $<$Beat\+Effect.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_beat_effect_a8073fcaf17a1393c8201b55e3ba42403}{Beat\+Effect}} ()
+\item 
+\doxymbox{\hyperlink{struct_beat_effect_a98199bc17be7f395cf7b9bee1547641d}{Beat\+Effect}} (\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}In\+Texture, float StartX, float StartY)
+\item 
+void \doxymbox{\hyperlink{struct_beat_effect_af8a6c518cef063ae4584d3db1a94c792}{Update}} (float Delta\+Time)
+\item 
+bool \doxymbox{\hyperlink{struct_beat_effect_a96e7b28fd5600690dbd81c6dd1f80c7c}{Is\+Alive}} () const
+\item 
+void \doxymbox{\hyperlink{struct_beat_effect_a64598596b876d498a62bfe13d9ee692d}{Reset}} (\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}In\+Texture, float StartX, float StartY, float in\+Life\+Time, float In\+Score)
+\item 
+void \doxymbox{\hyperlink{struct_beat_effect_ad622d721bd869a85c9b82c5a75e3ab5b}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_beat_effect_a3ce9f1395868223effc2405c3575153a}{Texture}} = nullptr
+\item 
+float \doxymbox{\hyperlink{struct_beat_effect_a1d3f7fc9f67e6eba8d5b962b6c9fb256}{X}} = 0.f
+\item 
+float \doxymbox{\hyperlink{struct_beat_effect_a096a6ef2f3e535e0c25bd090e712729f}{Y}} = 0.f
+\item 
+float \doxymbox{\hyperlink{struct_beat_effect_a3287eff50951220093f3c81355bba864}{Life\+Time}} = -\/1.f
+\item 
+float \doxymbox{\hyperlink{struct_beat_effect_afe83f47e56c8a141e5d7c21d6448715c}{Score}} = 0
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_beat_effect_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_beat_effect_a8073fcaf17a1393c8201b55e3ba42403}\index{BeatEffect@{BeatEffect}!BeatEffect@{BeatEffect}}
+\index{BeatEffect@{BeatEffect}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{BeatEffect()}{BeatEffect()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a8073fcaf17a1393c8201b55e3ba42403} 
+Beat\+Effect::\+\+Beat\+Effect (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{struct_beat_effect_a98199bc17be7f395cf7b9bee1547641d}\index{BeatEffect@{BeatEffect}!BeatEffect@{BeatEffect}}
+\index{BeatEffect@{BeatEffect}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{BeatEffect()}{BeatEffect()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a98199bc17be7f395cf7b9bee1547641d} 
+Beat\+Effect::\+\+Beat\+Effect (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{In\+Texture}{, }\item[{float}]{StartX}{, }\item[{float}]{StartY}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{struct_beat_effect_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_beat_effect_a96e7b28fd5600690dbd81c6dd1f80c7c}\index{BeatEffect@{BeatEffect}!IsAlive@{IsAlive}}
+\index{IsAlive@{IsAlive}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{IsAlive()}{IsAlive()}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a96e7b28fd5600690dbd81c6dd1f80c7c} 
+bool Beat\+Effect::\+\+Is\+Alive (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{struct_beat_effect_ad622d721bd869a85c9b82c5a75e3ab5b}\index{BeatEffect@{BeatEffect}!Render@{Render}}
+\index{Render@{Render}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{struct_beat_effect_ad622d721bd869a85c9b82c5a75e3ab5b} 
+void Beat\+Effect::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_beat_effect_a64598596b876d498a62bfe13d9ee692d}\index{BeatEffect@{BeatEffect}!Reset@{Reset}}
+\index{Reset@{Reset}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a64598596b876d498a62bfe13d9ee692d} 
+void Beat\+Effect::\+\+Reset (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{In\+Texture}{, }\item[{float}]{StartX}{, }\item[{float}]{StartY}{, }\item[{float}]{in\+Life\+Time}{, }\item[{float}]{In\+Score}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_beat_effect_af8a6c518cef063ae4584d3db1a94c792}\index{BeatEffect@{BeatEffect}!Update@{Update}}
+\index{Update@{Update}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{struct_beat_effect_af8a6c518cef063ae4584d3db1a94c792} 
+void Beat\+Effect::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_beat_effect_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_beat_effect_a3287eff50951220093f3c81355bba864}\index{BeatEffect@{BeatEffect}!LifeTime@{LifeTime}}
+\index{LifeTime@{LifeTime}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{LifeTime}{LifeTime}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a3287eff50951220093f3c81355bba864} 
+float Beat\+Effect::\+\+Life\+Time = -\/1.f}
+
+\Hypertarget{struct_beat_effect_afe83f47e56c8a141e5d7c21d6448715c}\index{BeatEffect@{BeatEffect}!Score@{Score}}
+\index{Score@{Score}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{Score}{Score}}
+{\footnotesize\ttfamily \label{struct_beat_effect_afe83f47e56c8a141e5d7c21d6448715c} 
+float Beat\+Effect::\+\+Score = 0}
+
+\Hypertarget{struct_beat_effect_a3ce9f1395868223effc2405c3575153a}\index{BeatEffect@{BeatEffect}!Texture@{Texture}}
+\index{Texture@{Texture}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{Texture}{Texture}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a3ce9f1395868223effc2405c3575153a} 
+const \doxymbox{\hyperlink{class_f_texture}{FTexture}}\texorpdfstring{$\ast$}{*} Beat\+Effect::\+\+Texture = nullptr}
+
+\Hypertarget{struct_beat_effect_a1d3f7fc9f67e6eba8d5b962b6c9fb256}\index{BeatEffect@{BeatEffect}!X@{X}}
+\index{X@{X}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{X}{X}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a1d3f7fc9f67e6eba8d5b962b6c9fb256} 
+float Beat\+Effect::\+X = 0.f}
+
+\Hypertarget{struct_beat_effect_a096a6ef2f3e535e0c25bd090e712729f}\index{BeatEffect@{BeatEffect}!Y@{Y}}
+\index{Y@{Y}!BeatEffect@{BeatEffect}}
+\doxysubsubsection{\texorpdfstring{Y}{Y}}
+{\footnotesize\ttfamily \label{struct_beat_effect_a096a6ef2f3e535e0c25bd090e712729f} 
+float Beat\+Effect::\+Y = 0.f}
+
+
+
+The documentation for this struct was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+UI/\+widget/\+\doxymbox{\hyperlink{_beat_effect_8h}{Beat\+Effect.\+h}}\item 
+UI/\+widget/\+\doxymbox{\hyperlink{_beat_effect_8cpp}{Beat\+Effect.\+cpp}}\end{DoxyCompactItemize}

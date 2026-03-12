@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keyboard_2eh_0',['Keyboard.h',['../_keyboard_8h.html',1,'']]]
+  ['logger_2eh_0',['Logger.h',['../_logger_8h.html',1,'']]]
 ];

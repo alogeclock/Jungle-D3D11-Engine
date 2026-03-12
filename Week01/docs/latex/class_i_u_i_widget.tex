@@ -7,7 +7,7 @@
 Inheritance diagram for IUIWidget:\+\begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[height=2.000000cm]{class_i_u_i_widget}
+\includegraphics[height=1.891892cm]{class_i_u_i_widget}
 \end{center}
 \end{figure}
 \doxysubsubsection*{Public Member Functions}
@@ -18,6 +18,8 @@ virtual \doxymbox{\hyperlink{class_i_u_i_widget_ad69f73e9d6632b87cb5c98cd113bc77
 virtual void \doxymbox{\hyperlink{class_i_u_i_widget_a550065e70237fac75b7c61ab81e969ea}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
 \item 
 virtual void \doxymbox{\hyperlink{class_i_u_i_widget_ae700b3bb9392cd080853fb6427befc43}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_i_u_i_widget_abe9665fcd1afef16bf899c4d7eea062e}{Set\+Textures}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
 \item 
 void \doxymbox{\hyperlink{class_i_u_i_widget_ac308cc817ab57ad96af22323e4b538c5}{Set\+Visible}} (bool b\+Visible)
 \item 
@@ -58,7 +60,17 @@ virtual void IUIWidget::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hy
 
 
 
-Implemented in \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a9d1f3a65882c0a3797f0d9745555396c}{FBeat\+HUDWidget}}, \doxymbox{\hyperlink{class_f_debug_widget_af75d43451483249d327debb69c76225c}{FDebug\+Widget}}, and \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_aa3e1ccef3c6cfd616bde2a85da5b6518}{FGameplay\+HUDWidget}}.
+Implemented in \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a9d1f3a65882c0a3797f0d9745555396c}{FBeat\+HUDWidget}}, \doxymbox{\hyperlink{class_f_debug_widget_af75d43451483249d327debb69c76225c}{FDebug\+Widget}}, \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_aa3e1ccef3c6cfd616bde2a85da5b6518}{FGameplay\+HUDWidget}}, and \doxymbox{\hyperlink{class_f_minimap_widget_ac31901b21fe062fc8cb6b0e373118265}{FMinimap\+Widget}}.
+
+\Hypertarget{class_i_u_i_widget_abe9665fcd1afef16bf899c4d7eea062e}\index{IUIWidget@{IUIWidget}!SetTextures@{SetTextures}}
+\index{SetTextures@{SetTextures}!IUIWidget@{IUIWidget}}
+\doxysubsubsection{\texorpdfstring{SetTextures()}{SetTextures()}}
+{\footnotesize\ttfamily \label{class_i_u_i_widget_abe9665fcd1afef16bf899c4d7eea062e} 
+virtual void IUIWidget::\+\+Set\+Textures (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_ac51303480d7dfdad8ffe7c5ab49009f0}{FBeat\+HUDWidget}}, \doxymbox{\hyperlink{class_f_debug_widget_a24631a7ed019ce0d475755a96c40be23}{FDebug\+Widget}}, \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_a629cf8280f1c5ff6d89242902a633aa9}{FGameplay\+HUDWidget}}, and \doxymbox{\hyperlink{class_f_minimap_widget_a4b8542e618d881c40d8c95cb2ca71a68}{FMinimap\+Widget}}.
 
 \Hypertarget{class_i_u_i_widget_ac308cc817ab57ad96af22323e4b538c5}\index{IUIWidget@{IUIWidget}!SetVisible@{SetVisible}}
 \index{SetVisible@{SetVisible}!IUIWidget@{IUIWidget}}
@@ -74,7 +86,7 @@ virtual void IUIWidget::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hy
 
 
 
-Implemented in \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a2508e279b528556a0c4129d0536e8f98}{FBeat\+HUDWidget}}, \doxymbox{\hyperlink{class_f_debug_widget_a66a18155b0da3134609f0b979eebfbd1}{FDebug\+Widget}}, and \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_a55e6b3bc68f1c15212fa69ad3320fc12}{FGameplay\+HUDWidget}}.
+Implemented in \doxymbox{\hyperlink{class_f_beat_h_u_d_widget_a2508e279b528556a0c4129d0536e8f98}{FBeat\+HUDWidget}}, \doxymbox{\hyperlink{class_f_debug_widget_a66a18155b0da3134609f0b979eebfbd1}{FDebug\+Widget}}, \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_a55e6b3bc68f1c15212fa69ad3320fc12}{FGameplay\+HUDWidget}}, and \doxymbox{\hyperlink{class_f_minimap_widget_a57a8fe6a11c390199732ba5cbfa9433e}{FMinimap\+Widget}}.
 
 
 
@@ -91,4 +103,4 @@ bool IUIWidget::\+b\+Is\+Visible = true\hspace{0.3cm}{\ttfamily [protected]}}
 
 The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
 \item 
-UI/\+\doxymbox{\hyperlink{_u_i_widget_8h}{UIWidget.\+h}}\end{DoxyCompactItemize}
+UI/\+widget/\+\doxymbox{\hyperlink{_u_i_widget_8h}{UIWidget.\+h}}\end{DoxyCompactItemize}

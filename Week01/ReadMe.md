@@ -6,6 +6,10 @@
 
 [![Demo Video](https://img.youtube.com/vi/e3ChT2VRuvk/0.jpg)](https://youtu.be/e3ChT2VRuvk)
 
+## 문서화
+
+[API 문서 (Doxygen)](https://shimwoojin.github.io/Jungle_Week1_Team2/)
+
 ## 빌드 환경
 
 - **IDE**: Visual Studio 2022 (MSVC v143)

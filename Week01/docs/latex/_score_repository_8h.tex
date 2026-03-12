@@ -1,10 +1,28 @@
 \doxysection{Data/\+\+Score\+Repository.h File Reference}
 \hypertarget{_score_repository_8h}{}\label{_score_repository_8h}\index{Data/ScoreRepository.h@{Data/ScoreRepository.h}}
-{\ttfamily \+\#include $<$string$>$}\newline
 {\ttfamily \+\#include $<$vector$>$}\newline
-{\ttfamily \+\#include "{}Core/\+\+Types.\+h"{}}\newline
-\doxysubsubsection*{Classes}
+{\ttfamily \+\#include "{}Score\+Record.\+h"{}}\newline
+{\ttfamily \+\#include "{}Core/\+\+Application.\+h"{}}\newline
+\doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
-class \doxymbox{\hyperlink{class_f_score_repository}{FScore\+Repository}}
+namespace \doxymbox{\hyperlink{namespace_score_repository}{Score\+Repository}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_f_score_record}{FScore\+Record}} $>$ \doxymbox{\hyperlink{namespace_score_repository_a074e0babd9e3dce2a37ca366ad83d862}{Score\+Repository::\+\+Load}} ()
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_f_score_record}{FScore\+Record}} $>$ \doxymbox{\hyperlink{namespace_score_repository_a6c7b7641205e83fd08fa99c33da4b8ef}{Score\+Repository::\+\+Load\+Sorted}} ()
+\item 
+bool \doxymbox{\hyperlink{namespace_score_repository_a5ee4eff274b1308cc091ad0ff7349d47}{Score\+Repository::\+\+Save}} (const std::\+vector$<$ \doxymbox{\hyperlink{struct_f_score_record}{FScore\+Record}} $>$ \&Records)
+\item 
+bool \doxymbox{\hyperlink{namespace_score_repository_aa9faa3025c50f9c01d22144f00d8407c}{Score\+Repository::\+\+Append\+Record}} (const \doxymbox{\hyperlink{struct_f_score_record}{FScore\+Record}} \&Record)
+\item 
+void \doxymbox{\hyperlink{namespace_score_repository_a0e46f695ab6f0efb1d77d672ab049bbf}{Score\+Repository::\+\+Sort\+Descending}} (std::\+vector$<$ \doxymbox{\hyperlink{struct_f_score_record}{FScore\+Record}} $>$ \&Records)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr const char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{namespace_score_repository_a2b2f11dda74d2304071107576007e4cf}{Score\+Repository::\+\+Default\+Path}} ="{}Resources/\+Data/\+scoreboard.\+json"{}
 \end{DoxyCompactItemize}

@@ -1,0 +1,32 @@
+\doxysection{Credit\+Loader.\+h}
+\hypertarget{_credit_loader_8h_source}{}\label{_credit_loader_8h_source}\index{Data/CreditLoader.h@{Data/CreditLoader.h}}
+\doxymbox{\hyperlink{_credit_loader_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_singleton_8h}{Core/Singleton.h}}"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_credit_entry}{FCreditEntry}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ std::string\ \doxymbox{\hyperlink{struct_f_credit_entry_af38ae499487410db10ba0225f65cf562}{Name}};}
+\DoxyCodeLine{00010\ \ \ \ \ std::string\ \doxymbox{\hyperlink{struct_f_credit_entry_a4e956e96e7c0809ccad544fb860b27d7}{Role}};}
+\DoxyCodeLine{00011\ \};}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_credit_loader}{FCreditLoader}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_t_singleton_a3329d545584f47f675a5a46396392a58}{TSingleton}}<FCreditLoader>}
+\DoxyCodeLine{00014\ \{}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_t_singleton_a3329d545584f47f675a5a46396392a58}{TSingleton}}<\doxymbox{\hyperlink{class_f_credit_loader}{FCreditLoader}}>;}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_credit_loader_a08b08b86443238c05e0a9016304021d6}{Initialize}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_credit_loader_a3acc48342894ffce6300f4751055ca99}{IsLoaded}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_credit_loader_a5579dbd0752cc7f486e00daa90af998e}{LoadCredits}}(std::vector<FCreditEntry>\ \&OutCredits)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ std::string\ FileContent;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ bLoaded\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00026\ \};}
+
+\end{DoxyCode}

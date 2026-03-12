@@ -1,10 +1,19 @@
 var searchData=
 [
-  ['k_0',['K',['../struct_direct_x_1_1_keyboard_1_1_state.html#aa88655903b6ef4e10bedaaab39e58dc7',1,'DirectX::Keyboard::State::K'],['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7bafffea8984fca95991d22cb1e0df39e8a',1,'DirectX::Keyboard::K']]],
-  ['kana_1',['Kana',['../struct_direct_x_1_1_keyboard_1_1_state.html#aaaab1f6d662e5fa0717bf68db376f375',1,'DirectX::Keyboard::State::Kana'],['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7ba51af16035f72424236304b22c8d5382b',1,'DirectX::Keyboard::Kana']]],
-  ['kanji_2',['Kanji',['../struct_direct_x_1_1_keyboard_1_1_state.html#ab4e5eb67ce4abe5e4c626288c31ddd55',1,'DirectX::Keyboard::State::Kanji'],['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7baeecaee879216d6a04f3a5f11ec1a1e67',1,'DirectX::Keyboard::Kanji']]],
-  ['keyboard_3',['Keyboard',['../class_direct_x_1_1_keyboard.html',1,'DirectX::Keyboard'],['../class_direct_x_1_1_keyboard.html#afdfe991c7edb08e3efe9e2be66ef06a7',1,'DirectX::Keyboard::Keyboard() noexcept(false)'],['../class_direct_x_1_1_keyboard.html#ae1cd7a40412fffbad7bb410e8259ab42',1,'DirectX::Keyboard::Keyboard(Keyboard &amp;&amp;) noexcept'],['../class_direct_x_1_1_keyboard.html#a364da4330c1955fa016a2a9808fca90c',1,'DirectX::Keyboard::Keyboard(Keyboard const &amp;)=delete']]],
-  ['keyboard_2eh_4',['Keyboard.h',['../_keyboard_8h.html',1,'']]],
-  ['keyboardstatetracker_5',['KeyboardStateTracker',['../class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker.html',1,'DirectX::Keyboard::KeyboardStateTracker'],['../class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker.html#a7553a3f0e1aa23b009d5033e1a30540d',1,'DirectX::Keyboard::KeyboardStateTracker::KeyboardStateTracker()']]],
-  ['keys_6',['Keys',['../class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7b',1,'DirectX::Keyboard']]]
+  ['keepaliveid_0',['KeepAliveID',['../namespace_im_gui.html#a85a245c78a9f7c351636bdad6e60c488',1,'ImGui']]],
+  ['kern_1',['kern',['../structstbtt__fontinfo.html#a57cc83512daea60e97ed49354d634d37',1,'stbtt_fontinfo']]],
+  ['key_2',['Key',['../struct_f_texture_resource_desc.html#aa75fba55ae6238c779dd8417a84fa4c3',1,'FTextureResourceDesc::Key'],['../struct_im_gui_input_event_key.html#aa4efa74612b817e41b2a73f2f0d41b1c',1,'ImGuiInputEventKey::Key'],['../struct_im_gui_input_event.html#a7739f48af4f0fbad1ca79b5d9f82707e',1,'ImGuiInputEvent::Key'],['../struct_im_gui_loc_entry.html#aa2b09f545209e39a8487ab135c1d8af6',1,'ImGuiLocEntry::Key']]],
+  ['key_3',['key',['../struct_im_gui_storage_pair.html#a26f72e9d1e5d41624f6ec30d6734e00b',1,'ImGuiStoragePair']]],
+  ['keyalt_4',['KeyAlt',['../struct_im_gui_i_o.html#a1e64ef08a4448a2cac874496130992cb',1,'ImGuiIO']]],
+  ['keyboardcodepage_5',['KeyboardCodePage',['../struct_im_gui___impl_win32___data.html#a47341927f3324620368575f0888b32d6',1,'ImGui_ImplWin32_Data']]],
+  ['keyctrl_6',['KeyCtrl',['../struct_im_gui_i_o.html#a51de8f65dcabb80ef4e0d3c759ffcd7f',1,'ImGuiIO']]],
+  ['keymods_7',['KeyMods',['../struct_im_gui_i_o.html#a77133a351ecaf34ea5df82866690dcaa',1,'ImGuiIO::KeyMods'],['../struct_im_gui_box_select_state.html#a527a2f22d5d0de1b67693bd8ce484907',1,'ImGuiBoxSelectState::KeyMods'],['../struct_im_gui_multi_select_temp_data.html#ad2b3719d60d53b2aeede94dcd193ed96',1,'ImGuiMultiSelectTempData::KeyMods']]],
+  ['keyrepeatdelay_8',['KeyRepeatDelay',['../struct_im_gui_i_o.html#a390537e7cba21b98a8f89df857ea59fb',1,'ImGuiIO']]],
+  ['keyrepeatrate_9',['KeyRepeatRate',['../struct_im_gui_i_o.html#accd71987c895c4aec6d1a8c368cc9e0e',1,'ImGuiIO']]],
+  ['keysdata_10',['KeysData',['../struct_im_gui_i_o.html#afe06dd845441e299d4e0904947882185',1,'ImGuiIO']]],
+  ['keyshift_11',['KeyShift',['../struct_im_gui_i_o.html#a3c7642214f88862af5b8467f98ac35c9',1,'ImGuiIO']]],
+  ['keysmaybecharinput_12',['KeysMayBeCharInput',['../struct_im_gui_context.html#aaed094785231d1e7a223d173da4ea8b1',1,'ImGuiContext']]],
+  ['keysownerdata_13',['KeysOwnerData',['../struct_im_gui_context.html#a88db24511afec580dd4c354bb149dca6',1,'ImGuiContext']]],
+  ['keysroutingtable_14',['KeysRoutingTable',['../struct_im_gui_context.html#a9dc46ee2f1b4a6322bae55844f880f02',1,'ImGuiContext']]],
+  ['keysuper_15',['KeySuper',['../struct_im_gui_i_o.html#afda9e11e21b7ba21573671c38d9f4a81',1,'ImGuiIO']]]
 ];

@@ -105,29 +105,26 @@ Inheritance diagram for FPlayScene:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac9765276bea588d5726e8a2f9188713e" id="r_ac9765276bea588d5726e8a2f9188713e"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac9765276bea588d5726e8a2f9188713e">~FPlayScene</a> () override</td></tr>
-<tr class="memitem:a2d2bfbee4ab9f07caf785cba32c666ba" id="r_a2d2bfbee4ab9f07caf785cba32c666ba"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2d2bfbee4ab9f07caf785cba32c666ba">SetRenderer</a> (<a class="el" href="class_f_renderer.html">FRenderer</a> *InRenderer)</td></tr>
-<tr class="memitem:a815842514d5ed702dfd5e3cd356a24f5" id="r_a815842514d5ed702dfd5e3cd356a24f5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a815842514d5ed702dfd5e3cd356a24f5">SetTextureManager</a> (<a class="el" href="class_f_texture_manager.html">FTextureManager</a> *InTextures)</td></tr>
-<tr class="memitem:a1a0d603364bf29b307921ee74cdf716f" id="r_a1a0d603364bf29b307921ee74cdf716f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1a0d603364bf29b307921ee74cdf716f">Enter</a> () override</td></tr>
-<tr class="memitem:a14a04db3fe5db974c991bbdb29ad2a9d" id="r_a14a04db3fe5db974c991bbdb29ad2a9d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a14a04db3fe5db974c991bbdb29ad2a9d">Exit</a> () override</td></tr>
+<tr class="memitem:aee00047ed25bac8905195ff3ff347fb3" id="r_aee00047ed25bac8905195ff3ff347fb3"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aee00047ed25bac8905195ff3ff347fb3">FPlayScene</a> (int InStageIndex, int InAccumulatedScore=0, const std::string &amp;InPlayerSkinKey=&quot;player_otaku&quot;)</td></tr>
 <tr class="memitem:afd49d1c64f2553201b96c70884366ca7" id="r_afd49d1c64f2553201b96c70884366ca7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afd49d1c64f2553201b96c70884366ca7">Update</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context) override</td></tr>
 <tr class="memitem:a0c45ecd9ee46d0766898ec84f32c26a5" id="r_a0c45ecd9ee46d0766898ec84f32c26a5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0c45ecd9ee46d0766898ec84f32c26a5">Render</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context) override</td></tr>
-<tr class="memitem:a007f28bfa551b4b029125c515fe153cf" id="r_a007f28bfa551b4b029125c515fe153cf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a007f28bfa551b4b029125c515fe153cf">StartNewGame</a> (int StageIndex=0)</td></tr>
-<tr class="memitem:ac0495f4bfbeb1f0c8922d1937f5b4037" id="r_ac0495f4bfbeb1f0c8922d1937f5b4037"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac0495f4bfbeb1f0c8922d1937f5b4037">RestartGame</a> ()</td></tr>
 <tr class="inherit_header pub_methods_class_i_scene"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_scene')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_i_scene.html">IScene</a></td></tr>
 <tr class="memitem:a146b1101069efb7a46b3bb6e419bc2bc inherit pub_methods_class_i_scene" id="r_a146b1101069efb7a46b3bb6e419bc2bc"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a146b1101069efb7a46b3bb6e419bc2bc">~IScene</a> ()=default</td></tr>
-<tr class="memitem:a2cbbb0b3c57d330c35a937c81824614b inherit pub_methods_class_i_scene" id="r_a2cbbb0b3c57d330c35a937c81824614b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a2cbbb0b3c57d330c35a937c81824614b">HasSceneChangeRequest</a> () const</td></tr>
-<tr class="memitem:abbbbb84f448a83b56850ec7626b47dc8 inherit pub_methods_class_i_scene" id="r_abbbbb84f448a83b56850ec7626b47dc8"><td class="memItemLeft"><a class="el" href="_types_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a>&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#abbbbb84f448a83b56850ec7626b47dc8">GetRequestedScene</a> () const</td></tr>
-<tr class="memitem:a8e8c10be01bdfc78bb2e7501fdec3bdd inherit pub_methods_class_i_scene" id="r_a8e8c10be01bdfc78bb2e7501fdec3bdd"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a8e8c10be01bdfc78bb2e7501fdec3bdd">ClearSceneChangeRequest</a> ()</td></tr>
+<tr class="memitem:a7316409ac97b08fba543cd523e555121 inherit pub_methods_class_i_scene" id="r_a7316409ac97b08fba543cd523e555121"><td class="memItemLeft"><a class="el" href="struct_f_scene_command.html">FSceneCommand</a>&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a7316409ac97b08fba543cd523e555121">ConsumeCommand</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_class_i_scene"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_i_scene')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_i_scene.html">IScene</a></td></tr>
-<tr class="memitem:a9f77c1641bee42ccb8eeeb7a51ae71a4 inherit pro_methods_class_i_scene" id="r_a9f77c1641bee42ccb8eeeb7a51ae71a4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a9f77c1641bee42ccb8eeeb7a51ae71a4">RequestSceneChange</a> (<a class="el" href="_types_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a> SceneType)</td></tr>
+<tr class="memitem:ade55669e20b8ab34674321ee7964d9d0 inherit pro_methods_class_i_scene" id="r_ade55669e20b8ab34674321ee7964d9d0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#ade55669e20b8ab34674321ee7964d9d0">SetSceneCommand</a> (const <a class="el" href="struct_f_scene_command.html">FSceneCommand</a> &amp;Command)</td></tr>
+<tr class="memitem:a6e2f65a65fff325dd5ce68f8e418d17b inherit pro_methods_class_i_scene" id="r_a6e2f65a65fff325dd5ce68f8e418d17b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a6e2f65a65fff325dd5ce68f8e418d17b">ChangeScene</a> (<a class="el" href="_scene_type_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a> NextScene)</td></tr>
+<tr class="memitem:a535b76f8dfa4a7fa4f6e9a9c6097111a inherit pro_methods_class_i_scene" id="r_a535b76f8dfa4a7fa4f6e9a9c6097111a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a535b76f8dfa4a7fa4f6e9a9c6097111a">ChangeScene</a> (<a class="el" href="_scene_type_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a> NextScene, int NextStageIndex, int AccumulatedScore=0, const std::string &amp;PlayerSkinKey=&quot;&quot;)</td></tr>
+<tr class="memitem:aab3356a84a89d0ae8bd011e55d25a010 inherit pro_methods_class_i_scene" id="r_aab3356a84a89d0ae8bd011e55d25a010"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#aab3356a84a89d0ae8bd011e55d25a010">QuitGame</a> ()</td></tr>
+<tr class="memitem:a373ea6b6ebf14d0bfa5224727cb0e95b inherit pro_methods_class_i_scene" id="r_a373ea6b6ebf14d0bfa5224727cb0e95b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#a373ea6b6ebf14d0bfa5224727cb0e95b">DispatchPopupAction</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context, <a class="el" href="class_f_u_i_popup_base.html">FUIPopupBase</a> &amp;Popup, <a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a> Action)</td></tr>
+<tr class="memitem:acfdf07ebc1e55472a32ddbd8d8959f5a inherit pro_methods_class_i_scene" id="r_acfdf07ebc1e55472a32ddbd8d8959f5a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_i_scene.html#acfdf07ebc1e55472a32ddbd8d8959f5a">OnPopupActionDispatched</a> (<a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a> Action)</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac9765276bea588d5726e8a2f9188713e" name="ac9765276bea588d5726e8a2f9188713e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac9765276bea588d5726e8a2f9188713e">&#9670;&#160;</a></span>~FPlayScene()</h2>
+<a id="aee00047ed25bac8905195ff3ff347fb3" name="aee00047ed25bac8905195ff3ff347fb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee00047ed25bac8905195ff3ff347fb3">&#9670;&#160;</a></span>FPlayScene()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -136,15 +133,24 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">FPlayScene::~FPlayScene </td>
+          <td class="memname">FPlayScene::FPlayScene </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InStageIndex</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InAccumulatedScore</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>InPlayerSkinKey</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;player_otaku&quot;</span>&#160;)</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -152,60 +158,6 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a1a0d603364bf29b307921ee74cdf716f" name="a1a0d603364bf29b307921ee74cdf716f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a0d603364bf29b307921ee74cdf716f">&#9670;&#160;</a></span>Enter()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FPlayScene::Enter </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="class_i_scene.html#ad827b093764ba24f33a6490b2ce568f4">IScene</a>.</p>
-
-</div>
-</div>
-<a id="a14a04db3fe5db974c991bbdb29ad2a9d" name="a14a04db3fe5db974c991bbdb29ad2a9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a14a04db3fe5db974c991bbdb29ad2a9d">&#9670;&#160;</a></span>Exit()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FPlayScene::Exit </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="class_i_scene.html#ad91db1340cc6f0e4dbff45fe8c802d9b">IScene</a>.</p>
-
-</div>
-</div>
 <a id="a0c45ecd9ee46d0766898ec84f32c26a5" name="a0c45ecd9ee46d0766898ec84f32c26a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0c45ecd9ee46d0766898ec84f32c26a5">&#9670;&#160;</a></span>Render()</h2>
 
@@ -230,74 +182,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="class_i_scene.html#ace723c09a94c7febce67b45c8aef49c1">IScene</a>.</p>
-
-</div>
-</div>
-<a id="ac0495f4bfbeb1f0c8922d1937f5b4037" name="ac0495f4bfbeb1f0c8922d1937f5b4037"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0495f4bfbeb1f0c8922d1937f5b4037">&#9670;&#160;</a></span>RestartGame()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FPlayScene::RestartGame </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2d2bfbee4ab9f07caf785cba32c666ba" name="a2d2bfbee4ab9f07caf785cba32c666ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d2bfbee4ab9f07caf785cba32c666ba">&#9670;&#160;</a></span>SetRenderer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FPlayScene::SetRenderer </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_f_renderer.html">FRenderer</a> *</td>          <td class="paramname"><span class="paramname"><em>InRenderer</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a815842514d5ed702dfd5e3cd356a24f5" name="a815842514d5ed702dfd5e3cd356a24f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a815842514d5ed702dfd5e3cd356a24f5">&#9670;&#160;</a></span>SetTextureManager()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FPlayScene::SetTextureManager </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_f_texture_manager.html">FTextureManager</a> *</td>          <td class="paramname"><span class="paramname"><em>InTextures</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a007f28bfa551b4b029125c515fe153cf" name="a007f28bfa551b4b029125c515fe153cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a007f28bfa551b4b029125c515fe153cf">&#9670;&#160;</a></span>StartNewGame()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FPlayScene::StartNewGame </td>
-          <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>StageIndex</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>

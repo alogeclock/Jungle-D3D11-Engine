@@ -108,11 +108,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adbfdd6076c0f584103d116fb1ce220cd" id="r_adbfdd6076c0f584103d116fb1ce220cd"><td class="memItemLeft"><a class="el" href="_types_8h.html#ad914e65c956dae027f9a1765ac337c68">EActorType</a>&#160;</td><td class="memItemRight"><a class="el" href="#adbfdd6076c0f584103d116fb1ce220cd">GetActorType</a> () const override</td></tr>
 <tr class="memitem:a3f3db60ee81f30e06add71f232c83b3f" id="r_a3f3db60ee81f30e06add71f232c83b3f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3f3db60ee81f30e06add71f232c83b3f">Update</a> (float DeltaTime, <a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context) override</td></tr>
 <tr class="memitem:adcd7cdbac7af1cc688a9b3ec8fb6bcfb" id="r_adcd7cdbac7af1cc688a9b3ec8fb6bcfb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adcd7cdbac7af1cc688a9b3ec8fb6bcfb">OnBeat</a> (<a class="el" href="class_f_stage.html">FStage</a> &amp;Stage) override</td></tr>
+<tr class="memitem:ab94f5314af8e42e8d8b378cd246db67b" id="r_ab94f5314af8e42e8d8b378cd246db67b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab94f5314af8e42e8d8b378cd246db67b">Damage</a> (int Amount) override</td></tr>
 <tr class="memitem:a3649d20bece099bc7fe6f0f27b5542a7" id="r_a3649d20bece099bc7fe6f0f27b5542a7"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a3649d20bece099bc7fe6f0f27b5542a7">GetLastMovedBeatIndex</a> ()</td></tr>
 <tr class="memitem:a6a54cd93e415ad94c38f4c707107aa1f" id="r_a6a54cd93e415ad94c38f4c707107aa1f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6a54cd93e415ad94c38f4c707107aa1f">SetLastMovedBeatIndex</a> (int CurrentBeatIndex)</td></tr>
 <tr class="memitem:ab9f4bfa7a1243647860cfecc4a495fd7" id="r_ab9f4bfa7a1243647860cfecc4a495fd7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab9f4bfa7a1243647860cfecc4a495fd7">QueueInput</a> (<a class="el" href="_types_8h.html#acb2b033915f6659a71a38b5aa6e4eb42">EDirection</a> InDirection)</td></tr>
 <tr class="memitem:a3528b42ea1689a613a07c6ce17ab6fd5" id="r_a3528b42ea1689a613a07c6ce17ab6fd5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3528b42ea1689a613a07c6ce17ab6fd5">ClearQueuedInput</a> ()</td></tr>
 <tr class="memitem:a02082b2237ddccc54df3f77ca1333077" id="r_a02082b2237ddccc54df3f77ca1333077"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a02082b2237ddccc54df3f77ca1333077">HasQueuedInput</a> () const</td></tr>
+<tr class="memitem:aba5ff5454b8fe997b3f15ab35e93ccd0" id="r_aba5ff5454b8fe997b3f15ab35e93ccd0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aba5ff5454b8fe997b3f15ab35e93ccd0">AddEffect</a> (const <a class="el" href="struct_f_active_effect.html">FActiveEffect</a> &amp;Effect)</td></tr>
+<tr class="memitem:a77d80262d2abe9b67b54024bb71c1e1a" id="r_a77d80262d2abe9b67b54024bb71c1e1a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a77d80262d2abe9b67b54024bb71c1e1a">UpdateActiveEffects</a> (float DeltaTime)</td></tr>
+<tr class="memitem:a4bde98ab2c81981f07594979ab56fc5e" id="r_a4bde98ab2c81981f07594979ab56fc5e"><td class="memItemLeft">const std::vector&lt; <a class="el" href="struct_f_active_effect.html">FActiveEffect</a> &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a4bde98ab2c81981f07594979ab56fc5e">GetActiveEffects</a> () const</td></tr>
+<tr class="memitem:a9c31b78c440ba9c416744141d045414e" id="r_a9c31b78c440ba9c416744141d045414e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a9c31b78c440ba9c416744141d045414e">HasActiveEffect</a> (<a class="el" href="_item_8h.html#a8e767a593b51b2324703625995d9e762">EItemType</a> Type) const</td></tr>
+<tr class="memitem:ab1d5ad1deb5ecea85f7bbb2fcedb5ec5" id="r_ab1d5ad1deb5ecea85f7bbb2fcedb5ec5"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ab1d5ad1deb5ecea85f7bbb2fcedb5ec5">ConsumeInvincibility</a> ()</td></tr>
 <tr class="inherit_header pub_methods_class_f_actor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_f_actor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_f_actor.html">FActor</a></td></tr>
 <tr class="memitem:aad1e02b0db6bcdd5d3c6a0430050c848 inherit pub_methods_class_f_actor" id="r_aad1e02b0db6bcdd5d3c6a0430050c848"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#aad1e02b0db6bcdd5d3c6a0430050c848">~FActor</a> ()=default</td></tr>
 <tr class="memitem:aa4e2ef6e4886ce328bcf1d9c12b30bcf inherit pub_methods_class_f_actor" id="r_aa4e2ef6e4886ce328bcf1d9c12b30bcf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#aa4e2ef6e4886ce328bcf1d9c12b30bcf">SetPosition</a> (int InTileX, int InTileY, float TileSize)</td></tr>
@@ -126,7 +132,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abf82029b6feefe52d27c4597ab8bba6c inherit pub_methods_class_f_actor" id="r_abf82029b6feefe52d27c4597ab8bba6c"><td class="memItemLeft"><a class="el" href="_types_8h.html#acb2b033915f6659a71a38b5aa6e4eb42">EDirection</a>&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#abf82029b6feefe52d27c4597ab8bba6c">GetDirection</a> () const</td></tr>
 <tr class="memitem:a68595bdd34cbe511ae5a21193037da90 inherit pub_methods_class_f_actor" id="r_a68595bdd34cbe511ae5a21193037da90"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a68595bdd34cbe511ae5a21193037da90">SetHp</a> (int InHp)</td></tr>
 <tr class="memitem:a43b436e481db08d4675554ec09fa8287 inherit pub_methods_class_f_actor" id="r_a43b436e481db08d4675554ec09fa8287"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a43b436e481db08d4675554ec09fa8287">GetHp</a> () const</td></tr>
-<tr class="memitem:a152a420fa7ab37e9ed626c91a33b185b inherit pub_methods_class_f_actor" id="r_a152a420fa7ab37e9ed626c91a33b185b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a152a420fa7ab37e9ed626c91a33b185b">Damage</a> (int Amount)</td></tr>
 <tr class="memitem:a279cf6d77a0343648e2dece3f1eb1801 inherit pub_methods_class_f_actor" id="r_a279cf6d77a0343648e2dece3f1eb1801"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a279cf6d77a0343648e2dece3f1eb1801">Heal</a> (int Amount)</td></tr>
 <tr class="memitem:a4e8f828e5728dc61a99878afcd02fe4d inherit pub_methods_class_f_actor" id="r_a4e8f828e5728dc61a99878afcd02fe4d"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a4e8f828e5728dc61a99878afcd02fe4d">IsDead</a> () const</td></tr>
 <tr class="memitem:ae30eefecc73f1ae6a57d9a146db2de43 inherit pub_methods_class_f_actor" id="r_ae30eefecc73f1ae6a57d9a146db2de43"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#ae30eefecc73f1ae6a57d9a146db2de43">SetInvincible</a> (bool bEnable)</td></tr>
@@ -134,6 +139,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adc0348f0969c577bd049e44dcec1e840 inherit pub_methods_class_f_actor" id="r_adc0348f0969c577bd049e44dcec1e840"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#adc0348f0969c577bd049e44dcec1e840">IsMoving</a> () const</td></tr>
 <tr class="memitem:a0382ed1b6c73a2a6d5649440dd992e7f inherit pub_methods_class_f_actor" id="r_a0382ed1b6c73a2a6d5649440dd992e7f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a0382ed1b6c73a2a6d5649440dd992e7f">SetSprite</a> (const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;InSprite)</td></tr>
 <tr class="memitem:abf4308febfabb82b0dc4a3bf349f1ddc inherit pub_methods_class_f_actor" id="r_abf4308febfabb82b0dc4a3bf349f1ddc"><td class="memItemLeft">const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#abf4308febfabb82b0dc4a3bf349f1ddc">GetSprite</a> () const</td></tr>
+<tr class="memitem:a1141daa9f2f604282274fdfc21700fc7 inherit pub_methods_class_f_actor" id="r_a1141daa9f2f604282274fdfc21700fc7"><td class="memItemLeft"><a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a1141daa9f2f604282274fdfc21700fc7">GetAnimator</a> ()</td></tr>
+<tr class="memitem:a74765cd157241180001c3e43d7dde2b3 inherit pub_methods_class_f_actor" id="r_a74765cd157241180001c3e43d7dde2b3"><td class="memItemLeft">const <a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a74765cd157241180001c3e43d7dde2b3">GetAnimator</a> () const</td></tr>
+<tr class="memitem:a9c81f5b8c75ed26676ee2be9278394fc inherit pub_methods_class_f_actor" id="r_a9c81f5b8c75ed26676ee2be9278394fc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a9c81f5b8c75ed26676ee2be9278394fc">SetDefaultMirrored</a> (bool bMirrored)</td></tr>
+<tr class="memitem:aea22b6ce1c5342bfe614bff73b7099cf inherit pub_methods_class_f_actor" id="r_aea22b6ce1c5342bfe614bff73b7099cf"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#aea22b6ce1c5342bfe614bff73b7099cf">GetDefaultMirrored</a> () const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -153,8 +162,27 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:aee38cb6ce1961fafc673aea488d97663 inherit pro_attribs_class_f_actor" id="r_aee38cb6ce1961fafc673aea488d97663"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#aee38cb6ce1961fafc673aea488d97663">MoveTargetX</a> = 0.0f</td></tr>
 <tr class="memitem:a24b13b3de3279f0f13b67fa7ea38b24e inherit pro_attribs_class_f_actor" id="r_a24b13b3de3279f0f13b67fa7ea38b24e"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a24b13b3de3279f0f13b67fa7ea38b24e">MoveTargetY</a> = 0.0f</td></tr>
 <tr class="memitem:a43a92b36260e21ac6f3123d3d31c369f inherit pro_attribs_class_f_actor" id="r_a43a92b36260e21ac6f3123d3d31c369f"><td class="memItemLeft"><a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a>&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a43a92b36260e21ac6f3123d3d31c369f">Sprite</a></td></tr>
+<tr class="memitem:ae838b8d9bb305983b93d02e829d3a507 inherit pro_attribs_class_f_actor" id="r_ae838b8d9bb305983b93d02e829d3a507"><td class="memItemLeft"><a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a>&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#ae838b8d9bb305983b93d02e829d3a507">Animator</a></td></tr>
+<tr class="memitem:a8f8eaf81fa1f15bece45c1864b66e068 inherit pro_attribs_class_f_actor" id="r_a8f8eaf81fa1f15bece45c1864b66e068"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_f_actor.html#a8f8eaf81fa1f15bece45c1864b66e068">bDefaultMirrored</a> = false</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aba5ff5454b8fe997b3f15ab35e93ccd0" name="aba5ff5454b8fe997b3f15ab35e93ccd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba5ff5454b8fe997b3f15ab35e93ccd0">&#9670;&#160;</a></span>AddEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FPlayer::AddEffect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_f_active_effect.html">FActiveEffect</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Effect</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a3528b42ea1689a613a07c6ce17ab6fd5" name="a3528b42ea1689a613a07c6ce17ab6fd5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3528b42ea1689a613a07c6ce17ab6fd5">&#9670;&#160;</a></span>ClearQueuedInput()</h2>
 
@@ -166,6 +194,67 @@ Additional Inherited Members</h2></td></tr>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1d5ad1deb5ecea85f7bbb2fcedb5ec5" name="ab1d5ad1deb5ecea85f7bbb2fcedb5ec5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1d5ad1deb5ecea85f7bbb2fcedb5ec5">&#9670;&#160;</a></span>ConsumeInvincibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FPlayer::ConsumeInvincibility </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab94f5314af8e42e8d8b378cd246db67b" name="ab94f5314af8e42e8d8b378cd246db67b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab94f5314af8e42e8d8b378cd246db67b">&#9670;&#160;</a></span>Damage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FPlayer::Damage </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>Amount</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="class_f_actor.html#a152a420fa7ab37e9ed626c91a33b185b">FActor</a>.</p>
+
+</div>
+</div>
+<a id="a4bde98ab2c81981f07594979ab56fc5e" name="a4bde98ab2c81981f07594979ab56fc5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bde98ab2c81981f07594979ab56fc5e">&#9670;&#160;</a></span>GetActiveEffects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="struct_f_active_effect.html">FActiveEffect</a> &gt; &amp; FPlayer::GetActiveEffects </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -210,6 +299,23 @@ Additional Inherited Members</h2></td></tr>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c31b78c440ba9c416744141d045414e" name="a9c31b78c440ba9c416744141d045414e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c31b78c440ba9c416744141d045414e">&#9670;&#160;</a></span>HasActiveEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FPlayer::HasActiveEffect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_item_8h.html#a8e767a593b51b2324703625995d9e762">EItemType</a></td>          <td class="paramname"><span class="paramname"><em>Type</em></span></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -322,6 +428,23 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="class_f_actor.html#a9b8bdf8a83131a5c626b070534d851f6">FActor</a>.</p>
+
+</div>
+</div>
+<a id="a77d80262d2abe9b67b54024bb71c1e1a" name="a77d80262d2abe9b67b54024bb71c1e1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77d80262d2abe9b67b54024bb71c1e1a">&#9670;&#160;</a></span>UpdateActiveEffects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FPlayer::UpdateActiveEffects </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>DeltaTime</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

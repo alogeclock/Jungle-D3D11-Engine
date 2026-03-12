@@ -5,39 +5,29 @@
 \DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{00002\ }
 \DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
-\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Core/Types.h}}"{}}}
-\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_scene_8h}{Scene.h}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_scene_8h}{Scene.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_scene_command_8h}{SceneCommand.h}}"{}}}
 \DoxyCodeLine{00006\ }
-\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
-\DoxyCodeLine{00008\ }
-\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_scene_manager}{FSceneManager}}}
-\DoxyCodeLine{00010\ \{}
-\DoxyCodeLine{00011\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scene_manager_afc36a35489419db2745cc68001bd2251}{Initialize}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}*\ InGameContext);}
-\DoxyCodeLine{00013\ }
-\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scene_manager_a3ab46437e85bb3317e3c13dbcc10ca2b}{RequestChangeScene}}(\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ SceneType);}
-\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scene_manager_a49c0737b78fe2798a5fe69712da3c3e9}{ChangeSceneImmediately}}(\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ SceneType);}
-\DoxyCodeLine{00016\ }
-\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scene_manager_a2ee87dfe03c875a272bcee41dfb5a304}{Update}}();}
-\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_scene_manager_a673fae32eff6203ea229a010be8902e8}{Render}}();}
+\DoxyCodeLine{00007\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_scene_manager_8h_a0570e6f2d6f147fa79d4a31f696321f7}{ESceneManagerUpdateResult}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_scene_manager_8h_a0570e6f2d6f147fa79d4a31f696321f7a6adf97f83acf6453d4a6a4b1070f3754}{None}},}
+\DoxyCodeLine{00010\ \ \ \ \ \doxymbox{\hyperlink{_scene_manager_8h_a0570e6f2d6f147fa79d4a31f696321f7ac4932eb27921738ea095473272240ceb}{QuitGame}}}
+\DoxyCodeLine{00011\ \};}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_scene_manager}{FSceneManager}}}
+\DoxyCodeLine{00014\ \{}
+\DoxyCodeLine{00015\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_scene_manager_a2516a3a1218cc283ce1c5cef75a65b66}{Initialize}}();}
+\DoxyCodeLine{00017\ \ \ \ \ \doxymbox{\hyperlink{_scene_manager_8h_a0570e6f2d6f147fa79d4a31f696321f7}{ESceneManagerUpdateResult}}\ \doxymbox{\hyperlink{class_f_scene_manager_a1b3c414827287bcb0b35b1677dbcee89}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_scene_manager_a6dd15f2615f4aeddfa2f536e9759f0dd}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
 \DoxyCodeLine{00019\ }
-\DoxyCodeLine{00020\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ \doxymbox{\hyperlink{class_f_scene_manager_a242f0832993b0caf18ac61b47e11be36}{GetCurrentSceneType}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{class_i_scene}{IScene}}*\ \doxymbox{\hyperlink{class_f_scene_manager_af45d03aa54c2e549c1aa3400ae7e9e28}{GetCurrentScene}}();}
-\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_i_scene}{IScene}}*\ \doxymbox{\hyperlink{class_f_scene_manager_af45d03aa54c2e549c1aa3400ae7e9e28}{GetCurrentScene}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00023\ }
-\DoxyCodeLine{00024\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ ApplyPendingSceneChange();}
-\DoxyCodeLine{00026\ \ \ \ \ std::unique\_ptr<IScene>\ CreateScene(\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ SceneType);}
-\DoxyCodeLine{00027\ }
-\DoxyCodeLine{00028\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00029\ \ \ \ \ \doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}*\ GameContext\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{00030\ }
-\DoxyCodeLine{00031\ \ \ \ \ std::unique\_ptr<IScene>\ CurrentScene;}
-\DoxyCodeLine{00032\ }
-\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ CurrentSceneType\ =\ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9ab78a3223503896721cca1303f776159b}{ESceneType::Title}};}
-\DoxyCodeLine{00034\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ PendingSceneType\ =\ \doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9ab78a3223503896721cca1303f776159b}{ESceneType::Title}};}
-\DoxyCodeLine{00035\ }
-\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{bool}\ bHasPendingSceneChange\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{00037\ \};}
+\DoxyCodeLine{00020\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleSceneCommand(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_scene_command}{FSceneCommand}}\ \&Command);}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{void}\ ChangeSceneInternal(\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{ESceneType}}\ SceneType,\ \textcolor{keywordtype}{int}\ StageIndex\ =\ -\/1,\ \textcolor{keywordtype}{int}\ AccumulatedScore\ =\ 0,}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&PlayerSkinKey\ =\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00026\ \ \ \ \ std::unique\_ptr<IScene>\ CurrentScene;}
+\DoxyCodeLine{00027\ \};}
 
 \end{DoxyCode}

@@ -15,6 +15,14 @@ Inheritance diagram for FDebug\+Widget:\+\begin{figure}[H]
 \item 
 void \doxymbox{\hyperlink{class_f_debug_widget_abfc23e3196db81919ac5ff48cd650d55}{Bind\+Stage}} (\doxymbox{\hyperlink{class_f_stage}{FStage}} \texorpdfstring{$\ast$}{*}In\+Stage)
 \item 
+void \doxymbox{\hyperlink{class_f_debug_widget_ad3be804c293d1244f89bd51b93e5ddb9}{Bind\+Pause\+Flag}} (bool \texorpdfstring{$\ast$}{*}In\+Pause\+Flag)
+\item 
+void \doxymbox{\hyperlink{class_f_debug_widget_a80df7020a3d9203ec6fe912f3c3bde73}{Set\+Stage\+Change\+Callback}} (std::\+function$<$ void(int)$>$ Callback)
+\item 
+void \doxymbox{\hyperlink{class_f_debug_widget_a2807a2d80bd3ba257151f68d4698b731}{Set\+Total\+Stages}} (int Count)
+\item 
+virtual void \doxymbox{\hyperlink{class_f_debug_widget_a24631a7ed019ce0d475755a96c40be23}{Set\+Textures}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\item 
 void \doxymbox{\hyperlink{class_f_debug_widget_a66a18155b0da3134609f0b979eebfbd1}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
 \item 
 void \doxymbox{\hyperlink{class_f_debug_widget_af75d43451483249d327debb69c76225c}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
@@ -39,6 +47,12 @@ bool \doxymbox{\hyperlink{class_i_u_i_widget_a1ac3d6c564caddead36a060ace629b09}{
 \label{doc-func-members}
 \Hypertarget{class_f_debug_widget_doc-func-members}
 \doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_debug_widget_ad3be804c293d1244f89bd51b93e5ddb9}\index{FDebugWidget@{FDebugWidget}!BindPauseFlag@{BindPauseFlag}}
+\index{BindPauseFlag@{BindPauseFlag}!FDebugWidget@{FDebugWidget}}
+\doxysubsubsection{\texorpdfstring{BindPauseFlag()}{BindPauseFlag()}}
+{\footnotesize\ttfamily \label{class_f_debug_widget_ad3be804c293d1244f89bd51b93e5ddb9} 
+void FDebug\+Widget::\+\+Bind\+Pause\+Flag (\begin{DoxyParamCaption}\item[{bool \texorpdfstring{$\ast$}{*}}]{In\+Pause\+Flag}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_debug_widget_abfc23e3196db81919ac5ff48cd650d55}\index{FDebugWidget@{FDebugWidget}!BindStage@{BindStage}}
 \index{BindStage@{BindStage}!FDebugWidget@{FDebugWidget}}
 \doxysubsubsection{\texorpdfstring{BindStage()}{BindStage()}}
@@ -55,6 +69,28 @@ void FDebug\+Widget::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyper
 
 Implements \doxymbox{\hyperlink{class_i_u_i_widget_ae700b3bb9392cd080853fb6427befc43}{IUIWidget}}.
 
+\Hypertarget{class_f_debug_widget_a80df7020a3d9203ec6fe912f3c3bde73}\index{FDebugWidget@{FDebugWidget}!SetStageChangeCallback@{SetStageChangeCallback}}
+\index{SetStageChangeCallback@{SetStageChangeCallback}!FDebugWidget@{FDebugWidget}}
+\doxysubsubsection{\texorpdfstring{SetStageChangeCallback()}{SetStageChangeCallback()}}
+{\footnotesize\ttfamily \label{class_f_debug_widget_a80df7020a3d9203ec6fe912f3c3bde73} 
+void FDebug\+Widget::\+\+Set\+Stage\+Change\+Callback (\begin{DoxyParamCaption}\item[{std::\+function$<$ void(int)$>$}]{Callback}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_debug_widget_a24631a7ed019ce0d475755a96c40be23}\index{FDebugWidget@{FDebugWidget}!SetTextures@{SetTextures}}
+\index{SetTextures@{SetTextures}!FDebugWidget@{FDebugWidget}}
+\doxysubsubsection{\texorpdfstring{SetTextures()}{SetTextures()}}
+{\footnotesize\ttfamily \label{class_f_debug_widget_a24631a7ed019ce0d475755a96c40be23} 
+void FDebug\+Widget::\+\+Set\+Textures (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_u_i_widget_abe9665fcd1afef16bf899c4d7eea062e}{IUIWidget}}.
+
+\Hypertarget{class_f_debug_widget_a2807a2d80bd3ba257151f68d4698b731}\index{FDebugWidget@{FDebugWidget}!SetTotalStages@{SetTotalStages}}
+\index{SetTotalStages@{SetTotalStages}!FDebugWidget@{FDebugWidget}}
+\doxysubsubsection{\texorpdfstring{SetTotalStages()}{SetTotalStages()}}
+{\footnotesize\ttfamily \label{class_f_debug_widget_a2807a2d80bd3ba257151f68d4698b731} 
+void FDebug\+Widget::\+\+Set\+Total\+Stages (\begin{DoxyParamCaption}\item[{int}]{Count}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_debug_widget_a66a18155b0da3134609f0b979eebfbd1}\index{FDebugWidget@{FDebugWidget}!Update@{Update}}
 \index{Update@{Update}!FDebugWidget@{FDebugWidget}}
 \doxysubsubsection{\texorpdfstring{Update()}{Update()}}
@@ -69,5 +105,5 @@ Implements \doxymbox{\hyperlink{class_i_u_i_widget_a550065e70237fac75b7c61ab81e9
 
 The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
 \item 
-UI/\+\doxymbox{\hyperlink{_debug_widget_8h}{Debug\+Widget.\+h}}\item 
-UI/\+\doxymbox{\hyperlink{_debug_widget_8cpp}{Debug\+Widget.\+cpp}}\end{DoxyCompactItemize}
+UI/\+widget/\+\doxymbox{\hyperlink{_debug_widget_8h}{Debug\+Widget.\+h}}\item 
+UI/\+widget/\+\doxymbox{\hyperlink{_debug_widget_8cpp}{Debug\+Widget.\+cpp}}\end{DoxyCompactItemize}

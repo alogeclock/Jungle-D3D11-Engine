@@ -65,15 +65,59 @@ const \doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}} \& \doxymbox{\hyperlin
 \item 
 const \doxymbox{\hyperlink{class_f_score_system}{FScore\+System}} \& \doxymbox{\hyperlink{class_f_stage_ab37a9e96a235e57b69f300a50ee61362}{Get\+Score\+System}} () const
 \item 
+int \doxymbox{\hyperlink{class_f_stage_ac2dcbddc8ed3171f5b14ed5fdb31021c}{Get\+Score}} () const
+\item 
 float \doxymbox{\hyperlink{class_f_stage_a91e4ca712cbfb0da1f64e8dd8b20d97c}{Get\+Tile\+Size}} () const
 \item 
 bool \doxymbox{\hyperlink{class_f_stage_a016d3ebf8555e9fd8589f03ba07ead43}{Is\+Game\+Over}} () const
 \item 
+void \doxymbox{\hyperlink{class_f_stage_aed2b927bae8e05c7b836bfd749887231}{Set\+Is\+Cleared}} (bool b\+Is\+Cleared)
+\item 
 bool \doxymbox{\hyperlink{class_f_stage_acae64b4e60b86d1c07313675f48ec41a}{Is\+Cleared}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_stage_aa11199158d611de51286bc7009b1310a}{Get\+Remaining\+Time}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a56712b94d43594c597a014fd0db5444f}{Set\+Remaining\+Time}} (float Time)
+\item 
+float \doxymbox{\hyperlink{class_f_stage_a770cc01ef55c09ef02337e716ba40961}{Get\+Time\+Limit}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_a616e0bd01acce98e8257d871b1915683}{Get\+Darkness\+Level}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ae4727cdee3f5d89f0903f7f1c4d19a64}{Set\+Darkness\+Level}} (int Level)
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a169d08115d8ade93d6cd65070284effd}{Is\+Time\+Frozen}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ae3aa0d5810017bfe84317db0cc22aa86}{Set\+Time\+Frozen}} (bool b\+Frozen)
+\item 
+float \doxymbox{\hyperlink{class_f_stage_ae47a0a83b55bfaa678fae0862423d979}{Get\+Time\+Freeze\+Remaining}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a8a662f41b41320c8ead506b2c798d23a}{Is\+Darkness\+Disabled}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ad4ef8e58b2f35d3cc5f0efd847f494ff}{Set\+Darkness\+Disabled}} (bool b\+Disabled)
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a214b72e71df69ae92b9ba74c0cbb0cf0}{Is\+Angry}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a32ac1e10a78ce6f9daaea7b8d252ffc3}{Apply\+Item}} (const \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} \&Item)
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a06dfeb142832383612f9742d79afc822}{Update\+Active\+Effects}} (float Delta\+Time)
+\item 
+const std::\+vector$<$ \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} $>$ \& \doxymbox{\hyperlink{class_f_stage_ac83faad044c470df05854643f121d72e}{Get\+Items}} () const
 \item 
 int \doxymbox{\hyperlink{class_f_stage_af68f830bf45fcaa6a51604625e12aa67}{Get\+Current\+Stage\+Index}} () const
 \item 
 const std::\+string \& \doxymbox{\hyperlink{class_f_stage_aec5d09194ca32f56243f90979d5e001d}{Get\+Stage\+Name}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_ac4822dda94731fbc6b3af9cd542b39cc}{Get\+GoalX}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_af8a1f3a93553dddec1249269da77e8c2}{Get\+GoalY}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ae9063aa3a8dca0bd290bf1789c9447ce}{Start\+BGM}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a6509170509180d2bdd181e70d7283aa7}{Stop\+BGM}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_stage_acf227bc1c144141bd6ed8470a183c5a1}{Set\+Player\+Skin\+Key}} (const std::\+string \&Key)
+\item 
+const std::\+string \& \doxymbox{\hyperlink{class_f_stage_ad8fdc978db57ea5e0c39a1121409e417}{Get\+Player\+Skin\+Key}} () const
 \end{DoxyCompactItemize}
 
 
@@ -84,7 +128,7 @@ const std::\+string \& \doxymbox{\hyperlink{class_f_stage_aec5d09194ca32f56243f9
 \index{````~FStage@{\texorpdfstring{$\sim$}{\string~}FStage}!FStage@{FStage}}
 \doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}FStage()}{\string~FStage()}}
 {\footnotesize\ttfamily \label{class_f_stage_a3deb7aa7822e14c77d581281f158b1f5} 
-FStage::\+\texorpdfstring{$\sim$}{\string~}\+FStage (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+FStage::\+\texorpdfstring{$\sim$}{\string~}\+FStage (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
 
 
@@ -96,6 +140,12 @@ FStage::\+\texorpdfstring{$\sim$}{\string~}\+FStage (\begin{DoxyParamCaption}{}{
 \doxysubsubsection{\texorpdfstring{AddMonster()}{AddMonster()}}
 {\footnotesize\ttfamily \label{class_f_stage_a5d80d6f2e6dc548196fe507dc44d17cd} 
 void FStage::\+\+Add\+Monster (\begin{DoxyParamCaption}\item[{std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_monster}{FMonster}} $>$}]{Monster}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a32ac1e10a78ce6f9daaea7b8d252ffc3}\index{FStage@{FStage}!ApplyItem@{ApplyItem}}
+\index{ApplyItem@{ApplyItem}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{ApplyItem()}{ApplyItem()}}
+{\footnotesize\ttfamily \label{class_f_stage_a32ac1e10a78ce6f9daaea7b8d252ffc3} 
+void FStage::\+\+Apply\+Item (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} \&}]{Item}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_stage_a090be5bc82bfa3dabac5ab816cf1fab1}\index{FStage@{FStage}!CanMoveTo@{CanMoveTo}}
 \index{CanMoveTo@{CanMoveTo}!FStage@{FStage}}
@@ -151,6 +201,30 @@ const \doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}} \& FStage::\+\+Get\+Ca
 {\footnotesize\ttfamily \label{class_f_stage_af68f830bf45fcaa6a51604625e12aa67} 
 int FStage::\+\+Get\+Current\+Stage\+Index (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{class_f_stage_a616e0bd01acce98e8257d871b1915683}\index{FStage@{FStage}!GetDarknessLevel@{GetDarknessLevel}}
+\index{GetDarknessLevel@{GetDarknessLevel}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetDarknessLevel()}{GetDarknessLevel()}}
+{\footnotesize\ttfamily \label{class_f_stage_a616e0bd01acce98e8257d871b1915683} 
+int FStage::\+\+Get\+Darkness\+Level (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ac4822dda94731fbc6b3af9cd542b39cc}\index{FStage@{FStage}!GetGoalX@{GetGoalX}}
+\index{GetGoalX@{GetGoalX}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetGoalX()}{GetGoalX()}}
+{\footnotesize\ttfamily \label{class_f_stage_ac4822dda94731fbc6b3af9cd542b39cc} 
+int FStage::\+\+Get\+GoalX (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_af8a1f3a93553dddec1249269da77e8c2}\index{FStage@{FStage}!GetGoalY@{GetGoalY}}
+\index{GetGoalY@{GetGoalY}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetGoalY()}{GetGoalY()}}
+{\footnotesize\ttfamily \label{class_f_stage_af8a1f3a93553dddec1249269da77e8c2} 
+int FStage::\+\+Get\+GoalY (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ac83faad044c470df05854643f121d72e}\index{FStage@{FStage}!GetItems@{GetItems}}
+\index{GetItems@{GetItems}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetItems()}{GetItems()}}
+{\footnotesize\ttfamily \label{class_f_stage_ac83faad044c470df05854643f121d72e} 
+const std::\+vector$<$ \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} $>$ \& FStage::\+\+Get\+Items (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{class_f_stage_a5761a4d4882586daeae2452d68b3a0a7}\index{FStage@{FStage}!GetMap@{GetMap}}
 \index{GetMap@{GetMap}!FStage@{FStage}}
 \doxysubsubsection{\texorpdfstring{GetMap()}{GetMap()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
@@ -186,6 +260,24 @@ const std::\+vector$<$ std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_mo
 \doxysubsubsection{\texorpdfstring{GetPlayer()}{GetPlayer()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{class_f_stage_a578b61c86ed68c008973253d9e150fe2} 
 const \doxymbox{\hyperlink{class_f_player}{FPlayer}} \& FStage::\+\+Get\+Player (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ad8fdc978db57ea5e0c39a1121409e417}\index{FStage@{FStage}!GetPlayerSkinKey@{GetPlayerSkinKey}}
+\index{GetPlayerSkinKey@{GetPlayerSkinKey}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetPlayerSkinKey()}{GetPlayerSkinKey()}}
+{\footnotesize\ttfamily \label{class_f_stage_ad8fdc978db57ea5e0c39a1121409e417} 
+const std::\+string \& FStage::\+\+Get\+Player\+Skin\+Key (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_aa11199158d611de51286bc7009b1310a}\index{FStage@{FStage}!GetRemainingTime@{GetRemainingTime}}
+\index{GetRemainingTime@{GetRemainingTime}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetRemainingTime()}{GetRemainingTime()}}
+{\footnotesize\ttfamily \label{class_f_stage_aa11199158d611de51286bc7009b1310a} 
+float FStage::\+\+Get\+Remaining\+Time (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ac2dcbddc8ed3171f5b14ed5fdb31021c}\index{FStage@{FStage}!GetScore@{GetScore}}
+\index{GetScore@{GetScore}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetScore()}{GetScore()}}
+{\footnotesize\ttfamily \label{class_f_stage_ac2dcbddc8ed3171f5b14ed5fdb31021c} 
+int FStage::\+\+Get\+Score (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{class_f_stage_a3d1166c59f61a4d9b719d1fd1d15cdd0}\index{FStage@{FStage}!GetScoreSystem@{GetScoreSystem}}
 \index{GetScoreSystem@{GetScoreSystem}!FStage@{FStage}}
@@ -223,6 +315,18 @@ const std::\+vector$<$ \doxymbox{\hyperlink{class_f_tile}{FTile}} $>$ \& FStage:
 {\footnotesize\ttfamily \label{class_f_stage_a91e4ca712cbfb0da1f64e8dd8b20d97c} 
 float FStage::\+\+Get\+Tile\+Size (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{class_f_stage_ae47a0a83b55bfaa678fae0862423d979}\index{FStage@{FStage}!GetTimeFreezeRemaining@{GetTimeFreezeRemaining}}
+\index{GetTimeFreezeRemaining@{GetTimeFreezeRemaining}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetTimeFreezeRemaining()}{GetTimeFreezeRemaining()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae47a0a83b55bfaa678fae0862423d979} 
+float FStage::\+\+Get\+Time\+Freeze\+Remaining (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a770cc01ef55c09ef02337e716ba40961}\index{FStage@{FStage}!GetTimeLimit@{GetTimeLimit}}
+\index{GetTimeLimit@{GetTimeLimit}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetTimeLimit()}{GetTimeLimit()}}
+{\footnotesize\ttfamily \label{class_f_stage_a770cc01ef55c09ef02337e716ba40961} 
+float FStage::\+\+Get\+Time\+Limit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{class_f_stage_aac409d9fcc35456f935e34b9b9455fc5}\index{FStage@{FStage}!GetWalls@{GetWalls}}
 \index{GetWalls@{GetWalls}!FStage@{FStage}}
 \doxysubsubsection{\texorpdfstring{GetWalls()}{GetWalls()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
@@ -235,11 +339,23 @@ std::\+vector$<$ \doxymbox{\hyperlink{class_f_wall}{FWall}} $>$ \& FStage::\+\+G
 {\footnotesize\ttfamily \label{class_f_stage_ab5eff933107a7c8bc589aa11f9c79219} 
 const std::\+vector$<$ \doxymbox{\hyperlink{class_f_wall}{FWall}} $>$ \& FStage::\+\+Get\+Walls (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{class_f_stage_a214b72e71df69ae92b9ba74c0cbb0cf0}\index{FStage@{FStage}!IsAngry@{IsAngry}}
+\index{IsAngry@{IsAngry}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsAngry()}{IsAngry()}}
+{\footnotesize\ttfamily \label{class_f_stage_a214b72e71df69ae92b9ba74c0cbb0cf0} 
+bool FStage::\+\+Is\+Angry (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{class_f_stage_acae64b4e60b86d1c07313675f48ec41a}\index{FStage@{FStage}!IsCleared@{IsCleared}}
 \index{IsCleared@{IsCleared}!FStage@{FStage}}
 \doxysubsubsection{\texorpdfstring{IsCleared()}{IsCleared()}}
 {\footnotesize\ttfamily \label{class_f_stage_acae64b4e60b86d1c07313675f48ec41a} 
 bool FStage::\+\+Is\+Cleared (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a8a662f41b41320c8ead506b2c798d23a}\index{FStage@{FStage}!IsDarknessDisabled@{IsDarknessDisabled}}
+\index{IsDarknessDisabled@{IsDarknessDisabled}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsDarknessDisabled()}{IsDarknessDisabled()}}
+{\footnotesize\ttfamily \label{class_f_stage_a8a662f41b41320c8ead506b2c798d23a} 
+bool FStage::\+\+Is\+Darkness\+Disabled (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{class_f_stage_a016d3ebf8555e9fd8589f03ba07ead43}\index{FStage@{FStage}!IsGameOver@{IsGameOver}}
 \index{IsGameOver@{IsGameOver}!FStage@{FStage}}
@@ -252,6 +368,12 @@ bool FStage::\+\+Is\+Game\+Over (\begin{DoxyParamCaption}{}{}\end{DoxyParamCapti
 \doxysubsubsection{\texorpdfstring{IsOccupied()}{IsOccupied()}}
 {\footnotesize\ttfamily \label{class_f_stage_aa02a0643c7fb4f471047f9441234c0c2} 
 bool FStage::\+\+Is\+Occupied (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a169d08115d8ade93d6cd65070284effd}\index{FStage@{FStage}!IsTimeFrozen@{IsTimeFrozen}}
+\index{IsTimeFrozen@{IsTimeFrozen}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsTimeFrozen()}{IsTimeFrozen()}}
+{\footnotesize\ttfamily \label{class_f_stage_a169d08115d8ade93d6cd65070284effd} 
+bool FStage::\+\+Is\+Time\+Frozen (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{class_f_stage_a7a614cf2e6fa87b4e3026e5f155463b5}\index{FStage@{FStage}!IsWalkable@{IsWalkable}}
 \index{IsWalkable@{IsWalkable}!FStage@{FStage}}
@@ -283,11 +405,65 @@ void FStage::\+\+Render (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 {\footnotesize\ttfamily \label{class_f_stage_a18e3f47a7d25eb986d485f0da9401d8e} 
 void FStage::\+\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_stage_ad4ef8e58b2f35d3cc5f0efd847f494ff}\index{FStage@{FStage}!SetDarknessDisabled@{SetDarknessDisabled}}
+\index{SetDarknessDisabled@{SetDarknessDisabled}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetDarknessDisabled()}{SetDarknessDisabled()}}
+{\footnotesize\ttfamily \label{class_f_stage_ad4ef8e58b2f35d3cc5f0efd847f494ff} 
+void FStage::\+\+Set\+Darkness\+Disabled (\begin{DoxyParamCaption}\item[{bool}]{b\+Disabled}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ae4727cdee3f5d89f0903f7f1c4d19a64}\index{FStage@{FStage}!SetDarknessLevel@{SetDarknessLevel}}
+\index{SetDarknessLevel@{SetDarknessLevel}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetDarknessLevel()}{SetDarknessLevel()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae4727cdee3f5d89f0903f7f1c4d19a64} 
+void FStage::\+\+Set\+Darkness\+Level (\begin{DoxyParamCaption}\item[{int}]{Level}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_aed2b927bae8e05c7b836bfd749887231}\index{FStage@{FStage}!SetIsCleared@{SetIsCleared}}
+\index{SetIsCleared@{SetIsCleared}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetIsCleared()}{SetIsCleared()}}
+{\footnotesize\ttfamily \label{class_f_stage_aed2b927bae8e05c7b836bfd749887231} 
+void FStage::\+\+Set\+Is\+Cleared (\begin{DoxyParamCaption}\item[{bool}]{b\+Is\+Cleared}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_acf227bc1c144141bd6ed8470a183c5a1}\index{FStage@{FStage}!SetPlayerSkinKey@{SetPlayerSkinKey}}
+\index{SetPlayerSkinKey@{SetPlayerSkinKey}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetPlayerSkinKey()}{SetPlayerSkinKey()}}
+{\footnotesize\ttfamily \label{class_f_stage_acf227bc1c144141bd6ed8470a183c5a1} 
+void FStage::\+\+Set\+Player\+Skin\+Key (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a56712b94d43594c597a014fd0db5444f}\index{FStage@{FStage}!SetRemainingTime@{SetRemainingTime}}
+\index{SetRemainingTime@{SetRemainingTime}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetRemainingTime()}{SetRemainingTime()}}
+{\footnotesize\ttfamily \label{class_f_stage_a56712b94d43594c597a014fd0db5444f} 
+void FStage::\+\+Set\+Remaining\+Time (\begin{DoxyParamCaption}\item[{float}]{Time}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ae3aa0d5810017bfe84317db0cc22aa86}\index{FStage@{FStage}!SetTimeFrozen@{SetTimeFrozen}}
+\index{SetTimeFrozen@{SetTimeFrozen}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetTimeFrozen()}{SetTimeFrozen()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae3aa0d5810017bfe84317db0cc22aa86} 
+void FStage::\+\+Set\+Time\+Frozen (\begin{DoxyParamCaption}\item[{bool}]{b\+Frozen}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ae9063aa3a8dca0bd290bf1789c9447ce}\index{FStage@{FStage}!StartBGM@{StartBGM}}
+\index{StartBGM@{StartBGM}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{StartBGM()}{StartBGM()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae9063aa3a8dca0bd290bf1789c9447ce} 
+void FStage::\+\+Start\+BGM (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a6509170509180d2bdd181e70d7283aa7}\index{FStage@{FStage}!StopBGM@{StopBGM}}
+\index{StopBGM@{StopBGM}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{StopBGM()}{StopBGM()}}
+{\footnotesize\ttfamily \label{class_f_stage_a6509170509180d2bdd181e70d7283aa7} 
+void FStage::\+\+Stop\+BGM (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_stage_a575032fbd92b8ce84d9a5e19f8532cca}\index{FStage@{FStage}!Update@{Update}}
 \index{Update@{Update}!FStage@{FStage}}
 \doxysubsubsection{\texorpdfstring{Update()}{Update()}}
 {\footnotesize\ttfamily \label{class_f_stage_a575032fbd92b8ce84d9a5e19f8532cca} 
 void FStage::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{, }\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a06dfeb142832383612f9742d79afc822}\index{FStage@{FStage}!UpdateActiveEffects@{UpdateActiveEffects}}
+\index{UpdateActiveEffects@{UpdateActiveEffects}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{UpdateActiveEffects()}{UpdateActiveEffects()}}
+{\footnotesize\ttfamily \label{class_f_stage_a06dfeb142832383612f9742d79afc822} 
+void FStage::\+\+Update\+Active\+Effects (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})}
 
 
 

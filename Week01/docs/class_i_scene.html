@@ -99,25 +99,30 @@ Inheritance diagram for IScene:</div>
  <div class="center">
   <img src="class_i_scene.png" usemap="#IScene_map" alt=""/>
   <map id="IScene_map" name="IScene_map">
-<area href="class_f_play_scene.html" alt="FPlayScene" shape="rect" coords="0,56,81,80"/>
-<area href="class_f_title_scene.html" alt="FTitleScene" shape="rect" coords="91,56,172,80"/>
+<area href="class_f_ending_scene.html" alt="FEndingScene" shape="rect" coords="0,56,95,80"/>
+<area href="class_f_play_scene.html" alt="FPlayScene" shape="rect" coords="105,56,200,80"/>
+<area href="class_f_test_scene.html" alt="FTestScene" shape="rect" coords="210,56,305,80"/>
+<area href="class_f_title_scene.html" alt="FTitleScene" shape="rect" coords="315,56,410,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a146b1101069efb7a46b3bb6e419bc2bc" id="r_a146b1101069efb7a46b3bb6e419bc2bc"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a146b1101069efb7a46b3bb6e419bc2bc">~IScene</a> ()=default</td></tr>
-<tr class="memitem:ad827b093764ba24f33a6490b2ce568f4" id="r_ad827b093764ba24f33a6490b2ce568f4"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad827b093764ba24f33a6490b2ce568f4">Enter</a> ()=0</td></tr>
-<tr class="memitem:ad91db1340cc6f0e4dbff45fe8c802d9b" id="r_ad91db1340cc6f0e4dbff45fe8c802d9b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad91db1340cc6f0e4dbff45fe8c802d9b">Exit</a> ()=0</td></tr>
 <tr class="memitem:aaac68ad3611a9ef3cad7697b87dd92f4" id="r_aaac68ad3611a9ef3cad7697b87dd92f4"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aaac68ad3611a9ef3cad7697b87dd92f4">Update</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context)=0</td></tr>
 <tr class="memitem:ace723c09a94c7febce67b45c8aef49c1" id="r_ace723c09a94c7febce67b45c8aef49c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ace723c09a94c7febce67b45c8aef49c1">Render</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context)=0</td></tr>
-<tr class="memitem:a2cbbb0b3c57d330c35a937c81824614b" id="r_a2cbbb0b3c57d330c35a937c81824614b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a2cbbb0b3c57d330c35a937c81824614b">HasSceneChangeRequest</a> () const</td></tr>
-<tr class="memitem:abbbbb84f448a83b56850ec7626b47dc8" id="r_abbbbb84f448a83b56850ec7626b47dc8"><td class="memItemLeft"><a class="el" href="_types_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a>&#160;</td><td class="memItemRight"><a class="el" href="#abbbbb84f448a83b56850ec7626b47dc8">GetRequestedScene</a> () const</td></tr>
-<tr class="memitem:a8e8c10be01bdfc78bb2e7501fdec3bdd" id="r_a8e8c10be01bdfc78bb2e7501fdec3bdd"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8e8c10be01bdfc78bb2e7501fdec3bdd">ClearSceneChangeRequest</a> ()</td></tr>
+<tr class="memitem:a7316409ac97b08fba543cd523e555121" id="r_a7316409ac97b08fba543cd523e555121"><td class="memItemLeft"><a class="el" href="struct_f_scene_command.html">FSceneCommand</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7316409ac97b08fba543cd523e555121">ConsumeCommand</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a9f77c1641bee42ccb8eeeb7a51ae71a4" id="r_a9f77c1641bee42ccb8eeeb7a51ae71a4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9f77c1641bee42ccb8eeeb7a51ae71a4">RequestSceneChange</a> (<a class="el" href="_types_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a> SceneType)</td></tr>
+<tr class="memitem:ade55669e20b8ab34674321ee7964d9d0" id="r_ade55669e20b8ab34674321ee7964d9d0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ade55669e20b8ab34674321ee7964d9d0">SetSceneCommand</a> (const <a class="el" href="struct_f_scene_command.html">FSceneCommand</a> &amp;Command)</td></tr>
+<tr class="memitem:a6e2f65a65fff325dd5ce68f8e418d17b" id="r_a6e2f65a65fff325dd5ce68f8e418d17b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6e2f65a65fff325dd5ce68f8e418d17b">ChangeScene</a> (<a class="el" href="_scene_type_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a> NextScene)</td></tr>
+<tr class="memitem:a535b76f8dfa4a7fa4f6e9a9c6097111a" id="r_a535b76f8dfa4a7fa4f6e9a9c6097111a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a535b76f8dfa4a7fa4f6e9a9c6097111a">ChangeScene</a> (<a class="el" href="_scene_type_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a> NextScene, int NextStageIndex, int AccumulatedScore=0, const std::string &amp;PlayerSkinKey=&quot;&quot;)</td></tr>
+<tr class="memitem:aab3356a84a89d0ae8bd011e55d25a010" id="r_aab3356a84a89d0ae8bd011e55d25a010"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aab3356a84a89d0ae8bd011e55d25a010">QuitGame</a> ()</td></tr>
+<tr class="memitem:a373ea6b6ebf14d0bfa5224727cb0e95b" id="r_a373ea6b6ebf14d0bfa5224727cb0e95b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a373ea6b6ebf14d0bfa5224727cb0e95b">DispatchPopupAction</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context, <a class="el" href="class_f_u_i_popup_base.html">FUIPopupBase</a> &amp;Popup, <a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a> Action)</td></tr>
+<tr class="memitem:ac64e2d7a756b3b3c109c4434ba159128" id="r_ac64e2d7a756b3b3c109c4434ba159128"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#ac64e2d7a756b3b3c109c4434ba159128">HandleOwnPopupAction</a> (<a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;Context, <a class="el" href="class_f_u_i_popup_base.html">FUIPopupBase</a> &amp;Popup, <a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a> Action)</td></tr>
+<tr class="memitem:acfdf07ebc1e55472a32ddbd8d8959f5a" id="r_acfdf07ebc1e55472a32ddbd8d8959f5a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#acfdf07ebc1e55472a32ddbd8d8959f5a">OnPopupActionDispatched</a> (<a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a> Action)</td></tr>
+<tr class="memitem:a32707d18a7aab5e72b71c8c6cc0217cb" id="r_a32707d18a7aab5e72b71c8c6cc0217cb"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a32707d18a7aab5e72b71c8c6cc0217cb">OpenGoToTitlePopup</a> ()</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a146b1101069efb7a46b3bb6e419bc2bc" name="a146b1101069efb7a46b3bb6e419bc2bc"></a>
@@ -146,25 +151,8 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a8e8c10be01bdfc78bb2e7501fdec3bdd" name="a8e8c10be01bdfc78bb2e7501fdec3bdd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e8c10be01bdfc78bb2e7501fdec3bdd">&#9670;&#160;</a></span>ClearSceneChangeRequest()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void IScene::ClearSceneChangeRequest </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad827b093764ba24f33a6490b2ce568f4" name="ad827b093764ba24f33a6490b2ce568f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad827b093764ba24f33a6490b2ce568f4">&#9670;&#160;</a></span>Enter()</h2>
+<a id="a6e2f65a65fff325dd5ce68f8e418d17b" name="a6e2f65a65fff325dd5ce68f8e418d17b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e2f65a65fff325dd5ce68f8e418d17b">&#9670;&#160;</a></span>ChangeScene() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -173,25 +161,23 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void IScene::Enter </td>
+          <td class="memname">void IScene::ChangeScene </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="_scene_type_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a></td>          <td class="paramname"><span class="paramname"><em>NextScene</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_f_play_scene.html#a1a0d603364bf29b307921ee74cdf716f">FPlayScene</a>, and <a class="el" href="class_f_title_scene.html#ad709bfac856eadb166d7a90bb3b8e6bd">FTitleScene</a>.</p>
-
 </div>
 </div>
-<a id="ad91db1340cc6f0e4dbff45fe8c802d9b" name="ad91db1340cc6f0e4dbff45fe8c802d9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad91db1340cc6f0e4dbff45fe8c802d9b">&#9670;&#160;</a></span>Exit()</h2>
+<a id="a535b76f8dfa4a7fa4f6e9a9c6097111a" name="a535b76f8dfa4a7fa4f6e9a9c6097111a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a535b76f8dfa4a7fa4f6e9a9c6097111a">&#9670;&#160;</a></span>ChangeScene() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -200,7 +186,156 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void IScene::Exit </td>
+          <td class="memname">void IScene::ChangeScene </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_scene_type_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a></td>          <td class="paramname"><span class="paramname"><em>NextScene</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>NextStageIndex</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>AccumulatedScore</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>PlayerSkinKey</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7316409ac97b08fba543cd523e555121" name="a7316409ac97b08fba543cd523e555121"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7316409ac97b08fba543cd523e555121">&#9670;&#160;</a></span>ConsumeCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_f_scene_command.html">FSceneCommand</a> IScene::ConsumeCommand </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a373ea6b6ebf14d0bfa5224727cb0e95b" name="a373ea6b6ebf14d0bfa5224727cb0e95b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a373ea6b6ebf14d0bfa5224727cb0e95b">&#9670;&#160;</a></span>DispatchPopupAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IScene::DispatchPopupAction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_f_u_i_popup_base.html">FUIPopupBase</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Popup</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a></td>          <td class="paramname"><span class="paramname"><em>Action</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac64e2d7a756b3b3c109c4434ba159128" name="ac64e2d7a756b3b3c109c4434ba159128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac64e2d7a756b3b3c109c4434ba159128">&#9670;&#160;</a></span>HandleOwnPopupAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool IScene::HandleOwnPopupAction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_game_context.html">FGameContext</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_f_u_i_popup_base.html">FUIPopupBase</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Popup</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a></td>          <td class="paramname"><span class="paramname"><em>Action</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acfdf07ebc1e55472a32ddbd8d8959f5a" name="acfdf07ebc1e55472a32ddbd8d8959f5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfdf07ebc1e55472a32ddbd8d8959f5a">&#9670;&#160;</a></span>OnPopupActionDispatched()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IScene::OnPopupActionDispatched </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a></td>          <td class="paramname"><span class="paramname"><em>Action</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a32707d18a7aab5e72b71c8c6cc0217cb" name="a32707d18a7aab5e72b71c8c6cc0217cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32707d18a7aab5e72b71c8c6cc0217cb">&#9670;&#160;</a></span>OpenGoToTitlePopup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void IScene::OpenGoToTitlePopup </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -208,45 +343,34 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_f_play_scene.html#a14a04db3fe5db974c991bbdb29ad2a9d">FPlayScene</a>, and <a class="el" href="class_f_title_scene.html#a0513c9586553f1fcc92b6bc9f19a4fcc">FTitleScene</a>.</p>
-
 </div>
 </div>
-<a id="abbbbb84f448a83b56850ec7626b47dc8" name="abbbbb84f448a83b56850ec7626b47dc8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbbbb84f448a83b56850ec7626b47dc8">&#9670;&#160;</a></span>GetRequestedScene()</h2>
+<a id="aab3356a84a89d0ae8bd011e55d25a010" name="aab3356a84a89d0ae8bd011e55d25a010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab3356a84a89d0ae8bd011e55d25a010">&#9670;&#160;</a></span>QuitGame()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_types_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a> IScene::GetRequestedScene </td>
+          <td class="memname">void IScene::QuitGame </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2cbbb0b3c57d330c35a937c81824614b" name="a2cbbb0b3c57d330c35a937c81824614b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2cbbb0b3c57d330c35a937c81824614b">&#9670;&#160;</a></span>HasSceneChangeRequest()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool IScene::HasSceneChangeRequest </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -274,12 +398,12 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_f_play_scene.html#a0c45ecd9ee46d0766898ec84f32c26a5">FPlayScene</a>, and <a class="el" href="class_f_title_scene.html#ac4c53715b29293cc5f1396151eba5319">FTitleScene</a>.</p>
+<p>Implemented in <a class="el" href="class_f_ending_scene.html#ad22499e8f561985038bae5d44a2b3c89">FEndingScene</a>, <a class="el" href="class_f_play_scene.html#a0c45ecd9ee46d0766898ec84f32c26a5">FPlayScene</a>, <a class="el" href="class_f_test_scene.html#a6252f166d504f9e4dd2327e6fe353fd5">FTestScene</a>, and <a class="el" href="class_f_title_scene.html#ac4c53715b29293cc5f1396151eba5319">FTitleScene</a>.</p>
 
 </div>
 </div>
-<a id="a9f77c1641bee42ccb8eeeb7a51ae71a4" name="a9f77c1641bee42ccb8eeeb7a51ae71a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f77c1641bee42ccb8eeeb7a51ae71a4">&#9670;&#160;</a></span>RequestSceneChange()</h2>
+<a id="ade55669e20b8ab34674321ee7964d9d0" name="ade55669e20b8ab34674321ee7964d9d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade55669e20b8ab34674321ee7964d9d0">&#9670;&#160;</a></span>SetSceneCommand()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,9 +412,9 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void IScene::RequestSceneChange </td>
+          <td class="memname">void IScene::SetSceneCommand </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="_types_8h.html#ab6949df4214b79a5795967590fe95bc9">ESceneType</a></td>          <td class="paramname"><span class="paramname"><em>SceneType</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="struct_f_scene_command.html">FSceneCommand</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>Command</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -326,7 +450,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_f_play_scene.html#afd49d1c64f2553201b96c70884366ca7">FPlayScene</a>, and <a class="el" href="class_f_title_scene.html#a5d763c4ba05e3d901c3e6213d17698cd">FTitleScene</a>.</p>
+<p>Implemented in <a class="el" href="class_f_ending_scene.html#a4488ba6462794bbfb694f242b56e2677">FEndingScene</a>, <a class="el" href="class_f_play_scene.html#afd49d1c64f2553201b96c70884366ca7">FPlayScene</a>, <a class="el" href="class_f_test_scene.html#a51694c009b2c0dd288051b742c7856a1">FTestScene</a>, and <a class="el" href="class_f_title_scene.html#a5d763c4ba05e3d901c3e6213d17698cd">FTitleScene</a>.</p>
 
 </div>
 </div>

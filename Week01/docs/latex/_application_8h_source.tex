@@ -6,43 +6,79 @@
 \DoxyCodeLine{00002\ }
 \DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
 \DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <optional>}}
-\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <windows.h>}}
-\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_game_context_8h}{GameContext.h}}"{}}}
-\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_input_8h}{Input.h}}"{}}}
-\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_renderer_8h}{Render/Renderer.h}}"{}}}
-\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_scene_manager_8h}{Scene/SceneManager.h}}"{}}}
-\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_texture_manager_8h}{Render/TextureManager.h}}"{}}}
-\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_time_8h}{Time.h}}"{}}}
-\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_f_window_8h}{FWindow.h}}"{}}}
-\DoxyCodeLine{00013\ }
-\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_application}{FApplication}}}
-\DoxyCodeLine{00015\ \{}
-\DoxyCodeLine{00016\ \ \ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_application_a16c73a66b5fedc0ae094f8b5f4689b1e}{Initialize}}(HINSTANCE\ hInstance,\ \textcolor{keywordtype}{int}\ ScreenWidth,\ \textcolor{keywordtype}{int}\ ScreenHeight);}
-\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_application_abb4eefbfe47780177f0cad1ec4e72264}{Run}}();}
-\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_application_a2e95ee4f22ce25bc8be1618ad7e5cb78}{Shutdown}}();}
-\DoxyCodeLine{00020\ }
-\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_application_a1f1fe26c85d60ccdf4c51a58b8abd54d}{RequestQuit}}();}
-\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_application_abc696bc3b580646be76c62500ab16eaf}{IsRunning}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00023\ }
-\DoxyCodeLine{00024\ \ \ \ \ \doxymbox{\hyperlink{class_f_time}{FTime}}\&\ \doxymbox{\hyperlink{class_f_application_a7f0f6209a60f918182630ef3d995354a}{GetTime}}();}
-\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{class_f_input}{FInput}}\&\ \doxymbox{\hyperlink{class_f_application_a85a7409efe0b186c3e0596e20aca3cac}{GetInput}}();}
-\DoxyCodeLine{00026\ \ \ \ \ \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}\&\ \doxymbox{\hyperlink{class_f_application_a64876b1ef0cb6c6e5c6340771eaa8c1a}{GetRenderer}}();}
-\DoxyCodeLine{00027\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}\&\ \doxymbox{\hyperlink{class_f_application_a41dd5ced5072ce08b01a5dccbc447042}{GetTextureManager}}();}
-\DoxyCodeLine{00028\ \ \ \ \ \doxymbox{\hyperlink{class_f_scene_manager}{FSceneManager}}\&\ \doxymbox{\hyperlink{class_f_application_a40a7c6567b74a72d901d2876fc9869f7}{GetSceneManager}}();}
-\DoxyCodeLine{00029\ }
-\DoxyCodeLine{00030\ \ \ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsRunning\ =\ \textcolor{keyword}{true};}
-\DoxyCodeLine{00032\ }
-\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{class_f_window}{FWindow}}\ Window;}
-\DoxyCodeLine{00034\ }
-\DoxyCodeLine{00035\ \ \ \ \ std::unique\_ptr<FTime>\ \ \ \ \ \ \ \ \ \ \ Time;}
-\DoxyCodeLine{00036\ \ \ \ \ std::unique\_ptr<FInput>\ \ \ \ \ \ \ \ \ \ Input;}
-\DoxyCodeLine{00037\ \ \ \ \ std::unique\_ptr<FRenderer>\ \ \ \ \ \ \ Renderer;}
-\DoxyCodeLine{00038\ \ \ \ \ std::unique\_ptr<FTextureManager>\ TextureManager;}
-\DoxyCodeLine{00039\ \ \ \ \ std::unique\_ptr<FSceneManager>\ \ \ SceneManager;}
-\DoxyCodeLine{00040\ }
-\DoxyCodeLine{00041\ \ \ \ \ std::optional<FGameContext>\ GameContext;}
-\DoxyCodeLine{00042\ \};}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <string\_view>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_game_context_8h}{Core/GameContext.h}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_scene_manager_8h}{Scene/SceneManager.h}}"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_f_window_8h}{FWindow.h}}"{}}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_time}{FTime}};}
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_input}{FInput}};}
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_renderer}{FRenderer}};}
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}};}
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_font_manager}{FFontManager}};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_texture_resource_desc}{FTextureResourceDesc}}}
+\DoxyCodeLine{00017\ \{}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\doxymbox{\hyperlink{struct_f_texture_resource_desc_aa75fba55ae6238c779dd8417a84fa4c3}{Key}};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\doxymbox{\hyperlink{struct_f_texture_resource_desc_a6e54afa1b900ab3fcb0913253b647cf1}{FileName}};}
+\DoxyCodeLine{00020\ \};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_application}{FApplication}}}
+\DoxyCodeLine{00023\ \{}
+\DoxyCodeLine{00024\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_application_a16c73a66b5fedc0ae094f8b5f4689b1e}{Initialize}}(HINSTANCE\ hInstance,\ \textcolor{keywordtype}{int}\ ScreenWidth,\ \textcolor{keywordtype}{int}\ ScreenHeight);}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_application_abb4eefbfe47780177f0cad1ec4e72264}{Run}}();}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_application_a2e95ee4f22ce25bc8be1618ad7e5cb78}{Shutdown}}();}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_application_a1f1fe26c85d60ccdf4c51a58b8abd54d}{RequestQuit}}();}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_application_abc696bc3b580646be76c62500ab16eaf}{IsRunning}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \doxymbox{\hyperlink{class_f_time}{FTime}}\ \ \ \ \ \ \ \ \ \ \ \&\doxymbox{\hyperlink{class_f_application_a7f0f6209a60f918182630ef3d995354a}{GetTime}}();}
+\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{class_f_input}{FInput}}\ \ \ \ \ \ \ \ \ \ \&\doxymbox{\hyperlink{class_f_application_a85a7409efe0b186c3e0596e20aca3cac}{GetInput}}();}
+\DoxyCodeLine{00034\ \ \ \ \ \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}\ \ \ \ \ \ \ \&\doxymbox{\hyperlink{class_f_application_a64876b1ef0cb6c6e5c6340771eaa8c1a}{GetRenderer}}();}
+\DoxyCodeLine{00035\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}\ \&\doxymbox{\hyperlink{class_f_application_a41dd5ced5072ce08b01a5dccbc447042}{GetTextureManager}}();}
+\DoxyCodeLine{00036\ \ \ \ \ \doxymbox{\hyperlink{class_f_scene_manager}{FSceneManager}}\ \ \ \&\doxymbox{\hyperlink{class_f_application_a40a7c6567b74a72d901d2876fc9869f7}{GetSceneManager}}();}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{bool}\ InitializeResources();}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{bool}\ InitializeImGui(HWND\ WindowHandle);}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{bool}\ LoadDataResources();}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{bool}\ LoadFontResources();}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{bool}\ LoadSoundResources();}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{bool}\ LoadSpriteResources();}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{bool}\ LoadTextureResource(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::wstring\_view\ WindowTitle\ =\ L\textcolor{stringliteral}{"{}My\ Game"{}};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ ResourceRoot\ =\ \textcolor{stringliteral}{"{}Resources/"{}};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ DataDir\ =\ \textcolor{stringliteral}{"{}Resources/Data/"{}};}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ FontDir\ =\ \textcolor{stringliteral}{"{}Resources/Fonts/"{}};}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ SoundDir\ =\ \textcolor{stringliteral}{"{}Resources/Sounds/"{}};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ SpriteDir\ =\ \textcolor{stringliteral}{"{}Resources/Sprites/"{}};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ StageDataPath\ =\ \textcolor{stringliteral}{"{}Resources/Data/stages.json"{}};}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ CreditDataPath\ =\ \textcolor{stringliteral}{"{}Resources/Data/credits.json"{}};}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ ScoreboardPath\ =\ \textcolor{stringliteral}{"{}Resources/Data/scoreboard.json"{}};}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ ImGuiFontPath\ =\ \textcolor{stringliteral}{"{}Resources/Fonts/Galmuri11.ttf"{}};}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ BitmapFontFntPath\ =\ \textcolor{stringliteral}{"{}Resources/Fonts/bmFont.fnt"{}};}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::string\_view\ BitmapFontPngPath\ =\ \textcolor{stringliteral}{"{}Resources/Fonts/bmFont.png"{}};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsRunning\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \doxymbox{\hyperlink{class_f_window}{FWindow}}\ Window;}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ std::unique\_ptr<FTime>\ \ \ \ \ \ \ \ \ \ \ Time;}
+\DoxyCodeLine{00071\ \ \ \ \ std::unique\_ptr<FInput>\ \ \ \ \ \ \ \ \ \ Input;}
+\DoxyCodeLine{00072\ \ \ \ \ std::unique\_ptr<FRenderer>\ \ \ \ \ \ \ Renderer;}
+\DoxyCodeLine{00073\ \ \ \ \ std::unique\_ptr<FTextureManager>\ TextureManager;}
+\DoxyCodeLine{00074\ \ \ \ \ std::unique\_ptr<FSceneManager>\ \ \ SceneManager;}
+\DoxyCodeLine{00075\ \ \ \ \ std::unique\_ptr<FFontManager>\ \ \ \ FontManager;}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ std::optional<FGameContext>\ GameContext;}
+\DoxyCodeLine{00078\ \};}
 
 \end{DoxyCode}

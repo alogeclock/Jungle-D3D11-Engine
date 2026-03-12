@@ -1,0 +1,88 @@
+\doxysection{Gameplay/\+\+Item.h File Reference}
+\hypertarget{_item_8h}{}\label{_item_8h}\index{Gameplay/Item.h@{Gameplay/Item.h}}
+{\ttfamily \+\#include $<$string$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_active_effect}{FActive\+Effect}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItem\+Type}} \{ \newline
+\doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a6ae2a59f875534297e7a2379bc8fa909}{Invincibility}}
+, \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a8cb2592d8513f72c2a42403c7efaeadb}{Time\+Scale\+Down}}
+, \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a7739549fff07a20ca811641d88534d4d}{Darkness\+Up}}
+, \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a4e21ea5f44f26c83670336fdbd3d181e}{Darkness\+Down}}
+, \newline
+\doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762af4b0cfd652d521a7fc34c0152067ba9c}{Time\+Freeze}}
+, \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762aeff7d0c22b481f2b897592067cf5dd9e}{Hp\+Up}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std::\+string \doxymbox{\hyperlink{_item_8h_a18d07378b72036816a79d86ab8a910b5}{Get\+Item\+Texture\+Key}} (\doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItem\+Type}} Type)
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{_item_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_item_8h_a8e767a593b51b2324703625995d9e762}\index{Item.h@{Item.h}!EItemType@{EItemType}}
+\index{EItemType@{EItemType}!Item.h@{Item.h}}
+\doxysubsubsection{\texorpdfstring{EItemType}{EItemType}}
+{\footnotesize\ttfamily \label{_item_8h_a8e767a593b51b2324703625995d9e762} 
+enum class \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItem\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Invincibility@{Invincibility}!Item.h@{Item.h}}
+\index{Item.h@{Item.h}!Invincibility@{Invincibility}}
+}\Hypertarget{_item_8h_a8e767a593b51b2324703625995d9e762a6ae2a59f875534297e7a2379bc8fa909}\label{_item_8h_a8e767a593b51b2324703625995d9e762a6ae2a59f875534297e7a2379bc8fa909} 
+Invincibility&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TimeScaleDown@{TimeScaleDown}!Item.h@{Item.h}}
+\index{Item.h@{Item.h}!TimeScaleDown@{TimeScaleDown}}
+}\Hypertarget{_item_8h_a8e767a593b51b2324703625995d9e762a8cb2592d8513f72c2a42403c7efaeadb}\label{_item_8h_a8e767a593b51b2324703625995d9e762a8cb2592d8513f72c2a42403c7efaeadb} 
+Time\+Scale\+Down&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DarknessUp@{DarknessUp}!Item.h@{Item.h}}
+\index{Item.h@{Item.h}!DarknessUp@{DarknessUp}}
+}\Hypertarget{_item_8h_a8e767a593b51b2324703625995d9e762a7739549fff07a20ca811641d88534d4d}\label{_item_8h_a8e767a593b51b2324703625995d9e762a7739549fff07a20ca811641d88534d4d} 
+Darkness\+Up&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DarknessDown@{DarknessDown}!Item.h@{Item.h}}
+\index{Item.h@{Item.h}!DarknessDown@{DarknessDown}}
+}\Hypertarget{_item_8h_a8e767a593b51b2324703625995d9e762a4e21ea5f44f26c83670336fdbd3d181e}\label{_item_8h_a8e767a593b51b2324703625995d9e762a4e21ea5f44f26c83670336fdbd3d181e} 
+Darkness\+Down&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TimeFreeze@{TimeFreeze}!Item.h@{Item.h}}
+\index{Item.h@{Item.h}!TimeFreeze@{TimeFreeze}}
+}\Hypertarget{_item_8h_a8e767a593b51b2324703625995d9e762af4b0cfd652d521a7fc34c0152067ba9c}\label{_item_8h_a8e767a593b51b2324703625995d9e762af4b0cfd652d521a7fc34c0152067ba9c} 
+Time\+Freeze&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HpUp@{HpUp}!Item.h@{Item.h}}
+\index{Item.h@{Item.h}!HpUp@{HpUp}}
+}\Hypertarget{_item_8h_a8e767a593b51b2324703625995d9e762aeff7d0c22b481f2b897592067cf5dd9e}\label{_item_8h_a8e767a593b51b2324703625995d9e762aeff7d0c22b481f2b897592067cf5dd9e} 
+Hp\+Up&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-func-members}
+\Hypertarget{_item_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_item_8h_a18d07378b72036816a79d86ab8a910b5}\index{Item.h@{Item.h}!GetItemTextureKey@{GetItemTextureKey}}
+\index{GetItemTextureKey@{GetItemTextureKey}!Item.h@{Item.h}}
+\doxysubsubsection{\texorpdfstring{GetItemTextureKey()}{GetItemTextureKey()}}
+{\footnotesize\ttfamily \label{_item_8h_a18d07378b72036816a79d86ab8a910b5} 
+std::\+string Get\+Item\+Texture\+Key (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItem\+Type}}}]{Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+

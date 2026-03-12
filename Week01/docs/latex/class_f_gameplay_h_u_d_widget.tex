@@ -21,6 +21,12 @@ void \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_a55e6b3bc68f1c15212fa69a
 \item 
 void \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_aa3e1ccef3c6cfd616bde2a85da5b6518}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
 \item 
+virtual void \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_a629cf8280f1c5ff6d89242902a633aa9}{Set\+Textures}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\item 
+void \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_ac869c2a53142534fc832626aedeb341d}{On\+Beat\+Score\+Update}} (int In\+Score)
+\item 
+void \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_a4dbb290d278f21c11082be3853c32bb4}{On\+Timer\+Bonus\+Update}} (int In\+Score)
+\item 
 void \doxymbox{\hyperlink{class_f_gameplay_h_u_d_widget_ae14ba634c3add12c10c248ac2735fb99}{Reset\+Play\+Time}} ()
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_i_u_i_widget}{IUIWidget}}}
@@ -55,6 +61,18 @@ void FGameplay\+HUDWidget::\+\+Bind\+Pause\+Flag (\begin{DoxyParamCaption}\item[
 {\footnotesize\ttfamily \label{class_f_gameplay_h_u_d_widget_adaaf481cc350874f58cb8a560b8ecc80} 
 void FGameplay\+HUDWidget::\+\+Bind\+Stage (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_stage}{FStage}} \texorpdfstring{$\ast$}{*}}]{Stage}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_gameplay_h_u_d_widget_ac869c2a53142534fc832626aedeb341d}\index{FGameplayHUDWidget@{FGameplayHUDWidget}!OnBeatScoreUpdate@{OnBeatScoreUpdate}}
+\index{OnBeatScoreUpdate@{OnBeatScoreUpdate}!FGameplayHUDWidget@{FGameplayHUDWidget}}
+\doxysubsubsection{\texorpdfstring{OnBeatScoreUpdate()}{OnBeatScoreUpdate()}}
+{\footnotesize\ttfamily \label{class_f_gameplay_h_u_d_widget_ac869c2a53142534fc832626aedeb341d} 
+void FGameplay\+HUDWidget::\+\+On\+Beat\+Score\+Update (\begin{DoxyParamCaption}\item[{int}]{In\+Score}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_gameplay_h_u_d_widget_a4dbb290d278f21c11082be3853c32bb4}\index{FGameplayHUDWidget@{FGameplayHUDWidget}!OnTimerBonusUpdate@{OnTimerBonusUpdate}}
+\index{OnTimerBonusUpdate@{OnTimerBonusUpdate}!FGameplayHUDWidget@{FGameplayHUDWidget}}
+\doxysubsubsection{\texorpdfstring{OnTimerBonusUpdate()}{OnTimerBonusUpdate()}}
+{\footnotesize\ttfamily \label{class_f_gameplay_h_u_d_widget_a4dbb290d278f21c11082be3853c32bb4} 
+void FGameplay\+HUDWidget::\+\+On\+Timer\+Bonus\+Update (\begin{DoxyParamCaption}\item[{int}]{In\+Score}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_gameplay_h_u_d_widget_aa3e1ccef3c6cfd616bde2a85da5b6518}\index{FGameplayHUDWidget@{FGameplayHUDWidget}!Render@{Render}}
 \index{Render@{Render}!FGameplayHUDWidget@{FGameplayHUDWidget}}
 \doxysubsubsection{\texorpdfstring{Render()}{Render()}}
@@ -71,6 +89,16 @@ Implements \doxymbox{\hyperlink{class_i_u_i_widget_ae700b3bb9392cd080853fb6427be
 {\footnotesize\ttfamily \label{class_f_gameplay_h_u_d_widget_ae14ba634c3add12c10c248ac2735fb99} 
 void FGameplay\+HUDWidget::\+\+Reset\+Play\+Time (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_gameplay_h_u_d_widget_a629cf8280f1c5ff6d89242902a633aa9}\index{FGameplayHUDWidget@{FGameplayHUDWidget}!SetTextures@{SetTextures}}
+\index{SetTextures@{SetTextures}!FGameplayHUDWidget@{FGameplayHUDWidget}}
+\doxysubsubsection{\texorpdfstring{SetTextures()}{SetTextures()}}
+{\footnotesize\ttfamily \label{class_f_gameplay_h_u_d_widget_a629cf8280f1c5ff6d89242902a633aa9} 
+void FGameplay\+HUDWidget::\+\+Set\+Textures (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_u_i_widget_abe9665fcd1afef16bf899c4d7eea062e}{IUIWidget}}.
+
 \Hypertarget{class_f_gameplay_h_u_d_widget_a55e6b3bc68f1c15212fa69ad3320fc12}\index{FGameplayHUDWidget@{FGameplayHUDWidget}!Update@{Update}}
 \index{Update@{Update}!FGameplayHUDWidget@{FGameplayHUDWidget}}
 \doxysubsubsection{\texorpdfstring{Update()}{Update()}}
@@ -85,5 +113,5 @@ Implements \doxymbox{\hyperlink{class_i_u_i_widget_a550065e70237fac75b7c61ab81e9
 
 The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
 \item 
-UI/\+\doxymbox{\hyperlink{_gameplay_h_u_d_widget_8h}{Gameplay\+HUDWidget.\+h}}\item 
-UI/\+\doxymbox{\hyperlink{_gameplay_h_u_d_widget_8cpp}{Gameplay\+HUDWidget.\+cpp}}\end{DoxyCompactItemize}
+UI/\+widget/\+\doxymbox{\hyperlink{_gameplay_h_u_d_widget_8h}{Gameplay\+HUDWidget.\+h}}\item 
+UI/\+widget/\+\doxymbox{\hyperlink{_gameplay_h_u_d_widget_8cpp}{Gameplay\+HUDWidget.\+cpp}}\end{DoxyCompactItemize}

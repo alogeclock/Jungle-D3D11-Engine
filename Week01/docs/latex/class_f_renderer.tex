@@ -4,6 +4,11 @@
 
 {\ttfamily \+\#include $<$Renderer.\+h$>$}
 
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants}{FConstants}}
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -15,13 +20,27 @@ void \doxymbox{\hyperlink{class_f_renderer_ae13409ebc376fe5e7a54afb0e8d1b541}{En
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_a183d538ff00573183be945c105589efc}{Set\+Camera}} (const \doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}} \&Camera)
 \item 
-void \doxymbox{\hyperlink{class_f_renderer_adaef37126cc3dc1ab6e3dbfe205e4162}{Draw\+Sprite}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}Texture, float WorldX, float WorldY, float Width, float Height, const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&Sprite)
+void \doxymbox{\hyperlink{class_f_renderer_a6b3d3315418651a46c226429f5fdef05}{Draw\+Sprite}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}Texture, float WorldX, float WorldY, float Width, float Height, const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&Sprite, const Direct\+X::\+\+XMFLOAT4 \&Color\+Tint=\{0.\+0f, 0.\+0f, 0.\+0f, 0.\+0f\})
 \item 
-void \doxymbox{\hyperlink{class_f_renderer_a39df37f16da9a396cc311e3c931b22d3}{Draw\+Texture}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}texture, float screenX, float screenY, float width, float height)
+void \doxymbox{\hyperlink{class_f_renderer_a2acae9e20d2489885fe68bb85fe44ebe}{Draw\+Texture}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}texture, float screenX, float screenY, float width, float height, const Direct\+X::\+\+XMFLOAT4 \&Color\+Tint=\{0.\+0f, 0.\+0f, 0.\+0f, 0.\+0f\})
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_a03b0a8dcf1ab244c621f6727f8b22495}{Draw\+Texture}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}texture, float screenX, float screenY, float width, float height, float rotation\+Rad, const Direct\+X::\+\+XMFLOAT4 \&Color\+Tint=\{0.\+0f, 0.\+0f, 0.\+0f, 0.\+0f\})
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_af52637f3ce29bea23d4584ce46eeaa9e}{Draw\+Darkness\+Overlay}} (const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}Texture, float Screen\+CenterX, float Screen\+CenterY)
+\item 
+\doxymbox{\hyperlink{struct_f_static_batch}{FStatic\+Batch}} \doxymbox{\hyperlink{class_f_renderer_a2086c0f6f78df82ed31961427b3a8c10}{Create\+Static\+Batch}} (const \doxymbox{\hyperlink{struct_f_vertex_simple}{FVertex\+Simple}} \texorpdfstring{$\ast$}{*}Vertices, UINT Vertex\+Count, const UINT \texorpdfstring{$\ast$}{*}Indices, UINT Index\+Count)
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_ab83a5098e30404bd44af27ffda20492a}{Release\+Static\+Batch}} (\doxymbox{\hyperlink{struct_f_static_batch}{FStatic\+Batch}} \&Batch)
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_ab8ff902e5b32be00b847f502773d0997}{Draw\+Batch}} (const \doxymbox{\hyperlink{struct_f_static_batch}{FStatic\+Batch}} \&Batch, const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}Texture)
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_a9dc7f7119485bb0d858731f91a7611cc}{Draw\+Font}} (const std::\+string \&text, const \doxymbox{\hyperlink{struct_f_bitmap_font}{FBitmap\+Font}} \texorpdfstring{$\ast$}{*}Font, const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}texture, float screenX, float screenY, float scale)
 \item 
 int \doxymbox{\hyperlink{class_f_renderer_addba53f722a0bfe3457b5121ea337f9c}{Get\+Screen\+Width}} () const
 \item 
 int \doxymbox{\hyperlink{class_f_renderer_a525287c8a1947323cfbd5cd6799df8a2}{Get\+Screen\+Height}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_ac929aa53e1243bf987c00fa975faaa5f}{On\+Resize}} (int New\+Width, int New\+Height)
 \item 
 bool \doxymbox{\hyperlink{class_f_renderer_a8c91fdea0d6c5eeaeaf48e1b405376ce}{Load\+Shader\+From\+File}} (const std::\+wstring \&Path)
 \item 
@@ -31,6 +50,10 @@ const std::\+string \& \doxymbox{\hyperlink{class_f_renderer_a4fa0b75f0009a5f319
 \item 
 const std::\+string \& \doxymbox{\hyperlink{class_f_renderer_aba38d5b26c2b71a2bea24a9d54ce3cf5}{Get\+Shader\+Error}} () const
 \item 
+void \doxymbox{\hyperlink{class_f_renderer_adf8d11f99a0049ed63bdc043795bfe60}{Update\+Font\+Constant}} (\doxymbox{\hyperlink{struct_f_vector}{FVector}} Offset, float ScaleX=1.\+0f, float ScaleY=1.\+0f)
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_a33219235e7b79ef8adfe090fad77cd3f}{Bind\+Shader}} (\doxymbox{\hyperlink{_renderer_8h_a73311d3c753c341dc5d32561a39659a0}{EShader\+Type}} Type)
+\item 
 void \doxymbox{\hyperlink{class_f_renderer_a379425a7bcf35e75a417f9794c721854}{Prepare}} ()
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_aca9ed1d06f30c88bb6ffe1ee8073cb94}{Prepare\+Shader}} ()
@@ -38,6 +61,10 @@ void \doxymbox{\hyperlink{class_f_renderer_aca9ed1d06f30c88bb6ffe1ee8073cb94}{Pr
 void \doxymbox{\hyperlink{class_f_renderer_a98a009965b63919b8155f8f16bcf59f7}{Render}} ()
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_a8e0f8ca6aa503a239efe1ff6bee91834}{Create\+Shader}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_af2a6ea631431636d7251c037933c0e51}{Create\+Font\+Shader}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_a55f1df1ffc59075136f17b5b363de252}{Release\+Font\+Shader}} ()
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_a20493b87cf19df2aa96e47c599db7cab}{Release\+Shader}} ()
 \item 
@@ -61,13 +88,21 @@ void \doxymbox{\hyperlink{class_f_renderer_a3b10265b3f2c5f7179fcbc505dc97603}{Sw
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_a5db710f7a9ab0a9de13aeb9d11a56828}{Create\+Sampler\+State}} ()
 \item 
+void \doxymbox{\hyperlink{class_f_renderer_a88370a3efc23c818a6ba2e7a8c37ae34}{Create\+Blend\+State}} ()
+\item 
 void \doxymbox{\hyperlink{class_f_renderer_aece136ed48896a80dec803af3241c71c}{Create\+Simple\+Quad}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_afd23b6785c403130f5f97cb404609a0e}{Create\+Text\+Quad\+Buffer}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_a2b46431750e7d18d6e62f76bf647784f}{Update\+Text\+Quad\+Buffer}} (\doxymbox{\hyperlink{struct_f_vertex_simple}{FVertex\+Simple}} \texorpdfstring{$\ast$}{*}text\+Vertices)
 \item 
 ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_af6eaca2705740537f55bc2494c7b3273}{Create\+Vertex\+Buffer}} (\doxymbox{\hyperlink{struct_f_vertex_simple}{FVertex\+Simple}} \texorpdfstring{$\ast$}{*}vertices, UINT byte\+Width)
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_a1b4c8626568135305c30a8121a1c1505}{Release\+Vertex\+Buffer}} (ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*}vertex\+Buffer)
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_a8b4ac4a903068dbdd0659741969c5aaa}{Create\+Constant\+Buffer}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_renderer_a66ceae126b1fbdf496e67013e408d051}{Create\+Font\+Constant\+Buffer}} ()
 \item 
 void \doxymbox{\hyperlink{class_f_renderer_ae79d9f85b715273e9e4d95f920156abb}{Release\+Constant\+Buffer}} ()
 \end{DoxyCompactItemize}
@@ -96,7 +131,9 @@ ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_rendere
 \item 
 ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_a31743944269d38ebb4c4c0ae0f526f02}{Quad\+Buffer}} = nullptr
 \item 
-FLOAT \doxymbox{\hyperlink{class_f_renderer_aeb697690f506f4f49f165a852e31b3a5}{Clear\+Color}} \+[4]\+ = \{ 0.\+025f, 0.\+025f, 0.\+025f, 1.\+0f \}
+ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_acd22ed5bf9c8fa4d4f659a2395baa758}{Text\+Quad\+Buffer}} = nullptr
+\item 
+FLOAT \doxymbox{\hyperlink{class_f_renderer_aeb697690f506f4f49f165a852e31b3a5}{Clear\+Color}} \+[4]\+ = \{0.\+025f, 0.\+025f, 0.\+025f, 1.\+0f\}
 \item 
 D3\+D11\+\_\+\+VIEWPORT \doxymbox{\hyperlink{class_f_renderer_a989ef474fc7d8e8da1665570c8d267e0}{Viewport\+Info}}
 \item 
@@ -108,7 +145,17 @@ ID3\+D11\+Input\+Layout \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_
 \item 
 unsigned int \doxymbox{\hyperlink{class_f_renderer_a71466a0e85aa51bf272507cd1988f24e}{Stride}}
 \item 
+ID3\+D11\+Vertex\+Shader \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_ab70cc7329e6c68b6540dc53d098a6043}{Font\+Vertex\+Shader}} = nullptr
+\item 
+ID3\+D11\+Pixel\+Shader \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_a4e4601de1ba69d2ed1aa3cadbd60e78f}{Font\+Pixel\+Shader}} = nullptr
+\item 
+ID3\+D11\+Input\+Layout \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_ae6828e32e019b658446ae63d8676ed9b}{Font\+Input\+Layout}} = nullptr
+\item 
+ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_a985175d09dcf50cf8f2c97aeae86e1c4}{Font\+Constant\+Buffer}} = nullptr
+\item 
 ID3\+D11\+Sampler\+State \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_a6192b383970a37fac5614d22a5d26f50}{Sampler\+State}} = nullptr
+\item 
+ID3\+D11\+Blend\+State \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_renderer_aca088331d3db84cf317dda6596a52ea5}{Alpha\+Blend\+State}} = nullptr
 \end{DoxyCompactItemize}
 
 
@@ -121,11 +168,23 @@ ID3\+D11\+Sampler\+State \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f
 {\footnotesize\ttfamily \label{class_f_renderer_a0e1d7559e2106cb434c4889fe892f057} 
 void FRenderer::\+\+Begin\+Frame (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_renderer_a33219235e7b79ef8adfe090fad77cd3f}\index{FRenderer@{FRenderer}!BindShader@{BindShader}}
+\index{BindShader@{BindShader}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{BindShader()}{BindShader()}}
+{\footnotesize\ttfamily \label{class_f_renderer_a33219235e7b79ef8adfe090fad77cd3f} 
+void FRenderer::\+\+Bind\+Shader (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_renderer_8h_a73311d3c753c341dc5d32561a39659a0}{EShader\+Type}}}]{Type}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_renderer_a859092e1a53c21075ddc452e348e0e4e}\index{FRenderer@{FRenderer}!Create@{Create}}
 \index{Create@{Create}!FRenderer@{FRenderer}}
 \doxysubsubsection{\texorpdfstring{Create()}{Create()}}
 {\footnotesize\ttfamily \label{class_f_renderer_a859092e1a53c21075ddc452e348e0e4e} 
 void FRenderer::\+\+Create (\begin{DoxyParamCaption}\item[{HWND}]{h\+Window}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_a88370a3efc23c818a6ba2e7a8c37ae34}\index{FRenderer@{FRenderer}!CreateBlendState@{CreateBlendState}}
+\index{CreateBlendState@{CreateBlendState}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{CreateBlendState()}{CreateBlendState()}}
+{\footnotesize\ttfamily \label{class_f_renderer_a88370a3efc23c818a6ba2e7a8c37ae34} 
+void FRenderer::\+\+Create\+Blend\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_renderer_a8b4ac4a903068dbdd0659741969c5aaa}\index{FRenderer@{FRenderer}!CreateConstantBuffer@{CreateConstantBuffer}}
 \index{CreateConstantBuffer@{CreateConstantBuffer}!FRenderer@{FRenderer}}
@@ -138,6 +197,18 @@ void FRenderer::\+\+Create\+Constant\+Buffer (\begin{DoxyParamCaption}{}{}\end{D
 \doxysubsubsection{\texorpdfstring{CreateDeviceAndSwapChain()}{CreateDeviceAndSwapChain()}}
 {\footnotesize\ttfamily \label{class_f_renderer_ade9de6e0157ad5874822faa06128cbb2} 
 void FRenderer::\+\+Create\+Device\+And\+Swap\+Chain (\begin{DoxyParamCaption}\item[{HWND}]{h\+Window}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_a66ceae126b1fbdf496e67013e408d051}\index{FRenderer@{FRenderer}!CreateFontConstantBuffer@{CreateFontConstantBuffer}}
+\index{CreateFontConstantBuffer@{CreateFontConstantBuffer}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{CreateFontConstantBuffer()}{CreateFontConstantBuffer()}}
+{\footnotesize\ttfamily \label{class_f_renderer_a66ceae126b1fbdf496e67013e408d051} 
+void FRenderer::\+\+Create\+Font\+Constant\+Buffer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_af2a6ea631431636d7251c037933c0e51}\index{FRenderer@{FRenderer}!CreateFontShader@{CreateFontShader}}
+\index{CreateFontShader@{CreateFontShader}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{CreateFontShader()}{CreateFontShader()}}
+{\footnotesize\ttfamily \label{class_f_renderer_af2a6ea631431636d7251c037933c0e51} 
+void FRenderer::\+\+Create\+Font\+Shader (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_renderer_af9b5bbcb9f42fe1bb1cd0b3d9270d083}\index{FRenderer@{FRenderer}!CreateFrameBuffer@{CreateFrameBuffer}}
 \index{CreateFrameBuffer@{CreateFrameBuffer}!FRenderer@{FRenderer}}
@@ -169,23 +240,59 @@ void FRenderer::\+\+Create\+Shader (\begin{DoxyParamCaption}{}{}\end{DoxyParamCa
 {\footnotesize\ttfamily \label{class_f_renderer_aece136ed48896a80dec803af3241c71c} 
 void FRenderer::\+\+Create\+Simple\+Quad (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_renderer_a2086c0f6f78df82ed31961427b3a8c10}\index{FRenderer@{FRenderer}!CreateStaticBatch@{CreateStaticBatch}}
+\index{CreateStaticBatch@{CreateStaticBatch}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{CreateStaticBatch()}{CreateStaticBatch()}}
+{\footnotesize\ttfamily \label{class_f_renderer_a2086c0f6f78df82ed31961427b3a8c10} 
+\doxymbox{\hyperlink{struct_f_static_batch}{FStatic\+Batch}} FRenderer::\+\+Create\+Static\+Batch (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_vertex_simple}{FVertex\+Simple}} \texorpdfstring{$\ast$}{*}}]{Vertices}{, }\item[{UINT}]{Vertex\+Count}{, }\item[{const UINT \texorpdfstring{$\ast$}{*}}]{Indices}{, }\item[{UINT}]{Index\+Count}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_afd23b6785c403130f5f97cb404609a0e}\index{FRenderer@{FRenderer}!CreateTextQuadBuffer@{CreateTextQuadBuffer}}
+\index{CreateTextQuadBuffer@{CreateTextQuadBuffer}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{CreateTextQuadBuffer()}{CreateTextQuadBuffer()}}
+{\footnotesize\ttfamily \label{class_f_renderer_afd23b6785c403130f5f97cb404609a0e} 
+void FRenderer::\+\+Create\+Text\+Quad\+Buffer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_renderer_af6eaca2705740537f55bc2494c7b3273}\index{FRenderer@{FRenderer}!CreateVertexBuffer@{CreateVertexBuffer}}
 \index{CreateVertexBuffer@{CreateVertexBuffer}!FRenderer@{FRenderer}}
 \doxysubsubsection{\texorpdfstring{CreateVertexBuffer()}{CreateVertexBuffer()}}
 {\footnotesize\ttfamily \label{class_f_renderer_af6eaca2705740537f55bc2494c7b3273} 
 ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*} FRenderer::\+\+Create\+Vertex\+Buffer (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_vertex_simple}{FVertex\+Simple}} \texorpdfstring{$\ast$}{*}}]{vertices}{, }\item[{UINT}]{byte\+Width}{}\end{DoxyParamCaption})}
 
-\Hypertarget{class_f_renderer_adaef37126cc3dc1ab6e3dbfe205e4162}\index{FRenderer@{FRenderer}!DrawSprite@{DrawSprite}}
+\Hypertarget{class_f_renderer_ab8ff902e5b32be00b847f502773d0997}\index{FRenderer@{FRenderer}!DrawBatch@{DrawBatch}}
+\index{DrawBatch@{DrawBatch}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{DrawBatch()}{DrawBatch()}}
+{\footnotesize\ttfamily \label{class_f_renderer_ab8ff902e5b32be00b847f502773d0997} 
+void FRenderer::\+\+Draw\+Batch (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_static_batch}{FStatic\+Batch}} \&}]{Batch}{, }\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{Texture}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_af52637f3ce29bea23d4584ce46eeaa9e}\index{FRenderer@{FRenderer}!DrawDarknessOverlay@{DrawDarknessOverlay}}
+\index{DrawDarknessOverlay@{DrawDarknessOverlay}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{DrawDarknessOverlay()}{DrawDarknessOverlay()}}
+{\footnotesize\ttfamily \label{class_f_renderer_af52637f3ce29bea23d4584ce46eeaa9e} 
+void FRenderer::\+\+Draw\+Darkness\+Overlay (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{Texture}{, }\item[{float}]{Screen\+CenterX}{, }\item[{float}]{Screen\+CenterY}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_a9dc7f7119485bb0d858731f91a7611cc}\index{FRenderer@{FRenderer}!DrawFont@{DrawFont}}
+\index{DrawFont@{DrawFont}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{DrawFont()}{DrawFont()}}
+{\footnotesize\ttfamily \label{class_f_renderer_a9dc7f7119485bb0d858731f91a7611cc} 
+void FRenderer::\+\+Draw\+Font (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{text}{, }\item[{const \doxymbox{\hyperlink{struct_f_bitmap_font}{FBitmap\+Font}} \texorpdfstring{$\ast$}{*}}]{Font}{, }\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{texture}{, }\item[{float}]{screenX}{, }\item[{float}]{screenY}{, }\item[{float}]{scale}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_a6b3d3315418651a46c226429f5fdef05}\index{FRenderer@{FRenderer}!DrawSprite@{DrawSprite}}
 \index{DrawSprite@{DrawSprite}!FRenderer@{FRenderer}}
 \doxysubsubsection{\texorpdfstring{DrawSprite()}{DrawSprite()}}
-{\footnotesize\ttfamily \label{class_f_renderer_adaef37126cc3dc1ab6e3dbfe205e4162} 
-void FRenderer::\+\+Draw\+Sprite (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{Texture}{, }\item[{float}]{WorldX}{, }\item[{float}]{WorldY}{, }\item[{float}]{Width}{, }\item[{float}]{Height}{, }\item[{const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&}]{Sprite}{}\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \label{class_f_renderer_a6b3d3315418651a46c226429f5fdef05} 
+void FRenderer::\+\+Draw\+Sprite (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{Texture}{, }\item[{float}]{WorldX}{, }\item[{float}]{WorldY}{, }\item[{float}]{Width}{, }\item[{float}]{Height}{, }\item[{const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&}]{Sprite}{, }\item[{const Direct\+X::\+\+XMFLOAT4 \&}]{Color\+Tint}{ = {\ttfamily \{0.0f,~0.0f,~0.0f,~0.0f\}}}\end{DoxyParamCaption})}
 
-\Hypertarget{class_f_renderer_a39df37f16da9a396cc311e3c931b22d3}\index{FRenderer@{FRenderer}!DrawTexture@{DrawTexture}}
+\Hypertarget{class_f_renderer_a2acae9e20d2489885fe68bb85fe44ebe}\index{FRenderer@{FRenderer}!DrawTexture@{DrawTexture}}
 \index{DrawTexture@{DrawTexture}!FRenderer@{FRenderer}}
-\doxysubsubsection{\texorpdfstring{DrawTexture()}{DrawTexture()}}
-{\footnotesize\ttfamily \label{class_f_renderer_a39df37f16da9a396cc311e3c931b22d3} 
-void FRenderer::\+\+Draw\+Texture (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{texture}{, }\item[{float}]{screenX}{, }\item[{float}]{screenY}{, }\item[{float}]{width}{, }\item[{float}]{height}{}\end{DoxyParamCaption})}
+\doxysubsubsection{\texorpdfstring{DrawTexture()}{DrawTexture()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_renderer_a2acae9e20d2489885fe68bb85fe44ebe} 
+void FRenderer::\+\+Draw\+Texture (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{texture}{, }\item[{float}]{screenX}{, }\item[{float}]{screenY}{, }\item[{float}]{width}{, }\item[{float}]{height}{, }\item[{const Direct\+X::\+\+XMFLOAT4 \&}]{Color\+Tint}{ = {\ttfamily \{0.0f,~0.0f,~0.0f,~0.0f\}}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_a03b0a8dcf1ab244c621f6727f8b22495}\index{FRenderer@{FRenderer}!DrawTexture@{DrawTexture}}
+\index{DrawTexture@{DrawTexture}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{DrawTexture()}{DrawTexture()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_renderer_a03b0a8dcf1ab244c621f6727f8b22495} 
+void FRenderer::\+\+Draw\+Texture (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_f_texture}{FTexture}} \texorpdfstring{$\ast$}{*}}]{texture}{, }\item[{float}]{screenX}{, }\item[{float}]{screenY}{, }\item[{float}]{width}{, }\item[{float}]{height}{, }\item[{float}]{rotation\+Rad}{, }\item[{const Direct\+X::\+\+XMFLOAT4 \&}]{Color\+Tint}{ = {\ttfamily \{0.0f,~0.0f,~0.0f,~0.0f\}}}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_renderer_ae13409ebc376fe5e7a54afb0e8d1b541}\index{FRenderer@{FRenderer}!EndFrame@{EndFrame}}
 \index{EndFrame@{EndFrame}!FRenderer@{FRenderer}}
@@ -235,6 +342,12 @@ bool FRenderer::\+\+Initialize (\begin{DoxyParamCaption}\item[{HWND}]{window\+Ha
 {\footnotesize\ttfamily \label{class_f_renderer_a8c91fdea0d6c5eeaeaf48e1b405376ce} 
 bool FRenderer::\+\+Load\+Shader\+From\+File (\begin{DoxyParamCaption}\item[{const std::\+wstring \&}]{Path}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_renderer_ac929aa53e1243bf987c00fa975faaa5f}\index{FRenderer@{FRenderer}!OnResize@{OnResize}}
+\index{OnResize@{OnResize}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{OnResize()}{OnResize()}}
+{\footnotesize\ttfamily \label{class_f_renderer_ac929aa53e1243bf987c00fa975faaa5f} 
+void FRenderer::\+\+On\+Resize (\begin{DoxyParamCaption}\item[{int}]{New\+Width}{, }\item[{int}]{New\+Height}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_renderer_a379425a7bcf35e75a417f9794c721854}\index{FRenderer@{FRenderer}!Prepare@{Prepare}}
 \index{Prepare@{Prepare}!FRenderer@{FRenderer}}
 \doxysubsubsection{\texorpdfstring{Prepare()}{Prepare()}}
@@ -265,6 +378,12 @@ void FRenderer::\+\+Release\+Constant\+Buffer (\begin{DoxyParamCaption}{}{}\end{
 {\footnotesize\ttfamily \label{class_f_renderer_ad7da62513bce7d3967307716999f5654} 
 void FRenderer::\+\+Release\+Device\+And\+Swap\+Chain (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_renderer_a55f1df1ffc59075136f17b5b363de252}\index{FRenderer@{FRenderer}!ReleaseFontShader@{ReleaseFontShader}}
+\index{ReleaseFontShader@{ReleaseFontShader}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{ReleaseFontShader()}{ReleaseFontShader()}}
+{\footnotesize\ttfamily \label{class_f_renderer_a55f1df1ffc59075136f17b5b363de252} 
+void FRenderer::\+\+Release\+Font\+Shader (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_renderer_a17cf2c2c67224e2f42676cef7608d59c}\index{FRenderer@{FRenderer}!ReleaseFrameBuffer@{ReleaseFrameBuffer}}
 \index{ReleaseFrameBuffer@{ReleaseFrameBuffer}!FRenderer@{FRenderer}}
 \doxysubsubsection{\texorpdfstring{ReleaseFrameBuffer()}{ReleaseFrameBuffer()}}
@@ -282,6 +401,12 @@ void FRenderer::\+\+Release\+Rasterizer\+State (\begin{DoxyParamCaption}{}{}\end
 \doxysubsubsection{\texorpdfstring{ReleaseShader()}{ReleaseShader()}}
 {\footnotesize\ttfamily \label{class_f_renderer_a20493b87cf19df2aa96e47c599db7cab} 
 void FRenderer::\+\+Release\+Shader (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_ab83a5098e30404bd44af27ffda20492a}\index{FRenderer@{FRenderer}!ReleaseStaticBatch@{ReleaseStaticBatch}}
+\index{ReleaseStaticBatch@{ReleaseStaticBatch}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{ReleaseStaticBatch()}{ReleaseStaticBatch()}}
+{\footnotesize\ttfamily \label{class_f_renderer_ab83a5098e30404bd44af27ffda20492a} 
+void FRenderer::\+\+Release\+Static\+Batch (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_static_batch}{FStatic\+Batch}} \&}]{Batch}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_renderer_a1b4c8626568135305c30a8121a1c1505}\index{FRenderer@{FRenderer}!ReleaseVertexBuffer@{ReleaseVertexBuffer}}
 \index{ReleaseVertexBuffer@{ReleaseVertexBuffer}!FRenderer@{FRenderer}}
@@ -307,16 +432,34 @@ void FRenderer::\+\+Set\+Camera (\begin{DoxyParamCaption}\item[{const \doxymbox{
 {\footnotesize\ttfamily \label{class_f_renderer_a3b10265b3f2c5f7179fcbc505dc97603} 
 void FRenderer::\+\+Swap\+Buffer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_renderer_adf8d11f99a0049ed63bdc043795bfe60}\index{FRenderer@{FRenderer}!UpdateFontConstant@{UpdateFontConstant}}
+\index{UpdateFontConstant@{UpdateFontConstant}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{UpdateFontConstant()}{UpdateFontConstant()}}
+{\footnotesize\ttfamily \label{class_f_renderer_adf8d11f99a0049ed63bdc043795bfe60} 
+void FRenderer::\+\+Update\+Font\+Constant (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_vector}{FVector}}}]{Offset}{, }\item[{float}]{ScaleX}{ = {\ttfamily 1.0f}, }\item[{float}]{ScaleY}{ = {\ttfamily 1.0f}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_renderer_a2b46431750e7d18d6e62f76bf647784f}\index{FRenderer@{FRenderer}!UpdateTextQuadBuffer@{UpdateTextQuadBuffer}}
+\index{UpdateTextQuadBuffer@{UpdateTextQuadBuffer}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{UpdateTextQuadBuffer()}{UpdateTextQuadBuffer()}}
+{\footnotesize\ttfamily \label{class_f_renderer_a2b46431750e7d18d6e62f76bf647784f} 
+void FRenderer::\+\+Update\+Text\+Quad\+Buffer (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_vertex_simple}{FVertex\+Simple}} \texorpdfstring{$\ast$}{*}}]{text\+Vertices}{}\end{DoxyParamCaption})}
+
 
 
 \label{doc-variable-members}
 \Hypertarget{class_f_renderer_doc-variable-members}
 \doxysubsection{Member Data Documentation}
+\Hypertarget{class_f_renderer_aca088331d3db84cf317dda6596a52ea5}\index{FRenderer@{FRenderer}!AlphaBlendState@{AlphaBlendState}}
+\index{AlphaBlendState@{AlphaBlendState}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{AlphaBlendState}{AlphaBlendState}}
+{\footnotesize\ttfamily \label{class_f_renderer_aca088331d3db84cf317dda6596a52ea5} 
+ID3\+D11\+Blend\+State\texorpdfstring{$\ast$}{*} FRenderer::\+\+Alpha\+Blend\+State = nullptr}
+
 \Hypertarget{class_f_renderer_aeb697690f506f4f49f165a852e31b3a5}\index{FRenderer@{FRenderer}!ClearColor@{ClearColor}}
 \index{ClearColor@{ClearColor}!FRenderer@{FRenderer}}
 \doxysubsubsection{\texorpdfstring{ClearColor}{ClearColor}}
 {\footnotesize\ttfamily \label{class_f_renderer_aeb697690f506f4f49f165a852e31b3a5} 
-FLOAT FRenderer::\+\+Clear\+Color\+[4]\+ = \{ 0.\+025f, 0.\+025f, 0.\+025f, 1.\+0f \}}
+FLOAT FRenderer::\+\+Clear\+Color\+[4]\+ = \{0.\+025f, 0.\+025f, 0.\+025f, 1.\+0f\}}
 
 \Hypertarget{class_f_renderer_aae93072832e144b488f89bb514271539}\index{FRenderer@{FRenderer}!ConstantBuffer@{ConstantBuffer}}
 \index{ConstantBuffer@{ConstantBuffer}!FRenderer@{FRenderer}}
@@ -335,6 +478,30 @@ ID3\+D11\+Device\texorpdfstring{$\ast$}{*} FRenderer::\+\+Device = nullptr}
 \doxysubsubsection{\texorpdfstring{DeviceContext}{DeviceContext}}
 {\footnotesize\ttfamily \label{class_f_renderer_a80bf993f5dfb1dfb6d71bbe64ff8d33a} 
 ID3\+D11\+Device\+Context\texorpdfstring{$\ast$}{*} FRenderer::\+\+Device\+Context = nullptr}
+
+\Hypertarget{class_f_renderer_a985175d09dcf50cf8f2c97aeae86e1c4}\index{FRenderer@{FRenderer}!FontConstantBuffer@{FontConstantBuffer}}
+\index{FontConstantBuffer@{FontConstantBuffer}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{FontConstantBuffer}{FontConstantBuffer}}
+{\footnotesize\ttfamily \label{class_f_renderer_a985175d09dcf50cf8f2c97aeae86e1c4} 
+ID3\+D11\+Buffer\texorpdfstring{$\ast$}{*} FRenderer::\+\+Font\+Constant\+Buffer = nullptr}
+
+\Hypertarget{class_f_renderer_ae6828e32e019b658446ae63d8676ed9b}\index{FRenderer@{FRenderer}!FontInputLayout@{FontInputLayout}}
+\index{FontInputLayout@{FontInputLayout}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{FontInputLayout}{FontInputLayout}}
+{\footnotesize\ttfamily \label{class_f_renderer_ae6828e32e019b658446ae63d8676ed9b} 
+ID3\+D11\+Input\+Layout\texorpdfstring{$\ast$}{*} FRenderer::\+\+Font\+Input\+Layout = nullptr}
+
+\Hypertarget{class_f_renderer_a4e4601de1ba69d2ed1aa3cadbd60e78f}\index{FRenderer@{FRenderer}!FontPixelShader@{FontPixelShader}}
+\index{FontPixelShader@{FontPixelShader}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{FontPixelShader}{FontPixelShader}}
+{\footnotesize\ttfamily \label{class_f_renderer_a4e4601de1ba69d2ed1aa3cadbd60e78f} 
+ID3\+D11\+Pixel\+Shader\texorpdfstring{$\ast$}{*} FRenderer::\+\+Font\+Pixel\+Shader = nullptr}
+
+\Hypertarget{class_f_renderer_ab70cc7329e6c68b6540dc53d098a6043}\index{FRenderer@{FRenderer}!FontVertexShader@{FontVertexShader}}
+\index{FontVertexShader@{FontVertexShader}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{FontVertexShader}{FontVertexShader}}
+{\footnotesize\ttfamily \label{class_f_renderer_ab70cc7329e6c68b6540dc53d098a6043} 
+ID3\+D11\+Vertex\+Shader\texorpdfstring{$\ast$}{*} FRenderer::\+\+Font\+Vertex\+Shader = nullptr}
 
 \Hypertarget{class_f_renderer_a275265418cd66f565fe5280345323da4}\index{FRenderer@{FRenderer}!FrameBuffer@{FrameBuffer}}
 \index{FrameBuffer@{FrameBuffer}!FRenderer@{FRenderer}}
@@ -413,6 +580,12 @@ unsigned int FRenderer::\+\+Stride}
 \doxysubsubsection{\texorpdfstring{SwapChain}{SwapChain}}
 {\footnotesize\ttfamily \label{class_f_renderer_adc6b6908cdf5f1c2c6e490d1212c735d} 
 IDXGISwap\+Chain\texorpdfstring{$\ast$}{*} FRenderer::\+\+Swap\+Chain = nullptr}
+
+\Hypertarget{class_f_renderer_acd22ed5bf9c8fa4d4f659a2395baa758}\index{FRenderer@{FRenderer}!TextQuadBuffer@{TextQuadBuffer}}
+\index{TextQuadBuffer@{TextQuadBuffer}!FRenderer@{FRenderer}}
+\doxysubsubsection{\texorpdfstring{TextQuadBuffer}{TextQuadBuffer}}
+{\footnotesize\ttfamily \label{class_f_renderer_acd22ed5bf9c8fa4d4f659a2395baa758} 
+ID3\+D11\+Buffer\texorpdfstring{$\ast$}{*} FRenderer::\+\+Text\+Quad\+Buffer = nullptr}
 
 \Hypertarget{class_f_renderer_a989ef474fc7d8e8da1665570c8d267e0}\index{FRenderer@{FRenderer}!ViewportInfo@{ViewportInfo}}
 \index{ViewportInfo@{ViewportInfo}!FRenderer@{FRenderer}}

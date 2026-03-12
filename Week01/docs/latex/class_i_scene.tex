@@ -15,24 +15,30 @@ Inheritance diagram for IScene:\+\begin{figure}[H]
 \item 
 virtual \doxymbox{\hyperlink{class_i_scene_a146b1101069efb7a46b3bb6e419bc2bc}{\texorpdfstring{$\sim$}{\string~}\+IScene}} ()=default
 \item 
-virtual void \doxymbox{\hyperlink{class_i_scene_ad827b093764ba24f33a6490b2ce568f4}{Enter}} ()=0
-\item 
-virtual void \doxymbox{\hyperlink{class_i_scene_ad91db1340cc6f0e4dbff45fe8c802d9b}{Exit}} ()=0
-\item 
 virtual void \doxymbox{\hyperlink{class_i_scene_aaac68ad3611a9ef3cad7697b87dd92f4}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
 \item 
 virtual void \doxymbox{\hyperlink{class_i_scene_ace723c09a94c7febce67b45c8aef49c1}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
 \item 
-bool \doxymbox{\hyperlink{class_i_scene_a2cbbb0b3c57d330c35a937c81824614b}{Has\+Scene\+Change\+Request}} () const
-\item 
-\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} \doxymbox{\hyperlink{class_i_scene_abbbbb84f448a83b56850ec7626b47dc8}{Get\+Requested\+Scene}} () const
-\item 
-void \doxymbox{\hyperlink{class_i_scene_a8e8c10be01bdfc78bb2e7501fdec3bdd}{Clear\+Scene\+Change\+Request}} ()
+\doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \doxymbox{\hyperlink{class_i_scene_a7316409ac97b08fba543cd523e555121}{Consume\+Command}} ()
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-void \doxymbox{\hyperlink{class_i_scene_a9f77c1641bee42ccb8eeeb7a51ae71a4}{Request\+Scene\+Change}} (\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Scene\+Type)
+void \doxymbox{\hyperlink{class_i_scene_ade55669e20b8ab34674321ee7964d9d0}{Set\+Scene\+Command}} (const \doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \&Command)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a6e2f65a65fff325dd5ce68f8e418d17b}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a535b76f8dfa4a7fa4f6e9a9c6097111a}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene, int Next\+Stage\+Index, int Accumulated\+Score=0, const std::\+string \&Player\+Skin\+Key="{}"{})
+\item 
+void \doxymbox{\hyperlink{class_i_scene_aab3356a84a89d0ae8bd011e55d25a010}{Quit\+Game}} ()
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a373ea6b6ebf14d0bfa5224727cb0e95b}{Dispatch\+Popup\+Action}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context, \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}} \&Popup, \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\item 
+virtual bool \doxymbox{\hyperlink{class_i_scene_ac64e2d7a756b3b3c109c4434ba159128}{Handle\+Own\+Popup\+Action}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context, \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}} \&Popup, \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\item 
+virtual void \doxymbox{\hyperlink{class_i_scene_acfdf07ebc1e55472a32ddbd8d8959f5a}{On\+Popup\+Action\+Dispatched}} (\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\item 
+virtual void \doxymbox{\hyperlink{class_i_scene_a32707d18a7aab5e72b71c8c6cc0217cb}{Open\+Go\+To\+Title\+Popup}} ()
 \end{DoxyCompactItemize}
 
 
@@ -50,43 +56,53 @@ virtual IScene::\+\texorpdfstring{$\sim$}{\string~}\+IScene (\begin{DoxyParamCap
 \label{doc-func-members}
 \Hypertarget{class_i_scene_doc-func-members}
 \doxysubsection{Member Function Documentation}
-\Hypertarget{class_i_scene_a8e8c10be01bdfc78bb2e7501fdec3bdd}\index{IScene@{IScene}!ClearSceneChangeRequest@{ClearSceneChangeRequest}}
-\index{ClearSceneChangeRequest@{ClearSceneChangeRequest}!IScene@{IScene}}
-\doxysubsubsection{\texorpdfstring{ClearSceneChangeRequest()}{ClearSceneChangeRequest()}}
-{\footnotesize\ttfamily \label{class_i_scene_a8e8c10be01bdfc78bb2e7501fdec3bdd} 
-void IScene::\+\+Clear\+Scene\+Change\+Request (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+\Hypertarget{class_i_scene_a6e2f65a65fff325dd5ce68f8e418d17b}\index{IScene@{IScene}!ChangeScene@{ChangeScene}}
+\index{ChangeScene@{ChangeScene}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{ChangeScene()}{ChangeScene()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_i_scene_a6e2f65a65fff325dd5ce68f8e418d17b} 
+void IScene::\+\+Change\+Scene (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}}}]{Next\+Scene}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
 
-\Hypertarget{class_i_scene_ad827b093764ba24f33a6490b2ce568f4}\index{IScene@{IScene}!Enter@{Enter}}
-\index{Enter@{Enter}!IScene@{IScene}}
-\doxysubsubsection{\texorpdfstring{Enter()}{Enter()}}
-{\footnotesize\ttfamily \label{class_i_scene_ad827b093764ba24f33a6490b2ce568f4} 
-virtual void IScene::\+\+Enter (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+\Hypertarget{class_i_scene_a535b76f8dfa4a7fa4f6e9a9c6097111a}\index{IScene@{IScene}!ChangeScene@{ChangeScene}}
+\index{ChangeScene@{ChangeScene}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{ChangeScene()}{ChangeScene()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_i_scene_a535b76f8dfa4a7fa4f6e9a9c6097111a} 
+void IScene::\+\+Change\+Scene (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}}}]{Next\+Scene}{, }\item[{int}]{Next\+Stage\+Index}{, }\item[{int}]{Accumulated\+Score}{ = {\ttfamily 0}, }\item[{const std::\+string \&}]{Player\+Skin\+Key}{ = {\ttfamily "{}"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
 
+\Hypertarget{class_i_scene_a7316409ac97b08fba543cd523e555121}\index{IScene@{IScene}!ConsumeCommand@{ConsumeCommand}}
+\index{ConsumeCommand@{ConsumeCommand}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{ConsumeCommand()}{ConsumeCommand()}}
+{\footnotesize\ttfamily \label{class_i_scene_a7316409ac97b08fba543cd523e555121} 
+\doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} IScene::\+\+Consume\+Command (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_i_scene_a373ea6b6ebf14d0bfa5224727cb0e95b}\index{IScene@{IScene}!DispatchPopupAction@{DispatchPopupAction}}
+\index{DispatchPopupAction@{DispatchPopupAction}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{DispatchPopupAction()}{DispatchPopupAction()}}
+{\footnotesize\ttfamily \label{class_i_scene_a373ea6b6ebf14d0bfa5224727cb0e95b} 
+void IScene::\+\+Dispatch\+Popup\+Action (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{, }\item[{\doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}} \&}]{Popup}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}}}]{Action}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
 
-Implemented in \doxymbox{\hyperlink{class_f_play_scene_a1a0d603364bf29b307921ee74cdf716f}{FPlay\+Scene}}, and \doxymbox{\hyperlink{class_f_title_scene_ad709bfac856eadb166d7a90bb3b8e6bd}{FTitle\+Scene}}.
+\Hypertarget{class_i_scene_ac64e2d7a756b3b3c109c4434ba159128}\index{IScene@{IScene}!HandleOwnPopupAction@{HandleOwnPopupAction}}
+\index{HandleOwnPopupAction@{HandleOwnPopupAction}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{HandleOwnPopupAction()}{HandleOwnPopupAction()}}
+{\footnotesize\ttfamily \label{class_i_scene_ac64e2d7a756b3b3c109c4434ba159128} 
+bool IScene::\+\+Handle\+Own\+Popup\+Action (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{, }\item[{\doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}} \&}]{Popup}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}}}]{Action}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
 
-\Hypertarget{class_i_scene_ad91db1340cc6f0e4dbff45fe8c802d9b}\index{IScene@{IScene}!Exit@{Exit}}
-\index{Exit@{Exit}!IScene@{IScene}}
-\doxysubsubsection{\texorpdfstring{Exit()}{Exit()}}
-{\footnotesize\ttfamily \label{class_i_scene_ad91db1340cc6f0e4dbff45fe8c802d9b} 
-virtual void IScene::\+\+Exit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+\Hypertarget{class_i_scene_acfdf07ebc1e55472a32ddbd8d8959f5a}\index{IScene@{IScene}!OnPopupActionDispatched@{OnPopupActionDispatched}}
+\index{OnPopupActionDispatched@{OnPopupActionDispatched}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{OnPopupActionDispatched()}{OnPopupActionDispatched()}}
+{\footnotesize\ttfamily \label{class_i_scene_acfdf07ebc1e55472a32ddbd8d8959f5a} 
+void IScene::\+\+On\+Popup\+Action\+Dispatched (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}}}]{Action}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
 
+\Hypertarget{class_i_scene_a32707d18a7aab5e72b71c8c6cc0217cb}\index{IScene@{IScene}!OpenGoToTitlePopup@{OpenGoToTitlePopup}}
+\index{OpenGoToTitlePopup@{OpenGoToTitlePopup}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{OpenGoToTitlePopup()}{OpenGoToTitlePopup()}}
+{\footnotesize\ttfamily \label{class_i_scene_a32707d18a7aab5e72b71c8c6cc0217cb} 
+virtual void IScene::\+\+Open\+Go\+To\+Title\+Popup (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
 
-
-Implemented in \doxymbox{\hyperlink{class_f_play_scene_a14a04db3fe5db974c991bbdb29ad2a9d}{FPlay\+Scene}}, and \doxymbox{\hyperlink{class_f_title_scene_a0513c9586553f1fcc92b6bc9f19a4fcc}{FTitle\+Scene}}.
-
-\Hypertarget{class_i_scene_abbbbb84f448a83b56850ec7626b47dc8}\index{IScene@{IScene}!GetRequestedScene@{GetRequestedScene}}
-\index{GetRequestedScene@{GetRequestedScene}!IScene@{IScene}}
-\doxysubsubsection{\texorpdfstring{GetRequestedScene()}{GetRequestedScene()}}
-{\footnotesize\ttfamily \label{class_i_scene_abbbbb84f448a83b56850ec7626b47dc8} 
-\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} IScene::\+\+Get\+Requested\+Scene (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
-
-\Hypertarget{class_i_scene_a2cbbb0b3c57d330c35a937c81824614b}\index{IScene@{IScene}!HasSceneChangeRequest@{HasSceneChangeRequest}}
-\index{HasSceneChangeRequest@{HasSceneChangeRequest}!IScene@{IScene}}
-\doxysubsubsection{\texorpdfstring{HasSceneChangeRequest()}{HasSceneChangeRequest()}}
-{\footnotesize\ttfamily \label{class_i_scene_a2cbbb0b3c57d330c35a937c81824614b} 
-bool IScene::\+\+Has\+Scene\+Change\+Request (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+\Hypertarget{class_i_scene_aab3356a84a89d0ae8bd011e55d25a010}\index{IScene@{IScene}!QuitGame@{QuitGame}}
+\index{QuitGame@{QuitGame}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{QuitGame()}{QuitGame()}}
+{\footnotesize\ttfamily \label{class_i_scene_aab3356a84a89d0ae8bd011e55d25a010} 
+void IScene::\+\+Quit\+Game (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
 
 \Hypertarget{class_i_scene_ace723c09a94c7febce67b45c8aef49c1}\index{IScene@{IScene}!Render@{Render}}
 \index{Render@{Render}!IScene@{IScene}}
@@ -96,13 +112,13 @@ virtual void IScene::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyper
 
 
 
-Implemented in \doxymbox{\hyperlink{class_f_play_scene_a0c45ecd9ee46d0766898ec84f32c26a5}{FPlay\+Scene}}, and \doxymbox{\hyperlink{class_f_title_scene_ac4c53715b29293cc5f1396151eba5319}{FTitle\+Scene}}.
+Implemented in \doxymbox{\hyperlink{class_f_ending_scene_ad22499e8f561985038bae5d44a2b3c89}{FEnding\+Scene}}, \doxymbox{\hyperlink{class_f_play_scene_a0c45ecd9ee46d0766898ec84f32c26a5}{FPlay\+Scene}}, \doxymbox{\hyperlink{class_f_test_scene_a6252f166d504f9e4dd2327e6fe353fd5}{FTest\+Scene}}, and \doxymbox{\hyperlink{class_f_title_scene_ac4c53715b29293cc5f1396151eba5319}{FTitle\+Scene}}.
 
-\Hypertarget{class_i_scene_a9f77c1641bee42ccb8eeeb7a51ae71a4}\index{IScene@{IScene}!RequestSceneChange@{RequestSceneChange}}
-\index{RequestSceneChange@{RequestSceneChange}!IScene@{IScene}}
-\doxysubsubsection{\texorpdfstring{RequestSceneChange()}{RequestSceneChange()}}
-{\footnotesize\ttfamily \label{class_i_scene_a9f77c1641bee42ccb8eeeb7a51ae71a4} 
-void IScene::\+\+Request\+Scene\+Change (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_types_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}}}]{Scene\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+\Hypertarget{class_i_scene_ade55669e20b8ab34674321ee7964d9d0}\index{IScene@{IScene}!SetSceneCommand@{SetSceneCommand}}
+\index{SetSceneCommand@{SetSceneCommand}!IScene@{IScene}}
+\doxysubsubsection{\texorpdfstring{SetSceneCommand()}{SetSceneCommand()}}
+{\footnotesize\ttfamily \label{class_i_scene_ade55669e20b8ab34674321ee7964d9d0} 
+void IScene::\+\+Set\+Scene\+Command (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \&}]{Command}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
 
 \Hypertarget{class_i_scene_aaac68ad3611a9ef3cad7697b87dd92f4}\index{IScene@{IScene}!Update@{Update}}
 \index{Update@{Update}!IScene@{IScene}}
@@ -112,7 +128,7 @@ virtual void IScene::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyper
 
 
 
-Implemented in \doxymbox{\hyperlink{class_f_play_scene_afd49d1c64f2553201b96c70884366ca7}{FPlay\+Scene}}, and \doxymbox{\hyperlink{class_f_title_scene_a5d763c4ba05e3d901c3e6213d17698cd}{FTitle\+Scene}}.
+Implemented in \doxymbox{\hyperlink{class_f_ending_scene_a4488ba6462794bbfb694f242b56e2677}{FEnding\+Scene}}, \doxymbox{\hyperlink{class_f_play_scene_afd49d1c64f2553201b96c70884366ca7}{FPlay\+Scene}}, \doxymbox{\hyperlink{class_f_test_scene_a51694c009b2c0dd288051b742c7856a1}{FTest\+Scene}}, and \doxymbox{\hyperlink{class_f_title_scene_a5d763c4ba05e3d901c3e6213d17698cd}{FTitle\+Scene}}.
 
 
 

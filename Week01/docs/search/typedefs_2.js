@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['effectcollection_0',['EffectCollection',['../class_direct_x_1_1_d_x12_1_1_model.html#a10dfa21f8c0b7be31966cbd16d669ada',1,'DirectX::DX12::Model']]]
+  ['json_0',['json',['../_credit_loader_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d',1,'CreditLoader.cpp']]]
 ];

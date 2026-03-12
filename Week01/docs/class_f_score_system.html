@@ -97,12 +97,17 @@ $(function(){initNavTree('class_f_score_system.html','','class_f_score_system-me
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a79a6a0577ac1ad99f1c524f6d3b5a868" id="r_a79a6a0577ac1ad99f1c524f6d3b5a868"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a79a6a0577ac1ad99f1c524f6d3b5a868">Reset</a> ()</td></tr>
-<tr class="memitem:a38de03bc1d7077d59bb71ed4d8e930e5" id="r_a38de03bc1d7077d59bb71ed4d8e930e5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a38de03bc1d7077d59bb71ed4d8e930e5">AddMoveScore</a> ()</td></tr>
 <tr class="memitem:a2c31cf6b3af1aef26012809cb0d8b7c3" id="r_a2c31cf6b3af1aef26012809cb0d8b7c3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2c31cf6b3af1aef26012809cb0d8b7c3">AddBeatBonus</a> (<a class="el" href="_types_8h.html#a9395470b121c3a8c4ca82eb6db81f063">EBeatJudge</a> Judge)</td></tr>
 <tr class="memitem:a93854970f8c7e591ca81a11e3f1eba17" id="r_a93854970f8c7e591ca81a11e3f1eba17"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a93854970f8c7e591ca81a11e3f1eba17">AddEnemyDefeatBonus</a> ()</td></tr>
+<tr class="memitem:a119a61bf252d893737988f07c7fb4de6" id="r_a119a61bf252d893737988f07c7fb4de6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a119a61bf252d893737988f07c7fb4de6">AddTimeBonus</a> (float RemainingTime, float TimeLimit)</td></tr>
 <tr class="memitem:aaec0a22462f2ec5e34eea17f60c232c7" id="r_aaec0a22462f2ec5e34eea17f60c232c7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aaec0a22462f2ec5e34eea17f60c232c7">BreakCombo</a> ()</td></tr>
 <tr class="memitem:a6a1d6beaf3792864a8f1eb68a613f107" id="r_a6a1d6beaf3792864a8f1eb68a613f107"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a6a1d6beaf3792864a8f1eb68a613f107">GetScore</a> () const</td></tr>
+<tr class="memitem:ac2ca19e59348b568181b01648abd2874" id="r_ac2ca19e59348b568181b01648abd2874"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac2ca19e59348b568181b01648abd2874">SetScore</a> (int InScore)</td></tr>
 <tr class="memitem:a28c9d6cd1cd8aff32020edea1c82f407" id="r_a28c9d6cd1cd8aff32020edea1c82f407"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a28c9d6cd1cd8aff32020edea1c82f407">GetCombo</a> () const</td></tr>
+<tr class="memitem:a2a104981e817483bd9c8dbbee4821951" id="r_a2a104981e817483bd9c8dbbee4821951"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2a104981e817483bd9c8dbbee4821951">SetJudgeCallback</a> (std::function&lt; void(<a class="el" href="_types_8h.html#a9395470b121c3a8c4ca82eb6db81f063">EBeatJudge</a>, float, int)&gt; Callback)</td></tr>
+<tr class="memitem:a3a1256c745fdc3e00d059dbf3a3af423" id="r_a3a1256c745fdc3e00d059dbf3a3af423"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3a1256c745fdc3e00d059dbf3a3af423">SetJudgeScoreUpdateCallback</a> (std::function&lt; void(int)&gt; Callback)</td></tr>
+<tr class="memitem:ae83fe9a4e354ae71373fa792c1d5cf71" id="r_ae83fe9a4e354ae71373fa792c1d5cf71"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae83fe9a4e354ae71373fa792c1d5cf71">SetTimerBonusCallback</a> (std::function&lt; void(int)&gt; Callback)</td></tr>
+<tr class="memitem:a22c0b912979efd7bbf5c88d50f3c9a99" id="r_a22c0b912979efd7bbf5c88d50f3c9a99"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a22c0b912979efd7bbf5c88d50f3c9a99">ExecuteTimerBonusCallback</a> (int InScore)</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a2c31cf6b3af1aef26012809cb0d8b7c3" name="a2c31cf6b3af1aef26012809cb0d8b7c3"></a>
@@ -139,17 +144,21 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a38de03bc1d7077d59bb71ed4d8e930e5" name="a38de03bc1d7077d59bb71ed4d8e930e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a38de03bc1d7077d59bb71ed4d8e930e5">&#9670;&#160;</a></span>AddMoveScore()</h2>
+<a id="a119a61bf252d893737988f07c7fb4de6" name="a119a61bf252d893737988f07c7fb4de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a119a61bf252d893737988f07c7fb4de6">&#9670;&#160;</a></span>AddTimeBonus()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void FScoreSystem::AddMoveScore </td>
+          <td class="memname">void FScoreSystem::AddTimeBonus </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>RemainingTime</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>TimeLimit</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -166,6 +175,23 @@ Public Member Functions</h2></td></tr>
           <td class="memname">void FScoreSystem::BreakCombo </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a22c0b912979efd7bbf5c88d50f3c9a99" name="a22c0b912979efd7bbf5c88d50f3c9a99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22c0b912979efd7bbf5c88d50f3c9a99">&#9670;&#160;</a></span>ExecuteTimerBonusCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FScoreSystem::ExecuteTimerBonusCallback </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InScore</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -217,6 +243,74 @@ Public Member Functions</h2></td></tr>
           <td class="memname">void FScoreSystem::Reset </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a104981e817483bd9c8dbbee4821951" name="a2a104981e817483bd9c8dbbee4821951"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a104981e817483bd9c8dbbee4821951">&#9670;&#160;</a></span>SetJudgeCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FScoreSystem::SetJudgeCallback </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(<a class="el" href="_types_8h.html#a9395470b121c3a8c4ca82eb6db81f063">EBeatJudge</a>, float, int)&gt;</td>          <td class="paramname"><span class="paramname"><em>Callback</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3a1256c745fdc3e00d059dbf3a3af423" name="a3a1256c745fdc3e00d059dbf3a3af423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a1256c745fdc3e00d059dbf3a3af423">&#9670;&#160;</a></span>SetJudgeScoreUpdateCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FScoreSystem::SetJudgeScoreUpdateCallback </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(int)&gt;</td>          <td class="paramname"><span class="paramname"><em>Callback</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac2ca19e59348b568181b01648abd2874" name="ac2ca19e59348b568181b01648abd2874"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ca19e59348b568181b01648abd2874">&#9670;&#160;</a></span>SetScore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FScoreSystem::SetScore </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>InScore</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae83fe9a4e354ae71373fa792c1d5cf71" name="ae83fe9a4e354ae71373fa792c1d5cf71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae83fe9a4e354ae71373fa792c1d5cf71">&#9670;&#160;</a></span>SetTimerBonusCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FScoreSystem::SetTimerBonusCallback </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(int)&gt;</td>          <td class="paramname"><span class="paramname"><em>Callback</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

@@ -8,64 +8,82 @@
 \DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
 \DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
 \DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <memory>}}
-\DoxyCodeLine{00007\ }
-\DoxyCodeLine{00008\ \textcolor{keyword}{struct\ }IXAudio2;}
-\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }IXAudio2MasteringVoice;}
-\DoxyCodeLine{00010\ \textcolor{keyword}{struct\ }IXAudio2SourceVoice;}
-\DoxyCodeLine{00011\ }
-\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }FAudioSystem}
-\DoxyCodeLine{00013\ \{}
-\DoxyCodeLine{00014\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{static}\ FAudioSystem\ \&\doxymbox{\hyperlink{class_f_audio_system_aa0f3afaa0c3dec49dbaaf4f2e35a69c0}{Get}}();}
-\DoxyCodeLine{00016\ }
-\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_aae7f34646f38b8194b559927fdc8faa1}{Initialize}}();}
-\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a677fe730f99df5bb39b2d26a171a1b7c}{Shutdown}}();}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_singleton_8h}{Singleton.h}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }IXAudio2;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{struct\ }IXAudio2MasteringVoice;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{struct\ }IXAudio2SourceVoice;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{struct\ }IXAudio2SubmixVoice;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5a7cabb490f03302bbd6f4055c16c80f13}{BGM}},}
+\DoxyCodeLine{00017\ \ \ \ \ \doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5ada101052f6ba998ab41d571a6fff1708}{SFX}}}
+\DoxyCodeLine{00018\ \};}
 \DoxyCodeLine{00019\ }
-\DoxyCodeLine{00020\ \ \ \ \ \textcolor{comment}{//\ WAV\ 파일\ 로드\ (키로\ 관리)}}
-\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_a707ad416f8a553dae2dbaccba0ee086e}{LoadWav}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keyword}{const}\ std::string\ \&FilePath);}
-\DoxyCodeLine{00022\ }
-\DoxyCodeLine{00023\ \ \ \ \ \textcolor{comment}{//\ 재생\ (bLoop\ =\ true\ 이면\ 반복\ 재생)}}
-\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_accc0c9ca589632744435814921274f82}{Play}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{bool}\ bLoop\ =\ \textcolor{keyword}{false});}
-\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_aa8455741ff5bc8cf75db7ad0f05fccd6}{Stop}}(\textcolor{keyword}{const}\ std::string\ \&Key);}
-\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a65252f4342bea1ca01111ae98660cd47}{StopAll}}();}
-\DoxyCodeLine{00027\ }
-\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//\ 볼륨\ 조절\ (0.0\ \string~\ 1.0)}}
-\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a4c1767d3b5fdf261b8eccdf464e39808}{SetVolume}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{float}\ Volume);}
-\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_aeea6a5dc32d0974c0d8d4e1a86e56460}{SetMasterVolume}}(\textcolor{keywordtype}{float}\ Volume);}
-\DoxyCodeLine{00031\ }
-\DoxyCodeLine{00032\ \ \ \ \ \textcolor{comment}{//\ 재생\ 속도\ 조절\ (1.0\ =\ 원래\ 속도)}}
-\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a10ea8a91ff45b871f8d6801dc4b6ff91}{SetPlaybackRate}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{float}\ Rate);}
-\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_af070c31db19634576488bba16f76783f}{SetAllPlaybackRate}}(\textcolor{keywordtype}{float}\ Rate);}
-\DoxyCodeLine{00035\ }
-\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_aced10bd6c9b27cc1eaa0878e95ec3a34}{IsPlaying}}(\textcolor{keyword}{const}\ std::string\ \&Key)\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00037\ }
-\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00039\ \ \ \ \ FAudioSystem()\ =\ \textcolor{keywordflow}{default};}
-\DoxyCodeLine{00040\ \ \ \ \ \string~FAudioSystem();}
-\DoxyCodeLine{00041\ }
-\DoxyCodeLine{00042\ \ \ \ \ FAudioSystem(\textcolor{keyword}{const}\ FAudioSystem\ \&)\ =\ \textcolor{keyword}{delete};}
-\DoxyCodeLine{00043\ \ \ \ \ FAudioSystem\ \&operator=(\textcolor{keyword}{const}\ FAudioSystem\ \&)\ =\ \textcolor{keyword}{delete};}
-\DoxyCodeLine{00044\ }
-\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{struct\ }FWavData}
-\DoxyCodeLine{00046\ \ \ \ \ \{}
-\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ std::vector<uint8\_t>\ \ AudioData;}
-\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ std::vector<uint8\_t>\ \ FormatData;\ \textcolor{comment}{//\ WAVEFORMATEX\ or\ WAVEFORMATEXTENSIBLE}}
-\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ WAVEFORMATEX\ \ \ *GetFormat()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }WAVEFORMATEX\ *\textcolor{keyword}{>}(FormatData.data());\ \}}
-\DoxyCodeLine{00050\ \ \ \ \ \};}
+\DoxyCodeLine{00020\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_audio_system}{FAudioSystem}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_t_singleton_a3329d545584f47f675a5a46396392a58}{TSingleton}}<FAudioSystem>}
+\DoxyCodeLine{00021\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_t_singleton_a3329d545584f47f675a5a46396392a58}{TSingleton}}<\doxymbox{\hyperlink{class_f_audio_system}{FAudioSystem}}>;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{class_f_audio_system_a31cb48c28eb7307e7ac40c6b005cda43}{\string~FAudioSystem}}();}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_aae7f34646f38b8194b559927fdc8faa1}{Initialize}}();}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a677fe730f99df5bb39b2d26a171a1b7c}{Shutdown}}();}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{comment}{//\ WAV\ 파일\ 로드\ (키로\ 관리)}}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_a707ad416f8a553dae2dbaccba0ee086e}{LoadWav}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keyword}{const}\ std::string\ \&FilePath);}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{comment}{//\ 재생\ (Channel로\ BGM/SFX\ 구분)}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_a5a441d3f85eaafeb2e011b9e0b508947}{Play}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{bool}\ bLoop\ =\ \textcolor{keyword}{false},}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}\ Channel\ =\ \doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5ada101052f6ba998ab41d571a6fff1708}{EAudioChannel::SFX}});}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_aa8455741ff5bc8cf75db7ad0f05fccd6}{Stop}}(\textcolor{keyword}{const}\ std::string\ \&Key);}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a65252f4342bea1ca01111ae98660cd47}{StopAll}}();}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a10b0137b6250fba92fee61ae7d3ed0b7}{StopChannel}}(\doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}\ Channel);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ 볼륨\ 조절\ (0.0\ \string~\ 1.0)}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \doxymbox{\hyperlink{class_f_audio_system_a4c1767d3b5fdf261b8eccdf464e39808}{SetVolume}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{float}\ Volume);}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \doxymbox{\hyperlink{class_f_audio_system_aeea6a5dc32d0974c0d8d4e1a86e56460}{SetMasterVolume}}(\textcolor{keywordtype}{float}\ Volume);}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_audio_system_a44003858c1c1e59fb73a41986d69e4c4}{GetMasterVolume}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \doxymbox{\hyperlink{class_f_audio_system_a9dd7c98c5e7f51a5589d009636a1a331}{SetChannelVolume}}(\doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}\ Channel,\ \textcolor{keywordtype}{float}\ Volume);}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_audio_system_a49f5f1f6ebd7e3324059a99e37cb6498}{GetChannelVolume}}(\doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}\ Channel)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ 재생\ 속도\ 조절\ (1.0\ =\ 원래\ 속도)}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a10ea8a91ff45b871f8d6801dc4b6ff91}{SetPlaybackRate}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ \textcolor{keywordtype}{float}\ Rate);}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_af070c31db19634576488bba16f76783f}{SetAllPlaybackRate}}(\textcolor{keywordtype}{float}\ Rate);}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_audio_system_a59387d3b0640f46bf7cd202b6a0d999f}{SetChannelPlaybackRate}}(\doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}\ Channel,\ \textcolor{keywordtype}{float}\ Rate);}
 \DoxyCodeLine{00051\ }
-\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{struct\ }FPlayingVoice}
-\DoxyCodeLine{00053\ \ \ \ \ \{}
-\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ IXAudio2SourceVoice\ *Voice\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bIsPlaying\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{00056\ \ \ \ \ \};}
-\DoxyCodeLine{00057\ }
-\DoxyCodeLine{00058\ \ \ \ \ IXAudio2\ \ \ \ \ \ \ \ \ \ \ \ \ \ *XAudio2\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{00059\ \ \ \ \ IXAudio2MasteringVoice\ *MasterVoice\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{00060\ }
-\DoxyCodeLine{00061\ \ \ \ \ std::unordered\_map<std::string,\ FWavData>\ \ \ \ \ \ LoadedSounds;}
-\DoxyCodeLine{00062\ \ \ \ \ std::unordered\_map<std::string,\ FPlayingVoice>\ PlayingVoices;}
-\DoxyCodeLine{00063\ }
-\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{bool}\ bInitialized\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{00065\ \};}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_audio_system_aced10bd6c9b27cc1eaa0878e95ec3a34}{IsPlaying}}(\textcolor{keyword}{const}\ std::string\ \&Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{struct\ }FWavData}
+\DoxyCodeLine{00056\ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ std::vector<uint8\_t>\ AudioData;}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ std::vector<uint8\_t>\ FormatData;\ \textcolor{comment}{//\ WAVEFORMATEX\ or\ WAVEFORMATEXTENSIBLE}}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ WAVEFORMATEX\ \ *GetFormat()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00060\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }WAVEFORMATEX\ *\textcolor{keyword}{>}(FormatData.data());}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \ \ \};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{struct\ }FPlayingVoice}
+\DoxyCodeLine{00066\ \ \ \ \ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ IXAudio2SourceVoice\ *Voice\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}\ \ \ \ \ \ \ \ Channel\ =\ \doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5ada101052f6ba998ab41d571a6fff1708}{EAudioChannel::SFX}};}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bIsPlaying\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00070\ \ \ \ \ \};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ IXAudio2SubmixVoice\ *GetSubmixVoice(\doxymbox{\hyperlink{_audio_system_8h_a19d37fab37f64ab3d44b420782fe2cd5}{EAudioChannel}}\ Channel);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ IXAudio2\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *XAudio2\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00075\ \ \ \ \ IXAudio2MasteringVoice\ *MasterVoice\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00076\ \ \ \ \ IXAudio2SubmixVoice\ \ \ \ *BgmSubmix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00077\ \ \ \ \ IXAudio2SubmixVoice\ \ \ \ *SfxSubmix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ std::unordered\_map<std::string,\ FWavData>\ \ \ \ \ \ LoadedSounds;}
+\DoxyCodeLine{00080\ \ \ \ \ std::unordered\_map<std::string,\ FPlayingVoice>\ PlayingVoices;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{bool}\ bInitialized\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00083\ \};}
 
 \end{DoxyCode}

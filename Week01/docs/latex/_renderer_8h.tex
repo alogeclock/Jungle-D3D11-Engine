@@ -7,11 +7,86 @@
 {\ttfamily \+\#include $<$vector$>$}\newline
 {\ttfamily \+\#include "{}Gameplay/\+\+Camera2\+D.\+h"{}}\newline
 {\ttfamily \+\#include "{}Render\+Object.\+h"{}}\newline
+{\ttfamily \+\#include "{}Font\+Render\+Object.\+h"{}}\newline
 {\ttfamily \+\#include "{}Core/\+\+Types.\+h"{}}\newline
+{\ttfamily \+\#include "{}Render/\+\+Bitmap\+Font.\+h"{}}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_f_static_batch}{FStatic\+Batch}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_batch_render_cmd}{FBatch\+Render\+Cmd}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_darkness_render_cmd}{FDarkness\+Render\+Cmd}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_render_command}{FRender\+Command}}
 \item 
 struct \doxymbox{\hyperlink{struct_f_sprite_constants}{FSprite\+Constants}}
 \item 
 class \doxymbox{\hyperlink{class_f_renderer}{FRenderer}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_renderer_1_1_f_constants}{FRenderer::\+\+FConstants}}
 \end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \doxymbox{\hyperlink{_renderer_8h_a73311d3c753c341dc5d32561a39659a0}{EShader\+Type}} \{ \doxymbox{\hyperlink{_renderer_8h_a73311d3c753c341dc5d32561a39659a0a7a1920d61156abc05a60135aefe8bc67}{Default}}
+, \doxymbox{\hyperlink{_renderer_8h_a73311d3c753c341dc5d32561a39659a0a71ff71526d15db86eb50fcac245d183b}{UI}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_renderer_8h_ad262d476a9454d000780252a7482aff0}{ERender\+Cmd\+Type}} \{ \doxymbox{\hyperlink{_renderer_8h_ad262d476a9454d000780252a7482aff0a51ffe9dd1b1e143c1b9f1144d040e454}{Batch}}
+, \doxymbox{\hyperlink{_renderer_8h_ad262d476a9454d000780252a7482aff0a51f2b7b14433aa22c67d1f4fc18943cd}{Sprite}}
+, \doxymbox{\hyperlink{_renderer_8h_ad262d476a9454d000780252a7482aff0a0473d32f41674469d62f18354e57ad97}{Darkness\+Overlay}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{_renderer_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_renderer_8h_ad262d476a9454d000780252a7482aff0}\index{Renderer.h@{Renderer.h}!ERenderCmdType@{ERenderCmdType}}
+\index{ERenderCmdType@{ERenderCmdType}!Renderer.h@{Renderer.h}}
+\doxysubsubsection{\texorpdfstring{ERenderCmdType}{ERenderCmdType}}
+{\footnotesize\ttfamily \label{_renderer_8h_ad262d476a9454d000780252a7482aff0} 
+enum class \doxymbox{\hyperlink{_renderer_8h_ad262d476a9454d000780252a7482aff0}{ERender\+Cmd\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Batch@{Batch}!Renderer.h@{Renderer.h}}
+\index{Renderer.h@{Renderer.h}!Batch@{Batch}}
+}\Hypertarget{_renderer_8h_ad262d476a9454d000780252a7482aff0a51ffe9dd1b1e143c1b9f1144d040e454}\label{_renderer_8h_ad262d476a9454d000780252a7482aff0a51ffe9dd1b1e143c1b9f1144d040e454} 
+Batch&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Sprite@{Sprite}!Renderer.h@{Renderer.h}}
+\index{Renderer.h@{Renderer.h}!Sprite@{Sprite}}
+}\Hypertarget{_renderer_8h_ad262d476a9454d000780252a7482aff0a51f2b7b14433aa22c67d1f4fc18943cd}\label{_renderer_8h_ad262d476a9454d000780252a7482aff0a51f2b7b14433aa22c67d1f4fc18943cd} 
+Sprite&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DarknessOverlay@{DarknessOverlay}!Renderer.h@{Renderer.h}}
+\index{Renderer.h@{Renderer.h}!DarknessOverlay@{DarknessOverlay}}
+}\Hypertarget{_renderer_8h_ad262d476a9454d000780252a7482aff0a0473d32f41674469d62f18354e57ad97}\label{_renderer_8h_ad262d476a9454d000780252a7482aff0a0473d32f41674469d62f18354e57ad97} 
+Darkness\+Overlay&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_renderer_8h_a73311d3c753c341dc5d32561a39659a0}\index{Renderer.h@{Renderer.h}!EShaderType@{EShaderType}}
+\index{EShaderType@{EShaderType}!Renderer.h@{Renderer.h}}
+\doxysubsubsection{\texorpdfstring{EShaderType}{EShaderType}}
+{\footnotesize\ttfamily \label{_renderer_8h_a73311d3c753c341dc5d32561a39659a0} 
+enum class \doxymbox{\hyperlink{_renderer_8h_a73311d3c753c341dc5d32561a39659a0}{EShader\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Default@{Default}!Renderer.h@{Renderer.h}}
+\index{Renderer.h@{Renderer.h}!Default@{Default}}
+}\Hypertarget{_renderer_8h_a73311d3c753c341dc5d32561a39659a0a7a1920d61156abc05a60135aefe8bc67}\label{_renderer_8h_a73311d3c753c341dc5d32561a39659a0a7a1920d61156abc05a60135aefe8bc67} 
+Default&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{UI@{UI}!Renderer.h@{Renderer.h}}
+\index{Renderer.h@{Renderer.h}!UI@{UI}}
+}\Hypertarget{_renderer_8h_a73311d3c753c341dc5d32561a39659a0a71ff71526d15db86eb50fcac245d183b}\label{_renderer_8h_a73311d3c753c341dc5d32561a39659a0a71ff71526d15db86eb50fcac245d183b} 
+UI&\\
+\hline
+
+\end{DoxyEnumFields}

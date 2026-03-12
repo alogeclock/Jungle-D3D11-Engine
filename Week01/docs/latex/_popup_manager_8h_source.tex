@@ -1,36 +1,35 @@
 \doxysection{Popup\+Manager.\+h}
-\hypertarget{_popup_manager_8h_source}{}\label{_popup_manager_8h_source}\index{UI/PopupManager.h@{UI/PopupManager.h}}
+\hypertarget{_popup_manager_8h_source}{}\label{_popup_manager_8h_source}\index{UI/popup/PopupManager.h@{UI/popup/PopupManager.h}}
 \doxymbox{\hyperlink{_popup_manager_8h}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{00002\ }
 \DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
-\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
-\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
-\DoxyCodeLine{00006\ }
-\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_popup_8h}{Popup.h}}"{}}}
-\DoxyCodeLine{00008\ }
-\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
-\DoxyCodeLine{00010\ }
-\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_popup_manager}{FPopupManager}}}
-\DoxyCodeLine{00012\ \{}
-\DoxyCodeLine{00013\ \ \ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a9620cc6c72dbacd7d93e1fdc0ff8e62e}{AddPopup}}(\textcolor{keyword}{const}\ std::string\ \&Id,\ std::unique\_ptr<IPopup>\ Popup);}
-\DoxyCodeLine{00015\ }
-\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a86f8a717d3fa5e957384397fde8c6ae6}{Open}}(\textcolor{keyword}{const}\ std::string\ \&Id);}
-\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_acb3bef14bb2ae5b7e45fe2b9a6ba7331}{Close}}(\textcolor{keyword}{const}\ std::string\ \&Id);}
-\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a53606808db1ea22aad310472481eb293}{CloseAll}}();}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_game_context_8h}{Core/GameContext.h}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_base_8h}{UIPopupBase.h}}"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_popup_manager}{FPopupManager}}}
+\DoxyCodeLine{00009\ \{}
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a73b864e3da351a743641514c1fa770a3}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a8705329f2cd1fceacc3d1659d411f35d}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_popup_manager_ad5cd71f098fc9e06518e9ad61aad3ea1}{HasOpenPopup}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_popup_manager_aa42df2290501dbb2fa794c7fc8c5415f}{IsPopupClosed}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a3585433c009bbfa6a2baf548af0d36bf}{Open}}(std::unique\_ptr<FUIPopupBase>\ InPopup);}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a595ae00e1f718993bc61de572fae3be4}{RemoveClosedPopup}}();}
 \DoxyCodeLine{00019\ }
-\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_popup_manager_af6a0b4a6855eb29abf6aaca1a34f2461}{IsOpen}}(\textcolor{keyword}{const}\ std::string\ \&Id)\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00021\ }
-\DoxyCodeLine{00022\ \ \ \ \ \doxymbox{\hyperlink{class_i_popup}{IPopup}}\ \ \ \ \ \ \ *\doxymbox{\hyperlink{class_f_popup_manager_a77353bb347db15310af55337077d4d75}{GetPopup}}(\textcolor{keyword}{const}\ std::string\ \&Id);}
-\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_i_popup}{IPopup}}\ *\doxymbox{\hyperlink{class_f_popup_manager_a77353bb347db15310af55337077d4d75}{GetPopup}}(\textcolor{keyword}{const}\ std::string\ \&Id)\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00024\ }
-\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a73b864e3da351a743641514c1fa770a3}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
-\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_popup_manager_a8705329f2cd1fceacc3d1659d411f35d}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
-\DoxyCodeLine{00027\ }
-\DoxyCodeLine{00028\ \ \ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00029\ \ \ \ \ std::unordered\_map<std::string,\ std::unique\_ptr<IPopup>>\ PopupMap;}
-\DoxyCodeLine{00030\ \};}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00021\ \ \ \ \ T\ *\doxymbox{\hyperlink{class_f_popup_manager_a322d690aa166385a4b760d277132c662}{GetPopup}}()}
+\DoxyCodeLine{00022\ \ \ \ \ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_base\_of\_v<FUIPopupBase,\ T>,\ \textcolor{stringliteral}{"{}T\ must\ derive\ from\ FUIPopupBase"{}});}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{dynamic\_cast<}T\ *\textcolor{keyword}{>}(CurrentPopup.get());}
+\DoxyCodeLine{00025\ \ \ \ \ \}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00028\ \ \ \ \ std::unique\_ptr<FUIPopupBase>\ CurrentPopup;}
+\DoxyCodeLine{00029\ \};}
 
 \end{DoxyCode}

@@ -1,23 +1,41 @@
 \doxysection{Credit\+Popup.\+h}
-\hypertarget{_credit_popup_8h_source}{}\label{_credit_popup_8h_source}\index{Gameplay/CreditPopup.h@{Gameplay/CreditPopup.h}}
+\hypertarget{_credit_popup_8h_source}{}\label{_credit_popup_8h_source}\index{UI/popup/CreditPopup.h@{UI/popup/CreditPopup.h}}
 \doxymbox{\hyperlink{_credit_popup_8h}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{00002\ }
-\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_popup_8h}{UI/Popup.h}}"{}}}
-\DoxyCodeLine{00004\ }
-\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_credit_popup}{FCreditPopup}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_i_popup}{IPopup}}}
-\DoxyCodeLine{00006\ \{}
-\DoxyCodeLine{00007\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_credit_popup_ab18ccc2b84070ec7d2eadb4f0b351ab6}{Open}}()\ \textcolor{keyword}{override};}
-\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_credit_popup_a2e0485cd8fb7677f526e7ad8e7b93a51}{Close}}()\ \textcolor{keyword}{override};}
-\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_credit_popup_add2878c4991fb8acc9ad1aad7c07d9af}{IsOpen}}()\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{00011\ }
-\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_credit_popup_a0f9e151f259c6432319ac91ebd571621}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\&\ Context)\ \textcolor{keyword}{override};}
-\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_credit_popup_a32b2c3ed3fdf556852601b311cbe54bf}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\&\ Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_credit_loader_8h}{Data/CreditLoader.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_action_8h}{UIPopupAction.h}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_base_8h}{UIPopupBase.h}}"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_credit_popup}{FCreditPopup}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopupBase}}}
+\DoxyCodeLine{00011\ \{}
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_credit_popup_a462ed10fc21e939d9c9f7980358da309}{SetCredits}}(\textcolor{keyword}{const}\ std::vector<FCreditEntry>\ \&InCredits)\ \{\ Credits\ =\ InCredits;\ \}}
 \DoxyCodeLine{00014\ }
-\DoxyCodeLine{00015\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{bool}\ bIsOpen\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{00017\ \};}
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ \doxymbox{\hyperlink{class_f_credit_popup_a47edca2d120d5152d271fff96003e2c0}{ConsumeAction}}();}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_credit_popup_a32b2c3ed3fdf556852601b311cbe54bf}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_credit_popup_a0f9e151f259c6432319ac91ebd571621}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopupContentAlign}}\ \ \ \ ContentAlign\ =\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopupContentAlign::Center}};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopupContentTextSize}}\ ContentTextSize\ =\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3}{EUIPopupContentTextSize::Big}};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ NameColumnMinWidth\ =\ 220.0f;}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ PipeGap\ =\ 18.0f;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ LineGap\ =\ 14.0f;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ BlockOffsetX\ =\ -\/10.0f;}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ TopPadding\ =\ 6.0f;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawCredits(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopupFrameLayout}}\ \&Layout);}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00033\ \ \ \ \ std::vector<FCreditEntry>\ Credits;}
+\DoxyCodeLine{00034\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ \ \ \ \ \ \ \ \ \ \ \ PendingAction\ =\ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1aa6adf97f83acf6453d4a6a4b1070f3754}{EUIPopupAction::None}};}
+\DoxyCodeLine{00035\ \};}
 
 \end{DoxyCode}

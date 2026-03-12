@@ -5,27 +5,40 @@
 \DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{00002\ }
 \DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_actor_8h}{Actor.h}}"{}}}
-\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <optional>}}
-\DoxyCodeLine{00005\ }
-\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_player}{FPlayer}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_actor}{FActor}}}
-\DoxyCodeLine{00007\ \{}
-\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{public}:}
-\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActorType}}\ \doxymbox{\hyperlink{class_f_player_adbfdd6076c0f584103d116fb1ce220cd}{GetActorType}}()\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{00010\ }
-\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_a3f3db60ee81f30e06add71f232c83b3f}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime,\ \doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
-\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_adcd7cdbac7af1cc688a9b3ec8fb6bcfb}{OnBeat}}(\doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{override};}
-\DoxyCodeLine{00013\ }
-\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \doxymbox{\hyperlink{class_f_player_a3649d20bece099bc7fe6f0f27b5542a7}{GetLastMovedBeatIndex}}();}
-\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_a6a54cd93e415ad94c38f4c707107aa1f}{SetLastMovedBeatIndex}}(\textcolor{keywordtype}{int}\ CurrentBeatIndex);}
-\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_ab9f4bfa7a1243647860cfecc4a495fd7}{QueueInput}}(\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}\ InDirection);}
-\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_a3528b42ea1689a613a07c6ce17ab6fd5}{ClearQueuedInput}}();}
-\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_player_a02082b2237ddccc54df3f77ca1333077}{HasQueuedInput}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{00019\ }
-\DoxyCodeLine{00020\ \ \ \textcolor{keyword}{private}:}
-\DoxyCodeLine{00021\ \ \ \ \ std::optional<EDirection>\ QueuedInput;}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_item_8h}{Item.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_player}{FPlayer}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_actor}{FActor}}}
+\DoxyCodeLine{00009\ \{}
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00011\ \ \ \ \ \doxymbox{\hyperlink{_types_8h_ad914e65c956dae027f9a1765ac337c68}{EActorType}}\ \doxymbox{\hyperlink{class_f_player_adbfdd6076c0f584103d116fb1ce220cd}{GetActorType}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_a3f3db60ee81f30e06add71f232c83b3f}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime,\ \doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_adcd7cdbac7af1cc688a9b3ec8fb6bcfb}{OnBeat}}(\doxymbox{\hyperlink{class_f_stage}{FStage}}\ \&Stage)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_ab94f5314af8e42e8d8b378cd246db67b}{Damage}}(\textcolor{keywordtype}{int}\ Amount)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \doxymbox{\hyperlink{class_f_player_a3649d20bece099bc7fe6f0f27b5542a7}{GetLastMovedBeatIndex}}();}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_a6a54cd93e415ad94c38f4c707107aa1f}{SetLastMovedBeatIndex}}(\textcolor{keywordtype}{int}\ CurrentBeatIndex);}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_ab9f4bfa7a1243647860cfecc4a495fd7}{QueueInput}}(\doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}}\ InDirection);}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_player_a3528b42ea1689a613a07c6ce17ab6fd5}{ClearQueuedInput}}();}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_player_a02082b2237ddccc54df3f77ca1333077}{HasQueuedInput}}()\ \textcolor{keyword}{const};}
 \DoxyCodeLine{00022\ }
-\DoxyCodeLine{00023\ \ \ \ \ \textcolor{comment}{//\ 한\ 비트\ 내\ 중복\ 이동\ 방지용}}
-\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{int}\ LastMovedBeatIndex\ =\ -\/1;}
-\DoxyCodeLine{00025\ \};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{comment}{//\ 플레이어\ 전용\ 아이템\ 효과\ (Invincibility,\ TimeScaleDown)}}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_player_aba5ff5454b8fe997b3f15ab35e93ccd0}{AddEffect}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_active_effect}{FActiveEffect}}\ \&Effect);}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_player_a77d80262d2abe9b67b54024bb71c1e1a}{UpdateActiveEffects}}(\textcolor{keywordtype}{float}\ DeltaTime);}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<FActiveEffect>\ \&\doxymbox{\hyperlink{class_f_player_a4bde98ab2c81981f07594979ab56fc5e}{GetActiveEffects}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_player_a9c31b78c440ba9c416744141d045414e}{HasActiveEffect}}(\doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItemType}}\ Type)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_player_ab1d5ad1deb5ecea85f7bbb2fcedb5ec5}{ConsumeInvincibility}}();}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00031\ \ \ \ \ std::optional<EDirection>\ QueuedInput;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{comment}{//\ 한\ 비트\ 내\ 중복\ 이동\ 방지용}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ LastMovedBeatIndex\ =\ -\/1;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{float}\ HitInvincibilityTimer\ =\ 0.0f;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ std::vector<FActiveEffect>\ ActiveEffects;}
+\DoxyCodeLine{00038\ \};}
 
 \end{DoxyCode}

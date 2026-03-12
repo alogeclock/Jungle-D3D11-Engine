@@ -1,5 +1,6 @@
 var struct_f_sprite_constants =
 [
+    [ "ColorTint", "struct_f_sprite_constants.html#af13dc0823b80b6f6c25ea0eb32ada915", null ],
     [ "IsMirrored", "struct_f_sprite_constants.html#ad55345c2d8c80ad77ba85a15f9ef4215", null ],
     [ "Pad", "struct_f_sprite_constants.html#a73580328d04f791fa5ea42670d96fd83", null ],
     [ "Projection", "struct_f_sprite_constants.html#a51987a3911e0c6547fce8f54f6a968a9", null ],

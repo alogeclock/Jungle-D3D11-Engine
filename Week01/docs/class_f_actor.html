@@ -121,7 +121,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abf82029b6feefe52d27c4597ab8bba6c" id="r_abf82029b6feefe52d27c4597ab8bba6c"><td class="memItemLeft"><a class="el" href="_types_8h.html#acb2b033915f6659a71a38b5aa6e4eb42">EDirection</a>&#160;</td><td class="memItemRight"><a class="el" href="#abf82029b6feefe52d27c4597ab8bba6c">GetDirection</a> () const</td></tr>
 <tr class="memitem:a68595bdd34cbe511ae5a21193037da90" id="r_a68595bdd34cbe511ae5a21193037da90"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a68595bdd34cbe511ae5a21193037da90">SetHp</a> (int InHp)</td></tr>
 <tr class="memitem:a43b436e481db08d4675554ec09fa8287" id="r_a43b436e481db08d4675554ec09fa8287"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a43b436e481db08d4675554ec09fa8287">GetHp</a> () const</td></tr>
-<tr class="memitem:a152a420fa7ab37e9ed626c91a33b185b" id="r_a152a420fa7ab37e9ed626c91a33b185b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a152a420fa7ab37e9ed626c91a33b185b">Damage</a> (int Amount)</td></tr>
+<tr class="memitem:a152a420fa7ab37e9ed626c91a33b185b" id="r_a152a420fa7ab37e9ed626c91a33b185b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a152a420fa7ab37e9ed626c91a33b185b">Damage</a> (int Amount)</td></tr>
 <tr class="memitem:a279cf6d77a0343648e2dece3f1eb1801" id="r_a279cf6d77a0343648e2dece3f1eb1801"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a279cf6d77a0343648e2dece3f1eb1801">Heal</a> (int Amount)</td></tr>
 <tr class="memitem:a4e8f828e5728dc61a99878afcd02fe4d" id="r_a4e8f828e5728dc61a99878afcd02fe4d"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a4e8f828e5728dc61a99878afcd02fe4d">IsDead</a> () const</td></tr>
 <tr class="memitem:ae30eefecc73f1ae6a57d9a146db2de43" id="r_ae30eefecc73f1ae6a57d9a146db2de43"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae30eefecc73f1ae6a57d9a146db2de43">SetInvincible</a> (bool bEnable)</td></tr>
@@ -129,6 +129,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adc0348f0969c577bd049e44dcec1e840" id="r_adc0348f0969c577bd049e44dcec1e840"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#adc0348f0969c577bd049e44dcec1e840">IsMoving</a> () const</td></tr>
 <tr class="memitem:a0382ed1b6c73a2a6d5649440dd992e7f" id="r_a0382ed1b6c73a2a6d5649440dd992e7f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0382ed1b6c73a2a6d5649440dd992e7f">SetSprite</a> (const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;InSprite)</td></tr>
 <tr class="memitem:abf4308febfabb82b0dc4a3bf349f1ddc" id="r_abf4308febfabb82b0dc4a3bf349f1ddc"><td class="memItemLeft">const <a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#abf4308febfabb82b0dc4a3bf349f1ddc">GetSprite</a> () const</td></tr>
+<tr class="memitem:a1141daa9f2f604282274fdfc21700fc7" id="r_a1141daa9f2f604282274fdfc21700fc7"><td class="memItemLeft"><a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a1141daa9f2f604282274fdfc21700fc7">GetAnimator</a> ()</td></tr>
+<tr class="memitem:a74765cd157241180001c3e43d7dde2b3" id="r_a74765cd157241180001c3e43d7dde2b3"><td class="memItemLeft">const <a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a74765cd157241180001c3e43d7dde2b3">GetAnimator</a> () const</td></tr>
+<tr class="memitem:a9c81f5b8c75ed26676ee2be9278394fc" id="r_a9c81f5b8c75ed26676ee2be9278394fc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9c81f5b8c75ed26676ee2be9278394fc">SetDefaultMirrored</a> (bool bMirrored)</td></tr>
+<tr class="memitem:aea22b6ce1c5342bfe614bff73b7099cf" id="r_aea22b6ce1c5342bfe614bff73b7099cf"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aea22b6ce1c5342bfe614bff73b7099cf">GetDefaultMirrored</a> () const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -147,6 +151,8 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:aee38cb6ce1961fafc673aea488d97663" id="r_aee38cb6ce1961fafc673aea488d97663"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#aee38cb6ce1961fafc673aea488d97663">MoveTargetX</a> = 0.0f</td></tr>
 <tr class="memitem:a24b13b3de3279f0f13b67fa7ea38b24e" id="r_a24b13b3de3279f0f13b67fa7ea38b24e"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a24b13b3de3279f0f13b67fa7ea38b24e">MoveTargetY</a> = 0.0f</td></tr>
 <tr class="memitem:a43a92b36260e21ac6f3123d3d31c369f" id="r_a43a92b36260e21ac6f3123d3d31c369f"><td class="memItemLeft"><a class="el" href="struct_f_sprite_info.html">FSpriteInfo</a>&#160;</td><td class="memItemRight"><a class="el" href="#a43a92b36260e21ac6f3123d3d31c369f">Sprite</a></td></tr>
+<tr class="memitem:ae838b8d9bb305983b93d02e829d3a507" id="r_ae838b8d9bb305983b93d02e829d3a507"><td class="memItemLeft"><a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae838b8d9bb305983b93d02e829d3a507">Animator</a></td></tr>
+<tr class="memitem:a8f8eaf81fa1f15bece45c1864b66e068" id="r_a8f8eaf81fa1f15bece45c1864b66e068"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a8f8eaf81fa1f15bece45c1864b66e068">bDefaultMirrored</a> = false</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aad1e02b0db6bcdd5d3c6a0430050c848" name="aad1e02b0db6bcdd5d3c6a0430050c848"></a>
@@ -180,6 +186,9 @@ Protected Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void FActor::Damage </td>
@@ -188,7 +197,14 @@ Protected Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="class_f_player.html#ab94f5314af8e42e8d8b378cd246db67b">FPlayer</a>.</p>
 
 </div>
 </div>
@@ -216,6 +232,57 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="class_f_monster.html#a8d9e57fc0fbce15a135045329bb042be">FMonster</a>, and <a class="el" href="class_f_player.html#adbfdd6076c0f584103d116fb1ce220cd">FPlayer</a>.</p>
+
+</div>
+</div>
+<a id="a1141daa9f2f604282274fdfc21700fc7" name="a1141daa9f2f604282274fdfc21700fc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1141daa9f2f604282274fdfc21700fc7">&#9670;&#160;</a></span>GetAnimator() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a> &amp; FActor::GetAnimator </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a74765cd157241180001c3e43d7dde2b3" name="a74765cd157241180001c3e43d7dde2b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74765cd157241180001c3e43d7dde2b3">&#9670;&#160;</a></span>GetAnimator() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a> &amp; FActor::GetAnimator </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aea22b6ce1c5342bfe614bff73b7099cf" name="aea22b6ce1c5342bfe614bff73b7099cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea22b6ce1c5342bfe614bff73b7099cf">&#9670;&#160;</a></span>GetDefaultMirrored()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FActor::GetDefaultMirrored </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -433,6 +500,23 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a9c81f5b8c75ed26676ee2be9278394fc" name="a9c81f5b8c75ed26676ee2be9278394fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c81f5b8c75ed26676ee2be9278394fc">&#9670;&#160;</a></span>SetDefaultMirrored()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FActor::SetDefaultMirrored </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bMirrored</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a051ff2e846b7c7df29237969a64098b7" name="a051ff2e846b7c7df29237969a64098b7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a051ff2e846b7c7df29237969a64098b7">&#9670;&#160;</a></span>SetDirection()</h2>
 
@@ -606,6 +690,50 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ae838b8d9bb305983b93d02e829d3a507" name="ae838b8d9bb305983b93d02e829d3a507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae838b8d9bb305983b93d02e829d3a507">&#9670;&#160;</a></span>Animator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_f_sprite_animator.html">FSpriteAnimator</a> FActor::Animator</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8f8eaf81fa1f15bece45c1864b66e068" name="a8f8eaf81fa1f15bece45c1864b66e068"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f8eaf81fa1f15bece45c1864b66e068">&#9670;&#160;</a></span>bDefaultMirrored</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FActor::bDefaultMirrored = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a78d706532c3fa04982ca6722ea22309f" name="a78d706532c3fa04982ca6722ea22309f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a78d706532c3fa04982ca6722ea22309f">&#9670;&#160;</a></span>bIsInvincible</h2>
 

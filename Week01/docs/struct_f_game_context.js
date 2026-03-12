@@ -1,5 +1,6 @@
 var struct_f_game_context =
 [
+    [ "FontManager", "struct_f_game_context.html#a3030a8db12265f86e7e1a20c3c8da612", null ],
     [ "Input", "struct_f_game_context.html#a9e04dcf3284b5c71a52c94b0f8fdbc45", null ],
     [ "Renderer", "struct_f_game_context.html#a0bdbd68b5b4afaa56940de568cc54c96", null ],
     [ "Textures", "struct_f_game_context.html#ab080f64b9c4cd8a144274693f41c9831", null ],

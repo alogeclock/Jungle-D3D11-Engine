@@ -29,10 +29,9 @@ var NAVTREE =
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", "namespacemembers_dup" ],
-        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Functions", "namespacemembers_func.html", "namespacemembers_func" ],
         [ "Variables", "namespacemembers_vars.html", null ],
-        [ "Enumerations", "namespacemembers_enum.html", null ],
-        [ "Enumerator", "namespacemembers_eval.html", null ]
+        [ "Typedefs", "namespacemembers_type.html", null ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
@@ -44,20 +43,19 @@ var NAVTREE =
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
-        [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", "functions_eval" ],
         [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ],
+        [ "All", "globals.html", "globals_dup" ],
+        [ "Functions", "globals_func.html", "globals_func" ],
+        [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Enumerations", "globals_enum.html", null ],
-        [ "Enumerator", "globals_eval.html", null ],
-        [ "Macros", "globals_defs.html", null ]
+        [ "Enumerator", "globals_eval.html", "globals_eval" ],
+        [ "Macros", "globals_defs.html", "globals_defs" ]
       ] ]
     ] ]
   ] ]
@@ -66,33 +64,32 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_actor_8cpp.html",
-"class_direct_x_1_1_audio_engine.html#a1a027ded0a4fadaf445eb09e282e3da8",
-"class_direct_x_1_1_d_x12_1_1_basic_effect.html#afe2db2bd0ff337d5d5247389076ae905",
-"class_direct_x_1_1_d_x12_1_1_debug_effect.html#ad7e7c0b53a653a848e6b336a85ff839f",
-"class_direct_x_1_1_d_x12_1_1_effect_texture_factory.html#aa0f67290ee101fc3ec7e79bbd8652859",
-"class_direct_x_1_1_d_x12_1_1_graphics_memory.html#aac51fae7cc2bf6746441b5b93a9a5af2",
-"class_direct_x_1_1_d_x12_1_1_i_effect_lights.html#a62772c68a77e7d5954ba0c97f9b67743",
-"class_direct_x_1_1_d_x12_1_1_model.html#a8135109964717d4fb369a4923995c7d4",
-"class_direct_x_1_1_d_x12_1_1_model_mesh_part.html#a8e3bc7375064c57ea4f6f99a6051e0e2",
-"class_direct_x_1_1_d_x12_1_1_p_b_r_effect.html#a8ea8e350dc6eca870f13c3b4efbfd910",
-"class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#ae91cc12d8fb022e0c91d6f514d5c998e",
-"class_direct_x_1_1_d_x12_1_1_sprite_batch.html#a66fb6fbe29a001a9f30383b19c1bdecb",
-"class_direct_x_1_1_d_x12_1_1_tone_map_post_process.html#a60c5caeda820a87f789f81eeb3e61cb8a0cfe544ad2b77e81fc7c6e916f1a79c8",
-"class_direct_x_1_1_game_pad_1_1_button_state_tracker.html#ab184eb852da996b4bd10c4f088dc2d19",
-"class_direct_x_1_1_keyboard.html#a21dd19235a46fda68f9590e9640b5b7ba8ae030d179b7d5c618ba6a9f1e6a462f",
-"class_direct_x_1_1_render_target_state.html#a3105aca3343f6667ecd48244f0c418a6",
-"class_direct_x_1_1_sound_stream_instance.html#ae6d4fdbefb513d4606b50ecc57905e8c",
-"class_f_renderer.html#aa72f7321817228ddf42fada19216f1b8",
-"functions_func_k.html",
-"namespace_direct_x_1_1_d_x12.html#ae424be92aa718222f81dfda0ff7af9b4",
-"struct_direct_x_1_1_audio_statistics.html#af75408dc425cc6bd19dac7bab59d78cd",
-"struct_direct_x_1_1_d_x12_1_1_vertex_position_color.html#aad63859279faf1ff9e6ad7ec337cee7e",
-"struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture.html#ab774593578373ef24ef6d52433fb23ef",
-"struct_direct_x_1_1_keyboard_1_1_state.html",
-"struct_direct_x_1_1_keyboard_1_1_state.html#aaa029aadb4072fdcbba4e6e989bafaeb",
-"struct_direct_x_1_1_simple_math_1_1_matrix.html",
-"struct_direct_x_1_1_simple_math_1_1_rectangle.html#a83f3129326f0d8262b8d165a6d5b3a9f",
-"struct_f_sprite_constants.html#a51987a3911e0c6547fce8f54f6a968a9"
+"_types_8h.html#ad914e65c956dae027f9a1765ac337c68a243a3afa44aed85d504dbd53fd9804e9",
+"class_f_player.html#a4bde98ab2c81981f07594979ab56fc5e",
+"class_f_title_scene.html#ac4c53715b29293cc5f1396151eba5319",
+"imgui_8cpp.html#a549c106b56cef58bf303705cd95a6993",
+"imgui_8h.html#a4c5d47463a6be9a33b50841d0735f0d8a23001021394db5bc58ad88cbbbd396df",
+"imgui_8h.html#a8e46ef7d0c76fbb1916171edfa4ae9e7af9083e56301415cd001cb1087accfe1f",
+"imgui_8h.html#acf76ea0c1b4f603f78b44049e520b374",
+"imgui__draw_8cpp.html#ad574da8343f063ce995d922236480aac",
+"imgui__internal_8h.html#a50698b5f0feef98c52898068b9a22293",
+"imgui__internal_8h.html#ab508998bd890cd8d158816174a97bb3a",
+"imstb__truetype_8h.html#a0549774d30f6c64b85b88acc2329e89e",
+"namespace_im_gui.html#a32032b56f975bb3145adbe19f38f3b56",
+"namespace_im_gui.html#a82204d8800dc3a072ddbcbd2aecc48ac",
+"namespace_im_gui.html#acdc18199d50d26919312db5f9707b8dc",
+"stb__image_8h.html#a9099e31f34506c8630d58b737aa5a049",
+"struct_f_sprite_constants.html#a73580328d04f791fa5ea42670d96fd83",
+"struct_im_draw_list.html#ae9ad5f4d638b1bfd9383618dc60e3f18",
+"struct_im_font_glyph.html#a4e7d64945eeb9cf823c2ce7bb66a1e85",
+"struct_im_gui_context.html#a72e9a499d3518d5d48540d45bf978e15",
+"struct_im_gui_group_data.html#a6018dd0e6be2b26fd2b72aea1ad51cad",
+"struct_im_gui_key_routing_data.html#ae7a6adc428d25e74be70ab1b17e23e2b",
+"struct_im_gui_ptr_or_index.html#a9171d3539aed08cc1ffd543c63ce2891",
+"struct_im_gui_table.html#a1daad01c8bb3bc4194401c658b61a667",
+"struct_im_gui_text_index.html#aff1d671fe590cf08f0522ebcbc6ebf9b",
+"struct_im_pool.html#ae53033af46a5df28084f1d946c9face3",
+"struct_im_vec4.html#ac05b0806cef1a557f8c386b1b4af6703"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

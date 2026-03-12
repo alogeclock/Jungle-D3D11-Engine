@@ -1,0 +1,94 @@
+\doxysection{FEnding\+Scene Class Reference}
+\hypertarget{class_f_ending_scene}{}\label{class_f_ending_scene}\index{FEndingScene@{FEndingScene}}
+
+
+{\ttfamily \+\#include $<$Ending\+Scene.\+h$>$}
+
+Inheritance diagram for FEnding\+Scene:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_f_ending_scene}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_f_ending_scene_a77af28276c7a8ed5d8fd550da9b0d586}{FEnding\+Scene}} (int In\+Total\+Score=0, const std::\+string \&In\+Player\+Skin\+Key="{}"{})
+\item 
+\doxymbox{\hyperlink{class_f_ending_scene_ad9ce359f8258b785e6b106476d02cdb3}{\texorpdfstring{$\sim$}{\string~}\+FEnding\+Scene}} () override=default
+\item 
+void \doxymbox{\hyperlink{class_f_ending_scene_a4488ba6462794bbfb694f242b56e2677}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\item 
+void \doxymbox{\hyperlink{class_f_ending_scene_ad22499e8f561985038bae5d44a2b3c89}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_i_scene_a146b1101069efb7a46b3bb6e419bc2bc}{\texorpdfstring{$\sim$}{\string~}\+IScene}} ()=default
+\item 
+\doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \doxymbox{\hyperlink{class_i_scene_a7316409ac97b08fba543cd523e555121}{Consume\+Command}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_i_scene_ade55669e20b8ab34674321ee7964d9d0}{Set\+Scene\+Command}} (const \doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \&Command)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a6e2f65a65fff325dd5ce68f8e418d17b}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a535b76f8dfa4a7fa4f6e9a9c6097111a}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene, int Next\+Stage\+Index, int Accumulated\+Score=0, const std::\+string \&Player\+Skin\+Key="{}"{})
+\item 
+void \doxymbox{\hyperlink{class_i_scene_aab3356a84a89d0ae8bd011e55d25a010}{Quit\+Game}} ()
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a373ea6b6ebf14d0bfa5224727cb0e95b}{Dispatch\+Popup\+Action}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context, \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}} \&Popup, \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\item 
+virtual void \doxymbox{\hyperlink{class_i_scene_acfdf07ebc1e55472a32ddbd8d8959f5a}{On\+Popup\+Action\+Dispatched}} (\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_ending_scene_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_ending_scene_a77af28276c7a8ed5d8fd550da9b0d586}\index{FEndingScene@{FEndingScene}!FEndingScene@{FEndingScene}}
+\index{FEndingScene@{FEndingScene}!FEndingScene@{FEndingScene}}
+\doxysubsubsection{\texorpdfstring{FEndingScene()}{FEndingScene()}}
+{\footnotesize\ttfamily \label{class_f_ending_scene_a77af28276c7a8ed5d8fd550da9b0d586} 
+FEnding\+Scene::\+\+FEnding\+Scene (\begin{DoxyParamCaption}\item[{int}]{In\+Total\+Score}{ = {\ttfamily 0}, }\item[{const std::\+string \&}]{In\+Player\+Skin\+Key}{ = {\ttfamily "{}"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\Hypertarget{class_f_ending_scene_ad9ce359f8258b785e6b106476d02cdb3}\index{FEndingScene@{FEndingScene}!````~FEndingScene@{\texorpdfstring{$\sim$}{\string~}FEndingScene}}
+\index{````~FEndingScene@{\texorpdfstring{$\sim$}{\string~}FEndingScene}!FEndingScene@{FEndingScene}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}FEndingScene()}{\string~FEndingScene()}}
+{\footnotesize\ttfamily \label{class_f_ending_scene_ad9ce359f8258b785e6b106476d02cdb3} 
+FEnding\+Scene::\+\texorpdfstring{$\sim$}{\string~}\+FEnding\+Scene (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_ending_scene_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_ending_scene_ad22499e8f561985038bae5d44a2b3c89}\index{FEndingScene@{FEndingScene}!Render@{Render}}
+\index{Render@{Render}!FEndingScene@{FEndingScene}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_f_ending_scene_ad22499e8f561985038bae5d44a2b3c89} 
+void FEnding\+Scene::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_scene_ace723c09a94c7febce67b45c8aef49c1}{IScene}}.
+
+\Hypertarget{class_f_ending_scene_a4488ba6462794bbfb694f242b56e2677}\index{FEndingScene@{FEndingScene}!Update@{Update}}
+\index{Update@{Update}!FEndingScene@{FEndingScene}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_ending_scene_a4488ba6462794bbfb694f242b56e2677} 
+void FEnding\+Scene::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_scene_aaac68ad3611a9ef3cad7697b87dd92f4}{IScene}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Scene/\+\doxymbox{\hyperlink{_ending_scene_8h}{Ending\+Scene.\+h}}\item 
+Scene/\+\doxymbox{\hyperlink{_ending_scene_8cpp}{Ending\+Scene.\+cpp}}\end{DoxyCompactItemize}

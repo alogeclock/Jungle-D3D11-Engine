@@ -1,15 +1,5 @@
 var searchData=
 [
-  ['ieffect_0',['IEffect',['../class_direct_x_1_1_d_x12_1_1_i_effect.html',1,'DirectX::DX12::IEffect'],['../class_direct_x_1_1_d_x12_1_1_i_effect.html',1,'DirectX::IEffect']]],
-  ['ieffectfactory_1',['IEffectFactory',['../class_direct_x_1_1_d_x12_1_1_i_effect_factory.html',1,'DirectX::DX12::IEffectFactory'],['../class_direct_x_1_1_d_x12_1_1_i_effect_factory.html',1,'DirectX::IEffectFactory']]],
-  ['ieffectfog_2',['IEffectFog',['../class_direct_x_1_1_d_x12_1_1_i_effect_fog.html',1,'DirectX::DX12::IEffectFog'],['../class_direct_x_1_1_d_x12_1_1_i_effect_fog.html',1,'DirectX::IEffectFog']]],
-  ['ieffectlights_3',['IEffectLights',['../class_direct_x_1_1_d_x12_1_1_i_effect_lights.html',1,'DirectX::DX12::IEffectLights'],['../class_direct_x_1_1_d_x12_1_1_i_effect_lights.html',1,'DirectX::IEffectLights']]],
-  ['ieffectmatrices_4',['IEffectMatrices',['../class_direct_x_1_1_d_x12_1_1_i_effect_matrices.html',1,'DirectX::DX12::IEffectMatrices'],['../class_direct_x_1_1_d_x12_1_1_i_effect_matrices.html',1,'DirectX::IEffectMatrices']]],
-  ['ieffectskinning_5',['IEffectSkinning',['../class_direct_x_1_1_d_x12_1_1_i_effect_skinning.html',1,'DirectX::DX12::IEffectSkinning'],['../class_direct_x_1_1_d_x12_1_1_i_effect_skinning.html',1,'DirectX::IEffectSkinning']]],
-  ['ieffecttexturefactory_6',['IEffectTextureFactory',['../class_direct_x_1_1_d_x12_1_1_i_effect_texture_factory.html',1,'DirectX::DX12::IEffectTextureFactory'],['../class_direct_x_1_1_d_x12_1_1_i_effect_texture_factory.html',1,'DirectX::IEffectTextureFactory']]],
-  ['ipopup_7',['IPopup',['../class_i_popup.html',1,'']]],
-  ['ipostprocess_8',['IPostProcess',['../class_direct_x_1_1_d_x12_1_1_i_post_process.html',1,'DirectX::DX12::IPostProcess'],['../class_direct_x_1_1_d_x12_1_1_i_post_process.html',1,'DirectX::IPostProcess']]],
-  ['iscene_9',['IScene',['../class_i_scene.html',1,'']]],
-  ['iuiwidget_10',['IUIWidget',['../class_i_u_i_widget.html',1,'']]],
-  ['ivoicenotify_11',['IVoiceNotify',['../class_direct_x_1_1_i_voice_notify.html',1,'DirectX']]]
+  ['vec2_0',['Vec2',['../struct_vec2.html',1,'']]],
+  ['vertex_5fconstant_5fbuffer_5fdx11_1',['VERTEX_CONSTANT_BUFFER_DX11',['../struct_v_e_r_t_e_x___c_o_n_s_t_a_n_t___b_u_f_f_e_r___d_x11.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['xaudio2_5fhelper_5ffunctions_0',['XAUDIO2_HELPER_FUNCTIONS',['../_audio_8h.html#a91bcb060bd6be952f1cd26029531135f',1,'Audio.h']]]
+  ['va_5fcopy_0',['va_copy',['../imgui_8cpp.html#a19fd5658c088617859d4a89c657ec5cc',1,'imgui.cpp']]]
 ];

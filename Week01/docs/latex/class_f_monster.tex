@@ -27,6 +27,18 @@ void \doxymbox{\hyperlink{class_f_monster_ac05ba03c3564bdf723b4bb7941bf491a}{Set
 \item 
 \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}} \doxymbox{\hyperlink{class_f_monster_a65963fc01a9144a68db4fb3b3e0485c8}{Get\+Ai\+Type}} () const
 \item 
+void \doxymbox{\hyperlink{class_f_monster_aaffb46a967995dba3b8aacb8698bee4a}{Set\+Monster\+Type}} (\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}} In\+Monster\+Type)
+\item 
+\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}} \doxymbox{\hyperlink{class_f_monster_aea9c8af31da82a395cdacf14ee9e6602}{Get\+Monster\+Type}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_monster_a46e35474039be86a475cf065a498b157}{Set\+Search\+Range}} (int In\+Search\+Range)
+\item 
+int \doxymbox{\hyperlink{class_f_monster_a22e57c792a1aa6f2945a265ec954c85f}{Get\+Search\+Range}} () const
+\item 
+std::\+string \doxymbox{\hyperlink{class_f_monster_a93f51e10143eecfcca3bdeb4597b717e}{Get\+Monster\+Texture\+Key}} (\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}} Type)
+\item 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \doxymbox{\hyperlink{class_f_monster_aa503d765179a39de90dd1f15c7bb9a6d}{Get\+Sprite\+Angry}} () const
+\item 
 \doxymbox{\hyperlink{_types_8h_acb2b033915f6659a71a38b5aa6e4eb42}{EDirection}} \doxymbox{\hyperlink{class_f_monster_a8e3f39148b9461ff77ef1a332bdd8319}{Decide\+Next\+Move}} (const \doxymbox{\hyperlink{class_f_stage}{FStage}} \&Stage) const
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_f_actor}{FActor}}}
@@ -56,7 +68,7 @@ void \doxymbox{\hyperlink{class_f_actor_a68595bdd34cbe511ae5a21193037da90}{Set\+
 \item 
 int \doxymbox{\hyperlink{class_f_actor_a43b436e481db08d4675554ec09fa8287}{Get\+Hp}} () const
 \item 
-void \doxymbox{\hyperlink{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b}{Damage}} (int Amount)
+virtual void \doxymbox{\hyperlink{class_f_actor_a152a420fa7ab37e9ed626c91a33b185b}{Damage}} (int Amount)
 \item 
 void \doxymbox{\hyperlink{class_f_actor_a279cf6d77a0343648e2dece3f1eb1801}{Heal}} (int Amount)
 \item 
@@ -71,6 +83,14 @@ bool \doxymbox{\hyperlink{class_f_actor_adc0348f0969c577bd049e44dcec1e840}{Is\+M
 void \doxymbox{\hyperlink{class_f_actor_a0382ed1b6c73a2a6d5649440dd992e7f}{Set\+Sprite}} (const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \&In\+Sprite)
 \item 
 const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \& \doxymbox{\hyperlink{class_f_actor_abf4308febfabb82b0dc4a3bf349f1ddc}{Get\+Sprite}} () const
+\item 
+\doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \& \doxymbox{\hyperlink{class_f_actor_a1141daa9f2f604282274fdfc21700fc7}{Get\+Animator}} ()
+\item 
+const \doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \& \doxymbox{\hyperlink{class_f_actor_a74765cd157241180001c3e43d7dde2b3}{Get\+Animator}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_actor_a9c81f5b8c75ed26676ee2be9278394fc}{Set\+Default\+Mirrored}} (bool b\+Mirrored)
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_aea22b6ce1c5342bfe614bff73b7099cf}{Get\+Default\+Mirrored}} () const
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Additional Inherited Members}
 \doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_f_actor}{FActor}}}
@@ -105,6 +125,10 @@ float \doxymbox{\hyperlink{class_f_actor_aee38cb6ce1961fafc673aea488d97663}{Move
 float \doxymbox{\hyperlink{class_f_actor_a24b13b3de3279f0f13b67fa7ea38b24e}{Move\+TargetY}} = 0.\+0f
 \item 
 \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} \doxymbox{\hyperlink{class_f_actor_a43a92b36260e21ac6f3123d3d31c369f}{Sprite}}
+\item 
+\doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \doxymbox{\hyperlink{class_f_actor_ae838b8d9bb305983b93d02e829d3a507}{Animator}}
+\item 
+bool \doxymbox{\hyperlink{class_f_actor_a8f8eaf81fa1f15bece45c1864b66e068}{b\+Default\+Mirrored}} = false
 \end{DoxyCompactItemize}
 
 
@@ -133,11 +157,35 @@ Implements \doxymbox{\hyperlink{class_f_actor_aacfa923eb1d70916869e858aa897097e}
 {\footnotesize\ttfamily \label{class_f_monster_a65963fc01a9144a68db4fb3b3e0485c8} 
 \doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}} FMonster::\+\+Get\+Ai\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
+\Hypertarget{class_f_monster_a93f51e10143eecfcca3bdeb4597b717e}\index{FMonster@{FMonster}!GetMonsterTextureKey@{GetMonsterTextureKey}}
+\index{GetMonsterTextureKey@{GetMonsterTextureKey}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{GetMonsterTextureKey()}{GetMonsterTextureKey()}}
+{\footnotesize\ttfamily \label{class_f_monster_a93f51e10143eecfcca3bdeb4597b717e} 
+std::\+string FMonster::\+\+Get\+Monster\+Texture\+Key (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}}}]{Type}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_monster_aea9c8af31da82a395cdacf14ee9e6602}\index{FMonster@{FMonster}!GetMonsterType@{GetMonsterType}}
+\index{GetMonsterType@{GetMonsterType}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{GetMonsterType()}{GetMonsterType()}}
+{\footnotesize\ttfamily \label{class_f_monster_aea9c8af31da82a395cdacf14ee9e6602} 
+\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}} FMonster::\+\+Get\+Monster\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
 \Hypertarget{class_f_monster_a09ebcec17395797acd1b61704e10cbf9}\index{FMonster@{FMonster}!GetMoveFrequency@{GetMoveFrequency}}
 \index{GetMoveFrequency@{GetMoveFrequency}!FMonster@{FMonster}}
 \doxysubsubsection{\texorpdfstring{GetMoveFrequency()}{GetMoveFrequency()}}
 {\footnotesize\ttfamily \label{class_f_monster_a09ebcec17395797acd1b61704e10cbf9} 
 int FMonster::\+\+Get\+Move\+Frequency (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_monster_a22e57c792a1aa6f2945a265ec954c85f}\index{FMonster@{FMonster}!GetSearchRange@{GetSearchRange}}
+\index{GetSearchRange@{GetSearchRange}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{GetSearchRange()}{GetSearchRange()}}
+{\footnotesize\ttfamily \label{class_f_monster_a22e57c792a1aa6f2945a265ec954c85f} 
+int FMonster::\+\+Get\+Search\+Range (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_monster_aa503d765179a39de90dd1f15c7bb9a6d}\index{FMonster@{FMonster}!GetSpriteAngry@{GetSpriteAngry}}
+\index{GetSpriteAngry@{GetSpriteAngry}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{GetSpriteAngry()}{GetSpriteAngry()}}
+{\footnotesize\ttfamily \label{class_f_monster_aa503d765179a39de90dd1f15c7bb9a6d} 
+const \doxymbox{\hyperlink{struct_f_sprite_info}{FSprite\+Info}} FMonster::\+\+Get\+Sprite\+Angry (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{class_f_monster_a52648e30a33904f0e417483607c00e85}\index{FMonster@{FMonster}!OnBeat@{OnBeat}}
 \index{OnBeat@{OnBeat}!FMonster@{FMonster}}
@@ -155,11 +203,23 @@ Implements \doxymbox{\hyperlink{class_f_actor_a88bccdf6676b7fff8414a48d9cec2cc5}
 {\footnotesize\ttfamily \label{class_f_monster_ac05ba03c3564bdf723b4bb7941bf491a} 
 void FMonster::\+\+Set\+Ai\+Type (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_types_8h_a5950ad5ea571cdaa0468f4494c9234af}{EMonster\+AIType}}}]{In\+Ai\+Type}{}\end{DoxyParamCaption})}
 
+\Hypertarget{class_f_monster_aaffb46a967995dba3b8aacb8698bee4a}\index{FMonster@{FMonster}!SetMonsterType@{SetMonsterType}}
+\index{SetMonsterType@{SetMonsterType}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{SetMonsterType()}{SetMonsterType()}}
+{\footnotesize\ttfamily \label{class_f_monster_aaffb46a967995dba3b8aacb8698bee4a} 
+void FMonster::\+\+Set\+Monster\+Type (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_monster_8h_a2f5ac0bac53fc504ced40c0686aaecae}{EMonster\+Type}}}]{In\+Monster\+Type}{}\end{DoxyParamCaption})}
+
 \Hypertarget{class_f_monster_a61085fbafcefad2fcf277660ddedf5f9}\index{FMonster@{FMonster}!SetMoveFrequency@{SetMoveFrequency}}
 \index{SetMoveFrequency@{SetMoveFrequency}!FMonster@{FMonster}}
 \doxysubsubsection{\texorpdfstring{SetMoveFrequency()}{SetMoveFrequency()}}
 {\footnotesize\ttfamily \label{class_f_monster_a61085fbafcefad2fcf277660ddedf5f9} 
 void FMonster::\+\+Set\+Move\+Frequency (\begin{DoxyParamCaption}\item[{int}]{In\+Freq}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_monster_a46e35474039be86a475cf065a498b157}\index{FMonster@{FMonster}!SetSearchRange@{SetSearchRange}}
+\index{SetSearchRange@{SetSearchRange}!FMonster@{FMonster}}
+\doxysubsubsection{\texorpdfstring{SetSearchRange()}{SetSearchRange()}}
+{\footnotesize\ttfamily \label{class_f_monster_a46e35474039be86a475cf065a498b157} 
+void FMonster::\+\+Set\+Search\+Range (\begin{DoxyParamCaption}\item[{int}]{In\+Search\+Range}{}\end{DoxyParamCaption})}
 
 \Hypertarget{class_f_monster_ab99ea1e9983cf0533ac2ce78efb35cce}\index{FMonster@{FMonster}!Update@{Update}}
 \index{Update@{Update}!FMonster@{FMonster}}

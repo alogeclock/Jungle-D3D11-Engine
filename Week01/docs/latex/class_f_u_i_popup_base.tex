@@ -1,0 +1,442 @@
+\doxysection{FUIPopup\+Base Class Reference}
+\hypertarget{class_f_u_i_popup_base}{}\label{class_f_u_i_popup_base}\index{FUIPopupBase@{FUIPopupBase}}
+
+
+{\ttfamily \+\#include $<$UIPopup\+Base.\+h$>$}
+
+Inheritance diagram for FUIPopup\+Base:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=9.000000cm]{class_f_u_i_popup_base}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_f_u_i_popup_base_a0a3849d24fc4b642e0bea3fba3afc3d1}{\texorpdfstring{$\sim$}{\string~}\+FUIPopup\+Base}} ()=default
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_a0929a5a3df8355dbf077cf542192b7cb}{Open}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_ac8d6de5232d5b3facc09760a9da0f64a}{Close}} ()
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_aa0b2c3ed9e250dcc5a423512617a6e28}{Is\+Open}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_aaecbcb854240bb3a96f60c16512f2d72}{Is\+Closed}} () const
+\item 
+virtual void \doxymbox{\hyperlink{class_f_u_i_popup_base_a9d90ba7079dc49c92b6a35bc444fd0a6}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_f_u_i_popup_base_a099a78d5fafeb822614d9061e8445ce4}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)=0
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_a4c0dedb620aa9d5364bb728bbd31397c}{Consume\+Open\+Request}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_ae52306646f1ba8563e540d8d34b2e21d}{Setup\+Popup\+Window}} (const char \texorpdfstring{$\ast$}{*}Popup\+Id, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&Popup\+Size)
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_a93af971ad7da99d418a5974506ff7c76}{Begin\+Popup\+Window}} (const char \texorpdfstring{$\ast$}{*}Popup\+Id, const char \texorpdfstring{$\ast$}{*}Title, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&Popup\+Size, \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Out\+Layout)
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_a0ac4dadb290f6d9d84a7431d666aad15}{End\+Popup\+Window}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_a544c53594f5b2a7e091820ed85080ed4}{Build\+Frame\+Layout}} (const char \texorpdfstring{$\ast$}{*}Title, \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Out\+Layout) const
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_a8882c32aedab1c8b2a00c0689a7f3f12}{Draw\+Title\+And\+Divider}} (const char \texorpdfstring{$\ast$}{*}Title, const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout) const
+\item 
+float \doxymbox{\hyperlink{class_f_u_i_popup_base_a3bac3d82b7f6218e7ca734825145fecf}{Get\+Bottom\+Button\+Width}} (const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout, int Button\+Count, float In\+Button\+Width=\doxymbox{\hyperlink{class_f_u_i_popup_base_aeb69a670a92f3aa9dbf33e7df4e06912}{Button\+Width}}, float In\+Button\+Gap=\doxymbox{\hyperlink{class_f_u_i_popup_base_ab76baf9fe8a53826611bac456a1764c8}{Button\+Gap}}) const
+\item 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \doxymbox{\hyperlink{class_f_u_i_popup_base_afa82086cc4056f8a2e15bae44869b05d}{Get\+Bottom\+Button\+Position}} (const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout, int Button\+Index, int Button\+Count, float In\+Button\+Width=\doxymbox{\hyperlink{class_f_u_i_popup_base_aeb69a670a92f3aa9dbf33e7df4e06912}{Button\+Width}}, float In\+Button\+Height=\doxymbox{\hyperlink{class_f_u_i_popup_base_adc7660d8942616a5a0c4d8c1f5b1891d}{Button\+Height}}, float In\+Button\+Gap=\doxymbox{\hyperlink{class_f_u_i_popup_base_ab76baf9fe8a53826611bac456a1764c8}{Button\+Gap}}) const
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_a770a49256e850e188b94d371c9dd7677}{Draw\+Bottom\+Button}} (const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout, const char \texorpdfstring{$\ast$}{*}Label)
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_af1312df49cea4587350b60eaa6e5e4a8}{Draw\+Bottom\+Button}} (const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout, const char \texorpdfstring{$\ast$}{*}Label, int Button\+Index, int Button\+Count)
+\item 
+float \doxymbox{\hyperlink{class_f_u_i_popup_base_acb643b74a834b7a0db7649904a12f150}{Get\+Content\+Font\+Scale}} (\doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}} Size) const
+\item 
+std::\+string \doxymbox{\hyperlink{class_f_u_i_popup_base_acc393e2a9b6bc000b8bcbe41ac3aa4c7}{Normalize\+To\+Utf8}} (std::\+string\+\_\+view Text) const
+\item 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \doxymbox{\hyperlink{class_f_u_i_popup_base_a491679cddcb9845d76a56330291ec3b6}{Calc\+Utf8\+Text\+Size}} (const char \texorpdfstring{$\ast$}{*}Text) const
+\item 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \doxymbox{\hyperlink{class_f_u_i_popup_base_a21f35ba398d30d6fb7921bafdb699ee8}{Calc\+Utf8\+Text\+Size}} (const std::\+string \&Text) const
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_af7bdf8cb6a7975e7b4ac843be8da8ef7}{Text\+Unformatted\+Utf8}} (const char \texorpdfstring{$\ast$}{*}Text) const
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_a4e6950cbe876d17035d9d1ffaeb44208}{Text\+Unformatted\+Utf8}} (const std::\+string \&Text) const
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_adecbbe6ebd520d9d55c64cf4de9ff7aa}{Button\+Utf8}} (const char \texorpdfstring{$\ast$}{*}Label, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&Size) const
+\item 
+bool \doxymbox{\hyperlink{class_f_u_i_popup_base_aafaee6de15bf1c4ab3471817bc82ab2b}{Button\+Utf8}} (const std::\+string \&Label, const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&Size) const
+\item 
+float \doxymbox{\hyperlink{class_f_u_i_popup_base_a5d4756eac49cfad32bbe7104580cd99d}{Get\+AlignedX}} (const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout, float Item\+Width, \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}} Align) const
+\item 
+float \doxymbox{\hyperlink{class_f_u_i_popup_base_ab035e03c9fa9a445ce35e167220de01e}{Get\+Text\+Block\+Height}} (const char \texorpdfstring{$\ast$}{*}const \texorpdfstring{$\ast$}{*}Lines, int Line\+Count, float Line\+Gap, \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}} Text\+Size) const
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_a27dbe4327648529a6d49ead9b13e0bf5}{Draw\+Text\+Block}} (const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout, const char \texorpdfstring{$\ast$}{*}const \texorpdfstring{$\ast$}{*}Lines, int Line\+Count, float Line\+Gap, \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}} Horizontal\+Align, \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}} Text\+Size, \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}{EUIPopup\+Content\+Vertical\+Align}} Vertical\+Align=\doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopup\+Content\+Vertical\+Align::\+\+Center}}) const
+\item 
+void \doxymbox{\hyperlink{class_f_u_i_popup_base_a2663f0edf64b8d63cef8892e5784d959}{Draw\+Text\+Block}} (const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&Layout, std::\+initializer\+\_\+list$<$ const char \texorpdfstring{$\ast$}{*} $>$ Lines, float Line\+Gap, \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}} Horizontal\+Align, \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}} Text\+Size, \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}{EUIPopup\+Content\+Vertical\+Align}} Vertical\+Align=\doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopup\+Content\+Vertical\+Align::\+\+Center}}) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a5422a136f1bcbf96c30b102650070132}{Default\+Popup\+Width}} = 760.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_abebc3445a46400e6b3e82f57832d2efa}{Default\+Popup\+Height}} = 420.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a08fd4c3c6581cc110973f4ac0c2b94b8}{Window\+PaddingX}} = 20.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_aa6b1874a411c79a183a7c6c9b715fbee}{Window\+PaddingY}} = 18.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a89874fa0852516452aadb9f0fa54b195}{Window\+Rounding}} = 12.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a4b0ecdaa1608274c92ecace726dd209e}{Dim\+Bg\+Alpha}} = 0.\+35f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_af3032947982f130870a52b49a5cd75a6}{Title\+Font\+Scale}} = 1.\+8f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_adf262c4084505f2e36831040f053be4c}{Title\+Top\+Offset}} = 18.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a6a250ed692c7ca8967e672f751cd3b64}{Title\+To\+Divider\+Gap}} = 10.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_ae2110df99ddcce95dc42133b2ecbb4a4}{Divider\+InsetX}} = 8.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a425f78459d2231ef05f474f1778166c5}{Divider\+Thickness}} = 1.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_ab0eea04c1615412b7e51a9793d6f636a}{Divider\+To\+Content\+Gap}} = 16.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_adf0368e0102935974716825acd117e50}{Bottom\+Padding}} = 6.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_ac946647cb1b04f3d48db3bdac0fec99e}{Content\+To\+Button\+Gap}} = 16.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_aeb69a670a92f3aa9dbf33e7df4e06912}{Button\+Width}} = 240.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_adc7660d8942616a5a0c4d8c1f5b1891d}{Button\+Height}} = 40.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_ab76baf9fe8a53826611bac456a1764c8}{Button\+Gap}} = 12.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_ae29fc3c1e813b73129d19aa701beea9d}{Button\+Text\+Font\+Scale}} = 1.\+3f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a6d5b394591224323e69b912ab88b3a8c}{Min\+Button\+Width\+When\+Multi}} = 80.\+0f
+\item 
+static constexpr float \doxymbox{\hyperlink{class_f_u_i_popup_base_a1c4ccbf989e7e4de0d1525676c334107}{Default\+Content\+Line\+Gap}} = 6.\+0f
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_u_i_popup_base_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_u_i_popup_base_a0a3849d24fc4b642e0bea3fba3afc3d1}\index{FUIPopupBase@{FUIPopupBase}!````~FUIPopupBase@{\texorpdfstring{$\sim$}{\string~}FUIPopupBase}}
+\index{````~FUIPopupBase@{\texorpdfstring{$\sim$}{\string~}FUIPopupBase}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}FUIPopupBase()}{\string~FUIPopupBase()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a0a3849d24fc4b642e0bea3fba3afc3d1} 
+virtual FUIPopup\+Base::\+\texorpdfstring{$\sim$}{\string~}\+FUIPopup\+Base (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_u_i_popup_base_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_u_i_popup_base_a93af971ad7da99d418a5974506ff7c76}\index{FUIPopupBase@{FUIPopupBase}!BeginPopupWindow@{BeginPopupWindow}}
+\index{BeginPopupWindow@{BeginPopupWindow}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{BeginPopupWindow()}{BeginPopupWindow()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a93af971ad7da99d418a5974506ff7c76} 
+bool FUIPopup\+Base::\+\+Begin\+Popup\+Window (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Popup\+Id}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{Title}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{Popup\+Size}{, }\item[{\doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Out\+Layout}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a544c53594f5b2a7e091820ed85080ed4}\index{FUIPopupBase@{FUIPopupBase}!BuildFrameLayout@{BuildFrameLayout}}
+\index{BuildFrameLayout@{BuildFrameLayout}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{BuildFrameLayout()}{BuildFrameLayout()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a544c53594f5b2a7e091820ed85080ed4} 
+void FUIPopup\+Base::\+\+Build\+Frame\+Layout (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Title}{, }\item[{\doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Out\+Layout}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_adecbbe6ebd520d9d55c64cf4de9ff7aa}\index{FUIPopupBase@{FUIPopupBase}!ButtonUtf8@{ButtonUtf8}}
+\index{ButtonUtf8@{ButtonUtf8}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ButtonUtf8()}{ButtonUtf8()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_adecbbe6ebd520d9d55c64cf4de9ff7aa} 
+bool FUIPopup\+Base::\+\+Button\+Utf8 (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Label}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{Size}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_aafaee6de15bf1c4ab3471817bc82ab2b}\index{FUIPopupBase@{FUIPopupBase}!ButtonUtf8@{ButtonUtf8}}
+\index{ButtonUtf8@{ButtonUtf8}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ButtonUtf8()}{ButtonUtf8()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_aafaee6de15bf1c4ab3471817bc82ab2b} 
+bool FUIPopup\+Base::\+\+Button\+Utf8 (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Label}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{Size}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a491679cddcb9845d76a56330291ec3b6}\index{FUIPopupBase@{FUIPopupBase}!CalcUtf8TextSize@{CalcUtf8TextSize}}
+\index{CalcUtf8TextSize@{CalcUtf8TextSize}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{CalcUtf8TextSize()}{CalcUtf8TextSize()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a491679cddcb9845d76a56330291ec3b6} 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} FUIPopup\+Base::\+\+Calc\+Utf8\+Text\+Size (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Text}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a21f35ba398d30d6fb7921bafdb699ee8}\index{FUIPopupBase@{FUIPopupBase}!CalcUtf8TextSize@{CalcUtf8TextSize}}
+\index{CalcUtf8TextSize@{CalcUtf8TextSize}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{CalcUtf8TextSize()}{CalcUtf8TextSize()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a21f35ba398d30d6fb7921bafdb699ee8} 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} FUIPopup\+Base::\+\+Calc\+Utf8\+Text\+Size (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Text}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_ac8d6de5232d5b3facc09760a9da0f64a}\index{FUIPopupBase@{FUIPopupBase}!Close@{Close}}
+\index{Close@{Close}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{Close()}{Close()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ac8d6de5232d5b3facc09760a9da0f64a} 
+void FUIPopup\+Base::\+\+Close (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_u_i_popup_base_a4c0dedb620aa9d5364bb728bbd31397c}\index{FUIPopupBase@{FUIPopupBase}!ConsumeOpenRequest@{ConsumeOpenRequest}}
+\index{ConsumeOpenRequest@{ConsumeOpenRequest}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ConsumeOpenRequest()}{ConsumeOpenRequest()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a4c0dedb620aa9d5364bb728bbd31397c} 
+bool FUIPopup\+Base::\+\+Consume\+Open\+Request (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a770a49256e850e188b94d371c9dd7677}\index{FUIPopupBase@{FUIPopupBase}!DrawBottomButton@{DrawBottomButton}}
+\index{DrawBottomButton@{DrawBottomButton}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DrawBottomButton()}{DrawBottomButton()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a770a49256e850e188b94d371c9dd7677} 
+bool FUIPopup\+Base::\+\+Draw\+Bottom\+Button (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{Label}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_af1312df49cea4587350b60eaa6e5e4a8}\index{FUIPopupBase@{FUIPopupBase}!DrawBottomButton@{DrawBottomButton}}
+\index{DrawBottomButton@{DrawBottomButton}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DrawBottomButton()}{DrawBottomButton()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_af1312df49cea4587350b60eaa6e5e4a8} 
+bool FUIPopup\+Base::\+\+Draw\+Bottom\+Button (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{Label}{, }\item[{int}]{Button\+Index}{, }\item[{int}]{Button\+Count}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a27dbe4327648529a6d49ead9b13e0bf5}\index{FUIPopupBase@{FUIPopupBase}!DrawTextBlock@{DrawTextBlock}}
+\index{DrawTextBlock@{DrawTextBlock}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DrawTextBlock()}{DrawTextBlock()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a27dbe4327648529a6d49ead9b13e0bf5} 
+void FUIPopup\+Base::\+\+Draw\+Text\+Block (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{, }\item[{const char \texorpdfstring{$\ast$}{*}const \texorpdfstring{$\ast$}{*}}]{Lines}{, }\item[{int}]{Line\+Count}{, }\item[{float}]{Line\+Gap}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}}}]{Horizontal\+Align}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}}}]{Text\+Size}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}{EUIPopup\+Content\+Vertical\+Align}}}]{Vertical\+Align}{ = {\ttfamily \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopup\+Content\+Vertical\+Align::\+\+Center}}}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a2663f0edf64b8d63cef8892e5784d959}\index{FUIPopupBase@{FUIPopupBase}!DrawTextBlock@{DrawTextBlock}}
+\index{DrawTextBlock@{DrawTextBlock}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DrawTextBlock()}{DrawTextBlock()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a2663f0edf64b8d63cef8892e5784d959} 
+void FUIPopup\+Base::\+\+Draw\+Text\+Block (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{, }\item[{std::\+initializer\+\_\+list$<$ const char \texorpdfstring{$\ast$}{*} $>$}]{Lines}{, }\item[{float}]{Line\+Gap}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}}}]{Horizontal\+Align}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}}}]{Text\+Size}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}{EUIPopup\+Content\+Vertical\+Align}}}]{Vertical\+Align}{ = {\ttfamily \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopup\+Content\+Vertical\+Align::\+\+Center}}}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a8882c32aedab1c8b2a00c0689a7f3f12}\index{FUIPopupBase@{FUIPopupBase}!DrawTitleAndDivider@{DrawTitleAndDivider}}
+\index{DrawTitleAndDivider@{DrawTitleAndDivider}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DrawTitleAndDivider()}{DrawTitleAndDivider()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a8882c32aedab1c8b2a00c0689a7f3f12} 
+void FUIPopup\+Base::\+\+Draw\+Title\+And\+Divider (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Title}{, }\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a0ac4dadb290f6d9d84a7431d666aad15}\index{FUIPopupBase@{FUIPopupBase}!EndPopupWindow@{EndPopupWindow}}
+\index{EndPopupWindow@{EndPopupWindow}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{EndPopupWindow()}{EndPopupWindow()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a0ac4dadb290f6d9d84a7431d666aad15} 
+void FUIPopup\+Base::\+\+End\+Popup\+Window (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a5d4756eac49cfad32bbe7104580cd99d}\index{FUIPopupBase@{FUIPopupBase}!GetAlignedX@{GetAlignedX}}
+\index{GetAlignedX@{GetAlignedX}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{GetAlignedX()}{GetAlignedX()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a5d4756eac49cfad32bbe7104580cd99d} 
+float FUIPopup\+Base::\+\+Get\+AlignedX (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{, }\item[{float}]{Item\+Width}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}}}]{Align}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_afa82086cc4056f8a2e15bae44869b05d}\index{FUIPopupBase@{FUIPopupBase}!GetBottomButtonPosition@{GetBottomButtonPosition}}
+\index{GetBottomButtonPosition@{GetBottomButtonPosition}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{GetBottomButtonPosition()}{GetBottomButtonPosition()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_afa82086cc4056f8a2e15bae44869b05d} 
+\doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} FUIPopup\+Base::\+\+Get\+Bottom\+Button\+Position (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{, }\item[{int}]{Button\+Index}{, }\item[{int}]{Button\+Count}{, }\item[{float}]{In\+Button\+Width}{ = {\ttfamily \doxymbox{\hyperlink{class_f_u_i_popup_base_aeb69a670a92f3aa9dbf33e7df4e06912}{Button\+Width}}}, }\item[{float}]{In\+Button\+Height}{ = {\ttfamily \doxymbox{\hyperlink{class_f_u_i_popup_base_adc7660d8942616a5a0c4d8c1f5b1891d}{Button\+Height}}}, }\item[{float}]{In\+Button\+Gap}{ = {\ttfamily \doxymbox{\hyperlink{class_f_u_i_popup_base_ab76baf9fe8a53826611bac456a1764c8}{Button\+Gap}}}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a3bac3d82b7f6218e7ca734825145fecf}\index{FUIPopupBase@{FUIPopupBase}!GetBottomButtonWidth@{GetBottomButtonWidth}}
+\index{GetBottomButtonWidth@{GetBottomButtonWidth}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{GetBottomButtonWidth()}{GetBottomButtonWidth()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a3bac3d82b7f6218e7ca734825145fecf} 
+float FUIPopup\+Base::\+\+Get\+Bottom\+Button\+Width (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}} \&}]{Layout}{, }\item[{int}]{Button\+Count}{, }\item[{float}]{In\+Button\+Width}{ = {\ttfamily \doxymbox{\hyperlink{class_f_u_i_popup_base_aeb69a670a92f3aa9dbf33e7df4e06912}{Button\+Width}}}, }\item[{float}]{In\+Button\+Gap}{ = {\ttfamily \doxymbox{\hyperlink{class_f_u_i_popup_base_ab76baf9fe8a53826611bac456a1764c8}{Button\+Gap}}}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_acb643b74a834b7a0db7649904a12f150}\index{FUIPopupBase@{FUIPopupBase}!GetContentFontScale@{GetContentFontScale}}
+\index{GetContentFontScale@{GetContentFontScale}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{GetContentFontScale()}{GetContentFontScale()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_acb643b74a834b7a0db7649904a12f150} 
+float FUIPopup\+Base::\+\+Get\+Content\+Font\+Scale (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}}}]{Size}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_ab035e03c9fa9a445ce35e167220de01e}\index{FUIPopupBase@{FUIPopupBase}!GetTextBlockHeight@{GetTextBlockHeight}}
+\index{GetTextBlockHeight@{GetTextBlockHeight}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{GetTextBlockHeight()}{GetTextBlockHeight()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ab035e03c9fa9a445ce35e167220de01e} 
+float FUIPopup\+Base::\+\+Get\+Text\+Block\+Height (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}const \texorpdfstring{$\ast$}{*}}]{Lines}{, }\item[{int}]{Line\+Count}{, }\item[{float}]{Line\+Gap}{, }\item[{\doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}}}]{Text\+Size}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_aaecbcb854240bb3a96f60c16512f2d72}\index{FUIPopupBase@{FUIPopupBase}!IsClosed@{IsClosed}}
+\index{IsClosed@{IsClosed}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{IsClosed()}{IsClosed()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_aaecbcb854240bb3a96f60c16512f2d72} 
+bool FUIPopup\+Base::\+\+Is\+Closed (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_f_u_i_popup_base_aa0b2c3ed9e250dcc5a423512617a6e28}\index{FUIPopupBase@{FUIPopupBase}!IsOpen@{IsOpen}}
+\index{IsOpen@{IsOpen}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{IsOpen()}{IsOpen()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_aa0b2c3ed9e250dcc5a423512617a6e28} 
+bool FUIPopup\+Base::\+\+Is\+Open (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_f_u_i_popup_base_acc393e2a9b6bc000b8bcbe41ac3aa4c7}\index{FUIPopupBase@{FUIPopupBase}!NormalizeToUtf8@{NormalizeToUtf8}}
+\index{NormalizeToUtf8@{NormalizeToUtf8}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{NormalizeToUtf8()}{NormalizeToUtf8()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_acc393e2a9b6bc000b8bcbe41ac3aa4c7} 
+std::\+string FUIPopup\+Base::\+\+Normalize\+To\+Utf8 (\begin{DoxyParamCaption}\item[{std::\+string\+\_\+view}]{Text}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a0929a5a3df8355dbf077cf542192b7cb}\index{FUIPopupBase@{FUIPopupBase}!Open@{Open}}
+\index{Open@{Open}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{Open()}{Open()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a0929a5a3df8355dbf077cf542192b7cb} 
+void FUIPopup\+Base::\+\+Open (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_u_i_popup_base_a9d90ba7079dc49c92b6a35bc444fd0a6}\index{FUIPopupBase@{FUIPopupBase}!Render@{Render}}
+\index{Render@{Render}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a9d90ba7079dc49c92b6a35bc444fd0a6} 
+virtual void FUIPopup\+Base::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_credit_popup_a32b2c3ed3fdf556852601b311cbe54bf}{FCredit\+Popup}}, \doxymbox{\hyperlink{class_f_ending_popup_aac5fb623c2aca2072f3e11b125cf73c4}{FEnding\+Popup}}, \doxymbox{\hyperlink{class_f_game_over_popup_a8266db842d0b875f5bece95454b8c5de}{FGame\+Over\+Popup}}, \doxymbox{\hyperlink{class_f_go_to_title_popup_afb280d8d45c2f6c0c88c3660004d601f}{FGo\+To\+Title\+Popup}}, \doxymbox{\hyperlink{class_f_save_score_popup_afd2d6826c8fcdd6ba3c7498af7dc7dcb}{FSave\+Score\+Popup}}, \doxymbox{\hyperlink{class_f_scoreboard_popup_aca91fa2443e4102e08f3f5af2a4278be}{FScoreboard\+Popup}}, \doxymbox{\hyperlink{class_f_stage_clear_popup_ac196138843b7a3147fa8a7ac4724df7b}{FStage\+Clear\+Popup}}, and \doxymbox{\hyperlink{class_f_stage_intro_popup_a6709f0831fc83d067027b0029d472542}{FStage\+Intro\+Popup}}.
+
+\Hypertarget{class_f_u_i_popup_base_ae52306646f1ba8563e540d8d34b2e21d}\index{FUIPopupBase@{FUIPopupBase}!SetupPopupWindow@{SetupPopupWindow}}
+\index{SetupPopupWindow@{SetupPopupWindow}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{SetupPopupWindow()}{SetupPopupWindow()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ae52306646f1ba8563e540d8d34b2e21d} 
+void FUIPopup\+Base::\+\+Setup\+Popup\+Window (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Popup\+Id}{, }\item[{const \doxymbox{\hyperlink{struct_im_vec2}{Im\+Vec2}} \&}]{Popup\+Size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_af7bdf8cb6a7975e7b4ac843be8da8ef7}\index{FUIPopupBase@{FUIPopupBase}!TextUnformattedUtf8@{TextUnformattedUtf8}}
+\index{TextUnformattedUtf8@{TextUnformattedUtf8}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{TextUnformattedUtf8()}{TextUnformattedUtf8()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_af7bdf8cb6a7975e7b4ac843be8da8ef7} 
+void FUIPopup\+Base::\+\+Text\+Unformatted\+Utf8 (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Text}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a4e6950cbe876d17035d9d1ffaeb44208}\index{FUIPopupBase@{FUIPopupBase}!TextUnformattedUtf8@{TextUnformattedUtf8}}
+\index{TextUnformattedUtf8@{TextUnformattedUtf8}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{TextUnformattedUtf8()}{TextUnformattedUtf8()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a4e6950cbe876d17035d9d1ffaeb44208} 
+void FUIPopup\+Base::\+\+Text\+Unformatted\+Utf8 (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Text}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a099a78d5fafeb822614d9061e8445ce4}\index{FUIPopupBase@{FUIPopupBase}!Update@{Update}}
+\index{Update@{Update}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a099a78d5fafeb822614d9061e8445ce4} 
+virtual void FUIPopup\+Base::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_f_credit_popup_a0f9e151f259c6432319ac91ebd571621}{FCredit\+Popup}}, \doxymbox{\hyperlink{class_f_ending_popup_abb141f482feae88806d771686fbc209a}{FEnding\+Popup}}, \doxymbox{\hyperlink{class_f_game_over_popup_a9130f831a51de149dd6dd039c5cbe393}{FGame\+Over\+Popup}}, \doxymbox{\hyperlink{class_f_go_to_title_popup_a547bb116ebe8ab6d032d05ac484c0cf6}{FGo\+To\+Title\+Popup}}, \doxymbox{\hyperlink{class_f_save_score_popup_a797726ed75a6b1913e2c9435c408c5bd}{FSave\+Score\+Popup}}, \doxymbox{\hyperlink{class_f_scoreboard_popup_a06ee8b8f05ee498666b607cf276291c7}{FScoreboard\+Popup}}, \doxymbox{\hyperlink{class_f_stage_clear_popup_a0560f303ec2e906471e7cf520790ea46}{FStage\+Clear\+Popup}}, and \doxymbox{\hyperlink{class_f_stage_intro_popup_a23a969f82de2dc62b25dbadb2a790b94}{FStage\+Intro\+Popup}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_f_u_i_popup_base_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_f_u_i_popup_base_adf0368e0102935974716825acd117e50}\index{FUIPopupBase@{FUIPopupBase}!BottomPadding@{BottomPadding}}
+\index{BottomPadding@{BottomPadding}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{BottomPadding}{BottomPadding}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_adf0368e0102935974716825acd117e50} 
+float FUIPopup\+Base::\+\+Bottom\+Padding = 6.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_ab76baf9fe8a53826611bac456a1764c8}\index{FUIPopupBase@{FUIPopupBase}!ButtonGap@{ButtonGap}}
+\index{ButtonGap@{ButtonGap}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ButtonGap}{ButtonGap}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ab76baf9fe8a53826611bac456a1764c8} 
+float FUIPopup\+Base::\+\+Button\+Gap = 12.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_adc7660d8942616a5a0c4d8c1f5b1891d}\index{FUIPopupBase@{FUIPopupBase}!ButtonHeight@{ButtonHeight}}
+\index{ButtonHeight@{ButtonHeight}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ButtonHeight}{ButtonHeight}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_adc7660d8942616a5a0c4d8c1f5b1891d} 
+float FUIPopup\+Base::\+\+Button\+Height = 40.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_ae29fc3c1e813b73129d19aa701beea9d}\index{FUIPopupBase@{FUIPopupBase}!ButtonTextFontScale@{ButtonTextFontScale}}
+\index{ButtonTextFontScale@{ButtonTextFontScale}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ButtonTextFontScale}{ButtonTextFontScale}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ae29fc3c1e813b73129d19aa701beea9d} 
+float FUIPopup\+Base::\+\+Button\+Text\+Font\+Scale = 1.\+3f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_aeb69a670a92f3aa9dbf33e7df4e06912}\index{FUIPopupBase@{FUIPopupBase}!ButtonWidth@{ButtonWidth}}
+\index{ButtonWidth@{ButtonWidth}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ButtonWidth}{ButtonWidth}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_aeb69a670a92f3aa9dbf33e7df4e06912} 
+float FUIPopup\+Base::\+\+Button\+Width = 240.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_ac946647cb1b04f3d48db3bdac0fec99e}\index{FUIPopupBase@{FUIPopupBase}!ContentToButtonGap@{ContentToButtonGap}}
+\index{ContentToButtonGap@{ContentToButtonGap}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{ContentToButtonGap}{ContentToButtonGap}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ac946647cb1b04f3d48db3bdac0fec99e} 
+float FUIPopup\+Base::\+\+Content\+To\+Button\+Gap = 16.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a1c4ccbf989e7e4de0d1525676c334107}\index{FUIPopupBase@{FUIPopupBase}!DefaultContentLineGap@{DefaultContentLineGap}}
+\index{DefaultContentLineGap@{DefaultContentLineGap}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DefaultContentLineGap}{DefaultContentLineGap}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a1c4ccbf989e7e4de0d1525676c334107} 
+float FUIPopup\+Base::\+\+Default\+Content\+Line\+Gap = 6.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_abebc3445a46400e6b3e82f57832d2efa}\index{FUIPopupBase@{FUIPopupBase}!DefaultPopupHeight@{DefaultPopupHeight}}
+\index{DefaultPopupHeight@{DefaultPopupHeight}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DefaultPopupHeight}{DefaultPopupHeight}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_abebc3445a46400e6b3e82f57832d2efa} 
+float FUIPopup\+Base::\+\+Default\+Popup\+Height = 420.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a5422a136f1bcbf96c30b102650070132}\index{FUIPopupBase@{FUIPopupBase}!DefaultPopupWidth@{DefaultPopupWidth}}
+\index{DefaultPopupWidth@{DefaultPopupWidth}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DefaultPopupWidth}{DefaultPopupWidth}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a5422a136f1bcbf96c30b102650070132} 
+float FUIPopup\+Base::\+\+Default\+Popup\+Width = 760.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a4b0ecdaa1608274c92ecace726dd209e}\index{FUIPopupBase@{FUIPopupBase}!DimBgAlpha@{DimBgAlpha}}
+\index{DimBgAlpha@{DimBgAlpha}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DimBgAlpha}{DimBgAlpha}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a4b0ecdaa1608274c92ecace726dd209e} 
+float FUIPopup\+Base::\+\+Dim\+Bg\+Alpha = 0.\+35f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_ae2110df99ddcce95dc42133b2ecbb4a4}\index{FUIPopupBase@{FUIPopupBase}!DividerInsetX@{DividerInsetX}}
+\index{DividerInsetX@{DividerInsetX}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DividerInsetX}{DividerInsetX}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ae2110df99ddcce95dc42133b2ecbb4a4} 
+float FUIPopup\+Base::\+\+Divider\+InsetX = 8.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a425f78459d2231ef05f474f1778166c5}\index{FUIPopupBase@{FUIPopupBase}!DividerThickness@{DividerThickness}}
+\index{DividerThickness@{DividerThickness}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DividerThickness}{DividerThickness}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a425f78459d2231ef05f474f1778166c5} 
+float FUIPopup\+Base::\+\+Divider\+Thickness = 1.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_ab0eea04c1615412b7e51a9793d6f636a}\index{FUIPopupBase@{FUIPopupBase}!DividerToContentGap@{DividerToContentGap}}
+\index{DividerToContentGap@{DividerToContentGap}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{DividerToContentGap}{DividerToContentGap}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_ab0eea04c1615412b7e51a9793d6f636a} 
+float FUIPopup\+Base::\+\+Divider\+To\+Content\+Gap = 16.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a6d5b394591224323e69b912ab88b3a8c}\index{FUIPopupBase@{FUIPopupBase}!MinButtonWidthWhenMulti@{MinButtonWidthWhenMulti}}
+\index{MinButtonWidthWhenMulti@{MinButtonWidthWhenMulti}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{MinButtonWidthWhenMulti}{MinButtonWidthWhenMulti}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a6d5b394591224323e69b912ab88b3a8c} 
+float FUIPopup\+Base::\+\+Min\+Button\+Width\+When\+Multi = 80.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_af3032947982f130870a52b49a5cd75a6}\index{FUIPopupBase@{FUIPopupBase}!TitleFontScale@{TitleFontScale}}
+\index{TitleFontScale@{TitleFontScale}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{TitleFontScale}{TitleFontScale}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_af3032947982f130870a52b49a5cd75a6} 
+float FUIPopup\+Base::\+\+Title\+Font\+Scale = 1.\+8f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a6a250ed692c7ca8967e672f751cd3b64}\index{FUIPopupBase@{FUIPopupBase}!TitleToDividerGap@{TitleToDividerGap}}
+\index{TitleToDividerGap@{TitleToDividerGap}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{TitleToDividerGap}{TitleToDividerGap}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a6a250ed692c7ca8967e672f751cd3b64} 
+float FUIPopup\+Base::\+\+Title\+To\+Divider\+Gap = 10.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_adf262c4084505f2e36831040f053be4c}\index{FUIPopupBase@{FUIPopupBase}!TitleTopOffset@{TitleTopOffset}}
+\index{TitleTopOffset@{TitleTopOffset}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{TitleTopOffset}{TitleTopOffset}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_adf262c4084505f2e36831040f053be4c} 
+float FUIPopup\+Base::\+\+Title\+Top\+Offset = 18.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a08fd4c3c6581cc110973f4ac0c2b94b8}\index{FUIPopupBase@{FUIPopupBase}!WindowPaddingX@{WindowPaddingX}}
+\index{WindowPaddingX@{WindowPaddingX}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{WindowPaddingX}{WindowPaddingX}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a08fd4c3c6581cc110973f4ac0c2b94b8} 
+float FUIPopup\+Base::\+\+Window\+PaddingX = 20.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_aa6b1874a411c79a183a7c6c9b715fbee}\index{FUIPopupBase@{FUIPopupBase}!WindowPaddingY@{WindowPaddingY}}
+\index{WindowPaddingY@{WindowPaddingY}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{WindowPaddingY}{WindowPaddingY}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_aa6b1874a411c79a183a7c6c9b715fbee} 
+float FUIPopup\+Base::\+\+Window\+PaddingY = 18.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+\Hypertarget{class_f_u_i_popup_base_a89874fa0852516452aadb9f0fa54b195}\index{FUIPopupBase@{FUIPopupBase}!WindowRounding@{WindowRounding}}
+\index{WindowRounding@{WindowRounding}!FUIPopupBase@{FUIPopupBase}}
+\doxysubsubsection{\texorpdfstring{WindowRounding}{WindowRounding}}
+{\footnotesize\ttfamily \label{class_f_u_i_popup_base_a89874fa0852516452aadb9f0fa54b195} 
+float FUIPopup\+Base::\+\+Window\+Rounding = 12.\+0f\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}, {\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+UI/\+popup/\+\doxymbox{\hyperlink{_u_i_popup_base_8h}{UIPopup\+Base.\+h}}\item 
+UI/\+popup/\+\doxymbox{\hyperlink{_u_i_popup_base_8cpp}{UIPopup\+Base.\+cpp}}\end{DoxyCompactItemize}

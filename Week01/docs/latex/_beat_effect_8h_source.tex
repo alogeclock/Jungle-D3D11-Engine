@@ -1,0 +1,30 @@
+\doxysection{Beat\+Effect.\+h}
+\hypertarget{_beat_effect_8h_source}{}\label{_beat_effect_8h_source}\index{UI/widget/BeatEffect.h@{UI/widget/BeatEffect.h}}
+\doxymbox{\hyperlink{_beat_effect_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_game_context_8h}{Core/GameContext.h}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_texture_8h}{Render/Texture.h}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_beat_effect_a8073fcaf17a1393c8201b55e3ba42403}{BeatEffect}}}
+\DoxyCodeLine{00005\ \{}
+\DoxyCodeLine{00006\ \ \ \ \ \doxymbox{\hyperlink{struct_beat_effect_a8073fcaf17a1393c8201b55e3ba42403}{BeatEffect}}()\ \{\}}
+\DoxyCodeLine{00007\ \ \ \ \ \doxymbox{\hyperlink{struct_beat_effect_a98199bc17be7f395cf7b9bee1547641d}{BeatEffect}}(\doxymbox{\hyperlink{class_f_texture}{FTexture}}\ *InTexture,\ \textcolor{keywordtype}{float}\ StartX,\ \textcolor{keywordtype}{float}\ StartY)}
+\DoxyCodeLine{00008\ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_beat_effect_a3ce9f1395868223effc2405c3575153a}{Texture}}(InTexture),\ \doxymbox{\hyperlink{struct_beat_effect_a1d3f7fc9f67e6eba8d5b962b6c9fb256}{X}}(StartX),\ \doxymbox{\hyperlink{struct_beat_effect_a096a6ef2f3e535e0c25bd090e712729f}{Y}}(StartY)}
+\DoxyCodeLine{00009\ \ \ \ \ \{}
+\DoxyCodeLine{00010\ \ \ \ \ \}}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_beat_effect_af8a6c518cef063ae4584d3db1a94c792}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime);}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_beat_effect_a96e7b28fd5600690dbd81c6dd1f80c7c}{IsAlive}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_beat_effect_a64598596b876d498a62bfe13d9ee692d}{Reset}}(\doxymbox{\hyperlink{class_f_texture}{FTexture}}\ *InTexture,\ \textcolor{keywordtype}{float}\ StartX,\ \textcolor{keywordtype}{float}\ StartY,\ \textcolor{keywordtype}{float}\ inLifeTime,\ \textcolor{keywordtype}{float}\ InScore);}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_beat_effect_ad622d721bd869a85c9b82c5a75e3ab5b}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_f_texture}{FTexture}}\ *\doxymbox{\hyperlink{struct_beat_effect_a3ce9f1395868223effc2405c3575153a}{Texture}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_beat_effect_a1d3f7fc9f67e6eba8d5b962b6c9fb256}{X}}\ =\ 0.f;}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_beat_effect_a096a6ef2f3e535e0c25bd090e712729f}{Y}}\ =\ 0.f;}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_beat_effect_a3287eff50951220093f3c81355bba864}{LifeTime}}\ =\ -\/1.f;}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_beat_effect_afe83f47e56c8a141e5d7c21d6448715c}{Score}}\ =\ 0;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{float}\ Speed\ =\ 100.f;}
+\DoxyCodeLine{00024\ \};}
+
+\end{DoxyCode}

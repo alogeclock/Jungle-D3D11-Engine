@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['stb_5fimage_5fimplementation_0',['STB_IMAGE_IMPLEMENTATION',['../_image_loader_8cpp.html#a18372412ad2fc3ce1e3240b3cf0efe78',1,'ImageLoader.cpp']]],
-  ['stbi_5fversion_1',['STBI_VERSION',['../stb__image_8h.html#aed6cd14a3bf678808c4c179e808866aa',1,'stb_image.h']]],
-  ['stbidef_2',['STBIDEF',['../stb__image_8h.html#a2d9ec9850cd12aefe7641b456266a4c2',1,'stb_image.h']]]
+  ['map_5fanalog_0',['MAP_ANALOG',['../imgui__impl__win32_8cpp.html#ab9e788661f93cea16f50bdd44f7228f2',1,'imgui_impl_win32.cpp']]],
+  ['map_5fbutton_1',['MAP_BUTTON',['../imgui__impl__win32_8cpp.html#a2836771b67b5a6453c60b139320d255c',1,'imgui_impl_win32.cpp']]]
 ];

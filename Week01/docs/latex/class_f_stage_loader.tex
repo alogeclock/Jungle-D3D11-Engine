@@ -13,7 +13,9 @@ bool \doxymbox{\hyperlink{class_f_stage_loader_af05c1127b9d23cc63065bd39e995db07
 \item 
 int \doxymbox{\hyperlink{class_f_stage_loader_a57fce289c4cac9c19549d38da8a2a436}{Get\+Stage\+Count}} () const
 \item 
-bool \doxymbox{\hyperlink{class_f_stage_loader_a664cbba5f1ba4b3e794af31707a831da}{Load\+Stage\+By\+Id}} (int Stage\+Index, \doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \&Out\+Stage) const
+bool \doxymbox{\hyperlink{class_f_stage_loader_a4b0091a87c9aff3a54329694b90f4100}{Load\+Stage\+By\+Id}} (int Stage\+Id, \doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \&Out\+Stage) const
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_loader_af76cdfde65a1e2087416098ab67c597f}{Load\+Ending\+Messages}} (std::\+vector$<$ std::\+string $>$ \&Out\+Messages) const
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Static Public Member Functions}
 \begin{DoxyCompactItemize}
@@ -49,11 +51,17 @@ bool FStage\+Loader::\+\+Initialize (\begin{DoxyParamCaption}\item[{const std::\
 {\footnotesize\ttfamily \label{class_f_stage_loader_af05c1127b9d23cc63065bd39e995db07} 
 bool FStage\+Loader::\+\+Is\+Loaded (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
 
-\Hypertarget{class_f_stage_loader_a664cbba5f1ba4b3e794af31707a831da}\index{FStageLoader@{FStageLoader}!LoadStageById@{LoadStageById}}
+\Hypertarget{class_f_stage_loader_af76cdfde65a1e2087416098ab67c597f}\index{FStageLoader@{FStageLoader}!LoadEndingMessages@{LoadEndingMessages}}
+\index{LoadEndingMessages@{LoadEndingMessages}!FStageLoader@{FStageLoader}}
+\doxysubsubsection{\texorpdfstring{LoadEndingMessages()}{LoadEndingMessages()}}
+{\footnotesize\ttfamily \label{class_f_stage_loader_af76cdfde65a1e2087416098ab67c597f} 
+bool FStage\+Loader::\+\+Load\+Ending\+Messages (\begin{DoxyParamCaption}\item[{std::\+vector$<$ std::\+string $>$ \&}]{Out\+Messages}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_loader_a4b0091a87c9aff3a54329694b90f4100}\index{FStageLoader@{FStageLoader}!LoadStageById@{LoadStageById}}
 \index{LoadStageById@{LoadStageById}!FStageLoader@{FStageLoader}}
 \doxysubsubsection{\texorpdfstring{LoadStageById()}{LoadStageById()}}
-{\footnotesize\ttfamily \label{class_f_stage_loader_a664cbba5f1ba4b3e794af31707a831da} 
-bool FStage\+Loader::\+\+Load\+Stage\+By\+Id (\begin{DoxyParamCaption}\item[{int}]{Stage\+Index}{, }\item[{\doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \&}]{Out\+Stage}{}\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \label{class_f_stage_loader_a4b0091a87c9aff3a54329694b90f4100} 
+bool FStage\+Loader::\+\+Load\+Stage\+By\+Id (\begin{DoxyParamCaption}\item[{int}]{Stage\+Id}{, }\item[{\doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \&}]{Out\+Stage}{}\end{DoxyParamCaption}) const}
 
 
 

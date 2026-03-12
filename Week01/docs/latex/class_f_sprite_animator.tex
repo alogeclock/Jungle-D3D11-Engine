@@ -1,0 +1,76 @@
+\doxysection{FSprite\+Animator Class Reference}
+\hypertarget{class_f_sprite_animator}{}\label{class_f_sprite_animator}\index{FSpriteAnimator@{FSpriteAnimator}}
+
+
+{\ttfamily \+\#include $<$Sprite\+Animation.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_f_sprite_animator_ac5c9ef75416d8cccf0a6c1fa7bc7b096}{Add\+Animation}} (const std::\+string \&Name, const \doxymbox{\hyperlink{struct_f_sprite_animation}{FSprite\+Animation}} \&Anim)
+\item 
+void \doxymbox{\hyperlink{class_f_sprite_animator_afbb7960bdb83c1e5efcfed3e3cd4ee7b}{Play}} (const std::\+string \&Name, bool b\+Force\+Restart=false)
+\item 
+void \doxymbox{\hyperlink{class_f_sprite_animator_a885b0dd2805291aa51d85b903c6ecbd3}{Update}} (float Delta\+Time)
+\item 
+const \doxymbox{\hyperlink{struct_f_keyframe}{FKeyframe}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_sprite_animator_ac46f23cf097efc13817ac385625bbe76}{Get\+Current\+Keyframe}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_sprite_animator_a70bd460108d04f2cd82e2eb760006d67}{Is\+Playing}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_sprite_animator_a99231624214f0f26c1715ff451f7b2b6}{Is\+Finished}} () const
+\item 
+const std::\+string \& \doxymbox{\hyperlink{class_f_sprite_animator_af8e4ce577125fa9ac7522608335eddf7}{Get\+Current\+Anim\+Name}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_sprite_animator_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_sprite_animator_ac5c9ef75416d8cccf0a6c1fa7bc7b096}\index{FSpriteAnimator@{FSpriteAnimator}!AddAnimation@{AddAnimation}}
+\index{AddAnimation@{AddAnimation}!FSpriteAnimator@{FSpriteAnimator}}
+\doxysubsubsection{\texorpdfstring{AddAnimation()}{AddAnimation()}}
+{\footnotesize\ttfamily \label{class_f_sprite_animator_ac5c9ef75416d8cccf0a6c1fa7bc7b096} 
+void FSprite\+Animator::\+\+Add\+Animation (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Name}{, }\item[{const \doxymbox{\hyperlink{struct_f_sprite_animation}{FSprite\+Animation}} \&}]{Anim}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_sprite_animator_af8e4ce577125fa9ac7522608335eddf7}\index{FSpriteAnimator@{FSpriteAnimator}!GetCurrentAnimName@{GetCurrentAnimName}}
+\index{GetCurrentAnimName@{GetCurrentAnimName}!FSpriteAnimator@{FSpriteAnimator}}
+\doxysubsubsection{\texorpdfstring{GetCurrentAnimName()}{GetCurrentAnimName()}}
+{\footnotesize\ttfamily \label{class_f_sprite_animator_af8e4ce577125fa9ac7522608335eddf7} 
+const std::\+string \& FSprite\+Animator::\+\+Get\+Current\+Anim\+Name (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_sprite_animator_ac46f23cf097efc13817ac385625bbe76}\index{FSpriteAnimator@{FSpriteAnimator}!GetCurrentKeyframe@{GetCurrentKeyframe}}
+\index{GetCurrentKeyframe@{GetCurrentKeyframe}!FSpriteAnimator@{FSpriteAnimator}}
+\doxysubsubsection{\texorpdfstring{GetCurrentKeyframe()}{GetCurrentKeyframe()}}
+{\footnotesize\ttfamily \label{class_f_sprite_animator_ac46f23cf097efc13817ac385625bbe76} 
+const \doxymbox{\hyperlink{struct_f_keyframe}{FKeyframe}} \texorpdfstring{$\ast$}{*} FSprite\+Animator::\+\+Get\+Current\+Keyframe (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_sprite_animator_a99231624214f0f26c1715ff451f7b2b6}\index{FSpriteAnimator@{FSpriteAnimator}!IsFinished@{IsFinished}}
+\index{IsFinished@{IsFinished}!FSpriteAnimator@{FSpriteAnimator}}
+\doxysubsubsection{\texorpdfstring{IsFinished()}{IsFinished()}}
+{\footnotesize\ttfamily \label{class_f_sprite_animator_a99231624214f0f26c1715ff451f7b2b6} 
+bool FSprite\+Animator::\+\+Is\+Finished (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_sprite_animator_a70bd460108d04f2cd82e2eb760006d67}\index{FSpriteAnimator@{FSpriteAnimator}!IsPlaying@{IsPlaying}}
+\index{IsPlaying@{IsPlaying}!FSpriteAnimator@{FSpriteAnimator}}
+\doxysubsubsection{\texorpdfstring{IsPlaying()}{IsPlaying()}}
+{\footnotesize\ttfamily \label{class_f_sprite_animator_a70bd460108d04f2cd82e2eb760006d67} 
+bool FSprite\+Animator::\+\+Is\+Playing (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_sprite_animator_afbb7960bdb83c1e5efcfed3e3cd4ee7b}\index{FSpriteAnimator@{FSpriteAnimator}!Play@{Play}}
+\index{Play@{Play}!FSpriteAnimator@{FSpriteAnimator}}
+\doxysubsubsection{\texorpdfstring{Play()}{Play()}}
+{\footnotesize\ttfamily \label{class_f_sprite_animator_afbb7960bdb83c1e5efcfed3e3cd4ee7b} 
+void FSprite\+Animator::\+\+Play (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Name}{, }\item[{bool}]{b\+Force\+Restart}{ = {\ttfamily false}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_sprite_animator_a885b0dd2805291aa51d85b903c6ecbd3}\index{FSpriteAnimator@{FSpriteAnimator}!Update@{Update}}
+\index{Update@{Update}!FSpriteAnimator@{FSpriteAnimator}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_sprite_animator_a885b0dd2805291aa51d85b903c6ecbd3} 
+void FSprite\+Animator::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Gameplay/\+\doxymbox{\hyperlink{_sprite_animation_8h}{Sprite\+Animation.\+h}}\item 
+Gameplay/\+\doxymbox{\hyperlink{_sprite_animation_8cpp}{Sprite\+Animation.\+cpp}}\end{DoxyCompactItemize}

@@ -93,47 +93,99 @@ $(function(){initNavTree('class_f_audio_system.html','','class_f_audio_system-me
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="_audio_system_8h_source.html">AudioSystem.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for FAudioSystem:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="class_f_audio_system.png" usemap="#FAudioSystem_map" alt=""/>
+  <map id="FAudioSystem_map" name="FAudioSystem_map">
+<area href="class_t_singleton.html" alt="TSingleton&lt; FAudioSystem &gt;" shape="rect" coords="0,0,176,24"/>
+  </map>
+</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a31cb48c28eb7307e7ac40c6b005cda43" id="r_a31cb48c28eb7307e7ac40c6b005cda43"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a31cb48c28eb7307e7ac40c6b005cda43">~FAudioSystem</a> ()</td></tr>
 <tr class="memitem:aae7f34646f38b8194b559927fdc8faa1" id="r_aae7f34646f38b8194b559927fdc8faa1"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aae7f34646f38b8194b559927fdc8faa1">Initialize</a> ()</td></tr>
 <tr class="memitem:a677fe730f99df5bb39b2d26a171a1b7c" id="r_a677fe730f99df5bb39b2d26a171a1b7c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a677fe730f99df5bb39b2d26a171a1b7c">Shutdown</a> ()</td></tr>
 <tr class="memitem:a707ad416f8a553dae2dbaccba0ee086e" id="r_a707ad416f8a553dae2dbaccba0ee086e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a707ad416f8a553dae2dbaccba0ee086e">LoadWav</a> (const std::string &amp;Key, const std::string &amp;FilePath)</td></tr>
-<tr class="memitem:accc0c9ca589632744435814921274f82" id="r_accc0c9ca589632744435814921274f82"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#accc0c9ca589632744435814921274f82">Play</a> (const std::string &amp;Key, bool bLoop=false)</td></tr>
+<tr class="memitem:a5a441d3f85eaafeb2e011b9e0b508947" id="r_a5a441d3f85eaafeb2e011b9e0b508947"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5a441d3f85eaafeb2e011b9e0b508947">Play</a> (const std::string &amp;Key, bool bLoop=false, <a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a> Channel=<a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5ada101052f6ba998ab41d571a6fff1708">EAudioChannel::SFX</a>)</td></tr>
 <tr class="memitem:aa8455741ff5bc8cf75db7ad0f05fccd6" id="r_aa8455741ff5bc8cf75db7ad0f05fccd6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa8455741ff5bc8cf75db7ad0f05fccd6">Stop</a> (const std::string &amp;Key)</td></tr>
 <tr class="memitem:a65252f4342bea1ca01111ae98660cd47" id="r_a65252f4342bea1ca01111ae98660cd47"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a65252f4342bea1ca01111ae98660cd47">StopAll</a> ()</td></tr>
+<tr class="memitem:a10b0137b6250fba92fee61ae7d3ed0b7" id="r_a10b0137b6250fba92fee61ae7d3ed0b7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a10b0137b6250fba92fee61ae7d3ed0b7">StopChannel</a> (<a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a> Channel)</td></tr>
 <tr class="memitem:a4c1767d3b5fdf261b8eccdf464e39808" id="r_a4c1767d3b5fdf261b8eccdf464e39808"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4c1767d3b5fdf261b8eccdf464e39808">SetVolume</a> (const std::string &amp;Key, float Volume)</td></tr>
 <tr class="memitem:aeea6a5dc32d0974c0d8d4e1a86e56460" id="r_aeea6a5dc32d0974c0d8d4e1a86e56460"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aeea6a5dc32d0974c0d8d4e1a86e56460">SetMasterVolume</a> (float Volume)</td></tr>
+<tr class="memitem:a44003858c1c1e59fb73a41986d69e4c4" id="r_a44003858c1c1e59fb73a41986d69e4c4"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a44003858c1c1e59fb73a41986d69e4c4">GetMasterVolume</a> () const</td></tr>
+<tr class="memitem:a9dd7c98c5e7f51a5589d009636a1a331" id="r_a9dd7c98c5e7f51a5589d009636a1a331"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9dd7c98c5e7f51a5589d009636a1a331">SetChannelVolume</a> (<a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a> Channel, float Volume)</td></tr>
+<tr class="memitem:a49f5f1f6ebd7e3324059a99e37cb6498" id="r_a49f5f1f6ebd7e3324059a99e37cb6498"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="#a49f5f1f6ebd7e3324059a99e37cb6498">GetChannelVolume</a> (<a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a> Channel) const</td></tr>
 <tr class="memitem:a10ea8a91ff45b871f8d6801dc4b6ff91" id="r_a10ea8a91ff45b871f8d6801dc4b6ff91"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a10ea8a91ff45b871f8d6801dc4b6ff91">SetPlaybackRate</a> (const std::string &amp;Key, float Rate)</td></tr>
 <tr class="memitem:af070c31db19634576488bba16f76783f" id="r_af070c31db19634576488bba16f76783f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af070c31db19634576488bba16f76783f">SetAllPlaybackRate</a> (float Rate)</td></tr>
+<tr class="memitem:a59387d3b0640f46bf7cd202b6a0d999f" id="r_a59387d3b0640f46bf7cd202b6a0d999f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a59387d3b0640f46bf7cd202b6a0d999f">SetChannelPlaybackRate</a> (<a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a> Channel, float Rate)</td></tr>
 <tr class="memitem:aced10bd6c9b27cc1eaa0878e95ec3a34" id="r_aced10bd6c9b27cc1eaa0878e95ec3a34"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aced10bd6c9b27cc1eaa0878e95ec3a34">IsPlaying</a> (const std::string &amp;Key) const</td></tr>
+<tr class="inherit_header pub_methods_class_t_singleton"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_t_singleton')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_t_singleton.html">TSingleton&lt; FAudioSystem &gt;</a></td></tr>
+<tr class="memitem:a3329d545584f47f675a5a46396392a58 inherit pub_methods_class_t_singleton" id="r_a3329d545584f47f675a5a46396392a58"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="class_t_singleton.html#a3329d545584f47f675a5a46396392a58">TSingleton</a> (const <a class="el" href="class_t_singleton.html">TSingleton</a> &amp;)=delete</td></tr>
+<tr class="memitem:a4fc16f83796779f41ea0504e29f9a654 inherit pub_methods_class_t_singleton" id="r_a4fc16f83796779f41ea0504e29f9a654"><td class="memItemLeft"><a class="el" href="class_t_singleton.html">TSingleton</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_t_singleton.html#a4fc16f83796779f41ea0504e29f9a654">operator=</a> (const <a class="el" href="class_t_singleton.html">TSingleton</a> &amp;)=delete</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa0f3afaa0c3dec49dbaaf4f2e35a69c0" id="r_aa0f3afaa0c3dec49dbaaf4f2e35a69c0"><td class="memItemLeft">static <a class="el" href="class_f_audio_system.html">FAudioSystem</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aa0f3afaa0c3dec49dbaaf4f2e35a69c0">Get</a> ()</td></tr>
+<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a0de5c560266197b5180451d2b588b8fd" id="r_a0de5c560266197b5180451d2b588b8fd"><td class="memItemLeft">class&#160;</td><td class="memItemRight"><a class="el" href="#a0de5c560266197b5180451d2b588b8fd">TSingleton&lt; FAudioSystem &gt;</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_static_methods_class_t_singleton"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_class_t_singleton')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="class_t_singleton.html">TSingleton&lt; FAudioSystem &gt;</a></td></tr>
+<tr class="memitem:a7e105a91dd88831d00ca746554eb57d9 inherit pub_static_methods_class_t_singleton" id="r_a7e105a91dd88831d00ca746554eb57d9"><td class="memItemLeft">static <a class="el" href="class_f_audio_system.html">FAudioSystem</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_t_singleton.html#a7e105a91dd88831d00ca746554eb57d9">Get</a> ()</td></tr>
+<tr class="inherit_header pro_methods_class_t_singleton"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_t_singleton')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_t_singleton.html">TSingleton&lt; FAudioSystem &gt;</a></td></tr>
+<tr class="memitem:a8d0a2d35245cf6186e32bcd902734027 inherit pro_methods_class_t_singleton" id="r_a8d0a2d35245cf6186e32bcd902734027"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="class_t_singleton.html#a8d0a2d35245cf6186e32bcd902734027">~TSingleton</a> ()=default</td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="aa0f3afaa0c3dec49dbaaf4f2e35a69c0" name="aa0f3afaa0c3dec49dbaaf4f2e35a69c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0f3afaa0c3dec49dbaaf4f2e35a69c0">&#9670;&#160;</a></span>Get()</h2>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a31cb48c28eb7307e7ac40c6b005cda43" name="a31cb48c28eb7307e7ac40c6b005cda43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31cb48c28eb7307e7ac40c6b005cda43">&#9670;&#160;</a></span>~FAudioSystem()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_f_audio_system.html">FAudioSystem</a> &amp; FAudioSystem::Get </td>
+          <td class="memname">FAudioSystem::~FAudioSystem </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a49f5f1f6ebd7e3324059a99e37cb6498" name="a49f5f1f6ebd7e3324059a99e37cb6498"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49f5f1f6ebd7e3324059a99e37cb6498">&#9670;&#160;</a></span>GetChannelVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float FAudioSystem::GetChannelVolume </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a></td>          <td class="paramname"><span class="paramname"><em>Channel</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a44003858c1c1e59fb73a41986d69e4c4" name="a44003858c1c1e59fb73a41986d69e4c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44003858c1c1e59fb73a41986d69e4c4">&#9670;&#160;</a></span>GetMasterVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float FAudioSystem::GetMasterVolume </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
 </div><div class="memdoc">
 
 </div>
@@ -193,8 +245,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="accc0c9ca589632744435814921274f82" name="accc0c9ca589632744435814921274f82"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#accc0c9ca589632744435814921274f82">&#9670;&#160;</a></span>Play()</h2>
+<a id="a5a441d3f85eaafeb2e011b9e0b508947" name="a5a441d3f85eaafeb2e011b9e0b508947"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a441d3f85eaafeb2e011b9e0b508947">&#9670;&#160;</a></span>Play()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -207,7 +259,12 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bLoop</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bLoop</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a></td>          <td class="paramname"><span class="paramname"><em>Channel</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5ada101052f6ba998ab41d571a6fff1708">EAudioChannel::SFX</a></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -225,6 +282,48 @@ Static Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>Rate</em></span></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59387d3b0640f46bf7cd202b6a0d999f" name="a59387d3b0640f46bf7cd202b6a0d999f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59387d3b0640f46bf7cd202b6a0d999f">&#9670;&#160;</a></span>SetChannelPlaybackRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FAudioSystem::SetChannelPlaybackRate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a></td>          <td class="paramname"><span class="paramname"><em>Channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>Rate</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9dd7c98c5e7f51a5589d009636a1a331" name="a9dd7c98c5e7f51a5589d009636a1a331"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dd7c98c5e7f51a5589d009636a1a331">&#9670;&#160;</a></span>SetChannelVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FAudioSystem::SetChannelVolume </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a></td>          <td class="paramname"><span class="paramname"><em>Channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>Volume</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -337,6 +436,46 @@ Static Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a10b0137b6250fba92fee61ae7d3ed0b7" name="a10b0137b6250fba92fee61ae7d3ed0b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10b0137b6250fba92fee61ae7d3ed0b7">&#9670;&#160;</a></span>StopChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FAudioSystem::StopChannel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_audio_system_8h.html#a19d37fab37f64ab3d44b420782fe2cd5">EAudioChannel</a></td>          <td class="paramname"><span class="paramname"><em>Channel</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-related-members" id="doc-related-members"></a><h2 id="header-doc-related-members" class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a0de5c560266197b5180451d2b588b8fd" name="a0de5c560266197b5180451d2b588b8fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0de5c560266197b5180451d2b588b8fd">&#9670;&#160;</a></span>TSingleton&lt; FAudioSystem &gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="class_t_singleton.html">TSingleton</a>&lt; <a class="el" href="class_f_audio_system.html">FAudioSystem</a> &gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>

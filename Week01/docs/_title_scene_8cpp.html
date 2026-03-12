@@ -92,17 +92,55 @@ $(function(){initNavTree('_title_scene_8cpp.html','',''); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="pch_8h_source.html">pch.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_title_scene_8h_source.html">TitleScene.h</a>&quot;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &quot;<a class="el" href="_audio_system_8h_source.html">Core/AudioSystem.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_game_context_8h_source.html">Core/GameContext.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_score_repository_8h_source.html">Data/ScoreRepository.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_renderer_8h_source.html">Render/Renderer.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_credit_popup_8h_source.html">Gameplay/CreditPopup.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_scoreboard_popup_8h_source.html">Gameplay/ScoreboardPopup.h</a>&quot;</code><br />
-<code>#include &quot;imgui/imgui.h&quot;</code><br />
-<code>#include &quot;imgui/imgui_internal.h&quot;</code><br />
-<code>#include &quot;imgui/imgui_impl_dx11.h&quot;</code><br />
-<code>#include &quot;imgui/imgui_impl_win32.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="_texture_manager_8h_source.html">Render/TextureManager.h</a>&quot;</code><br />
-</div></div><!-- contents -->
+<code>#include &quot;<a class="el" href="_scene_type_8h_source.html">Scene/SceneType.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_title_scene_8h_source.html">TitleScene.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_credit_popup_8h_source.html">UI/popup/CreditPopup.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_popup_manager_8h_source.html">UI/popup/PopupManager.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_scoreboard_popup_8h_source.html">UI/popup/ScoreboardPopup.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_u_i_popup_action_8h_source.html">UI/popup/UIPopupAction.h</a>&quot;</code><br />
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a2e6ef411e0ff00ad889788b6cde701b5" id="r_a2e6ef411e0ff00ad889788b6cde701b5"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a2e6ef411e0ff00ad889788b6cde701b5">WIN_WIDTH</a>&#160;&#160;&#160;1024</td></tr>
+<tr class="memitem:a0a33b1743038db1adbbf1045aa839b38" id="r_a0a33b1743038db1adbbf1045aa839b38"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a0a33b1743038db1adbbf1045aa839b38">WIN_HEIGHT</a>&#160;&#160;&#160;1024</td></tr>
+</table>
+<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="a0a33b1743038db1adbbf1045aa839b38" name="a0a33b1743038db1adbbf1045aa839b38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a33b1743038db1adbbf1045aa839b38">&#9670;&#160;</a></span>WIN_HEIGHT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WIN_HEIGHT&#160;&#160;&#160;1024</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e6ef411e0ff00ad889788b6cde701b5" name="a2e6ef411e0ff00ad889788b6cde701b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e6ef411e0ff00ad889788b6cde701b5">&#9670;&#160;</a></span>WIN_WIDTH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WIN_WIDTH&#160;&#160;&#160;1024</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

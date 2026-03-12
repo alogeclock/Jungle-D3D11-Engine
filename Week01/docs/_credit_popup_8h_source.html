@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Jungle_Week1_Team2: Gameplay/CreditPopup.h Source File</title>
+<title>Jungle_Week1_Team2: UI/popup/CreditPopup.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -93,39 +93,65 @@ $(function(){initNavTree('_credit_popup_8h_source.html','',''); });
 <div class="contents">
 <a href="_credit_popup_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="_popup_8h.html">UI/Popup.h</a>&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="foldopen" id="foldopen00005" data-start="{" data-end="};">
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="class_f_credit_popup.html">    5</a></span><span class="keyword">class </span><a class="code hl_class" href="class_f_credit_popup.html">FCreditPopup</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_i_popup.html">IPopup</a></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_f_credit_popup.html#ab18ccc2b84070ec7d2eadb4f0b351ab6">Open</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_f_credit_popup.html#a2e0485cd8fb7677f526e7ad8e7b93a51">Close</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_f_credit_popup.html#add2878c4991fb8acc9ad1aad7c07d9af">IsOpen</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_f_credit_popup.html#a0f9e151f259c6432319ac91ebd571621">Update</a>(<a class="code hl_struct" href="struct_f_game_context.html">FGameContext</a>&amp; Context) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_f_credit_popup.html#a32b2c3ed3fdf556852601b311cbe54bf">Render</a>(<a class="code hl_struct" href="struct_f_game_context.html">FGameContext</a>&amp; Context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_credit_loader_8h.html">Data/CreditLoader.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_u_i_popup_action_8h.html">UIPopupAction.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_u_i_popup_base_8h.html">UIPopupBase.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">struct </span><a class="code hl_struct" href="struct_f_game_context.html">FGameContext</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="class_f_credit_popup.html">   10</a></span><span class="keyword">class </span><a class="code hl_class" href="class_f_credit_popup.html">FCreditPopup</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_f_u_i_popup_base.html">FUIPopupBase</a></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="class_f_credit_popup.html#a462ed10fc21e939d9c9f7980358da309">   13</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_f_credit_popup.html#a462ed10fc21e939d9c9f7980358da309">SetCredits</a>(<span class="keyword">const</span> std::vector&lt;FCreditEntry&gt; &amp;InCredits) { Credits = InCredits; }</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordtype">bool</span> bIsOpen = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_enumeration" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a> <a class="code hl_function" href="class_f_credit_popup.html#a47edca2d120d5152d271fff96003e2c0">ConsumeAction</a>();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordtype">void</span>           <a class="code hl_function" href="class_f_credit_popup.html#a32b2c3ed3fdf556852601b311cbe54bf">Render</a>(<a class="code hl_struct" href="struct_f_game_context.html">FGameContext</a> &amp;Context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="class_f_credit_popup.html#a0f9e151f259c6432319ac91ebd571621">   17</a></span>    <span class="keywordtype">void</span>           <a class="code hl_function" href="class_f_credit_popup.html#a0f9e151f259c6432319ac91ebd571621">Update</a>(<a class="code hl_struct" href="struct_f_game_context.html">FGameContext</a> &amp;Context)<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="_u_i_popup_base_8h.html#a27a1627db9ed7cbd3aeee442c7a400ec">EUIPopupContentAlign</a>    ContentAlign = <a class="code hl_enumvalue" href="_u_i_popup_base_8h.html#a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd">EUIPopupContentAlign::Center</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="_u_i_popup_base_8h.html#a6cd788de8a8bee68b0aff0957db765e8">EUIPopupContentTextSize</a> ContentTextSize = <a class="code hl_enumvalue" href="_u_i_popup_base_8h.html#a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3">EUIPopupContentTextSize::Big</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> NameColumnMinWidth = 220.0f;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> PipeGap = 18.0f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> LineGap = 14.0f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> BlockOffsetX = -10.0f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> TopPadding = 6.0f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> DrawCredits(<span class="keyword">const</span> <a class="code hl_struct" href="struct_f_popup_frame_layout.html">FPopupFrameLayout</a> &amp;Layout);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::vector&lt;FCreditEntry&gt; Credits;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_enumeration" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a>            PendingAction = <a class="code hl_enumvalue" href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1aa6adf97f83acf6453d4a6a4b1070f3754">EUIPopupAction::None</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
 </div>
-<div class="ttc" id="a_popup_8h_html"><div class="ttname"><a href="_popup_8h.html">Popup.h</a></div></div>
-<div class="ttc" id="aclass_f_credit_popup_html"><div class="ttname"><a href="class_f_credit_popup.html">FCreditPopup</a></div><div class="ttdef"><b>Definition</b> CreditPopup.h:6</div></div>
-<div class="ttc" id="aclass_f_credit_popup_html_a0f9e151f259c6432319ac91ebd571621"><div class="ttname"><a href="class_f_credit_popup.html#a0f9e151f259c6432319ac91ebd571621">FCreditPopup::Update</a></div><div class="ttdeci">void Update(FGameContext &amp;Context) override</div><div class="ttdef"><b>Definition</b> CreditPopup.cpp:12</div></div>
-<div class="ttc" id="aclass_f_credit_popup_html_a2e0485cd8fb7677f526e7ad8e7b93a51"><div class="ttname"><a href="class_f_credit_popup.html#a2e0485cd8fb7677f526e7ad8e7b93a51">FCreditPopup::Close</a></div><div class="ttdeci">void Close() override</div><div class="ttdef"><b>Definition</b> CreditPopup.cpp:8</div></div>
-<div class="ttc" id="aclass_f_credit_popup_html_a32b2c3ed3fdf556852601b311cbe54bf"><div class="ttname"><a href="class_f_credit_popup.html#a32b2c3ed3fdf556852601b311cbe54bf">FCreditPopup::Render</a></div><div class="ttdeci">void Render(FGameContext &amp;Context) override</div><div class="ttdef"><b>Definition</b> CreditPopup.cpp:14</div></div>
-<div class="ttc" id="aclass_f_credit_popup_html_ab18ccc2b84070ec7d2eadb4f0b351ab6"><div class="ttname"><a href="class_f_credit_popup.html#ab18ccc2b84070ec7d2eadb4f0b351ab6">FCreditPopup::Open</a></div><div class="ttdeci">void Open() override</div><div class="ttdef"><b>Definition</b> CreditPopup.cpp:6</div></div>
-<div class="ttc" id="aclass_f_credit_popup_html_add2878c4991fb8acc9ad1aad7c07d9af"><div class="ttname"><a href="class_f_credit_popup.html#add2878c4991fb8acc9ad1aad7c07d9af">FCreditPopup::IsOpen</a></div><div class="ttdeci">bool IsOpen() const override</div><div class="ttdef"><b>Definition</b> CreditPopup.cpp:10</div></div>
-<div class="ttc" id="aclass_i_popup_html"><div class="ttname"><a href="class_i_popup.html">IPopup</a></div><div class="ttdef"><b>Definition</b> Popup.h:6</div></div>
-<div class="ttc" id="astruct_f_game_context_html"><div class="ttname"><a href="struct_f_game_context.html">FGameContext</a></div><div class="ttdef"><b>Definition</b> GameContext.h:9</div></div>
+<div class="ttc" id="a_credit_loader_8h_html"><div class="ttname"><a href="_credit_loader_8h.html">CreditLoader.h</a></div></div>
+<div class="ttc" id="a_u_i_popup_action_8h_html"><div class="ttname"><a href="_u_i_popup_action_8h.html">UIPopupAction.h</a></div></div>
+<div class="ttc" id="a_u_i_popup_action_8h_html_aa5ecfd7a32541f889e86cd3acde85b1a"><div class="ttname"><a href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1a">EUIPopupAction</a></div><div class="ttdeci">EUIPopupAction</div><div class="ttdef"><b>Definition</b> UIPopupAction.h:4</div></div>
+<div class="ttc" id="a_u_i_popup_action_8h_html_aa5ecfd7a32541f889e86cd3acde85b1aa6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="_u_i_popup_action_8h.html#aa5ecfd7a32541f889e86cd3acde85b1aa6adf97f83acf6453d4a6a4b1070f3754">EUIPopupAction::None</a></div><div class="ttdeci">@ None</div><div class="ttdef"><b>Definition</b> UIPopupAction.h:5</div></div>
+<div class="ttc" id="a_u_i_popup_base_8h_html"><div class="ttname"><a href="_u_i_popup_base_8h.html">UIPopupBase.h</a></div></div>
+<div class="ttc" id="a_u_i_popup_base_8h_html_a27a1627db9ed7cbd3aeee442c7a400ec"><div class="ttname"><a href="_u_i_popup_base_8h.html#a27a1627db9ed7cbd3aeee442c7a400ec">EUIPopupContentAlign</a></div><div class="ttdeci">EUIPopupContentAlign</div><div class="ttdef"><b>Definition</b> UIPopupBase.h:12</div></div>
+<div class="ttc" id="a_u_i_popup_base_8h_html_a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd"><div class="ttname"><a href="_u_i_popup_base_8h.html#a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd">EUIPopupContentAlign::Center</a></div><div class="ttdeci">@ Center</div><div class="ttdef"><b>Definition</b> UIPopupBase.h:14</div></div>
+<div class="ttc" id="a_u_i_popup_base_8h_html_a6cd788de8a8bee68b0aff0957db765e8"><div class="ttname"><a href="_u_i_popup_base_8h.html#a6cd788de8a8bee68b0aff0957db765e8">EUIPopupContentTextSize</a></div><div class="ttdeci">EUIPopupContentTextSize</div><div class="ttdef"><b>Definition</b> UIPopupBase.h:19</div></div>
+<div class="ttc" id="a_u_i_popup_base_8h_html_a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3"><div class="ttname"><a href="_u_i_popup_base_8h.html#a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3">EUIPopupContentTextSize::Big</a></div><div class="ttdeci">@ Big</div><div class="ttdef"><b>Definition</b> UIPopupBase.h:22</div></div>
+<div class="ttc" id="aclass_f_credit_popup_html"><div class="ttname"><a href="class_f_credit_popup.html">FCreditPopup</a></div><div class="ttdef"><b>Definition</b> CreditPopup.h:11</div></div>
+<div class="ttc" id="aclass_f_credit_popup_html_a0f9e151f259c6432319ac91ebd571621"><div class="ttname"><a href="class_f_credit_popup.html#a0f9e151f259c6432319ac91ebd571621">FCreditPopup::Update</a></div><div class="ttdeci">void Update(FGameContext &amp;Context) override</div><div class="ttdef"><b>Definition</b> CreditPopup.h:17</div></div>
+<div class="ttc" id="aclass_f_credit_popup_html_a32b2c3ed3fdf556852601b311cbe54bf"><div class="ttname"><a href="class_f_credit_popup.html#a32b2c3ed3fdf556852601b311cbe54bf">FCreditPopup::Render</a></div><div class="ttdeci">void Render(FGameContext &amp;Context) override</div><div class="ttdef"><b>Definition</b> CreditPopup.cpp:11</div></div>
+<div class="ttc" id="aclass_f_credit_popup_html_a462ed10fc21e939d9c9f7980358da309"><div class="ttname"><a href="class_f_credit_popup.html#a462ed10fc21e939d9c9f7980358da309">FCreditPopup::SetCredits</a></div><div class="ttdeci">void SetCredits(const std::vector&lt; FCreditEntry &gt; &amp;InCredits)</div><div class="ttdef"><b>Definition</b> CreditPopup.h:13</div></div>
+<div class="ttc" id="aclass_f_credit_popup_html_a47edca2d120d5152d271fff96003e2c0"><div class="ttname"><a href="class_f_credit_popup.html#a47edca2d120d5152d271fff96003e2c0">FCreditPopup::ConsumeAction</a></div><div class="ttdeci">EUIPopupAction ConsumeAction()</div><div class="ttdef"><b>Definition</b> CreditPopup.cpp:4</div></div>
+<div class="ttc" id="aclass_f_u_i_popup_base_html"><div class="ttname"><a href="class_f_u_i_popup_base.html">FUIPopupBase</a></div><div class="ttdef"><b>Definition</b> UIPopupBase.h:58</div></div>
+<div class="ttc" id="astruct_f_game_context_html"><div class="ttname"><a href="struct_f_game_context.html">FGameContext</a></div><div class="ttdef"><b>Definition</b> GameContext.h:10</div></div>
+<div class="ttc" id="astruct_f_popup_frame_layout_html"><div class="ttname"><a href="struct_f_popup_frame_layout.html">FPopupFrameLayout</a></div><div class="ttdef"><b>Definition</b> UIPopupBase.h:32</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="dir_042d05fde9de49a23d65aa13d3a79273.html">Gameplay</a></li><li class="navelem"><a href="_credit_popup_8h.html">CreditPopup.h</a></li>
+    <li class="navelem"><a href="dir_53ff6e473d46d4e442ba5a7ce9f895e3.html">UI</a></li><li class="navelem"><a href="dir_cd8c8fb1b7f793e251cfeaa015784d13.html">popup</a></li><li class="navelem"><a href="_credit_popup_8h.html">CreditPopup.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.16.1 </li>
   </ul>
 </div>

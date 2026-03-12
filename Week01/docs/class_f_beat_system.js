@@ -1,6 +1,7 @@
 var class_f_beat_system =
 [
     [ "ConsumeBeat", "class_f_beat_system.html#a7a85f6add305295886abc6927c14b8d7", null ],
+    [ "GetBeatCount", "class_f_beat_system.html#a56e2e0fb75cc70729c6dd988f87aa31f", null ],
     [ "GetBeatInterval", "class_f_beat_system.html#ac6d48788df3316f54a2c24e9003781a5", null ],
     [ "GetBpm", "class_f_beat_system.html#a5a0e2c316575782e539c02add2b38cec", null ],
     [ "GetElapsedTime", "class_f_beat_system.html#a405820b752e971ecfb1fb16bb4f88da4", null ],

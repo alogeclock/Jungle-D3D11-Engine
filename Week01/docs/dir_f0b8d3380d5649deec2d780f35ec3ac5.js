@@ -1,5 +1,7 @@
 var dir_f0b8d3380d5649deec2d780f35ec3ac5 =
 [
+    [ "BitmapFontLoader.cpp", "_bitmap_font_loader_8cpp.html", null ],
+    [ "BitmapFontLoader.h", "_bitmap_font_loader_8h.html", null ],
     [ "FileIO.cpp", "_file_i_o_8cpp.html", null ],
     [ "FileIO.h", "_file_i_o_8h.html", "_file_i_o_8h" ],
     [ "ImageLoader.cpp", "_image_loader_8cpp.html", "_image_loader_8cpp" ],
