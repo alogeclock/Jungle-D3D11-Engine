@@ -164,6 +164,10 @@ void FPlayScene::LoadStage(FGameContext &Context)
     HUD->SetTextures(Context);
     HUD->BindStage(Stage.get());
     HUD->BindPauseFlag(&bIsPaused);
+    Stage->GetScoreSystem().SetJudgeScoreUpdateCallback([HUDptr = HUD.get()](int InScore)
+                                                        { HUDptr->OnBeatScoreUpdate(InScore); });
+    Stage->GetScoreSystem().SetTimerBonusCallback([HUDptr = HUD.get()](int InScore)
+                                                  { HUDptr->OnTimerBonusUpdate(InScore); });
     UIManager.AddWidget("GameplayHUD", std::move(HUD));
 
     auto BeatHUD = std::make_unique<FBeatHUDWidget>();

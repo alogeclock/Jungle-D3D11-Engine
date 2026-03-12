@@ -28,13 +28,6 @@ void FGameplayHUDWidget::Update(FGameContext &Context)
     // Score 애니메이션 업데이트
     if (Stage)
     {
-        int ActualScore = Stage->GetScoreSystem().GetScore();
-        if (ActualScore != TargetScore)
-        {
-            ScoreAnimStart = DisplayScore;
-            TargetScore = ActualScore;
-            ScoreAnimTimer = 0.0f;
-        }
 
         if (DisplayScore != TargetScore)
         {
@@ -47,7 +40,8 @@ void FGameplayHUDWidget::Update(FGameContext &Context)
             }
             else
             {
-                DisplayScore = ScoreAnimStart + static_cast<int>((TargetScore - ScoreAnimStart) * T);
+                DisplayScore =
+                    ScoreAnimStart + static_cast<int>((TargetScore - ScoreAnimStart) * T);
             }
         }
     }
@@ -98,13 +92,12 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
 
         char TimeBuf[32];
         // snprintf(TimeBuf, sizeof(TimeBuf), "Time %d:%02d", Minutes, Seconds);
-        snprintf(TimeBuf, sizeof(TimeBuf), "Time %03d", IRemaining);
+        snprintf(TimeBuf, sizeof(TimeBuf), "Time   %03d", IRemaining);
 
         char ScoreBuf[32];
-        snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %d", DisplayScore);
+        snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %05d", DisplayScore);
 
-        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 120,
-                                  50);
+        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, HPTextPos.X + 50, HPTextPos.Y + 120, 50);
 
         // Angry 모드: 타이머 텍스트 scale 펄싱 (1.0 ~ 1.15, 1초 주기)
         float TimeScale = 50.0f;
@@ -113,7 +106,7 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
             float Pulse = (sinf(PlayTime * 2.0f * 3.14159f) + 1.0f) * 0.5f; // 0~1, 1초 주기
             TimeScale = 50.0f * (1.0f + 0.15f * Pulse);
         }
-        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 100, HPTextPos.Y + 70,
+        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 46, HPTextPos.Y + 70,
                                   TimeScale);
         std::string StageName = Stage->GetStageName();
         auto        iter = StageName.find(':');
@@ -224,5 +217,22 @@ void FGameplayHUDWidget::SetTextures(FGameContext &Context)
     if (!LifeDeadTexture)
     {
         LifeDeadTexture = Context.Textures.Get("life_dead");
+    }
+}
+
+void FGameplayHUDWidget::OnBeatScoreUpdate(int InScore)
+{
+    DisplayScore = InScore;
+    TargetScore = DisplayScore;
+}
+
+void FGameplayHUDWidget::OnTimerBonusUpdate(int InScore)
+{
+    int ActualScore = InScore;
+    if (ActualScore != TargetScore)
+    {
+        ScoreAnimStart = DisplayScore;
+        TargetScore = ActualScore;
+        ScoreAnimTimer = 0.0f;
     }
 }
