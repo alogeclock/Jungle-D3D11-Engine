@@ -69,8 +69,8 @@ void FMinimapWidget::Render(FGameContext &Context)
     float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
     float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
 
-    const float CompassSize = 100.0f;
-    const float NeedleSize = 80.0f;
+    const float CompassSize = 180.0f;
+    const float NeedleSize = 140.0f;
     const float Padding = 16.0f;
     const float MarginRight = 30.0f;
     const float MarginBottom = 30.0f;
@@ -99,7 +99,7 @@ void FMinimapWidget::Render(FGameContext &Context)
     //		Context.Renderer.DrawTexture(CompassTex, ItemCX, ItemCY, CompassSize, CompassSize);
     //	if (NeedleTex)
     //		Context.Renderer.DrawTexture(NeedleTex, ItemCX, ItemCY, NeedleSize, NeedleSize,
-    //ItemAngle);
+    // ItemAngle);
     // }
 
     //// Labels
