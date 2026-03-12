@@ -19,7 +19,7 @@ void FRenderer::Prepare()
 	DeviceContext->RSSetState(RasterizerState);
 
 	DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, nullptr);
-	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+	DeviceContext->OMSetBlendState(AlphaBlendState, nullptr, 0xffffffff);
 }
 
 void FRenderer::BindShader(EShaderType Type)
@@ -330,9 +330,6 @@ void FRenderer::ExecuteSprite(const FRenderObject& Obj)
 
 void FRenderer::ExecuteDarkness(const FDarknessRenderCmd& Cmd)
 {
-	// 알파 블렌딩 활성화
-	DeviceContext->OMSetBlendState(AlphaBlendState, nullptr, 0xffffffff);
-
 	PrepareShader();
 
 	UINT offset = 0;
@@ -364,9 +361,6 @@ void FRenderer::ExecuteDarkness(const FDarknessRenderCmd& Cmd)
 	DeviceContext->Unmap(ConstantBuffer, 0);
 
 	DeviceContext->Draw(6, 0);
-
-	// 블렌딩 해제
-	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
 bool FRenderer::LoadShaderFromFile(const std::wstring& Path)
