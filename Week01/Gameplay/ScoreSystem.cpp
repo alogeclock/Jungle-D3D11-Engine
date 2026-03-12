@@ -73,3 +73,5 @@ void FScoreSystem::SetTimerBonusCallback(std::function<void(int)> Callback)
 {
     OnTimerBonusCallback = std::move(Callback);
 }
+
+void FScoreSystem::ExecuteTimerBonusCallback(int inScore) { OnTimerBonusCallback(inScore); }

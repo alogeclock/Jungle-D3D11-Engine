@@ -168,6 +168,7 @@ void FPlayScene::LoadStage(FGameContext &Context)
                                                         { HUDptr->OnBeatScoreUpdate(InScore); });
     Stage->GetScoreSystem().SetTimerBonusCallback([HUDptr = HUD.get()](int InScore)
                                                   { HUDptr->OnTimerBonusUpdate(InScore); });
+    Stage->GetScoreSystem().ExecuteTimerBonusCallback(Stage->GetScore());
     UIManager.AddWidget("GameplayHUD", std::move(HUD));
 
     auto BeatHUD = std::make_unique<FBeatHUDWidget>();
