@@ -14,6 +14,7 @@
 #include "UI/popup/GoToTitlePopup.h"
 #include "UI/popup/PopupManager.h"
 #include "UI/popup/SaveScorePopup.h"
+#include "UI/popup/UIPopupAction.h"
 
 void FEndingScene::Update(FGameContext &Context)
 {
@@ -59,6 +60,11 @@ void FEndingScene::OpenEndingPopup()
 void FEndingScene::OpenSaveScorePopup()
 {
     std::unique_ptr<FSaveScorePopup> Popup = std::make_unique<FSaveScorePopup>();
+    Popup->SetScore(TotalScore);
+
+    const int TotalStages = FStageLoader::Get().GetStageCount();
+    Popup->SetStage(TotalStages > 0 ? TotalStages : 0);
+
     Popup->Open();
     UIManager.GetPopupManager().Open(std::move(Popup));
 }
@@ -78,79 +84,62 @@ void FEndingScene::ChangeToTitleScene(FGameContext &Context)
     SetSceneCommand(Command);
 }
 
-bool FEndingScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup)
+bool FEndingScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                                      EUIPopupAction Action)
 {
-    if (FEndingPopup *EndingPopup = dynamic_cast<FEndingPopup *>(&Popup))
+    switch (Action)
     {
-        const EUIPopupAction Action = EndingPopup->ConsumeAction();
+    case EUIPopupAction::OpenSaveScorePopup:
+        Popup.Close();
+        OpenSaveScorePopup();
+        return true;
 
-        switch (Action)
-        {
-        case EUIPopupAction::OpenSaveScorePopup:
-            Popup.Close();
-            OpenSaveScorePopup();
+    case EUIPopupAction::ConfirmSaveScore:
+    {
+        Popup.Close();
+
+        FSaveScorePopup *SavePopup = dynamic_cast<FSaveScorePopup *>(&Popup);
+        if (!SavePopup)
             return true;
 
-        default:
-            return false;
-        }
+        const std::string Nickname = SavePopup->GetNickname();
+        const int ClearedStage = FStageLoader::Get().GetStageCount();
+        const int Score = TotalScore;
+
+        ScoreRepository::AppendRecord({Nickname, ClearedStage, Score});
+        OpenGoToTitlePopup();
+        return true;
     }
 
-    if (FSaveScorePopup *SavePopup = dynamic_cast<FSaveScorePopup *>(&Popup))
-    {
-        const EUIPopupAction Action = SavePopup->ConsumeAction();
+    case EUIPopupAction::GoToTitleScene:
+        Popup.Close();
+        ChangeToTitleScene(Context);
+        return true;
 
-        switch (Action)
-        {
-        case EUIPopupAction::ConfirmSaveScore:
-        {
-            Popup.Close();
-
-            const std::string Nickname = SavePopup->GetNickname();
-            const int ClearedStage = 3;
-            const int Score = TotalScore;
-
-            ScoreRepository::AppendRecord({Nickname, ClearedStage, Score});
-            OpenGoToTitlePopup();
-            return true;
-        }
-
-        case EUIPopupAction::ClosePopup:
-            Popup.Close();
-            return true;
-
-        default:
-            return false;
-        }
+    default:
+        return false;
     }
-
-    if (FGoToTitlePopup *GoToTitlePopup = dynamic_cast<FGoToTitlePopup *>(&Popup))
-    {
-        const EUIPopupAction Action = GoToTitlePopup->ConsumeAction();
-
-        switch (Action)
-        {
-        case EUIPopupAction::GoToTitleScene:
-            Popup.Close();
-            ChangeToTitleScene(Context);
-            return true;
-
-        case EUIPopupAction::ClosePopup:
-            Popup.Close();
-            return true;
-
-        default:
-            return false;
-        }
-    }
-
-    return false;
 }
 
 void FEndingScene::HandlePopupResult(FGameContext &Context)
 {
-    if (FUIPopupBase *Popup = UIManager.GetPopupManager().GetPopup<FUIPopupBase>())
+    FPopupManager &PopupManager = UIManager.GetPopupManager();
+
+    if (FEndingPopup *Popup = PopupManager.GetPopup<FEndingPopup>())
     {
-        HandleOwnPopupAction(Context, *Popup);
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
+    }
+
+    if (FSaveScorePopup *Popup = PopupManager.GetPopup<FSaveScorePopup>())
+    {
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
+    }
+
+    if (FGoToTitlePopup *Popup = PopupManager.GetPopup<FGoToTitlePopup>())
+    {
+        DispatchPopupAction(Context, *Popup, Popup->ConsumeAction());
+        return;
     }
 }

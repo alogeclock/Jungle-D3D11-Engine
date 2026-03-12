@@ -69,7 +69,7 @@ void FSceneManager::ChangeSceneInternal(ESceneType SceneType, int StageIndex, in
         break;
 
     case ESceneType::Ending:
-        CurrentScene = std::make_unique<FEndingScene>();
+        CurrentScene = std::make_unique<FEndingScene>(AccumulatedScore, PlayerSkinKey);
         break;
 
     default:

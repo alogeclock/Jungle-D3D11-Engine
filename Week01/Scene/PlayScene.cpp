@@ -235,7 +235,8 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
         if (bAllCleared)
         {
             FAudioSystem::Get().Play("sfx_game_clear", false);
-            ChangeScene(ESceneType::Ending);
+            ChangeScene(ESceneType::Ending, -1, Stage ? Stage->GetScore() : AccumulatedScore,
+                        PlayerSkinKey);
             return;
         }
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include "Scene/Scene.h"
@@ -6,6 +6,7 @@
 
 struct FGameContext;
 class FUIPopupBase;
+enum class EUIPopupAction;
 
 class FEndingScene : public IScene
 {
@@ -26,7 +27,8 @@ class FEndingScene : public IScene
     void OpenSaveScorePopup();
     void OpenGoToTitlePopup();
 
-    bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup);
+    bool HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
+                              EUIPopupAction Action) override;
     void HandlePopupResult(FGameContext &Context);
     void ChangeToTitleScene(FGameContext &Context);
 
