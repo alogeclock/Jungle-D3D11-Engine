@@ -27,12 +27,6 @@ namespace
     }
 }
 
-FStageLoader &FStageLoader::Get()
-{
-    static FStageLoader Instance;
-    return Instance;
-}
-
 bool FStageLoader::Initialize(const std::string &Path)
 {
     if (bLoaded)

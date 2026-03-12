@@ -1,15 +1,16 @@
 #pragma once
 
 #include <string>
+#include "Core/Singleton.h"
 #include "Core/Types.h"
 
 struct FStageData;
 
-class FStageLoader
+class FStageLoader : public TSingleton<FStageLoader>
 {
-  public:
-    static FStageLoader &Get();
+    friend class TSingleton<FStageLoader>;
 
+  public:
     bool Initialize(const std::string &Path);
     bool IsLoaded() const;
 
@@ -17,8 +18,6 @@ class FStageLoader
     bool LoadStageById(int StageIndex, FStageData &OutStage) const;
 
   private:
-    FStageLoader() = default;
-
     std::string FileContent;
     bool        bLoaded = false;
 };

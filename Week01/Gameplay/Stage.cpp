@@ -208,7 +208,7 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
     {
         bIsAngry = true;
         BeatSystem->SetTimeScale(AngryTimeScale);
-        FAudioSystem::Get().SetAllPlaybackRate(AngryTimeScale);
+        FAudioSystem::Get().SetChannelPlaybackRate(EAudioChannel::BGM, AngryTimeScale);
         CreateAngryOverlayTexture();
     }
 
@@ -331,7 +331,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 Player->Damage(1);
             ScoreSystem->AddBeatBonus(Judge);
             Player->SetLastMovedBeatIndex(CurrentBeatIndex);
-            FAudioSystem::Get().Play("sfx_miss", false);
         }
     }
 
@@ -363,7 +362,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 if (!Player->ConsumeInvincibility())
                     Player->Damage(1);
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
-                FAudioSystem::Get().Play("sfx_miss", false);
             }
         }
     }
@@ -1065,7 +1063,7 @@ float FStage::GetTimeFreezeRemaining() const { return TimeFreezeRemaining; }
 void FStage::StartBGM()
 {
     if (!BgmKey.empty())
-        FAudioSystem::Get().Play(BgmKey, true);
+        FAudioSystem::Get().Play(BgmKey, true, EAudioChannel::BGM);
 }
 
 void FStage::StopBGM()

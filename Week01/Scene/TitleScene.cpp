@@ -22,7 +22,7 @@ void FTitleScene::Update(FGameContext &Context)
     {
         FAudioSystem::Get().StopAll();
         FAudioSystem::Get().LoadWav("bgm_title", "Resources/Sounds/title.wav");
-        FAudioSystem::Get().Play("bgm_title", true);
+        FAudioSystem::Get().Play("bgm_title", true, EAudioChannel::BGM);
         bInitialized = true;
     }
 
