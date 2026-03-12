@@ -111,6 +111,18 @@ LRESULT FWindow::HandleMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
 
     switch (Msg)
     {
+    case WM_SIZE:
+        if (wParam != SIZE_MINIMIZED)
+        {
+            int NewWidth = LOWORD(lParam);
+            int NewHeight = HIWORD(lParam);
+            Width = NewWidth;
+            Height = NewHeight;
+            if (OnResize)
+                OnResize(NewWidth, NewHeight);
+        }
+        return 0;
+
     case WM_CLOSE:
         DestroyWindow(hWnd);
         return 0;

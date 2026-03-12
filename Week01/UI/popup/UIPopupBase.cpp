@@ -38,7 +38,7 @@ void FUIPopupBase::SetupPopupWindow(const char *PopupId, const ImVec2 &PopupSize
     if (ConsumeOpenRequest())
     {
         ImGui::SetNextWindowSize(PopupSize, ImGuiCond_Appearing);
-        ImGui::SetNextWindowPos(PopupPos, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowPos(PopupPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         ImGui::OpenPopup(PopupId);
 
         FAudioSystem::Get().LoadWav("PopupSound", "Resources/Sounds/Popup.wav");
@@ -46,7 +46,7 @@ void FUIPopupBase::SetupPopupWindow(const char *PopupId, const ImVec2 &PopupSize
     }
 
     ImGui::SetNextWindowSize(PopupSize, ImGuiCond_Appearing);
-    ImGui::SetNextWindowPos(PopupPos, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowPos(PopupPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 }
 
 bool FUIPopupBase::BeginPopupWindow(const char *PopupId, const char *Title, const ImVec2 &PopupSize,

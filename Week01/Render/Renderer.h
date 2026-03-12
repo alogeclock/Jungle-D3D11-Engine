@@ -112,6 +112,8 @@ public:
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
 
+	void OnResize(int NewWidth, int NewHeight);
+
 public:
 	// UI/Font 상수 버퍼용 구조체 (UI.hlsl cbuffer와 1:1 매칭)
 	struct FConstants

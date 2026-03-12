@@ -41,6 +41,14 @@ void FBeatHUDWidget::Render(FGameContext &Context)
 
     if (!BeatSystem)
         return;
+
+    // 화면 크기에 맞춰 위치 재계산
+    float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+    float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
+    Heart.X = ScreenW * 0.5f;
+    Ypos = ScreenH * 0.8f;
+    Heart.Y = Ypos;
+
     /*
      * 진행바랑 하트 렌더링
      */

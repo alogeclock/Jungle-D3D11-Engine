@@ -39,6 +39,8 @@ bool FApplication::Initialize(HINSTANCE hInstance, int ScreenWidth, int ScreenHe
     if (!InitializeImGui(WindowHandle))
         return false;
 
+    Window.SetResizeCallback([this](int W, int H) { Renderer->OnResize(W, H); });
+
     GameContext.emplace(FGameContext{*Time, *Input, *Renderer, *TextureManager, *FontManager});
     SceneManager->Initialize();
 

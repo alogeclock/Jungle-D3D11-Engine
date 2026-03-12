@@ -892,3 +892,29 @@ int FRenderer::GetScreenHeight() const
 {
 	return static_cast<int>(ViewportInfo.Height);
 }
+
+void FRenderer::OnResize(int NewWidth, int NewHeight)
+{
+	if (NewWidth == 0 || NewHeight == 0)
+		return;
+
+	// 기존 렌더 타겟 해제
+	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+	ReleaseFrameBuffer();
+
+	// 백버퍼 리사이즈
+	HRESULT Hr = SwapChain->ResizeBuffers(0, NewWidth, NewHeight, DXGI_FORMAT_UNKNOWN, 0);
+	if (FAILED(Hr))
+		return;
+
+	// 프레임버퍼 재생성
+	CreateFrameBuffer();
+
+	// 뷰포트 갱신
+	ScreenWidth = NewWidth;
+	ScreenHeight = NewHeight;
+	ViewportInfo = { 0.0f, 0.0f, (float)ScreenWidth, (float)ScreenHeight, 0.0f, 1.0f };
+
+	// 렌더 타겟 재바인딩
+	DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, nullptr);
+}

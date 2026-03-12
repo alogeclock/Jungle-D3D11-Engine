@@ -80,53 +80,77 @@ void FGameplayHUDWidget::Render(FGameContext &Context)
     ImGui::End();
 #endif
 
+    float ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
+    float ScreenH = static_cast<float>(Context.Renderer.GetScreenHeight());
+
+    const float MarginRight = 40.0f;
+    const float TopY = 20.0f;
+
     // 비트맵 폰트 렌더링
     if (FontTexPair *Pair = Context.FontManager.Get("basic_font"))
     {
         FBitmapFont *Font = Pair->Font.get();
         FTexture    *FontTex = Pair->Tex.get();
 
-        int Minutes = static_cast<int>(ReaminingTime) / 60;
-        int Seconds = static_cast<int>(ReaminingTime) % 60;
+        // 텍스트 픽셀 폭 계산 람다
+        auto MeasureText = [&](const char *Text, float Scale) -> float
+        {
+            float Width = 0.0f;
+            float ScaleF = Scale / static_cast<float>(Font->LineHeight);
+            for (const char *C = Text; *C; ++C)
+            {
+                const FGlyph *G = Font->Get(static_cast<int>(*C));
+                if (G)
+                    Width += G->XAdvance * ScaleF;
+            }
+            return Width;
+        };
+
         int IRemaining = static_cast<int>(ReaminingTime);
 
         char TimeBuf[32];
-        // snprintf(TimeBuf, sizeof(TimeBuf), "Time %d:%02d", Minutes, Seconds);
         snprintf(TimeBuf, sizeof(TimeBuf), "Time   %03d", IRemaining);
 
         char ScoreBuf[32];
         snprintf(ScoreBuf, sizeof(ScoreBuf), "Score %05d", DisplayScore);
 
-        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, HPTextPos.X + 50, HPTextPos.Y + 120, 50);
+        // Score: 우측 정렬
+        float ScoreFontSize = 50.0f;
+        float ScoreTextW = MeasureText(ScoreBuf, ScoreFontSize);
+        float ScoreX = ScreenW - MarginRight - ScoreTextW;
+        Context.Renderer.DrawFont(ScoreBuf, Font, FontTex, ScoreX, TopY + 120, ScoreFontSize);
 
-        // Angry 모드: 타이머 텍스트 scale 펄싱 (1.0 ~ 1.15, 1초 주기)
+        // Time: 우측 정렬
         float TimeScale = 50.0f;
         if (Stage->IsAngry())
         {
-            float Pulse = (sinf(PlayTime * 2.0f * 3.14159f) + 1.0f) * 0.5f; // 0~1, 1초 주기
+            float Pulse = (sinf(PlayTime * 2.0f * 3.14159f) + 1.0f) * 0.5f;
             TimeScale = 50.0f * (1.0f + 0.15f * Pulse);
         }
-        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, HPTextPos.X + 46, HPTextPos.Y + 70,
-                                  TimeScale);
+        float TimeTextW = MeasureText(TimeBuf, TimeScale);
+        float TimeX = ScreenW - MarginRight - TimeTextW;
+        Context.Renderer.DrawFont(TimeBuf, Font, FontTex, TimeX, TopY + 70, TimeScale);
+
+        // Stage 이름: 좌측 고정
         std::string StageName = Stage->GetStageName();
         auto        iter = StageName.find(':');
         std::string StageIdx = StageName.substr(0, iter);
-        Context.Renderer.DrawFont(StageIdx, Font, FontTex, 50, HPTextPos.Y, 50);
-        // Context.Renderer.DrawFont("HP", Font, FontTex, HPTextPos.X, HPTextPos.Y, 35);
+        Context.Renderer.DrawFont(StageIdx, Font, FontTex, 50, TopY, 50);
     }
+
     for (int i = 0; i < HP; i++)
     {
-        float xPos = 980.f - (HeartScale * i);
-        Context.Renderer.DrawTexture(LifeTexture, xPos, HPTextPos.Y + 30, HeartScale, HeartScale);
+        float xPos = (ScreenW - MarginRight) - (HeartScale * i);
+        Context.Renderer.DrawTexture(LifeTexture, xPos - HeartScale / 2.0f, TopY + 30, HeartScale,
+                                     HeartScale);
     }
 
     // 버프 아이콘 (우상단, 셰이더 렌더링)
     {
-        float       ScreenW = static_cast<float>(Context.Renderer.GetScreenWidth());
         const float IconSize = 40.0f;
         const float IconPadding = 8.0f;
         const float MarginRight = 20.f;
-        const float MarginTop = 960.0f;
+        const float MarginTop = ScreenH - 60.0f;
         const float FontSize = 20.0f;
 
         struct FBuffDisplay
