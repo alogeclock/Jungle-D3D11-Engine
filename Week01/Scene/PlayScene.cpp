@@ -36,7 +36,6 @@ void FPlayScene::Update(FGameContext &Context)
     {
         LoadStage(Context);
         FAudioSystem::Get().LoadWav("sfx_stage_clear", "Resources/Sounds/stage_clear.wav");
-        FAudioSystem::Get().LoadWav("sfx_game_clear", "Resources/Sounds/game_clear.wav");
         FAudioSystem::Get().LoadWav("sfx_gameover", "Resources/Sounds/gameover.wav");
         bStageLoaded = true;
     }
@@ -251,7 +250,7 @@ void FPlayScene::HandleStageResult(FGameContext &Context)
     }
 }
 
-void FPlayScene::OpenStageIntroPopup(const std::string &Title,
+void FPlayScene::OpenStageIntroPopup(const std::string              &Title,
                                      const std::vector<std::string> &Messages)
 {
     std::unique_ptr<FStageIntroPopup> Popup = std::make_unique<FStageIntroPopup>();

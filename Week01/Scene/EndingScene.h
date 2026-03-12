@@ -33,9 +33,11 @@ class FEndingScene : public IScene
     void ChangeToTitleScene(FGameContext &Context);
 
   private:
-    FUIManager   UIManager;
-    float        ElapsedTime = 0.0f;
-    bool         bOpenedEndingPopup = false;
-    int          TotalScore = 0;
-    std::string  PlayerSkinKey;
+    FUIManager  UIManager;
+    float       ElapsedTime = 0.0f;
+    bool        bOpenedEndingPopup = false;
+    bool        bIsGameClearSoundPlayed = false;
+    bool        bIsEndingMusicPlayed = false;
+    int         TotalScore = 0;
+    std::string PlayerSkinKey;
 };

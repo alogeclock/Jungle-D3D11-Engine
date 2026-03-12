@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "Core/AudioSystem.h"
 #include "Core/GameContext.h"
 #include "Core/Time.h"
 #include "Data/ScoreRepository.h"
@@ -20,13 +21,27 @@ void FEndingScene::Update(FGameContext &Context)
 {
     ElapsedTime += Context.Time.GetDeltaTime();
     UIManager.Update(Context);
+
+    if (!bOpenedEndingPopup && !bIsGameClearSoundPlayed)
+    {
+        bIsGameClearSoundPlayed = true;
+        FAudioSystem::Get().LoadWav("sfx_game_clear", "Resources/Sounds/game_clear.wav");
+        FAudioSystem::Get().Play("sfx_game_clear", false);
+    }
+
+    if (!bOpenedEndingPopup && ElapsedTime >= 6.0f && !bIsEndingMusicPlayed)
+    {
+        bIsEndingMusicPlayed = true;
+        FAudioSystem::Get().LoadWav("sfx_ending", "Resources/Sounds/ending.wav");
+        FAudioSystem::Get().Play("sfx_ending", true);
+    }
 }
 
 void FEndingScene::Render(FGameContext &Context)
 {
     RenderBackground(Context);
 
-    if (!bOpenedEndingPopup && ElapsedTime >= 1.0f)
+    if (!bOpenedEndingPopup && ElapsedTime >= 6.0f)
     {
         OpenEndingPopup();
         bOpenedEndingPopup = true;
@@ -85,7 +100,7 @@ void FEndingScene::ChangeToTitleScene(FGameContext &Context)
 }
 
 bool FEndingScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Popup,
-                                      EUIPopupAction Action)
+                                        EUIPopupAction Action)
 {
     switch (Action)
     {
@@ -103,8 +118,8 @@ bool FEndingScene::HandleOwnPopupAction(FGameContext &Context, FUIPopupBase &Pop
             return true;
 
         const std::string Nickname = SavePopup->GetNickname();
-        const int ClearedStage = FStageLoader::Get().GetStageCount();
-        const int Score = TotalScore;
+        const int         ClearedStage = FStageLoader::Get().GetStageCount();
+        const int         Score = TotalScore;
 
         ScoreRepository::AppendRecord({Nickname, ClearedStage, Score});
         OpenGoToTitlePopup();
