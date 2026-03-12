@@ -451,6 +451,17 @@ void FStage::Render()
         float              WorldY = Player->GetRenderY() + TileSize * 0.5f;
         const FSpriteInfo &Spr = Player->GetSprite();
         Renderer->DrawSprite(GetTex(Spr.TextureKey), WorldX, WorldY, TileSize, TileSize, Spr);
+
+        // 무적 상태일 때 쉴드 오버레이
+        if (Player->HasActiveEffect(EItemType::Invincibility))
+        {
+            FTexture *ShieldTex = Textures->Get("effect_shield");
+            if (ShieldTex)
+            {
+                FSpriteInfo ShieldSpr;
+                Renderer->DrawSprite(ShieldTex, WorldX, WorldY, TileSize, TileSize, ShieldSpr);
+            }
+        }
     }
 
     // 암흑 오버레이 큐잉 (스프라이트 위에 렌더)
