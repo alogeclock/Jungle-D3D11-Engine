@@ -4,15 +4,18 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include "Singleton.h"
 
 struct IXAudio2;
 struct IXAudio2MasteringVoice;
 struct IXAudio2SourceVoice;
 
-class FAudioSystem
+class FAudioSystem : public TSingleton<FAudioSystem>
 {
+    friend class TSingleton<FAudioSystem>;
+
 public:
-    static FAudioSystem &Get();
+    ~FAudioSystem();
 
     bool Initialize();
     void Shutdown();
@@ -36,12 +39,6 @@ public:
     bool IsPlaying(const std::string &Key) const;
 
 private:
-    FAudioSystem() = default;
-    ~FAudioSystem();
-
-    FAudioSystem(const FAudioSystem &) = delete;
-    FAudioSystem &operator=(const FAudioSystem &) = delete;
-
     struct FWavData
     {
         std::vector<uint8_t>  AudioData;

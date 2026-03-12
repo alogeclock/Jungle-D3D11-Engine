@@ -6,12 +6,6 @@
 
 using json = nlohmann::json;
 
-FCreditLoader &FCreditLoader::Get()
-{
-    static FCreditLoader Instance;
-    return Instance;
-}
-
 bool FCreditLoader::Initialize(const std::string &Path)
 {
     if (bLoaded)

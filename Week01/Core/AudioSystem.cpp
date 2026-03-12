@@ -4,12 +4,6 @@
 
 #pragma comment(lib, "xaudio2.lib")
 
-FAudioSystem &FAudioSystem::Get()
-{
-    static FAudioSystem Instance;
-    return Instance;
-}
-
 FAudioSystem::~FAudioSystem()
 {
     Shutdown();
