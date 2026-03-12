@@ -25,6 +25,7 @@ private:
 	bool    bTimeFrozen = false;
 	bool    bDarknessDisabled = false;
 	float   TimeScale = 1.0f;
+	float   BpmOverride = 0.0f;
 	int     DarknessLevel = 2;
 	int     TotalStages = 1;
 	std::function<void(int)> OnStageChange;

@@ -12,6 +12,7 @@ void FDebugWidget::BindStage(FStage *InStage)
     {
         DarknessLevel = Stage->GetDarknessLevel();
         bTimeFrozen = Stage->IsTimeFrozen();
+        BpmOverride = Stage->GetBeatSystem().GetBpm();
     }
 }
 
@@ -68,6 +69,13 @@ void FDebugWidget::Render(FGameContext &Context)
         {
             Stage->GetBeatSystem().SetTimeScale(TimeScale);
             FAudioSystem::Get().SetAllPlaybackRate(TimeScale);
+        }
+
+        if (BpmOverride == 0.0f)
+            BpmOverride = Stage->GetBeatSystem().GetBpm();
+        if (ImGui::SliderFloat("BPM Override", &BpmOverride, 60.0f, 300.0f, "%.0f"))
+        {
+            Stage->GetBeatSystem().SetBpm(BpmOverride);
         }
 
         DarknessLevel = Stage->GetDarknessLevel();
@@ -187,6 +195,9 @@ void FDebugWidget::Render(FGameContext &Context)
             TimeScale = 1.0f;
             Stage->GetBeatSystem().SetTimeScale(1.0f);
             FAudioSystem::Get().SetAllPlaybackRate(1.0f);
+
+            BpmOverride = Stage->GetMap().GetBpm();
+            Stage->GetBeatSystem().SetBpm(BpmOverride);
 
             DarknessLevel = 2;
             Stage->SetDarknessLevel(2);
