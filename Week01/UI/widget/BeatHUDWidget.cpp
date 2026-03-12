@@ -67,7 +67,7 @@ void FBeatHUDWidget::Render(FGameContext &Context)
     FontTexPair *FTPair = Context.FontManager.Get("basic_font");
     if (Combo != 0)
         Context.Renderer.DrawFont("Combo x" + std::to_string(Combo), FTPair->Font.get(),
-                                  FTPair->Tex.get(), Heart.X - 120, Heart.Y + 100, 75);
+                                  FTPair->Tex.get(), Heart.X - 160, Heart.Y + 100, 75);
     /*
      * 이펙트 그리기
      */

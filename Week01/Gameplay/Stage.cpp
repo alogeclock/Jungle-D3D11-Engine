@@ -331,7 +331,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 Player->Damage(1);
             ScoreSystem->AddBeatBonus(Judge);
             Player->SetLastMovedBeatIndex(CurrentBeatIndex);
-            FAudioSystem::Get().Play("sfx_miss", false);
         }
     }
 
@@ -363,7 +362,6 @@ void FStage::Update(float DeltaTime, FGameContext &Context)
                 if (!Player->ConsumeInvincibility())
                     Player->Damage(1);
                 ScoreSystem->AddBeatBonus(EBeatJudge::Miss);
-                FAudioSystem::Get().Play("sfx_miss", false);
             }
         }
     }
