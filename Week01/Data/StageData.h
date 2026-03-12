@@ -65,6 +65,9 @@ struct FStageData
     void  SetAngryTimeScale(float InScale);
     float GetAngryTimeScale() const;
 
+    void SetDarknessLevel(int InLevel);
+    int  GetDarknessLevel() const;
+
     void                          AddItem(const FItemData &Item);
     const std::vector<FItemData> &GetItems() const;
     void                          ClearItems();
@@ -88,6 +91,7 @@ struct FStageData
     float       AngryTime = 0.0f;       // 남은 시간이 이 값 이하일 때 Angry 모드 발동 (0 = 없음)
     float       AngryTimeScale = 1.3f;  // Angry 모드 시 BeatSystem TimeScale
     int         MonsterCount = 0;
+    int         DarknessLevel = 2; // 0~4 (5단계), JSON에서 오버라이드 가능
 
     std::vector<std::string> IntroMessages;
     std::vector<EMonsterType> MonsterTypes;

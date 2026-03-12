@@ -137,7 +137,8 @@ bool FStage::Load(int StageIndex, FRenderer *InRenderer, FTextureManager *InText
     // 정적 배치 생성 (타일/벽을 텍스처별로 묶어 DrawIndexed)
     BuildStaticBatches();
 
-    // 암흑 시야 텍스처 생성
+    // 암흑 시야 설정 (JSON에서 로드)
+    DarknessLevel = Map->GetDarknessLevel();
     CreateDarknessTexture();
 
     // 제한시간 설정
@@ -476,8 +477,8 @@ void FStage::Render()
 // 암흑 시야 텍스처 (방사형 그라데이션)
 // ============================================================
 
-static constexpr float DarknessInnerRatios[5] = {0.05f, 0.07f, 0.10f, 0.12f, 0.15f};
-static constexpr float DarknessOuterRatios[5] = {0.10f, 0.13f, 0.15f, 0.17f, 0.20f};
+static constexpr float DarknessInnerRatios[5] = {0.05f, 0.07f, 0.12f, 0.15f, 0.18f};
+static constexpr float DarknessOuterRatios[5] = {0.10f, 0.13f, 0.17f, 0.20f, 0.22f};
 
 void FStage::CreateDarknessTexture()
 {

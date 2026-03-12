@@ -4,10 +4,11 @@
 
 ## 빌드 환경
 
-- **IDE**: Visual Studio 2019+
+- **IDE**: Visual Studio 2022 (MSVC v143)
 - **플랫폼**: Windows (x86/x64)
 - **그래픽 API**: Direct3D 11
-- **C++ 표준**: C++17
+- **오디오**: XAudio2
+- **C++ 표준**: C++20
 
 ## 프로젝트 구조
 
@@ -15,11 +16,11 @@
 Core/           앱 진입점, 윈도우, 입력, 시간, 오디오 시스템
 Gameplay/       스테이지, 플레이어, 몬스터, 비트/스코어/아이템 시스템
 Render/         D3D11 렌더러, 텍스처, 스프라이트, 비트맵 폰트
-Scene/          씬 매니저, 타이틀/플레이 씬
-UI/             UI 매니저, HUD 위젯, 팝업
+Scene/          씬 매니저, 타이틀/플레이/엔딩 씬
+UI/             UI 매니저, HUD 위젯, 팝업 (엔딩 팝업 포함)
 IO/             이미지/폰트/JSON 파일 로더
 Data/           스테이지/스코어 데이터 관리
-ThirdParty/     ImGui
+ThirdParty/     ImGui, nlohmann/json, stb_image
 Resources/
   Fonts/        BMFont 비트맵 폰트 (.fnt + .png)
   Maps/         스테이지 맵 데이터 (JSON)
@@ -41,9 +42,10 @@ Resources/
 - **렌더링**: 스프라이트 배치 렌더링, 비트맵 폰트, 암흑 시야 오버레이 (5단계)
 - **나침반 UI**: 출구/아이템 방향을 가리키는 나침반 위젯
 - **셰이더 분리**: Default.hlsl (스프라이트) / UI.hlsl (UI/폰트) 이중 파이프라인
-- **씬 관리**: 타이틀 → 플레이 씬 전환, 팝업 시스템 (게임오버/스테이지 클리어/점수 저장)
+- **씬 관리**: 타이틀 → 플레이 → 엔딩 씬 전환, 팝업 시스템 (게임오버/스테이지 클리어/점수 저장/엔딩)
 - **BGM 관리**: 씬별 BGM 재생, 씬 전환 시 명시적 StopAll/StartBGM
 - **스코어보드**: 닉네임 입력 후 점수 저장, 누적 점수 시스템
+- **Angry 모드**: 제한시간이 적을 때 게임 속도 증가
 
 ## 스테이지 정보
 
@@ -56,6 +58,10 @@ Resources/
 
 ## 빌드 방법
 
-1. `jungle_practice.sln`을 Visual Studio에서 열기
+1. `Jungle_Week1_Team2.sln`을 Visual Studio에서 열기
 2. 솔루션 빌드 (Ctrl+Shift+B)
 3. 실행 (F5)
+
+## 팀원
+
+크래딧 정보는 `Resources/Data/credits.json` 참조
