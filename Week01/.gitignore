@@ -12,6 +12,7 @@ Windows/
 Save/
 imgui.ini
 Resources/Data/scoreboard.json
+Build_Release/
 
 # Compiled Object files
 *.slo

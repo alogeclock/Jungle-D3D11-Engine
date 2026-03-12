@@ -183,7 +183,7 @@ void FPlayScene::LoadStage(FGameContext &Context)
     Minimap->BindStage(Stage.get());
     UIManager.AddWidget("Minimap", std::move(Minimap));
 
-#ifdef DEBUG
+#ifdef _DEBUG
     auto Debug = std::make_unique<FDebugWidget>();
     Debug->BindStage(Stage.get());
     Debug->BindPauseFlag(&bIsPaused);
