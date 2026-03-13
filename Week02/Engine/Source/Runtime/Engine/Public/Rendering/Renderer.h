@@ -9,13 +9,8 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
-
-struct FVertexSimple
-{
-	float x, y, z;
-	float r, g, b, a;
-};
+#include "Engine\Source\Runtime\Core\Public\Math\Vector.h"
+#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
 
 struct FConstants
 {
@@ -25,7 +20,7 @@ struct FConstants
 
 class URenderer
 {
-public:
+public:	
 	URenderer();
 	~URenderer();
 
@@ -41,6 +36,7 @@ public:
 
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // 화면을 초기화하는 색
 	D3D11_VIEWPORT ViewportInfo;
+	D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	ID3D11VertexShader* SimpleVertexShader;
 	ID3D11PixelShader* SimplePixelShader;
@@ -67,9 +63,10 @@ public:
 	void Prepare();
 	void PrepareShader();
 
-	void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices);
+	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
+	void RenderPrimitiveTopology(ID3D11Buffer* pBuffer, uint32 numVertices, D3D11_PRIMITIVE_TOPOLOGY inTopology);
 
-	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
+	ID3D11Buffer* CreateVertexBuffer(FVertex *vertices, uint32 byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
 	void CreateConstantBuffer();

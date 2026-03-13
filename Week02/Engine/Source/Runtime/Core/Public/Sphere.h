@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 // © 2024 KRAFTON, Inc. ALL RIGHTS RESERVED.
 
 #pragma once
 
-FVertexSimple sphere_vertices[] = {
+FVertex sphere_vertices[] = {
 	{ 0.000000f, 1.000000f, 0.000000f, 0.500000f, 1.000000f, 0.500000f, 1.000000f },
 	{ 0.156434f, 0.987688f, 0.000000f, 0.578217f, 0.993844f, 0.500000f, 1.000000f },
 	{ 0.148778f, 0.987688f, 0.048341f, 0.574389f, 0.993844f, 0.524170f, 1.000000f },

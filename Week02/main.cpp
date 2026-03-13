@@ -5,15 +5,16 @@
 
 #include "Windows.h"
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
+#include "Engine\Source\Runtime\Editor\Public\Axis.h"
 #include <iostream>
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, uint32 msg, WPARAM wParam, LPARAM lParam);
 
 // WndProc 함수는 각종 메시지를 처리한다.
 /* hWnd는 이벤트가 발생한 창의 번호를 의미한다. message는 사건의 종류를 의미한다.
    가령 WM_KEYDOWN은 키 눌림, WM_LBUTTONDOWN은 마우스 클릭,
 	 WM_DESTROY는 창 파괴를 의미한다. */
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND hWnd, uint32 message, WPARAM wParam, LPARAM lParam)
 {
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 	{
@@ -47,6 +48,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	URenderer renderer;
 	renderer.Create(hWnd);
+	renderer.CreateConstantBuffer();
+	
+	UAxis* MainAxis = new UAxis();
+	
+	ID3D11Buffer* VertexBuffer = renderer.CreateVertexBuffer(MainAxis->GetVertexData(), MainAxis->GetVertexByteWidth());
+	MainAxis->SetVertexBuffer(VertexBuffer);
 
 	// Timing 관련 코드
 	const int targetFPS = 30;
@@ -72,10 +79,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		else
 		{
 			renderer.Prepare();
+			
+			FVector origin(0.0f, 0.0f, 0.0f);
+			renderer.UpdateConstant(origin, 1.0f);
+
+			MainAxis->RenderPrimitive(renderer);
 			renderer.SwapBuffer();
 		}
 	}
 
+	renderer.ReleaseConstantBuffer();
 	renderer.Release();
 
 	return 0;
