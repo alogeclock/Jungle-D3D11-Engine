@@ -1,7 +1,6 @@
 cbuffer ConstantBuffer : register(b0)
 {
-    float3 offset;
-    float scale;
+    row_major float4x4 worldMatrix;       // local -> world
 }
 
 struct VS_INPUT
@@ -20,8 +19,8 @@ PS_INPUT mainVS(VS_INPUT input)
 {
     PS_INPUT output;
 	
-    float3 finalPos = (input.position.xyz * scale) + offset;
-    output.position = float4(finalPos, 1.0f);
+    float4 worldPos = mul(input.position, worldMatrix);
+    output.position = worldPos;
     output.color = input.color;
 	
     return output;

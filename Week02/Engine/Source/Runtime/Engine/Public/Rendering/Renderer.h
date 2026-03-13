@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <windows.h>
 
@@ -9,13 +9,20 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-#include "Engine\Source\Runtime\Core\Public\Math\Vector.h"
-#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector4.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
+#include "Engine/Source/Runtime/Core/Public/CoreTypes.h"
+
+struct FVertexSimple
+{
+	float x, y, z;
+	float r, g, b, a;
+};
 
 struct FConstants
 {
-	FVector<float> Offset;
-	float Scale;
+	FMatrix<float> worldMatrix;
 };
 
 class URenderer
@@ -72,5 +79,5 @@ public:
 	void CreateConstantBuffer();
 	void ReleaseConstantBuffer();
 
-	void UpdateConstant(FVector<float> Offset, float Scale);
+	void UpdateConstant(FConstants data);
 };
