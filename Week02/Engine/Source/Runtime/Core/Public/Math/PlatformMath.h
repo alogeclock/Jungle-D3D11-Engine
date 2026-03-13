@@ -4,3 +4,4 @@
 #include "GenericPlatformMath.h"
 
 //#include COMPILED_PLATFORM_HEADER(PlatformMath.h)
+#include "WindowsPlatformMath.h"
