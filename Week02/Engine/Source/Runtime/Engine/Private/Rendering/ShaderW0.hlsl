@@ -19,8 +19,7 @@ PS_INPUT mainVS(VS_INPUT input)
 {
     PS_INPUT output;
 	
-    float3 finalPos = (input.position.xyz * Scale) + Offset;
-    output.position = float4(finalPos, 1.0f);
+    output.position = float4(input.position.xyz, 1.0f);
     output.color = input.color;
 	
     return output;

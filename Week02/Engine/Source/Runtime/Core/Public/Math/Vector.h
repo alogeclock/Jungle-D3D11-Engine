@@ -50,12 +50,12 @@ public:
 // =========================================================
 // 생성자
 // =========================================================
-FVector::FVector()
+inline FVector::FVector()
     : X(0.0f), Y(0.0f), Z(0.0f)
 {
 }
 
-FVector::FVector(float InX, float InY, float InZ)
+inline FVector::FVector(float InX, float InY, float InZ)
     : X(InX), Y(InY), Z(InZ)
 {
 }
@@ -63,22 +63,22 @@ FVector::FVector(float InX, float InY, float InZ)
 // =========================================================
 // 사칙 연산자 오버로딩
 // =========================================================
-FVector FVector::operator+(const FVector& V) const
+inline FVector FVector::operator+(const FVector& V) const
 {
     return FVector(X + V.X, Y + V.Y, Z + V.Z);
 }
 
-FVector FVector::operator-(const FVector& V) const
+inline FVector FVector::operator-(const FVector& V) const
 {
     return FVector(X - V.X, Y - V.Y, Z - V.Z);
 }
 
-FVector FVector::operator*(float Scale) const
+inline FVector FVector::operator*(float Scale) const
 {
     return FVector(X * Scale, Y * Scale, Z * Scale);
 }
 
-FVector FVector::operator/(float Scale) const
+inline FVector FVector::operator/(float Scale) const
 {
     const float RScale = 1.0f / Scale;
     return FVector(X * RScale, Y * RScale, Z * RScale);
@@ -87,7 +87,7 @@ FVector FVector::operator/(float Scale) const
 // =========================================================
 // 복합 대입 연산자
 // =========================================================
-FVector& FVector::operator+=(const FVector& V)
+inline FVector& FVector::operator+=(const FVector& V)
 {
     X += V.X;
     Y += V.Y;
@@ -95,7 +95,7 @@ FVector& FVector::operator+=(const FVector& V)
     return *this;
 }
 
-FVector& FVector::operator-=(const FVector& V)
+inline FVector& FVector::operator-=(const FVector& V)
 {
     X -= V.X;
     Y -= V.Y;
@@ -106,22 +106,22 @@ FVector& FVector::operator-=(const FVector& V)
 // =========================================================
 // 인스턴스 유틸리티 함수
 // =========================================================
-float FVector::SizeSquared() const
+inline float FVector::SizeSquared() const
 {
     return X * X + Y * Y + Z * Z;
 }
 
-float FVector::Size() const
+inline float FVector::Size() const
 {
     return FMath::Sqrt(X * X + Y * Y + Z * Z);
 }
 
-float FVector::Length() const
+inline float FVector::Length() const
 {
     return Size();
 }
 
-void FVector::Normalize() 
+inline void FVector::Normalize()
 {
     float len = Size();
     if (len > 0.000001f)
@@ -135,12 +135,12 @@ void FVector::Normalize()
 // =========================================================
 // 공용 수학 계산기 (Static)
 // =========================================================
-float FVector::DotProduct(const FVector& A, const FVector& B)
+inline float FVector::DotProduct(const FVector& A, const FVector& B)
 {
     return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
 }
 
-FVector FVector::CrossProduct(const FVector& A, const FVector& B)
+inline FVector FVector::CrossProduct(const FVector& A, const FVector& B)
 {
     return FVector(
         A.Y * B.Z - A.Z * B.Y,

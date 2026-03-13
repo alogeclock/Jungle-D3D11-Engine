@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:/Github/Week2/Engine/Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\Renderer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -135,16 +137,31 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ShaderW0.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Cube.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Matrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PerspectiveMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Plane.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformCrt.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ScaleMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TranslationMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealMathUtility.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector4.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\BoxComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PrimitiveComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SceneComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Rendering\Renderer.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
@@ -153,7 +170,13 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
-    <ClInclude Include="Sphere.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\ShaderW0.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
