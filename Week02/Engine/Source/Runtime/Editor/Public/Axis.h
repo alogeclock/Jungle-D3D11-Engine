@@ -19,9 +19,9 @@ public:
 	uint32 GetNumVertices() const { return NumVertices; }
 
 private:
-	FVector4 Color;
-	FVector Location;
-	FVector Rotation;
+	FVector4<float> Color;
+	FVector<float> Location;
+	FVector<float> Rotation;
 	float Scale;
 
 	ID3D11Buffer* AxisVertexBuffer = nullptr;

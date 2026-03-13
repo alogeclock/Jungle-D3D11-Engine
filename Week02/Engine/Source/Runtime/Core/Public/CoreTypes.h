@@ -24,8 +24,8 @@ using int64 = std::int64_t;
 template<typename T, typename Alloc = std::allocator<T>>
 using TArray = std::vector<T, Alloc>;
 
-struct FVertex 
+struct FVertex
 {
-	FVector Position;
-	FVector4 Color;
+	FVector<float> Position;
+	FVector4<float> Color;
 };

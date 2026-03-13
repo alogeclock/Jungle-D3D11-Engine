@@ -14,11 +14,11 @@
 template<typename T>
 struct FViewMatrix : public FMatrix<T>
 {
-    FViewMatrix(const FVector& Eye, const FVector& Target, const FVector& Up);
+    FViewMatrix(const FVector<T>& Eye, const FVector<T>& Target, const FVector<T>& Up);
 };
 
 template<typename T>
-FViewMatrix<T>::FViewMatrix(const FVector& Eye, const FVector& Target, const FVector& Up)
+FViewMatrix<T>::FViewMatrix(const FVector<T>& Eye, const FVector<T>& Target, const FVector<T>& Up)
 {
     // 왼손 좌표계 (Forward = X, Right = Y, Up = Z)
     FVector Forward = (Target - Eye).Normalize(); 

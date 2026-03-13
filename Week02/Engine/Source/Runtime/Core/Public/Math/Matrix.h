@@ -8,19 +8,7 @@ struct FMatrix
 public:
 	float M[4][4];
 
-	// 1. 기본 생성자 (단위 행렬 초기화 - 구조체 선언 시 필수)
-	FMatrix()
-	{
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				M[i][j] = (i == j) ? 1.0f : 0.0f;
-			}
-		}
-	}
-
-	// 2. 4개의 Plane을 받는 생성자 (cpp에 있던 내용을 이쪽으로 가져왔습니다!)
+	FMatrix() = default;
 	FMatrix(const FPlane<T>& InX, const FPlane<T>& InY, const FPlane<T>& InZ, const FPlane<T>& InW);
 	FMatrix<T> operator*(const FMatrix& Other) const;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Runtime/Engine/Public/Rendering/Renderer.h"
+#include "Rendering/Renderer.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"

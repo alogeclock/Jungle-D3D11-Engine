@@ -269,7 +269,7 @@ void URenderer::ReleaseConstantBuffer()
 	}
 }
 
-void URenderer::UpdateConstant(FVector Offset, float Scale)
+void URenderer::UpdateConstant(FVector<float> Offset, float Scale)
 {
 	if (ConstantBuffer)
 	{
