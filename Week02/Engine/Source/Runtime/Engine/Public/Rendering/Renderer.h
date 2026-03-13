@@ -14,7 +14,7 @@
 
 struct FConstants
 {
-	FVector Offset;
+	FVector<float> Offset;
 	float Scale;
 };
 
@@ -72,5 +72,5 @@ public:
 	void CreateConstantBuffer();
 	void ReleaseConstantBuffer();
 
-	void UpdateConstant(FVector Offset, float Scale);
+	void UpdateConstant(FVector<float> Offset, float Scale);
 };

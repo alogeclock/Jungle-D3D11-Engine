@@ -88,6 +88,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 	}
 
+	delete MainAxis;
+
+	renderer.ReleaseVertexBuffer(VertexBuffer);
 	renderer.ReleaseConstantBuffer();
 	renderer.Release();
 

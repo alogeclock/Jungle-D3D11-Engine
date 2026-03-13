@@ -26,6 +26,6 @@ using TArray = std::vector<T, Alloc>;
 
 struct FVertex 
 {
-	FVector Position;
-	FVector4 Color;
+	FVector<float> Position;
+	FVector4<float> Color;
 };

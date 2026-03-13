@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "UnrealMathUtility.h"
 #include "Vector.h"
@@ -18,6 +18,7 @@ public:
     // ---------------------------------------------------------
     // 2. 생성자 (Constructors)
     // ---------------------------------------------------------
+    FVector4() = default;
     FVector4(FVector<T> InVector);
     FVector4(T InX, T InY, T InZ, T InW);
 
