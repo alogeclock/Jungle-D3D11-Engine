@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <windows.h>
 
@@ -74,5 +74,6 @@ public:
 
 	void CreateConstantBuffer();
 	void ReleaseConstantBuffer();
+
 	void UpdateConstant(FVector Offset, float Scale);
 };

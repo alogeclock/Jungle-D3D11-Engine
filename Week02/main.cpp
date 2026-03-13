@@ -1,10 +1,11 @@
-#include "ImGui/imgui.h"
+﻿#include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "imGui/imgui_impl_win32.h"
 
 #include "Windows.h"
 #include "Runtime/Engine/Public/Rendering/Renderer.h"
+#include <iostream>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -44,8 +45,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
 		nullptr, nullptr, hInstance, nullptr);
 
-	URenderer* renderer = new URenderer();
-	renderer->Create(hWnd);
+	URenderer renderer;
+	renderer.Create(hWnd);
 
 	// Timing 관련 코드
 	const int targetFPS = 30;
@@ -58,31 +59,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	double elapsedTime = 0.0;
 
 	QueryPerformanceCounter(&startTime);
-	
+
 	// Main Loop
-	MSG msg;
-	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+	MSG msg = {};
+	while (msg.message != WM_QUIT)
 	{
-		TranslateMessage(&msg); // 키 입력 메시지를 번역한다.
-		DispatchMessage(&msg);  // 메시지가 WndProc으로 전달된다.
-
-		if (msg.message == WM_QUIT)
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
-			break;
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
 		}
-
-		renderer->Prepare();
-		renderer->SwapBuffer();
-
-		do
+		else
 		{
-			Sleep(0);
-			QueryPerformanceCounter(&endTime);
-			elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
-		} while (elapsedTime < targetFrameTime);
+			renderer.Prepare();
+			renderer.SwapBuffer();
+		}
 	}
 
-	renderer->Release();
+	renderer.Release();
 
 	return 0;
 }

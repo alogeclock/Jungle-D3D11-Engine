@@ -1,4 +1,4 @@
-#include "Runtime/Engine/Public/Rendering/Renderer.h"
+﻿#include "Runtime/Engine/Public/Rendering/Renderer.h"
 
 URenderer::URenderer()
 {
@@ -13,8 +13,10 @@ void URenderer::Create(HWND hWindow)
 	CreateDeviceAndSwapChain(hWindow);
 	CreateFrameBuffer();
 	CreateRasterizerState();
+
 	CreateConstantBuffer();
 	CreateShader();
+
 }
 
 void URenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -134,8 +136,8 @@ void URenderer::SwapBuffer()
 
 void URenderer::CreateShader()
 {
-	ID3DBlob* vertexshaderCSO;
-	ID3DBlob* pixelshaderCSO;
+	ID3DBlob* vertexshaderCSO = nullptr;
+	ID3DBlob* pixelshaderCSO = nullptr;
 
 	D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
 

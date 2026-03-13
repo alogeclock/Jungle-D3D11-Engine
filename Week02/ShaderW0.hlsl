@@ -1,3 +1,9 @@
+cbuffer ConstantBuffer : register(b0)
+{
+    float3 offset;
+    float scale;
+}
+
 struct VS_INPUT
 {
     float4 position : POSITION;
@@ -10,16 +16,12 @@ struct PS_INPUT
     float4 color : COLOR;
 };
 
-cbuffer constants : register(b0)
-{
-    row_major float4x4 MVP;
-};
-
 PS_INPUT mainVS(VS_INPUT input)
 {
     PS_INPUT output;
 	
-    output.position = float4(input.position.xyz, 1.0f);
+    float3 finalPos = (input.position.xyz * scale) + offset;
+    output.position = float4(finalPos, 1.0f);
     output.color = input.color;
 	
     return output;
