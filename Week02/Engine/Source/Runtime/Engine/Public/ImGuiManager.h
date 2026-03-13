@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Rendering/Renderer.h"
 #include "ImGui/imgui.h"

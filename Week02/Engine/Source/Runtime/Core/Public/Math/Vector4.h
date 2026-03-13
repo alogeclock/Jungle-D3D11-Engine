@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "UnrealMathUtility.h"
 #include "Vector.h"
