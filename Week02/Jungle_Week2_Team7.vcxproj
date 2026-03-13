@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Editor\Private\Axis.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\Renderer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TestSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Object.h" />
@@ -153,11 +155,13 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Plane.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformCrt.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\RotationMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ScaleMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TranslationMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealMathUtility.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector4.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ViewMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\Axis.h" />
@@ -169,6 +173,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\ImGuiManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Rendering\Renderer.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
