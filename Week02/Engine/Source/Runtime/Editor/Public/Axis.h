@@ -1,0 +1,32 @@
+﻿#pragma once
+
+#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
+#include "Engine\Source\Runtime\Core\Public\Object.h"
+#include "Engine\Source\Runtime\Engine\Public\Rendering\Renderer.h"
+
+class UAxis : public UObject
+{
+public:
+	UAxis();
+	~UAxis() override;
+
+	void RenderPrimitive(URenderer& renderer);
+	void SetVertexBuffer(ID3D11Buffer* InBuffer) { AxisVertexBuffer = InBuffer; }
+	ID3D11Buffer* GetVertexBuffer() const { return AxisVertexBuffer; }
+	
+	FVertex* GetVertexData() { return AxisVertices.data(); }
+	uint32 GetVertexByteWidth() const { return static_cast<uint32>(AxisVertices.size() * sizeof(FVertex)); }
+	uint32 GetNumVertices() const { return NumVertices; }
+
+private:
+	FVector4 Color;
+	FVector Location;
+	FVector Rotation;
+	float Scale;
+
+	ID3D11Buffer* AxisVertexBuffer = nullptr;
+	D3D11_PRIMITIVE_TOPOLOGY Topology;
+
+	uint32 NumVertices;
+	TArray<FVertex> AxisVertices;
+};

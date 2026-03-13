@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "Renderer.h"
 
-FVertexSimple cube_vertices[] =
+FVertex cube_vertices[] =
 {
 	// Front face (Z+)
 	{ -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, 1.0f }, // Bottom-left (red)

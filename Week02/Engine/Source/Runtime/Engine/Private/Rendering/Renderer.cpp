@@ -1,4 +1,5 @@
 ﻿#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
+#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
 
 URenderer::URenderer()
 {
@@ -16,7 +17,6 @@ void URenderer::Create(HWND hWindow)
 
 	CreateConstantBuffer();
 	CreateShader();
-
 }
 
 void URenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -159,7 +159,7 @@ void URenderer::CreateShader()
 		vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(),
 		&SimpleInputLayout);
 
-	Stride = sizeof(FVertexSimple);
+	Stride = sizeof(FVertex);
 
 	vertexshaderCSO->Release();
 	pixelshaderCSO->Release();
@@ -210,14 +210,24 @@ void URenderer::PrepareShader()
 	}
 }
 
-void URenderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
+void URenderer::RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices)
 {
-	UINT offset = 0;
+	uint32 offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
 	DeviceContext->Draw(numVertices, 0);
 }
 
-ID3D11Buffer* URenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
+void URenderer::RenderPrimitiveTopology(ID3D11Buffer* pBuffer, uint32 numVertices, D3D11_PRIMITIVE_TOPOLOGY inTopology)
+{
+	uint32 offset = 0;
+	D3D11_PRIMITIVE_TOPOLOGY prevTopology = Topology;
+
+	DeviceContext->IASetPrimitiveTopology(inTopology);
+	DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
+	DeviceContext->Draw(numVertices, 0);
+}
+
+ID3D11Buffer* URenderer::CreateVertexBuffer(FVertex* vertices, uint32 byteWidth)
 {
 	// Create a vertex buffer
 	D3D11_BUFFER_DESC vertexbufferdesc = {};
@@ -274,4 +284,3 @@ void URenderer::UpdateConstant(FVector Offset, float Scale)
 		DeviceContext->Unmap(ConstantBuffer, 0);
 	}
 }
-

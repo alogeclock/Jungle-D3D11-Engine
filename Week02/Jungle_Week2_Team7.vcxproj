@@ -131,6 +131,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Axis.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\Renderer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
@@ -142,6 +144,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Object.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Cube.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Matrix.h" />
@@ -156,6 +160,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector4.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Axis.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SceneComponent.h" />
