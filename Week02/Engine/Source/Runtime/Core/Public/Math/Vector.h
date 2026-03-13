@@ -2,60 +2,56 @@
 
 #include "UnrealMathUtility.h"
 
+template<typename T>
 struct FVector
 {
 public:
     // ---------------------------------------------------------
     // 1. 멤버 변수 (Member Variables)
     // ---------------------------------------------------------
-    float X;
-    float Y;
-    float Z;
+    T X;
+    T Y;
+    T Z;
 
     // ---------------------------------------------------------
     // 2. 생성자 (Constructors)
     // ---------------------------------------------------------
-    FVector();
-    FVector(float InX, float InY, float InZ);
+    FVector(T InX, T InY, T InZ);
 
     // ---------------------------------------------------------
     // 3. 일반 사칙 연산자 (Basic Math Operators)
     // ---------------------------------------------------------
-    FVector operator+(const FVector& V) const;
-    FVector operator-(const FVector& V) const;
-    FVector operator*(float Scale) const;
-    FVector operator/(float Scale) const;
+    FVector<T> operator+(const FVector<T>& V) const;
+    FVector<T> operator-(const FVector<T>& V) const;
+    FVector<T> operator*(T Scale) const;
+    FVector<T> operator/(T Scale) const;
 
     // ---------------------------------------------------------
     // 4. 복합 대입 연산자 (Assignment Operators)
     // ---------------------------------------------------------
-    FVector& operator+=(const FVector& V);
-    FVector& operator-=(const FVector& V); // +=이 있다면 -=도 짝꿍으로 필수!
+    FVector<T>& operator+=(const FVector<T>& V);
+    FVector<T>& operator-=(const FVector<T>& V); // +=이 있다면 -=도 짝꿍으로 필수!
 
     // ---------------------------------------------------------
     // 5. 인스턴스 유틸리티 함수 (Instance Utility Functions)
     // ---------------------------------------------------------
-    float SizeSquared() const;
-    float Size() const;
-    float Length() const;
-    void Normalize();
+    T SizeSquared() const;
+    T Size() const;
+    T Length() const;
+    bool Normalize(T Tolerance = 1.e-8f);
 
     // ---------------------------------------------------------
     // 6. 공용 수학 계산기 (Static Math Functions)
     // ---------------------------------------------------------
-    static float DotProduct(const FVector& A, const FVector& B);
-    static FVector CrossProduct(const FVector& A, const FVector& B);
+    static T DotProduct(const FVector<T>& A, const FVector<T>& B);
+    static FVector<T> CrossProduct(const FVector<T>& A, const FVector<T>& B);
 };
 
 // =========================================================
 // 생성자
 // =========================================================
-inline FVector::FVector()
-    : X(0.0f), Y(0.0f), Z(0.0f)
-{
-}
-
-inline FVector::FVector(float InX, float InY, float InZ)
+template<typename T>
+inline FVector<T>::FVector(T InX, T InY, T InZ)
     : X(InX), Y(InY), Z(InZ)
 {
 }
@@ -63,31 +59,36 @@ inline FVector::FVector(float InX, float InY, float InZ)
 // =========================================================
 // 사칙 연산자 오버로딩
 // =========================================================
-inline FVector FVector::operator+(const FVector& V) const
+template<typename T>
+inline FVector<T> FVector<T>::operator+(const FVector& V) const
 {
     return FVector(X + V.X, Y + V.Y, Z + V.Z);
 }
 
-inline FVector FVector::operator-(const FVector& V) const
+template<typename T>
+inline FVector<T> FVector<T>::operator-(const FVector& V) const
 {
-    return FVector(X - V.X, Y - V.Y, Z - V.Z);
+    return FVector<T>(X - V.X, Y - V.Y, Z - V.Z);
 }
 
-inline FVector FVector::operator*(float Scale) const
+template<typename T>
+inline FVector<T> FVector<T>::operator*(T Scale) const
 {
-    return FVector(X * Scale, Y * Scale, Z * Scale);
+    return FVector<T>(X * Scale, Y * Scale, Z * Scale);
 }
 
-inline FVector FVector::operator/(float Scale) const
+template<typename T>
+inline FVector<T> FVector<T>::operator/(T Scale) const
 {
-    const float RScale = 1.0f / Scale;
-    return FVector(X * RScale, Y * RScale, Z * RScale);
+    const T RScale = 1.0f / Scale;
+    return FVector<T>(X * RScale, Y * RScale, Z * RScale);
 }
 
 // =========================================================
 // 복합 대입 연산자
 // =========================================================
-inline FVector& FVector::operator+=(const FVector& V)
+template<typename T>
+inline FVector<T>& FVector<T>::operator+=(const FVector<T>& V)
 {
     X += V.X;
     Y += V.Y;
@@ -95,7 +96,8 @@ inline FVector& FVector::operator+=(const FVector& V)
     return *this;
 }
 
-inline FVector& FVector::operator-=(const FVector& V)
+template<typename T>
+inline FVector<T>& FVector<T>::operator-=(const FVector<T>& V)
 {
     X -= V.X;
     Y -= V.Y;
@@ -106,43 +108,50 @@ inline FVector& FVector::operator-=(const FVector& V)
 // =========================================================
 // 인스턴스 유틸리티 함수
 // =========================================================
-inline float FVector::SizeSquared() const
+template<typename T>
+inline T FVector<T>::SizeSquared() const
 {
     return X * X + Y * Y + Z * Z;
 }
 
-inline float FVector::Size() const
+template<typename T>
+inline T FVector<T>::Size() const
 {
     return FMath::Sqrt(X * X + Y * Y + Z * Z);
 }
 
-inline float FVector::Length() const
+template<typename T>
+inline T FVector<T>::Length() const
 {
     return Size();
 }
 
-inline void FVector::Normalize()
+template<typename T>
+inline bool FVector<T>::Normalize(T Tolerance)
 {
-    float len = Size();
-    if (len > 0.000001f)
+    const T SquareSum = X * X + Y * Y + Z * Z;
+    if (SquareSum > Tolerance)
     {
-        X /= len;
-        Y /= len;
-        Z /= len;
+        const T Scale = FMath::InvSqrt(SquareSum);
+        X *= Scale; Y *= Scale; Z *= Scale;
+        return true;
     }
+    return false;
 }
 
 // =========================================================
 // 공용 수학 계산기 (Static)
 // =========================================================
-inline float FVector::DotProduct(const FVector& A, const FVector& B)
+template<typename T>
+inline T FVector<T>::DotProduct(const FVector<T>& A, const FVector<T>& B)
 {
     return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
 }
 
-inline FVector FVector::CrossProduct(const FVector& A, const FVector& B)
+template<typename T>
+inline FVector<T> FVector<T>::CrossProduct(const FVector<T>& A, const FVector<T>& B)
 {
-    return FVector(
+    return FVector<T>(
         A.Y * B.Z - A.Z * B.Y,
         A.Z * B.X - A.X * B.Z,
         A.X * B.Y - A.Y * B.X

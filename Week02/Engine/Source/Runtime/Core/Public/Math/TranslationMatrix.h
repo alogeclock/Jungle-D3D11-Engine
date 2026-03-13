@@ -8,13 +8,13 @@ template<typename T>
 struct FTranslationMatrix : public FMatrix<T>
 {
 public:
-	FTranslationMatrix(const FVector& Delta);
+	FTranslationMatrix(const FVector<T>& Delta);
 };
 
 /********************************************/
 
 template<typename T>
-FTranslationMatrix<T>::FTranslationMatrix(const FVector& Delta)
+FTranslationMatrix<T>::FTranslationMatrix(const FVector<T>& Delta)
 	: FMatrix<T>(
 		FPlane<T>(1.0f,		0.0f,		0.0f,		0.0f),
 		FPlane<T>(0.0f,		1.0f,		0.0f,		0.0f),
