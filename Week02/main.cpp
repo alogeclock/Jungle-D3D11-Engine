@@ -1,11 +1,12 @@
-﻿#include "ImGui/imgui.h"
+#include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "imGui/imgui_impl_win32.h"
 
-#include "Windows.h"
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
+#include "Engine/Source/Runtime/Core/Public/Cube.h"
 #include <iostream>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, uint32 msg, WPARAM wParam, LPARAM lParam);
@@ -46,26 +47,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
 		nullptr, nullptr, hInstance, nullptr);
 
+	// Rendering
 	URenderer renderer;
 	renderer.Create(hWnd);
-	renderer.CreateConstantBuffer();
 	
+	// World Axis
 	UAxisComponent* MainAxis = new UAxisComponent();
-	
 	ID3D11Buffer* VertexBuffer = renderer.CreateVertexBuffer(MainAxis->GetVertexData(), MainAxis->GetVertexByteWidth());
 	MainAxis->SetVertexBuffer(VertexBuffer);
 
-	// Timing 관련 코드
-	const int targetFPS = 30;
-	const double targetFrameTime = 1000.0 / targetFPS;
+	// Test Object -> 나중에 이동
+	UINT numVerticesSphere = sizeof(cube_vertices) / sizeof(FVertexSimple);
+	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
+	USphere* sphere = new USphere();
 
-	LARGE_INTEGER frequency;
-	QueryPerformanceFrequency(&frequency);
-
-	LARGE_INTEGER startTime, endTime;
-	double elapsedTime = 0.0;
-
-	QueryPerformanceCounter(&startTime);
+	// ImGui
+	UImGuiManager::Get().Create(hWnd, &renderer);
+	UImGuiManager::Get().SetSelectedObject(sphere);
 
 	// Main Loop
 	MSG msg = {};
@@ -80,10 +78,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			renderer.Prepare();
 			
-			FVector origin(0.0f, 0.0f, 0.0f);
-			renderer.UpdateConstant(origin, 1.0f);
+			sphere->Render(renderer);
+			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 
+			FConstants basic;
+			basic.worldMatrix = FMatrix<float>::Identity();
+			renderer.UpdateConstant(basic);
 			MainAxis->RenderPrimitive(renderer);
+
+			UImGuiManager::Get().Update();
+
 			renderer.SwapBuffer();
 		}
 	}

@@ -14,7 +14,15 @@ void UImGuiManager::Update()
     beginFrame();
 
     // 로직
-    ImGui::Begin("Test");
+    ImGui::Begin("Jungle Property Window");
+
+    FTransform t = SelectedObject->Transform;
+
+    ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
+    ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -1.0f, 1.0f);
+    ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f,-1.0f, 1.0f);
+
+    SelectedObject->SetTransform(t);
 
     endFrame();
 }
@@ -39,4 +47,9 @@ void UImGuiManager::Release()
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
+}
+
+void UImGuiManager::SetSelectedObject(USphere* sphere)
+{
+    SelectedObject = sphere;
 }

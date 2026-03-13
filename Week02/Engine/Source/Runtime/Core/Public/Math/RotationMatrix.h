@@ -2,6 +2,7 @@
 
 #include "Plane.h"
 #include "Matrix.h"
+#include <cmath>
 
 // ─────────────────────────────────────────
 // X축 회전 행렬 (Pitch)
@@ -76,9 +77,9 @@ struct FRotationMatrix : public FMatrix<T>
 template<typename T>
 FRotationMatrix<T>::FRotationMatrix(T PitchRad, T YawRad, T RollRad)
     : FMatrix<T>(
-        FRotationZMatrix<T>(PitchRad)*
+        FRotationXMatrix<T>(PitchRad)*
         FRotationYMatrix<T>(YawRad)*
-        FRotationXMatrix<T>(RollRad)
+        FRotationZMatrix<T>(RollRad)
     )
 {
 }

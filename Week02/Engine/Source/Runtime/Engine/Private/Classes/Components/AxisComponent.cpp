@@ -31,7 +31,7 @@ UAxisComponent::~UAxisComponent()
 
 void UAxisComponent::RenderPrimitive(URenderer& renderer)
 {
-	renderer.UpdateConstant(Location, Scale);
+	//renderer.UpdateConstant(Location, Scale);
 	if (AxisVertexBuffer != nullptr)
 	{
 		renderer.RenderPrimitiveTopology(AxisVertexBuffer, NumVertices, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);

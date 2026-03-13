@@ -1,5 +1,5 @@
-﻿#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
-#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
+#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
+#include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
 
 URenderer::URenderer()
 {
@@ -258,6 +258,10 @@ void URenderer::CreateConstantBuffer()
 	constantbufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	Device->CreateBuffer(&constantbufferdesc, nullptr, &ConstantBuffer);
+
+	FConstants constants;
+	constants.worldMatrix = FTranslationMatrix<float>::FTranslationMatrix(FVector(1.0f, 0.0f, 0.0f));
+	UpdateConstant(constants);
 }
 
 void URenderer::ReleaseConstantBuffer()
@@ -269,7 +273,7 @@ void URenderer::ReleaseConstantBuffer()
 	}
 }
 
-void URenderer::UpdateConstant(FVector<float> Offset, float Scale)
+void URenderer::UpdateConstant(FConstants data)
 {
 	if (ConstantBuffer)
 	{
@@ -278,8 +282,7 @@ void URenderer::UpdateConstant(FVector<float> Offset, float Scale)
 		DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
 		FConstants* constants = (FConstants*)constantbufferMSR.pData;
 
-		constants->Offset = Offset;
-		constants->Scale = Scale;
+		constants->worldMatrix = data.worldMatrix;
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
 	}
