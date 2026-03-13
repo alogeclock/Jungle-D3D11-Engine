@@ -37,6 +37,8 @@ public:
     // ---------------------------------------------------------
     float SizeSquared() const;
     float Size() const;
+    float Length() const;
+    void Normalize();
 
     // ---------------------------------------------------------
     // 6. 공용 수학 계산기 (Static Math Functions)
@@ -44,19 +46,6 @@ public:
     static float DotProduct(const FVector& A, const FVector& B);
     static FVector CrossProduct(const FVector& A, const FVector& B);
 };
-
-struct FVector4
-{
-public:
-    // ---------------------------------------------------------
-    // 1. 멤버 변수 (Member Variables)
-    // ---------------------------------------------------------
-    float X;
-    float Y;
-    float Z;
-    float W;
-};
-
 
 // =========================================================
 // 생성자
@@ -125,6 +114,22 @@ float FVector::SizeSquared() const
 float FVector::Size() const
 {
     return FMath::Sqrt(X * X + Y * Y + Z * Z);
+}
+
+float FVector::Length() const
+{
+    return Size();
+}
+
+void FVector::Normalize() 
+{
+    float len = Size();
+    if (len > 0.000001f)
+    {
+        X /= len;
+        Y /= len;
+        Z /= len;
+    }
 }
 
 // =========================================================
