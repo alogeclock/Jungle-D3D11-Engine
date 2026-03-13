@@ -5,7 +5,7 @@
 
 #include "Windows.h"
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
-#include "Engine\Source\Runtime\Editor\Public\Axis.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
 #include <iostream>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, uint32 msg, WPARAM wParam, LPARAM lParam);
@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.Create(hWnd);
 	renderer.CreateConstantBuffer();
 	
-	UAxis* MainAxis = new UAxis();
+	UAxisComponent* MainAxis = new UAxisComponent();
 	
 	ID3D11Buffer* VertexBuffer = renderer.CreateVertexBuffer(MainAxis->GetVertexData(), MainAxis->GetVertexByteWidth());
 	MainAxis->SetVertexBuffer(VertexBuffer);

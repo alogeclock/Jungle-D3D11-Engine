@@ -4,11 +4,11 @@
 #include "Engine\Source\Runtime\Core\Public\Object.h"
 #include "Engine\Source\Runtime\Engine\Public\Rendering\Renderer.h"
 
-class UAxis : public UObject
+class UAxisComponent : public UObject
 {
 public:
-	UAxis();
-	~UAxis() override;
+	UAxisComponent();
+	~UAxisComponent() override;
 
 	void RenderPrimitive(URenderer& renderer);
 	void SetVertexBuffer(ID3D11Buffer* InBuffer) { AxisVertexBuffer = InBuffer; }

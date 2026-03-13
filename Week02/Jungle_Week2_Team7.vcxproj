@@ -132,7 +132,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Axis.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\AxisComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ActorComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\Renderer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
@@ -163,11 +164,16 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ViewMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
-    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Axis.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\AxisComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\BoxComponent.cpp" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PrimitiveComponent.cpp" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SceneComponent.cpp" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SphereComponent.cpp" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ActorComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SceneComponent.h" />
