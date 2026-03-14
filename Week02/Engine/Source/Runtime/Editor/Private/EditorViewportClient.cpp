@@ -112,6 +112,9 @@ FMatrix<float> FEditorViewportClient::GetViewMatrix() const { return CameraTrans
 
 void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
 {
+    if (!bRightMouseDragging)
+        return;
+
     const float PitchRad = CameraTransform.GetRotation().X * (3.14159265f / 180.f);
     const float YawRad = CameraTransform.GetRotation().Y * (3.14159265f / 180.f);
 
