@@ -121,6 +121,7 @@ void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
     // 카메라 로컬 Forward / Right
     FVector4<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad), std::sin(PitchRad), 0.f};
     FVector4<float> Right = {std::cos(YawRad + 1.5707963f), std::sin(YawRad + 1.5707963f), 0.f, 0.f};
+    FVector4<float> Up = Forward ^ Right;
 
     FVector4<float> Move = {0.f, 0.f, 0.f, 0.f};
     bool            bMoved = false;
@@ -129,6 +130,8 @@ void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
     if (Viewport->KeyState(EKeys::S)) { Move -= Forward; bMoved = true; }
     if (Viewport->KeyState(EKeys::D)) { Move += Right;   bMoved = true; }
     if (Viewport->KeyState(EKeys::A)) { Move -= Right;   bMoved = true; }
+    if (Viewport->KeyState(EKeys::Q)) { Move += Up;      bMoved = true; }
+    if (Viewport->KeyState(EKeys::E)) { Move -= Up;      bMoved = true; }
 
     if (!bMoved)
         return;
