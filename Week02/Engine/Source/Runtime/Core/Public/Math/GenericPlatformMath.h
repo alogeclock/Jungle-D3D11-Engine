@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PlatformCrt.h"
+#include "../Templates/TypeCompatibleBytes.h"
 
 struct FGenericPlatformMath
 {
@@ -9,4 +10,9 @@ struct FGenericPlatformMath
 	static float Tan(float Value) { return tanf(Value); }
 	static float Sqrt(float Value) { return sqrtf(Value); }
 	static float InvSqrt(float F) { return 1.0f / sqrtf(F); }
+
+	static bool IsFinite(float A)
+	{
+		return (BitCast<uint32, float>(A) & 0x7F800000U) != 0x7F800000U;
+	}
 };

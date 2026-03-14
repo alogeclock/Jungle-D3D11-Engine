@@ -131,7 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Source\Runtime\CoreUObject\UObjectArray.cpp" />
+    <ClCompile Include="Engine\Classes\LevelActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\Guid.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.cpp" />
@@ -159,7 +159,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Source\Runtime\CoreUObject\UObjectArray.h" />
+    <ClInclude Include="Engine\Classes\Actor.h" />
+    <ClInclude Include="Engine\Classes\Engine.h" />
+    <ClInclude Include="Engine\Classes\Level.h" />
+    <ClInclude Include="Engine\Classes\World.h" />
+    <ClInclude Include="Engine\Source\Runtime\CoreUObject\Class.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreMinimal.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\AutoRTFM.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\CoreTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatform.h" />
@@ -168,6 +173,9 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\MicrosoftPlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Platform.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformMisc.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Quat.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Rotator.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TransformNonVectorized.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE4.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatform.h" />
@@ -191,6 +199,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector4.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ViewMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Templates\TypeCompatibleBytes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\EditorViewportClient.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\PivotTransformGizmo.h" />

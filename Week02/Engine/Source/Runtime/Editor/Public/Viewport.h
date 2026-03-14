@@ -35,7 +35,7 @@ public:
     void Tick(float DeltaTime);
 
 private:
-    FEditorViewportClient* ViewportClient;
+    //FEditorViewportClient* ViewportClient;
 
     std::unordered_map<uint32, bool> KeyStates;
 

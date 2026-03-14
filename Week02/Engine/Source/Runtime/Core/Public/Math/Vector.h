@@ -46,6 +46,8 @@ public:
     // ---------------------------------------------------------
     static T DotProduct(const FVector<T>& A, const FVector<T>& B);
     static FVector<T> CrossProduct(const FVector<T>& A, const FVector<T>& B);
+
+    bool ContainsNaN() const;
 };
 
 // =========================================================
@@ -61,13 +63,13 @@ inline FVector<T>::FVector(T InX, T InY, T InZ)
 // 사칙 연산자 오버로딩
 // =========================================================
 template<typename T>
-inline FVector<T> FVector<T>::operator+(const FVector& V) const
+inline FVector<T> FVector<T>::operator+(const FVector<T>& V) const
 {
     return FVector(X + V.X, Y + V.Y, Z + V.Z);
 }
 
 template<typename T>
-inline FVector<T> FVector<T>::operator-(const FVector& V) const
+inline FVector<T> FVector<T>::operator-(const FVector<T>& V) const
 {
     return FVector<T>(X - V.X, Y - V.Y, Z - V.Z);
 }
@@ -158,3 +160,13 @@ inline FVector<T> FVector<T>::CrossProduct(const FVector<T>& A, const FVector<T>
         A.X * B.Y - A.Y * B.X
     );
 }
+
+template<typename T>
+inline bool FVector<T>::ContainsNaN() const
+{
+    return (!FMath::IsFinite(X) ||
+        !FMath::IsFinite(Y) ||
+        !FMath::IsFinite(Z));
+}
+
+using DVector = FVector<double>;
