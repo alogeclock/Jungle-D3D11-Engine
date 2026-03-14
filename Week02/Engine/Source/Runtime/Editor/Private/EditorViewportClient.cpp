@@ -104,7 +104,7 @@ void FEditorViewportClient::MouseMove(FViewport *Viewport, int32 X, int32 Y)
 void FEditorViewportClient::InputAxis(FViewport *Viewport, FKey Key, float Delta, float DeltaTime)
 {
     FVector<float> Loc = CameraTransform.GetLocation();
-    Loc.Z -= Delta * ZoomSpeed * DeltaTime;
+    Loc.X += Delta * ZoomSpeed * DeltaTime;
     CameraTransform.SetLocation(Loc);
 }
 
