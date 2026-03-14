@@ -102,9 +102,6 @@ public:
 		MaxLocation = InMaxLocation;
 	}
 
-	/** Check if transition curve is playing. */
-	bool IsPlaying();
-
 	/** @return The transform's location */
 	inline const FVector<float>& GetLocation() const { return ViewLocation; }
 
@@ -118,17 +115,9 @@ public:
 	inline float GetOrthoZoom() const { return OrthoZoom; }
 
 	/**
-	 * Updates any current location transitions
-	 *
-	 * @return true if there is currently a transition
-	 */
-	bool UpdateTransition();
-
-	/**
 	 * Computes a matrix to use for viewport location and rotation when orbiting
 	 */
 	FMatrix<float> ComputeOrbitMatrix() const;
-
 
 private:
 	/** Current viewport Position. */
