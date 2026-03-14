@@ -14,22 +14,48 @@
 template<typename T>
 struct FViewMatrix : public FMatrix<T>
 {
-    FViewMatrix(const FVector<T>& Eye, const FVector<T>& Target, const FVector<T>& Up);
+    FViewMatrix(const FVector<T>& Eye, const FVector<T>& Target, const FVector<T>& Up)
+        : FMatrix<T>(Compute(Eye, Target, Up))
+    { }
+
+private:
+    static FMatrix<T> Compute(const FVector<T>& Eye, const FVector<T>& Target, const FVector<T>& Up)
+    {
+        // 왼손 좌표계 (Forward = X, Right = Y, Up = Z)
+        FVector Forward = (Target - Eye);
+        Forward.Normalize();
+        FVector Right = FVector<float>::CrossProduct(Up, Forward);
+        Right.Normalize();
+        FVector NewUp = FVector<float>::CrossProduct(Forward, Right);
+
+        // Rotation의 역행렬(= 전치) + Translation의 역행렬(= 부호 반전)
+        return FMatrix<T>(
+            FPlane<T>(Right.X, NewUp.X, Forward.X, 0.0f),
+            FPlane<T>(Right.Y, NewUp.Y, Forward.Y, 0.0f),
+            FPlane<T>(Right.Z, NewUp.Z, Forward.Z, 0.0f),
+            FPlane<T>(-(FVector<float>::DotProduct(Right, Eye)), -(FVector<float>::DotProduct(NewUp, Eye)), -(FVector<float>::DotProduct(Forward, Eye)), 1.0f)
+        );
+    }
 };
 
-template<typename T>
-FViewMatrix<T>::FViewMatrix(const FVector<T>& Eye, const FVector<T>& Target, const FVector<T>& Up)
-{
-    // 왼손 좌표계 (Forward = X, Right = Y, Up = Z)
-    FVector Forward = (Target - Eye).Normalize(); 
-    FVector Right = (Up ^ Forward).Normalize(); 
-    FVector NewUp = (Forward ^ Right);               
-
-    // Rotation의 역행렬(= 전치) + Translation의 역행렬(= 부호 반전)
-    *this = FMatrix<T>(
-        FPlane<T>(Right.X, NewUp.X, Forward.X, 0.0f),
-        FPlane<T>(Right.Y, NewUp.Y, Forward.Y, 0.0f),
-        FPlane<T>(Right.Z, NewUp.Z, Forward.Z, 0.0f),
-        FPlane<T>(-(Right | Eye), -(NewUp | Eye), -(Forward | Eye), 1.0f)
-    );
-}
+//template<typename T>
+//FViewMatrix<T>::FViewMatrix(const FVector<T>& Eye, const FVector<T>& Target, const FVector<T>& Up)
+//    : FMatrix<float>()
+//{
+//    // 왼손 좌표계 (Forward = X, Right = Y, Up = Z)
+//    FVector Forward = (Target - Eye);
+//    Forward.Normalize();
+//
+//    FVector Right = FVector<float>::CrossProduct(Up, Forward);
+//    Right.Normalize();
+//
+//    FVector NewUp = FVector<float>::CrossProduct(Forward, Right);
+//
+//    // Rotation의 역행렬(= 전치) + Translation의 역행렬(= 부호 반전)
+//    *this = FMatrix<T>(
+//        FPlane<T>(Right.X, NewUp.X, Forward.X, 0.0f),
+//        FPlane<T>(Right.Y, NewUp.Y, Forward.Y, 0.0f),
+//        FPlane<T>(Right.Z, NewUp.Z, Forward.Z, 0.0f),
+//        FPlane<T>(-(FVector<float>::DotProduct(Right, Eye)), -(FVector<float>::DotProduct(NewUp, Eye)), -(FVector<float>::DotProduct(Forward, Eye)), 1.0f)
+//    );
+//};

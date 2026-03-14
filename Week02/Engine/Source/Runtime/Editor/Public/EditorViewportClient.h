@@ -1,12 +1,16 @@
 #pragma once
 
-#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
+#include "Engine/Source/Runtime/Editor/Public/Application.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+
+//#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
 
 // 사용자의 Input 이벤트, 카메라 관리
 
 // TODO: 오브젝트 선택, 기즈모 드래그, WSAD, 우클릭 카메라 조정
+
+class FViewport;
 
 struct FKey
 {
@@ -47,10 +51,9 @@ public:
 	EInputEvent GetInputEvent() const { return InputEvent; }
 	FKey GetKey() const { return Key; }
 
-	bool IsLeftMouseButtonPressed() const { return IsButtonPressed(EKeys::LeftMouseButton); }
-	bool IsRightMouseButtonPressed() const { return IsButtonPressed(EKeys::RightMouseButton); }
-
-	bool IsButtonPressed(FKey InKey) const { return Viewport->KeyState(InKey); }
+	bool IsLeftMouseButtonPressed() const;
+	bool IsRightMouseButtonPressed() const;
+	bool IsButtonPressed(FKey InKey) const;
 
 private:
 	/** Viewport the event was sent to */
@@ -70,16 +73,16 @@ public:
 	FViewportCameraTransform();
 
 	/** Sets the transform's location */
-	void SetLocation(const FVector4<float>& Position);
+	void SetLocation(const FVector<float>& Position);
 
 	/** Sets the transform's rotation */
-	void SetRotation(const FVector4<float>& Rotation)
+	void SetRotation(const FVector<float>& Rotation)
 	{
 		ViewRotation = Rotation;
 	}
 
 	/** Sets the location to look at during orbit */
-	void SetLookAt(const FVector4<float>& InLookAt)
+	void SetLookAt(const FVector<float>& InLookAt)
 	{
 		LookAt = InLookAt;
 	}
@@ -101,18 +104,16 @@ public:
 	bool IsPlaying();
 
 	/** @return The transform's location */
-	inline const FVector4<float>& GetLocation() const { return ViewLocation; }
+	inline const FVector<float>& GetLocation() const { return ViewLocation; }
 
 	/** @return The transform's rotation */
-	inline const FVector4<float>& GetRotation() const { return ViewRotation; }
+	inline const FVector<float>& GetRotation() const { return ViewRotation; }
 
 	/** @return The look at point for orbiting */
-	inline const FVector4<float>& GetLookAt() const { return LookAt; }
+	inline const FVector<float>& GetLookAt() const { return LookAt; }
 
 	/** @return The ortho zoom amount */
 	inline float GetOrthoZoom() const { return OrthoZoom; }
-
-	bool IsPlaying();
 	/**
 	 * Updates any current location transitions
 	 *
@@ -128,15 +129,15 @@ public:
 
 private:
 	/** Current viewport Position. */
-	FVector4<float>	ViewLocation;
+	FVector<float>	ViewLocation;
 	/** Current Viewport orientation; valid only for perspective projections. */
-	FVector4<float> ViewRotation;
+	FVector<float> ViewRotation;
 	/** Desired viewport location when animating between two locations */
-	FVector4<float>	DesiredLocation;
+	FVector<float>	DesiredLocation;
 	/** When orbiting, the point we are looking at */
-	FVector4<float> LookAt;
+	FVector<float> LookAt;
 	/** Viewport start location when animating to another location */
-	FVector4<float> StartLocation;
+	FVector<float> StartLocation;
 	/** Ortho zoom amount */
 	float OrthoZoom = 1.0f;
 	float Max_OrthoZoom = 1000.0f;
@@ -156,7 +157,7 @@ public:
 	void Tick(float DeltaTime, FViewport* Viewport);
 
 	bool InputKey(const FInputEventState& InputState);
-	void MouseMove(FViewport* Viewport, int32_t X, int32_t Y);
+	void MouseMove(FViewport* Viewport, int32 X, int32 Y);
 	void InputAxis(FViewport* Viewport, FKey Key, float Delta, float DeltaTime);
 
 	// 현재 카메라 View Matrix — Object에 전달하여 행렬곱
@@ -175,12 +176,10 @@ private:
 
 	// 우클릭 드래그 상태
 	bool  bRightMouseDragging = false;
-	int32_t LastMouseX = 0;
-	int32_t LastMouseY = 0;
+	int32 LastMouseX = 0;
+	int32 LastMouseY = 0;
 
 	// WASD 이동 누적
 	void ApplyMovement(float DeltaTime, FViewport* Viewport);
 
-	// 카메라 변경 후 디버그 출력
-	void DebugPrintCamera() const;
 };

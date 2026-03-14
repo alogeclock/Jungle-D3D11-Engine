@@ -11,6 +11,9 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Vector4.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
 #include "Engine/Source/Runtime/Core/Public/CoreTypes.h"
+//#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
+
+class FViewport;
 
 struct FVertexSimple
 {
@@ -21,6 +24,7 @@ struct FVertexSimple
 struct FConstants
 {
 	FMatrix<float> worldMatrix;
+	FMatrix<float> viewMatrix;
 };
 
 class URenderer
@@ -78,4 +82,9 @@ public:
 	void ReleaseConstantBuffer();
 
 	void UpdateConstant(FConstants data);
+
+	void SetViewport(FViewport* viewport) { Viewport = viewport; };
+
+private:
+	FViewport* Viewport = nullptr;
 };

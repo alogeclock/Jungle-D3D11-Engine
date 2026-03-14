@@ -1,5 +1,6 @@
 ﻿#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
+#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
 
 URenderer::URenderer()
 {
@@ -283,6 +284,10 @@ void URenderer::UpdateConstant(FConstants data)
 		FConstants* constants = (FConstants*)constantbufferMSR.pData;
 
 		constants->worldMatrix = data.worldMatrix;
+
+		if (Viewport != nullptr) {
+			constants->viewMatrix = Viewport->GetViewportClient()->GetViewMatrix();
+		}
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
 	}

@@ -5,6 +5,8 @@
 
 // 사용자의 Editor Input을 받는 곳
 
+class FEditorViewportClient;
+
 class FViewport
 {
 public:
@@ -33,6 +35,8 @@ public:
 
     // 매 프레임 Application 메인루프에서 호출
     void Tick(float DeltaTime);
+
+    FEditorViewportClient* GetViewportClient() const { return ViewportClient; }
 
 private:
     FEditorViewportClient* ViewportClient;
