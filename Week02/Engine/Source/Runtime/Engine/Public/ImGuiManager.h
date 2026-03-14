@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "Rendering/Renderer.h"
+#include "Engine/Source/Runtime/Core/Public/TimeManager.h"
+
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
@@ -41,6 +43,11 @@ private:
 	USphereComponent* SelectedObject;
 	char buffer[256];
 };
+
+
+// 아래는 imgui_demo.cpp에서 가져온 내용
+
+
 
 //-----------------------------------------------------------------------------
 // [SECTION] Example App: Debug Console / ShowExampleAppConsole()
@@ -126,10 +133,9 @@ struct ExampleAppConsole
             ImGui::EndPopup();
         }
 
-        ImGui::TextWrapped(
-            "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A more elaborate "
-            "implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
-        ImGui::TextWrapped("Enter 'HELP' for help.");
+        ImGui::TextWrapped("Hello Jungle World!");
+        ImGui::TextWrapped("FPS: %.f\n", UTimeManager::Get().GetFPS());
+        ImGui::TextWrapped("FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFrameTime());
 
         // TODO: display items starting from the bottom
 
