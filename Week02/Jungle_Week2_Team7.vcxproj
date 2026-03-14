@@ -135,6 +135,10 @@
     <ClCompile Include="Engine\Source\Runtime\Editor\Private\Application.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\AxisComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ActorComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\BoxComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PrimitiveComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SceneComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SphereComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\Renderer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
@@ -147,6 +151,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Transform.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Object.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Cube.h" />
@@ -171,10 +176,6 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SphereComponent.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\BoxComponent.cpp" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PrimitiveComponent.cpp" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SceneComponent.cpp" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SphereComponent.cpp" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ActorComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PrimitiveComponent.h" />

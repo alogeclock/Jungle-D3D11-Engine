@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <windows.h>
 
@@ -28,7 +28,7 @@ private:
 	UAxisComponent* MainAxis;
 	ID3D11Buffer* VertexBuffer;
 
-	USphere* sphere;
+	USphereComponent* sphere;
 	UINT numVerticesSphere;
 	ID3D11Buffer* vertexBufferSphere;
 };

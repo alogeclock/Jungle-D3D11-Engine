@@ -1,4 +1,4 @@
-#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
+﻿#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
 
 URenderer::URenderer()
@@ -227,7 +227,7 @@ void URenderer::RenderPrimitiveTopology(ID3D11Buffer* pBuffer, uint32 numVertice
 	DeviceContext->Draw(numVertices, 0);
 }
 
-ID3D11Buffer* URenderer::CreateVertexBuffer(FVertex* vertices, uint32 byteWidth)
+ID3D11Buffer* URenderer::CreateVertexBuffer(const FVertex* vertices, uint32 byteWidth)
 {
 	// Create a vertex buffer
 	D3D11_BUFFER_DESC vertexbufferdesc = {};

@@ -1,4 +1,4 @@
-#include "Engine/Source/Runtime/Editor/Public/Application.h"
+﻿#include "Engine/Source/Runtime/Editor/Public/Application.h"
 #include "Engine/Source/Runtime/Core/Public/Cube.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -60,9 +60,9 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	MainAxis->SetVertexBuffer(VertexBuffer);
 
 	// Test Object -> 나중에 이동
-	numVerticesSphere = sizeof(cube_vertices) / sizeof(FVertexSimple);
-	vertexBufferSphere = Renderer->CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
-	sphere = new USphere();
+	sphere = new USphereComponent();
+	vertexBufferSphere = Renderer->CreateVertexBuffer(sphere->GetVertices(), sphere->GetVertexByteWidth());
+    sphere->SetVertexBuffer(vertexBufferSphere);
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
@@ -85,7 +85,6 @@ void UApplication::Run()
 			Renderer->Prepare();
 
 			sphere->Render(*Renderer);
-			Renderer->RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 
 			FConstants basic;
 			basic.worldMatrix = FMatrix<float>::Identity();

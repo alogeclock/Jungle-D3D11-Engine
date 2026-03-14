@@ -6,7 +6,7 @@
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
 
-#include "TestSphere.cpp"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
 
 class UImGuiManager
 {
@@ -27,9 +27,9 @@ public:
 	void endFrame();
 	void Release();
 
-	void SetSelectedObject(USphere* sphere);
+	void SetSelectedObject(USphereComponent* sphere);
 
 private:
-	USphere* SelectedObject;
+	USphereComponent* SelectedObject;
 	char buffer[256];
 };
