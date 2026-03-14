@@ -10,6 +10,8 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector4.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
+#include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
+#include "Engine/Source/Runtime/Core/Public/Math/PerspectiveMatrix.h"
 #include "Engine/Source/Runtime/Core/Public/CoreTypes.h"
 //#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
 
@@ -25,6 +27,7 @@ struct FConstants
 {
 	FMatrix<float> worldMatrix;
 	FMatrix<float> viewMatrix;
+	FMatrix<float> projectionMatrix;
 };
 
 class URenderer

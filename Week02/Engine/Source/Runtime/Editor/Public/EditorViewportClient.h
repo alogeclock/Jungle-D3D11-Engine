@@ -168,7 +168,7 @@ public:
 
 private:
 	// 카메라 이동 속도
-	static constexpr float MoveSpeed = 500.0f;  // units/sec
+	static constexpr float MoveSpeed = 10.0f;  // units/sec
 	static constexpr float RotSpeed = 0.3f;    // deg/pixel
 	static constexpr float ZoomSpeed = 50.0f;
 

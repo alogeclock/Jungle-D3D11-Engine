@@ -1,5 +1,4 @@
 ﻿#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
-#include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
 #include "Engine/Source/Runtime/Editor/Public/Viewport.h"
 
 URenderer::URenderer() {}
@@ -320,8 +319,25 @@ void URenderer::UpdateConstant(FConstants data)
 
         constants->worldMatrix = data.worldMatrix;
 
-		if (Viewport != nullptr) {
+        if (Viewport != nullptr) {
 			constants->viewMatrix = Viewport->GetViewportClient()->GetViewMatrix();
+            
+            // --- 투영 행렬 생성 및 적용 부분 추가 ---
+            // 시야각(FOV)을 90도로 설정 (절반인 45도를 라디안으로 변환)
+            float HalfFOV = 3.14159265f / 4.0f; 
+            
+            // 뷰포트 종횡비(Aspect Ratio) 계산
+            float AspectRatio = ViewportInfo.Width / (ViewportInfo.Height > 0.0f ? ViewportInfo.Height : 1.0f);
+            
+            // FPerspectiveMatrix(HalfFOVX, HalfFOVY, MultFOVX, MultFOVY, MinZ, MaxZ)
+            constants->projectionMatrix = FPerspectiveMatrix<float>(
+                HalfFOV,         // HalfFOVX
+                HalfFOV,         // HalfFOVY
+                1.0f / AspectRatio,            // MultFOVX
+                1.0f,     // MultFOVY (화면 비율에 맞게 X, Y 비율 조정)
+                0.1f,            // MinZ (Near Plane)
+                1000.0f          // MaxZ (Far Plane)
+            );
 		}
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
