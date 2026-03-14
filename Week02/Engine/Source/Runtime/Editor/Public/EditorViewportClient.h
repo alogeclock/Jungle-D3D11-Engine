@@ -25,6 +25,8 @@ namespace EKeys
 	inline const FKey A{ 'A' };
 	inline const FKey S{ 'S' };
 	inline const FKey D{ 'D' };
+	inline const FKey Q{ 'Q' };
+	inline const FKey E{ 'E' };
 	inline const FKey LeftMouseButton{ VK_LBUTTON };
 	inline const FKey RightMouseButton{ VK_RBUTTON };
 }
