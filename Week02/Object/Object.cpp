@@ -1,4 +1,4 @@
-﻿#include "Engine\Source\Runtime\Core\Public\Object.h"
+﻿#include "Object.h"
 
 UObject::UObject()
 {

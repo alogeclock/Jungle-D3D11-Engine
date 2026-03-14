@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
-#include "Engine\Source\Runtime\Core\Public\Object.h"
+#include "CoreTypes.h"
+#include "Object\Object.h"
 #include "Engine\Source\Runtime\Engine\Public\Rendering\Renderer.h"
 
 class UAxisComponent : public UObject

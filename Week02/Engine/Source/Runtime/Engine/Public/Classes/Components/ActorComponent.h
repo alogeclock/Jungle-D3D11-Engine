@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Engine/Source/Runtime/Core/Public/Object.h"
+#include "Object/Object.h"
 
 // 가장 기본이 되는 컴포넌트
 class UActorComponent : public UObject

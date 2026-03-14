@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Engine/Source/Runtime/Core/Public/Object.h"
+#include "Object/Object.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 

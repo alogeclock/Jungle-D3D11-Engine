@@ -131,8 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Classes\LevelActor.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
+    <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\Guid.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Editor\Private\EditorViewportClient.cpp" />
@@ -157,13 +156,11 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Memory\Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Classes\Actor.h" />
-    <ClInclude Include="Engine\Classes\Engine.h" />
-    <ClInclude Include="Engine\Classes\Level.h" />
-    <ClInclude Include="Engine\Classes\World.h" />
-    <ClInclude Include="Engine\Source\Runtime\CoreUObject\Class.h" />
+    <ClInclude Include="Object\Actor.h" />
+    <ClInclude Include="Object\Class.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreMinimal.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\AutoRTFM.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\CoreTypes.h" />
@@ -183,8 +180,8 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Transform.h" />
-    <ClInclude Include="Engine\Source\Runtime\Core\Public\Object.h" />
-    <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreTypes.h" />
+    <ClInclude Include="Object\Object.h" />
+    <ClInclude Include="CoreTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Cube.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Matrix.h" />
@@ -227,6 +224,7 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="Memory\Memory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

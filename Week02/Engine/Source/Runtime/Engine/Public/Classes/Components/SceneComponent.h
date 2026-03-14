@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/ActorComponent.h"
-#include "Engine/Source/Runtime/Core/Public/CoreTypes.h"
+#include "CoreTypes.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Transform.h"
 
 // Transform Information을 갖는 Component (위치, 회전, 크기)
