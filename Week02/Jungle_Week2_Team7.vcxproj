@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -134,6 +134,7 @@
     <ClCompile Include="Engine\Classes\LevelActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\CubeArrow.h" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Private\TimeManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\Guid.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Editor\Private\EditorViewportClient.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Templates\TypeCompatibleBytes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Torus.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\TimeManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\EditorViewportClient.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\PivotTransformGizmo.h" />

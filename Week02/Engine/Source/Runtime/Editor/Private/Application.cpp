@@ -29,7 +29,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Viewport->OnKeyUp((uint32_t)wParam);
 		break;
 	case WM_MOUSEMOVE:
-		// Viewport->OnMouseMove(LOWORD(lParam), HIWORD(lParam)); // 삭제
 		Viewport->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_LBUTTONDOWN:
@@ -72,7 +71,6 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
-	// wndProc의 함수 포인터를 WindowClass 구조체 안에 넣는다.
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
 
 	RegisterClassW(&wndclass);
@@ -81,6 +79,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
 		nullptr, nullptr, hInst, nullptr);
 
+	// Viewport
 	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Viewport));
 
 	if(Viewport != nullptr)
@@ -107,6 +106,9 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
 	UImGuiManager::Get().SetSelectedObject(sphere);
+
+	// Timer
+    UTimeManager::Get().Initialize();
 }
 
 void UApplication::Run()
@@ -122,9 +124,7 @@ void UApplication::Run()
 		}
 		else
 		{
-			float DeltaTime = 1.0f / 60.0f;
-
-			Viewport->Tick(DeltaTime);
+			Viewport->Tick(UTimeManager::Get().GetDeltaTime());
 			Renderer->Prepare();
 
 			sphere->Render(*Renderer);
@@ -135,6 +135,7 @@ void UApplication::Run()
 			MainAxis->RenderPrimitive(*Renderer);
 
 			UImGuiManager::Get().Update();
+            UTimeManager::Get().Update();
 
 			Renderer->SwapBuffer();
 		}
