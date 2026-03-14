@@ -131,7 +131,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Source\Runtime\CoreUObject\UObjectArray.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\Guid.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\AxisComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ActorComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\ImGuiManager.cpp" />
@@ -146,6 +149,20 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\CoreUObject\UObjectArray.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\AutoRTFM.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\CoreTypes.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatform.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMisc.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Guid.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\MicrosoftPlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Platform.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformMisc.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE4.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatform.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Object.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Cube.h" />

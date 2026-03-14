@@ -1,6 +1,10 @@
 #pragma once
 
-#include "../Math/PlatformMath.h"
+#include "NameTypes.h"
+#include "ObjectMacros.h"
+
+class UClass;
+class UPackage;
 
 class UObjectBase
 {

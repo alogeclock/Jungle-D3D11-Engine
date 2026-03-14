@@ -2,7 +2,6 @@
 
 #include "Plane.h"
 #include "Matrix.h"
-#include <cmath>
 
 // ─────────────────────────────────────────
 // X축 회전 행렬 (Pitch)
