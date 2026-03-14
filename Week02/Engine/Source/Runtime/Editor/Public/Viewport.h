@@ -39,7 +39,7 @@ public:
     FEditorViewportClient* GetViewportClient() const { return ViewportClient; }
 
 private:
-    FEditorViewportClient* ViewportClient;
+    //FEditorViewportClient* ViewportClient;
 
     std::unordered_map<uint32, bool> KeyStates;
 

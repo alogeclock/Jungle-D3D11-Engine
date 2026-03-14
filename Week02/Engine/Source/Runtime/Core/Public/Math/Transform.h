@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+//#include "Quat.h"
+//#include "TransformNonVectorized.h"
+
+
+
 #include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/ScaleMatrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/RotationMatrix.h"

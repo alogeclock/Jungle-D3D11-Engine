@@ -9,6 +9,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	UApplication* main_app = new UApplication();
 
+
+
 	main_app->Initialize(hInstance);
 	main_app->Run();
 	main_app->Finish();
