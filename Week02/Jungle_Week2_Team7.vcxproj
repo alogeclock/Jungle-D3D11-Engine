@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Object.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Application.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\AxisComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ActorComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\ImGuiManager.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ViewMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Application.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\AxisComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\PrimitiveComponent.h" />
