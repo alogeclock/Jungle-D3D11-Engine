@@ -29,16 +29,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Viewport->OnKeyUp((uint32_t)wParam);
 		break;
 	case WM_MOUSEMOVE:
-		Viewport->OnMouseMove(LOWORD(lParam), HIWORD(lParam));
+		// Viewport->OnMouseMove(LOWORD(lParam), HIWORD(lParam)); // 삭제
+		LOWORD(lParam)
+		Viewport->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_LBUTTONDOWN:
-		Viewport->OnMouseButtonDown(VK_LBUTTON, LOWORD(lParam), HIWORD(lParam));
+		Viewport->OnMouseButtonDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+	case WM_RBUTTONDOWN:
+		Viewport->OnMouseButtonDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_LBUTTONUP:
 		Viewport->OnMouseButtonUp(VK_LBUTTON);
-		break;
-	case WM_RBUTTONDOWN:
-		Viewport->OnMouseButtonDown(VK_RBUTTON, LOWORD(lParam), HIWORD(lParam));
 		break;
 	case WM_RBUTTONUP:
 		Viewport->OnMouseButtonUp(VK_RBUTTON);

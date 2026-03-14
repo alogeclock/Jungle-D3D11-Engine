@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+NamespaceIndentation: All
+ColumnLimit: 160
+BreakBeforeBraces: Allman
+AlignConsecutiveDeclarations: true
+
+SortIncludes: false
+IncludeBlocks: Merge

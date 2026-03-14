@@ -1,6 +1,7 @@
 ﻿#pragma once  
 
-#include <windows.h>  
+#include <windows.h>
+#include <windowsx.h>
 
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"  
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"  
