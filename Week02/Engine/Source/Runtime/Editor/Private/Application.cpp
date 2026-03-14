@@ -30,7 +30,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_MOUSEMOVE:
 		// Viewport->OnMouseMove(LOWORD(lParam), HIWORD(lParam)); // 삭제
-		LOWORD(lParam)
 		Viewport->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_LBUTTONDOWN:

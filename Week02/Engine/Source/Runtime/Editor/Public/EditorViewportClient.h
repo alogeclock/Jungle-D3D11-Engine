@@ -116,6 +116,7 @@ public:
 
 	/** @return The ortho zoom amount */
 	inline float GetOrthoZoom() const { return OrthoZoom; }
+
 	/**
 	 * Updates any current location transitions
 	 *
