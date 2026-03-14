@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-FVertex cube_arrow_vertices[]  = {
+#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
+
+FVertex cube_arrow_vertices[] = {
 	// Front (+Z face)
 	{ {-0.025f, -0.025f, 0.00f}, {1,1,0,1} },
 	{ { 0.025f,  0.025f, 0.00f}, {1,1,0,1} },

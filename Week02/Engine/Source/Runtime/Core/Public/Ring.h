@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
+
 FVertex ring_vertices[] = {
 	{{0.900000f, 0.000000f, 0.000000f}, {1.0f, 1.0f, 0.0f, 1.0f}},
 	{{1.000000f, 0.000000f, 0.000000f}, {1.0f, 1.0f, 0.0f, 1.0f}},

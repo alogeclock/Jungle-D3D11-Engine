@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
+
 FVertex torus_vertices[] = {
 	{{ 1.120000f, 0.000000f, 0.000000f }, { 1.000000f, 1.000000f, 1.000000f, 1.000000f } },
 	{{ 1.098480f, 0.218501f, 0.000000f }, { 1.000000f, 1.000000f, 1.000000f, 1.000000f } },
