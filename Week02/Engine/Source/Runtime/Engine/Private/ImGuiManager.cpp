@@ -1,5 +1,7 @@
 ﻿#include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
+ExampleAppConsole* GConsole = nullptr;
+
 void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
 {
     IMGUI_CHECKVERSION();
@@ -12,17 +14,27 @@ void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
 void UImGuiManager::Update()
 {
     beginFrame();
+    
+    // Control Panel
+    ImGui::Begin("Jungle Control Panel");
+    bool open = true;
+    ShowExampleAppConsole(&open);
 
-    // 로직
+    ImGui::End();
+
+    // Property Window
     ImGui::Begin("Jungle Property Window");
 
-    FTransform t = SelectedObject->GetTransform();
+    if (SelectedObject != nullptr)
+    {
+        FTransform t = SelectedObject->GetTransform();
 
-    ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
-    ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -1.0f, 1.0f);
-    ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f,-1.0f, 1.0f);
+        ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
+        ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -5.0f, 5.0f);
+        ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f,-1.0f, 1.0f);
 
-    SelectedObject->SetTransform(t);
+        SelectedObject->SetTransform(t);
+    }
 
     endFrame();
 }
@@ -52,4 +64,9 @@ void UImGuiManager::Release()
 void UImGuiManager::SetSelectedObject(USphereComponent* sphere)
 {
     SelectedObject = sphere;
+}
+
+void UImGuiManager::AddLog(char* msg)
+{
+    GConsole->AddLog(msg);
 }

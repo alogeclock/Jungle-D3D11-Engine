@@ -176,6 +176,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Quat.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Rotator.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TransformNonVectorized.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TranslationMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE4.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatform.h" />
@@ -193,7 +194,6 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\RotationMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ScaleMatrix.h" />
-    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TranslationMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealMathUtility.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector4.h" />

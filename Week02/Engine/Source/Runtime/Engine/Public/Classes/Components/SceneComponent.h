@@ -27,7 +27,7 @@ class USceneComponent : public UActorComponent
     // SRT 행렬을 Update하는 함수
     void UpdateWorldMatrix();
     void UpdateWorldMatrix(const FTransform &InTransform);
-    const FMatrix<float> &GetWorldMatrix() const;
+    const FMatrix<float> &GetWorldMatrix();
 
   protected:
     FTransform Transform;

@@ -13,10 +13,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return true;
 	}
 
+	FViewport* Viewport = reinterpret_cast<FViewport*>(
+		GetWindowLongPtr(hWnd, GWLP_USERDATA)
+		);
+
 	switch (message)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0); // 프로그램 종료 메시지를 메시지 큐에 넣는다.
+		break;
+	case WM_KEYDOWN:
+		Viewport->OnKeyDown((uint32_t)wParam);
+		break;
+	case WM_KEYUP:
+		Viewport->OnKeyUp((uint32_t)wParam);
+		break;
+	case WM_MOUSEMOVE:
+		Viewport->OnMouseMove(LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_LBUTTONDOWN:
+		Viewport->OnMouseButtonDown(VK_LBUTTON, LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_LBUTTONUP:
+		Viewport->OnMouseButtonUp(VK_LBUTTON);
+		break;
+	case WM_RBUTTONDOWN:
+		Viewport->OnMouseButtonDown(VK_RBUTTON, LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_RBUTTONUP:
+		Viewport->OnMouseButtonUp(VK_RBUTTON);
+		break;
+	case WM_MOUSEWHEEL:
+		Viewport->OnMouseWheel((float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -28,11 +56,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 UApplication::UApplication()
 {
 	Renderer = new URenderer();
+	Viewport = new FViewport();
 }
 
 UApplication::~UApplication()
 {
 	delete Renderer;
+	delete Viewport;
 }
 
 void UApplication::Initialize(HINSTANCE hInstance)
@@ -50,8 +80,14 @@ void UApplication::Initialize(HINSTANCE hInstance)
 		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
 		nullptr, nullptr, hInst, nullptr);
 
+	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Viewport));
+
+	if(Viewport != nullptr)
+		Viewport->CreateEditorViewportClient();
+
 	// Rendering
 	Renderer->Create(hWnd);
+	Renderer->SetViewport(Viewport);
 
 	// World Axis
 	MainAxis = new UAxisComponent();
@@ -63,7 +99,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
     box->SetVertexBuffer(vertexBufferBox);
 
 	// Test Object -> 나중에 이동
-	sphere = new USphereComponent();
+	sphere = new USphereComponent(0.2f);
 	vertexBufferSphere = Renderer->CreateVertexBuffer(sphere->GetVertices(), sphere->GetVertexByteWidth());
     sphere->SetVertexBuffer(vertexBufferSphere);
 
@@ -85,6 +121,9 @@ void UApplication::Run()
 		}
 		else
 		{
+			float DeltaTime = 1.0f / 60.0f;
+
+			Viewport->Tick(DeltaTime);
 			Renderer->Prepare();
 
 			sphere->Render(*Renderer);

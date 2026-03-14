@@ -1,77 +1,46 @@
-#pragma once
+﻿#pragma once
 
 #include "Engine/Source/Runtime/Core/Public/Object.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 
-/// <summary>
-/// Object Transform Gizmo를 위한 추상 클래스
-/// </summary>
-
-enum class EGizmoHandleTypes
+enum class EGizmoHandleType
 {
-	All = 0,
-	Translate = 1,
-	Rotate = 2,
-	Scale = 3
+    Translate,
+    Rotate,
+    Scale
+};
+
+enum class EGizmoAxis
+{
+    X,
+    Y,
+    Z,
+    None
 };
 
 class ABaseTransformGizmo : UObject
 {
-public:
-	ABaseTransformGizmo();
-	virtual ~ABaseTransformGizmo();
+  public:
+    ABaseTransformGizmo();
+    virtual ~ABaseTransformGizmo();
 
-public:
-	/** Call this when new objects become selected.  This triggers an animation transition. */
-	virtual void OnNewObjectsSelected() = 0;
+    virtual void Update(float DeltaTime) {}
+    virtual void Render(URenderer &Renderer) {}
 
-	/** Called by the world interaction system when one of our components is dragged by the user to find out
-		what type of interaction to do.  If null is passed in then we'll treat it as dragging the whole object
-		(rather than a specific axis/handle) */
-	UE_API class UViewportDragOperationComponent* GetInteractionType(UActorComponent* DraggedComponent, TOptional<FTransformGizmoHandlePlacement>& OutHandlePlacement);
+    virtual void         SetTargetObject(UPrimitiveComponent *InTarget);
+    UPrimitiveComponent *GetTargetObject() const;
 
-	/** Sets the owner */
-	UE_API void SetOwnerWorldInteraction(class UViewportWorldInteraction* InWorldInteraction);
+    // 마우스 입력 이벤트 (RayOrigin: 카메라 위치, RayDir: 카메라에서 마우스 커서 방향으로 발사되는 단위 벡터)
+    virtual bool OnMouseDown(const FVector<float>& RayOrigin, const FVector<float>& RayDir) = 0;
+    virtual void OnMouseMove(const FVector<float>& RayOrigin, const FVector<float>& RayDir) = 0;
+    virtual void OnMouseUp() = 0;
+    virtual void OnNewObjectsSelected() = 0;
 
-	/** Gets the owner */
-	UE_API class UViewportWorldInteraction* GetOwnerWorldInteraction() const;
+  protected:
+    EGizmoHandleType GizmoType = EGizmoHandleType::Translate;
+    EGizmoAxis       ActiveAxis = EGizmoAxis::None;
+    bool             bIsDragging = false;
 
-	/** Called by the world interaction system after we've been spawned into the world, to allow
-		us to create components and set everything up nicely for the selected objects that we'll be
-		used to manipulate */
-	virtual void UpdateGizmo(const EGizmoHandleTypes InGizmoType, const ECoordSystem InGizmoCoordinateSpace, const FTransform& InLocalToWorld, const FBox& InLocalBounds, const FVector& InViewLocation, const float InScaleMultiplier, bool bInAllHandlesVisible,
-		const bool bInAllowRotationAndScaleHandles, class UActorComponent* DraggingHandle, const TArray<UActorComponent*>& InHoveringOverHandles, const float InGizmoHoverScale, const float InGizmoHoverAnimationDuration) {
-	}
-
-
-	/** Gets the current gizmo handle type */
-	UE_API EGizmoHandleTypes GetGizmoType() const;
-
-protected:
-
-	/** Static: Given a bounding box and information about which edge to query, returns the vertex positions of that edge */
-	static UE_API void GetBoundingBoxEdge(const FBox& Box, const int32 AxisIndex, const int32 EdgeIndex, FVector& OutVertex0, FVector& OutVertex1);
-
-	/** Updates the visibility of all the handles */
-	UE_API void UpdateHandleVisibility(const EGizmoHandleTypes InGizmoType, const ECoordSystem InGizmoCoordinateSpace, bool bInAllHandlesVisible, UActorComponent* DraggingHandle);
-
-	/** Gets if the gizmo shows measurement texts */
-	UE_API bool GetShowMeasurementText() const;
-
-	/** Real time that the gizmo was last attached to a selected set of objects.  This is used for animation transitions */
-	FTimespan SelectedAtTime;
-
-	/** Scene component root of this actor */
-	UPROPERTY()
-	TObjectPtr<USceneComponent> SceneComponent;
-
-	/** All gizmo components */
-	UPROPERTY()
-	TArray< TObjectPtr<class UGizmoHandleGroup> > AllHandleGroups;
-
-	/** Owning object */
-	UPROPERTY()
-	TObjectPtr<class UViewportWorldInteraction> WorldInteraction;
-
-	/** Current gizmo type */
-	EGizmoHandleTypes GizmoType;
+    UPrimitiveComponent *TargetObject = nullptr;
 };
