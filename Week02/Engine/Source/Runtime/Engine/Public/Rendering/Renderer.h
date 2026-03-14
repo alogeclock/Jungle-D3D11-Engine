@@ -43,6 +43,10 @@ public:
 	ID3D11RasterizerState* RasterizerState = nullptr; // 래스터라이저 상태(cull, fill mode 등을 정의)
 	ID3D11Buffer* ConstantBuffer = nullptr; // shader에 데이터를 전송하기 위한 상수 버퍼
 
+	// 깊이 스텐실 상태 객체
+    ID3D11DepthStencilState* DepthState_Default = nullptr; // 일반적인 3D 렌더링용 (Depth 켬)
+    ID3D11DepthStencilState* DepthState_Ignore = nullptr;  // 기즈모, UI용 (Depth 끔)
+
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // 화면을 초기화하는 색
 	D3D11_VIEWPORT ViewportInfo;
 	D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -68,6 +72,10 @@ public:
 
 	void CreateShader();
 	void ReleaseShader();
+
+	void CreateDepthStencilState();
+	void ReleaseDepthStencilState();
+	void SetDepthTestEnable(bool bEnable);
 
 	void Prepare();
 	void PrepareShader();

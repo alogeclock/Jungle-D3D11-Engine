@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Engine/Source/Runtime/Editor/Public/Application.h"
 #include "Engine/Source/Runtime/Editor/Public/EditorViewportClient.h"

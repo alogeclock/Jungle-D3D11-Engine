@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Engine/Source/Runtime/Editor/Public/Application.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
@@ -45,7 +45,7 @@ public:
 		, Key(InKey)
 		, InputEvent(InInputEvent)
 	{
-	}
+	} 
 
 	FViewport* GetViewport() const { return Viewport; }
 	EInputEvent GetInputEvent() const { return InputEvent; }

@@ -99,7 +99,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
     box->SetVertexBuffer(vertexBufferBox);
 
 	// Test Object -> 나중에 이동
-	sphere = new USphereComponent();
+	sphere = new USphereComponent(0.2f);
 	vertexBufferSphere = Renderer->CreateVertexBuffer(sphere->GetVertices(), sphere->GetVertexByteWidth());
     sphere->SetVertexBuffer(vertexBufferSphere);
 
