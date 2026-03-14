@@ -1,5 +1,4 @@
 ﻿#include "Engine/Source/Runtime/Editor/Public/Application.h"
-#include "Engine/Source/Runtime/Core/Public/Cube.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -58,6 +57,10 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	MainAxis = new UAxisComponent();
 	VertexBuffer = Renderer->CreateVertexBuffer(MainAxis->GetVertexData(), MainAxis->GetVertexByteWidth());
 	MainAxis->SetVertexBuffer(VertexBuffer);
+
+	UBoxComponent* box = new UBoxComponent();
+	ID3D11Buffer* vertexBufferBox = Renderer->CreateVertexBuffer(box->GetVertices(), box->GetVertexByteWidth());
+    box->SetVertexBuffer(vertexBufferBox);
 
 	// Test Object -> 나중에 이동
 	sphere = new USphereComponent();

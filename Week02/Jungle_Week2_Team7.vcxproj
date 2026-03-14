@@ -139,6 +139,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PrimitiveComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SceneComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SphereComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\TriangleComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\Renderer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\TriangleComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\ImGuiManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Rendering\Renderer.h" />
     <ClInclude Include="ImGui\imconfig.h" />
