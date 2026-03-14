@@ -1,4 +1,4 @@
-#include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
+﻿#include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
 void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
 {
@@ -16,7 +16,7 @@ void UImGuiManager::Update()
     // 로직
     ImGui::Begin("Jungle Property Window");
 
-    FTransform t = SelectedObject->Transform;
+    FTransform t = SelectedObject->GetTransform();
 
     ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
     ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -1.0f, 1.0f);
@@ -49,7 +49,7 @@ void UImGuiManager::Release()
     ImGui::DestroyContext();
 }
 
-void UImGuiManager::SetSelectedObject(USphere* sphere)
+void UImGuiManager::SetSelectedObject(USphereComponent* sphere)
 {
     SelectedObject = sphere;
 }

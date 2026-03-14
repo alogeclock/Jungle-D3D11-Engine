@@ -1,6 +1,4 @@
-#pragma once
-
-#include <windows.h>
+﻿#pragma once
 
 #pragma comment(lib, "user32")
 #pragma comment(lib, "d3d11")
@@ -73,7 +71,7 @@ public:
 	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
 	void RenderPrimitiveTopology(ID3D11Buffer* pBuffer, uint32 numVertices, D3D11_PRIMITIVE_TOPOLOGY inTopology);
 
-	ID3D11Buffer* CreateVertexBuffer(FVertex *vertices, uint32 byteWidth);
+	ID3D11Buffer* CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
 	void CreateConstantBuffer();

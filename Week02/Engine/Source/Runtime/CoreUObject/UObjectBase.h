@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "NameTypes.h"
 #include "ObjectMacros.h"

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Plane.h"
 #include "Matrix.h"
@@ -70,7 +70,8 @@ FRotationZMatrix<T>::FRotationZMatrix(T AngleRad)
 template<typename T>
 struct FRotationMatrix : public FMatrix<T>
 {
-    FRotationMatrix(T PitchRad, T YawRad, T RollRad);
+    FRotationMatrix(T PitchRad, T YawRad, T RollRad);    
+    FRotationMatrix(const FVector<T>& Rotation);
 };
 
 template<typename T>
@@ -79,6 +80,16 @@ FRotationMatrix<T>::FRotationMatrix(T PitchRad, T YawRad, T RollRad)
         FRotationXMatrix<T>(PitchRad)*
         FRotationYMatrix<T>(YawRad)*
         FRotationZMatrix<T>(RollRad)
+    )
+{
+}
+
+template<typename T>
+FRotationMatrix<T>::FRotationMatrix(const FVector<T>& Rotation)
+    : FMatrix<T>(
+        FRotationXMatrix<T>(Rotation.X)*
+        FRotationYMatrix<T>(Rotation.Y)*
+        FRotationZMatrix<T>(Rotation.Z)
     )
 {
 }
