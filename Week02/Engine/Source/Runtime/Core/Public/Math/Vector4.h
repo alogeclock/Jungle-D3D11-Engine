@@ -2,6 +2,7 @@
 
 #include "Engine/Source/Runtime/Core/Public/Math/UnrealMathUtility.h"
 #include "Vector.h"
+#include "Matrix.h"
 
 template<typename T>
 struct FVector4
@@ -28,6 +29,7 @@ public:
     FVector4<T> operator+(const FVector4<T>& V) const;
     FVector4<T> operator-(const FVector4<T>& V) const;
     FVector4<T> operator*(T Scale) const;
+    FVector4<T> operator*(const FMatrix<T> &M) const;
     FVector4<T> operator/(T Scale) const;
 
     // ---------------------------------------------------------
@@ -35,6 +37,8 @@ public:
     // ---------------------------------------------------------
     FVector4<T>& operator+=(const FVector4<T>& V);
     FVector4<T>& operator-=(const FVector4<T>& V); // +=이 있다면 -=도 짝꿍으로 필수!
+    FVector4<T>& operator*=(T Scale);
+    FVector4<T>& operator/=(T Scale);
 
     // ---------------------------------------------------------
     // 5. 인스턴스 유틸리티 함수 (Instance Utility Functions)
@@ -87,7 +91,16 @@ inline FVector4<T> FVector4<T>::operator-(const FVector4<T>& V) const
 template<typename T>
 inline FVector4<T> FVector4<T>::operator*(T Scale) const
 {
-    return FVector4<T>(X * Scale, Y * Scale, Z * Scale, W * Scale);
+    return FVector4<T>(X * Scale, Y * Scale, Z * Scale, W * Scale); }
+
+template <typename T> 
+inline FVector4<T> FVector4<T>::operator*(const FMatrix<T>& M) const 
+{ 
+    return FVector4<T>(
+        X * M.M[0][0] + Y * M.M[1][0] + Z * M.M[2][0] + W * M.M[3][0], 
+        X * M.M[0][1] + Y * M.M[1][1] + Z * M.M[2][1] + W * M.M[3][1],
+        X * M.M[0][2] + Y * M.M[1][2] + Z * M.M[2][2] + W * M.M[3][2], 
+        X * M.M[0][3] + Y * M.M[1][3] + Z * M.M[2][3] + W * M.M[3][3]);
 }
 
 template<typename T>
@@ -119,6 +132,28 @@ inline FVector4<T>& FVector4<T>::operator-=(const FVector4<T>& V)
     W -= V.W;
     return *this;
 }
+
+template <typename T> 
+inline FVector4<T> &FVector4<T>::operator*=(T Scale)
+{
+    X *= Scale;
+    Y *= Scale;
+    Z *= Scale;
+    W *= Scale;
+    return *this;
+}
+
+template <typename T> 
+inline FVector4<T> &FVector4<T>::operator/=(T Scale)
+{
+    const T InvScale = 1.0f / Scale;
+    X *= InvScale;
+    Y *= InvScale;
+    Z *= InvScale;
+    W *= InvScale;
+    return *this;
+}
+
 
 // =========================================================
 // 인스턴스 유틸리티 함수

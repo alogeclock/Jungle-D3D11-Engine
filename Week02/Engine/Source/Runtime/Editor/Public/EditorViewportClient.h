@@ -8,7 +8,7 @@
 
 // 사용자의 Input 이벤트, 카메라 관리
 
-// TODO: 오브젝트 선택, 기즈모 드래그, WSAD, 우클릭 카메라 조정
+// TODO: WSAD, 우클릭 카메라 조정
 
 class FViewport;
 
@@ -141,7 +141,7 @@ private:
 class FEditorViewportClient
 {
 public:
-	FEditorViewportClient() = default;
+	FEditorViewportClient(FViewport* viewport);
 	~FEditorViewportClient() = default;
 
 public:
@@ -154,24 +154,34 @@ public:
 
 	// 현재 카메라 View Matrix — Object에 전달하여 행렬곱
 	FMatrix<float> GetViewMatrix() const;
+    FMatrix<float> GetProjectionMatrix(float width, float height);
+    FVector<float> GetPickingRay();
 
 	// 카메라 트랜스폼 직접 접근 (필요 시)
 	const FViewportCameraTransform& GetCameraTransform() const { return CameraTransform; }
 
 private:
-	// 카메라 이동 속도
+    void SetWidth(float width) { Width = width; };
+	void SetHeight(float height) { Height = height; };
+
+	// WASD 이동 누적
+    void           ApplyMovement(float DeltaTime, FViewport *Viewport);
+    //FVector<float> GetPickingRay();
+
+	// Viewport
+    FViewport* Viewport = nullptr; 
+	float      Width = 0.0f;
+    float      Height = 0.0f;
+
+	// 카메라
+	FViewportCameraTransform CameraTransform;
+
 	static constexpr float MoveSpeed = 2.0f;  // units/sec
 	static constexpr float RotSpeed = 0.1f;    // deg/pixel
 	static constexpr float ZoomSpeed = 10.0f;
-
-	FViewportCameraTransform CameraTransform;
 
 	// 우클릭 드래그 상태
 	bool  bRightMouseDragging = false;
 	int32 LastMouseX = 0;
 	int32 LastMouseY = 0;
-
-	// WASD 이동 누적
-	void ApplyMovement(float DeltaTime, FViewport* Viewport);
-
 };

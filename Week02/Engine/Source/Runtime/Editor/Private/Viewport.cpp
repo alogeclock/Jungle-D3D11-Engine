@@ -1,8 +1,9 @@
-﻿#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
+﻿#include "Memory/Memory.h"
+#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
 
-FViewport::FViewport()
-	: ViewportClient(nullptr)
-{
+FViewport::FViewport() 
+{ 
+	CreateEditorViewportClient(); 
 }
 
 FViewport::~FViewport()
@@ -11,8 +12,8 @@ FViewport::~FViewport()
 }
 
 void FViewport::CreateEditorViewportClient()
-{
-	ViewportClient = new FEditorViewportClient();
+{ 
+	ViewportClient = new FEditorViewportClient(this);
 }
 
 void FViewport::OnKeyDown(uint32 KeyCode)
@@ -54,6 +55,7 @@ void FViewport::OnMouseButtonDown(uint32 KeyCode, int32 X, int32 Y)
 	{
 		FInputEventState State(this, FKey(KeyCode), EInputEvent::Pressed);
 		ViewportClient->InputKey(State);
+        ViewportClient->GetPickingRay();
 	}
 }
 
