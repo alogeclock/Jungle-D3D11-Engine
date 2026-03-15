@@ -1,30 +1,111 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/PivotTransformGizmo.h"
 
-APivotTransformGizmo::APivotTransformGizmo() { AxisComponent = new UAxisComponent(); }
+APivotTransformGizmo::APivotTransformGizmo() 
+{
+    UArrowComponent* TranslateX = new UArrowComponent();
+    TranslateX->SetRotation({1.0f, 0.0f, 0.0f});
+    TranslateGizmoComponents.push_back(TranslateX);
+
+    UArrowComponent* TranslateY = new UArrowComponent();
+    TranslateY->SetRotation({0.0f, 1.0f, 0.0f});
+    TranslateGizmoComponents.push_back(TranslateY);
+
+    UArrowComponent* TranslateZ = new UArrowComponent();
+    TranslateZ->SetRotation({0.0f, 0.0f, 1.0f});
+    TranslateGizmoComponents.push_back(TranslateZ);
+
+    URingComponent* RotateX = new URingComponent();
+    RotateX->SetRotation({1.0f, 0.0f, 0.0f});
+    RotateGizmoComponents.push_back(RotateX);
+
+    URingComponent* RotateY = new URingComponent();
+    RotateY->SetRotation({0.0f, 1.0f, 0.0f});
+    RotateGizmoComponents.push_back(RotateY);
+
+    URingComponent* RotateZ = new URingComponent();
+    RotateZ->SetRotation({0.0f, 0.0f, 1.0f});
+    RotateGizmoComponents.push_back(RotateZ);
+
+    UCubeArrowComponent* ScaleX = new UCubeArrowComponent();
+    ScaleX->SetRotation({1.0f, 0.0f, 0.0f});
+    ScaleGizmoComponents.push_back(ScaleX);
+
+    UCubeArrowComponent* ScaleY = new UCubeArrowComponent();
+    ScaleY->SetRotation({0.0f, 1.0f, 0.0f});
+    ScaleGizmoComponents.push_back(ScaleY);
+
+    UCubeArrowComponent* ScaleZ = new UCubeArrowComponent();
+    ScaleZ->SetRotation({0.0f, 0.0f, 1.0f});
+    ScaleGizmoComponents.push_back(ScaleZ);
+
+    // GizmoType = EGizmoHandleType::Translate;
+    // GizmoType = EGizmoHandleType::Rotate;
+    GizmoType = EGizmoHandleType::Scale;
+}
 
 APivotTransformGizmo::~APivotTransformGizmo()
 {
-    if (AxisComponent)
+    for (auto *Component : TranslateGizmoComponents)
     {
-        delete AxisComponent;
+        if (Component != nullptr)
+        {
+            delete Component;
+        }
     }
+    TranslateGizmoComponents.clear();
+
+    for (auto *Component : RotateGizmoComponents)
+    {
+        if (Component != nullptr)
+        {
+            delete Component;
+        }
+    }
+    RotateGizmoComponents.clear();
+
+    // 3. Scale 기즈모 메모리 해제
+    for (auto *Component : ScaleGizmoComponents)
+    {
+        if (Component != nullptr)
+        {
+            delete Component;
+        }
+    }
+    ScaleGizmoComponents.clear();
 }
 
-void APivotTransformGizmo::Render(URenderer &Renderer)
+void APivotTransformGizmo::Render(URenderer &renderer)
 {
-    if (TargetObject == nullptr || AxisComponent == nullptr)
-        return;
+    // if (TargetObject == nullptr)
+    //    return;
 
-    // 기즈모는 항상 선택된 객체의 위치에 렌더링
-    FConstants GizmoConstants;
-    GizmoConstants.worldMatrix = TargetObject->GetTransform().ToMatrix();
-    Renderer.UpdateConstant(GizmoConstants);
+    switch (GizmoType)
+    {
+    case EGizmoHandleType::Translate:
+        for (auto GizmoComponent : TranslateGizmoComponents)
+        {
+            if (GizmoComponent != nullptr)
+                GizmoComponent->Render(renderer);
+        }
+        break;
+    case EGizmoHandleType::Rotate:
 
-    // Depth Test를 끈 상태로 렌더링한 뒤 다시 켜준다.
-    Renderer.SetDepthTestEnable(false);
-    AxisComponent->Render(Renderer);
-    Renderer.SetDepthTestEnable(true);
+        for (auto *GizmoComponent : RotateGizmoComponents)
+        {
+            if (GizmoComponent != nullptr)
+                GizmoComponent->Render(renderer);
+        }
+        break;
+    case EGizmoHandleType::Scale:
+
+        for (auto *GizmoComponent : ScaleGizmoComponents)
+        {
+            if (GizmoComponent != nullptr)
+                GizmoComponent->Render(renderer);
+        }
+        break;
+    }
 }
 
 bool APivotTransformGizmo::OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir)
@@ -154,38 +235,13 @@ void APivotTransformGizmo::OnMouseUp()
     ActiveAxis = EGizmoAxis::None;
 }
 
-// Ray는 카메라에서 마우스 커서 방향으로 발사되는 벡터이며, Axis는 현재 Gizmo에서 결정된 축 방향 벡터이다.
-// OutAxisT 변수는 Axis 방향으로 마우스가 이동한 거리를 나타내고, OutRayT 변수는 Ray 방향으로 마우스가 이동한 거리를 나타낸다.
-// 이 함수는 Ray와 Axis(x, y, z축)가 가장 가까워지는 거리를 계산하여, 사용자가 현재 마우스로 클릭한 축을 찾는다.
-float APivotTransformGizmo::CalculateDistanceToAxis(const FVector<float> &RayOrigin, const FVector<float> &RayDir, const FVector<float> &AxisOrigin,
-                                                    const FVector<float> &AxisDir, float &OutAxisT, float &OutRayT)
+void APivotTransformGizmo::OnNewObjectsSelected()
 {
-    FVector<float> W0 = RayOrigin - AxisOrigin;
+}
 
-    float a = FVector<float>::DotProduct(RayDir, RayDir);   // RayDir의 제곱 길이
-    float b = FVector<float>::DotProduct(RayDir, AxisDir);  // RayDir와 AxisDir의 내적
-    float c = FVector<float>::DotProduct(AxisDir, AxisDir); // AxisDir의 제곱 길이 (일반적으로 1)
-    float d = FVector<float>::DotProduct(RayDir, W0);       // RayDir와 RayOrigin-AxisOrigin 벡터의 내적
-    float e = FVector<float>::DotProduct(AxisDir, W0);      // AxisDir와 RayOrigin-AxisOrigin 벡터의 내적
-
-    float Denominator = a * c - b * b;
-
-    // 평행한 경우
-    if (Denominator < 0.0001f)
-    {
-        OutRayT = 0.0f;
-        OutAxisT = e / c;
-        FVector<float> Diff = W0 - (AxisDir * OutAxisT);
-        return Diff.Size();
-    }
-
-    OutRayT = (b * e - c * d) / Denominator;
-    OutAxisT = (a * e - b * d) / Denominator;
-
-    // 최단 거리 지점에서의 벡터 차이
-    FVector<float> PointOnRay = RayOrigin + (RayDir * OutRayT);
-    FVector<float> PointOnAxis = AxisOrigin + (AxisDir * OutAxisT);
-
-    FVector<float> ClosestDiff = PointOnRay - PointOnAxis;
-    return ClosestDiff.Size(); // 선분 간의 최단 거리 반환
+void APivotTransformGizmo::ToggleMode()
+{
+    uint32 CurrentModeIndex = static_cast<uint32>(GizmoType);
+    uint32 NextModeIndex = (CurrentModeIndex + 1) % 3;
+    GizmoType = static_cast<EGizmoHandleType>(CurrentModeIndex);
 }
