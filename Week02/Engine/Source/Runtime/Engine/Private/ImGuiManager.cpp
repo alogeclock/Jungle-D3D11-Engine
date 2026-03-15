@@ -1,5 +1,9 @@
-﻿#include "Memory/Memory.h"
+﻿#include "CoreTypes.h"
+#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
+
+#include "World.h"
+#include "Object/Actor.h"
 
 ExampleAppConsole* GConsole = nullptr;
 
@@ -37,6 +41,26 @@ void UImGuiManager::Update()
         SelectedObject->SetTransform(t);
     }
 
+    ImGui::End();
+
+    // 임시
+    ImGui::Begin("Test");
+
+    if (ImGui::Button("Spawn Actor"))
+    {
+        AActor *NewActor = GWorld->SpawnActor<AActor>();
+
+        char logBuffer[256];
+
+        // snprintf를 사용해 문장과 액터의 개수(%zu)를 버퍼에 합칩니다.
+        //snprintf(logBuffer, sizeof(logBuffer), "[System] 스폰 성공! 현재 액터 수: %d", static_cast<int>(GWorld->CurrentLevel->Actors.size()));
+
+        // 질문자님께서 만드신 AddLog 함수에 완성된 문자열 버퍼를 넘겨줍니다!
+        AddLog(logBuffer);
+    }
+
+    ImGui::End();
+
     endFrame();
 }
 
@@ -49,8 +73,6 @@ void UImGuiManager::beginFrame()
 
 void UImGuiManager::endFrame()
 {
-    ImGui::End();
-
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }

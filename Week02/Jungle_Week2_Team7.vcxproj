@@ -141,7 +141,9 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\TorusComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\MeshManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\VertexData.cpp" />
-    <ClCompile Include="Object\Actorh.cpp" />
+    <ClCompile Include="Memory\Memory.cpp" />
+    <ClCompile Include="Object\Actor.cpp" />
+    <ClCompile Include="Object\Level.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\Guid.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.cpp" />
@@ -166,8 +168,10 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineStatics.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\TimeManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\Axis.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ArrowComponent.h" />
@@ -178,6 +182,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\TorusComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\MeshManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\VertexData.h" />
+    <ClInclude Include="Memory\Memory.h" />
     <ClInclude Include="Object\Actor.h" />
     <ClInclude Include="Object\Class.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreMinimal.h" />
@@ -199,6 +204,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Transform.h" />
+    <ClInclude Include="Object\Level.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="CoreTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMath.h" />
@@ -239,6 +245,7 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
