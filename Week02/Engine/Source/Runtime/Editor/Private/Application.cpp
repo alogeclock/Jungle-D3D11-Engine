@@ -100,6 +100,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	cube = new UCubeComponent();
 	ring = new URingComponent();
 	sphere = new USphereComponent(0.2f);
+	gizmo = new APivotTransformGizmo();
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
@@ -129,6 +130,7 @@ void UApplication::Run()
 			cube->Render(*Renderer);
 			ring->Render(*Renderer);
 			sphere->Render(*Renderer);
+			gizmo->Render(*Renderer);
 
 			UImGuiManager::Get().Update();
             UTimeManager::Get().Update();

@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include "Engine/Source/Runtime/Editor/Public/BaseTransformGizmo.h"
-#include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/ArrowComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
 
 class APivotTransformGizmo : public ABaseTransformGizmo
 {
@@ -9,20 +11,20 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     APivotTransformGizmo();
     virtual ~APivotTransformGizmo() override;
 
-    virtual void Render(URenderer &Renderer) override;
+    virtual void Render(URenderer &renderer) override;
 
     virtual bool OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseUp() override;
+    virtual void OnNewObjectsSelected() override;
+
+    void ToggleMode();
 
   private:
-    UAxisComponent *AxisComponent;
+    float      InitialIntersectionT = 0.0f;   // 드래그 시작 시점의 Ray T값
+    FTransform InitialObjectTransform; // 드래그 시작 시 객체의 Transform
 
-    // 드래그 계산용 임시 데이터
-    float          InitialIntersectionT;  // 드래그 시작 시점의 Ray T값
-    FTransform     InitialObjectTransform; // 드래그 시작 시 객체의 Transform
-
-    // 두 3D 직선(Ray와 기즈모 축) 간의 최단 거리를 계산하는 헬퍼 함수
-    float CalculateDistanceToAxis(const FVector<float> &RayOrigin, const FVector<float> &RayDir, const FVector<float> &AxisOrigin,
-                                  const FVector<float> &AxisDir, float &OutAxisT, float &OutRayT);
+    TArray<UArrowComponent *>     TranslateGizmoComponents;
+    TArray<URingComponent *>      RotateGizmoComponents;
+    TArray<UCubeArrowComponent *> ScaleGizmoComponents;
 };

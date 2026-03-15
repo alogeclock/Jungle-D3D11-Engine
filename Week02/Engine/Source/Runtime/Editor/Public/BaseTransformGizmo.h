@@ -43,4 +43,8 @@ class ABaseTransformGizmo : UObject
     bool             bIsDragging = false;
 
     UPrimitiveComponent *TargetObject = nullptr;
+
+    // 두 3D 직선(Ray와 기즈모 축) 간의 최단 거리를 계산하는 헬퍼 함수
+    float CalculateDistanceToAxis(const FVector<float> &RayOrigin, const FVector<float> &RayDir, const FVector<float> &AxisOrigin,
+                                  const FVector<float> &AxisDir, float &OutAxisT, float &OutRayT);
 };

@@ -14,6 +14,7 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
+#include "Engine/Source/Runtime/Editor/Public/PivotTransformGizmo.h"
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 #include "Engine/Source/Runtime/Core/Public/TimeManager.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/MeshManager.h"
@@ -44,4 +45,6 @@ class UApplication
     UCubeComponent   *cube = nullptr;
     USphereComponent *sphere = nullptr;
     URingComponent   *ring = nullptr;
+
+    APivotTransformGizmo *gizmo = nullptr;
 };

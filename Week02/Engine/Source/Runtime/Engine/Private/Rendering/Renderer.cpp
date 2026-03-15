@@ -214,12 +214,10 @@ void URenderer::SetDepthTestEnable(bool bEnable)
 
     if (bEnable)
     {
-        // 일반 객체 렌더링 모드
         DeviceContext->OMSetDepthStencilState(DepthState_Default, 0);
     }
     else
     {
-        // 기즈모 렌더링 모드 (맨 위에 덧그리기)
         DeviceContext->OMSetDepthStencilState(DepthState_Ignore, 0);
     }
 }
@@ -257,8 +255,6 @@ void URenderer::RenderPrimitive(ID3D11Buffer *pBuffer, uint32 numVertices)
 
 void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive)
 {
-    // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
-
     // 1. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
     EPrimitiveType Type = Primitive->GetPrimitiveType();
     EPrimitiveType Topology = Primitive->GetPrimitiveType();
@@ -267,7 +263,6 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive)
 
     // 2. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(Primitive->GetTopology());
-
     uint32 offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
     DeviceContext->Draw(NumVertices, 0);

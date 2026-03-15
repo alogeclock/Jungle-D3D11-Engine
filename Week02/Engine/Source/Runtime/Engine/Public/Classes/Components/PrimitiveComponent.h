@@ -14,13 +14,14 @@ class UPrimitiveComponent : public USceneComponent
 
     virtual void Render(URenderer &renderer);
 
-    void SetPrimitiveType(EPrimitiveType InType) { PrimitiveType = InType; }
+    void           SetPrimitiveType(EPrimitiveType InType) { PrimitiveType = InType; }
     EPrimitiveType GetPrimitiveType() const { return PrimitiveType; }
 
-    void SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology) { Topology = InTopology; }
+    void                     SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology) { Topology = InTopology; }
     D3D11_PRIMITIVE_TOPOLOGY GetTopology() const { return Topology; }
 
   protected:
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
+    bool                     bEnableDepthTest = false;
 };
