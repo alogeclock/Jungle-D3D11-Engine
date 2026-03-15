@@ -1,4 +1,5 @@
-﻿#include "Engine/Source/Runtime/Editor/Public/PivotTransformGizmo.h"
+﻿#include "Memory/Memory.h"
+#include "Engine/Source/Runtime/Editor/Public/PivotTransformGizmo.h"
 
 APivotTransformGizmo::APivotTransformGizmo() { AxisComponent = new UAxisComponent(); }
 

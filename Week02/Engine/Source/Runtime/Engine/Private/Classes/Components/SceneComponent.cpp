@@ -1,4 +1,5 @@
-﻿#include "Engine/Source/Runtime/Engine/Public/Classes/Components/SceneComponent.h"
+﻿#include "Memory/Memory.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/SceneComponent.h"
 
 USceneComponent::USceneComponent()
 {

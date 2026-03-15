@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/Application.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

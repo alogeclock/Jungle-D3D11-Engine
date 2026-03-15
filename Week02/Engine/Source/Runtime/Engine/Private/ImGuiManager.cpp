@@ -1,4 +1,5 @@
-﻿#include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
+﻿#include "Memory/Memory.h"
+#include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
 ExampleAppConsole* GConsole = nullptr;
 

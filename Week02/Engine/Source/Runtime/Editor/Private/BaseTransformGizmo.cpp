@@ -1,4 +1,5 @@
-﻿#include "Engine/Source/Runtime/Editor/Public/BaseTransformGizmo.h"
+﻿#include "Memory/Memory.h"
+#include "Engine/Source/Runtime/Editor/Public/BaseTransformGizmo.h"
 
 ABaseTransformGizmo::ABaseTransformGizmo() : GizmoType(EGizmoHandleType::Translate), ActiveAxis(EGizmoAxis::None), bIsDragging(false), TargetObject(nullptr) {}
 

@@ -1,4 +1,5 @@
-﻿#include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
+﻿#include "Memory/Memory.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
 
 UAxisComponent::UAxisComponent()
 {

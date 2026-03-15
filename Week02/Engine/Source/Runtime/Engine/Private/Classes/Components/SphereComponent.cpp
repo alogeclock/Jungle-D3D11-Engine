@@ -1,4 +1,5 @@
-﻿#include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
+﻿#include "Memory/Memory.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
 #include "Engine/Source/Runtime/Core/Public/Sphere.h"
 
 // 개별 USphereComponent에서 Topology, NumVertices를 결정해야 한다. 

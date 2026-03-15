@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Engine\Source\Runtime\Core\Public\CoreTypes.h"
+#include "CoreTypes.h"
 
 FVertex cube_arrow_vertices[] = {
 	// Front (+Z face)

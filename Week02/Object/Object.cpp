@@ -1,4 +1,5 @@
-﻿#include "Object.h"
+﻿#include "Memory/Memory.h"
+#include "Object.h"
 
 UObject::UObject()
 {
