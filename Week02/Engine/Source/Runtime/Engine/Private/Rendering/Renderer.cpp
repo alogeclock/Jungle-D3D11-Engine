@@ -255,15 +255,44 @@ void URenderer::RenderPrimitive(ID3D11Buffer *pBuffer, uint32 numVertices)
     DeviceContext->Draw(numVertices, 0);
 }
 
-void URenderer::RenderPrimitiveTopology(ID3D11Buffer *pBuffer, uint32 numVertices, D3D11_PRIMITIVE_TOPOLOGY inTopology)
+void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive)
 {
-    uint32                   offset = 0;
-    D3D11_PRIMITIVE_TOPOLOGY prevTopology = Topology;
+    // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
 
-    DeviceContext->IASetPrimitiveTopology(inTopology);
-    DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
-    DeviceContext->Draw(numVertices, 0);
+    // 1. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
+    EPrimitiveType Type = Primitive->GetPrimitiveType();
+    EPrimitiveType Topology = Primitive->GetPrimitiveType();
+    ID3D11Buffer* VertexBuffer = MeshManager->GetVertexBuffer(Type);
+    uint32 NumVertices = MeshManager->GetNumVertices(Type);
+
+    // 2. 위상(Topology) 설정
+    DeviceContext->IASetPrimitiveTopology(Primitive->GetTopology());
+
+    uint32 offset = 0;
+    DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
+    DeviceContext->Draw(NumVertices, 0);
 }
+
+void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants)
+{
+    // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
+    
+    // 1. 전달받은 상수 데이터(constants)를 GPU의 Constant Buffer에 업데이트
+    UpdateConstant(constants);
+
+    // 2. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
+    EPrimitiveType Type = Primitive->GetPrimitiveType();
+    ID3D11Buffer* VertexBuffer = MeshManager->GetVertexBuffer(Type);
+    uint32 NumVertices = MeshManager->GetNumVertices(Type);
+
+    // 3. 위상(Topology) 설정
+    DeviceContext->IASetPrimitiveTopology(Primitive->GetTopology());
+
+    uint32 offset = 0;
+    DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
+    DeviceContext->Draw(NumVertices, 0);
+}
+
 
 ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth)
 {

@@ -12,10 +12,12 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/PerspectiveMatrix.h"
+
 #include "CoreTypes.h"
-//#include "Engine/Source/Runtime/Editor/Public/Viewport.h"
 
 class FViewport;
+class UMeshManager;
+class UPrimitiveComponent;
 
 struct FVertexSimple
 {
@@ -84,7 +86,8 @@ public:
 	void PrepareShader();
 
 	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
-	void RenderPrimitiveTopology(ID3D11Buffer* pBuffer, uint32 numVertices, D3D11_PRIMITIVE_TOPOLOGY inTopology);
+	void RenderPrimitive(UPrimitiveComponent *Primitive);
+	void RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants);
 
 	ID3D11Buffer* CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
@@ -95,7 +98,9 @@ public:
 	void UpdateConstant(FConstants data);
 
 	void SetViewport(FViewport* viewport) { Viewport = viewport; };
+	void SetMeshManager(UMeshManager *meshManager) { MeshManager = meshManager; };
 
 private:
 	FViewport* Viewport = nullptr;
+	UMeshManager* MeshManager = nullptr;
 };

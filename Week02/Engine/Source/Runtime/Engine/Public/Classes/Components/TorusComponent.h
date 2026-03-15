@@ -1,12 +1,13 @@
 ﻿#pragma once
+#pragma once
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
-class UTriangleComponent : public UPrimitiveComponent
+class UTorusComponent : public UPrimitiveComponent
 {
 public:
-	UTriangleComponent() ;
-	virtual ~UTriangleComponent() override;
+	UTorusComponent() ;
+	virtual ~UTorusComponent() override;
 
 protected:
 	float SphereRadius = 1.0f;

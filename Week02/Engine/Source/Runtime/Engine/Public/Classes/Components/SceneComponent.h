@@ -31,6 +31,7 @@ class USceneComponent : public UActorComponent
 
   protected:
     FTransform Transform;
+    bool       bIsWorldMatrixDirty = true;
 
     FMatrix<float> WorldMatrix;
 };

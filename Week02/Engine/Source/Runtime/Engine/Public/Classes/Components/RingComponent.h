@@ -2,11 +2,11 @@
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
-class UTriangleComponent : public UPrimitiveComponent
+class URingComponent : public UPrimitiveComponent
 {
 public:
-	UTriangleComponent() ;
-	virtual ~UTriangleComponent() override;
+	URingComponent() ;
+	virtual ~URingComponent() override;
 
 protected:
 	float SphereRadius = 1.0f;

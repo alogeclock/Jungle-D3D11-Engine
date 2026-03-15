@@ -5,7 +5,7 @@
 class USphereComponent : public UPrimitiveComponent
 {
 public:
-	USphereComponent(float InSphereRadius = 1.0f);
+	USphereComponent(float inSphereRadius = 1.0f);
 	virtual ~USphereComponent() override;
 
 protected:

@@ -10,19 +10,35 @@ USceneComponent::USceneComponent()
 
 USceneComponent::~USceneComponent() {}
 
-void USceneComponent::SetLocation(const FVector<float> &NewLocation) { Transform.Location = NewLocation; }
+void USceneComponent::SetLocation(const FVector<float> &NewLocation)
+{
+    bIsWorldMatrixDirty = true;
+    Transform.Location = NewLocation;
+}
 
 FVector<float> USceneComponent::GetLocation() const { return Transform.Location; }
 
-void USceneComponent::SetRotation(const FVector<float> &NewRotation) { Transform.Rotation = NewRotation; }
+void USceneComponent::SetRotation(const FVector<float> &NewRotation)
+{
+    bIsWorldMatrixDirty = true;
+    Transform.Rotation = NewRotation;
+}
 
 FVector<float> USceneComponent::GetRotation() const { return Transform.Rotation; }
 
-void USceneComponent::SetScale(const FVector<float> &NewScale) { Transform.Scale = NewScale; }
+void USceneComponent::SetScale(const FVector<float> &NewScale)
+{
+    bIsWorldMatrixDirty = true;
+    Transform.Scale = NewScale;
+}
 
 FVector<float> USceneComponent::GetScale() const { return Transform.Scale; }
 
-void USceneComponent::SetTransform(const FTransform &InTransform) { Transform = InTransform; }
+void USceneComponent::SetTransform(const FTransform &InTransform)
+{
+    bIsWorldMatrixDirty = true;
+    Transform = InTransform;
+}
 
 FTransform USceneComponent::GetTransform() const { return Transform; }
 
@@ -36,6 +52,11 @@ void USceneComponent::UpdateWorldMatrix(const FTransform &InTransform)
 
 const FMatrix<float> &USceneComponent::GetWorldMatrix()
 {
-    UpdateWorldMatrix();
+    if (bIsWorldMatrixDirty)
+    {
+        UpdateWorldMatrix();
+        bIsWorldMatrixDirty = false;
+    }
+
     return WorldMatrix;
 };
