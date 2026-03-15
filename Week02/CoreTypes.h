@@ -9,6 +9,7 @@
 #include <queue>
 #include <stack>
 
+#include "Memory/Memory.h"
 #include "Engine\Source\Runtime\Core\Public\Math\Vector.h"
 #include "Engine\Source\Runtime\Core\Public\Math\Vector4.h"
 
