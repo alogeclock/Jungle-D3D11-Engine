@@ -58,6 +58,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 UApplication::UApplication()
 {
 	Renderer = new URenderer();
+    MeshManager = new UMeshManager();
 	Viewport = new FViewport();
 }
 
@@ -90,20 +91,15 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	// Rendering
 	Renderer->Create(hWnd);
 	Renderer->SetViewport(Viewport);
+	Renderer->SetMeshManager(MeshManager);
+	
+	// Mesh Manager
+    MeshManager->Initialize(*Renderer);
 
-	// World Axis
-	MainAxis = new UAxisComponent();
-	VertexBuffer = Renderer->CreateVertexBuffer(MainAxis->GetVertexData(), MainAxis->GetVertexByteWidth());
-	MainAxis->SetVertexBuffer(VertexBuffer);
-
-	UBoxComponent* box = new UBoxComponent();
-	ID3D11Buffer* vertexBufferBox = Renderer->CreateVertexBuffer(box->GetVertices(), box->GetVertexByteWidth());
-    box->SetVertexBuffer(vertexBufferBox);
-
-	// Test Object -> 나중에 이동
+    MainAxis = new UAxis();
+	cube = new UCubeComponent();
+	ring = new URingComponent();
 	sphere = new USphereComponent(0.2f);
-	vertexBufferSphere = Renderer->CreateVertexBuffer(sphere->GetVertices(), sphere->GetVertexByteWidth());
-    sphere->SetVertexBuffer(vertexBufferSphere);
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
@@ -129,12 +125,10 @@ void UApplication::Run()
 			Viewport->Tick(UTimeManager::Get().GetDeltaTime());
 			Renderer->Prepare();
 
+			MainAxis->Render(*Renderer);
+			cube->Render(*Renderer);
+			ring->Render(*Renderer);
 			sphere->Render(*Renderer);
-
-			FConstants basic;
-			basic.worldMatrix = FMatrix<float>::Identity();
-			Renderer->UpdateConstant(basic);
-			MainAxis->RenderPrimitive(*Renderer);
 
 			UImGuiManager::Get().Update();
             UTimeManager::Get().Update();
@@ -146,9 +140,7 @@ void UApplication::Run()
 
 void UApplication::Finish()
 {
-	delete MainAxis;
-
-	Renderer->ReleaseVertexBuffer(VertexBuffer);
+	MeshManager->Release(*Renderer);
 	Renderer->ReleaseConstantBuffer();
 	Renderer->Release();
 }

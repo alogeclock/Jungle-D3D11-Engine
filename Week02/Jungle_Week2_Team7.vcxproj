@@ -132,6 +132,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Source\Runtime\Core\Private\TimeManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Axis.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ArrowComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\CubeArrowComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\CubeComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PlaneComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\RingComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\TorusComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\MeshManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\VertexData.cpp" />
     <ClCompile Include="Object\Actorh.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\Guid.cpp" />
@@ -142,7 +151,6 @@
     <ClCompile Include="Engine\Source\Runtime\Editor\Private\Viewport.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\AxisComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ActorComponent.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\BoxComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PrimitiveComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SceneComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SphereComponent.cpp" />
@@ -158,10 +166,18 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Memory\Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Source\Runtime\Core\Public\TimeManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Axis.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ArrowComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\CubeArrowComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\CubeComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PlaneComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\RingComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\TorusComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\MeshManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\VertexData.h" />
     <ClInclude Include="Object\Actor.h" />
     <ClInclude Include="Object\Class.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreMinimal.h" />
@@ -185,7 +201,6 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Transform.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="CoreTypes.h" />
-    <ClInclude Include="Engine\Source\Runtime\Core\Public\Cube.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMath.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Matrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PerspectiveMatrix.h" />
@@ -198,9 +213,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector4.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ViewMatrix.h" />
-    <ClInclude Include="Engine\Source\Runtime\Core\Public\Sphere.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Templates\TypeCompatibleBytes.h" />
-    <ClInclude Include="Engine\Source\Runtime\Core\Public\Triangle.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\EditorViewportClient.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\PivotTransformGizmo.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\Application.h" />
@@ -211,7 +224,6 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SphereComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ActorComponent.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PrimitiveComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SphereComponent.h" />
@@ -227,7 +239,6 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
-    <ClInclude Include="Memory\Memory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

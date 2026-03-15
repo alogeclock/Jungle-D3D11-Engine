@@ -23,7 +23,7 @@ void APivotTransformGizmo::Render(URenderer &Renderer)
 
     // Depth Test를 끈 상태로 렌더링한 뒤 다시 켜준다.
     Renderer.SetDepthTestEnable(false);
-    AxisComponent->RenderPrimitive(Renderer);
+    AxisComponent->Render(Renderer);
     Renderer.SetDepthTestEnable(true);
 }
 

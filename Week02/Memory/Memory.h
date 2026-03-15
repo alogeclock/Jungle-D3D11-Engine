@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CoreTypes.h" // uint32 등의 타입 정의가 포함된 헤더
 #include <new>         // std::bad_alloc 예외 처리를 위해 필요
 

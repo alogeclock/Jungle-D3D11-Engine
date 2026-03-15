@@ -1,4 +1,4 @@
-#include "Memory.h"
+﻿#include "Memory.h"
 #include <cstdlib> // std::malloc, std::free
 
 // 실제 전역 변수 메모리 초기화
