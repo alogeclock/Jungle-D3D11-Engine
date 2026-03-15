@@ -111,9 +111,7 @@ public:
     void UpdateConstant(FConstantsColor data);
 
 	void SetViewport(FViewport* viewport) { Viewport = viewport; };
-	//void SetMeshManager(UMeshManager *meshManager) { MeshManager = meshManager; };
 
 private:
 	FViewport* Viewport = nullptr;
-	//UMeshManager* MeshManager = nullptr;
 };

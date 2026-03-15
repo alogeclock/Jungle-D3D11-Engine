@@ -58,7 +58,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 UApplication::UApplication()
 {
 	Renderer = new URenderer();
-    //MeshManager = new UMeshManager();
 	Viewport = new FViewport();
 }
 
@@ -91,7 +90,6 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	// Rendering
 	Renderer->Create(hWnd);
 	Renderer->SetViewport(Viewport);
-	//Renderer->SetMeshManager(MeshManager);
 	
 	// Mesh Manager
     UMeshManager::Get().Initialize(*Renderer);
@@ -142,7 +140,6 @@ void UApplication::Run()
 
 void UApplication::Finish()
 {
-	//MeshManager->Release(*Renderer);
 	Renderer->ReleaseConstantBuffer();
 	Renderer->Release();
 }

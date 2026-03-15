@@ -39,7 +39,6 @@ class UApplication
 
     FViewport    *Viewport = nullptr;
     URenderer    *Renderer = nullptr;
-    //UMeshManager *MeshManager = nullptr;
 
     UAxis            *MainAxis = nullptr;
     UCubeComponent   *cube = nullptr;
