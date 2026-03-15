@@ -5,6 +5,11 @@ cbuffer ConstantBuffer : register(b0)
     row_major float4x4 projectionMatrix;        // world -> view
 }
 
+cbuffer ConstantBufferColor : register(b1)
+{
+    float4 totalColor;
+}
+
 struct VS_INPUT
 {
     float4 position : POSITION;
@@ -26,11 +31,13 @@ PS_INPUT mainVS(VS_INPUT input)
     float4 projPos = mul(viewPos, projectionMatrix);
     output.position = projPos;
     output.color = input.color;
-	
+
     return output;
 }
 
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
+    input.color.a = totalColor.a;
+    
     return input.color;
 }

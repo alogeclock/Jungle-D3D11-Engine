@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/ActorComponent.h"
 #include "CoreTypes.h"

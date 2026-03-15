@@ -32,6 +32,11 @@ struct FConstants
 	FMatrix<float> projectionMatrix;
 };
 
+struct FConstantsColor
+{
+    float r, g, b, a;
+};
+
 class URenderer
 {
 public:	
@@ -39,18 +44,22 @@ public:
 	~URenderer();
 
 public:
-	ID3D11Device* Device = nullptr; // GPU와 통신하기 위한 DirectX3D 장치를 의미한다.
+	ID3D11Device* Device = nullptr; 
 	ID3D11DeviceContext* DeviceContext = nullptr;
 	IDXGISwapChain* SwapChain = nullptr;
 
 	ID3D11Texture2D* FrameBuffer = nullptr;
-	ID3D11RenderTargetView* FrameBufferRTV = nullptr; // texture를 렌더 타겟으로 사용하는 view
-	ID3D11RasterizerState* RasterizerState = nullptr; // 래스터라이저 상태(cull, fill mode 등을 정의)
-	ID3D11Buffer* ConstantBuffer = nullptr; // shader에 데이터를 전송하기 위한 상수 버퍼
+	ID3D11RenderTargetView* FrameBufferRTV = nullptr; 
+	ID3D11RasterizerState* RasterizerState = nullptr; 
+	ID3D11Buffer* ConstantBuffer = nullptr; 
+	ID3D11Buffer* ConstantBufferColor = nullptr;
 
 	// 깊이 스텐실 상태 객체
     ID3D11DepthStencilState* DepthState_Default = nullptr; // 일반적인 3D 렌더링용 (Depth 켬)
     ID3D11DepthStencilState* DepthState_Ignore = nullptr;  // 기즈모, UI용 (Depth 끔)
+
+	ID3D11BlendState* BlendState = nullptr;
+    FLOAT BlendFactor[4] = {0.f, 0.f, 0.f, 0.f};
 
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // 화면을 초기화하는 색
 	D3D11_VIEWPORT ViewportInfo;
@@ -82,12 +91,15 @@ public:
 	void ReleaseDepthStencilState();
 	void SetDepthTestEnable(bool bEnable);
 
+	void CreateBlendState();
+    void ReleaseBlendState();
+
 	void Prepare();
 	void PrepareShader();
 
 	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
 	void RenderPrimitive(UPrimitiveComponent *Primitive);
-	void RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants);
+        void RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants, FConstantsColor &constantsColor);
 
 	ID3D11Buffer* CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
@@ -96,11 +108,12 @@ public:
 	void ReleaseConstantBuffer();
 
 	void UpdateConstant(FConstants data);
+    void UpdateConstant(FConstantsColor data);
 
 	void SetViewport(FViewport* viewport) { Viewport = viewport; };
-	void SetMeshManager(UMeshManager *meshManager) { MeshManager = meshManager; };
+	//void SetMeshManager(UMeshManager *meshManager) { MeshManager = meshManager; };
 
 private:
 	FViewport* Viewport = nullptr;
-	UMeshManager* MeshManager = nullptr;
+	//UMeshManager* MeshManager = nullptr;
 };

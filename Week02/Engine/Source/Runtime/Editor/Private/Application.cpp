@@ -58,7 +58,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 UApplication::UApplication()
 {
 	Renderer = new URenderer();
-    MeshManager = new UMeshManager();
+    //MeshManager = new UMeshManager();
 	Viewport = new FViewport();
 }
 
@@ -91,10 +91,10 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	// Rendering
 	Renderer->Create(hWnd);
 	Renderer->SetViewport(Viewport);
-	Renderer->SetMeshManager(MeshManager);
+	//Renderer->SetMeshManager(MeshManager);
 	
 	// Mesh Manager
-    MeshManager->Initialize(*Renderer);
+    UMeshManager::Get().Initialize(*Renderer);
 
     MainAxis = new UAxis();
 	cube = new UCubeComponent();
@@ -104,7 +104,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
-	UImGuiManager::Get().SetSelectedObject(sphere);
+    UImGuiManager::Get().SetSelectedObject(sphere); // 피킹 후 Set으로 나중에 순서 변경
 
 	// Timer
     UTimeManager::Get().Initialize();
@@ -142,7 +142,7 @@ void UApplication::Run()
 
 void UApplication::Finish()
 {
-	MeshManager->Release(*Renderer);
+	//MeshManager->Release(*Renderer);
 	Renderer->ReleaseConstantBuffer();
 	Renderer->Release();
 }

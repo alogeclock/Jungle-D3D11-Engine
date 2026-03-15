@@ -19,7 +19,7 @@ public:
   void  Update();
   double GetDeltaTime() { return DeltaTime; }
   float GetFPS() { return FPS; }
-  float GetFrameTime() { return GetDeltaTime() * 1000.0f; }
+  double GetFrameTime() { return GetDeltaTime() * 1000.0f; }
 
 private:
   LARGE_INTEGER frequency;

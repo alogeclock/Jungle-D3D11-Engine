@@ -66,6 +66,12 @@ private:
 	EInputEvent InputEvent;
 };
 
+struct FRay
+{
+    FVector<float> Origin;
+    FVector<float> Direction;
+};
+
 /**
  * Stores the transformation data for the viewport camera
  */
@@ -155,7 +161,6 @@ public:
 	// 현재 카메라 View Matrix — Object에 전달하여 행렬곱
 	FMatrix<float> GetViewMatrix() const;
     FMatrix<float> GetProjectionMatrix(float width, float height);
-    FVector<float> GetPickingRay();
 
 	// 카메라 트랜스폼 직접 접근 (필요 시)
 	const FViewportCameraTransform& GetCameraTransform() const { return CameraTransform; }
@@ -165,8 +170,11 @@ private:
 	void SetHeight(float height) { Height = height; };
 
 	// WASD 이동 누적
-    void           ApplyMovement(float DeltaTime, FViewport *Viewport);
-    //FVector<float> GetPickingRay();
+    void ApplyMovement(float DeltaTime, FViewport *Viewport);
+
+	// Ray
+    FRay GetPickingRay();
+    FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
 	// Viewport
     FViewport* Viewport = nullptr; 

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "UnrealMathUtility.h"
+#include "Engine/Source/Runtime/Core/Public/Math/UnrealMathUtility.h"
 
 template<typename T>
 struct FVector
@@ -18,6 +18,7 @@ public:
     // ---------------------------------------------------------
     FVector() = default;
     FVector(T InX, T InY, T InZ);
+    FVector(T InX, T InY, T InZ, T InW);
 
     // ---------------------------------------------------------
     // 3. 일반 사칙 연산자 (Basic Math Operators)
@@ -56,8 +57,12 @@ public:
 template<typename T>
 inline FVector<T>::FVector(T InX, T InY, T InZ)
     : X(InX), Y(InY), Z(InZ)
-{
-}
+{}
+
+template <typename T> 
+inline FVector<T>::FVector(T InX, T InY, T InZ, T InW) 
+    : X(InX), Y(InY), Z(InZ) 
+{}
 
 // =========================================================
 // 사칙 연산자 오버로딩

@@ -14,6 +14,7 @@ void URenderer::Create(HWND hWindow)
 
     CreateConstantBuffer();
     CreateShader();
+    CreateBlendState();
 }
 
 void URenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -121,6 +122,8 @@ void URenderer::Release()
     ReleaseConstantBuffer();
 
     ReleaseShader();
+
+    ReleaseBlendState();
 }
 
 void URenderer::SwapBuffer()
@@ -223,6 +226,30 @@ void URenderer::SetDepthTestEnable(bool bEnable)
     }
 }
 
+void URenderer::CreateBlendState() 
+{
+    D3D11_BLEND_DESC BlendDesc = {};
+    BlendDesc.RenderTarget[0].BlendEnable = TRUE;
+    BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    Device->CreateBlendState(&BlendDesc, &BlendState);
+}
+
+void URenderer::ReleaseBlendState() 
+{
+    if (BlendState)
+    {
+        BlendState->Release();
+        BlendState = nullptr;
+    }
+}
+
 void URenderer::Prepare()
 {
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
@@ -230,7 +257,7 @@ void URenderer::Prepare()
     DeviceContext->RSSetViewports(1, &ViewportInfo);
     DeviceContext->RSSetState(RasterizerState);
     DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, nullptr);
-    DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+    DeviceContext->OMSetBlendState(BlendState, BlendFactor, 0xffffffff);
 
     PrepareShader();
 }
@@ -244,6 +271,11 @@ void URenderer::PrepareShader()
     if (ConstantBuffer)
     {
         DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
+    }
+    if (ConstantBufferColor)
+    {
+        DeviceContext->VSSetConstantBuffers(1, 1, &ConstantBufferColor);
+        DeviceContext->PSSetConstantBuffers(1, 1, &ConstantBufferColor);
     }
 }
 
@@ -259,8 +291,8 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive)
     // 1. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
     EPrimitiveType Type = Primitive->GetPrimitiveType();
     EPrimitiveType Topology = Primitive->GetPrimitiveType();
-    ID3D11Buffer* VertexBuffer = MeshManager->GetVertexBuffer(Type);
-    uint32 NumVertices = MeshManager->GetNumVertices(Type);
+    ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
+    uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
 
     // 2. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(Primitive->GetTopology());
@@ -269,17 +301,18 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive)
     DeviceContext->Draw(NumVertices, 0);
 }
 
-void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants)
+void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants, FConstantsColor &constantsColor)
 {
     // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
     
     // 1. 전달받은 상수 데이터(constants)를 GPU의 Constant Buffer에 업데이트
     UpdateConstant(constants);
+    UpdateConstant(constantsColor);
 
     // 2. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
     EPrimitiveType Type = Primitive->GetPrimitiveType();
-    ID3D11Buffer* VertexBuffer = MeshManager->GetVertexBuffer(Type);
-    uint32 NumVertices = MeshManager->GetNumVertices(Type);
+    ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
+    uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
 
     // 3. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(Primitive->GetTopology());
@@ -319,9 +352,13 @@ void URenderer::CreateConstantBuffer()
 
     Device->CreateBuffer(&constantbufferdesc, nullptr, &ConstantBuffer);
 
-    FConstants constants;
-    constants.worldMatrix = FTranslationMatrix<float>::FTranslationMatrix(FVector(1.0f, 0.0f, 0.0f));
-    UpdateConstant(constants);
+    D3D11_BUFFER_DESC constantbuffercolordesc = {};
+    constantbuffercolordesc.ByteWidth = sizeof(FConstantsColor) + 0xf & 0xfffffff0;
+    constantbuffercolordesc.Usage = D3D11_USAGE_DYNAMIC;
+    constantbuffercolordesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    constantbuffercolordesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    Device->CreateBuffer(&constantbuffercolordesc, nullptr, &ConstantBufferColor);
 }
 
 void URenderer::ReleaseConstantBuffer()
@@ -330,6 +367,12 @@ void URenderer::ReleaseConstantBuffer()
     {
         ConstantBuffer->Release();
         ConstantBuffer = nullptr;
+    }
+
+    if (ConstantBufferColor)
+    {
+        ConstantBufferColor->Release();
+        ConstantBufferColor = nullptr;
     }
 }
 
@@ -351,4 +394,19 @@ void URenderer::UpdateConstant(FConstants data)
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
 	}
+}
+
+void URenderer::UpdateConstant(FConstantsColor data) 
+{
+    if (ConstantBufferColor)
+    {
+        D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
+
+        DeviceContext->Map(ConstantBufferColor, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
+        FConstantsColor *constants = (FConstantsColor *)constantbufferMSR.pData;
+
+        constants->a = data.a;
+
+        DeviceContext->Unmap(ConstantBufferColor, 0);
+    }
 }

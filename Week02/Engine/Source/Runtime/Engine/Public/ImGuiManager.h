@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
 struct ExampleAppConsole;
 
@@ -36,11 +36,12 @@ public:
 	void endFrame();
 	void Release();
 
-	void SetSelectedObject(USphereComponent* sphere);
+    UPrimitiveComponent* GetSelectedObject() { return SelectedObject; };
+    void SetSelectedObject(UPrimitiveComponent *sphere);
     void AddLog(char* msg);
 
 private:
-	USphereComponent* SelectedObject;
+	UPrimitiveComponent* SelectedObject;
 	char buffer[256];
 };
 

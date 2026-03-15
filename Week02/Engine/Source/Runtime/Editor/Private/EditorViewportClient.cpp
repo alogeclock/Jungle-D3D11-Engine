@@ -61,17 +61,21 @@ bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
     const EInputEvent Event = InputState.GetInputEvent();
     const FKey        Key = InputState.GetKey();
 
-    // 우클릭 드래그 시작/종료
-    if (Key == EKeys::RightMouseButton)
+    if (Key == EKeys::LeftMouseButton)
+    {
+        if (Event == EInputEvent::Pressed)
+        {
+            FRay ray = GetPickingRay();
+            PickingRay(ray.Origin, ray.Direction);
+        }
+        return true;
+    }
+    else if (Key == EKeys::RightMouseButton)
     {
         bRightMouseDragging = (Event == EInputEvent::Pressed);
 
-        // 우클릭 이벤트
-
         return true;
     }
-
-    // 키 누름 디버그 출력 (Pressed / Released만)
     if (Event == EInputEvent::Pressed || Event == EInputEvent::Released)
     {
         // 키보드 이벤트
@@ -175,7 +179,7 @@ void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
     //UImGuiManager::Get().AddLog(Buf);
 }
 
-FVector<float> FEditorViewportClient::GetPickingRay()
+FRay FEditorViewportClient::GetPickingRay()
 { 
     float MouseX = Viewport->GetMouseX();
     float MouseY = Viewport->GetMouseY();
@@ -204,8 +208,7 @@ FVector<float> FEditorViewportClient::GetPickingRay()
     FVector<float> RayDirection = FVector(WorldPos.X, WorldPos.Y, WorldPos.Z) - RayOrigin;
     RayDirection.Normalize();
 
-    // Debug
-
+    // Debug ------------- 
     char Buf[256];
     snprintf(Buf, sizeof(Buf), "Mouse Screen Position: X=%.3f Y=%.3f", MouseX, MouseY);
     UImGuiManager::Get().AddLog(Buf);
@@ -216,8 +219,40 @@ FVector<float> FEditorViewportClient::GetPickingRay()
     snprintf(Buf, sizeof(Buf), "Mouse Ray Direction: X=%.3f Y=%.3f Z=%.3f\n\n", 
             RayDirection.X, RayDirection.Y, RayDirection.Z);
     UImGuiManager::Get().AddLog(Buf);
+    // -------------------
 
-    return RayDirection;
+    return FRay(RayOrigin, RayDirection);
+}
+
+/// <summary>
+/// 현재 씬에 생성된 오브젝트 모두 순회하면서 Ray Picking
+/// -> 추후 씬 오브젝트 데이터 생기면 다른 파일로 이동
+/// </summary>
+/// <param name="RayOrigin"></param>
+/// <param name="RayDirection"></param>
+/// <returns></returns>
+FHitResult FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
+{
+    FHitResult ClosestHit;
+
+    UPrimitiveComponent* Object = UImGuiManager::Get().GetSelectedObject(); // 피킹 된 거 Set으로 나중에 순서 변경
+    FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
+
+    char Buf[256];
+    snprintf(Buf, sizeof(Buf), "Ray Distance: %.3f %s", Hit.Distance, Hit.bHit ? "HIT" : "Hit X");
+    UImGuiManager::Get().AddLog(Buf);
+
+    // 확인용
+    if (Hit.bHit)
+    {
+        Object->Selected();
+    }
+    else
+        Object->NotSelected();
+
+    ClosestHit = Hit;
+    
+    return ClosestHit;
 }
 
 bool FInputEventState::IsLeftMouseButtonPressed() const { return IsButtonPressed(EKeys::LeftMouseButton); }

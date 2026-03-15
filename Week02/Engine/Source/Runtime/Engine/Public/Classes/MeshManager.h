@@ -9,6 +9,12 @@ class URenderer;
 class UMeshManager : public UObject
 {
   public:
+    static UMeshManager &Get()
+    {
+        static UMeshManager instance;
+        return instance;
+    }
+
     UMeshManager() {};
     ~UMeshManager() {};
 

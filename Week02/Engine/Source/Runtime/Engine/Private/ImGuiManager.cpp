@@ -84,12 +84,13 @@ void UImGuiManager::Release()
     ImGui::DestroyContext();
 }
 
-void UImGuiManager::SetSelectedObject(USphereComponent* sphere)
-{
-    SelectedObject = sphere;
+void UImGuiManager::SetSelectedObject(UPrimitiveComponent* primitiveComponent)
+{ 
+    SelectedObject = primitiveComponent; 
 }
 
 void UImGuiManager::AddLog(char* msg)
 {
     GConsole->AddLog(msg);
 }
+

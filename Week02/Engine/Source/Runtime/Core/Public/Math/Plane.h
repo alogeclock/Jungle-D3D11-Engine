@@ -11,7 +11,7 @@ public:
 	T W;
 
 	FPlane(T InX, T InY, T InZ, T InW);
-	FPlane(const FVector4<T>& V);
+	//FPlane(const FVector4<T>& V);
 };
 
 /********************************************/
@@ -24,9 +24,9 @@ inline FPlane<T>::FPlane(T InX, T InY, T InZ, T InW)
 {
 }
 
-template<typename T>
-inline FPlane<T>::FPlane(const FVector4<T>& V)
-	: FVector<T>(V)
-	, W(V.W)
-{
-}
+//template<typename T>
+//inline FPlane<T>::FPlane(const FVector4<T>& V)
+//	: FVector<T>(V)
+//	, W(V.W)
+//{
+//}
