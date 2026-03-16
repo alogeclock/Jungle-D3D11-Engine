@@ -39,6 +39,17 @@ class UPrimitiveComponent : public USceneComponent
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
+
+    static UObject *ConstructPrimitiveComponent() { return new UPrimitiveComponent(); }
+
+    static UClass *StaticClass()
+    {
+        // 부모를 UPrimitiveComponent::StaticClass() 로 지정
+        static UClass s_Class("UPrimitiveComponent", USceneComponent::StaticClass(), &UPrimitiveComponent::ConstructPrimitiveComponent);
+        return &s_Class;
+    }
+
+    virtual UClass *GetClass() const override { return StaticClass(); }
   protected:
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

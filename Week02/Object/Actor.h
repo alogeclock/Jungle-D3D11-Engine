@@ -7,7 +7,7 @@ class AActor : public UObject
 {
 private:
     TSet<UActorComponent *> OwnedComponents;
-  USceneComponent        *RootComponent = nullptr;
+    USceneComponent        *RootComponent = nullptr;
 
 public:
     USceneComponent *GetRootComponent() const;
@@ -26,4 +26,14 @@ public:
     void       GetScale(const FTransform &NewTransform);
 
     void IterateAllActorComponents(URenderer &renderer) const;
+
+    static UObject *ConstructActor() { return new AActor(); }
+
+    static UClass *StaticClass()
+    {
+        static UClass s_Class("AActor", UObject::StaticClass(), &AActor::ConstructActor);
+        return &s_Class;
+    }
+
+    virtual UClass *GetClass() const override { return StaticClass(); }
 };

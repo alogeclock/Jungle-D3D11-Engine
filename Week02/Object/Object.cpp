@@ -36,6 +36,28 @@ uint32 UObject::GetAllocatedCount() const
 	return AllocatedCounts; 
 }
 
+UClass *UObject::StaticClass()
+{
+    // UObject는 최상위 부모이며, 직접 생성하지 않으므로 생성 함수는 nullptr
+    static UClass s_Class("UObject", nullptr, nullptr);
+    return &s_Class;
+}
+
+bool UObject::IsA(UClass *TargetClass) const
+{
+    UClass *CurrentClass = GetClass();
+
+    while (CurrentClass != nullptr)
+    {
+        if (CurrentClass == TargetClass)
+        {
+            return true;
+        }
+        CurrentClass = CurrentClass->SuperClass;
+    }
+    return false;
+}
+
 void UObject::SetOuter(UObject *InObject)
 {
 	Outer = InObject;

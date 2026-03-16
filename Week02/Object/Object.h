@@ -3,6 +3,33 @@
 #include "CoreTypes.h"
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 
+class UObject;
+
+using ConstructFn = UObject* (*)();
+
+class UClass
+{
+  public:
+    FString     ClassName;
+    UClass     *SuperClass;
+    ConstructFn Constructor;
+
+    UClass(const FString &InName, UClass *InSuper, ConstructFn InConstructor) : ClassName(InName), SuperClass(InSuper), Constructor(InConstructor) {}
+};
+
+class FObjectFactory
+{
+  public:
+    static UObject *ConstructObject(UClass *TargetClass)
+    {
+        if (TargetClass != nullptr && TargetClass->Constructor != nullptr)
+        {
+            return TargetClass->Constructor();
+        }
+        return nullptr;
+    }
+};
+
 class UObject
 {
 public:
@@ -13,10 +40,10 @@ public:
 	const FString& GetName() const;
 	void SetName(const FString& InName);
 
+	virtual class UWorld *GetWorld() const;
+
 	UObject *GetOuter() const { return Outer; }
     void SetOuter(UObject *InObject);
-
-	virtual class UWorld *GetWorld() const;
 
 	void AddMemoryUsage(uint64 InBytes, uint32 InCount = 1);
 	void RemoveMemoryUsage(uint64 InBytes, uint32 InCount = 1);
@@ -25,6 +52,10 @@ public:
 	uint32 GetAllocatedCount() const;
 
 	template <typename T> T *CreateDefaultSubobject();
+    
+	static UClass  *StaticClass();
+    virtual UClass *GetClass() const { return StaticClass(); }
+    bool            IsA(UClass *TargetClass) const;
 
 private:
 	uint32 UUID = -1;
@@ -45,4 +76,15 @@ template <typename T> inline T *UObject::CreateDefaultSubobject()
 	NewSubobject->SetOuter(this);
 
     return NewSubobject;
+}
+
+template <typename T> inline T *Cast(UObject *Src)
+{
+    // Src가 유효하고, T의 클래스 타입과 일치하거나 자식 클래스라면
+    if (Src != nullptr && Src->IsA(T::StaticClass()))
+    {
+        // 안전하게 static_cast로 다운캐스팅
+        return static_cast<T *>(Src);
+    }
+    return nullptr;
 }

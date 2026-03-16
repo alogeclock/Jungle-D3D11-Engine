@@ -34,5 +34,5 @@ AActor *UActorComponent::GetOwner() const
 {
     // 내 Outer를 가져와서 AActor 타입인지 확인(dynamic_cast) 후 반환합니다.
     // 만약 주인이 액터가 아니라 다른 컴포넌트거나 월드라면 nullptr을 반환하여 안전성을 보장합니다.
-    return dynamic_cast<AActor *>(GetOuter());
+    return Cast<AActor>(GetOuter());
 }

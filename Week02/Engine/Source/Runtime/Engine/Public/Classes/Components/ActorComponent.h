@@ -22,4 +22,15 @@ class UActorComponent : public UObject
 
     // 4. [핵심 추가] 실제 UE에서 컴포넌트가 자기 주인을 찾을 때 쓰는 국민 함수
     AActor *GetOwner() const;
+
+    static UObject *ConstructActorComponent() { return new UActorComponent(); }
+
+    static UClass *StaticClass()
+    {
+        // 부모를 UPrimitiveComponent::StaticClass() 로 지정
+        static UClass s_Class("UActorComponent", UObject::StaticClass(), &UActorComponent::ConstructActorComponent);
+        return &s_Class;
+    }
+
+    virtual UClass *GetClass() const override { return StaticClass(); }
 };

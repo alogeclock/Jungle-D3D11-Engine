@@ -68,6 +68,15 @@ void UImGuiManager::Update(URenderer *renderer)
 
         // 질문자님께서 만드신 AddLog 함수에 완성된 문자열 버퍼를 넘겨줍니다!
         AddLog(logBuffer);
+
+        UClass *ClassToSpawn = UCubeComponent::StaticClass();
+        UObject *NewObj = FObjectFactory::ConstructObject(ClassToSpawn);
+        UCubeComponent *MyCube = Cast<UCubeComponent>(NewObj);
+
+        if (MyCube)
+        {
+
+        }
     }
 
     ImGui::End();

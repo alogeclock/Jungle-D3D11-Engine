@@ -41,7 +41,7 @@ void AActor::IterateAllActorComponents(URenderer &renderer) const
     // Actor의 GetComponents()는 보통 컴포넌트들의 Set이나 Array를 반환합니다.
     for (UActorComponent *Component : OwnedComponents)
     {
-        UPrimitiveComponent *PrimitiveComp = dynamic_cast<UPrimitiveComponent*>(Component);
+        UPrimitiveComponent *PrimitiveComp = Cast<UPrimitiveComponent>(Component);
 
         if (PrimitiveComp != nullptr)
         {
