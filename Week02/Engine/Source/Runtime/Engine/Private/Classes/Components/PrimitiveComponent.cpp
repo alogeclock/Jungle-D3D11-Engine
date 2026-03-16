@@ -7,7 +7,7 @@ void UPrimitiveComponent::Render(URenderer &renderer)
 {
     FConstants constants;
     constants.worldMatrix = Transform.ToMatrix() * ParentMatrix;
-    renderer.SetDepthTestEnable(bEnableDepthTest);
+    renderer.SetDepthStencilEnable(bEnableDepthTest);
 
 	FConstantsColor constantsColor;
     constantsColor.a = ColorAlpha;
