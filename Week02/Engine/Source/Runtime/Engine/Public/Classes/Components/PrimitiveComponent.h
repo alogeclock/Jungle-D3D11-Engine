@@ -31,6 +31,9 @@ class UPrimitiveComponent : public USceneComponent
     void                     SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology) { Topology = InTopology; }
     D3D11_PRIMITIVE_TOPOLOGY GetTopology() const { return Topology; }
 
+    bool isAlwaysVisible() const { return bEnableDepthTest; }
+    void SetAlwaysVisible(const bool bInEnableDepthTest) { bEnableDepthTest = !bInEnableDepthTest; }
+
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
   protected:
