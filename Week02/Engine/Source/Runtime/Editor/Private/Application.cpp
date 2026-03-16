@@ -165,7 +165,7 @@ void UApplication::Run()
 
 			Viewport->GetViewportClient()->RenderGizmo(*Renderer);
 
-			UImGuiManager::Get().Update();
+			UImGuiManager::Get().Update(Renderer);
             UTimeManager::Get().Update();
 
 			Renderer->SwapBuffer();

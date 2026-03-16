@@ -31,7 +31,7 @@ public:
 
 public:
 	void Create(HWND hWnd, URenderer* renderer);
-	void Update();
+	void Update(URenderer *renderer);
 	void beginFrame();
 	void endFrame();
 	void Release();

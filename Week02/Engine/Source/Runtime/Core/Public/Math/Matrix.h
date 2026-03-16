@@ -1,4 +1,4 @@
-// Math/Matrix.h
+﻿// Math/Matrix.h
 #pragma once
 #include "Plane.h"
 
@@ -18,6 +18,7 @@ public:
 
 	float      Determinant() const;
     FMatrix<T> Inverse() const;
+	FVector<T> ToEuler() const;
 };
 
 template<typename T>
@@ -180,3 +181,34 @@ template <typename T> inline FMatrix<T> FMatrix<T>::Inverse() const
 
     return Result;
 }
+
+
+template<typename T>
+inline FVector<T> FMatrix<T>::ToEuler() const
+{
+    FVector<float> Euler;
+    
+    // 짐벌락(Gimbal Lock) 판별을 위한 sin(Yaw) 값 추출
+    float sy = M[0][2]; 
+
+    // sy가 1 또는 -1에 매우 가까우면 Gimbal Lock 상태 (Yaw가 +/- 90도)
+    bool bGimbalLock = (abs(sy) > 0.9999f);
+
+    if (!bGimbalLock)
+    {
+        Euler.X = atan2(-M[1][2], M[2][2]); // Pitch (X축)
+        Euler.Y = asin(sy);                 // Yaw (Y축)
+        Euler.Z = atan2(-M[0][1], M[0][0]); // Roll (Z축)
+    }
+    else
+    {
+        // 짐벌락 상태: Pitch(X)와 Roll(Z)이 같은 축으로 겹침
+        // Pitch를 0으로 고정하고 Roll에 모든 회전을 몰아넣어 계산
+        Euler.X = 0.0f;
+        Euler.Y = (sy > 0.0f) ? 1.570796f : -1.570796f; // +/- PI/2
+        Euler.Z = atan2(M[1][0], M[1][1]);
+    }
+
+    return Euler;
+}
+

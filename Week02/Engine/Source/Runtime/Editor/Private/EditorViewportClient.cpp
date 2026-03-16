@@ -114,7 +114,9 @@ void FEditorViewportClient::MouseMove(FViewport *Viewport, int32 X, int32 Y)
     LastMouseX = X;
     LastMouseY = Y;
 
-    // 좌클릭 드래그 중일 경우 기즈모 로직 수행
+    FRay ray = GetPickingRay();
+  
+    // 1. 좌클릭 드래그 중일 경우 기즈모 로직 수행
     if (bLeftMouseDragging && Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
     {
         FRay ray = GetPickingRay();
@@ -122,6 +124,13 @@ void FEditorViewportClient::MouseMove(FViewport *Viewport, int32 X, int32 Y)
         return;
     }
 
+    // [추가] 2. 드래그 중이 아닐 때 기즈모 Hover 처리
+    if (!bLeftMouseDragging && !bRightMouseDragging && Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
+    {
+        FRay ray = GetPickingRay();
+        Gizmo->OnMouseHover(ray.Origin, ray.Direction);
+    }
+    
     // 우클릭 드래그 중일 경우 카메라 회전 로직 수행
     if (!bRightMouseDragging)
         return;
@@ -284,17 +293,17 @@ FRay FEditorViewportClient::GetPickingRay()
     FVector<float> RayDirection = FVector(WorldFar.X, WorldFar.Y, WorldFar.Z) - RayOrigin;
     RayDirection.Normalize();
 
-    // Debug -------------
-    char Buf[256];
-    snprintf(Buf, sizeof(Buf), "Mouse Screen Position: X=%.3f Y=%.3f", MouseX, MouseY);
-    UImGuiManager::Get().AddLog(Buf);
+    //// Debug -------------
+    //char Buf[256];
+    //snprintf(Buf, sizeof(Buf), "Mouse Screen Position: X=%.3f Y=%.3f", MouseX, MouseY);
+    //UImGuiManager::Get().AddLog(Buf);
 
-    snprintf(Buf, sizeof(Buf), "Mouse Screen Position(NDC): X=%.3f Y=%.3f", NDC_X, NDC_Y);
-    UImGuiManager::Get().AddLog(Buf);
+    //snprintf(Buf, sizeof(Buf), "Mouse Screen Position(NDC): X=%.3f Y=%.3f", NDC_X, NDC_Y);
+    //UImGuiManager::Get().AddLog(Buf);
 
-    snprintf(Buf, sizeof(Buf), "Mouse Ray Direction: X=%.3f Y=%.3f Z=%.3f\n\n", RayDirection.X, RayDirection.Y, RayDirection.Z);
-    UImGuiManager::Get().AddLog(Buf);
-    // -------------------
+    //snprintf(Buf, sizeof(Buf), "Mouse Ray Direction: X=%.3f Y=%.3f Z=%.3f\n\n", RayDirection.X, RayDirection.Y, RayDirection.Z);
+    //UImGuiManager::Get().AddLog(Buf);
+    //// -------------------
 
     return FRay(RayOrigin, RayDirection);
 }
