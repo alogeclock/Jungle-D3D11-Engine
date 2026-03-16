@@ -12,6 +12,7 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/PerspectiveMatrix.h"
+#include "Engine/Source/Runtime/Core/Public/Math/OrthographicMatrix.h"
 
 #include "CoreTypes.h"
 

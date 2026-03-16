@@ -158,7 +158,17 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
     // 뷰포트 종횡비(Aspect Ratio) 계산
     float AspectRatio = width / (height > 0.0f ? height : 1.0f);
 
-    // FPerspectiveMatrix(HalfFOVX, HalfFOVY, MultFOVX, MultFOVY, MinZ, MaxZ)
+    if (UImGuiManager::Get().bIsOrthographic)
+    {
+        // 직교 투영
+        FVector dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();
+        float   Distance = dir.Length();
+        float   OrthoWidth = Distance * FMath::Tan(HalfFOV) * 2.0f;
+        float   OrthoHeight = Distance * FMath::Tan(HalfFOV) * 2.0f;
+        return FOrthographicMatrix<float>(OrthoWidth, OrthoHeight, 0.1f, 1000.0f);
+    }
+
+    // 원근 투영
     return FPerspectiveMatrix<float>(HalfFOV,            // HalfFOVX
                                      HalfFOV,            // HalfFOVY
                                      1.0f / AspectRatio, // MultFOVX
@@ -252,22 +262,26 @@ FRay FEditorViewportClient::GetPickingRay()
     // 1. NDC
     float           NDC_X = (2.0f * MouseX / ViewportWidth) - 1.0f;
     float           NDC_Y = 1.0f - (2.0f * MouseY / ViewportHeight);
-    FVector4<float> NDCPos = FVector4(NDC_X, NDC_Y, 1.0f, 1.0f);
 
-    // 2. Projection
-    auto            projectionMatrix = GetProjectionMatrix(ViewportWidth, ViewportHeight);
-    auto            inverse_proj = projectionMatrix.Inverse();
-    FVector4<float> ViewPos = NDCPos * inverse_proj;
-    ViewPos /= ViewPos.W; // Perspective divide 역산
+    FVector4<float> NDCNear = FVector4(NDC_X, NDC_Y, 0.0f, 1.0f);
+    FVector4<float> NDCFar = FVector4(NDC_X, NDC_Y, 1.0f, 1.0f);
 
-    // 3. View
-    auto            viewMatrix = GetViewMatrix();
-    auto            inverse_view = viewMatrix.Inverse();
-    FVector4<float> WorldPos = ViewPos * inverse_view;
+    // 2. Inverse ViewProjection Matrix
+    FMatrix<float> ProjectionMatrix = GetProjectionMatrix(ViewportWidth, ViewportHeight);
+    FMatrix<float> ViewMatrix = GetViewMatrix();
 
-    // 4. Ray 생성
-    FVector<float> RayOrigin = CameraTransform.GetLocation();
-    FVector<float> RayDirection = FVector(WorldPos.X, WorldPos.Y, WorldPos.Z) - RayOrigin;
+    FMatrix<float>  ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
+    FMatrix<float>  InvViewProjection = ViewProjectionMatrix.Inverse();
+
+    FVector4<float> WorldNear = NDCNear * InvViewProjection;
+    FVector4<float> WorldFar = NDCFar * InvViewProjection;
+
+    WorldNear /= WorldNear.W;
+    WorldFar /= WorldFar.W;
+
+    // 3. Ray 생성
+    FVector<float> RayOrigin = FVector(WorldNear.X, WorldNear.Y, WorldNear.Z);
+    FVector<float> RayDirection = FVector(WorldFar.X, WorldFar.Y, WorldFar.Z) - RayOrigin;
     RayDirection.Normalize();
 
     // Debug -------------

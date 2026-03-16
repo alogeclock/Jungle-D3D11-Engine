@@ -40,6 +40,9 @@ public:
     void SetSelectedObject(UPrimitiveComponent *sphere);
     void AddLog(char* msg);
 
+public:
+    bool bIsOrthographic = false;
+
 private:
 	UPrimitiveComponent* SelectedObject;
 	char buffer[256];
@@ -137,6 +140,7 @@ struct ExampleAppConsole
         ImGui::TextWrapped("Hello Jungle World!");
         ImGui::TextWrapped("FPS: %.f\n", UTimeManager::Get().GetFPS());
         ImGui::TextWrapped("FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFrameTime());
+        ImGui::Checkbox("Orthographic", &UImGuiManager::Get().bIsOrthographic);
 
         // TODO: display items starting from the bottom
 
