@@ -18,7 +18,7 @@ struct FHitResult
 class UPrimitiveComponent : public USceneComponent
 {
   public:
-    UPrimitiveComponent() {}
+    UPrimitiveComponent();
     virtual ~UPrimitiveComponent();
 
     virtual void Render(URenderer &renderer);

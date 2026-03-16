@@ -4,6 +4,7 @@
 
 #include "World.h"
 #include "Object/Actor.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeComponent.h"
 
 ExampleAppConsole* GConsole = nullptr;
 
@@ -49,6 +50,18 @@ void UImGuiManager::Update()
     if (ImGui::Button("Spawn Actor"))
     {
         AActor *NewActor = GWorld->SpawnActor<AActor>();
+
+        USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+
+        NewActor->SetRootComponent(Root);
+        Root->RegisterComponent();
+
+        UCubeComponent *Cube = NewActor->CreateDefaultSubobject<UCubeComponent>();
+
+        //for (auto& components : NewActor->GetRootComponent)
+        //{
+        //}
+        //NewActor->OwnedComponents.
 
         char logBuffer[256];
 

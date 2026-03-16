@@ -12,7 +12,7 @@ public:
 	const FString& GetName() const;
 	void SetName(const FString& InName);
 
-	const UObject *GetOuter() const { return Outer; }
+	UObject *GetOuter() const { return Outer; }
     void SetOuter(UObject *InObject);
 
 	virtual class UWorld *GetWorld() const;
@@ -22,6 +22,8 @@ public:
 
 	uint64 GetAllocatedBytes() const;
 	uint32 GetAllocatedCount() const;
+
+	template <typename T> T *CreateDefaultSubobject();
 
 private:
 	uint32 UUID = -1;
@@ -34,3 +36,12 @@ private:
 };
 
 extern TArray<UObject *> GUObjectArray;
+
+template <typename T> inline T *UObject::CreateDefaultSubobject()
+{
+    T *NewSubobject = new T();
+
+	NewSubobject->SetOuter(this);
+
+    return NewSubobject;
+}

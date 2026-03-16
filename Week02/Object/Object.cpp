@@ -5,7 +5,7 @@
 uint32 UEngineStatics::NextUUID = 0;
 TArray<UObject *> GUObjectArray;
 
-UObject::UObject()
+UObject::UObject() : Outer(nullptr)
 {
     UUID = UEngineStatics::GenUUID();
 
@@ -13,7 +13,7 @@ UObject::UObject()
     InternalIndex = static_cast<uint32>(GUObjectArray.size()) - 1;
 }
 
-UObject::UObject(const FString& InString): Name(InString)
+UObject::UObject(const FString &InString) : Name(InString), Outer(nullptr)
 {
 }
 
@@ -24,8 +24,7 @@ const FString& UObject::GetName() const
 
 void UObject::SetName(const FString& InName) 
 { 
-	Name = InName; 
-}
+	Name = InName; }
 
 uint64 UObject::GetAllocatedBytes() const 
 { 
@@ -35,6 +34,11 @@ uint64 UObject::GetAllocatedBytes() const
 uint32 UObject::GetAllocatedCount() const 
 { 
 	return AllocatedCounts; 
+}
+
+void UObject::SetOuter(UObject *InObject)
+{
+	Outer = InObject;
 }
 
 UWorld *UObject::GetWorld() const

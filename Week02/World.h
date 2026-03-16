@@ -31,6 +31,7 @@ template <typename T> T *UWorld::SpawnActor()
 
     if (CurrentLevel)
     {
+        NewActor->SetOuter(CurrentLevel);
         CurrentLevel->Actors.push_back(NewActor);
     }
 
