@@ -37,7 +37,7 @@ uint32 UObject::GetAllocatedCount() const
 	return AllocatedCounts; 
 }
 
-World *UObject::GetWorld() const
+UWorld *UObject::GetWorld() const
 {
     if (Outer != nullptr)
     {

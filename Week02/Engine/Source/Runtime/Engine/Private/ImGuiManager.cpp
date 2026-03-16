@@ -53,7 +53,7 @@ void UImGuiManager::Update()
         char logBuffer[256];
 
         // snprintf를 사용해 문장과 액터의 개수(%zu)를 버퍼에 합칩니다.
-        //snprintf(logBuffer, sizeof(logBuffer), "[System] 스폰 성공! 현재 액터 수: %d", static_cast<int>(GWorld->CurrentLevel->Actors.size()));
+        snprintf(logBuffer, sizeof(logBuffer), "%d", static_cast<int>(GWorld->CurrentLevel->Actors.size()));
 
         // 질문자님께서 만드신 AddLog 함수에 완성된 문자열 버퍼를 넘겨줍니다!
         AddLog(logBuffer);

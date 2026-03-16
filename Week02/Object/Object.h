@@ -15,7 +15,7 @@ public:
 	const UObject *GetOuter() const { return Outer; }
     void SetOuter(UObject *InObject);
 
-	virtual class World *GetWorld() const;
+	virtual class UWorld *GetWorld() const;
 
 	void AddMemoryUsage(uint64 InBytes, uint32 InCount = 1);
 	void RemoveMemoryUsage(uint64 InBytes, uint32 InCount = 1);

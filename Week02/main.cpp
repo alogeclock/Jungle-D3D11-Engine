@@ -5,11 +5,11 @@
 #include "Engine/Source/Runtime/Editor/Public/Application.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-World         *GWorld = nullptr;
+UWorld         *GWorld = nullptr;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	GWorld = new World();
+	GWorld = new UWorld();
 
 	UApplication* main_app = new UApplication();
 

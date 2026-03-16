@@ -1,6 +1,9 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/Application.h"
 
+//임시 
+#include "World.h"
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // WndProc 함수는 각종 메시지를 처리한다.
@@ -106,6 +109,9 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	// Timer
     UTimeManager::Get().Initialize();
+
+	// 임시
+	GWorld->CreateNewLevel();
 }
 
 void UApplication::Run()

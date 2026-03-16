@@ -5,17 +5,27 @@
 
 class ULevel;
 
-class World final : public UObject
+class UWorld final : public UObject
 {
 public:
-    ULevel *CurrentLevel;
+    ULevel        *CurrentLevel;
+    TSet<ULevel *> Levels;
 
-    template<typename T> T *SpawnActor();
 
-    virtual World *GetWorld() const override { return const_cast<World *>(this); }
+public:
+    UWorld();
+    bool    SetCurrentLevel(ULevel *InLevel);
+    ULevel *GetCurrentLevel() const;
+
+    template <typename T> T *SpawnActor();
+    void                     RemoveActor() const;
+    
+    ULevel *CreateNewLevel();
+
+    virtual UWorld* GetWorld() const override { return const_cast<UWorld *>(this); }
 };
 
-template <typename T> T *World::SpawnActor()
+template <typename T> T *UWorld::SpawnActor()
 {
     T *NewActor = new T();
 

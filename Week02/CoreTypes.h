@@ -11,9 +11,8 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector4.h"
 
-class World;
-
-extern World *GWorld;
+class UWorld;
+extern UWorld *GWorld;
 
 using int32 = std::int32_t;
 using uint32 = std::uint32_t;
