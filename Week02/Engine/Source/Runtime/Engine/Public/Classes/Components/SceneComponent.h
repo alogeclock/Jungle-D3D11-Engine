@@ -27,6 +27,9 @@ class USceneComponent : public UActorComponent
     void       SetTransform(const FTransform &InTransform);
     FTransform GetTransform() const;
 
+    void SetParentMatrix(const FMatrix<float> &ParentMatrix);
+    const FMatrix<float> GetParentMatrix() const;
+
     // SRT 행렬을 Update하는 함수
     void                  UpdateWorldMatrix();
     void                  UpdateWorldMatrix(const FTransform &InTransform);
@@ -37,5 +40,6 @@ class USceneComponent : public UActorComponent
     bool       bIsWorldMatrixDirty = true;
 
     FMatrix<float>  WorldMatrix;
+    FMatrix<float>  ParentMatrix = FMatrix<float>::Identity();
     FVector4<float> Color = {0.0f, 0.0f, 0.0f, 1.0f};
 };

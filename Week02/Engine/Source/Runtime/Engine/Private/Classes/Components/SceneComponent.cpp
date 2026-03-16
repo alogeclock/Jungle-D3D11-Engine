@@ -64,3 +64,13 @@ const FMatrix<float> &USceneComponent::GetWorldMatrix()
 
     return WorldMatrix;
 };
+
+void USceneComponent::SetParentMatrix(const FMatrix<float>& NewParentMatrix)
+{
+    ParentMatrix = NewParentMatrix;
+}
+
+const FMatrix<float> USceneComponent::GetParentMatrix() const
+{
+    return ParentMatrix;
+}

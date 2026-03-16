@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/SceneComponent.h"
@@ -17,7 +17,7 @@ struct FHitResult
 
 class UPrimitiveComponent : public USceneComponent
 {
-public:
+  public:
     UPrimitiveComponent() {}
     virtual ~UPrimitiveComponent();
 
@@ -33,9 +33,9 @@ public:
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
-protected:
+  protected:
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
     bool                     bEnableDepthTest = false;
-    float          ColorAlpha = 1.0f;
+    float                    ColorAlpha = 1.0f;
 };
