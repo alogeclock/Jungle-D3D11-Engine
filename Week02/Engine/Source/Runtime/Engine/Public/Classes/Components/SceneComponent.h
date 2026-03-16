@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/ActorComponent.h"
 #include "CoreTypes.h"
@@ -21,17 +21,21 @@ class USceneComponent : public UActorComponent
     void           SetScale(const FVector<float> &NewScale);
     FVector<float> GetScale() const;
 
-    void SetTransform(const FTransform &InTransform);
+    void            SetColor(const FVector4<float> &NewColor);
+    FVector4<float> GetColor() const;
+
+    void       SetTransform(const FTransform &InTransform);
     FTransform GetTransform() const;
 
     // SRT 행렬을 Update하는 함수
-    void UpdateWorldMatrix();
-    void UpdateWorldMatrix(const FTransform &InTransform);
+    void                  UpdateWorldMatrix();
+    void                  UpdateWorldMatrix(const FTransform &InTransform);
     const FMatrix<float> &GetWorldMatrix();
 
   protected:
     FTransform Transform;
     bool       bIsWorldMatrixDirty = true;
 
-    FMatrix<float> WorldMatrix;
+    FMatrix<float>  WorldMatrix;
+    FVector4<float> Color = {0.0f, 0.0f, 0.0f, 1.0f};
 };

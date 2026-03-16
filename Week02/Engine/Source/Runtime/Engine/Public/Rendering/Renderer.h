@@ -19,12 +19,6 @@ class FViewport;
 class UMeshManager;
 class UPrimitiveComponent;
 
-struct FVertexSimple
-{
-	float x, y, z;
-	float r, g, b, a;
-};
-
 struct FConstants
 {
 	FMatrix<float> worldMatrix;

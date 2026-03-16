@@ -34,6 +34,10 @@ void USceneComponent::SetScale(const FVector<float> &NewScale)
 
 FVector<float> USceneComponent::GetScale() const { return Transform.Scale; }
 
+void USceneComponent::SetColor(const FVector4<float> &NewColor) { Color = NewColor; }
+
+FVector4<float> USceneComponent::GetColor() const { return Color; }
+
 void USceneComponent::SetTransform(const FTransform &InTransform)
 {
     bIsWorldMatrixDirty = true;

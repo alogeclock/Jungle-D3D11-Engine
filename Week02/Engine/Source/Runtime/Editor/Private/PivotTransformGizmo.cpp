@@ -5,43 +5,50 @@ APivotTransformGizmo::APivotTransformGizmo()
 {
     UArrowComponent* TranslateX = new UArrowComponent();
     TranslateX->SetRotation({1.0f, 0.0f, 0.0f});
+    TranslateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     TranslateGizmoComponents.push_back(TranslateX);
 
     UArrowComponent* TranslateY = new UArrowComponent();
     TranslateY->SetRotation({0.0f, 1.0f, 0.0f});
+    TranslateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     TranslateGizmoComponents.push_back(TranslateY);
 
     UArrowComponent* TranslateZ = new UArrowComponent();
     TranslateZ->SetRotation({0.0f, 0.0f, 1.0f});
+    TranslateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     TranslateGizmoComponents.push_back(TranslateZ);
 
     URingComponent* RotateX = new URingComponent();
     RotateX->SetRotation({1.0f, 0.0f, 0.0f});
+    RotateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     RotateGizmoComponents.push_back(RotateX);
 
     URingComponent* RotateY = new URingComponent();
     RotateY->SetRotation({0.0f, 1.0f, 0.0f});
+    RotateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     RotateGizmoComponents.push_back(RotateY);
 
     URingComponent* RotateZ = new URingComponent();
     RotateZ->SetRotation({0.0f, 0.0f, 1.0f});
+    RotateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     RotateGizmoComponents.push_back(RotateZ);
 
     UCubeArrowComponent* ScaleX = new UCubeArrowComponent();
     ScaleX->SetRotation({1.0f, 0.0f, 0.0f});
+    ScaleX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     ScaleGizmoComponents.push_back(ScaleX);
 
     UCubeArrowComponent* ScaleY = new UCubeArrowComponent();
     ScaleY->SetRotation({0.0f, 1.0f, 0.0f});
+    ScaleY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     ScaleGizmoComponents.push_back(ScaleY);
 
     UCubeArrowComponent* ScaleZ = new UCubeArrowComponent();
     ScaleZ->SetRotation({0.0f, 0.0f, 1.0f});
+    ScaleZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     ScaleGizmoComponents.push_back(ScaleZ);
 
-    // GizmoType = EGizmoHandleType::Translate;
-    // GizmoType = EGizmoHandleType::Rotate;
-    GizmoType = EGizmoHandleType::Scale;
+    GizmoType = EGizmoHandleType::Translate;
 }
 
 APivotTransformGizmo::~APivotTransformGizmo()

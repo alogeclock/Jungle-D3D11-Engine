@@ -322,7 +322,6 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &cons
     DeviceContext->Draw(NumVertices, 0);
 }
 
-
 ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth)
 {
     // Create a vertex buffer
