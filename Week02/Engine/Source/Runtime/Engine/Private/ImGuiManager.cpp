@@ -109,8 +109,12 @@ void UImGuiManager::SetSelectedObject(UPrimitiveComponent* primitiveComponent)
     SelectedObject = primitiveComponent; 
 }
 
-void UImGuiManager::AddLog(char* msg)
-{
+bool UImGuiManager::IsCaptureMouse() 
+{ 
+    return ImGui::GetIO().WantCaptureMouse;
+}
+
+void UImGuiManager::AddLog(char *msg) {
     GConsole->AddLog(msg);
 }
 

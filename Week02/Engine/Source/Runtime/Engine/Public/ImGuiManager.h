@@ -38,6 +38,8 @@ public:
 
     UPrimitiveComponent* GetSelectedObject() { return SelectedObject; };
     void SetSelectedObject(UPrimitiveComponent *sphere);
+
+    bool IsCaptureMouse();
     void AddLog(char* msg);
 
 public:

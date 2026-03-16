@@ -175,7 +175,7 @@ private:
 
 	// Ray
     FRay GetPickingRay();
-    FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+    void PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) const;
 
 	// Viewport
     FViewport* Viewport = nullptr; 

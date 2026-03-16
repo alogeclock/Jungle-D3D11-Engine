@@ -1,6 +1,7 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/EditorViewportClient.h"
 #include "Engine/Source/Runtime/Core/Public/Math/ViewMatrix.h"
+#include "World.h"
 
 FViewportCameraTransform::FViewportCameraTransform()
     : ViewLocation(-2.0f, 0.5f, 2.f), ViewRotation(-30.f, 0.f, 0.f), LookAt(0.f, 0.f, 0.f), OrthoZoom(1.f), Max_OrthoZoom(1000.f), Min_OrthoZoom(1.f),
@@ -71,6 +72,9 @@ bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
     {
         if (Event == EInputEvent::Pressed)
         {
+            if (UImGuiManager::Get().IsCaptureMouse())
+                return true;
+
             bLeftMouseDragging = true;
             FRay ray = GetPickingRay();
 
@@ -308,58 +312,21 @@ FRay FEditorViewportClient::GetPickingRay()
     return FRay(RayOrigin, RayDirection);
 }
 
-/// <summary>
-/// 현재 씬에 생성된 오브젝트 모두 순회하면서 Ray Picking
-/// -> 추후 씬 오브젝트 데이터 생기면 다른 파일(World.cpp)로 이동
-/// </summary>
-/// <param name="RayOrigin"></param>
-/// <param name="RayDirection"></param>
-/// <returns></returns>
-FHitResult FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
+void FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) const
 {
-    FHitResult ClosestHit;
+    FHitResult ClosestHit = GWorld->PickingRay(RayOrigin, RayDirection);
+    UPrimitiveComponent *Object = ClosestHit.HitComponent;
 
-    UPrimitiveComponent *Object = UImGuiManager::Get().GetSelectedObject(); // 피킹 된 거 Set으로 나중에 순서 변경
-
-    if (Object == nullptr)
+    if (ClosestHit.bHit)
     {
-        if (Gizmo != nullptr)
-            Gizmo->SetTargetObject(nullptr);
-        return ClosestHit;
-    }
-
-    // CurrentLevel->Actors 배열 순회
-    //for (auto actor : CurrentLevel->Actors)
-    //{
-    //    FHitResult Hit = actor->IntersectRay(RayOrigin, RayDirection);
-
-    //    if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
-    //    ClosestHit = Hit;
-    //}
-
-    FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
-
-    char Buf[256];
-    snprintf(Buf, sizeof(Buf), "Ray Distance: %.3f %s", Hit.Distance, Hit.bHit ? "HIT" : "Hit X");
-    UImGuiManager::Get().AddLog(Buf);
-
-    // 확인용
-    if (Hit.bHit)
-    {
-        Object->Selected();
         if (Gizmo != nullptr)
             Gizmo->SetTargetObject(Object);
     }
     else
     {
-        Object->NotSelected();
         if (Gizmo != nullptr)
             Gizmo->SetTargetObject(nullptr);
     }
-
-    ClosestHit = Hit;
-
-    return ClosestHit;
 }
 
 bool FInputEventState::IsLeftMouseButtonPressed() const { return IsButtonPressed(EKeys::LeftMouseButton); }

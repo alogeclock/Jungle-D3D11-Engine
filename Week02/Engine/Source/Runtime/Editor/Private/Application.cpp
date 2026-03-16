@@ -118,9 +118,9 @@ void UApplication::Initialize(HINSTANCE hInstance)
     UMeshManager::Get().Initialize(*Renderer);
 
     MainAxis = new UAxis();
-	cube = new UCubeComponent();
-	ring = new URingComponent();
-	sphere = new USphereComponent(0.2f);
+	//cube = new UCubeComponent();
+	//ring = new URingComponent();
+	//sphere = new USphereComponent(0.2f);
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
@@ -157,9 +157,9 @@ void UApplication::Run()
 			Renderer->Prepare();
 
 			MainAxis->Render(*Renderer);
-			cube->Render(*Renderer);
-			ring->Render(*Renderer);
-			sphere->Render(*Renderer);
+			//cube->Render(*Renderer);
+			//ring->Render(*Renderer);
+			//sphere->Render(*Renderer);
 
 			GWorld->Render(*Renderer);
 
