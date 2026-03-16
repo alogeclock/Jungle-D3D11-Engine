@@ -57,11 +57,12 @@ void UImGuiManager::Update()
         Root->RegisterComponent();
 
         UCubeComponent *Cube = NewActor->CreateDefaultSubobject<UCubeComponent>();
+        Cube->RegisterComponent();
 
-        //for (auto& components : NewActor->GetRootComponent)
-        //{
-        //}
-        //NewActor->OwnedComponents.
+        for (auto& components : NewActor->GetOwnedComponents())
+        {
+            
+        }
 
         char logBuffer[256];
 
