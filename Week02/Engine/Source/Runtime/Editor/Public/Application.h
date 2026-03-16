@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <windows.h>
 #include <windowsx.h>
@@ -33,21 +33,21 @@ class UApplication
     void Run();
     void Finish();
 
-    void OnResize(uint32 NewWidth, uint32 NewHeight);
+    void       OnResize(uint32 NewWidth, uint32 NewHeight);
     FViewport *GetViewport() { return Viewport; }
 
   private:
     HINSTANCE hInst = nullptr;
     HWND      hWnd = nullptr;
 
-    FViewport    *Viewport = nullptr;
-    URenderer    *Renderer = nullptr;
+    FViewport *Viewport = nullptr;
+    URenderer *Renderer = nullptr;
 
     UAxis            *MainAxis = nullptr;
     UCubeComponent   *cube = nullptr;
     USphereComponent *sphere = nullptr;
     URingComponent   *ring = nullptr;
-    bool                  bResize = false;
-    uint32                Width = 0.0f;
-    uint32                Height = 0.0f;
+    bool              bResize = false;
+    uint32            Width = 0.0f;
+    uint32            Height = 0.0f;
 };

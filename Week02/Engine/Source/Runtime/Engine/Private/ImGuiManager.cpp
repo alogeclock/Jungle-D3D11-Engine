@@ -17,7 +17,7 @@ void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
     ImGui_ImplDX11_Init(renderer->Device, renderer->DeviceContext);
 }
 
-void UImGuiManager::Update()
+void UImGuiManager::Update(URenderer *renderer)
 {
     beginFrame();
     
@@ -59,9 +59,11 @@ void UImGuiManager::Update()
         UCubeComponent *Cube = NewActor->CreateDefaultSubobject<UCubeComponent>();
         Cube->RegisterComponent();
 
-        for (auto& components : NewActor->GetOwnedComponents())
+        for (auto *components : NewActor->GetOwnedComponents())
         {
-            
+            UPrimitiveComponent *PrimitiveComponent = dynamic_cast<UPrimitiveComponent*>(components);
+            if(PrimitiveComponent != nullptr)
+                PrimitiveComponent->Render(*renderer);
         }
 
         char logBuffer[256];
