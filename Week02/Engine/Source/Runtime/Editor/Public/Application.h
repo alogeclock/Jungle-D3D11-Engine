@@ -44,6 +44,4 @@ class UApplication
     UCubeComponent   *cube = nullptr;
     USphereComponent *sphere = nullptr;
     URingComponent   *ring = nullptr;
-
-    APivotTransformGizmo *gizmo = nullptr;
 };

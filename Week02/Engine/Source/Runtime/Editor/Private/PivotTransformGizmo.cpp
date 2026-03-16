@@ -1,49 +1,51 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/PivotTransformGizmo.h"
 
-APivotTransformGizmo::APivotTransformGizmo() 
+APivotTransformGizmo::APivotTransformGizmo()
 {
-    UArrowComponent* TranslateX = new UArrowComponent();
-    TranslateX->SetRotation({1.0f, 0.0f, 0.0f});
+    const float HALF_PI = 1.570796f;
+
+    UArrowComponent *TranslateX = new UArrowComponent();
+    TranslateX->SetRotation({HALF_PI, 0.0f, 0.0f});
     TranslateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     TranslateGizmoComponents.push_back(TranslateX);
 
-    UArrowComponent* TranslateY = new UArrowComponent();
-    TranslateY->SetRotation({0.0f, 1.0f, 0.0f});
+    UArrowComponent *TranslateY = new UArrowComponent();
+    TranslateY->SetRotation({0.0f, -HALF_PI, 0.0f});
     TranslateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     TranslateGizmoComponents.push_back(TranslateY);
 
-    UArrowComponent* TranslateZ = new UArrowComponent();
-    TranslateZ->SetRotation({0.0f, 0.0f, 1.0f});
+    UArrowComponent *TranslateZ = new UArrowComponent();
+    TranslateZ->SetRotation({0.0f, 0.0f, HALF_PI});
     TranslateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     TranslateGizmoComponents.push_back(TranslateZ);
 
-    URingComponent* RotateX = new URingComponent();
-    RotateX->SetRotation({1.0f, 0.0f, 0.0f});
+    URingComponent *RotateX = new URingComponent();
+    RotateX->SetRotation({HALF_PI, 0.0f, 0.0f});
     RotateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     RotateGizmoComponents.push_back(RotateX);
 
-    URingComponent* RotateY = new URingComponent();
-    RotateY->SetRotation({0.0f, 1.0f, 0.0f});
+    URingComponent *RotateY = new URingComponent();
+    RotateY->SetRotation({0.0f, -HALF_PI, 0.0f});
     RotateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     RotateGizmoComponents.push_back(RotateY);
 
-    URingComponent* RotateZ = new URingComponent();
-    RotateZ->SetRotation({0.0f, 0.0f, 1.0f});
+    URingComponent *RotateZ = new URingComponent();
+    RotateZ->SetRotation({0.0f, 0.0f, HALF_PI});
     RotateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     RotateGizmoComponents.push_back(RotateZ);
 
-    UCubeArrowComponent* ScaleX = new UCubeArrowComponent();
-    ScaleX->SetRotation({1.0f, 0.0f, 0.0f});
+    UCubeArrowComponent *ScaleX = new UCubeArrowComponent();
+    ScaleX->SetRotation({HALF_PI, 0.0f, 0.0f});
     ScaleX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     ScaleGizmoComponents.push_back(ScaleX);
 
-    UCubeArrowComponent* ScaleY = new UCubeArrowComponent();
-    ScaleY->SetRotation({0.0f, 1.0f, 0.0f});
+    UCubeArrowComponent *ScaleY = new UCubeArrowComponent();
+    ScaleY->SetRotation({0.0f, -HALF_PI, 0.0f});
     ScaleY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     ScaleGizmoComponents.push_back(ScaleY);
 
-    UCubeArrowComponent* ScaleZ = new UCubeArrowComponent();
+    UCubeArrowComponent *ScaleZ = new UCubeArrowComponent();
     ScaleZ->SetRotation({0.0f, 0.0f, 1.0f});
     ScaleZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     ScaleGizmoComponents.push_back(ScaleZ);
@@ -84,8 +86,17 @@ APivotTransformGizmo::~APivotTransformGizmo()
 
 void APivotTransformGizmo::Render(URenderer &renderer)
 {
-    // if (TargetObject == nullptr)
-    //    return;
+    if (TargetObject == nullptr)
+        return;
+
+    FTransform TargetTransform = TargetObject->GetTransform();
+
+    FTransform UnscaledTransform;
+    UnscaledTransform.Location = TargetTransform.Location;
+    UnscaledTransform.Rotation = TargetTransform.Rotation;
+    UnscaledTransform.Scale = FVector<float>(1.0f, 1.0f, 1.0f); // 스케일 무시
+
+    FMatrix<float> TargetMatrix = UnscaledTransform.ToMatrix();
 
     switch (GizmoType)
     {
@@ -93,7 +104,11 @@ void APivotTransformGizmo::Render(URenderer &renderer)
         for (auto GizmoComponent : TranslateGizmoComponents)
         {
             if (GizmoComponent != nullptr)
+            {
+                // 타겟의 변환 행렬을 부모 행렬로 전달 (자신의 고유 Transform은 유지됨)
+                GizmoComponent->SetParentMatrix(TargetMatrix);
                 GizmoComponent->Render(renderer);
+            }
         }
         break;
     case EGizmoHandleType::Rotate:
@@ -101,7 +116,11 @@ void APivotTransformGizmo::Render(URenderer &renderer)
         for (auto *GizmoComponent : RotateGizmoComponents)
         {
             if (GizmoComponent != nullptr)
+            {
+                // 타겟의 변환 행렬을 부모 행렬로 전달 (자신의 고유 Transform은 유지됨)
+                GizmoComponent->SetParentMatrix(TargetMatrix);
                 GizmoComponent->Render(renderer);
+            }
         }
         break;
     case EGizmoHandleType::Scale:
@@ -109,7 +128,11 @@ void APivotTransformGizmo::Render(URenderer &renderer)
         for (auto *GizmoComponent : ScaleGizmoComponents)
         {
             if (GizmoComponent != nullptr)
+            {
+                // 타겟의 변환 행렬을 부모 행렬로 전달 (자신의 고유 Transform은 유지됨)
+                GizmoComponent->SetParentMatrix(TargetMatrix);
                 GizmoComponent->Render(renderer);
+            }
         }
         break;
     }
@@ -124,13 +147,25 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float> &RayOrigin, const FV
     InitialObjectTransform = TargetObject->GetTransform();
     FVector<float> GizmoOrigin = TargetObject->GetTransform().Location;
 
-    // 기즈모를 선택하기 위한 허용 오차 (클릭 범위)
-    const float SelectThreshold = 0.5f;
+    // 오브젝트의 현재 회전값을 바탕으로 회전 행렬 생성
+    FMatrix<float> RotationMatrix = FRotationMatrix<float>(InitialObjectTransform.Rotation);
 
-    // 각 축(X, Y, Z) 방향 벡터
-    FVector<float> AxisDirX(1.0f, 0.0f, 0.0f);
-    FVector<float> AxisDirY(0.0f, 1.0f, 0.0f);
-    FVector<float> AxisDirZ(0.0f, 0.0f, 1.0f);
+    // 로컬 축(Local Axis)에 회전 행렬을 곱해 월드 공간에서의 방향 벡터 도출
+    FVector4<float> WorldX = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
+    FVector4<float> WorldY = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
+    FVector4<float> WorldZ = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
+
+    FVector<float> AxisDirX(WorldX.X, WorldX.Y, WorldX.Z);
+    FVector<float> AxisDirY(WorldY.X, WorldY.Y, WorldY.Z);
+    FVector<float> AxisDirZ(WorldZ.X, WorldZ.Y, WorldZ.Z);
+
+    // 정규화
+    AxisDirX.Normalize();
+    AxisDirY.Normalize();
+    AxisDirZ.Normalize();
+
+    // 기즈모를 선택하기 위한 허용 오차 (클릭 범위)
+    const float SelectThreshold = 0.2f;
 
     float DistX, DistY, DistZ;
     float AxisTX, AxisTY, AxisTZ;
@@ -177,19 +212,25 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
     if (!bIsDragging || TargetObject == nullptr || ActiveAxis == EGizmoAxis::None)
         return;
 
-    FVector<float> GizmoOrigin = InitialObjectTransform.Location;
-    FVector<float> CurrentAxisDir;
+    FVector<float>  GizmoOrigin = InitialObjectTransform.Location;
+    FVector<float>  CurrentAxisDir;
+    FVector4<float> Dir;
+
+    FMatrix<float> RotationMatrix = FRotationMatrix<float>(InitialObjectTransform.Rotation);
 
     switch (ActiveAxis)
     {
     case EGizmoAxis::X:
-        CurrentAxisDir = FVector<float>(1.0f, 0.0f, 0.0f);
+        Dir = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
+        CurrentAxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
         break;
     case EGizmoAxis::Y:
-        CurrentAxisDir = FVector<float>(0.0f, 1.0f, 0.0f);
+        Dir = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
+        CurrentAxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
         break;
     case EGizmoAxis::Z:
-        CurrentAxisDir = FVector<float>(0.0f, 0.0f, 1.0f);
+        Dir = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
+        CurrentAxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
         break;
     default:
         return;
@@ -207,29 +248,33 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
     const float ScaleSensitivity = 0.05f;
 
     // 객체의 Transform 갱신 (이동 로직)
-
     switch (GizmoType)
     {
     case EGizmoHandleType::Translate:
-        NewTransform.Location = InitialObjectTransform.Location + (CurrentAxisDir * DeltaT);
+        NewTransform.Location = InitialObjectTransform.Location + (CurrentAxisDir * (DeltaT * TranslationSensitivity));
         break;
     case EGizmoHandleType::Rotate:
-        FVector<float> RotationDelta = CurrentAxisDir * (DeltaT * RotationSensitivity);
-        NewTransform.Rotation = InitialObjectTransform.Rotation + RotationDelta;
+        if (ActiveAxis == EGizmoAxis::X)
+            NewTransform.Rotation.X += DeltaT * RotationSensitivity;
+        else if (ActiveAxis == EGizmoAxis::Y)
+            NewTransform.Rotation.Y += DeltaT * RotationSensitivity;
+        else if (ActiveAxis == EGizmoAxis::Z)
+            NewTransform.Rotation.Z += DeltaT * RotationSensitivity;
         break;
     case EGizmoHandleType::Scale:
-        FVector<float> ScaleDelta = CurrentAxisDir * (DeltaT * ScaleSensitivity);
-        NewTransform.Scale = InitialObjectTransform.Scale + ScaleDelta;
+        if (ActiveAxis == EGizmoAxis::X)
+            NewTransform.Scale.X += DeltaT * ScaleSensitivity;
+        else if (ActiveAxis == EGizmoAxis::Y)
+            NewTransform.Scale.Y += DeltaT * ScaleSensitivity;
+        else if (ActiveAxis == EGizmoAxis::Z)
+            NewTransform.Scale.Z += DeltaT * ScaleSensitivity;
 
-        // 스케일이 0이 되거나 뒤집히는(음수) 것을 방지하기 위한 최소값 보정
         if (NewTransform.Scale.X < MinScale)
             NewTransform.Scale.X = MinScale;
         if (NewTransform.Scale.Y < MinScale)
             NewTransform.Scale.Y = MinScale;
         if (NewTransform.Scale.Z < MinScale)
             NewTransform.Scale.Z = MinScale;
-        break;
-    default:
         break;
     }
 
@@ -242,13 +287,9 @@ void APivotTransformGizmo::OnMouseUp()
     ActiveAxis = EGizmoAxis::None;
 }
 
-void APivotTransformGizmo::OnNewObjectsSelected()
-{
-}
-
 void APivotTransformGizmo::ToggleMode()
 {
     uint32 CurrentModeIndex = static_cast<uint32>(GizmoType);
     uint32 NextModeIndex = (CurrentModeIndex + 1) % 3;
-    GizmoType = static_cast<EGizmoHandleType>(CurrentModeIndex);
+    GizmoType = static_cast<EGizmoHandleType>(NextModeIndex);
 }

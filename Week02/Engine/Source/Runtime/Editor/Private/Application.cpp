@@ -91,8 +91,8 @@ void UApplication::Initialize(HINSTANCE hInstance)
 		Viewport->CreateEditorViewportClient();
 
 	// Rendering
+    Renderer->SetViewport(Viewport);
 	Renderer->Create(hWnd);
-	Renderer->SetViewport(Viewport);
 	
 	// Mesh Manager
     UMeshManager::Get().Initialize(*Renderer);
@@ -101,7 +101,6 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	cube = new UCubeComponent();
 	ring = new URingComponent();
 	sphere = new USphereComponent(0.2f);
-	gizmo = new APivotTransformGizmo();
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
@@ -134,7 +133,8 @@ void UApplication::Run()
 			cube->Render(*Renderer);
 			ring->Render(*Renderer);
 			sphere->Render(*Renderer);
-			gizmo->Render(*Renderer);
+
+			Viewport->GetViewportClient()->RenderGizmo(*Renderer);
 
 			UImGuiManager::Get().Update();
             UTimeManager::Get().Update();

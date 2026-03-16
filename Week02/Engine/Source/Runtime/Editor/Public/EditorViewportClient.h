@@ -148,7 +148,7 @@ class FEditorViewportClient
 {
 public:
 	FEditorViewportClient(FViewport* viewport);
-	~FEditorViewportClient() = default;
+	~FEditorViewportClient();
 
 public:
 	// FViewport → 매 프레임 호출
@@ -161,6 +161,9 @@ public:
 	// 현재 카메라 View Matrix — Object에 전달하여 행렬곱
 	FMatrix<float> GetViewMatrix() const;
     FMatrix<float> GetProjectionMatrix(float width, float height);
+
+	// 기즈모 렌더링 함수
+	void RenderGizmo(URenderer &renderer);
 
 	// 카메라 트랜스폼 직접 접근 (필요 시)
 	const FViewportCameraTransform& GetCameraTransform() const { return CameraTransform; }
@@ -188,8 +191,10 @@ private:
 	static constexpr float RotSpeed = 0.1f;    // deg/pixel
 	static constexpr float ZoomSpeed = 10.0f;
 
-	// 우클릭 드래그 상태
+	bool  bLeftMouseDragging = false;
 	bool  bRightMouseDragging = false;
 	int32 LastMouseX = 0;
 	int32 LastMouseY = 0;
+
+	APivotTransformGizmo* Gizmo = nullptr;
 };

@@ -35,7 +35,6 @@ class ABaseTransformGizmo : UObject
     virtual bool OnMouseDown(const FVector<float>& RayOrigin, const FVector<float>& RayDir) = 0;
     virtual void OnMouseMove(const FVector<float>& RayOrigin, const FVector<float>& RayDir) = 0;
     virtual void OnMouseUp() = 0;
-    virtual void OnNewObjectsSelected() = 0;
 
   protected:
     EGizmoHandleType GizmoType = EGizmoHandleType::Translate;
