@@ -1,4 +1,4 @@
-﻿#include "Memory/Memory.h"
+#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/EditorViewportClient.h"
 #include "Engine/Source/Runtime/Core/Public/Math/ViewMatrix.h"
 
@@ -151,9 +151,6 @@ FMatrix<float> FEditorViewportClient::GetViewMatrix() const { return CameraTrans
 
 FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float height)
 {
-    SetWidth(width);
-    SetHeight(height);
-
     // --- 투영 행렬 생성 및 적용 부분 추가 ---
     // 시야각(FOV)을 90도로 설정 (절반인 45도를 라디안으로 변환)
     float HalfFOV = 3.14159265f / 4.0f;
@@ -248,8 +245,8 @@ FRay FEditorViewportClient::GetPickingRay()
     float MouseX = Viewport->GetMouseX();
     float MouseY = Viewport->GetMouseY();
 
-    float ViewportWidth = Width;
-    float ViewportHeight = Height;
+    float ViewportWidth = Viewport->GetWidth();
+    float ViewportHeight = Viewport->GetHeight();
 
     // 1. NDC
     float           NDC_X = (2.0f * MouseX / ViewportWidth) - 1.0f;
@@ -289,7 +286,7 @@ FRay FEditorViewportClient::GetPickingRay()
 
 /// <summary>
 /// 현재 씬에 생성된 오브젝트 모두 순회하면서 Ray Picking
-/// -> 추후 씬 오브젝트 데이터 생기면 다른 파일로 이동
+/// -> 추후 씬 오브젝트 데이터 생기면 다른 파일(World.cpp)로 이동
 /// </summary>
 /// <param name="RayOrigin"></param>
 /// <param name="RayDirection"></param>
@@ -306,6 +303,15 @@ FHitResult FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, co
             Gizmo->SetTargetObject(nullptr);
         return ClosestHit;
     }
+
+    // CurrentLevel->Actors 배열 순회
+    //for (auto actor : CurrentLevel->Actors)
+    //{
+    //    FHitResult Hit = actor->IntersectRay(RayOrigin, RayDirection);
+
+    //    if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
+    //    ClosestHit = Hit;
+    //}
 
     FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
 

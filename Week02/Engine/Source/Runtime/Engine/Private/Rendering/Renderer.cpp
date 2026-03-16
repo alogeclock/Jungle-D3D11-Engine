@@ -487,3 +487,33 @@ void URenderer::UpdateConstant(FConstantsColor data)
         DeviceContext->Unmap(ConstantBufferColor, 0);
     }
 }
+
+void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight) 
+{
+    OutputDebugStringA(("OnResize: " + std::to_string(NewWidth) + "x" + std::to_string(NewHeight) + "\n").c_str());
+    if (!SwapChain)
+        return;
+
+    // 기존 RTV 해제 (SwapChain 참조 끊기)
+    DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+    ReleaseFrameBuffer();
+    ReleaseDepthStencilBuffer();
+
+    // SwapChain 버퍼 리사이즈
+    HRESULT hr = SwapChain->ResizeBuffers(0, NewWidth, NewHeight, DXGI_FORMAT_UNKNOWN, 0);
+
+    // RTV 재생성
+    SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **)&FrameBuffer);
+
+    D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
+    framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+    framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
+
+    // Depth Buffer 재생성
+    CreateDepthStencilBuffer(NewWidth, NewHeight);
+
+    // Viewport 재설정
+    ViewportInfo = {0.f, 0.f, (float)NewWidth, (float)NewHeight, 0.f, 1.f};
+}

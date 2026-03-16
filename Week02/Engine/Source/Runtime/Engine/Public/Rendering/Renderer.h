@@ -115,6 +115,7 @@ public:
     void UpdateConstant(FConstantsColor data);
 
 	void SetViewport(FViewport* viewport) { Viewport = viewport; };
+    void OnResize(uint32 NewWidth, uint32 NewHeight);
 
 private:
 	FViewport* Viewport = nullptr;
