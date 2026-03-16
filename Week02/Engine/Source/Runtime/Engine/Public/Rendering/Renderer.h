@@ -12,6 +12,7 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Matrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TranslationMatrix.h"
 #include "Engine/Source/Runtime/Core/Public/Math/PerspectiveMatrix.h"
+#include "Engine/Source/Runtime/Core/Public/Math/OrthographicMatrix.h"
 
 #include "CoreTypes.h"
 
@@ -46,14 +47,17 @@ public:
     ID3D11Texture2D* DepthStencilBuffer = nullptr;
     ID3D11DepthStencilView* DepthStencilView = nullptr;
 	ID3D11RenderTargetView* FrameBufferRTV = nullptr; 
-	ID3D11RasterizerState* RasterizerState = nullptr; 
 
 	ID3D11Buffer* ConstantBuffer = nullptr; 
 	ID3D11Buffer* ConstantBufferColor = nullptr;
 
 	// 깊이 스텐실 상태 객체
-    ID3D11DepthStencilState* DepthState_Default = nullptr; // 일반적인 3D 렌더링용 (Depth 켬)
-    ID3D11DepthStencilState* DepthState_Ignore = nullptr;  // 기즈모, UI용 (Depth 끔)
+    ID3D11DepthStencilState* DepthStateDefault = nullptr; // 일반적인 3D 렌더링용 (Depth 켬)
+    ID3D11DepthStencilState* DepthStateIgnore = nullptr;  // 기즈모, UI용 (Depth 끔)
+
+	ID3D11RasterizerState* RasterizerStateCullBack = nullptr;
+    ID3D11RasterizerState* RasterizerStateCullFront = nullptr;
+    ID3D11RasterizerState* RasterizerStateCullNone = nullptr;
 
 	ID3D11BlendState* BlendState = nullptr;
     FLOAT BlendFactor[4] = {0.f, 0.f, 0.f, 0.f};
@@ -90,6 +94,7 @@ public:
 	void CreateDepthStencilState();
 	void ReleaseDepthStencilState();
 	void SetDepthStencilEnable(bool bEnable);
+	void SetCullMode(ECullMode cullMode);
 
 	void CreateBlendState();
     void ReleaseBlendState();
@@ -98,8 +103,8 @@ public:
 	void PrepareShader();
 
 	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
-	void RenderPrimitive(UPrimitiveComponent *Primitive);
-    void RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants, FConstantsColor &constantsColor);
+	void RenderPrimitive(UPrimitiveComponent *primitive);
+    void RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor);
 
 	ID3D11Buffer* CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
@@ -111,6 +116,7 @@ public:
     void UpdateConstant(FConstantsColor data);
 
 	void SetViewport(FViewport* viewport) { Viewport = viewport; };
+    void OnResize(uint32 NewWidth, uint32 NewHeight);
 
 private:
 	FViewport* Viewport = nullptr;

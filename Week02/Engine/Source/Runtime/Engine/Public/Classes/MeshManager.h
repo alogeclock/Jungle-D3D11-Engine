@@ -22,8 +22,8 @@ class UMeshManager : public UObject
     void Release(URenderer &Renderer);
 
     ID3D11Buffer    *GetVertexBuffer(EPrimitiveType Type) const;
-    TArray<FVertex> *GetVertexData(EPrimitiveType Type) const;
     uint32           GetNumVertices(EPrimitiveType Type) const;
+    TArray<FVertex> *GetVertexData(EPrimitiveType Type) const;
 
   private:
     TMap<EPrimitiveType, ID3D11Buffer *>    VertexBuffers;

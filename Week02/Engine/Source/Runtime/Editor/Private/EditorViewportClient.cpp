@@ -97,6 +97,11 @@ bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
     }
     if (Event == EInputEvent::Pressed || Event == EInputEvent::Released)
     {
+        if (Event == EInputEvent::Pressed && Key == EKeys::Space)
+        {
+            if (Gizmo != nullptr)
+                Gizmo->ToggleMode();
+        }
     }
 
     return false;
@@ -146,9 +151,6 @@ FMatrix<float> FEditorViewportClient::GetViewMatrix() const { return CameraTrans
 
 FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float height)
 {
-    SetWidth(width);
-    SetHeight(height);
-
     // --- 투영 행렬 생성 및 적용 부분 추가 ---
     // 시야각(FOV)을 90도로 설정 (절반인 45도를 라디안으로 변환)
     float HalfFOV = 3.14159265f / 4.0f;
@@ -156,7 +158,17 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
     // 뷰포트 종횡비(Aspect Ratio) 계산
     float AspectRatio = width / (height > 0.0f ? height : 1.0f);
 
-    // FPerspectiveMatrix(HalfFOVX, HalfFOVY, MultFOVX, MultFOVY, MinZ, MaxZ)
+    if (UImGuiManager::Get().bIsOrthographic)
+    {
+        // 직교 투영
+        FVector dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();
+        float   Distance = dir.Length();
+        float   OrthoWidth = Distance * FMath::Tan(HalfFOV) * 2.0f;
+        float   OrthoHeight = Distance * FMath::Tan(HalfFOV) * 2.0f;
+        return FOrthographicMatrix<float>(OrthoWidth, OrthoHeight, 0.1f, 1000.0f);
+    }
+
+    // 원근 투영
     return FPerspectiveMatrix<float>(HalfFOV,            // HalfFOVX
                                      HalfFOV,            // HalfFOVY
                                      1.0f / AspectRatio, // MultFOVX
@@ -171,7 +183,8 @@ void FEditorViewportClient::RenderGizmo(URenderer& renderer)
     // 타겟 오브젝트가 설정되어 있을 때만 기즈모를 그린다.
     if (Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
     {
-        Gizmo->Render(renderer);
+        FMatrix<float> ViewMatrix = GetViewMatrix();
+        Gizmo->Render(renderer, ViewMatrix);
     }
 }
 
@@ -243,28 +256,32 @@ FRay FEditorViewportClient::GetPickingRay()
     float MouseX = Viewport->GetMouseX();
     float MouseY = Viewport->GetMouseY();
 
-    float ViewportWidth = Width;
-    float ViewportHeight = Height;
+    float ViewportWidth = Viewport->GetWidth();
+    float ViewportHeight = Viewport->GetHeight();
 
     // 1. NDC
     float           NDC_X = (2.0f * MouseX / ViewportWidth) - 1.0f;
     float           NDC_Y = 1.0f - (2.0f * MouseY / ViewportHeight);
-    FVector4<float> NDCPos = FVector4(NDC_X, NDC_Y, 1.0f, 1.0f);
 
-    // 2. Projection
-    auto            projectionMatrix = GetProjectionMatrix(ViewportWidth, ViewportHeight);
-    auto            inverse_proj = projectionMatrix.Inverse();
-    FVector4<float> ViewPos = NDCPos * inverse_proj;
-    ViewPos /= ViewPos.W; // Perspective divide 역산
+    FVector4<float> NDCNear = FVector4(NDC_X, NDC_Y, 0.0f, 1.0f);
+    FVector4<float> NDCFar = FVector4(NDC_X, NDC_Y, 1.0f, 1.0f);
 
-    // 3. View
-    auto            viewMatrix = GetViewMatrix();
-    auto            inverse_view = viewMatrix.Inverse();
-    FVector4<float> WorldPos = ViewPos * inverse_view;
+    // 2. Inverse ViewProjection Matrix
+    FMatrix<float> ProjectionMatrix = GetProjectionMatrix(ViewportWidth, ViewportHeight);
+    FMatrix<float> ViewMatrix = GetViewMatrix();
 
-    // 4. Ray 생성
-    FVector<float> RayOrigin = CameraTransform.GetLocation();
-    FVector<float> RayDirection = FVector(WorldPos.X, WorldPos.Y, WorldPos.Z) - RayOrigin;
+    FMatrix<float>  ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
+    FMatrix<float>  InvViewProjection = ViewProjectionMatrix.Inverse();
+
+    FVector4<float> WorldNear = NDCNear * InvViewProjection;
+    FVector4<float> WorldFar = NDCFar * InvViewProjection;
+
+    WorldNear /= WorldNear.W;
+    WorldFar /= WorldFar.W;
+
+    // 3. Ray 생성
+    FVector<float> RayOrigin = FVector(WorldNear.X, WorldNear.Y, WorldNear.Z);
+    FVector<float> RayDirection = FVector(WorldFar.X, WorldFar.Y, WorldFar.Z) - RayOrigin;
     RayDirection.Normalize();
 
     // Debug -------------
@@ -284,7 +301,7 @@ FRay FEditorViewportClient::GetPickingRay()
 
 /// <summary>
 /// 현재 씬에 생성된 오브젝트 모두 순회하면서 Ray Picking
-/// -> 추후 씬 오브젝트 데이터 생기면 다른 파일로 이동
+/// -> 추후 씬 오브젝트 데이터 생기면 다른 파일(World.cpp)로 이동
 /// </summary>
 /// <param name="RayOrigin"></param>
 /// <param name="RayDirection"></param>
@@ -301,6 +318,15 @@ FHitResult FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, co
             Gizmo->SetTargetObject(nullptr);
         return ClosestHit;
     }
+
+    // CurrentLevel->Actors 배열 순회
+    //for (auto actor : CurrentLevel->Actors)
+    //{
+    //    FHitResult Hit = actor->IntersectRay(RayOrigin, RayDirection);
+
+    //    if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
+    //    ClosestHit = Hit;
+    //}
 
     FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
 

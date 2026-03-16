@@ -10,5 +10,4 @@ public:
 	virtual ~UTorusComponent() override;
 
 protected:
-	float SphereRadius = 1.0f;
 };

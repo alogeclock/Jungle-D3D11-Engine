@@ -6,10 +6,6 @@
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// WndProc 함수는 각종 메시지를 처리한다.
-/* hWnd는 이벤트가 발생한 창의 번호를 의미한다. message는 사건의 종류를 의미한다.
-   가령 WM_KEYDOWN은 키 눌림, WM_LBUTTONDOWN은 마우스 클릭,
-	 WM_DESTROY는 창 파괴를 의미한다. */
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// ImGui에 입력
@@ -18,15 +14,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return true;
 	}
 
-	FViewport* Viewport = reinterpret_cast<FViewport*>(
-		GetWindowLongPtr(hWnd, GWLP_USERDATA)
-		);
+    UApplication* App = reinterpret_cast<UApplication *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    FViewport* Viewport = App ? App->GetViewport() : nullptr;
 
 	switch (message)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0); // 프로그램 종료 메시지를 메시지 큐에 넣는다.
 		break;
+    case WM_SIZE:
+    {
+        if (wParam == SIZE_MINIMIZED)
+            break;
+        if (!App)
+            break;
+
+        uint32 NewWidth = LOWORD(lParam);
+        uint32 NewHeight = HIWORD(lParam);
+
+        if (App && NewWidth > 0 && NewHeight > 0)
+            App->OnResize(NewWidth, NewHeight);
+
+        break;
+    }
 	case WM_KEYDOWN:
 		Viewport->OnKeyDown((uint32_t)wParam);
 		break;
@@ -84,11 +94,21 @@ void UApplication::Initialize(HINSTANCE hInstance)
 		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
 		nullptr, nullptr, hInst, nullptr);
 
-	// Viewport
-	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Viewport));
+	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
-	if(Viewport != nullptr)
-		Viewport->CreateEditorViewportClient();
+	// Viewport
+    if (Viewport != nullptr)
+    {
+        Viewport->CreateEditorViewportClient();
+
+		RECT rect;
+        GetClientRect(hWnd, &rect);
+
+        uint32 Width = rect.right - rect.left;
+        uint32 Height = rect.bottom - rect.top;
+
+        Viewport->OnResize(Width, Height);
+	}
 
 	// Rendering
     Renderer->SetViewport(Viewport);
@@ -104,7 +124,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
-    UImGuiManager::Get().SetSelectedObject(sphere); // 피킹 후 Set으로 나중에 순서 변경
+    UImGuiManager::Get().SetSelectedObject(cube); // 피킹 후 Set으로 나중에 순서 변경
 
 	// Timer
     UTimeManager::Get().Initialize();
@@ -126,6 +146,13 @@ void UApplication::Run()
 		}
 		else
 		{
+            if (bResize)
+            {
+                Renderer->OnResize(Width, Height);
+                Viewport->OnResize(Width, Height);
+                bResize = false;
+			}
+
 			Viewport->Tick(UTimeManager::Get().GetDeltaTime());
 			Renderer->Prepare();
 
@@ -148,5 +175,12 @@ void UApplication::Finish()
 {
 	Renderer->ReleaseConstantBuffer();
 	Renderer->Release();
+}
+
+void UApplication::OnResize(uint32 NewWidth, uint32 NewHeight) 
+{
+    bResize = true;
+    Width = NewWidth;
+    Height = NewHeight;
 }
 

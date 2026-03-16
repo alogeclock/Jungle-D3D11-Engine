@@ -41,5 +41,5 @@ class USceneComponent : public UActorComponent
 
     FMatrix<float>  WorldMatrix;
     FMatrix<float>  ParentMatrix = FMatrix<float>::Identity();
-    FVector4<float> Color = {0.0f, 0.0f, 0.0f, 1.0f};
+    FVector4<float> Color = {0.0f, 0.0f, 0.0f, 0.0f};
 };

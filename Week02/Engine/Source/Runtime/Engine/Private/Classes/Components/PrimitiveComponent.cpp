@@ -10,29 +10,29 @@ void UPrimitiveComponent::Render(URenderer &renderer)
     FConstants constants;
     constants.worldMatrix = Transform.ToMatrix() * ParentMatrix;
     renderer.SetDepthStencilEnable(bEnableDepthTest);
+    renderer.SetCullMode(CullMode);
 
-	FConstantsColor constantsColor;
-    constantsColor.a = ColorAlpha;
+    FConstantsColor constantsColor(Color.X, Color.Y, Color.Z, Color.W);
 
     renderer.RenderPrimitive(this, constants, constantsColor);
 }
 
-void UPrimitiveComponent::Selected() { ColorAlpha = 0.5f; }
+void UPrimitiveComponent::Selected() { SetColor({0.0f, 0.0f, 0.0f, 0.5f}); }
 
-void UPrimitiveComponent::NotSelected() { ColorAlpha = 1.0f; }
+void UPrimitiveComponent::NotSelected() { SetColor({0.0f, 0.0f, 0.0f, 0.0f}); }
 
-FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) 
-{ 
+FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
+{
     FHitResult Result;
 
     if (PrimitiveType == EPrimitiveType::None)
         return Result;
 
-    TArray<FVertex>* vertices = UMeshManager::Get().GetVertexData(PrimitiveType);
-    uint32 NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
+    TArray<FVertex> *vertices = UMeshManager::Get().GetVertexData(PrimitiveType);
+    uint32           NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
 
     // World Matrix로 Vertex를 World Space로 변환
-    FMatrix<float> WorldMatrix = GetWorldMatrix(); // TRS 행렬
+    FMatrix<float> WorldMatrix = GetWorldMatrix() * ParentMatrix; // TRS 행렬
 
     // Index 없이 Vertex 3개씩 = Triangle 1개
     for (uint32 i = 0; i + 2 < NumVertices; i += 3)
