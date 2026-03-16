@@ -169,9 +169,6 @@ public:
 	const FViewportCameraTransform& GetCameraTransform() const { return CameraTransform; }
 
 private:
-    void SetWidth(float width) { Width = width; };
-	void SetHeight(float height) { Height = height; };
-
 	// WASD 이동 누적
     void ApplyMovement(float DeltaTime, FViewport *Viewport);
 
@@ -181,8 +178,6 @@ private:
 
 	// Viewport
     FViewport* Viewport = nullptr; 
-	float      Width = 0.0f;
-    float      Height = 0.0f;
 
 	// 카메라
 	FViewportCameraTransform CameraTransform;

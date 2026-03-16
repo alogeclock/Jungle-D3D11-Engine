@@ -38,6 +38,17 @@ public:
 
     FEditorViewportClient* GetViewportClient() const { return ViewportClient; }
 
+    void OnResize(uint32 NewWidth, uint32 NewHeight)
+    {
+        Width = NewWidth;
+        Height = NewHeight;
+    }
+    uint32 GetWidth() const { return Width; }
+    uint32 GetHeight() const { return Height; }
+
+    uint32 SetWidth(uint32 width) { return Width = width; }
+    uint32 SetHeight(uint32 height) { return Height = height; }
+
 private:
     FEditorViewportClient* ViewportClient;
 
@@ -49,4 +60,7 @@ private:
     int32 PrevMouseY = 0;
     int32 MouseDeltaX = 0;
     int32 MouseDeltaY = 0;
+
+    uint32 Width = 0.0f;
+    uint32 Height = 0.0f;
 };
