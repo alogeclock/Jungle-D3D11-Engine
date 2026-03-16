@@ -123,11 +123,11 @@ void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &Vie
     if (Distance < 0.01f)
         Distance = 0.01f; // 거리가 너무 가까울 때 사라짐 방지
 
-    float ScaleFactor = 0.25f;
+    float ScaleFactor = 1.25f;
 
-    if (UImGuiManager::Get().bIsOrthographic)
+    if (!UImGuiManager::Get().bIsOrthographic)
     {
-        ScaleFactor = 0.5f;
+        ScaleFactor = 0.25f;
         // 타겟의 3D 월드 위치를 Vector4로 구성한 뒤, ViewMatrix를 곱해 카메라 기준 로컬 좌표로 변환한다.
         // 이 떄의 Z값이 곧 물체부터 카메라까지의 정확한 깊이이다.
         FVector4<float> TargetWorldPos(TargetTransform.Location.X, TargetTransform.Location.Y, TargetTransform.Location.Z, 1.0f);
@@ -300,7 +300,7 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float> &RayOrigin, const FV
 
 void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir)
 {
-    if (!bIsDragging || TargetObject == nullptr || ActiveAxis == EGizmoAxis::None)
+    if (TargetObject == nullptr || ActiveAxis == EGizmoAxis::None)
         return;
 
     FVector<float> GizmoOrigin = InitialObjectTransform.Location;
@@ -434,6 +434,63 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
     TargetObject->SetTransform(NewTransform);
 }
 
+void APivotTransformGizmo::OnMouseHover(const FVector<float> &RayOrigin, const FVector<float> &RayDir)
+{
+    // 드래그 중이거나 타겟이 없으면 Hover 처리를 생략합니다.
+    if (bIsDragging || TargetObject == nullptr)
+        return;
+
+    TArray<UPrimitiveComponent *> *ActiveComponents = nullptr;
+
+    switch (GizmoType)
+    {
+    case EGizmoHandleType::Translate:
+        ActiveComponents = &TranslateGizmoComponents;
+        break;
+    case EGizmoHandleType::Rotate:
+        ActiveComponents = &RotateGizmoComponents;
+        break;
+    case EGizmoHandleType::Scale:
+        ActiveComponents = &ScaleGizmoComponents;
+        break;
+    }
+
+    if (ActiveComponents == nullptr)
+        return;
+
+    float MinDistance = FLT_MAX;
+    int   HitIndex = -1;
+
+    for (int i = 0; i < ActiveComponents->size(); ++i)
+    {
+        UPrimitiveComponent *Comp = (*ActiveComponents)[i];
+        if (Comp == nullptr)
+            continue;
+
+        FHitResult Hit = Comp->IntersectRay(RayOrigin, RayDir);
+        if (Hit.bHit && Hit.Distance < MinDistance)
+        {
+            MinDistance = Hit.Distance;
+            HitIndex = i;
+        }
+    }
+
+    EGizmoAxis NewHoveredAxis = EGizmoAxis::None;
+    if (HitIndex == 0)
+        NewHoveredAxis = EGizmoAxis::X;
+    else if (HitIndex == 1)
+        NewHoveredAxis = EGizmoAxis::Y;
+    else if (HitIndex == 2)
+        NewHoveredAxis = EGizmoAxis::Z;
+
+    // Hover된 축이 변경되었을 때만 색상 업데이트를 수행
+    if (HoveredAxis != NewHoveredAxis)
+    {
+        HoveredAxis = NewHoveredAxis;
+        UpdateColor();
+    }
+}
+
 void APivotTransformGizmo::OnMouseUp()
 {
     bIsDragging = false;
@@ -448,4 +505,40 @@ void APivotTransformGizmo::ToggleMode()
     uint32 CurrentModeIndex = static_cast<uint32>(GizmoType);
     uint32 NextModeIndex = (CurrentModeIndex + 1) % 3;
     GizmoType = static_cast<EGizmoHandleType>(NextModeIndex);
+}
+
+void APivotTransformGizmo::UpdateColor()
+{
+    auto ApplyColor = [&](TArray<UPrimitiveComponent *> &Comps)
+    {
+        if (Comps.size() < 3)
+            return;
+
+        // 기본 색상
+        FVector4<float> ColorX = {1.0f, 0.0f, 0.0f, 1.0f};     // Red
+        FVector4<float> ColorY = {0.0f, 1.0f, 0.0f, 1.0f};     // Green
+        FVector4<float> ColorZ = {0.0f, 0.0f, 1.0f, 1.0f};     // Blue
+        FVector4<float> HoverColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow
+
+        // 드래그 중이라면 ActiveAxis를, 아니라면 HoveredAxis를 강조합니다.
+        EGizmoAxis HighlightAxis = bIsDragging ? ActiveAxis : HoveredAxis;
+
+        if (HighlightAxis == EGizmoAxis::X)
+            ColorX = HoverColor;
+        else if (HighlightAxis == EGizmoAxis::Y)
+            ColorY = HoverColor;
+        else if (HighlightAxis == EGizmoAxis::Z)
+            ColorZ = HoverColor;
+
+        if (Comps[0])
+            Comps[0]->SetColor(ColorX);
+        if (Comps[1])
+            Comps[1]->SetColor(ColorY);
+        if (Comps[2])
+            Comps[2]->SetColor(ColorZ);
+    };
+
+    ApplyColor(TranslateGizmoComponents);
+    ApplyColor(RotateGizmoComponents);
+    ApplyColor(ScaleGizmoComponents);
 }

@@ -16,15 +16,19 @@ class APivotTransformGizmo : public ABaseTransformGizmo
 
     virtual bool OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
+    virtual void OnMouseHover(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseUp() override;
 
     void ToggleMode();
+    void UpdateColor();
 
   private:
     float          InitialIntersectionT = 0.0f; // 드래그 시작 시점의 Ray T값
     FTransform     InitialObjectTransform;      // 드래그 시작 시 객체의 Transform
     FVector<float> DragPlaneNormal;
     FVector<float> InitialDragVector;
+
+    EGizmoAxis HoveredAxis = EGizmoAxis::None;
 
     TArray<UPrimitiveComponent *> TranslateGizmoComponents;
     TArray<UPrimitiveComponent *> RotateGizmoComponents;
