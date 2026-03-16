@@ -88,8 +88,8 @@ void UApplication::Initialize(HINSTANCE hInstance)
 		Viewport->CreateEditorViewportClient();
 
 	// Rendering
+    Renderer->SetViewport(Viewport);
 	Renderer->Create(hWnd);
-	Renderer->SetViewport(Viewport);
 	
 	// Mesh Manager
     UMeshManager::Get().Initialize(*Renderer);

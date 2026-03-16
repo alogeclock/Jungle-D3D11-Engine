@@ -43,8 +43,11 @@ public:
 	IDXGISwapChain* SwapChain = nullptr;
 
 	ID3D11Texture2D* FrameBuffer = nullptr;
+    ID3D11Texture2D* DepthStencilBuffer = nullptr;
+    ID3D11DepthStencilView* DepthStencilView = nullptr;
 	ID3D11RenderTargetView* FrameBufferRTV = nullptr; 
 	ID3D11RasterizerState* RasterizerState = nullptr; 
+
 	ID3D11Buffer* ConstantBuffer = nullptr; 
 	ID3D11Buffer* ConstantBufferColor = nullptr;
 
@@ -81,9 +84,12 @@ public:
 	void CreateShader();
 	void ReleaseShader();
 
+	void CreateDepthStencilBuffer(uint32 width, uint32 height);
+    void ReleaseDepthStencilBuffer();
+
 	void CreateDepthStencilState();
 	void ReleaseDepthStencilState();
-	void SetDepthTestEnable(bool bEnable);
+	void SetDepthStencilEnable(bool bEnable);
 
 	void CreateBlendState();
     void ReleaseBlendState();
@@ -93,7 +99,7 @@ public:
 
 	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
 	void RenderPrimitive(UPrimitiveComponent *Primitive);
-        void RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants, FConstantsColor &constantsColor);
+    void RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants, FConstantsColor &constantsColor);
 
 	ID3D11Buffer* CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);

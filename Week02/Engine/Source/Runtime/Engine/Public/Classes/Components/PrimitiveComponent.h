@@ -36,6 +36,6 @@ public:
 protected:
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
-    bool                     bEnableDepthTest = false;
+    bool                     bEnableDepthTest = true;
     float          ColorAlpha = 1.0f;
 };

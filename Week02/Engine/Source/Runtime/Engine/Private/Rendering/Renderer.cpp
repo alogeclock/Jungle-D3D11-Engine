@@ -13,6 +13,9 @@ void URenderer::Create(HWND hWindow)
     CreateRasterizerState();
 
     CreateConstantBuffer();
+    CreateDepthStencilBuffer(ViewportInfo.Width, ViewportInfo.Height);
+    CreateDepthStencilState();
+
     CreateShader();
     CreateBlendState();
 }
@@ -120,6 +123,8 @@ void URenderer::Release()
     ReleaseDeviceAndSwapChain();
 
     ReleaseConstantBuffer();
+    ReleaseDepthStencilBuffer();
+    ReleaseDepthStencilState();
 
     ReleaseShader();
 
@@ -178,6 +183,41 @@ void URenderer::ReleaseShader()
     }
 }
 
+void URenderer::CreateDepthStencilBuffer(uint32 width, uint32 height) 
+{
+    D3D11_TEXTURE2D_DESC depthDesc = {};
+    depthDesc.Width = width;
+    depthDesc.Height = height;
+    depthDesc.MipLevels = 1;
+    depthDesc.ArraySize = 1;
+    depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthDesc.SampleDesc.Count = 1;
+    depthDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    Device->CreateTexture2D(&depthDesc, nullptr, &DepthStencilBuffer);
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+    Device->CreateDepthStencilView(DepthStencilBuffer, &dsvDesc, &DepthStencilView);
+}
+
+void URenderer::ReleaseDepthStencilBuffer() 
+{
+    if (DepthStencilBuffer)
+    {
+        DepthStencilBuffer->Release();
+        DepthStencilBuffer = nullptr;
+    }
+    if (DepthStencilView)
+    {
+        DepthStencilView->Release();
+        DepthStencilView = nullptr;
+    }
+}
+
 void URenderer::CreateDepthStencilState()
 {
     // 1. 기본 상태 (깊이 판정 켜기)
@@ -211,7 +251,7 @@ void URenderer::ReleaseDepthStencilState()
     }
 }
 
-void URenderer::SetDepthTestEnable(bool bEnable)
+void URenderer::SetDepthStencilEnable(bool bEnable)
 {
     if (DeviceContext == nullptr)
         return;
@@ -253,11 +293,13 @@ void URenderer::ReleaseBlendState()
 void URenderer::Prepare()
 {
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
+    DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     DeviceContext->RSSetViewports(1, &ViewportInfo);
     DeviceContext->RSSetState(RasterizerState);
-    DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, nullptr);
+    DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, DepthStencilView);
     DeviceContext->OMSetBlendState(BlendState, BlendFactor, 0xffffffff);
+    DeviceContext->OMSetDepthStencilState(DepthState_Default, 0);
 
     PrepareShader();
 }
