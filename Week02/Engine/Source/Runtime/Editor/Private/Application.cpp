@@ -97,8 +97,18 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
 	// Viewport
-	if(Viewport != nullptr)
-		Viewport->CreateEditorViewportClient();
+    if (Viewport != nullptr)
+    {
+        Viewport->CreateEditorViewportClient();
+
+		RECT rect;
+        GetClientRect(hWnd, &rect);
+
+        uint32 Width = rect.right - rect.left;
+        uint32 Height = rect.bottom - rect.top;
+
+        Viewport->OnResize(Width, Height);
+	}
 
 	// Rendering
     Renderer->SetViewport(Viewport);
