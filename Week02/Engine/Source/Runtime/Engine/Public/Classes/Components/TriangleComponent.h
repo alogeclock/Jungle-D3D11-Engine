@@ -9,5 +9,4 @@ public:
 	virtual ~UTriangleComponent() override;
 
 protected:
-	float SphereRadius = 1.0f;
 };

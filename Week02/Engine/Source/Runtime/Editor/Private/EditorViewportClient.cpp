@@ -97,6 +97,11 @@ bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
     }
     if (Event == EInputEvent::Pressed || Event == EInputEvent::Released)
     {
+        if (Event == EInputEvent::Pressed && Key == EKeys::Space)
+        {
+            if (Gizmo != nullptr)
+                Gizmo->ToggleMode();
+        }
     }
 
     return false;

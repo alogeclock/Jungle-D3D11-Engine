@@ -104,7 +104,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
-    UImGuiManager::Get().SetSelectedObject(sphere); // 피킹 후 Set으로 나중에 순서 변경
+    UImGuiManager::Get().SetSelectedObject(cube); // 피킹 후 Set으로 나중에 순서 변경
 
 	// Timer
     UTimeManager::Get().Initialize();

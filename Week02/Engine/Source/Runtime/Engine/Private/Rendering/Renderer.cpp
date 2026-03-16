@@ -99,17 +99,33 @@ void URenderer::CreateRasterizerState()
 {
     D3D11_RASTERIZER_DESC rasterizerdesc = {};
     rasterizerdesc.FillMode = D3D11_FILL_SOLID;
-    rasterizerdesc.CullMode = D3D11_CULL_BACK; // back-face culling (뒷면을 생략한다.)
 
-    Device->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
+    rasterizerdesc.CullMode = D3D11_CULL_BACK;
+    Device->CreateRasterizerState(&rasterizerdesc, &RasterizerStateCullBack);
+
+    rasterizerdesc.CullMode = D3D11_CULL_FRONT;
+    Device->CreateRasterizerState(&rasterizerdesc, &RasterizerStateCullFront);
+
+    rasterizerdesc.CullMode = D3D11_CULL_NONE;
+    Device->CreateRasterizerState(&rasterizerdesc, &RasterizerStateCullNone);
 }
 
 void URenderer::ReleaseRasterizerState()
 {
-    if (RasterizerState)
+    if (RasterizerStateCullBack)
     {
-        RasterizerState->Release();
-        RasterizerState = nullptr;
+        RasterizerStateCullBack->Release();
+        RasterizerStateCullBack = nullptr;
+    }
+    if (RasterizerStateCullFront)
+    {
+        RasterizerStateCullFront->Release();
+        RasterizerStateCullFront = nullptr;
+    }
+    if (RasterizerStateCullNone)
+    {
+        RasterizerStateCullNone->Release();
+        RasterizerStateCullNone = nullptr;
     }
 }
 
@@ -226,7 +242,7 @@ void URenderer::CreateDepthStencilState()
     dsDescDefault.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     dsDescDefault.DepthFunc = D3D11_COMPARISON_LESS; // 앞쪽에 있는 픽셀만 그리기
 
-    Device->CreateDepthStencilState(&dsDescDefault, &DepthState_Default);
+    Device->CreateDepthStencilState(&dsDescDefault, &DepthStateDefault);
 
     // 2. 무시 상태 (깊이 판정 끄기)
     D3D11_DEPTH_STENCIL_DESC dsDescIgnore = {};
@@ -234,20 +250,20 @@ void URenderer::CreateDepthStencilState()
     dsDescIgnore.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // Depth 버퍼에 쓰기도 방지
     dsDescIgnore.DepthFunc = D3D11_COMPARISON_ALWAYS;          // 항상 무조건 그리기
 
-    Device->CreateDepthStencilState(&dsDescIgnore, &DepthState_Ignore);
+    Device->CreateDepthStencilState(&dsDescIgnore, &DepthStateIgnore);
 }
 
 void URenderer::ReleaseDepthStencilState()
 {
-    if (DepthState_Default)
+    if (DepthStateDefault)
     {
-        DepthState_Default->Release();
-        DepthState_Default = nullptr;
+        DepthStateDefault->Release();
+        DepthStateDefault = nullptr;
     }
-    if (DepthState_Ignore)
+    if (DepthStateIgnore)
     {
-        DepthState_Ignore->Release();
-        DepthState_Ignore = nullptr;
+        DepthStateIgnore->Release();
+        DepthStateIgnore = nullptr;
     }
 }
 
@@ -258,11 +274,31 @@ void URenderer::SetDepthStencilEnable(bool bEnable)
 
     if (bEnable)
     {
-        DeviceContext->OMSetDepthStencilState(DepthState_Default, 0);
+        DeviceContext->OMSetDepthStencilState(DepthStateDefault, 0);
     }
     else
     {
-        DeviceContext->OMSetDepthStencilState(DepthState_Ignore, 0);
+        DeviceContext->OMSetDepthStencilState(DepthStateIgnore, 0);
+    }
+}
+
+void URenderer::SetCullMode(ECullMode Mode)
+{
+    if (DeviceContext == nullptr)
+        return;
+
+    switch (Mode)
+    {
+    case ECullMode::None:
+        DeviceContext->RSSetState(RasterizerStateCullNone);
+        break;
+    case ECullMode::Front:
+        DeviceContext->RSSetState(RasterizerStateCullFront);
+        break;
+    case ECullMode::Back:
+    default:
+        DeviceContext->RSSetState(RasterizerStateCullBack);
+        break;
     }
 }
 
@@ -296,10 +332,10 @@ void URenderer::Prepare()
     DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     DeviceContext->RSSetViewports(1, &ViewportInfo);
-    DeviceContext->RSSetState(RasterizerState);
+    DeviceContext->RSSetState(RasterizerStateCullBack);
     DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, DepthStencilView);
     DeviceContext->OMSetBlendState(BlendState, BlendFactor, 0xffffffff);
-    DeviceContext->OMSetDepthStencilState(DepthState_Default, 0);
+    DeviceContext->OMSetDepthStencilState(DepthStateDefault, 0);
 
     PrepareShader();
 }
@@ -328,22 +364,22 @@ void URenderer::RenderPrimitive(ID3D11Buffer *pBuffer, uint32 numVertices)
     DeviceContext->Draw(numVertices, 0);
 }
 
-void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive)
+void URenderer::RenderPrimitive(UPrimitiveComponent *primitive)
 {
     // 1. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
-    EPrimitiveType Type = Primitive->GetPrimitiveType();
-    EPrimitiveType Topology = Primitive->GetPrimitiveType();
+    EPrimitiveType Type = primitive->GetPrimitiveType();
+    EPrimitiveType Topology = primitive->GetPrimitiveType();
     ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
     uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
 
     // 2. 위상(Topology) 설정
-    DeviceContext->IASetPrimitiveTopology(Primitive->GetTopology());
+    DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
     uint32 offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
     DeviceContext->Draw(NumVertices, 0);
 }
 
-void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &constants, FConstantsColor &constantsColor)
+void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor)
 {
     // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
     
@@ -352,12 +388,12 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *Primitive, FConstants &cons
     UpdateConstant(constantsColor);
 
     // 2. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
-    EPrimitiveType Type = Primitive->GetPrimitiveType();
+    EPrimitiveType Type = primitive->GetPrimitiveType();
     ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
     uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
 
     // 3. 위상(Topology) 설정
-    DeviceContext->IASetPrimitiveTopology(Primitive->GetTopology());
+    DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
 
     uint32 offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
@@ -446,7 +482,7 @@ void URenderer::UpdateConstant(FConstantsColor data)
         DeviceContext->Map(ConstantBufferColor, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
         FConstantsColor *constants = (FConstantsColor *)constantbufferMSR.pData;
 
-        constants->a = data.a;
+        *constants = data;
 
         DeviceContext->Unmap(ConstantBufferColor, 0);
     }

@@ -51,3 +51,10 @@ enum class EPrimitiveType : uint8
 	Ring,
 	Axis
 };
+
+enum class ECullMode : uint8
+{
+	None,
+	Front,
+	Back
+};

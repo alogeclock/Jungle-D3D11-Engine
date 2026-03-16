@@ -9,5 +9,4 @@ public:
 	virtual ~URingComponent() override;
 
 protected:
-	float SphereRadius = 1.0f;
 };

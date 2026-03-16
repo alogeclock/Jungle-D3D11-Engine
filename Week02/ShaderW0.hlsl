@@ -37,7 +37,6 @@ PS_INPUT mainVS(VS_INPUT input)
 
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
-    input.color.a = totalColor.a;
-    
-    return input.color;
+    float4 finalColor = lerp(input.color, totalColor, totalColor.a);
+    return finalColor;
 }

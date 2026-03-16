@@ -9,54 +9,63 @@ APivotTransformGizmo::APivotTransformGizmo()
     TranslateX->SetRotation({HALF_PI, 0.0f, 0.0f});
     TranslateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     TranslateX->SetAlwaysVisible(true);
+    TranslateX->SetCullMode(ECullMode::None);
     TranslateGizmoComponents.push_back(TranslateX);
 
     UArrowComponent *TranslateY = new UArrowComponent();
     TranslateY->SetRotation({0.0f, -HALF_PI, 0.0f});
     TranslateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     TranslateY->SetAlwaysVisible(true);
+    TranslateY->SetCullMode(ECullMode::None);
     TranslateGizmoComponents.push_back(TranslateY);
 
     UArrowComponent *TranslateZ = new UArrowComponent();
     TranslateZ->SetRotation({0.0f, 0.0f, HALF_PI});
     TranslateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     TranslateZ->SetAlwaysVisible(true);
+    TranslateZ->SetCullMode(ECullMode::None);
     TranslateGizmoComponents.push_back(TranslateZ);
 
     URingComponent *RotateX = new URingComponent();
     RotateX->SetRotation({HALF_PI, 0.0f, 0.0f});
     RotateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     RotateX->SetAlwaysVisible(true);
+    RotateX->SetCullMode(ECullMode::None);
     RotateGizmoComponents.push_back(RotateX);
 
     URingComponent *RotateY = new URingComponent();
     RotateY->SetRotation({0.0f, -HALF_PI, 0.0f});
     RotateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     RotateY->SetAlwaysVisible(true);
+    RotateY->SetCullMode(ECullMode::None);
     RotateGizmoComponents.push_back(RotateY);
 
     URingComponent *RotateZ = new URingComponent();
     RotateZ->SetRotation({0.0f, 0.0f, HALF_PI});
     RotateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     RotateZ->SetAlwaysVisible(true);
+    RotateZ->SetCullMode(ECullMode::None);
     RotateGizmoComponents.push_back(RotateZ);
 
     UCubeArrowComponent *ScaleX = new UCubeArrowComponent();
     ScaleX->SetRotation({HALF_PI, 0.0f, 0.0f});
     ScaleX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     ScaleX->SetAlwaysVisible(true);
+    ScaleX->SetCullMode(ECullMode::None);
     ScaleGizmoComponents.push_back(ScaleX);
 
     UCubeArrowComponent *ScaleY = new UCubeArrowComponent();
     ScaleY->SetRotation({0.0f, -HALF_PI, 0.0f});
     ScaleY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     ScaleY->SetAlwaysVisible(true);
+    ScaleY->SetCullMode(ECullMode::None);
     ScaleGizmoComponents.push_back(ScaleY);
 
     UCubeArrowComponent *ScaleZ = new UCubeArrowComponent();
     ScaleZ->SetRotation({0.0f, 0.0f, 1.0f});
     ScaleZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     ScaleZ->SetAlwaysVisible(true);
+    ScaleZ->SetCullMode(ECullMode::None);
     ScaleGizmoComponents.push_back(ScaleZ);
 
     GizmoType = EGizmoHandleType::Translate;
@@ -244,6 +253,8 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
     default:
         return;
     }
+    
+    CurrentAxisDir.Normalize();
 
     float OutAxisT, OutRayT;
     CalculateDistanceToAxis(RayOrigin, RayDir, GizmoOrigin, CurrentAxisDir, OutAxisT, OutRayT);
@@ -253,8 +264,8 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
     FTransform  NewTransform = InitialObjectTransform;
     const float MinScale = 0.01f;
     const float TranslationSensitivity = 1.0f;
-    const float RotationSensitivity = 20.0f;
-    const float ScaleSensitivity = 0.05f;
+    const float RotationSensitivity = 5.0f;
+    const float ScaleSensitivity = 0.1f;
 
     // 객체의 Transform 갱신 (이동 로직)
     switch (GizmoType)
@@ -298,6 +309,9 @@ void APivotTransformGizmo::OnMouseUp()
 
 void APivotTransformGizmo::ToggleMode()
 {
+    if (TargetObject == nullptr)
+        return;
+
     uint32 CurrentModeIndex = static_cast<uint32>(GizmoType);
     uint32 NextModeIndex = (CurrentModeIndex + 1) % 3;
     GizmoType = static_cast<EGizmoHandleType>(NextModeIndex);
