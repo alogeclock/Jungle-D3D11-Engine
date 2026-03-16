@@ -1,4 +1,5 @@
 #include "World.h"
+#include "Object/Actor.h"
 
 UWorld::UWorld()
 {
@@ -16,4 +17,15 @@ ULevel *UWorld::CreateNewLevel()
 	CurrentLevel = NewLevel;
 
 	return NewLevel;
+}
+
+void UWorld::Render(URenderer &renderer)
+{
+    if (CurrentLevel)
+    {
+        for (AActor* actor : CurrentLevel->GetActors())
+        {
+            actor->IterateAllActorComponents(renderer);
+        }
+    }
 }

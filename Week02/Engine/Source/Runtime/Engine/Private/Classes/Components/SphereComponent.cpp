@@ -5,7 +5,7 @@
 USphereComponent::USphereComponent(float inSphereRadius) : UPrimitiveComponent()
 {
     PrimitiveType = EPrimitiveType::Sphere;
-	SetScale({inSphereRadius, inSphereRadius, inSphereRadius});
+	SetScale({inSphereRadius, inSphereRadius, inSphereRadius}); 
 }
 
 USphereComponent::~USphereComponent() {}

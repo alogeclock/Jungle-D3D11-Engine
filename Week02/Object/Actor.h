@@ -6,8 +6,8 @@
 class AActor : public UObject
 {
 private:
-    TSet<UActorComponent*> OwnedComponents;
-    USceneComponent *RootComponent;
+    TSet<UActorComponent *> OwnedComponents;
+  USceneComponent        *RootComponent = nullptr;
 
 public:
     USceneComponent *GetRootComponent() const;
@@ -24,4 +24,6 @@ public:
 
     FTransform GetScale() const;
     void       GetScale(const FTransform &NewTransform);
+
+    void IterateAllActorComponents(URenderer &renderer) const;
 };

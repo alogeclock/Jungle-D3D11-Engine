@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreTypes.h"
+#include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 
 class UObject
 {

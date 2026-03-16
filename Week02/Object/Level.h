@@ -7,7 +7,8 @@ class AActor;
 class ULevel : public UObject
 {
 public:
-	TArray<AActor *> Actors;
+    TArray<AActor *> &GetActors() { return Actors; }
 
-private:
+  private:
+    TArray<AActor *> Actors;
 };

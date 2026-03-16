@@ -15,7 +15,7 @@ public:
 public:
     UWorld();
     bool    SetCurrentLevel(ULevel *InLevel);
-    ULevel *GetCurrentLevel() const;
+    ULevel *GetCurrentLevel();
 
     template <typename T> T *SpawnActor();
     void                     RemoveActor() const;
@@ -23,6 +23,8 @@ public:
     ULevel *CreateNewLevel();
 
     virtual UWorld* GetWorld() const override { return const_cast<UWorld *>(this); }
+
+    void Render(URenderer &renderer);
 };
 
 template <typename T> T *UWorld::SpawnActor()
@@ -32,7 +34,7 @@ template <typename T> T *UWorld::SpawnActor()
     if (CurrentLevel)
     {
         NewActor->SetOuter(CurrentLevel);
-        CurrentLevel->Actors.push_back(NewActor);
+        CurrentLevel->GetActors().push_back(NewActor);
     }
 
     return NewActor;

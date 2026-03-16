@@ -161,6 +161,8 @@ void UApplication::Run()
 			ring->Render(*Renderer);
 			sphere->Render(*Renderer);
 
+			GWorld->Render(*Renderer);
+
 			Viewport->GetViewportClient()->RenderGizmo(*Renderer);
 
 			UImGuiManager::Get().Update();
