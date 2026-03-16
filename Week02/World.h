@@ -4,6 +4,7 @@
 #include "Object/Object.h"
 
 class ULevel;
+struct FHitResult;
 
 class UWorld final : public UObject
 {
@@ -25,6 +26,7 @@ public:
     virtual UWorld* GetWorld() const override { return const_cast<UWorld *>(this); }
 
     void Render(URenderer &renderer);
+    FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 };
 
 template <typename T> T *UWorld::SpawnActor()
