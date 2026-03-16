@@ -1,4 +1,4 @@
-#include "Memory/Memory.h"
+﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/EditorViewportClient.h"
 #include "Engine/Source/Runtime/Core/Public/Math/ViewMatrix.h"
 
@@ -173,7 +173,8 @@ void FEditorViewportClient::RenderGizmo(URenderer& renderer)
     // 타겟 오브젝트가 설정되어 있을 때만 기즈모를 그린다.
     if (Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
     {
-        Gizmo->Render(renderer);
+        FMatrix<float> ViewMatrix = GetViewMatrix();
+        Gizmo->Render(renderer, ViewMatrix);
     }
 }
 

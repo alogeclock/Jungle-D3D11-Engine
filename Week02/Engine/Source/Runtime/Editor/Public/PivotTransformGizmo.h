@@ -5,14 +5,13 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
 
-
 class APivotTransformGizmo : public ABaseTransformGizmo
 {
   public:
     APivotTransformGizmo();
     virtual ~APivotTransformGizmo() override;
 
-    virtual void Render(URenderer &renderer) override;
+    virtual void Render(URenderer &renderer, const FMatrix<float>& ViewMatrix) override;
 
     virtual bool OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
@@ -23,8 +22,9 @@ class APivotTransformGizmo : public ABaseTransformGizmo
   private:
     float      InitialIntersectionT = 0.0f; // 드래그 시작 시점의 Ray T값
     FTransform InitialObjectTransform;      // 드래그 시작 시 객체의 Transform
+    FVector<float> DragPlaneNormal;
 
-    TArray<UArrowComponent *>     TranslateGizmoComponents;
-    TArray<URingComponent *>      RotateGizmoComponents;
-    TArray<UCubeArrowComponent *> ScaleGizmoComponents;
+    TArray<UPrimitiveComponent *> TranslateGizmoComponents;
+    TArray<UPrimitiveComponent *> RotateGizmoComponents;
+    TArray<UPrimitiveComponent *> ScaleGizmoComponents;
 };
