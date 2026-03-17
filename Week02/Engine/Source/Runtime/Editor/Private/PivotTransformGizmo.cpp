@@ -369,7 +369,7 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
         // 1. 타겟 오브젝트의 현재 회전 상태를 행렬로 변환
         FMatrix<float> CurrentRotMat = FRotationMatrix<float>(InitialObjectTransform.Rotation);
 
-        float DeltaAngle = std::atan2(y, x);
+        float DeltaAngle = -std::atan2(y, x);
 
         // 2. 조작한 축을 기준으로 '순수한 로컬 회전(Delta) 행렬' 생성
         FMatrix<float> DeltaRotMat;

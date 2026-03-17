@@ -143,7 +143,7 @@ void FEditorViewportClient::MouseMove(FViewport *Viewport, int32 X, int32 Y)
     // Yaw += DX * RotSpeed,  Pitch += DY * RotSpeed
     FVector<float> Rot = CameraTransform.GetRotation();
     Rot.Y += static_cast<float>(DX) * RotSpeed; // Yaw
-    Rot.X += static_cast<float>(DY) * RotSpeed; // Pitch
+    Rot.X -= static_cast<float>(DY) * RotSpeed; // Pitch
 
     // Pitch 클램프 (-89 ~ 89)
     if (Rot.X > 89.f)
