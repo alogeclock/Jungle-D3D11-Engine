@@ -87,4 +87,4 @@ template <typename T> inline T *Cast(UObject *Src)
         return static_cast<T *>(Src);
     }
     return nullptr;
-}                                                                                     \
+}
