@@ -1,4 +1,4 @@
-﻿#include "CoreTypes.h"
+#include "CoreTypes.h"
 #include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
@@ -23,62 +23,19 @@ void UImGuiManager::Update(URenderer *renderer)
     
     // Control Panel
     ImGui::Begin("Jungle Control Panel");
-    bool open = true;
-    ShowExampleAppConsole(&open);
-
+    ShowControlPanel();
+    SpawnActors();
     ImGui::End();
 
     // Property Window
     ImGui::Begin("Jungle Property Window");
-
-    if (SelectedObject != nullptr)
-    {
-        FTransform t = SelectedObject->GetTransform();
-
-        ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
-        ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -5.0f, 5.0f);
-        ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f,-1.0f, 1.0f);
-
-        SelectedObject->SetTransform(t);
-    }
-
+    TransformInspector();
     ImGui::End();
 
-    // 임시
-    ImGui::Begin("Test");
-
-    if (ImGui::Button("Spawn Actors"))
-    {
-        AActor *NewActor = GWorld->SpawnActor<AActor>();
-
-        USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
-
-        NewActor->SetRootComponent(Root);
-        Root->RegisterComponent();
-
-        UCubeComponent *Cube = NewActor->CreateDefaultSubobject<UCubeComponent>();
-        Cube->RegisterComponent();
-
-        NewActor->SetTransform(FTransform(FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f)));
-
-        char logBuffer[256];
-
-        // snprintf를 사용해 문장과 액터의 개수(%zu)를 버퍼에 합칩니다.
-        snprintf(logBuffer, sizeof(logBuffer), "%d", static_cast<int>(GWorld->CurrentLevel->GetActors().size()));
-
-        // 질문자님께서 만드신 AddLog 함수에 완성된 문자열 버퍼를 넘겨줍니다!
-        AddLog(logBuffer);
-
-        UClass *ClassToSpawn = UCubeComponent::StaticClass();
-        UObject *NewObj = FObjectFactory::ConstructObject(ClassToSpawn);
-        UCubeComponent *MyCube = Cast<UCubeComponent>(NewObj);
-
-        if (MyCube)
-        {
-
-        }
-    }
-
+    //Console
+    ImGui::Begin("Console");
+    bool open = true;
+    ShowExampleAppConsole(&open);
     ImGui::End();
 
     endFrame();
@@ -115,6 +72,66 @@ bool UImGuiManager::IsCaptureMouse()
 }
 
 void UImGuiManager::AddLog(char *msg) {
-    GConsole->AddLog(msg);
+    GConsole->AddLog(msg); }
+
+void UImGuiManager::ShowControlPanel() 
+{
+    ImGui::TextWrapped("FPS: %.f\n", UTimeManager::Get().GetFPS());
+    ImGui::TextWrapped("FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFrameTime());
+    ImGui::Checkbox("Orthogonal", &UImGuiManager::Get().bIsOrthogonal);
+}
+
+void UImGuiManager::SpawnActors() 
+{
+    const char *PrimitiveTypeStrings[] = 
+    {"None", "Sphere", "Cube", "Triangle", "Plane",
+    "Torus", "Arrow", "CubeArrow", "Ring", "Axis"};
+
+    static int  Primitive = 0;
+
+    ImGui::Combo("Primitive", &Primitive, PrimitiveTypeStrings, IM_ARRAYSIZE(PrimitiveTypeStrings));
+
+    if (ImGui::Button("Spawn Actors"))
+    {
+        if (Primitive == 0)
+            return;
+
+        AActor *NewActor = GWorld->SpawnActor<AActor>();
+
+        USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+
+        NewActor->SetRootComponent(Root);
+        Root->RegisterComponent();
+
+        UCubeComponent *Cube = NewActor->CreateDefaultSubobject<UCubeComponent>();
+        Cube->RegisterComponent();
+
+        NewActor->SetTransform(FTransform(FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f)));
+
+        char logBuffer[256];
+        // snprintf를 사용해 문장과 액터의 개수(%zu)를 버퍼에 합칩니다.
+        snprintf(logBuffer, sizeof(logBuffer), "%d", static_cast<int>(GWorld->CurrentLevel->GetActors().size()));
+
+        // 질문자님께서 만드신 AddLog 함수에 완성된 문자열 버퍼를 넘겨줍니다!
+        AddLog(logBuffer);
+
+        UClass         *ClassToSpawn = UCubeComponent::StaticClass();
+        UObject        *NewObj = FObjectFactory::ConstructObject(ClassToSpawn);
+        UCubeComponent *MyCube = Cast<UCubeComponent>(NewObj);
+    }
+}
+
+void UImGuiManager::TransformInspector()
+{
+    if (SelectedObject != nullptr)
+    {
+        FTransform t = SelectedObject->GetTransform();
+
+        ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
+        ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -5.0f, 5.0f);
+        ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f, -1.0f, 1.0f);
+
+        SelectedObject->SetTransform(t);
+    }
 }
 

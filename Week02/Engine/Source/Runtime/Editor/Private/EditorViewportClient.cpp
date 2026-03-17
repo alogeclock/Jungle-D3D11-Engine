@@ -171,7 +171,7 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
     // 뷰포트 종횡비(Aspect Ratio) 계산
     float AspectRatio = width / (height > 0.0f ? height : 1.0f);
 
-    if (UImGuiManager::Get().bIsOrthographic)
+    if (UImGuiManager::Get().bIsOrthogonal)
     {
         // 직교 투영
         FVector dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();

@@ -42,8 +42,13 @@ public:
     bool IsCaptureMouse();
     void AddLog(char* msg);
 
+private:
+    void ShowControlPanel();
+    void SpawnActors();
+    void TransformInspector();
+
 public:
-    bool bIsOrthographic = false;
+    bool bIsOrthogonal = false;
 
 private:
 	UPrimitiveComponent* SelectedObject;
@@ -140,9 +145,7 @@ struct ExampleAppConsole
         }
 
         ImGui::TextWrapped("Hello Jungle World!");
-        ImGui::TextWrapped("FPS: %.f\n", UTimeManager::Get().GetFPS());
-        ImGui::TextWrapped("FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFrameTime());
-        ImGui::Checkbox("Orthographic", &UImGuiManager::Get().bIsOrthographic);
+
 
         // TODO: display items starting from the bottom
 
@@ -419,5 +422,5 @@ static void ShowExampleAppConsole(bool* p_open)
     if (GConsole == nullptr)
         GConsole = &console;
 
-    console.Draw("Jungle Control Panel", p_open);
+    console.Draw("Console", p_open);
 }

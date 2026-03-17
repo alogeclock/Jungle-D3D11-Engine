@@ -43,7 +43,7 @@ FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<flo
         {
             for (UActorComponent *actorC : actor->GetOwnedComponents())
             {
-                UPrimitiveComponent *Object = dynamic_cast<UPrimitiveComponent *>(actorC);
+                UPrimitiveComponent *Object = Cast<UPrimitiveComponent>(actorC);
                 if (Object != nullptr)
                 {
                     FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
