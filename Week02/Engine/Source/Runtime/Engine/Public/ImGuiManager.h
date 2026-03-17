@@ -10,6 +10,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <filesystem>
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
@@ -43,6 +44,9 @@ public:
     char* FStringTochar(FString string);
     void AddLog(const char* msg);
     void AddLog(const FString& msg);
+
+    FString SaveFileDialog();
+    FString OpenFileDialog();
 
 private:
     void ShowControlPanel();

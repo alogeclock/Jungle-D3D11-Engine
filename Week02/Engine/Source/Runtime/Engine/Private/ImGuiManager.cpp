@@ -1,4 +1,4 @@
-﻿#include "CoreTypes.h"
+#include "CoreTypes.h"
 #include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
@@ -12,7 +12,7 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PlaneComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
-#include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h">
 
 ExampleAppConsole *GConsole = nullptr;
 
@@ -83,10 +83,7 @@ char* UImGuiManager::FStringTochar(FString string)
 
 void UImGuiManager::AddLog(const char *msg) { GConsole->AddLog(msg); }
 
-void UImGuiManager::AddLog(const std::string& msg)
-{
-    GConsole->AddLog("%s", msg.c_str());
-}
+void UImGuiManager::AddLog(const FString &msg) { GConsole->AddLog("%s", msg.c_str()); }
 
 void UImGuiManager::ShowControlPanel()
 {
@@ -105,7 +102,10 @@ void UImGuiManager::ShowControlPanel()
 
     ImGui::Separator();
 
-    ImGui::InputText("Scene Name", SceneNamebuffer, sizeof(SceneNamebuffer));
+    ImGui::InputText("Scene Name", buffer, IM_ARRAYSIZE(buffer));
+
+    ImGui::Separator();
+
     NewScene();
     SaveScene();
     LoadScene();
@@ -159,7 +159,7 @@ void UImGuiManager::SpawnActors()
             NewActor->SetRootComponent(Root);
             Root->RegisterComponent();
 
-            UObject             *NewObj = FObjectFactory::ConstructObject(ComponentClassToSpawn);
+            UObject *NewObj = FObjectFactory::ConstructObject(ComponentClassToSpawn);
             UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewObj); // 생성된 객체가 화면에 그릴 수 있는 PrimitiveComponent인지 확인
 
             if (DynamicPrimitive != nullptr)
@@ -183,69 +183,77 @@ void UImGuiManager::SpawnActors()
 
 void UImGuiManager::NewScene()
 {
-    if (ImGui::Button("New Scene"))
+    if (ImGui::Button("New Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         if (GWorld && GWorld->GetCurrentLevel())
         {
+            GWorld->CurrentSceneName = "Default";
             GWorld->GetCurrentLevel()->ClearActors();
             AddLog("[System] All actors and components have been destroyed.");
         }
 
         SelectedObject = nullptr;
     }
+
+    FString SceneName(buffer);
+    // 만약 입력칸이 비어있다면 기본 이름(Default) 할당
+    if (SceneName.empty())
+    {
+        SceneName = "Default";
+        strcpy_s(buffer, sizeof(buffer), SceneName.c_str());
+    }
 }
 
 void UImGuiManager::SaveScene()
 {
-    if (ImGui::Button("Save Scene"))
+    if (ImGui::Button("Save Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
-        if (GWorld != nullptr)
+        FString SceneName(buffer);
+
+        FString DirectoryPath = "Data";
+
+        // Data 폴더가 존재하지 않으면 생성
+        if (!std::filesystem::exists(DirectoryPath))
         {
-            if (GWorld->GetCurrentLevel() != nullptr)
-            {
-                AddLog("[System] 이름을 지정하세요");
-                return;
-            }
-
-            GWorld->GetCurrentLevel()->SetLevelName(SceneNamebuffer);
-
-            char FilePath[512];
-            snprintf(FilePath, sizeof(FilePath), "Data/%s.Scene", GWorld->GetCurrentLevel()->GetLevelName().c_str());
-
-            // 기본 파일명 지정 (필요 시 ImGui::InputText로 파일명을 입력받도록 확장 가능)
-            if (GWorld->SaveLevel(FilePath))
-            {
-                char logBuffer[512];
-                snprintf(logBuffer, sizeof(logBuffer), "[System] Level saved successfully to '%s'.", FilePath);
-                AddLog(logBuffer);
-            }
-            else
-            {
-                AddLog("[Error] Failed to save level.");
-            }
+            std::filesystem::create_directory(DirectoryPath);
         }
 
-        SelectedObject = nullptr;
+        FString FilePath = DirectoryPath + "/" + SceneName + ".Scene";
+
+        bool bSuccess = GWorld->SaveLevel(FilePath);
+
+        if (bSuccess)
+        {
+            GWorld->CurrentSceneName = SceneName;
+            AddLog("Scene saved successfully: " + FilePath);
+        }
+        else
+        {
+            AddLog("Failed to save scene: " + FilePath);
+        }
     }
 }
 
 void UImGuiManager::LoadScene()
 {
-    if (ImGui::Button("Load Scene"))
+    if (ImGui::Button("Load Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
-        if (GWorld != nullptr && GWorld->GetCurrentLevel() != nullptr)
+        FString FilePath = OpenFileDialog();
+        if (!FilePath.empty())
         {
-            if (GWorld->LoadLevel("Data/SavedScene.Scene"))
-            {
-                AddLog("[System] Level loaded successfully from 'Data/SavedScene.Scene'.");
+            GWorld->LoadLevel(FilePath);
 
-                snprintf(SceneNamebuffer, sizeof(SceneNamebuffer), "%s", GWorld->GetCurrentLevel()->GetLevelName().c_str());
-            }
-            else
-            {
-                AddLog("[Error] Failed to load level.");
-            }
+            // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출 (예: "Data/MyScene.Scene" -> "MyScene")
+            std::filesystem::path path(FilePath);
+            FString               LoadedSceneName = path.stem().string();
+
+            // GWorld의 씬 이름과 ImGui UI의 buffer를 갱신
+            GWorld->CurrentSceneName = LoadedSceneName;
+            strcpy_s(buffer, sizeof(buffer), LoadedSceneName.c_str());
+
+            AddLog("Scene loaded successfully: " + FilePath);
         }
+
         SelectedObject = nullptr;
     }
 }
@@ -255,7 +263,7 @@ void UImGuiManager::TransformInspector()
     if (SelectedObject == nullptr)
         return;
 
-    AActor* Actor = Cast<AActor>(SelectedObject->GetOwner());
+    AActor    *Actor = Cast<AActor>(SelectedObject->GetOwner());
     FTransform t = Actor->GetTransform();
 
     ImGui::DragFloat3("Translation", &t.Location.X, 0.01f);
@@ -263,4 +271,66 @@ void UImGuiManager::TransformInspector()
     ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f);
 
     Actor->SetTransform(t);
+}
+
+FString UImGuiManager::SaveFileDialog()
+{
+    OPENFILENAMEA ofn;
+    CHAR          szFile[260] = {0};
+
+    ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
+    ofn.lStructSize = sizeof(OPENFILENAMEA);
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+
+    ofn.lpstrFilter = "Scene Files (*.Scene)\0*.Scene\0All Files (*.*)\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+
+    // OFN_OVERWRITEPROMPT: 이미 존재하는 파일 선택 시 덮어쓸지 묻는 경고창을 띄웁니다.
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+
+    // 사용자가 확장자를 입력하지 않아도 자동으로 .Scene을 붙여줍니다.
+    ofn.lpstrDefExt = "Scene";
+
+    // 다이얼로그 호출 (Save)
+    if (GetSaveFileNameA(&ofn) == TRUE)
+    {
+        return FString(ofn.lpstrFile);
+    }
+
+    return FString("");
+}
+
+FString UImGuiManager::OpenFileDialog()
+{
+    OPENFILENAMEA ofn;
+    CHAR          szFile[260] = {0};
+
+    ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
+    ofn.lStructSize = sizeof(OPENFILENAMEA);
+    ofn.hwndOwner = NULL;
+
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+
+    // 파일 필터 설정 (.Scene 파일 전용)
+    ofn.lpstrFilter = "Scene Files (*.Scene)\0*.Scene\0All Files (*.*)\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    // 대화상자 호출 (불러오기)
+    if (GetOpenFileNameA(&ofn) == TRUE)
+    {
+        return FString(ofn.lpstrFile);
+    }
+
+    return FString("");
 }

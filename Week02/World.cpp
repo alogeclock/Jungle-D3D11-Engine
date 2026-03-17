@@ -11,12 +11,12 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
-
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <filesystem>
 
 using json = nlohmann::json;
 
@@ -38,13 +38,17 @@ UWorld::~UWorld()
     }
 }
 
-bool UWorld::SaveLevel(const std::string& FilePath)
+bool UWorld::SaveLevel(const FString& FilePath)
 {
     if (CurrentLevel == nullptr)
         return false;
 
+    std::filesystem::path path(FilePath);
+    CurrentSceneName = path.stem().string();
+
     json j;
     j["Version"] = 1;
+    j["SceneName"] = CurrentSceneName;
     
     json primitives;
     int currentUuid = 0;
@@ -93,7 +97,7 @@ bool UWorld::SaveLevel(const std::string& FilePath)
     return false;
 }
 
-bool UWorld::LoadLevel(const std::string& FilePath)
+bool UWorld::LoadLevel(const FString& FilePath)
 {
     std::ifstream file(FilePath);
     if (!file.is_open())
@@ -102,6 +106,16 @@ bool UWorld::LoadLevel(const std::string& FilePath)
     json j;
     file >> j;
     file.close();
+
+    if (j.contains("SceneName"))
+    {
+        CurrentSceneName = j["SceneName"].get<std::string>();
+    }
+    else
+    {
+        std::filesystem::path path(FilePath);
+        CurrentSceneName = path.stem().string();
+    }
 
     // 기존 레벨 메모리 해제 및 새 레벨 할당
     if (CurrentLevel != nullptr)
