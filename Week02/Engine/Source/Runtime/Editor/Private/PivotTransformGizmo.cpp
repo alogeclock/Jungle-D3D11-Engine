@@ -125,7 +125,7 @@ void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &Vie
 
     float ScaleFactor = 1.25f;
 
-    if (!UImGuiManager::Get().bIsOrthographic)
+    if (!UImGuiManager::Get().bIsOrthogonal)
     {
         ScaleFactor = 0.25f;
         // 타겟의 3D 월드 위치를 Vector4로 구성한 뒤, ViewMatrix를 곱해 카메라 기준 로컬 좌표로 변환한다.

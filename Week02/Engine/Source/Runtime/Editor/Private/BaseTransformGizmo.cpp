@@ -5,6 +5,6 @@ ABaseTransformGizmo::ABaseTransformGizmo() : GizmoType(EGizmoHandleType::Transla
 
 ABaseTransformGizmo::~ABaseTransformGizmo() {}
 
-void ABaseTransformGizmo::SetTargetObject(UPrimitiveComponent *InTarget) { TargetObject = InTarget; }
+void ABaseTransformGizmo::SetTargetObject(USceneComponent *InTarget) { TargetObject = InTarget; }
 
-UPrimitiveComponent *ABaseTransformGizmo::GetTargetObject() const { return TargetObject; }
+USceneComponent *ABaseTransformGizmo::GetTargetObject() const { return TargetObject; }

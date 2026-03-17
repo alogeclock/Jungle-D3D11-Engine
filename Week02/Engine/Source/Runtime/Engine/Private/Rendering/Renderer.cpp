@@ -462,12 +462,13 @@ void URenderer::UpdateConstant(FConstants data)
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
         FConstants *constants = (FConstants *)constantbufferMSR.pData;
 
-        constants->worldMatrix = data.worldMatrix;
+        if (Viewport != nullptr)
+        {
+            FMatrix<float> viewMatrix = Viewport->GetViewportClient()->GetViewMatrix();
+            FMatrix<float> projectionMatrix = Viewport->GetViewportClient()->GetProjectionMatrix(ViewportInfo.Width, ViewportInfo.Height);
 
-        if (Viewport != nullptr) {
-			constants->viewMatrix = Viewport->GetViewportClient()->GetViewMatrix();
-            constants->projectionMatrix = Viewport->GetViewportClient()->GetProjectionMatrix(ViewportInfo.Width, ViewportInfo.Height);
-		}
+            constants->MVPMatrix = data.MVPMatrix * viewMatrix * projectionMatrix;
+        }
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
 	}

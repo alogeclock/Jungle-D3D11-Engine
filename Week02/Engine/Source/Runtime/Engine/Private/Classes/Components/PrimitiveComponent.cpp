@@ -8,7 +8,7 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
     FConstants constants;
-    constants.worldMatrix = Transform.ToMatrix() * ParentMatrix;
+    constants.MVPMatrix = GetWorldMatrix();  // 부모 및 자신의 변경 사항을 반영한 GetWorldMatrix()를 호출한다.
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
 
@@ -32,7 +32,7 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     uint32           NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
 
     // World Matrix로 Vertex를 World Space로 변환
-    FMatrix<float> WorldMatrix = Transform.ToMatrix() * ParentMatrix; // TRS 행렬
+    FMatrix<float> WorldMatrix = GetWorldMatrix(); // TRS 행렬
 
     // Index 없이 Vertex 3개씩 = Triangle 1개
     for (uint32 i = 0; i + 2 < NumVertices; i += 3)
