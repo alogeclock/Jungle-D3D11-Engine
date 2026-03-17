@@ -170,9 +170,16 @@ void FEditorViewportClient::MouseMove(FViewport *Viewport, int32 X, int32 Y)
 
 void FEditorViewportClient::InputAxis(FViewport *Viewport, FKey Key, float Delta, float DeltaTime)
 {
-    FVector<float> Loc = CameraTransform.GetLocation();
-    Loc.X += Delta * ZoomSpeed * DeltaTime;
-    CameraTransform.SetLocation(Loc);
+    const float PitchRad = CameraTransform.GetRotation().X * (3.14159265f / 180.f);
+    const float YawRad = CameraTransform.GetRotation().Y * (3.14159265f / 180.f);
+
+    // 카메라 로컬 Forward
+    FVector4<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad), std::sin(PitchRad), 0.f};
+
+    FVector4<float> Loc = CameraTransform.GetLocation();
+    Loc += Forward * Delta * ZoomSpeed * DeltaTime;
+
+    CameraTransform.SetLocation({Loc.X, Loc.Y, Loc.Z});
 }
 
 FMatrix<float> FEditorViewportClient::GetViewMatrix() const { return CameraTransform.ComputeOrbitMatrix(); }
