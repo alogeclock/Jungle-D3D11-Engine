@@ -237,6 +237,9 @@ void FEditorViewportClient::Render(URenderer& renderer)
 
 void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
 {
+    if (UImGuiManager::Get().IsCaptureKeyboard())
+        return;
+
     const float PitchRad = CameraTransform.GetRotation().X * (3.14159265f / 180.f);
     const float YawRad = CameraTransform.GetRotation().Y * (3.14159265f / 180.f);
 

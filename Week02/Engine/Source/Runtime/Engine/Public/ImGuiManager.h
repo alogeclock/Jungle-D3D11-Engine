@@ -41,6 +41,8 @@ public:
     void SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
+    bool IsCaptureKeyboard();
+
     char* FStringTochar(FString string);
     void AddLog(const char* msg);
     void AddLog(const FString& msg);

@@ -72,6 +72,8 @@ void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) {
 
 bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
 
+bool UImGuiManager::IsCaptureKeyboard() {return ImGui::GetIO().WantCaptureKeyboard;}
+
 char* UImGuiManager::FStringTochar(FString string)
 {
     char TempBuffer[256];
