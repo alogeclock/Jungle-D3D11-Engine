@@ -259,13 +259,13 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float> &RayOrigin, const FV
 
     FVector<float> CameraDir = RayDir; // 클릭 시점의 카메라 시선
     FVector<float> RightVec = FVector<float>::CrossProduct(AxisDir, CameraDir);
-    DragPlaneNormal = FVector<float>(-RayDir.X, -RayDir.Y, -RayDir.Z);
-    DragPlaneNormal.Normalize();
+    GizmoPlaneNormal = FVector<float>(-RayDir.X, -RayDir.Y, -RayDir.Z);
+    GizmoPlaneNormal.Normalize();
 
     if (GizmoType == EGizmoHandleType::Rotate)
     {
         // [수정 1] 회전 모드: 조작할 축(AxisDir) 자체가 평면의 법선(Normal)이 됩니다.
-        DragPlaneNormal = AxisDir;
+        GizmoPlaneNormal = AxisDir;
         float Denom = FVector<float>::DotProduct(RayDir, AxisDir);
         if (std::abs(Denom) > 0.001f)
         {
@@ -278,19 +278,19 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float> &RayOrigin, const FV
     else
     {
         // 이동/스케일 모드: 기존처럼 카메라를 바라보는 평면을 사용합니다.
-        DragPlaneNormal = FVector<float>(-RayDir.X, -RayDir.Y, -RayDir.Z);
-        DragPlaneNormal.Normalize();
+        GizmoPlaneNormal = FVector<float>(-RayDir.X, -RayDir.Y, -RayDir.Z);
+        GizmoPlaneNormal.Normalize();
 
-        float Denom = FVector<float>::DotProduct(RayDir, DragPlaneNormal);
+        float Denom = FVector<float>::DotProduct(RayDir, GizmoPlaneNormal);
         if (std::abs(Denom) > 0.0001f)
         {
-            float          t = FVector<float>::DotProduct(InitialObjectTransform.Location - RayOrigin, DragPlaneNormal) / Denom;
+            float          t = FVector<float>::DotProduct(InitialObjectTransform.Location - RayOrigin, GizmoPlaneNormal) / Denom;
             FVector<float> HitPoint = RayOrigin + (RayDir * t);
-            InitialIntersectionT = FVector<float>::DotProduct(HitPoint - InitialObjectTransform.Location, AxisDir);
+            RayDistance = FVector<float>::DotProduct(HitPoint - InitialObjectTransform.Location, AxisDir);
         }
         else
         {
-            InitialIntersectionT = 0.0f;
+            RayDistance = 0.0f;
         }
     }
 
@@ -392,19 +392,19 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
     // ==========================================
     else
     {
-        float Denom = FVector<float>::DotProduct(RayDir, DragPlaneNormal);
+        float Denom = FVector<float>::DotProduct(RayDir, GizmoPlaneNormal);
 
         // [안전장치] 평행 및 뒤쪽 투영 방지
         if (std::abs(Denom) < 0.001f)
             return;
 
-        float t = FVector<float>::DotProduct(GizmoOrigin - RayOrigin, DragPlaneNormal) / Denom;
+        float t = FVector<float>::DotProduct(GizmoOrigin - RayOrigin, GizmoPlaneNormal) / Denom;
         if (t < 0.0f)
             return;
 
         FVector<float> HitPoint = RayOrigin + (RayDir * t);
         float          AxisT = FVector<float>::DotProduct(HitPoint - GizmoOrigin, AxisDir);
-        float          DeltaT = AxisT - InitialIntersectionT;
+        float          DeltaT = AxisT - RayDistance;
 
         if (GizmoType == EGizmoHandleType::Translate)
         {
