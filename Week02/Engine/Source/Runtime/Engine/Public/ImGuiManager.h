@@ -15,6 +15,7 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
 struct ExampleAppConsole;
+struct FViewportCameraTransform;
 
 extern ExampleAppConsole* GConsole;
 
@@ -38,6 +39,7 @@ public:
 	void Release();
 
     UPrimitiveComponent* GetSelectedObject() { return SelectedObject; };
+    void SetCamera(FViewportCameraTransform* camera);
     void SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
@@ -56,12 +58,14 @@ private:
     void NewScene();
     void SaveScene();
     void LoadScene();
+    void SetCameraInfo();
     void TransformInspector();
 
 public:
     bool bIsOrthogonal = false;
 
 private:
+    FViewportCameraTransform* Camera;
     UPrimitiveComponent *SelectedObject;
   char                   buffer[256];
 };

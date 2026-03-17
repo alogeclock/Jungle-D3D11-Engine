@@ -84,6 +84,9 @@ struct FViewportCameraTransform
     /** Sets the location to look at during orbit */
     void SetLookAt(const FVector<float> &InLookAt) { LookAt = InLookAt; }
 
+    /** Sets the FOV for imGuit */
+    void SetFOV(float radian) { FOV = radian; }
+
     /** Set the ortho zoom amount */
     void SetOrthoZoom(float InOrthoZoom)
     {
@@ -96,13 +99,16 @@ struct FViewportCameraTransform
     void SetMaxLocation(double InMaxLocation) { MaxLocation = InMaxLocation; }
 
     /** @return The transform's location */
-    inline const FVector<float> &GetLocation() const { return ViewLocation; }
+    inline FVector<float> &GetLocation() { return ViewLocation; }
 
     /** @return The transform's rotation */
-    inline const FVector<float> &GetRotation() const { return ViewRotation; }
+    inline FVector<float> &GetRotation() { return ViewRotation; }
 
     /** @return The look at point for orbiting */
     inline const FVector<float> &GetLookAt() const { return LookAt; }
+
+    /** @return The transform's FOV */
+    inline float &GetFOV() { return FOV; }
 
     /** @return The ortho zoom amount */
     inline float GetOrthoZoom() const { return OrthoZoom; }
@@ -123,6 +129,8 @@ struct FViewportCameraTransform
     FVector<float> LookAt;
     /** Viewport start location when animating to another location */
     FVector<float> StartLocation;
+    /** FOV */
+    float FOV = 3.14159265f / 2.0f;
     /** Ortho zoom amount */
     float OrthoZoom = 1.0f;
     float Max_OrthoZoom = 1000.0f;

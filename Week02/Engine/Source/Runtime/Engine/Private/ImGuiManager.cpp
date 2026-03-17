@@ -14,6 +14,8 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h">
 
+#include "Engine/Source/Runtime/Editor/Public/EditorViewportClient.h"
+
 ExampleAppConsole *GConsole = nullptr;
 
 void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
@@ -68,6 +70,8 @@ void UImGuiManager::Release()
     ImGui::DestroyContext();
 }
 
+void UImGuiManager::SetCamera(FViewportCameraTransform *camera) { Camera = camera; }
+
 void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) { SelectedObject = primitiveComponent; }
 
 bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
@@ -108,7 +112,7 @@ void UImGuiManager::ShowControlPanel()
 
     ImGui::Separator();
 
-    ImGui::Checkbox("Orthogonal", &UImGuiManager::Get().bIsOrthogonal);
+    SetCameraInfo();
 }
 
 void UImGuiManager::SpawnActors()
@@ -252,6 +256,24 @@ void UImGuiManager::LoadScene()
 
         SelectedObject = nullptr;
     }
+}
+
+void UImGuiManager::SetCameraInfo()
+{
+    if (Camera == nullptr)
+        return;
+
+    ImGui::Checkbox("Orthogonal", &UImGuiManager::Get().bIsOrthogonal);
+
+    float fovDeg = Camera->GetFOV() * 180.0f / 3.14159265f;
+
+    if (ImGui::DragFloat("FOV", &fovDeg, 0.1f, 0.0f, 180.0f))
+    {
+        Camera->SetFOV(fovDeg * 3.14159265f / 180.0f);
+    }
+
+    ImGui::DragFloat3("Camera Location", &Camera->GetLocation().X, 0.01f);
+    ImGui::DragFloat3("Camera Rotation", &Camera->GetRotation().X, 0.1f);
 }
 
 void UImGuiManager::TransformInspector()

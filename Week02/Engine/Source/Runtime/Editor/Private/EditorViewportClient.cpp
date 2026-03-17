@@ -48,6 +48,8 @@ FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
     Gizmo = new APivotTransformGizmo();
     Axis = new AAxis();
     Grid = new AGrid();
+
+    UImGuiManager::Get().SetCamera(&CameraTransform);
 }
 
 FEditorViewportClient::~FEditorViewportClient()
@@ -188,7 +190,7 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
 {
     // --- 투영 행렬 생성 및 적용 부분 추가 ---
     // 시야각(FOV)을 90도로 설정 (절반인 45도를 라디안으로 변환)
-    float HalfFOV = 3.14159265f / 4.0f;
+    float HalfFOV = CameraTransform.GetFOV() / 2.0f;
 
     // 뷰포트 종횡비(Aspect Ratio) 계산
     float AspectRatio = width / (height > 0.0f ? height : 1.0f);
