@@ -46,7 +46,6 @@ enum class EPrimitiveType : uint8
 	Cube,
 	Triangle,
 	Plane,
-	Torus,
 	Arrow,
 	CubeArrow,
 	Ring,

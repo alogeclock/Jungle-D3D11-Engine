@@ -6,7 +6,6 @@ void UMeshManager::Initialize(URenderer &Renderer)
 	VertexData.emplace(EPrimitiveType::Sphere, &sphere_vertices);
 	VertexData.emplace(EPrimitiveType::Triangle, &triangle_vertices);
 	VertexData.emplace(EPrimitiveType::Plane, &plane_vertices);
-	VertexData.emplace(EPrimitiveType::Torus, &torus_vertices);
 	VertexData.emplace(EPrimitiveType::Arrow, &arrow_vertices);
 	VertexData.emplace(EPrimitiveType::CubeArrow, &cube_arrow_vertices);
 	VertexData.emplace(EPrimitiveType::Ring, &ring_vertices);
@@ -20,8 +19,6 @@ void UMeshManager::Initialize(URenderer &Renderer)
 		triangle_vertices.data(), static_cast<int>(triangle_vertices.size() * sizeof(FVertex))));
 	VertexBuffers.emplace(EPrimitiveType::Plane, Renderer.CreateVertexBuffer(
 		plane_vertices.data(), static_cast<int>(plane_vertices.size() * sizeof(FVertex))));
-	VertexBuffers.emplace(EPrimitiveType::Torus, Renderer.CreateVertexBuffer(
-		torus_vertices.data(), static_cast<int>(torus_vertices.size() * sizeof(FVertex))));
 	VertexBuffers.emplace(EPrimitiveType::Arrow, Renderer.CreateVertexBuffer(
 		arrow_vertices.data(), static_cast<int>(arrow_vertices.size() * sizeof(FVertex))));
 	VertexBuffers.emplace(EPrimitiveType::CubeArrow, Renderer.CreateVertexBuffer(
@@ -35,7 +32,6 @@ void UMeshManager::Initialize(URenderer &Renderer)
 	NumVertices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_vertices.size()));
 	NumVertices.emplace(EPrimitiveType::Triangle, static_cast<uint32>(triangle_vertices.size()));
 	NumVertices.emplace(EPrimitiveType::Plane, static_cast<uint32>(plane_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::Torus, static_cast<uint32>(torus_vertices.size()));
 	NumVertices.emplace(EPrimitiveType::Arrow, static_cast<uint32>(arrow_vertices.size()));
 	NumVertices.emplace(EPrimitiveType::CubeArrow, static_cast<uint32>(cube_arrow_vertices.size()));
 	NumVertices.emplace(EPrimitiveType::Ring, static_cast<uint32>(ring_vertices.size()));

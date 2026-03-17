@@ -23,9 +23,9 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     void UpdateColor();
 
   private:
-    float          InitialIntersectionT = 0.0f; // 드래그 시작 시점의 Ray T값
-    FTransform     InitialObjectTransform;      // 드래그 시작 시 객체의 Transform
-    FVector<float> DragPlaneNormal;
+    float          InitialRayDistance = 0.0f; // 카메라에서 쏜 Ray가 기즈모 축에 부딪힌 깊이(거리)
+    FTransform     InitialObjectTransform;    // (드래그로 객체를 변경하기 위한) 객체의 초기 Transform
+    FVector<float> GizmoPlaneNormal;
     FVector<float> InitialDragVector;
 
     EGizmoAxis HoveredAxis = EGizmoAxis::None;

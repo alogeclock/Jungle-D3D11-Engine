@@ -162,8 +162,8 @@ public:
 	FMatrix<float> GetViewMatrix() const;
     FMatrix<float> GetProjectionMatrix(float width, float height);
 
-	// 기즈모 렌더링 함수
-	void RenderGizmo(URenderer &renderer);
+	// 기즈모 및 메인 축 렌더링 함수
+	void Render(URenderer &renderer);
 
 	// 카메라 트랜스폼 직접 접근 (필요 시)
 	const FViewportCameraTransform& GetCameraTransform() const { return CameraTransform; }
@@ -192,4 +192,5 @@ private:
 	int32 LastMouseY = 0;
 
 	APivotTransformGizmo* Gizmo = nullptr;
+	AAxis* Axis = nullptr;
 };

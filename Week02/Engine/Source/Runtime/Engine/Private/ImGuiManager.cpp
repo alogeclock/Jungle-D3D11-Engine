@@ -12,7 +12,6 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PlaneComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
-#include "Engine/Source/Runtime/Engine/Public/Classes/Components/TorusComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
 
 ExampleAppConsole *GConsole = nullptr;

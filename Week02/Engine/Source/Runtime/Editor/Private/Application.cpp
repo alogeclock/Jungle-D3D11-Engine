@@ -117,11 +117,8 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	// Mesh Manager
     UMeshManager::Get().Initialize(*Renderer);
 
-    MainAxis = new UAxis();
-
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
-    UImGuiManager::Get().SetSelectedObject(cube); // 피킹 후 Set으로 나중에 순서 변경
 
 	// Timer
     UTimeManager::Get().Initialize();
@@ -150,14 +147,9 @@ void UApplication::Run()
 			Viewport->Tick(UTimeManager::Get().GetDeltaTime());
 			Renderer->Prepare();
 
-			MainAxis->Render(*Renderer);
-			//cube->Render(*Renderer);
-			//ring->Render(*Renderer);
-			//sphere->Render(*Renderer);
-
 			GWorld->Render(*Renderer);
 
-			Viewport->GetViewportClient()->RenderGizmo(*Renderer);
+			Viewport->GetViewportClient()->Render(*Renderer);
 
 			UImGuiManager::Get().Update(Renderer);
             UTimeManager::Get().Update();

@@ -9,7 +9,6 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PlaneComponent.h"
-#include "Engine/Source/Runtime/Engine/Public/Classes/Components/TorusComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/ArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
@@ -43,10 +42,6 @@ class UApplication
     FViewport *Viewport = nullptr;
     URenderer *Renderer = nullptr;
 
-    UAxis            *MainAxis = nullptr;
-    UCubeComponent   *cube = nullptr;
-    USphereComponent *sphere = nullptr;
-    URingComponent   *ring = nullptr;
     bool              bResize = false;
     uint32            Width = 0.0f;
     uint32            Height = 0.0f;

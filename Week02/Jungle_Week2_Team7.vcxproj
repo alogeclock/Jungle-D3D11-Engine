@@ -138,7 +138,6 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\CubeComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PlaneComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\RingComponent.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\TorusComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\MeshManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\VertexData.cpp" />
     <ClCompile Include="Memory\Memory.cpp" />
@@ -182,7 +181,6 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\CubeComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PlaneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\RingComponent.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\TorusComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\MeshManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\VertexData.h" />
     <ClInclude Include="Memory\Memory.h" />
