@@ -61,7 +61,7 @@ public:
 
 private:
     UPrimitiveComponent *SelectedObject;
-  char                 SceneNamebuffer[256] = "";
+  char                   buffer[256];
 };
 
 

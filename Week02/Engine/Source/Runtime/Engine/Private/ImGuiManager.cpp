@@ -1,4 +1,4 @@
-#include "CoreTypes.h"
+﻿#include "CoreTypes.h"
 #include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
@@ -87,12 +87,6 @@ void UImGuiManager::AddLog(const FString &msg) { GConsole->AddLog("%s", msg.c_st
 
 void UImGuiManager::ShowControlPanel()
 {
-    // 최초 1회: 버퍼가 비어있다면 현재 레벨 이름으로 초기화
-    if (SceneNamebuffer[0] == '\0' && GWorld && GWorld->GetCurrentLevel())
-    {
-        snprintf(SceneNamebuffer, sizeof(SceneNamebuffer), "%s", GWorld->GetCurrentLevel()->GetLevelName().c_str());
-    }
-
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
     ImGui::TextWrapped("Memory : ");
 

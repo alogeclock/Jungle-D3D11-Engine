@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Object/Actor.h"
 #include "Object/Level.h"
@@ -41,7 +41,6 @@ class UWorld final : public UObject
     virtual UClass *GetClass() const override { return StaticClass(); }
 
     void       Render(URenderer &renderer);
-    FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     FString CurrentSceneName = "Default";
 
   private:
