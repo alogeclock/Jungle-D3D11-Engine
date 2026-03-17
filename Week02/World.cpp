@@ -24,10 +24,7 @@ struct FHitResult;
 
 UWorld::UWorld(const FString &InString) : UObject(InString)
 {
-    CurrentLevel = new ULevel("PersistentLevel");
-    CurrentLevel->SetOuter(this);
-    CurrentLevel->SetLevelName("PersistentLevel");
-    Levels.insert(CurrentLevel);
+    CurrentLevel = CreateNewLevel("PersistentLevel");
 }
 
 UWorld::~UWorld()
@@ -37,6 +34,17 @@ UWorld::~UWorld()
         delete CurrentLevel;
         CurrentLevel = nullptr;
     }
+}
+
+ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
+{
+    ULevel *NewLevel = new ULevel(NewLevelName);
+
+    NewLevel->SetOuter(this);
+
+    Levels.insert(NewLevel);
+
+    return NewLevel;
 }
 
 bool UWorld::SaveLevel(const FString& FilePath)
@@ -123,13 +131,12 @@ bool UWorld::LoadLevel(const FString& FilePath)
     // 기존 레벨 메모리 해제 및 새 레벨 할당
     if (CurrentLevel != nullptr)
     {
-        // TODO: 레벨 내부의 Actor들 메모리 해제 로직이 추가되어야 합니다.
-        CurrentLevel->GetActors().clear(); 
+        CurrentLevel->ClearActors();
         delete CurrentLevel;
     }
-    
-    CurrentLevel = new ULevel("Loaded Level");
-    CurrentLevel->SetOuter(this);
+
+    //여기서부터
+    CurrentLevel = CreateNewLevel(CurrentSceneName);
 
     if (j.contains("Primitives"))
     {
@@ -140,25 +147,11 @@ bool UWorld::LoadLevel(const FString& FilePath)
             json primData = item.value();
             std::string type = primData["Type"].get<std::string>();
             
-            // 액터 생성
-            AActor *NewActor = new AActor("a"); 
+            AActor          *NewActor = GWorld->SpawnActor<AActor>();
+            USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+            NewActor->SetRootComponent(Root);
+            Root->RegisterComponent();
             NewActor->SetOuter(CurrentLevel);
-
-            // 문자열 기반으로 매칭되는 타입별 컴포넌트 생성
-            UPrimitiveComponent* PrimitiveComp = nullptr;
-            if (type == "Sphere")
-                PrimitiveComp = new USphereComponent("a");
-            else if (type == "Cube")
-                PrimitiveComp = new UCubeComponent("A");
-            else if (type == "Triangle")
-                PrimitiveComp = new UTriangleComponent("s");
-
-            if (PrimitiveComp != nullptr)
-            {
-                PrimitiveComp->SetOuter(NewActor);
-                NewActor->SetRootComponent(PrimitiveComp);
-                NewActor->AddOwnedComponent(PrimitiveComp);
-            }
 
             // 트랜스폼 데이터 파싱 및 적용
             FTransform NewTransform;
@@ -180,8 +173,20 @@ bool UWorld::LoadLevel(const FString& FilePath)
             
             NewActor->SetTransform(NewTransform);
 
-            // 레벨에 액터 추가
-            CurrentLevel->GetActors().push_back(NewActor); 
+            UObject *NewObj = nullptr;
+            if (type == "Sphere")
+                NewObj = FObjectFactory::ConstructObject(USphereComponent::StaticClass());
+            else if (type == "Cube")
+                NewObj = FObjectFactory::ConstructObject(UCubeComponent::StaticClass());
+            else if (type == "Triangle")
+                NewObj = FObjectFactory::ConstructObject(UTriangleComponent::StaticClass());
+
+            UPrimitiveComponent *Primitive = Cast<UPrimitiveComponent>(NewObj);
+            if (Primitive != nullptr)
+            {
+                Primitive->SetOuter(NewActor);
+                Primitive->RegisterComponent();
+            }
         }
     }
 

@@ -56,6 +56,21 @@ void UImGuiManager::Update(URenderer *renderer)
             AddLog("Object Name : " + ObjectName);
         }
     }
+
+    if (ImGui::Button("Actors", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    {
+        for (AActor *Actor : GWorld->GetCurrentLevel()->GetActors())
+        {
+            FString ActorName = Actor->GetName();
+            AddLog("Actor Name : " + ActorName);
+
+            for (UActorComponent *Component : Actor->GetOwnedComponents())
+            {
+                FString ComponentName = Component->GetName();
+                AddLog("    ComponentName Name : " + ComponentName);
+            }
+        }
+    }
     ImGui::End();
 
     endFrame();
@@ -104,6 +119,11 @@ void UImGuiManager::AddLog(const FString &msg) { GConsole->AddLog("%s", msg.c_st
 
 void UImGuiManager::ShowControlPanel()
 {
+    if (buffer[0] == '\0' && GWorld && GWorld->GetCurrentLevel())
+    {
+        snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().c_str());
+    }
+
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
     ImGui::TextWrapped("Memory : ");
 
@@ -114,8 +134,6 @@ void UImGuiManager::ShowControlPanel()
     ImGui::Separator();
 
     ImGui::InputText("Scene Name", buffer, IM_ARRAYSIZE(buffer));
-
-    ImGui::Separator();
 
     NewScene();
     SaveScene();
@@ -199,7 +217,8 @@ void UImGuiManager::NewScene()
         if (GWorld && GWorld->GetCurrentLevel())
         {
             GWorld->GetCurrentLevel()->ClearActors();
-            GWorld->GetCurrentLevel()->SetLevelName("DefaultLevel");
+            GWorld->GetCurrentLevel()->SetName("DefaultLevel");
+            snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().c_str());
             AddLog("[System] All actors and components have been destroyed.");
         }
 

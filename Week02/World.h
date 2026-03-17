@@ -16,6 +16,8 @@ class UWorld final : public UObject
     
     virtual UWorld *GetWorld() const override { return const_cast<UWorld *>(this); }
 
+    ULevel *CreateNewLevel(const FString &NewLevelName);
+
     ULevel *GetCurrentLevel() { return CurrentLevel; }
     
     bool SaveLevel(const FString& FilePath);

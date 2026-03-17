@@ -2,7 +2,7 @@
 
 ULevel::ULevel(const FString &InString) : UObject(InString)
 {
-    LevelName = "PersistentLevel"; }
+}
 
 ULevel::~ULevel() { ClearActors(); }
 
@@ -22,4 +22,3 @@ void ULevel::ClearActors()
     Actors.clear();
 }
 
-void ULevel::SetLevelName(const FString &levelName) { LevelName = levelName; }

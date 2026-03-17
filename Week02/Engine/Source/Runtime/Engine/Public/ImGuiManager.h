@@ -67,7 +67,7 @@ public:
 private:
     FViewportCameraTransform* Camera;
     UPrimitiveComponent *SelectedObject;
-  char                   buffer[256];
+    char                      buffer[256];
 };
 
 

@@ -71,7 +71,7 @@ extern TArray<UObject *> GUObjectArray;
 
 template <typename T> inline T *UObject::CreateDefaultSubobject()
 {
-    T *NewSubobject = new T("CreateDefaultSubobject");
+    T *NewSubobject = new T("SceneComponent");
 
 	NewSubobject->SetOuter(this);
 
