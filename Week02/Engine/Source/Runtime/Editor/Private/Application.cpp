@@ -91,7 +91,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	RegisterClassW(&wndclass);
 
 	hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
+		CW_USEDEFAULT, CW_USEDEFAULT, 1400, 800,
 		nullptr, nullptr, hInst, nullptr);
 
 	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));

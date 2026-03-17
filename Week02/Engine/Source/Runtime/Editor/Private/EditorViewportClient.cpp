@@ -224,14 +224,14 @@ void FEditorViewportClient::Render(URenderer& renderer)
         Gizmo->Render(renderer, ViewMatrix);
     }
 
-    if (Axis != nullptr)
-    {
-        Axis->Render(renderer);
-    }
-
     if (Grid != nullptr)
     {
         Grid->Render(renderer);
+    }
+
+    if (Axis != nullptr)
+    {
+        Axis->Render(renderer);
     }
 }
 

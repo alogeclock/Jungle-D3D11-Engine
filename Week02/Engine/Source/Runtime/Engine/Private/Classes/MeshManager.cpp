@@ -2,20 +2,20 @@
 
 void UMeshManager::Initialize(URenderer &Renderer)
 {
-    int   GridSize = 100;  // 100x100 칸
+    int   GridSize = 1000;  // 100x100 칸
     float GridStep = 1.0f; // 1칸의 크기
 
-    FVector4<float> Color = {1.0f, 1.0f, 1.0f, 1.0f};
+    FVector4<float> Color = {0.3f, 0.3f, 0.3f, 0.2f};
 
     for (int i = -GridSize; i <= GridSize; ++i)
     {
         // 1. 가로선 (X축과 평행한 선, Z값을 변화시키며 배치)
-        grid_vertices.push_back(FVertex{FVector<float>(-GridSize * GridStep, i * GridStep, 0.0f), Color});
-        grid_vertices.push_back(FVertex{FVector<float>(GridSize * GridStep, i * GridStep, 0.0f), Color});
+        grid_vertices.push_back(FVertex{FVector<float>(-GridSize * GridStep, i * GridStep, -0.005f), Color});
+        grid_vertices.push_back(FVertex{FVector<float>(GridSize * GridStep, i * GridStep, -0.005f), Color});
 
         // 2. 세로선 (Z축과 평행한 선, X값을 변화시키며 배치)
-        grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, -GridSize * GridStep, 0.0f), Color});
-        grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, GridSize * GridStep, 0.0f), Color});
+        grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, -GridSize * GridStep, -0.005f), Color});
+        grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, GridSize * GridStep, -0.005f), Color});
     }
 
     VertexData.emplace(EPrimitiveType::Cube, &cube_vertices);
