@@ -1,14 +1,15 @@
 ﻿#pragma once
 
 #include "Object/Object.h"
+#include "Object/Actor.h"
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
 
-class UAxis : public UObject
+class AAxis : public UObject
 {
   public:
-    UAxis();
-    ~UAxis() override;
+    AAxis();
+    ~AAxis() override;
 
     void Render(URenderer &renderer);
 

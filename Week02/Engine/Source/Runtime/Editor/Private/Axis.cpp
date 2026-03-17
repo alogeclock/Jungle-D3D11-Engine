@@ -1,15 +1,17 @@
 ﻿#include "Engine/Source/Runtime/Editor/Public/Axis.h"
 
-UAxis::UAxis()
+AAxis::AAxis()
 {
 	AxisComponent = new UAxisComponent();
+    AxisComponent->SetCullMode(ECullMode::None);
 }
 
-UAxis::~UAxis() 
+AAxis::~AAxis() 
 {
+    delete AxisComponent;
 }
 
-void UAxis::Render(URenderer &renderer)
+void AAxis::Render(URenderer &renderer)
 {
     if (AxisComponent != nullptr)
     {

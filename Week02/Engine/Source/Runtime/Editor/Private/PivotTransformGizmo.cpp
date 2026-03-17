@@ -412,7 +412,7 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
         }
         else if (GizmoType == EGizmoHandleType::Scale)
         {
-            const float ScaleSensitivity = 0.1f;
+            const float ScaleSensitivity = 0.2f;
             const float MinScale = 0.01f;
 
             if (ActiveAxis == EGizmoAxis::X)

@@ -46,6 +46,7 @@ FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
 {
     Viewport = viewport;
     Gizmo = new APivotTransformGizmo();
+    Axis = new AAxis();
 }
 
 FEditorViewportClient::~FEditorViewportClient()
@@ -54,6 +55,12 @@ FEditorViewportClient::~FEditorViewportClient()
     {
         delete Gizmo;
         Gizmo = nullptr;
+    }
+
+    if (Axis != nullptr)
+    {
+        delete Axis;
+        Axis = nullptr;
     }
 }
 
@@ -192,7 +199,7 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
     );
 }
 
-void FEditorViewportClient::RenderGizmo(URenderer& renderer)
+void FEditorViewportClient::Render(URenderer& renderer)
 {
     if (UImGuiManager::Get().GetSelectedObject() == nullptr)
     {
@@ -202,12 +209,18 @@ void FEditorViewportClient::RenderGizmo(URenderer& renderer)
         }
     }
 
+    FMatrix<float> ViewMatrix = GetViewMatrix();
+
     // 타겟 오브젝트가 설정되어 있을 때만 기즈모를 그린다.
     if (Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
     {
-        FMatrix<float> ViewMatrix = GetViewMatrix();
         Gizmo->Render(renderer, ViewMatrix);
     }
+
+    if (Axis != nullptr)
+    {
+        Axis->Render(renderer);
+   }
 }
 
 void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
