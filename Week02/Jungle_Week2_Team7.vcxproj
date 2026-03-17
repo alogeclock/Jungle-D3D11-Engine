@@ -188,7 +188,6 @@
     <ClInclude Include="Memory\Memory.h" />
     <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="Object\Actor.h" />
-    <ClInclude Include="Object\Class.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreMinimal.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\AutoRTFM.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\CoreTypes.h" />

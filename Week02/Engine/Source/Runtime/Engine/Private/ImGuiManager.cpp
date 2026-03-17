@@ -32,6 +32,44 @@ void UImGuiManager::Update(URenderer *renderer)
     TransformInspector();
     ImGui::End();
 
+    // 임시
+    ImGui::Begin("Test");
+
+    if (ImGui::Button("Spawn Actors"))
+    {
+
+
+        AActor *NewActor = GWorld->SpawnActor<AActor>();
+
+        USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+
+        NewActor->SetRootComponent(Root);
+        Root->RegisterComponent();
+
+        UCubeComponent *Cube = NewActor->CreateDefaultSubobject<UCubeComponent>();
+        Cube->RegisterComponent();
+
+        NewActor->SetTransform(FTransform(FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f)));
+
+        char logBuffer[256];
+
+        // snprintf를 사용해 문장과 액터의 개수(%zu)를 버퍼에 합칩니다.
+        snprintf(logBuffer, sizeof(logBuffer), "%d", static_cast<int>(GWorld->CurrentLevel->GetActors().size()));
+
+        // 질문자님께서 만드신 AddLog 함수에 완성된 문자열 버퍼를 넘겨줍니다!
+        AddLog(logBuffer);
+
+        UClass *ClassToSpawn = UCubeComponent::StaticClass();
+        UObject *NewObj = FObjectFactory::ConstructObject(ClassToSpawn);
+        UCubeComponent *MyCube = Cast<UCubeComponent>(NewObj);
+
+        if (MyCube)
+        {
+
+        }
+    }
+    ImGui::End();
+
     // Console
     ImGui::Begin("Console");
     bool open = true;
