@@ -72,16 +72,16 @@ const FMatrix<float> USceneComponent::GetParentMatrix() const { return ParentMat
 
 void USceneComponent::SetupAttachment(USceneComponent *InParent)
 {
-    if (InParent == this || InParent == nullptr)
+    if (InParent == this || AttachParent == InParent)
         return;
 
     if (AttachParent != nullptr)
-    {
         erase(AttachParent->AttachChildren, this);
-    }
 
     AttachParent = InParent;
-    AttachParent->AttachChildren.push_back(this);
+
+    if (AttachParent != nullptr)
+        AttachParent->AttachChildren.push_back(this);
 
     MarkTransformDirty();
 }

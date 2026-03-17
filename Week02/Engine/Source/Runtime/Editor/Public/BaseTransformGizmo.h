@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Object/Object.h"
+#include "Object/Actor.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 
@@ -19,7 +20,7 @@ enum class EGizmoAxis
     None
 };
 
-class ABaseTransformGizmo : UObject
+class ABaseTransformGizmo : AActor
 {
   public:
     ABaseTransformGizmo();

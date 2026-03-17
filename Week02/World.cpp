@@ -48,6 +48,11 @@ bool UWorld::SaveLevel(const std::string& FilePath)
     json primitives;
     int currentUuid = 0;
 
+    // 소수점 6자리까지 반올림하는 람다 함수
+    auto Round6 = [](float val) -> float {
+        return std::round(val * 1000000.0f) / 1000000.0f;
+    };
+
     // 현재 레벨의 모든 액터를 순회하며 저장
     for (AActor* Actor : CurrentLevel->GetActors())
     {
@@ -71,9 +76,9 @@ bool UWorld::SaveLevel(const std::string& FilePath)
         
         json primitiveJson;
         primitiveJson["Type"] = primitiveType;
-        primitiveJson["Location"] = { Transform.Location.X, Transform.Location.Y, Transform.Location.Z };
-        primitiveJson["Rotation"] = { Transform.Rotation.X, Transform.Rotation.Y, Transform.Rotation.Z }; 
-        primitiveJson["Scale"]    = { Transform.Scale.X, Transform.Scale.Y, Transform.Scale.Z };
+        primitiveJson["Location"] = { Round6(Transform.Location.X), Round6(Transform.Location.Y), Round6(Transform.Location.Z) };
+        primitiveJson["Rotation"] = { Round6(Transform.Rotation.X), Round6(Transform.Rotation.Y), Round6(Transform.Rotation.Z) }; 
+        primitiveJson["Scale"]    = { Round6(Transform.Scale.X), Round6(Transform.Scale.Y), Round6(Transform.Scale.Z) };
 
         primitives[std::to_string(currentUuid)] = primitiveJson;
         currentUuid++;
