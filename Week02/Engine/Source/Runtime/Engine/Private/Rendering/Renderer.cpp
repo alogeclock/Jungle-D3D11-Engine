@@ -376,14 +376,27 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive)
     // 1. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
     EPrimitiveType Type = primitive->GetPrimitiveType();
     EPrimitiveType Topology = primitive->GetPrimitiveType();
+
     ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
     uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
+
+    ID3D11Buffer *IndexBuffer = UMeshManager::Get().GetIndexBuffer(Type);
+    uint32        NumIndices = UMeshManager::Get().GetNumIndices(Type);
 
     // 2. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
     uint32 offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
-    DeviceContext->Draw(NumVertices, 0);
+
+    if (IndexBuffer)
+    {
+        DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        DeviceContext->DrawIndexed(NumIndices, 0, 0);
+    }
+    else 
+    {
+        DeviceContext->Draw(NumVertices, 0);
+    }
 }
 
 void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor)
@@ -396,15 +409,28 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &cons
 
     // 2. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
     EPrimitiveType Type = primitive->GetPrimitiveType();
+
     ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
     uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
+
+    ID3D11Buffer *IndexBuffer = UMeshManager::Get().GetIndexBuffer(Type);
+    uint32        NumIndices = UMeshManager::Get().GetNumIndices(Type);
 
     // 3. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
 
     uint32 offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
-    DeviceContext->Draw(NumVertices, 0);
+    
+    if (IndexBuffer)
+    {
+        DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        DeviceContext->DrawIndexed(NumIndices, 0, 0);
+    }
+    else
+    {
+        DeviceContext->Draw(NumVertices, 0);
+    }
 }
 
 ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth)
@@ -425,6 +451,27 @@ ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byte
 }
 
 void URenderer::ReleaseVertexBuffer(ID3D11Buffer *vertexBuffer) { vertexBuffer->Release(); }
+
+ID3D11Buffer *URenderer::CreateIndexBuffer(const uint16 *indices, uint32 byteWidth) 
+{
+    D3D11_BUFFER_DESC desc = {};
+    desc.ByteWidth = byteWidth;
+    desc.Usage = D3D11_USAGE_IMMUTABLE;
+    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA srd = {indices};
+
+    ID3D11Buffer *buffer;
+    Device->CreateBuffer(&desc, &srd, &buffer);
+
+    return buffer;
+}
+
+void URenderer::ReleaseIndexBuffer(ID3D11Buffer *indexBuffer) 
+{
+    if (indexBuffer)
+        indexBuffer->Release();
+}
 
 void URenderer::CreateConstantBuffer()
 {

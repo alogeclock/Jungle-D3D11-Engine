@@ -3,6 +3,7 @@
 #include "CoreTypes.h"
 
 extern TArray<FVertex> sphere_vertices;
+extern TArray<uint16>  sphere_indices;
 extern TArray<FVertex> cube_vertices;
 extern TArray<FVertex> triangle_vertices;
 extern TArray<FVertex> plane_vertices;

@@ -50,6 +50,13 @@ void UMeshManager::Initialize(URenderer &Renderer)
     NumVertices.emplace(EPrimitiveType::Ring, static_cast<uint32>(ring_vertices.size()));
     NumVertices.emplace(EPrimitiveType::Axis, static_cast<uint32>(axis_vertices.size()));
     NumVertices.emplace(EPrimitiveType::Grid, static_cast<uint32>(grid_vertices.size()));
+
+
+    IndexData.emplace(EPrimitiveType::Sphere, &sphere_indices);
+
+    IndexBuffers.emplace(EPrimitiveType::Sphere, Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
+    
+    NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
 }
 
 void UMeshManager::Release(URenderer &renderer)
@@ -60,6 +67,13 @@ void UMeshManager::Release(URenderer &renderer)
     }
     // TMap.Empty()
     VertexBuffers.clear();
+
+    for (auto &Pair : IndexBuffers)
+    {
+        renderer.ReleaseIndexBuffer(Pair.second);
+    }
+    // TMap.Empty()
+    IndexBuffers.clear();
 }
 
 TArray<FVertex> *UMeshManager::GetVertexData(EPrimitiveType Type) const { return VertexData.at(Type); }
@@ -67,3 +81,27 @@ TArray<FVertex> *UMeshManager::GetVertexData(EPrimitiveType Type) const { return
 ID3D11Buffer *UMeshManager::GetVertexBuffer(EPrimitiveType Type) const { return VertexBuffers.at(Type); }
 
 uint32 UMeshManager::GetNumVertices(EPrimitiveType Type) const { return NumVertices.at(Type); }
+
+ID3D11Buffer *UMeshManager::GetIndexBuffer(EPrimitiveType Type) const 
+{ 
+    auto it = IndexBuffers.find(Type);
+    if (it == IndexBuffers.end())
+        return nullptr; // 없으면 nullptr 반환
+    return it->second;
+}
+
+uint32 UMeshManager::GetNumIndices(EPrimitiveType Type) const 
+{ 
+    auto it = NumIndices.find(Type);
+    if (it == NumIndices.end())
+        return 0;
+    return it->second;
+}
+
+TArray<uint16> *UMeshManager::GetIndexData(EPrimitiveType Type) const 
+{ 
+    auto it = IndexData.find(Type);
+    if (it == IndexData.end())
+        return nullptr;
+    return it->second;
+}

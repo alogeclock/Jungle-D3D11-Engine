@@ -107,6 +107,9 @@ public:
 	ID3D11Buffer* CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
+	ID3D11Buffer *CreateIndexBuffer(const uint16 *indices, uint32 byteWidth);
+    void          ReleaseIndexBuffer(ID3D11Buffer *indexBuffer);
+
 	void CreateConstantBuffer();
 	void ReleaseConstantBuffer();
 
