@@ -100,7 +100,7 @@ void URenderer::CreateRasterizerState()
     CD3D11_RASTERIZER_DESC rasterizerdesc(D3D11_DEFAULT);
     rasterizerdesc.FillMode = D3D11_FILL_SOLID;
 
-    rasterizerdesc.FrontCounterClockwise = TRUE;
+    rasterizerdesc.FrontCounterClockwise = true;
 
     rasterizerdesc.CullMode = D3D11_CULL_BACK;
     Device->CreateRasterizerState(&rasterizerdesc, &RasterizerStateCullBack);
