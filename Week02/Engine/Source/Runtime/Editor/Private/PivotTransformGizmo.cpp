@@ -286,11 +286,11 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float> &RayOrigin, const FV
         {
             float          t = FVector<float>::DotProduct(InitialObjectTransform.Location - RayOrigin, GizmoPlaneNormal) / Denom;
             FVector<float> HitPoint = RayOrigin + (RayDir * t);
-            RayDistance = FVector<float>::DotProduct(HitPoint - InitialObjectTransform.Location, AxisDir);
+            InitialRayDistance = FVector<float>::DotProduct(HitPoint - InitialObjectTransform.Location, AxisDir);
         }
         else
         {
-            RayDistance = 0.0f;
+            InitialRayDistance = 0.0f;
         }
     }
 
@@ -404,7 +404,7 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
 
         FVector<float> HitPoint = RayOrigin + (RayDir * t);
         float          AxisT = FVector<float>::DotProduct(HitPoint - GizmoOrigin, AxisDir);
-        float          DeltaT = AxisT - RayDistance;
+        float          DeltaT = AxisT - InitialRayDistance;
 
         if (GizmoType == EGizmoHandleType::Translate)
         {
