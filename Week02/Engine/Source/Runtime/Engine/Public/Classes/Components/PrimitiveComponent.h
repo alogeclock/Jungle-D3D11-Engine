@@ -39,7 +39,6 @@ class UPrimitiveComponent : public USceneComponent
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
-
     static UObject *ConstructPrimitiveComponent() { return new UPrimitiveComponent(); }
 
     static UClass *StaticClass()

@@ -1,4 +1,4 @@
-#include "Memory/Memory.h"
+﻿#include "Memory/Memory.h"
 #include "Actor.h"
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
@@ -15,7 +15,20 @@ void AActor::SetRootComponent(USceneComponent *InOwnedComponents)
 
 void AActor::AddOwnedComponent(UActorComponent *Component)
 {
+    if (Component == nullptr)
+        return;
+
     OwnedComponents.insert(Component);
+    
+    if (RootComponent == nullptr)
+        return;
+    
+    USceneComponent *SceneComponent = Cast<USceneComponent>(Component);
+
+    if (SceneComponent == RootComponent || SceneComponent == nullptr)
+        return;
+    
+    SceneComponent->SetupAttachment(RootComponent);
 }
 
 FTransform AActor::GetTransform() const

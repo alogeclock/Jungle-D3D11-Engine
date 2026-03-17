@@ -26,14 +26,14 @@ class ABaseTransformGizmo : UObject
     virtual ~ABaseTransformGizmo();
 
     virtual void Update(float DeltaTime) {}
-    virtual void Render(URenderer &renderer, const FMatrix<float>& ViewMatrix) {}
+    virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix) {}
 
-    virtual void         SetTargetObject(UPrimitiveComponent *InTarget);
-    UPrimitiveComponent *GetTargetObject() const;
+    virtual void     SetTargetObject(USceneComponent *InTarget);
+    USceneComponent *GetTargetObject() const;
 
     // 마우스 입력 이벤트 (RayOrigin: 카메라 위치, RayDir: 카메라에서 마우스 커서 방향으로 발사되는 단위 벡터)
-    virtual bool OnMouseDown(const FVector<float>& RayOrigin, const FVector<float>& RayDir) = 0;
-    virtual void OnMouseMove(const FVector<float>& RayOrigin, const FVector<float>& RayDir) = 0;
+    virtual bool OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir) = 0;
+    virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) = 0;
     virtual void OnMouseHover(const FVector<float> &RayOrigin, const FVector<float> &RayDir) = 0;
     virtual void OnMouseUp() = 0;
 
@@ -42,5 +42,5 @@ class ABaseTransformGizmo : UObject
     EGizmoAxis       ActiveAxis = EGizmoAxis::None;
     bool             bIsDragging = false;
 
-    UPrimitiveComponent *TargetObject = nullptr;
+    USceneComponent *TargetObject = nullptr;
 };

@@ -186,6 +186,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\MeshManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\VertexData.h" />
     <ClInclude Include="Memory\Memory.h" />
+    <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="Object\Actor.h" />
     <ClInclude Include="Object\Class.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreMinimal.h" />

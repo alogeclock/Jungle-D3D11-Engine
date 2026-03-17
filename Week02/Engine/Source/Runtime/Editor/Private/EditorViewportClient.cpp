@@ -2,6 +2,7 @@
 #include "Engine/Source/Runtime/Editor/Public/EditorViewportClient.h"
 #include "Engine/Source/Runtime/Core/Public/Math/ViewMatrix.h"
 #include "World.h"
+#include "Object/Actor.h"
 
 FViewportCameraTransform::FViewportCameraTransform()
     : ViewLocation(-2.0f, 0.5f, 2.f), ViewRotation(-30.f, 0.f, 0.f), LookAt(0.f, 0.f, 0.f), OrthoZoom(1.f), Max_OrthoZoom(1000.f), Min_OrthoZoom(1.f),
@@ -315,12 +316,23 @@ FRay FEditorViewportClient::GetPickingRay()
 void FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) const
 {
     FHitResult ClosestHit = GWorld->PickingRay(RayOrigin, RayDirection);
-    UPrimitiveComponent *Object = ClosestHit.HitComponent;
+    UPrimitiveComponent *HitComp = ClosestHit.HitComponent;
 
-    if (ClosestHit.bHit)
+    if (ClosestHit.bHit && HitComp != nullptr)
     {
-        if (Gizmo != nullptr)
-            Gizmo->SetTargetObject(Object);
+        // 1. 부딪힌 컴포넌트의 소유자(Actor)를 가져옵니다.
+        if (AActor* HitActor = Cast<AActor>(HitComp->GetOwner()))
+        {
+            // 2. 액터의 RootComponent를 기즈모의 타겟으로 설정합니다.
+            if (USceneComponent* RootComp = HitActor->GetRootComponent())
+            {
+                if (Gizmo != nullptr)
+                {
+                    // 기즈모가 개별 메쉬가 아닌 액터 전체(Root)를 조작하게 됩니다.
+                    Gizmo->SetTargetObject(RootComp); 
+                }
+            }
+        }
     }
     else
     {

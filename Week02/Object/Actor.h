@@ -1,17 +1,17 @@
-#pragma once
+﻿#pragma once
 
 #include "Object.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/SceneComponent.h"
 
 class AActor : public UObject
 {
-private:
+  private:
     TSet<UActorComponent *> OwnedComponents;
     USceneComponent        *RootComponent = nullptr;
 
-public:
+  public:
     USceneComponent *GetRootComponent() const;
-    void SetRootComponent(USceneComponent *InOwnedComponents);
+    void             SetRootComponent(USceneComponent *InOwnedComponents);
 
     TSet<UActorComponent *> GetOwnedComponents() const { return OwnedComponents; }
     void                    AddOwnedComponent(UActorComponent *Component);

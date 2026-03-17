@@ -30,11 +30,16 @@ class USceneComponent : public UActorComponent
     void SetParentMatrix(const FMatrix<float> &ParentMatrix);
     const FMatrix<float> GetParentMatrix() const;
 
+    void                             SetupAttachment(USceneComponent *InParent);
+    USceneComponent                 *GetAttachParent() const { return AttachParent; }
+    const TArray<USceneComponent *> &GetAttachChildren() const { return AttachChildren; }
+
     // SRT 행렬을 Update하는 함수
     void                  UpdateWorldMatrix();
     void                  UpdateWorldMatrix(const FTransform &InTransform);
     const FMatrix<float> &GetWorldMatrix();
-
+    
+    void MarkTransformDirty();
 
     static UObject *ConstructSceneComponent() { return new USceneComponent(); }
 
@@ -51,7 +56,11 @@ class USceneComponent : public UActorComponent
     FTransform Transform;
     bool       bIsWorldMatrixDirty = true;
 
-    FMatrix<float>  WorldMatrix;
+    FMatrix<float>  WorldMatrix = FMatrix<float>::Identity();
     FMatrix<float>  ParentMatrix = FMatrix<float>::Identity();
     FVector4<float> Color = {0.0f, 0.0f, 0.0f, 0.0f};
+
+    // 계층 구조 관리를 위한 멤버 변수
+    USceneComponent          *AttachParent = nullptr;
+    TArray<USceneComponent *> AttachChildren;
 };
