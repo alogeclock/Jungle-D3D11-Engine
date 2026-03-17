@@ -8,7 +8,7 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
     FConstants constants;
-    constants.worldMatrix = Transform.ToMatrix() * ParentMatrix;
+    constants.MVPMatrix = Transform.ToMatrix() * ParentMatrix;  // world matrix
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
 

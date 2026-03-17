@@ -22,9 +22,7 @@ class UPrimitiveComponent;
 
 struct FConstants
 {
-	FMatrix<float> worldMatrix;
-	FMatrix<float> viewMatrix;
-	FMatrix<float> projectionMatrix;
+    FMatrix<float> MVPMatrix;
 };
 
 struct FConstantsColor
