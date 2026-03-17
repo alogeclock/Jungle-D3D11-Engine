@@ -34,7 +34,7 @@ class UPrimitiveComponent : public USceneComponent
     void      SetCullMode(ECullMode InCullMode) { CullMode = InCullMode; }
     ECullMode GetCullMode() const { return CullMode; }
 
-    bool isAlwaysVisible() const { return bEnableDepthTest; }
+    bool isAlwaysVisible() const { return !bEnableDepthTest; }
     void SetAlwaysVisible(const bool bInEnableDepthTest) { bEnableDepthTest = !bInEnableDepthTest; }
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
