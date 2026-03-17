@@ -201,10 +201,11 @@ void UImGuiManager::NewScene()
         if (GWorld && GWorld->GetCurrentLevel())
         {
             GWorld->GetCurrentLevel()->ClearActors();
-
             AddLog("[System] All actors and components have been destroyed.");
         }
     }
+
+    SelectedObject = nullptr;
 }
 
 void UImGuiManager::SaveScene()
@@ -242,8 +243,9 @@ void UImGuiManager::LoadScene()
                 AddLog("[Error] Failed to load level.");
             }
         }
-        SelectedObject = nullptr;
     }
+    
+    SelectedObject = nullptr;
 }
 
 void UImGuiManager::TransformInspector()
