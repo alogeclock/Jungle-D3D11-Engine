@@ -41,6 +41,7 @@ public:
 
     bool IsCaptureMouse();
     void AddLog(const char* msg);
+    void AddLog(const FString& msg);
 
 private:
     void ShowControlPanel();

@@ -17,7 +17,7 @@ struct FHitResult
 
 class UPrimitiveComponent : public USceneComponent
 {
-  public:
+public:
     UPrimitiveComponent();
     virtual ~UPrimitiveComponent();
 
@@ -39,6 +39,7 @@ class UPrimitiveComponent : public USceneComponent
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
+
     static UObject *ConstructPrimitiveComponent() { return new UPrimitiveComponent(); }
 
     static UClass *StaticClass()
@@ -49,9 +50,20 @@ class UPrimitiveComponent : public USceneComponent
     }
 
     virtual UClass *GetClass() const override { return StaticClass(); }
-  protected:
+
+protected:
+    FVector<float> GetLocalAABBMin() const;
+    FVector<float> GetLocalAABBMax() const;
+
+private:
+    FTransform GetTransformFromOwner() const;
+    bool IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+    bool IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+    FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+
+protected:
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-    ECullMode                CullMode = ECullMode::Back;
+    ECullMode                CullMode = ECullMode::None;
     bool                     bEnableDepthTest = true;
 };

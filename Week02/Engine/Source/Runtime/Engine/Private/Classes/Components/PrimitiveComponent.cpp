@@ -1,5 +1,6 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
+#include "Object/Actor.h"
 
 UPrimitiveComponent::UPrimitiveComponent() {}
 
@@ -22,6 +23,205 @@ void UPrimitiveComponent::Selected() { SetColor({0.0f, 0.0f, 0.0f, 0.5f}); }
 void UPrimitiveComponent::NotSelected() { SetColor({0.0f, 0.0f, 0.0f, 0.0f}); }
 
 FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
+{
+    FHitResult Result;
+
+    if (PrimitiveType == EPrimitiveType::None)
+        return Result;
+
+    switch (PrimitiveType)
+    {
+    // Vertex 적음 → 바로 Triangle 검사
+    case EPrimitiveType::Triangle:
+    case EPrimitiveType::Arrow:
+    case EPrimitiveType::CubeArrow:
+    case EPrimitiveType::Ring:
+        Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
+        break;
+
+    // Vertex 많음 → Sphere -> AABB → Triangle  
+    case EPrimitiveType::Cube:
+    case EPrimitiveType::Sphere:
+    default:
+        if (!IntersectRayBoundingSphere(RayOrigin, RayDirection))
+            return Result;
+        if (!IntersectRayAABB(RayOrigin, RayDirection))
+            return Result;
+        Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
+        break;
+    }
+
+    return Result;
+}
+
+FVector<float> UPrimitiveComponent::GetLocalAABBMin() const 
+{ 
+    switch (PrimitiveType)
+    {
+    case EPrimitiveType::Sphere:
+        return FVector<float>(-1.0f, -1.0f, -1.0f);
+    case EPrimitiveType::Cube:
+        return FVector<float>(-0.5f, -0.5f, -0.5);
+    default:
+        return FVector<float>(0, 0, 0);
+    }
+}
+
+FVector<float> UPrimitiveComponent::GetLocalAABBMax() const 
+{
+    switch (PrimitiveType)
+    {
+    case EPrimitiveType::Sphere:
+        return FVector<float>(1.0f, 1.0f, 1.0f);
+    case EPrimitiveType::Cube:
+        return FVector<float>(0.5f, 0.5f, 0.5f);
+    default:
+        return FVector<float>(0, 0, 0);
+    }
+}
+
+FTransform UPrimitiveComponent::GetTransformFromOwner() const  
+{  
+    FTransform transform;
+
+    if (GetOwner() == nullptr)
+        return transform;
+    
+    return GetOwner()->GetRootComponent()->GetTransform();  
+}
+
+bool UPrimitiveComponent::IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
+{
+    FTransform transform = GetTransformFromOwner();
+    FVector<float> Center = transform.Location;
+
+    float Max = transform.Scale.X > transform.Scale.Y ? transform.Scale.X : transform.Scale.Y;
+    float Radius = Max > transform.Scale.Z ? Max : transform.Scale.Z;
+
+    // ──────────────────────────────────────────────
+    // Ray → Sphere 교차 판정 (기하학적 방법)
+    //
+    //  L = Center - RayOrigin  (Origin에서 구 중심까지 벡터)
+    //  tca = L · RayDirection  (RayDirection으로의 정사영 길이)
+    //  d²  = L·L - tca²        (Ray와 구 중심 사이의 최단거리²)
+    //  d² <= r²  이면 교차
+    // ──────────────────────────────────────────────
+    const FVector<float> L = Center - RayOrigin;
+    const float tca = FVector<float>::DotProduct(L, RayDirection);
+
+    // Ray가 구를 등지고 있으면 miss
+    // (tca < 0 이면 구 중심이 Ray 뒤쪽)
+    if (tca < 0.0f)
+    {
+        // 단, Origin이 구 안에 있을 수도 있으므로 체크
+        const float originInsideSq = FVector<float>::DotProduct(L, L);
+        if (originInsideSq > Radius * Radius)
+            return false;
+    }
+    const float Distance2 = FVector<float>::DotProduct(L, L) - (tca * tca);
+    
+    if (Distance2 > Radius * Radius)
+        return false;
+    
+    return true;
+}
+
+bool UPrimitiveComponent::IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) 
+{
+    // ──────────────────────────────────────────────
+    // 1. Local AABB를 World Space로 변환
+    //    Rotation은 이 단계에서 무시 → AABB 특성상
+    //    World Axis-Aligned로 재계산 (AABB의 한계)
+    // ──────────────────────────────────────────────
+    FTransform transform = GetTransformFromOwner();
+
+    const FVector<float> LocalMin = GetLocalAABBMin();
+    const FVector<float> LocalMax = GetLocalAABBMax();
+
+    FVector<float> &WorldLocation = transform.Location;
+    FVector<float> &WorldScale = transform.Scale;
+
+    FVector<float> WorldMin = LocalMin * WorldScale + WorldLocation;
+    FVector<float> WorldMax = LocalMax * WorldScale + WorldLocation;
+
+    if (WorldMin.X > WorldMax.X)
+        std::swap(WorldMin.X, WorldMax.X);
+    if (WorldMin.Y > WorldMax.Y)
+        std::swap(WorldMin.Y, WorldMax.Y);
+    if (WorldMin.Z > WorldMax.Z)
+        std::swap(WorldMin.Z, WorldMax.Z);
+
+    // ──────────────────────────────────────────────
+    // 2. Slab Method (Amy Williams, 2005)
+    //    각 축별로 Ray가 Slab에 진입/탈출하는 t값 계산
+    // ──────────────────────────────────────────────
+    float tMin = 0.0f; // Ray 시작점 (음수 방향 교차 제거)
+    float tMax = FLT_MAX;
+
+    const float EPSILON = 1e-6f;
+    // X Slab
+    if (fabs(RayDirection.X) < EPSILON)
+    {
+        // Ray가 X축에 평행 → Origin이 Slab 밖이면 miss
+        if (RayOrigin.X < WorldMin.X || RayOrigin.X > WorldMax.X)
+            return false;
+    }
+    else
+    {
+        const float invDx = 1.0f / RayDirection.X;
+        float       t1 = (WorldMin.X - RayOrigin.X) * invDx;
+        float       t2 = (WorldMax.X - RayOrigin.X) * invDx; // P = Origin + t * Direction
+        if (t1 > t2)
+            std::swap(t1, t2);
+
+        tMin = tMin > t1 ? tMin : t1;
+        tMax = tMax > t2 ? t2 : tMax;
+        if (tMin > tMax)
+            return false;
+    }
+    // Y Slab
+    if (fabs(RayDirection.Y) < EPSILON)
+    {
+        if (RayOrigin.Y < WorldMin.Y || RayOrigin.Y > WorldMax.Y)
+            return false;
+    }
+    else
+    {
+        const float invDy = 1.0f / RayDirection.Y;
+        float       t1 = (WorldMin.Y - RayOrigin.Y) * invDy;
+        float       t2 = (WorldMax.Y - RayOrigin.Y) * invDy; // P = Origin + t * Direction
+        if (t1 > t2)
+            std::swap(t1, t2);
+
+        tMin = tMin > t1 ? tMin : t1;
+        tMax = tMax > t2 ? t2 : tMax;
+        if (tMin > tMax)
+            return false;
+    }
+    // Z Slab
+    if (fabs(RayDirection.Z) < EPSILON)
+    {
+        if (RayOrigin.Z < WorldMin.Z || RayOrigin.Z > WorldMax.Z)
+            return false;
+    }
+    else
+    {
+        const float invDz = 1.0f / RayDirection.Z;
+        float       t1 = (WorldMin.Z - RayOrigin.Z) * invDz;
+        float       t2 = (WorldMax.Z - RayOrigin.Z) * invDz; // P = Origin + t * Direction
+        if (t1 > t2)
+            std::swap(t1, t2);
+
+        tMin = tMin > t1 ? tMin : t1;
+        tMax = tMax > t2 ? t2 : tMax;
+        if (tMin > tMax)
+            return false;
+    }
+
+    return tMax >= 0.0f;
+}
+
+FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) 
 {
     FHitResult Result;
 
