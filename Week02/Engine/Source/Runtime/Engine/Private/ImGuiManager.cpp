@@ -147,14 +147,15 @@ void UImGuiManager::SpawnActors()
 
 void UImGuiManager::TransformInspector()
 {
-    if (SelectedObject != nullptr)
-    {
-        FTransform t = SelectedObject->GetTransform();
+    if (SelectedObject == nullptr)
+        return;
+    
+    AActor* Actor = Cast<AActor>(SelectedObject->GetOwner());
+    FTransform t = Actor->GetTransform();
 
-        ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
-        ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -5.0f, 5.0f);
-        ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f, -1.0f, 1.0f);
+    ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
+    ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -5.0f, 5.0f);
+    ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f, -1.0f, 1.0f);
 
-        SelectedObject->SetTransform(t);
-    }
+    Actor->SetTransform(t);
 }
