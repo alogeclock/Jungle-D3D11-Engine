@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Object/Level.h"
 #include "Object/Object.h"
@@ -8,25 +8,39 @@ struct FHitResult;
 
 class UWorld final : public UObject
 {
-public:
-    ULevel        *CurrentLevel;
-    TSet<ULevel *> Levels;
-
-
-public:
+  public:
     UWorld();
-    bool    SetCurrentLevel(ULevel *InLevel);
+    ~UWorld();
+    
+    virtual UWorld *GetWorld() const override { return const_cast<UWorld *>(this); }
+
     ULevel *GetCurrentLevel();
+
+    bool SaveLevel(const std::string& FilePath);
+    bool LoadLevel(const std::string& FilePath);
 
     template <typename T> T *SpawnActor();
     void                     RemoveActor() const;
-    
+
     ULevel *CreateNewLevel();
 
-    virtual UWorld* GetWorld() const override { return const_cast<UWorld *>(this); }
+    static UObject *ConstructWorld() { return new UWorld(); }
 
-    void Render(URenderer &renderer);
+    static UClass *StaticClass()
+    {
+        static UClass s_Class("UWorld", UObject::StaticClass(), &UWorld::ConstructWorld);
+        return &s_Class;
+    }
+
+    virtual UClass *GetClass() const override { return StaticClass(); }
+
+    void       Render(URenderer &renderer);
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+
+  private:
+  public:
+    ULevel        *CurrentLevel;
+    TSet<ULevel *> Levels;
 };
 
 template <typename T> T *UWorld::SpawnActor()

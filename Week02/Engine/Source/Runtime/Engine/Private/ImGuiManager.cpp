@@ -1,4 +1,4 @@
-#include "CoreTypes.h"
+﻿#include "CoreTypes.h"
 #include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 
@@ -6,21 +6,21 @@
 #include "Object/Actor.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeComponent.h"
 
-ExampleAppConsole* GConsole = nullptr;
+ExampleAppConsole *GConsole = nullptr;
 
-void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
+void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    ImGui_ImplWin32_Init((void*)hWnd);
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui_ImplWin32_Init((void *)hWnd);
     ImGui_ImplDX11_Init(renderer->Device, renderer->DeviceContext);
 }
 
 void UImGuiManager::Update(URenderer *renderer)
 {
     beginFrame();
-    
+
     // Control Panel
     ImGui::Begin("Jungle Control Panel");
     ShowControlPanel();
@@ -32,7 +32,7 @@ void UImGuiManager::Update(URenderer *renderer)
     TransformInspector();
     ImGui::End();
 
-    //Console
+    // Console
     ImGui::Begin("Console");
     bool open = true;
     ShowExampleAppConsole(&open);
@@ -45,7 +45,7 @@ void UImGuiManager::beginFrame()
 {
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame(); 
+    ImGui::NewFrame();
 }
 
 void UImGuiManager::endFrame()
@@ -61,33 +61,24 @@ void UImGuiManager::Release()
     ImGui::DestroyContext();
 }
 
-void UImGuiManager::SetSelectedObject(UPrimitiveComponent* primitiveComponent)
-{ 
-    SelectedObject = primitiveComponent; 
-}
+void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) { SelectedObject = primitiveComponent; }
 
-bool UImGuiManager::IsCaptureMouse() 
-{ 
-    return ImGui::GetIO().WantCaptureMouse;
-}
+bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
 
-void UImGuiManager::AddLog(char *msg) {
-    GConsole->AddLog(msg); }
+void UImGuiManager::AddLog(const char *msg) { GConsole->AddLog(msg); }
 
-void UImGuiManager::ShowControlPanel() 
+void UImGuiManager::ShowControlPanel()
 {
     ImGui::TextWrapped("FPS: %.f\n", UTimeManager::Get().GetFPS());
     ImGui::TextWrapped("FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFrameTime());
     ImGui::Checkbox("Orthogonal", &UImGuiManager::Get().bIsOrthogonal);
 }
 
-void UImGuiManager::SpawnActors() 
+void UImGuiManager::SpawnActors()
 {
-    const char *PrimitiveTypeStrings[] = 
-    {"None", "Sphere", "Cube", "Triangle", "Plane",
-    "Torus", "Arrow", "CubeArrow", "Ring", "Axis"};
+    const char *PrimitiveTypeStrings[] = {"None", "Sphere", "Cube", "Triangle", "Plane", "Torus", "Arrow", "CubeArrow", "Ring", "Axis"};
 
-    static int  Primitive = 0;
+    static int Primitive = 0;
 
     ImGui::Combo("Primitive", &Primitive, PrimitiveTypeStrings, IM_ARRAYSIZE(PrimitiveTypeStrings));
 
@@ -106,7 +97,7 @@ void UImGuiManager::SpawnActors()
         UCubeComponent *Cube = NewActor->CreateDefaultSubobject<UCubeComponent>();
         Cube->RegisterComponent();
 
-        NewActor->SetTransform(FTransform(FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f)));
+        NewActor->SetTransform(FTransform(FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(3.0f, 3.0f, 3.0f), FVector<float>(1.0f, 1.0f, 1.0f)));
 
         char logBuffer[256];
         // snprintf를 사용해 문장과 액터의 개수(%zu)를 버퍼에 합칩니다.
@@ -118,6 +109,38 @@ void UImGuiManager::SpawnActors()
         UClass         *ClassToSpawn = UCubeComponent::StaticClass();
         UObject        *NewObj = FObjectFactory::ConstructObject(ClassToSpawn);
         UCubeComponent *MyCube = Cast<UCubeComponent>(NewObj);
+    }
+
+    if (ImGui::Button("Save Scene"))
+    {
+        if (GWorld != nullptr)
+        {
+            // 기본 파일명 지정 (필요 시 ImGui::InputText로 파일명을 입력받도록 확장 가능)
+            if (GWorld->SaveLevel("Data/SavedScene.Scene"))
+            {
+                AddLog("[System] Level saved successfully to 'Data/SavedScene.Scene'.");
+            }
+            else
+            {
+                AddLog("[Error] Failed to save level.");
+            }
+        }
+    }
+
+    if (ImGui::Button("Load Scene"))
+    {
+        if (GWorld != nullptr)
+        {
+            if (GWorld->LoadLevel("Data/SavedScene.Scene"))
+            {
+                AddLog("[System] Level loaded successfully from 'Data/SavedScene.Scene'.");
+                SelectedObject = nullptr;
+            }
+            else
+            {
+                AddLog("[Error] Failed to load level.");
+            }
+        }
     }
 }
 
@@ -134,4 +157,3 @@ void UImGuiManager::TransformInspector()
         SelectedObject->SetTransform(t);
     }
 }
-

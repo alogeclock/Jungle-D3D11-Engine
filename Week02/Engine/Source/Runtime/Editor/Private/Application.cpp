@@ -118,9 +118,6 @@ void UApplication::Initialize(HINSTANCE hInstance)
     UMeshManager::Get().Initialize(*Renderer);
 
     MainAxis = new UAxis();
-	//cube = new UCubeComponent();
-	//ring = new URingComponent();
-	//sphere = new USphereComponent(0.2f);
 
 	// ImGui
 	UImGuiManager::Get().Create(hWnd, Renderer);
@@ -128,9 +125,6 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	// Timer
     UTimeManager::Get().Initialize();
-
-	// 임시
-	GWorld->CreateNewLevel();
 }
 
 void UApplication::Run()

@@ -40,7 +40,7 @@ public:
     void SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
-    void AddLog(char* msg);
+    void AddLog(const char* msg);
 
 private:
     void ShowControlPanel();
