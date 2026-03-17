@@ -6,7 +6,10 @@ ABaseTransformGizmo::ABaseTransformGizmo() : GizmoType(EGizmoHandleType::Transla
 	SetRootComponent(new USceneComponent());
 }
 
-ABaseTransformGizmo::~ABaseTransformGizmo() {}
+ABaseTransformGizmo::~ABaseTransformGizmo() 
+{
+	delete GetRootComponent();
+}
 
 // 선택된 오브젝트의 루트 컴포넌트와 부모자식 관계를 형성한다.
 void ABaseTransformGizmo::SetTargetObject(USceneComponent *InTarget) { TargetObject = InTarget; }
