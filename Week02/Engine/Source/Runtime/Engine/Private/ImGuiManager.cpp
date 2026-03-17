@@ -82,10 +82,15 @@ void UImGuiManager::AddLog(const std::string& msg)
 void UImGuiManager::ShowControlPanel()
 {
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
+    ImGui::TextWrapped("Memory : ");
 
     ImGui::Separator();
 
     SpawnActors();
+
+    ImGui::Separator();
+
+    
     NewScene();
     SaveScene();
     LoadScene();

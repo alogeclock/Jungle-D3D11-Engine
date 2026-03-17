@@ -63,11 +63,6 @@ bool UWorld::SaveLevel(const std::string& FilePath)
             if (Cast<USphereComponent>(Component))        { primitiveType = "Sphere"; break; }
             if (Cast<UCubeComponent>(Component))          { primitiveType = "Cube"; break; }
             if (Cast<UTriangleComponent>(Component))      { primitiveType = "Triangle"; break; }
-            if (Cast<UPlaneComponent>(Component))         { primitiveType = "Plane"; break; }
-            if (Cast<UArrowComponent>(Component))         { primitiveType = "Arrow"; break; }
-            if (Cast<UCubeArrowComponent>(Component))     { primitiveType = "CubeArrow"; break; }
-            if (Cast<URingComponent>(Component))          { primitiveType = "Ring"; break; }
-            if (Cast<UAxisComponent>(Component))          { primitiveType = "Axis"; break; }
         }
 
         FTransform Transform = Actor->GetTransform();
@@ -82,7 +77,7 @@ bool UWorld::SaveLevel(const std::string& FilePath)
         currentUuid++;
     }
 
-    j["NextUUID"] = currentUuid;
+    j["UUID"] = currentUuid;
     j["Primitives"] = primitives;
 
     std::ofstream file(FilePath);
