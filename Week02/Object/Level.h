@@ -7,8 +7,12 @@ class AActor;
 class ULevel : public UObject
 {
 public:
+    ULevel();
     TArray<AActor *> &GetActors() { return Actors; }
   void              ClearActors();
+
+  FString GetLevelName();
+  void    SetLevelName(FString levelName);
 
     static UObject   *ConstructULevel() { return new ULevel(); }
 
@@ -21,4 +25,5 @@ public:
     virtual UClass *GetClass() const override { return StaticClass(); }
 private:
     TArray<AActor *> Actors;
+  FString          LevelName;
 };

@@ -1,5 +1,7 @@
 #include "Level.h"
 
+ULevel::ULevel() { LevelName = "PersistentLevel"; }
+
 void ULevel::ClearActors()
 {
     // 1. 레벨에 존재하는 모든 액터의 메모리를 해제합니다.
@@ -15,3 +17,7 @@ void ULevel::ClearActors()
     // 2. 액터들을 담고 있던 배열(리스트)을 완전히 비워줍니다.
     Actors.clear();
 }
+
+FString ULevel::GetLevelName() { return LevelName; }
+
+void ULevel::SetLevelName(FString levelName) { LevelName = levelName; }

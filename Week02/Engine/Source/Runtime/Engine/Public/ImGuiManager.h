@@ -40,6 +40,7 @@ public:
     void SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
+    char* FStringTochar(FString string);
     void AddLog(const char* msg);
     void AddLog(const FString& msg);
 
@@ -55,8 +56,8 @@ public:
     bool bIsOrthogonal = false;
 
 private:
-	UPrimitiveComponent* SelectedObject;
-	char buffer[256];
+    UPrimitiveComponent *SelectedObject;
+  char                 SceneNamebuffer[256] = "";
 };
 
 

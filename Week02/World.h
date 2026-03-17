@@ -16,8 +16,11 @@ class UWorld final : public UObject
     
     virtual UWorld *GetWorld() const override { return const_cast<UWorld *>(this); }
 
-    ULevel *GetCurrentLevel() { return CurrentLevel; }
-    
+    ULevel *GetCurrentLevel()
+    {
+        return CurrentLevel;
+    }
+    ULevel  *CreateNewLevel();
     bool SaveLevel(const std::string& FilePath);
     bool LoadLevel(const std::string& FilePath);
 
@@ -25,7 +28,10 @@ class UWorld final : public UObject
     template <typename T> T *SpawnActor();
     void                     RemoveActor() const;
 
-    ULevel *CreateNewLevel();
+    
+    void SetLevelName(FString levelName);
+
+    FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
     static UObject *ConstructWorld() { return new UWorld(); }
 
@@ -38,11 +44,11 @@ class UWorld final : public UObject
     virtual UClass *GetClass() const override { return StaticClass(); }
 
     void       Render(URenderer &renderer);
-    FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
-
+    
   private:
     ULevel        *CurrentLevel;
     TSet<ULevel *> Levels;
+    
 };
 
 // ⭐️ 2. 개발자 편의용 템플릿 함수 (회원님이 쓰시던 것)

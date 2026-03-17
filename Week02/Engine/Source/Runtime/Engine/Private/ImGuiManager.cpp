@@ -72,6 +72,15 @@ void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) {
 
 bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
 
+char* UImGuiManager::FStringTochar(FString string)
+{
+    char TempBuffer[256];
+    
+    snprintf(TempBuffer, sizeof(TempBuffer), "%s", string.c_str());
+
+    return TempBuffer;
+}
+
 void UImGuiManager::AddLog(const char *msg) { GConsole->AddLog(msg); }
 
 void UImGuiManager::AddLog(const std::string& msg)
@@ -81,6 +90,12 @@ void UImGuiManager::AddLog(const std::string& msg)
 
 void UImGuiManager::ShowControlPanel()
 {
+    // 최초 1회: 버퍼가 비어있다면 현재 레벨 이름으로 초기화
+    if (SceneNamebuffer[0] == '\0' && GWorld && GWorld->GetCurrentLevel())
+    {
+        snprintf(SceneNamebuffer, sizeof(SceneNamebuffer), "%s", GWorld->GetCurrentLevel()->GetLevelName().c_str());
+    }
+
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
     ImGui::TextWrapped("Memory : ");
 
@@ -90,7 +105,7 @@ void UImGuiManager::ShowControlPanel()
 
     ImGui::Separator();
 
-    
+    ImGui::InputText("Scene Name", SceneNamebuffer, sizeof(SceneNamebuffer));
     NewScene();
     SaveScene();
     LoadScene();
@@ -186,10 +201,23 @@ void UImGuiManager::SaveScene()
     {
         if (GWorld != nullptr)
         {
-            // 기본 파일명 지정 (필요 시 ImGui::InputText로 파일명을 입력받도록 확장 가능)
-            if (GWorld->SaveLevel("Data/SavedScene.Scene"))
+            if (GWorld->GetCurrentLevel() != nullptr)
             {
-                AddLog("[System] Level saved successfully to 'Data/SavedScene.Scene'.");
+                AddLog("[System] 이름을 지정하세요");
+                return;
+            }
+
+            GWorld->GetCurrentLevel()->SetLevelName(SceneNamebuffer);
+
+            char FilePath[512];
+            snprintf(FilePath, sizeof(FilePath), "Data/%s.Scene", GWorld->GetCurrentLevel()->GetLevelName().c_str());
+
+            // 기본 파일명 지정 (필요 시 ImGui::InputText로 파일명을 입력받도록 확장 가능)
+            if (GWorld->SaveLevel(FilePath))
+            {
+                char logBuffer[512];
+                snprintf(logBuffer, sizeof(logBuffer), "[System] Level saved successfully to '%s'.", FilePath);
+                AddLog(logBuffer);
             }
             else
             {
@@ -205,11 +233,13 @@ void UImGuiManager::LoadScene()
 {
     if (ImGui::Button("Load Scene"))
     {
-        if (GWorld != nullptr)
+        if (GWorld != nullptr && GWorld->GetCurrentLevel() != nullptr)
         {
             if (GWorld->LoadLevel("Data/SavedScene.Scene"))
             {
                 AddLog("[System] Level loaded successfully from 'Data/SavedScene.Scene'.");
+
+                snprintf(SceneNamebuffer, sizeof(SceneNamebuffer), "%s", GWorld->GetCurrentLevel()->GetLevelName().c_str());
             }
             else
             {

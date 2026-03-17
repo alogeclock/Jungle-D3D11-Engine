@@ -22,9 +22,11 @@ using json = nlohmann::json;
 
 struct FHitResult;
 
-UWorld::UWorld() {
+UWorld::UWorld()
+{
     CurrentLevel = new ULevel();
     CurrentLevel->SetOuter(this);
+
 }
 
 UWorld::~UWorld()
@@ -207,7 +209,7 @@ void UWorld::Render(URenderer &renderer)
     }
 }
 
-FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) 
+FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
     FHitResult ClosestHit;
 
