@@ -13,57 +13,52 @@ class FViewport;
 
 struct FKey
 {
-	uint32 KeyCode;
-	explicit FKey(uint32 InCode) : KeyCode(InCode) {}
-	bool operator==(const FKey& O) const { return KeyCode == O.KeyCode; }
+    uint32 KeyCode;
+    explicit FKey(uint32 InCode) : KeyCode(InCode) {}
+    bool operator==(const FKey &O) const { return KeyCode == O.KeyCode; }
 };
 
 namespace EKeys
 {
-	inline const FKey W{ 'W' };
-	inline const FKey A{ 'A' };
-	inline const FKey S{ 'S' };
-	inline const FKey D{ 'D' };
-	inline const FKey Q{ 'Q' };
-	inline const FKey E{ 'E' };
-	inline const FKey Space{ VK_SPACE };
-	inline const FKey LeftMouseButton{ VK_LBUTTON };
-	inline const FKey RightMouseButton{ VK_RBUTTON };
-}
+    inline const FKey W{'W'};
+    inline const FKey A{'A'};
+    inline const FKey S{'S'};
+    inline const FKey D{'D'};
+    inline const FKey Q{'Q'};
+    inline const FKey E{'E'};
+    inline const FKey Space{VK_SPACE};
+    inline const FKey LeftMouseButton{VK_LBUTTON};
+    inline const FKey RightMouseButton{VK_RBUTTON};
+} // namespace EKeys
 
 enum class EInputEvent : uint8
 {
-	Pressed	 = 0,
-	Released = 1,
-	Repeat	 = 2,
-	Axis	 = 3,
+    Pressed = 0,
+    Released = 1,
+    Repeat = 2,
+    Axis = 3,
 };
 
 struct FInputEventState
 {
-public:
-	FInputEventState(FViewport* InViewport, FKey InKey, EInputEvent InInputEvent)
-		: Viewport(InViewport)
-		, Key(InKey)
-		, InputEvent(InInputEvent)
-	{
-	} 
+  public:
+    FInputEventState(FViewport *InViewport, FKey InKey, EInputEvent InInputEvent) : Viewport(InViewport), Key(InKey), InputEvent(InInputEvent) {}
 
-	FViewport* GetViewport() const { return Viewport; }
-	EInputEvent GetInputEvent() const { return InputEvent; }
-	FKey GetKey() const { return Key; }
+    FViewport  *GetViewport() const { return Viewport; }
+    EInputEvent GetInputEvent() const { return InputEvent; }
+    FKey        GetKey() const { return Key; }
 
-	bool IsLeftMouseButtonPressed() const;
-	bool IsRightMouseButtonPressed() const;
-	bool IsButtonPressed(FKey InKey) const;
+    bool IsLeftMouseButtonPressed() const;
+    bool IsRightMouseButtonPressed() const;
+    bool IsButtonPressed(FKey InKey) const;
 
-private:
-	/** Viewport the event was sent to */
-	FViewport* Viewport;
-	/** Pressed Key */
-	FKey Key;
-	/** Key event */
-	EInputEvent InputEvent;
+  private:
+    /** Viewport the event was sent to */
+    FViewport *Viewport;
+    /** Pressed Key */
+    FKey Key;
+    /** Key event */
+    EInputEvent InputEvent;
 };
 
 struct FRay
@@ -77,120 +72,113 @@ struct FRay
  */
 struct FViewportCameraTransform
 {
-public:
-	FViewportCameraTransform();
+  public:
+    FViewportCameraTransform();
 
-	/** Sets the transform's location */
-	void SetLocation(const FVector<float>& Position);
+    /** Sets the transform's location */
+    void SetLocation(const FVector<float> &Position);
 
-	/** Sets the transform's rotation */
-	void SetRotation(const FVector<float>& Rotation)
-	{
-		ViewRotation = Rotation;
-	}
+    /** Sets the transform's rotation */
+    void SetRotation(const FVector<float> &Rotation) { ViewRotation = Rotation; }
 
-	/** Sets the location to look at during orbit */
-	void SetLookAt(const FVector<float>& InLookAt)
-	{
-		LookAt = InLookAt;
-	}
+    /** Sets the location to look at during orbit */
+    void SetLookAt(const FVector<float> &InLookAt) { LookAt = InLookAt; }
 
-	/** Set the ortho zoom amount */
-	void SetOrthoZoom(float InOrthoZoom)
-	{
-		if (InOrthoZoom >= Max_OrthoZoom && InOrthoZoom <= Min_OrthoZoom) return;
+    /** Set the ortho zoom amount */
+    void SetOrthoZoom(float InOrthoZoom)
+    {
+        if (InOrthoZoom >= Max_OrthoZoom && InOrthoZoom <= Min_OrthoZoom)
+            return;
 
-		OrthoZoom = InOrthoZoom;
-	}
+        OrthoZoom = InOrthoZoom;
+    }
 
-	void SetMaxLocation(double InMaxLocation)
-	{
-		MaxLocation = InMaxLocation;
-	}
+    void SetMaxLocation(double InMaxLocation) { MaxLocation = InMaxLocation; }
 
-	/** @return The transform's location */
-	inline const FVector<float>& GetLocation() const { return ViewLocation; }
+    /** @return The transform's location */
+    inline const FVector<float> &GetLocation() const { return ViewLocation; }
 
-	/** @return The transform's rotation */
-	inline const FVector<float>& GetRotation() const { return ViewRotation; }
+    /** @return The transform's rotation */
+    inline const FVector<float> &GetRotation() const { return ViewRotation; }
 
-	/** @return The look at point for orbiting */
-	inline const FVector<float>& GetLookAt() const { return LookAt; }
+    /** @return The look at point for orbiting */
+    inline const FVector<float> &GetLookAt() const { return LookAt; }
 
-	/** @return The ortho zoom amount */
-	inline float GetOrthoZoom() const { return OrthoZoom; }
+    /** @return The ortho zoom amount */
+    inline float GetOrthoZoom() const { return OrthoZoom; }
 
-	/**
-	 * Computes a matrix to use for viewport location and rotation when orbiting
-	 */
-	FMatrix<float> ComputeOrbitMatrix() const;
+    /**
+     * Computes a matrix to use for viewport location and rotation when orbiting
+     */
+    FMatrix<float> ComputeOrbitMatrix() const;
 
-private:
-	/** Current viewport Position. */
-	FVector<float>	ViewLocation;
-	/** Current Viewport orientation; valid only for perspective projections. */
-	FVector<float> ViewRotation;
-	/** Desired viewport location when animating between two locations */
-	FVector<float>	DesiredLocation;
-	/** When orbiting, the point we are looking at */
-	FVector<float> LookAt;
-	/** Viewport start location when animating to another location */
-	FVector<float> StartLocation;
-	/** Ortho zoom amount */
-	float OrthoZoom = 1.0f;
-	float Max_OrthoZoom = 1000.0f;
-	float Min_OrthoZoom = 1.0f;
-	/** Location is clamped to a box around the origin with this radius */
-	double MaxLocation = 1000.0f;
+  private:
+    /** Current viewport Position. */
+    FVector<float> ViewLocation;
+    /** Current Viewport orientation; valid only for perspective projections. */
+    FVector<float> ViewRotation;
+    /** Desired viewport location when animating between two locations */
+    FVector<float> DesiredLocation;
+    /** When orbiting, the point we are looking at */
+    FVector<float> LookAt;
+    /** Viewport start location when animating to another location */
+    FVector<float> StartLocation;
+    /** Ortho zoom amount */
+    float OrthoZoom = 1.0f;
+    float Max_OrthoZoom = 1000.0f;
+    float Min_OrthoZoom = 1.0f;
+    /** Location is clamped to a box around the origin with this radius */
+    double MaxLocation = 1000.0f;
 };
 
 class FEditorViewportClient
 {
-public:
-	FEditorViewportClient(FViewport* viewport);
-	~FEditorViewportClient();
+  public:
+    FEditorViewportClient(FViewport *viewport);
+    ~FEditorViewportClient();
 
-public:
-	// FViewport → 매 프레임 호출
-	void Tick(float DeltaTime, FViewport* Viewport);
+  public:
+    // FViewport → 매 프레임 호출
+    void Tick(float DeltaTime, FViewport *Viewport);
 
-	bool InputKey(const FInputEventState& InputState);
-	void MouseMove(FViewport* Viewport, int32 X, int32 Y);
-	void InputAxis(FViewport* Viewport, FKey Key, float Delta, float DeltaTime);
+    bool InputKey(const FInputEventState &InputState);
+    void MouseMove(FViewport *Viewport, int32 X, int32 Y);
+    void InputAxis(FViewport *Viewport, FKey Key, float Delta, float DeltaTime);
 
-	// 현재 카메라 View Matrix — Object에 전달하여 행렬곱
-	FMatrix<float> GetViewMatrix() const;
+    // 현재 카메라 View Matrix — Object에 전달하여 행렬곱
+    FMatrix<float> GetViewMatrix() const;
     FMatrix<float> GetProjectionMatrix(float width, float height);
 
-	// 기즈모 및 메인 축 렌더링 함수
-	void Render(URenderer &renderer);
+    // 기즈모 및 메인 축 렌더링 함수
+    void Render(URenderer &renderer);
 
-	// 카메라 트랜스폼 직접 접근 (필요 시)
-	const FViewportCameraTransform& GetCameraTransform() const { return CameraTransform; }
+    // 카메라 트랜스폼 직접 접근 (필요 시)
+    const FViewportCameraTransform &GetCameraTransform() const { return CameraTransform; }
 
-private:
-	// WASD 이동 누적
+  private:
+    // WASD 이동 누적
     void ApplyMovement(float DeltaTime, FViewport *Viewport);
 
-	// Ray
+    // Ray
     FRay GetPickingRay();
     void PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) const;
 
-	// Viewport
-    FViewport* Viewport = nullptr; 
+    // Viewport
+    FViewport *Viewport = nullptr;
 
-	// 카메라
-	FViewportCameraTransform CameraTransform;
+    // 카메라
+    FViewportCameraTransform CameraTransform;
 
-	static constexpr float MoveSpeed = 2.0f;  // units/sec
-	static constexpr float RotSpeed = 0.1f;    // deg/pixel
-	static constexpr float ZoomSpeed = 10.0f;
+    static constexpr float MoveSpeed = 2.0f; // units/sec
+    static constexpr float RotSpeed = 0.1f;  // deg/pixel
+    static constexpr float ZoomSpeed = 10.0f;
 
-	bool  bLeftMouseDragging = false;
-	bool  bRightMouseDragging = false;
-	int32 LastMouseX = 0;
-	int32 LastMouseY = 0;
+    bool  bLeftMouseDragging = false;
+    bool  bRightMouseDragging = false;
+    int32 LastMouseX = 0;
+    int32 LastMouseY = 0;
 
-	APivotTransformGizmo* Gizmo = nullptr;
-	AAxis* Axis = nullptr;
+    APivotTransformGizmo *Gizmo = nullptr;
+    AAxis                *Axis = nullptr;
+    AGrid                *Grid = nullptr;
 };

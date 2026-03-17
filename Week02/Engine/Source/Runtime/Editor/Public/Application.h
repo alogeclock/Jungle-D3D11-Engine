@@ -4,7 +4,6 @@
 #include <windowsx.h>
 
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
-#include "Engine/Source/Runtime/Editor/Public/Axis.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
@@ -13,7 +12,10 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
+#include "Engine/Source/Runtime/Engine/Public/Classes/Components/GridComponent.h"
 #include "Engine/Source/Runtime/Editor/Public/PivotTransformGizmo.h"
+#include "Engine/Source/Runtime/Editor/Public/Grid.h"
+#include "Engine/Source/Runtime/Editor/Public/Axis.h"
 #include "Engine/Source/Runtime/Engine/Public/ImGuiManager.h"
 #include "Engine/Source/Runtime/Core/Public/TimeManager.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/MeshManager.h"

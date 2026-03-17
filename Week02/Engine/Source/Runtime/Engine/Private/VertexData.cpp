@@ -2870,3 +2870,5 @@ TArray<FVertex> axis_vertices =
     {{1000.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}, 
     {{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}
 };
+
+TArray<FVertex> grid_vertices;

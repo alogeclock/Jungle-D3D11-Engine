@@ -1,65 +1,69 @@
 ﻿#include "Engine/Source/Runtime/Engine/Public/Classes/MeshManager.h"
 
 void UMeshManager::Initialize(URenderer &Renderer)
-{   
-	VertexData.emplace(EPrimitiveType::Cube, &cube_vertices);
-	VertexData.emplace(EPrimitiveType::Sphere, &sphere_vertices);
-	VertexData.emplace(EPrimitiveType::Triangle, &triangle_vertices);
-	VertexData.emplace(EPrimitiveType::Plane, &plane_vertices);
-	VertexData.emplace(EPrimitiveType::Arrow, &arrow_vertices);
-	VertexData.emplace(EPrimitiveType::CubeArrow, &cube_arrow_vertices);
-	VertexData.emplace(EPrimitiveType::Ring, &ring_vertices);
-	VertexData.emplace(EPrimitiveType::Axis, &axis_vertices);
+{
+    int   GridSize = 100;  // 100x100 칸
+    float GridStep = 1.0f; // 1칸의 크기
 
-	VertexBuffers.emplace(EPrimitiveType::Cube, Renderer.CreateVertexBuffer(
-		cube_vertices.data(), static_cast<int>(cube_vertices.size()) * sizeof(FVertex)));
-	VertexBuffers.emplace(EPrimitiveType::Sphere, Renderer.CreateVertexBuffer(
-		sphere_vertices.data(), static_cast<int>(sphere_vertices.size() * sizeof(FVertex))));
-	VertexBuffers.emplace(EPrimitiveType::Triangle, Renderer.CreateVertexBuffer(
-		triangle_vertices.data(), static_cast<int>(triangle_vertices.size() * sizeof(FVertex))));
-	VertexBuffers.emplace(EPrimitiveType::Plane, Renderer.CreateVertexBuffer(
-		plane_vertices.data(), static_cast<int>(plane_vertices.size() * sizeof(FVertex))));
-	VertexBuffers.emplace(EPrimitiveType::Arrow, Renderer.CreateVertexBuffer(
-		arrow_vertices.data(), static_cast<int>(arrow_vertices.size() * sizeof(FVertex))));
-	VertexBuffers.emplace(EPrimitiveType::CubeArrow, Renderer.CreateVertexBuffer(
-		cube_arrow_vertices.data(), static_cast<int>(cube_arrow_vertices.size() * sizeof(FVertex))));
-	VertexBuffers.emplace(EPrimitiveType::Ring, Renderer.CreateVertexBuffer(
-		ring_vertices.data(), static_cast<int>(ring_vertices.size() * sizeof(FVertex))));
-	VertexBuffers.emplace(EPrimitiveType::Axis, Renderer.CreateVertexBuffer(
-		axis_vertices.data(), static_cast<int>(axis_vertices.size() * sizeof(FVertex))));
+    FVector4<float> Color = {1.0f, 1.0f, 1.0f, 1.0f};
 
-	NumVertices.emplace(EPrimitiveType::Cube, static_cast<uint32>(cube_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::Triangle, static_cast<uint32>(triangle_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::Plane, static_cast<uint32>(plane_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::Arrow, static_cast<uint32>(arrow_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::CubeArrow, static_cast<uint32>(cube_arrow_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::Ring, static_cast<uint32>(ring_vertices.size()));
-	NumVertices.emplace(EPrimitiveType::Axis, static_cast<uint32>(axis_vertices.size()));
+    for (int i = -GridSize; i <= GridSize; ++i)
+    {
+        // 1. 가로선 (X축과 평행한 선, Z값을 변화시키며 배치)
+        grid_vertices.push_back(FVertex{FVector<float>(-GridSize * GridStep, i * GridStep, 0.0f), Color});
+        grid_vertices.push_back(FVertex{FVector<float>(GridSize * GridStep, i * GridStep, 0.0f), Color});
+
+        // 2. 세로선 (Z축과 평행한 선, X값을 변화시키며 배치)
+        grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, -GridSize * GridStep, 0.0f), Color});
+        grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, GridSize * GridStep, 0.0f), Color});
+    }
+
+    VertexData.emplace(EPrimitiveType::Cube, &cube_vertices);
+    VertexData.emplace(EPrimitiveType::Sphere, &sphere_vertices);
+    VertexData.emplace(EPrimitiveType::Triangle, &triangle_vertices);
+    VertexData.emplace(EPrimitiveType::Plane, &plane_vertices);
+    VertexData.emplace(EPrimitiveType::Arrow, &arrow_vertices);
+    VertexData.emplace(EPrimitiveType::CubeArrow, &cube_arrow_vertices);
+    VertexData.emplace(EPrimitiveType::Ring, &ring_vertices);
+    VertexData.emplace(EPrimitiveType::Axis, &axis_vertices);
+    VertexData.emplace(EPrimitiveType::Grid, &grid_vertices);
+
+    VertexBuffers.emplace(EPrimitiveType::Cube, Renderer.CreateVertexBuffer(cube_vertices.data(), static_cast<int>(cube_vertices.size()) * sizeof(FVertex)));
+    VertexBuffers.emplace(EPrimitiveType::Sphere,
+                          Renderer.CreateVertexBuffer(sphere_vertices.data(), static_cast<int>(sphere_vertices.size() * sizeof(FVertex))));
+    VertexBuffers.emplace(EPrimitiveType::Triangle,
+                          Renderer.CreateVertexBuffer(triangle_vertices.data(), static_cast<int>(triangle_vertices.size() * sizeof(FVertex))));
+    VertexBuffers.emplace(EPrimitiveType::Plane, Renderer.CreateVertexBuffer(plane_vertices.data(), static_cast<int>(plane_vertices.size() * sizeof(FVertex))));
+    VertexBuffers.emplace(EPrimitiveType::Arrow, Renderer.CreateVertexBuffer(arrow_vertices.data(), static_cast<int>(arrow_vertices.size() * sizeof(FVertex))));
+    VertexBuffers.emplace(EPrimitiveType::CubeArrow,
+                          Renderer.CreateVertexBuffer(cube_arrow_vertices.data(), static_cast<int>(cube_arrow_vertices.size() * sizeof(FVertex))));
+    VertexBuffers.emplace(EPrimitiveType::Ring, Renderer.CreateVertexBuffer(ring_vertices.data(), static_cast<int>(ring_vertices.size() * sizeof(FVertex))));
+    VertexBuffers.emplace(EPrimitiveType::Axis, Renderer.CreateVertexBuffer(axis_vertices.data(), static_cast<int>(axis_vertices.size() * sizeof(FVertex))));
+    VertexBuffers.emplace(EPrimitiveType::Grid, Renderer.CreateVertexBuffer(grid_vertices.data(), static_cast<int>(grid_vertices.size() * sizeof(FVertex))));
+
+    NumVertices.emplace(EPrimitiveType::Cube, static_cast<uint32>(cube_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::Triangle, static_cast<uint32>(triangle_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::Plane, static_cast<uint32>(plane_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::Arrow, static_cast<uint32>(arrow_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::CubeArrow, static_cast<uint32>(cube_arrow_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::Ring, static_cast<uint32>(ring_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::Axis, static_cast<uint32>(axis_vertices.size()));
+    NumVertices.emplace(EPrimitiveType::Grid, static_cast<uint32>(grid_vertices.size()));
 }
 
 void UMeshManager::Release(URenderer &renderer)
 {
-	for (auto& Pair : VertexBuffers)
-	{
-		renderer.ReleaseVertexBuffer(Pair.second);
-	}
-	//TMap.Empty()
-	VertexBuffers.clear();
+    for (auto &Pair : VertexBuffers)
+    {
+        renderer.ReleaseVertexBuffer(Pair.second);
+    }
+    // TMap.Empty()
+    VertexBuffers.clear();
 }
 
+TArray<FVertex> *UMeshManager::GetVertexData(EPrimitiveType Type) const { return VertexData.at(Type); }
 
-TArray<FVertex>* UMeshManager::GetVertexData(EPrimitiveType Type) const
-{
-	return VertexData.at(Type);
-}
+ID3D11Buffer *UMeshManager::GetVertexBuffer(EPrimitiveType Type) const { return VertexBuffers.at(Type); }
 
-ID3D11Buffer* UMeshManager::GetVertexBuffer(EPrimitiveType Type) const
-{
-	return VertexBuffers.at(Type);
-}
-
-uint32 UMeshManager::GetNumVertices(EPrimitiveType Type) const
-{
-	return NumVertices.at(Type);
-}
+uint32 UMeshManager::GetNumVertices(EPrimitiveType Type) const { return NumVertices.at(Type); }

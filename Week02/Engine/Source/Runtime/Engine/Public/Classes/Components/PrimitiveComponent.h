@@ -52,6 +52,6 @@ class UPrimitiveComponent : public USceneComponent
   protected:
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-    ECullMode                CullMode = ECullMode::None;
+    ECullMode                CullMode = ECullMode::Back;
     bool                     bEnableDepthTest = true;
 };
