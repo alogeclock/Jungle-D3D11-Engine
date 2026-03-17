@@ -19,7 +19,7 @@ class UPrimitiveComponent : public USceneComponent
 {
 public:
     UPrimitiveComponent(const FString &InString);
-    virtual ~UPrimitiveComponent();
+    virtual ~UPrimitiveComponent() override;
 
     virtual void Render(URenderer &renderer);
     void         Selected();

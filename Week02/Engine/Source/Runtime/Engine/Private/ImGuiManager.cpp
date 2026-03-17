@@ -198,20 +198,12 @@ void UImGuiManager::NewScene()
     {
         if (GWorld && GWorld->GetCurrentLevel())
         {
-            GWorld->CurrentSceneName = "Default";
             GWorld->GetCurrentLevel()->ClearActors();
+            GWorld->GetCurrentLevel()->SetLevelName("DefaultLevel");
             AddLog("[System] All actors and components have been destroyed.");
         }
 
         SelectedObject = nullptr;
-    }
-
-    FString SceneName(buffer);
-    // 만약 입력칸이 비어있다면 기본 이름(Default) 할당
-    if (SceneName.empty())
-    {
-        SceneName = "Default";
-        strcpy_s(buffer, sizeof(buffer), SceneName.c_str());
     }
 }
 
@@ -235,7 +227,7 @@ void UImGuiManager::SaveScene()
 
         if (bSuccess)
         {
-            GWorld->CurrentSceneName = SceneName;
+            //GWorld->CurrentSceneName = SceneName;
             AddLog("Scene saved successfully: " + FilePath);
         }
         else
@@ -259,7 +251,7 @@ void UImGuiManager::LoadScene()
             FString               LoadedSceneName = path.stem().string();
 
             // GWorld의 씬 이름과 ImGui UI의 buffer를 갱신
-            GWorld->CurrentSceneName = LoadedSceneName;
+            //GWorld->CurrentSceneName = LoadedSceneName;
             strcpy_s(buffer, sizeof(buffer), LoadedSceneName.c_str());
 
             AddLog("Scene loaded successfully: " + FilePath);

@@ -26,7 +26,8 @@ UWorld::UWorld(const FString &InString) : UObject(InString)
 {
     CurrentLevel = new ULevel("PersistentLevel");
     CurrentLevel->SetOuter(this);
-
+    CurrentLevel->SetLevelName("PersistentLevel");
+    Levels.insert(CurrentLevel);
 }
 
 UWorld::~UWorld()
@@ -44,7 +45,7 @@ bool UWorld::SaveLevel(const FString& FilePath)
         return false;
 
     std::filesystem::path path(FilePath);
-    CurrentSceneName = path.stem().string();
+    FString               CurrentSceneName = path.stem().string();
 
     json j;
     j["Version"] = 1;
@@ -106,6 +107,8 @@ bool UWorld::LoadLevel(const FString& FilePath)
     json j;
     file >> j;
     file.close();
+
+    FString CurrentSceneName;
 
     if (j.contains("SceneName"))
     {

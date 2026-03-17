@@ -9,7 +9,7 @@ class UActorComponent : public UObject
 {
   public:
     UActorComponent(const FString &InString);
-    virtual ~UActorComponent();
+    virtual ~UActorComponent() override;
 
     void RegisterComponent();
     virtual void InitializeComponent();

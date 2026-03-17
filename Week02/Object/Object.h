@@ -35,7 +35,7 @@ class UObject
 {
 public:
 	explicit UObject(const FString& InString);
-	virtual ~UObject() = default;
+  virtual ~UObject();
 
 	const FString& GetName() const;
 	void SetName(const FString& InName);

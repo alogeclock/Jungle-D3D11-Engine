@@ -13,6 +13,15 @@ UObject::UObject(const FString &InString) : Name(InString), Outer(nullptr)
     InternalIndex = static_cast<uint32>(GUObjectArray.size()) - 1;
 }
 
+UObject::~UObject()
+{
+    auto it = std::find(GUObjectArray.begin(), GUObjectArray.end(), this);
+    if (it != GUObjectArray.end())
+    {
+        GUObjectArray.erase(it);
+    }
+}
+
 const FString& UObject::GetName() const 
 { 
 	return Name; 

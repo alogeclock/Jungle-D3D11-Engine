@@ -25,9 +25,6 @@ class UWorld final : public UObject
     template <typename T> T *SpawnActor();
     void                     RemoveActor() const;
 
-    
-    void SetLevelName(FString levelName);
-
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
     static UObject *Constructor() { return new UWorld("WorldConstructor"); }
@@ -41,7 +38,6 @@ class UWorld final : public UObject
     virtual UClass *GetClass() const override { return StaticClass(); }
 
     void       Render(URenderer &renderer);
-    FString CurrentSceneName = "Default";
 
   private:
     ULevel        *CurrentLevel;

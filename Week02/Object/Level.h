@@ -1,18 +1,18 @@
 #pragma once
 
 #include "Object.h"
-
-class AActor;
+#include "Actor.h"
 
 class ULevel : public UObject
 {
 public:
     ULevel(const FString &InString);
+  virtual ~ULevel() override;
+  
     TArray<AActor *> &GetActors() { return Actors; }
   void              ClearActors();
 
-  FString GetLevelName();
-  void    SetLevelName(FString levelName);
+  void SetLevelName(const FString &LevelName);
 
     static UObject *Constructor() { return new ULevel("LevelConstructor"); }
 

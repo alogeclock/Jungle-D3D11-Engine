@@ -8,6 +8,7 @@
 #include <queue>
 #include <stack>
 #include <cmath>
+#include <algorithm>
 
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector4.h"

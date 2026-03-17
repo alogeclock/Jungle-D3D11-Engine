@@ -9,7 +9,7 @@ class USceneComponent : public UActorComponent
 {
   public:
     USceneComponent(const FString &InString);
-    virtual ~USceneComponent();
+    virtual ~USceneComponent() override;
 
     // transform 관련 접근자
     void           SetLocation(const FVector<float> &NewLocation);

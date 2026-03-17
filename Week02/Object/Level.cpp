@@ -1,6 +1,10 @@
 #include "Level.h"
 
-ULevel::ULevel(const FString &InString) : UObject(InString) { LevelName = "PersistentLevel"; }
+ULevel::ULevel(const FString &InString) : UObject(InString)
+{
+    LevelName = "PersistentLevel"; }
+
+ULevel::~ULevel() { ClearActors(); }
 
 void ULevel::ClearActors()
 {
@@ -18,6 +22,4 @@ void ULevel::ClearActors()
     Actors.clear();
 }
 
-FString ULevel::GetLevelName() { return LevelName; }
-
-void ULevel::SetLevelName(FString levelName) { LevelName = levelName; }
+void ULevel::SetLevelName(const FString &levelName) { LevelName = levelName; }
