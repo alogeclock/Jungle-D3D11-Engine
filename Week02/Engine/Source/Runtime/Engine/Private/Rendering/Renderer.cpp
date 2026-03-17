@@ -97,8 +97,10 @@ void URenderer::ReleaseFrameBuffer()
 
 void URenderer::CreateRasterizerState()
 {
-    D3D11_RASTERIZER_DESC rasterizerdesc = {};
+    CD3D11_RASTERIZER_DESC rasterizerdesc(D3D11_DEFAULT);
     rasterizerdesc.FillMode = D3D11_FILL_SOLID;
+
+    rasterizerdesc.FrontCounterClockwise = TRUE;
 
     rasterizerdesc.CullMode = D3D11_CULL_BACK;
     Device->CreateRasterizerState(&rasterizerdesc, &RasterizerStateCullBack);
@@ -338,6 +340,11 @@ void URenderer::Prepare()
     DeviceContext->OMSetDepthStencilState(DepthStateDefault, 0);
 
     PrepareShader();
+
+    if (DepthStencilView == nullptr)
+    {
+        DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    }
 }
 
 void URenderer::PrepareShader()

@@ -170,6 +170,7 @@ void UImGuiManager::NewScene()
             GWorld->GetCurrentLevel()->ClearActors();
             AddLog("[System] All actors and components have been destroyed.");
         }
+
         SelectedObject = nullptr;
     }
 }
@@ -190,6 +191,8 @@ void UImGuiManager::SaveScene()
                 AddLog("[Error] Failed to save level.");
             }
         }
+
+        SelectedObject = nullptr;
     }
 }
 

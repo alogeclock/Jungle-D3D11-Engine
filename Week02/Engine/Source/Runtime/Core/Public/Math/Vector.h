@@ -25,6 +25,7 @@ public:
     // ---------------------------------------------------------
     FVector<T> operator+(const FVector<T>& V) const;
     FVector<T> operator-(const FVector<T>& V) const;
+    FVector<T> operator*(const FVector<T> &V) const;
     FVector<T> operator*(T Scale) const;
     FVector<T> operator/(T Scale) const;
 
@@ -76,7 +77,11 @@ inline FVector<T> FVector<T>::operator+(const FVector<T>& V) const
 template<typename T>
 inline FVector<T> FVector<T>::operator-(const FVector<T>& V) const
 {
-    return FVector<T>(X - V.X, Y - V.Y, Z - V.Z);
+    return FVector<T>(X - V.X, Y - V.Y, Z - V.Z); }
+
+template <typename T> inline FVector<T> FVector<T>::operator*(const FVector<T> &V) const 
+{ 
+    return FVector<T>(X * V.X, Y * V.Y, Z * V.Z); 
 }
 
 template<typename T>
