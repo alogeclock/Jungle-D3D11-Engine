@@ -1,7 +1,7 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/SceneComponent.h"
 
-USceneComponent::USceneComponent()
+USceneComponent::USceneComponent(const FString &InString) : UActorComponent(InString)
 {
     Transform.Location = FVector<float>(0.0f, 0.0f, 0.0f);
     Transform.Rotation = FVector<float>(0.0f, 0.0f, 0.0f);

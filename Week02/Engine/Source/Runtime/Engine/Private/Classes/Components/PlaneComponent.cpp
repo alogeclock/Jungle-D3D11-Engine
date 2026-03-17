@@ -1,7 +1,6 @@
 ﻿#include "Engine/Source/Runtime/Engine/Public/Classes/Components/PlaneComponent.h"
 
-UPlaneComponent::UPlaneComponent() : UPrimitiveComponent()
-{
+UPlaneComponent::UPlaneComponent(const FString &InString) : UPrimitiveComponent(InString) {
     PrimitiveType = EPrimitiveType::Plane;
 }
 

@@ -8,7 +8,7 @@
 class USceneComponent : public UActorComponent
 {
   public:
-    USceneComponent();
+    USceneComponent(const FString &InString);
     virtual ~USceneComponent();
 
     // transform 관련 접근자
@@ -41,12 +41,12 @@ class USceneComponent : public UActorComponent
     
     void MarkTransformDirty();
 
-    static UObject *ConstructSceneComponent() { return new USceneComponent(); }
+    static UObject *Constructor() { return new USceneComponent("USceneComponentConstructor"); }
 
     static UClass *StaticClass()
     {
         // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-        static UClass s_Class("USceneComponent", UActorComponent::StaticClass(), &USceneComponent::ConstructSceneComponent);
+        static UClass s_Class("USceneComponent", UActorComponent::StaticClass(), &USceneComponent::Constructor);
         return &s_Class;
     }
 

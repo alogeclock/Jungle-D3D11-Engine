@@ -1,5 +1,7 @@
 ﻿#include "Engine/Source/Runtime/Engine/Public/Classes/MeshManager.h"
 
+UMeshManager::UMeshManager(const FString &InString) : UObject(InString) {}
+
 void UMeshManager::Initialize(URenderer &Renderer)
 {
     int   GridSize = 1000;  // 100x100 칸

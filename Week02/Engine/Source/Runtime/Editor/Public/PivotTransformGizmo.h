@@ -9,7 +9,7 @@
 class APivotTransformGizmo : public ABaseTransformGizmo
 {
   public:
-    APivotTransformGizmo();
+    APivotTransformGizmo(const FString &InString);
     virtual ~APivotTransformGizmo() override;
 
     virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix) override;

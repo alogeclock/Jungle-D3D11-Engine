@@ -8,7 +8,7 @@
 class AAxis : public AActor
 {
   public:
-    AAxis();
+    AAxis(const FString &InString);
     ~AAxis() override;
 
     void Render(URenderer &renderer);

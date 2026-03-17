@@ -3,7 +3,9 @@
 
 #include "Object/Actor.h"
 
-UActorComponent::UActorComponent() {}
+UActorComponent::UActorComponent(const FString &InString) : UObject(InString)
+{
+}
 
 UActorComponent::~UActorComponent() {}
 

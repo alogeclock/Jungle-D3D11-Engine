@@ -45,9 +45,9 @@ FMatrix<float> FViewportCameraTransform::ComputeOrbitMatrix() const
 FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
 {
     Viewport = viewport;
-    Gizmo = new APivotTransformGizmo();
-    Axis = new AAxis();
-    Grid = new AGrid();
+    Gizmo = new APivotTransformGizmo("ViewPortClientGizmo");
+    Axis = new AAxis("ViewPortClientAxis");
+    Grid = new AGrid("ViewPortClientGrid");
 
     UImGuiManager::Get().SetCamera(&CameraTransform);
 }

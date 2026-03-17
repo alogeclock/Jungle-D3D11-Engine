@@ -23,7 +23,7 @@ enum class EGizmoAxis
 class ABaseTransformGizmo : public AActor
 {
   public:
-    ABaseTransformGizmo();
+    ABaseTransformGizmo(const FString &InString);
     virtual ~ABaseTransformGizmo();
 
     virtual void Update(float DeltaTime) {}

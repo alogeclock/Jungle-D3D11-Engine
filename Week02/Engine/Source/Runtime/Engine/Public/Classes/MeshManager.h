@@ -11,11 +11,11 @@ class UMeshManager : public UObject
   public:
     static UMeshManager &Get()
     {
-        static UMeshManager instance;
+        static UMeshManager instance("MeshManagerInstance");
         return instance;
     }
 
-    UMeshManager() {};
+    UMeshManager(const FString &InString);
     ~UMeshManager() {};
 
     void Initialize(URenderer &Renderer);

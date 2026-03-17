@@ -47,6 +47,17 @@ void UImGuiManager::Update(URenderer *renderer)
     ShowExampleAppConsole(&open);
     ImGui::End();
 
+    ImGui::Begin("Log");
+    if (ImGui::Button("GUObjectArray", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    {
+        for (UObject* Object : GUObjectArray)
+        {
+            FString ObjectName = Object->GetName();
+            AddLog("Object Name : " + ObjectName);
+        }
+    }
+    ImGui::End();
+
     endFrame();
 }
 

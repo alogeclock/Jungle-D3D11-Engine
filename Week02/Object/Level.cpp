@@ -1,6 +1,6 @@
 #include "Level.h"
 
-ULevel::ULevel() { LevelName = "PersistentLevel"; }
+ULevel::ULevel(const FString &InString) : UObject(InString) { LevelName = "PersistentLevel"; }
 
 void ULevel::ClearActors()
 {

@@ -1,15 +1,15 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/PivotTransformGizmo.h"
 
-APivotTransformGizmo::APivotTransformGizmo()
+APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTransformGizmo(InString)
 {
-    USceneComponent *Root = new USceneComponent();
+    USceneComponent *Root = new USceneComponent("PivotTransformSceneComponent");
     this->SetRootComponent(Root);
     Root->RegisterComponent();
 
     const float HALF_PI = 1.570796f;
 
-    UArrowComponent *TranslateX = new UArrowComponent();
+    UArrowComponent *TranslateX = new UArrowComponent("XArrowComponent");
     TranslateX->SetOuter(this);
     TranslateX->RegisterComponent();
     TranslateX->SetRotation({0.0, -HALF_PI, 0.0f});
@@ -18,7 +18,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     TranslateX->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateX);
 
-    UArrowComponent *TranslateY = new UArrowComponent();
+    UArrowComponent *TranslateY = new UArrowComponent("YArrowComponent");
     TranslateY->SetOuter(this);
     TranslateY->RegisterComponent();
     TranslateY->SetRotation({HALF_PI, 0.0f, 0.0f});
@@ -27,7 +27,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     TranslateY->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateY);
 
-    UArrowComponent *TranslateZ = new UArrowComponent();
+    UArrowComponent *TranslateZ = new UArrowComponent("ZArrowComponent");
     TranslateZ->SetOuter(this);
     TranslateZ->RegisterComponent();
     TranslateZ->SetRotation({0.0f, 0.0f, 0.0f});
@@ -36,7 +36,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     TranslateZ->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateZ);
 
-    URingComponent *RotateX = new URingComponent();
+    URingComponent *RotateX = new URingComponent("XRingComponent");
     RotateX->SetOuter(this);
     RotateX->RegisterComponent();
     RotateX->SetRotation({0.0f, -HALF_PI, 0.0f});
@@ -45,7 +45,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     RotateX->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateX);
 
-    URingComponent *RotateY = new URingComponent();
+    URingComponent *RotateY = new URingComponent("YRingComponent");
     RotateY->SetOuter(this);
     RotateY->RegisterComponent();
     RotateY->SetRotation({HALF_PI, 0.0f, 0.0f});
@@ -54,7 +54,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     RotateY->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateY);
 
-    URingComponent *RotateZ = new URingComponent();
+    URingComponent *RotateZ = new URingComponent("ZRingComponent");
     RotateZ->SetOuter(this);
     RotateZ->RegisterComponent();
     RotateZ->SetRotation({0.0f, 0.0f, 0.0f});
@@ -63,7 +63,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     RotateZ->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateZ);
 
-    UCubeArrowComponent *ScaleX = new UCubeArrowComponent();
+    UCubeArrowComponent *ScaleX = new UCubeArrowComponent("XCubeArrowComponent");
     ScaleX->SetOuter(this);
     ScaleX->RegisterComponent();
     ScaleX->SetRotation({0.0f, -HALF_PI, 0.0f});
@@ -72,7 +72,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     ScaleX->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleX);
 
-    UCubeArrowComponent *ScaleY = new UCubeArrowComponent();
+    UCubeArrowComponent *ScaleY = new UCubeArrowComponent("YCubeArrowComponent");
     ScaleY->SetOuter(this);
     ScaleY->RegisterComponent();
     ScaleY->SetRotation({HALF_PI, 0.0f, 0.0f});
@@ -81,7 +81,7 @@ APivotTransformGizmo::APivotTransformGizmo()
     ScaleY->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleY);
 
-    UCubeArrowComponent *ScaleZ = new UCubeArrowComponent();
+    UCubeArrowComponent *ScaleZ = new UCubeArrowComponent("ZCubeArrowComponent");
     ScaleZ->SetOuter(this);
     ScaleZ->RegisterComponent();
     ScaleZ->SetRotation({0.0f, 0.0f, 0.0f});

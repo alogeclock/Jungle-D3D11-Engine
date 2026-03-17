@@ -5,15 +5,15 @@
 class USphereComponent : public UPrimitiveComponent
 {
 public:
-	USphereComponent(float inSphereRadius = 1.0f);
+    USphereComponent(const FString &InString, float inSphereRadius = 1.0f);
 	virtual ~USphereComponent() override;
 
-		static UObject *ConstructCubeComponent() { return new USphereComponent(); }
+		static UObject *Constructor() { return new USphereComponent("SphereComponentConstructor"); }
 
         static UClass *StaticClass()
         {
             // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-            static UClass s_Class("USphereComponent", UPrimitiveComponent::StaticClass(), &USphereComponent::ConstructCubeComponent);
+            static UClass s_Class("USphereComponent", UPrimitiveComponent::StaticClass(), &USphereComponent::Constructor);
             return &s_Class;
         }
 

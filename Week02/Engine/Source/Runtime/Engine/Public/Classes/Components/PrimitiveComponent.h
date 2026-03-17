@@ -18,7 +18,7 @@ struct FHitResult
 class UPrimitiveComponent : public USceneComponent
 {
 public:
-    UPrimitiveComponent();
+    UPrimitiveComponent(const FString &InString);
     virtual ~UPrimitiveComponent();
 
     virtual void Render(URenderer &renderer);
@@ -40,12 +40,12 @@ public:
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
 
-    static UObject *ConstructPrimitiveComponent() { return new UPrimitiveComponent(); }
+    static UObject *Constructor() { return new UPrimitiveComponent("PrimitiveComponentConstructor"); }
 
     static UClass *StaticClass()
     {
         // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-        static UClass s_Class("UPrimitiveComponent", USceneComponent::StaticClass(), &UPrimitiveComponent::ConstructPrimitiveComponent);
+        static UClass s_Class("UPrimitiveComponent", USceneComponent::StaticClass(), &UPrimitiveComponent::Constructor);
         return &s_Class;
     }
 

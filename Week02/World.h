@@ -11,7 +11,7 @@ struct FHitResult;
 class UWorld final : public UObject
 {
   public:
-    UWorld();
+    UWorld(const FString &InString);
     ~UWorld();
     
     virtual UWorld *GetWorld() const override { return const_cast<UWorld *>(this); }
@@ -30,11 +30,11 @@ class UWorld final : public UObject
 
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
-    static UObject *ConstructWorld() { return new UWorld(); }
+    static UObject *Constructor() { return new UWorld("WorldConstructor"); }
 
     static UClass *StaticClass()
     {
-        static UClass s_Class("UWorld", UObject::StaticClass(), &UWorld::ConstructWorld);
+        static UClass s_Class("UWorld", UObject::StaticClass(), &UWorld::Constructor);
         return &s_Class;
     }
 

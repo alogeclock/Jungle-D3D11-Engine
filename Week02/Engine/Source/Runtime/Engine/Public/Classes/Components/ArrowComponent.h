@@ -5,15 +5,15 @@
 class UArrowComponent : public UPrimitiveComponent
 {
 public:
-	UArrowComponent() ;
+    UArrowComponent(const FString &InString);
 	virtual ~UArrowComponent() override;
 
-		static UObject *ConstructCubeComponent() { return new UArrowComponent(); }
+		static UObject *Constructor() { return new UArrowComponent("ArrowComponentConstructor"); }
 
         static UClass *StaticClass()
         {
             // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-            static UClass s_Class("UArrowComponent", UPrimitiveComponent::StaticClass(), &UArrowComponent::ConstructCubeComponent);
+            static UClass s_Class("UArrowComponent", UPrimitiveComponent::StaticClass(), &UArrowComponent::Constructor);
             return &s_Class;
         }
 

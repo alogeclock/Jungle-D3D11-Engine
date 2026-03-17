@@ -22,9 +22,9 @@ using json = nlohmann::json;
 
 struct FHitResult;
 
-UWorld::UWorld()
+UWorld::UWorld(const FString &InString) : UObject(InString)
 {
-    CurrentLevel = new ULevel();
+    CurrentLevel = new ULevel("PersistentLevel");
     CurrentLevel->SetOuter(this);
 
 }
@@ -125,7 +125,7 @@ bool UWorld::LoadLevel(const FString& FilePath)
         delete CurrentLevel;
     }
     
-    CurrentLevel = new ULevel();
+    CurrentLevel = new ULevel("Loaded Level");
     CurrentLevel->SetOuter(this);
 
     if (j.contains("Primitives"))
@@ -138,19 +138,17 @@ bool UWorld::LoadLevel(const FString& FilePath)
             std::string type = primData["Type"].get<std::string>();
             
             // 액터 생성
-            AActor* NewActor = new AActor(); 
+            AActor *NewActor = new AActor("a"); 
             NewActor->SetOuter(CurrentLevel);
 
             // 문자열 기반으로 매칭되는 타입별 컴포넌트 생성
             UPrimitiveComponent* PrimitiveComp = nullptr;
-            if (type == "Sphere")             PrimitiveComp = new USphereComponent();
-            else if (type == "Cube")          PrimitiveComp = new UCubeComponent();
-            else if (type == "Triangle")      PrimitiveComp = new UTriangleComponent();
-            else if (type == "Plane")         PrimitiveComp = new UPlaneComponent();
-            else if (type == "Arrow")         PrimitiveComp = new UArrowComponent();
-            else if (type == "CubeArrow")     PrimitiveComp = new UCubeArrowComponent();
-            else if (type == "Ring")          PrimitiveComp = new URingComponent();
-            else if (type == "Axis")          PrimitiveComp = new UAxisComponent();
+            if (type == "Sphere")
+                PrimitiveComp = new USphereComponent("a");
+            else if (type == "Cube")
+                PrimitiveComp = new UCubeComponent("A");
+            else if (type == "Triangle")
+                PrimitiveComp = new UTriangleComponent("s");
 
             if (PrimitiveComp != nullptr)
             {

@@ -2,7 +2,7 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 #include "Object/Actor.h"
 
-UPrimitiveComponent::UPrimitiveComponent() {}
+UPrimitiveComponent::UPrimitiveComponent(const FString &InString) : USceneComponent(InString) {}
 
 UPrimitiveComponent::~UPrimitiveComponent() {}
 

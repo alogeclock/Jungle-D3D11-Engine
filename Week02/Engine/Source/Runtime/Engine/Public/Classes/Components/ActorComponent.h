@@ -8,7 +8,7 @@ class AActor;
 class UActorComponent : public UObject
 {
   public:
-    UActorComponent();
+    UActorComponent(const FString &InString);
     virtual ~UActorComponent();
 
     void RegisterComponent();
@@ -18,12 +18,12 @@ class UActorComponent : public UObject
     AActor *GetOwner() const;
     void SetOwner(AActor* InOwner) { Owner = InOwner; }
 
-    static UObject *ConstructActorComponent() { return new UActorComponent(); }
+    static UObject *Constructor() { return new UActorComponent("ConstructActorComponent"); }
 
     static UClass *StaticClass()
     {
         // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-        static UClass s_Class("UActorComponent", UObject::StaticClass(), &UActorComponent::ConstructActorComponent);
+        static UClass s_Class("UActorComponent", UObject::StaticClass(), &UActorComponent::Constructor);
         return &s_Class;
     }
 

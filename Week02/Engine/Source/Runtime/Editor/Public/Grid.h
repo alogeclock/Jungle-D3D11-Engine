@@ -9,7 +9,7 @@
 class AGrid : public AActor
 {
 public:
-    AGrid();
+    AGrid(const FString &InString);
     virtual ~AGrid();
 
     void Render(URenderer& renderer);

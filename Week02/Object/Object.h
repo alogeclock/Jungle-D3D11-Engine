@@ -34,7 +34,6 @@ class FObjectFactory
 class UObject
 {
 public:
-	UObject();
 	explicit UObject(const FString& InString);
 	virtual ~UObject() = default;
 
@@ -72,7 +71,7 @@ extern TArray<UObject *> GUObjectArray;
 
 template <typename T> inline T *UObject::CreateDefaultSubobject()
 {
-    T *NewSubobject = new T();
+    T *NewSubobject = new T("CreateDefaultSubobject");
 
 	NewSubobject->SetOuter(this);
 

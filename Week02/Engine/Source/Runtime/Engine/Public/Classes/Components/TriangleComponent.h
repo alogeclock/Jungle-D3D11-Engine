@@ -5,15 +5,15 @@
 class UTriangleComponent : public UPrimitiveComponent
 {
 public:
-	UTriangleComponent() ;
+    UTriangleComponent(const FString &InString);
 	virtual ~UTriangleComponent() override;
 
-		static UObject *ConstructCubeComponent() { return new UTriangleComponent(); }
+		static UObject *Constructor() { return new UTriangleComponent("TriangleComponentConstructor"); }
 
         static UClass *StaticClass()
         {
             // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-            static UClass s_Class("UTriangleComponent", UPrimitiveComponent::StaticClass(), &UTriangleComponent::ConstructCubeComponent);
+            static UClass s_Class("UTriangleComponent", UPrimitiveComponent::StaticClass(), &UTriangleComponent::Constructor);
             return &s_Class;
         }
 

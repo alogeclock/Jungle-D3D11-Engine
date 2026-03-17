@@ -10,6 +10,7 @@ class AActor : public UObject
     USceneComponent        *RootComponent = nullptr;
 
   public:
+    AActor(const FString &InString);
     virtual ~AActor() override;
 
     USceneComponent *GetRootComponent() const;
@@ -29,11 +30,11 @@ class AActor : public UObject
 
     void IterateAllActorComponents(URenderer &renderer) const;
 
-    static UObject *ConstructActor() { return new AActor(); }
+    static UObject *Constructor() { return new AActor("ActorConstructor"); }
 
     static UClass *StaticClass()
     {
-        static UClass s_Class("AActor", UObject::StaticClass(), &AActor::ConstructActor);
+        static UClass s_Class("AActor", UObject::StaticClass(), &AActor::Constructor);
         return &s_Class;
     }
 

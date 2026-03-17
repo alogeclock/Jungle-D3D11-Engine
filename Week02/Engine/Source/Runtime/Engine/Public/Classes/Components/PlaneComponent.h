@@ -6,15 +6,15 @@
 class UPlaneComponent : public UPrimitiveComponent
 {
 public:
-	UPlaneComponent() ;
+    UPlaneComponent(const FString &InString);
 	virtual ~UPlaneComponent() override;
 
-		static UObject *ConstructCubeComponent() { return new UPlaneComponent(); }
+		static UObject *Constructor() { return new UPlaneComponent("PlaneComponentConstructor"); }
 
         static UClass *StaticClass()
         {
             // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-            static UClass s_Class("UPlaneComponent", UPrimitiveComponent::StaticClass(), &UPlaneComponent::ConstructCubeComponent);
+            static UClass s_Class("UPlaneComponent", UPrimitiveComponent::StaticClass(), &UPlaneComponent::Constructor);
             return &s_Class;
         }
 

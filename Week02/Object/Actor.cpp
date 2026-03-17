@@ -3,6 +3,8 @@
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
+AActor::AActor(const FString &InString) : UObject(InString) {}
+
 AActor::~AActor()
 {
     for (UActorComponent *Component : OwnedComponents)

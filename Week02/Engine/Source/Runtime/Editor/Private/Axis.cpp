@@ -1,12 +1,12 @@
 ﻿#include "Engine/Source/Runtime/Editor/Public/Axis.h"
 
-AAxis::AAxis()
+AAxis::AAxis(const FString &InString) : AActor(InString)
 {
-    USceneComponent *Root = new USceneComponent();
+    USceneComponent *Root = new USceneComponent("AxisSceneComponent");
     SetRootComponent(Root);
     Root->RegisterComponent();
 
-	AxisComponent = new UAxisComponent();
+	AxisComponent = new UAxisComponent("AxisPrimitiveComponent");
     AxisComponent->SetOuter(Root);
     AxisComponent->RegisterComponent();
 }

@@ -9,7 +9,7 @@ UWorld         *GWorld = nullptr;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	GWorld = new UWorld();
+    GWorld = new UWorld("World");
 
 	UApplication* main_app = new UApplication();
 

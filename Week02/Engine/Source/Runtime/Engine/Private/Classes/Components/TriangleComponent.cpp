@@ -2,8 +2,7 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
 
 // 개별 Component에서 Topology, NumVertices를 결정해야 한다. 
-UTriangleComponent::UTriangleComponent() : UPrimitiveComponent()
-{
+UTriangleComponent::UTriangleComponent(const FString &InString) : UPrimitiveComponent(InString) {
     PrimitiveType = EPrimitiveType::Triangle;
 }
 

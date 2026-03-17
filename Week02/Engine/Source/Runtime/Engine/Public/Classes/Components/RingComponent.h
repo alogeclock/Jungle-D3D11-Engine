@@ -5,15 +5,15 @@
 class URingComponent : public UPrimitiveComponent
 {
 public:
-	URingComponent() ;
+    URingComponent(const FString &InString);
 	virtual ~URingComponent() override;
 
-		static UObject *ConstructCubeComponent() { return new URingComponent(); }
+		static UObject *Constructor() { return new URingComponent("RingComponentConstructor"); }
 
         static UClass *StaticClass()
         {
             // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-            static UClass s_Class("URingComponent", UPrimitiveComponent::StaticClass(), &URingComponent::ConstructCubeComponent);
+            static UClass s_Class("URingComponent", UPrimitiveComponent::StaticClass(), &URingComponent::Constructor);
             return &s_Class;
         }
 

@@ -1,12 +1,12 @@
 ﻿#include "Engine/Source/Runtime/Editor/Public/Grid.h"
 
-AGrid::AGrid()
+AGrid::AGrid(const FString &InString) : AActor(InString)
 {
-    USceneComponent *Root = new USceneComponent();
+    USceneComponent *Root = new USceneComponent("GridSceneComponent");
     this->SetRootComponent(Root);
     Root->RegisterComponent();
 
-    GridComponent = new UGridComponent();
+    GridComponent = new UGridComponent("GridPrimitiveComponent");
     GridComponent->SetOuter(this);
     GridComponent->RegisterComponent();
 }
