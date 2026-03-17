@@ -76,7 +76,7 @@ void UImGuiManager::ShowControlPanel()
 
 void UImGuiManager::SpawnActors()
 {
-    const char *PrimitiveTypeStrings[] = {"None", "Sphere", "Cube", "Triangle", "Plane", "Torus", "Arrow", "CubeArrow", "Ring", "Axis"};
+    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Torus", "Arrow", "CubeArrow", "Ring", "Axis"};
 
     static int Primitive = 0;
 
@@ -141,6 +141,7 @@ void UImGuiManager::SpawnActors()
                 AddLog("[Error] Failed to load level.");
             }
         }
+        SelectedObject = nullptr;
     }
 }
 

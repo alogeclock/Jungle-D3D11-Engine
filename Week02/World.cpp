@@ -67,10 +67,6 @@ bool UWorld::SaveLevel(const std::string& FilePath)
             if (Cast<UAxisComponent>(Component))          { primitiveType = "Axis"; break; }
         }
 
-        // None이거나 알 수 없는 타입이면 건너뜁니다.
-        if (primitiveType == "None")
-            continue;
-
         FTransform Transform = Actor->GetTransform();
         
         json primitiveJson;
