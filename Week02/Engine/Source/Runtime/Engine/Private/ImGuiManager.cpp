@@ -68,6 +68,7 @@ void UImGuiManager::Update(URenderer *renderer)
 
         }
     }
+    ImGui::End();
 
     // Console
     ImGui::Begin("Console");
