@@ -15,6 +15,7 @@ class UClass
     ConstructFn Constructor;
 
     UClass(const FString &InName, UClass *InSuper, ConstructFn InConstructor) : ClassName(InName), SuperClass(InSuper), Constructor(InConstructor) {}
+    const char *GetName() { return ClassName.c_str();}
 };
 
 class FObjectFactory

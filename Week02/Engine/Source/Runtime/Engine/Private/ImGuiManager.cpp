@@ -33,7 +33,6 @@ void UImGuiManager::Update(URenderer *renderer)
     // Control Panel
     ImGui::Begin("Jungle Control Panel");
     ShowControlPanel();
-    SpawnActors();
     ImGui::End();
 
     // Property Window
@@ -63,7 +62,7 @@ void UImGuiManager::Update(URenderer *renderer)
         char logBuffer[256];
 
         // snprintf를 사용해 문장과 액터의 개수(%zu)를 버퍼에 합칩니다.
-        snprintf(logBuffer, sizeof(logBuffer), "%d", static_cast<int>(GWorld->CurrentLevel->GetActors().size()));
+        snprintf(logBuffer, sizeof(logBuffer), "%d", static_cast<int>(GWorld->GetCurrentLevel()->GetActors().size()));
 
         // 질문자님께서 만드신 AddLog 함수에 완성된 문자열 버퍼를 넘겨줍니다!
         AddLog(logBuffer);
@@ -116,8 +115,17 @@ void UImGuiManager::AddLog(const char *msg) { GConsole->AddLog(msg); }
 
 void UImGuiManager::ShowControlPanel()
 {
-    ImGui::TextWrapped("FPS: %.f\n", UTimeManager::Get().GetFPS());
-    ImGui::TextWrapped("FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFrameTime());
+    ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
+
+    ImGui::Separator();
+
+    SpawnActors();
+    NewScene();
+    SaveScene();
+    LoadScene();
+
+    ImGui::Separator();
+
     ImGui::Checkbox("Orthogonal", &UImGuiManager::Get().bIsOrthogonal);
 }
 
@@ -126,10 +134,17 @@ void UImGuiManager::SpawnActors()
     const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle"};
 
     static int Primitive = 0;
+    static int NumberOfSpawn = 1;
+
+    bool isSpawn = false;
 
     ImGui::Combo("Primitive", &Primitive, PrimitiveTypeStrings, IM_ARRAYSIZE(PrimitiveTypeStrings));
 
-    if (ImGui::Button("Spawn Actors"))
+    isSpawn = ImGui::Button("Spawn");
+    ImGui::SameLine();
+    ImGui::DragInt("Number of spawn", &NumberOfSpawn, 0.05f, 1, 10);
+
+    if (isSpawn)
     {
         UClass *ComponentClassToSpawn = nullptr;
 
@@ -151,26 +166,50 @@ void UImGuiManager::SpawnActors()
             AddLog("[Error] Failed to spawn: Invalid primitive type selected.");
         }
 
-        AActor *NewActor = GWorld->SpawnActor<AActor>();
-        USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
-        NewActor->SetRootComponent(Root);
-        Root->RegisterComponent();
-
-        UObject        *NewObj = FObjectFactory::ConstructObject(ComponentClassToSpawn);
-        UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewObj); // 생성된 객체가 화면에 그릴 수 있는 PrimitiveComponent인지 확인
-
-        if (DynamicPrimitive != nullptr)
+        for (int i = 0; i < NumberOfSpawn; i++)
         {
-            AddLog("[System] ");
+            AActor          *NewActor = GWorld->SpawnActor<AActor>();
+            USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+            NewActor->SetRootComponent(Root);
+            Root->RegisterComponent();
 
-            // 템플릿 CreateDefaultSubobject()가 내부적으로 해주던 작업을 직접 해줍니다.
-            DynamicPrimitive->SetOuter(NewActor);  // 이 컴포넌트의 주인(AActor) 설정
-            DynamicPrimitive->RegisterComponent(); // 시스템에 등록
+            UObject             *NewObj = FObjectFactory::ConstructObject(ComponentClassToSpawn);
+            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewObj); // 생성된 객체가 화면에 그릴 수 있는 PrimitiveComponent인지 확인
+
+            if (DynamicPrimitive != nullptr)
+            {
+                const char *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
+
+                // ⭐️ 2. 가져온 이름을 로그 버퍼에 예쁘게 포맷팅합니다.
+                char logBuffer[256];
+                snprintf(logBuffer, sizeof(logBuffer), "[System] Spawned Actor: %s", SpawnedClassName);
+
+                // ⭐️ 3. 완성된 문자열을 로그로 출력합니다!
+                AddLog(logBuffer);
+
+                // 템플릿 CreateDefaultSubobject()가 내부적으로 해주던 작업을 직접 해줍니다.
+                DynamicPrimitive->SetOuter(NewActor);  // 이 컴포넌트의 주인(AActor) 설정
+                DynamicPrimitive->RegisterComponent(); // 시스템에 등록
+            }
         }
-
-        NewActor->SetTransform(FTransform(FVector<float>(0.0f, 0.0f, 0.0f), FVector<float>(0.0f, 0.0f, 0.0f), FVector<float>(1.0f, 1.0f, 1.0f)));
     }
+}
 
+void UImGuiManager::NewScene()
+{
+    if (ImGui::Button("New Scene"))
+    {
+        if (GWorld && GWorld->GetCurrentLevel())
+        {
+            GWorld->GetCurrentLevel()->ClearActors();
+
+            AddLog("[System] All actors and components have been destroyed.");
+        }
+    }
+}
+
+void UImGuiManager::SaveScene()
+{
     if (ImGui::Button("Save Scene"))
     {
         if (GWorld != nullptr)
@@ -186,7 +225,10 @@ void UImGuiManager::SpawnActors()
             }
         }
     }
+}
 
+void UImGuiManager::LoadScene()
+{
     if (ImGui::Button("Load Scene"))
     {
         if (GWorld != nullptr)
@@ -209,13 +251,13 @@ void UImGuiManager::TransformInspector()
 {
     if (SelectedObject == nullptr)
         return;
-    
+
     AActor* Actor = Cast<AActor>(SelectedObject->GetOwner());
     FTransform t = Actor->GetTransform();
 
-    ImGui::DragFloat3("Translation", &t.Location.X, 0.01f, -1.0f, 1.0f);
-    ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f, -5.0f, 5.0f);
-    ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f, -1.0f, 1.0f);
+    ImGui::DragFloat3("Translation", &t.Location.X, 0.01f);
+    ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f);
+    ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f);
 
     Actor->SetTransform(t);
 }

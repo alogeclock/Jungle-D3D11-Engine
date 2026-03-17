@@ -8,6 +8,8 @@ class ULevel : public UObject
 {
 public:
     TArray<AActor *> &GetActors() { return Actors; }
+  void              ClearActors();
+
     static UObject   *ConstructULevel() { return new ULevel(); }
 
     static UClass *StaticClass()

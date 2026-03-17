@@ -10,6 +10,8 @@ class AActor : public UObject
     USceneComponent        *RootComponent = nullptr;
 
   public:
+    virtual ~AActor() override;
+
     USceneComponent *GetRootComponent() const;
     void             SetRootComponent(USceneComponent *InOwnedComponents);
 

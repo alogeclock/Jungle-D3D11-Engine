@@ -45,6 +45,9 @@ public:
 private:
     void ShowControlPanel();
     void SpawnActors();
+    void NewScene();
+    void SaveScene();
+    void LoadScene();
     void TransformInspector();
 
 public:

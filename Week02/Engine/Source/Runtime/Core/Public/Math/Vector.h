@@ -171,7 +171,6 @@ inline bool FVector<T>::ContainsNaN() const
 {
     return (!FMath::IsFinite(X) ||
         !FMath::IsFinite(Y) ||
-        !FMath::IsFinite(Z));
-}
+        !FMath::IsFinite(Z)); }
 
 using DVector = FVector<double>;

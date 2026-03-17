@@ -16,7 +16,7 @@ class UWorld final : public UObject
     
     virtual UWorld *GetWorld() const override { return const_cast<UWorld *>(this); }
 
-    ULevel *GetCurrentLevel();
+    ULevel *GetCurrentLevel() { return CurrentLevel; }
     
     bool SaveLevel(const std::string& FilePath);
     bool LoadLevel(const std::string& FilePath);
@@ -41,7 +41,6 @@ class UWorld final : public UObject
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
   private:
-  public:
     ULevel        *CurrentLevel;
     TSet<ULevel *> Levels;
 };

@@ -15,4 +15,8 @@ struct FGenericPlatformMath
 	{
 		return (BitCast<uint32, float>(A) & 0x7F800000U) != 0x7F800000U;
 	}
+
+	static float DegreesToRadians(float Degrees) { return Degrees * (std::numbers::pi_v<float> / 180.0f); }
+    static float RadiansToDegrees(float Radians) { return Radians * (180.0f / std ::numbers::pi_v<float>); }
+
 };

@@ -3,8 +3,22 @@
 
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
-USceneComponent *AActor::GetRootComponent() const
+AActor::~AActor()
 {
+    for (UActorComponent *Component : OwnedComponents)
+    {
+        if (Component != nullptr)
+        {
+            delete Component;
+        }
+    }
+
+    // 2. 컨테이너 비우기 및 포인터 초기화
+    OwnedComponents.clear();
+    RootComponent = nullptr;
+}
+
+USceneComponent *AActor::GetRootComponent() const {
     return RootComponent;
 }
 
