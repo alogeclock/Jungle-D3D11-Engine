@@ -1,4 +1,4 @@
-#include "World.h"
+﻿#include "World.h"
 #include "Object/Actor.h"
 
 // 모든 Primitive Component 헤더 포함
@@ -6,7 +6,6 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PlaneComponent.h"
-#include "Engine/Source/Runtime/Engine/Public/Classes/Components/TorusComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/ArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
@@ -65,7 +64,6 @@ bool UWorld::SaveLevel(const std::string& FilePath)
             if (Cast<UCubeComponent>(Component))          { primitiveType = "Cube"; break; }
             if (Cast<UTriangleComponent>(Component))      { primitiveType = "Triangle"; break; }
             if (Cast<UPlaneComponent>(Component))         { primitiveType = "Plane"; break; }
-            if (Cast<UTorusComponent>(Component))         { primitiveType = "Torus"; break; }
             if (Cast<UArrowComponent>(Component))         { primitiveType = "Arrow"; break; }
             if (Cast<UCubeArrowComponent>(Component))     { primitiveType = "CubeArrow"; break; }
             if (Cast<URingComponent>(Component))          { primitiveType = "Ring"; break; }
@@ -138,7 +136,6 @@ bool UWorld::LoadLevel(const std::string& FilePath)
             else if (type == "Cube")          PrimitiveComp = new UCubeComponent();
             else if (type == "Triangle")      PrimitiveComp = new UTriangleComponent();
             else if (type == "Plane")         PrimitiveComp = new UPlaneComponent();
-            else if (type == "Torus")         PrimitiveComp = new UTorusComponent();
             else if (type == "Arrow")         PrimitiveComp = new UArrowComponent();
             else if (type == "CubeArrow")     PrimitiveComp = new UCubeArrowComponent();
             else if (type == "Ring")          PrimitiveComp = new URingComponent();

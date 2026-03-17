@@ -9,7 +9,6 @@
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/PlaneComponent.h"
-#include "Engine/Source/Runtime/Engine/Public/Classes/Components/TorusComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/ArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
