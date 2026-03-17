@@ -49,6 +49,8 @@ void UImGuiManager::Update(URenderer *renderer)
 
     if (ImGui::Button("Spawn Actors"))
     {
+
+
         AActor *NewActor = GWorld->SpawnActor<AActor>();
 
         USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();

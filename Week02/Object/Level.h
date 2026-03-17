@@ -8,7 +8,15 @@ class ULevel : public UObject
 {
 public:
     TArray<AActor *> &GetActors() { return Actors; }
+    static UObject   *ConstructULevel() { return new ULevel(); }
 
-  private:
+    static UClass *StaticClass()
+    {
+        static UClass s_Class("ULevel", UObject::StaticClass(), &ULevel::ConstructULevel);
+        return &s_Class;
+    }
+
+    virtual UClass *GetClass() const override { return StaticClass(); }
+private:
     TArray<AActor *> Actors;
 };
