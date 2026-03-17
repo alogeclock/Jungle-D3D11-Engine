@@ -133,9 +133,11 @@
   <ItemGroup>
     <ClCompile Include="Engine\Source\Runtime\Core\Private\TimeManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Editor\Private\Axis.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Grid.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ArrowComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\CubeArrowComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\CubeComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\GridComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PlaneComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\RingComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\MeshManager.cpp" />
@@ -176,9 +178,11 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\OrthographicMatrix.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\TimeManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Editor\Public\Axis.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Grid.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ArrowComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\CubeArrowComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\CubeComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\GridComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PlaneComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\RingComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\MeshManager.h" />

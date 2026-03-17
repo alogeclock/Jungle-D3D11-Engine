@@ -20,7 +20,7 @@ enum class EGizmoAxis
     None
 };
 
-class ABaseTransformGizmo : AActor
+class ABaseTransformGizmo : public AActor
 {
   public:
     ABaseTransformGizmo();

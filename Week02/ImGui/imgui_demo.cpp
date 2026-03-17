@@ -1,4 +1,4 @@
-// dear imgui, v1.92.5
+﻿// dear imgui, v1.92.5
 // (demo code)
 
 // Help:
@@ -10547,7 +10547,7 @@ struct ExampleAssetsBrowser
     float           LayoutSelectableSpacing = 0.0f;
     float           LayoutOuterPadding = 0.0f;
     int             LayoutColumnCount = 0;
-    int             LayoutLineCount = 0;
+    int             Layoutl = 0;
 
     // Functions
     ExampleAssetsBrowser()
@@ -10581,7 +10581,7 @@ struct ExampleAssetsBrowser
         // Layout: calculate number of icon per line and number of lines
         LayoutItemSize = ImVec2(floorf(IconSize), floorf(IconSize));
         LayoutColumnCount = IM_MAX((int)(avail_width / (LayoutItemSize.x + LayoutItemSpacing)), 1);
-        LayoutLineCount = (Items.Size + LayoutColumnCount - 1) / LayoutColumnCount;
+        Layoutl = (Items.Size + LayoutColumnCount - 1) / LayoutColumnCount;
 
         // Layout: when stretching: allocate remaining space to more spacing. Round before division, so item_spacing may be non-integer.
         if (StretchSpacing && LayoutColumnCount > 1)
@@ -10667,7 +10667,7 @@ struct ExampleAssetsBrowser
         }
 
         ImGuiIO& io = ImGui::GetIO();
-        ImGui::SetNextWindowContentSize(ImVec2(0.0f, LayoutOuterPadding + LayoutLineCount * (LayoutItemSize.y + LayoutItemSpacing)));
+        ImGui::SetNextWindowContentSize(ImVec2(0.0f, LayoutOuterPadding + Layoutl * (LayoutItemSize.y + LayoutItemSpacing)));
         if (ImGui::BeginChild("Assets", ImVec2(0.0f, -ImGui::GetTextLineHeightWithSpacing()), ImGuiChildFlags_Borders, ImGuiWindowFlags_NoMove))
         {
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -10723,7 +10723,7 @@ struct ExampleAssetsBrowser
 
             const int column_count = LayoutColumnCount;
             ImGuiListClipper clipper;
-            clipper.Begin(LayoutLineCount, LayoutItemStep.y);
+            clipper.Begin(Layoutl, LayoutItemStep.y);
             if (item_curr_idx_to_focus != -1)
                 clipper.IncludeItemByIndex(item_curr_idx_to_focus / column_count); // Ensure focused item line is not clipped.
             if (ms_io->RangeSrcItem != -1)

@@ -5,7 +5,7 @@
 #include "Engine/Source/Runtime/Engine/Public/Rendering/Renderer.h"
 #include "Engine/Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
 
-class AAxis : public UObject
+class AAxis : public AActor
 {
   public:
     AAxis();

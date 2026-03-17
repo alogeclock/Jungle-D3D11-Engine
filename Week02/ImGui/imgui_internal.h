@@ -1,4 +1,4 @@
-// dear imgui, v1.92.5
+﻿// dear imgui, v1.92.5
 // (internal structures/api)
 
 // You may use this file to debug, understand or extend Dear ImGui features but we don't provide any guarantee of forward compatibility.
@@ -1234,7 +1234,7 @@ struct IMGUI_API ImGuiInputTextState
     ImVector<char>          CallbackTextBackup;     // temporary storage for callback to support automatic reconcile of undo-stack
     int                     BufCapacity;            // end-user buffer capacity (include zero terminator)
     ImVec2                  Scroll;                 // horizontal offset (managed manually) + vertical scrolling (pulled from child window's own Scroll.y)
-    int                     LineCount;              // last line count (solely for debugging)
+    int                     l;              // last line count (solely for debugging)
     float                   WrapWidth;              // word-wrapping width
     float                   CursorAnim;             // timer for cursor blink, reset on every user action so the cursor reappears immediately
     bool                    CursorFollow;           // set when we want scrolling to follow the current cursor position (not always!)

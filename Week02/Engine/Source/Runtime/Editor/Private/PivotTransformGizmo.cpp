@@ -3,69 +3,91 @@
 
 APivotTransformGizmo::APivotTransformGizmo()
 {
+    USceneComponent *Root = new USceneComponent();
+    this->SetRootComponent(Root);
+    Root->RegisterComponent();
+
     const float HALF_PI = 1.570796f;
 
     UArrowComponent *TranslateX = new UArrowComponent();
+    TranslateX->SetOuter(this);
+    TranslateX->RegisterComponent();
     TranslateX->SetRotation({0.0, -HALF_PI, 0.0f});
     TranslateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
-    TranslateX->SetAlwaysVisible(true);
     TranslateX->SetCullMode(ECullMode::None);
+    TranslateX->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateX);
 
     UArrowComponent *TranslateY = new UArrowComponent();
+    TranslateY->SetOuter(this);
+    TranslateY->RegisterComponent();
     TranslateY->SetRotation({HALF_PI, 0.0f, 0.0f});
     TranslateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
-    TranslateY->SetAlwaysVisible(true);
     TranslateY->SetCullMode(ECullMode::None);
+    TranslateY->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateY);
 
     UArrowComponent *TranslateZ = new UArrowComponent();
+    TranslateZ->SetOuter(this);
+    TranslateZ->RegisterComponent();
     TranslateZ->SetRotation({0.0f, 0.0f, 0.0f});
     TranslateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
-    TranslateZ->SetAlwaysVisible(true);
     TranslateZ->SetCullMode(ECullMode::None);
+    TranslateZ->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateZ);
 
     URingComponent *RotateX = new URingComponent();
+    RotateX->SetOuter(this);
+    RotateX->RegisterComponent();
     RotateX->SetRotation({0.0f, -HALF_PI, 0.0f});
     RotateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
-    RotateX->SetAlwaysVisible(true);
     RotateX->SetCullMode(ECullMode::None);
+    RotateX->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateX);
 
     URingComponent *RotateY = new URingComponent();
+    RotateY->SetOuter(this);
+    RotateY->RegisterComponent();
     RotateY->SetRotation({HALF_PI, 0.0f, 0.0f});
     RotateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
-    RotateY->SetAlwaysVisible(true);
     RotateY->SetCullMode(ECullMode::None);
+    RotateY->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateY);
 
     URingComponent *RotateZ = new URingComponent();
+    RotateZ->SetOuter(this);
+    RotateZ->RegisterComponent();
     RotateZ->SetRotation({0.0f, 0.0f, 0.0f});
     RotateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
-    RotateZ->SetAlwaysVisible(true);
     RotateZ->SetCullMode(ECullMode::None);
+    RotateZ->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateZ);
 
     UCubeArrowComponent *ScaleX = new UCubeArrowComponent();
+    ScaleX->SetOuter(this);
+    ScaleX->RegisterComponent();
     ScaleX->SetRotation({0.0f, -HALF_PI, 0.0f});
     ScaleX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
-    ScaleX->SetAlwaysVisible(true);
     ScaleX->SetCullMode(ECullMode::None);
+    ScaleX->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleX);
 
     UCubeArrowComponent *ScaleY = new UCubeArrowComponent();
+    ScaleY->SetOuter(this);
+    ScaleY->RegisterComponent();
     ScaleY->SetRotation({HALF_PI, 0.0f, 0.0f});
     ScaleY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
-    ScaleY->SetAlwaysVisible(true);
     ScaleY->SetCullMode(ECullMode::None);
+    ScaleY->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleY);
 
     UCubeArrowComponent *ScaleZ = new UCubeArrowComponent();
+    ScaleZ->SetOuter(this);
+    ScaleZ->RegisterComponent();
     ScaleZ->SetRotation({0.0f, 0.0f, 0.0f});
     ScaleZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
-    ScaleZ->SetAlwaysVisible(true);
     ScaleZ->SetCullMode(ECullMode::None);
+    ScaleZ->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleZ);
 
     GizmoType = EGizmoHandleType::Translate;
@@ -100,6 +122,8 @@ APivotTransformGizmo::~APivotTransformGizmo()
         }
     }
     ScaleGizmoComponents.clear();
+
+    delete this->GetRootComponent();
 }
 
 void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &ViewMatrix)
@@ -143,7 +167,7 @@ void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &Vie
 
     UnscaledTransform.Scale = FVector<float>(ScaleFactor, ScaleFactor, ScaleFactor);
 
-    FMatrix<float> TargetMatrix = UnscaledTransform.ToMatrix();
+    this->SetTransform(UnscaledTransform);
 
     switch (GizmoType)
     {
@@ -151,11 +175,7 @@ void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &Vie
         for (auto GizmoComponent : TranslateGizmoComponents)
         {
             if (GizmoComponent != nullptr)
-            {
-                // 타겟의 변환 행렬을 부모 행렬로 전달 (자신의 고유 Transform은 유지됨)
-                GizmoComponent->SetParentMatrix(TargetMatrix);
                 GizmoComponent->Render(renderer);
-            }
         }
         break;
     case EGizmoHandleType::Rotate:
@@ -163,11 +183,7 @@ void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &Vie
         for (auto *GizmoComponent : RotateGizmoComponents)
         {
             if (GizmoComponent != nullptr)
-            {
-                // 타겟의 변환 행렬을 부모 행렬로 전달 (자신의 고유 Transform은 유지됨)
-                GizmoComponent->SetParentMatrix(TargetMatrix);
                 GizmoComponent->Render(renderer);
-            }
         }
         break;
     case EGizmoHandleType::Scale:
@@ -175,11 +191,7 @@ void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &Vie
         for (auto *GizmoComponent : ScaleGizmoComponents)
         {
             if (GizmoComponent != nullptr)
-            {
-                // 타겟의 변환 행렬을 부모 행렬로 전달 (자신의 고유 Transform은 유지됨)
-                GizmoComponent->SetParentMatrix(TargetMatrix);
                 GizmoComponent->Render(renderer);
-            }
         }
         break;
     }

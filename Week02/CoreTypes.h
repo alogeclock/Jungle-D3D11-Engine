@@ -49,7 +49,8 @@ enum class EPrimitiveType : uint8
 	Arrow,
 	CubeArrow,
 	Ring,
-	Axis
+	Axis,
+	Grid
 };
 
 enum class ECullMode : uint8

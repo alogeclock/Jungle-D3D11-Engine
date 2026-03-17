@@ -3,7 +3,6 @@
 UCubeComponent::UCubeComponent() : UPrimitiveComponent()
 {
     PrimitiveType = EPrimitiveType::Cube;
-    
 }
 
 UCubeComponent::~UCubeComponent() {}

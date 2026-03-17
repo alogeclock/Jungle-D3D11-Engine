@@ -1,4 +1,4 @@
-// dear imgui, v1.92.5
+﻿// dear imgui, v1.92.5
 // (widgets code)
 
 /*
@@ -5446,7 +5446,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         // We are attempting to do most of that in **one main pass** to minimize the computation cost (non-negligible for large amount of text) + 2nd pass for selection rendering (we could merge them by an extra refactoring effort)
         // FIXME: This should occur on buf_display but we'd need to maintain cursor/select_start/select_end for UTF-8.
         IM_ASSERT(state != NULL);
-        state->LineCount = line_count;
+        state->l = line_count;
 
         // Scroll
         float new_scroll_y = scroll_y;
@@ -5629,7 +5629,7 @@ void ImGui::DebugNodeInputTextState(ImGuiInputTextState* state)
     Text("TextLen: %d, Cursor: %d%s, Selection: %d..%d", state->TextLen, stb_state->cursor,
         (state->Flags & ImGuiInputTextFlags_WordWrap) ? (state->LastMoveDirectionLR == ImGuiDir_Left ? " (L)" : " (R)") : "",
         stb_state->select_start, stb_state->select_end);
-    Text("BufCapacity: %d, LineCount: %d", state->BufCapacity, state->LineCount);
+    Text("BufCapacity: %d, l: %d", state->BufCapacity, state->l);
     Text("(Internal Buffer: TextA Size: %d, Capacity: %d)", state->TextA.Size, state->TextA.Capacity);
     Text("has_preferred_x: %d (%.2f)", stb_state->has_preferred_x, stb_state->preferred_x);
     Text("undo_point: %d, redo_point: %d, undo_char_point: %d, redo_char_point: %d", undo_state->undo_point, undo_state->redo_point, undo_state->undo_char_point, undo_state->redo_char_point);

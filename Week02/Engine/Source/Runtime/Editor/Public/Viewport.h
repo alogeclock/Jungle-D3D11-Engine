@@ -43,6 +43,7 @@ public:
         Width = NewWidth;
         Height = NewHeight;
     }
+
     uint32 GetWidth() const { return Width; }
     uint32 GetHeight() const { return Height; }
 

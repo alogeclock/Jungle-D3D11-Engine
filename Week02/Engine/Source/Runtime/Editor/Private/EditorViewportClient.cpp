@@ -47,6 +47,7 @@ FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
     Viewport = viewport;
     Gizmo = new APivotTransformGizmo();
     Axis = new AAxis();
+    Grid = new AGrid();
 }
 
 FEditorViewportClient::~FEditorViewportClient()
@@ -61,6 +62,12 @@ FEditorViewportClient::~FEditorViewportClient()
     {
         delete Axis;
         Axis = nullptr;
+    }
+
+    if (Grid != nullptr)
+    {
+        delete Grid;
+        Grid = nullptr;
     }
 }
 
@@ -217,10 +224,15 @@ void FEditorViewportClient::Render(URenderer& renderer)
         Gizmo->Render(renderer, ViewMatrix);
     }
 
+    if (Grid != nullptr)
+    {
+        Grid->Render(renderer);
+    }
+
     if (Axis != nullptr)
     {
         Axis->Render(renderer);
-   }
+    }
 }
 
 void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)

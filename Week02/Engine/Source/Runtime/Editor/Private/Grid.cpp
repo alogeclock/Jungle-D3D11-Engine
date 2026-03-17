@@ -1,0 +1,25 @@
+﻿#include "Engine/Source/Runtime/Editor/Public/Grid.h"
+
+AGrid::AGrid()
+{
+    USceneComponent *Root = new USceneComponent();
+    this->SetRootComponent(Root);
+    Root->RegisterComponent();
+
+    GridComponent = new UGridComponent();
+    GridComponent->SetOuter(this);
+    GridComponent->RegisterComponent();
+}
+
+AGrid::~AGrid()
+{
+    delete GridComponent;
+    delete this->GetRootComponent();
+}
+
+void AGrid::Render(URenderer &renderer)
+{
+    FMatrix<float> TargetMatrix = GetTransform().ToMatrix();
+    GridComponent->SetParentMatrix(TargetMatrix);
+    GridComponent->Render(renderer);
+}
