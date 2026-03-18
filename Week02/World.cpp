@@ -22,10 +22,7 @@ using json = nlohmann::json;
 
 struct FHitResult;
 
-UWorld::UWorld(const FString &InString) : UObject(InString)
-{
-    CurrentLevel = CreateNewLevel("PersistentLevel");
-}
+UWorld::UWorld(const FString &InString) : UObject(InString) { CurrentLevel = CreateNewLevel("PersistentLevel"); }
 
 UWorld::~UWorld()
 {
@@ -47,7 +44,7 @@ ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
     return NewLevel;
 }
 
-bool UWorld::SaveLevel(const FString& FilePath)
+bool UWorld::SaveLevel(const FString &FilePath)
 {
     if (CurrentLevel == nullptr)
         return false;
@@ -58,35 +55,50 @@ bool UWorld::SaveLevel(const FString& FilePath)
     json j;
     j["Version"] = 1;
     j["SceneName"] = CurrentSceneName;
-    
+
     json primitives;
-    int currentUuid = 0;
+    int  currentUuid = 0;
 
     // 소수점 6자리까지 반올림하는 람다 함수
-    auto Round6 = [](float val) -> float {
-        return std::round(val * 1000000.0f) / 1000000.0f;
-    };
+    auto Round6 = [](float val) -> float { return std::round(val * 1000000.0f) / 1000000.0f; };
 
     // 현재 레벨의 모든 액터를 순회하며 저장
-    for (AActor* Actor : CurrentLevel->GetActors())
+    for (AActor *Actor : CurrentLevel->GetActors())
     {
         std::string primitiveType = "None";
-        
+
         // 추가된 모든 Primitive Component를 식별합니다.
-        for (UActorComponent* Component : Actor->GetOwnedComponents())
+        for (UActorComponent *Component : Actor->GetOwnedComponents())
         {
-            if (Cast<USphereComponent>(Component))        { primitiveType = "Sphere"; break; }
-            if (Cast<UCubeComponent>(Component))          { primitiveType = "Cube"; break; }
-            if (Cast<UTriangleComponent>(Component))      { primitiveType = "Triangle"; break; }
+            if (Cast<USphereComponent>(Component))
+            {
+                primitiveType = "Sphere";
+                break;
+            }
+            if (Cast<UCubeComponent>(Component))
+            {
+                primitiveType = "Cube";
+                break;
+            }
+            if (Cast<UTriangleComponent>(Component))
+            {
+                primitiveType = "Triangle";
+                break;
+            }
+            if (Cast<UPlaneComponent>(Component))
+            {
+                primitiveType = "Plane";
+                break;
+            }
         }
 
         FTransform Transform = Actor->GetTransform();
-        
+
         json primitiveJson;
         primitiveJson["Type"] = primitiveType;
-        primitiveJson["Location"] = { Round6(Transform.Location.X), Round6(Transform.Location.Y), Round6(Transform.Location.Z) };
-        primitiveJson["Rotation"] = { Round6(Transform.Rotation.X), Round6(Transform.Rotation.Y), Round6(Transform.Rotation.Z) }; 
-        primitiveJson["Scale"]    = { Round6(Transform.Scale.X), Round6(Transform.Scale.Y), Round6(Transform.Scale.Z) };
+        primitiveJson["Location"] = {Round6(Transform.Location.X), Round6(Transform.Location.Y), Round6(Transform.Location.Z)};
+        primitiveJson["Rotation"] = {Round6(Transform.Rotation.X), Round6(Transform.Rotation.Y), Round6(Transform.Rotation.Z)};
+        primitiveJson["Scale"] = {Round6(Transform.Scale.X), Round6(Transform.Scale.Y), Round6(Transform.Scale.Z)};
 
         primitives[std::to_string(currentUuid)] = primitiveJson;
         currentUuid++;
@@ -106,7 +118,7 @@ bool UWorld::SaveLevel(const FString& FilePath)
     return false;
 }
 
-bool UWorld::LoadLevel(const FString& FilePath)
+bool UWorld::LoadLevel(const FString &FilePath)
 {
     std::ifstream file(FilePath);
     if (!file.is_open())
@@ -135,18 +147,18 @@ bool UWorld::LoadLevel(const FString& FilePath)
         delete CurrentLevel;
     }
 
-    //여기서부터
+    // 여기서부터
     CurrentLevel = CreateNewLevel(CurrentSceneName);
 
     if (j.contains("Primitives"))
     {
         json primitives = j["Primitives"];
-        
-        for (auto& item : primitives.items())
+
+        for (auto &item : primitives.items())
         {
-            json primData = item.value();
+            json        primData = item.value();
             std::string type = primData["Type"].get<std::string>();
-            
+
             AActor          *NewActor = GWorld->SpawnActor<AActor>();
             USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
             NewActor->SetRootComponent(Root);
@@ -158,19 +170,19 @@ bool UWorld::LoadLevel(const FString& FilePath)
             if (primData.contains("Location"))
             {
                 auto loc = primData["Location"];
-                NewTransform.Location = { loc[0], loc[1], loc[2] }; 
+                NewTransform.Location = {loc[0], loc[1], loc[2]};
             }
             if (primData.contains("Rotation"))
             {
                 auto rot = primData["Rotation"];
-                NewTransform.Rotation = { rot[0], rot[1], rot[2] }; 
+                NewTransform.Rotation = {rot[0], rot[1], rot[2]};
             }
             if (primData.contains("Scale"))
             {
                 auto scale = primData["Scale"];
-                NewTransform.Scale = { scale[0], scale[1], scale[2] }; 
+                NewTransform.Scale = {scale[0], scale[1], scale[2]};
             }
-            
+
             NewActor->SetTransform(NewTransform);
 
             UObject *NewObj = nullptr;
@@ -222,7 +234,7 @@ void UWorld::Render(URenderer &renderer)
 {
     if (CurrentLevel)
     {
-        for (AActor* actor : CurrentLevel->GetActors())
+        for (AActor *actor : CurrentLevel->GetActors())
         {
             actor->IterateAllActorComponents(renderer);
         }
@@ -247,7 +259,7 @@ FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<flo
                     // Ray와 가장 가까운 오브젝트 피킹
                     if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
                     {
-                        if(ClosestHit.HitComponent != nullptr)
+                        if (ClosestHit.HitComponent != nullptr)
                             ClosestHit.HitComponent->NotSelected();
 
                         ClosestHit = Hit;
@@ -256,7 +268,7 @@ FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<flo
                     }
                     else
                         Object->NotSelected();
-                }  
+                }
             }
         }
     }
