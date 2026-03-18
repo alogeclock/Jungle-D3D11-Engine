@@ -27,7 +27,6 @@ class USceneComponent : public UActorComponent
     void       SetTransform(const FTransform &InTransform);
     FTransform GetTransform() const;
 
-    void SetParentMatrix(const FMatrix<float> &ParentMatrix);
     const FMatrix<float> GetParentMatrix() const;
 
     void                             SetupAttachment(USceneComponent *InParent);
@@ -57,7 +56,6 @@ class USceneComponent : public UActorComponent
     bool       bIsWorldMatrixDirty = true;
 
     FMatrix<float>  WorldMatrix = FMatrix<float>::Identity();
-    FMatrix<float>  ParentMatrix = FMatrix<float>::Identity();
     FVector4<float> Color = {0.0f, 0.0f, 0.0f, 0.0f};
 
     // 계층 구조 관리를 위한 멤버 변수

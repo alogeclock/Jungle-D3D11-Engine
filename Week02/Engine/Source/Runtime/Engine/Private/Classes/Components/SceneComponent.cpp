@@ -62,13 +62,13 @@ void USceneComponent::SetTransform(const FTransform &InTransform)
 
 FTransform USceneComponent::GetTransform() const { return Transform; }
 
-void USceneComponent::SetParentMatrix(const FMatrix<float> &NewParentMatrix)
+const FMatrix<float> USceneComponent::GetParentMatrix() const
 {
-    ParentMatrix = NewParentMatrix;
-    MarkTransformDirty();
+    if (AttachParent)
+        return AttachParent->GetWorldMatrix();
+    else
+        return FMatrix<float>::Identity();
 }
-
-const FMatrix<float> USceneComponent::GetParentMatrix() const { return ParentMatrix; }
 
 void USceneComponent::SetupAttachment(USceneComponent *InParent)
 {
@@ -88,14 +88,16 @@ void USceneComponent::SetupAttachment(USceneComponent *InParent)
 
 void USceneComponent::UpdateWorldMatrix()
 {
+    FMatrix<float> CurrentParentMatrix = FMatrix<float>::Identity();
+
     // 1. 부모가 존재할 경우, 부모의 최신 월드 행렬을 자신의 ParentMatrix로 가져옵니다.
     if (AttachParent != nullptr)
     {
-        ParentMatrix = AttachParent->GetWorldMatrix();
+        CurrentParentMatrix = AttachParent->GetWorldMatrix();
     }
 
     // 2. 로컬 Transform과 부모의 행렬을 곱하여 최종 월드 행렬 도출
-    WorldMatrix = Transform.ToMatrix() * ParentMatrix;
+    WorldMatrix = Transform.ToMatrix() * CurrentParentMatrix;
     bIsWorldMatrixDirty = false;
 }
 

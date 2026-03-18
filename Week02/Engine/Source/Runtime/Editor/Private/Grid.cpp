@@ -18,6 +18,5 @@ AGrid::~AGrid()
 void AGrid::Render(URenderer &renderer)
 {
     FMatrix<float> TargetMatrix = GetTransform().ToMatrix();
-    GridComponent->SetParentMatrix(TargetMatrix);
     GridComponent->Render(renderer);
 }
