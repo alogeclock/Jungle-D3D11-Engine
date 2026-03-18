@@ -3,7 +3,6 @@
 
 FViewport::FViewport() 
 { 
-	CreateEditorViewportClient(); 
 }
 
 FViewport::~FViewport()
