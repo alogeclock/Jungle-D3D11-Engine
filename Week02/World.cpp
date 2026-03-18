@@ -192,6 +192,8 @@ bool UWorld::LoadLevel(const FString &FilePath)
                 NewObj = FObjectFactory::ConstructObject(UCubeComponent::StaticClass());
             else if (type == "Triangle")
                 NewObj = FObjectFactory::ConstructObject(UTriangleComponent::StaticClass());
+            else if (type == "Plane")
+                NewObj = FObjectFactory::ConstructObject(UPlaneComponent::StaticClass());
 
             UPrimitiveComponent *Primitive = Cast<UPrimitiveComponent>(NewObj);
             if (Primitive != nullptr)
