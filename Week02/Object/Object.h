@@ -14,7 +14,8 @@ class UClass
     UClass     *SuperClass;
     ConstructFn Constructor;
 
-    UClass(const FString &InName, UClass *InSuper, ConstructFn InConstructor) : ClassName(InName), SuperClass(InSuper), Constructor(InConstructor) {}
+    UClass(const FString &InName, UClass *InSuper, ConstructFn InConstructor) 
+        : ClassName(InName), SuperClass(InSuper), Constructor(InConstructor) {}
     const char *GetName() { return ClassName.c_str();}
 };
 
@@ -48,6 +49,7 @@ public:
 	void AddMemoryUsage(uint64 InBytes, uint32 InCount = 1);
 	void RemoveMemoryUsage(uint64 InBytes, uint32 InCount = 1);
 
+    uint32 GetUUID() const { return UUID; }
 	uint64 GetAllocatedBytes() const;
 	uint32 GetAllocatedCount() const;
 

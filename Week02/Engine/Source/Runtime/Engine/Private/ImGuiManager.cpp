@@ -199,10 +199,11 @@ void UImGuiManager::SpawnActors()
             if (DynamicPrimitive != nullptr)
             {
                 const char *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
+                const uint32 UUID = NewObj->GetUUID();
 
                 // ⭐️ 2. 가져온 이름을 로그 버퍼에 예쁘게 포맷팅합니다.
                 char logBuffer[256];
-                snprintf(logBuffer, sizeof(logBuffer), "[System] Spawned Actor: %s", SpawnedClassName);
+                snprintf(logBuffer, sizeof(logBuffer), "[System] Spawned Actor: %s / UUID: %u", SpawnedClassName, UUID);
 
                 // ⭐️ 3. 완성된 문자열을 로그로 출력합니다!
                 AddLog(logBuffer);
