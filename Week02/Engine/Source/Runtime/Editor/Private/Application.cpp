@@ -1,8 +1,8 @@
 ﻿#include "Memory/Memory.h"
 #include "Engine/Source/Runtime/Editor/Public/Application.h"
-
-//임시 
 #include "World.h"
+
+UWorld         *GWorld = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -72,6 +72,7 @@ UApplication::UApplication()
 {
 	Renderer = new URenderer();
 	Viewport = new FViewport();
+    GWorld = new UWorld("World");
 }
 
 UApplication::~UApplication()
@@ -95,7 +96,6 @@ void UApplication::Initialize(HINSTANCE hInstance)
 		nullptr, nullptr, hInst, nullptr);
 
 	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-
 	// Viewport
     if (Viewport != nullptr)
     {

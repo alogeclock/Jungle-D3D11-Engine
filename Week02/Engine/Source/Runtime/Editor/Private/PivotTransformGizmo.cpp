@@ -344,7 +344,7 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float> &RayOrigin, const FV
         FVector<float> CurrentDragVector = HitPoint - GizmoOrigin;
         CurrentDragVector.Normalize();
 
-        // [핵심 로직] acos의 도메인 에러(값이 튀는 현상)를 배제하고 정확한 부호와 각도를 얻기 위해 atan2 사용
+        // 정확한 부호와 각도를 얻기 위해 atan2 사용
         FVector<float> CrossProduct = FVector<float>::CrossProduct(InitialDragVector, CurrentDragVector);
         float          y = FVector<float>::DotProduct(CrossProduct, PlaneNormal);            // sin 성분 (외적 벡터를 축에 투영)
         float          x = FVector<float>::DotProduct(InitialDragVector, CurrentDragVector); // cos 성분 (두 벡터의 내적)

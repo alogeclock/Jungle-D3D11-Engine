@@ -33,9 +33,6 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     {
     // Vertex 적음 → 바로 Triangle 검사
     case EPrimitiveType::Triangle:
-    case EPrimitiveType::Arrow:
-    case EPrimitiveType::CubeArrow:
-    case EPrimitiveType::Ring:
     case EPrimitiveType::Plane:
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
         break;
@@ -43,6 +40,9 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     // Vertex 많음 → Sphere -> AABB → Triangle  
     case EPrimitiveType::Cube:
     case EPrimitiveType::Sphere:
+    case EPrimitiveType::Arrow:
+    case EPrimitiveType::CubeArrow:
+    case EPrimitiveType::Ring:
     default:
         if (!IntersectRayBoundingSphere(RayOrigin, RayDirection))
             return Result;
@@ -64,7 +64,7 @@ FVector<float> UPrimitiveComponent::GetLocalAABBMin() const
     case EPrimitiveType::Cube:
         return FVector<float>(-0.5f, -0.5f, -0.5);
     default:
-        return FVector<float>(0, 0, 0);
+        return FVector<float>(-1.0f, -1.0f, -1.0f);
     }
 }
 
@@ -77,7 +77,7 @@ FVector<float> UPrimitiveComponent::GetLocalAABBMax() const
     case EPrimitiveType::Cube:
         return FVector<float>(0.5f, 0.5f, 0.5f);
     default:
-        return FVector<float>(0, 0, 0);
+        return FVector<float>(1.0f, 1.0f, 1.0f);
     }
 }
 
