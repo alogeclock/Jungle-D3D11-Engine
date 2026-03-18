@@ -177,7 +177,7 @@ class FEditorViewportClient
     // 카메라
     FViewportCameraTransform CameraTransform;
 
-    static constexpr float MoveSpeed = 2.0f; // units/sec
+    static constexpr float MoveSpeed = 5.0f; // units/sec
     static constexpr float RotSpeed = 0.1f;  // deg/pixel
     static constexpr float ZoomSpeed = 10.0f;
 

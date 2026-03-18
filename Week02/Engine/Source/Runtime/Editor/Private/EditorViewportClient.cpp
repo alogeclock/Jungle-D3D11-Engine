@@ -172,6 +172,9 @@ void FEditorViewportClient::MouseMove(FViewport *Viewport, int32 X, int32 Y)
 
 void FEditorViewportClient::InputAxis(FViewport *Viewport, FKey Key, float Delta, float DeltaTime)
 {
+    if (UImGuiManager::Get().IsCaptureMouse())
+        return;
+
     const float PitchRad = CameraTransform.GetRotation().X * (3.14159265f / 180.f);
     const float YawRad = CameraTransform.GetRotation().Y * (3.14159265f / 180.f);
 

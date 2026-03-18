@@ -125,7 +125,7 @@ void UImGuiManager::ShowControlPanel()
     }
 
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
-    ImGui::TextWrapped("Memory : ");
+    ImGui::TextWrapped("Memory : %u / %u", TotalAllocationBytes, TotalAllocationCount);
 
     ImGui::Separator();
 
