@@ -1,16 +1,16 @@
-#pragma once
+﻿#pragma once
 
 #include "Object.h"
 #include "Actor.h"
 
 class ULevel : public UObject
 {
-public:
+  public:
     ULevel(const FString &InString);
-  virtual ~ULevel() override;
-  
+    virtual ~ULevel() override;
+
     TArray<AActor *> &GetActors() { return Actors; }
-  void              ClearActors();
+    void              ClearActors();
 
     static UObject *Constructor() { return new ULevel("LevelConstructor"); }
 
@@ -21,6 +21,7 @@ public:
     }
 
     virtual UClass *GetClass() const override { return StaticClass(); }
-private:
+
+  private:
     TArray<AActor *> Actors;
 };

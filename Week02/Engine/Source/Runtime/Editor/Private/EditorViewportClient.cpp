@@ -211,8 +211,8 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
         // 직교 투영
         FVector dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();
         float   Distance = dir.Length();
-        float   OrthoWidth = Distance * FMath::Tan(HalfFOV) * 2.0f;
-        float   OrthoHeight = Distance * FMath::Tan(HalfFOV) * 2.0f;
+        float   OrthoWidth = Distance * 2.0f;
+        float   OrthoHeight = Distance * 2.0f;
         return FOrthographicMatrix<float>(OrthoWidth, OrthoHeight, 0.1f, 1000.0f);
     }
 
