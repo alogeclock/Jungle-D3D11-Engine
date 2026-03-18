@@ -125,9 +125,9 @@ void UImGuiManager::ShowControlPanel()
     }
 
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
-    ImGui::TextWrapped("Memory : %u Bytes / %u Count / %u Objects", TotalAllocationBytes, TotalAllocationCount, GUObjectArray.size());
     ImGui::TextWrapped("Allocated Bytes: %u", TotalAllocationBytes);
-    ImGui::TextWrapped("Allocated Objects: %u", TotalAllocationCount);
+    ImGui::TextWrapped("Allocated Count: %u", TotalAllocationCount);
+    ImGui::TextWrapped("Object Count: %u", GUObjectArray.size());
 
     ImGui::Separator();
 
