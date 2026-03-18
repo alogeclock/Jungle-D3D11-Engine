@@ -161,6 +161,9 @@ void UApplication::Run()
 
 void UApplication::Finish()
 {
+    UMeshManager::Get().Release(*Renderer);
+    UImGuiManager::Get().Release();
+
 	Renderer->ReleaseConstantBuffer();
 	Renderer->Release();
 }
