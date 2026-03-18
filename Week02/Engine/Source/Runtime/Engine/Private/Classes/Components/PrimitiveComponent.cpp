@@ -36,6 +36,7 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     case EPrimitiveType::Arrow:
     case EPrimitiveType::CubeArrow:
     case EPrimitiveType::Ring:
+    case EPrimitiveType::Plane:
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
         break;
 

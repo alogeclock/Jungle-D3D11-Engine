@@ -125,7 +125,8 @@ void UImGuiManager::ShowControlPanel()
     }
 
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
-    ImGui::TextWrapped("Memory : %u / %u", TotalAllocationBytes, TotalAllocationCount);
+    ImGui::TextWrapped("Allocated Bytes: %u", TotalAllocationBytes);
+    ImGui::TextWrapped("Allocated Objects: %u", TotalAllocationCount);
 
     ImGui::Separator();
 
@@ -146,7 +147,7 @@ void UImGuiManager::ShowControlPanel()
 
 void UImGuiManager::SpawnActors()
 {
-    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle"};
+    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane"};
 
     static int Primitive = 0;
     static int NumberOfSpawn = 1;
@@ -173,6 +174,9 @@ void UImGuiManager::SpawnActors()
             break;
         case 2:
             ComponentClassToSpawn = UTriangleComponent::StaticClass();
+            break;
+        case 3:
+            ComponentClassToSpawn = UPlaneComponent::StaticClass();
             break;
         }
 
