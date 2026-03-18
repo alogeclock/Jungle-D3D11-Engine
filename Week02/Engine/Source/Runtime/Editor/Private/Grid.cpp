@@ -13,8 +13,6 @@ AGrid::AGrid(const FString &InString) : AActor(InString)
 
 AGrid::~AGrid()
 {
-    delete GridComponent;
-    delete this->GetRootComponent();
 }
 
 void AGrid::Render(URenderer &renderer)

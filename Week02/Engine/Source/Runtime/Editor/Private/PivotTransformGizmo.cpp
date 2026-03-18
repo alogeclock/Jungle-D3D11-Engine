@@ -95,35 +95,6 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
 
 APivotTransformGizmo::~APivotTransformGizmo()
 {
-    for (auto *Component : TranslateGizmoComponents)
-    {
-        if (Component != nullptr)
-        {
-            delete Component;
-        }
-    }
-    TranslateGizmoComponents.clear();
-
-    for (auto *Component : RotateGizmoComponents)
-    {
-        if (Component != nullptr)
-        {
-            delete Component;
-        }
-    }
-    RotateGizmoComponents.clear();
-
-    // 3. Scale 기즈모 메모리 해제
-    for (auto *Component : ScaleGizmoComponents)
-    {
-        if (Component != nullptr)
-        {
-            delete Component;
-        }
-    }
-    ScaleGizmoComponents.clear();
-
-    delete this->GetRootComponent();
 }
 
 void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &ViewMatrix)

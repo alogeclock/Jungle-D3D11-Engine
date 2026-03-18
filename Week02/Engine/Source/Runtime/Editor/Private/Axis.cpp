@@ -13,8 +13,6 @@ AAxis::AAxis(const FString &InString) : AActor(InString)
 
 AAxis::~AAxis() 
 {   
-    delete AxisComponent;
-    delete this->GetRootComponent();
 }
 
 void AAxis::Render(URenderer &renderer)
