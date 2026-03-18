@@ -313,7 +313,10 @@ void UImGuiManager::TransformInspector()
 
     ImGui::DragFloat3("Translation", &t.Location.X, 0.01f);
     ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f);
-    ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f);
+    ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f, 0.f, FLT_MAX);
+
+    if (ImGui::Button("Change Mode"))
+        bChangeMode = true;
 
     Actor->SetTransform(t);
 }

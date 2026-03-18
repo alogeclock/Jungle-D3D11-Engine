@@ -63,6 +63,7 @@ private:
 
 public:
     bool bIsOrthogonal = false;
+    bool bChangeMode = false;
 
 private:
     FViewportCameraTransform* Camera;
