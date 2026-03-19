@@ -13,7 +13,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     TranslateX->SetOuter(this);
     TranslateX->RegisterComponent();
     TranslateX->SetRotation({0.0, -HALF_PI, 0.0f});
-    TranslateX->SetColor({1.0f, 0.0f, 0.0f, 0.0f});
+    TranslateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     TranslateX->SetCullMode(ECullMode::None);
     TranslateX->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateX);
@@ -22,7 +22,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     TranslateY->SetOuter(this);
     TranslateY->RegisterComponent();
     TranslateY->SetRotation({HALF_PI, 0.0f, 0.0f});
-    TranslateY->SetColor({0.0f, 1.0f, 0.0f, 0.0f});
+    TranslateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     TranslateY->SetCullMode(ECullMode::None);
     TranslateY->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateY);
@@ -31,7 +31,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     TranslateZ->SetOuter(this);
     TranslateZ->RegisterComponent();
     TranslateZ->SetRotation({0.0f, 0.0f, 0.0f});
-    TranslateZ->SetColor({0.0f, 0.0f, 1.0f, 0.0f});
+    TranslateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     TranslateZ->SetCullMode(ECullMode::None);
     TranslateZ->SetAlwaysVisible(true);
     TranslateGizmoComponents.push_back(TranslateZ);
@@ -40,7 +40,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     RotateX->SetOuter(this);
     RotateX->RegisterComponent();
     RotateX->SetRotation({0.0f, -HALF_PI, 0.0f});
-    RotateX->SetColor({1.0f, 0.0f, 0.0f, 0.0f});
+    RotateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     RotateX->SetCullMode(ECullMode::None);
     RotateX->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateX);
@@ -49,7 +49,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     RotateY->SetOuter(this);
     RotateY->RegisterComponent();
     RotateY->SetRotation({HALF_PI, 0.0f, 0.0f});
-    RotateY->SetColor({0.0f, 1.0f, 0.0f, 0.0f});
+    RotateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     RotateY->SetCullMode(ECullMode::None);
     RotateY->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateY);
@@ -58,7 +58,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     RotateZ->SetOuter(this);
     RotateZ->RegisterComponent();
     RotateZ->SetRotation({0.0f, 0.0f, 0.0f});
-    RotateZ->SetColor({0.0f, 0.0f, 1.0f, 0.0f});
+    RotateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     RotateZ->SetCullMode(ECullMode::None);
     RotateZ->SetAlwaysVisible(true);
     RotateGizmoComponents.push_back(RotateZ);
@@ -67,7 +67,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     ScaleX->SetOuter(this);
     ScaleX->RegisterComponent();
     ScaleX->SetRotation({0.0f, -HALF_PI, 0.0f});
-    ScaleX->SetColor({1.0f, 0.0f, 0.0f, 0.0f});
+    ScaleX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
     ScaleX->SetCullMode(ECullMode::None);
     ScaleX->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleX);
@@ -76,7 +76,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     ScaleY->SetOuter(this);
     ScaleY->RegisterComponent();
     ScaleY->SetRotation({HALF_PI, 0.0f, 0.0f});
-    ScaleY->SetColor({0.0f, 1.0f, 0.0f, 0.0f});
+    ScaleY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
     ScaleY->SetCullMode(ECullMode::None);
     ScaleY->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleY);
@@ -85,7 +85,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
     ScaleZ->SetOuter(this);
     ScaleZ->RegisterComponent();
     ScaleZ->SetRotation({0.0f, 0.0f, 0.0f});
-    ScaleZ->SetColor({0.0f, 0.0f, 1.0f, 0.0f});
+    ScaleZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
     ScaleZ->SetCullMode(ECullMode::None);
     ScaleZ->SetAlwaysVisible(true);
     ScaleGizmoComponents.push_back(ScaleZ);
