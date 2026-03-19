@@ -238,15 +238,16 @@ void FEditorViewportClient::Render(URenderer& renderer)
 
     FMatrix<float> ViewMatrix = GetViewMatrix();
 
-    // 타겟 오브젝트가 설정되어 있을 때만 기즈모를 그린다.
-    if (Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
-    {
-        Gizmo->Render(renderer, ViewMatrix);
-    }
+    // 타겟 오브젝트가 설정되어 있을 때만 기즈모를 그린다
 
     if (Grid != nullptr)
     {
         Grid->Render(renderer);
+    }
+
+    if (Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
+    {
+        Gizmo->Render(renderer, ViewMatrix);
     }
 
     if (Axis != nullptr)
