@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Source/Core/Public/Math/UnrealMathUtility.h"
 
@@ -7,36 +7,40 @@ struct FVector
 {
 public:
     // ---------------------------------------------------------
-    // 1. ¸â¹ö º¯¼ö (Member Variables)
+    // 1. ë©¤ë²„ ë³€ìˆ˜ (Member Variables)
     // ---------------------------------------------------------
     T X;
     T Y;
     T Z;
 
     // ---------------------------------------------------------
-    // 2. »ı¼ºÀÚ (Constructors)
+    // 2. ìƒì„±ì (Constructors)
     // ---------------------------------------------------------
     FVector() = default;
     FVector(T InX, T InY, T InZ);
     FVector(T InX, T InY, T InZ, T InW);
 
     // ---------------------------------------------------------
-    // 3. ÀÏ¹İ »çÄ¢ ¿¬»êÀÚ (Basic Math Operators)
+    // 3. ì¼ë°˜ ì‚¬ì¹™ ì—°ì‚°ì (Basic Math Operators)
     // ---------------------------------------------------------
     FVector<T> operator+(const FVector<T>& V) const;
+    FVector<T> operator+(T Offset) const;
     FVector<T> operator-(const FVector<T>& V) const;
+    FVector<T> operator-(T Offset) const;
     FVector<T> operator*(const FVector<T> &V) const;
     FVector<T> operator*(T Scale) const;
     FVector<T> operator/(T Scale) const;
 
     // ---------------------------------------------------------
-    // 4. º¹ÇÕ ´ëÀÔ ¿¬»êÀÚ (Assignment Operators)
+    // 4. ë³µí•© ëŒ€ì… ì—°ì‚°ì (Assignment Operators)
     // ---------------------------------------------------------
     FVector<T>& operator+=(const FVector<T>& V);
-    FVector<T>& operator-=(const FVector<T>& V); // +=ÀÌ ÀÖ´Ù¸é -=µµ Â¦²áÀ¸·Î ÇÊ¼ö!
+    FVector<T>& operator-=(const FVector<T>& V); // +=ì´ ìˆë‹¤ë©´ -=ë„ ì§ê¿ìœ¼ë¡œ í•„ìˆ˜!
+    FVector<T>& operator+=(T Offset);
+    FVector<T>& operator-=(T Offset);
 
     // ---------------------------------------------------------
-    // 5. ÀÎ½ºÅÏ½º À¯Æ¿¸®Æ¼ ÇÔ¼ö (Instance Utility Functions)
+    // 5. ì¸ìŠ¤í„´ìŠ¤ ìœ í‹¸ë¦¬í‹° í•¨ìˆ˜ (Instance Utility Functions)
     // ---------------------------------------------------------
     T SizeSquared() const;
     T Size() const;
@@ -44,7 +48,7 @@ public:
     bool Normalize(T Tolerance = 1.e-8f);
 
     // ---------------------------------------------------------
-    // 6. °ø¿ë ¼öÇĞ °è»ê±â (Static Math Functions)
+    // 6. ê³µìš© ìˆ˜í•™ ê³„ì‚°ê¸° (Static Math Functions)
     // ---------------------------------------------------------
     static T DotProduct(const FVector<T>& A, const FVector<T>& B);
     static FVector<T> CrossProduct(const FVector<T>& A, const FVector<T>& B);
@@ -53,7 +57,7 @@ public:
 };
 
 // =========================================================
-// »ı¼ºÀÚ
+// ìƒì„±ì
 // =========================================================
 template<typename T>
 inline FVector<T>::FVector(T InX, T InY, T InZ)
@@ -66,7 +70,7 @@ inline FVector<T>::FVector(T InX, T InY, T InZ, T InW)
 {}
 
 // =========================================================
-// »çÄ¢ ¿¬»êÀÚ ¿À¹ö·Îµù
+// ì‚¬ì¹™ ì—°ì‚°ì ì˜¤ë²„ë¡œë”©
 // =========================================================
 template<typename T>
 inline FVector<T> FVector<T>::operator+(const FVector<T>& V) const
@@ -75,9 +79,21 @@ inline FVector<T> FVector<T>::operator+(const FVector<T>& V) const
 }
 
 template<typename T>
+inline FVector<T> FVector<T>::operator+(T Offset) const
+{
+    return FVector<T>(X + Offset, Y + Offset, Z + Offset);
+}
+
+template<typename T>
 inline FVector<T> FVector<T>::operator-(const FVector<T>& V) const
 {
     return FVector<T>(X - V.X, Y - V.Y, Z - V.Z); }
+
+template<typename T>
+inline FVector<T> FVector<T>::operator-(T Offset) const
+{
+    return FVector<T>(X - Offset, Y - Offset, Z - Offset);
+}
 
 template <typename T> inline FVector<T> FVector<T>::operator*(const FVector<T> &V) const 
 { 
@@ -98,7 +114,7 @@ inline FVector<T> FVector<T>::operator/(T Scale) const
 }
 
 // =========================================================
-// º¹ÇÕ ´ëÀÔ ¿¬»êÀÚ
+// ë³µí•© ëŒ€ì… ì—°ì‚°ì
 // =========================================================
 template<typename T>
 inline FVector<T>& FVector<T>::operator+=(const FVector<T>& V)
@@ -106,6 +122,15 @@ inline FVector<T>& FVector<T>::operator+=(const FVector<T>& V)
     X += V.X;
     Y += V.Y;
     Z += V.Z;
+    return *this;
+}
+
+template<typename T>
+inline FVector<T>& FVector<T>::operator+=(T Offset)
+{
+    X += Offset;
+    Y += Offset;
+    Z += Offset;
     return *this;
 }
 
@@ -118,8 +143,17 @@ inline FVector<T>& FVector<T>::operator-=(const FVector<T>& V)
     return *this;
 }
 
+template<typename T>
+inline FVector<T>& FVector<T>::operator-=(T Offset)
+{
+    X -= Offset;
+    Y -= Offset;
+    Z -= Offset;
+    return *this;
+}
+
 // =========================================================
-// ÀÎ½ºÅÏ½º À¯Æ¿¸®Æ¼ ÇÔ¼ö
+// ì¸ìŠ¤í„´ìŠ¤ ìœ í‹¸ë¦¬í‹° í•¨ìˆ˜
 // =========================================================
 template<typename T>
 inline T FVector<T>::SizeSquared() const
@@ -153,7 +187,7 @@ inline bool FVector<T>::Normalize(T Tolerance)
 }
 
 // =========================================================
-// °ø¿ë ¼öÇĞ °è»ê±â (Static)
+// ê³µìš© ìˆ˜í•™ ê³„ì‚°ê¸° (Static)
 // =========================================================
 template<typename T>
 inline T FVector<T>::DotProduct(const FVector<T>& A, const FVector<T>& B)

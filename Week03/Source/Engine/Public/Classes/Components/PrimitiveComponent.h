@@ -24,7 +24,7 @@ class UPrimitiveComponent : public USceneComponent
 {
     DECLARE_OBJECT(UPrimitiveComponent, USceneComponent)
 
-public:
+  public:
     UPrimitiveComponent(const FString &InString);
     virtual ~UPrimitiveComponent() override;
 
@@ -32,7 +32,7 @@ public:
     void         Selected();
     void         NotSelected();
 
-    void           SetPrimitiveType(EPrimitiveType InType) { PrimitiveType = InType; }
+    void           SetPrimitiveType(EPrimitiveType InType);
     EPrimitiveType GetPrimitiveType() const { return PrimitiveType; }
 
     void                     SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology) { Topology = InTopology; }
@@ -45,26 +45,27 @@ public:
     void SetAlwaysVisible(const bool bInEnableDepthTest) { bEnableDepthTest = !bInEnableDepthTest; }
 
     virtual void UpdateBounds();
-    const FBox& GetWorldAABB() const { return WorldAABB; }
+    const FBox  &GetWorldAABB();
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
-protected:
-    FVector<float> GetLocalAABBMin() const;
-    FVector<float> GetLocalAABBMax() const;
-    FTransform GetTransformFromOwner() const;
+  protected:
+    FTransform     GetTransformFromOwner() const;
 
-private:
-    bool IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
-    bool IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+  private:
+    bool       IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+    bool       IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
-protected:
+  protected:
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     ECullMode                CullMode = ECullMode::Back;
     bool                     bEnableDepthTest = true;
+    bool                     bLocalBoundsDirty = true;
 
     FBox LocalAABB;
     FBox WorldAABB;
+
+    FVector<float> Corners[8];
 };
