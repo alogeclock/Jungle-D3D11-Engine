@@ -1,63 +1,45 @@
-#include "Source/Engine/Public/Classes/MeshManager.h"
+Ôªø#include "Source/Engine/Public/Classes/MeshManager.h"
 
 UMeshManager::UMeshManager(const FString &InString) : UObject(InString) {}
 
 void UMeshManager::Initialize(URenderer &Renderer)
 {
-    int   GridSize = 1000;  // 100x100 ƒ≠
-    float GridStep = 1.0f; // 1ƒ≠¿« ≈©±‚
+    int   GridSize = 1000; // 100x100 Ïπ∏
+    float GridStep = 1.0f; // 1Ïπ∏Ïùò ÌÅ¨Í∏∞
 
     FVector4<float> Color = {0.3f, 0.3f, 0.3f, 0.2f};
 
     for (int i = -GridSize; i <= GridSize; ++i)
     {
-        // 1. ∞°∑Œº± (X√‡∞˙ ∆Ú«‡«— º±, Z∞™¿ª ∫Ø»≠Ω√≈∞∏Á πËƒ°)
+        // 1. Í∞ÄÎ°úÏÑ† (XÏ∂ïÍ≥º ÌèâÌñâÌïú ÏÑ†, ZÍ∞íÏùÑ Î≥ÄÌôîÏãúÌÇ§Î©∞ Î∞∞Ïπò)
         grid_vertices.push_back(FVertex{FVector<float>(-GridSize * GridStep, i * GridStep, -0.005f), Color});
         grid_vertices.push_back(FVertex{FVector<float>(GridSize * GridStep, i * GridStep, -0.005f), Color});
 
-        // 2. ºº∑Œº± (Z√‡∞˙ ∆Ú«‡«— º±, X∞™¿ª ∫Ø»≠Ω√≈∞∏Á πËƒ°)
+        // 2. ÏÑ∏Î°úÏÑ† (ZÏ∂ïÍ≥º ÌèâÌñâÌïú ÏÑ†, XÍ∞íÏùÑ Î≥ÄÌôîÏãúÌÇ§Î©∞ Î∞∞Ïπò)
         grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, -GridSize * GridStep, -0.005f), Color});
         grid_vertices.push_back(FVertex{FVector<float>(i * GridStep, GridSize * GridStep, -0.005f), Color});
     }
 
-    VertexData.emplace(EPrimitiveType::Cube, &cube_vertices);
-    VertexData.emplace(EPrimitiveType::Sphere, &sphere_vertices);
-    VertexData.emplace(EPrimitiveType::Triangle, &triangle_vertices);
-    VertexData.emplace(EPrimitiveType::Plane, &plane_vertices);
-    VertexData.emplace(EPrimitiveType::Arrow, &arrow_vertices);
-    VertexData.emplace(EPrimitiveType::CubeArrow, &cube_arrow_vertices);
-    VertexData.emplace(EPrimitiveType::Ring, &ring_vertices);
-    VertexData.emplace(EPrimitiveType::Axis, &axis_vertices);
-    VertexData.emplace(EPrimitiveType::Grid, &grid_vertices);
+    TArray<EPrimitiveType> PrimitiveTypes = {EPrimitiveType::Cube,  EPrimitiveType::Sphere, EPrimitiveType::Triangle,
+                                             EPrimitiveType::Plane, EPrimitiveType::Arrow,  EPrimitiveType::CubeArrow,
+                                             EPrimitiveType::Ring,  EPrimitiveType::Axis,   EPrimitiveType::Grid};
 
-    VertexBuffers.emplace(EPrimitiveType::Cube, Renderer.CreateVertexBuffer(cube_vertices.data(), static_cast<int>(cube_vertices.size()) * sizeof(FVertex)));
-    VertexBuffers.emplace(EPrimitiveType::Sphere,
-                          Renderer.CreateVertexBuffer(sphere_vertices.data(), static_cast<int>(sphere_vertices.size() * sizeof(FVertex))));
-    VertexBuffers.emplace(EPrimitiveType::Triangle,
-                          Renderer.CreateVertexBuffer(triangle_vertices.data(), static_cast<int>(triangle_vertices.size() * sizeof(FVertex))));
-    VertexBuffers.emplace(EPrimitiveType::Plane, Renderer.CreateVertexBuffer(plane_vertices.data(), static_cast<int>(plane_vertices.size() * sizeof(FVertex))));
-    VertexBuffers.emplace(EPrimitiveType::Arrow, Renderer.CreateVertexBuffer(arrow_vertices.data(), static_cast<int>(arrow_vertices.size() * sizeof(FVertex))));
-    VertexBuffers.emplace(EPrimitiveType::CubeArrow,
-                          Renderer.CreateVertexBuffer(cube_arrow_vertices.data(), static_cast<int>(cube_arrow_vertices.size() * sizeof(FVertex))));
-    VertexBuffers.emplace(EPrimitiveType::Ring, Renderer.CreateVertexBuffer(ring_vertices.data(), static_cast<int>(ring_vertices.size() * sizeof(FVertex))));
-    VertexBuffers.emplace(EPrimitiveType::Axis, Renderer.CreateVertexBuffer(axis_vertices.data(), static_cast<int>(axis_vertices.size() * sizeof(FVertex))));
-    VertexBuffers.emplace(EPrimitiveType::Grid, Renderer.CreateVertexBuffer(grid_vertices.data(), static_cast<int>(grid_vertices.size() * sizeof(FVertex))));
+    TArray<TArray<FVertex> *> VerticesPtr = {&cube_vertices,       &sphere_vertices, &triangle_vertices, &plane_vertices, &arrow_vertices,
+                                             &cube_arrow_vertices, &ring_vertices,   &axis_vertices,     &grid_vertices};
 
-    NumVertices.emplace(EPrimitiveType::Cube, static_cast<uint32>(cube_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::Triangle, static_cast<uint32>(triangle_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::Plane, static_cast<uint32>(plane_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::Arrow, static_cast<uint32>(arrow_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::CubeArrow, static_cast<uint32>(cube_arrow_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::Ring, static_cast<uint32>(ring_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::Axis, static_cast<uint32>(axis_vertices.size()));
-    NumVertices.emplace(EPrimitiveType::Grid, static_cast<uint32>(grid_vertices.size()));
+    for (int i = 0; i < PrimitiveTypes.size(); i++)
+    {
+        EPrimitiveType   t = PrimitiveTypes[i];
+        TArray<FVertex> *vptr = VerticesPtr[i];
 
+        VertexData.emplace(t, vptr);
+        VertexBuffers.emplace(t, Renderer.CreateVertexBuffer(vptr->data(), static_cast<int>(vptr->size()) * sizeof(FVertex)));
+        NumVertices.emplace(t, static_cast<uint32>(vptr->size()));
+        MeshAABB.emplace(t, ComputeAABB(*vptr));
+    }
 
     IndexData.emplace(EPrimitiveType::Sphere, &sphere_indices);
-
     IndexBuffers.emplace(EPrimitiveType::Sphere, Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
-    
     NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
 }
 
@@ -78,30 +60,52 @@ void UMeshManager::Release(URenderer &renderer)
     IndexBuffers.clear();
 }
 
+FBox UMeshManager::ComputeAABB(const TArray<FVertex> &Vertices)
+{
+    FBox Box;
+
+    for (const auto &V : Vertices)
+        Box.Encapsulate(V.Position);
+
+    return Box;
+}
+
+FBox UMeshManager::GetMeshAABB(EPrimitiveType Type) const
+{
+    auto it = MeshAABB.find(Type);
+    
+    if (it != MeshAABB.end())
+    {
+        return it->second;
+    }
+
+    return FBox(); // Ï∞æÏßÄ Î™ªÌñàÏùÑ Í≤ΩÏö∞ Í∏∞Î≥∏ ÏÉùÏÑ±Îêú Î∞ïÏä§ Î∞òÌôò
+}
+
 TArray<FVertex> *UMeshManager::GetVertexData(EPrimitiveType Type) const { return VertexData.at(Type); }
 
 ID3D11Buffer *UMeshManager::GetVertexBuffer(EPrimitiveType Type) const { return VertexBuffers.at(Type); }
 
 uint32 UMeshManager::GetNumVertices(EPrimitiveType Type) const { return NumVertices.at(Type); }
 
-ID3D11Buffer *UMeshManager::GetIndexBuffer(EPrimitiveType Type) const 
-{ 
+ID3D11Buffer *UMeshManager::GetIndexBuffer(EPrimitiveType Type) const
+{
     auto it = IndexBuffers.find(Type);
     if (it == IndexBuffers.end())
-        return nullptr; // æ¯¿∏∏È nullptr π›»Ø
+        return nullptr; // ÏóÜÏúºÎ©¥ nullptr Î∞òÌôò
     return it->second;
 }
 
-uint32 UMeshManager::GetNumIndices(EPrimitiveType Type) const 
-{ 
+uint32 UMeshManager::GetNumIndices(EPrimitiveType Type) const
+{
     auto it = NumIndices.find(Type);
     if (it == NumIndices.end())
         return 0;
     return it->second;
 }
 
-TArray<uint16> *UMeshManager::GetIndexData(EPrimitiveType Type) const 
-{ 
+TArray<uint16> *UMeshManager::GetIndexData(EPrimitiveType Type) const
+{
     auto it = IndexData.find(Type);
     if (it == IndexData.end())
         return nullptr;
