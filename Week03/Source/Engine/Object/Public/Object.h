@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreTypes.h"
+#include "Source/Core/Public/FName.h"
+
 class UObject;
 
 using ConstructFn = UObject * (*)();
@@ -69,7 +71,7 @@ public:
 	explicit UObject(const FString& InString);
 	virtual ~UObject();
 
-	const FString& GetName() const;
+	const FName& GetName() const;
 	void SetName(const FString& InName);
 
 	virtual class UWorld* GetWorld() const;
@@ -90,7 +92,7 @@ public:
 private:
 	uint32 UUID = -1;
 	uint32 InternalIndex = -1;
-	FString Name;
+	FName Name;
 	UObject* Outer;
 
 	uint64 AllocatedBytes = 0;

@@ -2,6 +2,9 @@
 #include "Source/Editor/Public/Application.h"
 #include "World.h"
 
+#include <Windows.h>
+
+
 UWorld         *GWorld = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
