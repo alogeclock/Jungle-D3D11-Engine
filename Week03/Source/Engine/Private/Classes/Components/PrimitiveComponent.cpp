@@ -14,9 +14,9 @@ void UPrimitiveComponent::Render(URenderer &renderer)
     FConstantsColor constantsColor(Color.X, Color.Y, Color.Z, Color.W);
 
     renderer.RenderPrimitive(this, constants, constantsColor);
-    
+
     if (!UImGuiManager::Get().bDrawAABB)
-       return;
+        return;
 
     if (PrimitiveType == EPrimitiveType::Cube || PrimitiveType == EPrimitiveType::Sphere)
     {
@@ -29,12 +29,12 @@ void UPrimitiveComponent::Render(URenderer &renderer)
         FMatrix<float> WorldMat = ScaleMat * TransMat;
 
         FConstants aabbConstants;
-        aabbConstants.MVPMatrix = WorldMat; 
-        FConstantsColor aabbColor = { 0.3f, 1.0f, 0.3f, 1.0f };
+        aabbConstants.MVPMatrix = WorldMat;
+        FConstantsColor aabbColor = {0.3f, 1.0f, 0.3f, 1.0f};
 
         // Line Batching이 도입되면 임시 컴포넌트 생성 없이 Batcher 클래스에 박스 정보를 넘기는 방식으로 최적화한다.
         UPrimitiveComponent WireBoxComp("TempAABB");
-        WireBoxComp.SetPrimitiveType(EPrimitiveType::WireBox); // MeshManager에 추가해야 할 Line List 용 타입
+        WireBoxComp.SetPrimitiveType(EPrimitiveType::WireBox);      // MeshManager에 추가해야 할 Line List 용 타입
         WireBoxComp.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // 선 그리기 모드로 변경
 
         renderer.RenderPrimitive(&WireBoxComp, aabbConstants, aabbColor);
@@ -44,6 +44,15 @@ void UPrimitiveComponent::Render(URenderer &renderer)
 void UPrimitiveComponent::Selected() { SetColor({0.0f, 0.0f, 0.0f, 0.5f}); }
 
 void UPrimitiveComponent::NotSelected() { SetColor({0.0f, 0.0f, 0.0f, 0.0f}); }
+
+void UPrimitiveComponent::SetPrimitiveType(EPrimitiveType InType)
+{
+    if (PrimitiveType != InType)
+    {
+        PrimitiveType = InType;
+        bLocalBoundsDirty = true; // 타입이 바뀌었으므로 LocalCorners 갱신 필요
+    }
+}
 
 FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
@@ -68,7 +77,7 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     case EPrimitiveType::Ring:
     default:
         if (!IntersectRayBoundingSphere(RayOrigin, RayDirection))
-            return Result;
+           return Result;
         if (!IntersectRayAABB(RayOrigin, RayDirection))
             return Result;
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
@@ -76,32 +85,6 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     }
 
     return Result;
-}
-
-FVector<float> UPrimitiveComponent::GetLocalAABBMin() const
-{
-    switch (PrimitiveType)
-    {
-    case EPrimitiveType::Sphere:
-        return FVector<float>(-1.0f, -1.0f, -1.0f);
-    case EPrimitiveType::Cube:
-        return FVector<float>(-0.5f, -0.5f, -0.5);
-    default:
-        return FVector<float>(-1.0f, -1.0f, -1.0f);
-    }
-}
-
-FVector<float> UPrimitiveComponent::GetLocalAABBMax() const
-{
-    switch (PrimitiveType)
-    {
-    case EPrimitiveType::Sphere:
-        return FVector<float>(1.0f, 1.0f, 1.0f);
-    case EPrimitiveType::Cube:
-        return FVector<float>(0.5f, 0.5f, 0.5f);
-    default:
-        return FVector<float>(1.0f, 1.0f, 1.0f);
-    }
 }
 
 FTransform UPrimitiveComponent::GetTransformFromOwner() const
@@ -157,23 +140,10 @@ bool UPrimitiveComponent::IntersectRayAABB(const FVector<float> &RayOrigin, cons
     //    Rotation은 이 단계에서 무시 → AABB 특성상
     //    World Axis-Aligned로 재계산 (AABB의 한계)
     // ──────────────────────────────────────────────
-    FTransform transform = GetTransformFromOwner();
+    UpdateBounds();
 
-    const FVector<float> LocalMin = GetLocalAABBMin();
-    const FVector<float> LocalMax = GetLocalAABBMax();
-
-    FVector<float> &WorldLocation = transform.Location;
-    FVector<float> &WorldScale = transform.Scale;
-
-    FVector<float> WorldMin = LocalMin * WorldScale + WorldLocation;
-    FVector<float> WorldMax = LocalMax * WorldScale + WorldLocation;
-
-    if (WorldMin.X > WorldMax.X)
-        std::swap(WorldMin.X, WorldMax.X);
-    if (WorldMin.Y > WorldMax.Y)
-        std::swap(WorldMin.Y, WorldMax.Y);
-    if (WorldMin.Z > WorldMax.Z)
-        std::swap(WorldMin.Z, WorldMax.Z);
+    FVector<float> WorldMin = WorldAABB.Min;
+    FVector<float> WorldMax = WorldAABB.Max;
 
     // ──────────────────────────────────────────────
     // 2. Slab Method (Amy Williams, 2005)
@@ -334,35 +304,29 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
 
 void UPrimitiveComponent::UpdateBounds()
 {
-    LocalAABB = UMeshManager::Get().GetMeshAABB(PrimitiveType);
-
-    // 구형일 경우 회전 무시
-    if (PrimitiveType == EPrimitiveType::Sphere)
+    if (bLocalBoundsDirty)
     {
-        FTransform transform = GetTransformFromOwner();
+        LocalAABB = UMeshManager::Get().GetMeshAABB(PrimitiveType);
+
+        FVector<float> Min = LocalAABB.Min;
+        FVector<float> Max = LocalAABB.Max;
+
+        // 로컬 AABB의 8개 정점 생성
         
-        // Uniform Scale을 가정하여 가장 큰 값을 반지름 Scale로 사용
-        float MaxScale = MAX(transform.Scale.X, transform.Scale.Y);
-        MaxScale = MAX(MaxScale, transform.Scale.Z);
-        FVector<float> Extents(MaxScale, MaxScale, MaxScale);
-        
-        WorldAABB = FBox(transform.Location - Extents, transform.Location + Extents);
-        return;
+        Corners[0] = {Min.X, Min.Y, Min.Z};
+        Corners[1] = {Max.X, Min.Y, Min.Z};
+        Corners[2] = {Min.X, Max.Y, Min.Z};
+        Corners[3] = {Max.X, Max.Y, Min.Z};
+        Corners[4] = {Min.X, Min.Y, Max.Z};
+        Corners[5] = {Max.X, Min.Y, Max.Z};
+        Corners[6] = {Min.X, Max.Y, Max.Z};
+        Corners[7] = {Max.X, Max.Y, Max.Z};
+
+        bLocalBoundsDirty = false;
     }
 
-    FVector<float> Min = LocalAABB.Min;
-    FVector<float> Max = LocalAABB.Max;
-
-    // 로컬 AABB의 8개 정점 생성
-    FVector<float> Corners[8] = 
-    {
-        {Min.X, Min.Y, Min.Z}, {Max.X, Min.Y, Min.Z},
-        {Min.X, Max.Y, Min.Z}, {Max.X, Max.Y, Min.Z},
-        {Min.X, Min.Y, Max.Z}, {Max.X, Min.Y, Max.Z},
-        {Min.X, Max.Y, Max.Z}, {Max.X, Max.Y, Max.Z}
-    };
-
     FMatrix<float> WorldMatrix = GetWorldMatrix();
+
     WorldAABB = FBox(); // 초기화
     for (int i = 0; i < 8; ++i)
     {
@@ -370,4 +334,10 @@ void UPrimitiveComponent::UpdateBounds()
         FVector4<float> Transformed = FVector4<float>(Corners[i].X, Corners[i].Y, Corners[i].Z, 1.0f) * WorldMatrix;
         WorldAABB.Encapsulate(FVector<float>(Transformed.X, Transformed.Y, Transformed.Z));
     }
+}
+
+const FBox &UPrimitiveComponent::GetWorldAABB() 
+{
+    UpdateBounds();
+    return WorldAABB;
 }

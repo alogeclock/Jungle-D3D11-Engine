@@ -187,7 +187,6 @@ void UImGuiManager::ShowControlPanel()
     ImGui::TextWrapped("Allocated Bytes: %u", TotalAllocationBytes);
     ImGui::TextWrapped("Allocated Count: %u", TotalAllocationCount);
     ImGui::TextWrapped("Object Count: %u", GUObjectArray.size());
-    ImGui::Checkbox("Draw AABB", &bDrawAABB);
 
     ImGui::Separator();
 
