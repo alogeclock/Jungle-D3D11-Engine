@@ -10,8 +10,8 @@
 #include <cmath>
 #include <algorithm>
 
-#include "Source/Runtime/Core/Public/Math/Vector.h"
-#include "Source/Runtime/Core/Public/Math/Vector4.h"
+#include "Source/Core/Public/Math/Vector.h"
+#include "Source/Core/Public/Math/Vector4.h"
 
 class UWorld;
 extern UWorld *GWorld;

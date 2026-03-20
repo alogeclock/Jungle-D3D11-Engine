@@ -1,17 +1,17 @@
 #include "World.h"
-#include "Source/Runtime/Engine/Object/Public/Actor.h"
+#include "Source/Engine/Object/Public/Actor.h"
 
 // 모든 Primitive Component 헤더 포함
-#include "Source/Runtime/Engine/Public/Classes/Components/SphereComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/CubeComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/TriangleComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/PlaneComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/ArrowComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/CubeArrowComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/RingComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/AxisComponent.h"
-#include "Source/Runtime/Engine/Public/Classes/Components/PrimitiveComponent.h"
-#include "Source/Runtime/Engine/Public/ImGuiManager.h"
+#include "Source/Engine/Public/Classes/Components/SphereComponent.h"
+#include "Source/Engine/Public/Classes/Components/CubeComponent.h"
+#include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
+#include "Source/Engine/Public/Classes/Components/PlaneComponent.h"
+#include "Source/Engine/Public/Classes/Components/ArrowComponent.h"
+#include "Source/Engine/Public/Classes/Components/CubeArrowComponent.h"
+#include "Source/Engine/Public/Classes/Components/RingComponent.h"
+#include "Source/Engine/Public/Classes/Components/AxisComponent.h"
+#include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
+#include "Source/Engine/Public/ImGuiManager.h"
 
 #include <fstream>
 #include <iostream>

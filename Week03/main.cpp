@@ -1,8 +1,8 @@
 #include "CoreTypes.h"
 #include "World.h"
 
-#include "Source/Runtime/Core/Public/Memory.h"
-#include "Source/Runtime/Editor/Public/Application.h"
+#include "Source/Core/Public/Memory.h"
+#include "Source/Editor/Public/Application.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

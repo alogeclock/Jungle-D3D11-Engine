@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "Source/Runtime/Engine/Object/Public/Actor.h"
-#include "Source/Runtime/Engine/Object/Public/Level.h"
-#include "Source/Runtime/Engine/Object/Public/Object.h"
+#include "Source/Engine/Object/Public/Actor.h"
+#include "Source/Engine/Object/Public/Level.h"
+#include "Source/Engine/Object/Public/Object.h"
 
 class ULevel;
 class AActor;
