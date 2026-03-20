@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Source/Engine/Object/Public/Object.h"
 #include "Source/Engine/Object/Public/Actor.h"
@@ -27,12 +27,12 @@ class ABaseTransformGizmo : public AActor
     virtual ~ABaseTransformGizmo();
 
     virtual void Update(float DeltaTime) {}
-    virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix) {}
+    virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix, float FOV = 90.0f, float OrthoWidth = 10.0f) {}
 
     virtual void     SetTargetObject(USceneComponent *InTarget);
     USceneComponent *GetTargetObject() const;
 
-    // ¸¶¿ì½º ÀÔ·Â ÀÌº¥Æ® (RayOrigin: Ä«¸Ş¶ó À§Ä¡, RayDir: Ä«¸Ş¶ó¿¡¼­ ¸¶¿ì½º Ä¿¼­ ¹æÇâÀ¸·Î ¹ß»çµÇ´Â ´ÜÀ§ º¤ÅÍ)
+    // ë§ˆìš°ìŠ¤ ì…ë ¥ ì´ë²¤íŠ¸ (RayOrigin: ì¹´ë©”ë¼ ìœ„ì¹˜, RayDir: ì¹´ë©”ë¼ì—ì„œ ë§ˆìš°ìŠ¤ ì»¤ì„œ ë°©í–¥ìœ¼ë¡œ ë°œì‚¬ë˜ëŠ” ë‹¨ìœ„ ë²¡í„°)
     virtual bool OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir) = 0;
     virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) = 0;
     virtual void OnMouseHover(const FVector<float> &RayOrigin, const FVector<float> &RayDir) = 0;

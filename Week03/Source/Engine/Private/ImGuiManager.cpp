@@ -341,7 +341,7 @@ void UImGuiManager::SetCameraInfo()
     if (Camera == nullptr)
         return;
 
-    ImGui::Checkbox("Orthogonal", &UImGuiManager::Get().bIsOrthogonal);
+    ImGui::Checkbox("Orthographic", &UImGuiManager::Get().bIsOrthogonal);
 
     float fovDeg = Camera->GetFOV() * 180.0f / 3.14159265f;
 
