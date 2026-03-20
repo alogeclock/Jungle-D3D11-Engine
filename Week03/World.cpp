@@ -26,11 +26,16 @@ UWorld::UWorld(const FString &InString) : UObject(InString) { CurrentLevel = Cre
 
 UWorld::~UWorld()
 {
-    if (CurrentLevel != nullptr)
+    for (ULevel* Level : Levels)
     {
-        delete CurrentLevel;
-        CurrentLevel = nullptr;
+        if (Level != nullptr)
+        {
+            delete Level;
+        }
     }
+    Levels.clear();
+
+    CurrentLevel = nullptr;
 }
 
 ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
@@ -50,7 +55,7 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
         return false;
 
     std::filesystem::path path(FilePath);
-    FString          CurrentSceneName = path.stem().string();
+    FString               CurrentSceneName = path.stem().string();
 
     json j;
     j["Version"] = 1;
@@ -127,86 +132,152 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
         return false;
 
     json j;
-    file >> j;
+
+    try
+    {
+        file >> j; // JSON 파싱 시도
+    }
+    catch (const json::parse_error&)
+    {
+        // JSON 형식이 잘못되었거나 파일이 비어있는 경우
+        file.close();
+        return false;
+    }
+    catch (const std::exception&)
+    {
+        // 기타 표준 예외 발생 시
+        file.close();
+        return false;
+    }
+
     file.close();
 
     FString CurrentSceneName;
+    ULevel *OldLevel = CurrentLevel;
 
     // 1. contains()와 함께 is_string()을 추가로 확인하여 타입 불일치 오류 방지
-    if (j.contains("SceneName") && j["SceneName"].is_string())
+    try
     {
-        CurrentSceneName = j["SceneName"].get<std::string>();
-    }
-    else
-    {
-        // 2. else 블록으로 넘어왔을 때 한자/한글 경로로 프로그램이 종료되는 현상 차단
-        std::wstring wStem = path.stem().wstring();
-        int size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
-        std::string utf8Stem(size_needed, 0);
-        WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
-        
-        CurrentSceneName = utf8Stem;
-    }
-
-    // 기존 레벨 메모리 해제 및 새 레벨 할당
-    if (CurrentLevel != nullptr)
-    {
-        delete CurrentLevel;
-    }
-    CurrentLevel = CreateNewLevel(CurrentSceneName);
-
-    if (j.contains("Primitives"))
-    {
-        json primitives = j["Primitives"];
-
-        for (auto &item : primitives.items())
+        if (j.contains("SceneName") && j["SceneName"].is_string())
         {
-            json        primData = item.value();
-            std::string type = primData["Type"].get<std::string>();
+            CurrentSceneName = j["SceneName"].get<std::string>();
+        }
+        else
+        {
+            // 2. else 블록으로 넘어왔을 때 한자/한글 경로로 프로그램이 종료되는 현상 차단
+            std::wstring wStem = path.stem().wstring();
+            int          size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
+            std::string  utf8Stem(size_needed, 0);
+            WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
 
-            AActor          *NewActor = GWorld->SpawnActor<AActor>();
-            USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
-            NewActor->SetRootComponent(Root);
-            Root->RegisterComponent();
-            NewActor->SetOuter(CurrentLevel);
+            CurrentSceneName = utf8Stem;
+        }
+        CurrentLevel = CreateNewLevel(CurrentSceneName);
 
-            // 트랜스폼 데이터 파싱 및 적용
-            FTransform NewTransform;
-            if (primData.contains("Location"))
+        if (j.contains("Primitives"))
+        {
+            json primitives = j["Primitives"];
+
+            for (auto &item : primitives.items())
             {
-                auto loc = primData["Location"];
-                NewTransform.Location = {loc[0], loc[1], loc[2]};
-            }
-            if (primData.contains("Rotation"))
-            {
-                auto rot = primData["Rotation"];
-                NewTransform.Rotation = {rot[0], rot[1], rot[2]};
-            }
-            if (primData.contains("Scale"))
-            {
-                auto scale = primData["Scale"];
-                NewTransform.Scale = {scale[0], scale[1], scale[2]};
-            }
+                json primData = item.value();
 
-            NewActor->SetTransform(NewTransform);
+                if (!primData.contains("Type") || !primData["Type"].is_string())
+                {
+                    throw std::runtime_error("Invalid or missing 'Type' format.");
+                }
 
-            UObject *NewObj = nullptr;
-            if (type == "Sphere")
-                NewObj = FObjectFactory::ConstructObject(USphereComponent::StaticClass());
-            else if (type == "Cube")
-                NewObj = FObjectFactory::ConstructObject(UCubeComponent::StaticClass());
-            else if (type == "Triangle")
-                NewObj = FObjectFactory::ConstructObject(UTriangleComponent::StaticClass());
-            else if (type == "Plane")
-                NewObj = FObjectFactory::ConstructObject(UPlaneComponent::StaticClass());
+                std::string type = primData["Type"].get<std::string>();
 
-            UPrimitiveComponent *Primitive = Cast<UPrimitiveComponent>(NewObj);
-            if (Primitive != nullptr)
-            {
-                Primitive->SetOuter(NewActor);
-                Primitive->RegisterComponent();
+                AActor *NewActor = GWorld->SpawnActor<AActor>();
+                if (NewActor == nullptr)
+                    throw std::runtime_error("Failed to spawn actor.");
+
+                USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+                if (Root != nullptr)
+                {
+                    NewActor->SetRootComponent(Root);
+                    Root->RegisterComponent();
+                    NewActor->SetOuter(CurrentLevel);
+                }
+
+                // 트랜스폼 데이터 파싱 및 적용
+                FTransform NewTransform;
+                if (primData.contains("Location") && primData["Location"].is_array() && primData["Location"].size() >= 3 &&
+                    primData["Location"][0].is_number() && primData["Location"][1].is_number() && primData["Location"][2].is_number())
+                {
+                    auto &loc = primData["Location"];
+                    NewTransform.Location = {loc[0].get<float>(), loc[1].get<float>(), loc[2].get<float>()};
+                }
+                else
+                    throw std::runtime_error("Invalid Location format.");
+
+                if (primData.contains("Rotation") && primData["Rotation"].is_array() && primData["Rotation"].size() >= 3 &&
+                    primData["Rotation"][0].is_number() && primData["Rotation"][1].is_number() && primData["Rotation"][2].is_number())
+                {
+                    auto &rot = primData["Rotation"];
+                    NewTransform.Rotation = {rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>()};
+                }
+                else
+                    throw std::runtime_error("Invalid Rotation format.");
+
+                if (primData.contains("Scale") && primData["Scale"].is_array() && primData["Scale"].size() >= 3 && primData["Scale"][0].is_number() &&
+                    primData["Scale"][1].is_number() && primData["Scale"][2].is_number())
+                {
+                    auto &scale = primData["Scale"];
+                    NewTransform.Scale = {scale[0].get<float>(), scale[1].get<float>(), scale[2].get<float>()};
+                }
+                else
+                    throw std::runtime_error("Invalid Scale format.");
+
+                NewActor->SetTransform(NewTransform);
+
+                UObject *NewObj = nullptr;
+                if (type == "Sphere")
+                    NewObj = FObjectFactory::ConstructObject(USphereComponent::StaticClass());
+                else if (type == "Cube")
+                    NewObj = FObjectFactory::ConstructObject(UCubeComponent::StaticClass());
+                else if (type == "Triangle")
+                    NewObj = FObjectFactory::ConstructObject(UTriangleComponent::StaticClass());
+                else if (type == "Plane")
+                    NewObj = FObjectFactory::ConstructObject(UPlaneComponent::StaticClass());
+                else
+                    throw std::runtime_error("Unknown Primitive Type."); // 알 수 없는 타입 시 중단
+
+                if (NewObj != nullptr)
+                {
+                    UPrimitiveComponent *Primitive = Cast<UPrimitiveComponent>(NewObj);
+                    if (Primitive != nullptr)
+                    {
+                        Primitive->SetOuter(NewActor);
+                        Primitive->RegisterComponent();
+                    }
+                    else
+                    {
+                        delete NewObj;
+                        throw std::runtime_error("Failed to cast PrimitiveComponent.");
+                    }
+                }
             }
         }
+
+        // 모든 과정이 완벽하게 성공했을 때 기존 레벨을 삭제합니다.
+        if (OldLevel != nullptr)
+        {
+            Levels.erase(OldLevel); 
+            delete OldLevel;
+        }
+    }
+    catch (const std::exception&)
+    {
+        // 1. 만들다 만 잘못된 씬(현재 레벨)을 월드 목록에서 지우고 메모리를 해제합니다.
+        Levels.erase(CurrentLevel);
+        delete CurrentLevel;
+
+        // 2. 아까 백업해두었던 기존 씬(OldLevel)을 다시 현재 씬으로 복구합니다.
+        CurrentLevel = OldLevel;
+
+        return false;
     }
 
     return true;

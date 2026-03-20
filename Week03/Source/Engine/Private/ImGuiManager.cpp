@@ -315,12 +315,9 @@ void UImGuiManager::LoadScene()
     if (ImGui::Button("Load Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         std::wstring FilePath = OpenFileDialog();
-        if (!FilePath.empty())
+        if (!FilePath.empty() && GWorld->LoadLevel(FilePath))
         {
-            GWorld->LoadLevel(FilePath);
-
-            // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출 (예:
-            // "Data/MyScene.Scene" -> "MyScene")
+            // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출
             std::filesystem::path path(FilePath);
             FString               LoadedSceneName = path.stem().string();
 
@@ -329,6 +326,10 @@ void UImGuiManager::LoadScene()
             strcpy_s(buffer, sizeof(buffer), LoadedSceneName.c_str());
 
             AddLog(L"Scene loaded successfully: " + FilePath);
+        }
+        else
+        {
+            AddLog(L"Failed to load scene.");
         }
 
         SelectedObject = nullptr;
@@ -344,7 +345,7 @@ void UImGuiManager::SetCameraInfo()
 
     float fovDeg = Camera->GetFOV() * 180.0f / 3.14159265f;
 
-    if (ImGui::DragFloat("FOV", &fovDeg, 0.1f, 0.0f, 180.0f))
+    if (ImGui::DragFloat("FOV", &fovDeg, 0.1f, 60.0f, 120.0f))
     {
         Camera->SetFOV(fovDeg * 3.14159265f / 180.0f);
     }
