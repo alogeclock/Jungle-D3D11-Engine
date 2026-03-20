@@ -7,6 +7,8 @@
 // Transform Information을 갖는 Component (위치, 회전, 크기)
 class USceneComponent : public UActorComponent
 {
+    DECLARE_OBJECT(USceneComponent, UActorComponent)
+
   public:
     USceneComponent(const FString &InString);
     virtual ~USceneComponent() override;
@@ -39,17 +41,6 @@ class USceneComponent : public UActorComponent
     const FMatrix<float> &GetWorldMatrix();
     
     void MarkTransformDirty();
-
-    static UObject *Constructor() { return new USceneComponent("USceneComponentConstructor"); }
-
-    static UClass *StaticClass()
-    {
-        // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-        static UClass s_Class("USceneComponent", UActorComponent::StaticClass(), &USceneComponent::Constructor);
-        return &s_Class;
-    }
-
-    virtual UClass *GetClass() const override { return StaticClass(); }
 
   protected:
     FTransform Transform;

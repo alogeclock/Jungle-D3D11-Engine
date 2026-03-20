@@ -5,22 +5,14 @@
 
 class ULevel : public UObject
 {
+    DECLARE_OBJECT(ULevel, UObject)
+
   public:
     ULevel(const FString &InString);
     virtual ~ULevel() override;
 
     void ClearActors();
     TArray<AActor *> &GetActors() { return Actors; }
-
-    static UObject *Constructor() { return new ULevel("LevelConstructor"); }
-
-    static UClass *StaticClass()
-    {
-        static UClass s_Class("ULevel", UObject::StaticClass(), &ULevel::Constructor);
-        return &s_Class;
-    }
-
-    virtual UClass *GetClass() const override { return StaticClass(); }
 
   private:
     TArray<AActor *> Actors;

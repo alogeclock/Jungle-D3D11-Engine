@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Object.h"
+#include "Source/Engine/Public/Rendering/Renderer.h"
 #include "Source/Engine/Public/Classes/Components/SceneComponent.h"
 
 class AActor : public UObject
 {
+    DECLARE_OBJECT(AActor, UObject)
   private:
     TSet<UActorComponent *> OwnedComponents;
     USceneComponent        *RootComponent = nullptr;
@@ -29,14 +31,4 @@ class AActor : public UObject
     void       GetScale(const FTransform &NewTransform);
 
     void IterateAllActorComponents(URenderer &renderer) const;
-
-    static UObject *Constructor() { return new AActor("ActorConstructor"); }
-
-    static UClass *StaticClass()
-    {
-        static UClass s_Class("AActor", UObject::StaticClass(), &AActor::Constructor);
-        return &s_Class;
-    }
-
-    virtual UClass *GetClass() const override { return StaticClass(); }
 };
