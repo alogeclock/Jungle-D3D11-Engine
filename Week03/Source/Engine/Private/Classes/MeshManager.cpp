@@ -35,7 +35,6 @@ void UMeshManager::Initialize(URenderer &Renderer)
         VertexData.emplace(t, vptr);
         VertexBuffers.emplace(t, Renderer.CreateVertexBuffer(vptr->data(), static_cast<int>(vptr->size()) * sizeof(FVertex)));
         NumVertices.emplace(t, static_cast<uint32>(vptr->size()));
-        MeshAABB.emplace(t, ComputeAABB(*vptr));
     }
 
     IndexData.emplace(EPrimitiveType::Sphere, &sphere_indices);
@@ -58,28 +57,6 @@ void UMeshManager::Release(URenderer &renderer)
     }
     // TMap.Empty()
     IndexBuffers.clear();
-}
-
-FBox UMeshManager::ComputeAABB(const TArray<FVertex> &Vertices)
-{
-    FBox Box;
-
-    for (const auto &V : Vertices)
-        Box.Encapsulate(V.Position);
-
-    return Box;
-}
-
-FBox UMeshManager::GetMeshAABB(EPrimitiveType Type) const
-{
-    auto it = MeshAABB.find(Type);
-    
-    if (it != MeshAABB.end())
-    {
-        return it->second;
-    }
-
-    return FBox(); // 찾지 못했을 경우 기본 생성된 박스 반환
 }
 
 TArray<FVertex> *UMeshManager::GetVertexData(EPrimitiveType Type) const { return VertexData.at(Type); }
