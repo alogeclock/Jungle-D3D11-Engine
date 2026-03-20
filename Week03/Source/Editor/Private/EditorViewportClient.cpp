@@ -50,6 +50,7 @@ FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
     Grid = new AGrid("ViewPortClientGrid");
 
     UImGuiManager::Get().SetCamera(&CameraTransform);
+    UImGuiManager::Get().SetEditorViewportClient(this);
 }
 
 FEditorViewportClient::~FEditorViewportClient()
@@ -199,8 +200,7 @@ FMatrix<float> FEditorViewportClient::GetViewMatrix() const { return CameraTrans
 
 FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float height)
 {
-    // --- 투영 행렬 생성 및 적용 부분 추가 ---
-    // 시야각(FOV)을 90도로 설정 (절반인 45도를 라디안으로 변환)
+    // 시야각(FOV) 계산
     float HalfFOV = CameraTransform.GetFOV() / 2.0f;
 
     // 뷰포트 종횡비(Aspect Ratio) 계산
@@ -212,7 +212,7 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
         FVector dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();
         float   Distance = dir.Length();
         float   OrthoWidth = Distance * 2.0f;
-        float   OrthoHeight = Distance * 2.0f;
+        float   OrthoHeight = OrthoWidth / AspectRatio;;
         return FOrthographicMatrix<float>(OrthoWidth, OrthoHeight, 0.1f, 1000.0f);
     }
 

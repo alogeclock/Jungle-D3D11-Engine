@@ -98,6 +98,8 @@ void UImGuiManager::Release()
 
 void UImGuiManager::SetCamera(FViewportCameraTransform *camera) { Camera = camera; }
 
+void UImGuiManager::SetEditorViewportClient(FEditorViewportClient *editor) { EditorViewportClient = editor; }
+
 void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) { SelectedObject = primitiveComponent; }
 
 bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
@@ -352,6 +354,13 @@ void UImGuiManager::SetCameraInfo()
 
     ImGui::DragFloat3("Camera Location", &Camera->GetLocation().X, 0.01f);
     ImGui::DragFloat3("Camera Rotation", &Camera->GetRotation().X, 0.1f);
+
+    if (EditorViewportClient != nullptr)
+    {
+        ImGui::Separator();
+        ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 1.0f, 20.0f, "%.2f");
+        ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f");
+    }
 }
 
 void UImGuiManager::TransformInspector()

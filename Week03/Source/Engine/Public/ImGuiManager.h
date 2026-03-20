@@ -16,6 +16,7 @@
 
 struct ExampleAppConsole;
 struct FViewportCameraTransform;
+struct FEditorViewportClient;
 
 extern ExampleAppConsole *GConsole;
 
@@ -40,17 +41,18 @@ class UImGuiManager
 
     UPrimitiveComponent *GetSelectedObject() { return SelectedObject; };
     void                 SetCamera(FViewportCameraTransform *camera);
+    void                 SetEditorViewportClient(FEditorViewportClient *viewportclient);
     void                 SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
     bool IsCaptureKeyboard();
 
-    char   *FStringToChar(FString string);
-    FString WStringToFString(const std::wstring &string);
+    char        *FStringToChar(FString string);
+    FString      WStringToFString(const std::wstring &string);
     std::wstring CharToWString(const char *msg);
-    void    AddLog(const char *msg);
-    void    AddLog(const FString &msg);
-    void    AddLog(const std::wstring &msg);
+    void         AddLog(const char *msg);
+    void         AddLog(const FString &msg);
+    void         AddLog(const std::wstring &msg);
 
     std::wstring SaveFileDialog();
     std::wstring OpenFileDialog();
@@ -69,8 +71,9 @@ class UImGuiManager
     bool bChangeMode = false;
 
   private:
-    FViewportCameraTransform *Camera;
-    UPrimitiveComponent      *SelectedObject;
+    FEditorViewportClient    *EditorViewportClient = nullptr;
+    FViewportCameraTransform *Camera = nullptr;
+    UPrimitiveComponent      *SelectedObject = nullptr;
     char                      buffer[256];
 };
 
