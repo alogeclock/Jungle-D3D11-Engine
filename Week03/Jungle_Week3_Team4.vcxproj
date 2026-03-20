@@ -136,7 +136,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\Private\FName.cpp" />
+    <ClCompile Include="Source\Core\Private\FNamePool.cpp" />
     <ClCompile Include="Source\Core\Private\TimeManager.cpp" />
+    <ClCompile Include="Source\Core\Private\UniqueNamePool.cpp" />
     <ClCompile Include="Source\Editor\Private\Axis.cpp" />
     <ClCompile Include="Source\Editor\Private\Grid.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\ArrowComponent.cpp" />
@@ -180,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineStatics.h" />
+    <ClInclude Include="Source\Core\Public\FName.h" />
     <ClInclude Include="External\Include\DirectXTK\DDSTextureLoader.h" />
     <ClInclude Include="External\Include\DirectXTK\WICTextureLoader.h" />
     <ClInclude Include="External\Include\DirectXTK\XboxDDSTextureLoader.h" />

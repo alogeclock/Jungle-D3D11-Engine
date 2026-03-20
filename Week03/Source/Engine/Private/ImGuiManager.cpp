@@ -16,6 +16,9 @@
 
 #include "Source/Editor/Public/EditorViewportClient.h"
 
+#include "Source/Core/Public/FName.h"
+
+
 ExampleAppConsole *GConsole = nullptr;
 
 void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
@@ -52,8 +55,9 @@ void UImGuiManager::Update(URenderer *renderer)
     {
         for (UObject *Object : GUObjectArray)
         {
-            FString ObjectName = Object->GetName();
-            AddLog("Object Name : " + ObjectName);
+            FName ObjectName = Object->GetName();
+            FString msg = "Object Name : ";
+            AddLog(msg + ObjectName);
         }
     }
 
@@ -61,13 +65,16 @@ void UImGuiManager::Update(URenderer *renderer)
     {
         for (AActor *Actor : GWorld->GetCurrentLevel()->GetActors())
         {
-            FString ActorName = Actor->GetName();
-            AddLog("Actor Name : " + ActorName);
+            FName ActorName = Actor->GetName();
+            FString msg = "Actor Name : ";
+            AddLog(msg + ActorName);
 
             for (UActorComponent *Component : Actor->GetOwnedComponents())
             {
-                FString ComponentName = Component->GetName();
-                AddLog("    ComponentName Name : " + ComponentName);
+                FName ComponentName = Component->GetName();
+                FString msg = "    ComponentName Name : ";
+
+                AddLog(msg + ComponentName);
             }
         }
     }
@@ -173,7 +180,7 @@ void UImGuiManager::ShowControlPanel()
 {
     if (buffer[0] == '\0' && GWorld && GWorld->GetCurrentLevel())
     {
-        snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().c_str());
+        snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().ToString().c_str());
     }
 
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
@@ -279,7 +286,7 @@ void UImGuiManager::NewScene()
         {
             GWorld->GetCurrentLevel()->ClearActors();
             GWorld->GetCurrentLevel()->SetName("DefaultLevel");
-            snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().c_str());
+            snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().ToString().c_str());
             AddLog("[System] All actors and components have been destroyed.");
         }
 

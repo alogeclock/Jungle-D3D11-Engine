@@ -1,6 +1,8 @@
 ﻿#include "CoreTypes.h"
 #include "../Public/Object.h"
 #include "EngineStatics.h"
+#include <Windows.h>
+
 
 uint32 UEngineStatics::NextUUID = 0;
 TArray<UObject *> GUObjectArray;
@@ -11,6 +13,8 @@ UObject::UObject(const FString &InString) : Name(InString), Outer(nullptr)
 
     GUObjectArray.push_back(this);
     InternalIndex = static_cast<uint32>(GUObjectArray.size()) - 1;
+
+    //SetName(InString);
 }
 
 UObject::~UObject()
@@ -23,14 +27,22 @@ UObject::~UObject()
     }
 }
 
-const FString& UObject::GetName() const 
+const FName& UObject::GetName() const
 { 
 	return Name; 
 }
 
 void UObject::SetName(const FString& InName) 
 { 
-	Name = InName;
+	Name = GNamePool.AddName(InName);
+    //OutputDebugStringA("1\n");
+
+    //if (Outer == nullptr)
+    //    return;
+    //OutputDebugStringA("2g\n");
+
+    //uint32 Number = GUniqueNamePool.AddNameAndCount(Outer->GetUUID(), Name.GetDisplayIndex());
+    //Name.SetNumber(Number);
 }
 
 uint64 UObject::GetAllocatedBytes() const 
