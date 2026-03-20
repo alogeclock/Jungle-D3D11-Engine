@@ -75,26 +75,36 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 		FString FileExtension = FilePath.extension().string();
 
 		ComPtr<ID3D11ShaderResourceView> TextureSRV = nullptr;
-
-		if (FileExtension == ".dds") {
-			ResultHandle = DirectX::CreateDDSTextureFromFile(Device, DeviceContext,
-				FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
-		}
-		else {
-			ResultHandle = DirectX::CreateWICTextureFromFile(Device, DeviceContext,
-				FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
-		}
-
-		if (SUCCEEDED(ResultHandle))
+		try
 		{
-			FString HashKey = GetHashKeyPath(FilePath);
-			std::cout << "TextureManager: 텍스처 로드 성공" << FilePath.string() << std::endl;
-			TextureMap[HashKey] = TextureSRV;
+			if (FileExtension == ".dds") {
+				ResultHandle = DirectX::CreateDDSTextureFromFile(Device, DeviceContext,
+					FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
+			}/*
+			else {
+				ResultHandle = DirectX::CreateWICTextureFromFile(Device, DeviceContext,
+					FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
+			}*/
+		}
+		catch (const std::exception&)
+		{
+			ResultHandle = E_FAIL;
+		}
+
+		if (SUCCEEDED(ResultHandle) && TextureSRV)
+		{
+			std::cout << "TextureManager: 텍스처 로드 성공 "
+				<< FilePath.string() << std::endl;
 		}
 		else
 		{
-			std::cout << "TextureManager: 텍스처 로드 실패..." << FilePath.string() << ResultHandle << std::endl;
+			std::cout << "TextureManager: 텍스처 로드 실패 → fallback 사용 "
+				<< FilePath.string() << std::endl;
+
+			TextureSRV = GetDefaultTexture(Device);
 		}
+		FString HashKey = GetHashKeyPath(FilePath);
+		TextureMap[HashKey] = TextureSRV;
 	}
 }
 
@@ -106,4 +116,42 @@ ID3D11ShaderResourceView* UTextureManger::GetTexture(const path& inFilePath)
 		return TextureMap[HashKey].Get();
 	}
 	return nullptr;
+}
+
+ComPtr<ID3D11ShaderResourceView> UTextureManger::GetDefaultTexture(ID3D11Device* Device)
+{
+	static ComPtr<ID3D11ShaderResourceView> DefaultSRV;
+
+	if (DefaultSRV) return DefaultSRV;
+
+	const UINT width = 2;
+	const UINT height = 2;
+
+	// 핑크/검정 체크 패턴
+	uint32_t pixels[width * height] =
+	{
+		0xFFFF00FF, 0xFF000000,
+		0xFF000000, 0xFFFF00FF
+	};
+
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Width = width;
+	desc.Height = height;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = pixels;
+	initData.SysMemPitch = width * sizeof(uint32_t);
+
+	ComPtr<ID3D11Texture2D> texture;
+	Device->CreateTexture2D(&desc, &initData, texture.GetAddressOf());
+
+	Device->CreateShaderResourceView(texture.Get(), nullptr, DefaultSRV.GetAddressOf());
+
+	return DefaultSRV;
 }

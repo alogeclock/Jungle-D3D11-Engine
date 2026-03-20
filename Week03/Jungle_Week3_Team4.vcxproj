@@ -142,6 +142,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\GridComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\PlaneComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\RingComponent.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\Components\TextComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\MeshManager.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\TextureManger.cpp" />
     <ClCompile Include="Source\Engine\Private\VertexData.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Source\Engine\Public\Classes\Components\GridComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\PlaneComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\RingComponent.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\Components\TextComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\MeshManager.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
     <ClInclude Include="Source\Engine\Public\VertexData.h" />
