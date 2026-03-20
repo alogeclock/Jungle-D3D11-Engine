@@ -1,4 +1,4 @@
-#include "Source/Core/Public/Memory.h"
+ï»¿#include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/Application.h"
 #include "World.h"
 
@@ -8,7 +8,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// ImGui¿¡ ÀÔ·Â
+	// ImGuiì— ì…ë ¥
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 	{
 		return true;
@@ -20,7 +20,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_DESTROY:
-		PostQuitMessage(0); // ÇÁ·Î±×·¥ Á¾·á ¸Ş½ÃÁö¸¦ ¸Ş½ÃÁö Å¥¿¡ ³Ö´Â´Ù.
+		PostQuitMessage(0); // í”„ë¡œê·¸ë¨ ì¢…ë£Œ ë©”ì‹œì§€ë¥¼ ë©”ì‹œì§€ íì— ë„£ëŠ”ë‹¤.
 		break;
     case WM_SIZE:
     {

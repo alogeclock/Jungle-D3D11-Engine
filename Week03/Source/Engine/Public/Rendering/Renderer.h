@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #pragma comment(lib, "user32")
 #pragma comment(lib, "d3d11")
@@ -10,6 +10,7 @@
 #include "Source/Core/Public/Math/Vector.h"
 #include "Source/Core/Public/Math/Vector4.h"
 #include "Source/Core/Public/Math/Matrix.h"
+#include "Source/Core/Public/Math/Box.h"
 #include "Source/Core/Public/Math/TranslationMatrix.h"
 #include "Source/Core/Public/Math/PerspectiveMatrix.h"
 #include "Source/Core/Public/Math/OrthographicMatrix.h"
@@ -49,18 +50,19 @@ public:
 	ID3D11Buffer* ConstantBuffer = nullptr; 
 	ID3D11Buffer* ConstantBufferColor = nullptr;
 
-	// ±íÀÌ ½ºÅÙ½Ç »óÅÂ °´Ã¼
-    ID3D11DepthStencilState* DepthStateDefault = nullptr; // ÀÏ¹İÀûÀÎ 3D ·»´õ¸µ¿ë (Depth ÄÔ)
-    ID3D11DepthStencilState* DepthStateIgnore = nullptr;  // ±âÁî¸ğ, UI¿ë (Depth ²û)
+	// ê¹Šì´ ìŠ¤í…ì‹¤ ìƒíƒœ ê°ì²´
+    ID3D11DepthStencilState* DepthStateDefault = nullptr; // ì¼ë°˜ì ì¸ 3D ë Œë”ë§ìš© (Depth ì¼¬)
+    ID3D11DepthStencilState* DepthStateIgnore = nullptr;  // ê¸°ì¦ˆëª¨, UIìš© (Depth ë”)
 
 	ID3D11RasterizerState* RasterizerStateCullBack = nullptr;
     ID3D11RasterizerState* RasterizerStateCullFront = nullptr;
     ID3D11RasterizerState* RasterizerStateCullNone = nullptr;
+	ID3D11RasterizerState* RasterizerStateWireframe = nullptr; // ì„ì‹œ
 
 	ID3D11BlendState* BlendState = nullptr;
     FLOAT BlendFactor[4] = {0.f, 0.f, 0.f, 0.f};
 
-	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // È­¸éÀ» ÃÊ±âÈ­ÇÏ´Â »ö
+	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // í™”ë©´ì„ ì´ˆê¸°í™”í•˜ëŠ” ìƒ‰
 	D3D11_VIEWPORT ViewportInfo;
 	D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 

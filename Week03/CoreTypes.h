@@ -1,4 +1,4 @@
- #pragma once
+﻿ #pragma once
 
 #include <vector>
 #include <string>
@@ -58,6 +58,7 @@ enum class EPrimitiveType : uint8
 	Ring,
 	Axis,
 	Grid,
+	WireBox,
 	Text,
 };
 

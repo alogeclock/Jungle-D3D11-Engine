@@ -22,10 +22,11 @@ void UMeshManager::Initialize(URenderer &Renderer)
 
     TArray<EPrimitiveType> PrimitiveTypes = {EPrimitiveType::Cube,  EPrimitiveType::Sphere, EPrimitiveType::Triangle,
                                              EPrimitiveType::Plane, EPrimitiveType::Arrow,  EPrimitiveType::CubeArrow,
-                                             EPrimitiveType::Ring,  EPrimitiveType::Axis,   EPrimitiveType::Grid};
+                                             EPrimitiveType::Ring,  EPrimitiveType::Axis,   EPrimitiveType::Grid,
+                                             EPrimitiveType::WireBox};
 
     TArray<TArray<FVertex> *> VerticesPtr = {&cube_vertices,       &sphere_vertices, &triangle_vertices, &plane_vertices, &arrow_vertices,
-                                             &cube_arrow_vertices, &ring_vertices,   &axis_vertices,     &grid_vertices};
+                                             &cube_arrow_vertices, &ring_vertices,   &axis_vertices,     &grid_vertices, &wirebox_vertices};
 
     for (int i = 0; i < PrimitiveTypes.size(); i++)
     {
@@ -35,11 +36,16 @@ void UMeshManager::Initialize(URenderer &Renderer)
         VertexData.emplace(t, vptr);
         VertexBuffers.emplace(t, Renderer.CreateVertexBuffer(vptr->data(), static_cast<int>(vptr->size()) * sizeof(FVertex)));
         NumVertices.emplace(t, static_cast<uint32>(vptr->size()));
+        MeshAABB.emplace(t, ComputeAABB(*vptr));
     }
 
     IndexData.emplace(EPrimitiveType::Sphere, &sphere_indices);
     IndexBuffers.emplace(EPrimitiveType::Sphere, Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
     NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
+
+    IndexData.emplace(EPrimitiveType::WireBox, &wirebox_indices);
+    IndexBuffers.emplace(EPrimitiveType::WireBox, Renderer.CreateIndexBuffer(wirebox_indices.data(), static_cast<int>(wirebox_indices.size() * sizeof(uint16))));
+    NumIndices.emplace(EPrimitiveType::WireBox, static_cast<uint32>(wirebox_indices.size()));
 }
 
 void UMeshManager::Release(URenderer &renderer)
@@ -57,6 +63,28 @@ void UMeshManager::Release(URenderer &renderer)
     }
     // TMap.Empty()
     IndexBuffers.clear();
+}
+
+FBox UMeshManager::ComputeAABB(const TArray<FVertex> &Vertices)
+{
+    FBox Box;
+
+    for (const auto &V : Vertices)
+        Box.Encapsulate(V.Position);
+
+    return Box;
+}
+
+FBox UMeshManager::GetMeshAABB(EPrimitiveType Type) const
+{
+    auto it = MeshAABB.find(Type);
+    
+    if (it != MeshAABB.end())
+    {
+        return it->second;
+    }
+
+    return FBox(); // 찾지 못했을 경우 기본 생성된 박스 반환
 }
 
 TArray<FVertex> *UMeshManager::GetVertexData(EPrimitiveType Type) const { return VertexData.at(Type); }

@@ -69,6 +69,7 @@ class UImGuiManager
   public:
     bool bIsOrthogonal = false;
     bool bChangeMode = false;
+    bool bDrawAABB = true;
 
   private:
     FEditorViewportClient    *EditorViewportClient = nullptr;
