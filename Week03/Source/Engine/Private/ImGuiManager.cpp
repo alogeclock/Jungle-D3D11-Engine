@@ -358,8 +358,8 @@ void UImGuiManager::SetCameraInfo()
     if (EditorViewportClient != nullptr)
     {
         ImGui::Separator();
-        ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 1.0f, 20.0f, "%.2f");
-        ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f");
+        ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
+        ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f", ImGuiSliderFlags_Logarithmic);
     }
 }
 
