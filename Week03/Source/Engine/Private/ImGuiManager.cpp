@@ -180,6 +180,7 @@ void UImGuiManager::ShowControlPanel()
     ImGui::TextWrapped("Allocated Bytes: %u", TotalAllocationBytes);
     ImGui::TextWrapped("Allocated Count: %u", TotalAllocationCount);
     ImGui::TextWrapped("Object Count: %u", GUObjectArray.size());
+    ImGui::Checkbox("Draw AABB", &bDrawAABB);
 
     ImGui::Separator();
 
@@ -196,6 +197,10 @@ void UImGuiManager::ShowControlPanel()
     ImGui::Separator();
 
     SetCameraInfo();
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Draw AABB", &bDrawAABB);
 }
 
 void UImGuiManager::SpawnActors()
