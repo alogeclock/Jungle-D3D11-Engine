@@ -80,11 +80,11 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 			if (FileExtension == ".dds") {
 				ResultHandle = DirectX::CreateDDSTextureFromFile(Device, DeviceContext,
 					FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
-			}/*
-			else {
+			}
+			else if(FileExtension == ".png") {
 				ResultHandle = DirectX::CreateWICTextureFromFile(Device, DeviceContext,
 					FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
-			}*/
+			}
 		}
 		catch (const std::exception&)
 		{
@@ -115,6 +115,7 @@ ID3D11ShaderResourceView* UTextureManger::GetTexture(const path& inFilePath)
 	if (TextureMap.find(HashKey) != TextureMap.end()) {
 		return TextureMap[HashKey].Get();
 	}
+	
 	return nullptr;
 }
 

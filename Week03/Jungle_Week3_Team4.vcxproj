@@ -150,6 +150,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\RingComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\TextComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\MeshManager.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\TextMeshBuilder.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\TextureManger.cpp" />
     <ClCompile Include="Source\Engine\Private\VertexData.cpp" />
     <ClCompile Include="Source\Core\Private\Memory.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Source\Engine\Public\Classes\Components\RingComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\TextComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\MeshManager.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\TextMeshBuilder.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
     <ClInclude Include="Source\Engine\Public\VertexData.h" />
     <ClInclude Include="Source\Core\Public\Memory.h" />
