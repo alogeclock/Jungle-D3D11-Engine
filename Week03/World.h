@@ -20,8 +20,8 @@ class UWorld final : public UObject
 
     ULevel *GetCurrentLevel() { return CurrentLevel; }
     
-    bool SaveLevel(const FString& FilePath);
-    bool LoadLevel(const FString& FilePath);
+    bool SaveLevel(const std::wstring& FilePath);
+    bool LoadLevel(const std::wstring& FilePath);
 
     AActor                  *SpawnActor(UClass *ClassToSpawn);
     template <typename T> T *SpawnActor();

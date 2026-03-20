@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include "Rendering/Renderer.h"
 #include "Source/Core/Public/TimeManager.h"
@@ -17,42 +17,45 @@
 struct ExampleAppConsole;
 struct FViewportCameraTransform;
 
-extern ExampleAppConsole* GConsole;
+extern ExampleAppConsole *GConsole;
 
 class UImGuiManager
 {
-public:
-	static UImGuiManager& Get()
-	{
-		static UImGuiManager instance;
-		return instance;
-	}
+  public:
+    static UImGuiManager &Get()
+    {
+        static UImGuiManager instance;
+        return instance;
+    }
 
-	UImGuiManager() = default;
-	~UImGuiManager() = default;
+    UImGuiManager() = default;
+    ~UImGuiManager() = default;
 
-public:
-	void Create(HWND hWnd, URenderer* renderer);
-	void Update(URenderer *renderer);
-	void beginFrame();
-	void endFrame();
-	void Release();
+  public:
+    void Create(HWND hWnd, URenderer *renderer);
+    void Update(URenderer *renderer);
+    void beginFrame();
+    void endFrame();
+    void Release();
 
-    UPrimitiveComponent* GetSelectedObject() { return SelectedObject; };
-    void SetCamera(FViewportCameraTransform* camera);
-    void SetSelectedObject(UPrimitiveComponent *sphere);
+    UPrimitiveComponent *GetSelectedObject() { return SelectedObject; };
+    void                 SetCamera(FViewportCameraTransform *camera);
+    void                 SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
     bool IsCaptureKeyboard();
 
-    char* FStringTochar(FString string);
-    void AddLog(const char* msg);
-    void AddLog(const FString& msg);
+    char   *FStringToChar(FString string);
+    FString WStringToFString(const std::wstring &string);
+    std::wstring CharToWString(const char *msg);
+    void    AddLog(const char *msg);
+    void    AddLog(const FString &msg);
+    void    AddLog(const std::wstring &msg);
 
-    FString SaveFileDialog();
-    FString OpenFileDialog();
+    std::wstring SaveFileDialog();
+    std::wstring OpenFileDialog();
 
-private:
+  private:
     void ShowControlPanel();
     void SpawnActors();
     void NewScene();
@@ -61,20 +64,17 @@ private:
     void SetCameraInfo();
     void TransformInspector();
 
-public:
+  public:
     bool bIsOrthogonal = false;
     bool bChangeMode = false;
 
-private:
-    FViewportCameraTransform* Camera;
-    UPrimitiveComponent *SelectedObject;
+  private:
+    FViewportCameraTransform *Camera;
+    UPrimitiveComponent      *SelectedObject;
     char                      buffer[256];
 };
 
-
-// æ∆∑°¥¬ imgui_demo.cppø°º≠ ∞°¡Æø¬ ≥ªøÎ
-
-
+// ÏïÑÎûòÎäî imgui_demo.cppÏóêÏÑú Í∞ÄÏ†∏Ïò® ÎÇ¥Ïö©
 
 //-----------------------------------------------------------------------------
 // [SECTION] Example App: Debug Console / ShowExampleAppConsole()
@@ -84,18 +84,18 @@ private:
 // For the console example, we are using a more C++ like approach of declaring a class to hold both data and functions.
 struct ExampleAppConsole
 {
-    char                  InputBuf[256];
-    ImVector<char*>       Items;
-    ImVector<const char*> Commands;
-    ImVector<char*>       History;
-    int                   HistoryPos;    // -1: new line, 0..History.Size-1 browsing history.
-    ImGuiTextFilter       Filter;
-    bool                  AutoScroll;
-    bool                  ScrollToBottom;
+    char                   InputBuf[256];
+    ImVector<char *>       Items;
+    ImVector<const char *> Commands;
+    ImVector<char *>       History;
+    int                    HistoryPos; // -1: new line, 0..History.Size-1 browsing history.
+    ImGuiTextFilter        Filter;
+    bool                   AutoScroll;
+    bool                   ScrollToBottom;
 
     ExampleAppConsole()
     {
-        //IMGUI_DEMO_MARKER("Examples/Console");
+        // IMGUI_DEMO_MARKER("Examples/Console");
         ClearLog();
         memset(InputBuf, 0, sizeof(InputBuf));
         HistoryPos = -1;
@@ -117,22 +117,54 @@ struct ExampleAppConsole
     }
 
     // Portable helpers
-    static int   Stricmp(const char* s1, const char* s2) { int d; while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; } return d; }
-    static int   Strnicmp(const char* s1, const char* s2, int n) { int d = 0; while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; n--; } return d; }
-    static char* Strdup(const char* s) { IM_ASSERT(s); size_t len = strlen(s) + 1; void* buf = ImGui::MemAlloc(len); IM_ASSERT(buf); return (char*)memcpy(buf, (const void*)s, len); }
-    static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
+    static int Stricmp(const char *s1, const char *s2)
+    {
+        int d;
+        while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
+        {
+            s1++;
+            s2++;
+        }
+        return d;
+    }
+    static int Strnicmp(const char *s1, const char *s2, int n)
+    {
+        int d = 0;
+        while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
+        {
+            s1++;
+            s2++;
+            n--;
+        }
+        return d;
+    }
+    static char *Strdup(const char *s)
+    {
+        IM_ASSERT(s);
+        size_t len = strlen(s) + 1;
+        void  *buf = ImGui::MemAlloc(len);
+        IM_ASSERT(buf);
+        return (char *)memcpy(buf, (const void *)s, len);
+    }
+    static void Strtrim(char *s)
+    {
+        char *str_end = s + strlen(s);
+        while (str_end > s && str_end[-1] == ' ')
+            str_end--;
+        *str_end = 0;
+    }
 
-    void    ClearLog()
+    void ClearLog()
     {
         for (int i = 0; i < Items.Size; i++)
             ImGui::MemFree(Items[i]);
         Items.clear();
     }
 
-    void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
+    void AddLog(const char *fmt, ...) IM_FMTARGS(2)
     {
         // FIXME-OPT
-        char buf[1024];
+        char    buf[1024];
         va_list args;
         va_start(args, fmt);
         vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
@@ -141,7 +173,7 @@ struct ExampleAppConsole
         Items.push_back(Strdup(buf));
     }
 
-    void    Draw(const char* title, bool* p_open)
+    void Draw(const char *title, bool *p_open)
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         if (!ImGui::Begin(title, p_open))
@@ -162,17 +194,27 @@ struct ExampleAppConsole
 
         ImGui::TextWrapped("Hello Jungle World!");
 
-
         // TODO: display items starting from the bottom
 
-        if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text", Items.Size); AddLog("some more text"); AddLog("display very important message here!"); }
+        if (ImGui::SmallButton("Add Debug Text"))
+        {
+            AddLog("%d some text", Items.Size);
+            AddLog("some more text");
+            AddLog("display very important message here!");
+        }
         ImGui::SameLine();
-        if (ImGui::SmallButton("Add Debug Error")) { AddLog("[error] something went wrong"); }
+        if (ImGui::SmallButton("Add Debug Error"))
+        {
+            AddLog("[error] something went wrong");
+        }
         ImGui::SameLine();
-        if (ImGui::SmallButton("Clear")) { ClearLog(); }
+        if (ImGui::SmallButton("Clear"))
+        {
+            ClearLog();
+        }
         ImGui::SameLine();
         bool copy_to_clipboard = ImGui::SmallButton("Copy");
-        //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
+        // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 
         ImGui::Separator();
 
@@ -197,7 +239,8 @@ struct ExampleAppConsole
         {
             if (ImGui::BeginPopupContextWindow())
             {
-                if (ImGui::Selectable("Clear")) ClearLog();
+                if (ImGui::Selectable("Clear"))
+                    ClearLog();
                 ImGui::EndPopup();
             }
 
@@ -228,7 +271,7 @@ struct ExampleAppConsole
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
             if (copy_to_clipboard)
                 ImGui::LogToClipboard();
-            for (const char* item : Items)
+            for (const char *item : Items)
             {
                 if (!Filter.PassFilter(item))
                     continue;
@@ -236,9 +279,17 @@ struct ExampleAppConsole
                 // Normally you would store more information in your item than just a string.
                 // (e.g. make Items[] an array of structure, store color/type etc.)
                 ImVec4 color;
-                bool has_color = false;
-                if (strstr(item, "[error]")) { color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f); has_color = true; }
-                else if (strncmp(item, "# ", 2) == 0) { color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f); has_color = true; }
+                bool   has_color = false;
+                if (strstr(item, "[error]"))
+                {
+                    color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                    has_color = true;
+                }
+                else if (strncmp(item, "# ", 2) == 0)
+                {
+                    color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f);
+                    has_color = true;
+                }
                 if (has_color)
                     ImGui::PushStyleColor(ImGuiCol_Text, color);
                 ImGui::TextUnformatted(item);
@@ -260,11 +311,12 @@ struct ExampleAppConsole
         ImGui::Separator();
 
         // Command-line
-        bool reclaim_focus = false;
-        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void*)this))
+        bool                reclaim_focus = false;
+        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
+                                               ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void *)this))
         {
-            char* s = InputBuf;
+            char *s = InputBuf;
             Strtrim(s);
             if (s[0])
                 ExecCommand(s);
@@ -280,7 +332,7 @@ struct ExampleAppConsole
         ImGui::End();
     }
 
-    void    ExecCommand(const char* command_line)
+    void ExecCommand(const char *command_line)
     {
         AddLog("# %s\n", command_line);
 
@@ -323,15 +375,15 @@ struct ExampleAppConsole
     }
 
     // In C++11 you'd be better off using lambdas for this sort of forwarding callbacks
-    static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
+    static int TextEditCallbackStub(ImGuiInputTextCallbackData *data)
     {
-        ExampleAppConsole* console = (ExampleAppConsole*)data->UserData;
+        ExampleAppConsole *console = (ExampleAppConsole *)data->UserData;
         return console->TextEditCallback(data);
     }
 
-    int     TextEditCallback(ImGuiInputTextCallbackData* data)
+    int TextEditCallback(ImGuiInputTextCallbackData *data)
     {
-        //AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
+        // AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
         switch (data->EventFlag)
         {
         case ImGuiInputTextFlags_CallbackCompletion:
@@ -339,8 +391,8 @@ struct ExampleAppConsole
             // Example of TEXT COMPLETION
 
             // Locate beginning of current word
-            const char* word_end = data->Buf + data->CursorPos;
-            const char* word_start = word_end;
+            const char *word_end = data->Buf + data->CursorPos;
+            const char *word_start = word_end;
             while (word_start > data->Buf)
             {
                 const char c = word_start[-1];
@@ -350,7 +402,7 @@ struct ExampleAppConsole
             }
 
             // Build a list of candidates
-            ImVector<const char*> candidates;
+            ImVector<const char *> candidates;
             for (int i = 0; i < Commands.Size; i++)
                 if (Strnicmp(Commands[i], word_start, (int)(word_end - word_start)) == 0)
                     candidates.push_back(Commands[i]);
@@ -374,7 +426,7 @@ struct ExampleAppConsole
                 int match_len = (int)(word_end - word_start);
                 for (;;)
                 {
-                    int c = 0;
+                    int  c = 0;
                     bool all_candidates_matches = true;
                     for (int i = 0; i < candidates.Size && all_candidates_matches; i++)
                         if (i == 0)
@@ -421,7 +473,7 @@ struct ExampleAppConsole
             // A better implementation would preserve the data on the current input line along with cursor position.
             if (prev_history_pos != HistoryPos)
             {
-                const char* history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
+                const char *history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
                 data->DeleteChars(0, data->BufTextLen);
                 data->InsertChars(0, history_str);
             }
@@ -431,7 +483,7 @@ struct ExampleAppConsole
     }
 };
 
-static void ShowExampleAppConsole(bool* p_open)
+static void ShowExampleAppConsole(bool *p_open)
 {
     static ExampleAppConsole console;
 
