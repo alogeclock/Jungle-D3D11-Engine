@@ -44,9 +44,9 @@ public:
 protected:
     FVector<float> GetLocalAABBMin() const;
     FVector<float> GetLocalAABBMax() const;
+    FTransform GetTransformFromOwner() const;
 
 private:
-    FTransform GetTransformFromOwner() const;
     bool IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     bool IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
