@@ -125,7 +125,7 @@ FString UImGuiManager::WStringToFString(const std::wstring &string)
     return strTo;
 }
 
-std::wstring CharToWString(const char *charStr)
+std::wstring UImGuiManager::CharToWString(const char *charStr)
 {
     // 입력된 문자열이 비어있는 경우 빈 wstring 반환
     if (charStr == nullptr || charStr[0] == '\0')
