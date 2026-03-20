@@ -22,7 +22,8 @@ UObject::~UObject()
     auto it = std::find(GUObjectArray.begin(), GUObjectArray.end(), this);
     if (it != GUObjectArray.end())
     {
-        GUObjectArray.erase(it);
+        *it = GUObjectArray.back();
+        GUObjectArray.pop_back();
     }
 }
 

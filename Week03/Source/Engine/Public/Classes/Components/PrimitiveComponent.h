@@ -1,9 +1,14 @@
-
+﻿
 #pragma once
 
 #include "Source/Engine/Public/Classes/Components/SceneComponent.h"
 #include "Source/Engine/Public/Classes/MeshManager.h"
+#include "Source/Engine/Object/Public/Actor.h"
+#include "Source/Engine/Public/ImGuiManager.h"
 #include "Source/Core/Public/Math/Intersections.h"
+#include "Source/Core/Public/Math/Matrix.h"
+#include "Source/Core/Public/Math/Box.h"
+#include "Source/Core/Public/Memory.h"
 
 class URenderer;
 
@@ -39,14 +44,17 @@ public:
     bool isAlwaysVisible() const { return !bEnableDepthTest; }
     void SetAlwaysVisible(const bool bInEnableDepthTest) { bEnableDepthTest = !bInEnableDepthTest; }
 
+    virtual void UpdateBounds();
+    const FBox& GetWorldAABB() const { return WorldAABB; }
+
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
 protected:
     FVector<float> GetLocalAABBMin() const;
     FVector<float> GetLocalAABBMax() const;
+    FTransform GetTransformFromOwner() const;
 
 private:
-    FTransform GetTransformFromOwner() const;
     bool IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     bool IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
@@ -56,4 +64,7 @@ protected:
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     ECullMode                CullMode = ECullMode::Back;
     bool                     bEnableDepthTest = true;
+
+    FBox LocalAABB;
+    FBox WorldAABB;
 };

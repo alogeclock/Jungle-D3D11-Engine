@@ -58,3 +58,8 @@ imgui.ini
 
 # (선택) 만약 Mac/Linux 환경 팀원이 있다면 추가
 .DS_Store
+
+
+# 특정 라이브러리 포함
+!External/Include/DirectXTK/
+!External/Library/DirectXTK/**

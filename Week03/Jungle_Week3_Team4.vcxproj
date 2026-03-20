@@ -77,11 +77,12 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>External\Include\DirectXTK;;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>;External\Library\DirectXTK\Release;External\Library\DirectXTK\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -93,11 +94,12 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>External\Include\DirectXTK;;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>;External\Library\DirectXTK\Release;External\Library\DirectXTK\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -107,11 +109,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:/Github/Week2/Engine/Source;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>External\Include\DirectXTK;$(SolutionDir)External\Include\DirectXTK;C:/Github/Week2/Engine/Source;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\Library\DirectXTK\$(Configuration);%(AdditionalLibraryDirectories);External\Library\DirectXTK\Release;External\Library\DirectXTK\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -123,11 +127,12 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>External\Include\DirectXTK;;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>;External\Library\DirectXTK\Release;External\Library\DirectXTK\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -144,6 +149,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\PlaneComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\RingComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\MeshManager.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\TextureManger.cpp" />
     <ClCompile Include="Source\Engine\Private\VertexData.cpp" />
     <ClCompile Include="Source\Core\Private\Memory.cpp" />
     <ClCompile Include="Source\Engine\Object\Private\Actor.cpp" />
@@ -177,8 +183,12 @@
   <ItemGroup>
     <ClInclude Include="EngineStatics.h" />
     <ClInclude Include="Source\Core\Public\FName.h" />
+    <ClInclude Include="External\Include\DirectXTK\DDSTextureLoader.h" />
+    <ClInclude Include="External\Include\DirectXTK\WICTextureLoader.h" />
+    <ClInclude Include="External\Include\DirectXTK\XboxDDSTextureLoader.h" />
     <ClInclude Include="Object\Actor.h" />
     <ClInclude Include="Object\Object.h" />
+    <ClInclude Include="Source\Core\Public\Math\Box.h" />
     <ClInclude Include="Source\Core\Public\Math\Intersections.h" />
     <ClInclude Include="Source\Core\Public\Math\OrthographicMatrix.h" />
     <ClInclude Include="Source\Core\Public\TimeManager.h" />
@@ -191,6 +201,7 @@
     <ClInclude Include="Source\Engine\Public\Classes\Components\PlaneComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\RingComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\MeshManager.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
     <ClInclude Include="Source\Engine\Public\VertexData.h" />
     <ClInclude Include="Source\Core\Public\Memory.h" />
     <ClInclude Include="nlohmann\json.hpp" />
@@ -256,6 +267,10 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="External\Library\DirectXTK\Debug\DirectXTK.lib" />
+    <Library Include="External\Library\DirectXTK\Release\DirectXTK.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

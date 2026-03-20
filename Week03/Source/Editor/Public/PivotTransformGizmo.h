@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Source/Editor/Public/BaseTransformGizmo.h"
 #include "Source/Engine/Public/Classes/Components/ArrowComponent.h"
@@ -12,7 +12,7 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     APivotTransformGizmo(const FString &InString);
     virtual ~APivotTransformGizmo() override;
 
-    virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix) override;
+    virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix, float FOV = 90.0f, float OrthoWidth = 10.0f) override;
 
     virtual bool OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
@@ -23,8 +23,8 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     void UpdateColor();
 
   private:
-    float          InitialRayDistance = 0.0f; // Ä«¸Ş¶ó¿¡¼­ ½ğ Ray°¡ ±âÁî¸ğ Ãà¿¡ ºÎµúÈù ±íÀÌ(°Å¸®)
-    FTransform     InitialObjectTransform;    // (µå·¡±×·Î °´Ã¼¸¦ º¯°æÇÏ±â À§ÇÑ) °´Ã¼ÀÇ ÃÊ±â Transform
+    float          InitialRayDistance = 0.0f; // ì¹´ë©”ë¼ì—ì„œ ìœ Rayê°€ ê¸°ì¦ˆëª¨ ì¶•ì— ë¶€ë”ªíŒ ê¹Šì´(ê±°ë¦¬)
+    FTransform     InitialObjectTransform;    // (ë“œë˜ê·¸ë¡œ ê°ì²´ë¥¼ ë³€ê²½í•˜ê¸° ìœ„í•œ) ê°ì²´ì˜ ì´ˆê¸° Transform
     FVector<float> GizmoPlaneNormal;
     FVector<float> InitialDragVector;
 

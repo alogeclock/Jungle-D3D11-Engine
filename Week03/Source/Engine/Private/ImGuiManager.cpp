@@ -105,6 +105,8 @@ void UImGuiManager::Release()
 
 void UImGuiManager::SetCamera(FViewportCameraTransform *camera) { Camera = camera; }
 
+void UImGuiManager::SetEditorViewportClient(FEditorViewportClient *editor) { EditorViewportClient = editor; }
+
 void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) { SelectedObject = primitiveComponent; }
 
 bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
@@ -185,6 +187,7 @@ void UImGuiManager::ShowControlPanel()
     ImGui::TextWrapped("Allocated Bytes: %u", TotalAllocationBytes);
     ImGui::TextWrapped("Allocated Count: %u", TotalAllocationCount);
     ImGui::TextWrapped("Object Count: %u", GUObjectArray.size());
+    ImGui::Checkbox("Draw AABB", &bDrawAABB);
 
     ImGui::Separator();
 
@@ -201,6 +204,10 @@ void UImGuiManager::ShowControlPanel()
     ImGui::Separator();
 
     SetCameraInfo();
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Draw AABB", &bDrawAABB);
 }
 
 void UImGuiManager::SpawnActors()
@@ -322,12 +329,9 @@ void UImGuiManager::LoadScene()
     if (ImGui::Button("Load Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         std::wstring FilePath = OpenFileDialog();
-        if (!FilePath.empty())
+        if (!FilePath.empty() && GWorld->LoadLevel(FilePath))
         {
-            GWorld->LoadLevel(FilePath);
-
-            // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출 (예:
-            // "Data/MyScene.Scene" -> "MyScene")
+            // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출
             std::filesystem::path path(FilePath);
             FString               LoadedSceneName = path.stem().string();
 
@@ -336,6 +340,10 @@ void UImGuiManager::LoadScene()
             strcpy_s(buffer, sizeof(buffer), LoadedSceneName.c_str());
 
             AddLog(L"Scene loaded successfully: " + FilePath);
+        }
+        else
+        {
+            AddLog(L"Failed to load scene.");
         }
 
         SelectedObject = nullptr;
@@ -347,17 +355,24 @@ void UImGuiManager::SetCameraInfo()
     if (Camera == nullptr)
         return;
 
-    ImGui::Checkbox("Orthogonal", &UImGuiManager::Get().bIsOrthogonal);
+    ImGui::Checkbox("Orthographic", &UImGuiManager::Get().bIsOrthogonal);
 
     float fovDeg = Camera->GetFOV() * 180.0f / 3.14159265f;
 
-    if (ImGui::DragFloat("FOV", &fovDeg, 0.1f, 0.0f, 180.0f))
+    if (ImGui::DragFloat("FOV", &fovDeg, 0.1f, 60.0f, 120.0f))
     {
         Camera->SetFOV(fovDeg * 3.14159265f / 180.0f);
     }
 
     ImGui::DragFloat3("Camera Location", &Camera->GetLocation().X, 0.01f);
     ImGui::DragFloat3("Camera Rotation", &Camera->GetRotation().X, 0.1f);
+
+    if (EditorViewportClient != nullptr)
+    {
+        ImGui::Separator();
+        ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
+        ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f", ImGuiSliderFlags_Logarithmic);
+    }
 }
 
 void UImGuiManager::TransformInspector()

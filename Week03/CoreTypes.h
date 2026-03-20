@@ -1,4 +1,4 @@
- #pragma once
+﻿ #pragma once
 
 #include <vector>
 #include <string>
@@ -40,6 +40,12 @@ struct FVertex
 	FVector4<float> Color;
 };
 
+struct FVertexToTexture
+{
+	FVector<float> Position;
+	float u, v;
+};
+
 enum class EPrimitiveType : uint8
 {
 	None,
@@ -51,7 +57,9 @@ enum class EPrimitiveType : uint8
 	CubeArrow,
 	Ring,
 	Axis,
-	Grid
+	Grid,
+	WireBox,
+	Text,
 };
 
 enum class ECullMode : uint8

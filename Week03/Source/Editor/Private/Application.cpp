@@ -1,4 +1,4 @@
-#include "Source/Core/Public/Memory.h"
+ï»¿#include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/Application.h"
 #include "World.h"
 
@@ -11,7 +11,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// ImGui¿¡ ÀÔ·Â
+	// ImGuiì— ìž…ë ¥
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 	{
 		return true;
@@ -23,7 +23,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_DESTROY:
-		PostQuitMessage(0); // ÇÁ·Î±×·¥ Á¾·á ¸Þ½ÃÁö¸¦ ¸Þ½ÃÁö Å¥¿¡ ³Ö´Â´Ù.
+		PostQuitMessage(0); // í”„ë¡œê·¸ëž¨ ì¢…ë£Œ ë©”ì‹œì§€ë¥¼ ë©”ì‹œì§€ íì— ë„£ëŠ”ë‹¤.
 		break;
     case WM_SIZE:
     {
@@ -116,7 +116,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	// Rendering
     Renderer->SetViewport(Viewport);
 	Renderer->Create(hWnd);
-	
+
 	// Mesh Manager
     UMeshManager::Get().Initialize(*Renderer);
 
@@ -125,7 +125,10 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	// Timer
     UTimeManager::Get().Initialize();
-}
+
+	// UTextureManger::Get().Initialize(*Renderer);
+	//void* a = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
+}	
 
 void UApplication::Run()
 {
