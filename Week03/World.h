@@ -29,15 +29,15 @@ class UWorld final : public UObject
 
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
-    static UObject *Constructor() { return new UWorld("WorldConstructor"); }
+    //static UObject *Constructor() { return new UWorld("WorldConstructor"); }
 
-    static UClass *StaticClass()
-    {
-        static UClass s_Class("UWorld", UObject::StaticClass(), &UWorld::Constructor);
-        return &s_Class;
-    }
+    //static UClass *StaticClass()
+    //{
+    //    static UClass s_Class("UWorld", UObject::StaticClass(), &UWorld::Constructor);
+    //    return &s_Class;
+    //}
 
-    virtual UClass *GetClass() const override { return StaticClass(); }
+    //virtual UClass *GetClass() const override { return StaticClass(); }
 
     void       Render(URenderer &renderer);
 

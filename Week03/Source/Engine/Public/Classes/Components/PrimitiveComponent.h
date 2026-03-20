@@ -17,6 +17,8 @@ struct FHitResult
 
 class UPrimitiveComponent : public USceneComponent
 {
+    DECLARE_OBJECT(UPrimitiveComponent, USceneComponent)
+
 public:
     UPrimitiveComponent(const FString &InString);
     virtual ~UPrimitiveComponent() override;
@@ -38,17 +40,6 @@ public:
     void SetAlwaysVisible(const bool bInEnableDepthTest) { bEnableDepthTest = !bInEnableDepthTest; }
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
-
-    static UObject *Constructor() { return new UPrimitiveComponent("PrimitiveComponentConstructor"); }
-
-    static UClass *StaticClass()
-    {
-        // 부모를 UPrimitiveComponent::StaticClass() 로 지정
-        static UClass s_Class("UPrimitiveComponent", USceneComponent::StaticClass(), &UPrimitiveComponent::Constructor);
-        return &s_Class;
-    }
-
-    virtual UClass *GetClass() const override { return StaticClass(); }
 
 protected:
     FVector<float> GetLocalAABBMin() const;
