@@ -50,7 +50,7 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
         return false;
 
     std::filesystem::path path(FilePath);
-    std::wstring          CurrentSceneName = path.stem();
+    FString          CurrentSceneName = path.stem().string();
 
     json j;
     j["Version"] = 1;
@@ -120,10 +120,8 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
 
 bool UWorld::LoadLevel(const std::wstring &FilePath)
 {
-    // [수정 1] 영어 설정 OS에서 한글 경로를 인식할 수 있도록 u8path를 거쳐서 path 객체 생성
     std::filesystem::path path = std::filesystem::path(FilePath);
 
-    // [수정 2] 단순 문자열(FilePath) 대신, 인코딩이 올바르게 처리된 path 객체로 파일 열기
     std::ifstream file(path);
     if (!file.is_open())
         return false;
@@ -134,13 +132,20 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
 
     FString CurrentSceneName;
 
-    if (j.contains("SceneName"))
+    // 1. contains()와 함께 is_string()을 추가로 확인하여 타입 불일치 오류 방지
+    if (j.contains("SceneName") && j["SceneName"].is_string())
     {
         CurrentSceneName = j["SceneName"].get<std::string>();
     }
     else
     {
-        CurrentSceneName = path.stem().string();
+        // 2. else 블록으로 넘어왔을 때 한자/한글 경로로 프로그램이 종료되는 현상 차단
+        std::wstring wStem = path.stem().wstring();
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
+        std::string utf8Stem(size_needed, 0);
+        WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
+        
+        CurrentSceneName = utf8Stem;
     }
 
     // 기존 레벨 메모리 해제 및 새 레벨 할당
