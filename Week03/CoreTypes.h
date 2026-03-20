@@ -1,4 +1,4 @@
-﻿ #pragma once
+ #pragma once
 
 #include <vector>
 #include <string>
@@ -10,8 +10,8 @@
 #include <cmath>
 #include <algorithm>
 
-#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
-#include "Engine/Source/Runtime/Core/Public/Math/Vector4.h"
+#include "Source/Runtime/Core/Public/Math/Vector.h"
+#include "Source/Runtime/Core/Public/Math/Vector4.h"
 
 class UWorld;
 extern UWorld *GWorld;
