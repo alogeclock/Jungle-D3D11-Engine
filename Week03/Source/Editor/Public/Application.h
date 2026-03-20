@@ -19,6 +19,7 @@
 #include "Source/Engine/Public/ImGuiManager.h"
 #include "Source/Core/Public/TimeManager.h"
 #include "Source/Engine/Public/Classes/MeshManager.h"
+#include "Source/Engine/Public/Classes/TextureManger.h"
 #include "Source/Editor/Public/Viewport.h"
 
 #include <iostream>

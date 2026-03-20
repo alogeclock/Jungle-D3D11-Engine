@@ -107,11 +107,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:/Github/Week2/Engine/Source;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\Include\DirectXTK;C:/Github/Week2/Engine/Source;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\Library\DirectXTK\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,6 +143,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\PlaneComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\RingComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\MeshManager.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\TextureManger.cpp" />
     <ClCompile Include="Source\Engine\Private\VertexData.cpp" />
     <ClCompile Include="Source\Core\Private\Memory.cpp" />
     <ClCompile Include="Source\Engine\Object\Private\Actor.cpp" />
@@ -187,6 +190,7 @@
     <ClInclude Include="Source\Engine\Public\Classes\Components\PlaneComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\RingComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\MeshManager.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
     <ClInclude Include="Source\Engine\Public\VertexData.h" />
     <ClInclude Include="Source\Core\Public\Memory.h" />
     <ClInclude Include="nlohmann\json.hpp" />

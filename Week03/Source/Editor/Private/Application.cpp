@@ -113,7 +113,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 	// Rendering
     Renderer->SetViewport(Viewport);
 	Renderer->Create(hWnd);
-	
+
 	// Mesh Manager
     UMeshManager::Get().Initialize(*Renderer);
 
@@ -122,7 +122,10 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
 	// Timer
     UTimeManager::Get().Initialize();
-}
+
+	UTextureManger::Get().Initialize(*Renderer);
+	//void* a = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
+}	
 
 void UApplication::Run()
 {
