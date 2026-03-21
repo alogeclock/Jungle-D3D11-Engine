@@ -19,27 +19,24 @@ void UPrimitiveComponent::Render(URenderer &renderer)
     if (!renderer.IsDrawAABB())
         return;
 
-    if (PrimitiveType == EPrimitiveType::Cube || PrimitiveType == EPrimitiveType::Sphere)
-    {
-        UpdateBounds();
+    UpdateBounds();
 
-        FVector<float> Center = WorldAABB.GetCenter();
-        FVector<float> Size = WorldAABB.GetExtents() * 2.0f;
-        FMatrix<float> ScaleMat = FScaleMatrix(Size);
-        FMatrix<float> TransMat = FTranslationMatrix(Center);
-        FMatrix<float> WorldMat = ScaleMat * TransMat;
+    FVector<float> Center = WorldAABB.GetCenter();
+    FVector<float> Size = WorldAABB.GetExtents() * 2.0f;
+    FMatrix<float> ScaleMat = FScaleMatrix(Size);
+    FMatrix<float> TransMat = FTranslationMatrix(Center);
+    FMatrix<float> WorldMat = ScaleMat * TransMat;
 
-        FConstants aabbConstants;
-        aabbConstants.MVPMatrix = WorldMat;
-        FConstantsColor aabbColor = {0.3f, 1.0f, 0.3f, 1.0f};
+    FConstants aabbConstants;
+    aabbConstants.MVPMatrix = WorldMat;
+    FConstantsColor aabbColor = {0.3f, 1.0f, 0.3f, 1.0f};
 
-        // Line Batching이 도입되면 임시 컴포넌트 생성 없이 Batcher 클래스에 박스 정보를 넘기는 방식으로 최적화한다.
-        UPrimitiveComponent WireBoxComp("TempAABB");
-        WireBoxComp.SetPrimitiveType(EPrimitiveType::WireBox);      // MeshManager에 추가해야 할 Line List 용 타입
-        WireBoxComp.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // 선 그리기 모드로 변경
+    // Line Batching이 도입되면 임시 컴포넌트 생성 없이 Batcher 클래스에 박스 정보를 넘기는 방식으로 최적화한다.
+    UPrimitiveComponent WireBoxComp("TempAABB");
+    WireBoxComp.SetPrimitiveType(EPrimitiveType::WireBox);      // MeshManager에 추가해야 할 Line List 용 타입
+    WireBoxComp.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // 선 그리기 모드로 변경
 
-        renderer.RenderPrimitive(&WireBoxComp, aabbConstants, aabbColor);
-    }
+    renderer.RenderPrimitive(&WireBoxComp, aabbConstants, aabbColor);
 }
 
 void UPrimitiveComponent::Selected() { SetColor({0.0f, 0.0f, 0.0f, 0.5f}); }
@@ -78,7 +75,7 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     case EPrimitiveType::Ring:
     default:
         if (!IntersectRayBoundingSphere(RayOrigin, RayDirection))
-           return Result;
+            return Result;
         if (!IntersectRayAABB(RayOrigin, RayDirection))
             return Result;
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
@@ -313,7 +310,7 @@ void UPrimitiveComponent::UpdateBounds()
         FVector<float> Max = LocalAABB.Max;
 
         // 로컬 AABB의 8개 정점 생성
-        
+
         Corners[0] = {Min.X, Min.Y, Min.Z};
         Corners[1] = {Max.X, Min.Y, Min.Z};
         Corners[2] = {Min.X, Max.Y, Min.Z};
@@ -337,7 +334,7 @@ void UPrimitiveComponent::UpdateBounds()
     }
 }
 
-const FBox &UPrimitiveComponent::GetWorldAABB() 
+const FBox &UPrimitiveComponent::GetWorldAABB()
 {
     UpdateBounds();
     return WorldAABB;

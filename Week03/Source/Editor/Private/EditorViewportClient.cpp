@@ -228,6 +228,13 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
 
 void FEditorViewportClient::Render(URenderer& renderer)
 {
+	FSceneViewOptions OriginalViewOptions;
+	OriginalViewOptions.ViewMode = GetViewMode();
+	OriginalViewOptions.bDrawAABB = GetDrawAABB();
+
+	renderer.SetViewMode(EViewModeIndex::VMI_Lit);
+    renderer.SetDrawAABB(false);
+
     if (UImGuiManager::Get().GetSelectedObject() == nullptr)
     {
         if (Gizmo != nullptr)
@@ -258,6 +265,9 @@ void FEditorViewportClient::Render(URenderer& renderer)
     {
         Axis->Render(renderer);
     }
+    
+    renderer.SetViewMode(OriginalViewOptions.ViewMode);
+    renderer.SetDrawAABB(OriginalViewOptions.bDrawAABB);
 }
 
 void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
