@@ -31,6 +31,8 @@ void UActorComponent::InitializeComponent() {}
 // Update 대신 UE의 명칭인 TickComponent로 구현합니다.
 void UActorComponent::TickComponent(float DeltaTime) {}
 
+void UActorComponent::Tick(float deltaTime) {}
+
 // [추가] 나를 감싸고 있는 주인(Outer)을 AActor로 변환해서 돌려줍니다.
 AActor *UActorComponent::GetOwner() const
 {

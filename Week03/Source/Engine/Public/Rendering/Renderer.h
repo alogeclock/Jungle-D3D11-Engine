@@ -118,7 +118,7 @@ public:
 	void Prepare(const FSceneViewOptions& ViewOptions);
 	void PrepareShader();
 
-	void RenderText(UPrimitiveComponent *primitive, FConstants &constants, TArray<FTextVertex>* vertices);
+	void RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex>* vertices);
 	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
 	void RenderPrimitive(UPrimitiveComponent *primitive);
     void RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor);

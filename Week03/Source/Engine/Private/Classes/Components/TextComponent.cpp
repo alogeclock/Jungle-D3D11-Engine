@@ -34,7 +34,7 @@ void UTextComponent::Render(URenderer &renderer)
 
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
-    renderer.RenderText(this, constants, &TextVertices);
+    renderer.RenderText(FilePath, constants, &TextVertices);
 }
 
 void UTextComponent::RebuildMesh()

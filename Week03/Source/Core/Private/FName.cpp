@@ -1,6 +1,6 @@
 #include "Source/Core/Public/FName.h"
 
-FName::FName() : ComparisionIndex(0), Number(0), DisplayIndex(0)
+FName::FName() : ComparisonIndex(0), Number(0), DisplayIndex(0)
 {
 }
 
@@ -11,19 +11,19 @@ FName::FName(char* pStr) : FName(FString(pStr))
 FName::FName(const FString& Name)
 {
 	FName name = GNamePool.AddName(Name);
-	ComparisionIndex = name.ComparisionIndex;
+	ComparisonIndex = name.ComparisonIndex;
 	DisplayIndex = name.DisplayIndex;
 }
 
 FName::FName(uint32 InComparisionIndex, uint32 InDisplayIndex)
 {
-	ComparisionIndex = InComparisionIndex;
+	ComparisonIndex = InComparisionIndex;
 	DisplayIndex = InDisplayIndex;
 }
 
 bool FName::operator==(const FName& Other) const
 {
-	return ComparisionIndex == Other.ComparisionIndex;
+	return ComparisonIndex == Other.ComparisonIndex;
 }
 
 FString FName::operator+(const FString& Other)

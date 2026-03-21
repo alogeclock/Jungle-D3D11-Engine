@@ -440,7 +440,7 @@ void URenderer::PrepareShader()
     }
 }
 
-void URenderer::RenderText(UPrimitiveComponent *primitive, FConstants &constants, TArray<FTextVertex> *vertices) 
+void URenderer::RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices) 
 {
     if (!TextVertexShader)   { OutputDebugStringA("TextVertexShader NULL\n"); return; }
     if (!TextPixelShader)    { OutputDebugStringA("TextPixelShader NULL\n");  return; }
@@ -494,7 +494,7 @@ void URenderer::RenderText(UPrimitiveComponent *primitive, FConstants &constants
     DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
 
     // 6. 폰트 텍스처 / 샘플러
-    ID3D11ShaderResourceView* fontSRV = UTextureManger::Get().GetTexture("Data/Texture/DejaVu Sans Mono.dds");
+    ID3D11ShaderResourceView *fontSRV = UTextureManger::Get().GetTexture(FilePath);
     if (!fontSRV) { 
         OutputDebugStringA("FontSRV NULL\n"); 
         vertexBuffer->Release(); 

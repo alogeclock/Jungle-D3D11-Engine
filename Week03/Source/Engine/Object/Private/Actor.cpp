@@ -65,6 +65,17 @@ void AActor::SetTransform(const FTransform &NewTransform)
     }
 }
 
+void AActor::Tick(float deltaTime) 
+{
+    for (UActorComponent *Component : OwnedComponents)
+    {
+        if (Component != nullptr)
+        {
+            Component->Tick(deltaTime);
+        }
+    }
+}
+
 void AActor::IterateAllActorComponents(URenderer &renderer) const
 {
     // Actor의 GetComponents()는 보통 컴포넌트들의 Set이나 Array를 반환합니다.
