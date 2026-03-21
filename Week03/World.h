@@ -30,6 +30,7 @@ class UWorld final : public UObject
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
     void       Render(URenderer &renderer);
+    void Tick(float deltaTime);
 
   private:
     ULevel        *CurrentLevel;

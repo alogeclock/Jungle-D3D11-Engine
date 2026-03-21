@@ -33,6 +33,8 @@ class AActor : public UObject
     template<typename T>
     T* FindComponentByClass();
 
+    void Tick(float deltaTime);
+
     void IterateAllActorComponents(URenderer &renderer) const;
 };
 

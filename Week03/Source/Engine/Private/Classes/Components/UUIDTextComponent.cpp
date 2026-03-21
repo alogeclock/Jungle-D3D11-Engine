@@ -7,6 +7,7 @@ UUUIDTextComponent::UUUIDTextComponent(const FString &InString)
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
     bVIsible = false;
+    FilePath = "Data/Texture/DejaVu Sans Mono.dds";
 }
 
 UUUIDTextComponent::~UUUIDTextComponent() {}
@@ -31,7 +32,7 @@ void UUUIDTextComponent::Render(URenderer &renderer) {
     constants.MVPMatrix = RTMatrix;
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
-    renderer.RenderText(this, constants, &TextVertices);
+    renderer.RenderText(FilePath, constants, &TextVertices);
 }
 
 void UUUIDTextComponent::Selected() { 

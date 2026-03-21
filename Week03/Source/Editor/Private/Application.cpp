@@ -161,6 +161,7 @@ void UApplication::Run()
 			Renderer->Prepare(ViewOptions);
 
 			GWorld->Render(*Renderer);
+            GWorld->Tick(UTimeManager::Get().GetDeltaTime());
 			
 			ViewportClient->Render(*Renderer);
 
