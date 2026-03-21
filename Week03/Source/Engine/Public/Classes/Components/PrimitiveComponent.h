@@ -22,7 +22,11 @@ struct FHitResult
 
 class UPrimitiveComponent : public USceneComponent
 {
-    DECLARE_OBJECT(UPrimitiveComponent, USceneComponent)
+    //DECLARE_OBJECT(UPrimitiveComponent, USceneComponent)
+    DECLARE_UCLASS()
+    //내 클래스, 해당 멤버 변수 이름, 해당 멤버 자료형
+    REGISTER_PROPERTY(UPrimitiveComponent, Transform, Transform)
+    END_DECLARE(UPrimitiveComponent, USceneComponent)
 
   public:
     UPrimitiveComponent(const FString &InString);

@@ -187,6 +187,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineStatics.h" />
+    <ClInclude Include="Source\Core\Public\Property.h" />
+    <ClInclude Include="Source\Core\Public\UClass.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\LineBatcherComponent.h" />
     <ClInclude Include="Source\Core\Public\FName.h" />
     <ClInclude Include="External\Include\DirectXTK\DDSTextureLoader.h" />
