@@ -15,6 +15,7 @@
 #include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Source/Engine/Public/Classes/Components/TextComponent.h"
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
+#include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 
 #include "Source/Editor/Public/EditorViewportClient.h"
 
@@ -262,7 +263,7 @@ void UImGuiManager::ShowControlPanel()
 
 void UImGuiManager::SpawnActors()
 {
-    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI"};
+    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI", "Smoke"};
 
     static int Primitive = 0;
     static int NumberOfSpawn = 1;
@@ -300,6 +301,9 @@ void UImGuiManager::SpawnActors()
             break;
         case 5:
             ComponentClassToSpawn = UUUIDTextComponent::StaticClass();
+            break;
+        case 6:
+            ComponentClassToSpawn = UParticleSubUVComponent::StaticClass();
             break;
         }
 

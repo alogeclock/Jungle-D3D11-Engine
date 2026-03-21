@@ -17,6 +17,8 @@ class UActorComponent : public UObject
     virtual void InitializeComponent();
     virtual void TickComponent(float DeltaTime);
 
+    virtual void Tick(float deltaTime);
+
     AActor *GetOwner() const;
     void SetOwner(AActor* InOwner) { Owner = InOwner; }
 

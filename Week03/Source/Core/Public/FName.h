@@ -8,7 +8,7 @@ class FName
 	friend class UniqueNamePool;
 	friend struct std::hash<FName>;
 
-	uint32 ComparisionIndex = 0;
+	uint32 ComparisonIndex = 0;
 	uint32 Number = 0;
 	uint32 DisplayIndex = 0;
 public:
@@ -37,7 +37,7 @@ namespace std {
 		size_t operator()(const FName& InName) const
 		{
 			// FName의 고유성을 결정하는 ComparisionIndex와 Number를 조합하여 해시값 생성
-			size_t Hash1 = std::hash<uint32>()(InName.ComparisionIndex);
+			size_t Hash1 = std::hash<uint32>()(InName.ComparisonIndex);
 			size_t Hash2 = std::hash<uint32>()(InName.Number);
 
 			// 비트 XOR 연산과 시프트 연산을 통해 두 해시값을 섞어줍니다.

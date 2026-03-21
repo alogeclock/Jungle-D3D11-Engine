@@ -329,6 +329,17 @@ void UWorld::Render(URenderer &renderer)
     }
 }
 
+void UWorld::Tick(float deltaTime)
+{
+    if (CurrentLevel)
+    {
+        for (AActor *actor : CurrentLevel->GetActors())
+        {
+            actor->Tick(deltaTime);
+        }
+    }
+}
+
 FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
     FHitResult ClosestHit;
