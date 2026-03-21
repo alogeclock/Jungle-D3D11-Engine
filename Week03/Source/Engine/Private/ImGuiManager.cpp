@@ -12,7 +12,8 @@
 #include "Source/Engine/Public/Classes/Components/PlaneComponent.h"
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/SphereComponent.h"
-#include "Source/Engine/Public/Classes/Components/TriangleComponent.h">
+#include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
+#include "Source/Engine/Public/Classes/Components/TextComponent.h"
 
 #include "Source/Editor/Public/EditorViewportClient.h"
 
@@ -211,7 +212,7 @@ void UImGuiManager::ShowControlPanel()
 
 void UImGuiManager::SpawnActors()
 {
-    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane"};
+    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text"};
 
     static int Primitive = 0;
     static int NumberOfSpawn = 1;
@@ -242,6 +243,9 @@ void UImGuiManager::SpawnActors()
         case 3:
             ComponentClassToSpawn = UPlaneComponent::StaticClass();
             break;
+        case 4:
+            ComponentClassToSpawn = UTextComponent::StaticClass();
+            break;
         }
 
         if (ComponentClassToSpawn == nullptr)
@@ -270,8 +274,13 @@ void UImGuiManager::SpawnActors()
 
                 AddLog(logBuffer);
 
-                DynamicPrimitive->SetOuter(NewActor);  // 이 컴포넌트의 주인(AActor) 설정
-                DynamicPrimitive->RegisterComponent(); // 시스템에 등록
+                DynamicPrimitive->SetOuter(NewActor);
+                DynamicPrimitive->RegisterComponent();
+
+                if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
+                {
+                    TextComp->SetText(UUID);   
+                }
             }
         }
     }

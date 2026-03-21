@@ -31,6 +31,7 @@ const CharacterInfo *FTextMeshBuilder::GetCharInfo(wchar_t InChar)
 
 TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
 {
+    //현재는 중심 기준
     if (charInfoMap.empty())
         InitializeCharInfo();
 
@@ -52,8 +53,8 @@ TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
 
         const float x0 = PenX;
         const float x1 = PenX + 1.0f;
-        const float y0 = 0.0f;
-        const float y1 = 1.0f;
+        const float y0 = -0.5f;
+        const float y1 = 0.5f;
         const float z  = 0.0f;
 
         const float u0 = Info->u;
@@ -61,12 +62,13 @@ TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
         const float u1 = Info->u + Info->width;
         const float v1 = Info->v + Info->height;
 
-        Vertices.push_back({FVector<float>(x0, y0, z), u0, v0});
-        Vertices.push_back({FVector<float>(x1, y0, z), u1, v0});
-        Vertices.push_back({FVector<float>(x0, y1, z), u0, v1});
-        Vertices.push_back({FVector<float>(x1, y0, z), u1, v0});
-        Vertices.push_back({FVector<float>(x1, y1, z), u1, v1});
-        Vertices.push_back({FVector<float>(x0, y1, z), u0, v1});
+        Vertices.push_back({ FVector<float>(x0, y0, 0.0f), u0, v0 });
+        Vertices.push_back({ FVector<float>(x1, y0, 0.0f), u1, v0 });
+        Vertices.push_back({ FVector<float>(x0, y1, 0.0f), u0, v1 });
+
+        Vertices.push_back({ FVector<float>(x1, y0, 0.0f), u1, v0 });
+        Vertices.push_back({ FVector<float>(x1, y1, 0.0f), u1, v1 });
+        Vertices.push_back({ FVector<float>(x0, y1, 0.0f), u0, v1 });
 
         PenX += 1.0f;
     }

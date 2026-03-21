@@ -1,6 +1,6 @@
 cbuffer FConstants : register(b0)
 {
-    float4x4 MVPMatrix;
+    row_major float4x4 MVPMatrix;
 };
 
 struct VS_INPUT

@@ -11,31 +11,35 @@ UTextComponent::UTextComponent(const FString &InString)
 	PrimitiveType = EPrimitiveType::Text;
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
-	bMeshDirty = true;
-        SetText("asdfaaaaaaaaaaaaaaaaaaa");
+     
 }
 
 UTextComponent::~UTextComponent() {}
 
-void UTextComponent::Render(URenderer &renderer) {
+void UTextComponent::Render(URenderer &renderer)
+{
+    if (bMeshDirty) RebuildMesh();
     if (TextVertices.empty()) return;
 
-    FVector<float> CamRight, CamUp, CamForward;
-    if (renderer.GetCameraBasis(CamRight, CamUp, CamForward))
-    {
-        UpdateBillboard(CamForward, CamUp);
-    }
-    else
-    {
-        RTMatrix = GetWorldMatrix();
-    }
-
     FConstants constants;
+
+    FVector<float> forwardVector;
+    FVector<float> rightVector;
+    FVector<float> upVector;
+    if (renderer.GetCameraBasis(rightVector, upVector, forwardVector))
+    {
+        UpdateBillboard(forwardVector, upVector);
+    }
     constants.MVPMatrix = RTMatrix;
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
+    renderer.RenderText(this, constants, &TextVertices);
+}
 
-    renderer.RenderText(this, TextVertices, constants);
+void UTextComponent::RebuildMesh()
+{
+    TextVertices = FTextMeshBuilder::BuildTextMesh(Text);
+    bMeshDirty   = false;
 }
 
 void UTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp)
@@ -53,7 +57,7 @@ void UTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, cons
     if (!FaceDir.Normalize())
         FaceDir = FVector<float>(1.f, 0.f, 0.f);
 
-    FVector<float> Up = InWorldUp;
+    FVector<float> Up = InWorldUp* -1.0f;
     if (!Up.Normalize())
         Up = FVector<float>(0.f, 0.f, 1.f);
 
