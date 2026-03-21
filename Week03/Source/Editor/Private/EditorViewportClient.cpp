@@ -442,6 +442,9 @@ void FEditorViewportClient::SaveConfig()
 
     std::string rotStr = std::to_string(RotSpeed);
     WritePrivateProfileStringA("CameraSettings", "RotSpeed", rotStr.c_str(), iniPath);
+    
+    std::string gridStepStr = std::to_string(Grid->GetGridStep());
+    WritePrivateProfileStringA("GridSettings", "GridStep", gridStepStr.c_str(), iniPath);
 }
 
 bool FInputEventState::IsLeftMouseButtonPressed() const
