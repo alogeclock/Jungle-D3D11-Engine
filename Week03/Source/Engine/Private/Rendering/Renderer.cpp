@@ -451,10 +451,6 @@ void URenderer::RenderText(UPrimitiveComponent *primitive, FConstants &constants
     vbDesc.ByteWidth            = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
     vbDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
 
-    std::cout << "FTextVertex size: " << sizeof(FTextVertex) << std::endl;
-    std::cout << "vertex count: " << vertices->size() << std::endl;
-    std::cout << "ByteWidth: " << vbDesc.ByteWidth << std::endl;
-
     ID3D11Buffer* vertexBuffer  = nullptr;
     if (FAILED(Device->CreateBuffer(&vbDesc, nullptr, &vertexBuffer)))
     {

@@ -1,10 +1,12 @@
 #pragma once
 #include "CoreTypes.h"
 #include <string>
+#include <functional> // std::hash를 위해 추가
 
 class FName
 {
 	friend class UniqueNamePool;
+	friend struct std::hash<FName>;
 
 	uint32 ComparisionIndex = 0;
 	uint32 Number = 0;
@@ -15,7 +17,7 @@ public:
 	FName(const FString& Name);
 	FName(uint32 InComparisionIndex, uint32 InDisplayIndex);
 
-	bool operator==(const FName& Other);
+	bool operator==(const FName& Other) const;
 	FString operator+(const FString& Other);
 
 	int32 Compare(const FName& Other) const;
@@ -26,6 +28,23 @@ public:
 
 	uint32 GetDisplayIndex();
 };
+
+namespace std {
+	// std::hash 구조체에 대한 템플릿 특수화
+	template <>
+	struct hash<FName>
+	{
+		size_t operator()(const FName& InName) const
+		{
+			// FName의 고유성을 결정하는 ComparisionIndex와 Number를 조합하여 해시값 생성
+			size_t Hash1 = std::hash<uint32>()(InName.ComparisionIndex);
+			size_t Hash2 = std::hash<uint32>()(InName.Number);
+
+			// 비트 XOR 연산과 시프트 연산을 통해 두 해시값을 섞어줍니다.
+			return Hash1 ^ (Hash2 << 1);
+		}
+	};
+}
 
 class FNamePool
 {

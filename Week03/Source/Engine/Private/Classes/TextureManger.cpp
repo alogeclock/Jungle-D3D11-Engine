@@ -23,11 +23,11 @@ UTextureManger::~UTextureManger()
 
 void UTextureManger::Initialize(URenderer& Renderer)
 {
-	LoadToFileTexture(RootPath / L"Data", Renderer);
+	LoadToFileTexture(L"Data/Texture", Renderer);
 }
 
 
-FString UTextureManger::GetHashKeyPath(const path& inFilePath) const
+FName UTextureManger::GetHashKeyPath(const path& inFilePath) const
 {
 	path InputPath = inFilePath;      // 사용자 입력 경로
 	path AbsolutePath;               // 절대 경로
@@ -54,6 +54,18 @@ FString UTextureManger::GetHashKeyPath(const path& inFilePath) const
 
 void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& Renderer)
 {
+	if (!std::filesystem::exists(InDirectoryPath))
+	{
+		std::cout << "[TextureManager] 디렉토리를 찾을 수 없어 새로 생성합니다: " << InDirectoryPath.string() << std::endl;
+		// 경로상의 모든 상위 디렉토리까지 포함하여 생성
+		std::filesystem::create_directories(InDirectoryPath);
+	}
+	else if (!std::filesystem::is_directory(InDirectoryPath))
+	{
+		std::cout << "[TextureManager] 오류: 해당 경로에 디렉토리가 아닌 파일이 이미 존재합니다: " << InDirectoryPath.string() << std::endl;
+		return;
+	}
+
 	ID3D11Device* Device = Renderer.Device;
 	ID3D11DeviceContext* DeviceContext = Renderer.DeviceContext;
 
@@ -103,14 +115,14 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 
 			TextureSRV = GetDefaultTexture(Device);
 		}
-		FString HashKey = GetHashKeyPath(FilePath);
+		FName HashKey = GetHashKeyPath(FilePath);
 		TextureMap[HashKey] = TextureSRV;
 	}
 }
 
 ID3D11ShaderResourceView* UTextureManger::GetTexture(const path& inFilePath)
 {
-	FString HashKey = GetHashKeyPath(inFilePath);
+	FName HashKey = GetHashKeyPath(inFilePath);
 
 	if (TextureMap.find(HashKey) != TextureMap.end()) {
 		return TextureMap[HashKey].Get();

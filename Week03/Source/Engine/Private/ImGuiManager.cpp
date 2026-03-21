@@ -288,6 +288,10 @@ void UImGuiManager::SpawnActors()
 
             if (DynamicPrimitive != nullptr)
             {
+                UUUIDTextComponent *UUUID = NewObj->CreateDefaultSubobject<UUUIDTextComponent>();
+                NewActor->AddOwnedComponent(UUUID);
+                UUUID->SetText(NewObj->GetUUID());
+
                 const char  *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
                 const uint32 UUID = NewObj->GetUUID();
 
