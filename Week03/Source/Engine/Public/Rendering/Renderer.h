@@ -61,8 +61,8 @@ public:
 
 	ID3D11BlendState* BlendState = nullptr;
     FLOAT BlendFactor[4] = {0.f, 0.f, 0.f, 0.f};
-
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // 화면을 초기화하는 색
+
 	D3D11_VIEWPORT ViewportInfo;
 	D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
@@ -100,12 +100,18 @@ public:
 	void CreateDepthStencilState();
 	void ReleaseDepthStencilState();
 	void SetDepthStencilEnable(bool bEnable);
+
 	void SetCullMode(ECullMode cullMode);
+	void SetViewMode(EViewModeIndex Mode);
+	void ApplyRasterizerState();
+
+	void SetDrawAABB(bool bEnable) { bDrawAABB = bEnable; }
+    bool IsDrawAABB() const { return bDrawAABB; }
 
 	void CreateBlendState();
     void ReleaseBlendState();
 
-	void Prepare();
+	void Prepare(const FSceneViewOptions& ViewOptions);
 	void PrepareShader();
 
 	void RenderText(UPrimitiveComponent *primitive, FConstants &constants, TArray<FTextVertex>* vertices);
@@ -133,4 +139,7 @@ public:
 
 private:
 	FViewport* Viewport = nullptr;
+	ECullMode CurrentCullMode = ECullMode::Back;
+	EViewModeIndex ViewModeIndex = EViewModeIndex::VMI_Lit;
+    bool bDrawAABB = false;
 };
