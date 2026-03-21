@@ -48,18 +48,19 @@ struct FTextVertex
 
 enum class EPrimitiveType : uint8
 {
-    None,
-    Sphere,
-    Cube,
-    Triangle,
-    Plane,
-    Arrow,
-    CubeArrow,
-    Ring,
-    Axis,
-    Grid,
-    WireBox,
-    Text,
+	None,
+	Sphere,
+	Cube,
+	Triangle,
+	Plane,
+	Arrow,
+	CubeArrow,
+	Ring,
+	Axis,
+	Grid,
+	WireBox,
+	Text,
+	LineBatcher,
 };
 
 enum class ECullMode : uint8

@@ -349,7 +349,8 @@ void URenderer::SetShowFlags(EEngineShowFlags InShowFlags)
 
 void URenderer::ApplyRasterizerState()
 {
-    if (DeviceContext == nullptr) return;
+    if (DeviceContext == nullptr)
+        return;
 
     // 와이어프레임 상태가 켜져 있으면 다른 세팅을 무시하고 와이어프레임 적용
     if (ViewModeIndex == EViewModeIndex::VMI_Wireframe)
@@ -398,7 +399,7 @@ void URenderer::ReleaseBlendState()
     }
 }
 
-void URenderer::Prepare(const FSceneViewOptions& ViewOptions)
+void URenderer::Prepare(const FSceneViewOptions &ViewOptions)
 {
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
     DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -587,6 +588,19 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &cons
     }
 }
 
+void URenderer::Draw(ID3D11Buffer *vertexBuffer, uint32 numVertices, uint32 InStride) {
+    uint32 offset = 0;
+    DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &InStride, &offset);
+    DeviceContext->Draw(numVertices, 0);
+}
+
+void URenderer::DrawIndexed(ID3D11Buffer *vertexBuffer, ID3D11Buffer *indexBuffer, uint32 numIndices, uint32 InStride) {
+    uint32 offset = 0;
+    DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &InStride, &offset);
+    DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0); // uint16 인덱스
+    DeviceContext->DrawIndexed(numIndices, 0, 0);
+}
+
 ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth)
 {
     // Create a vertex buffer
@@ -625,6 +639,61 @@ void URenderer::ReleaseIndexBuffer(ID3D11Buffer *indexBuffer)
 {
     if (indexBuffer)
         indexBuffer->Release();
+}
+
+ID3D11Buffer *URenderer::CreateDynamicVertexBuffer(uint32 byteWidth)
+{
+    D3D11_BUFFER_DESC vertexbufferdesc = {};
+    vertexbufferdesc.ByteWidth = byteWidth;
+    vertexbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
+    vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vertexbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    ID3D11Buffer *buffer = nullptr;
+    Device->CreateBuffer(&vertexbufferdesc, nullptr, &buffer);
+    return buffer;
+}
+
+void URenderer::ReleaseDynamicVertexBuffer(ID3D11Buffer *vertexBuffer)
+{
+    if (vertexBuffer)
+    {
+        vertexBuffer->Release();
+    }
+}
+
+ID3D11Buffer *URenderer::CreateDynamicIndexBuffer(uint32 byteWidth)
+{
+    D3D11_BUFFER_DESC indexbufferdesc = {};
+    indexbufferdesc.ByteWidth = byteWidth;
+    indexbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
+    indexbufferdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    indexbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    ID3D11Buffer *buffer = nullptr;
+    Device->CreateBuffer(&indexbufferdesc, nullptr, &buffer);
+    return buffer;
+}
+
+void URenderer::ReleaseDynamicIndexBuffer(ID3D11Buffer *indexBuffer)
+{
+    if (indexBuffer)
+    {
+        indexBuffer->Release();
+    }
+}
+
+void URenderer::UpdateDynamicBuffer(ID3D11Buffer *Buffer, const void *Data, uint32 byteWidth) 
+{
+    if (!Buffer || !Data || byteWidth == 0)
+    {
+        return;
+    }
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    if (SUCCEEDED(DeviceContext->Map(Buffer, 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+    {
+        memcpy(mappedResource.pData, Data, byteWidth);
+        DeviceContext->Unmap(Buffer, 0);
+    }
 }
 
 void URenderer::CreateConstantBuffer()
@@ -746,4 +815,10 @@ void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight)
 
     // Viewport 재설정
     ViewportInfo = {0.f, 0.f, (float)NewWidth, (float)NewHeight, 0.f, 1.f};
+}
+
+void URenderer::SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology)
+{
+    Topology = InTopology;
+    DeviceContext->IASetPrimitiveTopology(Topology);
 }
