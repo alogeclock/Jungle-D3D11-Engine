@@ -12,7 +12,7 @@ UTextComponent::UTextComponent(const FString &InString)
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
     bVIsible = true;
-    FilePath = "Data/Texture/DejaVu Sans Mono.dds";
+    FilePath = "Data/Texture/KorName.png";
 }
 
 UTextComponent::~UTextComponent() {
