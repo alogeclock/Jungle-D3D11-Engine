@@ -11,6 +11,7 @@
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
+#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 #include "Source/Engine/Public/ImGuiManager.h"
 
 #include <fstream>
@@ -342,10 +343,18 @@ FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<flo
 
                         ClosestHit = Hit;
                         Object->Selected();
+                        if (UUUIDTextComponent* TextComp = actor->FindComponentByClass<UUUIDTextComponent>())
+                            TextComp->Selected();
+
                         UImGuiManager::Get().SetSelectedObject(ClosestHit.HitComponent);
                     }
                     else
+                    {
                         Object->NotSelected();
+
+                        if (UUUIDTextComponent* TextComp = actor->FindComponentByClass<UUUIDTextComponent>())
+                            TextComp->NotSelected();
+                    }
                 }
             }
         }

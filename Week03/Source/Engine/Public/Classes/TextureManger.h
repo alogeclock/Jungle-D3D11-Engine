@@ -30,7 +30,6 @@ class UTextureManger :
 
     ComPtr<ID3D11ShaderResourceView> GetDefaultTexture(ID3D11Device* Device);
 private:
-  
 	path RootPath;
     //TODO : 현재 FString Key를 FName으로 변경해야함
     TMap<FName, ComPtr<ID3D11ShaderResourceView>> TextureMap;

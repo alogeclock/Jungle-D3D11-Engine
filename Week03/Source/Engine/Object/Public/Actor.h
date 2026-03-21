@@ -30,5 +30,18 @@ class AActor : public UObject
     FTransform GetScale() const;
     void       GetScale(const FTransform &NewTransform);
 
+    template<typename T>
+    T* FindComponentByClass();
+
     void IterateAllActorComponents(URenderer &renderer) const;
 };
+
+template <typename T> inline T *AActor::FindComponentByClass()
+{
+    for (UActorComponent* Comp : OwnedComponents)
+    {
+        if (T* Found = Cast<T>(Comp))
+            return Found;
+    }
+    return nullptr;
+}

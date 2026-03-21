@@ -29,7 +29,7 @@ public:
 	void RebuildMesh();
 
 protected:
-
+	bool bVIsible;
 	FString Text = FString("Text");
 	FMatrix<float> RTMatrix;
     bool bMeshDirty = true;
