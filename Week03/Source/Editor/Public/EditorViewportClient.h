@@ -174,6 +174,9 @@ class FEditorViewportClient
     EEngineShowFlags GetShowFlags() const { return ShowFlags; }
     void SetShowFlags(EEngineShowFlags InShowFlags) { ShowFlags = InShowFlags; }
 
+    void LoadConfig();
+    void SaveConfig();
+
   private:
     // WASD 이동 누적
     void ApplyMovement(float DeltaTime, FViewport *Viewport);

@@ -55,7 +55,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
             {
                 Comp->SetOuter(this);
                 Comp->RegisterComponent();
-                Comp->SetIsInEditor(true); // 누락되어 있던 다른 컴포넌트들에도 일괄 적용
+                Comp->SetIsInEditor(true);
                 Comp->SetRotation(Axes[Axis].Rotation);
                 Comp->SetColor(Axes[Axis].Color);
                 Comp->SetCullMode(ECullMode::None);

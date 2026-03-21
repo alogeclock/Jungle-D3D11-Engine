@@ -2,6 +2,7 @@
 
 ULevel::ULevel(const FString &InString) : UObject(InString)
 {
+    // ULevel은 항상 UWorld의 LoadLevel 또는 CreateNewLevel에 의해 생성됩니다.
 }
 
 ULevel::~ULevel() { ClearActors(); }
