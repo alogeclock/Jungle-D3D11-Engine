@@ -327,7 +327,6 @@ void UWorld::Render(URenderer &renderer)
             actor->IterateAllActorComponents(renderer);
         }
     }
-    LineBatcherComponent->DrawBox(FBox({-1, -1, -1}, {1, 1, 1}), {1, 1, 1, 1});
 
     LineBatcherComponent->Build();
     LineBatcherComponent->Render(renderer);
