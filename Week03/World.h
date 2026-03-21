@@ -28,6 +28,8 @@ class UWorld final : public UObject
     template <typename T> T *SpawnActor();
     void                     RemoveActor() const;
 
+    ULineBatcherComponent *GetLineBatcherComponent() { return LineBatcherComponent; }
+
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
     void       Render(URenderer &renderer);

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <windows.h>
 #include <windowsx.h>
@@ -23,6 +23,8 @@
 #include "Source/Editor/Public/Viewport.h"
 
 #include <iostream>
+
+extern UWorld *GWorld;
 
 class UApplication
 {

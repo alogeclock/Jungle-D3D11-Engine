@@ -4,27 +4,26 @@
 
 #include <Windows.h>
 
-
-UWorld         *GWorld = nullptr;
+UWorld *GWorld = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// ImGui에 입력
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
-	{
-		return true;
-	}
+    // ImGui에 입력
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+    {
+        return true;
+    }
 
-    UApplication* App = reinterpret_cast<UApplication *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-    FViewport* Viewport = App ? App->GetViewport() : nullptr;
+    UApplication *App = reinterpret_cast<UApplication *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    FViewport    *Viewport = App ? App->GetViewport() : nullptr;
 
-	switch (message)
-	{
-	case WM_DESTROY:
-		PostQuitMessage(0); // 프로그램 종료 메시지를 메시지 큐에 넣는다.
-		break;
+    switch (message)
+    {
+    case WM_DESTROY:
+        PostQuitMessage(0); // 프로그램 종료 메시지를 메시지 큐에 넣는다.
+        break;
     case WM_SIZE:
     {
         if (wParam == SIZE_MINIMIZED)
@@ -40,137 +39,136 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         break;
     }
-	case WM_KEYDOWN:
-		Viewport->OnKeyDown((uint32_t)wParam);
-		break;
-	case WM_KEYUP:
-		Viewport->OnKeyUp((uint32_t)wParam);
-		break;
-	case WM_MOUSEMOVE:
-		Viewport->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		break;
-	case WM_LBUTTONDOWN:
-		Viewport->OnMouseButtonDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		break;
-	case WM_RBUTTONDOWN:
-		Viewport->OnMouseButtonDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		break;
-	case WM_LBUTTONUP:
-		Viewport->OnMouseButtonUp(VK_LBUTTON);
-		break;
-	case WM_RBUTTONUP:
-		Viewport->OnMouseButtonUp(VK_RBUTTON);
-		break;
-	case WM_MOUSEWHEEL:
-		Viewport->OnMouseWheel((float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
+    case WM_KEYDOWN:
+        Viewport->OnKeyDown((uint32_t)wParam);
+        break;
+    case WM_KEYUP:
+        Viewport->OnKeyUp((uint32_t)wParam);
+        break;
+    case WM_MOUSEMOVE:
+        Viewport->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        break;
+    case WM_LBUTTONDOWN:
+        Viewport->OnMouseButtonDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        break;
+    case WM_RBUTTONDOWN:
+        Viewport->OnMouseButtonDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        break;
+    case WM_LBUTTONUP:
+        Viewport->OnMouseButtonUp(VK_LBUTTON);
+        break;
+    case WM_RBUTTONUP:
+        Viewport->OnMouseButtonUp(VK_RBUTTON);
+        break;
+    case WM_MOUSEWHEEL:
+        Viewport->OnMouseWheel((float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA);
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
 
-	return 0;
+    return 0;
 }
 
 UApplication::UApplication()
 {
-	Renderer = new URenderer();
-	Viewport = new FViewport();
+    Renderer = new URenderer();
+    Viewport = new FViewport();
     GWorld = new UWorld("World");
 }
 
 UApplication::~UApplication()
 {
-	delete Renderer;
-	delete Viewport;
+    delete Renderer;
+    delete Viewport;
 }
 
 void UApplication::Initialize(HINSTANCE hInstance)
 {
-	hInst = hInstance;
+    hInst = hInstance;
 
-	WCHAR WindowClass[] = L"JungleWindowClass";
-	WCHAR Title[] = L"Game Tech Lab";
-	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
+    WCHAR     WindowClass[] = L"JungleWindowClass";
+    WCHAR     Title[] = L"Game Tech Lab";
+    WNDCLASSW wndclass = {0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass};
 
-	RegisterClassW(&wndclass);
+    RegisterClassW(&wndclass);
 
-	hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1400, 800,
-		nullptr, nullptr, hInst, nullptr);
+    hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1400, 800, nullptr, nullptr, hInst,
+                           nullptr);
 
-	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-	// Viewport
+    SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+    // Viewport
     if (Viewport != nullptr)
     {
         Viewport->CreateEditorViewportClient();
 
-		RECT rect;
+        RECT rect;
         GetClientRect(hWnd, &rect);
 
         uint32 Width = rect.right - rect.left;
         uint32 Height = rect.bottom - rect.top;
 
         Viewport->OnResize(Width, Height);
-	}
+    }
 
-	// Rendering
+    // Rendering
     Renderer->SetViewport(Viewport);
-	Renderer->Create(hWnd);
+    Renderer->Create(hWnd);
 
-	// Mesh Manager
+    // Mesh Manager
     UMeshManager::Get().Initialize(*Renderer);
 
-	// ImGui
-	UImGuiManager::Get().Create(hWnd, Renderer);
+    // ImGui
+    UImGuiManager::Get().Create(hWnd, Renderer);
 
-	// Timer
+    // Timer
     UTimeManager::Get().Initialize();
 
-	UTextureManger::Get().Initialize(*Renderer);
-	//void* a = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
-}	
+    UTextureManger::Get().Initialize(*Renderer);
+    // void* a = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
+}
 
 void UApplication::Run()
 {
-	// Main Loop
-	MSG msg = {};
-	while (msg.message != WM_QUIT)
-	{
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		else
-		{
+    // Main Loop
+    MSG msg = {};
+    while (msg.message != WM_QUIT)
+    {
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        else
+        {
             if (bResize)
             {
                 Renderer->OnResize(Width, Height);
                 Viewport->OnResize(Width, Height);
                 bResize = false;
-			}
-			
-			FEditorViewportClient *ViewportClient = Viewport->GetViewportClient();
+            }
 
-			FSceneViewOptions ViewOptions;
-			ViewOptions.ShowFlags = ViewportClient->GetShowFlags();
-			ViewOptions.ViewMode = ViewportClient->GetViewMode();
-			ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
+            FEditorViewportClient *ViewportClient = Viewport->GetViewportClient();
 
-			Viewport->Tick(UTimeManager::Get().GetDeltaTime());
-			Renderer->Prepare(ViewOptions);
+            FSceneViewOptions ViewOptions;
+            ViewOptions.ShowFlags = ViewportClient->GetShowFlags();
+            ViewOptions.ViewMode = ViewportClient->GetViewMode();
+            ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
 
-			GWorld->Render(*Renderer);
+            Viewport->Tick(UTimeManager::Get().GetDeltaTime());
+            Renderer->Prepare(ViewOptions);
+
+            GWorld->Render(*Renderer);
             GWorld->Tick(UTimeManager::Get().GetDeltaTime());
-			
-			ViewportClient->Render(*Renderer);
 
-			UImGuiManager::Get().Update();
+            ViewportClient->Render(*Renderer);
+
+            UImGuiManager::Get().Update();
             UTimeManager::Get().Update();
 
-			Renderer->SwapBuffer();
-		}
-	}
+            Renderer->SwapBuffer();
+        }
+    }
 }
 
 void UApplication::Finish()
@@ -178,14 +176,13 @@ void UApplication::Finish()
     UMeshManager::Get().Release(*Renderer);
     UImGuiManager::Get().Release();
 
-	Renderer->ReleaseConstantBuffer();
-	Renderer->Release();
+    Renderer->ReleaseConstantBuffer();
+    Renderer->Release();
 }
 
-void UApplication::OnResize(uint32 NewWidth, uint32 NewHeight) 
+void UApplication::OnResize(uint32 NewWidth, uint32 NewHeight)
 {
     bResize = true;
     Width = NewWidth;
     Height = NewHeight;
 }
-
