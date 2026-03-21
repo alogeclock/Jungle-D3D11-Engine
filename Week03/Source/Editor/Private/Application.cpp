@@ -153,6 +153,7 @@ void UApplication::Run()
 			FEditorViewportClient *ViewportClient = Viewport->GetViewportClient();
 
 			FSceneViewOptions ViewOptions;
+			ViewOptions.ShowFlags = ViewportClient->GetShowFlags();
 			ViewOptions.ViewMode = ViewportClient->GetViewMode();
 			ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
 

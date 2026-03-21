@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Object.h"
 #include "Source/Engine/Public/Rendering/Renderer.h"
@@ -23,12 +23,6 @@ class AActor : public UObject
 
     FTransform GetTransform() const;
     void       SetTransform(const FTransform &NewTransform);
-
-    FTransform GetRotation() const;
-    void       GetRotation(const FTransform &NewTransform);
-
-    FTransform GetScale() const;
-    void       GetScale(const FTransform &NewTransform);
 
     void IterateAllActorComponents(URenderer &renderer) const;
 };

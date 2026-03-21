@@ -92,6 +92,7 @@ public:
 	void SwapBuffer();
 
 	void CreateShader();
+	void CreateTextShader();
 	void ReleaseShader();
 
 	void CreateDepthStencilBuffer(uint32 width, uint32 height);
@@ -103,7 +104,10 @@ public:
 
 	void SetCullMode(ECullMode cullMode);
 	void SetViewMode(EViewModeIndex Mode);
+	void SetShowFlags(EEngineShowFlags ShowFlags);
 	void ApplyRasterizerState();
+
+	bool CheckShowFlag(EEngineShowFlags InFlag) const { return (ShowFlags & InFlag) != EEngineShowFlags::None; }
 
 	void SetDrawAABB(bool bEnable) { bDrawAABB = bEnable; }
     bool IsDrawAABB() const { return bDrawAABB; }
@@ -141,5 +145,6 @@ private:
 	FViewport* Viewport = nullptr;
 	ECullMode CurrentCullMode = ECullMode::Back;
 	EViewModeIndex ViewModeIndex = EViewModeIndex::VMI_Lit;
+	EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID;
     bool bDrawAABB = false;
 };
