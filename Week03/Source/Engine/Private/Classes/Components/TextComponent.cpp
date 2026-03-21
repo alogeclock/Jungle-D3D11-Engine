@@ -15,7 +15,14 @@ UTextComponent::UTextComponent(const FString &InString)
     FilePath = "Data/Texture/DejaVu Sans Mono.dds";
 }
 
-UTextComponent::~UTextComponent() {}
+UTextComponent::~UTextComponent() {
+
+    if (VertexBuffer)
+    {
+        VertexBuffer->Release();
+        VertexBuffer = nullptr;
+    }
+}
 
 void UTextComponent::SetText(const uint32 UUID){
 		char buf[64];
@@ -35,7 +42,7 @@ void UTextComponent::Render(URenderer &renderer)
 
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
-    renderer.RenderText(FilePath, constants, &TextVertices);
+    renderer.RenderText(FilePath, constants, &TextVertices, &VertexBuffer, VertexBufferSize);
 }
 
 void UTextComponent::RebuildMesh()

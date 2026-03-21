@@ -9,23 +9,23 @@ class URenderer;
 using namespace std::filesystem;
 using namespace Microsoft::WRL;
 
-class UTextureManger :
+class UTextureManager :
     public UObject
 {
     public:
-    static UTextureManger &Get()
+    static UTextureManager &Get()
     {
-        static UTextureManger instance("TextureManagerInstance");
+        static UTextureManager instance("TextureManagerInstance");
         return instance;
     }
-    UTextureManger(const FString &I£ánString);
-    ~UTextureManger();
+    UTextureManager(const FString &InString);
+    ~UTextureManager();  
 
     void Initialize(URenderer& Renderer);
 
     FName GetHashKeyPath(const path& inFilePath) const;
     void LoadToFileTexture(const path& inFilePath, URenderer& Renderer);
-    ID3D11ShaderResourceView* GetTexture(const path& FilePath);
+    ID3D11ShaderResourceView* GetTexture(const FName& FilePath);
     const TMap<FName, ComPtr<ID3D11ShaderResourceView>>& GetTextureMap() const { return TextureMap; }
 
     ComPtr<ID3D11ShaderResourceView> GetDefaultTexture(ID3D11Device* Device);

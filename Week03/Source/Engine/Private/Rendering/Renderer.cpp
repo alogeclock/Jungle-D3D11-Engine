@@ -161,7 +161,7 @@ void URenderer::Release()
 
 void URenderer::SwapBuffer()
 {
-    SwapChain->Present(1, 0); // 1: Vsync 활성화
+    SwapChain->Present(0, 0); // 1: Vsync 활성화
 }
 
 void URenderer::CreateShader()
@@ -441,50 +441,45 @@ void URenderer::PrepareShader()
     }
 }
 
-void URenderer::RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices) 
+void URenderer::RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices, ID3D11Buffer** InOutVertexBuffer, uint32& InOutBufferSize) 
 {
-    if (!TextVertexShader)   { OutputDebugStringA("TextVertexShader NULL\n"); return; }
-    if (!TextPixelShader)    { OutputDebugStringA("TextPixelShader NULL\n");  return; }
-    if (!TextInputLayout)    { OutputDebugStringA("TextInputLayout NULL\n");  return; }
-    if (!LinearSamplerState) { OutputDebugStringA("TextSamplerState NULL\n"); return; }
-    if (vertices->empty())   return;
+    if (!TextVertexShader || !TextPixelShader || 
+        !TextInputLayout  || !LinearSamplerState) return;
+    if (vertices->empty()) return;
 
     DeviceContext->RSSetState(RasterizerStateCullNone);
+    const UINT DataSize = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
 
-    // 1. 버텍스 버퍼 생성
-        D3D11_BUFFER_DESC vbDesc    = {};
-    vbDesc.Usage          = D3D11_USAGE_DYNAMIC;
-    vbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    vbDesc.ByteWidth            = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
-    vbDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
-
-    ID3D11Buffer* vertexBuffer  = nullptr;
-    if (FAILED(Device->CreateBuffer(&vbDesc, nullptr, &vertexBuffer)))
+    // 버퍼가 없거나 크기가 부족할 때만 재생성
+    if (*InOutVertexBuffer == nullptr || InOutBufferSize < DataSize)
     {
-        DeviceContext->RSSetState(RasterizerStateCullBack);
-        return;
+        if (*InOutVertexBuffer) (*InOutVertexBuffer)->Release();
+
+        D3D11_BUFFER_DESC vbDesc  = {};
+        vbDesc.Usage              = D3D11_USAGE_DYNAMIC;
+        vbDesc.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
+        vbDesc.ByteWidth          = DataSize;
+        vbDesc.BindFlags          = D3D11_BIND_VERTEX_BUFFER;
+
+        if (FAILED(Device->CreateBuffer(&vbDesc, nullptr, InOutVertexBuffer))) return;
+        InOutBufferSize = DataSize;
     }
 
     // 2. 버텍스 데이터 업로드 (이전 코드에서 제거됐던 부분)
     D3D11_MAPPED_SUBRESOURCE vbMSR = {};
-    if (SUCCEEDED(DeviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &vbMSR)))
+    if (SUCCEEDED(DeviceContext->Map(*InOutVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &vbMSR)))
     {
-        memcpy(vbMSR.pData, vertices->data(), sizeof(FTextVertex) * vertices->size());
-        DeviceContext->Unmap(vertexBuffer, 0);
+        memcpy(vbMSR.pData, vertices->data(), DataSize);
+        DeviceContext->Unmap(*InOutVertexBuffer, 0);
     }
-    else
-    {
-        vertexBuffer->Release();
-        DeviceContext->RSSetState(RasterizerStateCullBack);
-        return;
-    }
+    else return;
 
     UpdateConstant(constants);
 
     // 4. IA 세팅
     UINT stride = sizeof(FTextVertex);
     UINT offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+    DeviceContext->IASetVertexBuffers(0, 1, InOutVertexBuffer, &stride, &offset);
     DeviceContext->IASetInputLayout(TextInputLayout);
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -495,12 +490,8 @@ void URenderer::RenderText(FString FilePath, FConstants &constants, TArray<FText
     DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
 
     // 6. 폰트 텍스처 / 샘플러
-    ID3D11ShaderResourceView *fontSRV = UTextureManger::Get().GetTexture(FilePath);
-    if (!fontSRV) { 
-        OutputDebugStringA("FontSRV NULL\n"); 
-        vertexBuffer->Release(); 
-        return; 
-    }
+    ID3D11ShaderResourceView *fontSRV = UTextureManager::Get().GetTexture(FilePath);
+    if (!fontSRV) return;
 
     DeviceContext->PSSetShaderResources(0, 1, &fontSRV);
     DeviceContext->PSSetSamplers(0, 1, &LinearSamplerState);
@@ -511,7 +502,6 @@ void URenderer::RenderText(FString FilePath, FConstants &constants, TArray<FText
     // 8. 상태 복구
     ID3D11ShaderResourceView* nullSRV = nullptr;
     DeviceContext->PSSetShaderResources(0, 1, &nullSRV);
-    vertexBuffer->Release();
     DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
     DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
     DeviceContext->IASetInputLayout(SimpleInputLayout);

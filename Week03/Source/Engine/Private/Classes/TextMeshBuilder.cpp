@@ -75,3 +75,8 @@ TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
 
     return Vertices;
 }
+
+void FTextMeshBuilder::LoadFNT(const std::string& FntPath)
+{
+    
+}

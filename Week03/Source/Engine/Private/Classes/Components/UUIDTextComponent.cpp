@@ -32,7 +32,7 @@ void UUUIDTextComponent::Render(URenderer &renderer) {
     constants.MVPMatrix = RTMatrix;
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
-    renderer.RenderText(FilePath, constants, &TextVertices);
+    renderer.RenderText(FilePath, constants, &TextVertices, &VertexBuffer, VertexBufferSize);
 }
 
 void UUUIDTextComponent::Selected() { 

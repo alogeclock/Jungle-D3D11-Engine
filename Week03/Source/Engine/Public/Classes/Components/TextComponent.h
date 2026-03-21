@@ -9,10 +9,14 @@ class UTextComponent : public UPrimitiveComponent
   public:
     UTextComponent(const FString &InString);
     virtual ~UTextComponent() override;
-    FString        FilePath;
+
+    virtual void UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp = FVector<float>(0, 0, 1));
+
+    virtual void Render(URenderer &renderer);
+    virtual void  RebuildMesh();
+    
     const FString &GetText() const { return Text; }
-    //FString        FilePath = "Data/Texture/DejaVu Sans Mono.dds";
-    // UUID
+ 
     void SetText(const uint32 UUID);
     void SetText(const FString &InText)
     {
@@ -22,16 +26,14 @@ class UTextComponent : public UPrimitiveComponent
         bMeshDirty = true;
     }
 
-    virtual void UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp = FVector<float>(0, 0, 1));
-
-    virtual void Render(URenderer &renderer);
-    virtual void  RebuildMesh();
-
   protected:
+    FString        FilePath;
     FString        Text = FString("Text");
     FMatrix<float> RTMatrix;
     bool           bMeshDirty = true;
     bool bVIsible = false;
 
 	TArray<FTextVertex> TextVertices;
+    ID3D11Buffer* VertexBuffer     = nullptr;
+    uint32        VertexBufferSize = 0; // 현재 버퍼 용량
 };

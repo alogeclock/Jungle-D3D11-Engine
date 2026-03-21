@@ -18,6 +18,7 @@ public:
   static const CharacterInfo *GetCharInfo(wchar_t InChar);
 
   static TArray<FTextVertex> BuildTextMesh(const FString &InText);
+  static void LoadFNT(const FString& FntPath);
 
 private:
   static TMap<wchar_t, CharacterInfo> charInfoMap;

@@ -124,7 +124,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
     // Timer
     UTimeManager::Get().Initialize();
 
-    UTextureManger::Get().Initialize(*Renderer);
+    UTextureManager::Get().Initialize(*Renderer);
     // void* a = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
 }
 
