@@ -1,6 +1,10 @@
 ﻿#include "World.h"
 #include "Source/Engine/Object/Public/Actor.h"
 
+#include "Source/Editor/Public/Grid.h"
+#include "Source/Editor/Public/PivotTransformGizmo.h"
+#include "Source/Editor/Public/Axis.h"
+
 // 모든 Primitive Component 헤더 포함
 #include "Source/Engine/Public/Classes/Components/SphereComponent.h"
 #include "Source/Engine/Public/Classes/Components/CubeComponent.h"
@@ -11,7 +15,6 @@
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
-#include "Source/Engine/Public/ImGuiManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -51,10 +54,12 @@ UWorld::~UWorld()
 ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
 {
     ULevel *NewLevel = new ULevel(NewLevelName);
-
     NewLevel->SetOuter(this);
-
     Levels.insert(NewLevel);
+
+    SpawnActorForLevel<AGrid>(NewLevel, "EditorGrid");
+    SpawnActorForLevel<AAxis>(NewLevel, "EditorAxis");
+    SpawnActorForLevel<APivotTransformGizmo>(NewLevel, "EditorGizmo");
 
     return NewLevel;
 }
@@ -65,7 +70,17 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
         return false;
 
     std::filesystem::path path(FilePath);
-    FString               CurrentSceneName = path.stem().string();
+
+    // [추가됨] wstring을 UTF-8 인코딩의 string으로 안전하게 변환하는 람다 함수
+    auto WStringToUTF8 = [](const std::wstring& wstr) -> std::string {
+        if (wstr.empty()) return std::string();
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+        std::string strTo(size_needed, 0);
+        WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+        return strTo;
+    };
+
+    FString CurrentSceneName = WStringToUTF8(path.stem().wstring());
 
     json j;
     j["Version"] = 1;
@@ -243,7 +258,9 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
                 NewActor->SetTransform(NewTransform);
 
                 UObject *NewObj = nullptr;
-                if (type == "Sphere")
+                if (type == "None")
+                    continue;
+                else if (type == "Sphere")
                     NewObj = FObjectFactory::ConstructObject(USphereComponent::StaticClass());
                 else if (type == "Cube")
                     NewObj = FObjectFactory::ConstructObject(UCubeComponent::StaticClass());

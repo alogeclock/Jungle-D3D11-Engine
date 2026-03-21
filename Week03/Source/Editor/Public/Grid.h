@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Source/Engine/Object/Public/Actor.h"
 #include "Source/Engine/Public/Rendering/Renderer.h"
 #include "Source/Engine/Public/Classes/Components/GridComponent.h"
 #include "Source/Core/Public/Math/Matrix.h"
 
-// ÀÏ¹İÀûÀÎ ¾À ÀúÀå¿¡ Æ÷ÇÔµÇÁö ¾Êµµ·Ï ¿¡µğÅÍ Àü¿ë ¾×ÅÍ·Î ¼±¾ğÇÕ´Ï´Ù.
+// ì¼ë°˜ì ì¸ ì”¬ ì €ì¥ì— í¬í•¨ë˜ì§€ ì•Šë„ë¡ ì—ë””í„° ì „ìš© ì•¡í„°ë¡œ ì„ ì–¸í•©ë‹ˆë‹¤.
 class AGrid : public AActor
 {
 public:
@@ -15,5 +15,4 @@ public:
     void Render(URenderer& renderer);
 
 private:
-    UGridComponent *GridComponent = nullptr;
 };

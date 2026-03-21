@@ -359,10 +359,20 @@ void UImGuiManager::NewScene()
     {
         if (GWorld && GWorld->GetCurrentLevel())
         {
-            GWorld->GetCurrentLevel()->ClearActors();
-            GWorld->GetCurrentLevel()->SetName("DefaultLevel");
+            ULevel* OldLevel = GWorld->GetCurrentLevel();
+            ULevel* NewLevel = GWorld->CreateNewLevel("DefaultLevel");
+            GWorld->SetCurrentLevel(NewLevel);
+            
+            if (OldLevel != nullptr)
+            {
+                GWorld->GetLevels().erase(OldLevel); // UWorld에 GetLevels() 필요
+                delete OldLevel;
+            }
             snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().ToString().c_str());
             AddLog("[System] All actors and components have been destroyed.");
+
+            if (GApplication)
+                GApplication->UpdateEditorViewport();
         }
 
         SelectedObject = nullptr;
@@ -408,13 +418,25 @@ void UImGuiManager::LoadScene()
         {
             // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출
             std::filesystem::path path(FilePath);
-            FString               LoadedSceneName = path.stem().string();
+            std::wstring wStem = path.stem().wstring();
+            
+            int size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
+            std::string utf8Stem(size_needed, 0);
+            WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
+
+            // 문자열 끝의 널(Null) 문자가 포함되어 변환될 수 있으므로 제거해줍니다.
+            if (!utf8Stem.empty() && utf8Stem.back() == '\0')
+            {
+                utf8Stem.pop_back();
+            }
 
             // GWorld의 씬 이름과 ImGui UI의 buffer를 갱신
-            // GWorld->CurrentSceneName = LoadedSceneName;
-            strcpy_s(buffer, sizeof(buffer), LoadedSceneName.c_str());
+            strcpy_s(buffer, sizeof(buffer), utf8Stem.c_str());
 
             AddLog(L"Scene loaded successfully: " + FilePath);
+
+            if (GApplication)
+                GApplication->UpdateEditorViewport();
         }
         else
         {
@@ -461,6 +483,10 @@ void UImGuiManager::TransformInspector()
         return;
 
     AActor    *Actor = Cast<AActor>(SelectedObject->GetOwner());
+
+    if (Actor == nullptr || Actor->GetRootComponent() == nullptr)
+        return;
+
     FTransform t = Actor->GetTransform();
 
     ImGui::DragFloat3("Translation", &t.Location.X, 0.01f);

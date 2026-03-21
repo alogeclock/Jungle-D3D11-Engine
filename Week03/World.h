@@ -18,13 +18,16 @@ class UWorld final : public UObject
     virtual UWorld *GetWorld() const override { return const_cast<UWorld *>(this); }
 
     ULevel *CreateNewLevel(const FString &NewLevelName);
-
     ULevel *GetCurrentLevel() { return CurrentLevel; }
+    void SetCurrentLevel(ULevel *InLevel) { CurrentLevel = InLevel; }
+
+    TSet<ULevel *> &GetLevels() { return Levels; }
     
     bool SaveLevel(const std::wstring& FilePath);
     bool LoadLevel(const std::wstring& FilePath);
 
     AActor                  *SpawnActor(UClass *ClassToSpawn);
+
     template <typename T> T *SpawnActor();
     void                     RemoveActor() const;
 
@@ -39,6 +42,16 @@ class UWorld final : public UObject
     ULevel        *CurrentLevel;
     TSet<ULevel *> Levels;
     ULineBatcherComponent *LineBatcherComponent;
+
+    // 지정된 레벨에 액터를 생성 및 종속시키는 헬퍼 함수
+    template <typename T>
+    T* SpawnActorForLevel(ULevel* TargetLevel, const FString& ActorName)
+    {
+        T* NewActor = new T(ActorName);
+        NewActor->SetOuter(TargetLevel);
+        TargetLevel->GetActors().push_back(NewActor);
+        return NewActor;
+    }
 };
 
 // ⭐️ 2. 개발자 편의용 템플릿 함수

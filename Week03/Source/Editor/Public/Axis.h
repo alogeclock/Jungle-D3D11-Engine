@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Source/Engine/Object/Public/Object.h"
 #include "Source/Engine/Object/Public/Actor.h"
@@ -14,5 +14,4 @@ class AAxis : public AActor
     void Render(URenderer &renderer);
 
   private:
-    UAxisComponent *AxisComponent = nullptr;
 };

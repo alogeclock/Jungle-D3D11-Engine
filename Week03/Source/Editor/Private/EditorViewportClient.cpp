@@ -45,9 +45,9 @@ FMatrix<float> FViewportCameraTransform::ComputeOrbitMatrix() const
 FEditorViewportClient::FEditorViewportClient(FViewport* viewport)
 {
     Viewport = viewport;
-    Gizmo = new APivotTransformGizmo("ViewPortClientGizmo");
-    Axis = new AAxis("ViewPortClientAxis");
-    Grid = new AGrid("ViewPortClientGrid");
+    Gizmo = nullptr;
+    Axis = nullptr;
+    Grid = nullptr;
 
     UImGuiManager::Get().SetCamera(&CameraTransform);
     UImGuiManager::Get().SetEditorViewportClient(this);
@@ -58,24 +58,6 @@ FEditorViewportClient::FEditorViewportClient(FViewport* viewport)
 FEditorViewportClient::~FEditorViewportClient()
 {
     SaveConfig();
-
-    if (Gizmo != nullptr)
-    {
-        delete Gizmo;
-        Gizmo = nullptr;
-    }
-
-    if (Axis != nullptr)
-    {
-        delete Axis;
-        Axis = nullptr;
-    }
-
-    if (Grid != nullptr)
-    {
-        delete Grid;
-        Grid = nullptr;
-    }
 }
 
 void FEditorViewportClient::Tick(float DeltaTime, FViewport* Viewport)
@@ -252,29 +234,6 @@ void FEditorViewportClient::Render(URenderer& renderer)
         }
     }
 
-    FMatrix<float> ViewMatrix = GetViewMatrix();
-
-    // 타겟 오브젝트가 설정되어 있을 때만 기즈모를 그린다
-
-    if (Grid != nullptr)
-    {
-        Grid->Render(renderer);
-    }
-
-    if (Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
-    {
-        FVector dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();
-        float Distance = dir.Length();
-        float OrthoWidth = Distance * 2.0f;
-        float CurrentFOV = CameraTransform.GetFOV();
-        Gizmo->Render(renderer, ViewMatrix, CurrentFOV, OrthoWidth);
-    }
-
-    if (Axis != nullptr)
-    {
-        Axis->Render(renderer);
-    }
-
     renderer.SetViewMode(OriginalViewOptions.ViewMode);
     renderer.SetDrawAABB(OriginalViewOptions.bDrawAABB);
 }
@@ -421,6 +380,10 @@ void FEditorViewportClient::PickingRay(const FVector<float>& RayOrigin, const FV
                     // 기즈모가 개별 메쉬가 아닌 액터 전체(Root)를 조작하게 됩니다.
                     Gizmo->SetTargetObject(RootComp);
                 }
+
+                // 충돌한 컴포넌트를 ImGui의 객체로 등록한다.
+                UImGuiManager::Get().SetSelectedObject(HitComp);
+                return;
             }
         }
     }

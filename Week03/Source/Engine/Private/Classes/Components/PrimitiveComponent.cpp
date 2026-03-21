@@ -8,15 +8,15 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
-    // Show AABB 설정이 켜져 있다면 AABB를 렌더링한다.
-    if (renderer.IsDrawAABB())
+    // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
+    if (renderer.IsDrawAABB() && !bIsInEditor)
     {
         UpdateBounds();
         GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
     }
-    
-    // Show Primitives 설정이 꺼져 있고, 에디터 컴포넌트가 아니라면 렌더링을 취소한다.
-    if (!bIsInEditor && !renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
+
+    // 현재 프리미티브의 렌더링 여부를 판단하고 렌더링할 필요가 없을 시 생략한다.
+    if (!IsRenderable(renderer))
         return;
 
     FConstants constants;
@@ -43,11 +43,23 @@ void UPrimitiveComponent::SetPrimitiveType(EPrimitiveType InType)
     }
 }
 
+bool UPrimitiveComponent::IsRenderable(URenderer &renderer)
+{
+    if (!bIsVisible)
+        return false;
+
+    // Show Primitives 설정이 꺼져 있고, 에디터 컴포넌트가 아니라면 렌더링을 취소한다.
+    if (!bIsInEditor && !renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
+        return false;
+
+    return true;
+}
+
 FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
     FHitResult Result;
 
-    if (PrimitiveType == EPrimitiveType::None)
+    if (!bIsVisible || PrimitiveType == EPrimitiveType::None)
         return Result;
 
     switch (PrimitiveType)
@@ -64,13 +76,14 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     case EPrimitiveType::Arrow:
     case EPrimitiveType::CubeArrow:
     case EPrimitiveType::Ring:
-    default:
         if (!IntersectRayBoundingSphere(RayOrigin, RayDirection))
             return Result;
         if (!IntersectRayAABB(RayOrigin, RayDirection))
             return Result;
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
         break;
+    default: 
+        return Result;
     }
 
     return Result;

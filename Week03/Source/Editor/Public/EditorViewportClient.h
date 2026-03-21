@@ -177,6 +177,10 @@ class FEditorViewportClient
     void LoadConfig();
     void SaveConfig();
 
+    void SetGrid(AGrid* InGrid) { Grid = InGrid; }
+    void SetAxis(AAxis* InAxis) { Axis = InAxis; }
+    void SetGizmo(APivotTransformGizmo* InGizmo) { Gizmo = InGizmo; }
+
   private:
     // WASD 이동 누적
     void ApplyMovement(float DeltaTime, FViewport *Viewport);
