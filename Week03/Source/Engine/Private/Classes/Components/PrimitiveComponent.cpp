@@ -6,10 +6,32 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
-    if (!bIsInEditor && !renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
+    // Show AABB 설정이 켜져 있다면 AABB를 렌더링한다.
+    if (renderer.IsDrawAABB())
     {
-        return; 
+        UpdateBounds();
+
+        FVector<float> Center = WorldAABB.GetCenter();
+        FVector<float> Size = WorldAABB.GetExtents() * 2.0f;
+        FMatrix<float> ScaleMat = FScaleMatrix(Size);
+        FMatrix<float> TransMat = FTranslationMatrix(Center);
+        FMatrix<float> WorldMat = ScaleMat * TransMat;
+
+        FConstants aabbConstants;
+        aabbConstants.MVPMatrix = WorldMat;
+        FConstantsColor aabbColor = {0.3f, 1.0f, 0.3f, 1.0f};
+
+        // Line Batching이 도입되면 임시 컴포넌트 생성 없이 Batcher 클래스에 박스 정보를 넘기는 방식으로 최적화한다.
+        UPrimitiveComponent WireBoxComp("TempAABB");
+        WireBoxComp.SetPrimitiveType(EPrimitiveType::WireBox);      // MeshManager에 추가해야 할 Line List 용 타입
+        WireBoxComp.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // 선 그리기 모드로 변경
+
+        renderer.RenderPrimitive(&WireBoxComp, aabbConstants, aabbColor);
     }
+    
+    // Show Primitives 설정이 꺼져 있고, 에디터 컴포넌트가 아니라면 렌더링을 취소한다.
+    if (!bIsInEditor && !renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
+        return;
 
     FConstants constants;
     constants.MVPMatrix = GetWorldMatrix(); // 부모 및 자신의 변경 사항을 반영한 GetWorldMatrix()를 호출한다.
@@ -20,28 +42,6 @@ void UPrimitiveComponent::Render(URenderer &renderer)
     FConstantsColor constantsColor(Color.X, Color.Y, Color.Z, Color.W);
 
     renderer.RenderPrimitive(this, constants, constantsColor);
-
-    if (!renderer.IsDrawAABB())
-        return;
-
-    UpdateBounds();
-
-    FVector<float> Center = WorldAABB.GetCenter();
-    FVector<float> Size = WorldAABB.GetExtents() * 2.0f;
-    FMatrix<float> ScaleMat = FScaleMatrix(Size);
-    FMatrix<float> TransMat = FTranslationMatrix(Center);
-    FMatrix<float> WorldMat = ScaleMat * TransMat;
-
-    FConstants aabbConstants;
-    aabbConstants.MVPMatrix = WorldMat;
-    FConstantsColor aabbColor = {0.3f, 1.0f, 0.3f, 1.0f};
-
-    // Line Batching이 도입되면 임시 컴포넌트 생성 없이 Batcher 클래스에 박스 정보를 넘기는 방식으로 최적화한다.
-    UPrimitiveComponent WireBoxComp("TempAABB");
-    WireBoxComp.SetPrimitiveType(EPrimitiveType::WireBox);      // MeshManager에 추가해야 할 Line List 용 타입
-    WireBoxComp.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // 선 그리기 모드로 변경
-
-    renderer.RenderPrimitive(&WireBoxComp, aabbConstants, aabbColor);
 }
 
 void UPrimitiveComponent::Selected() { SetColor({0.0f, 0.0f, 0.0f, 0.5f}); }

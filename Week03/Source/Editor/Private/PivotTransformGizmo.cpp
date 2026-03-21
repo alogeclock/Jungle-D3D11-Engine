@@ -9,86 +9,60 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
 
     const float HALF_PI = 1.570796f;
 
-    UArrowComponent *TranslateX = new UArrowComponent("XArrowComponent");
-    TranslateX->SetOuter(this);
-    TranslateX->RegisterComponent();
-    TranslateX->SetRotation({0.0, -HALF_PI, 0.0f});
-    TranslateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
-    TranslateX->SetCullMode(ECullMode::None);
-    TranslateX->SetAlwaysVisible(true);
-    TranslateGizmoComponents.push_back(TranslateX);
+    struct FGizmoAxisInfo
+    {
+        const char* Prefix;
+        FVector<float> Rotation;
+        FVector4<float> Color;
+    };
 
-    UArrowComponent *TranslateY = new UArrowComponent("YArrowComponent");
-    TranslateY->SetOuter(this);
-    TranslateY->RegisterComponent();
-    TranslateY->SetRotation({HALF_PI, 0.0f, 0.0f});
-    TranslateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
-    TranslateY->SetCullMode(ECullMode::None);
-    TranslateY->SetAlwaysVisible(true);
-    TranslateGizmoComponents.push_back(TranslateY);
+    FGizmoAxisInfo Axes[3] = {
+        { "X", {0.0f, -HALF_PI, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
+        { "Y", {HALF_PI, 0.0f, 0.0f},  {0.0f, 1.0f, 0.0f, 1.0f} },
+        { "Z", {0.0f, 0.0f, 0.0f},     {0.0f, 0.0f, 1.0f, 1.0f} }
+    };
 
-    UArrowComponent *TranslateZ = new UArrowComponent("ZArrowComponent");
-    TranslateZ->SetOuter(this);
-    TranslateZ->RegisterComponent();
-    TranslateZ->SetRotation({0.0f, 0.0f, 0.0f});
-    TranslateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
-    TranslateZ->SetCullMode(ECullMode::None);
-    TranslateZ->SetAlwaysVisible(true);
-    TranslateGizmoComponents.push_back(TranslateZ);
+    const char* ComponentSuffixes[3] = { "ArrowComponent", "RingComponent", "CubeArrowComponent" };
 
-    URingComponent *RotateX = new URingComponent("XRingComponent");
-    RotateX->SetOuter(this);
-    RotateX->RegisterComponent();
-    RotateX->SetRotation({0.0f, -HALF_PI, 0.0f});
-    RotateX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
-    RotateX->SetCullMode(ECullMode::None);
-    RotateX->SetAlwaysVisible(true);
-    RotateGizmoComponents.push_back(RotateX);
+    for (int Mode = 0; Mode < 3; ++Mode)
+    {
+        for (int Axis = 0; Axis < 3; ++Axis)
+        {
+            FString CompName = FString(Axes[Axis].Prefix) + ComponentSuffixes[Mode];
+            UPrimitiveComponent* Comp = nullptr;
 
-    URingComponent *RotateY = new URingComponent("YRingComponent");
-    RotateY->SetOuter(this);
-    RotateY->RegisterComponent();
-    RotateY->SetRotation({HALF_PI, 0.0f, 0.0f});
-    RotateY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
-    RotateY->SetCullMode(ECullMode::None);
-    RotateY->SetAlwaysVisible(true);
-    RotateGizmoComponents.push_back(RotateY);
+            if (Mode == 0)
+            {
+                auto Arrow = new UArrowComponent(CompName);
+                TranslateGizmoComponents.push_back(Arrow);
+                Comp = Arrow;
+            }
+            else if (Mode == 1)
+            {
+                auto Ring = new URingComponent(CompName);
+                RotateGizmoComponents.push_back(Ring);
+                Comp = Ring;
+            }
+            else if (Mode == 2)
+            {
+                auto CubeArrow = new UCubeArrowComponent(CompName);
+                ScaleGizmoComponents.push_back(CubeArrow);
+                Comp = CubeArrow;
+            }
 
-    URingComponent *RotateZ = new URingComponent("ZRingComponent");
-    RotateZ->SetOuter(this);
-    RotateZ->RegisterComponent();
-    RotateZ->SetRotation({0.0f, 0.0f, 0.0f});
-    RotateZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
-    RotateZ->SetCullMode(ECullMode::None);
-    RotateZ->SetAlwaysVisible(true);
-    RotateGizmoComponents.push_back(RotateZ);
-
-    UCubeArrowComponent *ScaleX = new UCubeArrowComponent("XCubeArrowComponent");
-    ScaleX->SetOuter(this);
-    ScaleX->RegisterComponent();
-    ScaleX->SetRotation({0.0f, -HALF_PI, 0.0f});
-    ScaleX->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
-    ScaleX->SetCullMode(ECullMode::None);
-    ScaleX->SetAlwaysVisible(true);
-    ScaleGizmoComponents.push_back(ScaleX);
-
-    UCubeArrowComponent *ScaleY = new UCubeArrowComponent("YCubeArrowComponent");
-    ScaleY->SetOuter(this);
-    ScaleY->RegisterComponent();
-    ScaleY->SetRotation({HALF_PI, 0.0f, 0.0f});
-    ScaleY->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
-    ScaleY->SetCullMode(ECullMode::None);
-    ScaleY->SetAlwaysVisible(true);
-    ScaleGizmoComponents.push_back(ScaleY);
-
-    UCubeArrowComponent *ScaleZ = new UCubeArrowComponent("ZCubeArrowComponent");
-    ScaleZ->SetOuter(this);
-    ScaleZ->RegisterComponent();
-    ScaleZ->SetRotation({0.0f, 0.0f, 0.0f});
-    ScaleZ->SetColor({0.0f, 0.0f, 1.0f, 1.0f});
-    ScaleZ->SetCullMode(ECullMode::None);
-    ScaleZ->SetAlwaysVisible(true);
-    ScaleGizmoComponents.push_back(ScaleZ);
+            // 공통 속성 일괄 설정
+            if (Comp)
+            {
+                Comp->SetOuter(this);
+                Comp->RegisterComponent();
+                Comp->SetIsInEditor(true); // 누락되어 있던 다른 컴포넌트들에도 일괄 적용
+                Comp->SetRotation(Axes[Axis].Rotation);
+                Comp->SetColor(Axes[Axis].Color);
+                Comp->SetCullMode(ECullMode::None);
+                Comp->SetAlwaysVisible(true);
+            }
+        }
+    }
 
     GizmoType = EGizmoHandleType::Translate;
 }

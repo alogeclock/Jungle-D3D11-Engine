@@ -386,6 +386,15 @@ FRay FEditorViewportClient::GetPickingRay()
 
 void FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) const
 {
+    // Show Primitives가 꺼져있다면 피킹을 수행하지 않고 선택을 해제합니다.
+    if ((ShowFlags & EEngineShowFlags::SF_Primitives) == EEngineShowFlags::None)
+    {
+        if (Gizmo != nullptr)
+            Gizmo->SetTargetObject(nullptr);
+        UImGuiManager::Get().SetSelectedObject(nullptr);
+        return;
+    }
+
     FHitResult ClosestHit = GWorld->PickingRay(RayOrigin, RayDirection);
     UPrimitiveComponent *HitComp = ClosestHit.HitComponent;
 
