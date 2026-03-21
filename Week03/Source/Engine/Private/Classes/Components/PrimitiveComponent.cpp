@@ -217,7 +217,7 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
 {
     FHitResult Result;
 
-    if (PrimitiveType == EPrimitiveType::None)
+    if (PrimitiveType == EPrimitiveType::None || PrimitiveType == EPrimitiveType::Text)
         return Result;
 
     TArray<FVertex> *vertices = UMeshManager::Get().GetVertexData(PrimitiveType);

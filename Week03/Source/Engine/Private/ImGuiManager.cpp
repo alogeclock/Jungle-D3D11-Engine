@@ -14,6 +14,7 @@
 #include "Source/Engine/Public/Classes/Components/SphereComponent.h"
 #include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Source/Engine/Public/Classes/Components/TextComponent.h"
+#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
 #include "Source/Editor/Public/EditorViewportClient.h"
 
@@ -230,7 +231,7 @@ void UImGuiManager::ShowControlPanel()
 
 void UImGuiManager::SpawnActors()
 {
-    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text"};
+    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI"};
 
     static int Primitive = 0;
     static int NumberOfSpawn = 1;
@@ -264,6 +265,9 @@ void UImGuiManager::SpawnActors()
         case 4:
             ComponentClassToSpawn = UTextComponent::StaticClass();
             break;
+        case 5:
+            ComponentClassToSpawn = UUUIDTextComponent::StaticClass();
+            break;
         }
 
         if (ComponentClassToSpawn == nullptr)
@@ -295,9 +299,13 @@ void UImGuiManager::SpawnActors()
                 DynamicPrimitive->SetOuter(NewActor);
                 DynamicPrimitive->RegisterComponent();
 
-                if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
+                /*if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText(UUID);   
+                    TextComp->SetText(logBuffer);   
+                }
+                else */if (UUUIDTextComponent* UUIDTextComp= Cast<UUUIDTextComponent>(DynamicPrimitive))
+                {
+                    UUIDTextComp->SetText(UUID);   
                 }
             }
         }

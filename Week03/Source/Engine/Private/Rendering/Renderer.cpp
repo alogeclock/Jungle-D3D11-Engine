@@ -17,6 +17,7 @@ void URenderer::Create(HWND hWindow)
     CreateDepthStencilState();
 
     CreateShader();
+    CreateTextShader();
     CreateBlendState();
 }
 
@@ -187,8 +188,10 @@ void URenderer::CreateShader()
 
     vertexshaderCSO->Release();
     pixelshaderCSO->Release();
+}
 
-     ID3DBlob* textVS = nullptr;
+void URenderer::CreateTextShader() {
+    ID3DBlob* textVS = nullptr;
     ID3DBlob* textPS = nullptr;
 
     D3DCompileFromFile(L"Shaders/ShaderFont.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &textVS, nullptr);
