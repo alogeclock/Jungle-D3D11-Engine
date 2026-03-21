@@ -32,11 +32,11 @@ FName UTextureManger::GetHashKeyPath(const path& inFilePath) const
 	path InputPath = inFilePath;      // 사용자 입력 경로
 	path AbsolutePath;               // 절대 경로
 	path RelativeKeyPath;            // 캐시 키용 경로
-
+	
+		AbsolutePath = InputPath;/*
 	if (InputPath.is_relative())
-		AbsolutePath = RootPath / InputPath;
-	else
 		AbsolutePath = InputPath;
+	else*/
 
 	try
 	{
@@ -116,6 +116,7 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 			TextureSRV = GetDefaultTexture(Device);
 		}
 		FName HashKey = GetHashKeyPath(FilePath);
+		std::cout << HashKey.ToString() << std::endl;
 		TextureMap[HashKey] = TextureSRV;
 	}
 }
@@ -123,10 +124,14 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 ID3D11ShaderResourceView* UTextureManger::GetTexture(const path& inFilePath)
 {
 	FName HashKey = GetHashKeyPath(inFilePath);
+	
+	std::cout << HashKey.ToString() << std::endl;
 
 	if (TextureMap.find(HashKey) != TextureMap.end()) {
 		return TextureMap[HashKey].Get();
 	}
+	
+	std::cout << "TextureManager: 텍스처 로드 실패 → fallback 사용 "<< std::endl;
 	
 	return nullptr;
 }

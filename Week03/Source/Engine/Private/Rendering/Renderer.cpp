@@ -488,7 +488,7 @@ void URenderer::RenderText(UPrimitiveComponent *primitive, FConstants &constants
     DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
 
     // 6. 폰트 텍스처 / 샘플러
-    ID3D11ShaderResourceView* fontSRV = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
+    ID3D11ShaderResourceView* fontSRV = UTextureManger::Get().GetTexture("Data/Texture/DejaVu Sans Mono.dds");
     if (!fontSRV) { 
         OutputDebugStringA("FontSRV NULL\n"); 
         vertexBuffer->Release(); 
