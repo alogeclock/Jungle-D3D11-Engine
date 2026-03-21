@@ -44,13 +44,16 @@ class UPrimitiveComponent : public USceneComponent
     bool isAlwaysVisible() const { return !bEnableDepthTest; }
     void SetAlwaysVisible(const bool bInEnableDepthTest) { bEnableDepthTest = !bInEnableDepthTest; }
 
+    void SetIsInEditor(bool IsInEditor) { bIsInEditor = IsInEditor; }
+    bool IsInEditor() const { return bIsInEditor; }
+
     virtual void UpdateBounds();
     const FBox  &GetWorldAABB();
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
   protected:
-    FTransform     GetTransformFromOwner() const;
+    FTransform GetTransformFromOwner() const;
 
   private:
     bool       IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
@@ -63,6 +66,7 @@ class UPrimitiveComponent : public USceneComponent
     ECullMode                CullMode = ECullMode::Back;
     bool                     bEnableDepthTest = true;
     bool                     bLocalBoundsDirty = true;
+    bool                     bIsInEditor = false;
 
     FBox LocalAABB;
     FBox WorldAABB;

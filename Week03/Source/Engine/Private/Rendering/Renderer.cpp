@@ -65,7 +65,7 @@ void URenderer::ReleaseDeviceAndSwapChain()
 
     if (DeviceContext)
     {
-        DeviceContext->Release();
+        DeviceContext->Release(); 
         DeviceContext = nullptr;
     }
 }
@@ -342,6 +342,11 @@ void URenderer::SetViewMode(EViewModeIndex Mode)
     ApplyRasterizerState();
 }
 
+void URenderer::SetShowFlags(EEngineShowFlags InShowFlags)
+{
+    ShowFlags = InShowFlags;
+}
+
 void URenderer::ApplyRasterizerState()
 {
     if (DeviceContext == nullptr) return;
@@ -400,6 +405,7 @@ void URenderer::Prepare(const FSceneViewOptions& ViewOptions)
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     DeviceContext->RSSetViewports(1, &ViewportInfo);
 
+    ShowFlags = ViewOptions.ShowFlags;
     ViewModeIndex = ViewOptions.ViewMode;
     bDrawAABB = ViewOptions.bDrawAABB;
 

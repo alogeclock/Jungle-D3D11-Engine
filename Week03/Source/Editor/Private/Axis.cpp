@@ -1,4 +1,4 @@
-#include "Source/Editor/Public/Axis.h"
+﻿#include "Source/Editor/Public/Axis.h"
 
 AAxis::AAxis(const FString &InString) : AActor(InString)
 {
@@ -8,6 +8,7 @@ AAxis::AAxis(const FString &InString) : AActor(InString)
 
 	AxisComponent = new UAxisComponent("AxisPrimitiveComponent");
     AxisComponent->SetOuter(Root);
+    AxisComponent->SetIsInEditor(true);
     AxisComponent->RegisterComponent();
 }
 

@@ -384,33 +384,42 @@ FRay FEditorViewportClient::GetPickingRay()
     return FRay(RayOrigin, RayDirection);
 }
 
-    void FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) const
+void FEditorViewportClient::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) const
+{
+    // Show Primitives가 꺼져있다면 피킹을 수행하지 않고 선택을 해제합니다.
+    if ((ShowFlags & EEngineShowFlags::SF_Primitives) == EEngineShowFlags::None)
     {
-        FHitResult ClosestHit = GWorld->PickingRay(RayOrigin, RayDirection);
-        UPrimitiveComponent *HitComp = ClosestHit.HitComponent;
+        if (Gizmo != nullptr)
+            Gizmo->SetTargetObject(nullptr);
+        UImGuiManager::Get().SetSelectedObject(nullptr);
+        return;
+    }
 
-        if (ClosestHit.bHit && HitComp != nullptr)
+    FHitResult ClosestHit = GWorld->PickingRay(RayOrigin, RayDirection);
+    UPrimitiveComponent *HitComp = ClosestHit.HitComponent;
+
+    if (ClosestHit.bHit && HitComp != nullptr)
+    {
+        // 1. 부딪힌 컴포넌트의 소유자(Actor)를 가져옵니다.
+        if (AActor* HitActor = Cast<AActor>(HitComp->GetOwner()))
         {
-            // 1. 부딪힌 컴포넌트의 소유자(Actor)를 가져옵니다.
-            if (AActor* HitActor = Cast<AActor>(HitComp->GetOwner()))
+            // 2. 액터의 RootComponent를 기즈모의 타겟으로 설정합니다.
+            if (USceneComponent* RootComp = HitActor->GetRootComponent())
             {
-                // 2. 액터의 RootComponent를 기즈모의 타겟으로 설정합니다.
-                if (USceneComponent* RootComp = HitActor->GetRootComponent())
+                if (Gizmo != nullptr)
                 {
-                    if (Gizmo != nullptr)
-                    {
-                        // 기즈모가 개별 메쉬가 아닌 액터 전체(Root)를 조작하게 됩니다.
-                        Gizmo->SetTargetObject(RootComp); 
-                    }
+                    // 기즈모가 개별 메쉬가 아닌 액터 전체(Root)를 조작하게 됩니다.
+                    Gizmo->SetTargetObject(RootComp); 
                 }
             }
         }
-        else
-        {
-            if (Gizmo != nullptr)
-                Gizmo->SetTargetObject(nullptr);
-            UImGuiManager::Get().SetSelectedObject(nullptr);
-        }
+    }
+    else
+    {
+        if (Gizmo != nullptr)
+            Gizmo->SetTargetObject(nullptr);
+        UImGuiManager::Get().SetSelectedObject(nullptr);
+    }
 }
 
 bool FInputEventState::IsLeftMouseButtonPressed() const { return IsButtonPressed(EKeys::LeftMouseButton); }

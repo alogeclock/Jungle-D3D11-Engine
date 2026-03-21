@@ -1,4 +1,4 @@
-#include "Source/Engine/Public/Classes/TextureManger.h"
+Ôªø#include "Source/Engine/Public/Classes/TextureManger.h"
 #include "Source/Engine/Public/Rendering/Renderer.h"
 #include <fstream>
 #include <iostream>
@@ -29,9 +29,9 @@ void UTextureManger::Initialize(URenderer& Renderer)
 
 FName UTextureManger::GetHashKeyPath(const path& inFilePath) const
 {
-	path InputPath = inFilePath;      // ªÁøÎ¿⁄ ¿‘∑¬ ∞Ê∑Œ
-	path AbsolutePath;               // ¿˝¥Î ∞Ê∑Œ
-	path RelativeKeyPath;            // ƒ≥Ω√ ≈∞øÎ ∞Ê∑Œ
+	path InputPath = inFilePath;      // ÏÇ¨Ïö©Ïûê ÏûÖÎ†• Í≤ΩÎ°ú
+	path AbsolutePath;               // Ï†àÎåÄ Í≤ΩÎ°ú
+	path RelativeKeyPath;            // Ï∫êÏãú ÌÇ§Ïö© Í≤ΩÎ°ú
 	
 		AbsolutePath = InputPath;/*
 	if (InputPath.is_relative())
@@ -56,13 +56,13 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 {
 	if (!std::filesystem::exists(InDirectoryPath))
 	{
-		std::cout << "[TextureManager] µ∑∫≈‰∏Æ∏¶ √£¿ª ºˆ æ¯æÓ ªı∑Œ ª˝º∫«’¥œ¥Ÿ: " << InDirectoryPath.string() << std::endl;
-		// ∞Ê∑ŒªÛ¿« ∏µÁ ªÛ¿ß µ∑∫≈‰∏Æ±Ó¡ˆ ∆˜«‘«œø© ª˝º∫
+		std::cout << "[TextureManager] ÎîîÎ†âÌÜ†Î¶¨Î•º Ï∞æÏùÑ Ïàò ÏóÜÏñ¥ ÏÉàÎ°ú ÏÉùÏÑ±Ìï©ÎãàÎã§: " << InDirectoryPath.string() << std::endl;
+		// Í≤ΩÎ°úÏÉÅÏùò Î™®Îì† ÏÉÅÏúÑ ÎîîÎ†âÌÜ†Î¶¨ÍπåÏßÄ Ìè¨Ìï®ÌïòÏó¨ ÏÉùÏÑ±
 		std::filesystem::create_directories(InDirectoryPath);
 	}
 	else if (!std::filesystem::is_directory(InDirectoryPath))
 	{
-		std::cout << "[TextureManager] ø¿∑˘: «ÿ¥Á ∞Ê∑Œø° µ∑∫≈‰∏Æ∞° æ∆¥— ∆ƒ¿œ¿Ã ¿ÃπÃ ¡∏¿Á«’¥œ¥Ÿ: " << InDirectoryPath.string() << std::endl;
+		std::cout << "[TextureManager] Ïò§Î•ò: Ìï¥Îãπ Í≤ΩÎ°úÏóê ÎîîÎ†âÌÜ†Î¶¨Í∞Ä ÏïÑÎãå ÌååÏùºÏù¥ Ïù¥ÎØ∏ Ï°¥Ïû¨Ìï©ÎãàÎã§: " << InDirectoryPath.string() << std::endl;
 		return;
 	}
 
@@ -71,13 +71,13 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 
 	if (!Device || !DeviceContext)
 	{
-		std::cout << "TextureManager: Texture ª˝º∫ Ω«∆– - Device ∂«¥¬ DeviceContext∞° null¿‘¥œ¥Ÿ" << std::endl;
+		std::cout << "TextureManager: Texture ÏÉùÏÑ± Ïã§Ìå® - Device ÎòêÎäî DeviceContextÍ∞Ä nullÏûÖÎãàÎã§" << std::endl;
 		return;
 	}
 
 	HRESULT ResultHandle;
 
-	std::cout << "TextureManager: ≈ÿΩ∫√≥ ∑ŒµÂ Ω√¿€ - " << InDirectoryPath.string() << std::endl;
+	std::cout << "TextureManager: ÌÖçÏä§Ï≤ò Î°úÎìú ÏãúÏûë - " << InDirectoryPath.string() << std::endl;
 
 	for (const auto& Entry : std::filesystem::recursive_directory_iterator(InDirectoryPath)) {
 
@@ -87,33 +87,25 @@ void UTextureManger::LoadToFileTexture(const path& InDirectoryPath, URenderer& R
 		FString FileExtension = FilePath.extension().string();
 
 		ComPtr<ID3D11ShaderResourceView> TextureSRV = nullptr;
-		try
-		{
-			if (FileExtension == ".dds") {
-				ResultHandle = DirectX::CreateDDSTextureFromFile(Device, DeviceContext,
-					FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
-			}
-			else if(FileExtension == ".png") {
-				ResultHandle = DirectX::CreateWICTextureFromFile(Device, DeviceContext,
-					FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
-			}
+
+		if (FileExtension == ".dds") {
+			ResultHandle = DirectX::CreateDDSTextureFromFile(Device, DeviceContext,
+				FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
 		}
-		catch (const std::exception&)
-		{
-			ResultHandle = E_FAIL;
+		else {
+			ResultHandle = DirectX::CreateWICTextureFromFile(Device, DeviceContext,
+				FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
 		}
 
-		if (SUCCEEDED(ResultHandle) && TextureSRV)
+		if (SUCCEEDED(ResultHandle))
 		{
-			std::cout << "TextureManager: ≈ÿΩ∫√≥ ∑ŒµÂ º∫∞¯ "
-				<< FilePath.string() << std::endl;
+			FName HashKey = GetHashKeyPath(FilePath);
+			std::cout << "TextureManager: ÌÖçÏä§Ï≤ò Î°úÎìú ÏÑ±Í≥µ" << FilePath.string() << std::endl;
+			TextureMap[HashKey] = TextureSRV;
 		}
 		else
 		{
-			std::cout << "TextureManager: ≈ÿΩ∫√≥ ∑ŒµÂ Ω«∆– °Ê fallback ªÁøÎ "
-				<< FilePath.string() << std::endl;
-
-			TextureSRV = GetDefaultTexture(Device);
+			std::cout << "TextureManager: ÌÖçÏä§Ï≤ò Î°úÎìú Ïã§Ìå®..." << FilePath.string() << ResultHandle << std::endl;
 		}
 		FName HashKey = GetHashKeyPath(FilePath);
 		std::cout << HashKey.ToString() << std::endl;
@@ -131,45 +123,7 @@ ID3D11ShaderResourceView* UTextureManger::GetTexture(const path& inFilePath)
 		return TextureMap[HashKey].Get();
 	}
 	
-	std::cout << "TextureManager: ≈ÿΩ∫√≥ ∑ŒµÂ Ω«∆– °Ê fallback ªÁøÎ "<< std::endl;
+	std::cout << "TextureManager: ÌÖçÏä§Ï≤ò Î°úÎìú Ïã§Ìå® ‚Üí fallback ÏÇ¨Ïö© "<< std::endl;
 	
 	return nullptr;
-}
-
-ComPtr<ID3D11ShaderResourceView> UTextureManger::GetDefaultTexture(ID3D11Device* Device)
-{
-	static ComPtr<ID3D11ShaderResourceView> DefaultSRV;
-
-	if (DefaultSRV) return DefaultSRV;
-
-	const UINT width = 2;
-	const UINT height = 2;
-
-	// «Œ≈©/∞À¡§ √º≈© ∆–≈œ
-	uint32_t pixels[width * height] =
-	{
-		0xFFFF00FF, 0xFF000000,
-		0xFF000000, 0xFFFF00FF
-	};
-
-	D3D11_TEXTURE2D_DESC desc = {};
-	desc.Width = width;
-	desc.Height = height;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	desc.SampleDesc.Count = 1;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = pixels;
-	initData.SysMemPitch = width * sizeof(uint32_t);
-
-	ComPtr<ID3D11Texture2D> texture;
-	Device->CreateTexture2D(&desc, &initData, texture.GetAddressOf());
-
-	Device->CreateShaderResourceView(texture.Get(), nullptr, DefaultSRV.GetAddressOf());
-
-	return DefaultSRV;
 }
