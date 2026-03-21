@@ -1,4 +1,4 @@
-﻿ #pragma once
+﻿#pragma once
 
 #include <vector>
 #include <string>
@@ -26,59 +26,91 @@ using int16 = std::int16_t;
 using uint64 = std::uint64_t;
 using int64 = std::int64_t;
 
-template<typename T, typename Alloc = std::allocator<T>>
-using TArray = std::vector<T, Alloc>;
+template <typename T, typename Alloc = std::allocator<T>> using TArray = std::vector<T, Alloc>;
 using FString = std::string;
-template<typename KeyType, typename ValueType, typename Hash = std::hash<KeyType>, typename Eq = std::equal_to<KeyType>, typename Alloc = std::allocator<std::pair<const KeyType, ValueType>>>
+template <typename KeyType, typename ValueType, typename Hash = std::hash<KeyType>, typename Eq = std::equal_to<KeyType>,
+          typename Alloc = std::allocator<std::pair<const KeyType, ValueType>>>
 using TMap = std::unordered_map<KeyType, ValueType, Hash, Eq, Alloc>;
-template<typename T> using TSet = std::unordered_set<T>;
-template<typename T> using TQueue = std::queue<T>;
+template <typename T> using TSet = std::unordered_set<T>;
+template <typename T> using TQueue = std::queue<T>;
 
 struct FVertex
 {
-	FVector<float> Position;
-	FVector4<float> Color;
+    FVector<float>  Position;
+    FVector4<float> Color;
 };
 
 struct FVertexToTexture
 {
-	FVector<float> Position;
-	float u, v;
+    FVector<float> Position;
+    float          u, v;
 };
 
 enum class EPrimitiveType : uint8
 {
-	None,
-	Sphere,
-	Cube,
-	Triangle,
-	Plane,
-	Arrow,
-	CubeArrow,
-	Ring,
-	Axis,
-	Grid,
-	WireBox,
-	Text,
+    None,
+    Sphere,
+    Cube,
+    Triangle,
+    Plane,
+    Arrow,
+    CubeArrow,
+    Ring,
+    Axis,
+    Grid,
+    WireBox,
+    Text,
 };
 
 enum class ECullMode : uint8
 {
-	None,
-	Front,
-	Back
+    None,
+    Front,
+    Back
 };
 
 enum class EViewModeIndex : uint8
 {
-	VMI_Lit,
-	VMI_Unlit,
-	VMI_Wireframe
+    VMI_Lit,
+    VMI_Unlit,
+    VMI_Wireframe
 };
+
+enum class EEngineShowFlags : uint64
+{
+    None,
+    SF_Primitives = 1ULL << 0,    // 0001 (1번째 체크박스)
+    SF_BillboardText = 1ULL << 1, // 0010 (2번째 체크박스)
+};
+
+inline EEngineShowFlags operator|(EEngineShowFlags Lhs, EEngineShowFlags Rhs)
+{
+    return static_cast<EEngineShowFlags>(static_cast<uint64>(Lhs) | static_cast<uint64>(Rhs));
+}
+
+inline EEngineShowFlags &operator|=(EEngineShowFlags &Lhs, EEngineShowFlags Rhs)
+{
+    Lhs = Lhs | Rhs;
+    return Lhs;
+}
+
+inline EEngineShowFlags operator&(EEngineShowFlags Lhs, EEngineShowFlags Rhs)
+{
+    return static_cast<EEngineShowFlags>(static_cast<uint64>(Lhs) & static_cast<uint64>(Rhs));
+}
+
+inline EEngineShowFlags &operator&=(EEngineShowFlags &Lhs, EEngineShowFlags Rhs)
+{
+    Lhs = Lhs & Rhs;
+    return Lhs;
+}
+
+inline EEngineShowFlags operator~(EEngineShowFlags Flag) { return static_cast<EEngineShowFlags>(~static_cast<uint64>(Flag)); }
 
 struct FSceneViewOptions
 {
-	EViewModeIndex ViewMode = EViewModeIndex::VMI_Lit;
-    bool bDrawAABB = false;
-    bool bDrawGrid = true;
+    EViewModeIndex   ViewMode = EViewModeIndex::VMI_Lit;
+    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_BillboardText;
+    bool             bDrawAABB = false;
+    bool             bDrawGrid = true;
 };

@@ -170,6 +170,9 @@ class FEditorViewportClient
 
     EViewModeIndex GetViewMode() const { return ViewMode; }
     void SetViewMode(EViewModeIndex InViewMode) { ViewMode = InViewMode; }
+    
+    EEngineShowFlags GetShowFlags() const { return ShowFlags; }
+    void SetShowFlags(EEngineShowFlags InShowFlags) { ShowFlags = InShowFlags; }
 
   private:
     // WASD 이동 누적
@@ -200,4 +203,5 @@ class FEditorViewportClient
 
     bool bDrawAABB = true;
     EViewModeIndex ViewMode = EViewModeIndex::VMI_Lit;
+    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_BillboardText;
 };

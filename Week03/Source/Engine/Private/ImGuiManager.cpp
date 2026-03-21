@@ -211,19 +211,40 @@ void UImGuiManager::ShowControlPanel()
 
         EViewModeIndex currentMode = EditorViewportClient->GetViewMode();
         int            currentItem = static_cast<int>(currentMode);
-
-        if (ImGui::ListBox("View Mode", &currentItem, ViewModeStrings, IM_ARRAYSIZE(ViewModeStrings)))
+        
+        ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
+        ImGui::Text("View Mode");
+        if (ImGui::ListBox("##View Mode", &currentItem, ViewModeStrings, IM_ARRAYSIZE(ViewModeStrings)))
         {
             EditorViewportClient->SetViewMode(static_cast<EViewModeIndex>(currentItem));
         }
-        
+    }
+
+    if (EditorViewportClient != nullptr)
+    {
         ImGui::Separator();
+        ImGui::Text("Show Flags");
 
         bool bDrawAABB = EditorViewportClient->GetDrawAABB();
         if (ImGui::Checkbox("Draw AABB", &bDrawAABB))
         {
             EditorViewportClient->SetDrawAABB(bDrawAABB);
         }
+
+        // 현재 뷰포트 클라이언트의 ShowFlags 값을 가져옵니다.
+        EEngineShowFlags CurrentFlags = EditorViewportClient->GetShowFlags();
+
+        // 1. Primitive 표시 여부 체크박스
+        bool bShowPrimitives = (CurrentFlags & EEngineShowFlags::SF_Primitives) != EEngineShowFlags::None;
+        if (ImGui::Checkbox("Show Primitives", &bShowPrimitives))
+        {
+            if (bShowPrimitives)
+                CurrentFlags |= EEngineShowFlags::SF_Primitives; // 비트 켜기 (OR)
+            else
+                CurrentFlags &= ~EEngineShowFlags::SF_Primitives; // 비트 끄기 (AND NOT)
+        }
+        // 변경된 상태를 다시 뷰포트 클라이언트에 저장
+        EditorViewportClient->SetShowFlags(CurrentFlags);
     }
 }
 
@@ -240,6 +261,8 @@ void UImGuiManager::SpawnActors()
 
     isSpawn = ImGui::Button("Spawn");
     ImGui::SameLine();
+
+    ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
     ImGui::DragInt("Number of spawn", &NumberOfSpawn, 0.05f, 1, 10);
 
     if (isSpawn)
@@ -376,18 +399,23 @@ void UImGuiManager::SetCameraInfo()
 
     float fovDeg = Camera->GetFOV() * 180.0f / 3.14159265f;
 
+    ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
     if (ImGui::DragFloat("FOV", &fovDeg, 0.1f, 60.0f, 120.0f))
     {
         Camera->SetFOV(fovDeg * 3.14159265f / 180.0f);
     }
 
+    ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
     ImGui::DragFloat3("Camera Location", &Camera->GetLocation().X, 0.01f);
+    ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
     ImGui::DragFloat3("Camera Rotation", &Camera->GetRotation().X, 0.1f);
 
     if (EditorViewportClient != nullptr)
     {
         ImGui::Separator();
+        ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
+        ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f", ImGuiSliderFlags_Logarithmic);
     }
 }

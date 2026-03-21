@@ -6,6 +6,11 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
+    if (!bIsInEditor && !renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
+    {
+        return; 
+    }
+
     FConstants constants;
     constants.MVPMatrix = GetWorldMatrix(); // 부모 및 자신의 변경 사항을 반영한 GetWorldMatrix()를 호출한다.
 
