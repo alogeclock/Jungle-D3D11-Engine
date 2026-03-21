@@ -117,13 +117,13 @@ void ULineBatcherComponent::Render(URenderer &renderer)
         DynamicIndexBuffer = renderer.CreateDynamicIndexBuffer(IndexBufferSize);
     }
 
-    renderer.UpdateDynamicBuffer(DynamicVertexBuffer, RenderVertices.data(), RequiredVertexBufferSize * sizeof(FVertex));
-    renderer.UpdateDynamicBuffer(DynamicIndexBuffer, RenderIndices.data(), RequiredIndexBufferSize * sizeof(uint16));
+    renderer.UpdateDynamicBuffer(DynamicVertexBuffer, RenderVertices.data(), RequiredVertexBufferSize);
+    renderer.UpdateDynamicBuffer(DynamicIndexBuffer, RenderIndices.data(), RequiredIndexBufferSize);
     FConstants constants = {};
     constants.MVPMatrix = FMatrix<float>::Identity();
     renderer.UpdateConstant(constants);
 
-    renderer.DrawIndexed(DynamicVertexBuffer, DynamicIndexBuffer, RequiredIndexBufferSize, sizeof(FVertex));
+    renderer.DrawIndexed(DynamicVertexBuffer, DynamicIndexBuffer, static_cast<uint32>(RenderIndices.size()), sizeof(FVertex));
 }
 
 void ULineBatcherComponent::Flush()

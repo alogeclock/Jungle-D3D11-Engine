@@ -35,7 +35,7 @@ class UWorld final : public UObject
   private:
     ULevel        *CurrentLevel;
     TSet<ULevel *> Levels;
-    ULineBatcherComponent *LineBatcher;
+    ULineBatcherComponent *LineBatcherComponent;
 };
 
 // ⭐️ 2. 개발자 편의용 템플릿 함수 (회원님이 쓰시던 것)

@@ -25,15 +25,15 @@ struct FHitResult;
 UWorld::UWorld(const FString &InString) : UObject(InString) 
 {
     CurrentLevel = CreateNewLevel("PersistentLevel");
-    LineBatcher = new ULineBatcherComponent("LineBatcherComponent");
+    LineBatcherComponent = new ULineBatcherComponent("LineBatcherComponent");
 }
 
 UWorld::~UWorld()
 {
-    if (LineBatcher)
+    if (LineBatcherComponent)
     {
-        delete LineBatcher;
-        LineBatcher = nullptr;
+        delete LineBatcherComponent;
+        LineBatcherComponent = nullptr;
     }
 
     for (ULevel* Level : Levels)

@@ -817,7 +817,7 @@ void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight)
     ViewportInfo = {0.f, 0.f, (float)NewWidth, (float)NewHeight, 0.f, 1.f};
 }
 
-inline void URenderer::SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology)
+void URenderer::SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology)
 {
     Topology = InTopology;
     DeviceContext->IASetPrimitiveTopology(Topology);
