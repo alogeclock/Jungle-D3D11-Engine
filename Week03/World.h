@@ -36,7 +36,7 @@ class UWorld final : public UObject
     TSet<ULevel *> Levels;    
 };
 
-// ⭐️ 2. 개발자 편의용 템플릿 함수 (회원님이 쓰시던 것)
+// ⭐️ 2. 개발자 편의용 템플릿 함수
 template <typename T> T *UWorld::SpawnActor()
 {
     T* Object = SpawnActor(T::StaticClass());
