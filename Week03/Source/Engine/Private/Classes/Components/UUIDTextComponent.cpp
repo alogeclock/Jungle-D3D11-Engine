@@ -41,7 +41,7 @@ void UUUIDTextComponent::Selected() {
 }
 
 void UUUIDTextComponent::NotSelected() {
-    UPrimitiveComponent::NotSelected();
+    UPrimitiveComponent::Selected();
     bVIsible = false;
 }
 

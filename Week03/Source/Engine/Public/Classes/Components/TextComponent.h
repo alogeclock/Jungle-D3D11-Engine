@@ -31,15 +31,7 @@ class UTextComponent : public UPrimitiveComponent
     FString        Text = FString("Text");
     FMatrix<float> RTMatrix;
     bool           bMeshDirty = true;
-
-	virtual void Render(URenderer &renderer);
-	void RebuildMesh();
-
-protected:
-	bool bVIsible;
-	FString Text = FString("Text");
-	FMatrix<float> RTMatrix;
-    bool bMeshDirty = true;
+    bool bVIsible = false;
 
 	TArray<FTextVertex> TextVertices;
 };

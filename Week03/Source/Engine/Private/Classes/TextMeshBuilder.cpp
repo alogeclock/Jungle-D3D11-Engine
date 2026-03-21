@@ -39,7 +39,7 @@ TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
     Vertices.reserve(InText.size() * 6);
 
     const float StartX = -(static_cast<float>(InText.size()) * 0.5f);
-    float PenX = StartX;
+    float PenX = StartX / 2;
 
     for (char Ch8 : InText)
     {
@@ -47,14 +47,14 @@ TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
         const CharacterInfo* Info = GetCharInfo(Ch);
         if (!Info)
         {
-            PenX += 1.0f;
+            PenX += 0.5f;
             continue;
         }
 
         const float x0 = PenX;
-        const float x1 = PenX + 1.0f;
-        const float y0 = -0.5f;
-        const float y1 = 0.5f;
+        const float x1 = PenX + 0.5f;
+        const float y0 = -0.25f;
+        const float y1 = 0.25f;
         const float z  = 0.0f;
 
         const float u0 = Info->u;
@@ -70,7 +70,7 @@ TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
         Vertices.push_back({ FVector<float>(x1, y1, 0.0f), u1, v1 });
         Vertices.push_back({ FVector<float>(x0, y1, 0.0f), u0, v1 });
 
-        PenX += 1.0f;
+        PenX += 0.5f;
     }
 
     return Vertices;
