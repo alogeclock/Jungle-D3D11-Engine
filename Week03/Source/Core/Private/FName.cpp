@@ -21,7 +21,7 @@ FName::FName(uint32 InComparisionIndex, uint32 InDisplayIndex)
 	DisplayIndex = InDisplayIndex;
 }
 
-bool FName::operator==(const FName& Other)
+bool FName::operator==(const FName& Other) const
 {
 	return ComparisionIndex == Other.ComparisionIndex;
 }

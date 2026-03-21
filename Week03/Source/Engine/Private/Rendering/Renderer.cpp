@@ -17,6 +17,7 @@ void URenderer::Create(HWND hWindow)
     CreateDepthStencilState();
 
     CreateShader();
+    CreateTextShader();
     CreateBlendState();
 }
 
@@ -187,8 +188,10 @@ void URenderer::CreateShader()
 
     vertexshaderCSO->Release();
     pixelshaderCSO->Release();
+}
 
-     ID3DBlob* textVS = nullptr;
+void URenderer::CreateTextShader() {
+    ID3DBlob* textVS = nullptr;
     ID3DBlob* textPS = nullptr;
 
     D3DCompileFromFile(L"Shaders/ShaderFont.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &textVS, nullptr);
@@ -454,10 +457,6 @@ void URenderer::RenderText(UPrimitiveComponent *primitive, FConstants &constants
     vbDesc.ByteWidth            = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
     vbDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
 
-    std::cout << "FTextVertex size: " << sizeof(FTextVertex) << std::endl;
-    std::cout << "vertex count: " << vertices->size() << std::endl;
-    std::cout << "ByteWidth: " << vbDesc.ByteWidth << std::endl;
-
     ID3D11Buffer* vertexBuffer  = nullptr;
     if (FAILED(Device->CreateBuffer(&vbDesc, nullptr, &vertexBuffer)))
     {
@@ -495,7 +494,7 @@ void URenderer::RenderText(UPrimitiveComponent *primitive, FConstants &constants
     DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
 
     // 6. 폰트 텍스처 / 샘플러
-    ID3D11ShaderResourceView* fontSRV = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
+    ID3D11ShaderResourceView* fontSRV = UTextureManger::Get().GetTexture("Data/Texture/DejaVu Sans Mono.dds");
     if (!fontSRV) { 
         OutputDebugStringA("FontSRV NULL\n"); 
         vertexBuffer->Release(); 

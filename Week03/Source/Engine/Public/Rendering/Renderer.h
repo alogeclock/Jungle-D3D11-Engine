@@ -92,6 +92,7 @@ public:
 	void SwapBuffer();
 
 	void CreateShader();
+	void CreateTextShader();
 	void ReleaseShader();
 
 	void CreateDepthStencilBuffer(uint32 width, uint32 height);
