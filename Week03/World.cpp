@@ -22,10 +22,20 @@ using json = nlohmann::json;
 
 struct FHitResult;
 
-UWorld::UWorld(const FString &InString) : UObject(InString) { CurrentLevel = CreateNewLevel("PersistentLevel"); }
+UWorld::UWorld(const FString &InString) : UObject(InString) 
+{
+    CurrentLevel = CreateNewLevel("PersistentLevel");
+    LineBatcherComponent = new ULineBatcherComponent("LineBatcherComponent");
+}
 
 UWorld::~UWorld()
 {
+    if (LineBatcherComponent)
+    {
+        delete LineBatcherComponent;
+        LineBatcherComponent = nullptr;
+    }
+
     for (ULevel* Level : Levels)
     {
         if (Level != nullptr)

@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Private\Classes\Components\LineBatcherComponent.cpp" />
     <ClCompile Include="Source\Core\Private\FName.cpp" />
     <ClCompile Include="Source\Core\Private\FNamePool.cpp" />
     <ClCompile Include="Source\Core\Private\TimeManager.cpp" />
@@ -186,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineStatics.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\Components\LineBatcherComponent.h" />
     <ClInclude Include="Source\Core\Public\FName.h" />
     <ClInclude Include="External\Include\DirectXTK\DDSTextureLoader.h" />
     <ClInclude Include="External\Include\DirectXTK\WICTextureLoader.h" />

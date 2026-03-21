@@ -3,6 +3,7 @@
 #include "Source/Engine/Object/Public/Actor.h"
 #include "Source/Engine/Object/Public/Level.h"
 #include "Source/Engine/Object/Public/Object.h"
+#include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 
 class ULevel;
 class AActor;
@@ -34,7 +35,8 @@ class UWorld final : public UObject
 
   private:
     ULevel        *CurrentLevel;
-    TSet<ULevel *> Levels;    
+    TSet<ULevel *> Levels;
+    ULineBatcherComponent *LineBatcherComponent;
 };
 
 // ⭐️ 2. 개발자 편의용 템플릿 함수 (회원님이 쓰시던 것)
