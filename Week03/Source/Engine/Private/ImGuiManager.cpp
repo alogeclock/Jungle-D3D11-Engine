@@ -452,6 +452,13 @@ void UImGuiManager::SetCameraInfo()
         ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f", ImGuiSliderFlags_Logarithmic);
+
+        ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
+        float GridStep = EditorViewportClient->GetGridStep();
+        if (ImGui::SliderFloat("Grid Snap", &GridStep, 0.1f, 5.0f, "%.2f"))
+        {
+            EditorViewportClient->SetGridStepAndUpdate(GridStep);
+        }
     }
 }
 
