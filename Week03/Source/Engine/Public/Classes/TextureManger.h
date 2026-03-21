@@ -27,6 +27,9 @@ class UTextureManger :
     void LoadToFileTexture(const path& inFilePath, URenderer& Renderer);
     ID3D11ShaderResourceView* GetTexture(const path& FilePath);
     const TMap<FString, ComPtr<ID3D11ShaderResourceView>>& GetTextureMap() const { return TextureMap; }
+
+
+    ComPtr<ID3D11ShaderResourceView> GetDefaultTexture(ID3D11Device* Device);
 private:
   
 	path RootPath;

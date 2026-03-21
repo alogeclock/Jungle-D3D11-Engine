@@ -40,7 +40,7 @@ struct FVertex
     FVector4<float> Color;
 };
 
-struct FVertexToTexture
+struct FTextVertex
 {
     FVector<float> Position;
     float          u, v;

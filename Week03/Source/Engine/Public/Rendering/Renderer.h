@@ -67,8 +67,14 @@ public:
 	D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	ID3D11VertexShader* SimpleVertexShader;
+	ID3D11VertexShader* TextVertexShader;
 	ID3D11PixelShader* SimplePixelShader;
+	ID3D11PixelShader* TextPixelShader;
 	ID3D11InputLayout* SimpleInputLayout;
+	ID3D11InputLayout* TextInputLayout;
+
+	ID3D11SamplerState* LinearSamplerState;
+
 	unsigned int Stride;
 
 public:
@@ -111,6 +117,7 @@ public:
 	void Prepare(const FSceneViewOptions& ViewOptions);
 	void PrepareShader();
 
+	void RenderText(UPrimitiveComponent *primitive, FConstants &constants, TArray<FTextVertex>* vertices);
 	void RenderPrimitive(ID3D11Buffer* pBuffer, uint32 numVertices);
 	void RenderPrimitive(UPrimitiveComponent *primitive);
     void RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor);
@@ -126,6 +133,9 @@ public:
 
 	void UpdateConstant(FConstants data);
     void UpdateConstant(FConstantsColor data);
+
+    // Text billboard용 카메라 축 추출
+    bool GetCameraBasis(FVector<float>& OutRight, FVector<float>& OutUp, FVector<float>& OutForward) const;
 
 	void SetViewport(FViewport* viewport) { Viewport = viewport; };
     void OnResize(uint32 NewWidth, uint32 NewHeight);
