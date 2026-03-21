@@ -3,6 +3,7 @@
 #include "Source/Engine/Object/Public/Actor.h"
 #include "Source/Engine/Object/Public/Level.h"
 #include "Source/Engine/Object/Public/Object.h"
+#include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 
 class ULevel;
 class AActor;
@@ -30,10 +31,12 @@ class UWorld final : public UObject
     FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
     void       Render(URenderer &renderer);
+    void Tick(float deltaTime);
 
   private:
     ULevel        *CurrentLevel;
-    TSet<ULevel *> Levels;    
+    TSet<ULevel *> Levels;
+    ULineBatcherComponent *LineBatcherComponent;
 };
 
 // ⭐️ 2. 개발자 편의용 템플릿 함수

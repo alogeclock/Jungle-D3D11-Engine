@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Private\Classes\Components\LineBatcherComponent.cpp" />
     <ClCompile Include="Source\Core\Private\FName.cpp" />
     <ClCompile Include="Source\Core\Private\FNamePool.cpp" />
     <ClCompile Include="Source\Core\Private\TimeManager.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\PlaneComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\RingComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\TextComponent.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\Components\UUIDTextComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\MeshManager.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\TextMeshBuilder.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\TextureManger.cpp" />
@@ -180,11 +182,12 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\Private\Classes\Components\UUIDTextComponent.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\Components\ParticleSubUVComponent.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineStatics.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\Components\LineBatcherComponent.h" />
     <ClInclude Include="Source\Core\Public\FName.h" />
     <ClInclude Include="External\Include\DirectXTK\DDSTextureLoader.h" />
     <ClInclude Include="External\Include\DirectXTK\WICTextureLoader.h" />
@@ -201,9 +204,11 @@
     <ClInclude Include="Source\Engine\Public\Classes\Components\CubeArrowComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\CubeComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\GridComponent.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\Components\ParticleSubUVComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\PlaneComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\RingComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\TextComponent.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\Components\UUIDTextComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\MeshManager.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextMeshBuilder.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
@@ -271,7 +276,6 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
-    <ClInclude Include="Source\Engine\Public\Classes\Components\UUIDTextComponent.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
