@@ -328,7 +328,6 @@ void UWorld::Render(URenderer &renderer)
         }
     }
 
-    LineBatcherComponent->Build();
     LineBatcherComponent->Render(renderer);
     LineBatcherComponent->Flush();
 }
