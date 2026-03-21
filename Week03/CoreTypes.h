@@ -68,3 +68,17 @@ enum class ECullMode : uint8
 	Front,
 	Back
 };
+
+enum class EViewModeIndex : uint8
+{
+	VMI_Lit,
+	VMI_Unlit,
+	VMI_Wireframe
+};
+
+struct FSceneViewOptions
+{
+	EViewModeIndex ViewMode = EViewModeIndex::VMI_Lit;
+    bool bDrawAABB = false;
+    bool bDrawGrid = true;
+};

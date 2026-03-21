@@ -149,15 +149,21 @@ void UApplication::Run()
                 Viewport->OnResize(Width, Height);
                 bResize = false;
 			}
+			
+			FEditorViewportClient *ViewportClient = Viewport->GetViewportClient();
+
+			FSceneViewOptions ViewOptions;
+			ViewOptions.ViewMode = ViewportClient->GetViewMode();
+			ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
 
 			Viewport->Tick(UTimeManager::Get().GetDeltaTime());
-			Renderer->Prepare();
+			Renderer->Prepare(ViewOptions);
 
 			GWorld->Render(*Renderer);
+			
+			ViewportClient->Render(*Renderer);
 
-			Viewport->GetViewportClient()->Render(*Renderer);
-
-			UImGuiManager::Get().Update(Renderer);
+			UImGuiManager::Get().Update();
             UTimeManager::Get().Update();
 
 			Renderer->SwapBuffer();

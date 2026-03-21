@@ -81,10 +81,10 @@ void FEditorViewportClient::Tick(float DeltaTime, FViewport *Viewport)
 
     ApplyMovement(DeltaTime, Viewport);
 
-    if (UImGuiManager::Get().bChangeMode)
+    if (UImGuiManager::Get().bToggleGizmoMode)
     {
         Gizmo->ToggleMode();
-        UImGuiManager::Get().bChangeMode = false;
+        UImGuiManager::Get().bToggleGizmoMode = false;
     }
 
 }

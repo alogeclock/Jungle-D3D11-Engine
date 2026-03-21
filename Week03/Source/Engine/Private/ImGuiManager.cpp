@@ -18,7 +18,6 @@
 
 #include "Source/Core/Public/FName.h"
 
-
 ExampleAppConsole *GConsole = nullptr;
 
 void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
@@ -30,7 +29,7 @@ void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
     ImGui_ImplDX11_Init(renderer->Device, renderer->DeviceContext);
 }
 
-void UImGuiManager::Update(URenderer *renderer)
+void UImGuiManager::Update()
 {
     beginFrame();
 
@@ -55,7 +54,7 @@ void UImGuiManager::Update(URenderer *renderer)
     {
         for (UObject *Object : GUObjectArray)
         {
-            FName ObjectName = Object->GetName();
+            FName   ObjectName = Object->GetName();
             FString msg = "Object Name : ";
             AddLog(msg + ObjectName);
         }
@@ -65,13 +64,13 @@ void UImGuiManager::Update(URenderer *renderer)
     {
         for (AActor *Actor : GWorld->GetCurrentLevel()->GetActors())
         {
-            FName ActorName = Actor->GetName();
+            FName   ActorName = Actor->GetName();
             FString msg = "Actor Name : ";
             AddLog(msg + ActorName);
 
             for (UActorComponent *Component : Actor->GetOwnedComponents())
             {
-                FName ComponentName = Component->GetName();
+                FName   ComponentName = Component->GetName();
                 FString msg = "    ComponentName Name : ";
 
                 AddLog(msg + ComponentName);
@@ -206,7 +205,26 @@ void UImGuiManager::ShowControlPanel()
 
     ImGui::Separator();
 
-    ImGui::Checkbox("Draw AABB", &bDrawAABB);
+    if (EditorViewportClient != nullptr)
+    {
+        const char *ViewModeStrings[] = {"Lit", "Unlit", "Wireframe"};
+
+        EViewModeIndex currentMode = EditorViewportClient->GetViewMode();
+        int            currentItem = static_cast<int>(currentMode);
+
+        if (ImGui::ListBox("View Mode", &currentItem, ViewModeStrings, IM_ARRAYSIZE(ViewModeStrings)))
+        {
+            EditorViewportClient->SetViewMode(static_cast<EViewModeIndex>(currentItem));
+        }
+        
+        ImGui::Separator();
+
+        bool bDrawAABB = EditorViewportClient->GetDrawAABB();
+        if (ImGui::Checkbox("Draw AABB", &bDrawAABB))
+        {
+            EditorViewportClient->SetDrawAABB(bDrawAABB);
+        }
+    }
 }
 
 void UImGuiManager::SpawnActors()
@@ -387,7 +405,7 @@ void UImGuiManager::TransformInspector()
     ImGui::DragFloat3("Scale", &t.Scale.X, 0.01f, 0.f, FLT_MAX);
 
     if (ImGui::Button("Change Mode"))
-        bChangeMode = true;
+        bToggleGizmoMode = true;
 
     Actor->SetTransform(t);
 }

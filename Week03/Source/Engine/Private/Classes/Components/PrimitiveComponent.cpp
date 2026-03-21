@@ -8,6 +8,7 @@ void UPrimitiveComponent::Render(URenderer &renderer)
 {
     FConstants constants;
     constants.MVPMatrix = GetWorldMatrix(); // 부모 및 자신의 변경 사항을 반영한 GetWorldMatrix()를 호출한다.
+
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
 
@@ -15,7 +16,7 @@ void UPrimitiveComponent::Render(URenderer &renderer)
 
     renderer.RenderPrimitive(this, constants, constantsColor);
 
-    if (!UImGuiManager::Get().bDrawAABB)
+    if (!renderer.IsDrawAABB())
         return;
 
     if (PrimitiveType == EPrimitiveType::Cube || PrimitiveType == EPrimitiveType::Sphere)

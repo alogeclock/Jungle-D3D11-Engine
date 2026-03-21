@@ -210,7 +210,7 @@ void URenderer::ReleaseShader()
     }
 }
 
-void URenderer::CreateDepthStencilBuffer(uint32 width, uint32 height) 
+void URenderer::CreateDepthStencilBuffer(uint32 width, uint32 height)
 {
     D3D11_TEXTURE2D_DESC depthDesc = {};
     depthDesc.Width = width;
@@ -231,7 +231,7 @@ void URenderer::CreateDepthStencilBuffer(uint32 width, uint32 height)
     Device->CreateDepthStencilView(DepthStencilBuffer, &dsvDesc, &DepthStencilView);
 }
 
-void URenderer::ReleaseDepthStencilBuffer() 
+void URenderer::ReleaseDepthStencilBuffer()
 {
     if (DepthStencilBuffer)
     {
@@ -295,10 +295,29 @@ void URenderer::SetDepthStencilEnable(bool bEnable)
 
 void URenderer::SetCullMode(ECullMode Mode)
 {
-    if (DeviceContext == nullptr)
-        return;
+    CurrentCullMode = Mode;
+    ApplyRasterizerState();
+}
 
-    switch (Mode)
+void URenderer::SetViewMode(EViewModeIndex Mode)
+{
+    ViewModeIndex = Mode;
+    ApplyRasterizerState();
+}
+
+void URenderer::ApplyRasterizerState()
+{
+    if (DeviceContext == nullptr) return;
+
+    // 와이어프레임 상태가 켜져 있으면 다른 세팅을 무시하고 와이어프레임 적용
+    if (ViewModeIndex == EViewModeIndex::VMI_Wireframe)
+    {
+        DeviceContext->RSSetState(RasterizerStateWireframe);
+        return;
+    }
+
+    // 그렇지 않으면 현재 CullMode에 맞게 적용
+    switch (CurrentCullMode)
     {
     case ECullMode::None:
         DeviceContext->RSSetState(RasterizerStateCullNone);
@@ -313,7 +332,7 @@ void URenderer::SetCullMode(ECullMode Mode)
     }
 }
 
-void URenderer::CreateBlendState() 
+void URenderer::CreateBlendState()
 {
     D3D11_BLEND_DESC BlendDesc = {};
     BlendDesc.RenderTarget[0].BlendEnable = TRUE;
@@ -328,7 +347,7 @@ void URenderer::CreateBlendState()
     Device->CreateBlendState(&BlendDesc, &BlendState);
 }
 
-void URenderer::ReleaseBlendState() 
+void URenderer::ReleaseBlendState()
 {
     if (BlendState)
     {
@@ -337,13 +356,18 @@ void URenderer::ReleaseBlendState()
     }
 }
 
-void URenderer::Prepare()
+void URenderer::Prepare(const FSceneViewOptions& ViewOptions)
 {
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
     DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     DeviceContext->RSSetViewports(1, &ViewportInfo);
-    DeviceContext->RSSetState(RasterizerStateCullBack);
+
+    ViewModeIndex = ViewOptions.ViewMode;
+    bDrawAABB = ViewOptions.bDrawAABB;
+
+    ApplyRasterizerState();
+
     DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, DepthStencilView);
     DeviceContext->OMSetBlendState(BlendState, BlendFactor, 0xffffffff);
     DeviceContext->OMSetDepthStencilState(DepthStateDefault, 0);
@@ -386,8 +410,8 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive)
     EPrimitiveType Type = primitive->GetPrimitiveType();
     EPrimitiveType Topology = primitive->GetPrimitiveType();
 
-    ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
-    uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
+    ID3D11Buffer *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
+    uint32        NumVertices = UMeshManager::Get().GetNumVertices(Type);
 
     ID3D11Buffer *IndexBuffer = UMeshManager::Get().GetIndexBuffer(Type);
     uint32        NumIndices = UMeshManager::Get().GetNumIndices(Type);
@@ -402,7 +426,7 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive)
         DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
         DeviceContext->DrawIndexed(NumIndices, 0, 0);
     }
-    else 
+    else
     {
         DeviceContext->Draw(NumVertices, 0);
     }
@@ -411,7 +435,7 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive)
 void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor)
 {
     // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
-    
+
     // 1. 전달받은 상수 데이터(constants)를 GPU의 Constant Buffer에 업데이트
     UpdateConstant(constants);
     UpdateConstant(constantsColor);
@@ -419,8 +443,8 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &cons
     // 2. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
     EPrimitiveType Type = primitive->GetPrimitiveType();
 
-    ID3D11Buffer  *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
-    uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
+    ID3D11Buffer *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
+    uint32        NumVertices = UMeshManager::Get().GetNumVertices(Type);
 
     ID3D11Buffer *IndexBuffer = UMeshManager::Get().GetIndexBuffer(Type);
     uint32        NumIndices = UMeshManager::Get().GetNumIndices(Type);
@@ -430,7 +454,7 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &cons
 
     uint32 offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
-    
+
     if (IndexBuffer)
     {
         DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
@@ -461,7 +485,7 @@ ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byte
 
 void URenderer::ReleaseVertexBuffer(ID3D11Buffer *vertexBuffer) { vertexBuffer->Release(); }
 
-ID3D11Buffer *URenderer::CreateIndexBuffer(const uint16 *indices, uint32 byteWidth) 
+ID3D11Buffer *URenderer::CreateIndexBuffer(const uint16 *indices, uint32 byteWidth)
 {
     D3D11_BUFFER_DESC desc = {};
     desc.ByteWidth = byteWidth;
@@ -476,7 +500,7 @@ ID3D11Buffer *URenderer::CreateIndexBuffer(const uint16 *indices, uint32 byteWid
     return buffer;
 }
 
-void URenderer::ReleaseIndexBuffer(ID3D11Buffer *indexBuffer) 
+void URenderer::ReleaseIndexBuffer(ID3D11Buffer *indexBuffer)
 {
     if (indexBuffer)
         indexBuffer->Release();
@@ -533,11 +557,11 @@ void URenderer::UpdateConstant(FConstants data)
             constants->MVPMatrix = data.MVPMatrix * viewMatrix * projectionMatrix;
         }
 
-		DeviceContext->Unmap(ConstantBuffer, 0);
-	}
+        DeviceContext->Unmap(ConstantBuffer, 0);
+    }
 }
 
-void URenderer::UpdateConstant(FConstantsColor data) 
+void URenderer::UpdateConstant(FConstantsColor data)
 {
     if (ConstantBufferColor)
     {
@@ -552,7 +576,7 @@ void URenderer::UpdateConstant(FConstantsColor data)
     }
 }
 
-void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight) 
+void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight)
 {
     OutputDebugStringA(("OnResize: " + std::to_string(NewWidth) + "x" + std::to_string(NewHeight) + "\n").c_str());
     if (!SwapChain)
