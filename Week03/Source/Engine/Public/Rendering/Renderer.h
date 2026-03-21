@@ -145,6 +145,6 @@ private:
 	FViewport* Viewport = nullptr;
 	ECullMode CurrentCullMode = ECullMode::Back;
 	EViewModeIndex ViewModeIndex = EViewModeIndex::VMI_Lit;
-	EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives;
+	EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID;
     bool bDrawAABB = false;
 };

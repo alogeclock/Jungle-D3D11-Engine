@@ -203,5 +203,5 @@ class FEditorViewportClient
 
     bool bDrawAABB = true;
     EViewModeIndex ViewMode = EViewModeIndex::VMI_Lit;
-    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_BillboardText;
+    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID;
 };

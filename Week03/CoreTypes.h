@@ -80,7 +80,7 @@ enum class EEngineShowFlags : uint64
 {
     None,
     SF_Primitives = 1ULL << 0,    // 0001 (1번째 체크박스)
-    SF_BillboardText = 1ULL << 1, // 0010 (2번째 체크박스)
+    SF_UUID = 1ULL << 1, // 0010 (2번째 체크박스)
 };
 
 inline EEngineShowFlags operator|(EEngineShowFlags Lhs, EEngineShowFlags Rhs)
@@ -110,7 +110,7 @@ inline EEngineShowFlags operator~(EEngineShowFlags Flag) { return static_cast<EE
 struct FSceneViewOptions
 {
     EViewModeIndex   ViewMode = EViewModeIndex::VMI_Lit;
-    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_BillboardText;
+    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID;
     bool             bDrawAABB = false;
     bool             bDrawGrid = true;
 };

@@ -45,7 +45,7 @@ class UPrimitiveComponent : public USceneComponent
     void SetAlwaysVisible(const bool bInEnableDepthTest) { bEnableDepthTest = !bInEnableDepthTest; }
 
     void SetIsInEditor(bool IsInEditor) { bIsInEditor = IsInEditor; }
-    bool IsInEditor() { return bIsInEditor; }
+    bool IsInEditor() const { return bIsInEditor; }
 
     virtual void UpdateBounds();
     const FBox  &GetWorldAABB();

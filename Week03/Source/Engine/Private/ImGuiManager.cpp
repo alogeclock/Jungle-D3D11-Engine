@@ -228,7 +228,7 @@ void UImGuiManager::ShowControlPanel()
         ImGui::Text("Show Flags");
 
         bool bDrawAABB = EditorViewportClient->GetDrawAABB();
-        if (ImGui::Checkbox("Draw AABB", &bDrawAABB))
+        if (ImGui::Checkbox("Show AABB", &bDrawAABB))
         {
             EditorViewportClient->SetDrawAABB(bDrawAABB);
         }
@@ -245,6 +245,16 @@ void UImGuiManager::ShowControlPanel()
             else
                 CurrentFlags &= ~EEngineShowFlags::SF_Primitives; // 비트 끄기 (AND NOT)
         }
+
+        bool bShowUUID = (CurrentFlags & EEngineShowFlags::SF_UUID) != EEngineShowFlags::None;
+        if (ImGui::Checkbox("Show UUID", &bShowUUID))
+        {
+            if (bShowUUID)
+                CurrentFlags |= EEngineShowFlags::SF_UUID; // 비트 켜기 (OR)
+            else
+                CurrentFlags &= ~EEngineShowFlags::SF_UUID; // 비트 끄기 (AND NOT)
+        }
+        
         // 변경된 상태를 다시 뷰포트 클라이언트에 저장
         EditorViewportClient->SetShowFlags(CurrentFlags);
     }
@@ -361,7 +371,7 @@ void UImGuiManager::SaveScene()
     {
         std::wstring SceneName(CharToWString(buffer));
 
-        std::wstring DirectoryPath = L"Data";
+        std::wstring DirectoryPath = L"Data/Scene";
 
         // Data 폴더가 존재하지 않으면 생성
         if (!std::filesystem::exists(DirectoryPath))
@@ -512,6 +522,14 @@ std::wstring UImGuiManager::OpenFileDialog()
     ofn.lpstrInitialDir = NULL;
 
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    std::wstring DirectoryPath = L"Data\\Scene";
+    if (!std::filesystem::exists(DirectoryPath))
+    {
+        std::filesystem::create_directories(DirectoryPath);
+    }
+    std::wstring InitialDir = std::filesystem::absolute(DirectoryPath).wstring();
+    ofn.lpstrInitialDir = InitialDir.c_str();
 
     // 대화상자 호출 (불러오기)
     if (GetOpenFileNameW(&ofn) == TRUE)
