@@ -1,5 +1,4 @@
-﻿#pragma execution_character_set("utf-8")
-#include "Source/Engine/Public/ImGuiManager.h"
+﻿#include "Source/Engine/Public/ImGuiManager.h"
 #include "CoreTypes.h"
 #include "Source/Core/Public/Memory.h"
 
@@ -341,11 +340,11 @@ void UImGuiManager::SpawnActors()
                 DynamicPrimitive->SetOuter(NewActor);
                 DynamicPrimitive->RegisterComponent();
 
-                if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
+                /*if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText("박상혁 김호준 전현길 김기홍");   
+                    TextComp->SetText(logBuffer);   
                 }
-                else if (UUUIDTextComponent* UUIDTextComp= Cast<UUUIDTextComponent>(DynamicPrimitive))
+                else */if (UUUIDTextComponent* UUIDTextComp= Cast<UUUIDTextComponent>(DynamicPrimitive))
                 {
                     UUIDTextComp->SetText(UUID);   
                 }
