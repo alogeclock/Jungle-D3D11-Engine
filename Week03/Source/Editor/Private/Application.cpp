@@ -1,11 +1,11 @@
-﻿#include "Source/Core/Public/Memory.h"
-#include "Source/Editor/Public/Application.h"
+﻿#include "Source/Editor/Public/Application.h"
+#include "Source/Core/Public/Memory.h"
 #include "World.h"
 
 #include <Windows.h>
 
-UWorld *GWorld = nullptr;
-UApplication *GApplication = nullptr;
+UWorld* GWorld = nullptr;
+UApplication* GApplication = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -17,16 +17,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return true;
     }
 
-    UApplication *App = reinterpret_cast<UApplication *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-    FViewport    *Viewport = App ? App->GetViewport() : nullptr;
+    UApplication* App = reinterpret_cast<UApplication*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    FViewport* Viewport = App ? App->GetViewport() : nullptr;
 
     switch (message)
     {
     case WM_DESTROY:
         PostQuitMessage(0); // 프로그램 종료 메시지를 메시지 큐에 넣는다.
         break;
-    case WM_SIZE:
-    {
+    case WM_SIZE: {
         if (wParam == SIZE_MINIMIZED)
             break;
         if (!App)
@@ -89,14 +88,14 @@ void UApplication::Initialize(HINSTANCE hInstance)
 {
     hInst = hInstance;
 
-    WCHAR     WindowClass[] = L"JungleWindowClass";
-    WCHAR     Title[] = L"Game Tech Lab";
+    WCHAR WindowClass[] = L"JungleWindowClass";
+    WCHAR Title[] = L"Game Tech Lab";
     WNDCLASSW wndclass = {0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass};
 
     RegisterClassW(&wndclass);
 
-    hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1400, 800, nullptr, nullptr, hInst,
-                           nullptr);
+    hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+                           CW_USEDEFAULT, 1400, 800, nullptr, nullptr, hInst, nullptr);
 
     SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
     // Viewport
@@ -138,41 +137,56 @@ void UApplication::Run()
     MSG msg = {};
     while (msg.message != WM_QUIT)
     {
+        // 1. 입력 및 운영체제 메시지 처리
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+        // 2. 시간 갱신 (프레임 시작)
         else
         {
-            if (bResize)
-            {
-                Renderer->OnResize(Width, Height);
-                Viewport->OnResize(Width, Height);
-                bResize = false;
-            }
-
-            FEditorViewportClient *ViewportClient = Viewport->GetViewportClient();
-
-            FSceneViewOptions ViewOptions;
-            ViewOptions.ShowFlags = ViewportClient->GetShowFlags();
-            ViewOptions.ViewMode = ViewportClient->GetViewMode();
-            ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
-
-            Viewport->Tick(UTimeManager::Get().GetDeltaTime());
-            Renderer->Prepare(ViewOptions);
-
-            GWorld->Render(*Renderer);
-            GWorld->Tick(UTimeManager::Get().GetDeltaTime());
-
-            ViewportClient->Render(*Renderer);
-
-            UImGuiManager::Get().Update();
             UTimeManager::Get().Update();
+            float DeltaTime = UTimeManager::Get().GetDeltaTime();
 
-            Renderer->SwapBuffer();
+            Tick(DeltaTime);
+
+            Render();
         }
     }
+}
+
+void UApplication::Tick(float DeltaTime)
+{
+    // 1. 창 리사이즈
+    if (bResize)
+    {
+        Renderer->OnResize(Width, Height);
+        Viewport->OnResize(Width, Height);
+        bResize = false;
+    }
+
+    // 2. 객체 갱신
+    Viewport->Tick(UTimeManager::Get().GetDeltaTime());
+    GWorld->Tick(UTimeManager::Get().GetDeltaTime());
+}
+
+void UApplication::Render()
+{
+    FEditorViewportClient* ViewportClient = Viewport->GetViewportClient();
+
+    FSceneViewOptions ViewOptions;
+    ViewOptions.ShowFlags = ViewportClient->GetShowFlags();
+    ViewOptions.ViewMode = ViewportClient->GetViewMode();
+    ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
+
+    Renderer->Prepare(ViewOptions);
+
+    GWorld->Render(*Renderer);
+    ViewportClient->Render(*Renderer);
+    UImGuiManager::Get().Update();
+
+    Renderer->SwapBuffer();
 }
 
 void UApplication::Finish()
@@ -190,7 +204,6 @@ void UApplication::OnResize(uint32 NewWidth, uint32 NewHeight)
     Width = NewWidth;
     Height = NewHeight;
 }
-
 
 void UApplication::UpdateEditorViewport()
 {
@@ -216,9 +229,12 @@ void UApplication::UpdateEditorViewport()
     // 3. 현재 레벨의 Actors 배열을 순회하며 에디터 객체 찾기
     for (AActor* Actor : GWorld->GetCurrentLevel()->GetActors())
     {
-        if (!FoundGrid) FoundGrid = dynamic_cast<AGrid*>(Actor);
-        if (!FoundAxis) FoundAxis = dynamic_cast<AAxis*>(Actor);
-        if (!FoundGizmo) FoundGizmo = dynamic_cast<APivotTransformGizmo*>(Actor);
+        if (!FoundGrid)
+            FoundGrid = dynamic_cast<AGrid*>(Actor);
+        if (!FoundAxis)
+            FoundAxis = dynamic_cast<AAxis*>(Actor);
+        if (!FoundGizmo)
+            FoundGizmo = dynamic_cast<APivotTransformGizmo*>(Actor);
     }
 
     // 4. 찾은 객체들을 뷰포트 클라이언트에 맵핑

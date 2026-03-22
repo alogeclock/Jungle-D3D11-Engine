@@ -35,6 +35,8 @@ class UApplication
   public:
     void Initialize(HINSTANCE hInstance);
     void Run();
+    void Tick(float DeltaTime);
+    void Render();
     void Finish();
 
     void       OnResize(uint32 NewWidth, uint32 NewHeight);
