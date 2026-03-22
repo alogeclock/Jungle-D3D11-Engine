@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Source/Core/Public/Math/UnrealMathUtility.h"
+#include "Math.h"
 
 template<typename T>
 struct FVector
@@ -164,7 +164,7 @@ inline T FVector<T>::SizeSquared() const
 template<typename T>
 inline T FVector<T>::Size() const
 {
-    return FMath::Sqrt(X * X + Y * Y + Z * Z);
+    return sqrt(X * X + Y * Y + Z * Z);
 }
 
 template<typename T>
@@ -179,7 +179,7 @@ inline bool FVector<T>::Normalize(T Tolerance)
     const T SquareSum = X * X + Y * Y + Z * Z;
     if (SquareSum > Tolerance)
     {
-        const T Scale = FMath::InvSqrt(SquareSum);
+        const T Scale = 1.0f / sqrt(SquareSum);
         X *= Scale; Y *= Scale; Z *= Scale;
         return true;
     }
@@ -204,12 +204,3 @@ inline FVector<T> FVector<T>::CrossProduct(const FVector<T>& A, const FVector<T>
         A.X * B.Y - A.Y * B.X
     );
 }
-
-template<typename T>
-inline bool FVector<T>::ContainsNaN() const
-{
-    return (!FMath::IsFinite(X) ||
-        !FMath::IsFinite(Y) ||
-        !FMath::IsFinite(Z)); }
-
-using DVector = FVector<double>;

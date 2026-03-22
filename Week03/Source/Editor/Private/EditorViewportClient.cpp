@@ -338,18 +338,6 @@ FRay FEditorViewportClient::GetPickingRay()
     FVector<float> RayDirection = FVector(WorldFar.X, WorldFar.Y, WorldFar.Z) - RayOrigin;
     RayDirection.Normalize();
 
-    //// Debug -------------
-    // char Buf[256];
-    // snprintf(Buf, sizeof(Buf), "Mouse Screen Position: X=%.3f Y=%.3f", MouseX, MouseY);
-    // UImGuiManager::Get().AddLog(Buf);
-
-    // snprintf(Buf, sizeof(Buf), "Mouse Screen Position(NDC): X=%.3f Y=%.3f", NDC_X, NDC_Y);
-    // UImGuiManager::Get().AddLog(Buf);
-
-    // snprintf(Buf, sizeof(Buf), "Mouse Ray Direction: X=%.3f Y=%.3f Z=%.3f\n\n", RayDirection.X, RayDirection.Y,
-    // RayDirection.Z); UImGuiManager::Get().AddLog(Buf);
-    //// -------------------
-
     return FRay(RayOrigin, RayDirection);
 }
 
