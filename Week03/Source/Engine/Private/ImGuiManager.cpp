@@ -477,7 +477,7 @@ void UImGuiManager::SetCameraInfo()
 
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         float GridStep = EditorViewportClient->GetGridStep();
-        if (ImGui::SliderFloat("Grid Snap", &GridStep, 0.1f, 5.0f, "%.2f"))
+        if (ImGui::SliderFloat("Grid Snap", &GridStep, 0.1f, 10.0f, "%.2f"))
         {
             EditorViewportClient->SetGridStepAndUpdate(GridStep);
         }
