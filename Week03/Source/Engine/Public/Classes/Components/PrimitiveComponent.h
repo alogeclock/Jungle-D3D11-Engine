@@ -29,8 +29,8 @@ class UPrimitiveComponent : public USceneComponent
     virtual ~UPrimitiveComponent() override;
 
     virtual void Render(URenderer &renderer);
-    void         Selected();
-    void         NotSelected();
+    virtual void Selected();
+    virtual void NotSelected();
 
     void           SetPrimitiveType(EPrimitiveType InType);
     EPrimitiveType GetPrimitiveType() const { return PrimitiveType; }

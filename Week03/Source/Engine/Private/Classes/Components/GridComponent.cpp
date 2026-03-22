@@ -4,7 +4,7 @@
 
 UGridComponent::UGridComponent(const FString &InString) : UPrimitiveComponent(InString)
 {
-    PrimitiveType = EPrimitiveType::Grid;
+    //PrimitiveType = EPrimitiveType::Grid;
     Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 }
 

@@ -13,4 +13,9 @@ public:
 		const FVector<float> &InWorldUp = FVector<float>(0, 0, 1)) override;
 		
 	virtual void Render(URenderer &renderer) override;
+
+	void Selected() override;
+	void NotSelected() override;
+private:
+	float Zoffset = 2.5f;
 };

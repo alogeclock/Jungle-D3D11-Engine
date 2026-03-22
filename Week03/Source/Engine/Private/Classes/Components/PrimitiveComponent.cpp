@@ -8,12 +8,6 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
-    if (PrimitiveType == EPrimitiveType::Grid)
-    {
-        // TODO: 슬슬 PrimitiveComponent::Render 를 가볍게 만들어야..
-        return;
-    }
-
     // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
     if (renderer.IsDrawAABB() && !bIsInEditor)
     {
@@ -51,9 +45,6 @@ void UPrimitiveComponent::SetPrimitiveType(EPrimitiveType InType)
 
 bool UPrimitiveComponent::IsRenderable(URenderer &renderer)
 {
-    if (PrimitiveType == EPrimitiveType::Grid)
-        return false;
-
     if (!bIsVisible)
         return false;
 
@@ -320,7 +311,7 @@ void UPrimitiveComponent::UpdateBounds()
         LocalAABB = UMeshManager::Get().GetMeshAABB(PrimitiveType);
 
         FVector<float> Min = LocalAABB.Min;
-        FVector<float> Max = LocalAABB.Max;
+        FVector<float> Max = LocalAABB.Max;                                                               
 
         bLocalBoundsDirty = false;
     }
