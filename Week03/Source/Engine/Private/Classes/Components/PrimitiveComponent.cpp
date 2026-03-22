@@ -313,17 +313,6 @@ void UPrimitiveComponent::UpdateBounds()
         FVector<float> Min = LocalAABB.Min;
         FVector<float> Max = LocalAABB.Max;
 
-        // 로컬 AABB의 8개 정점 생성
-
-        Corners[0] = {Min.X, Min.Y, Min.Z};
-        Corners[1] = {Max.X, Min.Y, Min.Z};
-        Corners[2] = {Min.X, Max.Y, Min.Z};
-        Corners[3] = {Max.X, Max.Y, Min.Z};
-        Corners[4] = {Min.X, Min.Y, Max.Z};
-        Corners[5] = {Max.X, Min.Y, Max.Z};
-        Corners[6] = {Min.X, Max.Y, Max.Z};
-        Corners[7] = {Max.X, Max.Y, Max.Z};
-
         bLocalBoundsDirty = false;
     }
 

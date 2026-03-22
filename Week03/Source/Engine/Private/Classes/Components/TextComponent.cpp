@@ -12,8 +12,7 @@ UTextComponent::UTextComponent(const FString &InString)
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
     bVIsible = true;
-    FilePath = "Data/Texture/DejaVu Sans Mono.dds";
-    FilePathKor = "Data/Texture/KorName.png";
+    FilePath = "Data/Texture/KorName.png";
 }
 
 UTextComponent::~UTextComponent() {
@@ -44,11 +43,7 @@ void UTextComponent::Render(URenderer &renderer)
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
 
-    FString Path = FTextMeshBuilder::bIsKorean(Text) ? FilePathKor : FilePath;
-    std::cout << Path << std::endl;
-
-
-    renderer.RenderText(Path, constants, &TextVertices, &VertexBuffer, VertexBufferSize);
+    renderer.RenderText(FilePath, constants, &TextVertices, &VertexBuffer, VertexBufferSize);
 }
 
 void UTextComponent::RebuildMesh()

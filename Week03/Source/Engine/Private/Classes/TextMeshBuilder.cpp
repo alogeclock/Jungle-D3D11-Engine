@@ -38,22 +38,55 @@ void FTextMeshBuilder::InitializeCharInfo() {
     }
 }
 
-bool FTextMeshBuilder::bIsKorean(const FString& text) 
-{ 
-    if (text.empty()) return false;
-    
+bool FTextMeshBuilder::bIsKorean(const FString& text)
+{
     int32 i = 0;
+
     while (i < text.size())
     {
         unsigned char c = (unsigned char)text[i];
+        uint32_t CP = 0;
 
-        // 완성형 한글
-        if ((c & 0x0F) << 12 |
-             (text[i+1] & 0x3F) << 6 |
-             (text[i+2] & 0x3F))
+        if (c < 0x80) // 1-byte ASCII
+        {
+            CP = c;
+            i += 1;
+        }
+        else if ((c & 0xE0) == 0xC0) // 2-byte
+        {
+            if (i + 1 >= text.size()) break;
+
+            CP = ((c & 0x1F) << 6) |
+                 ((unsigned char)text[i + 1] & 0x3F);
+            i += 2;
+        }
+        else if ((c & 0xF0) == 0xE0) // 3-byte
+        {
+            if (i + 2 >= text.size()) break;
+
+            CP = ((c & 0x0F) << 12) |
+                 (((unsigned char)text[i + 1] & 0x3F) << 6) |
+                 ((unsigned char)text[i + 2] & 0x3F);
+            i += 3;
+        }
+        else if ((c & 0xF8) == 0xF0) // 4-byte
+        {
+            if (i + 3 >= text.size()) break;
+
+            CP = ((c & 0x07) << 18) |
+                 (((unsigned char)text[i + 1] & 0x3F) << 12) |
+                 (((unsigned char)text[i + 2] & 0x3F) << 6) |
+                 ((unsigned char)text[i + 3] & 0x3F);
+            i += 4;
+        }
+        else
+        {
+            ++i;
+            continue;
+        }
+
+        if (CP >= 0xAC00 && CP <= 0xD7A3)
             return true;
-
-        ++i;
     }
 
     return false;

@@ -365,34 +365,63 @@ void UWorld::Tick(float deltaTime)
 FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
     FHitResult ClosestHit;
+    
+    ClosestHit.Distance = FLT_MAX;
+    ClosestHit.bHit = false;
+
+    UPrimitiveComponent* NewSelected = nullptr;
+    UPrimitiveComponent* LastSelected = UImGuiManager::Get().GetSelectedObject();
+
+    AActor *CurrentSelectedActor = LastSelected ? LastSelected->GetOwner() : nullptr;
 
     if (CurrentLevel)
     {
-        for (AActor *actor : CurrentLevel->GetActors())
+        for (AActor* Actor : CurrentLevel->GetActors())
         {
-            for (UActorComponent *actorC : actor->GetOwnedComponents())
+            for (UActorComponent* ActorC : Actor->GetOwnedComponents())
             {
-                UPrimitiveComponent *Object = Cast<UPrimitiveComponent>(actorC);
-                if (Object != nullptr)
+                UPrimitiveComponent* Object = Cast<UPrimitiveComponent>(ActorC);
+                if (!Object)
+                    continue;
+
+                FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
+                if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
                 {
-                    FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
-
-                    // Ray와 가장 가까운 오브젝트 피킹
-                    if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
-                    {
-                        if (ClosestHit.HitComponent != nullptr)
-                            ClosestHit.HitComponent->NotSelected();
-
-                        ClosestHit = Hit;
-                        Object->Selected();
-                        UImGuiManager::Get().SetSelectedObject(ClosestHit.HitComponent);
-                    }
-                    else
-                        Object->NotSelected();
-                }
+                   ClosestHit = Hit;
+                        
+                   NewSelected = Object;
+                   UImGuiManager::Get().SetSelectedObject(ClosestHit.HitComponent);
+                } 
             }
         }
     }
-
+        // 여기서 이전 선택/새 선택 갱신
+    UpdateSelection(NewSelected, CurrentSelectedActor);
     return ClosestHit;
+}
+void UWorld::UpdateSelection(UPrimitiveComponent* Selected, AActor* CurrentSelectedActor)
+{
+    AActor* NewActor = Selected ? Selected->GetOwner() : nullptr;
+    
+    if (CurrentSelectedActor == NewActor)
+        return;
+
+    if (CurrentSelectedActor)
+    {
+        for (auto& OwnedComponent : CurrentSelectedActor->GetOwnedComponents())
+        {
+            if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(OwnedComponent))
+                Primitive->NotSelected();
+        }
+    }
+    CurrentSelectedActor = NewActor;
+
+    if (CurrentSelectedActor)
+    {
+        for (auto& OwnedComponent : CurrentSelectedActor->GetOwnedComponents())
+        {
+            if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(OwnedComponent))
+                Primitive->Selected();
+        }
+    }
 }

@@ -1,5 +1,4 @@
-﻿#pragma execution_character_set("utf-8")
-#include "Source/Engine/Public/ImGuiManager.h"
+﻿#include "Source/Engine/Public/ImGuiManager.h"
 #include "CoreTypes.h"
 #include "Source/Core/Public/Memory.h"
 
@@ -339,7 +338,7 @@ void UImGuiManager::SpawnActors()
 
                 if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText("박상혁 김호준 전현길 김기홍");   
+                    TextComp->SetText(FString(reinterpret_cast<const char*>(u8"4팀: 박상혁 김호준 전현길 김기홍")));   
                 }
 
                 UObject *NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
