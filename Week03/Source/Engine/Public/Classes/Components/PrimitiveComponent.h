@@ -42,6 +42,7 @@ class UPrimitiveComponent : public USceneComponent
     ECullMode GetCullMode() const { return CullMode; }
 
     void SetEnableDepthTest(const bool bInEnableDepthTest) { bEnableDepthTest = bInEnableDepthTest; }
+    bool GetEnableDepthTest() const { return bEnableDepthTest; }
 
     void SetIsInEditor(bool IsInEditor) { bIsInEditor = IsInEditor; }
     bool IsInEditor() const { return bIsInEditor; }
@@ -75,6 +76,4 @@ class UPrimitiveComponent : public USceneComponent
 
     FBox LocalAABB;
     FBox WorldAABB;
-
-    FVector<float> Corners[8];
 };

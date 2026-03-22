@@ -7,7 +7,7 @@ AAxis::AAxis(const FString &InString) : AActor(InString)
     AddOwnedComponent(Root);
     Root->RegisterComponent();
 
-	UAxisComponent *AxisComponent = new UAxisComponent("AxisPrimitiveComponent");
+	AxisComponent = new UAxisComponent("AxisPrimitiveComponent");
     AxisComponent->SetOuter(Root);
     AxisComponent->SetIsInEditor(true);
     AddOwnedComponent(AxisComponent);

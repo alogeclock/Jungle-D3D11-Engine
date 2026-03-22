@@ -339,9 +339,11 @@ void UWorld::Render(URenderer &renderer)
 {
     if (CurrentLevel)
     {
-        for (AActor *actor : CurrentLevel->GetActors())
+        const auto& Actors = CurrentLevel->GetActors();
+        
+        for (int i = Actors.size() - 1; i >= 0; --i)
         {
-            actor->IterateAllActorComponents(renderer);
+            Actors[i]->IterateAllActorComponents(renderer);
         }
     }
 
