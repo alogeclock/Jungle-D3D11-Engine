@@ -320,9 +320,9 @@ void UImGuiManager::SpawnActors()
             Root->RegisterComponent();
 
             UObject             *NewComponent = FObjectFactory::ConstructObject(ComponentClassToSpawn);
-            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent); // 생성된 객체가 화면에 그릴 수
-                                                                                       // 있는 PrimitiveComponent인지 확인
-
+            
+            // 생성된 객체가 화면에 그릴 수 있는 PrimitiveComponent인지 확인
+            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent); 
             if (DynamicPrimitive != nullptr)
             {
                 const char  *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
