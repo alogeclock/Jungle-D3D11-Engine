@@ -27,6 +27,37 @@ void ULineBatcherComponent::DrawLine(const FVector<float> &Start, const FVector<
     RenderIndices.emplace_back(StartIndex + 1);
 }
 
+void ULineBatcherComponent::DrawLines(std::span<const FBatchedLine> Lines)
+{
+    if (Lines.empty())
+        return;
+
+    const uint16 StartIndex = static_cast<uint16>(RenderVertices.size());
+    const size_t LineCount = Lines.size();
+
+    // 임시 벡터에 모든 데이터 미리 구성
+    TArray<FVertex> TempVertices;
+    TArray<uint16> TempIndices;
+
+    TempVertices.reserve(LineCount * 2);
+    TempIndices.reserve(LineCount * 2);
+
+    for (size_t i = 0; i < LineCount; ++i)
+    {
+        const auto &Line = Lines[i];
+        TempVertices.emplace_back(Line.Start, Line.Color);
+        TempVertices.emplace_back(Line.End, Line.Color);
+
+        const uint16 Index = static_cast<uint16>(StartIndex + i * 2);
+        TempIndices.emplace_back(Index);
+        TempIndices.emplace_back(Index + 1);
+    }
+
+    // 한 번에 삽입
+    RenderVertices.insert(RenderVertices.end(), TempVertices.begin(), TempVertices.end());
+    RenderIndices.insert(RenderIndices.end(), TempIndices.begin(), TempIndices.end());
+}
+
 void ULineBatcherComponent::DrawBox(const FBox &Box, FVector4<float> Color)
 {
     const uint16 StartIndex = static_cast<uint16>(RenderVertices.size());

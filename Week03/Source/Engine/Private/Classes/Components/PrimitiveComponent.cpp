@@ -311,7 +311,7 @@ void UPrimitiveComponent::UpdateBounds()
         LocalAABB = UMeshManager::Get().GetMeshAABB(PrimitiveType);
 
         FVector<float> Min = LocalAABB.Min;
-        FVector<float> Max = LocalAABB.Max;
+        FVector<float> Max = LocalAABB.Max;                                                               
 
         bLocalBoundsDirty = false;
     }

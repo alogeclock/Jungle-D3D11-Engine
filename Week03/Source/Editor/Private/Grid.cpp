@@ -23,9 +23,13 @@ AGrid::AGrid(const FString &InString) : AActor(InString)
     {
         float ParsedGridStep = std::stof(buffer);
         if (ParsedGridStep >= 0.1f && ParsedGridStep <= 10.0f)
+        {
             SetGridStep(ParsedGridStep);
+        }
         else
+        {
             SetGridStep(1.0f);
+        }
     }
     catch (const std::exception &)
     {
@@ -39,4 +43,8 @@ AGrid::~AGrid()
 
 void AGrid::Render(URenderer &renderer)
 {
+    if (GridComponent)
+    {
+        GridComponent->Render(renderer);
+    }
 }
