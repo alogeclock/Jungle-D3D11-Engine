@@ -28,6 +28,7 @@ class UTextComponent : public UPrimitiveComponent
 
   protected:
     FString        FilePath;
+    FString        FilePathKor;
     FString        Text = FString("Text");
     FMatrix<float> RTMatrix;
     bool           bMeshDirty = true;

@@ -33,10 +33,7 @@ FName UTextureManager::GetHashKeyPath(const path& inFilePath) const
 	path AbsolutePath;               // 절대 경로
 	path RelativeKeyPath;            // 캐시 키용 경로
 	
-		AbsolutePath = InputPath;/*
-	if (InputPath.is_relative())
-		AbsolutePath = InputPath;
-	else*/
+	AbsolutePath = InputPath;
 
 	try
 	{

@@ -1,7 +1,8 @@
-#include "Source/Engine/Public/Classes/TextMeshBuilder.h"
+﻿#include "Source/Engine/Public/Classes/TextMeshBuilder.h"
+#include "Source/Engine/Public/Classes/TextLoader.h"
+#include <iostream>
 
 TMap<wchar_t, CharacterInfo> FTextMeshBuilder::charInfoMap;
-
 void FTextMeshBuilder::InitializeCharInfo() {
     charInfoMap.clear();
 
@@ -20,6 +21,42 @@ void FTextMeshBuilder::InitializeCharInfo() {
 
         charInfoMap.insert({static_cast<wchar_t>(i), Info});
     }
+    
+    FString FntContent;
+    if (UTextLoader::LoadTextFromFile("Data/Texture/KorName.txt", FntContent))
+    {
+        LoadFNT(FntContent, 256.f, 256.f);
+        
+        // ← FNT 로드 확인
+        char buf[64];
+        sprintf_s(buf, "charInfoMap size: %zu\n", charInfoMap.size());
+        OutputDebugStringA(buf);
+    }
+    else
+    {
+        OutputDebugStringA("FNT 로드 실패\n"); // ← 이게 뜨면 경로 문제
+    }
+}
+
+bool FTextMeshBuilder::bIsKorean(const FString& text) 
+{ 
+    if (text.empty()) return false;
+    
+    int32 i = 0;
+    while (i < text.size())
+    {
+        unsigned char c = (unsigned char)text[i];
+
+        // 완성형 한글
+        if ((c & 0x0F) << 12 |
+             (text[i+1] & 0x3F) << 6 |
+             (text[i+2] & 0x3F))
+            return true;
+
+        ++i;
+    }
+
+    return false;
 }
 
 const CharacterInfo *FTextMeshBuilder::GetCharInfo(wchar_t InChar)
@@ -29,54 +66,79 @@ const CharacterInfo *FTextMeshBuilder::GetCharInfo(wchar_t InChar)
     return nullptr;
 }
 
-TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString &InText)
+TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString& InText)
 {
-    //����� �߽� ����
-    if (charInfoMap.empty())
-        InitializeCharInfo();
+    if (charInfoMap.empty()) InitializeCharInfo();
 
     TArray<FTextVertex> Vertices;
     Vertices.reserve(InText.size() * 6);
 
-    const float StartX = -(static_cast<float>(InText.size()) * 0.5f);
-    float PenX = StartX / 2;
+    const float GlyphWidth  = 0.5f;
+    const float GlyphHeight = 0.5f;
+    const float TotalWidth  = static_cast<float>(InText.size()) * GlyphWidth;
+    float PenX = -TotalWidth * 0.5f;
 
-    for (char Ch8 : InText)
+    size_t i = 0;
+    while (i < InText.size())
     {
-        const wchar_t Ch = static_cast<unsigned char>(Ch8);
-        const CharacterInfo* Info = GetCharInfo(Ch);
-        if (!Info)
-        {
-            PenX += 0.5f;
-            continue;
-        }
+        // UTF-8 → 코드포인트 디코딩
+        uint32_t CP = 0;
+        unsigned char c = (unsigned char)InText[i];
 
-        const float x0 = PenX;
-        const float x1 = PenX + 0.5f;
-        const float y0 = -0.25f;
-        const float y1 = 0.25f;
-        const float z  = 0.0f;
+        if      (c < 0x80) { CP = c;                                                                                                    i += 1; }
+        else if (c < 0xE0) { CP = (c & 0x1F) << 6  | ((unsigned char)InText[i+1] & 0x3F);                                              i += 2; }
+        else if (c < 0xF0) { CP = (c & 0x0F) << 12 | ((unsigned char)InText[i+1] & 0x3F) << 6 | ((unsigned char)InText[i+2] & 0x3F);  i += 3; }
+        else               { CP = 0x3F; i += 4; }
 
-        const float u0 = Info->u;
-        const float v0 = Info->v;
-        const float u1 = Info->u + Info->width;
-        const float v1 = Info->v + Info->height;
+        if (CP == L' ') { PenX += GlyphWidth; continue; }
+        
+        char buf[128];
+        sprintf_s(buf, "CP: %u (0x%X) → %s\n", CP, CP, GetCharInfo(static_cast<wchar_t>(CP)) ? "찾음" : "없음");
+        OutputDebugStringA(buf);
+        const CharacterInfo* Info = GetCharInfo(static_cast<wchar_t>(CP));
+        if (!Info) { PenX += GlyphWidth; continue; }
 
-        Vertices.push_back({ FVector<float>(x0, y0, 0.0f), u0, v0 });
-        Vertices.push_back({ FVector<float>(x1, y0, 0.0f), u1, v0 });
-        Vertices.push_back({ FVector<float>(x0, y1, 0.0f), u0, v1 });
+        const float x0 = PenX,          x1 = PenX + GlyphWidth;
+        const float y0 = -GlyphHeight * 0.5f, y1 = GlyphHeight * 0.5f;
+        const float u0 = Info->u,              v0 = Info->v;
+        const float u1 = Info->u + Info->width, v1 = Info->v + Info->height;
 
-        Vertices.push_back({ FVector<float>(x1, y0, 0.0f), u1, v0 });
-        Vertices.push_back({ FVector<float>(x1, y1, 0.0f), u1, v1 });
-        Vertices.push_back({ FVector<float>(x0, y1, 0.0f), u0, v1 });
+        Vertices.push_back(FTextVertex(FVector(x0, y0, 0.f), u0, v0));
+        Vertices.push_back(FTextVertex(FVector(x1, y0, 0.f), u1, v0));
+        Vertices.push_back(FTextVertex(FVector(x0, y1, 0.f), u0, v1));
+        Vertices.push_back(FTextVertex(FVector(x1, y0, 0.f), u1, v0));
+        Vertices.push_back(FTextVertex(FVector(x1, y1, 0.f), u1, v1));
+        Vertices.push_back(FTextVertex(FVector(x0, y1, 0.f), u0, v1));
 
-        PenX += 0.5f;
+        PenX += GlyphWidth;
     }
 
     return Vertices;
 }
 
-void FTextMeshBuilder::LoadFNT(const std::string& FntPath)
+void FTextMeshBuilder::LoadFNT(const FString& FntContent, float AtlasW, float AtlasH)
 {
-    
+    std::istringstream Stream(FntContent);
+    std::string Line;
+
+    while (std::getline(Stream, Line))
+    {
+        if (Line.find("char id=") == std::string::npos) continue;
+
+        int id = 0, x = 0, y = 0, w = 0, h = 0;
+        int xoff = 0, yoff = 0, xadv = 0;
+
+        sscanf_s(Line.c_str(),
+            "char id=%d x=%d y=%d width=%d height=%d xoffset=%d yoffset=%d xadvance=%d",
+            &id, &x, &y, &w, &h, &xoff, &yoff, &xadv);
+
+        CharacterInfo Info;
+        Info.u      = (float)x / AtlasW;
+        Info.v      = (float)y / AtlasH;
+        Info.width  = (float)w / AtlasW;
+        Info.height = (float)h / AtlasH;
+        Info.bIsKorean = true;
+
+        charInfoMap.insert({static_cast<wchar_t>(id), Info});
+    }
 }

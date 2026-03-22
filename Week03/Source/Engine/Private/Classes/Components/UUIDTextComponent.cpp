@@ -36,12 +36,10 @@ void UUUIDTextComponent::Render(URenderer &renderer) {
 }
 
 void UUUIDTextComponent::Selected() { 
-    UPrimitiveComponent::Selected();
     bVIsible = true;
 }
 
 void UUUIDTextComponent::NotSelected() {
-    UPrimitiveComponent::Selected();
     bVIsible = false;
 }
 

@@ -8,18 +8,20 @@ struct CharacterInfo
     float v;      // UV Ω√¿€ Y (0~1)
     float width;  // UV ∆¯
     float height; // UV ≥Ù¿Ã
+    bool bIsKorean = false;
 };
 
 class FTextMeshBuilder
 {
 public:
   static constexpr uint32 MAX_FONT_VERTICES = 4096;
-  static void InitializeCharInfo();
-  static const CharacterInfo *GetCharInfo(wchar_t InChar);
 
-  static TArray<FTextVertex> BuildTextMesh(const FString &InText);
-  static void LoadFNT(const FString& FntPath);
+  static void InitializeCharInfo();
+  static bool bIsKorean(const FString& text);
+  static const CharacterInfo *GetCharInfo(wchar_t InChar);
+  static TArray<FTextVertex> BuildTextMesh(const FString& text);
 
 private:
   static TMap<wchar_t, CharacterInfo> charInfoMap;
+  static void LoadFNT(const FString& FntContent, float AtlasW, float AtlasH);
 };

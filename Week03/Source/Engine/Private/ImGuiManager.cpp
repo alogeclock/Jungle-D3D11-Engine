@@ -1,4 +1,5 @@
-﻿#include "Source/Engine/Public/ImGuiManager.h"
+﻿#pragma execution_character_set("utf-8")
+#include "Source/Engine/Public/ImGuiManager.h"
 #include "CoreTypes.h"
 #include "Source/Core/Public/Memory.h"
 
@@ -319,18 +320,14 @@ void UImGuiManager::SpawnActors()
             NewActor->SetRootComponent(Root);
             Root->RegisterComponent();
 
-            UObject             *NewObj = FObjectFactory::ConstructObject(ComponentClassToSpawn);
-            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewObj); // 생성된 객체가 화면에 그릴 수
+            UObject             *NewComponent = FObjectFactory::ConstructObject(ComponentClassToSpawn);
+            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent); // 생성된 객체가 화면에 그릴 수
                                                                                        // 있는 PrimitiveComponent인지 확인
 
             if (DynamicPrimitive != nullptr)
             {
-                UUUIDTextComponent *UUUID = NewObj->CreateDefaultSubobject<UUUIDTextComponent>();
-                NewActor->AddOwnedComponent(UUUID);
-                UUUID->SetText(NewObj->GetUUID());
-
                 const char  *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
-                const uint32 UUID = NewObj->GetUUID();
+                const uint32 UUID = NewActor->GetUUID();
 
                 char logBuffer[256];
                 snprintf(logBuffer, sizeof(logBuffer), "[System] Spawned Actor: %s / UUID: %u", SpawnedClassName, UUID);
@@ -340,14 +337,21 @@ void UImGuiManager::SpawnActors()
                 DynamicPrimitive->SetOuter(NewActor);
                 DynamicPrimitive->RegisterComponent();
 
-                /*if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
+                if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText(logBuffer);   
+                    TextComp->SetText("박상혁 김호준 전현길 김기홍");   
                 }
-                else */if (UUUIDTextComponent* UUIDTextComp= Cast<UUUIDTextComponent>(DynamicPrimitive))
+
+                UObject *NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
+                UUUIDTextComponent *UUUID = Cast<UUUIDTextComponent>(NewUUUIDComponent);
+                if (UUUID == nullptr)
                 {
-                    UUIDTextComp->SetText(UUID);   
+                    return;
                 }
+
+                UUUID->SetOuter(NewActor);
+                UUUID->RegisterComponent();
+                UUUID->SetText(UUID);
             }
         }
     }
