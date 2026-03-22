@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Object.h"
 #include "Source/Engine/Public/Rendering/Renderer.h"
@@ -24,26 +24,7 @@ class AActor : public UObject
     FTransform GetTransform() const;
     void       SetTransform(const FTransform &NewTransform);
 
-    FTransform GetRotation() const;
-    void       GetRotation(const FTransform &NewTransform);
-
-    FTransform GetScale() const;
-    void       GetScale(const FTransform &NewTransform);
-
-    template<typename T>
-    T* FindComponentByClass();
-
-    void Tick(float deltaTime);
+    virtual void Tick(float deltaTime);
 
     void IterateAllActorComponents(URenderer &renderer) const;
 };
-
-template <typename T> inline T *AActor::FindComponentByClass()
-{
-    for (UActorComponent* Comp : OwnedComponents)
-    {
-        if (T* Found = Cast<T>(Comp))
-            return Found;
-    }
-    return nullptr;
-}

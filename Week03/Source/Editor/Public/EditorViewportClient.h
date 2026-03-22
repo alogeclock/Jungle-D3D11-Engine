@@ -158,6 +158,11 @@ class FEditorViewportClient
     FMatrix<float> GetProjectionMatrix(float width, float height);
     float         *GetMoveSpeedPtr() { return &MoveSpeed; }
     float         *GetRotSpeedPtr() { return &RotSpeed; }
+    
+    float GetGridStep() const { return Grid->GetGridStep(); }
+    void SetGridStepAndUpdate(float InGridStep) { 
+        Grid->SetGridStep(InGridStep);
+    }
 
     // 기즈모 및 메인 축 렌더링 함수
     void Render(URenderer &renderer);
@@ -176,6 +181,10 @@ class FEditorViewportClient
 
     void LoadConfig();
     void SaveConfig();
+
+    void SetGrid(AGrid* InGrid) { Grid = InGrid; }
+    void SetAxis(AAxis* InAxis) { Axis = InAxis; }
+    void SetGizmo(APivotTransformGizmo* InGizmo) { Gizmo = InGizmo; }
 
   private:
     // WASD 이동 누적

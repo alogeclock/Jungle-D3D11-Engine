@@ -39,10 +39,12 @@ class UImGuiManager
     void endFrame();
     void Release();
 
-    UPrimitiveComponent *GetSelectedObject() { return SelectedObject; };
-    void                 SetCamera(FViewportCameraTransform *camera);
-    void                 SetEditorViewportClient(FEditorViewportClient *viewportclient);
-    void                 SetSelectedObject(UPrimitiveComponent *sphere);
+    UPrimitiveComponent      *GetSelectedObject() { return SelectedObject; };
+    FViewportCameraTransform *GetCamera() const { return Camera; }
+    void                      SetCamera(FViewportCameraTransform *camera);
+    FEditorViewportClient    *GetEditorViewportClient() const { return EditorViewportClient; }
+    void                      SetEditorViewportClient(FEditorViewportClient *viewportclient);
+    void                      SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
     bool IsCaptureKeyboard();
