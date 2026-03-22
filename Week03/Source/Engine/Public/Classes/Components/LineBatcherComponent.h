@@ -42,6 +42,7 @@ private:
 
 public:
     void DrawLine(const FVector<float> &Start, const FVector<float> &End, const FVector4<float> &Color);
+    void DrawLines(std::span<const FBatchedLine> Lines);
     void DrawBox(const FBox &Box, const FVector4<float> Color);
 
     void Render(URenderer &renderer) override;
