@@ -323,6 +323,7 @@ void URenderer::SetDepthStencilEnable(bool bEnable)
     if (bEnable)
     {
         DeviceContext->OMSetDepthStencilState(DepthStateDefault, 0);
+        DeviceContext->RSSetViewports(1, &ViewportInfo);
     }
     else
     {

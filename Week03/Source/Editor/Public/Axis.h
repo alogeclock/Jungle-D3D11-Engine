@@ -14,4 +14,5 @@ class AAxis : public AActor
     void Render(URenderer &renderer);
 
   private:
+      UAxisComponent *AxisComponent = nullptr;
 };

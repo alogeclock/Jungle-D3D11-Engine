@@ -1,4 +1,4 @@
-#include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
+﻿#include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 
 ULineBatcherComponent::ULineBatcherComponent(const FString &InString) : UPrimitiveComponent(InString) { PrimitiveType = EPrimitiveType::LineBatcher; }
 
