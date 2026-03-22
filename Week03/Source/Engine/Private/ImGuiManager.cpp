@@ -338,7 +338,7 @@ void UImGuiManager::SpawnActors()
 
                 if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText(FString(reinterpret_cast<const char*>(u8"4팀: 박상혁 김호준 전현길 김기홍")));   
+                    TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));   
                 }
 
                 UObject *NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
