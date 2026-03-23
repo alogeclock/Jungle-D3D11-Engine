@@ -18,6 +18,10 @@
 #include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 
 #include "Source/Editor/Public/EditorViewportClient.h"
+#include "Source/Editor/Public/Grid.h"
+#include "Source/Editor/Public/Axis.h"
+#include "Source/Engine/Public/Classes/Components/GridComponent.h"
+#include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 
 #include "Source/Core/Public/FName.h"
 
@@ -28,6 +32,19 @@ void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
+    std::filesystem::path FontFilePath = "Data/Font/NanumGothic.ttf";
+
+    if (!std::filesystem::exists(FontFilePath))
+    {
+        MessageBoxW(nullptr, FontFilePath.c_str(), L"폰트 파일 없음", MB_OK);
+    }
+    io.Fonts->AddFontFromFileTTF(
+        (char*)FontFilePath.u8string().c_str(),
+        16.0f,
+        nullptr,
+        io.Fonts->GetGlyphRangesKorean()
+    );
+
     ImGui_ImplWin32_Init((void *)hWnd);
     ImGui_ImplDX11_Init(renderer->Device, renderer->DeviceContext);
 }
@@ -431,7 +448,7 @@ void UImGuiManager::LoadScene()
             // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출
             std::filesystem::path path(FilePath);
             std::wstring wStem = path.stem().wstring();
-            
+
             int size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
             std::string utf8Stem(size_needed, 0);
             WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
@@ -490,10 +507,10 @@ void UImGuiManager::SetCameraInfo()
 
         // TODO: Grid Step은 CameraInfo가 아니므로, 함수이름을 바꾸거나 CameraInfo에서 분리하는 것을 고려
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        float GridStep = EditorViewportClient->GetGrid()->GetGridComponent()->GetGridStep();
+        float GridStep = EditorViewportClient->GetGridStep();
         if (ImGui::SliderFloat("Grid Step", &GridStep, 0.1f, 10.0f, "%.2f"))
         {
-            EditorViewportClient->GetGrid()->GetGridComponent()->SetGridStep(GridStep);
+            EditorViewportClient->SetGridStep(GridStep);
         }
     }
 }
@@ -516,6 +533,34 @@ void UImGuiManager::TransformInspector()
 
     if (ImGui::Button("Change Mode"))
         bToggleGizmoMode = true;
+
+    static HIMC s_hPrevImc = NULL;
+    
+    if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
+    {
+        if (text->IsExactly(UTextComponent::StaticClass()))
+        {
+            strncpy_s(TextBuffer, text->GetText().c_str(), IM_ARRAYSIZE(TextBuffer));
+            // TextBuffer를 버퍼로 사용
+            if (ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
+            {
+                text->SetText(TextBuffer);
+            }
+
+            if (ImGui::IsItemDeactivated())
+            {
+                HWND hwnd = ::GetFocus();
+                if (!hwnd) hwnd = ::GetActiveWindow();
+                HIMC hImc = ImmGetContext(hwnd);
+                if (hImc)
+                {
+                    ImmNotifyIME(hImc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+                    ImmReleaseContext(hwnd, hImc);
+                }
+            }
+        }
+    }
+        
 
     Actor->SetTransform(t);
 }

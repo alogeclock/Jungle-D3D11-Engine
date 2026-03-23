@@ -79,6 +79,19 @@ bool UObject::IsA(UClass *TargetClass) const
     return false;
 }
 
+//해당 클래스와 정확히 일치하는지 파악하는 함수
+bool UObject::IsExactly(UClass* InClass) const
+{
+    UClass *CurrentClass = GetClass();
+
+    if (CurrentClass == InClass)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
 void UObject::SetOuter(UObject *InObject)
 {
 	Outer = InObject;

@@ -60,6 +60,7 @@ public:
 
 	template <typename T> T* CreateDefaultSubobject();
 	bool            IsA(UClass* TargetClass) const;
+	bool            IsExactly(UClass* TargetClass) const;
 
 private:
 	uint32 UUID = -1;
