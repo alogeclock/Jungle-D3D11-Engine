@@ -6,9 +6,12 @@
 
 class AActor : public UObject
 {
-    DECLARE_OBJECT(AActor, UObject)
+    DECLARE_OBJECT_START(AActor, UObject)
+    PUBLIC_PROPERTY(AActor, RootComponent, UObjectDetail)
+    PUBLIC_PROPERTY(AActor, OwnedComponents, UObjectPtrArray)
+    DECLARE_END
   private:
-    TSet<UActorComponent *> OwnedComponents;
+    TArray<UActorComponent *> OwnedComponents;
     USceneComponent        *RootComponent = nullptr;
 
   public:
@@ -18,7 +21,7 @@ class AActor : public UObject
     USceneComponent *GetRootComponent() const;
     void             SetRootComponent(USceneComponent *InOwnedComponents);
 
-    TSet<UActorComponent *> GetOwnedComponents() const { return OwnedComponents; }
+    TArray<UActorComponent *> GetOwnedComponents() const { return OwnedComponents; }
     void                    AddOwnedComponent(UActorComponent *Component);
 
     FTransform GetTransform() const;

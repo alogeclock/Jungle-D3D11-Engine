@@ -4,7 +4,6 @@
 #include "Source/Engine/Public/Classes/Components/SceneComponent.h"
 #include "Source/Engine/Public/Classes/MeshManager.h"
 #include "Source/Engine/Object/Public/Actor.h"
-#include "Source/Engine/Public/ImGuiManager.h"
 #include "Source/Core/Public/Math/Intersections.h"
 #include "Source/Core/Public/Math/Matrix.h"
 #include "Source/Core/Public/Math/Box.h"
@@ -22,7 +21,8 @@ struct FHitResult
 
 class UPrimitiveComponent : public USceneComponent
 {
-    DECLARE_OBJECT(UPrimitiveComponent, USceneComponent)
+    DECLARE_OBJECT_START(UPrimitiveComponent, USceneComponent)
+    DECLARE_END
 
   public:
     UPrimitiveComponent(const FString &InString);
@@ -63,7 +63,7 @@ class UPrimitiveComponent : public USceneComponent
   private:
     bool       IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     bool       IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
-    FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+    virtual FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
   protected:
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;

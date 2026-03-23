@@ -1,4 +1,6 @@
 ﻿#include "Source/Editor/Public/PivotTransformGizmo.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
+
 #include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/EditorViewportClient.h"
 
@@ -56,7 +58,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTrans
             if (Comp)
             {
                 Comp->SetOuter(this);
-                AddOwnedComponent(Comp);
+                //AddOwnedComponent(Comp);
                 Comp->RegisterComponent();
 
                 Comp->SetIsInEditor(true);
@@ -493,7 +495,8 @@ void APivotTransformGizmo::ToggleMode()
 
 void APivotTransformGizmo::UpdateColor()
 {
-    auto ApplyColor = [&](TArray<UPrimitiveComponent*>& Comps) {
+    auto ApplyColor = [&](TArray<UPrimitiveComponent *> &Comps)
+    {
         if (Comps.size() < 3)
             return;
 

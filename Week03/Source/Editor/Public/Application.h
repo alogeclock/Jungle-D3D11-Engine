@@ -17,7 +17,7 @@
 #include "Source/Editor/Public/PivotTransformGizmo.h"
 #include "Source/Editor/Public/Grid.h"
 #include "Source/Editor/Public/Axis.h"
-#include "Source/Engine/Public/ImGuiManager.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
 #include "Source/Core/Public/TimeManager.h"
 #include "Source/Engine/Public/Classes/MeshManager.h"
 #include "Source/Engine/Public/Classes/TextureManger.h"

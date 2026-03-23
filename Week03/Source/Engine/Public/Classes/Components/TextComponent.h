@@ -26,7 +26,9 @@ class UTextComponent : public UPrimitiveComponent
         bMeshDirty = true;
     }
 
-  protected:
+protected:
+    virtual FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) override;
+
     FString        FilePath;
     FString        FilePathKor;
     FString        Text;
@@ -35,6 +37,11 @@ class UTextComponent : public UPrimitiveComponent
     bool bVIsible = false;
 
 	TArray<FTextVertex> TextVertices;
+	TArray<uint32> TextIndeices;
+
     ID3D11Buffer* VertexBuffer     = nullptr;
+    ID3D11Buffer* IndexBuffer     = nullptr;
     uint32        VertexBufferSize = 0; // 현재 버퍼 용량
+    uint32        IndexBufferSize = 0;
+
 };

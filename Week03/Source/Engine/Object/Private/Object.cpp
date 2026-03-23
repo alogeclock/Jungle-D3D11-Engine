@@ -19,12 +19,16 @@ UObject::UObject(const FString &InString) : Name(InString), Outer(nullptr)
 
 UObject::~UObject()
 {
-    auto it = std::find(GUObjectArray.begin(), GUObjectArray.end(), this);
-    if (it != GUObjectArray.end())
-    {
-        *it = GUObjectArray.back();
-        GUObjectArray.pop_back();
-    }
+    //auto it = std::find(GUObjectArray.begin(), GUObjectArray.end(), this);
+    //if (it != GUObjectArray.end())
+    //{
+    //    *it = GUObjectArray.back();
+    //    GUObjectArray.pop_back();
+    //}
+
+    GUObjectArray[InternalIndex] = GUObjectArray.back();
+    GUObjectArray[InternalIndex]->InternalIndex = InternalIndex;
+    GUObjectArray.pop_back();
 }
 
 const FName& UObject::GetName() const
@@ -55,6 +59,11 @@ uint32 UObject::GetAllocatedCount() const
 	return AllocatedCounts; 
 }
 
+bool UObject::IsValid()
+{
+    return InternalIndex < GUObjectArray.size();//    &&Name.IsValid();
+}
+
 bool UObject::IsA(UClass *TargetClass) const
 {
     UClass *CurrentClass = GetClass();
@@ -67,6 +76,19 @@ bool UObject::IsA(UClass *TargetClass) const
         }
         CurrentClass = CurrentClass->SuperClass;
     }
+    return false;
+}
+
+//해당 클래스와 정확히 일치하는지 파악하는 함수
+bool UObject::IsExactly(UClass* InClass) const
+{
+    UClass *CurrentClass = GetClass();
+
+    if (CurrentClass == InClass)
+    {
+        return true;
+    }
+    
     return false;
 }
 

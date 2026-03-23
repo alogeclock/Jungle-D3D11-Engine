@@ -2,23 +2,7 @@
 
 #include "CoreTypes.h"
 #include "Source/Core/Public/FName.h"
-
-class UObject;
-
-using ConstructFn = UObject * (*)();
-
-
-class UClass
-{
-public:
-	FString     ClassName;
-	UClass* SuperClass;
-	uint32      ClassSize;
-	ConstructFn Constructor;
-
-	UClass(FString InClassName, UClass* InSuperClass, uint32 InClassSize, ConstructFn InConstructor) : ClassName(InClassName), SuperClass(InSuperClass), ClassSize(InClassSize), Constructor(InConstructor) {}
-	const char* GetName() { return ClassName.c_str(); }
-};
+#include "Source/Core/Public/UClass.h"
 
 class FObjectFactory
 {
@@ -33,22 +17,7 @@ public:
 	}
 };
 
-#define DECLARE_OBJECT(CurrentType, SuperType)                           \
-public:\
-	static UClass* StaticClass()\
-{\
-	static UClass s_Class(#CurrentType, SuperType::StaticClass(), sizeof(CurrentType), Constructor);\
-	return &s_Class;\
-}\
-virtual UClass* GetClass() const override\
-{\
-		return CurrentType::StaticClass(); \
-}\
-\
-static UObject* Constructor()\
-{\
-		return new CurrentType(#CurrentType); \
-}
+
 
 class UObject
 {
@@ -85,9 +54,13 @@ public:
 	uint32 GetUUID() const { return UUID; }
 	uint64 GetAllocatedBytes() const;
 	uint32 GetAllocatedCount() const;
+    uint32 GetInternalIndex() const { return InternalIndex; }
+
+	bool IsValid();
 
 	template <typename T> T* CreateDefaultSubobject();
 	bool            IsA(UClass* TargetClass) const;
+	bool            IsExactly(UClass* TargetClass) const;
 
 private:
 	uint32 UUID = -1;

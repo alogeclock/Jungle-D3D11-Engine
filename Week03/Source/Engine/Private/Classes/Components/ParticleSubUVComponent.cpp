@@ -4,12 +4,12 @@
 #include "CoreTypes.h"
 #include <iostream>
 
-UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UTextComponent(InString) 
+UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UUUIDTextComponent(InString)
 { 
-    FilePath = "Data/Texture/Smoke.png"; 
-    SpriteSize = 107;
-    Height = 857;
-    Width = 857;
+    FilePath = "Data/Texture/Explosion.png"; 
+    SpriteSize = 150;
+    Height = 900;
+    Width = 900;
     bMeshDirty = true;
     CurrentTime = 0;
     bLoop = true;
@@ -18,11 +18,12 @@ UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UTex
 }
 
 
+
 void UParticleSubUVComponent::Render(URenderer &renderer)
 {
     if (CurrentTime >= PlayRate && !bLoop)
         return;
-    UTextComponent::Render(renderer);
+    UUUIDTextComponent::Render(renderer);
 }
 
 void UParticleSubUVComponent::Tick(float deltaTime)

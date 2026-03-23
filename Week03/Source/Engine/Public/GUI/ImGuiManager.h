@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Rendering/Renderer.h"
+#include "Source/Engine/Public/Rendering/Renderer.h"
 #include "Source/Core/Public/TimeManager.h"
 
 #include "ImGui/imgui.h"
@@ -65,15 +65,32 @@ class UImGuiManager
     void LoadScene();
     void SetCameraInfo();
     void TransformInspector();
+    void ShowObjectInfo(UObject* InObject);
+    void ShowOutliner(TArray<UObject *> &ObjectArray);
+    void ShowOutliner(UObject *Object, TMap<UObject*, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth);
+    void ShowOutliner();
+
+    void ShowCameraProperty()
+    {
+
+    }
+
+    //void Show
 
   public:
     bool bIsOrthogonal = false;
     bool bToggleGizmoMode = false;
 
   private:
-    FEditorViewportClient* EditorViewportClient = nullptr;
-    FViewportCameraTransform* Camera = nullptr;
-    char buffer[256];
+    FEditorViewportClient    *EditorViewportClient = nullptr;
+    FViewportCameraTransform *Camera = nullptr;
+    UPrimitiveComponent      *SelectedObject = nullptr;
+
+    float outlinerHeight = 300.0f;
+    float splitterThickness = 6.0f;
+    UObject *TempSelectedObject = nullptr;
+    char                      buffer[256];
+    char                      TextBuffer[256];
 };
 
 // 아래는 imgui_demo.cpp에서 가져온 내용

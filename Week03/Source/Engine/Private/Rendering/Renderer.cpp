@@ -18,6 +18,7 @@ void URenderer::Create(HWND hWindow)
 
     CreateShader();
     CreateTextShader();
+    CreateLineShader();
     CreateBlendState();
 }
 
@@ -65,7 +66,7 @@ void URenderer::ReleaseDeviceAndSwapChain()
 
     if (DeviceContext)
     {
-        DeviceContext->Release(); 
+        DeviceContext->Release();
         DeviceContext = nullptr;
     }
 }
@@ -221,6 +222,28 @@ void URenderer::CreateTextShader() {
     textPS->Release();
 }
 
+void URenderer::CreateLineShader()
+{
+    ID3DBlob* lineVS = nullptr;
+    ID3DBlob* linePS = nullptr;
+
+    D3DCompileFromFile(L"Shaders/LineShader.hlsl", nullptr, nullptr, "VS", "vs_5_0", 0, 0, &lineVS, nullptr);
+    Device->CreateVertexShader(lineVS->GetBufferPointer(), lineVS->GetBufferSize(), nullptr, &LineVertexShader);
+
+    D3DCompileFromFile(L"Shaders/LineShader.hlsl", nullptr, nullptr, "PS", "ps_5_0", 0, 0, &linePS, nullptr);
+    Device->CreatePixelShader(linePS->GetBufferPointer(), linePS->GetBufferSize(), nullptr, &LinePixelShader);
+
+    D3D11_INPUT_ELEMENT_DESC LineLayout[] = {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+    Device->CreateInputLayout(LineLayout, ARRAYSIZE(LineLayout), lineVS->GetBufferPointer(),
+                              lineVS->GetBufferSize(), &LineInputLayout);
+
+    lineVS->Release();
+    linePS->Release();
+}
+
 void URenderer::ReleaseShader()
 {
     if (SimpleInputLayout)
@@ -240,10 +263,13 @@ void URenderer::ReleaseShader()
         SimplePixelShader->Release();
         SimplePixelShader = nullptr;
     }
-    
+
     if (TextInputLayout)  { TextInputLayout->Release();  TextInputLayout  = nullptr; }
     if (TextVertexShader) { TextVertexShader->Release(); TextVertexShader = nullptr; }
     if (TextPixelShader)  { TextPixelShader->Release();  TextPixelShader  = nullptr; }
+    if (LineInputLayout)  { LineInputLayout->Release();  LineInputLayout  = nullptr; }
+    if (LineVertexShader) { LineVertexShader->Release(); LineVertexShader = nullptr; }
+    if (LinePixelShader)  { LinePixelShader->Release();  LinePixelShader  = nullptr; }
     if (LinearSamplerState) { LinearSamplerState->Release(); LinearSamplerState = nullptr; }
 }
 
@@ -442,74 +468,99 @@ void URenderer::PrepareShader()
     }
 }
 
-void URenderer::RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices, ID3D11Buffer** InOutVertexBuffer, uint32& InOutBufferSize) 
+void URenderer::RenderText(
+    FString FilePath, FConstants& constants,
+    TArray<FTextVertex>* vertices, TArray<uint32>* indices,
+    ID3D11Buffer** InOutVertexBuffer, ID3D11Buffer** InOutIndexBuffer,
+    uint32& InOutVBSize, uint32& InOutIBSize)   // ← split into two size params
 {
-    if (!TextVertexShader || !TextPixelShader || 
+    if (!TextVertexShader || !TextPixelShader ||
         !TextInputLayout  || !LinearSamplerState) return;
-    if (vertices->empty()) return;
+    if (vertices->empty() || indices->empty()) return;
 
-    DeviceContext->RSSetState(RasterizerStateCullNone);
-    const UINT DataSize = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
+    ID3D11ShaderResourceView* fontSRV = UTextureManager::Get().GetTexture(FilePath);
+    if (!fontSRV) return;
 
-    // 버퍼가 없거나 크기가 부족할 때만 재생성
-    if (*InOutVertexBuffer == nullptr || InOutBufferSize < DataSize)
+    // ── 1. Vertex buffer: recreate only when missing or too small ────────────
+    const UINT vbDataSize = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
+
+    if (*InOutVertexBuffer == nullptr || InOutVBSize < vbDataSize)
     {
-        if (*InOutVertexBuffer) (*InOutVertexBuffer)->Release();
+        if (*InOutVertexBuffer) { (*InOutVertexBuffer)->Release(); *InOutVertexBuffer = nullptr; }
 
-        D3D11_BUFFER_DESC vbDesc  = {};
-        vbDesc.Usage              = D3D11_USAGE_DYNAMIC;
-        vbDesc.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
-        vbDesc.ByteWidth          = DataSize;
-        vbDesc.BindFlags          = D3D11_BIND_VERTEX_BUFFER;
+        D3D11_BUFFER_DESC vbDesc = {};
+        vbDesc.Usage          = D3D11_USAGE_DYNAMIC;
+        vbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        vbDesc.ByteWidth      = vbDataSize;
+        vbDesc.BindFlags      = D3D11_BIND_VERTEX_BUFFER;
 
         if (FAILED(Device->CreateBuffer(&vbDesc, nullptr, InOutVertexBuffer))) return;
-        InOutBufferSize = DataSize;
+        InOutVBSize = vbDataSize;
     }
 
-    // 2. 버텍스 데이터 업로드 (이전 코드에서 제거됐던 부분)
-    D3D11_MAPPED_SUBRESOURCE vbMSR = {};
-    if (SUCCEEDED(DeviceContext->Map(*InOutVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &vbMSR)))
+    // ── 2. Index buffer: recreate only when missing or too small ─────────────
+    const UINT ibDataSize = sizeof(uint32) * static_cast<UINT>(indices->size());
+
+    if (*InOutIndexBuffer == nullptr || InOutIBSize < ibDataSize)
     {
-        memcpy(vbMSR.pData, vertices->data(), DataSize);
+        if (*InOutIndexBuffer) { (*InOutIndexBuffer)->Release(); *InOutIndexBuffer = nullptr; }
+
+        D3D11_BUFFER_DESC ibDesc = {};
+        ibDesc.Usage          = D3D11_USAGE_DYNAMIC;
+        ibDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        ibDesc.ByteWidth      = ibDataSize;          // ← index bytes, not vertex bytes
+        ibDesc.BindFlags      = D3D11_BIND_INDEX_BUFFER;
+
+        if (FAILED(Device->CreateBuffer(&ibDesc, nullptr, InOutIndexBuffer))) return;  // ← target IB
+        InOutIBSize = ibDataSize;
+    }
+
+    // ── 3. Upload vertex data ────────────────────────────────────────────────
+    D3D11_MAPPED_SUBRESOURCE msr = {};
+    if (SUCCEEDED(DeviceContext->Map(*InOutVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr)))
+    {
+        memcpy(msr.pData, vertices->data(), vbDataSize);
         DeviceContext->Unmap(*InOutVertexBuffer, 0);
     }
     else return;
 
+    // ── 4. Upload index data ─────────────────────────────────────────────────
+    if (SUCCEEDED(DeviceContext->Map(*InOutIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr)))
+    {
+        memcpy(msr.pData, indices->data(), ibDataSize);
+        DeviceContext->Unmap(*InOutIndexBuffer, 0);
+    }
+    else return;
+
+    // ── 5. Update constant buffer ────────────────────────────────────────────
     UpdateConstant(constants);
 
-    // 4. IA 세팅
-    UINT stride = sizeof(FTextVertex);
-    UINT offset = 0;
+    // ── 6. IA stage ──────────────────────────────────────────────────────────
+    DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // ← was missing
+
+    UINT stride = sizeof(FTextVertex), offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, InOutVertexBuffer, &stride, &offset);
+    DeviceContext->IASetIndexBuffer(*InOutIndexBuffer, DXGI_FORMAT_R32_UINT, 0);   // ← was missing
     DeviceContext->IASetInputLayout(TextInputLayout);
-    DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // 5. 셰이더 바인딩
+    // ── 7. Shader + resource binding ─────────────────────────────────────────
+    DeviceContext->RSSetState(RasterizerStateCullNone);
     DeviceContext->VSSetShader(TextVertexShader, nullptr, 0);
-    DeviceContext->PSSetShader(TextPixelShader, nullptr, 0);
-    DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
-    DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
-
-    // 6. 폰트 텍스처 / 샘플러
-    ID3D11ShaderResourceView *fontSRV = UTextureManager::Get().GetTexture(FilePath);
-    if (!fontSRV) return;
-
+    DeviceContext->PSSetShader(TextPixelShader,  nullptr, 0);
     DeviceContext->PSSetShaderResources(0, 1, &fontSRV);
     DeviceContext->PSSetSamplers(0, 1, &LinearSamplerState);
 
-    // 7. 드로우
-    DeviceContext->Draw(static_cast<UINT>(vertices->size()), 0);
+    // ── 8. Draw ───────────────────────────────────────────────────────────────
+    DeviceContext->DrawIndexed(static_cast<UINT>(indices->size()), 0, 0);  // ← 'size' → indices->size()
 
-    // 8. 상태 복구
+    // ── 9. Restore state ──────────────────────────────────────────────────────
     ID3D11ShaderResourceView* nullSRV = nullptr;
     DeviceContext->PSSetShaderResources(0, 1, &nullSRV);
     DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
-    DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
+    DeviceContext->PSSetShader(SimplePixelShader,  nullptr, 0);
     DeviceContext->IASetInputLayout(SimpleInputLayout);
-    DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
     DeviceContext->RSSetState(RasterizerStateCullBack);
 }
-
 void URenderer::RenderPrimitive(ID3D11Buffer *pBuffer, uint32 numVertices)
 {
     uint32 offset = 0;
@@ -768,14 +819,14 @@ bool URenderer::GetCameraBasis(FVector<float> &OutRight, FVector<float> &OutUp, 
     // 현재 카메라의 뷰 변환 행렬을 가져옵니다.
     FMatrix<float> ViewMatrix = Viewport->GetViewportClient()->GetViewMatrix();
 
-    // DirectX 기반의 행 우선(Row-Major) 뷰 행렬 기준, 
+    // DirectX 기반의 행 우선(Row-Major) 뷰 행렬 기준,
     // 역행렬(World 행렬)의 회전 성분은 뷰 행렬의 전치(Transpose)된 형태로 들어있습니다.
     // 따라서 각 열(Column)의 데이터를 읽어오면 카메라의 기저 벡터를 얻을 수 있습니다.
     OutRight   = FVector<float>(ViewMatrix.M[0][0], ViewMatrix.M[1][0], ViewMatrix.M[2][0]);
     OutUp      = FVector<float>(ViewMatrix.M[0][1], ViewMatrix.M[1][1], ViewMatrix.M[2][1]);
     OutForward = FVector<float>(ViewMatrix.M[0][2], ViewMatrix.M[1][2], ViewMatrix.M[2][2]);
 
-    return true; 
+    return true;
 }
 
 void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight)

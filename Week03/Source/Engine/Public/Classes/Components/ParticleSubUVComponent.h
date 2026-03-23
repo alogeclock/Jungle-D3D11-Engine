@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Source/Engine/Public/Classes/Components/TextComponent.h"
+#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
-class UParticleSubUVComponent : public UTextComponent
+class UParticleSubUVComponent : public UUUIDTextComponent
 {
-    DECLARE_OBJECT(UParticleSubUVComponent, UTextComponent)
+    DECLARE_OBJECT(UParticleSubUVComponent, UUUIDTextComponent)
   public:
     UParticleSubUVComponent(const FString &InString);
 
@@ -19,3 +19,4 @@ class UParticleSubUVComponent : public UTextComponent
     virtual void Tick(float deltaTime) override;
     virtual void RebuildMesh() override;
 };
+

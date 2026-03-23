@@ -15,6 +15,7 @@
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -121,6 +122,9 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
                 break;
             }
         }
+
+        if (primitiveType == "None")
+            continue;
 
         FTransform Transform = Actor->GetTransform();
 
@@ -391,6 +395,7 @@ FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<flo
 
     return ClosestHit;
 }
+
 void UWorld::UpdateSelection(UPrimitiveComponent* Selected, AActor* CurrentSelectedActor)
 {
     AActor* NewActor = Selected ? Selected->GetOwner() : nullptr;

@@ -1,18 +1,26 @@
 ﻿#include "Source/Editor/Public/EditorViewportClient.h"
+#include "Source/Editor/Public/Viewport.h"
+#include "Source/Editor/Public/Grid.h"
+#include "Source/Editor/Public/Axis.h"
+#include "Source/Engine/Public/Classes/Components/GridComponent.h"
+#include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Core/Public/Math/ViewMatrix.h"
 #include "Source/Core/Public/Memory.h"
 #include "Source/Engine/Object/Public/Actor.h"
 #include "World.h"
 
+#include <iostream>
+
 FViewportCameraTransform::FViewportCameraTransform()
-    : ViewLocation(-2.0f, 0.5f, 2.f), ViewRotation(-30.f, 0.f, 0.f), LookAt(0.f, 0.f, 0.f), OrthoZoom(1.f),
-      Max_OrthoZoom(1000.f), Min_OrthoZoom(1.f), MaxLocation(1000.0)
+    : ViewLocation(-2.0f, 0.5f, 2.f), ViewRotation(-30.f, 0.f, 0.f), LookAt(0.f, 0.f, 0.f), OrthoZoom(1.f), Max_OrthoZoom(1000.f), Min_OrthoZoom(1.f),
+      MaxLocation(1000.0)
 {
 }
 
-void FViewportCameraTransform::SetLocation(const FVector<float>& Position)
+void FViewportCameraTransform::SetLocation(const FVector<float> &Position)
 {
-    auto Clamp = [&](float V) -> float {
+    auto Clamp = [&](float V) -> float
+    {
         float MaxBoundary = static_cast<float>(MaxLocation);
         if (V < -MaxBoundary)
             return -MaxBoundary;
@@ -26,14 +34,13 @@ void FViewportCameraTransform::SetLocation(const FVector<float>& Position)
 FMatrix<float> FViewportCameraTransform::ComputeOrbitMatrix() const
 {
     FVector<float> worldUp = {0.0f, 0.0f, 1.0f};
-    const float PI = 3.141592f;
+    const float    PI = 3.141592f;
 
     // 1. ViewRotation을 바탕으로 실제 카메라가 바라보는 Forward 벡터 계산
     const float PitchRad = ViewRotation.X * (PI / 180.f);
     const float YawRad = ViewRotation.Y * (PI / 180.f);
 
-    FVector<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad),
-                              std::sin(PitchRad)};
+    FVector<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad), std::sin(PitchRad)};
 
     // 2. 카메라 위치(ViewLocation)에서 Forward 방향으로 뻗어나간 지점을 새로운 LookAt으로 설정
     FVector<float> DynamicLookAt = {ViewLocation.X + Forward.X, ViewLocation.Y + Forward.Y, ViewLocation.Z + Forward.Z};
@@ -42,7 +49,7 @@ FMatrix<float> FViewportCameraTransform::ComputeOrbitMatrix() const
     return FViewMatrix(ViewLocation, DynamicLookAt, worldUp);
 }
 
-FEditorViewportClient::FEditorViewportClient(FViewport* viewport)
+FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
 {
     Viewport = viewport;
 
@@ -57,6 +64,33 @@ FEditorViewportClient::~FEditorViewportClient()
     SaveConfig();
 }
 
+void FEditorViewportClient::SetGrid(AGrid* InGrid)
+{
+    Grid = InGrid;
+    Grid->GetGridComponent()->SetGridStep(GridStep);
+}
+
+void FEditorViewportClient::SetAxis(AAxis* InAxis)
+{
+    Axis = InAxis;
+    Axis->GetAxisComponent()->SetGridStep(GridStep);
+}
+
+void FEditorViewportClient::SetGridStep(float InGridStep)
+{
+    GridStep = InGridStep;
+
+    if (Grid && Grid->GetGridComponent())
+    {
+        Grid->GetGridComponent()->SetGridStep(GridStep);
+    }
+
+    if (Axis && Axis->GetAxisComponent())
+    {
+        Axis->GetAxisComponent()->SetGridStep(GridStep);
+    }
+}
+
 void FEditorViewportClient::Tick(float DeltaTime, FViewport* Viewport)
 {
     if (!Viewport)
@@ -68,10 +102,10 @@ void FEditorViewportClient::Tick(float DeltaTime, FViewport* Viewport)
         Gizmo->Tick(DeltaTime);
 }
 
-bool FEditorViewportClient::InputKey(const FInputEventState& InputState)
+bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
 {
     const EInputEvent Event = InputState.GetInputEvent();
-    const FKey Key = InputState.GetKey();
+    const FKey        Key = InputState.GetKey();
 
     // 1. 키보드 눌림 이벤트 위임 (SpaceBar 모드 전환 등은 기즈모가 스스로 처리함)
     if (Event == EInputEvent::Pressed)
@@ -119,7 +153,7 @@ bool FEditorViewportClient::InputKey(const FInputEventState& InputState)
     return false;
 }
 
-void FEditorViewportClient::MouseMove(FViewport* Viewport, int32 X, int32 Y)
+void FEditorViewportClient::MouseMove(FViewport *Viewport, int32 X, int32 Y)
 {
     const int32_t DX = X - LastMouseX;
     const int32_t DY = Y - LastMouseY;
@@ -159,7 +193,7 @@ void FEditorViewportClient::MouseMove(FViewport* Viewport, int32 X, int32 Y)
     CameraTransform.SetRotation(Rot);
 }
 
-void FEditorViewportClient::InputAxis(FViewport* Viewport, FKey Key, float Delta, float DeltaTime)
+void FEditorViewportClient::InputAxis(FViewport *Viewport, FKey Key, float Delta, float DeltaTime)
 {
     if (UImGuiManager::Get().IsCaptureMouse())
         return;
@@ -168,8 +202,7 @@ void FEditorViewportClient::InputAxis(FViewport* Viewport, FKey Key, float Delta
     const float YawRad = CameraTransform.GetRotation().Y * (3.14159265f / 180.f);
 
     // 카메라 로컬 Forward
-    FVector4<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad),
-                               std::sin(PitchRad), 0.f};
+    FVector4<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad), std::sin(PitchRad), 0.f};
 
     FVector4<float> Loc = CameraTransform.GetLocation();
     Loc += Forward * Delta * ZoomSpeed * DeltaTime;
@@ -177,10 +210,7 @@ void FEditorViewportClient::InputAxis(FViewport* Viewport, FKey Key, float Delta
     CameraTransform.SetLocation({Loc.X, Loc.Y, Loc.Z});
 }
 
-FMatrix<float> FEditorViewportClient::GetViewMatrix() const
-{
-    return CameraTransform.ComputeOrbitMatrix();
-}
+FMatrix<float> FEditorViewportClient::GetViewMatrix() const { return CameraTransform.ComputeOrbitMatrix(); }
 
 FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float height)
 {
@@ -194,9 +224,9 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
     {
         // 직교 투영
         FVector dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();
-        float Distance = dir.Length();
-        float OrthoWidth = Distance * 2.0f;
-        float OrthoHeight = OrthoWidth / AspectRatio;
+        float   Distance = dir.Length();
+        float   OrthoWidth = Distance * 2.0f;
+        float   OrthoHeight = OrthoWidth / AspectRatio;
 
         return FOrthographicMatrix<float>(OrthoWidth, OrthoHeight, 0.1f, 1000.0f);
     }
@@ -211,7 +241,7 @@ FMatrix<float> FEditorViewportClient::GetProjectionMatrix(float width, float hei
     );
 }
 
-void FEditorViewportClient::Render(URenderer& renderer)
+void FEditorViewportClient::Render(URenderer &renderer)
 {
     FSceneViewOptions OriginalViewOptions;
     OriginalViewOptions.ViewMode = GetViewMode();
@@ -223,7 +253,7 @@ void FEditorViewportClient::Render(URenderer& renderer)
     renderer.SetDrawAABB(OriginalViewOptions.bDrawAABB);
 }
 
-void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport* Viewport)
+void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
 {
     if (UImGuiManager::Get().IsCaptureKeyboard())
         return;
@@ -232,13 +262,12 @@ void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport* Viewport)
     const float YawRad = CameraTransform.GetRotation().Y * (3.14159265f / 180.f);
 
     // 카메라 로컬 Forward / Right
-    FVector4<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad),
-                               std::sin(PitchRad), 0.f};
+    FVector4<float> Forward = {std::cos(PitchRad) * std::cos(YawRad), std::cos(PitchRad) * std::sin(YawRad), std::sin(PitchRad), 0.f};
     FVector4<float> Right = {std::cos(YawRad + 1.5707963f), std::sin(YawRad + 1.5707963f), 0.f, 0.f};
     FVector4<float> Up = Forward ^ Right;
 
     FVector4<float> Move = {0.f, 0.f, 0.f, 0.f};
-    bool bMoved = false;
+    bool            bMoved = false;
 
     if (Viewport->KeyState(EKeys::W))
     {
@@ -345,7 +374,7 @@ void FEditorViewportClient::PickingRay(const FVector<float>& RayOrigin, const FV
 
 void FEditorViewportClient::LoadConfig()
 {
-    char buffer[256];
+    char   buffer[256];
     LPCSTR iniPath = ".\\editor.ini";
 
     // 1. MoveSpeed 로드 및 예외 처리 (범위를 벗어난 값이거나 이상한 값일 시 기본값 사용)
@@ -358,7 +387,7 @@ void FEditorViewportClient::LoadConfig()
         else
             MoveSpeed = 5.0f;
     }
-    catch (const std::exception&)
+    catch (const std::exception &)
     {
         MoveSpeed = 5.0f;
     }
@@ -374,9 +403,24 @@ void FEditorViewportClient::LoadConfig()
         else
             RotSpeed = 0.1f;
     }
-    catch (const std::exception&)
+    catch (const std::exception &)
     {
         RotSpeed = 0.1f;
+    }
+
+    // 3. GridStep 로드 및 예외 처리
+    GetPrivateProfileStringA("GridSettings", "GridStep", "1.0", buffer, sizeof(buffer), iniPath);
+    try
+    {
+        float ParsedGridStep = std::stof(buffer);
+        if (ParsedGridStep >= 0.1f && ParsedGridStep <= 10.0f)
+            GridStep = ParsedGridStep;
+        else
+            GridStep = 1.0f;
+    }
+    catch (const std::exception&)
+    {
+        GridStep = 1.0f;
     }
 }
 
@@ -391,21 +435,12 @@ void FEditorViewportClient::SaveConfig()
     std::string rotStr = std::to_string(RotSpeed);
     WritePrivateProfileStringA("CameraSettings", "RotSpeed", rotStr.c_str(), iniPath);
 
-    std::string gridStepStr = std::to_string(Grid->GetGridStep());
+    std::string gridStepStr = std::to_string(GridStep);
     WritePrivateProfileStringA("GridSettings", "GridStep", gridStepStr.c_str(), iniPath);
 }
 
-bool FInputEventState::IsLeftMouseButtonPressed() const
-{
-    return IsButtonPressed(EKeys::LeftMouseButton);
-}
+bool FInputEventState::IsLeftMouseButtonPressed() const { return IsButtonPressed(EKeys::LeftMouseButton); }
 
-bool FInputEventState::IsRightMouseButtonPressed() const
-{
-    return IsButtonPressed(EKeys::RightMouseButton);
-}
+bool FInputEventState::IsRightMouseButtonPressed() const { return IsButtonPressed(EKeys::RightMouseButton); }
 
-bool FInputEventState::IsButtonPressed(FKey InKey) const
-{
-    return Viewport->KeyState(InKey);
-}
+bool FInputEventState::IsButtonPressed(FKey InKey) const { return Viewport->KeyState(InKey); }

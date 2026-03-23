@@ -11,7 +11,10 @@ class AAxis : public AActor
     AAxis(const FString &InString);
     ~AAxis() override;
 
-    void Render(URenderer &renderer);
+    UAxisComponent* GetAxisComponent() const
+    {
+        return AxisComponent;
+    }
 
   private:
       UAxisComponent *AxisComponent = nullptr;

@@ -19,7 +19,7 @@ public:
   static void InitializeCharInfo();
   static bool bIsKorean(const FString& text);
   static const CharacterInfo *GetCharInfo(wchar_t InChar);
-  static TArray<FTextVertex> BuildTextMesh(const FString& text);
+  static void BuildTextMesh(const FString& text, TArray<FTextVertex>* TextVertices, TArray<uint32>* TextIndeices);
 
 private:
   static TMap<wchar_t, CharacterInfo> charInfoMap;

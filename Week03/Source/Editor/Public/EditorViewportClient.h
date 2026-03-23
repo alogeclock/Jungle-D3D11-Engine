@@ -13,6 +13,8 @@ struct FRay
 {
     FVector<float> Origin;
     FVector<float> Direction;
+    FRay(const FVector<float>& InOrigin, const FVector<float>& InDirection)
+        : Origin(InOrigin), Direction(InDirection) {}
 };
 
 /**
@@ -128,8 +130,8 @@ class FEditorViewportClient
     void LoadConfig();
     void SaveConfig();
 
-    void SetGrid(AGrid* InGrid) { Grid = InGrid; }
-    void SetAxis(AAxis* InAxis) { Axis = InAxis; }
+    void SetGrid(AGrid* InGrid);
+    void SetAxis(AAxis* InAxis);
     void SetGizmo(APivotTransformGizmo* InGizmo) { Gizmo = InGizmo; }
 
   private:
@@ -148,6 +150,7 @@ class FEditorViewportClient
 
     float                  MoveSpeed = 5.0f; // units/sec
     float                  RotSpeed = 0.1f;  // deg/pixel
+    float                  GridStep = 1.0f;
     static constexpr float ZoomSpeed = 10.0f;
 
     bool  bLeftMouseDragging = false;
