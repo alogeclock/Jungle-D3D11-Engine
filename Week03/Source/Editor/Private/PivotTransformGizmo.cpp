@@ -1,11 +1,11 @@
 ﻿#include "Source/Editor/Public/PivotTransformGizmo.h"
 #include "Source/Engine/Public/GUI/ImGuiManager.h"
-
 #include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/EditorViewportClient.h"
 
 APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTransformGizmo(InString)
 {
+    // ... (기존 생성자 로직은 동일하므로 생략하지 않고 그대로 유지)
     USceneComponent* Root = new USceneComponent("PivotTransformSceneComponent");
     this->SetRootComponent(Root);
     AddOwnedComponent(Root);
@@ -13,8 +13,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTrans
 
     const float HALF_PI = 1.570796f;
 
-    struct FGizmoAxisInfo
-    {
+    struct FGizmoAxisInfo {
         const char* Prefix;
         FVector<float> Rotation;
         FVector4<float> Color;
@@ -35,32 +34,24 @@ APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTrans
             FString CompName = FString(Axes[Axis].Prefix) + ComponentSuffixes[Mode];
             UPrimitiveComponent* Comp = nullptr;
 
-            if (Mode == 0)
-            {
+            if (Mode == 0) {
                 auto Arrow = new UArrowComponent(CompName);
                 TranslateGizmoComponents.push_back(Arrow);
                 Comp = Arrow;
-            }
-            else if (Mode == 1)
-            {
+            } else if (Mode == 1) {
                 auto Ring = new URingComponent(CompName);
                 RotateGizmoComponents.push_back(Ring);
                 Comp = Ring;
-            }
-            else if (Mode == 2)
-            {
+            } else if (Mode == 2) {
                 auto CubeArrow = new UCubeArrowComponent(CompName);
                 ScaleGizmoComponents.push_back(CubeArrow);
                 Comp = CubeArrow;
             }
 
-            // 공통 속성 일괄 설정
             if (Comp)
             {
                 Comp->SetOuter(this);
-                //AddOwnedComponent(Comp);
                 Comp->RegisterComponent();
-
                 Comp->SetIsInEditor(true);
                 Comp->SetRotation(Axes[Axis].Rotation);
                 Comp->SetColor(Axes[Axis].Color);
@@ -84,101 +75,91 @@ APivotTransformGizmo::~APivotTransformGizmo()
 
 void APivotTransformGizmo::Tick(float DeltaTime)
 {
-    AActor::Tick(DeltaTime); // 부모 클래스의 틱(컴포넌트 틱 등) 실행
+    AActor::Tick(DeltaTime);
 
-    // 선택된 객체가 없으면 반환한다.
     if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
     {
         UpdateVisibility();
         return;
     }
 
-    // 이동의 중심이 될 Component를 결정한다.
-    USceneComponent* AnchorComp = GetAnchorComponent();
+    // [변경] 선택된 다중 객체들의 중심 Transform을 가져옵니다.
+    FTransform CenterTransform;
+    if (!GetGizmoCenterTransform(CenterTransform))
+    {
+        UpdateVisibility();
+        return;
+    }
+
     UpdateVisibility();
     UpdateColor();
 
-    if (AnchorComp == nullptr)
-        return;
-
-    // Anchor Component의 Transform 좌표를 기준으로 카메라 정보에 따라 기즈모 크기를 조정한다.
-    FTransform TargetTransform = TargetTransform.ToTransform(AnchorComp->GetWorldMatrix());
-    FTransform UnscaledTransform = CalculateUnscaledTransform(TargetTransform);
-
+    FTransform UnscaledTransform = CalculateUnscaledTransform(CenterTransform);
     this->SetTransform(UnscaledTransform);
 }
 
 void APivotTransformGizmo::UpdateVisibility()
 {
-    // 1. 모든 기즈모 파츠 숨기기
-    for (auto* Comp : TranslateGizmoComponents)
-        if (Comp)
-            Comp->SetVisible(false);
-    for (auto* Comp : RotateGizmoComponents)
-        if (Comp)
-            Comp->SetVisible(false);
-    for (auto* Comp : ScaleGizmoComponents)
-        if (Comp)
-            Comp->SetVisible(false);
+    // ... (기존 UpdateVisibility 유지)
+    for (auto* Comp : TranslateGizmoComponents) if (Comp) Comp->SetVisible(false);
+    for (auto* Comp : RotateGizmoComponents) if (Comp) Comp->SetVisible(false);
+    for (auto* Comp : ScaleGizmoComponents) if (Comp) Comp->SetVisible(false);
 
-    // 2. 선택된 객체가 없으면 반환
-    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
-    {
-        return;
-    }
+    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty()) return;
 
-    // 3. 현재 모드에 해당하는 파츠만 보이게 켜기
     if (GizmoType == EGizmoHandleType::Translate)
-        for (auto* Comp : TranslateGizmoComponents)
-            Comp->SetVisible(true);
+        for (auto* Comp : TranslateGizmoComponents) Comp->SetVisible(true);
     else if (GizmoType == EGizmoHandleType::Rotate)
-        for (auto* Comp : RotateGizmoComponents)
-            Comp->SetVisible(true);
+        for (auto* Comp : RotateGizmoComponents) Comp->SetVisible(true);
     else if (GizmoType == EGizmoHandleType::Scale)
-        for (auto* Comp : ScaleGizmoComponents)
-            Comp->SetVisible(true);
+        for (auto* Comp : ScaleGizmoComponents) Comp->SetVisible(true);
 }
 
 bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FVector<float>& RayDir)
 {
-    USceneComponent* AnchorComp = GetAnchorComponent();
-
     if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
         return false;
 
-    InitialObjectTransform = InitialObjectTransform.ToTransform(AnchorComp->GetWorldMatrix());
+    // [변경] 다중 선택 객체의 중심점을 기즈모의 초기 Transform으로 저장
+    FTransform CenterTransform;
+    if (!GetGizmoCenterTransform(CenterTransform))
+        return false;
 
-    // 1. 현재 모드(Translate, Rotate, Scale)에 맞는 기즈모 컴포넌트 배열 선택
+    InitialGizmoTransform = CenterTransform;
+
+    // [추가] 선택된 모든 객체들의 컴포넌트와 초기 월드 Transform을 보관
+    DraggingObjects.clear();
+    TArray<USceneComponent*> TargetComps;
+    GetTargetComponents(TargetComps);
+
+    for (USceneComponent* Comp : TargetComps)
+    {
+        FSelectedObjectState State;
+        State.Component = Comp;
+        FTransform TempTrans;
+        State.InitialWorldTransform = TempTrans.ToTransform(Comp->GetWorldMatrix());
+        DraggingObjects.push_back(State);
+    }
+
     std::vector<UPrimitiveComponent*>* ActiveComponents = nullptr;
     switch (GizmoType)
     {
-    case EGizmoHandleType::Translate:
-        ActiveComponents = &TranslateGizmoComponents;
-        break;
-    case EGizmoHandleType::Rotate:
-        ActiveComponents = &RotateGizmoComponents;
-        break;
-    case EGizmoHandleType::Scale:
-        ActiveComponents = &ScaleGizmoComponents;
-        break;
+    case EGizmoHandleType::Translate: ActiveComponents = &TranslateGizmoComponents; break;
+    case EGizmoHandleType::Rotate: ActiveComponents = &RotateGizmoComponents; break;
+    case EGizmoHandleType::Scale: ActiveComponents = &ScaleGizmoComponents; break;
     }
 
-    if (ActiveComponents == nullptr)
-        return false;
+    if (ActiveComponents == nullptr) return false;
 
-    // 2. 실제 기즈모 메쉬(삼각형) 기반 Ray 충돌 검사
     float MinDistance = FLT_MAX;
     int HitIndex = -1;
 
-    // 배열 인덱스 0: X축, 1: Y축, 2: Z축
     for (int i = 0; i < ActiveComponents->size(); ++i)
     {
         UPrimitiveComponent* Comp = (*ActiveComponents)[i];
-        if (Comp == nullptr)
-            continue;
+        if (Comp == nullptr) continue;
 
         FHitResult Hit = Comp->IntersectRay(RayOrigin, RayDir);
-
         if (Hit.bHit && Hit.Distance < MinDistance)
         {
             MinDistance = Hit.Distance;
@@ -186,62 +167,47 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FV
         }
     }
 
-    // 아무 기즈모 메쉬도 클릭하지 않고 허공을 클릭함
-    if (HitIndex == -1)
-        return false;
+    if (HitIndex == -1) return false;
 
-    // 3. 충돌한 인덱스를 바탕으로 조작할 축(ActiveAxis) 설정
-    if (HitIndex == 0)
-        ActiveAxis = EGizmoAxis::X;
-    else if (HitIndex == 1)
-        ActiveAxis = EGizmoAxis::Y;
-    else if (HitIndex == 2)
-        ActiveAxis = EGizmoAxis::Z;
+    if (HitIndex == 0) ActiveAxis = EGizmoAxis::X;
+    else if (HitIndex == 1) ActiveAxis = EGizmoAxis::Y;
+    else if (HitIndex == 2) ActiveAxis = EGizmoAxis::Z;
 
-    // 4. 마우스 이동 거리 계산을 위한 가상 드래그 평면 초기화 로직
-    FMatrix<float> RotationMatrix = FRotationMatrix<float>(InitialObjectTransform.Rotation);
+    // [변경] InitialObjectTransform -> InitialGizmoTransform 으로 치환
+    FMatrix<float> RotationMatrix = FRotationMatrix<float>(InitialGizmoTransform.Rotation);
     FVector4<float> Dir;
 
-    if (ActiveAxis == EGizmoAxis::X)
-        Dir = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
-    else if (ActiveAxis == EGizmoAxis::Y)
-        Dir = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
-    else if (ActiveAxis == EGizmoAxis::Z)
-        Dir = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
+    if (ActiveAxis == EGizmoAxis::X) Dir = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
+    else if (ActiveAxis == EGizmoAxis::Y) Dir = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
+    else if (ActiveAxis == EGizmoAxis::Z) Dir = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
 
     FVector<float> AxisDir(Dir.X, Dir.Y, Dir.Z);
     AxisDir.Normalize();
 
-    FVector<float> CameraDir = RayDir; // 클릭 시점의 카메라 시선
-    FVector<float> RightVec = FVector<float>::CrossProduct(AxisDir, CameraDir);
+    FVector<float> CameraDir = RayDir; 
     GizmoPlaneNormal = FVector<float>(-RayDir.X, -RayDir.Y, -RayDir.Z);
     GizmoPlaneNormal.Normalize();
 
     if (GizmoType == EGizmoHandleType::Rotate)
     {
-        // [수정 1] 회전 모드: 조작할 축(AxisDir) 자체가 평면의 법선(Normal)이 됩니다.
         GizmoPlaneNormal = AxisDir;
         float Denom = FVector<float>::DotProduct(RayDir, AxisDir);
         if (std::abs(Denom) > 0.001f)
         {
-            float t = FVector<float>::DotProduct(InitialObjectTransform.Location - RayOrigin, AxisDir) / Denom;
+            float t = FVector<float>::DotProduct(InitialGizmoTransform.Location - RayOrigin, AxisDir) / Denom;
             FVector<float> HitPoint = RayOrigin + (RayDir * t);
-            InitialDragVector = HitPoint - InitialObjectTransform.Location;
+            InitialDragVector = HitPoint - InitialGizmoTransform.Location;
             InitialDragVector.Normalize();
         }
     }
     else
     {
-        // 이동/스케일 모드: 기존처럼 카메라를 바라보는 평면을 사용합니다.
-        GizmoPlaneNormal = FVector<float>(-RayDir.X, -RayDir.Y, -RayDir.Z);
-        GizmoPlaneNormal.Normalize();
-
         float Denom = FVector<float>::DotProduct(RayDir, GizmoPlaneNormal);
         if (std::abs(Denom) > 0.0001f)
         {
-            float t = FVector<float>::DotProduct(InitialObjectTransform.Location - RayOrigin, GizmoPlaneNormal) / Denom;
+            float t = FVector<float>::DotProduct(InitialGizmoTransform.Location - RayOrigin, GizmoPlaneNormal) / Denom;
             FVector<float> HitPoint = RayOrigin + (RayDir * t);
-            InitialRayDistance = FVector<float>::DotProduct(HitPoint - InitialObjectTransform.Location, AxisDir);
+            InitialRayDistance = FVector<float>::DotProduct(HitPoint - InitialGizmoTransform.Location, AxisDir);
         }
         else
         {
@@ -255,108 +221,67 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FV
 
 void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FVector<float>& RayDir)
 {
-    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
+    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty() || DraggingObjects.empty())
         return;
 
-    USceneComponent* AnchorComp = GetAnchorComponent();
-    if (AnchorComp == nullptr)
-        return;
-
-    FVector<float> GizmoOrigin = InitialObjectTransform.Location;
+    FVector<float> GizmoOrigin = InitialGizmoTransform.Location;
     FVector<float> AxisDir;
 
-    // 1. 현재 조작 중인 축(로컬 축 기준) 도출
-    FMatrix<float> RotationMatrix = FRotationMatrix<float>(InitialObjectTransform.Rotation);
+    FMatrix<float> RotationMatrix = FRotationMatrix<float>(InitialGizmoTransform.Rotation);
     switch (ActiveAxis)
     {
     case EGizmoAxis::X: {
         FVector4<float> Dir = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
         AxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
-    }
-    break;
+    } break;
     case EGizmoAxis::Y: {
         FVector4<float> Dir = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
         AxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
-    }
-    break;
+    } break;
     case EGizmoAxis::Z: {
         FVector4<float> Dir = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
         AxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
-    }
-    break;
-    default:
-        return;
+    } break;
+    default: return;
     }
 
     AxisDir.Normalize();
-    FTransform NewTransform = InitialObjectTransform;
+    FTransform NewGizmoTransform = InitialGizmoTransform;
 
-    // ==========================================
-    // 회전 기즈모 (Rotation)
-    // ==========================================
     if (GizmoType == EGizmoHandleType::Rotate)
     {
-        // 조작 축 자체가 마우스 투영 평면의 법선(Normal)
         FVector<float> PlaneNormal = AxisDir;
         float Denom = FVector<float>::DotProduct(RayDir, PlaneNormal);
 
-        // [안전장치 1] 카메라 시선이 링 평면과 완전히 수평이 되어 값이 무한대로 폭주하는 현상 차단
-        if (std::abs(Denom) < 0.001f)
-            return;
-
+        if (std::abs(Denom) < 0.001f) return;
         float t = FVector<float>::DotProduct(GizmoOrigin - RayOrigin, PlaneNormal) / Denom;
+        if (t < 0.0f) return;
 
-        // [안전장치 2] 마우스 Ray의 충돌점이 카메라 뒤쪽에 형성되어 각도가 역전되는 현상 차단
-        if (t < 0.0f)
-            return;
-
-        // 평면 상의 마우스 3D 충돌점 도출
         FVector<float> HitPoint = RayOrigin + (RayDir * t);
-
-        // 기즈모 중심에서 현재 마우스 위치까지의 방향 벡터
         FVector<float> CurrentDragVector = HitPoint - GizmoOrigin;
         CurrentDragVector.Normalize();
 
-        // 정확한 부호와 각도를 얻기 위해 atan2 사용
         FVector<float> CrossProduct = FVector<float>::CrossProduct(InitialDragVector, CurrentDragVector);
-        float y = FVector<float>::DotProduct(CrossProduct, PlaneNormal); // sin 성분 (외적 벡터를 축에 투영)
-        float x = FVector<float>::DotProduct(InitialDragVector, CurrentDragVector); // cos 성분 (두 벡터의 내적)
+        float y = FVector<float>::DotProduct(CrossProduct, PlaneNormal); 
+        float x = FVector<float>::DotProduct(InitialDragVector, CurrentDragVector); 
 
-        // 1. 타겟 오브젝트의 현재 회전 상태를 행렬로 변환
-        FMatrix<float> CurrentRotMat = FRotationMatrix<float>(InitialObjectTransform.Rotation);
-
+        FMatrix<float> CurrentRotMat = FRotationMatrix<float>(InitialGizmoTransform.Rotation);
         float DeltaAngle = -std::atan2(y, x);
 
-        // 2. 조작한 축을 기준으로 '순수한 로컬 회전(Delta) 행렬' 생성
         FMatrix<float> DeltaRotMat;
-        if (ActiveAxis == EGizmoAxis::X)
-            DeltaRotMat = FRotationXMatrix<float>(DeltaAngle);
-        else if (ActiveAxis == EGizmoAxis::Y)
-            DeltaRotMat = FRotationYMatrix<float>(DeltaAngle);
-        else if (ActiveAxis == EGizmoAxis::Z)
-            DeltaRotMat = FRotationZMatrix<float>(DeltaAngle);
+        if (ActiveAxis == EGizmoAxis::X) DeltaRotMat = FRotationXMatrix<float>(DeltaAngle);
+        else if (ActiveAxis == EGizmoAxis::Y) DeltaRotMat = FRotationYMatrix<float>(DeltaAngle);
+        else if (ActiveAxis == EGizmoAxis::Z) DeltaRotMat = FRotationZMatrix<float>(DeltaAngle);
 
-        // 3. 로컬 회전 누적 (행렬 곱셈)
-        // 행벡터(Row-vector) 기반 수학에서는 Delta 행렬을 '앞'에 곱해야 로컬 축 기준 회전이 됩니다.
         FMatrix<float> NewRotMat = DeltaRotMat * CurrentRotMat;
-
-        // 4. 새로운 회전 행렬에서 오일러 각 추출하여 Transform에 갱신
-        NewTransform.Rotation = NewRotMat.ToEuler();
+        NewGizmoTransform.Rotation = NewRotMat.ToEuler();
     }
-    // ==========================================
-    // 이동 / 스케일 기즈모 (Translation / Scale)
-    // ==========================================
     else
     {
         float Denom = FVector<float>::DotProduct(RayDir, GizmoPlaneNormal);
-
-        // [안전장치] 평행 및 뒤쪽 투영 방지
-        if (std::abs(Denom) < 0.001f)
-            return;
-
+        if (std::abs(Denom) < 0.001f) return;
         float t = FVector<float>::DotProduct(GizmoOrigin - RayOrigin, GizmoPlaneNormal) / Denom;
-        if (t < 0.0f)
-            return;
+        if (t < 0.0f) return;
 
         FVector<float> HitPoint = RayOrigin + (RayDir * t);
         float AxisT = FVector<float>::DotProduct(HitPoint - GizmoOrigin, AxisDir);
@@ -364,71 +289,70 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
 
         if (GizmoType == EGizmoHandleType::Translate)
         {
-            NewTransform.Location = InitialObjectTransform.Location + (AxisDir * DeltaT);
+            NewGizmoTransform.Location = InitialGizmoTransform.Location + (AxisDir * DeltaT);
         }
         else if (GizmoType == EGizmoHandleType::Scale)
         {
             const float ScaleSensitivity = 0.2f;
             const float MinScale = 0.01f;
 
-            if (ActiveAxis == EGizmoAxis::X)
-                NewTransform.Scale.X += DeltaT * ScaleSensitivity;
-            else if (ActiveAxis == EGizmoAxis::Y)
-                NewTransform.Scale.Y += DeltaT * ScaleSensitivity;
-            else if (ActiveAxis == EGizmoAxis::Z)
-                NewTransform.Scale.Z += DeltaT * ScaleSensitivity;
+            if (ActiveAxis == EGizmoAxis::X) NewGizmoTransform.Scale.X += DeltaT * ScaleSensitivity;
+            else if (ActiveAxis == EGizmoAxis::Y) NewGizmoTransform.Scale.Y += DeltaT * ScaleSensitivity;
+            else if (ActiveAxis == EGizmoAxis::Z) NewGizmoTransform.Scale.Z += DeltaT * ScaleSensitivity;
 
-            if (NewTransform.Scale.X < MinScale)
-                NewTransform.Scale.X = MinScale;
-            if (NewTransform.Scale.Y < MinScale)
-                NewTransform.Scale.Y = MinScale;
-            if (NewTransform.Scale.Z < MinScale)
-                NewTransform.Scale.Z = MinScale;
+            if (NewGizmoTransform.Scale.X < MinScale) NewGizmoTransform.Scale.X = MinScale;
+            if (NewGizmoTransform.Scale.Y < MinScale) NewGizmoTransform.Scale.Y = MinScale;
+            if (NewGizmoTransform.Scale.Z < MinScale) NewGizmoTransform.Scale.Z = MinScale;
         }
     }
 
-    // 1. 계산된 새로운 월드 매트릭스
-    FMatrix<float> NewWorldMatrix = NewTransform.ToMatrix();
+    // ==========================================
+    // [추가] 선택된 모든 객체에 상대적 Transform 일괄 적용 로직
+    // ==========================================
+    FMatrix<float> GizmoInitialWorldMat = InitialGizmoTransform.ToMatrix();
+    FMatrix<float> GizmoNewWorldMat = NewGizmoTransform.ToMatrix();
+    FMatrix<float> GizmoInitialInv = GizmoInitialWorldMat.Inverse();
 
-    // 2. 부모 컴포넌트가 있다면 역행렬로 로컬 변환
-    USceneComponent* ParentComp = AnchorComp->GetAttachParent();
-    if (ParentComp)
+    for (FSelectedObjectState& State : DraggingObjects)
     {
-        FMatrix<float> ParentWorldInv = ParentComp->GetWorldMatrix().Inverse();
-        FMatrix<float> NewLocalMatrix = NewWorldMatrix * ParentWorldInv;
+        FMatrix<float> ObjInitialWorldMat = State.InitialWorldTransform.ToMatrix();
+        
+        // 1. 객체를 기준점(초기 기즈모) 좌표계로 로컬 변환 후, 새로운 기즈모 월드 행렬을 곱해 갱신된 월드 좌표계 도출
+        FMatrix<float> ObjNewWorldMat = ObjInitialWorldMat * GizmoInitialInv * GizmoNewWorldMat;
 
-        NewTransform = NewTransform.ToTransform(NewLocalMatrix);
+        FTransform ObjNewTransform;
+        ObjNewTransform = ObjNewTransform.ToTransform(ObjNewWorldMat);
+
+        // 2. 부모-자식 계층이 있는 경우 Local Transform으로 재변환
+        USceneComponent* ParentComp = State.Component->GetAttachParent();
+        if (ParentComp)
+        {
+            FMatrix<float> ParentWorldInv = ParentComp->GetWorldMatrix().Inverse();
+            FMatrix<float> ObjNewLocalMat = ObjNewWorldMat * ParentWorldInv;
+            ObjNewTransform = ObjNewTransform.ToTransform(ObjNewLocalMat);
+        }
+
+        // 3. 최종 Transform 적용
+        State.Component->SetTransform(ObjNewTransform);
     }
-
-    // 3. 최종 로컬 트랜스폼 적용
-    AnchorComp->SetTransform(NewTransform);
 }
 
 void APivotTransformGizmo::OnMouseHover(const FVector<float>& RayOrigin, const FVector<float>& RayDir)
 {
-    if (bIsDragging)
-        return;
-
-    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
-        return;
+    // ... (기존 OnMouseHover 유지)
+    if (bIsDragging) return;
+    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty()) return;
 
     TArray<UPrimitiveComponent*>* ActiveComponents = nullptr;
 
     switch (GizmoType)
     {
-    case EGizmoHandleType::Translate:
-        ActiveComponents = &TranslateGizmoComponents;
-        break;
-    case EGizmoHandleType::Rotate:
-        ActiveComponents = &RotateGizmoComponents;
-        break;
-    case EGizmoHandleType::Scale:
-        ActiveComponents = &ScaleGizmoComponents;
-        break;
+    case EGizmoHandleType::Translate: ActiveComponents = &TranslateGizmoComponents; break;
+    case EGizmoHandleType::Rotate: ActiveComponents = &RotateGizmoComponents; break;
+    case EGizmoHandleType::Scale: ActiveComponents = &ScaleGizmoComponents; break;
     }
 
-    if (ActiveComponents == nullptr)
-        return;
+    if (ActiveComponents == nullptr) return;
 
     float MinDistance = FLT_MAX;
     int HitIndex = -1;
@@ -436,8 +360,7 @@ void APivotTransformGizmo::OnMouseHover(const FVector<float>& RayOrigin, const F
     for (int i = 0; i < ActiveComponents->size(); ++i)
     {
         UPrimitiveComponent* Comp = (*ActiveComponents)[i];
-        if (Comp == nullptr)
-            continue;
+        if (Comp == nullptr) continue;
 
         FHitResult Hit = Comp->IntersectRay(RayOrigin, RayDir);
         if (Hit.bHit && Hit.Distance < MinDistance)
@@ -448,14 +371,10 @@ void APivotTransformGizmo::OnMouseHover(const FVector<float>& RayOrigin, const F
     }
 
     EGizmoAxis NewHoveredAxis = EGizmoAxis::None;
-    if (HitIndex == 0)
-        NewHoveredAxis = EGizmoAxis::X;
-    else if (HitIndex == 1)
-        NewHoveredAxis = EGizmoAxis::Y;
-    else if (HitIndex == 2)
-        NewHoveredAxis = EGizmoAxis::Z;
+    if (HitIndex == 0) NewHoveredAxis = EGizmoAxis::X;
+    else if (HitIndex == 1) NewHoveredAxis = EGizmoAxis::Y;
+    else if (HitIndex == 2) NewHoveredAxis = EGizmoAxis::Z;
 
-    // Hover된 축이 변경되었을 때만 색상 업데이트를 수행
     if (HoveredAxis != NewHoveredAxis)
     {
         HoveredAxis = NewHoveredAxis;
@@ -467,12 +386,12 @@ void APivotTransformGizmo::OnMouseUp()
 {
     bIsDragging = false;
     ActiveAxis = EGizmoAxis::None;
+    DraggingObjects.clear(); // 드래그 종료 시 상태 비우기
     UpdateColor();
 }
 
 bool APivotTransformGizmo::OnKeyDown(const FKey& Key)
 {
-    // ⭐️ 스페이스바(또는 W,E,R 등 원하는 키)가 눌리면 모드 전환
     if (Key == EKeys::Space)
     {
         ToggleMode();
@@ -483,7 +402,8 @@ bool APivotTransformGizmo::OnKeyDown(const FKey& Key)
 
 void APivotTransformGizmo::ToggleMode()
 {
-    if (GetAnchorComponent() == nullptr)
+    FTransform CenterTransform;
+    if (!GetGizmoCenterTransform(CenterTransform))
         return;
 
     uint32 CurrentModeIndex = static_cast<uint32>(GizmoType);
@@ -495,33 +415,25 @@ void APivotTransformGizmo::ToggleMode()
 
 void APivotTransformGizmo::UpdateColor()
 {
+    // ... (기존 UpdateColor 유지)
     auto ApplyColor = [&](TArray<UPrimitiveComponent *> &Comps)
     {
-        if (Comps.size() < 3)
-            return;
+        if (Comps.size() < 3) return;
 
-        // 기본 색상
-        FVector4<float> ColorX = {1.0f, 0.0f, 0.0f, 1.0f};     // Red
-        FVector4<float> ColorY = {0.0f, 1.0f, 0.0f, 1.0f};     // Green
-        FVector4<float> ColorZ = {0.0f, 0.0f, 1.0f, 1.0f};     // Blue
-        FVector4<float> HoverColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow
+        FVector4<float> ColorX = {1.0f, 0.0f, 0.0f, 1.0f};     
+        FVector4<float> ColorY = {0.0f, 1.0f, 0.0f, 1.0f};     
+        FVector4<float> ColorZ = {0.0f, 0.0f, 1.0f, 1.0f};     
+        FVector4<float> HoverColor = {1.0f, 1.0f, 0.0f, 1.0f}; 
 
-        // 드래그 중이라면 ActiveAxis를, 아니라면 HoveredAxis를 강조합니다.
         EGizmoAxis HighlightAxis = bIsDragging ? ActiveAxis : HoveredAxis;
 
-        if (HighlightAxis == EGizmoAxis::X)
-            ColorX = HoverColor;
-        else if (HighlightAxis == EGizmoAxis::Y)
-            ColorY = HoverColor;
-        else if (HighlightAxis == EGizmoAxis::Z)
-            ColorZ = HoverColor;
+        if (HighlightAxis == EGizmoAxis::X) ColorX = HoverColor;
+        else if (HighlightAxis == EGizmoAxis::Y) ColorY = HoverColor;
+        else if (HighlightAxis == EGizmoAxis::Z) ColorZ = HoverColor;
 
-        if (Comps[0])
-            Comps[0]->SetColor(ColorX);
-        if (Comps[1])
-            Comps[1]->SetColor(ColorY);
-        if (Comps[2])
-            Comps[2]->SetColor(ColorZ);
+        if (Comps[0]) Comps[0]->SetColor(ColorX);
+        if (Comps[1]) Comps[1]->SetColor(ColorY);
+        if (Comps[2]) Comps[2]->SetColor(ColorZ);
     };
 
     ApplyColor(TranslateGizmoComponents);
@@ -529,14 +441,13 @@ void APivotTransformGizmo::UpdateColor()
     ApplyColor(ScaleGizmoComponents);
 }
 
-// Initial Transform 값을 기반으로 이동한 Transform 값을 계산한다.
 FTransform APivotTransformGizmo::CalculateUnscaledTransform(FTransform TargetTransform)
 {
+    // ... (기존 CalculateUnscaledTransform 유지)
     FTransform UnscaledTransform;
     UnscaledTransform.Location = TargetTransform.Location;
     UnscaledTransform.Rotation = TargetTransform.Rotation;
 
-    // 뷰포트와 카메라 정보를 능동적으로 가져옵니다.
     FEditorViewportClient* ViewportClient = UImGuiManager::Get().GetEditorViewportClient();
     FViewportCameraTransform* Camera = UImGuiManager::Get().GetCamera();
 
@@ -551,40 +462,27 @@ FTransform APivotTransformGizmo::CalculateUnscaledTransform(FTransform TargetTra
         OrthoWidth = dir.Length() * 2.0f;
     }
 
-    // 타겟의 3D 월드 위치를 Vector4로 구성한 뒤, ViewMatrix를 곱해 카메라 기준 로컬 좌표로 변환한다.
-    // 이 떄의 Z값이 곧 물체부터 카메라까지의 정확한 깊이이다.
-    FVector4<float> TargetWorldPos(TargetTransform.Location.X, TargetTransform.Location.Y, TargetTransform.Location.Z,
-                                   1.0f);
+    FVector4<float> TargetWorldPos(TargetTransform.Location.X, TargetTransform.Location.Y, TargetTransform.Location.Z, 1.0f);
     FVector4<float> TargetViewPos = TargetWorldPos * ViewMatrix;
 
     float Distance = std::abs(TargetViewPos.Z);
-    if (Distance < 0.01f)
-        Distance = 0.01f; // 거리가 너무 가까울 때 사라짐 방지
+    if (Distance < 0.01f) Distance = 0.01f; 
 
     float ScaleFactor = 1.0f;
 
     if (!bIsOrtho)
     {
-        // 1. 카메라 평면으로부터의 깊이 (Z Depth)
         float ZDepth = std::abs(TargetViewPos.Z);
-        if (ZDepth < 0.01f)
-            ZDepth = 0.01f;
+        if (ZDepth < 0.01f) ZDepth = 0.01f;
 
-        // 1. 카메라 원점으로부터 기즈모까지의 '실제 3D 직선 거리(Euclidean Distance)' 계산
-        float EuclideanDist = std::sqrt(TargetViewPos.X * TargetViewPos.X + TargetViewPos.Y * TargetViewPos.Y +
-                                        TargetViewPos.Z * TargetViewPos.Z);
-        if (EuclideanDist < 0.01f)
-            EuclideanDist = 0.01f;
+        float EuclideanDist = std::sqrt(TargetViewPos.X * TargetViewPos.X + TargetViewPos.Y * TargetViewPos.Y + TargetViewPos.Z * TargetViewPos.Z);
+        if (EuclideanDist < 0.01f) EuclideanDist = 0.01f;
 
-        // 3. 화면 중심(Z축)에서 벗어난 각도의 Cosine 값 도출 (Z / Distance)
         float CosineAngle = ZDepth / EuclideanDist;
-
-        // 4. ZDepth에 CosineAngle을 한 번 더 곱해줌 (결과적으로 Z^2 / EuclideanDist)
         float CorrectedDistance = ZDepth * CosineAngle;
         float FOVRad = FOV * (3.14159265f / 180.0f);
         float FOVScale = std::tan(FOVRad / 2.0f);
 
-        // 최종 스케일은 보정된 거리와 FOV 스케일을 곱하여 결정
         ScaleFactor *= CorrectedDistance * FOVScale * 25.0f;
     }
     else
@@ -593,27 +491,55 @@ FTransform APivotTransformGizmo::CalculateUnscaledTransform(FTransform TargetTra
     }
 
     UnscaledTransform.Scale = FVector<float>(ScaleFactor, ScaleFactor, ScaleFactor);
-
     return UnscaledTransform;
 }
 
-// 이동의 중심이 될 Anchor Component를 찾는 헬퍼 함수
-USceneComponent* APivotTransformGizmo::GetAnchorComponent()
+// [추가] Selection 배열 안의 실제 조작 타겟 컴포넌트들을 모두 추출하는 유틸리티
+void APivotTransformGizmo::GetTargetComponents(TArray<USceneComponent*>& OutComponents)
 {
-    // 드래그 시작 시점의 전체 Transform 정보를 저장
     USelection* Selection = GEditor->GetSelection();
-    UObject* TargetObj = Selection->GetSelectedObject(0);
-    USceneComponent* AnchorComp = nullptr;
-
-    // 요구사항 1, 2 구현: Selection에 들어있는 타입에 따라 타겟 지정
-    if (AActor* SelectedActor = Cast<AActor>(TargetObj))
+    for (uint32 i = 0; i < Selection->GetCount(); ++i)
     {
-        AnchorComp = SelectedActor->GetRootComponent(); // 액터면 루트 컴포넌트
+        UObject* TargetObj = Selection->GetSelectedObject(i);
+        if (AActor* SelectedActor = Cast<AActor>(TargetObj))
+        {
+            if (SelectedActor->GetRootComponent())
+                OutComponents.push_back(SelectedActor->GetRootComponent());
+        }
+        else if (USceneComponent* SelectedComp = Cast<USceneComponent>(TargetObj))
+        {
+            OutComponents.push_back(SelectedComp);
+        }
     }
-    else if (USceneComponent* SelectedComp = Cast<USceneComponent>(TargetObj))
-    {
-        AnchorComp = SelectedComp; // 컴포넌트면 해당 컴포넌트
-    }
-
-    return AnchorComp;
 }
+
+// [추가] 선택된 모든 컴포넌트들의 위치를 평균내어 다중 선택 기준(Center Transform)을 도출
+bool APivotTransformGizmo::GetGizmoCenterTransform(FTransform& OutTransform)
+{
+    TArray<USceneComponent*> TargetComps;
+    GetTargetComponents(TargetComps);
+
+    if (TargetComps.empty())
+        return false;
+
+    FVector<float> CenterPos(0.0f, 0.0f, 0.0f);
+    for (USceneComponent* Comp : TargetComps)
+    {
+        FTransform TempTrans;
+        FTransform WorldTrans = TempTrans.ToTransform(Comp->GetWorldMatrix());
+        CenterPos += WorldTrans.Location;
+    }
+    CenterPos = CenterPos / static_cast<float>(TargetComps.size());
+
+    // 기즈모의 축 자체는 첫 번째 선택된 객체의 회전을 따르도록 설정 (또는 필요에 따라 월드 축(0,0,0)으로 변경 가능)
+    FTransform TempTransFirst;
+    FTransform FirstObjTrans = TempTransFirst.ToTransform(TargetComps[0]->GetWorldMatrix());
+    
+    OutTransform.Location = CenterPos;
+    OutTransform.Rotation = FirstObjTrans.Rotation;
+    OutTransform.Scale = FVector<float>(1.0f, 1.0f, 1.0f); // 기즈모 표시 스케일은 오버라이드 되므로 1로 설정
+
+    return true;
+}
+
+// GetAnchorComponent() 함수는 더 이상 사용되지 않으므로 삭제합니다.
