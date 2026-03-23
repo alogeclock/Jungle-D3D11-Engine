@@ -107,7 +107,7 @@ void USelection::Clear()
         UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(obj);
         if (PrimComp)
         {
-            PrimComp->SetSelectEffect(true);
+            PrimComp->SetSelectEffect(false);
         }
 
         // 2. 액터가 통째로 선택되어 있었던 경우
@@ -120,7 +120,7 @@ void USelection::Clear()
                 UPrimitiveComponent* ChildPrimComp = Cast<UPrimitiveComponent>(Comp);
                 if (ChildPrimComp)
                 {
-                    ChildPrimComp->SetSelectEffect(true);
+                    ChildPrimComp->SetSelectEffect(false);
                 }
             }
         }
