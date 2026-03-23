@@ -11,7 +11,7 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     APivotTransformGizmo(const FString &InString);
     virtual ~APivotTransformGizmo() override;
 
-    virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix, float FOV = 90.0f, float OrthoWidth = 10.0f) override;
+    virtual void Tick(float DeltaTime) override;
 
     virtual bool OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
@@ -26,6 +26,8 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     FTransform     InitialObjectTransform;    // (드래그로 객체를 변경하기 위한) 객체의 초기 Transform
     FVector<float> GizmoPlaneNormal;
     FVector<float> InitialDragVector;
+
+    void UpdateVisibility();
 
     EGizmoAxis HoveredAxis = EGizmoAxis::None;
 

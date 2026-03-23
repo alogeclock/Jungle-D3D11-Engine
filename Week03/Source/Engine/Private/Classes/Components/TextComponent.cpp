@@ -11,10 +11,18 @@ UTextComponent::UTextComponent(const FString &InString)
 	PrimitiveType = EPrimitiveType::Text;
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
-    FilePath = "Data/Texture/DejaVu Sans Mono.dds";
+    bVIsible = true;
+    FilePath = "Data/Texture/KorName.png";
 }
 
-UTextComponent::~UTextComponent() {}
+UTextComponent::~UTextComponent() {
+
+    if (VertexBuffer)
+    {
+        VertexBuffer->Release();
+        VertexBuffer = nullptr;
+    }
+}
 
 void UTextComponent::SetText(const uint32 UUID){
 		char buf[64];
@@ -34,7 +42,8 @@ void UTextComponent::Render(URenderer &renderer)
 
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
-    renderer.RenderText(FilePath, constants, &TextVertices);
+
+    renderer.RenderText(FilePath, constants, &TextVertices, &VertexBuffer, VertexBufferSize);
 }
 
 void UTextComponent::RebuildMesh()

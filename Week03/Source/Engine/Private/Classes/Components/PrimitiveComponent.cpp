@@ -8,15 +8,15 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
-    // Show AABB 설정이 켜져 있다면 AABB를 렌더링한다.
-    if (renderer.IsDrawAABB())
+    // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
+    if (renderer.IsDrawAABB() && !bIsInEditor)
     {
         UpdateBounds();
         GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
     }
-    
-    // Show Primitives 설정이 꺼져 있고, 에디터 컴포넌트가 아니라면 렌더링을 취소한다.
-    if (!bIsInEditor && !renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
+
+    // 현재 프리미티브의 렌더링 여부를 판단하고 렌더링할 필요가 없을 시 생략한다.
+    if (!IsRenderable(renderer))
         return;
 
     FConstants constants;
@@ -43,11 +43,23 @@ void UPrimitiveComponent::SetPrimitiveType(EPrimitiveType InType)
     }
 }
 
+bool UPrimitiveComponent::IsRenderable(URenderer &renderer)
+{
+    if (!bIsVisible)
+        return false;
+
+    // Show Primitives 설정이 꺼져 있고, 에디터 컴포넌트가 아니라면 렌더링을 취소한다.
+    if (!bIsInEditor && !renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
+        return false;
+
+    return true;
+}
+
 FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
     FHitResult Result;
 
-    if (PrimitiveType == EPrimitiveType::None)
+    if (!bIsVisible || PrimitiveType == EPrimitiveType::None)
         return Result;
 
     switch (PrimitiveType)
@@ -64,13 +76,14 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     case EPrimitiveType::Arrow:
     case EPrimitiveType::CubeArrow:
     case EPrimitiveType::Ring:
-    default:
         if (!IntersectRayBoundingSphere(RayOrigin, RayDirection))
             return Result;
         if (!IntersectRayAABB(RayOrigin, RayDirection))
             return Result;
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
         break;
+    default: 
+        return Result;
     }
 
     return Result;
@@ -298,31 +311,31 @@ void UPrimitiveComponent::UpdateBounds()
         LocalAABB = UMeshManager::Get().GetMeshAABB(PrimitiveType);
 
         FVector<float> Min = LocalAABB.Min;
-        FVector<float> Max = LocalAABB.Max;
-
-        // 로컬 AABB의 8개 정점 생성
-
-        Corners[0] = {Min.X, Min.Y, Min.Z};
-        Corners[1] = {Max.X, Min.Y, Min.Z};
-        Corners[2] = {Min.X, Max.Y, Min.Z};
-        Corners[3] = {Max.X, Max.Y, Min.Z};
-        Corners[4] = {Min.X, Min.Y, Max.Z};
-        Corners[5] = {Max.X, Min.Y, Max.Z};
-        Corners[6] = {Min.X, Max.Y, Max.Z};
-        Corners[7] = {Max.X, Max.Y, Max.Z};
+        FVector<float> Max = LocalAABB.Max;                                                               
 
         bLocalBoundsDirty = false;
     }
 
     FMatrix<float> WorldMatrix = GetWorldMatrix();
 
-    WorldAABB = FBox(); // 초기화
-    for (int i = 0; i < 8; ++i)
-    {
-        // 정점을 월드 공간으로 변환
-        FVector4<float> Transformed = FVector4<float>(Corners[i].X, Corners[i].Y, Corners[i].Z, 1.0f) * WorldMatrix;
-        WorldAABB.Encapsulate(FVector<float>(Transformed.X, Transformed.Y, Transformed.Z));
-    }
+    // 1. 로컬 AABB의 중심(Center)과 반직경(Extents) 계산
+    FVector<float> LocalCenter = (LocalAABB.Max + LocalAABB.Min) * 0.5f;
+    FVector<float> LocalExtents = (LocalAABB.Max - LocalAABB.Min) * 0.5f;
+
+    // 2. 중심점 이동 (Center * Matrix)
+    FVector4<float> WorldCenter4 = FVector4<float>(LocalCenter.X, LocalCenter.Y, LocalCenter.Z, 1.0f) * WorldMatrix;
+    FVector<float>  WorldCenter = FVector<float>(WorldCenter4.X, WorldCenter4.Y, WorldCenter4.Z);
+
+    // 3. 회전 행렬의 절댓값을 적용하여 새로운 Extents 계산 (Scale 적용됨)
+    // (WorldMatrix의 3x3 부분의 절댓값과 LocalExtents를 내적)
+    FVector<float> WorldExtents(
+        std::abs(WorldMatrix.M[0][0]) * LocalExtents.X + std::abs(WorldMatrix.M[1][0]) * LocalExtents.Y + std::abs(WorldMatrix.M[2][0]) * LocalExtents.Z,
+        std::abs(WorldMatrix.M[0][1]) * LocalExtents.X + std::abs(WorldMatrix.M[1][1]) * LocalExtents.Y + std::abs(WorldMatrix.M[2][1]) * LocalExtents.Z,
+        std::abs(WorldMatrix.M[0][2]) * LocalExtents.X + std::abs(WorldMatrix.M[1][2]) * LocalExtents.Y + std::abs(WorldMatrix.M[2][2]) * LocalExtents.Z);
+
+    // 4. 새로운 World AABB 갱신
+    WorldAABB.Min = WorldCenter - WorldExtents;
+    WorldAABB.Max = WorldCenter + WorldExtents;
 }
 
 const FBox &UPrimitiveComponent::GetWorldAABB()

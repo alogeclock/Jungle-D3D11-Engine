@@ -7,9 +7,9 @@
 
 enum class EGizmoHandleType
 {
-    Translate,
-    Rotate,
-    Scale
+    Translate = 0,
+    Rotate = 1,
+    Scale = 2
 };
 
 enum class EGizmoAxis
@@ -27,7 +27,6 @@ class ABaseTransformGizmo : public AActor
     virtual ~ABaseTransformGizmo();
 
     virtual void Update(float DeltaTime) {}
-    virtual void Render(URenderer &renderer, const FMatrix<float> &ViewMatrix, float FOV = 90.0f, float OrthoWidth = 10.0f) {}
 
     virtual void     SetTargetObject(USceneComponent *InTarget);
     USceneComponent *GetTargetObject() const;

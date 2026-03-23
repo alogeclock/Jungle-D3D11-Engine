@@ -6,6 +6,7 @@ UUUIDTextComponent::UUUIDTextComponent(const FString &InString)
 	PrimitiveType = EPrimitiveType::Text;
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
+    bVIsible = false;
     FilePath = "Data/Texture/DejaVu Sans Mono.dds";
 }
 
@@ -13,7 +14,7 @@ UUUIDTextComponent::~UUUIDTextComponent() {}
 
 void UUUIDTextComponent::Render(URenderer &renderer) {
 	if (bMeshDirty) RebuildMesh();
-    if (TextVertices.empty()) return;
+    if (TextVertices.empty() || !bVIsible) return;
 
     if (!renderer.CheckShowFlag(EEngineShowFlags::SF_UUID))
         return;
@@ -31,14 +32,22 @@ void UUUIDTextComponent::Render(URenderer &renderer) {
     constants.MVPMatrix = RTMatrix;
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
-    renderer.RenderText(FilePath, constants, &TextVertices);
+    renderer.RenderText(FilePath, constants, &TextVertices, &VertexBuffer, VertexBufferSize);
+}
+
+void UUUIDTextComponent::Selected() { 
+    bVIsible = true;
+}
+
+void UUUIDTextComponent::NotSelected() {
+    bVIsible = false;
 }
 
 void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp)
 {
     const FMatrix<float> &World = GetWorldMatrix();
 
-    const FVector<float> WorldPos(World.M[3][0], World.M[3][1], World.M[3][2]);
+    const FVector<float> WorldPos(World.M[3][0], World.M[3][1], World.M[3][2]+Zoffset);
 
     FVector<float> WorldScale;
     WorldScale.X = std::sqrt(World.M[0][0] * World.M[0][0] + World.M[0][1] * World.M[0][1] + World.M[0][2] * World.M[0][2]);
@@ -67,6 +76,6 @@ void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, 
         FPlane<float>(0.0f,      0.0f,      0.0f,      1.0f)
     );
 
-    const FMatrix<float> S = FScaleMatrix<float>(WorldScale);
+    const FMatrix<float> S = FScaleMatrix<float>::Identity();
     const FMatrix<float> T = FTranslationMatrix<float>(WorldPos);
     RTMatrix = S * R * T;}

@@ -39,10 +39,12 @@ class UImGuiManager
     void endFrame();
     void Release();
 
-    UPrimitiveComponent *GetSelectedObject() { return SelectedObject; };
-    void                 SetCamera(FViewportCameraTransform *camera);
-    void                 SetEditorViewportClient(FEditorViewportClient *viewportclient);
-    void                 SetSelectedObject(UPrimitiveComponent *sphere);
+    UPrimitiveComponent      *GetSelectedObject() { return SelectedObject; };
+    FViewportCameraTransform *GetCamera() const { return Camera; }
+    void                      SetCamera(FViewportCameraTransform *camera);
+    FEditorViewportClient    *GetEditorViewportClient() const { return EditorViewportClient; }
+    void                      SetEditorViewportClient(FEditorViewportClient *viewportclient);
+    void                      SetSelectedObject(UPrimitiveComponent *sphere);
 
     bool IsCaptureMouse();
     bool IsCaptureKeyboard();
@@ -66,8 +68,11 @@ class UImGuiManager
     void SetCameraInfo();
     void TransformInspector();
     void ShowObjectInfo(UObject* InObject);
-    void ShowDebugOutliner(TArray<UObject *> &ObjectArray);
-    void ShowDebugOutliner(UObject *Object, TMap<UObject*, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth);
+    void ShowOutliner(TArray<UObject *> &ObjectArray);
+    void ShowOutliner(UObject *Object, TMap<UObject*, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth);
+    void ShowOutliner();
+
+    //void Show
 
   public:
     bool bIsOrthogonal = false;
@@ -78,6 +83,8 @@ class UImGuiManager
     FViewportCameraTransform *Camera = nullptr;
     UPrimitiveComponent      *SelectedObject = nullptr;
 
+    float outlinerHeight = 300.0f;
+    float splitterThickness = 6.0f;
     UObject *TempSelectedObject = nullptr;
     char                      buffer[256];
 };

@@ -27,7 +27,7 @@ class AActor : public UObject
     FTransform GetTransform() const;
     void       SetTransform(const FTransform &NewTransform);
 
-    void Tick(float deltaTime);
+    virtual void Tick(float deltaTime);
 
     void IterateAllActorComponents(URenderer &renderer) const;
 };

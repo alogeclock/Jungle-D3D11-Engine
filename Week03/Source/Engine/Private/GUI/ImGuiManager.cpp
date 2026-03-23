@@ -82,12 +82,15 @@ void UImGuiManager::Update()
     }
     ImGui::End();
 
-    ImGui::Begin("Inspector");
-    ShowObjectInfo(TempSelectedObject);
-    ImGui::End();
+    //ImGui::Begin("Inspector");
+    //ShowObjectInfo(TempSelectedObject);
+    //ImGui::End();
 
-    ImGui::Begin("OutLiner");
-    ShowDebugOutliner(GUObjectArray);
+    //ImGui::Begin("OutLiner");
+    //ShowDebugOutliner(GUObjectArray);
+    //ImGui::End();
+    ImGui::Begin("Outliner");
+    ShowOutliner();
     ImGui::End();
 
     endFrame();
@@ -331,18 +334,14 @@ void UImGuiManager::SpawnActors()
             NewActor->SetRootComponent(Root);
             Root->RegisterComponent();
 
-            UObject             *NewObj = FObjectFactory::ConstructObject(ComponentClassToSpawn);
-            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewObj); // 생성된 객체가 화면에 그릴 수
+            UObject             *NewComponent = FObjectFactory::ConstructObject(ComponentClassToSpawn);
+            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent); // 생성된 객체가 화면에 그릴 수
                                                                                        // 있는 PrimitiveComponent인지 확인
 
             if (DynamicPrimitive != nullptr)
             {
-                // UUUIDTextComponent *UUUID = NewObj->CreateDefaultSubobject<UUUIDTextComponent>();
-                // NewActor->AddOwnedComponent(UUUID);
-                // UUUID->SetText(NewObj->GetUUID());
-
                 const char  *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
-                const uint32 UUID = NewObj->GetUUID();
+                const uint32 UUID = NewActor->GetUUID();
 
                 char logBuffer[256];
                 snprintf(logBuffer, sizeof(logBuffer), "[System] Spawned Actor: %s / UUID: %u", SpawnedClassName, UUID);
@@ -352,15 +351,21 @@ void UImGuiManager::SpawnActors()
                 DynamicPrimitive->SetOuter(NewActor);
                 DynamicPrimitive->RegisterComponent();
 
-                /*if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
+                if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText(logBuffer);
+                    TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));   
                 }
-                else */
-                if (UUUIDTextComponent *UUIDTextComp = Cast<UUUIDTextComponent>(DynamicPrimitive))
+
+                UObject *NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
+                UUUIDTextComponent *UUUID = Cast<UUUIDTextComponent>(NewUUUIDComponent);
+                if (UUUID == nullptr)
                 {
-                    UUIDTextComp->SetText(UUID);
+                    return;
                 }
+
+                UUUID->SetOuter(NewActor);
+                UUUID->RegisterComponent();
+                UUUID->SetText(UUID);
             }
         }
     }
@@ -372,10 +377,20 @@ void UImGuiManager::NewScene()
     {
         if (GWorld && GWorld->GetCurrentLevel())
         {
-            GWorld->GetCurrentLevel()->ClearActors();
-            GWorld->GetCurrentLevel()->SetName("DefaultLevel");
+            ULevel* OldLevel = GWorld->GetCurrentLevel();
+            ULevel* NewLevel = GWorld->CreateNewLevel("DefaultLevel");
+            GWorld->SetCurrentLevel(NewLevel);
+            
+            if (OldLevel != nullptr)
+            {
+                GWorld->GetLevels().erase(OldLevel); // UWorld에 GetLevels() 필요
+                delete OldLevel;
+            }
             snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().ToString().c_str());
             AddLog("[System] All actors and components have been destroyed.");
+
+            if (GApplication)
+                GApplication->UpdateEditorViewport();
         }
 
         SelectedObject = nullptr;
@@ -421,13 +436,25 @@ void UImGuiManager::LoadScene()
         {
             // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출
             std::filesystem::path path(FilePath);
-            FString               LoadedSceneName = path.stem().string();
+            std::wstring wStem = path.stem().wstring();
+            
+            int size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
+            std::string utf8Stem(size_needed, 0);
+            WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
+
+            // 문자열 끝의 널(Null) 문자가 포함되어 변환될 수 있으므로 제거해줍니다.
+            if (!utf8Stem.empty() && utf8Stem.back() == '\0')
+            {
+                utf8Stem.pop_back();
+            }
 
             // GWorld의 씬 이름과 ImGui UI의 buffer를 갱신
-            // GWorld->CurrentSceneName = LoadedSceneName;
-            strcpy_s(buffer, sizeof(buffer), LoadedSceneName.c_str());
+            strcpy_s(buffer, sizeof(buffer), utf8Stem.c_str());
 
             AddLog(L"Scene loaded successfully: " + FilePath);
+
+            if (GApplication)
+                GApplication->UpdateEditorViewport();
         }
         else
         {
@@ -468,7 +495,7 @@ void UImGuiManager::SetCameraInfo()
 
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         float GridStep = EditorViewportClient->GetGridStep();
-        if (ImGui::SliderFloat("Grid Snap", &GridStep, 0.1f, 5.0f, "%.2f"))
+        if (ImGui::SliderFloat("Grid Snap", &GridStep, 0.1f, 10.0f, "%.2f"))
         {
             EditorViewportClient->SetGridStepAndUpdate(GridStep);
         }
@@ -481,6 +508,10 @@ void UImGuiManager::TransformInspector()
         return;
 
     AActor    *Actor = Cast<AActor>(SelectedObject->GetOwner());
+
+    if (Actor == nullptr || Actor->GetRootComponent() == nullptr)
+        return;
+
     FTransform t = Actor->GetTransform();
 
     ImGui::DragFloat3("Translation", &t.Location.X, 0.01f);
@@ -552,7 +583,9 @@ void UImGuiManager::ShowObjectInfo(UObject *InObject)
                 if (!Object)
                     continue;
 
-                if (Object->IsA(UActorComponent::StaticClass()) && static_cast<UActorComponent *>(Object)->GetOwner()->GetRootComponent() == Object)
+                if (Object->IsA(UActorComponent::StaticClass()) 
+                    && static_cast<UActorComponent*>(Object)->GetOwner() 
+                    && static_cast<UActorComponent*>(Object)->GetOwner()->GetRootComponent() == Object)
                     continue;
 
                 if (ImGui::Button(Object->GetName().ToString().c_str(), {100.f, 15.f}))
@@ -564,7 +597,43 @@ void UImGuiManager::ShowObjectInfo(UObject *InObject)
     }
 }
 
-void UImGuiManager::ShowDebugOutliner(TArray<UObject *> &ObjectArray)
+void UImGuiManager::ShowOutliner()
+{
+    ImGui::BeginChild("OutlinerRegion", ImVec2(0, outlinerHeight), true);
+    {   
+        ShowOutliner(GUObjectArray);
+    }
+    ImGui::EndChild();
+
+    ImGui::InvisibleButton("H_Splitter", ImVec2(-1, splitterThickness));
+    if (ImGui::IsItemActive())
+    {
+        outlinerHeight += ImGui::GetIO().MouseDelta.y;
+    }
+
+    float availHeight = ImGui::GetContentRegionAvail().y;
+
+    float minTop = 100.0f;
+    float minBottom = 100.0f;
+    float maxTop = availHeight - splitterThickness - minBottom;
+    if (outlinerHeight < minTop)
+        outlinerHeight = minTop;
+    if (outlinerHeight > maxTop)
+        outlinerHeight = maxTop;
+
+        ImDrawList* draw = ImGui::GetWindowDrawList();
+    ImVec2 min = ImGui::GetItemRectMin();
+    ImVec2 max = ImGui::GetItemRectMax();
+    draw->AddRectFilled(min, max, IM_COL32(90, 90, 90, 255));
+
+    ImGui::BeginChild("InspectorRegion", ImVec2(0, 0), true);
+    {
+        ShowObjectInfo(TempSelectedObject);
+    }
+    ImGui::EndChild();
+}
+
+void UImGuiManager::ShowOutliner(TArray<UObject *> &ObjectArray)
 {
     int                                ArraySize = ObjectArray.size();
     TMap<UObject *, TArray<UObject *>> OuterGraph;
@@ -578,6 +647,7 @@ void UImGuiManager::ShowDebugOutliner(TArray<UObject *> &ObjectArray)
             continue;
         }
 
+
         OuterGraph[ObjectArray[i]->GetOuter()].push_back(ObjectArray[i]);
     }
 
@@ -587,11 +657,11 @@ void UImGuiManager::ShowDebugOutliner(TArray<UObject *> &ObjectArray)
         UObject *Current = SearchStack.back();
         SearchStack.pop_back();
 
-        ShowDebugOutliner(Current, OuterGraph, visited, 0);
+        ShowOutliner(Current, OuterGraph, visited, 0);
     }
 }
 
-void UImGuiManager::ShowDebugOutliner(UObject *Object, TMap<UObject *, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth)
+void UImGuiManager::ShowOutliner(UObject *Object, TMap<UObject *, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth)
 {
     if (Object == nullptr)
         return;
@@ -650,7 +720,7 @@ void UImGuiManager::ShowDebugOutliner(UObject *Object, TMap<UObject *, TArray<UO
         if (opened)
         {
             for (const auto &child : childs)
-                ShowDebugOutliner(child, Dependencies, Visited, Depth + 1);
+                ShowOutliner(child, Dependencies, Visited, Depth + 1);
 
             ImGui::TreePop();
         }

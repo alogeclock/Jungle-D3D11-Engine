@@ -136,6 +136,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\LineBatcherComponent.cpp" />
     <ClCompile Include="Source\Core\Private\FName.cpp" />
     <ClCompile Include="Source\Core\Private\FNamePool.cpp" />
@@ -159,8 +166,6 @@
     <ClCompile Include="Source\Engine\Object\Private\Actor.cpp" />
     <ClCompile Include="Source\Engine\Object\Private\Level.cpp" />
     <ClCompile Include="Source\Engine\Object\Private\Object.cpp" />
-    <ClCompile Include="Source\Core\Public\Math\Guid.cpp" />
-    <ClCompile Include="Source\Core\Public\Math\WindowsPlatformMisc.cpp" />
     <ClCompile Include="Source\Editor\Private\EditorViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Private\PivotTransformGizmo.cpp" />
     <ClCompile Include="Source\Editor\Private\Application.cpp" />
@@ -174,19 +179,22 @@
     <ClCompile Include="Source\Engine\Private\GUI\ImGuiManager.cpp" />
     <ClCompile Include="Source\Editor\Private\BaseTransformGizmo.cpp" />
     <ClCompile Include="Source\Engine\Private\Rendering\Renderer.cpp" />
-    <ClCompile Include="ImGui\imgui.cpp" />
-    <ClCompile Include="ImGui\imgui_demo.cpp" />
-    <ClCompile Include="ImGui\imgui_draw.cpp" />
-    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
-    <ClCompile Include="ImGui\imgui_tables.cpp" />
-    <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\ParticleSubUVComponent.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\TextLoader.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineStatics.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="Source\Core\Public\Math\Math.h" />
     <ClInclude Include="Source\Core\Public\Property.h" />
     <ClInclude Include="Source\Core\Public\UClass.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\LineBatcherComponent.h" />
@@ -212,6 +220,7 @@
     <ClInclude Include="Source\Engine\Public\Classes\Components\TextComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\UUIDTextComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\MeshManager.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\TextLoader.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextMeshBuilder.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
     <ClInclude Include="Source\Engine\Public\VertexData.h" />
@@ -219,36 +228,17 @@
     <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="Source\Engine\Object\Public\Actor.h" />
     <ClInclude Include="Source\Core\Public\CoreMinimal.h" />
-    <ClInclude Include="Source\Core\Public\Math\AutoRTFM.h" />
-    <ClInclude Include="Source\Core\Public\Math\CoreTypes.h" />
-    <ClInclude Include="Source\Core\Public\Math\GenericPlatform.h" />
-    <ClInclude Include="Source\Core\Public\Math\GenericPlatformMisc.h" />
-    <ClInclude Include="Source\Core\Public\Math\Guid.h" />
-    <ClInclude Include="Source\Core\Public\Math\MicrosoftPlatformMath.h" />
-    <ClInclude Include="Source\Core\Public\Math\Platform.h" />
-    <ClInclude Include="Source\Core\Public\Math\PlatformMisc.h" />
     <ClInclude Include="Source\Core\Public\Math\Quat.h" />
-    <ClInclude Include="Source\Core\Public\Math\Rotator.h" />
-    <ClInclude Include="Source\Core\Public\Math\TransformNonVectorized.h" />
     <ClInclude Include="Source\Core\Public\Math\TranslationMatrix.h" />
-    <ClInclude Include="Source\Core\Public\Math\UnrealPlatformMathSSE.h" />
-    <ClInclude Include="Source\Core\Public\Math\UnrealPlatformMathSSE4.h" />
-    <ClInclude Include="Source\Core\Public\Math\WindowsPlatform.h" />
-    <ClInclude Include="Source\Core\Public\Math\WindowsPlatformMath.h" />
-    <ClInclude Include="Source\Core\Public\Math\WindowsPlatformMisc.h" />
     <ClInclude Include="Source\Core\Public\Math\Transform.h" />
     <ClInclude Include="Source\Engine\Object\Public\Level.h" />
     <ClInclude Include="Source\Engine\Object\Public\Object.h" />
     <ClInclude Include="CoreTypes.h" />
-    <ClInclude Include="Source\Core\Public\Math\GenericPlatformMath.h" />
     <ClInclude Include="Source\Core\Public\Math\Matrix.h" />
     <ClInclude Include="Source\Core\Public\Math\PerspectiveMatrix.h" />
     <ClInclude Include="Source\Core\Public\Math\Plane.h" />
-    <ClInclude Include="Source\Core\Public\Math\PlatformCrt.h" />
-    <ClInclude Include="Source\Core\Public\Math\PlatformMath.h" />
     <ClInclude Include="Source\Core\Public\Math\RotationMatrix.h" />
     <ClInclude Include="Source\Core\Public\Math\ScaleMatrix.h" />
-    <ClInclude Include="Source\Core\Public\Math\UnrealMathUtility.h" />
     <ClInclude Include="Source\Core\Public\Math\Vector.h" />
     <ClInclude Include="Source\Core\Public\Math\Vector4.h" />
     <ClInclude Include="Source\Core\Public\Math\ViewMatrix.h" />
@@ -270,14 +260,6 @@
     <ClInclude Include="Source\Engine\Public\GUI\ImGuiManager.h" />
     <ClInclude Include="Source\Editor\Public\BaseTransformGizmo.h" />
     <ClInclude Include="Source\Engine\Public\Rendering\Renderer.h" />
-    <ClInclude Include="ImGui\imconfig.h" />
-    <ClInclude Include="ImGui\imgui.h" />
-    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
-    <ClInclude Include="ImGui\imgui_impl_win32.h" />
-    <ClInclude Include="ImGui\imgui_internal.h" />
-    <ClInclude Include="ImGui\imstb_rectpack.h" />
-    <ClInclude Include="ImGui\imstb_textedit.h" />
-    <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>

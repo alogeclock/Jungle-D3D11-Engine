@@ -35,10 +35,14 @@ class UApplication
   public:
     void Initialize(HINSTANCE hInstance);
     void Run();
+    void Tick(float DeltaTime);
+    void Render();
     void Finish();
 
     void       OnResize(uint32 NewWidth, uint32 NewHeight);
     FViewport *GetViewport() { return Viewport; }
+
+    void UpdateEditorViewport();
 
   private:
     HINSTANCE hInst = nullptr;
@@ -51,3 +55,5 @@ class UApplication
     uint32            Width = 0.0f;
     uint32            Height = 0.0f;
 };
+
+extern UApplication* GApplication;

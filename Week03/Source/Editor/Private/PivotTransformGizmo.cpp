@@ -2,11 +2,13 @@
 #include "Source/Editor/Public/PivotTransformGizmo.h"
 #include "Source/Engine/Public/GUI/ImGuiManager.h"
 
+#include "Source/Editor/Public/EditorViewportClient.h"
 
 APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTransformGizmo(InString)
 {
     USceneComponent *Root = new USceneComponent("PivotTransformSceneComponent");
     this->SetRootComponent(Root);
+    AddOwnedComponent(Root);
     Root->RegisterComponent();
 
     const float HALF_PI = 1.570796f;
@@ -56,66 +58,89 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
             if (Comp)
             {
                 Comp->SetOuter(this);
+                AddOwnedComponent(Comp);
                 Comp->RegisterComponent();
+
                 Comp->SetIsInEditor(true);
                 Comp->SetRotation(Axes[Axis].Rotation);
                 Comp->SetColor(Axes[Axis].Color);
                 Comp->SetCullMode(ECullMode::None);
-                Comp->SetAlwaysVisible(true);
+                Comp->SetEnableDepthTest(false);
+                Comp->SetVisible(true);
             }
         }
     }
 
     GizmoType = EGizmoHandleType::Translate;
+    UpdateVisibility();
 }
 
 APivotTransformGizmo::~APivotTransformGizmo()
 {
+    TranslateGizmoComponents.clear();
+    RotateGizmoComponents.clear();
+    ScaleGizmoComponents.clear();
 }
 
-void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &ViewMatrix, float FOV, float OrthoWidth)
+void APivotTransformGizmo::Tick(float DeltaTime)
 {
+    AActor::Tick(DeltaTime); // 부모 클래스의 틱(컴포넌트 틱 등) 실행
+    UpdateVisibility();
+    UpdateColor();
+
     if (TargetObject == nullptr)
         return;
+
+    // 뷰포트와 카메라 정보를 능동적으로 가져옵니다.
+    FEditorViewportClient* ViewportClient = UImGuiManager::Get().GetEditorViewportClient();
+    FViewportCameraTransform *Camera = UImGuiManager::Get().GetCamera();
+    if (!ViewportClient || !Camera) 
+        return;
+
+    FMatrix<float> ViewMatrix = ViewportClient->GetViewMatrix();
+    float FOV = Camera->GetFOV();
+    bool bIsOrtho = UImGuiManager::Get().bIsOrthogonal;
+    
+    float OrthoWidth = 10.0f;
+    if (bIsOrtho)
+    {
+        FVector<float> dir = Camera->GetLocation() - Camera->GetLookAt();
+        OrthoWidth = dir.Length() * 2.0f;
+    }
 
     FTransform TargetTransform = TargetObject->GetTransform();
     FTransform UnscaledTransform;
 
     UnscaledTransform.Location = TargetTransform.Location;
     UnscaledTransform.Rotation = TargetTransform.Rotation;
-
+    
     // 타겟의 3D 월드 위치를 Vector4로 구성한 뒤, ViewMatrix를 곱해 카메라 기준 로컬 좌표로 변환한다.
     // 이 떄의 Z값이 곧 물체부터 카메라까지의 정확한 깊이이다.
     FVector4<float> TargetWorldPos(TargetTransform.Location.X, TargetTransform.Location.Y, TargetTransform.Location.Z, 1.0f);
     FVector4<float> TargetViewPos = TargetWorldPos * ViewMatrix;
 
     float Distance = std::abs(TargetViewPos.Z);
-
-    if (Distance < 0.01f)
-        Distance = 0.01f; // 거리가 너무 가까울 때 사라짐 방지
+    if (Distance < 0.01f) Distance = 0.01f; // 거리가 너무 가까울 때 사라짐 방지
 
     float ScaleFactor = 1.0f;
 
-    if (!UImGuiManager::Get().bIsOrthogonal)
+    if (!bIsOrtho)
     {        
         // 1. 카메라 평면으로부터의 깊이 (Z Depth)
         float ZDepth = std::abs(TargetViewPos.Z);
-        if (ZDepth < 0.01f)
-            ZDepth = 0.01f; 
-
+        if (ZDepth < 0.01f) ZDepth = 0.01f; 
+        
         // 1. 카메라 원점으로부터 기즈모까지의 '실제 3D 직선 거리(Euclidean Distance)' 계산
         float EuclideanDist = std::sqrt(TargetViewPos.X * TargetViewPos.X + 
                                         TargetViewPos.Y * TargetViewPos.Y + 
                                         TargetViewPos.Z * TargetViewPos.Z);
-        if (EuclideanDist < 0.01f)
-            EuclideanDist = 0.01f;
-
+        if (EuclideanDist < 0.01f) EuclideanDist = 0.01f;
+        
         // 3. 화면 중심(Z축)에서 벗어난 각도의 Cosine 값 도출 (Z / Distance)
         float CosineAngle = ZDepth / EuclideanDist;
 
         // 4. ZDepth에 CosineAngle을 한 번 더 곱해줌 (결과적으로 Z^2 / EuclideanDist)
         float CorrectedDistance = ZDepth * CosineAngle;
-
         float FOVRad = FOV * (3.14159265f / 180.0f);
         float FOVScale = std::tan(FOVRad / 2.0f);
 
@@ -128,35 +153,26 @@ void APivotTransformGizmo::Render(URenderer &renderer, const FMatrix<float> &Vie
     }
 
     UnscaledTransform.Scale = FVector<float>(ScaleFactor, ScaleFactor, ScaleFactor);
-
     this->SetTransform(UnscaledTransform);
+}
 
-    switch (GizmoType)
-    {
-    case EGizmoHandleType::Translate:
-        for (auto GizmoComponent : TranslateGizmoComponents)
-        {
-            if (GizmoComponent != nullptr)
-                GizmoComponent->Render(renderer);
-        }
-        break;
-    case EGizmoHandleType::Rotate:
+void APivotTransformGizmo::UpdateVisibility()
+{
+    // 1. 모든 기즈모 파츠 숨기기
+    for (auto* Comp : TranslateGizmoComponents) if(Comp) Comp->SetVisible(false);
+    for (auto* Comp : RotateGizmoComponents) if(Comp) Comp->SetVisible(false);
+    for (auto* Comp : ScaleGizmoComponents) if(Comp) Comp->SetVisible(false);
 
-        for (auto *GizmoComponent : RotateGizmoComponents)
-        {
-            if (GizmoComponent != nullptr)
-                GizmoComponent->Render(renderer);
-        }
-        break;
-    case EGizmoHandleType::Scale:
+    if (TargetObject == nullptr)
+        return;
 
-        for (auto *GizmoComponent : ScaleGizmoComponents)
-        {
-            if (GizmoComponent != nullptr)
-                GizmoComponent->Render(renderer);
-        }
-        break;
-    }
+    // 2. 현재 모드에 해당하는 파츠만 보이게 켜기
+    if (GizmoType == EGizmoHandleType::Translate)
+        for (auto* Comp : TranslateGizmoComponents) Comp->SetVisible(true);
+    else if (GizmoType == EGizmoHandleType::Rotate)
+        for (auto* Comp : RotateGizmoComponents) Comp->SetVisible(true);
+    else if (GizmoType == EGizmoHandleType::Scale)
+        for (auto* Comp : ScaleGizmoComponents) Comp->SetVisible(true);
 }
 
 bool APivotTransformGizmo::OnMouseDown(const FVector<float> &RayOrigin, const FVector<float> &RayDir)
@@ -469,6 +485,7 @@ void APivotTransformGizmo::OnMouseUp()
 {
     bIsDragging = false;
     ActiveAxis = EGizmoAxis::None;
+    UpdateColor();
 }
 
 void APivotTransformGizmo::ToggleMode()
@@ -479,6 +496,8 @@ void APivotTransformGizmo::ToggleMode()
     uint32 CurrentModeIndex = static_cast<uint32>(GizmoType);
     uint32 NextModeIndex = (CurrentModeIndex + 1) % 3;
     GizmoType = static_cast<EGizmoHandleType>(NextModeIndex);
+    
+    UpdateVisibility();
 }
 
 void APivotTransformGizmo::UpdateColor()
