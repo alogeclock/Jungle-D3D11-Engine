@@ -405,6 +405,7 @@ void UImGuiManager::NewScene()
             if (GEditor && GEditor->GetSelection())
             {
                 GEditor->GetSelection()->Clear();
+                GEditor->GetInputListeners()->clear();
             }
 
             if (OldLevel != nullptr)
@@ -462,6 +463,7 @@ void UImGuiManager::LoadScene()
         if (GEditor && GEditor->GetSelection())
         {
             GEditor->GetSelection()->Clear();
+            GEditor->GetInputListeners()->clear();
         }
 
         if (!FilePath.empty() && GWorld->LoadLevel(FilePath))
@@ -491,7 +493,6 @@ void UImGuiManager::LoadScene()
         else
         {
             AddLog(L"Failed to load scene.");
-            SelectedObject = nullptr;
         }
     }
 }

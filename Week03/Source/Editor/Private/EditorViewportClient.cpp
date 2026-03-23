@@ -79,16 +79,6 @@ void FEditorViewportClient::SetAxis(AAxis* InAxis)
 void FEditorViewportClient::SetGridStep(float InGridStep)
 {
     GridStep = InGridStep;
-
-    if (Grid && Grid->GetGridComponent())
-    {
-        Grid->GetGridComponent()->SetGridStep(GridStep);
-    }
-
-    if (Axis && Axis->GetAxisComponent())
-    {
-        Axis->GetAxisComponent()->SetGridStep(GridStep);
-    }
 }
 
 void FEditorViewportClient::Tick(float DeltaTime, FViewport* Viewport)

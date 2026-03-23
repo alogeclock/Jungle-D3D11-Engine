@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "PrimitiveComponent.h"
 #include "Source/Core/Public/Math/Matrix.h"
 #include "Source/Core/Public/Math/Vector.h"
@@ -15,7 +15,7 @@ public :
     virtual void UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp = FVector<float>(0, 0, 1));
 
     virtual void Render(URenderer &renderer);
-    virtual void  RebuildMesh();
+    virtual void RebuildMesh();
     
     const FString &GetText() const { return Text; }
  
@@ -43,7 +43,7 @@ protected:
 
     ID3D11Buffer* VertexBuffer     = nullptr;
     ID3D11Buffer* IndexBuffer     = nullptr;
-    uint32        VertexBufferSize = 0; // ÇöÀç ¹öÆÛ ¿ë·®
+    uint32        VertexBufferSize = 0; // í˜„ì¬ ë²„í¼ ìš©ëŸ‰
     uint32        IndexBufferSize = 0;
 
 };

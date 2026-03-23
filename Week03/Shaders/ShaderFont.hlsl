@@ -29,6 +29,11 @@ SamplerState FontSampler : register(s0);
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     float4 Color = FontTexture.Sample(FontSampler, input.TexCoord);
-    clip(Color.a - 0.1f); // 완전 투명 픽셀 제거
+    
+    if (Color.r <= 0.1f && Color.g <= 0.1f && Color.b <= 0.1f)
+    {
+        discard; // 검은색은 날림
+    }
+    
     return Color;
 }
