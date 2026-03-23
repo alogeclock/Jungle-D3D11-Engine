@@ -478,11 +478,12 @@ void UImGuiManager::SetCameraInfo()
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f", ImGuiSliderFlags_Logarithmic);
 
+        // TODO: Grid Step은 CameraInfo가 아니므로, 함수이름을 바꾸거나 CameraInfo에서 분리하는 것을 고려
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        float GridStep = EditorViewportClient->GetGridStep();
-        if (ImGui::SliderFloat("Grid Snap", &GridStep, 0.1f, 10.0f, "%.2f"))
+        float GridStep = EditorViewportClient->GetGrid()->GetGridComponent()->GetGridStep();
+        if (ImGui::SliderFloat("Grid Step", &GridStep, 0.1f, 10.0f, "%.2f"))
         {
-            EditorViewportClient->SetGridStepAndUpdate(GridStep);
+            EditorViewportClient->GetGrid()->GetGridComponent()->SetGridStep(GridStep);
         }
     }
 }
