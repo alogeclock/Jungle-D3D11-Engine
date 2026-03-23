@@ -799,7 +799,7 @@ void UImGuiManager::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*
     if (childs.size() <= 0)
     {
         opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_Leaf);
-        if (ImGui::IsItemClicked())
+        if (ImGui::IsItemClicked() && (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
         {
             ImGuiIO& io = ImGui::GetIO();
             if (!io.KeyCtrl)
@@ -815,7 +815,7 @@ void UImGuiManager::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*
     else
     {
         opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_DefaultOpen);
-        if (ImGui::IsItemClicked())
+        if (ImGui::IsItemClicked() && (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
         {
             ImGuiIO& io = ImGui::GetIO();
             if (!io.KeyCtrl)
