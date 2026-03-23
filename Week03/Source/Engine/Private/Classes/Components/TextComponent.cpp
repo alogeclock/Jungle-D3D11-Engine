@@ -5,8 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-UTextComponent::UTextComponent(const FString &InString)
-    : UPrimitiveComponent(InString)
+UTextComponent::UTextComponent(const FString &InString) : UPrimitiveComponent(InString)
 {
 	PrimitiveType = EPrimitiveType::Text;
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지

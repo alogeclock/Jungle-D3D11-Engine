@@ -81,6 +81,7 @@ public:
     UObject* GetSelectedObject(int32 Index = 0) const;
     uint32 GetCount() const { return SelectedObjects.size(); }
     bool IsEmpty() const;
+    UObject* operator[](uint32 index);
 
 private:
     TArray<UObject*> SelectedObjects;

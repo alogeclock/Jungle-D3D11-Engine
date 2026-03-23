@@ -17,11 +17,11 @@
 #include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
+#include "Source/Editor/Public/Axis.h"
 #include "Source/Editor/Public/EditorViewportClient.h"
 #include "Source/Editor/Public/Grid.h"
-#include "Source/Editor/Public/Axis.h"
-#include "Source/Engine/Public/Classes/Components/GridComponent.h"
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
+#include "Source/Engine/Public/Classes/Components/GridComponent.h"
 
 #include "Source/Core/Public/FName.h"
 
@@ -31,21 +31,17 @@ void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     std::filesystem::path FontFilePath = "Data/Font/NanumGothic.ttf";
 
     if (!std::filesystem::exists(FontFilePath))
     {
         MessageBoxW(nullptr, FontFilePath.c_str(), L"폰트 파일 없음", MB_OK);
     }
-    io.Fonts->AddFontFromFileTTF(
-        (char*)FontFilePath.u8string().c_str(),
-        16.0f,
-        nullptr,
-        io.Fonts->GetGlyphRangesKorean()
-    );
+    io.Fonts->AddFontFromFileTTF((char*)FontFilePath.u8string().c_str(), 16.0f, nullptr,
+                                 io.Fonts->GetGlyphRangesKorean());
 
-    ImGui_ImplWin32_Init((void *)hWnd);
+    ImGui_ImplWin32_Init((void*)hWnd);
     ImGui_ImplDX11_Init(renderer->Device, renderer->DeviceContext);
 }
 
@@ -63,9 +59,9 @@ void UImGuiManager::Update()
     ImGui::End();
 
     // Property Window
-    ImGui::Begin("Jungle Property Window");
-    TransformInspector();
-    ImGui::End();
+    //ImGui::Begin("Jungle Property Window");
+    //TransformInspector();
+    //ImGui::End();
 
     // Console
     ImGui::Begin("Console");
@@ -73,35 +69,35 @@ void UImGuiManager::Update()
     ShowExampleAppConsole(&open);
     ImGui::End();
 
-    ImGui::Begin("Log");
-    if (ImGui::Button("GUObjectArray", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
-    {
-        for (UObject* Object : GUObjectArray)
-        {
-            FName ObjectName = Object->GetName();
-            FString msg = "Object Name : ";
-            AddLog(msg + ObjectName);
-        }
-    }
+    //ImGui::Begin("Log");
+    //if (ImGui::Button("GUObjectArray", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    //{
+    //    for (UObject* Object : GUObjectArray)
+    //    {
+    //        FName ObjectName = Object->GetName();
+    //        FString msg = "Object Name : ";
+    //        AddLog(msg + ObjectName);
+    //    }
+    //}
 
-    if (ImGui::Button("Actors", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
-    {
-        for (AActor* Actor : GWorld->GetCurrentLevel()->GetActors())
-        {
-            FName ActorName = Actor->GetName();
-            FString msg = "Actor Name : ";
-            AddLog(msg + ActorName);
+    //if (ImGui::Button("Actors", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    //{
+    //    for (AActor* Actor : GWorld->GetCurrentLevel()->GetActors())
+    //    {
+    //        FName ActorName = Actor->GetName();
+    //        FString msg = "Actor Name : ";
+    //        AddLog(msg + ActorName);
 
-            for (UActorComponent* Component : Actor->GetOwnedComponents())
-            {
-                FName ComponentName = Component->GetName();
-                FString msg = "    ComponentName Name : ";
+    //        for (UActorComponent* Component : Actor->GetOwnedComponents())
+    //        {
+    //            FName ComponentName = Component->GetName();
+    //            FString msg = "    ComponentName Name : ";
 
-                AddLog(msg + ComponentName);
-            }
-        }
-    }
-    ImGui::End();
+    //            AddLog(msg + ComponentName);
+    //        }
+    //    }
+    //}
+    //ImGui::End();
 
     endFrame();
 }
@@ -376,7 +372,7 @@ void UImGuiManager::SpawnActors()
 
                 if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    if(TextComp->IsExactly(UTextComponent::StaticClass()))
+                    if (TextComp->IsExactly(UTextComponent::StaticClass()))
                         TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));
                 }
 
@@ -423,8 +419,6 @@ void UImGuiManager::NewScene()
             if (GApplication)
                 GApplication->UpdateEditorViewport();
         }
-
-        TempSelectedObject = nullptr;
     }
 }
 
@@ -576,17 +570,17 @@ void UImGuiManager::TransformInspector()
         bToggleGizmoMode = true;
 
     static HIMC s_hPrevImc = NULL;
-    
-    //if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
+
+    // if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
     //{
-    //    if (text->IsExactly(UTextComponent::StaticClass()))
-    //    {
-    //        strncpy_s(TextBuffer, text->GetText().c_str(), IM_ARRAYSIZE(TextBuffer));
-    //        // TextBuffer를 버퍼로 사용
-    //        if (ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
-    //        {
-    //            text->SetText(TextBuffer);
-    //        }
+    //     if (text->IsExactly(UTextComponent::StaticClass()))
+    //     {
+    //         strncpy_s(TextBuffer, text->GetText().c_str(), IM_ARRAYSIZE(TextBuffer));
+    //         // TextBuffer를 버퍼로 사용
+    //         if (ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
+    //         {
+    //             text->SetText(TextBuffer);
+    //         }
 
     //        if (ImGui::IsItemDeactivated())
     //        {
@@ -605,7 +599,7 @@ void UImGuiManager::TransformInspector()
     OwnerActor->SetTransform(t);
 }
 
-void UImGuiManager::ShowObjectInfo(UObject *InObject)
+void UImGuiManager::ShowObjectInfo(UObject* InObject)
 {
     if (InObject == nullptr)
         return;
@@ -613,13 +607,26 @@ void UImGuiManager::ShowObjectInfo(UObject *InObject)
     if (!InObject->IsValid())
         return;
 
-    TArray<FProperty> &Properties = InObject->GetClass()->GetProperties();
-    for (const auto &Property : Properties)
+
+}
+
+void UImGuiManager::ShowObjectProperty(UObject* InObject)
+{
+    if (InObject == nullptr)
+        return;
+
+    if (!InObject->IsValid())
+        return;
+
+    USelection* Selection = GEditor->GetSelection();
+
+    TArray<FProperty>& Properties = InObject->GetClass()->GetProperties();
+    for (const auto& Property : Properties)
     {
         if (Property.Type == EPropertyType::UObjectPtr)
         {
-            UObject **ObjectPtr = reinterpret_cast<UObject **>(Property.GetValuePtr(InObject));
-            UObject  *Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
+            UObject** ObjectPtr = reinterpret_cast<UObject**>(Property.GetValuePtr(InObject));
+            UObject* Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
 
             if (Object == nullptr)
                 continue;
@@ -627,55 +634,68 @@ void UImGuiManager::ShowObjectInfo(UObject *InObject)
             ImGui::Separator();
             if (ImGui::Button(Object->GetName().ToString().c_str(), {100.f, 15.f}))
             {
-                TempSelectedObject = Object;
+                Selection->Clear();
+                Selection->AddObject(Object);
             }
         }
         else if (Property.Type == EPropertyType::UObjectDetail)
         {
-            UObject **ObjectPtr = reinterpret_cast<UObject **>(Property.GetValuePtr(InObject));
-            UObject  *Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
-            //ImGui::Separator();
-            ShowObjectInfo(Object);
+            UObject** ObjectPtr = reinterpret_cast<UObject**>(Property.GetValuePtr(InObject));
+            UObject* Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
+            // ImGui::Separator();
+            ShowObjectProperty(Object);
         }
         else if (Property.Type == EPropertyType::Transform)
         {
-            FTransform *Transform = reinterpret_cast<FTransform *>(Property.GetValuePtr(InObject));
+            FTransform* Transform = reinterpret_cast<FTransform*>(Property.GetValuePtr(InObject));
             ImGui::Separator();
             ImGui::Text("Transform");
             ImGui::DragFloat3("Location", &Transform->Location.X, 0.01f);
             ImGui::DragFloat3("Rotation", &Transform->Rotation.X, 0.01f);
             ImGui::DragFloat3("Scale", &Transform->Scale.X, 0.01f, 0.f, FLT_MAX);
 
-            USceneComponent *component = static_cast<USceneComponent *>(InObject);
+            USceneComponent* component = static_cast<USceneComponent*>(InObject);
             component->SetTransform(*Transform);
         }
         else if (Property.Type == EPropertyType::Float)
         {
-            float *FloatType = reinterpret_cast<float *>(Property.GetValuePtr(InObject));
+            float* FloatType = reinterpret_cast<float*>(Property.GetValuePtr(InObject));
             ImGui::Separator();
             ImGui::DragFloat(Property.Name.c_str(), FloatType);
         }
         else if (Property.Type == EPropertyType::UObjectPtrArray)
         {
-            TArray<UObject *> *ArrayPtr = reinterpret_cast<TArray<UObject *> *>(Property.GetValuePtr(InObject));
+            TArray<UObject*>* ArrayPtr = reinterpret_cast<TArray<UObject*>*>(Property.GetValuePtr(InObject));
 
             if (!ArrayPtr)
                 continue;
             ImGui::Separator();
-            for (UObject *Object : *ArrayPtr)
+            ImGui::Text(Property.Name.c_str());
+            for (UObject* Object : *ArrayPtr)
             {
                 if (!Object)
                     continue;
 
-                if (Object->IsA(UActorComponent::StaticClass()) 
-                    && static_cast<UActorComponent*>(Object)->GetOwner() 
-                    && static_cast<UActorComponent*>(Object)->GetOwner()->GetRootComponent() == Object)
-                    continue;
-
-                if (ImGui::Button(Object->GetName().ToString().c_str(), {100.f, 15.f}))
+                if (ImGui::SmallButton(Object->GetName().ToString().c_str()))
                 {
-                    TempSelectedObject = Object;
+                    Selection->Clear();
+                    Selection->AddObject(Object);
                 }
+            }
+        }
+        else if (Property.Type == EPropertyType::String)
+        {
+            FString* StringPtr = reinterpret_cast<FString*>(Property.GetValuePtr(InObject));
+            if (!StringPtr)
+                return;
+
+            char buffer[256];
+            memset(buffer, 0, sizeof(buffer));
+            strncpy_s(buffer, StringPtr->c_str(), sizeof(buffer) - 1);
+
+            if (ImGui::InputText(Property.Name.c_str(), buffer, sizeof(buffer)))
+            {
+                *StringPtr = FString(buffer);
             }
         }
     }
@@ -684,7 +704,7 @@ void UImGuiManager::ShowObjectInfo(UObject *InObject)
 void UImGuiManager::ShowOutliner()
 {
     ImGui::BeginChild("OutlinerRegion", ImVec2(0, outlinerHeight), true);
-    {   
+    {
         ShowOutliner(GUObjectArray);
     }
     ImGui::EndChild();
@@ -705,26 +725,26 @@ void UImGuiManager::ShowOutliner()
     if (outlinerHeight > maxTop)
         outlinerHeight = maxTop;
 
-        ImDrawList* draw = ImGui::GetWindowDrawList();
+    ImDrawList* draw = ImGui::GetWindowDrawList();
     ImVec2 min = ImGui::GetItemRectMin();
     ImVec2 max = ImGui::GetItemRectMax();
     draw->AddRectFilled(min, max, IM_COL32(90, 90, 90, 255));
 
-    if (TempSelectedObject == nullptr)
-        return;
     ImGui::BeginChild("InspectorRegion", ImVec2(0, 0), true);
     {
-        ShowObjectInfo(TempSelectedObject);
+        USelection* Selection = GEditor->GetSelection();
+        if (Selection->GetCount() > 0)
+            ShowObjectProperty((*Selection)[0]);
     }
     ImGui::EndChild();
 }
 
-void UImGuiManager::ShowOutliner(TArray<UObject *> &ObjectArray)
+void UImGuiManager::ShowOutliner(TArray<UObject*>& ObjectArray)
 {
-    int                                ArraySize = ObjectArray.size();
-    TMap<UObject *, TArray<UObject *>> OuterGraph;
+    int ArraySize = ObjectArray.size();
+    TMap<UObject*, TArray<UObject*>> OuterGraph;
 
-    TArray<UObject *> SearchStack;
+    TArray<UObject*> SearchStack;
     for (int i = 0; i < ArraySize; i++)
     {
         if (!ObjectArray[i]->GetOuter() && ObjectArray[i]->GetName() == FName("World"))
@@ -743,17 +763,17 @@ void UImGuiManager::ShowOutliner(TArray<UObject *> &ObjectArray)
         OuterGraph[ObjectArray[i]->GetOuter()].push_back(ObjectArray[i]);
     }
 
-    TSet<UObject *> visited;
+    TSet<UObject*> visited;
     while (!SearchStack.empty())
     {
-        UObject *Current = SearchStack.back();
+        UObject* Current = SearchStack.back();
         SearchStack.pop_back();
 
-        ShowOutliner(Current, OuterGraph, visited, 0);
+        ShowOutliner(Current, OuterGraph, visited);
     }
 }
 
-void UImGuiManager::ShowOutliner(UObject *Object, TMap<UObject *, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth)
+void UImGuiManager::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies, TSet<UObject*>& Visited)
 {
     if (Object == nullptr)
         return;
@@ -761,31 +781,29 @@ void UImGuiManager::ShowOutliner(UObject *Object, TMap<UObject *, TArray<UObject
         return;
 
     FString Name = "";
-    // Name += Object == TempSelectedObject ? "@  " : "O  ";
-    Name += Object->GetName().ToString();
+    Name += Object->GetName().ToString() + " UUID: " + std::to_string(Object->GetUUID());
 
     Visited.insert(Object);
 
-    TArray<UObject *>  childs = Dependencies[Object];
-    ImVec2             ButtonSize(100, 10);
+    TArray<UObject*> childs = Dependencies[Object];
+    ImVec2 ButtonSize(100, 10);
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
-    bool               opened = false;
+    bool opened = false;
+
+    USelection* Selection = GEditor->GetSelection();
+    if (Selection->IsSelected(Object))
+        flags |= ImGuiTreeNodeFlags_Selected;
+
+
     if (childs.size() <= 0)
     {
         opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_Leaf);
-        ImDrawList *draw = ImGui::GetWindowDrawList();
-        ImVec2      min = ImGui::GetItemRectMin();
-        ImVec2      max = ImGui::GetItemRectMax();
-        min.x = ImGui::GetWindowPos().x;
-        max.x = ImGui::GetWindowPos().x + ImGui::GetWindowSize().x;
-        if (Object == TempSelectedObject)
-        {
-            draw->AddRectFilled(min, max, IM_COL32(60, 120, 255, 60));
-        }
-
         if (ImGui::IsItemClicked())
         {
-            TempSelectedObject = Object;
+            ImGuiIO& io = ImGui::GetIO();
+            if (!io.KeyCtrl)
+                Selection->Clear();
+            Selection->AddObject(Object);
         }
 
         if (opened)
@@ -795,24 +813,18 @@ void UImGuiManager::ShowOutliner(UObject *Object, TMap<UObject *, TArray<UObject
     }
     else
     {
-        opened = ImGui::TreeNodeEx(Name.c_str(), flags);
-        ImDrawList *draw = ImGui::GetWindowDrawList();
-        ImVec2      min = ImGui::GetItemRectMin();
-        ImVec2      max = ImGui::GetItemRectMax();
-        min.x = ImGui::GetWindowPos().x;
-        max.x = ImGui::GetWindowPos().x + ImGui::GetWindowSize().x;
-        if (Object == TempSelectedObject)
-        {
-            draw->AddRectFilled(min, max, IM_COL32(60, 120, 255, 120));
-        }
+        opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_DefaultOpen);
         if (ImGui::IsItemClicked())
         {
-            TempSelectedObject = Object;
+            ImGuiIO& io = ImGui::GetIO();
+            if (!io.KeyCtrl)
+                Selection->Clear();
+            Selection->AddObject(Object);
         }
         if (opened)
         {
-            for (const auto &child : childs)
-                ShowOutliner(child, Dependencies, Visited, Depth + 1);
+            for (const auto& child : childs)
+                ShowOutliner(child, Dependencies, Visited);
 
             ImGui::TreePop();
         }

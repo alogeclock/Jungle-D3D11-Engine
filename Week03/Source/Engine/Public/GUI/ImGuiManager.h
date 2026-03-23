@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Source/Engine/Public/Rendering/Renderer.h"
 #include "Source/Core/Public/TimeManager.h"
+#include "Source/Engine/Public/Rendering/Renderer.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_dx11.h"
@@ -22,7 +22,7 @@ extern ExampleAppConsole* GConsole;
 
 class UImGuiManager
 {
-  public:
+public:
     static UImGuiManager& Get()
     {
         static UImGuiManager instance;
@@ -32,16 +32,22 @@ class UImGuiManager
     UImGuiManager() = default;
     ~UImGuiManager() = default;
 
-  public:
+public:
     void Create(HWND hWnd, URenderer* renderer);
     void Update();
     void beginFrame();
     void endFrame();
     void Release();
 
-    FViewportCameraTransform* GetCamera() const { return Camera; }
+    FViewportCameraTransform* GetCamera() const
+    {
+        return Camera;
+    }
     void SetCamera(FViewportCameraTransform* camera);
-    FEditorViewportClient* GetEditorViewportClient() const { return EditorViewportClient; }
+    FEditorViewportClient* GetEditorViewportClient() const
+    {
+        return EditorViewportClient;
+    }
     void SetEditorViewportClient(FEditorViewportClient* viewportclient);
 
     bool IsCaptureMouse();
@@ -57,7 +63,7 @@ class UImGuiManager
     std::wstring SaveFileDialog();
     std::wstring OpenFileDialog();
 
-  private:
+private:
     void ShowControlPanel();
     void SpawnActors();
     void NewScene();
@@ -66,31 +72,33 @@ class UImGuiManager
     void SetCameraInfo();
     void TransformInspector();
     void ShowObjectInfo(UObject* InObject);
-    void ShowOutliner(TArray<UObject *> &ObjectArray);
-    void ShowOutliner(UObject *Object, TMap<UObject*, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth);
+    void ShowObjectProperty(UObject* InObject);
+    void ShowOutliner(TArray<UObject*>& ObjectArray);
+    void ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies, TSet<UObject*>& Visited);
     void ShowOutliner();
+
 
     void ShowCameraProperty()
     {
-
     }
 
-    //void Show
+    // void Show
 
-  public:
+public:
     bool bIsOrthogonal = false;
     bool bToggleGizmoMode = false;
 
-  private:
-    FEditorViewportClient    *EditorViewportClient = nullptr;
-    FViewportCameraTransform *Camera = nullptr;
-    UPrimitiveComponent      *SelectedObject = nullptr;
+private:
+    FEditorViewportClient* EditorViewportClient = nullptr;
+    FViewportCameraTransform* Camera = nullptr;
+    UPrimitiveComponent* SelectedObject = nullptr;
 
     float outlinerHeight = 300.0f;
     float splitterThickness = 6.0f;
-    UObject *TempSelectedObject = nullptr;
-    char                      buffer[256];
-    char                      TextBuffer[256];
+    // UObject *TempSelectedObject = nullptr;
+
+    char buffer[256];
+    char TextBuffer[256];
 };
 
 // 아래는 imgui_demo.cpp에서 가져온 내용

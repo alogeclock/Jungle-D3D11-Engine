@@ -12,6 +12,7 @@ enum class EPropertyType
     Bool,
     Vec3,
     Transform,
+    String,
 };
 
 struct FProperty

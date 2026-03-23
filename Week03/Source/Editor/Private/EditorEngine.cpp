@@ -141,3 +141,8 @@ bool USelection::IsEmpty() const
 {
     return SelectedObjects.empty();
 }
+
+UObject* USelection::operator[](uint32 index)
+{
+    return SelectedObjects[index];
+}

@@ -17,7 +17,7 @@ class FName
     FName(char *pStr);
     FName(const FString &Name);
     FName(uint32 InComparisionIndex, uint32 InDisplayIndex);
-
+    FName(uint32 InComparisionIndex, uint32 InNumber, uint32 InDisplayIndex);
     bool    operator==(const FName &Other) const;
     FString operator+(const FString &Other);
 
