@@ -18,6 +18,10 @@
 #include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 
 #include "Source/Editor/Public/EditorViewportClient.h"
+#include "Source/Editor/Public/Grid.h"
+#include "Source/Editor/Public/Axis.h"
+#include "Source/Engine/Public/Classes/Components/GridComponent.h"
+#include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 
 #include "Source/Core/Public/FName.h"
 
@@ -435,7 +439,7 @@ void UImGuiManager::LoadScene()
             // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출
             std::filesystem::path path(FilePath);
             std::wstring wStem = path.stem().wstring();
-            
+
             int size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
             std::string utf8Stem(size_needed, 0);
             WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
@@ -491,11 +495,12 @@ void UImGuiManager::SetCameraInfo()
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f", ImGuiSliderFlags_Logarithmic);
 
+        // TODO: Grid Step은 CameraInfo가 아니므로, 함수이름을 바꾸거나 CameraInfo에서 분리하는 것을 고려
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         float GridStep = EditorViewportClient->GetGridStep();
-        if (ImGui::SliderFloat("Grid Snap", &GridStep, 0.1f, 10.0f, "%.2f"))
+        if (ImGui::SliderFloat("Grid Step", &GridStep, 0.1f, 10.0f, "%.2f"))
         {
-            EditorViewportClient->SetGridStepAndUpdate(GridStep);
+            EditorViewportClient->SetGridStep(GridStep);
         }
     }
 }

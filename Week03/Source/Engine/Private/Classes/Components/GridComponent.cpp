@@ -2,24 +2,28 @@
 #include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 #include "World.h"
 
-UGridComponent::UGridComponent(const FString &InString) : UPrimitiveComponent(InString)
+UGridComponent::UGridComponent(const FString& InString) : UPrimitiveComponent(InString)
 {
-    //PrimitiveType = EPrimitiveType::Grid;
+    // PrimitiveType = EPrimitiveType::Grid;
     Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 }
 
-UGridComponent::~UGridComponent() {}
+UGridComponent::~UGridComponent()
+{
+}
 
 void UGridComponent::SetGridStep(float InGridStep)
 {
     if (GridStep == InGridStep)
+    {
         return;
+    }
 
     GridStep = InGridStep;
     RebuildGridLines();
 }
 
-void UGridComponent::Render(URenderer &renderer)
+void UGridComponent::Render(URenderer& renderer)
 {
     if (!bInitialized)
     {
@@ -29,7 +33,7 @@ void UGridComponent::Render(URenderer &renderer)
 
     if (!GridLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)
     {
-        GWorld->GetLineBatcherComponent()->DrawLines(std::span<const FBatchedLine>(GridLines.data(), GridLines.size()));
+        GWorld->GetLineBatcherComponent()->DrawLines(GridLines);
     }
 }
 
@@ -40,20 +44,27 @@ void UGridComponent::RebuildGridLines()
     GridLines.clear();
     GridLines.reserve((GridSize * 2 + 1) * 2);
 
-    for (int i = -GridSize; i <= GridSize; ++i)
-    {
-        // 가로선 (X축과 평행)
-        GridLines.emplace_back(
-            FVector<float>(-GridSize * GridStep, i * GridStep, -0.005f),
-            FVector<float>(GridSize * GridStep, i * GridStep, -0.005f),
-            Color
-        );
+    float GridLength = GridSize * GridStep;
 
-        // 세로선 (Z축과 평행)
-        GridLines.emplace_back(
-            FVector<float>(i * GridStep, -GridSize * GridStep, -0.005f),
-            FVector<float>(i * GridStep, GridSize * GridStep, -0.005f),
-            Color
-        );
+    for (int i = -GridSize; i < 0; ++i)
+    {
+        GridLines.emplace_back(FVector<float>(-GridLength, i * GridStep, 0.0f),
+                               FVector<float>(GridLength, i * GridStep, 0.0f), Color);
+
+        GridLines.emplace_back(FVector<float>(i * GridStep, -GridLength, 0.0f),
+                               FVector<float>(i * GridStep, GridLength, 0.0f), Color);
     }
+
+    for (int i = 1; i <= GridSize; ++i)
+    {
+        GridLines.emplace_back(FVector<float>(-GridLength, i * GridStep, 0.0f),
+                               FVector<float>(GridLength, i * GridStep, 0.0f), Color);
+
+        GridLines.emplace_back(FVector<float>(i * GridStep, -GridLength, 0.0f),
+                               FVector<float>(i * GridStep, GridLength, 0.0f), Color);
+    }
+
+    GridLines.emplace_back(FVector<float>(-GridSize * GridStep, 0.0f, 0.0f), FVector<float>(0.0f, 0.0f, 0.0f), Color);
+
+    GridLines.emplace_back(FVector<float>(0.0f, -GridSize * GridStep, 0.0f), FVector<float>(0.0f, 0.0f, 0.0f), Color);
 }

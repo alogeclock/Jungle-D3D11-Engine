@@ -1,4 +1,9 @@
 ﻿#include "Source/Editor/Public/EditorViewportClient.h"
+#include "Source/Editor/Public/Viewport.h"
+#include "Source/Editor/Public/Grid.h"
+#include "Source/Editor/Public/Axis.h"
+#include "Source/Engine/Public/Classes/Components/GridComponent.h"
+#include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Core/Public/Math/ViewMatrix.h"
 #include "Source/Core/Public/Memory.h"
 #include "Source/Engine/Object/Public/Actor.h"
@@ -58,6 +63,33 @@ FEditorViewportClient::FEditorViewportClient(FViewport* viewport)
 FEditorViewportClient::~FEditorViewportClient()
 {
     SaveConfig();
+}
+
+void FEditorViewportClient::SetGrid(AGrid* InGrid)
+{
+    Grid = InGrid;
+    Grid->GetGridComponent()->SetGridStep(GridStep);
+}
+
+void FEditorViewportClient::SetAxis(AAxis* InAxis)
+{
+    Axis = InAxis;
+    Axis->GetAxisComponent()->SetGridStep(GridStep);
+}
+
+void FEditorViewportClient::SetGridStep(float InGridStep)
+{
+    GridStep = InGridStep;
+
+    if (Grid && Grid->GetGridComponent())
+    {
+        Grid->GetGridComponent()->SetGridStep(GridStep);
+    }
+
+    if (Axis && Axis->GetAxisComponent())
+    {
+        Axis->GetAxisComponent()->SetGridStep(GridStep);
+    }
 }
 
 void FEditorViewportClient::Tick(float DeltaTime, FViewport* Viewport)
@@ -338,18 +370,6 @@ FRay FEditorViewportClient::GetPickingRay()
     FVector<float> RayDirection = FVector(WorldFar.X, WorldFar.Y, WorldFar.Z) - RayOrigin;
     RayDirection.Normalize();
 
-    //// Debug -------------
-    // char Buf[256];
-    // snprintf(Buf, sizeof(Buf), "Mouse Screen Position: X=%.3f Y=%.3f", MouseX, MouseY);
-    // UImGuiManager::Get().AddLog(Buf);
-
-    // snprintf(Buf, sizeof(Buf), "Mouse Screen Position(NDC): X=%.3f Y=%.3f", NDC_X, NDC_Y);
-    // UImGuiManager::Get().AddLog(Buf);
-
-    // snprintf(Buf, sizeof(Buf), "Mouse Ray Direction: X=%.3f Y=%.3f Z=%.3f\n\n", RayDirection.X, RayDirection.Y,
-    // RayDirection.Z); UImGuiManager::Get().AddLog(Buf);
-    //// -------------------
-
     return FRay(RayOrigin, RayDirection);
 }
 
@@ -430,6 +450,21 @@ void FEditorViewportClient::LoadConfig()
     {
         RotSpeed = 0.1f;
     }
+
+    // 3. GridStep 로드 및 예외 처리
+    GetPrivateProfileStringA("GridSettings", "GridStep", "1.0", buffer, sizeof(buffer), iniPath);
+    try
+    {
+        float ParsedGridStep = std::stof(buffer);
+        if (ParsedGridStep >= 0.1f && ParsedGridStep <= 10.0f)
+            GridStep = ParsedGridStep;
+        else
+            GridStep = 1.0f;
+    }
+    catch (const std::exception&)
+    {
+        GridStep = 1.0f;
+    }
 }
 
 void FEditorViewportClient::SaveConfig()
@@ -442,8 +477,8 @@ void FEditorViewportClient::SaveConfig()
 
     std::string rotStr = std::to_string(RotSpeed);
     WritePrivateProfileStringA("CameraSettings", "RotSpeed", rotStr.c_str(), iniPath);
-    
-    std::string gridStepStr = std::to_string(Grid->GetGridStep());
+
+    std::string gridStepStr = std::to_string(GridStep);
     WritePrivateProfileStringA("GridSettings", "GridStep", gridStepStr.c_str(), iniPath);
 }
 

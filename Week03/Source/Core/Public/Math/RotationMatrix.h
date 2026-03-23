@@ -16,8 +16,8 @@ template<typename T>
 FRotationXMatrix<T>::FRotationXMatrix(T AngleRad)
     : FMatrix<T>(
         FPlane<T>(1.0f, 0.0f, 0.0f, 0.0f),
-        FPlane<T>(0.0f, FMath::Cos(AngleRad), -FMath::Sin(AngleRad), 0.0f),
-        FPlane<T>(0.0f, FMath::Sin(AngleRad), FMath::Cos(AngleRad), 0.0f),
+        FPlane<T>(0.0f, cos(AngleRad), -sin(AngleRad), 0.0f),
+        FPlane<T>(0.0f, sin(AngleRad), cos(AngleRad), 0.0f),
         FPlane<T>(0.0f, 0.0f, 0.0f, 1.0f)
     )
 {
@@ -35,9 +35,9 @@ struct FRotationYMatrix : public FMatrix<T>
 template<typename T>
 FRotationYMatrix<T>::FRotationYMatrix(T AngleRad)
     : FMatrix<T>(
-        FPlane<T>(FMath::Cos(AngleRad), 0.0f, FMath::Sin(AngleRad), 0.0f),
+        FPlane<T>(cos(AngleRad), 0.0f, sin(AngleRad), 0.0f),
         FPlane<T>(0.0f, 1.0f, 0.0f, 0.0f),
-        FPlane<T>(-FMath::Sin(AngleRad), 0.0f, FMath::Cos(AngleRad), 0.0f),
+        FPlane<T>(-sin(AngleRad), 0.0f, cos(AngleRad), 0.0f),
         FPlane<T>(0.0f, 0.0f, 0.0f, 1.0f)
     )
 {
@@ -55,8 +55,8 @@ struct FRotationZMatrix : public FMatrix<T>
 template<typename T>
 FRotationZMatrix<T>::FRotationZMatrix(T AngleRad)
     : FMatrix<T>(
-        FPlane<T>(FMath::Cos(AngleRad), -FMath::Sin(AngleRad), 0.0f, 0.0f),
-        FPlane<T>(FMath::Sin(AngleRad), FMath::Cos(AngleRad), 0.0f, 0.0f),
+        FPlane<T>(cos(AngleRad), -sin(AngleRad), 0.0f, 0.0f),
+        FPlane<T>(sin(AngleRad), cos(AngleRad), 0.0f, 0.0f),
         FPlane<T>(0.0f, 0.0f, 1.0f, 0.0f),
         FPlane<T>(0.0f, 0.0f, 0.0f, 1.0f)
     )

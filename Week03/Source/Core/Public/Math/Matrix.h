@@ -1,5 +1,6 @@
-﻿// Math/Matrix.h
-#pragma once
+﻿#pragma once
+
+#include "Math.h"
 #include "Plane.h"
 
 template<typename T>
@@ -175,13 +176,13 @@ template <typename T> inline FMatrix<T> FMatrix<T>::Inverse() const
 
 	// Inverse = Adjugate / Determinant
 	const float InvDet = 1.f / Det;
-    for (int32 i = 0; i < 4; i++)
-        for (int32 j = 0; j < 4; j++)
+
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
             Result.M[i][j] *= InvDet;
 
     return Result;
 }
-
 
 template<typename T>
 inline FVector<T> FMatrix<T>::ToEuler() const

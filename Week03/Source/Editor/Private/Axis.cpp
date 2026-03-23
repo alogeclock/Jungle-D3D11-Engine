@@ -14,10 +14,6 @@ AAxis::AAxis(const FString &InString) : AActor(InString)
     AxisComponent->RegisterComponent();
 }
 
-AAxis::~AAxis() 
-{   
-}
-
-void AAxis::Render(URenderer &renderer)
+AAxis::~AAxis()
 {
 }
