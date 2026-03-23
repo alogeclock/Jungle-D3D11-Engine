@@ -20,46 +20,72 @@ class UClass
     {
     }
 
-    UClass(FString InClassName, UClass *InSuperClass, uint32 InClassSize, ConstructFn InConstructor, TArray<FProperty> &InProperties)
-        : ClassName(InClassName), SuperClass(InSuperClass), ClassSize(InClassSize), Constructor(InConstructor), Properties(InProperties)
-    {
-    }
     TArray<FProperty> &GetProperties() { return Properties; }
+    void               AddProperty(const FProperty &property) { Properties.push_back(property); }
     const char        *GetName() { return ClassName.c_str(); }
 };
 
 #define DECLARE_OBJECT(CurrentType, SuperType)                                                                                                                 \
   public:                                                                                                                                                      \
-    static UClass *StaticClass()                                                                                                                               \
-    {                                                                                                                                                          \
-        static UClass s_Class(#CurrentType, SuperType::StaticClass(), sizeof(CurrentType), Constructor);                                                       \
-        return &s_Class;                                                                                                                                       \
-    }                                                                                                                                                          \
     virtual UClass *GetClass() const override { return CurrentType::StaticClass(); }                                                                           \
                                                                                                                                                                \
-    static UObject *Constructor() { return new CurrentType(#CurrentType); }
-
-#define DECLARE_UCLASS()                                                                                                                                       \
   private:                                                                                                                                                     \
+    static UObject       *Constructor() { return new CurrentType(#CurrentType); }                                                                              \
     inline static UClass *_StaticUClass = nullptr;                                                                                                             \
                                                                                                                                                                \
   public:                                                                                                                                                      \
     static UClass *StaticClass()                                                                                                                               \
     {                                                                                                                                                          \
-        if (_StaticUClass == nullptr)                                                                                                                          \
+        static UClass *s_Class = []() -> UClass *                                                                                                              \
         {                                                                                                                                                      \
-            TArray<FProperty> Properties;
+            UClass            *cls = new UClass(#CurrentType, SuperType::StaticClass(), sizeof(CurrentType), &CurrentType::Constructor);                       \
+            UClass            *SuperClass = SuperType::StaticClass();                                                                                          \
+            TArray<FProperty> &Properties = SuperClass->GetProperties();                                                                                       \
+            int                SuperPropertyCount = Properties.size();                                                                                         \
+            for (int i = 0; i < SuperPropertyCount; i++)                                                                                                       \
+            {                                                                                                                                                  \
+                if (Properties[i].bIsPublic)                                                                                                                   \
+                    cls->AddProperty(Properties[i]);                                                                                                           \
+            }                                                                                                                                                  \
+            return cls;                                                                                                                                        \
+        }();                                                                                                                                                   \
+        return s_Class;                                                                                                                                        \
+    }
 
-#define REGISTER_PROPERTY(ClassType, Member, TypeEnum) Properties.push_back({ #Member, EPropertyType::TypeEnum, offsetof(ClassType, Member)});
-
-#define END_DECLARE(CurrentType, SuperType)                                                                                                                    \
-                                                                                                                                                               \
-    UClass *s_Class = new UClass(#CurrentType, SuperType::StaticClass(), sizeof(CurrentType), Constructor, Properties);                                        \
-    _StaticUClass = s_Class;                                                                                                                                   \
-    }                                                                                                                                                          \
-    return _StaticUClass;                                                                                                                                      \
-    }                                                                                                                                                          \
-                                                                                                                                                               \
+#define DECLARE_OBJECT_START(CurrentType, SuperType)                                                                                                           \
+  public:                                                                                                                                                      \
     virtual UClass *GetClass() const override { return CurrentType::StaticClass(); }                                                                           \
-    static UObject *Constructor() { return new CurrentType(#CurrentType); }                                                                                    \
+                                                                                                                                                               \
+  private:                                                                                                                                                     \
+    static UObject       *Constructor() { return new CurrentType(#CurrentType); }                                                                              \
+    inline static UClass *_StaticUClass = nullptr;                                                                                                             \
+                                                                                                                                                               \
+  public:                                                                                                                                                      \
+    static UClass *StaticClass()                                                                                                                               \
+    {                                                                                                                                                          \
+        static UClass *s_Class = []() -> UClass * {                                                                                                            \
+            UClass* cls = new UClass(#CurrentType, SuperType::StaticClass(), sizeof(CurrentType), &CurrentType::Constructor);                                  \
+            UClass* SuperClass = SuperType::StaticClass();                                                                                                     \
+            TArray<FProperty>& Properties = SuperClass->GetProperties();                                                                                       \
+            int SuperPropertyCount = Properties.size();                                                                                                        \
+            for (int i = 0; i < SuperPropertyCount; i++)                                                                                                       \
+            {                                                                                                                                                  \
+                if(Properties[i].bIsPublic)                                                                                                                         \
+                cls->AddProperty(Properties[i]);                                                                                                                    \
+            }
+
+// 내 클래스, 해당 멤버 변수 이름, 해당 멤버 자료형
+// 자식에게도 상속되는 프로퍼티
+#define PUBLIC_PROPERTY(ClassType, Member, TypeEnum) cls->AddProperty({#Member, EPropertyType::TypeEnum, offsetof(ClassType, Member), true});
+// 내 클래스, 해당 멤버 변수 이름, 해당 멤버 자료형
+// 자신만 소유하는 프로퍼티
+#define PRIVATE_PROPERTY(ClassType, Member, TypeEnum) cls->AddProperty({#Member, EPropertyType::TypeEnum, offsetof(ClassType, Member), false});
+
+#define DECLARE_END                                                                                                                                         \
+    return cls;                                                                                                                                                \
+    }                                                                                                                                                          \
+    ();                                                                                                                                                        \
+    return s_Class;                                                                                                                                            \
+    }                                                                                                                                                          \
+                                                                                                                                                               \
   private:

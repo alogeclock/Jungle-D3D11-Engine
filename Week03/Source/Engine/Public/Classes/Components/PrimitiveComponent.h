@@ -4,11 +4,12 @@
 #include "Source/Engine/Public/Classes/Components/SceneComponent.h"
 #include "Source/Engine/Public/Classes/MeshManager.h"
 #include "Source/Engine/Object/Public/Actor.h"
-#include "Source/Engine/Public/ImGuiManager.h"
 #include "Source/Core/Public/Math/Intersections.h"
 #include "Source/Core/Public/Math/Matrix.h"
 #include "Source/Core/Public/Math/Box.h"
 #include "Source/Core/Public/Memory.h"
+
+#include <iostream>
 
 class URenderer;
 
@@ -22,11 +23,8 @@ struct FHitResult
 
 class UPrimitiveComponent : public USceneComponent
 {
-    //DECLARE_OBJECT(UPrimitiveComponent, USceneComponent)
-    DECLARE_UCLASS()
-    //내 클래스, 해당 멤버 변수 이름, 해당 멤버 자료형
-    REGISTER_PROPERTY(UPrimitiveComponent, Transform, Transform)
-    END_DECLARE(UPrimitiveComponent, USceneComponent)
+    DECLARE_OBJECT_START(UPrimitiveComponent, USceneComponent)
+    DECLARE_END
 
   public:
     UPrimitiveComponent(const FString &InString);
@@ -68,9 +66,10 @@ class UPrimitiveComponent : public USceneComponent
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     ECullMode                CullMode = ECullMode::Back;
-    bool                     bEnableDepthTest = true;
-    bool                     bLocalBoundsDirty = true;
-    bool                     bIsInEditor = false;
+
+    bool bEnableDepthTest = true;
+    bool bLocalBoundsDirty = true;
+    bool bIsInEditor = false;
 
     FBox LocalAABB;
     FBox WorldAABB;

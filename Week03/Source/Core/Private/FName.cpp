@@ -52,7 +52,8 @@ void FName::SetNumber(uint32 InNumber)
 	Number = InNumber;
 }
 
-uint32 FName::GetDisplayIndex()
-{
+uint32 FName::GetComparisonIndex() { return ComparisonIndex; }
+
+uint32 FName::GetDisplayIndex() {
 	return DisplayIndex;
 }

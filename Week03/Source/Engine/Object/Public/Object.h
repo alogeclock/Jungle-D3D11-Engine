@@ -54,6 +54,7 @@ public:
 	uint32 GetUUID() const { return UUID; }
 	uint64 GetAllocatedBytes() const;
 	uint32 GetAllocatedCount() const;
+    uint32 GetInternalIndex() const { return InternalIndex; }
 
 	template <typename T> T* CreateDefaultSubobject();
 	bool            IsA(UClass* TargetClass) const;

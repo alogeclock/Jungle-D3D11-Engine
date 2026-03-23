@@ -4,7 +4,6 @@
 #include "Source/Engine/Public/Classes/Components/ArrowComponent.h"
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/CubeArrowComponent.h"
-#include "Source/Engine/Public/ImGuiManager.h"
 
 class APivotTransformGizmo : public ABaseTransformGizmo
 {

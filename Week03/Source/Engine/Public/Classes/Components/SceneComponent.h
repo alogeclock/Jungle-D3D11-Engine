@@ -7,7 +7,10 @@
 // Transform Information을 갖는 Component (위치, 회전, 크기)
 class USceneComponent : public UActorComponent
 {
-    DECLARE_OBJECT(USceneComponent, UActorComponent)
+    DECLARE_OBJECT_START(USceneComponent, UActorComponent)
+    // 내 클래스, 해당 멤버 변수 이름, 해당 멤버 자료형
+    PUBLIC_PROPERTY(USceneComponent, Transform, Transform)
+    DECLARE_END
 
   public:
     USceneComponent(const FString &InString);

@@ -34,7 +34,7 @@ void AActor::AddOwnedComponent(UActorComponent *Component)
     if (Component == nullptr)
         return;
 
-    OwnedComponents.insert(Component);
+    OwnedComponents.push_back(Component);
     
     if (RootComponent == nullptr)
         return;

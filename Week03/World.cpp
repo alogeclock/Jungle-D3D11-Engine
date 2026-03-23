@@ -11,7 +11,7 @@
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
-#include "Source/Engine/Public/ImGuiManager.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
 
 #include <fstream>
 #include <iostream>

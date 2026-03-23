@@ -117,8 +117,6 @@ ID3D11ShaderResourceView* UTextureManger::GetTexture(const path& inFilePath)
 {
 	FName HashKey = GetHashKeyPath(inFilePath);
 	
-	std::cout << HashKey.ToString() << std::endl;
-
 	if (TextureMap.find(HashKey) != TextureMap.end()) {
 		return TextureMap[HashKey].Get();
 	}

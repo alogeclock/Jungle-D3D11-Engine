@@ -45,7 +45,7 @@ class UWorld final : public UObject
 template <typename T> T *UWorld::SpawnActor()
 {
     T* Object = SpawnActor(T::StaticClass());
-    Object->SetOuter(this);
+    // Object->SetOuter(this);
     // 내부적으로는 T::StaticClass() 신분증을 꺼내서 1번 함수에게 토스할 뿐입니다!
     return Cast<T>(Object);
 }

@@ -3,7 +3,6 @@
 #include "Source/Editor/Public/Application.h"
 #include "Source/Core/Public/Math/Matrix.h"
 #include "Source/Core/Public/Math/Vector.h"
-#include "Source/Engine/Public/ImGuiManager.h"
 
 // 사용자의 Input 이벤트, 카메라 관리
 

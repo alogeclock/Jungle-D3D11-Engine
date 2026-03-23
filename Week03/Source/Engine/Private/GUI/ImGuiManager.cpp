@@ -1,4 +1,4 @@
-﻿#include "Source/Engine/Public/ImGuiManager.h"
+﻿#include "Source/Engine/Public/GUI/ImGuiManager.h"
 #include "CoreTypes.h"
 #include "Source/Core/Public/Memory.h"
 
@@ -82,6 +82,14 @@ void UImGuiManager::Update()
     }
     ImGui::End();
 
+    ImGui::Begin("Inspector");
+    ShowObjectInfo(TempSelectedObject);
+    ImGui::End();
+
+    ImGui::Begin("OutLiner");
+    ShowDebugOutliner(GUObjectArray);
+    ImGui::End();
+
     endFrame();
 }
 
@@ -109,7 +117,11 @@ void UImGuiManager::SetCamera(FViewportCameraTransform *camera) { Camera = camer
 
 void UImGuiManager::SetEditorViewportClient(FEditorViewportClient *editor) { EditorViewportClient = editor; }
 
-void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) { SelectedObject = primitiveComponent; }
+void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent)
+{
+    TempSelectedObject = primitiveComponent != nullptr ? primitiveComponent->GetOwner() : nullptr;
+    SelectedObject = primitiveComponent;
+}
 
 bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
 
@@ -214,7 +226,7 @@ void UImGuiManager::ShowControlPanel()
 
         EViewModeIndex currentMode = EditorViewportClient->GetViewMode();
         int            currentItem = static_cast<int>(currentMode);
-        
+
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::Text("View Mode");
         if (ImGui::ListBox("##View Mode", &currentItem, ViewModeStrings, IM_ARRAYSIZE(ViewModeStrings)))
@@ -255,7 +267,7 @@ void UImGuiManager::ShowControlPanel()
             else
                 CurrentFlags &= ~EEngineShowFlags::SF_UUID; // 비트 끄기 (AND NOT)
         }
-        
+
         // 변경된 상태를 다시 뷰포트 클라이언트에 저장
         EditorViewportClient->SetShowFlags(CurrentFlags);
     }
@@ -325,9 +337,9 @@ void UImGuiManager::SpawnActors()
 
             if (DynamicPrimitive != nullptr)
             {
-                UUUIDTextComponent *UUUID = NewObj->CreateDefaultSubobject<UUUIDTextComponent>();
-                NewActor->AddOwnedComponent(UUUID);
-                UUUID->SetText(NewObj->GetUUID());
+                // UUUIDTextComponent *UUUID = NewObj->CreateDefaultSubobject<UUUIDTextComponent>();
+                // NewActor->AddOwnedComponent(UUUID);
+                // UUUID->SetText(NewObj->GetUUID());
 
                 const char  *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
                 const uint32 UUID = NewObj->GetUUID();
@@ -342,11 +354,12 @@ void UImGuiManager::SpawnActors()
 
                 /*if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText(logBuffer);   
+                    TextComp->SetText(logBuffer);
                 }
-                else */if (UUUIDTextComponent* UUIDTextComp= Cast<UUUIDTextComponent>(DynamicPrimitive))
+                else */
+                if (UUUIDTextComponent *UUIDTextComp = Cast<UUUIDTextComponent>(DynamicPrimitive))
                 {
-                    UUIDTextComp->SetText(UUID);   
+                    UUIDTextComp->SetText(UUID);
                 }
             }
         }
@@ -478,6 +491,170 @@ void UImGuiManager::TransformInspector()
         bToggleGizmoMode = true;
 
     Actor->SetTransform(t);
+}
+
+void UImGuiManager::ShowObjectInfo(UObject *InObject)
+{
+    if (InObject == nullptr)
+        return;
+
+    TArray<FProperty> &Properties = InObject->GetClass()->GetProperties();
+    for (const auto &Property : Properties)
+    {
+        if (Property.Type == EPropertyType::UObjectPtr)
+        {
+            UObject **ObjectPtr = reinterpret_cast<UObject **>(Property.GetValuePtr(InObject));
+            UObject  *Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
+
+            if (Object == nullptr)
+                continue;
+
+            ImGui::Separator();
+            if (ImGui::Button(Object->GetName().ToString().c_str(), {100.f, 15.f}))
+            {
+                TempSelectedObject = Object;
+            }
+        }
+        else if (Property.Type == EPropertyType::UObjectDetail)
+        {
+            UObject **ObjectPtr = reinterpret_cast<UObject **>(Property.GetValuePtr(InObject));
+            UObject  *Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
+            ImGui::Separator();
+            ShowObjectInfo(Object);
+        }
+        else if (Property.Type == EPropertyType::Transform)
+        {
+            FTransform *Transform = reinterpret_cast<FTransform *>(Property.GetValuePtr(InObject));
+            ImGui::Separator();
+            ImGui::Text("Transform");
+            ImGui::DragFloat3("Location", &Transform->Location.X, 0.01f);
+            ImGui::DragFloat3("Rotation", &Transform->Rotation.X, 0.01f);
+            ImGui::DragFloat3("Scale", &Transform->Scale.X, 0.01f, 0.f, FLT_MAX);
+
+            USceneComponent *component = static_cast<USceneComponent *>(InObject);
+            component->SetTransform(*Transform);
+        }
+        else if (Property.Type == EPropertyType::Float)
+        {
+            float *FloatType = reinterpret_cast<float *>(Property.GetValuePtr(InObject));
+            ImGui::Separator();
+            ImGui::DragFloat(Property.Name.c_str(), FloatType);
+        }
+        else if (Property.Type == EPropertyType::UObjectPtrArray)
+        {
+            TArray<UObject *> *ArrayPtr = reinterpret_cast<TArray<UObject *> *>(Property.GetValuePtr(InObject));
+
+            if (!ArrayPtr)
+                continue;
+            ImGui::Separator();
+            for (UObject *Object : *ArrayPtr)
+            {
+                if (!Object)
+                    continue;
+
+                if (Object->IsA(UActorComponent::StaticClass()) && static_cast<UActorComponent *>(Object)->GetOwner()->GetRootComponent() == Object)
+                    continue;
+
+                if (ImGui::Button(Object->GetName().ToString().c_str(), {100.f, 15.f}))
+                {
+                    TempSelectedObject = Object;
+                }
+            }
+        }
+    }
+}
+
+void UImGuiManager::ShowDebugOutliner(TArray<UObject *> &ObjectArray)
+{
+    int                                ArraySize = ObjectArray.size();
+    TMap<UObject *, TArray<UObject *>> OuterGraph;
+
+    TArray<UObject *> SearchStack;
+    for (int i = 0; i < ArraySize; i++)
+    {
+        if (!ObjectArray[i]->GetOuter() && ObjectArray[i]->GetName() == FName("World"))
+        {
+            SearchStack.push_back(ObjectArray[i]);
+            continue;
+        }
+
+        OuterGraph[ObjectArray[i]->GetOuter()].push_back(ObjectArray[i]);
+    }
+
+    TSet<UObject *> visited;
+    while (!SearchStack.empty())
+    {
+        UObject *Current = SearchStack.back();
+        SearchStack.pop_back();
+
+        ShowDebugOutliner(Current, OuterGraph, visited, 0);
+    }
+}
+
+void UImGuiManager::ShowDebugOutliner(UObject *Object, TMap<UObject *, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth)
+{
+    if (Object == nullptr)
+        return;
+    if (Visited.contains(Object))
+        return;
+
+    FString Name = "";
+    // Name += Object == TempSelectedObject ? "@  " : "O  ";
+    Name += Object->GetName().ToString();
+
+    Visited.insert(Object);
+
+    TArray<UObject *>  childs = Dependencies[Object];
+    ImVec2             ButtonSize(100, 10);
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
+    bool               opened = false;
+    if (childs.size() <= 0)
+    {
+        opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_Leaf);
+        ImDrawList *draw = ImGui::GetWindowDrawList();
+        ImVec2      min = ImGui::GetItemRectMin();
+        ImVec2      max = ImGui::GetItemRectMax();
+        min.x = ImGui::GetWindowPos().x;
+        max.x = ImGui::GetWindowPos().x + ImGui::GetWindowSize().x;
+        if (Object == TempSelectedObject)
+        {
+            draw->AddRectFilled(min, max, IM_COL32(60, 120, 255, 60));
+        }
+
+        if (ImGui::IsItemClicked())
+        {
+            TempSelectedObject = Object;
+        }
+
+        if (opened)
+        {
+            ImGui::TreePop();
+        }
+    }
+    else
+    {
+        opened = ImGui::TreeNodeEx(Name.c_str(), flags);
+        ImDrawList *draw = ImGui::GetWindowDrawList();
+        ImVec2      min = ImGui::GetItemRectMin();
+        ImVec2      max = ImGui::GetItemRectMax();
+        min.x = ImGui::GetWindowPos().x;
+        max.x = ImGui::GetWindowPos().x + ImGui::GetWindowSize().x;
+        if (Object == TempSelectedObject)
+        {
+            draw->AddRectFilled(min, max, IM_COL32(60, 120, 255, 120));
+        }
+        if (ImGui::IsItemClicked())
+        {
+            TempSelectedObject = Object;
+        }
+        if (opened)
+        {
+            for (const auto &child : childs)
+                ShowDebugOutliner(child, Dependencies, Visited, Depth + 1);
+
+            ImGui::TreePop();
+        }
+    }
 }
 
 std::wstring UImGuiManager::SaveFileDialog()

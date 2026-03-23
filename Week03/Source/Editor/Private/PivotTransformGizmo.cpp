@@ -1,5 +1,7 @@
 ﻿#include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/PivotTransformGizmo.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
+
 
 APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTransformGizmo(InString)
 {

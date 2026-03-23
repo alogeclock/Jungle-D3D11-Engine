@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Rendering/Renderer.h"
+#include "Source/Engine/Public/Rendering/Renderer.h"
 #include "Source/Core/Public/TimeManager.h"
 
 #include "ImGui/imgui.h"
@@ -65,6 +65,9 @@ class UImGuiManager
     void LoadScene();
     void SetCameraInfo();
     void TransformInspector();
+    void ShowObjectInfo(UObject* InObject);
+    void ShowDebugOutliner(TArray<UObject *> &ObjectArray);
+    void ShowDebugOutliner(UObject *Object, TMap<UObject*, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth);
 
   public:
     bool bIsOrthogonal = false;
@@ -74,6 +77,8 @@ class UImGuiManager
     FEditorViewportClient    *EditorViewportClient = nullptr;
     FViewportCameraTransform *Camera = nullptr;
     UPrimitiveComponent      *SelectedObject = nullptr;
+
+    UObject *TempSelectedObject = nullptr;
     char                      buffer[256];
 };
 

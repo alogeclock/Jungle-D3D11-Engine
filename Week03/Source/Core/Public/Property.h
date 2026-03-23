@@ -3,11 +3,15 @@
 
 enum class EPropertyType
 {
+    UObjectPtr,
+    UObjectPtrArray,
+    UObject,
+    UObjectDetail,
     Int,
     Float,
     Bool,
     Vec3,
-    Transform
+    Transform,
 };
 
 struct FProperty
@@ -15,8 +19,9 @@ struct FProperty
     FString       Name;
     EPropertyType Type;
     size_t        Offset;
+    bool          bIsPublic;
 
-    FProperty(const char* InName, EPropertyType InType, size_t InOffset) : Name(InName), Type(InType), Offset(InOffset) {}
+    FProperty(FString InName, EPropertyType InType, size_t InOffset, bool IsPublic) : Name(InName), Type(InType), Offset(InOffset), bIsPublic(IsPublic) {}
 
     void *GetValuePtr(void *ObjectBase) const { return reinterpret_cast<void *>(reinterpret_cast<uint8_t *>(ObjectBase) + Offset); }
 

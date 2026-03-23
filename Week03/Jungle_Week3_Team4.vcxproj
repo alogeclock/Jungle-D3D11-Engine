@@ -171,7 +171,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\SceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\SphereComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\TriangleComponent.cpp" />
-    <ClCompile Include="Source\Engine\Private\ImGuiManager.cpp" />
+    <ClCompile Include="Source\Engine\Private\GUI\ImGuiManager.cpp" />
     <ClCompile Include="Source\Editor\Private\BaseTransformGizmo.cpp" />
     <ClCompile Include="Source\Engine\Private\Rendering\Renderer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
@@ -267,7 +267,7 @@
     <ClInclude Include="Source\Engine\Public\Classes\Components\SceneComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\SphereComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\TriangleComponent.h" />
-    <ClInclude Include="Source\Engine\Public\ImGuiManager.h" />
+    <ClInclude Include="Source\Engine\Public\GUI\ImGuiManager.h" />
     <ClInclude Include="Source\Editor\Public\BaseTransformGizmo.h" />
     <ClInclude Include="Source\Engine\Public\Rendering\Renderer.h" />
     <ClInclude Include="ImGui\imconfig.h" />
