@@ -39,18 +39,17 @@ public:
     {
         return CurrentLevel;
     }
+
     void SetCurrentLevel(ULevel* InLevel)
     {
         CurrentLevel = InLevel;
     }
-    ULineBatcherComponent *GetLineBatcherComponent() { return LineBatcherComponent; }
-
-    FHitResult PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
     TSet<ULevel*>& GetLevels()
     {
         return Levels;
     }
+
     ULineBatcherComponent* GetLineBatcherComponent()
     {
         return LineBatcherComponent;

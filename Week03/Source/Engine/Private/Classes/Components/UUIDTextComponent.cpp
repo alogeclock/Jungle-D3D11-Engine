@@ -35,14 +35,6 @@ void UUUIDTextComponent::Render(URenderer &renderer) {
     renderer.RenderText(FilePath, constants, &TextVertices, &TextIndeices, &VertexBuffer, &IndexBuffer , VertexBufferSize, IndexBufferSize);
 }
 
-void UUUIDTextComponent::Selected() { 
-    bVIsible = true;
-}
-
-void UUUIDTextComponent::NotSelected() {
-    bVIsible = false;
-}
-
 void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp)
 {
     const FMatrix<float> &World = GetWorldMatrix();

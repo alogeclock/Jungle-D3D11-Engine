@@ -604,7 +604,6 @@ void UImGuiManager::TransformInspector()
     //}
 
     OwnerActor->SetTransform(t);
-    Actor->SetTransform(t);
 }
 
 void UImGuiManager::ShowObjectInfo(UObject *InObject)

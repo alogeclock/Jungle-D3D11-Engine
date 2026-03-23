@@ -30,10 +30,6 @@ void UPrimitiveComponent::Render(URenderer &renderer)
     renderer.RenderPrimitive(this, constants, constantsColor);
 }
 
-void UPrimitiveComponent::Selected() { SetColor({0.0f, 0.0f, 0.0f, 0.5f}); }
-
-void UPrimitiveComponent::NotSelected() { SetColor({0.0f, 0.0f, 0.0f, 0.0f}); }
-
 void UPrimitiveComponent::SetPrimitiveType(EPrimitiveType InType)
 {
     if (PrimitiveType != InType)

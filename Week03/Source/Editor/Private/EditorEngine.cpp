@@ -101,14 +101,63 @@ void UEditorEngine::UpdateSelection(UPrimitiveComponent* HitComp)
 
 void USelection::Clear()
 {
+    for (auto obj : SelectedObjects)
+    {
+       // 1. 단일 컴포넌트가 선택되어 있었던 경우
+        UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(obj);
+        if (PrimComp)
+        {
+            PrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.0f});
+        }
+
+        // 2. 액터가 통째로 선택되어 있었던 경우
+        AActor* Actor = Cast<AActor>(obj);
+        if (Actor)
+        {
+            // 액터에 속한 모든 컴포넌트를 순회하며 색상 초기화
+            for (auto Comp : Actor->GetOwnedComponents())
+            {
+                UPrimitiveComponent* ChildPrimComp = Cast<UPrimitiveComponent>(Comp);
+                if (ChildPrimComp)
+                {
+                    ChildPrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.0f});
+                }
+            }
+        }
+    }
     SelectedObjects.clear();
 }
 
 void USelection::AddObject(UObject* InObject)
 {
-    if (InObject && std::find(SelectedObjects.begin(), SelectedObjects.end(), InObject) == SelectedObjects.end())
+    // 이미 선택된 객체라면 중복 추가 방지 및 렌더링 오버헤드 최소화
+    if (!InObject || IsSelected(InObject))
     {
-        SelectedObjects.push_back(InObject);
+        return; 
+    }
+
+    SelectedObjects.push_back(InObject);
+    
+    // 1. 추가된 객체가 단일 컴포넌트인 경우
+    UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(InObject);
+    if (PrimComp)
+    {
+        PrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.5f});
+    }
+
+    // 2. 추가된 객체가 액터인 경우
+    AActor* Actor = Cast<AActor>(InObject);
+    if (Actor)
+    {
+        // 액터에 속한 모든 컴포넌트를 순회하며 색상 변경
+        for (auto Comp : Actor->GetOwnedComponents())
+        {
+            UPrimitiveComponent* ChildPrimComp = Cast<UPrimitiveComponent>(Comp);
+            if (ChildPrimComp)
+            {
+                ChildPrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.5f});
+            }
+        }
     }
 }
 

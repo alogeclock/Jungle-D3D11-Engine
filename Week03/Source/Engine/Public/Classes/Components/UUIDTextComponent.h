@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Source/Engine/Public/Classes/Components/TextComponent.h"
 
 class UUUIDTextComponent : public UTextComponent
@@ -14,8 +14,6 @@ public:
 		
 	virtual void Render(URenderer &renderer) override;
 
-	void Selected() override;
-	void NotSelected() override;
 private:
 	float Zoffset = 2.5f;
 };

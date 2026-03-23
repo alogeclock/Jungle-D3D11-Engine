@@ -132,7 +132,6 @@ class FEditorViewportClient
 
     void SetGrid(AGrid* InGrid);
     void SetAxis(AAxis* InAxis);
-    void SetGridStep(float InGridStep);
     void SetGizmo(APivotTransformGizmo* InGizmo) { Gizmo = InGizmo; }
 
   private:
