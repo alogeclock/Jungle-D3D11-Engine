@@ -63,7 +63,7 @@ class UPrimitiveComponent : public USceneComponent
   private:
     bool       IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
     bool       IntersectRayAABB(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
-    FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
+    virtual FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
   protected:
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;

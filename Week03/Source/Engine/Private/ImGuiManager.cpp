@@ -28,6 +28,19 @@ void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
+    std::filesystem::path FontFilePath = "Data/Font/NanumGothic.ttf";
+
+    if (!std::filesystem::exists(FontFilePath))
+    {
+        MessageBoxW(nullptr, FontFilePath.c_str(), L"폰트 파일 없음", MB_OK);
+    }
+    io.Fonts->AddFontFromFileTTF(
+        (char*)FontFilePath.u8string().c_str(),
+        16.0f,
+        nullptr,
+        io.Fonts->GetGlyphRangesKorean()
+    );
+
     ImGui_ImplWin32_Init((void *)hWnd);
     ImGui_ImplDX11_Init(renderer->Device, renderer->DeviceContext);
 }
@@ -505,6 +518,15 @@ void UImGuiManager::TransformInspector()
 
     if (ImGui::Button("Change Mode"))
         bToggleGizmoMode = true;
+
+    
+    if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
+    {
+        if (text->IsExactly(UTextComponent::StaticClass()))
+            if(ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
+                text->SetText(TextBuffer);
+    }
+        
 
     Actor->SetTransform(t);
 }

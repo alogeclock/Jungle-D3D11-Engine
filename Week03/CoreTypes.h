@@ -60,6 +60,7 @@ enum class EPrimitiveType : uint8
 	Grid,
 	WireBox,
 	Text,
+    UUID,
 	LineBatcher,
 };
 

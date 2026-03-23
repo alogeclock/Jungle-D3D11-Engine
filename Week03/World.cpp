@@ -399,6 +399,7 @@ FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<flo
     UpdateSelection(NewSelected, CurrentSelectedActor);
     return ClosestHit;
 }
+
 void UWorld::UpdateSelection(UPrimitiveComponent* Selected, AActor* CurrentSelectedActor)
 {
     AActor* NewActor = Selected ? Selected->GetOwner() : nullptr;

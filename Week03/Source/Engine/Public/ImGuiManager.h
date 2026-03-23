@@ -77,6 +77,7 @@ class UImGuiManager
     FViewportCameraTransform *Camera = nullptr;
     UPrimitiveComponent      *SelectedObject = nullptr;
     char                      buffer[256];
+    char                      TextBuffer[256];
 };
 
 // 아래는 imgui_demo.cpp에서 가져온 내용

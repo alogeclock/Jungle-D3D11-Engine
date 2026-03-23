@@ -99,16 +99,16 @@ const CharacterInfo *FTextMeshBuilder::GetCharInfo(wchar_t InChar)
     return nullptr;
 }
 
-TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString& InText)
+void FTextMeshBuilder::BuildTextMesh(const FString& InText, TArray<FTextVertex>* Vertices, TArray<uint32>* Indeices)
 {
     if (charInfoMap.empty()) InitializeCharInfo();
-
-    TArray<FTextVertex> Vertices;
-    Vertices.reserve(InText.size() * 6);
+    Vertices->clear();
+    Indeices->clear();
 
     const float GlyphWidth  = 0.5f;
     const float GlyphHeight = 0.5f;
     const float TotalWidth  = static_cast<float>(InText.size()) * GlyphWidth;
+
     float PenX = -TotalWidth * 0.5f;
 
     size_t i = 0;
@@ -135,18 +135,25 @@ TArray<FTextVertex> FTextMeshBuilder::BuildTextMesh(const FString& InText)
         const float y0 = -GlyphHeight * 0.5f, y1 = GlyphHeight * 0.5f;
         const float u0 = Info->u,              v0 = Info->v;
         const float u1 = Info->u + Info->width, v1 = Info->v + Info->height;
+        
+        uint32 VertexStartIndex = static_cast<uint32>(Vertices->size());
 
-        Vertices.push_back(FTextVertex(FVector(x0, y0, 0.f), u0, v0));
-        Vertices.push_back(FTextVertex(FVector(x1, y0, 0.f), u1, v0));
-        Vertices.push_back(FTextVertex(FVector(x0, y1, 0.f), u0, v1));
-        Vertices.push_back(FTextVertex(FVector(x1, y0, 0.f), u1, v0));
-        Vertices.push_back(FTextVertex(FVector(x1, y1, 0.f), u1, v1));
-        Vertices.push_back(FTextVertex(FVector(x0, y1, 0.f), u0, v1));
+        Vertices->push_back(FTextVertex(FVector(x0, y0, 0.f), u0, v0));
+        Vertices->push_back(FTextVertex(FVector(x1, y0, 0.f), u1, v0));
+        Vertices->push_back(FTextVertex(FVector(x0, y1, 0.f), u0, v1));
+        Vertices->push_back(FTextVertex(FVector(x1, y1, 0.f), u1, v1));
+
+        //012 132
+        Indeices->push_back(VertexStartIndex);
+        Indeices->push_back(VertexStartIndex + 1);
+        Indeices->push_back(VertexStartIndex + 2);
+
+        Indeices->push_back(VertexStartIndex + 1);
+        Indeices->push_back(VertexStartIndex + 3);
+        Indeices->push_back(VertexStartIndex + 2);
 
         PenX += GlyphWidth;
     }
-
-    return Vertices;
 }
 
 void FTextMeshBuilder::LoadFNT(const FString& FntContent, float AtlasW, float AtlasH)
