@@ -6,7 +6,7 @@ UUUIDTextComponent::UUUIDTextComponent(const FString &InString)
 	PrimitiveType = EPrimitiveType::UUID;
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
-    bVIsible = false;
+    bShowUUID = false;
     FilePath = "Data/Texture/DejaVu Sans Mono.dds";
 }
 
@@ -14,7 +14,7 @@ UUUIDTextComponent::~UUUIDTextComponent() {}
 
 void UUUIDTextComponent::Render(URenderer &renderer) {
 	if (bMeshDirty) RebuildMesh();
-    if (TextVertices.empty()) return;
+    if (TextVertices.empty() || !bShowUUID) return;
 
     if (!renderer.CheckShowFlag(EEngineShowFlags::SF_UUID))
         return;

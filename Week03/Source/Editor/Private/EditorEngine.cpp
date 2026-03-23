@@ -1,4 +1,5 @@
 ﻿#include "Source/Editor/Public/EditorEngine.h"
+#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
 UEditorEngine::UEditorEngine(const FString& InString) : UObject(InString)
 {
@@ -121,6 +122,7 @@ void USelection::Clear()
                 if (ChildPrimComp)
                 {
                     ChildPrimComp->SetSelectEffect(false);
+
                 }
             }
         }

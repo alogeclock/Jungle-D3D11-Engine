@@ -92,55 +92,50 @@ const CharacterInfo *FTextMeshBuilder::GetCharInfo(wchar_t InChar)
     return nullptr;
 }
 
-void FTextMeshBuilder::BuildTextMesh(const FString& InText, TArray<FTextVertex>* Vertices, TArray<uint32>* Indeices)
+// UTF-8 한 글자 디코딩 + 인덱스 전진
+static uint32_t DecodeUTF8(const FString& s, size_t& i)
+{
+    unsigned char c = (unsigned char)s[i];
+    if      (c < 0x80) { i += 1; return c; }
+    else if (c < 0xE0) { i += 2; return (c & 0x1F) << 6  | ((unsigned char)s[i-1] & 0x3F); }
+    else if (c < 0xF0) { i += 3; return (c & 0x0F) << 12 | ((unsigned char)s[i-2] & 0x3F) << 6 | ((unsigned char)s[i-1] & 0x3F); }
+    else               { i += 4; return 0x3F; }
+}
+
+void FTextMeshBuilder::BuildTextMesh(const FString& InText, TArray<FTextVertex>* Vertices, TArray<uint32>* Indices)
 {
     if (charInfoMap.empty()) InitializeCharInfo();
     Vertices->clear();
-    Indeices->clear();
+    Indices->clear();
 
-    const float GlyphWidth  = 0.5f;
-    const float GlyphHeight = 0.5f;
-    const float TotalWidth  = static_cast<float>(InText.size()) * GlyphWidth;
+    constexpr float GlyphWidth  = 0.5f;
+    constexpr float GlyphHeight = 0.5f;
 
-    float PenX = -TotalWidth * 0.5f;
+    // 1. 글자 수 계산
+    uint32 CharCount = 0;
+    for (size_t i = 0; i < InText.size();) { DecodeUTF8(InText, i); CharCount++; }
 
-    size_t i = 0;
-    while (i < InText.size())
+    float PenX = -(static_cast<float>(CharCount) * GlyphWidth) * 0.5f;
+
+    // 2. 메시 빌드
+    for (size_t i = 0; i < InText.size();)
     {
-        // UTF-8 → 코드포인트 디코딩
-        uint32_t CP = 0;
-        unsigned char c = (unsigned char)InText[i];
+        uint32_t CP = DecodeUTF8(InText, i);
 
-        if      (c < 0x80) { CP = c;                                                                                                    i += 1; }
-        else if (c < 0xE0) { CP = (c & 0x1F) << 6  | ((unsigned char)InText[i+1] & 0x3F);                                              i += 2; }
-        else if (c < 0xF0) { CP = (c & 0x0F) << 12 | ((unsigned char)InText[i+1] & 0x3F) << 6 | ((unsigned char)InText[i+2] & 0x3F);  i += 3; }
-        else               { CP = 0x3F; i += 4; }
-
-        if (CP == L' ') { PenX += GlyphWidth; continue; }
-        
-        const CharacterInfo* Info = GetCharInfo(static_cast<wchar_t>(CP));
+        const CharacterInfo* Info = (CP == L' ') ? nullptr : GetCharInfo(static_cast<wchar_t>(CP));
         if (!Info) { PenX += GlyphWidth; continue; }
 
-        const float x0 = PenX,          x1 = PenX + GlyphWidth;
+        const float x0 = PenX, x1 = PenX + GlyphWidth;
         const float y0 = -GlyphHeight * 0.5f, y1 = GlyphHeight * 0.5f;
-        const float u0 = Info->u,              v0 = Info->v;
-        const float u1 = Info->u + Info->width, v1 = Info->v + Info->height;
-        
-        uint32 VertexStartIndex = static_cast<uint32>(Vertices->size());
 
-        Vertices->push_back(FTextVertex(FVector(x0, y0, 0.f), u0, v0));
-        Vertices->push_back(FTextVertex(FVector(x1, y0, 0.f), u1, v0));
-        Vertices->push_back(FTextVertex(FVector(x0, y1, 0.f), u0, v1));
-        Vertices->push_back(FTextVertex(FVector(x1, y1, 0.f), u1, v1));
+        uint32 Base = static_cast<uint32>(Vertices->size());
+        Vertices->push_back({ FVector(x0, y0, 0.f), Info->u,              Info->v               });
+        Vertices->push_back({ FVector(x1, y0, 0.f), Info->u + Info->width, Info->v               });
+        Vertices->push_back({ FVector(x0, y1, 0.f), Info->u,              Info->v + Info->height });
+        Vertices->push_back({ FVector(x1, y1, 0.f), Info->u + Info->width, Info->v + Info->height });
 
-        //012 132
-        Indeices->push_back(VertexStartIndex);
-        Indeices->push_back(VertexStartIndex + 1);
-        Indeices->push_back(VertexStartIndex + 2);
-
-        Indeices->push_back(VertexStartIndex + 1);
-        Indeices->push_back(VertexStartIndex + 3);
-        Indeices->push_back(VertexStartIndex + 2);
+        for (uint32 idx : { Base, Base+1, Base+2, Base+1, Base+3, Base+2 })
+            Indices->push_back(idx);
 
         PenX += GlyphWidth;
     }

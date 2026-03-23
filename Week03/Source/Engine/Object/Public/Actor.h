@@ -31,3 +31,16 @@ class AActor : public UObject
 
     void IterateAllActorComponents(URenderer &renderer) const;
 };
+
+template<typename T>
+T* FindComponentByType(AActor* Actor)
+{
+    if (!Actor) return nullptr;
+
+    for (UActorComponent* Component : Actor->GetOwnedComponents())
+    {
+        if (T* Found = Cast<T>(Component))
+            return Found;
+    }
+    return nullptr;
+}

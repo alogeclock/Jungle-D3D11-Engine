@@ -543,8 +543,12 @@ void URenderer::RenderText(
     DeviceContext->IASetIndexBuffer(*InOutIndexBuffer, DXGI_FORMAT_R32_UINT, 0);   // ← was missing
     DeviceContext->IASetInputLayout(TextInputLayout);
 
+    if (ViewModeIndex == EViewModeIndex::VMI_Wireframe)
+        DeviceContext->RSSetState(RasterizerStateWireframe);
+    else
+        DeviceContext->RSSetState(RasterizerStateCullNone);
     // ── 7. Shader + resource binding ─────────────────────────────────────────
-    DeviceContext->RSSetState(RasterizerStateCullNone);
+    
     DeviceContext->VSSetShader(TextVertexShader, nullptr, 0);
     DeviceContext->PSSetShader(TextPixelShader,  nullptr, 0);
     DeviceContext->PSSetShaderResources(0, 1, &fontSRV);
