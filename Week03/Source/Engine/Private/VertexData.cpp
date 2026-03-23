@@ -926,11 +926,9 @@ TArray<FVertex> axis_vertices =
     {{0.0f, 1000.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
     {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},    
     // 빨간색 (+x축)
-    {{1000.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}, 
+    {{1000.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
     {{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}
 };
-
-TArray<FVertex> grid_vertices;
 
 TArray<FVertex> wirebox_vertices= {
     {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 0: Bottom-Left-Back

@@ -11,8 +11,6 @@ class AAxis : public AActor
     AAxis(const FString &InString);
     ~AAxis() override;
 
-    void Render(URenderer &renderer);
-
   private:
       UAxisComponent *AxisComponent = nullptr;
 };
