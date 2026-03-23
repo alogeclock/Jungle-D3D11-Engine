@@ -26,15 +26,6 @@ void FTextMeshBuilder::InitializeCharInfo() {
     if (UTextLoader::LoadTextFromFile("Data/Texture/KorName.txt", FntContent))
     {
         LoadFNT(FntContent, 256.f, 256.f);
-        
-        // ← FNT 로드 확인
-        char buf[64];
-        sprintf_s(buf, "charInfoMap size: %zu\n", charInfoMap.size());
-        OutputDebugStringA(buf);
-    }
-    else
-    {
-        OutputDebugStringA("FNT 로드 실패\n"); // ← 이게 뜨면 경로 문제
     }
 }
 
@@ -125,9 +116,6 @@ void FTextMeshBuilder::BuildTextMesh(const FString& InText, TArray<FTextVertex>*
 
         if (CP == L' ') { PenX += GlyphWidth; continue; }
         
-        char buf[128];
-        sprintf_s(buf, "CP: %u (0x%X) → %s\n", CP, CP, GetCharInfo(static_cast<wchar_t>(CP)) ? "찾음" : "없음");
-        OutputDebugStringA(buf);
         const CharacterInfo* Info = GetCharInfo(static_cast<wchar_t>(CP));
         if (!Info) { PenX += GlyphWidth; continue; }
 

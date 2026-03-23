@@ -524,12 +524,31 @@ void UImGuiManager::TransformInspector()
     if (ImGui::Button("Change Mode"))
         bToggleGizmoMode = true;
 
+    static HIMC s_hPrevImc = NULL;
     
     if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
     {
         if (text->IsExactly(UTextComponent::StaticClass()))
-            if(ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
+        {
+            strncpy_s(TextBuffer, text->GetText().c_str(), IM_ARRAYSIZE(TextBuffer));
+            // TextBuffer를 버퍼로 사용
+            if (ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
+            {
                 text->SetText(TextBuffer);
+            }
+
+            if (ImGui::IsItemDeactivated())
+            {
+                HWND hwnd = ::GetFocus();
+                if (!hwnd) hwnd = ::GetActiveWindow();
+                HIMC hImc = ImmGetContext(hwnd);
+                if (hImc)
+                {
+                    ImmNotifyIME(hImc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+                    ImmReleaseContext(hwnd, hImc);
+                }
+            }
+        }
     }
         
 

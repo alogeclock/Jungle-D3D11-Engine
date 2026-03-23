@@ -12,7 +12,7 @@ UTextComponent::UTextComponent(const FString &InString)
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
     bVIsible = true;
-    FilePath = "Data/Texture/KorName1.png";
+    FilePath = "Data/Texture/KorName.png";
 }
 
 UTextComponent::~UTextComponent() {
@@ -39,7 +39,7 @@ void UTextComponent::SetText(const uint32 UUID){
 FHitResult UTextComponent::IntersectRayMeshTriangle(const FVector<float>& RayOrigin, const FVector<float>& RayDirection)
 {
     FHitResult Result;
-    if (PrimitiveType != EPrimitiveType::UUID)
+    if (PrimitiveType == EPrimitiveType::UUID) return Result;
 
     // World Matrix로 Vertex를 World Space로 변환
     FMatrix<float> WorldMatrix = GetWorldMatrix(); // TRS 행렬
