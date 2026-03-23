@@ -56,6 +56,8 @@ public:
 	uint32 GetAllocatedCount() const;
     uint32 GetInternalIndex() const { return InternalIndex; }
 
+	bool IsValid();
+
 	template <typename T> T* CreateDefaultSubobject();
 	bool            IsA(UClass* TargetClass) const;
 

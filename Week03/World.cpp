@@ -123,6 +123,9 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
             }
         }
 
+        if (primitiveType == "None")
+            continue;
+
         FTransform Transform = Actor->GetTransform();
 
         json primitiveJson;

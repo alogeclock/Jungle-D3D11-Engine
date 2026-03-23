@@ -36,6 +36,10 @@ void UImGuiManager::Update()
 {
     beginFrame();
 
+    ImGui::Begin("Outliner");
+    ShowOutliner();
+    ImGui::End();
+
     // Control Panel
     ImGui::Begin("Jungle Control Panel");
     ShowControlPanel();
@@ -80,17 +84,6 @@ void UImGuiManager::Update()
             }
         }
     }
-    ImGui::End();
-
-    //ImGui::Begin("Inspector");
-    //ShowObjectInfo(TempSelectedObject);
-    //ImGui::End();
-
-    //ImGui::Begin("OutLiner");
-    //ShowDebugOutliner(GUObjectArray);
-    //ImGui::End();
-    ImGui::Begin("Outliner");
-    ShowOutliner();
     ImGui::End();
 
     endFrame();
@@ -394,6 +387,7 @@ void UImGuiManager::NewScene()
         }
 
         SelectedObject = nullptr;
+        TempSelectedObject = nullptr;
     }
 }
 
@@ -462,6 +456,7 @@ void UImGuiManager::LoadScene()
         }
 
         SelectedObject = nullptr;
+        TempSelectedObject = nullptr;
     }
 }
 
@@ -530,6 +525,9 @@ void UImGuiManager::ShowObjectInfo(UObject *InObject)
     if (InObject == nullptr)
         return;
 
+    if (!InObject->IsValid())
+        return;
+
     TArray<FProperty> &Properties = InObject->GetClass()->GetProperties();
     for (const auto &Property : Properties)
     {
@@ -551,7 +549,7 @@ void UImGuiManager::ShowObjectInfo(UObject *InObject)
         {
             UObject **ObjectPtr = reinterpret_cast<UObject **>(Property.GetValuePtr(InObject));
             UObject  *Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
-            ImGui::Separator();
+            //ImGui::Separator();
             ShowObjectInfo(Object);
         }
         else if (Property.Type == EPropertyType::Transform)
@@ -627,6 +625,8 @@ void UImGuiManager::ShowOutliner()
     ImVec2 max = ImGui::GetItemRectMax();
     draw->AddRectFilled(min, max, IM_COL32(90, 90, 90, 255));
 
+    if (TempSelectedObject == nullptr)
+        return;
     ImGui::BeginChild("InspectorRegion", ImVec2(0, 0), true);
     {
         ShowObjectInfo(TempSelectedObject);
@@ -648,6 +648,12 @@ void UImGuiManager::ShowOutliner(TArray<UObject *> &ObjectArray)
             continue;
         }
 
+        if (ObjectArray[i]->GetName() == FName("EditorGrid"))
+            continue;
+        if (ObjectArray[i]->GetName() == FName("EditorAxis"))
+            continue;
+        if (ObjectArray[i]->GetName() == FName("EditorGizmo"))
+            continue;
 
         OuterGraph[ObjectArray[i]->GetOuter()].push_back(ObjectArray[i]);
     }

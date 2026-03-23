@@ -29,6 +29,8 @@ class FName
 
     uint32 GetComparisonIndex();
     uint32 GetDisplayIndex();
+
+    bool IsValid();
 };
 
 namespace std

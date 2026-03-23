@@ -57,3 +57,8 @@ uint32 FName::GetComparisonIndex() { return ComparisonIndex; }
 uint32 FName::GetDisplayIndex() {
 	return DisplayIndex;
 }
+
+bool FName::IsValid()
+{
+    return GNamePool.HasName(DisplayIndex);
+}

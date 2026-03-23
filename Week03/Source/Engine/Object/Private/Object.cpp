@@ -19,12 +19,16 @@ UObject::UObject(const FString &InString) : Name(InString), Outer(nullptr)
 
 UObject::~UObject()
 {
-    auto it = std::find(GUObjectArray.begin(), GUObjectArray.end(), this);
-    if (it != GUObjectArray.end())
-    {
-        *it = GUObjectArray.back();
-        GUObjectArray.pop_back();
-    }
+    //auto it = std::find(GUObjectArray.begin(), GUObjectArray.end(), this);
+    //if (it != GUObjectArray.end())
+    //{
+    //    *it = GUObjectArray.back();
+    //    GUObjectArray.pop_back();
+    //}
+
+    GUObjectArray[InternalIndex] = GUObjectArray.back();
+    GUObjectArray[InternalIndex]->InternalIndex = InternalIndex;
+    GUObjectArray.pop_back();
 }
 
 const FName& UObject::GetName() const
@@ -53,6 +57,11 @@ uint64 UObject::GetAllocatedBytes() const
 uint32 UObject::GetAllocatedCount() const 
 { 
 	return AllocatedCounts; 
+}
+
+bool UObject::IsValid()
+{
+    return InternalIndex < GUObjectArray.size();//    &&Name.IsValid();
 }
 
 bool UObject::IsA(UClass *TargetClass) const

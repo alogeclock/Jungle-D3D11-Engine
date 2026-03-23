@@ -58,7 +58,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString &InString) : ABaseTrans
             if (Comp)
             {
                 Comp->SetOuter(this);
-                AddOwnedComponent(Comp);
+                //AddOwnedComponent(Comp);
                 Comp->RegisterComponent();
 
                 Comp->SetIsInEditor(true);

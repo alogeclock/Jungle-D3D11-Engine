@@ -72,6 +72,11 @@ class UImGuiManager
     void ShowOutliner(UObject *Object, TMap<UObject*, TArray<UObject *>> &Dependencies, TSet<UObject *> &Visited, uint32 Depth);
     void ShowOutliner();
 
+    void ShowCameraProperty()
+    {
+
+    }
+
     //void Show
 
   public:

@@ -10,7 +10,7 @@ AGrid::AGrid(const FString& InString) : AActor(InString)
     GridComponent = new UGridComponent("GridPrimitiveComponent");
     GridComponent->SetIsInEditor(true);
     GridComponent->SetOuter(this);
-    AddOwnedComponent(GridComponent);
+    //AddOwnedComponent(GridComponent);
     GridComponent->RegisterComponent();
 }
 
