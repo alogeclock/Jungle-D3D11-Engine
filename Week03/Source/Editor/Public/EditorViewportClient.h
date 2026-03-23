@@ -161,6 +161,9 @@ class FEditorViewportClient
     float         *GetMoveSpeedPtr() { return &MoveSpeed; }
     float         *GetRotSpeedPtr() { return &RotSpeed; }
 
+    float GetGridStep() const { return GridStep; }
+    void  SetGridStep(float InGridStep);
+
     // 기즈모 및 메인 축 렌더링 함수
     void Render(URenderer &renderer);
 
@@ -179,11 +182,9 @@ class FEditorViewportClient
     void LoadConfig();
     void SaveConfig();
 
-    void SetGrid(AGrid* InGrid) { Grid = InGrid; }
-    void SetAxis(AAxis* InAxis) { Axis = InAxis; }
+    void SetGrid(AGrid* InGrid);
+    void SetAxis(AAxis* InAxis);
     void SetGizmo(APivotTransformGizmo* InGizmo) { Gizmo = InGizmo; }
-
-    AGrid* GetGrid() const { return Grid; }
 
   private:
     // WASD 이동 누적
@@ -201,6 +202,7 @@ class FEditorViewportClient
 
     float                  MoveSpeed = 5.0f; // units/sec
     float                  RotSpeed = 0.1f;  // deg/pixel
+    float                  GridStep = 1.0f;
     static constexpr float ZoomSpeed = 10.0f;
 
     bool  bLeftMouseDragging = false;

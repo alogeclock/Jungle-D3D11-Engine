@@ -11,7 +11,6 @@ public:
     UGridComponent(const FString& InString);
     virtual ~UGridComponent() override;
 
-    float GetGridStep() const;
     void SetGridStep(float InGridStep);
     void Render(URenderer& renderer) override;
 
@@ -20,6 +19,5 @@ private:
     float GridStep = 1.0f;
     int GridSize = 1000;
     bool bInitialized = false;
-
     void RebuildGridLines();
 };

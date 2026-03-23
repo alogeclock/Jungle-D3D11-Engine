@@ -18,6 +18,7 @@ void URenderer::Create(HWND hWindow)
 
     CreateShader();
     CreateTextShader();
+    CreateLineShader();
     CreateBlendState();
 }
 
@@ -65,7 +66,7 @@ void URenderer::ReleaseDeviceAndSwapChain()
 
     if (DeviceContext)
     {
-        DeviceContext->Release(); 
+        DeviceContext->Release();
         DeviceContext = nullptr;
     }
 }
@@ -221,6 +222,28 @@ void URenderer::CreateTextShader() {
     textPS->Release();
 }
 
+void URenderer::CreateLineShader()
+{
+    ID3DBlob* lineVS = nullptr;
+    ID3DBlob* linePS = nullptr;
+
+    D3DCompileFromFile(L"Shaders/LineShader.hlsl", nullptr, nullptr, "VS", "vs_5_0", 0, 0, &lineVS, nullptr);
+    Device->CreateVertexShader(lineVS->GetBufferPointer(), lineVS->GetBufferSize(), nullptr, &LineVertexShader);
+
+    D3DCompileFromFile(L"Shaders/LineShader.hlsl", nullptr, nullptr, "PS", "ps_5_0", 0, 0, &linePS, nullptr);
+    Device->CreatePixelShader(linePS->GetBufferPointer(), linePS->GetBufferSize(), nullptr, &LinePixelShader);
+
+    D3D11_INPUT_ELEMENT_DESC LineLayout[] = {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+    Device->CreateInputLayout(LineLayout, ARRAYSIZE(LineLayout), lineVS->GetBufferPointer(),
+                              lineVS->GetBufferSize(), &LineInputLayout);
+
+    lineVS->Release();
+    linePS->Release();
+}
+
 void URenderer::ReleaseShader()
 {
     if (SimpleInputLayout)
@@ -240,10 +263,13 @@ void URenderer::ReleaseShader()
         SimplePixelShader->Release();
         SimplePixelShader = nullptr;
     }
-    
+
     if (TextInputLayout)  { TextInputLayout->Release();  TextInputLayout  = nullptr; }
     if (TextVertexShader) { TextVertexShader->Release(); TextVertexShader = nullptr; }
     if (TextPixelShader)  { TextPixelShader->Release();  TextPixelShader  = nullptr; }
+    if (LineInputLayout)  { LineInputLayout->Release();  LineInputLayout  = nullptr; }
+    if (LineVertexShader) { LineVertexShader->Release(); LineVertexShader = nullptr; }
+    if (LinePixelShader)  { LinePixelShader->Release();  LinePixelShader  = nullptr; }
     if (LinearSamplerState) { LinearSamplerState->Release(); LinearSamplerState = nullptr; }
 }
 
@@ -444,7 +470,7 @@ void URenderer::PrepareShader()
 
 void URenderer::RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices, ID3D11Buffer** InOutVertexBuffer, uint32& InOutBufferSize) 
 {
-    if (!TextVertexShader || !TextPixelShader || 
+    if (!TextVertexShader || !TextPixelShader ||
         !TextInputLayout  || !LinearSamplerState) return;
     if (vertices->empty()) return;
 
@@ -768,14 +794,14 @@ bool URenderer::GetCameraBasis(FVector<float> &OutRight, FVector<float> &OutUp, 
     // 현재 카메라의 뷰 변환 행렬을 가져옵니다.
     FMatrix<float> ViewMatrix = Viewport->GetViewportClient()->GetViewMatrix();
 
-    // DirectX 기반의 행 우선(Row-Major) 뷰 행렬 기준, 
+    // DirectX 기반의 행 우선(Row-Major) 뷰 행렬 기준,
     // 역행렬(World 행렬)의 회전 성분은 뷰 행렬의 전치(Transpose)된 형태로 들어있습니다.
     // 따라서 각 열(Column)의 데이터를 읽어오면 카메라의 기저 벡터를 얻을 수 있습니다.
     OutRight   = FVector<float>(ViewMatrix.M[0][0], ViewMatrix.M[1][0], ViewMatrix.M[2][0]);
     OutUp      = FVector<float>(ViewMatrix.M[0][1], ViewMatrix.M[1][1], ViewMatrix.M[2][1]);
     OutForward = FVector<float>(ViewMatrix.M[0][2], ViewMatrix.M[1][2], ViewMatrix.M[2][2]);
 
-    return true; 
+    return true;
 }
 
 void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight)

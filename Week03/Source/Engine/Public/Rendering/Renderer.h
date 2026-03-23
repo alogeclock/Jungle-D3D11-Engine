@@ -68,10 +68,13 @@ class URenderer
 
     ID3D11VertexShader *SimpleVertexShader;
     ID3D11VertexShader *TextVertexShader;
+    ID3D11VertexShader *LineVertexShader;
     ID3D11PixelShader  *SimplePixelShader;
     ID3D11PixelShader  *TextPixelShader;
+    ID3D11PixelShader  *LinePixelShader;
     ID3D11InputLayout  *SimpleInputLayout;
     ID3D11InputLayout  *TextInputLayout;
+    ID3D11InputLayout  *LineInputLayout;
 
     ID3D11SamplerState *LinearSamplerState;
 
@@ -93,6 +96,7 @@ class URenderer
 
     void CreateShader();
     void CreateTextShader();
+    void CreateLineShader();
     void ReleaseShader();
 
     void CreateDepthStencilBuffer(uint32 width, uint32 height);
