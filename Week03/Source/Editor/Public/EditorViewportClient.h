@@ -109,8 +109,8 @@ class FEditorViewportClient
     float         *GetMoveSpeedPtr() { return &MoveSpeed; }
     float         *GetRotSpeedPtr() { return &RotSpeed; }
     
-    float GetGridStep() const { return Grid->GetGridStep(); }
-    void SetGridStepAndUpdate(float InGridStep) { Grid->SetGridStep(InGridStep); }
+    float GetGridStep() const { return GridStep; }
+    void SetGridStep(float InGridStep);
 
     // 기즈모 및 메인 축 렌더링 함수
     void Render(URenderer &renderer);

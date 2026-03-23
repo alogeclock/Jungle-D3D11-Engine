@@ -2,7 +2,7 @@
 
 #include "CoreTypes.h"
 #include "Source/Engine/Object/Public/Object.h"
-#include "Source/Engine/Public/ImGuiManager.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
 #include "Source/Core/Public/Math/Vector.h"
 
 class UPrimitiveComponent;
