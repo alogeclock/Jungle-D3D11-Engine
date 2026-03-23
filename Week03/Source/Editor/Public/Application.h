@@ -13,6 +13,7 @@
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Engine/Public/Classes/Components/GridComponent.h"
+#include "Source/Editor/Public/EditorEngine.h"
 #include "Source/Editor/Public/PivotTransformGizmo.h"
 #include "Source/Editor/Public/Grid.h"
 #include "Source/Editor/Public/Axis.h"

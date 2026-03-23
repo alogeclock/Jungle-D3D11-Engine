@@ -1,4 +1,4 @@
-#include "CoreTypes.h"
+ï»¿#include "CoreTypes.h"
 #include "World.h"
 
 #include "Source/Core/Public/Memory.h"
@@ -9,7 +9,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 #ifdef _DEBUG
-	// µğ¹ö±× ¸ğµå¿¡¼­¸¸ ÄÜ¼Ö Ã¢À» ÇÒ´çÇÕ´Ï´Ù.
+	// ë””ë²„ê·¸ ëª¨ë“œì—ì„œë§Œ ì½˜ì†” ì°½ì„ í• ë‹¹í•©ë‹ˆë‹¤.
 	AllocConsole();
 	FILE* File = nullptr;
 	freopen_s(&File, "CONOUT$", "w", stdout);
@@ -24,10 +24,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	main_app->Finish();
 
 	delete main_app;
-	delete GWorld;
 
 #ifdef _DEBUG
-	// ÇÁ·Î±×·¥ Á¾·á Àü¿¡ ÄÜ¼ÖÀ» ÇØÁ¦ÇÕ´Ï´Ù.
+	// í”„ë¡œê·¸ë¨ ì¢…ë£Œ ì „ì— ì½˜ì†”ì„ í•´ì œí•©ë‹ˆë‹¤.
 	FreeConsole();
 #endif
 

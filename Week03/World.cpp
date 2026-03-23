@@ -226,7 +226,7 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
                     NewActor->SetOuter(CurrentLevel);
                 }
 
-                // 트랜스폼 데이터 파싱 및 적용
+                // 회전, 위치, 크기 데이터 파싱
                 FTransform NewTransform;
                 if (primData.contains("Location") && primData["Location"].is_array() && primData["Location"].size() >= 3 &&
                     primData["Location"][0].is_number() && primData["Location"][1].is_number() && primData["Location"][2].is_number())
@@ -321,7 +321,7 @@ AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
 
     if (NewActor != nullptr)
     {
-        // 3. 월드에 액터를 등록하고 초기화합니다.
+        // 3. 레벨에 액터를 등록하고 초기화합니다.
         if (CurrentLevel)
         {
             NewActor->SetOuter(CurrentLevel);
@@ -365,38 +365,30 @@ void UWorld::Tick(float deltaTime)
 FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
     FHitResult ClosestHit;
-    
-    ClosestHit.Distance = FLT_MAX;
-    ClosestHit.bHit = false;
 
-    UPrimitiveComponent* NewSelected = nullptr;
-    UPrimitiveComponent* LastSelected = UImGuiManager::Get().GetSelectedObject();
-
-    AActor *CurrentSelectedActor = LastSelected ? LastSelected->GetOwner() : nullptr;
-
+    // 선택된 액터의 컴포넌트 중 가장 가까운 오브젝트 하나만 색출 
+    // (시각적 선택 상태 갱신 로직, ImGuiManager 의존성 분리)
     if (CurrentLevel)
     {
-        for (AActor* Actor : CurrentLevel->GetActors())
+        for (AActor *actor : CurrentLevel->GetActors())
         {
-            for (UActorComponent* ActorC : Actor->GetOwnedComponents())
+            for (UActorComponent *actorC : actor->GetOwnedComponents())
             {
-                UPrimitiveComponent* Object = Cast<UPrimitiveComponent>(ActorC);
-                if (!Object)
-                    continue;
-
-                FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
-                if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
+                UPrimitiveComponent *Object = Cast<UPrimitiveComponent>(actorC);
+                if (Object != nullptr)
                 {
-                   ClosestHit = Hit;
-                        
-                   NewSelected = Object;
-                   UImGuiManager::Get().SetSelectedObject(ClosestHit.HitComponent);
-                } 
+                    FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);
+
+                    // Ray와 가장 가까운 오브젝트 하나만 색출
+                    if (Hit.bHit && Hit.Distance < ClosestHit.Distance)
+                    {
+                        ClosestHit = Hit;
+                    }
+                }
             }
         }
     }
-        // 여기서 이전 선택/새 선택 갱신
-    UpdateSelection(NewSelected, CurrentSelectedActor);
+
     return ClosestHit;
 }
 void UWorld::UpdateSelection(UPrimitiveComponent* Selected, AActor* CurrentSelectedActor)

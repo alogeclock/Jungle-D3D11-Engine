@@ -45,9 +45,6 @@ FMatrix<float> FViewportCameraTransform::ComputeOrbitMatrix() const
 FEditorViewportClient::FEditorViewportClient(FViewport* viewport)
 {
     Viewport = viewport;
-    Gizmo = nullptr;
-    Axis = nullptr;
-    Grid = nullptr;
 
     UImGuiManager::Get().SetCamera(&CameraTransform);
     UImGuiManager::Get().SetEditorViewportClient(this);
@@ -67,11 +64,8 @@ void FEditorViewportClient::Tick(float DeltaTime, FViewport* Viewport)
 
     ApplyMovement(DeltaTime, Viewport);
 
-    if (UImGuiManager::Get().bToggleGizmoMode)
-    {
-        Gizmo->ToggleMode();
-        UImGuiManager::Get().bToggleGizmoMode = false;
-    }
+    if (Gizmo)
+        Gizmo->Tick(DeltaTime);
 }
 
 bool FEditorViewportClient::InputKey(const FInputEventState& InputState)
@@ -79,6 +73,16 @@ bool FEditorViewportClient::InputKey(const FInputEventState& InputState)
     const EInputEvent Event = InputState.GetInputEvent();
     const FKey Key = InputState.GetKey();
 
+    // 1. 키보드 눌림 이벤트 위임 (SpaceBar 모드 전환 등은 기즈모가 스스로 처리함)
+    if (Event == EInputEvent::Pressed)
+    {
+        if (GEditor && GEditor->ProcessKeyDown(Key))
+        {
+            return true;
+        }
+    }
+
+    // 2. 마우스 입력 처리
     if (Key == EKeys::LeftMouseButton)
     {
         if (Event == EInputEvent::Pressed)
@@ -86,23 +90,23 @@ bool FEditorViewportClient::InputKey(const FInputEventState& InputState)
             if (UImGuiManager::Get().IsCaptureMouse())
                 return true;
 
-            bLeftMouseDragging = true;
+            bLeftMouseDragging = true; // 드래그 상태 On
             FRay ray = GetPickingRay();
 
-            // 기즈모의 축(화살표)과 마우스 Ray가 충돌했는지 검사한 뒤, 기즈모를 클릭했다면 뒤의 씬 객체 피킹은
-            // 생략한다.
-            if (Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
-                if (Gizmo->OnMouseDown(ray.Origin, ray.Direction))
-                    return true;
+            // 기즈모가 먼저 마우스 입력을 가로채는지 확인 (가로챘다면 여기서 true 반환하며 종료)
+            if (GEditor && GEditor->ProcessMouseDown(ray.Origin, ray.Direction)) 
+                return true;
 
+            // 기즈모를 클릭하지 않은 경우에만 일반 오브젝트 피킹 수행
+            // (추가 팁: 다중 선택 구현을 위해 InputState.IsControlDown() 같은 컨트롤 키 상태를 넘겨주면 좋습니다)
             PickingRay(ray.Origin, ray.Direction);
         }
         else if (Event == EInputEvent::Released)
         {
-            bLeftMouseDragging = false;
+            bLeftMouseDragging = false; // 드래그 상태 Off
 
-            if (Gizmo != nullptr)
-                Gizmo->OnMouseUp();
+            if (GEditor) 
+                GEditor->ProcessMouseUp();
         }
         return true;
     }
@@ -110,14 +114,6 @@ bool FEditorViewportClient::InputKey(const FInputEventState& InputState)
     {
         bRightMouseDragging = (Event == EInputEvent::Pressed);
         return true;
-    }
-    if (Event == EInputEvent::Pressed || Event == EInputEvent::Released)
-    {
-        if (Event == EInputEvent::Pressed && Key == EKeys::Space)
-        {
-            if (Gizmo != nullptr)
-                Gizmo->ToggleMode();
-        }
     }
 
     return false;
@@ -133,18 +129,16 @@ void FEditorViewportClient::MouseMove(FViewport* Viewport, int32 X, int32 Y)
     FRay ray = GetPickingRay();
 
     // 1. 좌클릭 드래그 중일 경우 기즈모 로직 수행
-    if (bLeftMouseDragging && Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
+    if (bLeftMouseDragging)
     {
-        FRay ray = GetPickingRay();
-        Gizmo->OnMouseMove(ray.Origin, ray.Direction);
+        if (GEditor) GEditor->ProcessMouseMove(ray.Origin, ray.Direction);
         return;
     }
 
     // [추가] 2. 드래그 중이 아닐 때 기즈모 Hover 처리
-    if (!bLeftMouseDragging && !bRightMouseDragging && Gizmo != nullptr && Gizmo->GetTargetObject() != nullptr)
+    if (!bLeftMouseDragging && !bRightMouseDragging)
     {
-        FRay ray = GetPickingRay();
-        Gizmo->OnMouseHover(ray.Origin, ray.Direction);
+        if (GEditor) GEditor->ProcessMouseHover(ray.Origin, ray.Direction);
     }
 
     // 우클릭 드래그 중일 경우 카메라 회전 로직 수행
@@ -225,15 +219,6 @@ void FEditorViewportClient::Render(URenderer& renderer)
 
     renderer.SetViewMode(EViewModeIndex::VMI_Lit);
     renderer.SetDrawAABB(false);
-
-    if (UImGuiManager::Get().GetSelectedObject() == nullptr)
-    {
-        if (Gizmo != nullptr)
-        {
-            Gizmo->SetTargetObject(nullptr);
-        }
-    }
-
     renderer.SetViewMode(OriginalViewOptions.ViewMode);
     renderer.SetDrawAABB(OriginalViewOptions.bDrawAABB);
 }
@@ -341,45 +326,20 @@ FRay FEditorViewportClient::GetPickingRay()
     return FRay(RayOrigin, RayDirection);
 }
 
-void FEditorViewportClient::PickingRay(const FVector<float>& RayOrigin, const FVector<float>& RayDirection) const
+void FEditorViewportClient::PickingRay(const FVector<float>& RayOrigin, const FVector<float>& RayDirection)
 {
-    // Show Primitives가 꺼져있다면 피킹을 수행하지 않고 선택을 해제합니다.
     if ((ShowFlags & EEngineShowFlags::SF_Primitives) == EEngineShowFlags::None)
     {
-        if (Gizmo != nullptr)
-            Gizmo->SetTargetObject(nullptr);
-        UImGuiManager::Get().SetSelectedObject(nullptr);
+        if (GEditor) GEditor->UpdateSelection(nullptr);
         return;
     }
 
     FHitResult ClosestHit = GWorld->PickingRay(RayOrigin, RayDirection);
-    UPrimitiveComponent* HitComp = ClosestHit.HitComponent;
-
-    if (ClosestHit.bHit && HitComp != nullptr)
+    
+    // 뷰포트는 그저 UEditorEngine에게 피킹된 컴포넌트를 던져주고 갱신을 위임한다.
+    if (GEditor) 
     {
-        // 1. 부딪힌 컴포넌트의 소유자(Actor)를 가져옵니다.
-        if (AActor* HitActor = Cast<AActor>(HitComp->GetOwner()))
-        {
-            // 2. 액터의 RootComponent를 기즈모의 타겟으로 설정합니다.
-            if (USceneComponent* RootComp = HitActor->GetRootComponent())
-            {
-                if (Gizmo != nullptr)
-                {
-                    // 기즈모가 개별 메쉬가 아닌 액터 전체(Root)를 조작하게 됩니다.
-                    Gizmo->SetTargetObject(RootComp);
-                }
-
-                // 충돌한 컴포넌트를 ImGui의 객체로 등록한다.
-                UImGuiManager::Get().SetSelectedObject(HitComp);
-                return;
-            }
-        }
-    }
-    else
-    {
-        if (Gizmo != nullptr)
-            Gizmo->SetTargetObject(nullptr);
-        UImGuiManager::Get().SetSelectedObject(nullptr);
+        GEditor->UpdateSelection(ClosestHit.bHit ? ClosestHit.HitComponent : nullptr);
     }
 }
 
@@ -430,7 +390,7 @@ void FEditorViewportClient::SaveConfig()
 
     std::string rotStr = std::to_string(RotSpeed);
     WritePrivateProfileStringA("CameraSettings", "RotSpeed", rotStr.c_str(), iniPath);
-    
+
     std::string gridStepStr = std::to_string(Grid->GetGridStep());
     WritePrivateProfileStringA("GridSettings", "GridStep", gridStepStr.c_str(), iniPath);
 }

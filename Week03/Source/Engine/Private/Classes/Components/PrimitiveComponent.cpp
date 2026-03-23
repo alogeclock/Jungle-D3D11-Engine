@@ -101,7 +101,7 @@ FTransform UPrimitiveComponent::GetTransformFromOwner() const
 
 bool UPrimitiveComponent::IntersectRayBoundingSphere(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
 {
-    FTransform     transform = GetTransformFromOwner();
+    FTransform transform = transform.ToTransform(GetWorldMatrix());
     FVector<float> Center = transform.Location;
 
     float Max = transform.Scale.X > transform.Scale.Y ? transform.Scale.X : transform.Scale.Y;

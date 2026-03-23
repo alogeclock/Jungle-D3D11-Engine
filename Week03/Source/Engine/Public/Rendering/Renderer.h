@@ -20,6 +20,9 @@
 class FViewport;
 class UMeshManager;
 class UPrimitiveComponent;
+class FRenderProxy;
+class FStaticMeshRenderProxy;
+class FDynamicMeshRenderProxy;
 
 struct FConstants
 {

@@ -9,26 +9,26 @@
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Engine/Public/Classes/Components/CubeArrowComponent.h"
 #include "Source/Engine/Public/Classes/Components/CubeComponent.h"
+#include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 #include "Source/Engine/Public/Classes/Components/PlaneComponent.h"
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
 #include "Source/Engine/Public/Classes/Components/SphereComponent.h"
-#include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Source/Engine/Public/Classes/Components/TextComponent.h"
+#include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
-#include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 
 #include "Source/Editor/Public/EditorViewportClient.h"
 
 #include "Source/Core/Public/FName.h"
 
-ExampleAppConsole *GConsole = nullptr;
+ExampleAppConsole* GConsole = nullptr;
 
-void UImGuiManager::Create(HWND hWnd, URenderer *renderer)
+void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    ImGui_ImplWin32_Init((void *)hWnd);
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui_ImplWin32_Init((void*)hWnd);
     ImGui_ImplDX11_Init(renderer->Device, renderer->DeviceContext);
 }
 
@@ -55,9 +55,9 @@ void UImGuiManager::Update()
     ImGui::Begin("Log");
     if (ImGui::Button("GUObjectArray", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
-        for (UObject *Object : GUObjectArray)
+        for (UObject* Object : GUObjectArray)
         {
-            FName   ObjectName = Object->GetName();
+            FName ObjectName = Object->GetName();
             FString msg = "Object Name : ";
             AddLog(msg + ObjectName);
         }
@@ -65,15 +65,15 @@ void UImGuiManager::Update()
 
     if (ImGui::Button("Actors", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
-        for (AActor *Actor : GWorld->GetCurrentLevel()->GetActors())
+        for (AActor* Actor : GWorld->GetCurrentLevel()->GetActors())
         {
-            FName   ActorName = Actor->GetName();
+            FName ActorName = Actor->GetName();
             FString msg = "Actor Name : ";
             AddLog(msg + ActorName);
 
-            for (UActorComponent *Component : Actor->GetOwnedComponents())
+            for (UActorComponent* Component : Actor->GetOwnedComponents())
             {
-                FName   ComponentName = Component->GetName();
+                FName ComponentName = Component->GetName();
                 FString msg = "    ComponentName Name : ";
 
                 AddLog(msg + ComponentName);
@@ -105,17 +105,27 @@ void UImGuiManager::Release()
     ImGui::DestroyContext();
 }
 
-void UImGuiManager::SetCamera(FViewportCameraTransform *camera) { Camera = camera; }
+void UImGuiManager::SetCamera(FViewportCameraTransform* camera)
+{
+    Camera = camera;
+}
 
-void UImGuiManager::SetEditorViewportClient(FEditorViewportClient *editor) { EditorViewportClient = editor; }
+void UImGuiManager::SetEditorViewportClient(FEditorViewportClient* editor)
+{
+    EditorViewportClient = editor;
+}
 
-void UImGuiManager::SetSelectedObject(UPrimitiveComponent *primitiveComponent) { SelectedObject = primitiveComponent; }
+bool UImGuiManager::IsCaptureMouse()
+{
+    return ImGui::GetIO().WantCaptureMouse;
+}
 
-bool UImGuiManager::IsCaptureMouse() { return ImGui::GetIO().WantCaptureMouse; }
+bool UImGuiManager::IsCaptureKeyboard()
+{
+    return ImGui::GetIO().WantCaptureKeyboard;
+}
 
-bool UImGuiManager::IsCaptureKeyboard() { return ImGui::GetIO().WantCaptureKeyboard; }
-
-char *UImGuiManager::FStringToChar(FString string)
+char* UImGuiManager::FStringToChar(FString string)
 {
     char TempBuffer[256];
 
@@ -124,26 +134,26 @@ char *UImGuiManager::FStringToChar(FString string)
     return TempBuffer;
 }
 
-FString UImGuiManager::WStringToFString(const std::wstring &string)
+FString UImGuiManager::WStringToFString(const std::wstring& string)
 {
     if (string.empty())
         return std::string();
 
-    int         size_needed = WideCharToMultiByte(CP_ACP, 0, &string[0], (int)string.size(), NULL, 0, NULL, NULL);
+    int size_needed = WideCharToMultiByte(CP_ACP, 0, &string[0], (int)string.size(), NULL, 0, NULL, NULL);
     std::string strTo(size_needed, 0);
     WideCharToMultiByte(CP_ACP, 0, &string[0], (int)string.size(), &strTo[0], size_needed, NULL, NULL);
 
     return strTo;
 }
 
-std::wstring UImGuiManager::CharToWString(const char *charStr)
+std::wstring UImGuiManager::CharToWString(const char* charStr)
 {
     // 입력된 문자열이 비어있는 경우 빈 wstring 반환
     if (charStr == nullptr || charStr[0] == '\0')
         return std::wstring();
 
     // 1. 변환 후의 와이드 문자열 길이를 먼저 계산하고, 계산된 길이만큼 공간을 할당합니다.
-    int          size_needed = MultiByteToWideChar(CP_UTF8, 0, charStr, -1, NULL, 0);
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, charStr, -1, NULL, 0);
     std::wstring wstrTo(size_needed, 0);
 
     // 2. 실제 멀티바이트(char) 문자열을 와이드(wchar_t) 문자열로 변환합니다.
@@ -158,11 +168,17 @@ std::wstring UImGuiManager::CharToWString(const char *charStr)
     return wstrTo;
 }
 
-void UImGuiManager::AddLog(const char *msg) { GConsole->AddLog(msg); }
+void UImGuiManager::AddLog(const char* msg)
+{
+    GConsole->AddLog(msg);
+}
 
-void UImGuiManager::AddLog(const FString &msg) { GConsole->AddLog("%s", msg.c_str()); }
+void UImGuiManager::AddLog(const FString& msg)
+{
+    GConsole->AddLog("%s", msg.c_str());
+}
 
-void UImGuiManager::AddLog(const std::wstring &msg)
+void UImGuiManager::AddLog(const std::wstring& msg)
 {
     if (msg.empty())
         return;
@@ -185,7 +201,8 @@ void UImGuiManager::ShowControlPanel()
         snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().ToString().c_str());
     }
 
-    ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(), UTimeManager::Get().GetFrameTime());
+    ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(),
+                       UTimeManager::Get().GetFrameTime());
     ImGui::TextWrapped("Allocated Bytes: %u", TotalAllocationBytes);
     ImGui::TextWrapped("Allocated Count: %u", TotalAllocationCount);
     ImGui::TextWrapped("Object Count: %u", GUObjectArray.size());
@@ -210,11 +227,11 @@ void UImGuiManager::ShowControlPanel()
 
     if (EditorViewportClient != nullptr)
     {
-        const char *ViewModeStrings[] = {"Lit", "Unlit", "Wireframe"};
+        const char* ViewModeStrings[] = {"Lit", "Unlit", "Wireframe"};
 
         EViewModeIndex currentMode = EditorViewportClient->GetViewMode();
-        int            currentItem = static_cast<int>(currentMode);
-        
+        int currentItem = static_cast<int>(currentMode);
+
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::Text("View Mode");
         if (ImGui::ListBox("##View Mode", &currentItem, ViewModeStrings, IM_ARRAYSIZE(ViewModeStrings)))
@@ -255,7 +272,7 @@ void UImGuiManager::ShowControlPanel()
             else
                 CurrentFlags &= ~EEngineShowFlags::SF_UUID; // 비트 끄기 (AND NOT)
         }
-        
+
         // 변경된 상태를 다시 뷰포트 클라이언트에 저장
         EditorViewportClient->SetShowFlags(CurrentFlags);
     }
@@ -263,7 +280,7 @@ void UImGuiManager::ShowControlPanel()
 
 void UImGuiManager::SpawnActors()
 {
-    const char *PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI", "Smoke"};
+    const char* PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI", "Smoke"};
 
     static int Primitive = 0;
     static int NumberOfSpawn = 1;
@@ -280,7 +297,7 @@ void UImGuiManager::SpawnActors()
 
     if (isSpawn)
     {
-        UClass *ComponentClassToSpawn = nullptr;
+        UClass* ComponentClassToSpawn = nullptr;
 
         switch (Primitive)
         {
@@ -314,18 +331,18 @@ void UImGuiManager::SpawnActors()
 
         for (int i = 0; i < NumberOfSpawn; i++)
         {
-            AActor          *NewActor = GWorld->SpawnActor<AActor>();
-            USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+            AActor* NewActor = GWorld->SpawnActor<AActor>();
+            USceneComponent* Root = NewActor->CreateDefaultSubobject<USceneComponent>();
             NewActor->SetRootComponent(Root);
             Root->RegisterComponent();
 
-            UObject             *NewComponent = FObjectFactory::ConstructObject(ComponentClassToSpawn);
-            
+            UObject* NewComponent = FObjectFactory::ConstructObject(ComponentClassToSpawn);
+
             // 생성된 객체가 화면에 그릴 수 있는 PrimitiveComponent인지 확인
-            UPrimitiveComponent *DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent); 
+            UPrimitiveComponent* DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent);
             if (DynamicPrimitive != nullptr)
             {
-                const char  *SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
+                const char* SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
                 const uint32 UUID = NewActor->GetUUID();
 
                 char logBuffer[256];
@@ -338,11 +355,11 @@ void UImGuiManager::SpawnActors()
 
                 if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));   
+                    TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));
                 }
 
-                UObject *NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
-                UUUIDTextComponent *UUUID = Cast<UUUIDTextComponent>(NewUUUIDComponent);
+                UObject* NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
+                UUUIDTextComponent* UUUID = Cast<UUUIDTextComponent>(NewUUUIDComponent);
                 if (UUUID == nullptr)
                 {
                     return;
@@ -365,20 +382,25 @@ void UImGuiManager::NewScene()
             ULevel* OldLevel = GWorld->GetCurrentLevel();
             ULevel* NewLevel = GWorld->CreateNewLevel("DefaultLevel");
             GWorld->SetCurrentLevel(NewLevel);
-            
+
+            // 선택된 객체 초기화
+            if (GEditor && GEditor->GetSelection())
+            {
+                GEditor->GetSelection()->Clear();
+            }
+
             if (OldLevel != nullptr)
             {
                 GWorld->GetLevels().erase(OldLevel); // UWorld에 GetLevels() 필요
                 delete OldLevel;
             }
+
             snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().ToString().c_str());
             AddLog("[System] All actors and components have been destroyed.");
 
             if (GApplication)
                 GApplication->UpdateEditorViewport();
         }
-
-        SelectedObject = nullptr;
     }
 }
 
@@ -417,12 +439,19 @@ void UImGuiManager::LoadScene()
     if (ImGui::Button("Load Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         std::wstring FilePath = OpenFileDialog();
+
+        // 선택된 객체 초기화
+        if (GEditor && GEditor->GetSelection())
+        {
+            GEditor->GetSelection()->Clear();
+        }
+
         if (!FilePath.empty() && GWorld->LoadLevel(FilePath))
         {
             // 불러온 파일 경로에서 확장자를 제외한 파일명만 추출
             std::filesystem::path path(FilePath);
             std::wstring wStem = path.stem().wstring();
-            
+
             int size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
             std::string utf8Stem(size_needed, 0);
             WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
@@ -445,8 +474,6 @@ void UImGuiManager::LoadScene()
         {
             AddLog(L"Failed to load scene.");
         }
-
-        SelectedObject = nullptr;
     }
 }
 
@@ -474,9 +501,11 @@ void UImGuiManager::SetCameraInfo()
     {
         ImGui::Separator();
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
+        ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f",
+                           ImGuiSliderFlags_Logarithmic);
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f", ImGuiSliderFlags_Logarithmic);
+        ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f",
+                           ImGuiSliderFlags_Logarithmic);
 
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         float GridStep = EditorViewportClient->GetGridStep();
@@ -489,15 +518,29 @@ void UImGuiManager::SetCameraInfo()
 
 void UImGuiManager::TransformInspector()
 {
-    if (SelectedObject == nullptr)
+    UObject* SelectedObject = nullptr;
+    if (GEditor && GEditor->GetSelection())
+    {
+        SelectedObject = GEditor->GetSelection()->GetSelectedObject(0);
+    }
+
+    // SelectedObject가 Actor인지 Component인지 안전하게 구별하여 Owner를 찾음
+    AActor* OwnerActor = Cast<AActor>(SelectedObject);
+
+    // 만약 액터 자체가 아니라 컴포넌트가 선택된 것이라면, 컴포넌트의 Owner를 가져옵니다.
+    if (OwnerActor == nullptr)
+    {
+        if (USceneComponent* SelectedComp = Cast<USceneComponent>(SelectedObject))
+        {
+            OwnerActor = SelectedComp->GetOwner();
+        }
+    }
+
+    // 그래도 찾지 못했다면 렌더링 취소
+    if (OwnerActor == nullptr || OwnerActor->GetRootComponent() == nullptr)
         return;
 
-    AActor    *Actor = Cast<AActor>(SelectedObject->GetOwner());
-
-    if (Actor == nullptr || Actor->GetRootComponent() == nullptr)
-        return;
-
-    FTransform t = Actor->GetTransform();
+    FTransform t = OwnerActor->GetTransform();
 
     ImGui::DragFloat3("Translation", &t.Location.X, 0.01f);
     ImGui::DragFloat3("Rotation", &t.Rotation.X, 0.01f);
@@ -506,13 +549,13 @@ void UImGuiManager::TransformInspector()
     if (ImGui::Button("Change Mode"))
         bToggleGizmoMode = true;
 
-    Actor->SetTransform(t);
+    OwnerActor->SetTransform(t);
 }
 
 std::wstring UImGuiManager::SaveFileDialog()
 {
     OPENFILENAMEW ofn;
-    WCHAR         szFile[260] = {0};
+    WCHAR szFile[260] = {0};
 
     ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
     ofn.lStructSize = sizeof(OPENFILENAMEW);
@@ -545,7 +588,7 @@ std::wstring UImGuiManager::SaveFileDialog()
 std::wstring UImGuiManager::OpenFileDialog()
 {
     OPENFILENAMEW ofn;
-    WCHAR         szFile[260] = {0};
+    WCHAR szFile[260] = {0};
 
     ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
     ofn.lStructSize = sizeof(OPENFILENAMEW);

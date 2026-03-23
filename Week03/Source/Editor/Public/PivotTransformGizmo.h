@@ -18,9 +18,13 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     virtual void OnMouseMove(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseHover(const FVector<float> &RayOrigin, const FVector<float> &RayDir) override;
     virtual void OnMouseUp() override;
+    virtual bool OnKeyDown(const FKey& Key);
 
     void ToggleMode();
     void UpdateColor();
+
+    FTransform CalculateUnscaledTransform(FTransform TargetTransform);    
+    USceneComponent* GetAnchorComponent();
 
   private:
     float          InitialRayDistance = 0.0f; // 카메라에서 쏜 Ray가 기즈모 축에 부딪힌 깊이(거리)
@@ -35,4 +39,5 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     TArray<UPrimitiveComponent *> TranslateGizmoComponents;
     TArray<UPrimitiveComponent *> RotateGizmoComponents;
     TArray<UPrimitiveComponent *> ScaleGizmoComponents;
+
 };
