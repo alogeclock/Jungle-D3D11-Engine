@@ -14,7 +14,7 @@ UUUIDTextComponent::~UUUIDTextComponent() {}
 
 void UUUIDTextComponent::Render(URenderer &renderer) {
 	if (bMeshDirty) RebuildMesh();
-    if (TextVertices.empty() || !bVIsible) return;
+    if (TextVertices.empty()) return;
 
     if (!renderer.CheckShowFlag(EEngineShowFlags::SF_UUID))
         return;

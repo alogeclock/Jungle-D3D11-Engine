@@ -4,7 +4,7 @@
 #include "CoreTypes.h"
 #include <iostream>
 
-UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UUUIDTextComponent(InString)
+UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UTextComponent(InString)
 { 
     FilePath = "Data/Texture/Explosion.png"; 
     SpriteSize = 150;
@@ -23,7 +23,7 @@ void UParticleSubUVComponent::Render(URenderer &renderer)
 {
     if (CurrentTime >= PlayRate && !bLoop)
         return;
-    UUUIDTextComponent::Render(renderer);
+    UTextComponent::Render(renderer);
 }
 
 void UParticleSubUVComponent::Tick(float deltaTime)
@@ -75,10 +75,13 @@ void UParticleSubUVComponent::RebuildMesh()
     TextVertices.push_back({FVector<float>(x0, y0, 0.f), fu0, fv0});
     TextVertices.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
     TextVertices.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
-
-    TextVertices.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
     TextVertices.push_back({FVector<float>(x1, y1, 0.f), fu1, fv1});
-    TextVertices.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
 
+    TextIndeices.push_back(0);
+    TextIndeices.push_back(1);
+    TextIndeices.push_back(2);
+    TextIndeices.push_back(1);
+    TextIndeices.push_back(3);
+    TextIndeices.push_back(2);
     bMeshDirty = true;
 }

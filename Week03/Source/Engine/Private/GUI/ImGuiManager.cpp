@@ -376,7 +376,8 @@ void UImGuiManager::SpawnActors()
 
                 if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
-                    TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));
+                    if(TextComp->IsExactly(UTextComponent::StaticClass()))
+                        TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));
                 }
 
                 UObject* NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
@@ -576,33 +577,34 @@ void UImGuiManager::TransformInspector()
         bToggleGizmoMode = true;
 
     static HIMC s_hPrevImc = NULL;
-   
-    if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
-    {
-        if (text->IsExactly(UTextComponent::StaticClass()))
-        {
-            strncpy_s(TextBuffer, text->GetText().c_str(), IM_ARRAYSIZE(TextBuffer));
-            // TextBuffer를 버퍼로 사용
-            if (ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
-            {
-                text->SetText(TextBuffer);
-            }
+    
+    //if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
+    //{
+    //    if (text->IsExactly(UTextComponent::StaticClass()))
+    //    {
+    //        strncpy_s(TextBuffer, text->GetText().c_str(), IM_ARRAYSIZE(TextBuffer));
+    //        // TextBuffer를 버퍼로 사용
+    //        if (ImGui::InputText("text name", TextBuffer, IM_ARRAYSIZE(TextBuffer)))
+    //        {
+    //            text->SetText(TextBuffer);
+    //        }
 
-            if (ImGui::IsItemDeactivated())
-            {
-                HWND hwnd = ::GetFocus();
-                if (!hwnd) hwnd = ::GetActiveWindow();
-                HIMC hImc = ImmGetContext(hwnd);
-                if (hImc)
-                {
-                    ImmNotifyIME(hImc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
-                    ImmReleaseContext(hwnd, hImc);
-                }
-            }
-        }
-    }
-        
+    //        if (ImGui::IsItemDeactivated())
+    //        {
+    //            HWND hwnd = ::GetFocus();
+    //            if (!hwnd) hwnd = ::GetActiveWindow();
+    //            HIMC hImc = ImmGetContext(hwnd);
+    //            if (hImc)
+    //            {
+    //                ImmNotifyIME(hImc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+    //                ImmReleaseContext(hwnd, hImc);
+    //            }
+    //        }
+    //    }
+    //}
+
     OwnerActor->SetTransform(t);
+    Actor->SetTransform(t);
 }
 
 void UImGuiManager::ShowObjectInfo(UObject *InObject)

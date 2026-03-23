@@ -2,9 +2,9 @@
 
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
-class UParticleSubUVComponent : public UUUIDTextComponent
+class UParticleSubUVComponent : public UTextComponent
 {
-    DECLARE_OBJECT(UParticleSubUVComponent, UUUIDTextComponent)
+    DECLARE_OBJECT(UParticleSubUVComponent, UTextComponent)
   public:
     UParticleSubUVComponent(const FString &InString);
 
