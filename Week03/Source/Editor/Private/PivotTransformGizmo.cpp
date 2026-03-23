@@ -5,7 +5,6 @@
 
 APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTransformGizmo(InString)
 {
-    // ... (기존 생성자 로직은 동일하므로 생략하지 않고 그대로 유지)
     USceneComponent* Root = new USceneComponent("PivotTransformSceneComponent");
     this->SetRootComponent(Root);
     AddOwnedComponent(Root);
@@ -83,7 +82,6 @@ void APivotTransformGizmo::Tick(float DeltaTime)
         return;
     }
 
-    // [변경] 선택된 다중 객체들의 중심 Transform을 가져옵니다.
     FTransform CenterTransform;
     if (!GetGizmoCenterTransform(CenterTransform))
     {
@@ -339,7 +337,6 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
 
 void APivotTransformGizmo::OnMouseHover(const FVector<float>& RayOrigin, const FVector<float>& RayDir)
 {
-    // ... (기존 OnMouseHover 유지)
     if (bIsDragging) return;
     if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty()) return;
 

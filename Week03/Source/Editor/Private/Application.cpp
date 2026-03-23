@@ -246,4 +246,6 @@ void UApplication::UpdateEditorViewport()
     ViewportClient->SetGrid(FoundGrid);
     ViewportClient->SetAxis(FoundAxis);
     ViewportClient->SetGizmo(FoundGizmo);
+
+    GEditor->RegisterInputListener(FoundGizmo);
 }
