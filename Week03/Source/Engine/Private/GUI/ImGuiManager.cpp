@@ -59,9 +59,9 @@ void UImGuiManager::Update()
     ImGui::End();
 
     // Property Window
-    //ImGui::Begin("Jungle Property Window");
-    //TransformInspector();
-    //ImGui::End();
+    // ImGui::Begin("Jungle Property Window");
+    // TransformInspector();
+    // ImGui::End();
 
     // Console
     ImGui::Begin("Console");
@@ -69,24 +69,24 @@ void UImGuiManager::Update()
     ShowExampleAppConsole(&open);
     ImGui::End();
 
-    //ImGui::Begin("Log");
-    //if (ImGui::Button("GUObjectArray", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    // ImGui::Begin("Log");
+    // if (ImGui::Button("GUObjectArray", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     //{
-    //    for (UObject* Object : GUObjectArray)
-    //    {
-    //        FName ObjectName = Object->GetName();
-    //        FString msg = "Object Name : ";
-    //        AddLog(msg + ObjectName);
-    //    }
-    //}
+    //     for (UObject* Object : GUObjectArray)
+    //     {
+    //         FName ObjectName = Object->GetName();
+    //         FString msg = "Object Name : ";
+    //         AddLog(msg + ObjectName);
+    //     }
+    // }
 
-    //if (ImGui::Button("Actors", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    // if (ImGui::Button("Actors", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     //{
-    //    for (AActor* Actor : GWorld->GetCurrentLevel()->GetActors())
-    //    {
-    //        FName ActorName = Actor->GetName();
-    //        FString msg = "Actor Name : ";
-    //        AddLog(msg + ActorName);
+    //     for (AActor* Actor : GWorld->GetCurrentLevel()->GetActors())
+    //     {
+    //         FName ActorName = Actor->GetName();
+    //         FString msg = "Actor Name : ";
+    //         AddLog(msg + ActorName);
 
     //        for (UActorComponent* Component : Actor->GetOwnedComponents())
     //        {
@@ -97,7 +97,7 @@ void UImGuiManager::Update()
     //        }
     //    }
     //}
-    //ImGui::End();
+    // ImGui::End();
 
     endFrame();
 }
@@ -607,8 +607,6 @@ void UImGuiManager::ShowObjectInfo(UObject* InObject)
 
     if (!InObject->IsValid())
         return;
-
-
 }
 
 void UImGuiManager::ShowObjectProperty(UObject* InObject)
@@ -740,41 +738,298 @@ void UImGuiManager::ShowOutliner()
     ImGui::EndChild();
 }
 
+//void UImGuiManager::ShowOutliner(TArray<UObject*>& ObjectArray)
+//{
+//    int ArraySize = ObjectArray.size();
+//    TMap<UObject*, TArray<UObject*>> OuterGraph;
+//
+//    TArray<UObject*> SearchStack;
+//    for (int i = 0; i < ArraySize; i++)
+//    {
+//        if (!ObjectArray[i]->GetOuter() && ObjectArray[i]->GetName() == FName("World"))
+//        {
+//            SearchStack.push_back(ObjectArray[i]);
+//            continue;
+//        }
+//
+//        if (ObjectArray[i]->GetName() == FName("EditorGrid"))
+//            continue;
+//        if (ObjectArray[i]->GetName() == FName("EditorAxis"))
+//            continue;
+//        if (ObjectArray[i]->GetName() == FName("EditorGizmo"))
+//            continue;
+//
+//        OuterGraph[ObjectArray[i]->GetOuter()].push_back(ObjectArray[i]);
+//    }
+//
+//    TSet<UObject*> visited;
+//    TArray<UObject*> Sequence;
+//    USelection* Selection = GEditor->GetSelection();
+//
+//
+//    bool ShiftClick = false;
+//    bool CtrlClick = false;
+//    int32 SelectIndex = -1;
+//    int32 OriginSelect = -1;
+//
+//    int32 CurrentIndex = 0;
+//    while (!SearchStack.empty())
+//    {
+//        UObject* Current = SearchStack.back();
+//        SearchStack.pop_back();
+//
+//        if (Current == nullptr)
+//            continue;
+//        if (visited.contains(Current))
+//            continue;
+//
+//        Sequence.push_back(Current);
+//
+//
+//        FString Name = "";
+//        Name += Current->GetName().ToString() + " UUID: " + std::to_string(Current->GetUUID());
+//
+//        visited.insert(Current);
+//
+//        if (Selection->GetCount() > 0 && (Selection->GetSelectedObject() == Current))
+//            OriginSelect = CurrentIndex;
+//
+//        ImGuiIO& io = ImGui::GetIO();
+//        TArray<UObject*> childs = OuterGraph[Current];
+//        ImVec2 ButtonSize(100, 10);
+//        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
+//        bool opened = false;
+//
+//        if (Selection->IsSelected(Current))
+//            flags |= ImGuiTreeNodeFlags_Selected;
+//
+//        if (childs.size() <= 0)
+//        {
+//            opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_Leaf);
+//            if (ImGui::IsItemClicked() &&
+//                (Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass())))
+//            {
+//                //if (!io.KeyCtrl)
+//                //    Selection->Clear();
+//                //Selection->AddObject(Current);
+//                ShiftClick = io.KeyShift;
+//                CtrlClick = io.KeyCtrl;
+//                SelectIndex = CurrentIndex;
+//            }
+//
+//            if (opened)
+//            {
+//                ImGui::TreePop();
+//            }
+//        }
+//        else
+//        {
+//            opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_DefaultOpen);
+//            if (ImGui::IsItemClicked() &&
+//                (Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass())))
+//            {
+//                //if (!io.KeyCtrl)
+//                //    Selection->Clear();
+//                //Selection->AddObject(Current);
+//                ShiftClick = io.KeyShift;
+//                CtrlClick = io.KeyCtrl;
+//                SelectIndex = CurrentIndex;
+//            }
+//            if (opened)
+//            {
+//                for (const auto& child : childs)
+//                {
+//                    SearchStack.push_back(child);
+//                } // ShowOutliner(child, Dependencies, Visited);
+//                ImGui::TreePop();
+//            }
+//        }
+//        CurrentIndex++;
+//        // ShowOutliner(Current, OuterGraph, visited);
+//    }
+//
+//    int min = SelectIndex < OriginSelect ? SelectIndex : OriginSelect;
+//    int max = SelectIndex > OriginSelect ? SelectIndex : OriginSelect;
+//    if (ShiftClick && min >= 0)
+//    {
+//        Selection->Clear();
+//        for (int i = min; i < max; i++)
+//        {
+//            Selection->AddObject(Sequence[i]);
+//        }
+//    }
+//    else if (CtrlClick && SelectIndex >= 0)
+//    {
+//        Selection->AddObject(Sequence[SelectIndex]);
+//    }
+//    else if (SelectIndex >= 0)
+//    {
+//        Selection->Clear();
+//        Selection->AddObject(Sequence[SelectIndex]);
+//    }
+//}
+
 void UImGuiManager::ShowOutliner(TArray<UObject*>& ObjectArray)
 {
-    int ArraySize = ObjectArray.size();
     TMap<UObject*, TArray<UObject*>> OuterGraph;
+    TArray<UObject*> RootObjects;
 
-    TArray<UObject*> SearchStack;
-    for (int i = 0; i < ArraySize; i++)
+    // 1. 그래프 구성
+    for (UObject* Object : ObjectArray)
     {
-        if (!ObjectArray[i]->GetOuter() && ObjectArray[i]->GetName() == FName("World"))
+        if (!Object)
+            continue;
+
+        FName Name = Object->GetName();
+        if (Name == FName("EditorGrid") || Name == FName("EditorAxis") || Name == FName("EditorGizmo"))
         {
-            SearchStack.push_back(ObjectArray[i]);
             continue;
         }
 
-        if (ObjectArray[i]->GetName() == FName("EditorGrid"))
+        if (!Object->GetOuter() && Name == FName("World"))
+        {
+            RootObjects.push_back(Object);
             continue;
-        if (ObjectArray[i]->GetName() == FName("EditorAxis"))
-            continue;
-        if (ObjectArray[i]->GetName() == FName("EditorGizmo"))
-            continue;
+        }
 
-        OuterGraph[ObjectArray[i]->GetOuter()].push_back(ObjectArray[i]);
+        OuterGraph[Object->GetOuter()].push_back(Object);
     }
 
-    TSet<UObject*> visited;
-    while (!SearchStack.empty())
-    {
-        UObject* Current = SearchStack.back();
-        SearchStack.pop_back();
+    USelection* Selection = GEditor->GetSelection();
+    if (!Selection)
+        return;
 
-        ShowOutliner(Current, OuterGraph, visited);
+    ImGuiIO& io = ImGui::GetIO();
+
+    TSet<UObject*> Visited;
+    TArray<UObject*> Sequence;
+
+    bool bShiftClick = false;
+    bool bCtrlClick = false;
+    int32 ClickedIndex = -1;
+    int32 AnchorIndex = -1;
+    int32 CurrentIndex = 0;
+
+    // anchor = 현재 선택된 첫 번째 오브젝트
+    auto FindAnchorIndex = [&](UObject* Current) {
+        if (AnchorIndex >= 0)
+            return;
+
+        if (Selection->IsSelected(Current))
+        {
+            AnchorIndex = CurrentIndex;
+        }
+    };
+
+    std::function<void(UObject*)> DrawNode = [&](UObject* Current) {
+        if (!Current)
+            return;
+        if (Visited.contains(Current))
+            return;
+
+        Visited.insert(Current);
+        Sequence.push_back(Current);
+
+        FindAnchorIndex(Current);
+
+        FString Label = Current->GetName().ToString() + " UUID: " + std::to_string(Current->GetUUID());
+
+        TArray<UObject*>& Children = OuterGraph[Current];
+
+        ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_SpanAvailWidth;
+        if (Selection->IsSelected(Current))
+            Flags |= ImGuiTreeNodeFlags_Selected;
+        if (Children.empty())
+            Flags |= ImGuiTreeNodeFlags_Leaf;
+
+        ImGui::PushID(Current);
+
+        bool bOpened = false;
+        if (Children.empty())
+            bOpened = ImGui::TreeNodeEx(Label.c_str(), Flags);
+        else
+            bOpened = ImGui::TreeNodeEx(Label.c_str(), Flags | ImGuiTreeNodeFlags_DefaultOpen);
+
+        const bool bSelectableType =
+            Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
+
+        if (ImGui::IsItemClicked() && bSelectableType)
+        {
+            bShiftClick = io.KeyShift;
+            bCtrlClick = io.KeyCtrl;
+            ClickedIndex = CurrentIndex;
+        }
+
+        ++CurrentIndex;
+
+        if (bOpened)
+        {
+            for (UObject* Child : Children)
+            {
+                DrawNode(Child);
+            }
+            ImGui::TreePop();
+        }
+
+        ImGui::PopID();
+    };
+
+    // 2. 루트부터 렌더 + 평탄화
+    for (UObject* Root : RootObjects)
+    {
+        DrawNode(Root);
+    }
+
+    // 3. 클릭 결과 반영
+    if (ClickedIndex < 0 || ClickedIndex >= static_cast<int32>(Sequence.size()))
+        return;
+
+    if (bShiftClick)
+    {
+        if (AnchorIndex < 0)
+            AnchorIndex = ClickedIndex;
+
+        int32 MinIndex = (ClickedIndex < AnchorIndex) ? ClickedIndex : AnchorIndex;
+        int32 MaxIndex = (ClickedIndex > AnchorIndex) ? ClickedIndex : AnchorIndex;
+
+        Selection->Clear();
+        for (int32 i = MinIndex; i <= MaxIndex; ++i) // <= 중요
+        {
+            UObject* Target = Sequence[i];
+            if (!Target)
+                continue;
+
+            if (Target->IsA(AActor::StaticClass()) || Target->IsA(USceneComponent::StaticClass()))
+            {
+                Selection->AddObject(Target);
+            }
+        }
+    }
+    else if (bCtrlClick)
+    {
+        UObject* Target = Sequence[ClickedIndex];
+        if (Target)
+        {
+            // RemoveObject가 있으면 토글 추천
+            if (!Selection->IsSelected(Target))
+            {
+                Selection->AddObject(Target);
+            }
+        }
+    }
+    else
+    {
+        UObject* Target = Sequence[ClickedIndex];
+        if (Target)
+        {
+            Selection->Clear();
+            Selection->AddObject(Target);
+        }
     }
 }
 
-void UImGuiManager::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies, TSet<UObject*>& Visited)
+void UImGuiManager::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies,
+                                 TSet<UObject*>& Visited)
 {
     if (Object == nullptr)
         return;
@@ -795,11 +1050,11 @@ void UImGuiManager::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*
     if (Selection->IsSelected(Object))
         flags |= ImGuiTreeNodeFlags_Selected;
 
-
     if (childs.size() <= 0)
     {
         opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_Leaf);
-        if (ImGui::IsItemClicked() && (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
+        if (ImGui::IsItemClicked() &&
+            (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
         {
             ImGuiIO& io = ImGui::GetIO();
             if (!io.KeyCtrl)
@@ -815,7 +1070,8 @@ void UImGuiManager::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*
     else
     {
         opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_DefaultOpen);
-        if (ImGui::IsItemClicked() && (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
+        if (ImGui::IsItemClicked() &&
+            (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
         {
             ImGuiIO& io = ImGui::GetIO();
             if (!io.KeyCtrl)
