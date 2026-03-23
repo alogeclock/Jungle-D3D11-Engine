@@ -408,6 +408,7 @@ void UImGuiManager::NewScene()
             if (GEditor && GEditor->GetSelection())
             {
                 GEditor->GetSelection()->Clear();
+                GEditor->GetInputListeners()->clear();
             }
 
             if (OldLevel != nullptr)
@@ -423,7 +424,7 @@ void UImGuiManager::NewScene()
                 GApplication->UpdateEditorViewport();
         }
 
-        TempSelectedObject = nullptr;
+        // TempSelectedObject = nullptr;
     }
 }
 
@@ -467,6 +468,7 @@ void UImGuiManager::LoadScene()
         if (GEditor && GEditor->GetSelection())
         {
             GEditor->GetSelection()->Clear();
+            GEditor->GetInputListeners()->clear();
         }
 
         if (!FilePath.empty() && GWorld->LoadLevel(FilePath))
@@ -496,7 +498,7 @@ void UImGuiManager::LoadScene()
         else
         {
             AddLog(L"Failed to load scene.");
-        SelectedObject = nullptr;
+        }
     }
 }
 
@@ -574,7 +576,7 @@ void UImGuiManager::TransformInspector()
         bToggleGizmoMode = true;
 
     static HIMC s_hPrevImc = NULL;
-    
+   
     if (UTextComponent* text = Cast<UTextComponent>(SelectedObject))
     {
         if (text->IsExactly(UTextComponent::StaticClass()))
@@ -600,8 +602,7 @@ void UImGuiManager::TransformInspector()
         }
     }
         
-
-    Actor->SetTransform(t);
+    OwnerActor->SetTransform(t);
 }
 
 void UImGuiManager::ShowObjectInfo(UObject *InObject)
@@ -709,8 +710,6 @@ void UImGuiManager::ShowOutliner()
     ImVec2 max = ImGui::GetItemRectMax();
     draw->AddRectFilled(min, max, IM_COL32(90, 90, 90, 255));
 
-    if (TempSelectedObject == nullptr)
-        return;
     ImGui::BeginChild("InspectorRegion", ImVec2(0, 0), true);
     {
         ShowObjectInfo(TempSelectedObject);

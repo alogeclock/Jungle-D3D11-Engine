@@ -109,8 +109,8 @@ class FEditorViewportClient
     float         *GetMoveSpeedPtr() { return &MoveSpeed; }
     float         *GetRotSpeedPtr() { return &RotSpeed; }
     
-    float GetGridStep() const { return Grid->GetGridStep(); }
-    void SetGridStepAndUpdate(float InGridStep) { Grid->SetGridStep(InGridStep); }
+    float GetGridStep() const { return GridStep; }
+    void SetGridStepAndUpdate(float InGridStep) { GridStep = InGridStep; }
 
     // 기즈모 및 메인 축 렌더링 함수
     void Render(URenderer &renderer);
@@ -132,6 +132,7 @@ class FEditorViewportClient
 
     void SetGrid(AGrid* InGrid);
     void SetAxis(AAxis* InAxis);
+    void SetGridStep(float InGridStep);
     void SetGizmo(APivotTransformGizmo* InGizmo) { Gizmo = InGizmo; }
 
   private:

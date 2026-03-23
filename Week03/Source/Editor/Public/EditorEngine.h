@@ -2,7 +2,7 @@
 
 #include "CoreTypes.h"
 #include "Source/Engine/Object/Public/Object.h"
-#include "Source/Engine/Public/ImGuiManager.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
 #include "Source/Core/Public/Math/Vector.h"
 
 class UPrimitiveComponent;
@@ -94,6 +94,7 @@ public:
     virtual ~UEditorEngine();
     
     USelection* GetSelection() const { return Selection; }
+    TArray<IViewportInputListener*>* GetInputListeners() { return &InputListeners; };
 
     // 입력 의존성 극복을 위한 리스너 등록/해제
     void RegisterInputListener(IViewportInputListener* Listener);
@@ -111,7 +112,7 @@ public:
 
 protected:
     USelection* Selection;
-    std::vector<IViewportInputListener*> InputListeners;
+    TArray<IViewportInputListener*> InputListeners;
 };
 
 extern UEditorEngine* GEditor;
