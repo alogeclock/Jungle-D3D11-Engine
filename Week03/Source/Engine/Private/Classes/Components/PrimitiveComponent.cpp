@@ -9,7 +9,7 @@ UPrimitiveComponent::~UPrimitiveComponent() {}
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
     // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
-    if (renderer.IsDrawAABB() && !bIsInEditor)
+    if (renderer.IsDrawAABB() && !bIsInEditor && bShowAABB)
     {
         UpdateBounds();
         GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
@@ -35,7 +35,24 @@ void UPrimitiveComponent::SetPrimitiveType(EPrimitiveType InType)
     if (PrimitiveType != InType)
     {
         PrimitiveType = InType;
-        bLocalBoundsDirty = true; // 타입이 바뀌었으므로 LocalCorners 갱신 필요
+        bLocalBoundsDirty = true;
+    }
+}
+
+// 선택되었을 때의 화면에 어떻게 그려질지 효과를 정의하는 함수
+void UPrimitiveComponent::SetSelectEffect(bool Selected)
+{
+    if (Selected)
+    {
+        SetColor({0.0f, 0.0f, 0.0f, 0.5f});
+        bShowAABB = true;
+        bShowUUID = true;
+    }
+    else
+    {
+        SetColor({0.0f, 0.0f, 0.0f, 0.0f});
+        bShowAABB = false;
+        bShowUUID = false;
     }
 }
 

@@ -107,7 +107,7 @@ void USelection::Clear()
         UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(obj);
         if (PrimComp)
         {
-            PrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.0f});
+            PrimComp->SetSelectEffect(true);
         }
 
         // 2. 액터가 통째로 선택되어 있었던 경우
@@ -120,7 +120,7 @@ void USelection::Clear()
                 UPrimitiveComponent* ChildPrimComp = Cast<UPrimitiveComponent>(Comp);
                 if (ChildPrimComp)
                 {
-                    ChildPrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.0f});
+                    ChildPrimComp->SetSelectEffect(true);
                 }
             }
         }
@@ -142,7 +142,7 @@ void USelection::AddObject(UObject* InObject)
     UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(InObject);
     if (PrimComp)
     {
-        PrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.5f});
+        PrimComp->SetSelectEffect(true);
     }
 
     // 2. 추가된 객체가 액터인 경우
@@ -155,7 +155,7 @@ void USelection::AddObject(UObject* InObject)
             UPrimitiveComponent* ChildPrimComp = Cast<UPrimitiveComponent>(Comp);
             if (ChildPrimComp)
             {
-                ChildPrimComp->SetColor({0.0f, 0.0f, 0.0f, 0.5f});
+                ChildPrimComp->SetSelectEffect(true);
             }
         }
     }

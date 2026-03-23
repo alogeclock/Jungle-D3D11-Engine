@@ -29,6 +29,7 @@ class UPrimitiveComponent : public USceneComponent
     virtual ~UPrimitiveComponent() override;
 
     virtual void Render(URenderer &renderer);
+    virtual void SetSelectEffect(bool Selected);
 
     void           SetPrimitiveType(EPrimitiveType InType);
     EPrimitiveType GetPrimitiveType() const { return PrimitiveType; }
@@ -71,6 +72,8 @@ class UPrimitiveComponent : public USceneComponent
     bool                     bLocalBoundsDirty = true;
     bool                     bIsInEditor = false;
     bool                     bIsVisible = true;
+    bool                     bShowAABB = false;
+    bool                     bShowUUID = false;
 
     FBox LocalAABB;
     FBox WorldAABB;
