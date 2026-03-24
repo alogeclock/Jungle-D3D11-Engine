@@ -4,8 +4,11 @@
 
 class UParticleSubUVComponent : public UTextComponent
 {
-    DECLARE_OBJECT(UParticleSubUVComponent, UTextComponent)
-  public:
+    DECLARE_OBJECT_START(UParticleSubUVComponent, UTextComponent)
+    PUBLIC_PROPERTY(UParticleSubUVComponent, bLoop, Bool)
+    PUBLIC_PROPERTY(UParticleSubUVComponent, PlayRate, Float)
+    DECLARE_END 
+public :
     UParticleSubUVComponent(const FString &InString);
 
     bool   bLoop;

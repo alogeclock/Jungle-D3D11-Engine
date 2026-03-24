@@ -17,16 +17,6 @@ UTextComponent::UTextComponent(const FString &InString) : UPrimitiveComponent(In
 
 UTextComponent::~UTextComponent() {
 
-    if (VertexBuffer)
-    {
-        VertexBuffer->Release();
-        VertexBuffer = nullptr;
-    }
-    if (IndexBuffer)
-    {
-        IndexBuffer->Release();
-        IndexBuffer = nullptr;
-    }
 }
 
 void UTextComponent::SetText(const uint32 UUID){
@@ -98,16 +88,24 @@ void UTextComponent::Render(URenderer &renderer)
     if (!IsRenderable(renderer))
         return;
 
-    if (bMeshDirty) RebuildMesh();
-    if (TextVertices.empty()) return;
+    if (Text.empty())
+    {
+        return;
+    }
 
-    FConstants constants;
-    constants.MVPMatrix = GetWorldMatrix();
+    UWorld* World = GetWorld();
+    if (World == nullptr)
+    {
+        return;
+    }
 
-    renderer.SetDepthStencilEnable(bEnableDepthTest);
-    renderer.SetCullMode(CullMode);
+    UTextBatcherComponent* TextBatcher = World->GetTextBatcherComponent();
+    if (TextBatcher == nullptr)
+    {
+        return;
+    }
 
-    renderer.RenderText(FilePath, constants, &TextVertices, &TextIndeices, &VertexBuffer,&IndexBuffer, VertexBufferSize, IndexBufferSize);
+    TextBatcher->Submit(FilePath, Text, GetWorldMatrix());
 }
 
 void UTextComponent::RebuildMesh()

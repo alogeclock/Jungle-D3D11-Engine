@@ -25,7 +25,7 @@ void FTextMeshBuilder::InitializeCharInfo() {
     }
     
     FString FntContent;
-    if (UTextLoader::LoadTextFromFile("Data/Texture/KorName.txt", FntContent))
+    if (UTextLoader::LoadTextFromFile("Data/Texture/Unnamed.txt", FntContent))
     {
         LoadFNT(FntContent, 256.f, 256.f);
     }
@@ -96,10 +96,23 @@ const CharacterInfo *FTextMeshBuilder::GetCharInfo(wchar_t InChar)
 static uint32_t DecodeUTF8(const FString& s, size_t& i)
 {
     unsigned char c = (unsigned char)s[i];
-    if      (c < 0x80) { i += 1; return c; }
-    else if (c < 0xE0) { i += 2; return (c & 0x1F) << 6  | ((unsigned char)s[i-1] & 0x3F); }
-    else if (c < 0xF0) { i += 3; return (c & 0x0F) << 12 | ((unsigned char)s[i-2] & 0x3F) << 6 | ((unsigned char)s[i-1] & 0x3F); }
-    else               { i += 4; return 0x3F; }
+    if (c < 0x80) {
+        return (uint32_t)s[i++];
+    } else if (c < 0xE0) {
+        uint32_t cp = (c & 0x1F) << 6 | ((unsigned char)s[i+1] & 0x3F);
+        i += 2; return cp;
+    } else if (c < 0xF0) {
+        uint32_t cp = (c & 0x0F) << 12
+                    | ((unsigned char)s[i+1] & 0x3F) << 6
+                    | ((unsigned char)s[i+2] & 0x3F);
+        i += 3; return cp;
+    } else {
+        uint32_t cp = (c & 0x07) << 18
+                    | ((unsigned char)s[i+1] & 0x3F) << 12
+                    | ((unsigned char)s[i+2] & 0x3F) << 6
+                    | ((unsigned char)s[i+3] & 0x3F);
+        i += 4; return cp;
+    }
 }
 
 void FTextMeshBuilder::BuildTextMesh(const FString& InText, TArray<FTextureVertex>* Vertices, TArray<uint32>* Indices)

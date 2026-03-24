@@ -1,4 +1,6 @@
 ﻿#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
+#include "Source/Engine/Public/Classes/Components/TextBatcherComponent.h"
+#include "World.h"
 
 UUUIDTextComponent::UUUIDTextComponent(const FString &InString)
     : UTextComponent(InString)
@@ -13,26 +15,47 @@ UUUIDTextComponent::UUUIDTextComponent(const FString &InString)
 UUUIDTextComponent::~UUUIDTextComponent() {}
 
 void UUUIDTextComponent::Render(URenderer &renderer) {
-	if (bMeshDirty) RebuildMesh();
-    if (TextVertices.empty() || !bShowUUID) return;
+	 if (!IsVisible() || !bShowUUID)
+    {
+        return;
+    }
+
+    if (Text.empty())
+    {
+        return;
+    }
 
     if (!renderer.CheckShowFlag(EEngineShowFlags::SF_UUID))
-        return;
-
-    FConstants constants;
-
-    FVector<float> forwardVector;
-    FVector<float> rightVector;
-    FVector<float> upVector;
-
-    if (renderer.GetCameraBasis(rightVector, upVector, forwardVector))
     {
-        UpdateBillboard(forwardVector, upVector);
+        return;
     }
-    constants.MVPMatrix = RTMatrix;
-    renderer.SetDepthStencilEnable(bEnableDepthTest);
-    renderer.SetCullMode(CullMode);
-    renderer.RenderText(FilePath, constants, &TextVertices, &TextIndeices, &VertexBuffer, &IndexBuffer , VertexBufferSize, IndexBufferSize);
+
+    FVector<float> ForwardVector;
+    FVector<float> RightVector;
+    FVector<float> UpVector;
+
+    if (renderer.GetCameraBasis(RightVector, UpVector, ForwardVector))
+    {
+        UpdateBillboard(ForwardVector, UpVector);
+    }
+    else
+    {
+        RTMatrix = GetWorldMatrix();
+    }
+
+    UWorld* World = GetWorld();
+    if (World == nullptr)
+    {
+        return;
+    }
+
+    UTextBatcherComponent* TextBatcher = World->GetTextBatcherComponent();
+    if (TextBatcher == nullptr)
+    {
+        return;
+    }
+
+    TextBatcher->Submit(FilePath, Text, RTMatrix);
 }
 
 void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp)

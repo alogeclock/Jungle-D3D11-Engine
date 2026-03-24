@@ -43,8 +43,6 @@ protected:
 	TArray<FTextureVertex> TextVertices;
 	TArray<uint32> TextIndeices;
 
-    ID3D11Buffer* VertexBuffer     = nullptr;
-    ID3D11Buffer* IndexBuffer     = nullptr;
     uint32        VertexBufferSize = 0; // 현재 버퍼 용량
     uint32        IndexBufferSize = 0;
 
