@@ -87,6 +87,7 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
     TArray<FProperty>& Properties = InObject->GetClass()->GetProperties();
     for (const auto& Property : Properties)
     {
+        ImGui::Text(Property.Name.c_str());
         if (Property.Type == EPropertyType::UObjectPtr)
         {
             UObject** ObjectPtr = reinterpret_cast<UObject**>(Property.GetValuePtr(InObject));
@@ -95,7 +96,6 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
             if (Object == nullptr)
                 continue;
 
-            ImGui::Separator();
             if (ImGui::Button(Object->GetName().ToString().c_str(), {100.f, 15.f}))
             {
                 Selection->Clear();
@@ -106,15 +106,16 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
         {
             UObject** ObjectPtr = reinterpret_cast<UObject**>(Property.GetValuePtr(InObject));
             UObject* Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
-            // ImGui::Separator();
+
+           ImGui::BeginChild("DetailRegion", ImVec2(0, outlinerHeight), true);
             ShowObjectProperty(Object);
+           ImGui::EndChild();
+
         }
         else if (Property.Type == EPropertyType::Transform)
         {
             FTransform* Transform = reinterpret_cast<FTransform*>(Property.GetValuePtr(InObject));
             float align = 100.f;
-            ImGui::Separator();
-            ImGui::Text("Transform");
 
             ImGui::Text("Location");
             ImGui::SameLine();
@@ -138,7 +139,6 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
         else if (Property.Type == EPropertyType::Float)
         {
             float* FloatType = reinterpret_cast<float*>(Property.GetValuePtr(InObject));
-            ImGui::Separator();
             ImGui::DragFloat(Property.Name.c_str(), FloatType);
         }
         else if (Property.Type == EPropertyType::UObjectPtrArray)
@@ -147,8 +147,6 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
 
             if (!ArrayPtr)
                 continue;
-            ImGui::Separator();
-            ImGui::Text(Property.Name.c_str());
             for (UObject* Object : *ArrayPtr)
             {
                 if (!Object)
@@ -176,6 +174,15 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
                 *StringPtr = FString(buffer);
             }
         }
+        else if (Property.Type == EPropertyType::Bool)
+        {
+            bool* BoolPtr = reinterpret_cast<bool*>(Property.GetValuePtr(InObject));
+            if (!BoolPtr)
+                return;
+
+            ImGui::Checkbox(Property.Name.c_str(), BoolPtr);
+        }
+        ImGui::Separator();
     }
 }
 
