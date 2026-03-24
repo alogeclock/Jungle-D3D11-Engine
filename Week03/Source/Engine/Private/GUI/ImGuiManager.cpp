@@ -56,8 +56,10 @@ void UImGuiManager::Update()
 
     ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x - cellWidth * 2, 0));
     ImGui::SetNextWindowSize(ImVec2(cellWidth * 2, io.DisplaySize.y));
-    ImGui::Begin("Outliner");
-    FOutliner.ShowOutliner();
+    if (ImGui::Begin("Outliner"))
+    {
+        FOutliner.ShowOutliner();
+    }
     ImGui::End();
 
     ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);

@@ -41,7 +41,7 @@ protected:
     bool           bMeshDirty = true;
     bool bVIsible = false;
 
-	TArray<FTextVertex> TextVertices;
+	TArray<FTextureVertex> TextVertices;
 	TArray<uint32> TextIndeices;
 
     ID3D11Buffer* VertexBuffer     = nullptr;

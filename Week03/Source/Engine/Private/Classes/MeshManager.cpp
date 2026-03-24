@@ -60,6 +60,16 @@ FBox UMeshManager::ComputeAABB(const TArray<FVertex>& Vertices)
     return Box;
 }
 
+FBox UMeshManager::ComputeAABB(const TArray<FTextureVertex>& Vertices)
+{
+    FBox Box;
+
+    for (const auto& V : Vertices)
+        Box.Encapsulate(V.Position);
+
+    return Box;
+}
+
 FBox UMeshManager::GetMeshAABB(EPrimitiveType Type) const
 {
     auto it = MeshAABB.find(Type);
