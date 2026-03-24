@@ -115,6 +115,8 @@ bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
             if (UImGuiManager::Get().IsCaptureMouse())
                 return true;
 
+            LastMouseX = Viewport->GetMouseX();
+            LastMouseY = Viewport->GetMouseY();
             bLeftMouseDragging = true; // 드래그 상태 On
             FRay ray = GetPickingRay();
 
@@ -137,6 +139,11 @@ bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
     }
     else if (Key == EKeys::RightMouseButton)
     {
+        if (Event == EInputEvent::Pressed)
+        {
+            LastMouseX = Viewport->GetMouseX();
+            LastMouseY = Viewport->GetMouseY();
+        }
         bRightMouseDragging = (Event == EInputEvent::Pressed);
         return true;
     }

@@ -41,28 +41,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     case WM_KEYDOWN:
-        Viewport->OnKeyDown((uint32_t)wParam);
+        if (Viewport)
+            Viewport->OnKeyDown((uint32_t)wParam);
         break;
     case WM_KEYUP:
-        Viewport->OnKeyUp((uint32_t)wParam);
+        if (Viewport)
+            Viewport->OnKeyUp((uint32_t)wParam);
         break;
     case WM_MOUSEMOVE:
-        Viewport->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        if (Viewport)
+            Viewport->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
         break;
     case WM_LBUTTONDOWN:
-        Viewport->OnMouseButtonDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        if (Viewport)
+            Viewport->OnMouseButtonDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
         break;
     case WM_RBUTTONDOWN:
-        Viewport->OnMouseButtonDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        if (Viewport)
+            Viewport->OnMouseButtonDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
         break;
     case WM_LBUTTONUP:
-        Viewport->OnMouseButtonUp(VK_LBUTTON);
+        if (Viewport)
+            Viewport->OnMouseButtonUp(VK_LBUTTON);
         break;
     case WM_RBUTTONUP:
-        Viewport->OnMouseButtonUp(VK_RBUTTON);
+        if (Viewport)
+            Viewport->OnMouseButtonUp(VK_RBUTTON);
         break;
     case WM_MOUSEWHEEL:
-        Viewport->OnMouseWheel((float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA);
+        if (Viewport)
+            Viewport->OnMouseWheel((float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

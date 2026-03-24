@@ -415,18 +415,22 @@ void URenderer::SetShowFlags(EEngineShowFlags InShowFlags)
 
 void URenderer::ApplyRasterizerState()
 {
+    ApplyRasterizerState(CurrentCullMode, false);
+}
+
+void URenderer::ApplyRasterizerState(ECullMode CullMode, bool bIgnoreWireframe)
+{
     if (DeviceContext == nullptr)
         return;
 
-    // 와이어프레임 상태가 켜져 있으면 다른 세팅을 무시하고 와이어프레임 적용
-    if (ViewModeIndex == EViewModeIndex::VMI_Wireframe)
+    // 와이어프레임 상태가 켜져 있더라도 특정 렌더 경로는 솔리드로 유지한다.
+    if (ViewModeIndex == EViewModeIndex::VMI_Wireframe && !bIgnoreWireframe)
     {
         DeviceContext->RSSetState(RasterizerStateWireframe);
         return;
     }
 
-    // 그렇지 않으면 현재 CullMode에 맞게 적용
-    switch (CurrentCullMode)
+    switch (CullMode)
     {
     case ECullMode::None:
         DeviceContext->RSSetState(RasterizerStateCullNone);
@@ -589,10 +593,7 @@ void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Const
     DeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
     DeviceContext->IASetInputLayout(TextInputLayout);
 
-    if (ViewModeIndex == EViewModeIndex::VMI_Wireframe)
-        DeviceContext->RSSetState(RasterizerStateWireframe);
-    else
-        DeviceContext->RSSetState(RasterizerStateCullNone);
+    ApplyRasterizerState(ECullMode::None, true);
 
     DeviceContext->VSSetShader(TextVertexShader, nullptr, 0);
     DeviceContext->PSSetShader(TextPixelShader, nullptr, 0);
@@ -627,7 +628,7 @@ void URenderer::UndoRenderText()
     DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
     DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
     DeviceContext->IASetInputLayout(SimpleInputLayout);
-    DeviceContext->RSSetState(RasterizerStateCullBack);
+    ApplyRasterizerState();
 }
 
 void URenderer::RenderPrimitive(UPrimitiveComponent* primitive, FConstants& constants, FConstantsColor& constantsColor)
@@ -938,7 +939,8 @@ void URenderer::RenderScene(FScene* Scene)
         {
             // 렌더 스테이트 설정 (Depth, Cull, Topology)
             SetDepthStencilEnable(Command.bEnableDepthTest);
-            SetCullMode(Command.CullMode);
+            CurrentCullMode = Command.CullMode;
+            ApplyRasterizerState(Command.CullMode, Command.bIgnoreWireframe);
             SetTopology(Command.Topology);
 
             // Vertex Buffer 바인딩

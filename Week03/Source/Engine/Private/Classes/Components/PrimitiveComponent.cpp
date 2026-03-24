@@ -42,6 +42,7 @@ void UPrimitiveComponent::Submit(const FSceneViewOptions& ViewOptions)
     Command.Constants.MVPMatrix = GetWorldMatrix();    
     Command.ConstantsColor = FConstantsColor(Color.X, Color.Y, Color.Z, Color.W);
     Command.bEnableDepthTest = bEnableDepthTest;
+    Command.bIgnoreWireframe = bIsInEditor;
     Command.CullMode = CullMode;
     Command.Topology = this->Topology;
 

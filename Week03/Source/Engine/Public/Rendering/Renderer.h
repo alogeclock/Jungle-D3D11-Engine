@@ -114,6 +114,7 @@ class URenderer
     void SetViewMode(EViewModeIndex Mode);
     void SetShowFlags(EEngineShowFlags ShowFlags);
     void ApplyRasterizerState();
+    void ApplyRasterizerState(ECullMode CullMode, bool bIgnoreWireframe);
 
     bool CheckShowFlag(EEngineShowFlags InFlag) const { return (ShowFlags & InFlag) != EEngineShowFlags::None; }
     void SetDrawAABB(bool bEnable) { ShowFlags |= EEngineShowFlags::SF_AABB; }

@@ -31,9 +31,10 @@ void FViewport::OnKeyUp(uint32 KeyCode)
 
 void FViewport::OnMouseMove(int32 X, int32 Y)
 {
+	PrevMouseX = MouseX;
+	PrevMouseY = MouseY;
 	MouseDeltaX = X - PrevMouseX;
 	MouseDeltaY = Y - PrevMouseY;
-	PrevMouseX = MouseX; PrevMouseY = MouseY;
 	MouseX = X;  MouseY = Y;
 
 	if (ViewportClient)
@@ -43,6 +44,8 @@ void FViewport::OnMouseMove(int32 X, int32 Y)
 void FViewport::OnMouseButtonDown(uint32 KeyCode, int32 X, int32 Y)
 {
 	KeyStates[KeyCode] = true;
+	PrevMouseX = X;
+	PrevMouseY = Y;
 	MouseX = X; MouseY = Y;
 	if (ViewportClient)
 	{

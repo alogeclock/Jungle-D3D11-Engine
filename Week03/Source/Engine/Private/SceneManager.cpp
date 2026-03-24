@@ -56,7 +56,6 @@ void FScenemanager::LoadScene(const std::wstring& string)
     if (GEditor && GEditor->GetSelection())
     {
         GEditor->GetSelection()->Clear();
-        GEditor->GetInputListeners()->clear();
     }
 
     if (!FilePath.empty() && GWorld->LoadLevel(FilePath))

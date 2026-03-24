@@ -29,6 +29,7 @@ struct FRenderCommand
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     ECullMode CullMode = ECullMode::Back;
     bool bEnableDepthTest = true;
+    bool bIgnoreWireframe = false;
     bool bIsVisible = true;
     ID3D11Buffer* VertexBuffer = nullptr;
     ID3D11Buffer* IndexBuffer = nullptr;
