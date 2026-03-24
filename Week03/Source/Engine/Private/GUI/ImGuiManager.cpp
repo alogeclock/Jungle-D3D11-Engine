@@ -25,6 +25,8 @@
 
 #include "Source/Core/Public/FName.h"
 
+#include <iostream>
+
 ExampleAppConsole* GConsole = nullptr;
 
 void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
@@ -48,10 +50,42 @@ void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
 void UImGuiManager::Update()
 {
     beginFrame();
+    ImGuiIO& io = ImGui::GetIO();
 
+    float cellWidth = io.DisplaySize.x * 0.1f;
+    float cellHeight = io.DisplaySize.y * 0.1f;
+
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x - cellWidth * 2, 0));
+    ImGui::SetNextWindowSize(ImVec2(cellWidth * 2, io.DisplaySize.y));
     ImGui::Begin("Outliner");
-    Outliner.ShowOutliner();
+    FOutliner.ShowOutliner();
     ImGui::End();
+
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x - cellWidth * 4.f, 0));
+    ImGui::SetNextWindowSize(ImVec2(cellWidth * 2, cellHeight));
+    ImGui::Begin("EngineStatics");
+    FEngineStaticsGUI.ShowPanel();
+    ImGui::End();
+
+    ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+    if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && (delta.x * delta.x + delta.y * delta.y) < 4.0f)
+    {
+        ImGui::SetNextWindowPos(io.MousePos);
+        FSpawnGUI.SetVisible(true);
+    }
+
+    if (FSpawnGUI.GetVisible())
+    {
+        ImGui::Begin("Spawn", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
+        FSpawnGUI.ShowPanel();
+        ImGui::End();
+    }
+
+    if (ImGui::IsMouseDragging(ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !io.WantCaptureMouse)
+    {
+        FSpawnGUI.SetVisible(false);
+    }
+
 
     // Control Panel
     ImGui::Begin("Jungle Control Panel");
@@ -203,22 +237,16 @@ void UImGuiManager::AddLog(const std::wstring& msg)
 
 void UImGuiManager::ShowControlPanel()
 {
+    //ImGui::Separator();
+
+    //SpawnActors();
+
+    ImGui::Separator();
+
     if (buffer[0] == '\0' && GWorld && GWorld->GetCurrentLevel())
     {
         snprintf(buffer, sizeof(buffer), "%s", GWorld->GetCurrentLevel()->GetName().ToString().c_str());
     }
-
-    ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(),
-                       UTimeManager::Get().GetFrameTime());
-    ImGui::TextWrapped("Allocated Bytes: %u", TotalAllocationBytes);
-    ImGui::TextWrapped("Allocated Count: %u", TotalAllocationCount);
-    ImGui::TextWrapped("Object Count: %u", GUObjectArray.size());
-
-    ImGui::Separator();
-
-    SpawnActors();
-
-    ImGui::Separator();
 
     ImGui::InputText("Scene Name", buffer, IM_ARRAYSIZE(buffer));
 

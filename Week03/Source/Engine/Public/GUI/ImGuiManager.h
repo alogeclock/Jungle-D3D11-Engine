@@ -14,6 +14,8 @@
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
 #include "Source/Engine/Public/GUI/Outliner.h"
+#include "Source/Engine/Public/GUI/EngineStaticsGUI.h"
+#include "Source/Engine/Public/GUI/SpawnGUI.h"
 
 struct ExampleAppConsole;
 struct FViewportCameraTransform;
@@ -67,7 +69,9 @@ public:
     bool bToggleGizmoMode = false;
 
   private:
-    Outliner Outliner;
+    FOutliner FOutliner;
+    FEngineStaticsGUI FEngineStaticsGUI;
+    FSpawnGUI FSpawnGUI;
 
     char buffer[256];
     char TextBuffer[256];

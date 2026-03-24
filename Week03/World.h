@@ -76,3 +76,6 @@ template <typename T> T* UWorld::SpawnActor()
     T* Object = SpawnActor(T::StaticClass());
     return Cast<T>(Object);
 }
+
+
+inline UWorld* GWorld = nullptr;

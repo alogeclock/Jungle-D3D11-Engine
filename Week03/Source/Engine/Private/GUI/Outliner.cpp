@@ -1,11 +1,13 @@
+#pragma once
 #include "Source/Editor/Public/Application.h"
 #include "Source/Engine/Public/GUI/Outliner.h"
 
-void Outliner::ShowOutliner()
+void FOutliner::ShowOutliner()
 {
     USelection* Selection = GEditor->GetSelection();
 
     ShowObjectInfo(Selection->GetSelectedObject());
+    ImGui::SetCursorPosY(100.f);
     ImGui::BeginChild("OutlinerRegion", ImVec2(0, outlinerHeight), true);
     {
         ShowOutliner(GUObjectArray);
@@ -42,7 +44,7 @@ void Outliner::ShowOutliner()
     ImGui::EndChild();
 }
 
-void Outliner::ShowObjectInfo(UObject* InObject)
+void FOutliner::ShowObjectInfo(UObject* InObject)
 {
     if (InObject == nullptr)
         return;
@@ -50,8 +52,12 @@ void Outliner::ShowObjectInfo(UObject* InObject)
     if (!InObject->IsValid())
         return;
 
-    ImGui::Text("Object UUID: %d", InObject->GetUUID());
+    ImGui::Text("Class: ");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(100.f);
+    ImGui::Text(InObject->GetClass()->GetName());
 
+    ImGui::Text("Object UUID: %d", InObject->GetUUID());
 
     char buffer[256];
     memset(buffer, 0, sizeof(buffer));
@@ -59,13 +65,16 @@ void Outliner::ShowObjectInfo(UObject* InObject)
 
     ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
-    if (ImGui::InputText("Name", buffer, sizeof(buffer), flags))
+    ImGui::Text("Name: ");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(100.f);
+    if (ImGui::InputText("##Name", buffer, sizeof(buffer), flags))
     {
         InObject->SetName(FString(buffer));
     }
 }
 
-void Outliner::ShowObjectProperty(UObject* InObject)
+void FOutliner::ShowObjectProperty(UObject* InObject)
 {
     if (InObject == nullptr)
         return;
@@ -103,11 +112,25 @@ void Outliner::ShowObjectProperty(UObject* InObject)
         else if (Property.Type == EPropertyType::Transform)
         {
             FTransform* Transform = reinterpret_cast<FTransform*>(Property.GetValuePtr(InObject));
+            float align = 100.f;
             ImGui::Separator();
             ImGui::Text("Transform");
-            ImGui::DragFloat3("Location", &Transform->Location.X, 0.01f);
-            ImGui::DragFloat3("Rotation", &Transform->Rotation.X, 0.01f);
-            ImGui::DragFloat3("Scale", &Transform->Scale.X, 0.01f, 0.f, FLT_MAX);
+
+            ImGui::Text("Location");
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(align);
+            ImGui::DragFloat3("##Location", &Transform->Location.X, 0.01f);
+
+            ImGui::Text("Rotation");
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(align);
+
+            ImGui::DragFloat3("##Rotation", &Transform->Rotation.X, 0.01f);
+
+            ImGui::Text("Scale");
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(align);
+            ImGui::DragFloat3("##Scale", &Transform->Scale.X, 0.01f, 0.f, FLT_MAX);
 
             USceneComponent* component = static_cast<USceneComponent*>(InObject);
             component->SetTransform(*Transform);
@@ -156,7 +179,7 @@ void Outliner::ShowObjectProperty(UObject* InObject)
     }
 }
 
-void Outliner::ShowOutliner(TArray<UObject*>& ObjectArray)
+void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
 {
     TMap<UObject*, TArray<UObject*>> OuterGraph;
     TArray<UObject*> RootObjects;
@@ -322,7 +345,7 @@ void Outliner::ShowOutliner(TArray<UObject*>& ObjectArray)
     }
 }
 
-void Outliner::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies,
+void FOutliner::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies,
                                  TSet<UObject*>& Visited)
 {
     if (Object == nullptr)

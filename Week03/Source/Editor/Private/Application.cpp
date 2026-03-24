@@ -4,7 +4,6 @@
 
 #include <Windows.h>
 
-UWorld* GWorld = nullptr;
 UApplication* GApplication = nullptr;
 UEditorEngine* GEditor = nullptr;
 
@@ -96,7 +95,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
 
     RegisterClassW(&wndclass);
 
-    hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+    hWnd = CreateWindowExW(0, WindowClass, Title, WS_MAXIMIZE | WS_VISIBLE | WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                            CW_USEDEFAULT, 1400, 800, nullptr, nullptr, hInst, nullptr);
 
     SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));

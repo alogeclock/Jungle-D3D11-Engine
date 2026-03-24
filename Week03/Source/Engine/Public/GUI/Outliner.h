@@ -2,7 +2,7 @@
 #include "Source/Engine/Object/Public/Actor.h"
 
 
-class Outliner
+class FOutliner
 {
 public:
     void ShowOutliner();
