@@ -16,6 +16,8 @@
 #include "Source/Engine/Public/GUI/Outliner.h"
 #include "Source/Engine/Public/GUI/EngineStaticsGUI.h"
 #include "Source/Engine/Public/GUI/SpawnGUI.h"
+#include "Source/Engine/Public/GUI/Toolbar.h"
+
 
 struct ExampleAppConsole;
 struct FViewportCameraTransform;
@@ -45,24 +47,24 @@ public:
     bool IsCaptureMouse();
     bool IsCaptureKeyboard();
 
-    char* FStringToChar(FString string);
-    FString WStringToFString(const std::wstring& string);
-    std::wstring CharToWString(const char* msg);
+    //char* FStringToChar(FString string);
+    //FString WStringToFString(const std::wstring& string);
+    //std::wstring CharToWString(const char* msg);
     void AddLog(const char* msg);
     void AddLog(const FString& msg);
     void AddLog(const std::wstring& msg);
 
-    std::wstring SaveFileDialog();
-    std::wstring OpenFileDialog();
+    //std::wstring SaveFileDialog();
+    //std::wstring OpenFileDialog();
 
 private:
-    void ShowControlPanel();
-    void SpawnActors();
-    void NewScene();
-    void SaveScene();
-    void LoadScene();
+    void ViewMode();
+    //void SpawnActors();
+    //void NewScene();
+    //void SaveScene();
+    //void LoadScene();
     void SetCameraInfo();
-    void TransformInspector();
+    //void TransformInspector();
 
 public:
     bool bIsOrthogonal = false;
@@ -72,6 +74,7 @@ public:
     FOutliner FOutliner;
     FEngineStaticsGUI FEngineStaticsGUI;
     FSpawnGUI FSpawnGUI;
+    FToolbar Toolbar;
 
     char buffer[256];
     char TextBuffer[256];

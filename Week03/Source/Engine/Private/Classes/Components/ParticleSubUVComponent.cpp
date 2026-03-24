@@ -69,6 +69,7 @@ void UParticleSubUVComponent::RebuildMesh()
     float fv1 = (float)v1 / (float)Height;
 
     TextVertices.clear();
+    TextIndeices.clear();
 
     TextVertices.push_back({FVector<float>(x0, y0, 0.f), fu0, fv0});
     TextVertices.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});

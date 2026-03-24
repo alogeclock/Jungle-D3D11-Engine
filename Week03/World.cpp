@@ -52,6 +52,33 @@ UWorld::~UWorld()
     CurrentLevel = nullptr;
 }
 
+void UWorld::Submit()
+{
+    if (CurrentLevel)
+    {
+        // 현재 레벨의 모든 액터를 순회
+        for (AActor *actor : CurrentLevel->GetActors())
+        {
+            // 액터가 소유한 모든 컴포넌트 순회
+            for (UActorComponent *component : actor->GetOwnedComponents())
+            {
+                // PrimitiveComponent인 경우에만 Submit 호출
+                UPrimitiveComponent *primitive = Cast<UPrimitiveComponent>(component);
+                if (primitive != nullptr)
+                {
+                    primitive->Submit();
+                }
+            }
+        }
+    }
+
+    // LineBatcherComponent 등 레벨 액터 목록과 별개로 관리되는 컴포넌트가 있다면 여기서 함께 Submit 처리
+    if (LineBatcherComponent)
+    {
+        LineBatcherComponent->Submit();
+    }
+}
+
 ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
 {
     ULevel *NewLevel = new ULevel(NewLevelName);
@@ -333,21 +360,6 @@ AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
     }
 
     return nullptr; // 팩토리 생성이 실패하거나 AActor가 아니면 nullptr 반환
-}
-
-void UWorld::Render(URenderer &renderer)
-{
-    LineBatcherComponent->Render(renderer);
-    LineBatcherComponent->Flush();
-    if (CurrentLevel)
-    {
-        const auto& Actors = CurrentLevel->GetActors();
-        
-        for (int i = Actors.size() - 1; i >= 0; --i)
-        {
-            Actors[i]->IterateAllActorComponents(renderer);
-        }
-    }
 }
 
 void UWorld::Tick(float deltaTime)

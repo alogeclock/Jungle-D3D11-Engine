@@ -169,6 +169,10 @@
     <ClCompile Include="Source\Engine\Private\GUI\EngineStaticsGUI.cpp" />
     <ClCompile Include="Source\Engine\Private\GUI\Outliner.cpp" />
     <ClCompile Include="Source\Engine\Private\GUI\SpawnGUI.cpp" />
+    <ClCompile Include="Source\Engine\Private\GUI\Tabbar.cpp" />
+    <ClCompile Include="Source\Engine\Private\GUI\SceneWindow.cpp" />
+    <ClCompile Include="Source\Engine\Private\GUI\ToolBar.cpp" />
+    <ClCompile Include="Source\Engine\Private\GUI\GuiWindow.cpp" />
     <ClCompile Include="Source\Engine\Private\Rendering\RenderProxy.cpp" />
     <ClCompile Include="Source\Engine\Private\Rendering\Scene.cpp" />
     <ClCompile Include="Source\Engine\Private\VertexData.cpp" />
@@ -235,8 +239,13 @@
     <ClInclude Include="Source\Engine\Public\Classes\TextMeshBuilder.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
     <ClInclude Include="Source\Engine\Public\GUI\EngineStaticsGUI.h" />
+    <ClInclude Include="Source\Engine\Public\GUI\GuiMsg.h" />
     <ClInclude Include="Source\Engine\Public\GUI\Outliner.h" />
     <ClInclude Include="Source\Engine\Public\GUI\SpawnGUI.h" />
+    <ClInclude Include="Source\Engine\Public\GUI\Tabbar.h" />
+    <ClInclude Include="Source\Engine\Public\GUI\SceneWindow.h" />
+    <ClInclude Include="Source\Engine\Public\GUI\Toolbar.h" />
+    <ClInclude Include="Source\Engine\Public\GUI\GuiWindow.h" />
     <ClInclude Include="Source\Engine\Public\Rendering\RenderProxy.h" />
     <ClInclude Include="Source\Engine\Public\Rendering\Scene.h" />
     <ClInclude Include="Source\Engine\Public\VertexData.h" />

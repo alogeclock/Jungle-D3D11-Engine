@@ -134,4 +134,4 @@ protected:
     APivotTransformGizmo* Gizmo = nullptr;
 };
 
-extern UEditorEngine* GEditor;
+inline UEditorEngine* GEditor = nullptr;
