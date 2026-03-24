@@ -1,7 +1,9 @@
 ﻿#include "Source/Engine/Public/Classes/Components/TextComponent.h"
+#include "Source/Engine/Public/Classes/Components/TextBatcherComponent.h"
 #include <Source/Engine/Public/Classes/TextMeshBuilder.h>
 #include "Source/Core/Public/Math/ScaleMatrix.h"
 #include "Source/Core/Public/Math/TranslationMatrix.h"
+#include "World.h"
 #include <cmath>
 #include <iostream>
 
@@ -11,21 +13,10 @@ UTextComponent::UTextComponent(const FString &InString) : UPrimitiveComponent(In
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
     bVIsible = true;
-    FilePath = "Data/Texture/KorName.png";
+    FilePath = "Data/Texture/Unnamed.png";
 }
 
 UTextComponent::~UTextComponent() {
-
-    if (VertexBuffer)
-    {
-        VertexBuffer->Release();
-        VertexBuffer = nullptr;
-    }
-    if (IndexBuffer)
-    {
-        IndexBuffer->Release();
-        IndexBuffer = nullptr;
-    }
 }
 
 void UTextComponent::SetText(const uint32 UUID){
@@ -86,16 +77,29 @@ FHitResult UTextComponent::IntersectRayMeshTriangle(const FVector<float>& RayOri
 
 void UTextComponent::Render(URenderer &renderer)
 {
-    if (bMeshDirty) RebuildMesh();
-    if (TextVertices.empty()) return;
+    if (!IsRenderable(renderer))
+    {
+        return;
+    }
 
-    FConstants constants;
-    constants.MVPMatrix = GetWorldMatrix();
+    if (Text.empty())
+    {
+        return;
+    }
 
-    renderer.SetDepthStencilEnable(bEnableDepthTest);
-    renderer.SetCullMode(CullMode);
+    UWorld* World = GetWorld();
+    if (World == nullptr)
+    {
+        return;
+    }
 
-    renderer.RenderText(FilePath, constants, &TextVertices, &TextIndeices, &VertexBuffer,&IndexBuffer, VertexBufferSize, IndexBufferSize);
+    UTextBatcherComponent* TextBatcher = World->GetTextBatcherComponent();
+    if (TextBatcher == nullptr)
+    {
+        return;
+    }
+
+    TextBatcher->Submit(FilePath, Text, GetWorldMatrix());
 }
 
 void UTextComponent::RebuildMesh()

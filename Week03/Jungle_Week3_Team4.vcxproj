@@ -113,6 +113,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>External\Include\DirectXTK;$(SolutionDir)External\Include\DirectXTK;C:/Github/Week2/Engine/Source;$(ProjectDir)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -192,6 +193,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\ParticleSubUVComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\TextLoader.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\Components\TextBatcherComponent.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -276,6 +278,7 @@
     <ClInclude Include="Source\Engine\Public\GUI\ImGuiManager.h" />
     <ClInclude Include="Source\Editor\Public\BaseTransformGizmo.h" />
     <ClInclude Include="Source\Engine\Public\Rendering\Renderer.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\Components\TextBatcherComponent.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>

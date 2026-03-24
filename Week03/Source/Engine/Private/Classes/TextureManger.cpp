@@ -80,6 +80,8 @@ void UTextureManager::LoadToFileTexture(const path& InDirectoryPath, URenderer& 
 
 		ComPtr<ID3D11ShaderResourceView> TextureSRV = nullptr;
 
+		ResultHandle = -1;
+
 		if (FileExtension == ".dds") {
 			ResultHandle = DirectX::CreateDDSTextureFromFile(Device, DeviceContext,
 				FilePath.c_str(), nullptr, TextureSRV.GetAddressOf());
@@ -92,6 +94,7 @@ void UTextureManager::LoadToFileTexture(const path& InDirectoryPath, URenderer& 
 		if (SUCCEEDED(ResultHandle))
 		{
 			FName HashKey = GetHashKeyPath(FilePath);
+			
 			TextureMap[HashKey] = TextureSRV;
 		}
 	}
@@ -100,7 +103,6 @@ void UTextureManager::LoadToFileTexture(const path& InDirectoryPath, URenderer& 
 ID3D11ShaderResourceView* UTextureManager::GetTexture(const FName& inFilePath)
 {
 	FName HashKey = GetHashKeyPath(inFilePath.ToString());
-	
 	
     const auto& It = TextureMap.find(HashKey);
     if (It != TextureMap.end())

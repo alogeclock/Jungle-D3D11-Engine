@@ -468,100 +468,126 @@ void URenderer::PrepareShader()
     }
 }
 
-void URenderer::RenderText(
-    FString FilePath, FConstants& constants,
-    TArray<FTextVertex>* vertices, TArray<uint32>* indices,
-    ID3D11Buffer** InOutVertexBuffer, ID3D11Buffer** InOutIndexBuffer,
-    uint32& InOutVBSize, uint32& InOutIBSize)   // ← split into two size params
+void URenderer::EnsureTextBuffers(FTextGpuBuffer& Buffers, uint32 RequiredVBSize, uint32 RequiredIBSize)
 {
-    if (!TextVertexShader || !TextPixelShader ||
-        !TextInputLayout  || !LinearSamplerState) return;
-    if (vertices->empty() || indices->empty()) return;
-
-    ID3D11ShaderResourceView* fontSRV = UTextureManager::Get().GetTexture(FilePath);
-    if (!fontSRV) return;
-
-    // ── 1. Vertex buffer: recreate only when missing or too small ────────────
-    const UINT vbDataSize = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
-
-    if (*InOutVertexBuffer == nullptr || InOutVBSize < vbDataSize)
+    if (!Buffers.VertexBuffer || Buffers.VertexBufferSize < RequiredVBSize)
     {
-        if (*InOutVertexBuffer) { (*InOutVertexBuffer)->Release(); *InOutVertexBuffer = nullptr; }
+        Buffers.VertexBuffer.Reset();
 
-        D3D11_BUFFER_DESC vbDesc = {};
-        vbDesc.Usage          = D3D11_USAGE_DYNAMIC;
-        vbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        vbDesc.ByteWidth      = vbDataSize;
-        vbDesc.BindFlags      = D3D11_BIND_VERTEX_BUFFER;
+        D3D11_BUFFER_DESC VBDesc = {};
+        VBDesc.Usage = D3D11_USAGE_DYNAMIC;
+        VBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        VBDesc.ByteWidth = RequiredVBSize;
+        VBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-        if (FAILED(Device->CreateBuffer(&vbDesc, nullptr, InOutVertexBuffer))) return;
-        InOutVBSize = vbDataSize;
+        if (SUCCEEDED(Device->CreateBuffer(&VBDesc, nullptr, Buffers.VertexBuffer.GetAddressOf())))
+        {
+            Buffers.VertexBufferSize = RequiredVBSize;
+        }
     }
 
-    // ── 2. Index buffer: recreate only when missing or too small ─────────────
-    const UINT ibDataSize = sizeof(uint32) * static_cast<UINT>(indices->size());
-
-    if (*InOutIndexBuffer == nullptr || InOutIBSize < ibDataSize)
+    if (!Buffers.IndexBuffer || Buffers.IndexBufferSize < RequiredIBSize)
     {
-        if (*InOutIndexBuffer) { (*InOutIndexBuffer)->Release(); *InOutIndexBuffer = nullptr; }
+        Buffers.IndexBuffer.Reset();
 
-        D3D11_BUFFER_DESC ibDesc = {};
-        ibDesc.Usage          = D3D11_USAGE_DYNAMIC;
-        ibDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        ibDesc.ByteWidth      = ibDataSize;          // ← index bytes, not vertex bytes
-        ibDesc.BindFlags      = D3D11_BIND_INDEX_BUFFER;
+        D3D11_BUFFER_DESC IBDesc = {};
+        IBDesc.Usage = D3D11_USAGE_DYNAMIC;
+        IBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        IBDesc.ByteWidth = RequiredIBSize;
+        IBDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-        if (FAILED(Device->CreateBuffer(&ibDesc, nullptr, InOutIndexBuffer))) return;  // ← target IB
-        InOutIBSize = ibDataSize;
+        if (SUCCEEDED(Device->CreateBuffer(&IBDesc, nullptr, Buffers.IndexBuffer.GetAddressOf())))
+        {
+            Buffers.IndexBufferSize = RequiredIBSize;
+        }
+    }
+}
+
+void URenderer::UploadTextBuffers(FTextGpuBuffer& Buffers, const TArray<FTextVertex>& Vertices,
+                                  const TArray<uint32>& Indices)
+{
+    if (!Buffers.VertexBuffer || !Buffers.IndexBuffer) return;
+
+    const UINT VBSize = static_cast<UINT>(sizeof(FTextVertex) * Vertices.size());
+    const UINT IBSize = static_cast<UINT>(sizeof(uint32) * Indices.size());
+
+    D3D11_MAPPED_SUBRESOURCE mapped = {};
+   
+    if (SUCCEEDED(DeviceContext->Map(Buffers.VertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
+    {
+        memcpy(mapped.pData, Vertices.data(), VBSize);
+        DeviceContext->Unmap(Buffers.VertexBuffer.Get(), 0);
+    }
+    else
+    {   
+        return;
     }
 
-    // ── 3. Upload vertex data ────────────────────────────────────────────────
-    D3D11_MAPPED_SUBRESOURCE msr = {};
-    if (SUCCEEDED(DeviceContext->Map(*InOutVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr)))
+    if (SUCCEEDED(DeviceContext->Map(Buffers.IndexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
     {
-        memcpy(msr.pData, vertices->data(), vbDataSize);
-        DeviceContext->Unmap(*InOutVertexBuffer, 0);
+        memcpy(mapped.pData, Indices.data(), IBSize);
+        DeviceContext->Unmap(Buffers.IndexBuffer.Get(), 0);
     }
-    else return;
+  
+}
 
-    // ── 4. Upload index data ─────────────────────────────────────────────────
-    if (SUCCEEDED(DeviceContext->Map(*InOutIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr)))
-    {
-        memcpy(msr.pData, indices->data(), ibDataSize);
-        DeviceContext->Unmap(*InOutIndexBuffer, 0);
-    }
-    else return;
+void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Constants, const FTextGpuBuffer& Buffers,
+                                uint32 IndexCount)
+{
+    if (!Buffers.VertexBuffer || !Buffers.IndexBuffer || IndexCount == 0) return;
 
-    // ── 5. Update constant buffer ────────────────────────────────────────────
-    UpdateConstant(constants);
+    ID3D11ShaderResourceView* SRV = UTextureManager::Get().GetTexture(FontPath);
+    if (!SRV) return;
 
-    // ── 6. IA stage ──────────────────────────────────────────────────────────
-    DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // ← was missing
+    UpdateConstant(Constants);
 
-    UINT stride = sizeof(FTextVertex), offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, InOutVertexBuffer, &stride, &offset);
-    DeviceContext->IASetIndexBuffer(*InOutIndexBuffer, DXGI_FORMAT_R32_UINT, 0);   // ← was missing
+    UINT Stride = sizeof(FTextVertex);
+    UINT Offset = 0;
+    ID3D11Buffer* VB = Buffers.VertexBuffer.Get();
+    ID3D11Buffer* IB = Buffers.IndexBuffer.Get();
+
+    DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    DeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &Offset);
+    DeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
     DeviceContext->IASetInputLayout(TextInputLayout);
 
     if (ViewModeIndex == EViewModeIndex::VMI_Wireframe)
         DeviceContext->RSSetState(RasterizerStateWireframe);
     else
         DeviceContext->RSSetState(RasterizerStateCullNone);
-    // ── 7. Shader + resource binding ─────────────────────────────────────────
-    
+
     DeviceContext->VSSetShader(TextVertexShader, nullptr, 0);
-    DeviceContext->PSSetShader(TextPixelShader,  nullptr, 0);
-    DeviceContext->PSSetShaderResources(0, 1, &fontSRV);
+    DeviceContext->PSSetShader(TextPixelShader, nullptr, 0);
+    DeviceContext->PSSetShaderResources(0, 1, &SRV);
     DeviceContext->PSSetSamplers(0, 1, &LinearSamplerState);
 
-    // ── 8. Draw ───────────────────────────────────────────────────────────────
-    DeviceContext->DrawIndexed(static_cast<UINT>(indices->size()), 0, 0);  // ← 'size' → indices->size()
+    DeviceContext->DrawIndexed(IndexCount, 0, 0);
+}
 
-    // ── 9. Restore state ──────────────────────────────────────────────────────
-    ID3D11ShaderResourceView* nullSRV = nullptr;
-    DeviceContext->PSSetShaderResources(0, 1, &nullSRV);
+
+void URenderer::RenderTextBatch(const FString& FontPath, const FConstants& Constants,
+                                const TArray<FTextVertex>& Vertices, const TArray<uint32>& Indices,
+                                FTextGpuBuffer& Buffers)
+{
+    if (Vertices.empty() || Indices.empty())
+        return;
+
+    const uint32 RequiredVBSize = static_cast<uint32>(sizeof(FTextVertex) * Vertices.size());
+    const uint32 RequiredIBSize = static_cast<uint32>(sizeof(uint32) * Indices.size());
+
+    EnsureTextBuffers(Buffers, RequiredVBSize, RequiredIBSize);
+    UploadTextBuffers(Buffers, Vertices, Indices);
+    DrawTextBuffers(FontPath, Constants, Buffers, static_cast<uint32>(Indices.size()));
+}
+
+void URenderer::UndoRenderText()
+{
+
+    ID3D11ShaderResourceView* NullSRV = nullptr;
+    DeviceContext->PSSetShaderResources(0, 1, &NullSRV);
+
     DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
-    DeviceContext->PSSetShader(SimplePixelShader,  nullptr, 0);
+    DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
     DeviceContext->IASetInputLayout(SimpleInputLayout);
     DeviceContext->RSSetState(RasterizerStateCullBack);
 }

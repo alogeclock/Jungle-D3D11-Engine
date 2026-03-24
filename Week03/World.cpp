@@ -30,6 +30,7 @@ UWorld::UWorld(const FString &InString) : UObject(InString)
 {
     CurrentLevel = CreateNewLevel("PersistentLevel");
     LineBatcherComponent = new ULineBatcherComponent("LineBatcherComponent");
+    TextBatcherComponent = new UTextBatcherComponent("TextBatcherComponent");
 }
 
 UWorld::~UWorld()
@@ -38,6 +39,11 @@ UWorld::~UWorld()
     {
         delete LineBatcherComponent;
         LineBatcherComponent = nullptr;
+    }
+    if (TextBatcherComponent)
+    {
+        delete TextBatcherComponent;
+        TextBatcherComponent = nullptr;
     }
 
     for (ULevel* Level : Levels)
@@ -341,6 +347,7 @@ AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
 
 void UWorld::Render(URenderer &renderer)
 {
+
     LineBatcherComponent->Render(renderer);
     LineBatcherComponent->Flush();
     if (CurrentLevel)
@@ -352,6 +359,8 @@ void UWorld::Render(URenderer &renderer)
             Actors[i]->IterateAllActorComponents(renderer);
         }
     }
+    TextBatcherComponent->Render(renderer);
+    TextBatcherComponent->Flush(renderer);
 }
 
 void UWorld::Tick(float deltaTime)

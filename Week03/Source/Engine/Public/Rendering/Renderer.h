@@ -18,10 +18,21 @@
 #include "CoreTypes.h"
 
 #include "Source/Engine/Public/Rendering/RenderProxy.h"
+#include <wrl.h>
+
+using namespace Microsoft::WRL;
 
 class FViewport;
 class UMeshManager;
 class UPrimitiveComponent;
+
+struct FTextGpuBuffer
+{
+    ComPtr<ID3D11Buffer> VertexBuffer;
+    ComPtr<ID3D11Buffer> IndexBuffer;
+    uint32 VertexBufferSize = 0;
+    uint32 IndexBufferSize = 0;
+};
 
 class URenderer
 {
@@ -114,7 +125,31 @@ class URenderer
     void Prepare(const FSceneViewOptions &ViewOptions);
     void PrepareShader();
 
-    void RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices,TArray<uint32> *indices, ID3D11Buffer** InOutVertexBuffer, ID3D11Buffer **IndexBuffer, uint32& InOutBufferSize, uint32& InOutIBSize);
+    void EnsureTextBuffers(
+        FTextGpuBuffer& Buffers,
+        uint32 RequiredVBSize,
+        uint32 RequiredIBSize);
+
+    void UploadTextBuffers(
+        FTextGpuBuffer& Buffers,
+        const TArray<FTextVertex>& Vertices,
+        const TArray<uint32>& Indices);
+
+    void DrawTextBuffers(
+        const FString& FontPath,
+        const FConstants& Constants,
+        const FTextGpuBuffer& Buffers,
+        uint32 IndexCount);
+
+    void RenderTextBatch(
+        const FString& FontPath,
+        const FConstants& Constants,
+        const TArray<FTextVertex>& Vertices,
+        const TArray<uint32>& Indices,
+        FTextGpuBuffer& Buffers);
+
+    void UndoRenderText();
+
     void RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor);
 
     void Draw(ID3D11Buffer *vertexBuffer, uint32 numVertices, uint32 InStride);
