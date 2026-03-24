@@ -7,12 +7,6 @@ FViewport::FViewport()
 
 FViewport::~FViewport()
 {
-	delete ViewportClient;
-}
-
-void FViewport::CreateEditorViewportClient()
-{ 
-	ViewportClient = new FEditorViewportClient(this);
 }
 
 void FViewport::OnKeyDown(uint32 KeyCode)
@@ -77,10 +71,4 @@ bool FViewport::KeyState(FKey InKey) const
 {
 	auto It = KeyStates.find(InKey.KeyCode);
 	return It != KeyStates.end() && It->second;
-}
-
-void FViewport::Tick(float DeltaTime)
-{
-	if (ViewportClient)
-		ViewportClient->Tick(DeltaTime, this);
 }

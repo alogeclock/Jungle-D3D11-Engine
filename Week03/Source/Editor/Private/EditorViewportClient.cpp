@@ -53,8 +53,10 @@ FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
 {
     Viewport = viewport;
 
-    UImGuiManager::Get().SetCamera(&CameraTransform);
-    UImGuiManager::Get().SetEditorViewportClient(this);
+    if (GEditor)
+        GEditor->SetEditorViewportClient(this);
+    else
+        std::cout << "[Error] EditorViewportClient is failed to register in GEditor." << std::endl;
 
     LoadConfig();
 }
@@ -79,14 +81,15 @@ void FEditorViewportClient::SetAxis(AAxis* InAxis)
 void FEditorViewportClient::SetGridStep(float InGridStep)
 {
     GridStep = InGridStep;
+    Grid->GetGridComponent()->SetGridStep(GridStep);
 }
 
-void FEditorViewportClient::Tick(float DeltaTime, FViewport* Viewport)
+void FEditorViewportClient::Tick(float DeltaTime)
 {
     if (!Viewport)
         return;
 
-    ApplyMovement(DeltaTime, Viewport);
+    ApplyMovement(DeltaTime);
 
     if (Gizmo)
         Gizmo->Tick(DeltaTime);
@@ -243,7 +246,7 @@ void FEditorViewportClient::Render(URenderer &renderer)
     renderer.SetDrawAABB(OriginalViewOptions.bDrawAABB);
 }
 
-void FEditorViewportClient::ApplyMovement(float DeltaTime, FViewport *Viewport)
+void FEditorViewportClient::ApplyMovement(float DeltaTime)
 {
     if (UImGuiManager::Get().IsCaptureKeyboard())
         return;

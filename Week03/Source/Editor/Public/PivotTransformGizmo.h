@@ -33,7 +33,7 @@ class APivotTransformGizmo : public ABaseTransformGizmo
     
     // [변경] 단일 Anchor 대신 타겟 컴포넌트 전체를 가져오고, 중심점(Center) Transform을 구하는 함수로 대체
     void GetTargetComponents(TArray<USceneComponent*>& OutComponents);
-    bool GetGizmoCenterTransform(FTransform& OutTransform);
+    bool GetGizmoTargetTransform(FTransform& OutTransform);
 
   private:
     float          InitialRayDistance = 0.0f; 

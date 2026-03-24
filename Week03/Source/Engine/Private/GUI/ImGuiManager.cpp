@@ -122,16 +122,6 @@ void UImGuiManager::Release()
     ImGui::DestroyContext();
 }
 
-void UImGuiManager::SetCamera(FViewportCameraTransform* camera)
-{
-    Camera = camera;
-}
-
-void UImGuiManager::SetEditorViewportClient(FEditorViewportClient* editor)
-{
-    EditorViewportClient = editor;
-}
-
 bool UImGuiManager::IsCaptureMouse()
 {
     return ImGui::GetIO().WantCaptureMouse;
@@ -242,34 +232,32 @@ void UImGuiManager::ShowControlPanel()
 
     ImGui::Separator();
 
-    if (EditorViewportClient != nullptr)
+    FEditorViewportClient* ViewportClient = GEditor->GetEditorViewportClient();
+    if (ViewportClient != nullptr)
     {
         const char* ViewModeStrings[] = {"Lit", "Unlit", "Wireframe"};
 
-        EViewModeIndex currentMode = EditorViewportClient->GetViewMode();
+        EViewModeIndex currentMode = ViewportClient->GetViewMode();
         int currentItem = static_cast<int>(currentMode);
 
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::Text("View Mode");
         if (ImGui::ListBox("##View Mode", &currentItem, ViewModeStrings, IM_ARRAYSIZE(ViewModeStrings)))
         {
-            EditorViewportClient->SetViewMode(static_cast<EViewModeIndex>(currentItem));
+            ViewportClient->SetViewMode(static_cast<EViewModeIndex>(currentItem));
         }
-    }
 
-    if (EditorViewportClient != nullptr)
-    {
         ImGui::Separator();
         ImGui::Text("Show Flags");
 
-        bool bDrawAABB = EditorViewportClient->GetDrawAABB();
+        bool bDrawAABB = ViewportClient->GetDrawAABB();
         if (ImGui::Checkbox("Show AABB", &bDrawAABB))
         {
-            EditorViewportClient->SetDrawAABB(bDrawAABB);
+            ViewportClient->SetDrawAABB(bDrawAABB);
         }
 
         // 현재 뷰포트 클라이언트의 ShowFlags 값을 가져옵니다.
-        EEngineShowFlags CurrentFlags = EditorViewportClient->GetShowFlags();
+        EEngineShowFlags CurrentFlags = ViewportClient->GetShowFlags();
 
         // 1. Primitive 표시 여부 체크박스
         bool bShowPrimitives = (CurrentFlags & EEngineShowFlags::SF_Primitives) != EEngineShowFlags::None;
@@ -291,7 +279,7 @@ void UImGuiManager::ShowControlPanel()
         }
 
         // 변경된 상태를 다시 뷰포트 클라이언트에 저장
-        EditorViewportClient->SetShowFlags(CurrentFlags);
+        ViewportClient->SetShowFlags(CurrentFlags);
     }
 }
 
@@ -499,40 +487,40 @@ void UImGuiManager::LoadScene()
 
 void UImGuiManager::SetCameraInfo()
 {
-    if (Camera == nullptr)
-        return;
+    FEditorViewportClient* ViewportClient = GEditor->GetEditorViewportClient();
+    FViewportCameraTransform Camera = ViewportClient->GetCameraTransform();
 
     ImGui::Checkbox("Orthographic", &UImGuiManager::Get().bIsOrthogonal);
 
-    float fovDeg = Camera->GetFOV() * 180.0f / 3.14159265f;
+    float fovDeg = Camera.GetFOV() * 180.0f / 3.14159265f;
 
     ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
     if (ImGui::DragFloat("FOV", &fovDeg, 0.1f, 60.0f, 120.0f))
     {
-        Camera->SetFOV(fovDeg * 3.14159265f / 180.0f);
+        Camera.SetFOV(fovDeg * 3.14159265f / 180.0f);
     }
 
     ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-    ImGui::DragFloat3("Camera Location", &Camera->GetLocation().X, 0.01f);
+    ImGui::DragFloat3("Camera Location", &Camera.GetLocation().X, 0.01f);
     ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-    ImGui::DragFloat3("Camera Rotation", &Camera->GetRotation().X, 0.1f);
+    ImGui::DragFloat3("Camera Rotation", &Camera.GetRotation().X, 0.1f);
 
-    if (EditorViewportClient != nullptr)
+    if (ViewportClient != nullptr)
     {
         ImGui::Separator();
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        ImGui::SliderFloat("Move Sensitivity", EditorViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f",
+        ImGui::SliderFloat("Move Sensitivity", ViewportClient->GetMoveSpeedPtr(), 0.1f, 100.0f, "%.2f",
                            ImGuiSliderFlags_Logarithmic);
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        ImGui::SliderFloat("Rotation Sensitivity", EditorViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f",
+        ImGui::SliderFloat("Rotation Sensitivity", ViewportClient->GetRotSpeedPtr(), 0.01f, 0.5f, "%.2f",
                            ImGuiSliderFlags_Logarithmic);
 
         // TODO: Grid Step은 CameraInfo가 아니므로, 함수이름을 바꾸거나 CameraInfo에서 분리하는 것을 고려
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        float GridStep = EditorViewportClient->GetGridStep();
+        float GridStep = ViewportClient->GetGridStep();
         if (ImGui::SliderFloat("Grid Step", &GridStep, 0.1f, 10.0f, "%.2f"))
         {
-            EditorViewportClient->SetGridStep(GridStep);
+            ViewportClient->SetGridStep(GridStep);
         }
     }
 }

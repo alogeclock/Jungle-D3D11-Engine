@@ -7,6 +7,9 @@
 
 class UPrimitiveComponent;
 
+class FEditorViewportClient;
+class FViewport;
+
 struct FKey
 {
     uint32 KeyCode;
@@ -93,7 +96,12 @@ class UEditorEngine : public UObject
 public:
 	UEditorEngine(const FString& InString);
     virtual ~UEditorEngine();
+
+    void Tick(float DeltaTime);
     
+    void SetEditorViewportClient(FEditorViewportClient* InViewportClient) { ViewportClient = InViewportClient; }
+    FEditorViewportClient* GetEditorViewportClient() { return ViewportClient; };
+
     USelection* GetSelection() const { return Selection; }
     TArray<IViewportInputListener*>* GetInputListeners() { return &InputListeners; };
 
@@ -114,6 +122,8 @@ public:
 protected:
     USelection* Selection;
     TArray<IViewportInputListener*> InputListeners;
+
+    FEditorViewportClient* ViewportClient = nullptr;
 };
 
 extern UEditorEngine* GEditor;

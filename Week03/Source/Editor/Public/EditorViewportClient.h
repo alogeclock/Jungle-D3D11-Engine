@@ -97,7 +97,7 @@ class FEditorViewportClient
 
   public:
     // FViewport → 매 프레임 호출
-    void Tick(float DeltaTime, FViewport *Viewport);
+    void Tick(float DeltaTime);
 
     bool InputKey(const FInputEventState &InputState);
     void MouseMove(FViewport *Viewport, int32 X, int32 Y);
@@ -136,7 +136,7 @@ class FEditorViewportClient
 
   private:
     // WASD 이동 누적
-    void ApplyMovement(float DeltaTime, FViewport *Viewport);
+    void ApplyMovement(float DeltaTime);
 
     // Ray
     FRay GetPickingRay();

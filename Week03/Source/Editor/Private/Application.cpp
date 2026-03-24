@@ -103,7 +103,8 @@ void UApplication::Initialize(HINSTANCE hInstance)
     // Viewport
     if (Viewport != nullptr)
     {
-        Viewport->CreateEditorViewportClient();
+        FEditorViewportClient* ViewportClient = new FEditorViewportClient(Viewport);
+        Viewport->SetEditorViewportClient(ViewportClient);
 
         RECT rect;
         GetClientRect(hWnd, &rect);
@@ -169,7 +170,7 @@ void UApplication::Tick(float DeltaTime)
     }
 
     // 2. 객체 갱신
-    Viewport->Tick(UTimeManager::Get().GetDeltaTime());
+    GEditor->Tick(UTimeManager::Get().GetDeltaTime());
     GWorld->Tick(UTimeManager::Get().GetDeltaTime());
 }
 
@@ -247,5 +248,6 @@ void UApplication::UpdateEditorViewport()
     ViewportClient->SetAxis(FoundAxis);
     ViewportClient->SetGizmo(FoundGizmo);
 
+    GEditor->GetInputListeners()->clear();
     GEditor->RegisterInputListener(FoundGizmo);
 }
