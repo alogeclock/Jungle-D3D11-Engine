@@ -55,6 +55,7 @@ class UPrimitiveComponent : public USceneComponent
     bool IsRenderable(URenderer &renderer);
 
     virtual void UpdateBounds();
+    virtual void UpdateBoundsTexture(TArray<FTextureVertex>* vertices);
     const FBox  &GetWorldAABB();
 
     virtual FHitResult IntersectRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);

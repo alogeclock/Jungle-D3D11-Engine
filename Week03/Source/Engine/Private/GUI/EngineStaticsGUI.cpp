@@ -2,7 +2,7 @@
 #include "Source/Editor/Public/Application.h"
 
 
-void FEngineStaticsGUI::ShowPanel()
+void FEngineStaticsGUI::ShowDetail()
 {
     ImGui::TextWrapped("FPS: %.f \t FrameTime: %.1f (ms)\n", UTimeManager::Get().GetFPS(),
                        UTimeManager::Get().GetFrameTime());

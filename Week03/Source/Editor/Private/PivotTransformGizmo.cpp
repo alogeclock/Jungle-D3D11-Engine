@@ -355,39 +355,75 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
     // ==========================================
     // [추가] 선택된 모든 객체에 상대적 Transform 일괄 적용 로직
     // ==========================================
-    FMatrix<float> GizmoInitialWorldMat = InitialGizmoTransform.ToMatrix();
-    FMatrix<float> GizmoNewWorldMat = NewGizmoTransform.ToMatrix();
-    FMatrix<float> GizmoInitialInv = GizmoInitialWorldMat.Inverse();
+    FMatrix<float> GizmoInitialRT = FRotationMatrix<float>(InitialGizmoTransform.Rotation) * FTranslationMatrix<float>(InitialGizmoTransform.Location);
+    FMatrix<float> GizmoNewRT = FRotationMatrix<float>(NewGizmoTransform.Rotation) * FTranslationMatrix<float>(NewGizmoTransform.Location);
+    FMatrix<float> GizmoInitialInvRT = GizmoInitialRT.Inverse();
 
     for (FSelectedObjectState& State : DraggingObjects)
     {
-        FMatrix<float> ObjInitialWorldMat = State.InitialWorldTransform.ToMatrix();
+        FTransform ObjNewWorldTransform;
 
-        // 1. 객체를 기준점(초기 기즈모) 좌표계로 로컬 변환 후, 새로운 기즈모 월드 행렬을 곱해 갱신된 월드 좌표계 도출
-        FMatrix<float> ObjNewWorldMat = ObjInitialWorldMat * GizmoInitialInv * GizmoNewWorldMat;
-
-        FTransform ObjNewTransform;
-
-        ObjNewTransform.Location = FVector<float>(ObjNewWorldMat.M[3][0], ObjNewWorldMat.M[3][1], ObjNewWorldMat.M[3][2]);
-        ObjNewTransform.Scale = State.InitialWorldTransform.Scale * NewGizmoTransform.Scale;
-
-        USceneComponent* ParentComp = State.Component->GetAttachParent();
-        if (ParentComp)
+        if (GizmoType == EGizmoHandleType::Scale)
         {
-            // 2. 부모-자식 계층이 있는 경우 Local Transform으로 재변환
-            FMatrix<float> ParentWorldInv = ParentComp->GetWorldMatrix().Inverse();
-            FMatrix<float> ObjNewLocalMat = ObjNewWorldMat * ParentWorldInv;
+            ObjNewWorldTransform.Scale = State.InitialWorldTransform.Scale * NewGizmoTransform.Scale;
+            ObjNewWorldTransform.Rotation = State.InitialWorldTransform.Rotation;
+
+            FVector<float> Offset = State.InitialWorldTransform.Location - InitialGizmoTransform.Location;
+            FMatrix<float> GizmoRotMat = FRotationMatrix<float>(InitialGizmoTransform.Rotation);
+            FMatrix<float> GizmoRotInv = GizmoRotMat.Inverse();
             
-            ObjNewTransform.Location = FVector<float>(ObjNewLocalMat.M[3][0], ObjNewLocalMat.M[3][1], ObjNewLocalMat.M[3][2]);
-            ObjNewTransform.Rotation = ObjNewLocalMat.ToEuler(); 
+            FVector4<float> LocalOffset4 = FVector4<float>(Offset.X, Offset.Y, Offset.Z, 0.0f) * GizmoRotInv;
+            FVector<float> LocalOffset(LocalOffset4.X, LocalOffset4.Y, LocalOffset4.Z);
+            
+            LocalOffset = LocalOffset * NewGizmoTransform.Scale;
+            
+            FVector4<float> ScaledOffset4 = FVector4<float>(LocalOffset.X, LocalOffset.Y, LocalOffset.Z, 0.0f) * GizmoRotMat;
+            ObjNewWorldTransform.Location = InitialGizmoTransform.Location + FVector<float>(ScaledOffset4.X, ScaledOffset4.Y, ScaledOffset4.Z);
         }
         else
         {
-            ObjNewTransform.Rotation = ObjNewWorldMat.ToEuler();
+            FMatrix<float> ObjInitialRT = FRotationMatrix<float>(State.InitialWorldTransform.Rotation) * FTranslationMatrix<float>(State.InitialWorldTransform.Location);
+            FMatrix<float> ObjNewRT = ObjInitialRT * GizmoInitialInvRT * GizmoNewRT;
+
+            ObjNewWorldTransform.Location = FVector<float>(ObjNewRT.M[3][0], ObjNewRT.M[3][1], ObjNewRT.M[3][2]);
+            ObjNewWorldTransform.Rotation = ObjNewRT.ToEuler(); 
+            ObjNewWorldTransform.Scale = State.InitialWorldTransform.Scale; // 스케일 원본 유지
         }
 
-        // 3. 최종 Transform 적용
-        State.Component->SetTransform(ObjNewTransform);
+        // ==========================================
+        // 부모-자식 계층 변환 (Local Transform으로 갱신)
+        // ==========================================
+        USceneComponent* ParentComp = State.Component->GetAttachParent();
+        if (ParentComp)
+        {
+            // 부모의 월드 매트릭스에서 깨끗한 Transform 추출
+            FTransform ParentTrans;
+            ParentTrans = ParentTrans.ToTransform(ParentComp->GetWorldMatrix());
+
+            FTransform FinalLocalTransform;
+
+            // 월드 위치를 부모의 온전한 역행렬(스케일 포함) 공간으로 매핑해야 거리가 정상적으로 축소/유지됩니다.
+            FMatrix<float> ParentWorldInv = ParentComp->GetWorldMatrix().Inverse();
+            FVector4<float> LocalPos4 = FVector4<float>(ObjNewWorldTransform.Location.X, ObjNewWorldTransform.Location.Y, ObjNewWorldTransform.Location.Z, 1.0f) * ParentWorldInv;
+            FinalLocalTransform.Location = FVector<float>(LocalPos4.X, LocalPos4.Y, LocalPos4.Z);
+
+            // 전단 행렬 버그(Shear)를 막기 위해 회전은 무조건 순수 회전 행렬끼리의 역행렬 곱셈으로만 구합니다.
+            FMatrix<float> WorldRotMat = FRotationMatrix<float>(ObjNewWorldTransform.Rotation);
+            FMatrix<float> ParentRotMat = FRotationMatrix<float>(ParentTrans.Rotation);
+            FMatrix<float> LocalRotMat = WorldRotMat * ParentRotMat.Inverse();
+            FinalLocalTransform.Rotation = LocalRotMat.ToEuler();
+
+            // WorldScale = LocalScale * ParentScale 이므로, 나눗셈을 통해 순수한 로컬 스케일만 남깁니다.
+            FinalLocalTransform.Scale.X = (ParentTrans.Scale.X != 0.0f) ? (ObjNewWorldTransform.Scale.X / ParentTrans.Scale.X) : ObjNewWorldTransform.Scale.X;
+            FinalLocalTransform.Scale.Y = (ParentTrans.Scale.Y != 0.0f) ? (ObjNewWorldTransform.Scale.Y / ParentTrans.Scale.Y) : ObjNewWorldTransform.Scale.Y;
+            FinalLocalTransform.Scale.Z = (ParentTrans.Scale.Z != 0.0f) ? (ObjNewWorldTransform.Scale.Z / ParentTrans.Scale.Z) : ObjNewWorldTransform.Scale.Z;
+            
+            State.Component->SetTransform(FinalLocalTransform);
+        }
+        else
+        {
+            State.Component->SetTransform(ObjNewWorldTransform);
+        }
     }
 }
 

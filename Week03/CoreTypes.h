@@ -41,7 +41,7 @@ struct FVertex
     FVector4<float> Color;
 };
 
-struct FTextVertex
+struct FTextureVertex
 {
     FVector<float> Position;
     float          u, v;

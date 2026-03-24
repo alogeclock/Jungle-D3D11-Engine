@@ -1,5 +1,4 @@
 ﻿#include "Source/Engine/Public/Classes/Components/TextComponent.h"
-#include "Source/Engine/Public/Classes/Components/TextBatcherComponent.h"
 #include <Source/Engine/Public/Classes/TextMeshBuilder.h>
 #include "Source/Core/Public/Math/ScaleMatrix.h"
 #include "Source/Core/Public/Math/TranslationMatrix.h"
@@ -13,10 +12,21 @@ UTextComponent::UTextComponent(const FString &InString) : UPrimitiveComponent(In
 	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
 	bEnableDepthTest = false;        // 기본적으로 항상 보이게
     bVIsible = true;
-    FilePath = "Data/Texture/Unnamed.png";
+    FilePath = "Data/Texture/KorName.png";
 }
 
 UTextComponent::~UTextComponent() {
+
+    if (VertexBuffer)
+    {
+        VertexBuffer->Release();
+        VertexBuffer = nullptr;
+    }
+    if (IndexBuffer)
+    {
+        IndexBuffer->Release();
+        IndexBuffer = nullptr;
+    }
 }
 
 void UTextComponent::SetText(const uint32 UUID){
@@ -41,9 +51,9 @@ FHitResult UTextComponent::IntersectRayMeshTriangle(const FVector<float>& RayOri
         for (uint32 i = 0; i + 2 < NumIndices; i += 3)
         {
             // index로 vertex 참조
-            const FTextVertex &v0 = TextVertices.at(TextIndeices.at(i));
-            const FTextVertex &v1 = TextVertices.at(TextIndeices.at(i + 1));
-            const FTextVertex &v2 = TextVertices.at(TextIndeices.at(i + 2));
+            const FTextureVertex &v0 = TextVertices.at(TextIndeices.at(i));
+            const FTextureVertex &v1 = TextVertices.at(TextIndeices.at(i + 1));
+            const FTextureVertex &v2 = TextVertices.at(TextIndeices.at(i + 2));
 
             FVector4<float> V0_L = {v0.Position.X, v0.Position.Y, v0.Position.Z, 1.f};
             FVector4<float> V1_L = {v1.Position.X, v1.Position.Y, v1.Position.Z, 1.f};
@@ -77,29 +87,27 @@ FHitResult UTextComponent::IntersectRayMeshTriangle(const FVector<float>& RayOri
 
 void UTextComponent::Render(URenderer &renderer)
 {
+    // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
+    if (renderer.IsDrawAABB() && !bIsInEditor && bShowAABB)
+    {
+        UpdateBoundsTexture(&TextVertices);
+        GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
+    }
+
+    // 현재 프리미티브의 렌더링 여부를 판단하고 렌더링할 필요가 없을 시 생략한다.
     if (!IsRenderable(renderer))
-    {
         return;
-    }
 
-    if (Text.empty())
-    {
-        return;
-    }
+    if (bMeshDirty) RebuildMesh();
+    if (TextVertices.empty()) return;
 
-    UWorld* World = GetWorld();
-    if (World == nullptr)
-    {
-        return;
-    }
+    FConstants constants;
+    constants.MVPMatrix = GetWorldMatrix();
 
-    UTextBatcherComponent* TextBatcher = World->GetTextBatcherComponent();
-    if (TextBatcher == nullptr)
-    {
-        return;
-    }
+    renderer.SetDepthStencilEnable(bEnableDepthTest);
+    renderer.SetCullMode(CullMode);
 
-    TextBatcher->Submit(FilePath, Text, GetWorldMatrix());
+    renderer.RenderText(FilePath, constants, &TextVertices, &TextIndeices, &VertexBuffer,&IndexBuffer, VertexBufferSize, IndexBufferSize);
 }
 
 void UTextComponent::RebuildMesh()

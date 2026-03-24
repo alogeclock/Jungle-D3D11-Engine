@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 UApplication* GApplication = nullptr;
-UEditorEngine* GEditor = nullptr;
+//UEditorEngine* GEditor = nullptr;
 FScene* GMainScene = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

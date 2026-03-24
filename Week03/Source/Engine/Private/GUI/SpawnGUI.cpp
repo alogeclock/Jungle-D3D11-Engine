@@ -29,7 +29,7 @@ bool FSpawnGUI::IsInBound(ImVec2 InScreenMousePosition)
             InScreenMousePosition.y <= max.y);
 }
 
-void FSpawnGUI::ShowPanel()
+void FSpawnGUI::ShowDetail()
 {
     const char* PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI", "Smoke"};
 

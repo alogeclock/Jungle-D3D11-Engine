@@ -41,7 +41,7 @@ protected:
     bool           bMeshDirty = true;
     bool bVIsible = false;
 
-	TArray<FTextVertex> TextVertices;
+	TArray<FTextureVertex> TextVertices;
 	TArray<uint32> TextIndeices;
 
     uint32        VertexBufferSize = 0; // 현재 버퍼 용량

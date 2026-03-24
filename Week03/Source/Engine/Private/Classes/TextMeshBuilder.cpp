@@ -115,7 +115,7 @@ static uint32_t DecodeUTF8(const FString& s, size_t& i)
     }
 }
 
-void FTextMeshBuilder::BuildTextMesh(const FString& InText, TArray<FTextVertex>* Vertices, TArray<uint32>* Indices)
+void FTextMeshBuilder::BuildTextMesh(const FString& InText, TArray<FTextureVertex>* Vertices, TArray<uint32>* Indices)
 {
     if (charInfoMap.empty()) InitializeCharInfo();
     Vertices->clear();
