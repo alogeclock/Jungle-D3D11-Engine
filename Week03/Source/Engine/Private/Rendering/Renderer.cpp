@@ -1,10 +1,14 @@
-﻿#include "Source/Core/Public/Memory.h"
-#include "Source/Engine/Public/Rendering/Renderer.h"
+﻿#include "Source/Engine/Public/Rendering/Renderer.h"
+#include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/Viewport.h"
 
-URenderer::URenderer() {}
+URenderer::URenderer()
+{
+}
 
-URenderer::~URenderer() {}
+URenderer::~URenderer()
+{
+}
 
 void URenderer::Create(HWND hWindow)
 {
@@ -37,12 +41,15 @@ void URenderer::CreateDeviceAndSwapChain(HWND hWindow)
     swapchaindesc.Windowed = TRUE;
     swapchaindesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
-    D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG, featurelevels,
-                                  ARRAYSIZE(featurelevels), D3D11_SDK_VERSION, &swapchaindesc, &SwapChain, &Device, nullptr, &DeviceContext);
+    D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
+                                  D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG, featurelevels,
+                                  ARRAYSIZE(featurelevels), D3D11_SDK_VERSION, &swapchaindesc, &SwapChain, &Device,
+                                  nullptr, &DeviceContext);
 
     SwapChain->GetDesc(&swapchaindesc);
 
-    ViewportInfo = {0.0f, 0.0f, (float)swapchaindesc.BufferDesc.Width, (float)swapchaindesc.BufferDesc.Height, 0.0f, 1.0f};
+    ViewportInfo = {0.0f, 0.0f, (float)swapchaindesc.BufferDesc.Width, (float)swapchaindesc.BufferDesc.Height,
+                    0.0f, 1.0f};
 }
 
 void URenderer::ReleaseDeviceAndSwapChain()
@@ -73,7 +80,7 @@ void URenderer::ReleaseDeviceAndSwapChain()
 
 void URenderer::CreateFrameBuffer()
 {
-    SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **)&FrameBuffer);
+    SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&FrameBuffer);
 
     D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
     framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
@@ -167,23 +174,26 @@ void URenderer::SwapBuffer()
 
 void URenderer::CreateShader()
 {
-    ID3DBlob *vertexshaderCSO = nullptr;
-    ID3DBlob *pixelshaderCSO = nullptr;
+    ID3DBlob* vertexshaderCSO = nullptr;
+    ID3DBlob* pixelshaderCSO = nullptr;
 
     D3DCompileFromFile(L"Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
 
-    Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
+    Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr,
+                               &SimpleVertexShader);
 
     D3DCompileFromFile(L"Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
 
-    Device->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
+    Device->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr,
+                              &SimplePixelShader);
 
     D3D11_INPUT_ELEMENT_DESC layout[] = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"POSITION", 0,    DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
 
-    Device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
+    Device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(),
+                              vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
 
     Stride = sizeof(FVertex);
 
@@ -191,7 +201,8 @@ void URenderer::CreateShader()
     pixelshaderCSO->Release();
 }
 
-void URenderer::CreateTextShader() {
+void URenderer::CreateTextShader()
+{
     ID3DBlob* textVS = nullptr;
     ID3DBlob* textPS = nullptr;
 
@@ -202,18 +213,18 @@ void URenderer::CreateTextShader() {
     Device->CreatePixelShader(textPS->GetBufferPointer(), textPS->GetBufferSize(), nullptr, &TextPixelShader);
 
     D3D11_INPUT_ELEMENT_DESC TextLayout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 0,    DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
-    Device->CreateInputLayout(TextLayout, ARRAYSIZE(TextLayout),
-                               textVS->GetBufferPointer(), textVS->GetBufferSize(), &TextInputLayout);
+    Device->CreateInputLayout(TextLayout, ARRAYSIZE(TextLayout), textVS->GetBufferPointer(), textVS->GetBufferSize(),
+                              &TextInputLayout);
 
     // 샘플러
     D3D11_SAMPLER_DESC SamplerDesc = {};
-    SamplerDesc.Filter         = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    SamplerDesc.AddressU       = D3D11_TEXTURE_ADDRESS_WRAP;
-    SamplerDesc.AddressV       = D3D11_TEXTURE_ADDRESS_WRAP;
-    SamplerDesc.AddressW       = D3D11_TEXTURE_ADDRESS_WRAP;
+    SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
     Device->CreateSamplerState(&SamplerDesc, &LinearSamplerState);
@@ -234,11 +245,11 @@ void URenderer::CreateLineShader()
     Device->CreatePixelShader(linePS->GetBufferPointer(), linePS->GetBufferSize(), nullptr, &LinePixelShader);
 
     D3D11_INPUT_ELEMENT_DESC LineLayout[] = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"POSITION", 0,    DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
-    Device->CreateInputLayout(LineLayout, ARRAYSIZE(LineLayout), lineVS->GetBufferPointer(),
-                              lineVS->GetBufferSize(), &LineInputLayout);
+    Device->CreateInputLayout(LineLayout, ARRAYSIZE(LineLayout), lineVS->GetBufferPointer(), lineVS->GetBufferSize(),
+                              &LineInputLayout);
 
     lineVS->Release();
     linePS->Release();
@@ -264,13 +275,41 @@ void URenderer::ReleaseShader()
         SimplePixelShader = nullptr;
     }
 
-    if (TextInputLayout)  { TextInputLayout->Release();  TextInputLayout  = nullptr; }
-    if (TextVertexShader) { TextVertexShader->Release(); TextVertexShader = nullptr; }
-    if (TextPixelShader)  { TextPixelShader->Release();  TextPixelShader  = nullptr; }
-    if (LineInputLayout)  { LineInputLayout->Release();  LineInputLayout  = nullptr; }
-    if (LineVertexShader) { LineVertexShader->Release(); LineVertexShader = nullptr; }
-    if (LinePixelShader)  { LinePixelShader->Release();  LinePixelShader  = nullptr; }
-    if (LinearSamplerState) { LinearSamplerState->Release(); LinearSamplerState = nullptr; }
+    if (TextInputLayout)
+    {
+        TextInputLayout->Release();
+        TextInputLayout = nullptr;
+    }
+    if (TextVertexShader)
+    {
+        TextVertexShader->Release();
+        TextVertexShader = nullptr;
+    }
+    if (TextPixelShader)
+    {
+        TextPixelShader->Release();
+        TextPixelShader = nullptr;
+    }
+    if (LineInputLayout)
+    {
+        LineInputLayout->Release();
+        LineInputLayout = nullptr;
+    }
+    if (LineVertexShader)
+    {
+        LineVertexShader->Release();
+        LineVertexShader = nullptr;
+    }
+    if (LinePixelShader)
+    {
+        LinePixelShader->Release();
+        LinePixelShader = nullptr;
+    }
+    if (LinearSamplerState)
+    {
+        LinearSamplerState->Release();
+        LinearSamplerState = nullptr;
+    }
 }
 
 void URenderer::CreateDepthStencilBuffer(uint32 width, uint32 height)
@@ -426,7 +465,7 @@ void URenderer::ReleaseBlendState()
     }
 }
 
-void URenderer::Prepare(const FSceneViewOptions &ViewOptions)
+void URenderer::Prepare(const FSceneViewOptions& ViewOptions)
 {
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
     DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -592,7 +631,7 @@ void URenderer::UndoRenderText()
     DeviceContext->RSSetState(RasterizerStateCullBack);
 }
 
-void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor)
+void URenderer::RenderPrimitive(UPrimitiveComponent* primitive, FConstants& constants, FConstantsColor& constantsColor)
 {
     // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
 
@@ -603,11 +642,11 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &cons
     // 2. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
     EPrimitiveType Type = primitive->GetPrimitiveType();
 
-    ID3D11Buffer *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
-    uint32        NumVertices = UMeshManager::Get().GetNumVertices(Type);
+    ID3D11Buffer* VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
+    uint32 NumVertices = UMeshManager::Get().GetNumVertices(Type);
 
-    ID3D11Buffer *IndexBuffer = UMeshManager::Get().GetIndexBuffer(Type);
-    uint32        NumIndices = UMeshManager::Get().GetNumIndices(Type);
+    ID3D11Buffer* IndexBuffer = UMeshManager::Get().GetIndexBuffer(Type);
+    uint32 NumIndices = UMeshManager::Get().GetNumIndices(Type);
 
     // 3. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
@@ -626,7 +665,7 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &cons
     }
 }
 
-ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth)
+ID3D11Buffer* URenderer::CreateVertexBuffer(const FVertex* vertices, uint32 byteWidth)
 {
     // Create a vertex buffer
     D3D11_BUFFER_DESC vertexbufferdesc = {};
@@ -636,16 +675,19 @@ ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byte
 
     D3D11_SUBRESOURCE_DATA vertexbufferSRD = {vertices};
 
-    ID3D11Buffer *vertexBuffer;
+    ID3D11Buffer* vertexBuffer;
 
     Device->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
 
     return vertexBuffer;
 }
 
-void URenderer::ReleaseVertexBuffer(ID3D11Buffer *vertexBuffer) { vertexBuffer->Release(); }
+void URenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
+{
+    vertexBuffer->Release();
+}
 
-ID3D11Buffer *URenderer::CreateIndexBuffer(const uint16 *indices, uint32 byteWidth)
+ID3D11Buffer* URenderer::CreateIndexBuffer(const uint16* indices, uint32 byteWidth)
 {
     D3D11_BUFFER_DESC desc = {};
     desc.ByteWidth = byteWidth;
@@ -654,31 +696,31 @@ ID3D11Buffer *URenderer::CreateIndexBuffer(const uint16 *indices, uint32 byteWid
 
     D3D11_SUBRESOURCE_DATA srd = {indices};
 
-    ID3D11Buffer *buffer;
+    ID3D11Buffer* buffer;
     Device->CreateBuffer(&desc, &srd, &buffer);
 
     return buffer;
 }
 
-void URenderer::ReleaseIndexBuffer(ID3D11Buffer *indexBuffer)
+void URenderer::ReleaseIndexBuffer(ID3D11Buffer* indexBuffer)
 {
     if (indexBuffer)
         indexBuffer->Release();
 }
 
-ID3D11Buffer *URenderer::CreateDynamicVertexBuffer(uint32 byteWidth)
+ID3D11Buffer* URenderer::CreateDynamicVertexBuffer(uint32 byteWidth)
 {
     D3D11_BUFFER_DESC vertexbufferdesc = {};
     vertexbufferdesc.ByteWidth = byteWidth;
     vertexbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
     vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vertexbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    ID3D11Buffer *buffer = nullptr;
+    ID3D11Buffer* buffer = nullptr;
     Device->CreateBuffer(&vertexbufferdesc, nullptr, &buffer);
     return buffer;
 }
 
-void URenderer::ReleaseDynamicVertexBuffer(ID3D11Buffer *vertexBuffer)
+void URenderer::ReleaseDynamicVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
     if (vertexBuffer)
     {
@@ -686,19 +728,19 @@ void URenderer::ReleaseDynamicVertexBuffer(ID3D11Buffer *vertexBuffer)
     }
 }
 
-ID3D11Buffer *URenderer::CreateDynamicIndexBuffer(uint32 byteWidth)
+ID3D11Buffer* URenderer::CreateDynamicIndexBuffer(uint32 byteWidth)
 {
     D3D11_BUFFER_DESC indexbufferdesc = {};
     indexbufferdesc.ByteWidth = byteWidth;
     indexbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
     indexbufferdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     indexbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    ID3D11Buffer *buffer = nullptr;
+    ID3D11Buffer* buffer = nullptr;
     Device->CreateBuffer(&indexbufferdesc, nullptr, &buffer);
     return buffer;
 }
 
-void URenderer::ReleaseDynamicIndexBuffer(ID3D11Buffer *indexBuffer)
+void URenderer::ReleaseDynamicIndexBuffer(ID3D11Buffer* indexBuffer)
 {
     if (indexBuffer)
     {
@@ -706,7 +748,7 @@ void URenderer::ReleaseDynamicIndexBuffer(ID3D11Buffer *indexBuffer)
     }
 }
 
-void URenderer::UpdateDynamicBuffer(ID3D11Buffer *Buffer, const void *Data, uint32 byteWidth) 
+void URenderer::UpdateDynamicBuffer(ID3D11Buffer* Buffer, const void* Data, uint32 byteWidth)
 {
     if (!Buffer || !Data || byteWidth == 0)
     {
@@ -761,13 +803,15 @@ void URenderer::UpdateConstant(FConstants data)
     {
         D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
-        DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
-        FConstants *constants = (FConstants *)constantbufferMSR.pData;
+        DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
+                           &constantbufferMSR); // update constant buffer every frame
+        FConstants* constants = (FConstants*)constantbufferMSR.pData;
 
         if (Viewport != nullptr)
         {
             FMatrix<float> viewMatrix = Viewport->GetViewportClient()->GetViewMatrix();
-            FMatrix<float> projectionMatrix = Viewport->GetViewportClient()->GetProjectionMatrix(ViewportInfo.Width, ViewportInfo.Height);
+            FMatrix<float> projectionMatrix =
+                Viewport->GetViewportClient()->GetProjectionMatrix(ViewportInfo.Width, ViewportInfo.Height);
 
             constants->MVPMatrix = data.MVPMatrix * viewMatrix * projectionMatrix;
         }
@@ -782,8 +826,9 @@ void URenderer::UpdateConstant(FConstantsColor data)
     {
         D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
-        DeviceContext->Map(ConstantBufferColor, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
-        FConstantsColor *constants = (FConstantsColor *)constantbufferMSR.pData;
+        DeviceContext->Map(ConstantBufferColor, 0, D3D11_MAP_WRITE_DISCARD, 0,
+                           &constantbufferMSR); // update constant buffer every frame
+        FConstantsColor* constants = (FConstantsColor*)constantbufferMSR.pData;
 
         *constants = data;
 
@@ -791,7 +836,8 @@ void URenderer::UpdateConstant(FConstantsColor data)
     }
 }
 
-bool URenderer::GetCameraBasis(FVector<float> &OutRight, FVector<float> &OutUp, FVector<float> &OutForward) const {
+bool URenderer::GetCameraBasis(FVector<float>& OutRight, FVector<float>& OutUp, FVector<float>& OutForward) const
+{
 
     // 유효성 검사
     if (Viewport == nullptr || Viewport->GetViewportClient() == nullptr)
@@ -805,8 +851,8 @@ bool URenderer::GetCameraBasis(FVector<float> &OutRight, FVector<float> &OutUp, 
     // DirectX 기반의 행 우선(Row-Major) 뷰 행렬 기준,
     // 역행렬(World 행렬)의 회전 성분은 뷰 행렬의 전치(Transpose)된 형태로 들어있습니다.
     // 따라서 각 열(Column)의 데이터를 읽어오면 카메라의 기저 벡터를 얻을 수 있습니다.
-    OutRight   = FVector<float>(ViewMatrix.M[0][0], ViewMatrix.M[1][0], ViewMatrix.M[2][0]);
-    OutUp      = FVector<float>(ViewMatrix.M[0][1], ViewMatrix.M[1][1], ViewMatrix.M[2][1]);
+    OutRight = FVector<float>(ViewMatrix.M[0][0], ViewMatrix.M[1][0], ViewMatrix.M[2][0]);
+    OutUp = FVector<float>(ViewMatrix.M[0][1], ViewMatrix.M[1][1], ViewMatrix.M[2][1]);
     OutForward = FVector<float>(ViewMatrix.M[0][2], ViewMatrix.M[1][2], ViewMatrix.M[2][2]);
 
     return true;
@@ -828,7 +874,7 @@ void URenderer::OnResize(uint32 NewWidth, uint32 NewHeight)
     HRESULT hr = SwapChain->ResizeBuffers(0, NewWidth, NewHeight, DXGI_FORMAT_UNKNOWN, 0);
 
     // RTV 재생성
-    SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **)&FrameBuffer);
+    SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&FrameBuffer);
 
     D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
     framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
@@ -846,4 +892,61 @@ void URenderer::SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology)
 {
     Topology = InTopology;
     DeviceContext->IASetPrimitiveTopology(Topology);
+}
+
+void URenderer::RenderScene(FScene* Scene)
+{
+    if (!Scene || !DeviceContext)
+        return;
+
+    // 씬에 등록된 모든 렌더 프록시 순회
+    const TArray<FRenderProxy*>& Proxies = Scene->GetProxies();
+
+    // 상태 변경 최소화를 위한 이전 Vertex Buffer 캐싱 변수
+    ID3D11Buffer* LastVertexBuffer = nullptr;
+
+    for (FRenderProxy* Proxy : Proxies)
+    {
+        if (!Proxy || !Proxy->RenderCommand.bIsVisible)
+            continue;
+
+        const FRenderCommand& Command = Proxy->RenderCommand;
+
+        // 1. 이전 프록시와 다른 Vertex Buffer를 사용할 때만 렌더 스테이트 및 버퍼를 새로 바인딩
+        if (LastVertexBuffer != Command.VertexBuffer)
+        {
+            // 렌더 스테이트 설정 (Depth, Cull, Topology)
+            SetDepthStencilEnable(Command.bEnableDepthTest);
+            SetCullMode(Command.CullMode);
+            SetTopology(Command.Topology);
+
+            // Vertex Buffer 바인딩
+            if (Command.VertexBuffer)
+            {
+                uint32 offset = 0;
+                DeviceContext->IASetVertexBuffers(0, 1, &Command.VertexBuffer, &Command.Stride, &offset);
+            }
+            if (Command.IndexBuffer)
+            {
+                DeviceContext->IASetIndexBuffer(Command.IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+            }
+
+            // 캐시 업데이트
+            LastVertexBuffer = Command.VertexBuffer;
+        }
+
+        // 2. 상수 버퍼(Constant Buffer) 갱신
+        UpdateConstant(Command.Constants);
+        UpdateConstant(Command.ConstantsColor);
+
+        // 3. 그리기 (Draw Call)
+        if (Command.IndexBuffer)
+        {
+            DeviceContext->DrawIndexed(Command.NumIndices, 0, 0);
+        }
+        else if (Command.VertexBuffer) // 인덱스 버퍼가 없는 경우
+        {
+            DeviceContext->Draw(Command.NumVertices, 0);
+        }
+    }
 }

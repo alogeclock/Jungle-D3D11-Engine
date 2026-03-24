@@ -47,7 +47,6 @@ public:
     virtual ~USphereComponent() override;
 
     virtual void Submit() override;
-    virtual FRenderProxy* CreateRenderProxy() override;
 
 protected:
     float SphereRadius = 1.0f;

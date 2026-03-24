@@ -21,6 +21,7 @@ public:
         return const_cast<UWorld*>(this);
     }
 
+    void Submit();
     ULevel* CreateNewLevel(const FString& NewLevelName);
 
     bool SaveLevel(const std::wstring& FilePath);

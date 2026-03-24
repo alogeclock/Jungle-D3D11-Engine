@@ -2,7 +2,6 @@
 #include "Source/Editor/Public/Application.h"
 #include "World.h"
 
-
 UPrimitiveComponent::UPrimitiveComponent(const FString &InString) : USceneComponent(InString) 
 {
     // 1. 다형성을 이용해 자식 클래스에 맞는 Proxy 메모리 동적 할당
@@ -31,11 +30,26 @@ UPrimitiveComponent::~UPrimitiveComponent()
     }
 }
 
-void UPrimitiveComponent::Submit() {}
+void UPrimitiveComponent::Submit()
+{
+    FRenderCommand &Command = RenderProxy->RenderCommand;
+
+    Command.bIsVisible = this->bIsVisible; 
+
+    if (!bIsVisible)
+        return;
+
+    Command.Constants.MVPMatrix = GetWorldMatrix();    
+    Command.ConstantsColor = FConstantsColor(Color.X, Color.Y, Color.Z, Color.W);
+    Command.bEnableDepthTest = bEnableDepthTest;
+    Command.CullMode = CullMode;
+    Command.Topology = this->Topology;
+}
 
 FRenderProxy* UPrimitiveComponent::CreateRenderProxy() 
 {
-    return nullptr;
+    RenderProxy = new FRenderProxy();
+    return RenderProxy;
 }
 
 void UPrimitiveComponent::Render(URenderer &renderer)

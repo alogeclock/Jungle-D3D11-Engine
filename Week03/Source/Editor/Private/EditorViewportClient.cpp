@@ -69,19 +69,20 @@ FEditorViewportClient::~FEditorViewportClient()
 void FEditorViewportClient::SetGrid(AGrid* InGrid)
 {
     Grid = InGrid;
-    Grid->GetGridComponent()->SetGridStep(GridStep);
+    GEditor->GetGrid()->GetGridComponent()->SetGridStep(GridStep);
 }
 
 void FEditorViewportClient::SetAxis(AAxis* InAxis)
 {
     Axis = InAxis;
-    Axis->GetAxisComponent()->SetGridStep(GridStep);
+    GEditor->GetAxis()->GetAxisComponent()->SetGridStep(GridStep);
 }
 
 void FEditorViewportClient::SetGridStep(float InGridStep)
 {
     GridStep = InGridStep;
-    Grid->GetGridComponent()->SetGridStep(GridStep);
+    GEditor->GetGrid()->GetGridComponent()->SetGridStep(GridStep);
+    GEditor->GetAxis()->GetAxisComponent()->SetGridStep(GridStep);
 }
 
 void FEditorViewportClient::Tick(float DeltaTime)
@@ -90,9 +91,6 @@ void FEditorViewportClient::Tick(float DeltaTime)
         return;
 
     ApplyMovement(DeltaTime);
-
-    if (Gizmo)
-        Gizmo->Tick(DeltaTime);
 }
 
 bool FEditorViewportClient::InputKey(const FInputEventState &InputState)

@@ -23,6 +23,7 @@
 using namespace Microsoft::WRL;
 
 class FViewport;
+class FScene;
 class UMeshManager;
 class UPrimitiveComponent;
 
@@ -185,6 +186,7 @@ class URenderer
 
     // 프록시로부터 렌더 커맨드를 받아 큐에 쌓는 함수
     void SubmitCommand(const FRenderCommand& Command) { RenderQueue.push_back(Command); }
+    void RenderScene(FScene *Scene);
     void Flush() { RenderQueue.clear(); }
 
   private:

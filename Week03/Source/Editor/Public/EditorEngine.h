@@ -6,9 +6,12 @@
 #include "Source/Core/Public/Math/Vector.h"
 
 class UPrimitiveComponent;
-
+class APivotTransformGizmo;
+class AGrid;
+class AAxis;
 class FEditorViewportClient;
 class FViewport;
+class AEditorSpriteActor;
 
 struct FKey
 {
@@ -72,9 +75,11 @@ public:
 };
 
 // 선택된 객체(Object)들을 관리하는 전용 컨테이너
-class USelection
+class USelection : public UObject
 {
 public:
+    USelection(const FString& InName) : UObject(InName) {}
+
     void Clear();
 
     void AddObject(UObject* InObject);
@@ -118,12 +123,20 @@ public:
 
     // 입력 분석 후 현재 선택한 오브젝트를 Selection 배열에 삽입
     void UpdateSelection(UPrimitiveComponent* HitComp);
+    APivotTransformGizmo* GetGizmo() const { return Gizmo; }
+    AGrid* GetGrid() { return Grid; }
+    AAxis* GetAxis() { return Axis; }
 
 protected:
     USelection* Selection;
     TArray<IViewportInputListener*> InputListeners;
 
     FEditorViewportClient* ViewportClient = nullptr;
+    AGrid* Grid = nullptr;
+    AAxis* Axis = nullptr;
+    APivotTransformGizmo* Gizmo = nullptr;
+    AEditorSpriteActor* EditorSprite = nullptr;
+
 };
 
-inline UEditorEngine* GEditor = nullptr;
+extern UEditorEngine *GEditor;

@@ -11,7 +11,6 @@ class UTriangleComponent : public UPrimitiveComponent
     virtual ~UTriangleComponent() override;
 
     virtual void Submit() override;
-    virtual FRenderProxy* CreateRenderProxy() override;
 
   protected:
 };

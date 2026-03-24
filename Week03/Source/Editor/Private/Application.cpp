@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 UApplication* GApplication = nullptr;
-//UEditorEngine* GEditor = nullptr;
+UEditorEngine* GEditor = nullptr;
 FScene* GMainScene = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -177,6 +177,8 @@ void UApplication::Tick(float DeltaTime)
 
 void UApplication::Render()
 {
+    GWorld->Submit();
+
     FEditorViewportClient* ViewportClient = Viewport->GetViewportClient();
 
     FSceneViewOptions ViewOptions;
@@ -185,9 +187,17 @@ void UApplication::Render()
     ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
 
     Renderer->Prepare(ViewOptions);
+    Renderer->RenderScene(GMainScene);
 
-    GWorld->Render(*Renderer);
-    ViewportClient->Render(*Renderer);
+    // [TODO] LineBatcher, TextBatcher 역시 한 개의 함수로 관리하기
+    GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
+    GEditor->GetAxis()->GetAxisComponent()->Render(*Renderer);
+    GWorld->GetLineBatcherComponent()->Render(*Renderer);
+    GWorld->GetLineBatcherComponent()->Flush();
+    GWorld->GetTextBatcherComponent()->Render(*Renderer);
+    GWorld->GetTextBatcherComponent()->Flush(*Renderer);
+
+    // ViewportClient->Render(*Renderer);
     UImGuiManager::Get().Update();
 
     Renderer->SwapBuffer();
@@ -201,9 +211,14 @@ void UApplication::Finish()
     Renderer->ReleaseConstantBuffer();
     Renderer->Release();
 
-    delete GMainScene;
 	delete GEditor;
-	delete GWorld;
+    GEditor = nullptr;
+
+    delete GWorld;
+    GWorld = nullptr;
+
+    delete GMainScene;
+    GMainScene = nullptr;
 }
 
 void UApplication::OnResize(uint32 NewWidth, uint32 NewHeight)
@@ -220,36 +235,4 @@ void UApplication::UpdateEditorViewport()
         return;
 
     FEditorViewportClient* ViewportClient = Viewport->GetViewportClient();
-
-    // 2. 월드나 현재 레벨이 유효하지 않으면 뷰포트에서 에디터 객체 참조 해제
-    if (!GWorld || !GWorld->GetCurrentLevel())
-    {
-        ViewportClient->SetGrid(nullptr);
-        ViewportClient->SetAxis(nullptr);
-        ViewportClient->SetGizmo(nullptr);
-        return;
-    }
-
-    AGrid* FoundGrid = nullptr;
-    AAxis* FoundAxis = nullptr;
-    APivotTransformGizmo* FoundGizmo = nullptr;
-
-    // 3. 현재 레벨의 Actors 배열을 순회하며 에디터 객체 찾기
-    for (AActor* Actor : GWorld->GetCurrentLevel()->GetActors())
-    {
-        if (!FoundGrid)
-            FoundGrid = dynamic_cast<AGrid*>(Actor);
-        if (!FoundAxis)
-            FoundAxis = dynamic_cast<AAxis*>(Actor);
-        if (!FoundGizmo)
-            FoundGizmo = dynamic_cast<APivotTransformGizmo*>(Actor);
-    }
-
-    // 4. 찾은 객체들을 뷰포트 클라이언트에 맵핑
-    ViewportClient->SetGrid(FoundGrid);
-    ViewportClient->SetAxis(FoundAxis);
-    ViewportClient->SetGizmo(FoundGizmo);
-
-    GEditor->GetInputListeners()->clear();
-    GEditor->RegisterInputListener(FoundGizmo);
 }

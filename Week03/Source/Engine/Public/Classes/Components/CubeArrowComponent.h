@@ -11,7 +11,6 @@ public:
 	virtual ~UCubeArrowComponent() override;
 
     virtual void Submit() override;
-    virtual FRenderProxy* CreateRenderProxy() override;
 
 protected:
 };

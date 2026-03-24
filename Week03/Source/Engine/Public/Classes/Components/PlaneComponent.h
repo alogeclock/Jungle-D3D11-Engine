@@ -12,7 +12,6 @@ public:
 	virtual ~UPlaneComponent() override;
 
     virtual void Submit() override;
-    virtual FRenderProxy* CreateRenderProxy() override;
 
 protected:
 };
