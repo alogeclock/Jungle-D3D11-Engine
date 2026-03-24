@@ -206,7 +206,7 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
             continue;
 
         FName Name = Object->GetName();
-        if (Name == FName("EditorGrid") || Name == FName("EditorAxis") || Name == FName("EditorGizmo"))
+        if (Name == FName("EditorGrid") || Name == FName("EditorAxis") || Name == FName("EditorGizmo") || Name == FName("EditorSprite"))
         {
             if (!bInDebug)
                 continue;
