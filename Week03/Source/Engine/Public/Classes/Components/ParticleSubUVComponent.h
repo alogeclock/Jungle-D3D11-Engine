@@ -22,6 +22,6 @@ public :
     virtual void Tick(float deltaTime) override;
     virtual void RebuildMesh() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 };
 

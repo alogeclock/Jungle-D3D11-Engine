@@ -170,25 +170,23 @@ void UApplication::Tick(float DeltaTime)
         bResize = false;
     }
 
+    FEditorViewportClient* ViewportClient = Viewport->GetViewportClient();
+    FSceneViewOptions ViewOptions = ViewportClient->GetViewOptions();
+
     // 2. 객체 갱신
-    GEditor->Tick(UTimeManager::Get().GetDeltaTime());
+    GEditor->Tick(UTimeManager::Get().GetDeltaTime(), ViewOptions);
     GWorld->Tick(UTimeManager::Get().GetDeltaTime());
 }
 
 void UApplication::Render()
 {
-    GWorld->Submit();
-
     FEditorViewportClient* ViewportClient = Viewport->GetViewportClient();
+    FSceneViewOptions ViewOptions = ViewportClient->GetViewOptions();
 
-    FSceneViewOptions ViewOptions;
-    ViewOptions.ShowFlags = ViewportClient->GetShowFlags();
-    ViewOptions.ViewMode = ViewportClient->GetViewMode();
-    ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
+    GWorld->Submit(ViewOptions);
 
     Renderer->Prepare(ViewOptions);
-    Renderer->RenderScene(GMainScene);
-
+    
     // [TODO] LineBatcher, TextBatcher 역시 한 개의 함수로 관리하기
     GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
     GEditor->GetAxis()->GetAxisComponent()->Render(*Renderer);
@@ -196,6 +194,8 @@ void UApplication::Render()
     GWorld->GetLineBatcherComponent()->Flush();
     GWorld->GetTextBatcherComponent()->Render(*Renderer);
     GWorld->GetTextBatcherComponent()->Flush(*Renderer);
+
+    Renderer->RenderScene(GMainScene);
 
     // ViewportClient->Render(*Renderer);
     UImGuiManager::Get().Update();

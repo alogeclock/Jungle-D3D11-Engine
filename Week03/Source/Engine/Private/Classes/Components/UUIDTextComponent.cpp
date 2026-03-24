@@ -1,6 +1,7 @@
 ﻿#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 #include "Source/Engine/Public/Classes/Components/TextBatcherComponent.h"
 #include "World.h"
+#include "Source/Editor/Public/Application.h"
 
 UUUIDTextComponent::UUUIDTextComponent(const FString &InString)
     : UTextComponent(InString)
@@ -14,48 +15,8 @@ UUUIDTextComponent::UUUIDTextComponent(const FString &InString)
 
 UUUIDTextComponent::~UUUIDTextComponent() {}
 
-void UUUIDTextComponent::Render(URenderer &renderer) {
-	 if (!IsVisible() || !bShowUUID)
-    {
-        return;
-    }
-
-    if (Text.empty())
-    {
-        return;
-    }
-
-    if (!renderer.CheckShowFlag(EEngineShowFlags::SF_UUID))
-    {
-        return;
-    }
-
-    FVector<float> ForwardVector;
-    FVector<float> RightVector;
-    FVector<float> UpVector;
-
-    if (renderer.GetCameraBasis(RightVector, UpVector, ForwardVector))
-    {
-        UpdateBillboard(ForwardVector, UpVector);
-    }
-    else
-    {
-        RTMatrix = GetWorldMatrix();
-    }
-
-    UWorld* World = GetWorld();
-    if (World == nullptr)
-    {
-        return;
-    }
-
-    UTextBatcherComponent* TextBatcher = World->GetTextBatcherComponent();
-    if (TextBatcher == nullptr)
-    {
-        return;
-    }
-
-    TextBatcher->Submit(FilePath, Text, RTMatrix);
+void UUUIDTextComponent::Render(URenderer &renderer) 
+{
 }
 
 void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp)
@@ -96,6 +57,32 @@ void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, 
     RTMatrix = S * R * T;
 }
 
-void UUUIDTextComponent::Submit()
+void UUUIDTextComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
+    bool bGlobalShowUUID = (ViewOptions.ShowFlags & EEngineShowFlags::SF_UUID) != EEngineShowFlags::None;
+    if (!bShowUUID || !bGlobalShowUUID)
+        return;
+
+    if (Text.empty())
+    {
+        return;
+    }
+    
+    UPrimitiveComponent::Submit(ViewOptions);
+
+    FMatrix<float> ViewMatrix = GEditor->GetEditorViewportClient()->GetViewMatrix();
+    
+    FVector<float> RightVector = FVector<float>(ViewMatrix.M[0][0], ViewMatrix.M[1][0], ViewMatrix.M[2][0]);
+    FVector<float> UpVector = FVector<float>(ViewMatrix.M[0][1], ViewMatrix.M[1][1], ViewMatrix.M[2][1]);
+    FVector<float> ForwardVector = FVector<float>(ViewMatrix.M[0][2], ViewMatrix.M[1][2], ViewMatrix.M[2][2]);
+
+    UpdateBillboard(ForwardVector, UpVector);
+
+    UTextBatcherComponent* TextBatcher = GWorld->GetTextBatcherComponent();
+    if (TextBatcher == nullptr)
+    {
+        return;
+    }
+
+    TextBatcher->Submit(FilePath, Text, RTMatrix);
 }

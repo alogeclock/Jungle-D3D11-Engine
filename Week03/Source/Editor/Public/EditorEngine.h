@@ -102,7 +102,7 @@ public:
 	UEditorEngine(const FString& InString);
     virtual ~UEditorEngine();
 
-    void Tick(float DeltaTime);
+    void Tick(float DeltaTime, FSceneViewOptions &ViewOptions);
     
     void SetEditorViewportClient(FEditorViewportClient* InViewportClient) { ViewportClient = InViewportClient; }
     FEditorViewportClient* GetEditorViewportClient() { return ViewportClient; };

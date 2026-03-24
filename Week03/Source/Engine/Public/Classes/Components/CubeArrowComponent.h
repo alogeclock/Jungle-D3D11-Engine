@@ -10,7 +10,7 @@ public:
 	UCubeArrowComponent(const FString& InString);
 	virtual ~UCubeArrowComponent() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 protected:
 };

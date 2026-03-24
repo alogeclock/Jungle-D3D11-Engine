@@ -87,6 +87,7 @@ enum class EEngineShowFlags : uint64
     None,
     SF_Primitives = 1ULL << 0,    // 0001 (1번째 체크박스)
     SF_UUID = 1ULL << 1, // 0010 (2번째 체크박스)
+    SF_AABB = 1ULL << 2,
 };
 
 inline EEngineShowFlags operator|(EEngineShowFlags Lhs, EEngineShowFlags Rhs)

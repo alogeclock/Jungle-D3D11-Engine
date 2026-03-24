@@ -146,6 +146,6 @@ void ULineBatcherComponent::Flush()
 }
 
 // 실제로 LineBatcher Component는 따로 렌더링된다.
-void ULineBatcherComponent::Submit()
+void ULineBatcherComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
 }

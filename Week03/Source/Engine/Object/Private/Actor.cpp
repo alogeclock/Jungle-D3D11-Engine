@@ -10,7 +10,6 @@ AActor::AActor(const FString& InString) : UObject(InString)
 
 AActor::~AActor()
 {
-    std::cout << GetName().ToString() << ": " << OwnedComponents.size() << std::endl;
      for (UActorComponent *Component : OwnedComponents)
     {
          if (Component != nullptr)
@@ -81,28 +80,16 @@ void AActor::Tick(float deltaTime)
     }
 }
 
-void AActor::IterateAllActorComponents(URenderer& renderer) const
-{
-    // Actor의 GetComponents()는 보통 컴포넌트들의 Set이나 Array를 반환합니다.
-    for (UActorComponent* Component : OwnedComponents)
-    {
-        UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(Component);
-
-        if (PrimitiveComp != nullptr)
-        {
-            PrimitiveComp->Submit();
-        }
-    }
-}
-
 // 렌더러에 모든 Components의 데이터를 전송한다.
-void AActor::SubmitAllActorComponents() const
+void AActor::SubmitAllActorComponents(const FSceneViewOptions& ViewOptions) const
 {
     for (UActorComponent* Comp : this->GetOwnedComponents())
     {
-        if (UPrimitiveComponent* PrimComp = dynamic_cast<UPrimitiveComponent*>(Comp))
+        UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(Comp);
+
+        if (PrimitiveComp != nullptr)
         {
-            PrimComp->Submit();
+            PrimitiveComp->Submit(ViewOptions);
         }
     }
 }

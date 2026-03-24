@@ -7,9 +7,9 @@ UCubeComponent::UCubeComponent(const FString &InString) : UPrimitiveComponent(In
 UCubeComponent::~UCubeComponent() {}
 
 // Tick 이후 갱신 타이밍에 호출됨
-void UCubeComponent::Submit()
+void UCubeComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

@@ -49,7 +49,7 @@ void UAxisComponent::RebuildAxisLines()
     AxisLines.emplace_back(FVector<float>(0.0f, 0.0f, 0.0f), FVector<float>(0.0f, 0.0f, GridLength), FVector4<float>(0.0f, 0.0f, 1.0f, 1.0f));
 }
 
-void UAxisComponent::Submit()
+void UAxisComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
 }
 

@@ -116,6 +116,6 @@ void UGridComponent::RebuildGridLines()
     GridLines.emplace_back(FVector<float>(0.0f, -GridSize * GridStep, 0.0f), FVector<float>(0.0f, 0.0f, 0.0f), Color);
 }
 
-void UGridComponent::Submit()
+void UGridComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
 }

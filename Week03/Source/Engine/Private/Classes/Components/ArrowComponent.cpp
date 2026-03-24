@@ -7,11 +7,11 @@ UArrowComponent::UArrowComponent(const FString &InString) : UPrimitiveComponent(
 
 UArrowComponent::~UArrowComponent() {}
 
-void UArrowComponent::Submit()
+void UArrowComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     if (!RenderProxy) return;
 
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

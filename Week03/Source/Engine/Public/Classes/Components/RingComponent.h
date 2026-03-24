@@ -10,7 +10,7 @@ public:
     URingComponent(const FString &InString);
 	virtual ~URingComponent() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 protected:
 };

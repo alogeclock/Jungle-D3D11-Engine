@@ -21,7 +21,7 @@ public:
         return const_cast<UWorld*>(this);
     }
 
-    void Submit();
+    void Submit(const FSceneViewOptions& ViewOptions);
     ULevel* CreateNewLevel(const FString& NewLevelName);
 
     bool SaveLevel(const std::wstring& FilePath);

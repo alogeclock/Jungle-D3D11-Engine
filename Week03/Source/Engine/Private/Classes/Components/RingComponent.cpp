@@ -7,9 +7,9 @@ URingComponent::URingComponent(const FString &InString) : UPrimitiveComponent(In
 
 URingComponent::~URingComponent() {}
 
-void URingComponent::Submit()
+void URingComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

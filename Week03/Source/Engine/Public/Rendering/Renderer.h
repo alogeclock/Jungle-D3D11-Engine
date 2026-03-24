@@ -116,9 +116,7 @@ class URenderer
     void ApplyRasterizerState();
 
     bool CheckShowFlag(EEngineShowFlags InFlag) const { return (ShowFlags & InFlag) != EEngineShowFlags::None; }
-
-    void SetDrawAABB(bool bEnable) { bDrawAABB = bEnable; }
-    bool IsDrawAABB() const { return bDrawAABB; }
+    void SetDrawAABB(bool bEnable) { ShowFlags |= EEngineShowFlags::SF_AABB; }
 
     void CreateBlendState();
     void ReleaseBlendState();
@@ -194,7 +192,6 @@ class URenderer
     ECullMode        CurrentCullMode = ECullMode::Back;
     EViewModeIndex   ViewModeIndex = EViewModeIndex::VMI_Lit;
     EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID;
-    bool             bDrawAABB = false;
     
     TArray<FRenderCommand> RenderQueue;
 };

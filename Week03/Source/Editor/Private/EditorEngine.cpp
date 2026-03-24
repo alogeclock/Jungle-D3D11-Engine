@@ -57,7 +57,7 @@ UEditorEngine::~UEditorEngine()
     }
 }
 
-void UEditorEngine::Tick(float DeltaTime)
+void UEditorEngine::Tick(float DeltaTime, FSceneViewOptions &ViewOptions)
 {
     if (ViewportClient)
     {
@@ -85,8 +85,8 @@ void UEditorEngine::Tick(float DeltaTime)
         EditorSprite->Tick(DeltaTime);
     }
 
-    Axis->SubmitAllActorComponents();
-    Gizmo->SubmitAllActorComponents();
+    Axis->SubmitAllActorComponents(ViewOptions);
+    Gizmo->SubmitAllActorComponents(ViewOptions);
 }
 
 void UEditorEngine::RegisterInputListener(IViewportInputListener* Listener)

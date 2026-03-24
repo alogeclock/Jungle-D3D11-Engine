@@ -31,7 +31,7 @@ class UPrimitiveComponent : public USceneComponent
     virtual ~UPrimitiveComponent() override;
     
     // 팩토리 메서드: 자식 클래스(Cube, LineBatcher 등)에서 자신에게 맞는 Proxy를 생성하도록 강제
-    virtual void Submit();
+    virtual void Submit(const FSceneViewOptions& ViewOptions);
     virtual FRenderProxy* CreateRenderProxy();
 
     virtual void Render(URenderer &renderer);

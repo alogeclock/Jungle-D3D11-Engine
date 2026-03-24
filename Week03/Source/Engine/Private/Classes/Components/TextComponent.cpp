@@ -77,35 +77,6 @@ FHitResult UTextComponent::IntersectRayMeshTriangle(const FVector<float>& RayOri
 
 void UTextComponent::Render(URenderer &renderer)
 {
-    // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
-    if (renderer.IsDrawAABB() && !bIsInEditor && bShowAABB)
-    {
-        UpdateBoundsTexture(&TextVertices);
-        GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
-    }
-
-    // 현재 프리미티브의 렌더링 여부를 판단하고 렌더링할 필요가 없을 시 생략한다.
-    if (!IsRenderable(renderer))
-        return;
-
-    if (Text.empty())
-    {
-        return;
-    }
-
-    UWorld* World = GetWorld();
-    if (World == nullptr)
-    {
-        return;
-    }
-
-    UTextBatcherComponent* TextBatcher = World->GetTextBatcherComponent();
-    if (TextBatcher == nullptr)
-    {
-        return;
-    }
-
-    TextBatcher->Submit(FilePath, Text, GetWorldMatrix());
 }
 
 void UTextComponent::RebuildMesh()
@@ -116,6 +87,20 @@ void UTextComponent::RebuildMesh()
 
 void UTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp) {}
 
-void UTextComponent::Submit()
+void UTextComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
+    if (Text.empty())
+    {
+        return;
+    }
+
+    UPrimitiveComponent::Submit(ViewOptions);
+
+    UTextBatcherComponent* TextBatcher = GWorld->GetTextBatcherComponent();
+    if (TextBatcher == nullptr)
+    {
+        return;
+    }
+
+    TextBatcher->Submit(FilePath, Text, GetWorldMatrix());
 }

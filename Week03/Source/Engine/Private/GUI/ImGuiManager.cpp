@@ -277,12 +277,6 @@ void UImGuiManager::ViewMode()
         ImGui::Separator();
         ImGui::Text("Show Flags");
 
-        bool bDrawAABB = ViewportClient->GetDrawAABB();
-        if (ImGui::Checkbox("Show AABB", &bDrawAABB))
-        {
-            ViewportClient->SetDrawAABB(bDrawAABB);
-        }
-
         // 현재 뷰포트 클라이언트의 ShowFlags 값을 가져옵니다.
         EEngineShowFlags CurrentFlags = ViewportClient->GetShowFlags();
 
@@ -303,6 +297,15 @@ void UImGuiManager::ViewMode()
                 CurrentFlags |= EEngineShowFlags::SF_UUID; // 비트 켜기 (OR)
             else
                 CurrentFlags &= ~EEngineShowFlags::SF_UUID; // 비트 끄기 (AND NOT)
+        }
+        
+        bool bShowAABB = (CurrentFlags & EEngineShowFlags::SF_AABB) != EEngineShowFlags::None;
+        if (ImGui::Checkbox("Show AABB", &bShowAABB))
+        {
+            if (bShowAABB)
+                CurrentFlags |= EEngineShowFlags::SF_AABB; // 비트 켜기 (OR)
+            else
+                CurrentFlags &= ~EEngineShowFlags::SF_AABB; // 비트 끄기 (AND NOT)
         }
 
         // 변경된 상태를 다시 뷰포트 클라이언트에 저장

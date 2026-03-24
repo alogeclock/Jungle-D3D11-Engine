@@ -14,7 +14,7 @@ public:
     void SetGridStep(float InGridStep);
     void Render(URenderer& renderer) override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 private:
     TArray<FBatchedLine> GridLines;

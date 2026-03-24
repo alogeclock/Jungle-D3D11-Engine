@@ -9,7 +9,7 @@ public:
     UCubeComponent(const FString &InString);
 	virtual ~UCubeComponent() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 protected:
 };

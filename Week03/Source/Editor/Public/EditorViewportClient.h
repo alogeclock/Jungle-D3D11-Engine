@@ -108,6 +108,7 @@ class FEditorViewportClient
     FMatrix<float> GetProjectionMatrix(float width, float height);
     float         *GetMoveSpeedPtr() { return &MoveSpeed; }
     float         *GetRotSpeedPtr() { return &RotSpeed; }
+
     
     float GetGridStep() const { return GridStep; }
     void SetGridStep(float InGridStep);
@@ -133,6 +134,15 @@ class FEditorViewportClient
     void SetGrid(AGrid* InGrid);
     void SetAxis(AAxis* InAxis);
     void SetGizmo(APivotTransformGizmo* InGizmo) { Gizmo = InGizmo; }
+
+    FSceneViewOptions GetViewOptions() 
+    {
+        FSceneViewOptions ViewOptions;
+        ViewOptions.ShowFlags = GetShowFlags();
+        ViewOptions.ViewMode = GetViewMode();
+        ViewOptions.bDrawAABB = GetDrawAABB();
+        return ViewOptions;
+    }
 
   private:
     // WASD 이동 누적
@@ -164,5 +174,5 @@ class FEditorViewportClient
 
     bool bDrawAABB = true;
     EViewModeIndex ViewMode = EViewModeIndex::VMI_Lit;
-    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID;
+    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID | EEngineShowFlags::SF_AABB;
 };

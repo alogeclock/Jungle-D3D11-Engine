@@ -6,11 +6,11 @@ UPlaneComponent::UPlaneComponent(const FString &InString) : UPrimitiveComponent(
 
 UPlaneComponent::~UPlaneComponent() {}
 
-void UPlaneComponent::Submit()
+void UPlaneComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     if (!RenderProxy) return;
 
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

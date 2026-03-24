@@ -14,7 +14,7 @@ public:
 		
 	virtual void Render(URenderer &renderer) override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 private:
 	float Zoffset = 2.5f;

@@ -10,9 +10,9 @@ USphereComponent::USphereComponent(const FString &InString, float inSphereRadius
 
 USphereComponent::~USphereComponent() {}
 
-void USphereComponent::Submit()
+void USphereComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

@@ -8,9 +8,9 @@ UTriangleComponent::UTriangleComponent(const FString &InString) : UPrimitiveComp
 
 UTriangleComponent::~UTriangleComponent() {}
 
-void UTriangleComponent::Submit()
+void UTriangleComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

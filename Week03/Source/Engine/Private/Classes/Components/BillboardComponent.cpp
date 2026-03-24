@@ -136,9 +136,9 @@ void UBillboardComponent::Render(URenderer& renderer)
     renderer.UndoRenderText();
 }
 
-void UBillboardComponent::Submit()
+void UBillboardComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = GpuBuffers->VertexBuffer.Get();

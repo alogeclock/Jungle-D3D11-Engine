@@ -32,7 +32,7 @@ public:
     ULineBatcherComponent(const FString &InString);
     virtual ~ULineBatcherComponent() override;
     
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 private:
     TArray<FVertex> RenderVertices;

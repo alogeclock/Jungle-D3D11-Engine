@@ -17,7 +17,7 @@ public :
     virtual void Render(URenderer &renderer);
     virtual void RebuildMesh();
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
     
     const FString &GetText() const { return Text; }
  

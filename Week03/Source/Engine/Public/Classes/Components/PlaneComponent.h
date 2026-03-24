@@ -11,7 +11,7 @@ public:
 	UPlaneComponent(const FString& InString);
 	virtual ~UPlaneComponent() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 protected:
 };

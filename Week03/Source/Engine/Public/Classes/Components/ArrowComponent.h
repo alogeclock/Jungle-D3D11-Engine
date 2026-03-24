@@ -10,7 +10,7 @@ public:
 	UArrowComponent(const FString& InString);
 	virtual ~UArrowComponent() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 protected:
 };

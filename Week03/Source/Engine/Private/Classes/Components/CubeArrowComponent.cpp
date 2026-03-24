@@ -8,9 +8,9 @@ UCubeArrowComponent::UCubeArrowComponent(const FString &InString) : UPrimitiveCo
 UCubeArrowComponent::~UCubeArrowComponent() {}
 
 // Tick 이후 갱신 타이밍에 호출됨
-void UCubeArrowComponent::Submit()
+void UCubeArrowComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

@@ -474,7 +474,6 @@ void URenderer::Prepare(const FSceneViewOptions& ViewOptions)
 
     ShowFlags = ViewOptions.ShowFlags;
     ViewModeIndex = ViewOptions.ViewMode;
-    bDrawAABB = ViewOptions.bDrawAABB;
 
     ApplyRasterizerState();
 
@@ -899,8 +898,30 @@ void URenderer::RenderScene(FScene* Scene)
     if (!Scene || !DeviceContext)
         return;
 
+    // Primitive 렌더링을 껐다면 메시 그리기를 생략한다.
+    if (!CheckShowFlag(EEngineShowFlags::SF_Primitives))
+        return;
+
     // 씬에 등록된 모든 렌더 프록시 순회
     const TArray<FRenderProxy*>& Proxies = Scene->GetProxies();
+
+    // 이전에 최적화했던 Visible 프록시 수집 및 정렬 로직
+    TArray<FRenderProxy*> RenderableProxies;
+    RenderableProxies.reserve(Proxies.size());
+
+    for (FRenderProxy* Proxy : Proxies)
+    {
+        if (Proxy && Proxy->RenderCommand.bIsVisible)
+        {
+            RenderableProxies.push_back(Proxy);
+        }
+    }
+
+    // Vertex Buffer를 기준으로 정렬한다. (Vertex Buffer 바인딩 비용을 아낄 수 있다.)
+    std::sort(RenderableProxies.begin(), RenderableProxies.end(), [](const FRenderProxy* A, const FRenderProxy* B)
+    {
+        return A->RenderCommand.VertexBuffer < B->RenderCommand.VertexBuffer;
+    });
 
     // 상태 변경 최소화를 위한 이전 Vertex Buffer 캐싱 변수
     ID3D11Buffer* LastVertexBuffer = nullptr;
@@ -933,6 +954,7 @@ void URenderer::RenderScene(FScene* Scene)
 
             // 캐시 업데이트
             LastVertexBuffer = Command.VertexBuffer;
+            UpdateConstant(Command.ConstantsColor);
         }
 
         // 2. 상수 버퍼(Constant Buffer) 갱신

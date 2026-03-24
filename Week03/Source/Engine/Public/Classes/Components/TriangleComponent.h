@@ -10,7 +10,7 @@ class UTriangleComponent : public UPrimitiveComponent
     UTriangleComponent(const FString &InString);
     virtual ~UTriangleComponent() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
   protected:
 };

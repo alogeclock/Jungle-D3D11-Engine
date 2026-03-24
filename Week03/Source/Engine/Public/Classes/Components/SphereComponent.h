@@ -46,7 +46,7 @@ public:
     USphereComponent(const FString& InString, float inSphereRadius = 1.0f);
     virtual ~USphereComponent() override;
 
-    virtual void Submit() override;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
 
 protected:
     float SphereRadius = 1.0f;

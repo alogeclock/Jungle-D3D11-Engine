@@ -30,7 +30,7 @@ UPrimitiveComponent::~UPrimitiveComponent()
     }
 }
 
-void UPrimitiveComponent::Submit()
+void UPrimitiveComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
@@ -44,6 +44,13 @@ void UPrimitiveComponent::Submit()
     Command.bEnableDepthTest = bEnableDepthTest;
     Command.CullMode = CullMode;
     Command.Topology = this->Topology;
+
+    bool bGlobalDrawAABB = (ViewOptions.ShowFlags & EEngineShowFlags::SF_AABB) != EEngineShowFlags::None;
+    if (bShowAABB && bGlobalDrawAABB && GWorld && GWorld->GetLineBatcherComponent())
+    {
+        UpdateBounds(); 
+        GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
+    }
 }
 
 FRenderProxy* UPrimitiveComponent::CreateRenderProxy() 
@@ -55,7 +62,7 @@ FRenderProxy* UPrimitiveComponent::CreateRenderProxy()
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
     // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
-    if (renderer.IsDrawAABB() && !bIsInEditor && bShowAABB)
+    if (renderer.CheckShowFlag(EEngineShowFlags::SF_AABB) && !bIsInEditor && bShowAABB)
     {
         UpdateBounds();
         GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});

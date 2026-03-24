@@ -87,11 +87,11 @@ void UParticleSubUVComponent::RebuildMesh()
     bMeshDirty = true;
 }
 
-void UParticleSubUVComponent::Submit()
+void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     if (!RenderProxy) return;
 
-    UPrimitiveComponent::Submit();
+    UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

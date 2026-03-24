@@ -59,7 +59,7 @@ UWorld::~UWorld()
     CurrentLevel = nullptr;
 }
 
-void UWorld::Submit()
+void UWorld::Submit(const FSceneViewOptions& ViewOptions)
 {
     if (CurrentLevel)
     {
@@ -73,7 +73,7 @@ void UWorld::Submit()
                 UPrimitiveComponent *primitive = Cast<UPrimitiveComponent>(component);
                 if (primitive != nullptr)
                 {
-                    primitive->Submit();
+                    primitive->Submit(ViewOptions);
                 }
             }
         }
@@ -82,7 +82,7 @@ void UWorld::Submit()
     // LineBatcherComponent 등 레벨 액터 목록과 별개로 관리되는 컴포넌트가 있다면 여기서 함께 Submit 처리
     if (LineBatcherComponent)
     {
-        LineBatcherComponent->Submit();
+        LineBatcherComponent->Submit(ViewOptions);
     }
 }
 
