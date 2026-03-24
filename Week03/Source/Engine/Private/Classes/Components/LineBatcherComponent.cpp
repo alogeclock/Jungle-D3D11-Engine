@@ -1,6 +1,9 @@
 ﻿#include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 
-ULineBatcherComponent::ULineBatcherComponent(const FString &InString) : UPrimitiveComponent(InString) { PrimitiveType = EPrimitiveType::LineBatcher; }
+ULineBatcherComponent::ULineBatcherComponent(const FString& InString) : UPrimitiveComponent(InString)
+{
+    PrimitiveType = EPrimitiveType::LineBatcher;
+}
 
 ULineBatcherComponent::~ULineBatcherComponent()
 {
@@ -16,7 +19,8 @@ ULineBatcherComponent::~ULineBatcherComponent()
     }
 }
 
-void ULineBatcherComponent::DrawLine(const FVector<float> &Start, const FVector<float> &End, const FVector4<float> &Color)
+void ULineBatcherComponent::DrawLine(const FVector<float>& Start, const FVector<float>& End,
+                                     const FVector4<float>& Color)
 {
     const uint16 StartIndex = static_cast<uint16>(RenderVertices.size());
 
@@ -40,7 +44,7 @@ void ULineBatcherComponent::DrawLines(std::span<const FBatchedLine> Lines)
 
     for (size_t i = 0; i < LineCount; ++i)
     {
-        const auto &Line = Lines[i];
+        const FBatchedLine& Line = Lines[i];
         RenderVertices.emplace_back(Line.Start, Line.Color);
         RenderVertices.emplace_back(Line.End, Line.Color);
 
@@ -50,7 +54,7 @@ void ULineBatcherComponent::DrawLines(std::span<const FBatchedLine> Lines)
     }
 }
 
-void ULineBatcherComponent::DrawBox(const FBox &Box, FVector4<float> Color)
+void ULineBatcherComponent::DrawBox(const FBox& Box, FVector4<float> Color)
 {
     const uint16 StartIndex = static_cast<uint16>(RenderVertices.size());
 
@@ -78,7 +82,7 @@ void ULineBatcherComponent::DrawBox(const FBox &Box, FVector4<float> Color)
     }
 }
 
-void ULineBatcherComponent::Render(URenderer &renderer)
+void ULineBatcherComponent::Render(URenderer& renderer)
 {
     if (RenderVertices.empty() || RenderIndices.empty())
     {
@@ -124,7 +128,8 @@ void ULineBatcherComponent::Render(URenderer &renderer)
     renderer.DeviceContext->PSSetShader(renderer.LinePixelShader, nullptr, 0);
     renderer.DeviceContext->VSSetConstantBuffers(0, 1, &renderer.ConstantBuffer);
 
-    renderer.DrawIndexed(DynamicVertexBuffer, DynamicIndexBuffer, static_cast<uint32>(RenderIndices.size()), sizeof(FVertex));
+    renderer.DrawIndexed(DynamicVertexBuffer, DynamicIndexBuffer, static_cast<uint32>(RenderIndices.size()),
+                         sizeof(FVertex));
 }
 
 void ULineBatcherComponent::Flush()

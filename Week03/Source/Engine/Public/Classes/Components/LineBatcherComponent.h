@@ -35,6 +35,7 @@ public:
 private:
     TArray<FVertex> RenderVertices;
     TArray<uint16>  RenderIndices;
+
     ID3D11Buffer *DynamicVertexBuffer = nullptr;
     ID3D11Buffer *DynamicIndexBuffer = nullptr;
     uint32 VertexBufferSize = 0;

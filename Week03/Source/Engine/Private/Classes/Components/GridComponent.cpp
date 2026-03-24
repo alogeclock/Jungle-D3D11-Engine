@@ -14,21 +14,19 @@ UGridComponent::~UGridComponent()
 
 void UGridComponent::SetGridStep(float InGridStep)
 {
-    if (GridStep == InGridStep)
+    if (GridStep != InGridStep)
     {
-        return;
+        GridStep = InGridStep;
+        bNeedRebuild = true;
     }
-
-    GridStep = InGridStep;
-    RebuildGridLines();
 }
 
 void UGridComponent::Render(URenderer& renderer)
 {
-    if (!bInitialized)
+    if (bNeedRebuild)
     {
         RebuildGridLines();
-        bInitialized = true;
+        bNeedRebuild = false;
     }
 
     if (!GridLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)
