@@ -132,7 +132,7 @@ class URenderer
 
     void UploadTextBuffers(
         FTextGpuBuffer& Buffers,
-        const TArray<FTextVertex>& Vertices,
+        const TArray<FTextureVertex>& Vertices,
         const TArray<uint32>& Indices);
 
     void DrawTextBuffers(
@@ -144,7 +144,7 @@ class URenderer
     void RenderTextBatch(
         const FString& FontPath,
         const FConstants& Constants,
-        const TArray<FTextVertex>& Vertices,
+        const TArray<FTextureVertex>& Vertices,
         const TArray<uint32>& Indices,
         FTextGpuBuffer& Buffers);
 

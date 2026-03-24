@@ -10,14 +10,14 @@ struct FTextMeshCache
 {
     FString FontPath;
     FString Text;
-    TArray<FTextVertex> LocalVertices;
+    TArray<FTextureVertex> LocalVertices;
     TArray<uint32> LocalIndices;
 };
 
 struct FTextBatchBucket
 {
     FString FontPath;
-    TArray<FTextVertex> BatchedVertices;
+    TArray<FTextureVertex> BatchedVertices;
     TArray<uint32> BatchedIndices;
     
     FTextGpuBuffer GpuBuffer;

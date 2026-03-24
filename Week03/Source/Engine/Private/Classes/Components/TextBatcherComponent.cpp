@@ -47,7 +47,7 @@ void UTextBatcherComponent::Submit(const FString& InFontPath, const FString& InT
     Bucket->BatchedIndices.reserve(    // ← 수정
         Bucket->BatchedIndices.size() + Cache.LocalIndices.size());
     
-    for (const FTextVertex& Vertex : Cache.LocalVertices)
+    for (const FTextureVertex& Vertex : Cache.LocalVertices)
     {
         const FVector4<float> LocalPos(
             Vertex.Position.X,

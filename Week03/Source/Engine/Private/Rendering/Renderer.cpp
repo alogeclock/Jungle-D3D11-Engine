@@ -503,12 +503,12 @@ void URenderer::EnsureTextBuffers(FTextGpuBuffer& Buffers, uint32 RequiredVBSize
     }
 }
 
-void URenderer::UploadTextBuffers(FTextGpuBuffer& Buffers, const TArray<FTextVertex>& Vertices,
+void URenderer::UploadTextBuffers(FTextGpuBuffer& Buffers, const TArray<FTextureVertex>& Vertices,
                                   const TArray<uint32>& Indices)
 {
     if (!Buffers.VertexBuffer || !Buffers.IndexBuffer) return;
 
-    const UINT VBSize = static_cast<UINT>(sizeof(FTextVertex) * Vertices.size());
+    const UINT VBSize = static_cast<UINT>(sizeof(FTextureVertex) * Vertices.size());
     const UINT IBSize = static_cast<UINT>(sizeof(uint32) * Indices.size());
 
     D3D11_MAPPED_SUBRESOURCE mapped = {};
@@ -541,7 +541,7 @@ void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Const
 
     UpdateConstant(Constants);
 
-    UINT Stride = sizeof(FTextVertex);
+    UINT Stride = sizeof(FTextureVertex);
     UINT Offset = 0;
     ID3D11Buffer* VB = Buffers.VertexBuffer.Get();
     ID3D11Buffer* IB = Buffers.IndexBuffer.Get();
@@ -566,13 +566,13 @@ void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Const
 
 
 void URenderer::RenderTextBatch(const FString& FontPath, const FConstants& Constants,
-                                const TArray<FTextVertex>& Vertices, const TArray<uint32>& Indices,
+                                const TArray<FTextureVertex>& Vertices, const TArray<uint32>& Indices,
                                 FTextGpuBuffer& Buffers)
 {
     if (Vertices.empty() || Indices.empty())
         return;
 
-    const uint32 RequiredVBSize = static_cast<uint32>(sizeof(FTextVertex) * Vertices.size());
+    const uint32 RequiredVBSize = static_cast<uint32>(sizeof(FTextureVertex) * Vertices.size());
     const uint32 RequiredIBSize = static_cast<uint32>(sizeof(uint32) * Indices.size());
 
     EnsureTextBuffers(Buffers, RequiredVBSize, RequiredIBSize);
