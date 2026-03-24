@@ -49,13 +49,17 @@ void UImGuiManager::Update()
 {
     beginFrame();
 
-    ImGui::Begin("Outliner");
-    Outliner.ShowOutliner();
+    if (ImGui::Begin("Outliner"))
+    {
+        Outliner.ShowOutliner();
+    }
     ImGui::End();
 
     // Control Panel
-    ImGui::Begin("Jungle Control Panel");
-    ShowControlPanel();
+    if (ImGui::Begin("Jungle Control Panel"))
+    {
+        ShowControlPanel();
+    }
     ImGui::End();
 
     // Property Window
@@ -64,9 +68,11 @@ void UImGuiManager::Update()
     // ImGui::End();
 
     // Console
-    ImGui::Begin("Console");
-    bool open = true;
-    ShowExampleAppConsole(&open);
+    if (ImGui::Begin("Console"))
+    {
+        bool open = true;
+        ShowExampleAppConsole(&open);
+    }
     ImGui::End();
 
     // ImGui::Begin("Log");
