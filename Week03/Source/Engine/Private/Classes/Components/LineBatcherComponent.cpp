@@ -90,6 +90,7 @@ void ULineBatcherComponent::Render(URenderer& renderer)
     }
 
     renderer.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+    renderer.SetDepthStencilEnable(true);
 
     uint32 RequiredVertexBufferSize = static_cast<uint32>(RenderVertices.size() * sizeof(FVertex));
     uint32 RequiredIndexBufferSize = static_cast<uint32>(RenderIndices.size() * sizeof(uint16));

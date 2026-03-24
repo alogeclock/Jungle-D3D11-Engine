@@ -341,18 +341,19 @@ AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
 
 void UWorld::Render(URenderer &renderer)
 {
+    LineBatcherComponent->Render(renderer);
+    LineBatcherComponent->Flush();
     if (CurrentLevel)
     {
         const auto& Actors = CurrentLevel->GetActors();
         
-        for (int i = Actors.size() - 1; i >= 0; --i)
+        for (int i = 0; i < Actors.size(); ++i)
         {
             Actors[i]->IterateAllActorComponents(renderer);
         }
     }
 
-    LineBatcherComponent->Render(renderer);
-    LineBatcherComponent->Flush();
+    
 }
 
 void UWorld::Tick(float deltaTime)

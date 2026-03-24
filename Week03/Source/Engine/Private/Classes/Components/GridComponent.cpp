@@ -70,6 +70,7 @@ void UGridComponent::Render(URenderer& renderer)
     if (!GridLines.empty() && DynamicVertexBuffer != nullptr)
     {
         renderer.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+        renderer.SetDepthStencilEnable(true);
         FConstants constants = {};
         constants.MVPMatrix = FMatrix<float>::Identity();
         renderer.UpdateConstant(constants);
