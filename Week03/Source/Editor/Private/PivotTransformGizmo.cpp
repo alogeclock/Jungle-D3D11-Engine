@@ -355,39 +355,68 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
     // ==========================================
     // [추가] 선택된 모든 객체에 상대적 Transform 일괄 적용 로직
     // ==========================================
-    FMatrix<float> GizmoInitialWorldMat = InitialGizmoTransform.ToMatrix();
-    FMatrix<float> GizmoNewWorldMat = NewGizmoTransform.ToMatrix();
-    FMatrix<float> GizmoInitialInv = GizmoInitialWorldMat.Inverse();
+    FMatrix<float> GizmoInitialRT = FRotationMatrix<float>(InitialGizmoTransform.Rotation) * FTranslationMatrix<float>(InitialGizmoTransform.Location);
+    FMatrix<float> GizmoNewRT = FRotationMatrix<float>(NewGizmoTransform.Rotation) * FTranslationMatrix<float>(NewGizmoTransform.Location);
+    FMatrix<float> GizmoInitialInvRT = GizmoInitialRT.Inverse();
 
     for (FSelectedObjectState& State : DraggingObjects)
     {
-        FMatrix<float> ObjInitialWorldMat = State.InitialWorldTransform.ToMatrix();
+        FTransform ObjNewWorldTransform;
 
-        // 1. 객체를 기준점(초기 기즈모) 좌표계로 로컬 변환 후, 새로운 기즈모 월드 행렬을 곱해 갱신된 월드 좌표계 도출
-        FMatrix<float> ObjNewWorldMat = ObjInitialWorldMat * GizmoInitialInv * GizmoNewWorldMat;
-
-        FTransform ObjNewTransform;
-
-        ObjNewTransform.Location = FVector<float>(ObjNewWorldMat.M[3][0], ObjNewWorldMat.M[3][1], ObjNewWorldMat.M[3][2]);
-        ObjNewTransform.Scale = State.InitialWorldTransform.Scale * NewGizmoTransform.Scale;
-
-        USceneComponent* ParentComp = State.Component->GetAttachParent();
-        if (ParentComp)
+        if (GizmoType == EGizmoHandleType::Scale)
         {
-            // 2. 부모-자식 계층이 있는 경우 Local Transform으로 재변환
-            FMatrix<float> ParentWorldInv = ParentComp->GetWorldMatrix().Inverse();
-            FMatrix<float> ObjNewLocalMat = ObjNewWorldMat * ParentWorldInv;
+            ObjNewWorldTransform.Scale = State.InitialWorldTransform.Scale * NewGizmoTransform.Scale;
+            ObjNewWorldTransform.Rotation = State.InitialWorldTransform.Rotation;
+
+            FVector<float> Offset = State.InitialWorldTransform.Location - InitialGizmoTransform.Location;
+            FMatrix<float> GizmoRotMat = FRotationMatrix<float>(InitialGizmoTransform.Rotation);
+            FMatrix<float> GizmoRotInv = GizmoRotMat.Inverse();
             
-            ObjNewTransform.Location = FVector<float>(ObjNewLocalMat.M[3][0], ObjNewLocalMat.M[3][1], ObjNewLocalMat.M[3][2]);
-            ObjNewTransform.Rotation = ObjNewLocalMat.ToEuler(); 
+            FVector4<float> LocalOffset4 = FVector4<float>(Offset.X, Offset.Y, Offset.Z, 0.0f) * GizmoRotInv;
+            FVector<float> LocalOffset(LocalOffset4.X, LocalOffset4.Y, LocalOffset4.Z);
+            
+            LocalOffset = LocalOffset * NewGizmoTransform.Scale;
+            
+            FVector4<float> ScaledOffset4 = FVector4<float>(LocalOffset.X, LocalOffset.Y, LocalOffset.Z, 0.0f) * GizmoRotMat;
+            ObjNewWorldTransform.Location = InitialGizmoTransform.Location + FVector<float>(ScaledOffset4.X, ScaledOffset4.Y, ScaledOffset4.Z);
         }
         else
         {
-            ObjNewTransform.Rotation = ObjNewWorldMat.ToEuler();
+            FMatrix<float> ObjInitialRT = FRotationMatrix<float>(State.InitialWorldTransform.Rotation) * FTranslationMatrix<float>(State.InitialWorldTransform.Location);
+            FMatrix<float> ObjNewRT = ObjInitialRT * GizmoInitialInvRT * GizmoNewRT;
+
+            ObjNewWorldTransform.Location = FVector<float>(ObjNewRT.M[3][0], ObjNewRT.M[3][1], ObjNewRT.M[3][2]);
+            ObjNewWorldTransform.Rotation = ObjNewRT.ToEuler(); 
+            ObjNewWorldTransform.Scale = State.InitialWorldTransform.Scale; // 스케일 원본 유지
         }
 
-        // 3. 최종 Transform 적용
-        State.Component->SetTransform(ObjNewTransform);
+        // ==========================================
+        // 부모-자식 계층 변환 (Local Transform으로 갱신)
+        // ==========================================
+        USceneComponent* ParentComp = State.Component->GetAttachParent();
+        if (ParentComp)
+        {
+            // 부모의 변환 행렬에서도 스케일을 배제한 RT 행렬만 추출하여 로컬 변환 시의 팽이 버그를 막습니다.
+            FTransform ParentTrans;
+            ParentTrans = ParentTrans.ToTransform(ParentComp->GetWorldMatrix());
+            
+            FMatrix<float> ParentRT = FRotationMatrix<float>(ParentTrans.Rotation) * FTranslationMatrix<float>(ParentTrans.Location);
+            FMatrix<float> ParentRTInv = ParentRT.Inverse();
+            
+            FMatrix<float> ObjNewWorldRT = FRotationMatrix<float>(ObjNewWorldTransform.Rotation) * FTranslationMatrix<float>(ObjNewWorldTransform.Location);
+            FMatrix<float> ObjNewLocalRT = ObjNewWorldRT * ParentRTInv;
+            
+            FTransform FinalLocalTransform;
+            FinalLocalTransform.Location = FVector<float>(ObjNewLocalRT.M[3][0], ObjNewLocalRT.M[3][1], ObjNewLocalRT.M[3][2]);
+            FinalLocalTransform.Rotation = ObjNewLocalRT.ToEuler();
+            FinalLocalTransform.Scale = ObjNewWorldTransform.Scale; // 로컬 스케일 유지
+            
+            State.Component->SetTransform(FinalLocalTransform);
+        }
+        else
+        {
+            State.Component->SetTransform(ObjNewWorldTransform);
+        }
     }
 }
 
