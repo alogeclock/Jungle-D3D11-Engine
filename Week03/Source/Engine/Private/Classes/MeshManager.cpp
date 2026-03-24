@@ -8,11 +8,11 @@ void UMeshManager::Initialize(URenderer& Renderer)
 {
     TArray<EPrimitiveType> PrimitiveTypes = {EPrimitiveType::Cube,  EPrimitiveType::Sphere, EPrimitiveType::Triangle,
                                              EPrimitiveType::Plane, EPrimitiveType::Arrow,  EPrimitiveType::CubeArrow,
-                                             EPrimitiveType::Ring,  EPrimitiveType::Axis,   EPrimitiveType::WireBox};
+                                             EPrimitiveType::Ring,  EPrimitiveType::Axis};
 
     TArray<TArray<FVertex>*> VerticesPtr = {&cube_vertices,  &sphere_vertices, &triangle_vertices,
                                             &plane_vertices, &arrow_vertices,  &cube_arrow_vertices,
-                                            &ring_vertices,  &axis_vertices,   &wirebox_vertices};
+                                            &ring_vertices,  &axis_vertices};
 
     for (int i = 0; i < PrimitiveTypes.size(); i++)
     {
@@ -31,12 +31,6 @@ void UMeshManager::Initialize(URenderer& Renderer)
         EPrimitiveType::Sphere,
         Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
     NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
-
-    IndexData.emplace(EPrimitiveType::WireBox, &wirebox_indices);
-    IndexBuffers.emplace(
-        EPrimitiveType::WireBox,
-        Renderer.CreateIndexBuffer(wirebox_indices.data(), static_cast<int>(wirebox_indices.size() * sizeof(uint16))));
-    NumIndices.emplace(EPrimitiveType::WireBox, static_cast<uint32>(wirebox_indices.size()));
 }
 
 void UMeshManager::Release(URenderer& renderer)

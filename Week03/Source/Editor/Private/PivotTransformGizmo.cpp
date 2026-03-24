@@ -369,7 +369,7 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
         FTransform ObjNewTransform;
 
         ObjNewTransform.Location = FVector<float>(ObjNewWorldMat.M[3][0], ObjNewWorldMat.M[3][1], ObjNewWorldMat.M[3][2]);
-        ObjNewTransform.Scale = State.InitialWorldTransform.Scale; // 스케일은 기즈모 변화율에 맞춰 별도 처리하거나 기존 유지
+        ObjNewTransform.Scale = State.InitialWorldTransform.Scale * NewGizmoTransform.Scale;
 
         USceneComponent* ParentComp = State.Component->GetAttachParent();
         if (ParentComp)

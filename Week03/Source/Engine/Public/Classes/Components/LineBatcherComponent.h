@@ -31,10 +31,14 @@ public:
 
     ULineBatcherComponent(const FString &InString);
     virtual ~ULineBatcherComponent() override;
+    
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 
 private:
     TArray<FVertex> RenderVertices;
     TArray<uint16>  RenderIndices;
+
     ID3D11Buffer *DynamicVertexBuffer = nullptr;
     ID3D11Buffer *DynamicIndexBuffer = nullptr;
     uint32 VertexBufferSize = 0;

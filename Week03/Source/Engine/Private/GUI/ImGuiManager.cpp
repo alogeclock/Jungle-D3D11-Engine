@@ -88,8 +88,10 @@ void UImGuiManager::Update()
 
 
     // Control Panel
-    ImGui::Begin("Jungle Control Panel");
-    ShowControlPanel();
+    if (ImGui::Begin("Jungle Control Panel"))
+    {
+        ShowControlPanel();
+    }
     ImGui::End();
 
     // Property Window
@@ -98,9 +100,11 @@ void UImGuiManager::Update()
     // ImGui::End();
 
     // Console
-    ImGui::Begin("Console");
-    bool open = true;
-    ShowExampleAppConsole(&open);
+    if (ImGui::Begin("Console"))
+    {
+        bool open = true;
+        ShowExampleAppConsole(&open);
+    }
     ImGui::End();
 
     // ImGui::Begin("Log");

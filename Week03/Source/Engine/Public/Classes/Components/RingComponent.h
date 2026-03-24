@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
@@ -10,5 +10,8 @@ public:
     URingComponent(const FString &InString);
 	virtual ~URingComponent() override;
 
-      protected:
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
+
+protected:
 };

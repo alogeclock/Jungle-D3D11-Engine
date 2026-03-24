@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
@@ -9,6 +9,9 @@ public:
 
     UCubeComponent(const FString &InString);
 	virtual ~UCubeComponent() override;
+
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 
 protected:
 };

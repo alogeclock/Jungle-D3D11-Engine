@@ -1,6 +1,9 @@
 ﻿#include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 
-ULineBatcherComponent::ULineBatcherComponent(const FString &InString) : UPrimitiveComponent(InString) { PrimitiveType = EPrimitiveType::LineBatcher; }
+ULineBatcherComponent::ULineBatcherComponent(const FString& InString) : UPrimitiveComponent(InString)
+{
+    PrimitiveType = EPrimitiveType::LineBatcher;
+}
 
 ULineBatcherComponent::~ULineBatcherComponent()
 {
@@ -16,7 +19,8 @@ ULineBatcherComponent::~ULineBatcherComponent()
     }
 }
 
-void ULineBatcherComponent::DrawLine(const FVector<float> &Start, const FVector<float> &End, const FVector4<float> &Color)
+void ULineBatcherComponent::DrawLine(const FVector<float>& Start, const FVector<float>& End,
+                                     const FVector4<float>& Color)
 {
     const uint16 StartIndex = static_cast<uint16>(RenderVertices.size());
 
@@ -40,7 +44,7 @@ void ULineBatcherComponent::DrawLines(std::span<const FBatchedLine> Lines)
 
     for (size_t i = 0; i < LineCount; ++i)
     {
-        const auto &Line = Lines[i];
+        const FBatchedLine& Line = Lines[i];
         RenderVertices.emplace_back(Line.Start, Line.Color);
         RenderVertices.emplace_back(Line.End, Line.Color);
 
@@ -50,7 +54,7 @@ void ULineBatcherComponent::DrawLines(std::span<const FBatchedLine> Lines)
     }
 }
 
-void ULineBatcherComponent::DrawBox(const FBox &Box, FVector4<float> Color)
+void ULineBatcherComponent::DrawBox(const FBox& Box, FVector4<float> Color)
 {
     const uint16 StartIndex = static_cast<uint16>(RenderVertices.size());
 
@@ -78,7 +82,7 @@ void ULineBatcherComponent::DrawBox(const FBox &Box, FVector4<float> Color)
     }
 }
 
-void ULineBatcherComponent::Render(URenderer &renderer)
+void ULineBatcherComponent::Render(URenderer& renderer)
 {
     if (RenderVertices.empty() || RenderIndices.empty())
     {
@@ -86,6 +90,7 @@ void ULineBatcherComponent::Render(URenderer &renderer)
     }
 
     renderer.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+    renderer.SetDepthStencilEnable(true);
 
     uint32 RequiredVertexBufferSize = static_cast<uint32>(RenderVertices.size() * sizeof(FVertex));
     uint32 RequiredIndexBufferSize = static_cast<uint32>(RenderIndices.size() * sizeof(uint16));
@@ -115,20 +120,46 @@ void ULineBatcherComponent::Render(URenderer &renderer)
     renderer.UpdateDynamicBuffer(DynamicVertexBuffer, RenderVertices.data(), RequiredVertexBufferSize);
     renderer.UpdateDynamicBuffer(DynamicIndexBuffer, RenderIndices.data(), RequiredIndexBufferSize);
 
-    FConstants constants = {};
-    constants.MVPMatrix = FMatrix<float>::Identity();
-    renderer.UpdateConstant(constants);
-
     renderer.DeviceContext->IASetInputLayout(renderer.LineInputLayout);
     renderer.DeviceContext->VSSetShader(renderer.LineVertexShader, nullptr, 0);
     renderer.DeviceContext->PSSetShader(renderer.LinePixelShader, nullptr, 0);
+
+    FConstants constants = {};
+    constants.MVPMatrix = FMatrix<float>::Identity();
+    renderer.UpdateConstant(constants);
     renderer.DeviceContext->VSSetConstantBuffers(0, 1, &renderer.ConstantBuffer);
 
-    renderer.DrawIndexed(DynamicVertexBuffer, DynamicIndexBuffer, static_cast<uint32>(RenderIndices.size()), sizeof(FVertex));
+    uint32 offset = 0;
+    renderer.DeviceContext->IASetVertexBuffers(0, 1, &DynamicVertexBuffer, &renderer.Stride, &offset);
+    renderer.DeviceContext->IASetIndexBuffer(DynamicIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    renderer.DeviceContext->DrawIndexed(static_cast<UINT>(RenderIndices.size()), 0, 0);
 }
 
 void ULineBatcherComponent::Flush()
 {
     RenderVertices.clear();
     RenderIndices.clear();
+}
+
+FRenderProxy* ULineBatcherComponent::CreateRenderProxy()
+{
+    FDynamicMeshRenderProxy* Proxy = new FDynamicMeshRenderProxy();
+    Proxy->Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+    return Proxy;
+}
+
+void ULineBatcherComponent::Submit()
+{
+    if (!RenderProxy) return;
+
+    FDynamicMeshRenderProxy* DynamicProxy = static_cast<FDynamicMeshRenderProxy*>(RenderProxy);
+    
+    DynamicProxy->Constants.MVPMatrix = GetWorldMatrix();
+    DynamicProxy->ConstantsColor = {Color.X, Color.Y, Color.Z, Color.W};
+    
+    // 동적 메쉬 특유의 버퍼 갱신 (런타임에 변하는 점들)
+    DynamicProxy->VertexBuffer = DynamicVertexBuffer;
+    DynamicProxy->IndexBuffer = DynamicIndexBuffer;
+    DynamicProxy->NumIndices = static_cast<uint32>(RenderIndices.size());
+    DynamicProxy->Stride = sizeof(FVertex);
 }

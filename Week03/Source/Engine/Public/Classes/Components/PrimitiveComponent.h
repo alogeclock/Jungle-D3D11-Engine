@@ -9,6 +9,8 @@
 #include "Source/Core/Public/Math/Box.h"
 #include "Source/Core/Public/Memory.h"
 
+#include "Source/Engine/Public/Rendering/RenderProxy.h"
+
 class URenderer;
 
 struct FHitResult
@@ -27,6 +29,10 @@ class UPrimitiveComponent : public USceneComponent
   public:
     UPrimitiveComponent(const FString &InString);
     virtual ~UPrimitiveComponent() override;
+    
+    // 팩토리 메서드: 자식 클래스(Cube, LineBatcher 등)에서 자신에게 맞는 Proxy를 생성하도록 강제
+    virtual void Submit();
+    virtual FRenderProxy* CreateRenderProxy();
 
     virtual void Render(URenderer &renderer);
     virtual void SetSelectEffect(bool Selected);
@@ -65,6 +71,8 @@ class UPrimitiveComponent : public USceneComponent
     virtual FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection);
 
   protected:
+    FRenderProxy* RenderProxy = nullptr;
+
     EPrimitiveType           PrimitiveType = EPrimitiveType::None;
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     ECullMode                CullMode = ECullMode::Back;

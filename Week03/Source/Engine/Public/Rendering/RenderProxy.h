@@ -1,5 +1,20 @@
 ﻿#pragma once
-#include "Source/Engine/Public/Rendering/Renderer.h"
+
+#include <d3d11.h>
+#include "Source/Core/Public/Math/Matrix.h"
+#include "CoreTypes.h"
+
+struct FConstants
+{
+    FMatrix<float> MVPMatrix;
+};
+
+struct FConstantsColor
+{
+    float r, g, b, a;
+};
+
+class URenderer;
 
 enum class ERenderCommandType
 {
@@ -32,8 +47,8 @@ class FRenderProxy
 {
 public:
     virtual ~FRenderProxy() = default;
-    
-    // 렌더러의 커맨드 큐에 자신을 그리는 커맨드를 조립하여 삽입
+
+    // 렌더러가 호출: 자신을 그릴 커맨드를 생성해서 렌더러의 큐에 집어넣음
     virtual void GenerateRenderCommand(class URenderer& Renderer) = 0;
 };
 

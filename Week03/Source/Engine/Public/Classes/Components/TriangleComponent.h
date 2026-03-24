@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
 
@@ -9,6 +9,9 @@ class UTriangleComponent : public UPrimitiveComponent
   public:
     UTriangleComponent(const FString &InString);
     virtual ~UTriangleComponent() override;
+
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 
   protected:
 };

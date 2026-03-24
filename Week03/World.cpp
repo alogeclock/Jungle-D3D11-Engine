@@ -341,6 +341,8 @@ AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
 
 void UWorld::Render(URenderer &renderer)
 {
+    LineBatcherComponent->Render(renderer);
+    LineBatcherComponent->Flush();
     if (CurrentLevel)
     {
         const auto& Actors = CurrentLevel->GetActors();
@@ -350,9 +352,6 @@ void UWorld::Render(URenderer &renderer)
             Actors[i]->IterateAllActorComponents(renderer);
         }
     }
-
-    LineBatcherComponent->Render(renderer);
-    LineBatcherComponent->Flush();
 }
 
 void UWorld::Tick(float deltaTime)

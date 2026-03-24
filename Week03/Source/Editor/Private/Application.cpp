@@ -6,6 +6,7 @@
 
 UApplication* GApplication = nullptr;
 UEditorEngine* GEditor = nullptr;
+FScene* GMainScene = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -74,6 +75,7 @@ UApplication::UApplication()
 {
     Renderer = new URenderer();
     Viewport = new FViewport();
+    GMainScene = new FScene();
     GEditor = new UEditorEngine("Editor");
     GWorld = new UWorld("World");
     GApplication = this;
@@ -199,6 +201,7 @@ void UApplication::Finish()
     Renderer->ReleaseConstantBuffer();
     Renderer->Release();
 
+    delete GMainScene;
 	delete GEditor;
 	delete GWorld;
 }
