@@ -1,7 +1,7 @@
 ﻿#include "Source/Editor/Public/PivotTransformGizmo.h"
-#include "Source/Engine/Public/GUI/ImGuiManager.h"
 #include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/EditorViewportClient.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
 
 APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTransformGizmo(InString)
 {
@@ -12,7 +12,8 @@ APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTrans
 
     const float HALF_PI = 1.570796f;
 
-    struct FGizmoAxisInfo {
+    struct FGizmoAxisInfo
+    {
         const char* Prefix;
         FVector<float> Rotation;
         FVector4<float> Color;
@@ -33,15 +34,20 @@ APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTrans
             FString CompName = FString(Axes[Axis].Prefix) + ComponentSuffixes[Mode];
             UPrimitiveComponent* Comp = nullptr;
 
-            if (Mode == 0) {
+            if (Mode == 0)
+            {
                 auto Arrow = new UArrowComponent(CompName);
                 TranslateGizmoComponents.push_back(Arrow);
                 Comp = Arrow;
-            } else if (Mode == 1) {
+            }
+            else if (Mode == 1)
+            {
                 auto Ring = new URingComponent(CompName);
                 RotateGizmoComponents.push_back(Ring);
                 Comp = Ring;
-            } else if (Mode == 2) {
+            }
+            else if (Mode == 2)
+            {
                 auto CubeArrow = new UCubeArrowComponent(CompName);
                 ScaleGizmoComponents.push_back(CubeArrow);
                 Comp = CubeArrow;
@@ -83,7 +89,7 @@ void APivotTransformGizmo::Tick(float DeltaTime)
     }
 
     FTransform CenterTransform;
-    if (!GetGizmoCenterTransform(CenterTransform))
+    if (!GetGizmoTargetTransform(CenterTransform))
     {
         UpdateVisibility();
         return;
@@ -99,18 +105,28 @@ void APivotTransformGizmo::Tick(float DeltaTime)
 void APivotTransformGizmo::UpdateVisibility()
 {
     // ... (기존 UpdateVisibility 유지)
-    for (auto* Comp : TranslateGizmoComponents) if (Comp) Comp->SetVisible(false);
-    for (auto* Comp : RotateGizmoComponents) if (Comp) Comp->SetVisible(false);
-    for (auto* Comp : ScaleGizmoComponents) if (Comp) Comp->SetVisible(false);
+    for (auto* Comp : TranslateGizmoComponents)
+        if (Comp)
+            Comp->SetVisible(false);
+    for (auto* Comp : RotateGizmoComponents)
+        if (Comp)
+            Comp->SetVisible(false);
+    for (auto* Comp : ScaleGizmoComponents)
+        if (Comp)
+            Comp->SetVisible(false);
 
-    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty()) return;
+    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
+        return;
 
     if (GizmoType == EGizmoHandleType::Translate)
-        for (auto* Comp : TranslateGizmoComponents) Comp->SetVisible(true);
+        for (auto* Comp : TranslateGizmoComponents)
+            Comp->SetVisible(true);
     else if (GizmoType == EGizmoHandleType::Rotate)
-        for (auto* Comp : RotateGizmoComponents) Comp->SetVisible(true);
+        for (auto* Comp : RotateGizmoComponents)
+            Comp->SetVisible(true);
     else if (GizmoType == EGizmoHandleType::Scale)
-        for (auto* Comp : ScaleGizmoComponents) Comp->SetVisible(true);
+        for (auto* Comp : ScaleGizmoComponents)
+            Comp->SetVisible(true);
 }
 
 bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FVector<float>& RayDir)
@@ -118,14 +134,14 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FV
     if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
         return false;
 
-    // [변경] 다중 선택 객체의 중심점을 기즈모의 초기 Transform으로 저장
+    // 가장 마지막으로 선택된 객체의 중심점을 기즈모의 초기 Transform으로 저장
     FTransform CenterTransform;
-    if (!GetGizmoCenterTransform(CenterTransform))
+    if (!GetGizmoTargetTransform(CenterTransform))
         return false;
 
     InitialGizmoTransform = CenterTransform;
 
-    // [추가] 선택된 모든 객체들의 컴포넌트와 초기 월드 Transform을 보관
+    // 선택된 모든 객체들의 컴포넌트와 초기 월드 Transform을 보관
     DraggingObjects.clear();
     TArray<USceneComponent*> TargetComps;
     GetTargetComponents(TargetComps);
@@ -142,12 +158,19 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FV
     std::vector<UPrimitiveComponent*>* ActiveComponents = nullptr;
     switch (GizmoType)
     {
-    case EGizmoHandleType::Translate: ActiveComponents = &TranslateGizmoComponents; break;
-    case EGizmoHandleType::Rotate: ActiveComponents = &RotateGizmoComponents; break;
-    case EGizmoHandleType::Scale: ActiveComponents = &ScaleGizmoComponents; break;
+    case EGizmoHandleType::Translate:
+        ActiveComponents = &TranslateGizmoComponents;
+        break;
+    case EGizmoHandleType::Rotate:
+        ActiveComponents = &RotateGizmoComponents;
+        break;
+    case EGizmoHandleType::Scale:
+        ActiveComponents = &ScaleGizmoComponents;
+        break;
     }
 
-    if (ActiveComponents == nullptr) return false;
+    if (ActiveComponents == nullptr)
+        return false;
 
     float MinDistance = FLT_MAX;
     int HitIndex = -1;
@@ -155,7 +178,8 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FV
     for (int i = 0; i < ActiveComponents->size(); ++i)
     {
         UPrimitiveComponent* Comp = (*ActiveComponents)[i];
-        if (Comp == nullptr) continue;
+        if (Comp == nullptr)
+            continue;
 
         FHitResult Hit = Comp->IntersectRay(RayOrigin, RayDir);
         if (Hit.bHit && Hit.Distance < MinDistance)
@@ -165,24 +189,31 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FV
         }
     }
 
-    if (HitIndex == -1) return false;
+    if (HitIndex == -1)
+        return false;
 
-    if (HitIndex == 0) ActiveAxis = EGizmoAxis::X;
-    else if (HitIndex == 1) ActiveAxis = EGizmoAxis::Y;
-    else if (HitIndex == 2) ActiveAxis = EGizmoAxis::Z;
+    if (HitIndex == 0)
+        ActiveAxis = EGizmoAxis::X;
+    else if (HitIndex == 1)
+        ActiveAxis = EGizmoAxis::Y;
+    else if (HitIndex == 2)
+        ActiveAxis = EGizmoAxis::Z;
 
     // [변경] InitialObjectTransform -> InitialGizmoTransform 으로 치환
     FMatrix<float> RotationMatrix = FRotationMatrix<float>(InitialGizmoTransform.Rotation);
     FVector4<float> Dir;
 
-    if (ActiveAxis == EGizmoAxis::X) Dir = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
-    else if (ActiveAxis == EGizmoAxis::Y) Dir = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
-    else if (ActiveAxis == EGizmoAxis::Z) Dir = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
+    if (ActiveAxis == EGizmoAxis::X)
+        Dir = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
+    else if (ActiveAxis == EGizmoAxis::Y)
+        Dir = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
+    else if (ActiveAxis == EGizmoAxis::Z)
+        Dir = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
 
     FVector<float> AxisDir(Dir.X, Dir.Y, Dir.Z);
     AxisDir.Normalize();
 
-    FVector<float> CameraDir = RayDir; 
+    FVector<float> CameraDir = RayDir;
     GizmoPlaneNormal = FVector<float>(-RayDir.X, -RayDir.Y, -RayDir.Z);
     GizmoPlaneNormal.Normalize();
 
@@ -231,16 +262,20 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
     case EGizmoAxis::X: {
         FVector4<float> Dir = FVector4<float>(1.0f, 0.0f, 0.0f, 0.0f) * RotationMatrix;
         AxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
-    } break;
+    }
+    break;
     case EGizmoAxis::Y: {
         FVector4<float> Dir = FVector4<float>(0.0f, 1.0f, 0.0f, 0.0f) * RotationMatrix;
         AxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
-    } break;
+    }
+    break;
     case EGizmoAxis::Z: {
         FVector4<float> Dir = FVector4<float>(0.0f, 0.0f, 1.0f, 0.0f) * RotationMatrix;
         AxisDir = FVector<float>(Dir.X, Dir.Y, Dir.Z);
-    } break;
-    default: return;
+    }
+    break;
+    default:
+        return;
     }
 
     AxisDir.Normalize();
@@ -251,25 +286,30 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
         FVector<float> PlaneNormal = AxisDir;
         float Denom = FVector<float>::DotProduct(RayDir, PlaneNormal);
 
-        if (std::abs(Denom) < 0.001f) return;
+        if (std::abs(Denom) < 0.001f)
+            return;
         float t = FVector<float>::DotProduct(GizmoOrigin - RayOrigin, PlaneNormal) / Denom;
-        if (t < 0.0f) return;
+        if (t < 0.0f)
+            return;
 
         FVector<float> HitPoint = RayOrigin + (RayDir * t);
         FVector<float> CurrentDragVector = HitPoint - GizmoOrigin;
         CurrentDragVector.Normalize();
 
         FVector<float> CrossProduct = FVector<float>::CrossProduct(InitialDragVector, CurrentDragVector);
-        float y = FVector<float>::DotProduct(CrossProduct, PlaneNormal); 
-        float x = FVector<float>::DotProduct(InitialDragVector, CurrentDragVector); 
+        float y = FVector<float>::DotProduct(CrossProduct, PlaneNormal);
+        float x = FVector<float>::DotProduct(InitialDragVector, CurrentDragVector);
 
         FMatrix<float> CurrentRotMat = FRotationMatrix<float>(InitialGizmoTransform.Rotation);
         float DeltaAngle = -std::atan2(y, x);
 
         FMatrix<float> DeltaRotMat;
-        if (ActiveAxis == EGizmoAxis::X) DeltaRotMat = FRotationXMatrix<float>(DeltaAngle);
-        else if (ActiveAxis == EGizmoAxis::Y) DeltaRotMat = FRotationYMatrix<float>(DeltaAngle);
-        else if (ActiveAxis == EGizmoAxis::Z) DeltaRotMat = FRotationZMatrix<float>(DeltaAngle);
+        if (ActiveAxis == EGizmoAxis::X)
+            DeltaRotMat = FRotationXMatrix<float>(DeltaAngle);
+        else if (ActiveAxis == EGizmoAxis::Y)
+            DeltaRotMat = FRotationYMatrix<float>(DeltaAngle);
+        else if (ActiveAxis == EGizmoAxis::Z)
+            DeltaRotMat = FRotationZMatrix<float>(DeltaAngle);
 
         FMatrix<float> NewRotMat = DeltaRotMat * CurrentRotMat;
         NewGizmoTransform.Rotation = NewRotMat.ToEuler();
@@ -277,9 +317,11 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
     else
     {
         float Denom = FVector<float>::DotProduct(RayDir, GizmoPlaneNormal);
-        if (std::abs(Denom) < 0.001f) return;
+        if (std::abs(Denom) < 0.001f)
+            return;
         float t = FVector<float>::DotProduct(GizmoOrigin - RayOrigin, GizmoPlaneNormal) / Denom;
-        if (t < 0.0f) return;
+        if (t < 0.0f)
+            return;
 
         FVector<float> HitPoint = RayOrigin + (RayDir * t);
         float AxisT = FVector<float>::DotProduct(HitPoint - GizmoOrigin, AxisDir);
@@ -294,13 +336,19 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
             const float ScaleSensitivity = 0.2f;
             const float MinScale = 0.01f;
 
-            if (ActiveAxis == EGizmoAxis::X) NewGizmoTransform.Scale.X += DeltaT * ScaleSensitivity;
-            else if (ActiveAxis == EGizmoAxis::Y) NewGizmoTransform.Scale.Y += DeltaT * ScaleSensitivity;
-            else if (ActiveAxis == EGizmoAxis::Z) NewGizmoTransform.Scale.Z += DeltaT * ScaleSensitivity;
+            if (ActiveAxis == EGizmoAxis::X)
+                NewGizmoTransform.Scale.X += DeltaT * ScaleSensitivity;
+            else if (ActiveAxis == EGizmoAxis::Y)
+                NewGizmoTransform.Scale.Y += DeltaT * ScaleSensitivity;
+            else if (ActiveAxis == EGizmoAxis::Z)
+                NewGizmoTransform.Scale.Z += DeltaT * ScaleSensitivity;
 
-            if (NewGizmoTransform.Scale.X < MinScale) NewGizmoTransform.Scale.X = MinScale;
-            if (NewGizmoTransform.Scale.Y < MinScale) NewGizmoTransform.Scale.Y = MinScale;
-            if (NewGizmoTransform.Scale.Z < MinScale) NewGizmoTransform.Scale.Z = MinScale;
+            if (NewGizmoTransform.Scale.X < MinScale)
+                NewGizmoTransform.Scale.X = MinScale;
+            if (NewGizmoTransform.Scale.Y < MinScale)
+                NewGizmoTransform.Scale.Y = MinScale;
+            if (NewGizmoTransform.Scale.Z < MinScale)
+                NewGizmoTransform.Scale.Z = MinScale;
         }
     }
 
@@ -314,20 +362,28 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
     for (FSelectedObjectState& State : DraggingObjects)
     {
         FMatrix<float> ObjInitialWorldMat = State.InitialWorldTransform.ToMatrix();
-        
+
         // 1. 객체를 기준점(초기 기즈모) 좌표계로 로컬 변환 후, 새로운 기즈모 월드 행렬을 곱해 갱신된 월드 좌표계 도출
         FMatrix<float> ObjNewWorldMat = ObjInitialWorldMat * GizmoInitialInv * GizmoNewWorldMat;
 
         FTransform ObjNewTransform;
-        ObjNewTransform = ObjNewTransform.ToTransform(ObjNewWorldMat);
 
-        // 2. 부모-자식 계층이 있는 경우 Local Transform으로 재변환
+        ObjNewTransform.Location = FVector<float>(ObjNewWorldMat.M[3][0], ObjNewWorldMat.M[3][1], ObjNewWorldMat.M[3][2]);
+        ObjNewTransform.Scale = State.InitialWorldTransform.Scale; // 스케일은 기즈모 변화율에 맞춰 별도 처리하거나 기존 유지
+
         USceneComponent* ParentComp = State.Component->GetAttachParent();
         if (ParentComp)
         {
+            // 2. 부모-자식 계층이 있는 경우 Local Transform으로 재변환
             FMatrix<float> ParentWorldInv = ParentComp->GetWorldMatrix().Inverse();
             FMatrix<float> ObjNewLocalMat = ObjNewWorldMat * ParentWorldInv;
-            ObjNewTransform = ObjNewTransform.ToTransform(ObjNewLocalMat);
+            
+            ObjNewTransform.Location = FVector<float>(ObjNewLocalMat.M[3][0], ObjNewLocalMat.M[3][1], ObjNewLocalMat.M[3][2]);
+            ObjNewTransform.Rotation = ObjNewLocalMat.ToEuler(); 
+        }
+        else
+        {
+            ObjNewTransform.Rotation = ObjNewWorldMat.ToEuler();
         }
 
         // 3. 최종 Transform 적용
@@ -337,19 +393,28 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
 
 void APivotTransformGizmo::OnMouseHover(const FVector<float>& RayOrigin, const FVector<float>& RayDir)
 {
-    if (bIsDragging) return;
-    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty()) return;
+    if (bIsDragging)
+        return;
+    if (!GEditor || !GEditor->GetSelection() || GEditor->GetSelection()->IsEmpty())
+        return;
 
     TArray<UPrimitiveComponent*>* ActiveComponents = nullptr;
 
     switch (GizmoType)
     {
-    case EGizmoHandleType::Translate: ActiveComponents = &TranslateGizmoComponents; break;
-    case EGizmoHandleType::Rotate: ActiveComponents = &RotateGizmoComponents; break;
-    case EGizmoHandleType::Scale: ActiveComponents = &ScaleGizmoComponents; break;
+    case EGizmoHandleType::Translate:
+        ActiveComponents = &TranslateGizmoComponents;
+        break;
+    case EGizmoHandleType::Rotate:
+        ActiveComponents = &RotateGizmoComponents;
+        break;
+    case EGizmoHandleType::Scale:
+        ActiveComponents = &ScaleGizmoComponents;
+        break;
     }
 
-    if (ActiveComponents == nullptr) return;
+    if (ActiveComponents == nullptr)
+        return;
 
     float MinDistance = FLT_MAX;
     int HitIndex = -1;
@@ -357,7 +422,8 @@ void APivotTransformGizmo::OnMouseHover(const FVector<float>& RayOrigin, const F
     for (int i = 0; i < ActiveComponents->size(); ++i)
     {
         UPrimitiveComponent* Comp = (*ActiveComponents)[i];
-        if (Comp == nullptr) continue;
+        if (Comp == nullptr)
+            continue;
 
         FHitResult Hit = Comp->IntersectRay(RayOrigin, RayDir);
         if (Hit.bHit && Hit.Distance < MinDistance)
@@ -368,9 +434,12 @@ void APivotTransformGizmo::OnMouseHover(const FVector<float>& RayOrigin, const F
     }
 
     EGizmoAxis NewHoveredAxis = EGizmoAxis::None;
-    if (HitIndex == 0) NewHoveredAxis = EGizmoAxis::X;
-    else if (HitIndex == 1) NewHoveredAxis = EGizmoAxis::Y;
-    else if (HitIndex == 2) NewHoveredAxis = EGizmoAxis::Z;
+    if (HitIndex == 0)
+        NewHoveredAxis = EGizmoAxis::X;
+    else if (HitIndex == 1)
+        NewHoveredAxis = EGizmoAxis::Y;
+    else if (HitIndex == 2)
+        NewHoveredAxis = EGizmoAxis::Z;
 
     if (HoveredAxis != NewHoveredAxis)
     {
@@ -400,7 +469,7 @@ bool APivotTransformGizmo::OnKeyDown(const FKey& Key)
 void APivotTransformGizmo::ToggleMode()
 {
     FTransform CenterTransform;
-    if (!GetGizmoCenterTransform(CenterTransform))
+    if (!GetGizmoTargetTransform(CenterTransform))
         return;
 
     uint32 CurrentModeIndex = static_cast<uint32>(GizmoType);
@@ -413,24 +482,30 @@ void APivotTransformGizmo::ToggleMode()
 void APivotTransformGizmo::UpdateColor()
 {
     // ... (기존 UpdateColor 유지)
-    auto ApplyColor = [&](TArray<UPrimitiveComponent *> &Comps)
-    {
-        if (Comps.size() < 3) return;
+    auto ApplyColor = [&](TArray<UPrimitiveComponent*>& Comps) {
+        if (Comps.size() < 3)
+            return;
 
-        FVector4<float> ColorX = {1.0f, 0.0f, 0.0f, 1.0f};     
-        FVector4<float> ColorY = {0.0f, 1.0f, 0.0f, 1.0f};     
-        FVector4<float> ColorZ = {0.0f, 0.0f, 1.0f, 1.0f};     
-        FVector4<float> HoverColor = {1.0f, 1.0f, 0.0f, 1.0f}; 
+        FVector4<float> ColorX = {1.0f, 0.0f, 0.0f, 1.0f};
+        FVector4<float> ColorY = {0.0f, 1.0f, 0.0f, 1.0f};
+        FVector4<float> ColorZ = {0.0f, 0.0f, 1.0f, 1.0f};
+        FVector4<float> HoverColor = {1.0f, 1.0f, 0.0f, 1.0f};
 
         EGizmoAxis HighlightAxis = bIsDragging ? ActiveAxis : HoveredAxis;
 
-        if (HighlightAxis == EGizmoAxis::X) ColorX = HoverColor;
-        else if (HighlightAxis == EGizmoAxis::Y) ColorY = HoverColor;
-        else if (HighlightAxis == EGizmoAxis::Z) ColorZ = HoverColor;
+        if (HighlightAxis == EGizmoAxis::X)
+            ColorX = HoverColor;
+        else if (HighlightAxis == EGizmoAxis::Y)
+            ColorY = HoverColor;
+        else if (HighlightAxis == EGizmoAxis::Z)
+            ColorZ = HoverColor;
 
-        if (Comps[0]) Comps[0]->SetColor(ColorX);
-        if (Comps[1]) Comps[1]->SetColor(ColorY);
-        if (Comps[2]) Comps[2]->SetColor(ColorZ);
+        if (Comps[0])
+            Comps[0]->SetColor(ColorX);
+        if (Comps[1])
+            Comps[1]->SetColor(ColorY);
+        if (Comps[2])
+            Comps[2]->SetColor(ColorZ);
     };
 
     ApplyColor(TranslateGizmoComponents);
@@ -458,21 +533,26 @@ FTransform APivotTransformGizmo::CalculateUnscaledTransform(FTransform TargetTra
         OrthoWidth = dir.Length() * 2.0f;
     }
 
-    FVector4<float> TargetWorldPos(TargetTransform.Location.X, TargetTransform.Location.Y, TargetTransform.Location.Z, 1.0f);
+    FVector4<float> TargetWorldPos(TargetTransform.Location.X, TargetTransform.Location.Y, TargetTransform.Location.Z,
+                                   1.0f);
     FVector4<float> TargetViewPos = TargetWorldPos * ViewMatrix;
 
     float Distance = std::abs(TargetViewPos.Z);
-    if (Distance < 0.01f) Distance = 0.01f; 
+    if (Distance < 0.01f)
+        Distance = 0.01f;
 
     float ScaleFactor = 1.0f;
 
     if (!bIsOrtho)
     {
         float ZDepth = std::abs(TargetViewPos.Z);
-        if (ZDepth < 0.01f) ZDepth = 0.01f;
+        if (ZDepth < 0.01f)
+            ZDepth = 0.01f;
 
-        float EuclideanDist = std::sqrt(TargetViewPos.X * TargetViewPos.X + TargetViewPos.Y * TargetViewPos.Y + TargetViewPos.Z * TargetViewPos.Z);
-        if (EuclideanDist < 0.01f) EuclideanDist = 0.01f;
+        float EuclideanDist = std::sqrt(TargetViewPos.X * TargetViewPos.X + TargetViewPos.Y * TargetViewPos.Y +
+                                        TargetViewPos.Z * TargetViewPos.Z);
+        if (EuclideanDist < 0.01f)
+            EuclideanDist = 0.01f;
 
         float CosineAngle = ZDepth / EuclideanDist;
         float CorrectedDistance = ZDepth * CosineAngle;
@@ -490,7 +570,7 @@ FTransform APivotTransformGizmo::CalculateUnscaledTransform(FTransform TargetTra
     return UnscaledTransform;
 }
 
-// [추가] Selection 배열 안의 실제 조작 타겟 컴포넌트들을 모두 추출하는 유틸리티
+// Selection 배열 안의 실제 조작 타겟 컴포넌트들을 모두 추출하는 유틸리티
 void APivotTransformGizmo::GetTargetComponents(TArray<USceneComponent*>& OutComponents)
 {
     USelection* Selection = GEditor->GetSelection();
@@ -509,33 +589,37 @@ void APivotTransformGizmo::GetTargetComponents(TArray<USceneComponent*>& OutComp
     }
 }
 
-// [추가] 선택된 모든 컴포넌트들의 위치를 평균내어 다중 선택 기준(Center Transform)을 도출
-bool APivotTransformGizmo::GetGizmoCenterTransform(FTransform& OutTransform)
+// 마지막으로 선택한 컴포넌트를 기준으로 중심점 도출
+bool APivotTransformGizmo::GetGizmoTargetTransform(FTransform& OutTransform)
 {
-    TArray<USceneComponent*> TargetComps;
-    GetTargetComponents(TargetComps);
-
-    if (TargetComps.empty())
+    USelection* Selection = GEditor->GetSelection();
+    if (!Selection || Selection->IsEmpty())
         return false;
 
-    FVector<float> CenterPos(0.0f, 0.0f, 0.0f);
-    for (USceneComponent* Comp : TargetComps)
-    {
-        FTransform TempTrans;
-        FTransform WorldTrans = TempTrans.ToTransform(Comp->GetWorldMatrix());
-        CenterPos += WorldTrans.Location;
-    }
-    CenterPos = CenterPos / static_cast<float>(TargetComps.size());
+    // Selection의 마지막 인덱스에 있는 객체가 '가장 마지막에 선택된 객체'입니다.
+    uint32 LastIndex = Selection->GetCount() - 1;
+    UObject* TargetObj = Selection->GetSelectedObject(LastIndex);
 
-    // 기즈모의 축 자체는 첫 번째 선택된 객체의 회전을 따르도록 설정 (또는 필요에 따라 월드 축(0,0,0)으로 변경 가능)
-    FTransform TempTransFirst;
-    FTransform FirstObjTrans = TempTransFirst.ToTransform(TargetComps[0]->GetWorldMatrix());
-    
-    OutTransform.Location = CenterPos;
-    OutTransform.Rotation = FirstObjTrans.Rotation;
-    OutTransform.Scale = FVector<float>(1.0f, 1.0f, 1.0f); // 기즈모 표시 스케일은 오버라이드 되므로 1로 설정
+    USceneComponent* PivotComp = nullptr;
+
+    if (AActor* SelectedActor = Cast<AActor>(TargetObj))
+    {
+        PivotComp = SelectedActor->GetRootComponent();
+    }
+    else if (USceneComponent* SelectedComp = Cast<USceneComponent>(TargetObj))
+    {
+        PivotComp = SelectedComp;
+    }
+
+    if (!PivotComp)
+        return false;
+
+    FTransform TempTrans;
+    FTransform WorldTrans = TempTrans.ToTransform(PivotComp->GetWorldMatrix());
+
+    OutTransform.Location = WorldTrans.Location;
+    OutTransform.Rotation = WorldTrans.Rotation;
+    OutTransform.Scale = FVector<float>(1.0f, 1.0f, 1.0f); // 기즈모 시각적 표시용이므로 1.0 고정
 
     return true;
 }
-
-// GetAnchorComponent() 함수는 더 이상 사용되지 않으므로 삭제합니다.
