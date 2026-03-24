@@ -13,6 +13,7 @@ UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UTex
     bMeshDirty = true;
     CurrentTime = 0;
     bLoop = true;
+    PrimitiveType = EPrimitiveType::SubUV;
 
     SetScale({3.f, 3.f, 3.f});
 }
@@ -37,6 +38,7 @@ void UParticleSubUVComponent::RebuildMesh()
 {
     //std::cout << FilePath << std::endl;
     TextVertices.reserve(6);
+    TextIndeices.reserve(6);
 
     uint32 Row = Height / SpriteSize;
     uint32 Collum = Width / SpriteSize;
@@ -83,7 +85,7 @@ void UParticleSubUVComponent::RebuildMesh()
     TextIndeices.push_back(2);
     TextIndeices.push_back(1);
     TextIndeices.push_back(3);
-    TextIndeices.push_back(2);
+    TextIndeices.push_back(2); 
     bMeshDirty = true;
 }
 

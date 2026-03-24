@@ -53,13 +53,13 @@ namespace std
 class FNamePool
 {
   private:
-    // 고유 이름과 키
-    TMap<FString, uint32> NameToUniqueIndex;
-
-    TArray<FString> UniqueNameArray;
-
     // 같은 이름(소문자로 통일)이면 같은 인덱스
     TMap<FString, uint32> ComparsionPool;
+
+    // 고유 이름과 키
+    TMap<FString, uint32> NameToUniqueIndex;
+    TArray<FString> UniqueNameArray;
+
 
   public:
     FName   AddName(const FString &InString);

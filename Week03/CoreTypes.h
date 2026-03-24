@@ -63,6 +63,7 @@ enum class EPrimitiveType : uint8
 	Text,
     UUID,
 	LineBatcher,
+    SubUV,
 };
 
 enum class ECullMode : uint8
