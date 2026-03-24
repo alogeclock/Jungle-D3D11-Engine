@@ -202,6 +202,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\ParticleSubUVComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\TextLoader.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\TextBatcherComponent.cpp" />
+    <ClCompile Include="Source\Engine\Private\GUI\SceneWindowTab.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -248,6 +249,7 @@
     <ClInclude Include="Source\Engine\Public\GUI\EngineStaticsGUI.h" />
     <ClInclude Include="Source\Engine\Public\GUI\GuiMsg.h" />
     <ClInclude Include="Source\Engine\Public\GUI\Outliner.h" />
+    <ClInclude Include="Source\Engine\Public\GUI\SceneWindowTab.h" />
     <ClInclude Include="Source\Engine\Public\GUI\SpawnGUI.h" />
     <ClInclude Include="Source\Engine\Public\GUI\Tabbar.h" />
     <ClInclude Include="Source\Engine\Public\GUI\SceneWindow.h" />

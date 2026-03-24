@@ -112,18 +112,39 @@ void UImGuiManager::Update()
     }
     ImGui::End();
 
+    ImGui::Begin("##Yar", nullptr, ImGuiWindowFlags_NoTitleBar);
+    if (ImGui::BeginTabBar("##Nice"))
+    {
+        if (ImGui::BeginTabItem("Console"))
+        {
+            bool open = true;
+            ShowExampleAppConsole(&open);
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Scene"))
+        {
+            SceneTab.ShowWindow();
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
+    }
+    ImGui::End();
+
+
     // Property Window
     // ImGui::Begin("Jungle Property Window");
     // TransformInspector();
     // ImGui::End();
 
     // Console
-    if (ImGui::Begin("Console"))
-    {
-        bool open = true;
-        ShowExampleAppConsole(&open);
-    }
-    ImGui::End();
+    //if (ImGui::Begin("Console"))
+    //{
+    //    bool open = true;
+    //    ShowExampleAppConsole(&open);
+    //}
+    //ImGui::End();
 
     // ImGui::Begin("Log");
     // if (ImGui::Button("GUObjectArray", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
