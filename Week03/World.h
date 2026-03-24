@@ -4,6 +4,7 @@
 #include "Source/Engine/Object/Public/Level.h"
 #include "Source/Engine/Object/Public/Object.h"
 #include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
+#include "Source/Engine/Public/Classes/Components/TextBatcherComponent.h"
 
 class ULevel;
 class AActor;
@@ -55,10 +56,16 @@ public:
         return LineBatcherComponent;
     }
 
+    UTextBatcherComponent* GetTextBatcherComponent()
+    {
+        return TextBatcherComponent;
+    }
+
 private:
     ULevel* CurrentLevel;
     TSet<ULevel*> Levels;
     ULineBatcherComponent* LineBatcherComponent;
+    UTextBatcherComponent* TextBatcherComponent;
 
     // 지정된 레벨에 액터를 생성 및 종속시키는 헬퍼 함수
     template <typename T> T* SpawnActorForLevel(ULevel* TargetLevel, const FString& ActorName)

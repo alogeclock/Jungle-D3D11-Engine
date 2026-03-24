@@ -4,6 +4,7 @@
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 #include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 #include "World.h"
+#include "Source/Core/Public/FName.h"
 
 
 bool FSpawnGUI::GetVisible()
@@ -98,7 +99,7 @@ void FSpawnGUI::ShowDetail()
                 if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
                 {
                     if (TextComp->IsExactly(UTextComponent::StaticClass()))
-                        TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));
+                        TextComp->SetText("박상혁 김호준 전현길 김기홍");
                 }
 
                 UObject* NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());

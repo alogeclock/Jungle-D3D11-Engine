@@ -54,6 +54,7 @@ enum class EPrimitiveType : uint8
 	Cube,
 	Triangle,
 	Plane,
+    Billboard,
 	Arrow,
 	CubeArrow,
 	Ring,
@@ -63,6 +64,7 @@ enum class EPrimitiveType : uint8
 	Text,
     UUID,
 	LineBatcher,
+    TextBatcher,
     SubUV,
 };
 

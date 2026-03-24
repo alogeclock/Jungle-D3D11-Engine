@@ -4,6 +4,7 @@
 #include "Source/Editor/Public/Grid.h"
 #include "Source/Editor/Public/PivotTransformGizmo.h"
 #include "Source/Editor/Public/Axis.h"
+#include "Source/Editor/Public/EditorSpriteActor.h"
 
 // 모든 Primitive Component 헤더 포함
 #include "Source/Engine/Public/Classes/Components/SphereComponent.h"
@@ -30,6 +31,7 @@ UWorld::UWorld(const FString &InString) : UObject(InString)
 {
     CurrentLevel = CreateNewLevel("PersistentLevel");
     LineBatcherComponent = new ULineBatcherComponent("LineBatcherComponent");
+    TextBatcherComponent = new UTextBatcherComponent("TextBatcherComponent");
 }
 
 UWorld::~UWorld()
@@ -38,6 +40,11 @@ UWorld::~UWorld()
     {
         delete LineBatcherComponent;
         LineBatcherComponent = nullptr;
+    }
+    if (TextBatcherComponent)
+    {
+        delete TextBatcherComponent;
+        TextBatcherComponent = nullptr;
     }
 
     for (ULevel* Level : Levels)
@@ -61,6 +68,7 @@ ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
     SpawnActorForLevel<AGrid>(NewLevel, "EditorGrid");
     SpawnActorForLevel<AAxis>(NewLevel, "EditorAxis");
     SpawnActorForLevel<APivotTransformGizmo>(NewLevel, "EditorGizmo");
+    SpawnActorForLevel<AEditorSpriteActor>(NewLevel, "EditorSprite");
 
     return NewLevel;
 }
@@ -341,6 +349,7 @@ AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
 
 void UWorld::Render(URenderer &renderer)
 {
+
     LineBatcherComponent->Render(renderer);
     LineBatcherComponent->Flush();
     if (CurrentLevel)
@@ -352,6 +361,8 @@ void UWorld::Render(URenderer &renderer)
             Actors[i]->IterateAllActorComponents(renderer);
         }
     }
+    TextBatcherComponent->Render(renderer);
+    TextBatcherComponent->Flush(renderer);
 }
 
 void UWorld::Tick(float deltaTime)
