@@ -119,17 +119,19 @@ void ULineBatcherComponent::Render(URenderer& renderer)
     renderer.UpdateDynamicBuffer(DynamicVertexBuffer, RenderVertices.data(), RequiredVertexBufferSize);
     renderer.UpdateDynamicBuffer(DynamicIndexBuffer, RenderIndices.data(), RequiredIndexBufferSize);
 
-    FConstants constants = {};
-    constants.MVPMatrix = FMatrix<float>::Identity();
-    renderer.UpdateConstant(constants);
-
     renderer.DeviceContext->IASetInputLayout(renderer.LineInputLayout);
     renderer.DeviceContext->VSSetShader(renderer.LineVertexShader, nullptr, 0);
     renderer.DeviceContext->PSSetShader(renderer.LinePixelShader, nullptr, 0);
+
+    FConstants constants = {};
+    constants.MVPMatrix = FMatrix<float>::Identity();
+    renderer.UpdateConstant(constants);
     renderer.DeviceContext->VSSetConstantBuffers(0, 1, &renderer.ConstantBuffer);
 
-    renderer.DrawIndexed(DynamicVertexBuffer, DynamicIndexBuffer, static_cast<uint32>(RenderIndices.size()),
-                         sizeof(FVertex));
+    uint32 offset = 0;
+    renderer.DeviceContext->IASetVertexBuffers(0, 1, &DynamicVertexBuffer, &renderer.Stride, &offset);
+    renderer.DeviceContext->IASetIndexBuffer(DynamicIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    renderer.DeviceContext->DrawIndexed(static_cast<UINT>(RenderIndices.size()), 0, 0);
 }
 
 void ULineBatcherComponent::Flush()

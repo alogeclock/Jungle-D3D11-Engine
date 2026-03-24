@@ -10,6 +10,13 @@ UGridComponent::UGridComponent(const FString& InString) : UPrimitiveComponent(In
 
 UGridComponent::~UGridComponent()
 {
+#ifdef _DEBUG
+    if (DynamicVertexBuffer)
+    {
+        DynamicVertexBuffer->Release();
+        DynamicVertexBuffer = nullptr;
+    }
+#endif
 }
 
 void UGridComponent::SetGridStep(float InGridStep)
@@ -26,13 +33,54 @@ void UGridComponent::Render(URenderer& renderer)
     if (bNeedRebuild)
     {
         RebuildGridLines();
+
+#ifdef _DEBUG
+        if (!GridLines.empty())
+        {
+            uint32 RequiredVertexBufferSize = static_cast<uint32>(GridLines.size() * 2 * sizeof(FVertex));
+            if (RequiredVertexBufferSize > VertexBufferSize)
+            {
+                if (DynamicVertexBuffer)
+                {
+                    DynamicVertexBuffer->Release();
+                }
+                VertexBufferSize = (std::max)(RequiredVertexBufferSize, VertexBufferSize * 2);
+                DynamicVertexBuffer = renderer.CreateDynamicVertexBuffer(VertexBufferSize);
+            }
+            std::vector<FVertex> Vertices;
+            Vertices.reserve(GridLines.size() * 2);
+            for (const FBatchedLine& Line : GridLines)
+            {
+                Vertices.emplace_back(Line.Start, Line.Color);
+                Vertices.emplace_back(Line.End, Line.Color);
+            }
+            renderer.UpdateDynamicBuffer(DynamicVertexBuffer, Vertices.data(), RequiredVertexBufferSize);
+        }
+#endif
+
         bNeedRebuild = false;
     }
 
+#ifndef _DEBUG
     if (!GridLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)
     {
         GWorld->GetLineBatcherComponent()->DrawLines(GridLines);
     }
+#else
+    if (!GridLines.empty() && DynamicVertexBuffer != nullptr)
+    {
+        renderer.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+        FConstants constants = {};
+        constants.MVPMatrix = FMatrix<float>::Identity();
+        renderer.UpdateConstant(constants);
+        renderer.DeviceContext->IASetInputLayout(renderer.LineInputLayout);
+        renderer.DeviceContext->VSSetShader(renderer.LineVertexShader, nullptr, 0);
+        renderer.DeviceContext->PSSetShader(renderer.LinePixelShader, nullptr, 0);
+        uint32 offset = 0;
+        renderer.DeviceContext->IASetVertexBuffers(0, 1, &DynamicVertexBuffer, &renderer.Stride, &offset);
+        renderer.DeviceContext->Draw(static_cast<UINT>(GridLines.size() * 2), 0);
+    }
+#endif
 }
 
 void UGridComponent::RebuildGridLines()

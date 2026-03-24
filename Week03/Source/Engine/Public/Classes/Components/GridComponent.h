@@ -19,5 +19,11 @@ private:
     float GridStep = 1.0f;
     int GridSize = 1000;
     bool bNeedRebuild = true;
+
+#ifdef _DEBUG
+    ID3D11Buffer* DynamicVertexBuffer = nullptr;
+    uint32 VertexBufferSize = 0;
+#endif
+
     void RebuildGridLines();
 };

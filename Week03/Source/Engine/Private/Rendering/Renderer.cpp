@@ -634,19 +634,6 @@ void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &cons
     }
 }
 
-void URenderer::Draw(ID3D11Buffer *vertexBuffer, uint32 numVertices, uint32 InStride) {
-    uint32 offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &InStride, &offset);
-    DeviceContext->Draw(numVertices, 0);
-}
-
-void URenderer::DrawIndexed(ID3D11Buffer *vertexBuffer, ID3D11Buffer *indexBuffer, uint32 numIndices, uint32 InStride) {
-    uint32 offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &InStride, &offset);
-    DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0); // uint16 인덱스
-    DeviceContext->DrawIndexed(numIndices, 0, 0);
-}
-
 ID3D11Buffer *URenderer::CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth)
 {
     // Create a vertex buffer
