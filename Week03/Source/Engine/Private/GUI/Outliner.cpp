@@ -5,9 +5,9 @@
 void FOutliner::ShowOutliner()
 {
     USelection* Selection = GEditor->GetSelection();
-
+    ImGui::Checkbox("Debug", &bInDebug);
     ShowObjectInfo(Selection->GetSelectedObject());
-    ImGui::SetCursorPosY(100.f);
+    ImGui::SetCursorPosY(120.f);
     ImGui::BeginChild("OutlinerRegion", ImVec2(0, outlinerHeight), true);
     {
         ShowOutliner(GUObjectArray);
@@ -87,6 +87,7 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
     TArray<FProperty>& Properties = InObject->GetClass()->GetProperties();
     for (const auto& Property : Properties)
     {
+        ImGui::Text(Property.Name.c_str());
         if (Property.Type == EPropertyType::UObjectPtr)
         {
             UObject** ObjectPtr = reinterpret_cast<UObject**>(Property.GetValuePtr(InObject));
@@ -95,7 +96,6 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
             if (Object == nullptr)
                 continue;
 
-            ImGui::Separator();
             if (ImGui::Button(Object->GetName().ToString().c_str(), {100.f, 15.f}))
             {
                 Selection->Clear();
@@ -106,15 +106,20 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
         {
             UObject** ObjectPtr = reinterpret_cast<UObject**>(Property.GetValuePtr(InObject));
             UObject* Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
-            // ImGui::Separator();
+            if (Object == nullptr)
+                continue;
+
+            FString DisplayText = ": ";
+            DisplayText  += Object->GetName().ToString();
+            ImGui::SameLine();
+            ImGui::Text(DisplayText.c_str());
             ShowObjectProperty(Object);
+
         }
         else if (Property.Type == EPropertyType::Transform)
         {
             FTransform* Transform = reinterpret_cast<FTransform*>(Property.GetValuePtr(InObject));
             float align = 100.f;
-            ImGui::Separator();
-            ImGui::Text("Transform");
 
             ImGui::Text("Location");
             ImGui::SameLine();
@@ -138,7 +143,6 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
         else if (Property.Type == EPropertyType::Float)
         {
             float* FloatType = reinterpret_cast<float*>(Property.GetValuePtr(InObject));
-            ImGui::Separator();
             ImGui::DragFloat(Property.Name.c_str(), FloatType);
         }
         else if (Property.Type == EPropertyType::UObjectPtrArray)
@@ -147,8 +151,6 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
 
             if (!ArrayPtr)
                 continue;
-            ImGui::Separator();
-            ImGui::Text(Property.Name.c_str());
             for (UObject* Object : *ArrayPtr)
             {
                 if (!Object)
@@ -176,6 +178,19 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
                 *StringPtr = FString(buffer);
             }
         }
+        else if (Property.Type == EPropertyType::Bool)
+        {
+            bool* BoolPtr = reinterpret_cast<bool*>(Property.GetValuePtr(InObject));
+            if (!BoolPtr)
+                return;
+
+            ImGui::Checkbox(Property.Name.c_str(), BoolPtr);
+        }
+        else
+        {
+            ImGui::Text(Property.Name.c_str());
+        }
+        ImGui::Separator();
     }
 }
 
@@ -195,7 +210,8 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
         if (!Object->GetOuter() && Name == FName("World"))
         {
             RootObjects.push_back(Object);
-            continue;
+            if (!bInDebug)
+                continue;
         }
 
         OuterGraph[Object->GetOuter()].push_back(Object);
@@ -258,8 +274,7 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
             bOpened = ImGui::TreeNodeEx(Label.c_str(),
                                         Flags | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow);
 
-        const bool bSelectableType =
-            Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
+        const bool bSelectableType = bInDebug || Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
 
         if (ImGui::IsItemClicked() && bSelectableType)
         {
@@ -337,66 +352,6 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
         {
             Selection->Clear();
             Selection->AddObject(Target);
-        }
-    }
-}
-
-void FOutliner::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies,
-                                 TSet<UObject*>& Visited)
-{
-    if (Object == nullptr)
-        return;
-    if (Visited.contains(Object))
-        return;
-
-    FString Name = "";
-    Name += Object->GetName().ToString() + " UUID: " + std::to_string(Object->GetUUID());
-
-    Visited.insert(Object);
-
-    TArray<UObject*> childs = Dependencies[Object];
-    ImVec2 ButtonSize(100, 10);
-    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
-    bool opened = false;
-
-    USelection* Selection = GEditor->GetSelection();
-    if (Selection->IsSelected(Object))
-        flags |= ImGuiTreeNodeFlags_Selected;
-
-    if (childs.size() <= 0)
-    {
-        opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_Leaf);
-        if (ImGui::IsItemClicked() &&
-            (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            if (!io.KeyCtrl)
-                Selection->Clear();
-            Selection->AddObject(Object);
-        }
-
-        if (opened)
-        {
-            ImGui::TreePop();
-        }
-    }
-    else
-    {
-        opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_DefaultOpen);
-        if (ImGui::IsItemClicked() &&
-            (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            if (!io.KeyCtrl)
-                Selection->Clear();
-            Selection->AddObject(Object);
-        }
-        if (opened)
-        {
-            for (const auto& child : childs)
-                ShowOutliner(child, Dependencies, Visited);
-
-            ImGui::TreePop();
         }
     }
 }

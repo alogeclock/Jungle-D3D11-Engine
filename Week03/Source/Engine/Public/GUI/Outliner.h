@@ -4,6 +4,8 @@
 
 class FOutliner
 {
+    bool bInDebug;
+
 public:
     void ShowOutliner();
     void ShowObjectInfo(UObject* InObject);
