@@ -133,6 +133,10 @@ void ULineBatcherComponent::Render(URenderer& renderer)
     renderer.DeviceContext->IASetVertexBuffers(0, 1, &DynamicVertexBuffer, &renderer.Stride, &offset);
     renderer.DeviceContext->IASetIndexBuffer(DynamicIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
     renderer.DeviceContext->DrawIndexed(static_cast<UINT>(RenderIndices.size()), 0, 0);
+
+    renderer.DeviceContext->IASetInputLayout(renderer.SimpleInputLayout);
+    renderer.DeviceContext->VSSetShader(renderer.SimpleVertexShader, nullptr, 0);
+    renderer.DeviceContext->PSSetShader(renderer.SimplePixelShader, nullptr, 0);
 }
 
 void ULineBatcherComponent::Flush()

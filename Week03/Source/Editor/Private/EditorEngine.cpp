@@ -1,17 +1,41 @@
 ﻿#include "Source/Editor/Public/EditorEngine.h"
-#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 #include "Source/Editor/Public/EditorViewportClient.h"
+#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
 UEditorEngine::UEditorEngine(const FString& InString) : UObject(InString)
 {
     Selection = new USelection();
+    Grid = new AGrid("EditorGrid");
+    Axis = new AAxis("EditorAxis");
+    Gizmo = new APivotTransformGizmo("TransformGizmo");
+
+    RegisterInputListener(Gizmo);
 }
 
 UEditorEngine::~UEditorEngine()
 {
     Selection->Clear();
     InputListeners.clear();
-    
+
+    if (Grid)
+    {
+        delete Grid;
+        Grid = nullptr;
+    }
+
+    if (Axis)
+    {
+        delete Axis;
+        Axis = nullptr;
+    }
+
+    if (Gizmo)
+    {
+        UnregisterInputListener(Gizmo);
+        delete Gizmo;
+        Gizmo = nullptr;
+    }
+
     if (Selection)
     {
         delete Selection;
@@ -27,11 +51,29 @@ UEditorEngine::~UEditorEngine()
 
 void UEditorEngine::Tick(float DeltaTime)
 {
+    if (Grid)
+    {
+        Grid->Tick(DeltaTime);
+    }
+    if (Axis)
+    {
+        Axis->Tick(DeltaTime);
+    }
+
+    if (Gizmo)
+    {
+        Gizmo->Tick(DeltaTime);
+    }
+
     if (ViewportClient)
     {
         // Viewport 객체 포인터는 Application 등에서 넘겨받거나 ViewportClient 내부에 캐싱된 것을 사용
-        ViewportClient->Tick(DeltaTime); 
+        ViewportClient->Tick(DeltaTime);
     }
+
+    Grid->SubmitAllActorComponents();
+    Axis->SubmitAllActorComponents();
+    Gizmo->SubmitAllActorComponents();
 }
 
 void UEditorEngine::RegisterInputListener(IViewportInputListener* Listener)
@@ -124,7 +166,7 @@ void USelection::Clear()
 {
     for (auto obj : SelectedObjects)
     {
-       // 1. 단일 컴포넌트가 선택되어 있었던 경우
+        // 1. 단일 컴포넌트가 선택되어 있었던 경우
         UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(obj);
         if (PrimComp)
         {
@@ -142,7 +184,6 @@ void USelection::Clear()
                 if (ChildPrimComp)
                 {
                     ChildPrimComp->SetSelectEffect(false);
-
                 }
             }
         }
@@ -155,11 +196,11 @@ void USelection::AddObject(UObject* InObject)
     // 이미 선택된 객체라면 중복 추가 방지 및 렌더링 오버헤드 최소화
     if (!InObject || IsSelected(InObject))
     {
-        return; 
+        return;
     }
 
     SelectedObjects.push_back(InObject);
-    
+
     // 1. 추가된 객체가 단일 컴포넌트인 경우
     UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(InObject);
     if (PrimComp)

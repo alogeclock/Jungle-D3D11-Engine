@@ -821,3 +821,8 @@ void URenderer::SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology)
     Topology = InTopology;
     DeviceContext->IASetPrimitiveTopology(Topology);
 }
+
+void URenderer::RenderScene(FScene* Scene)
+{
+
+}

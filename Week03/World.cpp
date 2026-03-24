@@ -58,10 +58,6 @@ ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
     NewLevel->SetOuter(this);
     Levels.insert(NewLevel);
 
-    SpawnActorForLevel<AGrid>(NewLevel, "EditorGrid");
-    SpawnActorForLevel<AAxis>(NewLevel, "EditorAxis");
-    SpawnActorForLevel<APivotTransformGizmo>(NewLevel, "EditorGizmo");
-
     return NewLevel;
 }
 

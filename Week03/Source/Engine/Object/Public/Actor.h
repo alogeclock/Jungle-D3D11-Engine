@@ -30,6 +30,7 @@ class AActor : public UObject
     virtual void Tick(float deltaTime);
 
     void IterateAllActorComponents(URenderer &renderer) const;
+    void SubmitAllActorComponents() const;
 };
 
 template<typename T>

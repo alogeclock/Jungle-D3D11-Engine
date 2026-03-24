@@ -6,7 +6,9 @@
 #include "Source/Core/Public/Math/Vector.h"
 
 class UPrimitiveComponent;
-
+class APivotTransformGizmo;
+class AGrid;
+class AAxis;
 class FEditorViewportClient;
 class FViewport;
 
@@ -118,12 +120,18 @@ public:
 
     // 입력 분석 후 현재 선택한 오브젝트를 Selection 배열에 삽입
     void UpdateSelection(UPrimitiveComponent* HitComp);
+    APivotTransformGizmo* GetGizmo() const { return Gizmo; }
+    AGrid* GetGrid() { return Grid; }
+    AAxis* GetAxis() { return Axis; }
 
 protected:
     USelection* Selection;
     TArray<IViewportInputListener*> InputListeners;
 
     FEditorViewportClient* ViewportClient = nullptr;
+    AGrid* Grid = nullptr;
+    AAxis* Axis = nullptr;
+    APivotTransformGizmo* Gizmo = nullptr;
 };
 
 extern UEditorEngine* GEditor;
