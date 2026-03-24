@@ -925,34 +925,3 @@ TArray<FVertex> ring_vertices = {
     {{0.9f, -0.f, 0.f}, {1.0f, 1.0f, 0.0f, 1.0f}},  {{0.9f, -0.f, 0.f}, {1.0f, 1.0f, 0.0f, 1.0f}},
     {{0.995185f, -0.098017f, 0.f}, {1.0f, 1.0f, 0.0f, 1.0f}},  {{1.f, -0.f, 0.f}, {1.0f, 1.0f, 0.0f, 1.0f}},
 };
-
-TArray<FVertex> axis_vertices = 
-{
-    // 파란색 (+z축)
-    {{0.0f, 0.0f, 1000.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},     
-    // 초록색 (+y축)
-    {{0.0f, 1000.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-    {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},    
-    // 빨간색 (+x축)
-    {{1000.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-    {{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}
-};
-
-TArray<FVertex> wirebox_vertices= {
-    {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 0: Bottom-Left-Back
-    {{ 0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 1: Bottom-Right-Back
-    {{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 2: Top-Right-Back
-    {{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 3: Top-Left-Back
-    {{-0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 4: Bottom-Left-Front
-    {{ 0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 5: Bottom-Right-Front
-    {{ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 6: Top-Right-Front
-    {{-0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}, // 7: Top-Left-Front
-};
-
-// 12개의 선 (24개 인덱스)
-TArray<uint16> wirebox_indices = {
-    0, 1, 1, 2, 2, 3, 3, 0, // Back face
-    4, 5, 5, 6, 6, 7, 7, 4, // Front face
-    0, 4, 1, 5, 2, 6, 3, 7  // Connecting edges
-};

@@ -8,11 +8,11 @@ void UMeshManager::Initialize(URenderer& Renderer)
 {
     TArray<EPrimitiveType> PrimitiveTypes = {EPrimitiveType::Cube,  EPrimitiveType::Sphere, EPrimitiveType::Triangle,
                                              EPrimitiveType::Plane, EPrimitiveType::Arrow,  EPrimitiveType::CubeArrow,
-                                             EPrimitiveType::Ring,  EPrimitiveType::Axis,   EPrimitiveType::SubUV};
+                                             EPrimitiveType::Ring};
 
     TArray<TArray<FVertex>*> VerticesPtr = {&cube_vertices,  &sphere_vertices, &triangle_vertices,
                                             &plane_vertices, &arrow_vertices,  &cube_arrow_vertices,
-                                            &ring_vertices,  &axis_vertices,   &subUV_vertices};
+                                            &ring_vertices};
 
     for (int i = 0; i < PrimitiveTypes.size(); i++)
     {

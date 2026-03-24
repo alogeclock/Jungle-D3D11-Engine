@@ -4,6 +4,7 @@
 #include "Source/Editor/Public/Grid.h"
 #include "Source/Editor/Public/PivotTransformGizmo.h"
 #include "Source/Editor/Public/Axis.h"
+#include "Source/Editor/Public/EditorSpriteActor.h"
 
 // 모든 Primitive Component 헤더 포함
 #include "Source/Engine/Public/Classes/Components/SphereComponent.h"
@@ -67,6 +68,7 @@ ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
     SpawnActorForLevel<AGrid>(NewLevel, "EditorGrid");
     SpawnActorForLevel<AAxis>(NewLevel, "EditorAxis");
     SpawnActorForLevel<APivotTransformGizmo>(NewLevel, "EditorGizmo");
+    SpawnActorForLevel<AEditorSpriteActor>(NewLevel, "EditorSprite");
 
     return NewLevel;
 }

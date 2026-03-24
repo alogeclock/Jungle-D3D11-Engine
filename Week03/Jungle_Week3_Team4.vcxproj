@@ -149,6 +149,8 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Editor\Private\EditorEngine.cpp" />
+    <ClCompile Include="Source\Editor\Private\EditorSpriteActor.cpp" />
+    <ClCompile Include="Source\Editor\Public\EditorSpriteActor.h" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\LineBatcherComponent.cpp" />
     <ClCompile Include="Source\Core\Private\FName.cpp" />
     <ClCompile Include="Source\Core\Private\FNamePool.cpp" />
@@ -157,6 +159,7 @@
     <ClCompile Include="Source\Editor\Private\Axis.cpp" />
     <ClCompile Include="Source\Editor\Private\Grid.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\ArrowComponent.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\Components\BillboardComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\CubeArrowComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\CubeComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\Components\GridComponent.cpp" />
@@ -228,6 +231,7 @@
     <ClInclude Include="Source\Editor\Public\Axis.h" />
     <ClInclude Include="Source\Editor\Public\Grid.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\ArrowComponent.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\Components\BillboardComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\CubeArrowComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\CubeComponent.h" />
     <ClInclude Include="Source\Engine\Public\Classes\Components\GridComponent.h" />
