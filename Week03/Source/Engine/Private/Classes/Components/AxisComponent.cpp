@@ -51,16 +51,6 @@ void UAxisComponent::RebuildAxisLines()
 
 void UAxisComponent::Submit()
 {
-    if (!RenderProxy) return;
-
-    UPrimitiveComponent::Submit();
-    FRenderCommand &Command = RenderProxy->RenderCommand;
-
-    Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
-    Command.IndexBuffer = UMeshManager::Get().GetIndexBuffer(PrimitiveType);
-    Command.NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
-    Command.NumIndices = UMeshManager::Get().GetNumIndices(PrimitiveType);
-    Command.Stride = sizeof(FVertex);
 }
 
 /*

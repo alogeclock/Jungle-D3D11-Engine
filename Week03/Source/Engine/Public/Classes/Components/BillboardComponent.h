@@ -24,6 +24,7 @@ public:
                                  const FVector<float>& CameraLookAt);
 
     virtual void Render(URenderer& renderer) override;
+    virtual void Submit() override;
 
     void SetTexturePath(const FString& InTexturePath) { TexturePath = InTexturePath; }
     const FString& GetTexturePath() const { return TexturePath; }

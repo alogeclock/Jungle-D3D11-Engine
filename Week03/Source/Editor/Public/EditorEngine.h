@@ -11,6 +11,7 @@ class AGrid;
 class AAxis;
 class FEditorViewportClient;
 class FViewport;
+class AEditorSpriteActor;
 
 struct FKey
 {
@@ -134,6 +135,8 @@ protected:
     AGrid* Grid = nullptr;
     AAxis* Axis = nullptr;
     APivotTransformGizmo* Gizmo = nullptr;
+    AEditorSpriteActor* EditorSprite = nullptr;
+
 };
 
 extern UEditorEngine *GEditor;

@@ -1,5 +1,6 @@
 ﻿#include "Source/Editor/Public/EditorEngine.h"
 #include "Source/Editor/Public/EditorViewportClient.h"
+#include "Source/Editor/Public/EditorSpriteActor.h"
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
 UEditorEngine::UEditorEngine(const FString& InString) : UObject(InString)
@@ -7,7 +8,8 @@ UEditorEngine::UEditorEngine(const FString& InString) : UObject(InString)
     Selection = new USelection("EditorSelection");
     Grid = new AGrid("EditorGrid");
     Axis = new AAxis("EditorAxis");
-    Gizmo = new APivotTransformGizmo("TransformGizmo");
+    Gizmo = new APivotTransformGizmo("EditorTransformGizmo");
+    EditorSprite = new AEditorSpriteActor("EditorSpriteActor");
 
     RegisterInputListener(Gizmo);
 }
@@ -16,7 +18,20 @@ UEditorEngine::~UEditorEngine()
 {
     Selection->Clear();
     InputListeners.clear();
+    
+    if (EditorSprite)
+    {
+        delete EditorSprite;
+        EditorSprite = nullptr;
+    }
 
+    if (Gizmo)
+    {
+        UnregisterInputListener(Gizmo);
+        delete Gizmo;
+        Gizmo = nullptr;
+    }
+    
     if (Grid)
     {
         delete Grid;
@@ -27,13 +42,6 @@ UEditorEngine::~UEditorEngine()
     {
         delete Axis;
         Axis = nullptr;
-    }
-
-    if (Gizmo)
-    {
-        UnregisterInputListener(Gizmo);
-        delete Gizmo;
-        Gizmo = nullptr;
     }
 
     if (Selection)
@@ -70,6 +78,11 @@ void UEditorEngine::Tick(float DeltaTime)
     if (Gizmo)
     {
         Gizmo->Tick(DeltaTime);
+    }
+
+    if (EditorSprite)
+    {
+        EditorSprite->Tick(DeltaTime);
     }
 
     Axis->SubmitAllActorComponents();

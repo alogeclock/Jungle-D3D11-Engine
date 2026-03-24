@@ -188,11 +188,14 @@ void UApplication::Render()
 
     Renderer->Prepare(ViewOptions);
     Renderer->RenderScene(GMainScene);
-    
+
     // [TODO] LineBatcher, TextBatcher 역시 한 개의 함수로 관리하기
     GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
+    GEditor->GetAxis()->GetAxisComponent()->Render(*Renderer);
     GWorld->GetLineBatcherComponent()->Render(*Renderer);
     GWorld->GetLineBatcherComponent()->Flush();
+    GWorld->GetTextBatcherComponent()->Render(*Renderer);
+    GWorld->GetTextBatcherComponent()->Flush(*Renderer);
 
     // ViewportClient->Render(*Renderer);
     UImGuiManager::Get().Update();
@@ -208,9 +211,14 @@ void UApplication::Finish()
     Renderer->ReleaseConstantBuffer();
     Renderer->Release();
 
-    delete GMainScene;
 	delete GEditor;
-	delete GWorld;
+    GEditor = nullptr;
+
+    delete GWorld;
+    GWorld = nullptr;
+
+    delete GMainScene;
+    GMainScene = nullptr;
 }
 
 void UApplication::OnResize(uint32 NewWidth, uint32 NewHeight)

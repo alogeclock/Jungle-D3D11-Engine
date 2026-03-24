@@ -92,8 +92,6 @@ ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
     NewLevel->SetOuter(this);
     Levels.insert(NewLevel);
 
-    SpawnActorForLevel<AEditorSpriteActor>(NewLevel, "EditorSprite");
-
     return NewLevel;
 }
 

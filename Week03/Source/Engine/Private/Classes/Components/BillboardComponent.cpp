@@ -135,3 +135,15 @@ void UBillboardComponent::Render(URenderer& renderer)
     }
     renderer.UndoRenderText();
 }
+
+void UBillboardComponent::Submit()
+{
+    UPrimitiveComponent::Submit();
+    FRenderCommand &Command = RenderProxy->RenderCommand;
+
+    Command.VertexBuffer = GpuBuffers->VertexBuffer.Get();
+    Command.IndexBuffer = GpuBuffers->IndexBuffer.Get();
+    Command.NumVertices = BillboardVertices.size();
+    Command.NumIndices = BillboardIndices.size();
+    Command.Stride = sizeof(FVertex);
+}
