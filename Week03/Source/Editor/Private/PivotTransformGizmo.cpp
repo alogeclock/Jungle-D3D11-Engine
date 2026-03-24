@@ -396,20 +396,27 @@ void APivotTransformGizmo::OnMouseMove(const FVector<float>& RayOrigin, const FV
         USceneComponent* ParentComp = State.Component->GetAttachParent();
         if (ParentComp)
         {
-            // 부모의 변환 행렬에서도 스케일을 배제한 RT 행렬만 추출하여 로컬 변환 시의 팽이 버그를 막습니다.
+            // 부모의 월드 매트릭스에서 깨끗한 Transform 추출
             FTransform ParentTrans;
             ParentTrans = ParentTrans.ToTransform(ParentComp->GetWorldMatrix());
-            
-            FMatrix<float> ParentRT = FRotationMatrix<float>(ParentTrans.Rotation) * FTranslationMatrix<float>(ParentTrans.Location);
-            FMatrix<float> ParentRTInv = ParentRT.Inverse();
-            
-            FMatrix<float> ObjNewWorldRT = FRotationMatrix<float>(ObjNewWorldTransform.Rotation) * FTranslationMatrix<float>(ObjNewWorldTransform.Location);
-            FMatrix<float> ObjNewLocalRT = ObjNewWorldRT * ParentRTInv;
-            
+
             FTransform FinalLocalTransform;
-            FinalLocalTransform.Location = FVector<float>(ObjNewLocalRT.M[3][0], ObjNewLocalRT.M[3][1], ObjNewLocalRT.M[3][2]);
-            FinalLocalTransform.Rotation = ObjNewLocalRT.ToEuler();
-            FinalLocalTransform.Scale = ObjNewWorldTransform.Scale; // 로컬 스케일 유지
+
+            // 월드 위치를 부모의 온전한 역행렬(스케일 포함) 공간으로 매핑해야 거리가 정상적으로 축소/유지됩니다.
+            FMatrix<float> ParentWorldInv = ParentComp->GetWorldMatrix().Inverse();
+            FVector4<float> LocalPos4 = FVector4<float>(ObjNewWorldTransform.Location.X, ObjNewWorldTransform.Location.Y, ObjNewWorldTransform.Location.Z, 1.0f) * ParentWorldInv;
+            FinalLocalTransform.Location = FVector<float>(LocalPos4.X, LocalPos4.Y, LocalPos4.Z);
+
+            // 전단 행렬 버그(Shear)를 막기 위해 회전은 무조건 순수 회전 행렬끼리의 역행렬 곱셈으로만 구합니다.
+            FMatrix<float> WorldRotMat = FRotationMatrix<float>(ObjNewWorldTransform.Rotation);
+            FMatrix<float> ParentRotMat = FRotationMatrix<float>(ParentTrans.Rotation);
+            FMatrix<float> LocalRotMat = WorldRotMat * ParentRotMat.Inverse();
+            FinalLocalTransform.Rotation = LocalRotMat.ToEuler();
+
+            // WorldScale = LocalScale * ParentScale 이므로, 나눗셈을 통해 순수한 로컬 스케일만 남깁니다.
+            FinalLocalTransform.Scale.X = (ParentTrans.Scale.X != 0.0f) ? (ObjNewWorldTransform.Scale.X / ParentTrans.Scale.X) : ObjNewWorldTransform.Scale.X;
+            FinalLocalTransform.Scale.Y = (ParentTrans.Scale.Y != 0.0f) ? (ObjNewWorldTransform.Scale.Y / ParentTrans.Scale.Y) : ObjNewWorldTransform.Scale.Y;
+            FinalLocalTransform.Scale.Z = (ParentTrans.Scale.Z != 0.0f) ? (ObjNewWorldTransform.Scale.Z / ParentTrans.Scale.Z) : ObjNewWorldTransform.Scale.Z;
             
             State.Component->SetTransform(FinalLocalTransform);
         }
