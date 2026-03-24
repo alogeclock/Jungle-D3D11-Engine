@@ -23,6 +23,7 @@ class UMeshManager : public UObject
     void Release(URenderer &Renderer);
 
     FBox ComputeAABB(const TArray<FVertex> &Vertices);
+    FBox ComputeAABB(const TArray<FTextureVertex> &Vertices);
     FBox GetMeshAABB(EPrimitiveType Type) const;
 
     ID3D11Buffer    *GetVertexBuffer(EPrimitiveType Type) const;

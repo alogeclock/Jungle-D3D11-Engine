@@ -470,7 +470,7 @@ void URenderer::PrepareShader()
 
 void URenderer::RenderText(
     FString FilePath, FConstants& constants,
-    TArray<FTextVertex>* vertices, TArray<uint32>* indices,
+    TArray<FTextureVertex>* vertices, TArray<uint32>* indices,
     ID3D11Buffer** InOutVertexBuffer, ID3D11Buffer** InOutIndexBuffer,
     uint32& InOutVBSize, uint32& InOutIBSize)   // ← split into two size params
 {
@@ -482,7 +482,7 @@ void URenderer::RenderText(
     if (!fontSRV) return;
 
     // ── 1. Vertex buffer: recreate only when missing or too small ────────────
-    const UINT vbDataSize = sizeof(FTextVertex) * static_cast<UINT>(vertices->size());
+    const UINT vbDataSize = sizeof(FTextureVertex) * static_cast<UINT>(vertices->size());
 
     if (*InOutVertexBuffer == nullptr || InOutVBSize < vbDataSize)
     {
@@ -538,7 +538,7 @@ void URenderer::RenderText(
     // ── 6. IA stage ──────────────────────────────────────────────────────────
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // ← was missing
 
-    UINT stride = sizeof(FTextVertex), offset = 0;
+    UINT stride = sizeof(FTextureVertex), offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, InOutVertexBuffer, &stride, &offset);
     DeviceContext->IASetIndexBuffer(*InOutIndexBuffer, DXGI_FORMAT_R32_UINT, 0);   // ← was missing
     DeviceContext->IASetInputLayout(TextInputLayout);

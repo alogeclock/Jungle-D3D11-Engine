@@ -384,6 +384,40 @@ void UPrimitiveComponent::UpdateBounds()
     WorldAABB.Max = WorldCenter + WorldExtents;
 }
 
+void UPrimitiveComponent::UpdateBoundsTexture(TArray<FTextureVertex>* vertices)
+{
+    if (bLocalBoundsDirty)
+    {
+        LocalAABB = UMeshManager::Get().ComputeAABB(*vertices);
+
+        FVector<float> Min = LocalAABB.Min;
+        FVector<float> Max = LocalAABB.Max;                                                               
+
+        bLocalBoundsDirty = false;
+    }
+
+    FMatrix<float> WorldMatrix = GetWorldMatrix();
+
+    // 1. 로컬 AABB의 중심(Center)과 반직경(Extents) 계산
+    FVector<float> LocalCenter = (LocalAABB.Max + LocalAABB.Min) * 0.5f;
+    FVector<float> LocalExtents = (LocalAABB.Max - LocalAABB.Min) * 0.5f;
+
+    // 2. 중심점 이동 (Center * Matrix)
+    FVector4<float> WorldCenter4 = FVector4<float>(LocalCenter.X, LocalCenter.Y, LocalCenter.Z, 1.0f) * WorldMatrix;
+    FVector<float>  WorldCenter = FVector<float>(WorldCenter4.X, WorldCenter4.Y, WorldCenter4.Z);
+
+    // 3. 회전 행렬의 절댓값을 적용하여 새로운 Extents 계산 (Scale 적용됨)
+    // (WorldMatrix의 3x3 부분의 절댓값과 LocalExtents를 내적)
+    FVector<float> WorldExtents(
+        std::abs(WorldMatrix.M[0][0]) * LocalExtents.X + std::abs(WorldMatrix.M[1][0]) * LocalExtents.Y + std::abs(WorldMatrix.M[2][0]) * LocalExtents.Z,
+        std::abs(WorldMatrix.M[0][1]) * LocalExtents.X + std::abs(WorldMatrix.M[1][1]) * LocalExtents.Y + std::abs(WorldMatrix.M[2][1]) * LocalExtents.Z,
+        std::abs(WorldMatrix.M[0][2]) * LocalExtents.X + std::abs(WorldMatrix.M[1][2]) * LocalExtents.Y + std::abs(WorldMatrix.M[2][2]) * LocalExtents.Z);
+
+    // 4. 새로운 World AABB 갱신
+    WorldAABB.Min = WorldCenter - WorldExtents;
+    WorldAABB.Max = WorldCenter + WorldExtents;
+}
+
 const FBox &UPrimitiveComponent::GetWorldAABB()
 {
     UpdateBounds();

@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Source/Engine/Public/Classes/Components/TextComponent.h"
 
 struct CharacterInfo
 {
-    float u;      // UV ½ÃÀÛ X (0~1)
-    float v;      // UV ½ÃÀÛ Y (0~1)
-    float width;  // UV Æø
-    float height; // UV ³ôÀÌ
+    float u;      // UV ì‹œì‘ X (0~1)
+    float v;      // UV ì‹œì‘ Y (0~1)
+    float width;  // UV í­
+    float height; // UV ë†’ì´
     bool bIsKorean = false;
 };
 
@@ -19,7 +19,7 @@ public:
   static void InitializeCharInfo();
   static bool bIsKorean(const FString& text);
   static const CharacterInfo *GetCharInfo(wchar_t InChar);
-  static void BuildTextMesh(const FString& text, TArray<FTextVertex>* TextVertices, TArray<uint32>* TextIndeices);
+  static void BuildTextMesh(const FString& text, TArray<FTextureVertex>* TextVertices, TArray<uint32>* TextIndeices);
 
 private:
   static TMap<wchar_t, CharacterInfo> charInfoMap;

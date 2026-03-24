@@ -114,7 +114,7 @@ class URenderer
     void Prepare(const FSceneViewOptions &ViewOptions);
     void PrepareShader();
 
-    void RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices,TArray<uint32> *indices, ID3D11Buffer** InOutVertexBuffer, ID3D11Buffer **IndexBuffer, uint32& InOutBufferSize, uint32& InOutIBSize);
+    void RenderText(FString FilePath, FConstants &constants, TArray<FTextureVertex> *vertices,TArray<uint32> *indices, ID3D11Buffer** InOutVertexBuffer, ID3D11Buffer **IndexBuffer, uint32& InOutBufferSize, uint32& InOutIBSize);
     void RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor);
 
     void Draw(ID3D11Buffer *vertexBuffer, uint32 numVertices, uint32 InStride);
