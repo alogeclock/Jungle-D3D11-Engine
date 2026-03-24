@@ -106,10 +106,14 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
         {
             UObject** ObjectPtr = reinterpret_cast<UObject**>(Property.GetValuePtr(InObject));
             UObject* Object = (ObjectPtr != nullptr) ? *ObjectPtr : nullptr;
+            if (Object == nullptr)
+                continue;
 
-           ImGui::BeginChild("DetailRegion", ImVec2(0, outlinerHeight), true);
+            FString DisplayText = ": ";
+            DisplayText  += Object->GetName().ToString();
+            ImGui::SameLine();
+            ImGui::Text(DisplayText.c_str());
             ShowObjectProperty(Object);
-           ImGui::EndChild();
 
         }
         else if (Property.Type == EPropertyType::Transform)
@@ -181,6 +185,10 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
                 return;
 
             ImGui::Checkbox(Property.Name.c_str(), BoolPtr);
+        }
+        else
+        {
+            ImGui::Text(Property.Name.c_str());
         }
         ImGui::Separator();
     }
