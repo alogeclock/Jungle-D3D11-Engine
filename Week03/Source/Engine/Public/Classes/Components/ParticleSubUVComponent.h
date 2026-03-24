@@ -20,6 +20,5 @@ class UParticleSubUVComponent : public UTextComponent
     virtual void RebuildMesh() override;
 
     virtual void Submit() override;
-    virtual FRenderProxy* CreateRenderProxy() override;
 };
 

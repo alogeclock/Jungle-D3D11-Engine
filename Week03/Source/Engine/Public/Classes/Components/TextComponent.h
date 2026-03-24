@@ -18,7 +18,6 @@ public :
     virtual void RebuildMesh();
 
     virtual void Submit() override;
-    virtual FRenderProxy* CreateRenderProxy() override;
     
     const FString &GetText() const { return Text; }
  

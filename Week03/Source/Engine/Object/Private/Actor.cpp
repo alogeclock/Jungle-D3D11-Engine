@@ -90,7 +90,7 @@ void AActor::IterateAllActorComponents(URenderer& renderer) const
 
         if (PrimitiveComp != nullptr)
         {
-            PrimitiveComp->Render(renderer);
+            PrimitiveComp->Submit();
         }
     }
 }

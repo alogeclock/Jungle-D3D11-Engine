@@ -74,9 +74,11 @@ public:
 };
 
 // 선택된 객체(Object)들을 관리하는 전용 컨테이너
-class USelection
+class USelection : public UObject
 {
 public:
+    USelection(const FString& InName) : UObject(InName) {}
+
     void Clear();
 
     void AddObject(UObject* InObject);
@@ -134,4 +136,4 @@ protected:
     APivotTransformGizmo* Gizmo = nullptr;
 };
 
-inline UEditorEngine* GEditor = nullptr;
+extern UEditorEngine *GEditor;

@@ -121,7 +121,3 @@ void UTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, cons
 void UTextComponent::Submit()
 {
 }
-
-FRenderProxy* UTextComponent::CreateRenderProxy()
-{
-}

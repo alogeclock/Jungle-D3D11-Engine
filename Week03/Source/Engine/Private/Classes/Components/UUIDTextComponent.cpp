@@ -76,7 +76,3 @@ void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, 
 void UUUIDTextComponent::Submit()
 {
 }
-
-FRenderProxy* UUUIDTextComponent::CreateRenderProxy()
-{
-}

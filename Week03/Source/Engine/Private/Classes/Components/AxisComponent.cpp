@@ -63,6 +63,7 @@ void UAxisComponent::Submit()
     Command.Stride = sizeof(FVertex);
 }
 
+/*
 FRenderProxy* UAxisComponent::CreateRenderProxy()
 {
     FStaticMeshRenderProxy* Proxy = new FStaticMeshRenderProxy();
@@ -70,3 +71,4 @@ FRenderProxy* UAxisComponent::CreateRenderProxy()
     Proxy->Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     return Proxy;
 }
+*/

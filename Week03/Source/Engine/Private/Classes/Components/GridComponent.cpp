@@ -118,14 +118,4 @@ void UGridComponent::RebuildGridLines()
 
 void UGridComponent::Submit()
 {
-    if (bNeedRebuild)
-    {
-        RebuildGridLines();
-        bNeedRebuild = false;
-    }
-
-    if (!GridLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)
-    {
-        GWorld->GetLineBatcherComponent()->DrawLines(GridLines);
-    }
 }

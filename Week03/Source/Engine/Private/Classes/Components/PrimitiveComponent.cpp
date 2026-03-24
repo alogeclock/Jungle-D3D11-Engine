@@ -30,9 +30,14 @@ UPrimitiveComponent::~UPrimitiveComponent()
     }
 }
 
-void UPrimitiveComponent::Submit() 
+void UPrimitiveComponent::Submit()
 {
     FRenderCommand &Command = RenderProxy->RenderCommand;
+
+    Command.bIsVisible = this->bIsVisible; 
+
+    if (!bIsVisible)
+        return;
 
     Command.Constants.MVPMatrix = GetWorldMatrix();    
     Command.ConstantsColor = FConstantsColor(Color.X, Color.Y, Color.Z, Color.W);

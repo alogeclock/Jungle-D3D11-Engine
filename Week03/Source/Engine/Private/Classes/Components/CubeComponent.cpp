@@ -19,6 +19,7 @@ void UCubeComponent::Submit()
     Command.Stride = sizeof(FVertex);
 }
 
+/*
 FRenderProxy* UCubeComponent::CreateRenderProxy()
 {
     FStaticMeshRenderProxy* Proxy = new FStaticMeshRenderProxy();
@@ -26,3 +27,4 @@ FRenderProxy* UCubeComponent::CreateRenderProxy()
     Proxy->Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     return Proxy;
 }
+*/

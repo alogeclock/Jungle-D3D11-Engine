@@ -145,25 +145,7 @@ void ULineBatcherComponent::Flush()
     RenderIndices.clear();
 }
 
-FRenderProxy* ULineBatcherComponent::CreateRenderProxy()
-{
-    FDynamicMeshRenderProxy* Proxy = new FDynamicMeshRenderProxy();
-    Proxy->Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
-    return Proxy;
-}
-
+// 실제로 LineBatcher Component는 따로 렌더링된다.
 void ULineBatcherComponent::Submit()
 {
-    if (!RenderProxy) return;
-
-    FDynamicMeshRenderProxy* DynamicProxy = static_cast<FDynamicMeshRenderProxy*>(RenderProxy);
-    
-    DynamicProxy->Constants.MVPMatrix = GetWorldMatrix();
-    DynamicProxy->ConstantsColor = {Color.X, Color.Y, Color.Z, Color.W};
-    
-    // 동적 메쉬 특유의 버퍼 갱신 (런타임에 변하는 점들)
-    DynamicProxy->VertexBuffer = DynamicVertexBuffer;
-    DynamicProxy->IndexBuffer = DynamicIndexBuffer;
-    DynamicProxy->NumIndices = static_cast<uint32>(RenderIndices.size());
-    DynamicProxy->Stride = sizeof(FVertex);
 }

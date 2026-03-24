@@ -104,7 +104,6 @@ void APivotTransformGizmo::Tick(float DeltaTime)
 
 void APivotTransformGizmo::UpdateVisibility()
 {
-    // ... (기존 UpdateVisibility 유지)
     for (auto* Comp : TranslateGizmoComponents)
         if (Comp)
             Comp->SetVisible(false);
@@ -517,7 +516,7 @@ void APivotTransformGizmo::ToggleMode()
 
 void APivotTransformGizmo::UpdateColor()
 {
-    // ... (기존 UpdateColor 유지)
+    //  (기존 UpdateColor 유지)
     auto ApplyColor = [&](TArray<UPrimitiveComponent*>& Comps) {
         if (Comps.size() < 3)
             return;

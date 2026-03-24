@@ -4,7 +4,7 @@
 
 UEditorEngine::UEditorEngine(const FString& InString) : UObject(InString)
 {
-    Selection = new USelection();
+    Selection = new USelection("EditorSelection");
     Grid = new AGrid("EditorGrid");
     Axis = new AAxis("EditorAxis");
     Gizmo = new APivotTransformGizmo("TransformGizmo");
@@ -51,10 +51,17 @@ UEditorEngine::~UEditorEngine()
 
 void UEditorEngine::Tick(float DeltaTime)
 {
+    if (ViewportClient)
+    {
+        // Viewport 객체 포인터는 Application 등에서 넘겨받거나 ViewportClient 내부에 캐싱된 것을 사용
+        ViewportClient->Tick(DeltaTime);
+    }
+
     if (Grid)
     {
         Grid->Tick(DeltaTime);
     }
+
     if (Axis)
     {
         Axis->Tick(DeltaTime);
@@ -65,13 +72,6 @@ void UEditorEngine::Tick(float DeltaTime)
         Gizmo->Tick(DeltaTime);
     }
 
-    if (ViewportClient)
-    {
-        // Viewport 객체 포인터는 Application 등에서 넘겨받거나 ViewportClient 내부에 캐싱된 것을 사용
-        ViewportClient->Tick(DeltaTime);
-    }
-
-    Grid->SubmitAllActorComponents();
     Axis->SubmitAllActorComponents();
     Gizmo->SubmitAllActorComponents();
 }

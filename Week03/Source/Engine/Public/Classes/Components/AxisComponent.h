@@ -17,7 +17,6 @@ public:
 	void Render(URenderer& renderer) override;
 
     virtual void Submit() override;
-    virtual FRenderProxy* CreateRenderProxy() override;
 
 private:
 	TArray<FBatchedLine> AxisLines;

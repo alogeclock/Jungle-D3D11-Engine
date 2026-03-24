@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 UApplication* GApplication = nullptr;
-//UEditorEngine* GEditor = nullptr;
+UEditorEngine* GEditor = nullptr;
 FScene* GMainScene = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -177,6 +177,8 @@ void UApplication::Tick(float DeltaTime)
 
 void UApplication::Render()
 {
+    GWorld->Submit();
+
     FEditorViewportClient* ViewportClient = Viewport->GetViewportClient();
 
     FSceneViewOptions ViewOptions;
@@ -185,9 +187,14 @@ void UApplication::Render()
     ViewOptions.bDrawAABB = ViewportClient->GetDrawAABB();
 
     Renderer->Prepare(ViewOptions);
+    Renderer->RenderScene(GMainScene);
+    
+    // [TODO] LineBatcher, TextBatcher 역시 한 개의 함수로 관리하기
+    GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
+    GWorld->GetLineBatcherComponent()->Render(*Renderer);
+    GWorld->GetLineBatcherComponent()->Flush();
 
-    GWorld->Render(*Renderer);
-    ViewportClient->Render(*Renderer);
+    // ViewportClient->Render(*Renderer);
     UImGuiManager::Get().Update();
 
     Renderer->SwapBuffer();
