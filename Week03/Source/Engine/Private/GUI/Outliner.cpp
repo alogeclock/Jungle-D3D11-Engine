@@ -5,9 +5,9 @@
 void FOutliner::ShowOutliner()
 {
     USelection* Selection = GEditor->GetSelection();
-
+    ImGui::Checkbox("Debug", &bInDebug);
     ShowObjectInfo(Selection->GetSelectedObject());
-    ImGui::SetCursorPosY(100.f);
+    ImGui::SetCursorPosY(120.f);
     ImGui::BeginChild("OutlinerRegion", ImVec2(0, outlinerHeight), true);
     {
         ShowOutliner(GUObjectArray);
@@ -208,13 +208,15 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
         FName Name = Object->GetName();
         if (Name == FName("EditorGrid") || Name == FName("EditorAxis") || Name == FName("EditorGizmo"))
         {
-            continue;
+            if (!bInDebug)
+                continue;
         }
 
         if (!Object->GetOuter() && Name == FName("World"))
         {
             RootObjects.push_back(Object);
-            continue;
+            if (!bInDebug)
+                continue;
         }
 
         OuterGraph[Object->GetOuter()].push_back(Object);
@@ -277,8 +279,7 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
             bOpened = ImGui::TreeNodeEx(Label.c_str(),
                                         Flags | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow);
 
-        const bool bSelectableType =
-            Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
+        const bool bSelectableType = bInDebug || Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
 
         if (ImGui::IsItemClicked() && bSelectableType)
         {
@@ -356,66 +357,6 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
         {
             Selection->Clear();
             Selection->AddObject(Target);
-        }
-    }
-}
-
-void FOutliner::ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies,
-                                 TSet<UObject*>& Visited)
-{
-    if (Object == nullptr)
-        return;
-    if (Visited.contains(Object))
-        return;
-
-    FString Name = "";
-    Name += Object->GetName().ToString() + " UUID: " + std::to_string(Object->GetUUID());
-
-    Visited.insert(Object);
-
-    TArray<UObject*> childs = Dependencies[Object];
-    ImVec2 ButtonSize(100, 10);
-    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
-    bool opened = false;
-
-    USelection* Selection = GEditor->GetSelection();
-    if (Selection->IsSelected(Object))
-        flags |= ImGuiTreeNodeFlags_Selected;
-
-    if (childs.size() <= 0)
-    {
-        opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_Leaf);
-        if (ImGui::IsItemClicked() &&
-            (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            if (!io.KeyCtrl)
-                Selection->Clear();
-            Selection->AddObject(Object);
-        }
-
-        if (opened)
-        {
-            ImGui::TreePop();
-        }
-    }
-    else
-    {
-        opened = ImGui::TreeNodeEx(Name.c_str(), flags | ImGuiTreeNodeFlags_DefaultOpen);
-        if (ImGui::IsItemClicked() &&
-            (Object->IsA(AActor::StaticClass()) || Object->IsA(USceneComponent::StaticClass())))
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            if (!io.KeyCtrl)
-                Selection->Clear();
-            Selection->AddObject(Object);
-        }
-        if (opened)
-        {
-            for (const auto& child : childs)
-                ShowOutliner(child, Dependencies, Visited);
-
-            ImGui::TreePop();
         }
     }
 }

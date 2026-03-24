@@ -175,6 +175,7 @@
     <ClCompile Include="Source\Engine\Private\GUI\GuiWindow.cpp" />
     <ClCompile Include="Source\Engine\Private\Rendering\RenderProxy.cpp" />
     <ClCompile Include="Source\Engine\Private\Rendering\Scene.cpp" />
+    <ClCompile Include="Source\Engine\Private\SceneManager.cpp" />
     <ClCompile Include="Source\Engine\Private\VertexData.cpp" />
     <ClCompile Include="Source\Core\Private\Memory.cpp" />
     <ClCompile Include="Source\Engine\Object\Private\Actor.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="Source\Engine\Public\GUI\GuiWindow.h" />
     <ClInclude Include="Source\Engine\Public\Rendering\RenderProxy.h" />
     <ClInclude Include="Source\Engine\Public\Rendering\Scene.h" />
+    <ClInclude Include="Source\Engine\Public\SceneManager.h" />
     <ClInclude Include="Source\Engine\Public\VertexData.h" />
     <ClInclude Include="Source\Core\Public\Memory.h" />
     <ClInclude Include="nlohmann\json.hpp" />
