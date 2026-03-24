@@ -565,40 +565,6 @@ void URenderer::RenderText(
     DeviceContext->IASetInputLayout(SimpleInputLayout);
     DeviceContext->RSSetState(RasterizerStateCullBack);
 }
-void URenderer::RenderPrimitive(ID3D11Buffer *pBuffer, uint32 numVertices)
-{
-    uint32 offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
-    DeviceContext->Draw(numVertices, 0);
-}
-
-void URenderer::RenderPrimitive(UPrimitiveComponent *primitive)
-{
-    // 1. 컴포넌트가 무슨 타입(Cube, Axis 등)인지 확인하고 MeshManager에서 실제 GPU 버퍼 조회
-    EPrimitiveType Type = primitive->GetPrimitiveType();
-    EPrimitiveType Topology = primitive->GetPrimitiveType();
-
-    ID3D11Buffer *VertexBuffer = UMeshManager::Get().GetVertexBuffer(Type);
-    uint32        NumVertices = UMeshManager::Get().GetNumVertices(Type);
-
-    ID3D11Buffer *IndexBuffer = UMeshManager::Get().GetIndexBuffer(Type);
-    uint32        NumIndices = UMeshManager::Get().GetNumIndices(Type);
-
-    // 2. 위상(Topology) 설정
-    DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
-    uint32 offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
-
-    if (IndexBuffer)
-    {
-        DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-        DeviceContext->DrawIndexed(NumIndices, 0, 0);
-    }
-    else
-    {
-        DeviceContext->Draw(NumVertices, 0);
-    }
-}
 
 void URenderer::RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor)
 {

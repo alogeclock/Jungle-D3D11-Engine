@@ -2,9 +2,41 @@
 #include "Source/Editor/Public/Application.h"
 #include "World.h"
 
-UPrimitiveComponent::UPrimitiveComponent(const FString &InString) : USceneComponent(InString) {}
 
-UPrimitiveComponent::~UPrimitiveComponent() {}
+UPrimitiveComponent::UPrimitiveComponent(const FString &InString) : USceneComponent(InString) 
+{
+    // 1. 다형성을 이용해 자식 클래스에 맞는 Proxy 메모리 동적 할당
+    if (!RenderProxy)
+    {
+        RenderProxy = CreateRenderProxy();
+        
+        // 2. FScene에 Proxy의 포인터를 등록 (렌더러가 순회할 수 있도록)
+        if (RenderProxy && GMainScene)
+        {
+            GMainScene->AddProxy(RenderProxy);
+        }
+    }
+}
+
+UPrimitiveComponent::~UPrimitiveComponent() 
+{
+    if (RenderProxy)
+    {
+        if (GMainScene)
+        {
+            GMainScene->RemoveProxy(RenderProxy);
+        }
+        delete RenderProxy;
+        RenderProxy = nullptr;
+    }
+}
+
+void UPrimitiveComponent::Submit() {}
+
+FRenderProxy* UPrimitiveComponent::CreateRenderProxy() 
+{
+    return nullptr;
+}
 
 void UPrimitiveComponent::Render(URenderer &renderer)
 {

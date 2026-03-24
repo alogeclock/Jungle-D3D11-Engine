@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
@@ -18,5 +18,8 @@ class UParticleSubUVComponent : public UTextComponent
     virtual void Render(URenderer &renderer) override;
     virtual void Tick(float deltaTime) override;
     virtual void RebuildMesh() override;
+
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 };
 

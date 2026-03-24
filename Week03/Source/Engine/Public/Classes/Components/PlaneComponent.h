@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #pragma once
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
@@ -10,6 +10,9 @@ public:
 
 	UPlaneComponent(const FString& InString);
 	virtual ~UPlaneComponent() override;
+
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 
 protected:
 };

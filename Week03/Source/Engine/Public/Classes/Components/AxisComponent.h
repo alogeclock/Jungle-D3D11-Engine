@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Source/Engine/Object/Public/Object.h"
 #include "Source/Engine/Public/Rendering/Renderer.h"
@@ -15,6 +15,9 @@ public:
 
 	void  SetGridStep(float InGridStep);
 	void Render(URenderer& renderer) override;
+
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 
 private:
 	TArray<FBatchedLine> AxisLines;

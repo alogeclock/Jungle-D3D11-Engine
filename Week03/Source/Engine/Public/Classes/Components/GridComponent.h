@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
@@ -13,6 +13,9 @@ public:
 
     void SetGridStep(float InGridStep);
     void Render(URenderer& renderer) override;
+
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 
 private:
     TArray<FBatchedLine> GridLines;

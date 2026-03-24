@@ -1,4 +1,4 @@
-#include "Source/Engine/Public/Classes/Components/GridComponent.h"
+﻿#include "Source/Engine/Public/Classes/Components/GridComponent.h"
 #include "Source/Engine/Public/Classes/Components/LineBatcherComponent.h"
 #include "World.h"
 
@@ -114,4 +114,26 @@ void UGridComponent::RebuildGridLines()
     GridLines.emplace_back(FVector<float>(-GridSize * GridStep, 0.0f, 0.0f), FVector<float>(0.0f, 0.0f, 0.0f), Color);
 
     GridLines.emplace_back(FVector<float>(0.0f, -GridSize * GridStep, 0.0f), FVector<float>(0.0f, 0.0f, 0.0f), Color);
+}
+
+FRenderProxy* UGridComponent::CreateRenderProxy()
+{
+    FStaticMeshRenderProxy* Proxy = new FStaticMeshRenderProxy();
+    Proxy->PrimitiveType = EPrimitiveType::Cube;
+    Proxy->Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    return Proxy;
+}
+
+void UGridComponent::Submit()
+{
+    if (bNeedRebuild)
+    {
+        RebuildGridLines();
+        bNeedRebuild = false;
+    }
+
+    if (!GridLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)
+    {
+        GWorld->GetLineBatcherComponent()->DrawLines(GridLines);
+    }
 }

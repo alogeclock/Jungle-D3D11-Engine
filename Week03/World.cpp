@@ -347,13 +347,11 @@ void UWorld::Render(URenderer &renderer)
     {
         const auto& Actors = CurrentLevel->GetActors();
         
-        for (int i = 0; i < Actors.size(); ++i)
+        for (int i = Actors.size() - 1; i >= 0; --i)
         {
             Actors[i]->IterateAllActorComponents(renderer);
         }
     }
-
-    
 }
 
 void UWorld::Tick(float deltaTime)

@@ -31,6 +31,9 @@ public:
 
     ULineBatcherComponent(const FString &InString);
     virtual ~ULineBatcherComponent() override;
+    
+    virtual void Submit() override;
+    virtual FRenderProxy* CreateRenderProxy() override;
 
 private:
     TArray<FVertex> RenderVertices;

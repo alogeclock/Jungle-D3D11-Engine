@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CoreTypes.h"
 #include "Source/Core/Public/FName.h"
 #include "Source/Core/Public/Property.h"
@@ -41,7 +41,7 @@ class UClass
             UClass            *cls = new UClass(#CurrentType, SuperType::StaticClass(), sizeof(CurrentType), &CurrentType::Constructor);                       \
             UClass            *SuperClass = SuperType::StaticClass();                                                                                          \
             TArray<FProperty> &Properties = SuperClass->GetProperties();                                                                                       \
-            int                SuperPropertyCount = Properties.size();                                                                                         \
+            int SuperPropertyCount = static_cast<int>(Properties.size());                                                                                                        \
             for (int i = 0; i < SuperPropertyCount; i++)                                                                                                       \
             {                                                                                                                                                  \
                 if (Properties[i].bIsPublic)                                                                                                                   \
@@ -67,7 +67,7 @@ class UClass
             UClass* cls = new UClass(#CurrentType, SuperType::StaticClass(), sizeof(CurrentType), &CurrentType::Constructor);                                  \
             UClass* SuperClass = SuperType::StaticClass();                                                                                                     \
             TArray<FProperty>& Properties = SuperClass->GetProperties();                                                                                       \
-            int SuperPropertyCount = Properties.size();                                                                                                        \
+            int SuperPropertyCount = static_cast<int>(Properties.size());                                                                                                        \
             for (int i = 0; i < SuperPropertyCount; i++)                                                                                                       \
             {                                                                                                                                                  \
                 if(Properties[i].bIsPublic)                                                                                                                         \

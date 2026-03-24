@@ -17,22 +17,11 @@
 
 #include "CoreTypes.h"
 
+#include "Source/Engine/Public/Rendering/RenderProxy.h"
+
 class FViewport;
 class UMeshManager;
 class UPrimitiveComponent;
-class FRenderProxy;
-class FStaticMeshRenderProxy;
-class FDynamicMeshRenderProxy;
-
-struct FConstants
-{
-    FMatrix<float> MVPMatrix;
-};
-
-struct FConstantsColor
-{
-    float r, g, b, a;
-};
 
 class URenderer
 {
@@ -126,8 +115,6 @@ class URenderer
     void PrepareShader();
 
     void RenderText(FString FilePath, FConstants &constants, TArray<FTextVertex> *vertices,TArray<uint32> *indices, ID3D11Buffer** InOutVertexBuffer, ID3D11Buffer **IndexBuffer, uint32& InOutBufferSize, uint32& InOutIBSize);
-    void RenderPrimitive(ID3D11Buffer *pBuffer, uint32 numVertices);
-    void RenderPrimitive(UPrimitiveComponent *primitive);
     void RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor);
 
     void Draw(ID3D11Buffer *vertexBuffer, uint32 numVertices, uint32 InStride);
@@ -161,10 +148,16 @@ class URenderer
 
     void SetTopology(D3D11_PRIMITIVE_TOPOLOGY InTopology);
 
+    // 프록시로부터 렌더 커맨드를 받아 큐에 쌓는 함수
+    void SubmitCommand(const FRenderCommand& Command) { RenderQueue.push_back(Command); }
+    void Flush() { RenderQueue.clear(); }
+
   private:
     FViewport       *Viewport = nullptr;
     ECullMode        CurrentCullMode = ECullMode::Back;
     EViewModeIndex   ViewModeIndex = EViewModeIndex::VMI_Lit;
     EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives | EEngineShowFlags::SF_UUID;
     bool             bDrawAABB = false;
+    
+    TArray<FRenderCommand> RenderQueue;
 };
