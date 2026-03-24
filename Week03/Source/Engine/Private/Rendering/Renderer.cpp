@@ -927,7 +927,7 @@ void URenderer::RenderScene(FScene* Scene)
     // 상태 변경 최소화를 위한 이전 Vertex Buffer 캐싱 변수
     ID3D11Buffer* LastVertexBuffer = nullptr;
 
-    for (FRenderProxy* Proxy : Proxies)
+    for (FRenderProxy* Proxy : RenderableProxies)
     {
         if (!Proxy || !Proxy->RenderCommand.bIsVisible)
             continue;
