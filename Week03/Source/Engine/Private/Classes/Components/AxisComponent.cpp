@@ -17,16 +17,16 @@ void UAxisComponent::SetGridStep(float InGridStep)
     if (GridStep != InGridStep)
     {
         GridStep = InGridStep;
-        RebuildAxisLines();
+        bNeedRebuild = true;
     }
 }
 
 void UAxisComponent::Render(URenderer& renderer)
 {
-    if (!bInitialized)
+    if (bNeedRebuild)
     {
         RebuildAxisLines();
-        bInitialized = true;
+        bNeedRebuild = false;
     }
 
     if (!AxisLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)

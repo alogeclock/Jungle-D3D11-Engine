@@ -19,7 +19,6 @@ public:
 private:
 	TArray<FBatchedLine> AxisLines;
 	float                GridStep = 1.0f;
-	// Render가 처음 호출될 때 AxisLines를 초기화하기 위한 플래그
-	bool bInitialized = false;
+    bool bNeedRebuild = true;
 	void RebuildAxisLines();
 };

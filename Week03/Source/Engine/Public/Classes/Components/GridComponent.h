@@ -18,6 +18,6 @@ private:
     TArray<FBatchedLine> GridLines;
     float GridStep = 1.0f;
     int GridSize = 1000;
-    bool bInitialized = false;
+    bool bNeedRebuild = true;
     void RebuildGridLines();
 };
