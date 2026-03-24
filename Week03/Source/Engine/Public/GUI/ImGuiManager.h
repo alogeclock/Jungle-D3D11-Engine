@@ -39,17 +39,6 @@ public:
     void endFrame();
     void Release();
 
-    FViewportCameraTransform* GetCamera() const
-    {
-        return Camera;
-    }
-    void SetCamera(FViewportCameraTransform* camera);
-    FEditorViewportClient* GetEditorViewportClient() const
-    {
-        return EditorViewportClient;
-    }
-    void SetEditorViewportClient(FEditorViewportClient* viewportclient);
-
     bool IsCaptureMouse();
     bool IsCaptureKeyboard();
 
@@ -77,21 +66,15 @@ private:
     void ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies, TSet<UObject*>& Visited);
     void ShowOutliner();
 
-
     void ShowCameraProperty()
     {
     }
-
-    // void Show
 
 public:
     bool bIsOrthogonal = false;
     bool bToggleGizmoMode = false;
 
-  private:
-    FEditorViewportClient    *EditorViewportClient = nullptr;
-    FViewportCameraTransform *Camera = nullptr;
-
+private:
     float outlinerHeight = 300.0f;
     float splitterThickness = 6.0f;
     // UObject *TempSelectedObject = nullptr;
@@ -100,19 +83,18 @@ public:
     char TextBuffer[256];
 };
 
-
 // Demonstrate creating a simple console window, with scrolling, filtering, completion and history.
 // For the console example, we are using a more C++ like approach of declaring a class to hold both data and functions.
 struct ExampleAppConsole
 {
-    char                   InputBuf[256];
-    ImVector<char *>       Items;
-    ImVector<const char *> Commands;
-    ImVector<char *>       History;
-    int                    HistoryPos; // -1: new line, 0..History.Size-1 browsing history.
-    ImGuiTextFilter        Filter;
-    bool                   AutoScroll;
-    bool                   ScrollToBottom;
+    char InputBuf[256];
+    ImVector<char*> Items;
+    ImVector<const char*> Commands;
+    ImVector<char*> History;
+    int HistoryPos; // -1: new line, 0..History.Size-1 browsing history.
+    ImGuiTextFilter Filter;
+    bool AutoScroll;
+    bool ScrollToBottom;
 
     ExampleAppConsole()
     {
@@ -138,7 +120,7 @@ struct ExampleAppConsole
     }
 
     // Portable helpers
-    static int Stricmp(const char *s1, const char *s2)
+    static int Stricmp(const char* s1, const char* s2)
     {
         int d;
         while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
@@ -148,7 +130,7 @@ struct ExampleAppConsole
         }
         return d;
     }
-    static int Strnicmp(const char *s1, const char *s2, int n)
+    static int Strnicmp(const char* s1, const char* s2, int n)
     {
         int d = 0;
         while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
@@ -159,17 +141,17 @@ struct ExampleAppConsole
         }
         return d;
     }
-    static char *Strdup(const char *s)
+    static char* Strdup(const char* s)
     {
         IM_ASSERT(s);
         size_t len = strlen(s) + 1;
-        void  *buf = ImGui::MemAlloc(len);
+        void* buf = ImGui::MemAlloc(len);
         IM_ASSERT(buf);
-        return (char *)memcpy(buf, (const void *)s, len);
+        return (char*)memcpy(buf, (const void*)s, len);
     }
-    static void Strtrim(char *s)
+    static void Strtrim(char* s)
     {
-        char *str_end = s + strlen(s);
+        char* str_end = s + strlen(s);
         while (str_end > s && str_end[-1] == ' ')
             str_end--;
         *str_end = 0;
@@ -182,10 +164,10 @@ struct ExampleAppConsole
         Items.clear();
     }
 
-    void AddLog(const char *fmt, ...) IM_FMTARGS(2)
+    void AddLog(const char* fmt, ...) IM_FMTARGS(2)
     {
         // FIXME-OPT
-        char    buf[1024];
+        char buf[1024];
         va_list args;
         va_start(args, fmt);
         vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
@@ -194,7 +176,7 @@ struct ExampleAppConsole
         Items.push_back(Strdup(buf));
     }
 
-    void Draw(const char *title, bool *p_open)
+    void Draw(const char* title, bool* p_open)
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         if (!ImGui::Begin(title, p_open))
@@ -256,7 +238,8 @@ struct ExampleAppConsole
 
         // Reserve enough left-over height for 1 separator + 1 input text
         const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_HorizontalScrollbar))
+        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_NavFlattened,
+                              ImGuiWindowFlags_HorizontalScrollbar))
         {
             if (ImGui::BeginPopupContextWindow())
             {
@@ -267,10 +250,10 @@ struct ExampleAppConsole
 
             // Display every line as a separate entry so we can change their color or add custom widgets.
             // If you only want raw text you can use ImGui::TextUnformatted(log.begin(), log.end());
-            // NB- if you have thousands of entries this approach may be too inefficient and may require user-side clipping
-            // to only process visible items. The clipper will automatically measure the height of your first item and then
-            // "seek" to display only items in the visible area.
-            // To use the clipper we can replace your standard loop:
+            // NB- if you have thousands of entries this approach may be too inefficient and may require user-side
+            // clipping to only process visible items. The clipper will automatically measure the height of your first
+            // item and then "seek" to display only items in the visible area. To use the clipper we can replace your
+            // standard loop:
             //      for (int i = 0; i < Items.Size; i++)
             //   With:
             //      ImGuiListClipper clipper;
@@ -292,7 +275,7 @@ struct ExampleAppConsole
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
             if (copy_to_clipboard)
                 ImGui::LogToClipboard();
-            for (const char *item : Items)
+            for (const char* item : Items)
             {
                 if (!Filter.PassFilter(item))
                     continue;
@@ -300,7 +283,7 @@ struct ExampleAppConsole
                 // Normally you would store more information in your item than just a string.
                 // (e.g. make Items[] an array of structure, store color/type etc.)
                 ImVec4 color;
-                bool   has_color = false;
+                bool has_color = false;
                 if (strstr(item, "[error]"))
                 {
                     color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
@@ -320,8 +303,8 @@ struct ExampleAppConsole
             if (copy_to_clipboard)
                 ImGui::LogFinish();
 
-            // Keep up at the bottom of the scroll region if we were already at the bottom at the beginning of the frame.
-            // Using a scrollbar or mouse-wheel will take away from the bottom edge.
+            // Keep up at the bottom of the scroll region if we were already at the bottom at the beginning of the
+            // frame. Using a scrollbar or mouse-wheel will take away from the bottom edge.
             if (ScrollToBottom || (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
                 ImGui::SetScrollHereY(1.0f);
             ScrollToBottom = false;
@@ -332,12 +315,14 @@ struct ExampleAppConsole
         ImGui::Separator();
 
         // Command-line
-        bool                reclaim_focus = false;
-        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
-                                               ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void *)this))
+        bool reclaim_focus = false;
+        ImGuiInputTextFlags input_text_flags =
+            ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
+            ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub,
+                             (void*)this))
         {
-            char *s = InputBuf;
+            char* s = InputBuf;
             Strtrim(s);
             if (s[0])
                 ExecCommand(s);
@@ -353,7 +338,7 @@ struct ExampleAppConsole
         ImGui::End();
     }
 
-    void ExecCommand(const char *command_line)
+    void ExecCommand(const char* command_line)
     {
         AddLog("# %s\n", command_line);
 
@@ -396,24 +381,23 @@ struct ExampleAppConsole
     }
 
     // In C++11 you'd be better off using lambdas for this sort of forwarding callbacks
-    static int TextEditCallbackStub(ImGuiInputTextCallbackData *data)
+    static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
     {
-        ExampleAppConsole *console = (ExampleAppConsole *)data->UserData;
+        ExampleAppConsole* console = (ExampleAppConsole*)data->UserData;
         return console->TextEditCallback(data);
     }
 
-    int TextEditCallback(ImGuiInputTextCallbackData *data)
+    int TextEditCallback(ImGuiInputTextCallbackData* data)
     {
         // AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
         switch (data->EventFlag)
         {
-        case ImGuiInputTextFlags_CallbackCompletion:
-        {
+        case ImGuiInputTextFlags_CallbackCompletion: {
             // Example of TEXT COMPLETION
 
             // Locate beginning of current word
-            const char *word_end = data->Buf + data->CursorPos;
-            const char *word_start = word_end;
+            const char* word_end = data->Buf + data->CursorPos;
+            const char* word_start = word_end;
             while (word_start > data->Buf)
             {
                 const char c = word_start[-1];
@@ -423,7 +407,7 @@ struct ExampleAppConsole
             }
 
             // Build a list of candidates
-            ImVector<const char *> candidates;
+            ImVector<const char*> candidates;
             for (int i = 0; i < Commands.Size; i++)
                 if (Strnicmp(Commands[i], word_start, (int)(word_end - word_start)) == 0)
                     candidates.push_back(Commands[i]);
@@ -447,7 +431,7 @@ struct ExampleAppConsole
                 int match_len = (int)(word_end - word_start);
                 for (;;)
                 {
-                    int  c = 0;
+                    int c = 0;
                     bool all_candidates_matches = true;
                     for (int i = 0; i < candidates.Size && all_candidates_matches; i++)
                         if (i == 0)
@@ -473,8 +457,7 @@ struct ExampleAppConsole
 
             break;
         }
-        case ImGuiInputTextFlags_CallbackHistory:
-        {
+        case ImGuiInputTextFlags_CallbackHistory: {
             // Example of HISTORY
             const int prev_history_pos = HistoryPos;
             if (data->EventKey == ImGuiKey_UpArrow)
@@ -494,7 +477,7 @@ struct ExampleAppConsole
             // A better implementation would preserve the data on the current input line along with cursor position.
             if (prev_history_pos != HistoryPos)
             {
-                const char *history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
+                const char* history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
                 data->DeleteChars(0, data->BufTextLen);
                 data->InsertChars(0, history_str);
             }
@@ -504,7 +487,7 @@ struct ExampleAppConsole
     }
 };
 
-static void ShowExampleAppConsole(bool *p_open)
+static void ShowExampleAppConsole(bool* p_open)
 {
     static ExampleAppConsole console;
 

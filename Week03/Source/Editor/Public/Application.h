@@ -26,6 +26,7 @@
 #include <iostream>
 
 extern UWorld *GWorld;
+extern UEditorEngine *GEditor;
 
 class UApplication
 {

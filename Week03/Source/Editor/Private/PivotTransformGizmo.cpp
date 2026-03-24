@@ -440,22 +440,21 @@ void APivotTransformGizmo::UpdateColor()
 
 FTransform APivotTransformGizmo::CalculateUnscaledTransform(FTransform TargetTransform)
 {
-    // ... (기존 CalculateUnscaledTransform 유지)
     FTransform UnscaledTransform;
     UnscaledTransform.Location = TargetTransform.Location;
     UnscaledTransform.Rotation = TargetTransform.Rotation;
 
-    FEditorViewportClient* ViewportClient = UImGuiManager::Get().GetEditorViewportClient();
-    FViewportCameraTransform* Camera = UImGuiManager::Get().GetCamera();
+    FEditorViewportClient* ViewportClient = GEditor->GetEditorViewportClient();
+    FViewportCameraTransform Camera = ViewportClient->GetCameraTransform();
 
     FMatrix<float> ViewMatrix = ViewportClient->GetViewMatrix();
-    float FOV = Camera->GetFOV();
+    float FOV = Camera.GetFOV();
     bool bIsOrtho = UImGuiManager::Get().bIsOrthogonal;
 
     float OrthoWidth = 10.0f;
     if (bIsOrtho)
     {
-        FVector<float> dir = Camera->GetLocation() - Camera->GetLookAt();
+        FVector<float> dir = Camera.GetLocation() - Camera.GetLookAt();
         OrthoWidth = dir.Length() * 2.0f;
     }
 

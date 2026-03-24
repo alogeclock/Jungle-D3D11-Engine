@@ -1,5 +1,6 @@
 ﻿#include "Source/Editor/Public/EditorEngine.h"
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
+#include "Source/Editor/Public/EditorViewportClient.h"
 
 UEditorEngine::UEditorEngine(const FString& InString) : UObject(InString)
 {
@@ -10,8 +11,27 @@ UEditorEngine::~UEditorEngine()
 {
     Selection->Clear();
     InputListeners.clear();
+    
     if (Selection)
+    {
         delete Selection;
+        Selection = nullptr;
+    }
+
+    if (ViewportClient)
+    {
+        delete ViewportClient;
+        ViewportClient = nullptr;
+    }
+}
+
+void UEditorEngine::Tick(float DeltaTime)
+{
+    if (ViewportClient)
+    {
+        // Viewport 객체 포인터는 Application 등에서 넘겨받거나 ViewportClient 내부에 캐싱된 것을 사용
+        ViewportClient->Tick(DeltaTime); 
+    }
 }
 
 void UEditorEngine::RegisterInputListener(IViewportInputListener* Listener)

@@ -14,8 +14,6 @@ public:
 	~FViewport();
 
 public:
-	void CreateEditorViewportClient();
-
     // WndProc에서 호출 ? 키/마우스 상태 업데이트
     void OnKeyDown(uint32 KeyCode);
     void OnKeyUp(uint32 KeyCode);
@@ -33,10 +31,8 @@ public:
     int32 GetMouseDeltaX() const { return MouseDeltaX; }
     int32 GetMouseDeltaY() const { return MouseDeltaY; }
 
-    // 매 프레임 Application 메인루프에서 호출
-    void Tick(float DeltaTime);
-
     FEditorViewportClient* GetViewportClient() const { return ViewportClient; }
+    void SetEditorViewportClient(FEditorViewportClient *InViewportClient) { ViewportClient = InViewportClient; }
 
     void OnResize(uint32 NewWidth, uint32 NewHeight)
     {
@@ -51,7 +47,7 @@ public:
     uint32 SetHeight(uint32 height) { return Height = height; }
 
 private:
-    FEditorViewportClient* ViewportClient;
+    FEditorViewportClient* ViewportClient; // ViewportClient를 갖고 있지만 단순히 참조만 한다.
 
     std::unordered_map<uint32, bool> KeyStates;
 
