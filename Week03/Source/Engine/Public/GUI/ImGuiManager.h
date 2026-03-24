@@ -13,6 +13,7 @@
 #include <filesystem>
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
+#include "Source/Engine/Public/GUI/Outliner.h"
 
 struct ExampleAppConsole;
 struct FViewportCameraTransform;
@@ -71,18 +72,6 @@ private:
     void LoadScene();
     void SetCameraInfo();
     void TransformInspector();
-    void ShowObjectInfo(UObject* InObject);
-    void ShowObjectProperty(UObject* InObject);
-    void ShowOutliner(TArray<UObject*>& ObjectArray);
-    void ShowOutliner(UObject* Object, TMap<UObject*, TArray<UObject*>>& Dependencies, TSet<UObject*>& Visited);
-    void ShowOutliner();
-
-
-    void ShowCameraProperty()
-    {
-    }
-
-    // void Show
 
 public:
     bool bIsOrthogonal = false;
@@ -92,9 +81,7 @@ public:
     FEditorViewportClient    *EditorViewportClient = nullptr;
     FViewportCameraTransform *Camera = nullptr;
 
-    float outlinerHeight = 300.0f;
-    float splitterThickness = 6.0f;
-    // UObject *TempSelectedObject = nullptr;
+    Outliner Outliner;
 
     char buffer[256];
     char TextBuffer[256];
