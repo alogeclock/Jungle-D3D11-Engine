@@ -3,5 +3,5 @@
 class FEngineStaticsGUI
 {
 public:
-    void ShowPanel();
+    void ShowDetail();
 };

@@ -9,5 +9,5 @@ public:
     bool GetVisible();
     void SetVisible(bool InVisible);
     bool IsInBound(ImVec2 InScreenMousePosition);
-    void ShowPanel();
+    void ShowDetail();
 };
