@@ -574,7 +574,7 @@ void UImGuiManager::SetCameraInfo()
         // TODO: Grid Step은 CameraInfo가 아니므로, 함수이름을 바꾸거나 CameraInfo에서 분리하는 것을 고려
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
         float GridStep = ViewportClient->GetGridStep();
-        if (ImGui::SliderFloat("Grid Step", &GridStep, 0.1f, 10.0f, "%.2f"))
+        if (ImGui::SliderFloat("Grid Step", &GridStep, 1.0f, 10.0f, "%.2f"))
         {
             ViewportClient->SetGridStep(GridStep);
         }
