@@ -312,12 +312,12 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
     auto GetPosition = [&](uint32 Index) -> FVector<float>& {
         if (bIsTextured && TextureVertices)
             return (*TextureVertices)[Index].Position;
-        else
+        else if (Vertices)
             return (*Vertices)[Index].Position;
     };
 
     // 1. 루프 진입 전, WorldMatrix의 역행렬을 계산 (단 1번만 수행)
-    FMatrix<float> InverseWorldMatrix = WorldMatrix.Inverse(); 
+    FMatrix<float> InverseWorldMatrix = GetWorldMatrix().Inverse();
 
     // 2. Ray의 Origin을 Local Space로 변환 (점 위치이므로 w = 1.0f 적용)
     FVector4<float> LocalOrigin4 = FVector4<float>(RayOrigin.X, RayOrigin.Y, RayOrigin.Z, 1.0f) * InverseWorldMatrix;
@@ -338,7 +338,7 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
             const FVector<float>& V2 = GetPosition((*Indices)[i + 2]);
 
             float T = 0.f;
-            if (RayIntersectsTriangle(RayOrigin, RayDirection, V0, V1, V2, T))
+            if (RayIntersectsTriangle(LocalOrigin, LocalDir, V0, V1, V2, T))
             {
                 if (T < Result.Distance)
                 {
@@ -361,7 +361,7 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
             FVector<float> V2 = GetPosition(i + 2);
 
             float T = 0.f;
-            if (RayIntersectsTriangle(RayOrigin, RayDirection, V0, V1, V2, T))
+            if (RayIntersectsTriangle(LocalOrigin, LocalDir, V0, V1, V2, T))
             {
                 // 교차점 중 가장 가까운 것만 저장
                 if (T < Result.Distance)

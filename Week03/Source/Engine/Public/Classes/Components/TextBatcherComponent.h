@@ -17,6 +17,7 @@ struct FTextMeshCache
 struct FTextBatchBucket
 {
     FString FontPath;
+    EEngineShowFlags RequiredShowFlag = EEngineShowFlags::SF_Primitives;
     TArray<FTextureVertex> BatchedVertices;
     TArray<uint32> BatchedIndices;
     
@@ -34,7 +35,8 @@ public:
     void Submit(
         const FString& InFontPath,
         const FString& InText,
-        const FMatrix<float>& InWorldMatrix);
+        const FMatrix<float>& InWorldMatrix,
+        EEngineShowFlags InRequiredShowFlag = EEngineShowFlags::SF_Primitives);
 
     void SetViewOption( FSceneViewOptions ViewOptions);
 
@@ -42,7 +44,7 @@ public:
     void Flush(URenderer& renderer);
 
 private:
-    FTextBatchBucket* FindOrAddBucket(const FString& InFontPath);
+    FTextBatchBucket* FindOrAddBucket(const FString& InFontPath, EEngineShowFlags InRequiredShowFlag);
 
 private:
     TMap<FString, FTextMeshCache> MeshCaches;
