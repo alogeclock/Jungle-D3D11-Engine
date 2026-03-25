@@ -57,6 +57,7 @@ void UUUIDTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, 
     RTMatrix = S * R * T;
 }
 
+// Text Batcher로 전송되므로 추가적인 Submit 작업을 하지 않는다.
 void UUUIDTextComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     bool bGlobalShowUUID = (ViewOptions.ShowFlags & EEngineShowFlags::SF_UUID) != EEngineShowFlags::None;

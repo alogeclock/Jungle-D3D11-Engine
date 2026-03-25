@@ -66,6 +66,7 @@ enum class EPrimitiveType : uint8
 	LineBatcher,
     TextBatcher,
     SubUV,
+    TextureQuad
 };
 
 enum class ECullMode : uint8

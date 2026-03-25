@@ -87,6 +87,7 @@ void UTextComponent::RebuildMesh()
 
 void UTextComponent::UpdateBillboard(const FVector<float> &InCameraForward, const FVector<float> &InWorldUp) {}
 
+// Text Batcher로 전송되므로 추가적인 Submit 작업을 하지 않는다.
 void UTextComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     if (Text.empty())

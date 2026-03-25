@@ -548,20 +548,21 @@ void URenderer::EnsureTextBuffers(FTextGpuBuffer& Buffers, uint32 RequiredVBSize
 void URenderer::UploadTextBuffers(FTextGpuBuffer& Buffers, const TArray<FTextureVertex>& Vertices,
                                   const TArray<uint32>& Indices)
 {
-    if (!Buffers.VertexBuffer || !Buffers.IndexBuffer) return;
+    if (!Buffers.VertexBuffer || !Buffers.IndexBuffer)
+        return;
 
     const UINT VBSize = static_cast<UINT>(sizeof(FTextureVertex) * Vertices.size());
     const UINT IBSize = static_cast<UINT>(sizeof(uint32) * Indices.size());
 
     D3D11_MAPPED_SUBRESOURCE mapped = {};
-   
+
     if (SUCCEEDED(DeviceContext->Map(Buffers.VertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
     {
         memcpy(mapped.pData, Vertices.data(), VBSize);
         DeviceContext->Unmap(Buffers.VertexBuffer.Get(), 0);
     }
     else
-    {   
+    {
         return;
     }
 
@@ -570,16 +571,17 @@ void URenderer::UploadTextBuffers(FTextGpuBuffer& Buffers, const TArray<FTexture
         memcpy(mapped.pData, Indices.data(), IBSize);
         DeviceContext->Unmap(Buffers.IndexBuffer.Get(), 0);
     }
-  
 }
 
 void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Constants, const FTextGpuBuffer& Buffers,
                                 uint32 IndexCount)
 {
-    if (!Buffers.VertexBuffer || !Buffers.IndexBuffer || IndexCount == 0) return;
+    if (!Buffers.VertexBuffer || !Buffers.IndexBuffer || IndexCount == 0)
+        return;
 
     ID3D11ShaderResourceView* SRV = UTextureManager::Get().GetTexture(FontPath);
-    if (!SRV) return;
+    if (!SRV)
+        return;
 
     UpdateConstant(Constants);
 
@@ -602,7 +604,6 @@ void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Const
 
     DeviceContext->DrawIndexed(IndexCount, 0, 0);
 }
-
 
 void URenderer::RenderTextBatch(const FString& FontPath, const FConstants& Constants,
                                 const TArray<FTextureVertex>& Vertices, const TArray<uint32>& Indices,
@@ -919,13 +920,13 @@ void URenderer::RenderScene(FScene* Scene)
     }
 
     // Vertex Buffer를 기준으로 정렬한다. (Vertex Buffer 바인딩 비용을 아낄 수 있다.)
-    std::sort(RenderableProxies.begin(), RenderableProxies.end(), [](const FRenderProxy* A, const FRenderProxy* B)
-    {
+    std::sort(RenderableProxies.begin(), RenderableProxies.end(), [](const FRenderProxy* A, const FRenderProxy* B) {
         return A->RenderCommand.VertexBuffer < B->RenderCommand.VertexBuffer;
     });
 
     // 상태 변경 최소화를 위한 이전 Vertex Buffer 캐싱 변수
     ID3D11Buffer* LastVertexBuffer = nullptr;
+    bool bLastTextured = false;
 
     for (FRenderProxy* Proxy : RenderableProxies)
     {
@@ -952,6 +953,28 @@ void URenderer::RenderScene(FScene* Scene)
             if (Command.IndexBuffer)
             {
                 DeviceContext->IASetIndexBuffer(Command.IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+            }
+            if (Command.bIsTextured != bLastTextured)
+            {
+                if (!Command.bIsTextured)
+                {
+                    DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
+                    DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
+                    DeviceContext->IASetInputLayout(SimpleInputLayout);
+                }
+                else
+                {
+                    DeviceContext->VSSetShader(TextVertexShader, nullptr, 0);
+                    DeviceContext->PSSetShader(TextPixelShader, nullptr, 0);
+                    DeviceContext->IASetInputLayout(TextInputLayout);
+                }
+                bLastTextured = Command.bIsTextured;
+            }
+
+            // 텍스처가 적용된 프록시라면, 각 컴포넌트가 지정한 텍스처(SRV)를 바인딩
+            if (Command.bIsTextured && Command.TextureSRV != nullptr)
+            {
+                DeviceContext->PSSetShaderResources(0, 1, &Command.TextureSRV);
             }
 
             // 캐시 업데이트

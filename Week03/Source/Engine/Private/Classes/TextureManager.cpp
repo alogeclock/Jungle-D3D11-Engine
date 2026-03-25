@@ -1,4 +1,4 @@
-﻿#include "Source/Engine/Public/Classes/TextureManger.h"
+﻿#include "Source/Engine/Public/Classes/TextureManager.h"
 #include "Source/Engine/Public/Rendering/Renderer.h"
 #include <fstream>
 #include <DDSTextureLoader.h>

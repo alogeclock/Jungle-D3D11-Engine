@@ -138,7 +138,7 @@ void UApplication::Initialize(HINSTANCE hInstance)
     UTimeManager::Get().Initialize();
 
     UTextureManager::Get().Initialize(*Renderer);
-    // void* a = UTextureManger::Get().GetTexture("Data/DejaVu Sans Mono.dds");
+    // void* a = UTextureManager::Get().GetTexture("Data/DejaVu Sans Mono.dds");
 
     UpdateEditorViewport();
 }

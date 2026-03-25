@@ -532,6 +532,11 @@ TArray<FVertex> subUV_vertices = {
     { {-0.5f, 0.5f, 0.f}, {0.0f, 1.0f, 1.0f, 1.0f}},
 };
 
+TArray<FVertex> texture_quad_vertices = {
+    {{0.5f, -0.5f, 0.f}, {1.0f, 0.0f, 1.0f, 1.0f}}, {{-0.5f, 0.5f, 0.f}, {1.0f, 1.0f, 0.0f, 1.0f}},  {{0.5f, 0.5f, 0.f}, {0.0f, 1.0f, 1.0f, 1.0f}},
+    {{0.5f, -0.5f, 0.f}, {1.0f, 0.0f, 1.0f, 1.0f}}, {{-0.5f, -0.5f, 0.f}, {1.0f, 1.0f, 0.0f, 1.0f}}, {{-0.5f, 0.5f, 0.f}, {0.0f, 1.0f, 1.0f, 1.0f}},
+};
+
 TArray<FVertex> arrow_vertices = {
     // 앞면 (+Z face)
     {{-0.025f, -0.025f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},

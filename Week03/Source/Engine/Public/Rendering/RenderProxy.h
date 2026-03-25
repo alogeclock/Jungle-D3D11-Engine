@@ -27,9 +27,11 @@ struct FRenderCommand
     FConstants Constants;
     FConstantsColor ConstantsColor;
     D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    ID3D11ShaderResourceView* TextureSRV = nullptr;
     ECullMode CullMode = ECullMode::Back;
     bool bEnableDepthTest = true;
     bool bIgnoreWireframe = false;
+    bool bIsTextured = false;
     bool bIsVisible = true;
     ID3D11Buffer* VertexBuffer = nullptr;
     ID3D11Buffer* IndexBuffer = nullptr;

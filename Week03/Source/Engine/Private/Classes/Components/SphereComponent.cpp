@@ -14,7 +14,8 @@ void USphereComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
-
+    
+    Command.bIsTextured = false;
     Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
     Command.IndexBuffer = UMeshManager::Get().GetIndexBuffer(PrimitiveType);
     Command.NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);

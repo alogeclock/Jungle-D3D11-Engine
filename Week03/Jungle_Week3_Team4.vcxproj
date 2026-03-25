@@ -169,7 +169,7 @@
     <ClCompile Include="Source\Engine\Private\Classes\Components\UUIDTextComponent.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\MeshManager.cpp" />
     <ClCompile Include="Source\Engine\Private\Classes\TextMeshBuilder.cpp" />
-    <ClCompile Include="Source\Engine\Private\Classes\TextureManger.cpp" />
+    <ClCompile Include="Source\Engine\Private\Classes\TextureManager.cpp" />
     <ClCompile Include="Source\Engine\Private\GUI\EngineStaticsGUI.cpp" />
     <ClCompile Include="Source\Engine\Private\GUI\Outliner.cpp" />
     <ClCompile Include="Source\Engine\Private\GUI\SpawnGUI.cpp" />
@@ -245,7 +245,7 @@
     <ClInclude Include="Source\Engine\Public\Classes\MeshManager.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextLoader.h" />
     <ClInclude Include="Source\Engine\Public\Classes\TextMeshBuilder.h" />
-    <ClInclude Include="Source\Engine\Public\Classes\TextureManger.h" />
+    <ClInclude Include="Source\Engine\Public\Classes\TextureManager.h" />
     <ClInclude Include="Source\Engine\Public\GUI\EngineStaticsGUI.h" />
     <ClInclude Include="Source\Engine\Public\GUI\GuiMsg.h" />
     <ClInclude Include="Source\Engine\Public\GUI\Outliner.h" />

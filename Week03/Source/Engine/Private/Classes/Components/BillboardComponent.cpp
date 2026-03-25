@@ -1,6 +1,6 @@
 #include "Source/Engine/Public/Classes/Components/BillboardComponent.h"
 #include "Source/Core/Public/Math/Vector4.h"
-#include "Source/Engine/Public/Classes/TextureManger.h"
+#include "Source/Engine/Public/Classes/TextureManager.h"
 #include "Source/Engine/Public/Rendering/Renderer.h"
 #include "World.h"
 #include <cmath>
@@ -139,11 +139,15 @@ void UBillboardComponent::Render(URenderer& renderer)
 void UBillboardComponent::Submit(const FSceneViewOptions& ViewOptions)
 {
     UPrimitiveComponent::Submit(ViewOptions);
-    FRenderCommand &Command = RenderProxy->RenderCommand;
+    FRenderCommand& Command = RenderProxy->RenderCommand;
 
-    Command.VertexBuffer = GpuBuffers->VertexBuffer.Get();
-    Command.IndexBuffer = GpuBuffers->IndexBuffer.Get();
-    Command.NumVertices = BillboardVertices.size();
-    Command.NumIndices = BillboardIndices.size();
-    Command.Stride = sizeof(FVertex);
+    Command.bIsTextured = true;
+    if (Command.VertexBuffer == nullptr)
+    {
+        Command.VertexBuffer = GpuBuffers->VertexBuffer.Get();
+        Command.IndexBuffer = GpuBuffers->IndexBuffer.Get();
+        Command.NumVertices = BillboardVertices.size();
+        Command.NumIndices = BillboardIndices.size();
+        Command.Stride = sizeof(FTextureVertex);
+    }
 }

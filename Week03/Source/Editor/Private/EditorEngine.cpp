@@ -1,6 +1,6 @@
 ﻿#include "Source/Editor/Public/EditorEngine.h"
-#include "Source/Editor/Public/EditorViewportClient.h"
 #include "Source/Editor/Public/EditorSpriteActor.h"
+#include "Source/Editor/Public/EditorViewportClient.h"
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 
 UEditorEngine::UEditorEngine(const FString& InString) : UObject(InString)
@@ -18,7 +18,7 @@ UEditorEngine::~UEditorEngine()
 {
     Selection->Clear();
     InputListeners.clear();
-    
+
     if (EditorSprite)
     {
         delete EditorSprite;
@@ -31,17 +31,17 @@ UEditorEngine::~UEditorEngine()
         delete Gizmo;
         Gizmo = nullptr;
     }
-    
-    if (Grid)
-    {
-        delete Grid;
-        Grid = nullptr;
-    }
 
     if (Axis)
     {
         delete Axis;
         Axis = nullptr;
+    }
+    
+    if (Grid)
+    {
+        delete Grid;
+        Grid = nullptr;
     }
 
     if (Selection)
@@ -57,7 +57,7 @@ UEditorEngine::~UEditorEngine()
     }
 }
 
-void UEditorEngine::Tick(float DeltaTime, FSceneViewOptions &ViewOptions)
+void UEditorEngine::Tick(float DeltaTime, FSceneViewOptions& ViewOptions)
 {
     if (ViewportClient)
     {
@@ -73,20 +73,20 @@ void UEditorEngine::Tick(float DeltaTime, FSceneViewOptions &ViewOptions)
     if (Axis)
     {
         Axis->Tick(DeltaTime);
+        Axis->SubmitAllActorComponents(ViewOptions);
     }
 
     if (Gizmo)
     {
         Gizmo->Tick(DeltaTime);
+        Gizmo->SubmitAllActorComponents(ViewOptions);
     }
 
     if (EditorSprite)
     {
         EditorSprite->Tick(DeltaTime);
+        EditorSprite->SubmitAllActorComponents(ViewOptions);
     }
-
-    Axis->SubmitAllActorComponents(ViewOptions);
-    Gizmo->SubmitAllActorComponents(ViewOptions);
 }
 
 void UEditorEngine::RegisterInputListener(IViewportInputListener* Listener)

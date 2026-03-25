@@ -1,4 +1,5 @@
 ﻿#include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
+#include "Source/Engine/Public/Classes/TextureManager.h"
 #include "Source/Engine/Public/Classes/TextMeshBuilder.h"
 #include <CMath>
 #include "CoreTypes.h"
@@ -30,6 +31,8 @@ void UParticleSubUVComponent::Tick(float deltaTime)
     CurrentTime += deltaTime;
     if (bLoop && CurrentTime >= PlayRate)
         CurrentTime -= PlayRate;
+    
+    RebuildMesh();
 }
 
 void UParticleSubUVComponent::RebuildMesh()
@@ -94,9 +97,15 @@ void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
     UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
-    Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
-    Command.IndexBuffer = UMeshManager::Get().GetIndexBuffer(PrimitiveType);
-    Command.NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
-    Command.NumIndices = UMeshManager::Get().GetNumIndices(PrimitiveType);
-    Command.Stride = sizeof(FVertex);
+    Command.bIsTextured = true;
+    Command.TextureSRV = UTextureManager::Get().GetTexture(FilePath);
+
+    if (Command.VertexBuffer == nullptr)
+    {
+        Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
+        Command.IndexBuffer = UMeshManager::Get().GetIndexBuffer(PrimitiveType);
+        Command.NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
+        Command.NumIndices = UMeshManager::Get().GetNumIndices(PrimitiveType);
+        Command.Stride = sizeof(FVertex);
+    }
 }
