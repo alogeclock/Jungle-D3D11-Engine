@@ -128,7 +128,8 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     // Vertex 적음 → 바로 Triangle 검사
     case EPrimitiveType::Triangle:
     case EPrimitiveType::Plane:
-    case EPrimitiveType::Text:   
+    case EPrimitiveType::Text:
+    case EPrimitiveType::SubUV:
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
         break;
 

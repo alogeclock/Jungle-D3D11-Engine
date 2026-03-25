@@ -9,6 +9,8 @@ AEditorSpriteActor::AEditorSpriteActor(const FString& InString) : AActor(InStrin
     Root->RegisterComponent();
 
     SpriteComponent = new UBillboardComponent("EditorBillboardComponent");
+    SpriteComponent->SetTexturePath("Data/Texture/EmptyActor.dds");
+
     SpriteComponent->SetOuter(this);
     SpriteComponent->RegisterComponent();
     SpriteComponent->SetIsInEditor(true);
@@ -61,15 +63,13 @@ void AEditorSpriteActor::Tick(float DeltaTime)
         if (ViewportClient)
         {
             FViewportCameraTransform Camera = ViewportClient->GetCameraTransform();
-            SpriteComponent->ApplyBillboardTransform(
-                TargetTransform, Camera.GetRotation(), ViewportClient->GetViewMatrix(), Camera.GetFOV(),
-                UImGuiManager::Get().bIsOrthogonal, Camera.GetLocation(), Camera.GetLookAt());
+            SpriteComponent->ApplyBillboardTransform(TargetTransform, Camera);
         }
 
         SpriteComponent->SetVisible(true);
     }
     else
     {
-        SpriteComponent->SetVisible(false);
+         SpriteComponent->SetVisible(false);
     }
 }

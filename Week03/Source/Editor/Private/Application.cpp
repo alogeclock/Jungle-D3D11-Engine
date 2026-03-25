@@ -194,10 +194,7 @@ void UApplication::Render()
     GWorld->Submit(ViewOptions);
 
     Renderer->Prepare(ViewOptions);
-
-    // [TODO] LineBatcher, TextBatcher 역시 한 개의 함수로 관리하기
-    GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
-    GEditor->GetAxis()->GetAxisComponent()->Render(*Renderer);
+    
     GWorld->GetLineBatcherComponent()->Render(*Renderer);
     GWorld->GetLineBatcherComponent()->Flush();
     GWorld->GetTextBatcherComponent()->Render(*Renderer);
@@ -206,6 +203,10 @@ void UApplication::Render()
     GEditor->Render(*Renderer);
 
     Renderer->RenderScene(GMainScene);
+
+    // [TODO] LineBatcher, TextBatcher 역시 한 개의 함수로 관리하기
+    GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
+    GEditor->GetAxis()->GetAxisComponent()->Render(*Renderer);
 
     // ViewportClient->Render(*Renderer);
     UImGuiManager::Get().Update();
