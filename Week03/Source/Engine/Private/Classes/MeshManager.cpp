@@ -1,5 +1,6 @@
 ﻿#include "Source/Engine/Public/Classes/MeshManager.h"
 
+
 UMeshManager::UMeshManager(const FString& InString) : UObject(InString)
 {
 }
@@ -31,7 +32,20 @@ void UMeshManager::Initialize(URenderer& Renderer)
         EPrimitiveType::Sphere,
         Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
     NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
-    
+
+    TArray<TArray<FTextureVertex>*> TextureVerticesPtr = {&billboard_vertices};
+    TArray<EPrimitiveType> TexturePrimitiveTypes = {EPrimitiveType::Billboard};
+    for (int i = 0; i < TexturePrimitiveTypes.size(); i++)
+    {
+        EPrimitiveType t = TexturePrimitiveTypes[i];
+        TArray<FTextureVertex>* vptr = TextureVerticesPtr[i];
+
+        TextureVertexData.emplace(t, vptr);
+        TextureVertexBuffers.emplace(
+            t, Renderer.CreateTextureVertexBuffer(vptr->data(), static_cast<int>(vptr->size()) * sizeof(FTextureVertex)));
+        NumTextureVertices.emplace(t, static_cast<uint32>(vptr->size()));
+    }
+
     TArray<FTextureVertex> VerticesSubUV = RebuildMesh();
 
     TextureVertexData.emplace(EPrimitiveType::SubUV, &VerticesSubUV);
@@ -113,6 +127,11 @@ void UMeshManager::Release(URenderer& renderer)
     }
     // TMap.Empty()
     IndexBuffers.clear();
+
+    for (auto& Pair : TextureVertexBuffers)
+    {
+        renderer.ReleaseTextureVertexBuffer(Pair.second);
+    }
 }
 
 FBox UMeshManager::ComputeAABB(const TArray<FVertex>& Vertices)
@@ -187,6 +206,22 @@ TArray<uint16>* UMeshManager::GetIndexData(EPrimitiveType Type) const
 {
     auto it = IndexData.find(Type);
     if (it == IndexData.end())
+        return nullptr;
+    return it->second;
+}
+
+uint32 UMeshManager::GetNumTextureVertices(EPrimitiveType Type) const
+{
+    auto it = NumTextureVertices.find(Type);
+    if (it == NumTextureVertices.end())
+        return 0;
+    return it->second;
+}
+
+ID3D11Buffer* UMeshManager::GetTextureVertexBuffer(EPrimitiveType Type) const
+{
+    auto it = TextureVertexBuffers.find(Type);
+    if (it == TextureVertexBuffers.end())
         return nullptr;
     return it->second;
 }

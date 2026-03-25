@@ -9,7 +9,7 @@ class URenderer;
 
 class UMeshManager : public UObject
 {
-  public:
+public:
     static UMeshManager &Get()
     {
         static UMeshManager instance("MeshManagerInstance");
@@ -31,23 +31,25 @@ class UMeshManager : public UObject
     uint32           GetNumVertices(EPrimitiveType Type) const;
     TArray<FVertex> *GetVertexData(EPrimitiveType Type) const;
 
-    TArray<FTextureVertex> *GetTextureVertexData(EPrimitiveType Type) const;
-
     ID3D11Buffer *GetIndexBuffer(EPrimitiveType Type) const;
     uint32        GetNumIndices(EPrimitiveType Type) const;
     TArray<uint16> *GetIndexData(EPrimitiveType Type) const;
 
+    ID3D11Buffer *GetTextureVertexBuffer(EPrimitiveType Type) const;
+    uint32 GetNumTextureVertices(EPrimitiveType Type) const;
+    TArray<FTextureVertex>* GetTextureVertexData(EPrimitiveType Type) const;
 
-  private:
+private:
     TMap<EPrimitiveType, ID3D11Buffer *>    VertexBuffers;
     TMap<EPrimitiveType, uint32>            NumVertices;
     TMap<EPrimitiveType, TArray<FVertex> *> VertexData;
-
-    //subUV용 Vertex캐시
-    TMap<EPrimitiveType, TArray<FTextureVertex> *> TextureVertexData;
 
     TMap<EPrimitiveType, ID3D11Buffer *> IndexBuffers;
     TMap<EPrimitiveType, uint32>         NumIndices;
     TMap<EPrimitiveType, TArray<uint16> *> IndexData;
     TMap<EPrimitiveType, FBox>            MeshAABB;
+
+    TMap<EPrimitiveType, ID3D11Buffer *> TextureVertexBuffers;
+    TMap<EPrimitiveType, uint32>         NumTextureVertices;
+    TMap<EPrimitiveType, TArray<FTextureVertex> *> TextureVertexData;
 };

@@ -5,6 +5,7 @@
 struct FTextGpuBuffer;
 
 struct FTransform;
+struct FViewportCameraTransform;
 class URenderer;
 
 class UBillboardComponent : public UPrimitiveComponent
@@ -12,35 +13,26 @@ class UBillboardComponent : public UPrimitiveComponent
 public:
     DECLARE_OBJECT(UBillboardComponent, UPrimitiveComponent)
 
-    UBillboardComponent(const FString& InString);
-    virtual ~UBillboardComponent() override;
-
-    void ApplyBillboardTransform(const FTransform& TargetTransform,
-                                 const FVector<float>& CameraRotation,
-                                 const FMatrix<float>& ViewMatrix,
-                                 float FOV,
-                                 bool bIsOrthogonal,
-                                 const FVector<float>& CameraLocation,
-                                 const FVector<float>& CameraLookAt);
-
-    virtual void Render(URenderer& renderer) override;
-    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
+    UBillboardComponent(const FString& InString) : UPrimitiveComponent(InString)
+    {
+        PrimitiveType = EPrimitiveType::Billboard;
+        TexturePath = "Data/Texture/DefaultBillboard.dds";
+    }
+    virtual ~UBillboardComponent() override {}
 
     void SetTexturePath(const FString& InTexturePath) { TexturePath = InTexturePath; }
     const FString& GetTexturePath() const { return TexturePath; }
 
-private:
-    float CalculateScaleFactor(const FTransform& TargetTransform,
-                               const FMatrix<float>& ViewMatrix,
-                               float FOV,
-                               bool bIsOrthogonal,
-                               const FVector<float>& CameraLocation,
-                               const FVector<float>& CameraLookAt) const;
+    virtual void Submit(const FSceneViewOptions& ViewOptions) override;
+
+    void ApplyBillboardTransform(const FTransform& TargetTransform, FViewportCameraTransform& Camera);
 
 private:
-    FString TexturePath = "Data/Texture/EmptyActor.dds";
-    TArray<FTextureVertex> BillboardVertices;
-    TArray<uint32> BillboardIndices;
+    FMatrix<float> BuildBillboardWorldMatrix();
 
-    FTextGpuBuffer* GpuBuffers = nullptr;
+    FString TexturePath;
+
+    FVector<float> CachedCameraRight = FVector<float>(1.0f, 0.0f, 0.0f);
+    FVector<float> CachedCameraUp = FVector<float>(0.0f, 1.0f, 0.0f);
+    FVector<float> CachedCameraForward = FVector<float>(0.0f, 0.0f, 1.0f);
 };
