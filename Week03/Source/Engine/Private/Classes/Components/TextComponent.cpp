@@ -111,7 +111,7 @@ void UTextComponent::Submit(const FSceneViewOptions& ViewOptions)
         return;
     }
 
-    TextBatcher->Submit(FilePath, Text, GetWorldMatrix());
+    TextBatcher->Submit(FilePath, Text, GetWorldMatrix(), EEngineShowFlags::SF_Primitives);
 
     bool bGlobalDrawAABB = (ViewOptions.ShowFlags & EEngineShowFlags::SF_AABB) != EEngineShowFlags::None;
     if (bShowAABB && bGlobalDrawAABB && GWorld && GWorld->GetLineBatcherComponent())

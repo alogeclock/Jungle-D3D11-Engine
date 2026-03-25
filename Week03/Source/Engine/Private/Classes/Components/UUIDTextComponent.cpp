@@ -85,5 +85,5 @@ void UUUIDTextComponent::Submit(const FSceneViewOptions& ViewOptions)
         return;
     }
 
-    TextBatcher->Submit(FilePath, Text, RTMatrix);
+    TextBatcher->Submit(FilePath, Text, RTMatrix, EEngineShowFlags::SF_UUID);
 }

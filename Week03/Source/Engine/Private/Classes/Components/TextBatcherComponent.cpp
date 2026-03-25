@@ -14,7 +14,11 @@ UTextBatcherComponent::~UTextBatcherComponent()
 }
 
 
-void UTextBatcherComponent::Submit(const FString& InFontPath, const FString& InText, const FMatrix<float>& InWorldMatrix)
+void UTextBatcherComponent::Submit(
+    const FString& InFontPath,
+    const FString& InText,
+    const FMatrix<float>& InWorldMatrix,
+    EEngineShowFlags InRequiredShowFlag)
 {
     if (InText.empty()) return;
     
@@ -37,7 +41,7 @@ void UTextBatcherComponent::Submit(const FString& InFontPath, const FString& InT
         return;
     }
 
-    FTextBatchBucket* Bucket = FindOrAddBucket(InFontPath);
+    FTextBatchBucket* Bucket = FindOrAddBucket(InFontPath, InRequiredShowFlag);
     if (Bucket == nullptr) return;
         
     const uint32 BaseIndex = static_cast<uint32>(Bucket->BatchedVertices.size());
@@ -82,11 +86,6 @@ void UTextBatcherComponent::Render(URenderer& renderer)
         return;
     }
 
-    if (!renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
-    {
-        return;
-    }
-
     if (Buckets.size() == 0)
         return;
 
@@ -99,6 +98,11 @@ void UTextBatcherComponent::Render(URenderer& renderer)
 
     for (FTextBatchBucket& Bucket : Buckets)
     {
+        if (!renderer.CheckShowFlag(Bucket.RequiredShowFlag))
+        {
+            continue;
+        }
+
         if (Bucket.BatchedVertices.empty() || Bucket.BatchedIndices.empty())
         {
             continue;
@@ -125,11 +129,11 @@ void UTextBatcherComponent::Flush(URenderer& renderer)
     }
 }
 
-FTextBatchBucket* UTextBatcherComponent::FindOrAddBucket(const FString& InFontPath)
+FTextBatchBucket* UTextBatcherComponent::FindOrAddBucket(const FString& InFontPath, EEngineShowFlags InRequiredShowFlag)
 {
    for (FTextBatchBucket& Bucket : Buckets)
     {
-        if (Bucket.FontPath == InFontPath)
+        if (Bucket.FontPath == InFontPath && Bucket.RequiredShowFlag == InRequiredShowFlag)
         {
             return &Bucket;
         }
@@ -137,6 +141,7 @@ FTextBatchBucket* UTextBatcherComponent::FindOrAddBucket(const FString& InFontPa
 
     FTextBatchBucket NewBucket;
     NewBucket.FontPath = InFontPath;
+    NewBucket.RequiredShowFlag = InRequiredShowFlag;
     Buckets.push_back(std::move(NewBucket));
     return &Buckets.back();
 }
