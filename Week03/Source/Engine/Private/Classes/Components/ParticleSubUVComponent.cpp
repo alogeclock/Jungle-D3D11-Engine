@@ -14,11 +14,8 @@ UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UPri
     CurrentTime = 0;
     bLoop = true;
     PrimitiveType = EPrimitiveType::SubUV;
+    CullMode = ECullMode::None;
     TotalFrameCount = 36;
-
-	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
-	bEnableDepthTest = false;        // 기본적으로 항상 보이게
-    bShowUUID = false;
 
     SetScale({3.f, 3.f, 3.f});
 }
@@ -53,7 +50,6 @@ void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
         Command.TextureSRV = UTextureManager::Get().GetTexture(FilePath);
         Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
         Command.NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
-        Command.NumIndices = UMeshManager::Get().GetNumIndices(PrimitiveType);
         Command.Stride = sizeof(FTextureVertex);
     }
 }

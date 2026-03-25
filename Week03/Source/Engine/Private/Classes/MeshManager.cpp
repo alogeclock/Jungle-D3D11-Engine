@@ -60,6 +60,7 @@ void UMeshManager::Initialize(URenderer& Renderer)
     NumVertices.emplace(EPrimitiveType::SubUV,
         static_cast<uint32>(VerticesSubUV.size())
     );
+    MeshAABB.emplace(EPrimitiveType::SubUV, ComputeAABB(VerticesSubUV));
 }
 
 TArray<FTextureVertex> UMeshManager::RebuildMesh()

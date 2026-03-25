@@ -29,7 +29,7 @@ bool FSpawnGUI::IsInBound(ImVec2 InScreenMousePosition)
 
 void FSpawnGUI::ShowDetail()
 {
-    const char* PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI", "Smoke"};
+    const char* PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI", "Explosion"};
 
     static int Primitive = 0;
 
