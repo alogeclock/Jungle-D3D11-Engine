@@ -309,13 +309,23 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
         Vertices = UMeshManager::Get().GetVertexData<FVertex>(PrimitiveType);
 
     // 2. 핵심: 인덱스 번호를 넣으면 알맞은 배열에서 Position만 꺼내주는 람다 함수
-    auto GetPosition = [&](uint32 Index) -> FVector<float> {
+    auto GetPosition = [&](uint32 Index) -> FVector<float>& {
         if (bIsTextured && TextureVertices)
-            return TextureVertices->at(Index).Position;
-        else if (Vertices)
-            return Vertices->at(Index).Position;
-        return FVector<float>(0.f, 0.f, 0.f);
+            return (*TextureVertices)[Index].Position;
+        else
+            return (*Vertices)[Index].Position;
     };
+
+    // 1. 루프 진입 전, WorldMatrix의 역행렬을 계산 (단 1번만 수행)
+    FMatrix<float> InverseWorldMatrix = WorldMatrix.Inverse(); 
+
+    // 2. Ray의 Origin을 Local Space로 변환 (점 위치이므로 w = 1.0f 적용)
+    FVector4<float> LocalOrigin4 = FVector4<float>(RayOrigin.X, RayOrigin.Y, RayOrigin.Z, 1.0f) * InverseWorldMatrix;
+    FVector<float> LocalOrigin = {LocalOrigin4.X, LocalOrigin4.Y, LocalOrigin4.Z};
+
+    // 3. Ray의 Direction을 Local Space로 변환 (방향 벡터이므로 이동(Translation)을 무시하기 위해 w = 0.0f 적용)
+    FVector4<float> LocalDir4 = FVector4<float>(RayDirection.X, RayDirection.Y, RayDirection.Z, 0.0f) * InverseWorldMatrix;
+    FVector<float> LocalDir = {LocalDir4.X, LocalDir4.Y, LocalDir4.Z};
 
     if (Indices && NumIndices > 0)
     {
@@ -323,17 +333,9 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
         for (uint32 i = 0; i + 2 < NumIndices; i += 3)
         {
             // index로 vertex 참조
-            FVector<float> p0 = GetPosition(Indices->at(i));
-            FVector<float> p1 = GetPosition(Indices->at(i + 1));
-            FVector<float> p2 = GetPosition(Indices->at(i + 2));
-
-            FVector4<float> V0_W = FVector4<float>(p0.X, p0.Y, p0.Z, 1.f) * WorldMatrix;
-            FVector4<float> V1_W = FVector4<float>(p1.X, p1.Y, p1.Z, 1.f) * WorldMatrix;
-            FVector4<float> V2_W = FVector4<float>(p2.X, p2.Y, p2.Z, 1.f) * WorldMatrix;
-
-            FVector<float> V0 = {V0_W.X, V0_W.Y, V0_W.Z};
-            FVector<float> V1 = {V1_W.X, V1_W.Y, V1_W.Z};
-            FVector<float> V2 = {V2_W.X, V2_W.Y, V2_W.Z};
+            const FVector<float>& V0 = GetPosition((*Indices)[i]);
+            const FVector<float>& V1 = GetPosition((*Indices)[i + 1]);
+            const FVector<float>& V2 = GetPosition((*Indices)[i + 2]);
 
             float T = 0.f;
             if (RayIntersectsTriangle(RayOrigin, RayDirection, V0, V1, V2, T))
@@ -354,17 +356,9 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
         // Index 없이 Vertex 3개씩 = Triangle 1개
         for (uint32 i = 0; i + 2 < NumVertices; i += 3)
         {
-            FVector<float> p0 = GetPosition(i);
-            FVector<float> p1 = GetPosition(i + 1);
-            FVector<float> p2 = GetPosition(i + 2);
-
-            FVector4<float> V0_W = FVector4<float>(p0.X, p0.Y, p0.Z, 1.f) * WorldMatrix;
-            FVector4<float> V1_W = FVector4<float>(p1.X, p1.Y, p1.Z, 1.f) * WorldMatrix;
-            FVector4<float> V2_W = FVector4<float>(p2.X, p2.Y, p2.Z, 1.f) * WorldMatrix;
-
-            FVector<float> V0 = FVector<float>(V0_W.X, V0_W.Y, V0_W.Z);
-            FVector<float> V1 = FVector<float>(V1_W.X, V1_W.Y, V1_W.Z);
-            FVector<float> V2 = FVector<float>(V2_W.X, V2_W.Y, V2_W.Z);
+            FVector<float> V0 = GetPosition(i);
+            FVector<float> V1 = GetPosition(i + 1);
+            FVector<float> V2 = GetPosition(i + 2);
 
             float T = 0.f;
             if (RayIntersectsTriangle(RayOrigin, RayDirection, V0, V1, V2, T))
