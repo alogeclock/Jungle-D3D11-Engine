@@ -97,10 +97,6 @@ void FSpawnGUI::DrawContextMenu()
     {
         SpawnPrimitiveComponent(UTextComponent::StaticClass(), SpawnCount);
     }
-    if (ImGui::MenuItem("UI"))
-    {
-        SpawnPrimitiveComponent(UUUIDTextComponent::StaticClass(), SpawnCount);
-    }
     if (ImGui::MenuItem("Smoke"))
     {
         SpawnPrimitiveComponent(UParticleSubUVComponent::StaticClass(), SpawnCount);

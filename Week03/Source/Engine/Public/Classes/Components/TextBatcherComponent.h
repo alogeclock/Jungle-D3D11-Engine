@@ -36,9 +36,7 @@ public:
         const FString& InText,
         const FMatrix<float>& InWorldMatrix);
 
-    void SubmitSubUV(
-        const FString& InFontPath,
-        const FMatrix<float>& InWorldMatrix);
+    void SetViewOption( FSceneViewOptions ViewOptions);
 
     virtual void Render(URenderer& renderer) override;
     void Flush(URenderer& renderer);
@@ -49,4 +47,5 @@ private:
 private:
     TMap<FString, FTextMeshCache> MeshCaches;
     TArray<FTextBatchBucket> Buckets;
+    FSceneViewOptions ViewOption;
 };

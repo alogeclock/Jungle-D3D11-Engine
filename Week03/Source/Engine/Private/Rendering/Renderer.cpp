@@ -595,7 +595,7 @@ void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Const
     DeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
     DeviceContext->IASetInputLayout(TextInputLayout);
 
-    ApplyRasterizerState(ECullMode::None, true);
+    ApplyRasterizerState(ECullMode::None, false);
 
     DeviceContext->VSSetShader(TextVertexShader, nullptr, 0);
     DeviceContext->PSSetShader(TextPixelShader, nullptr, 0);

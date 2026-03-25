@@ -204,6 +204,8 @@ void UApplication::Render()
     
     GEditor->Render(*Renderer);
     
+
+    GWorld->GetTextBatcherComponent()->SetViewOption(ViewOptions);
     GWorld->GetTextBatcherComponent()->Render(*Renderer);
     GWorld->GetTextBatcherComponent()->Flush(*Renderer);
 
