@@ -103,7 +103,9 @@ void UEditorEngine::Render(URenderer &renderer)
 
     if (Gizmo)
     {
+        renderer.DeviceContext->OMSetRenderTargets(1, &renderer.FrameBufferRTV, renderer.GizmoDepthStencilView);
         Gizmo->RenderAllActorComponents(renderer);
+        renderer.DeviceContext->OMSetRenderTargets(1, &renderer.FrameBufferRTV, renderer.DepthStencilView);
     }
 }
 

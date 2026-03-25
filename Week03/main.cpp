@@ -4,18 +4,20 @@
 #include "Source/Core/Public/Memory.h"
 #include "Source/Editor/Public/Application.h"
 
+#include <iostream>
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-//#ifdef _DEBUG
-//	// 디버그 모드에서만 콘솔 창을 할당합니다.
-//	AllocConsole();
-//	FILE* File = nullptr;
-//	freopen_s(&File, "CONOUT$", "w", stdout);
-//
-//	std::cout << "Engine Initialization Started..." << std::endl;
-//#endif
+#ifdef _DEBUG
+	// 디버그 모드에서만 콘솔 창을 할당합니다.
+	AllocConsole();
+	FILE* File = nullptr;
+	freopen_s(&File, "CONOUT$", "w", stdout);
+
+	std::cout << "Engine Initialization Started..." << std::endl;
+#endif
 
 	UApplication* main_app = new UApplication();
 
