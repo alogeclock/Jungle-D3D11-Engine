@@ -544,7 +544,7 @@ void UImGuiManager::ViewMode()
 void UImGuiManager::SetCameraInfo()
 {
     FEditorViewportClient* ViewportClient = GEditor->GetEditorViewportClient();
-    FViewportCameraTransform Camera = ViewportClient->GetCameraTransform();
+    FViewportCameraTransform& Camera = ViewportClient->GetCameraTransform();
 
     ImGui::Checkbox("Orthographic", &UImGuiManager::Get().bIsOrthogonal);
 

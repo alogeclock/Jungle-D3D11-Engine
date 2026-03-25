@@ -117,7 +117,7 @@ class FEditorViewportClient
     void Render(URenderer &renderer);
 
     // 카메라 트랜스폼 직접 접근 (필요 시)
-    const FViewportCameraTransform &GetCameraTransform() const { return CameraTransform; }
+    FViewportCameraTransform &GetCameraTransform() { return CameraTransform; }
 
     bool GetDrawAABB() const { return bDrawAABB; }
     void SetDrawAABB(bool bInDraw) { bDrawAABB = bInDraw; }

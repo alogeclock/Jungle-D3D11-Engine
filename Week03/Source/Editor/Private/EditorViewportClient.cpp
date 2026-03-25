@@ -53,7 +53,7 @@ FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
 
     if (GEditor)
         GEditor->SetEditorViewportClient(this);
-    else
+    //else
         //std::cout << "[Error] EditorViewportClient is failed to register in GEditor." << std::endl;
 
     LoadConfig();
