@@ -5,7 +5,6 @@
 void FOutliner::ShowOutliner()
 {
     USelection* Selection = GEditor->GetSelection();
-    ImGui::Checkbox("Debug", &bInDebug);
     ShowObjectInfo(Selection->GetSelectedObject());
     ImGui::SetCursorPosY(120.f);
     ImGui::BeginChild("OutlinerRegion", ImVec2(0, outlinerHeight), true);
@@ -121,6 +120,10 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
             FTransform* Transform = reinterpret_cast<FTransform*>(Property.GetValuePtr(InObject));
             float align = 100.f;
 
+            float RadToDeg = 57.2958f;
+            float DegToRad = 1 / RadToDeg;
+            float value;
+
             ImGui::Text("Location");
             ImGui::SameLine();
             ImGui::SetCursorPosX(align);
@@ -130,7 +133,9 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
             ImGui::SameLine();
             ImGui::SetCursorPosX(align);
 
-            ImGui::DragFloat3("##Rotation", &Transform->Rotation.X, 0.01f);
+            FVector<float> TempRotation = Transform->Rotation * RadToDeg;
+            ImGui::DragFloat3("##Rotation", &TempRotation.X, 0.1f);
+            Transform->Rotation = TempRotation * DegToRad;
 
             ImGui::Text("Scale");
             ImGui::SameLine();
@@ -199,129 +204,153 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
     TMap<UObject*, TArray<UObject*>> OuterGraph;
     TArray<UObject*> RootObjects;
 
-    // 1. 그래프 구성
+    // 1. 그래프 구성 (기존과 동일)
     for (UObject* Object : ObjectArray)
     {
-        if (!Object)
-            continue;
+        if (!Object) continue;
 
         FName Name = Object->GetName();
-
         if (!Object->GetOuter() && Name == FName("World"))
         {
             RootObjects.push_back(Object);
-            if (!bInDebug)
-                continue;
+            continue;
         }
 
         OuterGraph[Object->GetOuter()].push_back(Object);
     }
 
     USelection* Selection = GEditor->GetSelection();
-    if (!Selection)
-        return;
+    if (!Selection) return;
 
     ImGuiIO& io = ImGui::GetIO();
-
     TSet<UObject*> Visited;
+
+    // -------------------------------------------------------------
+    // [최적화 1단계] 보여지는 노드만 1차원 배열로 평탄화 (Flatten)
+    // -------------------------------------------------------------
+    struct FFlatNode 
+    {
+        UObject* Object;
+        int32 Depth;
+        int32 Index;
+    };
+    TArray<FFlatNode> FlatTree;
     TArray<UObject*> Sequence;
 
+    std::function<void(UObject*, int32)> FlattenTree = [&](UObject* Current, int32 Depth) {
+        if (!Current || Visited.contains(Current)) return;
+        Visited.insert(Current);
+
+        // 현재 노드를 1차원 배열에 추가
+        FlatTree.push_back({ Current, Depth, static_cast<int32>(Sequence.size()) });
+        Sequence.push_back(Current);
+
+        // 노드가 열려(Expanded) 있을 때만 자식 노드들을 배열에 추가 (재귀)
+        if (ExpandedNodes.contains(Current))
+        {
+            for (UObject* Child : OuterGraph[Current])
+            {
+                FlattenTree(Child, Depth + 1);
+            }
+        }
+    };
+
+    for (UObject* Root : RootObjects)
+    {
+        FlattenTree(Root, 0);
+    }
+
+    // -------------------------------------------------------------
+    // [최적화 2단계] ImGuiListClipper 적용 및 렌더링
+    // -------------------------------------------------------------
     bool bShiftClick = false;
     bool bCtrlClick = false;
     int32 ClickedIndex = -1;
     int32 AnchorIndex = -1;
-    int32 CurrentIndex = 0;
 
-    // anchor = 현재 선택된 첫 번째 오브젝트
-    auto FindAnchorIndex = [&](UObject* Current) {
-        if (AnchorIndex >= 0)
-            return;
+    ImGuiListClipper Clipper;
+    Clipper.Begin(FlatTree.size()); // 화면에 보일 수 있는 전체 리스트 개수 전달
 
-        if (Selection->IsSelected(Current))
-        {
-            AnchorIndex = CurrentIndex;
-        }
-    };
-
-    std::function<void(UObject*)> DrawNode = [&](UObject* Current) {
-        if (!Current)
-            return;
-        if (Visited.contains(Current))
-            return;
-
-        Visited.insert(Current);
-        Sequence.push_back(Current);
-
-        if (!Selection->IsEmpty() && Current == Selection->GetSelectedObject())
-            AnchorIndex = CurrentIndex;
-
-        FString Label = Current->GetName().ToString(); //        +" UUID: " + std::to_string(Current->GetUUID());
-
-        TArray<UObject*>& Children = OuterGraph[Current];
-
-        ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_SpanAvailWidth;
-        if (Selection->IsSelected(Current))
-            Flags |= ImGuiTreeNodeFlags_Selected;
-        if (Children.empty())
-            Flags |= ImGuiTreeNodeFlags_Leaf;
-
-        ImGui::PushID(Current);
-
-        bool bOpened = false;
-        if (Children.empty())
-            bOpened = ImGui::TreeNodeEx(Label.c_str(), Flags);
-        else
-            bOpened = ImGui::TreeNodeEx(Label.c_str(),
-                                        Flags | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow);
-
-        const bool bSelectableType = bInDebug || Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
-
-        if (ImGui::IsItemClicked() && bSelectableType)
-        {
-            bShiftClick = io.KeyShift;
-            bCtrlClick = io.KeyCtrl;
-            ClickedIndex = CurrentIndex;
-        }
-
-        ++CurrentIndex;
-
-        if (bOpened)
-        {
-            for (UObject* Child : Children)
-            {
-                DrawNode(Child);
-            }
-            ImGui::TreePop();
-        }
-
-        ImGui::PopID();
-    };
-
-    // 2. 루트부터 렌더 + 평탄화
-    for (UObject* Root : RootObjects)
+    while (Clipper.Step())
     {
-        DrawNode(Root);
-    }
+        for (int i = Clipper.DisplayStart; i < Clipper.DisplayEnd; ++i)
+        {
+            const FFlatNode& NodeData = FlatTree[i];
+            UObject* Current = NodeData.Object;
+            int32 Depth = NodeData.Depth;
+            int32 CurrentIndex = NodeData.Index;
 
-    // 3. 클릭 결과 반영
+            if (!Selection->IsEmpty() && Current == Selection->GetSelectedObject())
+                AnchorIndex = CurrentIndex;
+
+            TArray<UObject*>& Children = OuterGraph[Current];
+
+            ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow;
+            if (Selection->IsSelected(Current)) Flags |= ImGuiTreeNodeFlags_Selected;
+            if (Children.empty()) Flags |= ImGuiTreeNodeFlags_Leaf;
+
+            // 트리 계층 구조의 들여쓰기(Indent)를 수동으로 적용
+            float IndentWidth = Depth * ImGui::GetStyle().IndentSpacing;
+            if (IndentWidth > 0.0f) ImGui::Indent(IndentWidth);
+
+            // ImGui에게 이 노드가 열려야 하는지 강제로 알려줌
+            bool bIsExpanded = ExpandedNodes.contains(Current);
+            ImGui::SetNextItemOpen(bIsExpanded);
+
+            ImGui::PushID(Current);
+            FString Label = Current->GetName().ToString();
+            
+            bool bOpened = ImGui::TreeNodeEx(Label.c_str(), Flags);
+
+            // 화살표를 눌러서 노드를 열거나 닫았을 때 상태 업데이트
+            if (ImGui::IsItemToggledOpen())
+            {
+                if (bIsExpanded) ExpandedNodes.erase(Current);
+                else ExpandedNodes.insert(Current);
+            }
+
+            // 1차원 루프를 돌고 있으므로, 열렸다고 하더라도 내부 중첩을 막기 위해 즉시 Pop
+            if (bOpened)
+            {
+                ImGui::TreePop();
+            }
+
+            // 들여쓰기 복구
+            if (IndentWidth > 0.0f) ImGui::Unindent(IndentWidth);
+
+            // 클릭 및 선택 처리
+            const bool bSelectableType = Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
+            
+            // 화살표를 누른 것이 아니고(토글X), 아이템 자체를 클릭했을 때
+            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen() && bSelectableType)
+            {
+                bShiftClick = io.KeyShift;
+                bCtrlClick = io.KeyCtrl;
+                ClickedIndex = CurrentIndex;
+            }
+
+            ImGui::PopID();
+        }
+    }
+    Clipper.End();
+
+    // 3. 클릭 결과 반영 (기존 코드와 완벽히 동일하게 동작)
     if (ClickedIndex < 0 || ClickedIndex >= static_cast<int32>(Sequence.size()))
         return;
 
     if (bShiftClick)
     {
-        if (AnchorIndex < 0)
-            AnchorIndex = ClickedIndex;
+        if (AnchorIndex < 0) AnchorIndex = ClickedIndex;
 
         int32 MinIndex = (ClickedIndex < AnchorIndex) ? ClickedIndex : AnchorIndex;
         int32 MaxIndex = (ClickedIndex > AnchorIndex) ? ClickedIndex : AnchorIndex;
 
         Selection->Clear();
         Selection->AddObject(Sequence[AnchorIndex]);
-        for (int32 i = MinIndex; i <= MaxIndex; ++i) // <= 중요
+        for (int32 i = MinIndex; i <= MaxIndex; ++i)
         {
             UObject* Target = Sequence[i];
-            if (!Target)
-                continue;
+            if (!Target) continue;
 
             if (Target->IsA(AActor::StaticClass()) || Target->IsA(USceneComponent::StaticClass()))
             {
@@ -334,15 +363,8 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
         UObject* Target = Sequence[ClickedIndex];
         if (Target)
         {
-            // RemoveObject가 있으면 토글 추천
-            if (!Selection->IsSelected(Target))
-            {
-                Selection->AddObject(Target);
-            }
-            else
-            {
-                Selection->RemoveObject(Target);
-            }
+            if (!Selection->IsSelected(Target)) Selection->AddObject(Target);
+            else Selection->RemoveObject(Target);
         }
     }
     else

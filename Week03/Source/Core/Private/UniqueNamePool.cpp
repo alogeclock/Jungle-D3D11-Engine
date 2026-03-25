@@ -15,6 +15,5 @@ uint32 UniqueNamePool::AddNameAndCount(uint32 InOuterUUID, uint32 DisplayIndex)
         CountSet[DisplayIndex] = 0;
 
     uint32& Count = CountSet[DisplayIndex];
-    OutputDebugStringA("Hello Debug\n");
     return Count++;
 }

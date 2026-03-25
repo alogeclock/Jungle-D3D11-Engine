@@ -135,6 +135,7 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     case EPrimitiveType::Triangle:
     case EPrimitiveType::Plane:
     case EPrimitiveType::Text:
+    case EPrimitiveType::SubUV:
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
         break;
 

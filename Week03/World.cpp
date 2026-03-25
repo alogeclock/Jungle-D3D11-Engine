@@ -17,6 +17,7 @@
 #include "Source/Engine/Public/Classes/Components/AxisComponent.h"
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
 #include "Source/Engine/Public/GUI/ImGuiManager.h"
+#include "Source/Editor/Public/EditorEngine.h"
 
 #include <fstream>
 #include <iostream>
@@ -367,6 +368,72 @@ AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
     }
 
     return nullptr; // 팩토리 생성이 실패하거나 AActor가 아니면 nullptr 반환
+}
+
+bool UWorld::DeleteSelectedActors()
+{
+    if (CurrentLevel == nullptr || GEditor == nullptr || GEditor->GetSelection() == nullptr)
+    {
+        return false;
+    }
+
+    USelection* Selection = GEditor->GetSelection();
+    if (Selection->IsEmpty())
+    {
+        return false;
+    }
+
+    TArray<AActor*> ActorsToDelete;
+    const uint32 SelectionCount = Selection->GetCount();
+    for (uint32 i = 0; i < SelectionCount; ++i)
+    {
+        UObject* SelectedObject = (*Selection)[i];
+        if (SelectedObject == nullptr)
+        {
+            continue;
+        }
+
+        AActor* SelectedActor = Cast<AActor>(SelectedObject);
+        if (SelectedActor == nullptr)
+        {
+            if (USceneComponent* SelectedSceneComponent = Cast<USceneComponent>(SelectedObject))
+            {
+                SelectedActor = SelectedSceneComponent->GetOwner();
+            }
+        }
+
+        if (SelectedActor == nullptr)
+        {
+            continue;
+        }
+
+        if (std::find(ActorsToDelete.begin(), ActorsToDelete.end(), SelectedActor) == ActorsToDelete.end())
+        {
+            ActorsToDelete.push_back(SelectedActor);
+        }
+    }
+
+    if (ActorsToDelete.empty())
+    {
+        return false;
+    }
+
+    Selection->Clear();
+
+    TArray<AActor*>& LevelActors = CurrentLevel->GetActors();
+    for (AActor* ActorToDelete : ActorsToDelete)
+    {
+        auto It = std::find(LevelActors.begin(), LevelActors.end(), ActorToDelete);
+        if (It == LevelActors.end())
+        {
+            continue;
+        }
+
+        delete *It;
+        LevelActors.erase(It);
+    }
+
+    return true;
 }
 
 void UWorld::Tick(float deltaTime)

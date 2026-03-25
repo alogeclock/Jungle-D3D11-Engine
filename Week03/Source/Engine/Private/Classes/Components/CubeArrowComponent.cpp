@@ -13,6 +13,7 @@ void UCubeArrowComponent::Submit(const FSceneViewOptions& ViewOptions)
     UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
     
+    // 정적 Vertex Buffer의 경우 처음 한 번 외에는 호출하지 않음
     Command.bIsTextured = false;
     if (Command.VertexBuffer == nullptr)
     {

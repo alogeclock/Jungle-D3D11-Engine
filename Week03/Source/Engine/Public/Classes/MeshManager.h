@@ -21,6 +21,7 @@ public:
 
     void Initialize(URenderer &Renderer);
     void Release(URenderer &Renderer);
+    TArray<FTextureVertex> RebuildMesh();
 
     FBox ComputeAABB(const TArray<FVertex> &Vertices);
     FBox ComputeAABB(const TArray<FTextureVertex> &Vertices);

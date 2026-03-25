@@ -4,8 +4,6 @@
 #include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
 #include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 #include "World.h"
-#include "Source/Core/Public/FName.h"
-
 
 bool FSpawnGUI::GetVisible()
 {
@@ -34,19 +32,10 @@ void FSpawnGUI::ShowDetail()
     const char* PrimitiveTypeStrings[] = {"Sphere", "Cube", "Triangle", "Plane", "Text", "UI", "Smoke"};
 
     static int Primitive = 0;
-    static int NumberOfSpawn = 1;
-
-    bool isSpawn = false;
 
     ImGui::Combo("Primitive", &Primitive, PrimitiveTypeStrings, IM_ARRAYSIZE(PrimitiveTypeStrings));
 
-    isSpawn = ImGui::Button("Spawn");
-    ImGui::SameLine();
-
-    ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-    ImGui::DragInt("Number of spawn", &NumberOfSpawn, 0.05f, 1, 10);
-
-    if (isSpawn)
+    if (ImGui::Button("Spawn"))
     {
         UClass* ComponentClassToSpawn = nullptr;
 
@@ -75,44 +64,90 @@ void FSpawnGUI::ShowDetail()
             break;
         }
 
+        SpawnPrimitiveComponent(ComponentClassToSpawn, SpawnCount);
+    }
 
-        for (int i = 0; i < NumberOfSpawn; i++)
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+    ImGui::DragInt("Number of spawn", &SpawnCount, 0.05f, 1, 10);
+}
+
+void FSpawnGUI::DrawContextMenu()
+{
+    ImGui::SetNextItemWidth(120.0f);
+    ImGui::DragInt("Count", &SpawnCount, 0.1f, 1, 100);
+
+    if (ImGui::MenuItem("Sphere"))
+    {
+        SpawnPrimitiveComponent(USphereComponent::StaticClass(), SpawnCount);
+    }
+    if (ImGui::MenuItem("Cube"))
+    {
+        SpawnPrimitiveComponent(UCubeComponent::StaticClass(), SpawnCount);
+    }
+    if (ImGui::MenuItem("Triangle"))
+    {
+        SpawnPrimitiveComponent(UTriangleComponent::StaticClass(), SpawnCount);
+    }
+    if (ImGui::MenuItem("Plane"))
+    {
+        SpawnPrimitiveComponent(UPlaneComponent::StaticClass(), SpawnCount);
+    }
+    if (ImGui::MenuItem("Text"))
+    {
+        SpawnPrimitiveComponent(UTextComponent::StaticClass(), SpawnCount);
+    }
+    if (ImGui::MenuItem("UI"))
+    {
+        SpawnPrimitiveComponent(UUUIDTextComponent::StaticClass(), SpawnCount);
+    }
+    if (ImGui::MenuItem("Smoke"))
+    {
+        SpawnPrimitiveComponent(UParticleSubUVComponent::StaticClass(), SpawnCount);
+    }
+}
+
+void FSpawnGUI::SpawnPrimitiveComponent(UClass* ComponentClassToSpawn, int NumberOfSpawn)
+{
+    if (ComponentClassToSpawn == nullptr)
+    {
+        return;
+    }
+
+    for (int i = 0; i < NumberOfSpawn; i++)
+    {
+        AActor* NewActor = GWorld->SpawnActor<AActor>();
+        USceneComponent* Root = NewActor->CreateDefaultSubobject<USceneComponent>();
+        NewActor->SetRootComponent(Root);
+        Root->RegisterComponent();
+
+        UObject* NewComponent = FObjectFactory::ConstructObject(ComponentClassToSpawn);
+        UPrimitiveComponent* DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent);
+        if (DynamicPrimitive == nullptr)
         {
-            AActor* NewActor = GWorld->SpawnActor<AActor>();
-            USceneComponent* Root = NewActor->CreateDefaultSubobject<USceneComponent>();
-            NewActor->SetRootComponent(Root);
-            Root->RegisterComponent();
+            continue;
+        }
 
-            UObject* NewComponent = FObjectFactory::ConstructObject(ComponentClassToSpawn);
+        DynamicPrimitive->SetOuter(NewActor);
+        DynamicPrimitive->RegisterComponent();
 
-            // 생성된 객체가 화면에 그릴 수 있는 PrimitiveComponent인지 확인
-            UPrimitiveComponent* DynamicPrimitive = Cast<UPrimitiveComponent>(NewComponent);
-            if (DynamicPrimitive != nullptr)
+        if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
+        {
+            if (TextComp->IsExactly(UTextComponent::StaticClass()))
             {
-                const char* SpawnedClassName = DynamicPrimitive->GetClass()->GetName();
-                const uint32 UUID = NewActor->GetUUID();
-
-
-                DynamicPrimitive->SetOuter(NewActor);
-                DynamicPrimitive->RegisterComponent();
-
-                if (UTextComponent* TextComp = Cast<UTextComponent>(DynamicPrimitive))
-                {
-                    if (TextComp->IsExactly(UTextComponent::StaticClass()))
-                        TextComp->SetText("박상혁 김호준 전현길 김기홍");
-                }
-
-                UObject* NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
-                UUUIDTextComponent* UUUID = Cast<UUUIDTextComponent>(NewUUUIDComponent);
-                if (UUUID == nullptr)
-                {
-                    return;
-                }
-
-                UUUID->SetOuter(NewActor);
-                UUUID->RegisterComponent();
-                UUUID->SetText(UUID);
+                TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));
             }
         }
+
+        UObject* NewUUUIDComponent = FObjectFactory::ConstructObject(UUUIDTextComponent::StaticClass());
+        UUUIDTextComponent* UUUID = Cast<UUUIDTextComponent>(NewUUUIDComponent);
+        if (UUUID == nullptr)
+        {
+            continue;
+        }
+
+        UUUID->SetOuter(NewActor);
+        UUUID->RegisterComponent();
+        UUUID->SetText(NewActor->GetUUID());
     }
 }

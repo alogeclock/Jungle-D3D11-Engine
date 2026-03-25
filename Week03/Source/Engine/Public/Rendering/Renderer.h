@@ -152,6 +152,7 @@ class URenderer
 
     void RenderPrimitive(UPrimitiveComponent *primitive, FConstants &constants, FConstantsColor &constantsColor);
 
+    ID3D11Buffer *CreateVertexBuffer(const FTextureVertex *vertices, uint32 byteWidth);
     ID3D11Buffer *CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
     void          ReleaseVertexBuffer(ID3D11Buffer *vertexBuffer);
 

@@ -6,7 +6,6 @@
 class UTextComponent : public UPrimitiveComponent
 {
     DECLARE_OBJECT_START(UTextComponent, UPrimitiveComponent)
-    PRIVATE_PROPERTY(UTextComponent, Text, String)
     DECLARE_END 
 public :
     UTextComponent(const FString &InString);

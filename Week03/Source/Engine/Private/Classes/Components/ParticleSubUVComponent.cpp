@@ -5,89 +5,36 @@
 #include "CoreTypes.h"
 #include <iostream>
 
-UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UTextComponent(InString)
+UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UPrimitiveComponent(InString)
 { 
     FilePath = "Data/Texture/Explosion.png"; 
     SpriteSize = 150;
     Height = 900;
     Width = 900;
-    bMeshDirty = true;
     CurrentTime = 0;
     bLoop = true;
     PrimitiveType = EPrimitiveType::SubUV;
+    TotalFrameCount = 36;
+
+	CullMode = ECullMode::None;      // 텍스트가 카메라 방향에 따라 통째로 컬링되는 상황 방지
+	bEnableDepthTest = false;        // 기본적으로 항상 보이게
+    bShowUUID = false;
 
     SetScale({3.f, 3.f, 3.f});
 }
 
 void UParticleSubUVComponent::Render(URenderer &renderer)
 {
-    if (CurrentTime >= PlayRate && !bLoop)
-        return;
-    UTextComponent::Render(renderer);
 }
 
 void UParticleSubUVComponent::Tick(float deltaTime)
 {
-    CurrentTime += deltaTime;
-    if (bLoop && CurrentTime >= PlayRate)
-        CurrentTime -= PlayRate;
+    PlaySpeed = max(PlaySpeed, 0);
+    CurrentTime += deltaTime * TotalFrameCount * PlaySpeed;
+    if (bLoop && CurrentTime >= TotalFrameCount)
+        CurrentTime = 0;
     
-    RebuildMesh();
-}
-
-void UParticleSubUVComponent::RebuildMesh()
-{
-    //std::cout << FilePath << std::endl;
-    TextVertices.reserve(6);
-    TextIndeices.reserve(6);
-
-    uint32 Row = Height / SpriteSize;
-    uint32 Collum = Width / SpriteSize;
-
-    uint32 Size = Row * Collum;
-    //std::cout << Size << std::endl;
-
-    float  CurrentState = CurrentTime / PlayRate;
-
-    int CurrentIndex = static_cast<int>(floor(Size * CurrentState));
-
-    uint32 u0, u1, v0, v1;
-    u0 = CurrentIndex % Collum;
-    v0 = CurrentIndex / Collum;
-
-    u1 = u0 + 1;
-    v1 = v0 + 1;
-
-    u0 *= SpriteSize;
-    u1 *= SpriteSize;
-    v0 *= SpriteSize;
-    v1 *= SpriteSize;
-
-    float x0 = -0.5f;
-    float x1 = 0.5f;
-    float y0 = -0.5f;
-    float y1 = 0.5f;
-
-    float fu0 = (float)u0 / (float)Width;
-    float fu1 = (float)u1 / (float)Width;
-    float fv0 = (float)v0 / (float)Height;
-    float fv1 = (float)v1 / (float)Height;
-
-    TextVertices.clear();
-    TextIndeices.clear();
-
-    TextVertices.push_back({FVector<float>(x0, y0, 0.f), fu0, fv0});
-    TextVertices.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
-    TextVertices.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
-    TextVertices.push_back({FVector<float>(x1, y1, 0.f), fu1, fv1});
-
-    TextIndeices.push_back(0);
-    TextIndeices.push_back(1);
-    TextIndeices.push_back(2);
-    TextIndeices.push_back(1);
-    TextIndeices.push_back(3);
-    TextIndeices.push_back(2); 
-    bMeshDirty = true;
+    //RebuildMesh();
 }
 
 void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
@@ -98,14 +45,54 @@ void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
     Command.bIsTextured = true;
-    Command.TextureSRV = UTextureManager::Get().GetTexture(FilePath);
+    Command.CurrentFrame = static_cast<uint32>(CurrentTime);
 
+    // 정적 Vertex Buffer의 경우 처음 한 번 외에는 호출하지 않음
     if (Command.VertexBuffer == nullptr)
     {
+        Command.TextureSRV = UTextureManager::Get().GetTexture(FilePath);
         Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
-        Command.IndexBuffer = UMeshManager::Get().GetIndexBuffer(PrimitiveType);
         Command.NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
         Command.NumIndices = UMeshManager::Get().GetNumIndices(PrimitiveType);
-        Command.Stride = sizeof(FVertex);
+        Command.Stride = sizeof(FTextureVertex);
     }
+}
+
+FHitResult UParticleSubUVComponent::IntersectRayMeshTriangle(
+    const FVector<float>& RayOrigin,
+    const FVector<float>& RayDirection)
+{
+    FHitResult Result;
+
+    const FMatrix<float> WorldMatrix = GetWorldMatrix();
+
+    for (uint32 Index = 0; Index + 2 < static_cast<uint32>(RayCheck.size()); Index += 3)
+    {
+        const FVector<float>& LocalV0 = RayCheck[Index + 0];
+        const FVector<float>& LocalV1 = RayCheck[Index + 1];
+        const FVector<float>& LocalV2 = RayCheck[Index + 2];
+
+        const FVector4<float> V0L(LocalV0.X, LocalV0.Y, LocalV0.Z, 1.0f);
+        const FVector4<float> V1L(LocalV1.X, LocalV1.Y, LocalV1.Z, 1.0f);
+        const FVector4<float> V2L(LocalV2.X, LocalV2.Y, LocalV2.Z, 1.0f);
+
+        const FVector4<float> V0W = V0L * WorldMatrix;
+        const FVector4<float> V1W = V1L * WorldMatrix;
+        const FVector4<float> V2W = V2L * WorldMatrix;
+
+        const FVector<float> V0(V0W.X, V0W.Y, V0W.Z);
+        const FVector<float> V1(V1W.X, V1W.Y, V1W.Z);
+        const FVector<float> V2(V2W.X, V2W.Y, V2W.Z);
+
+        float T = 0.0f;
+        if (RayIntersectsTriangle(RayOrigin, RayDirection, V0, V1, V2, T) && T < Result.Distance)
+        {
+            Result.bHit = true;
+            Result.Distance = T;
+            Result.HitPoint = RayOrigin + RayDirection * T;
+            Result.HitComponent = this;
+        }
+    }
+
+    return Result;
 }

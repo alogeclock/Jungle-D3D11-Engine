@@ -95,6 +95,11 @@ void UTextComponent::Submit(const FSceneViewOptions& ViewOptions)
         return;
     }
 
+    if (bMeshDirty)
+    {
+        RebuildMesh();
+    }
+
     UPrimitiveComponent::Submit(ViewOptions);
 
     UTextBatcherComponent* TextBatcher = GWorld->GetTextBatcherComponent();

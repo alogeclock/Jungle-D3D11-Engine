@@ -36,6 +36,10 @@ public:
         const FString& InText,
         const FMatrix<float>& InWorldMatrix);
 
+    void SubmitSubUV(
+        const FString& InFontPath,
+        const FMatrix<float>& InWorldMatrix);
+
     virtual void Render(URenderer& renderer) override;
     void Flush(URenderer& renderer);
 
