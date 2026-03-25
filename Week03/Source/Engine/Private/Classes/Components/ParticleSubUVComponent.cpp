@@ -99,7 +99,8 @@ void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
 
     Command.bIsTextured = true;
     Command.TextureSRV = UTextureManager::Get().GetTexture(FilePath);
-
+    
+    // 정적 Vertex Buffer의 경우 처음 한 번 외에는 호출하지 않음
     if (Command.VertexBuffer == nullptr)
     {
         Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);

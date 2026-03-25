@@ -13,6 +13,7 @@ void URingComponent::Submit(const FSceneViewOptions& ViewOptions)
     FRenderCommand &Command = RenderProxy->RenderCommand;
     
     Command.bIsTextured = false;
+    // 정적 Vertex Buffer의 경우 처음 한 번 외에는 호출하지 않음
     if (Command.VertexBuffer == nullptr)
     {
         Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
