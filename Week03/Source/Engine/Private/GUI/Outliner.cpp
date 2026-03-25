@@ -5,7 +5,6 @@
 void FOutliner::ShowOutliner()
 {
     USelection* Selection = GEditor->GetSelection();
-    ImGui::Checkbox("Debug", &bInDebug);
     ShowObjectInfo(Selection->GetSelectedObject());
     ImGui::SetCursorPosY(120.f);
     ImGui::BeginChild("OutlinerRegion", ImVec2(0, outlinerHeight), true);
@@ -121,6 +120,10 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
             FTransform* Transform = reinterpret_cast<FTransform*>(Property.GetValuePtr(InObject));
             float align = 100.f;
 
+            float RadToDeg = 57.2958f;
+            float DegToRad = 1 / RadToDeg;
+            float value;
+
             ImGui::Text("Location");
             ImGui::SameLine();
             ImGui::SetCursorPosX(align);
@@ -130,7 +133,9 @@ void FOutliner::ShowObjectProperty(UObject* InObject)
             ImGui::SameLine();
             ImGui::SetCursorPosX(align);
 
-            ImGui::DragFloat3("##Rotation", &Transform->Rotation.X, 0.01f);
+            FVector<float> TempRotation = Transform->Rotation * RadToDeg;
+            ImGui::DragFloat3("##Rotation", &TempRotation.X, 0.1f);
+            Transform->Rotation = TempRotation * DegToRad;
 
             ImGui::Text("Scale");
             ImGui::SameLine();
@@ -208,7 +213,7 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
         if (!Object->GetOuter() && Name == FName("World"))
         {
             RootObjects.push_back(Object);
-            if (!bInDebug) continue;
+            continue;
         }
 
         OuterGraph[Object->GetOuter()].push_back(Object);
@@ -314,7 +319,7 @@ void FOutliner::ShowOutliner(TArray<UObject*>& ObjectArray)
             if (IndentWidth > 0.0f) ImGui::Unindent(IndentWidth);
 
             // 클릭 및 선택 처리
-            const bool bSelectableType = bInDebug || Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
+            const bool bSelectableType = Current->IsA(AActor::StaticClass()) || Current->IsA(USceneComponent::StaticClass());
             
             // 화살표를 누른 것이 아니고(토글X), 아이템 자체를 클릭했을 때
             if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen() && bSelectableType)

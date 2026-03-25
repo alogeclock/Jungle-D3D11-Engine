@@ -28,9 +28,11 @@ namespace EKeys
     inline const FKey D{'D'};
     inline const FKey Q{'Q'};
     inline const FKey E{'E'};
+    inline const FKey Delete{VK_DELETE};
     inline const FKey Space{VK_SPACE};
     inline const FKey LeftMouseButton{VK_LBUTTON};
     inline const FKey RightMouseButton{VK_RBUTTON};
+    inline const FKey Control{VK_CONTROL};
 } // namespace EKeys
 
 enum class EInputEvent : uint8
@@ -122,7 +124,7 @@ public:
     bool ProcessKeyDown(const FKey& Key);
 
     // 입력 분석 후 현재 선택한 오브젝트를 Selection 배열에 삽입
-    void UpdateSelection(UPrimitiveComponent* HitComp);
+    void UpdateSelection(UPrimitiveComponent* HitComp, bool bMultiSelect = false);
     APivotTransformGizmo* GetGizmo() const { return Gizmo; }
     AGrid* GetGrid() { return Grid; }
     AAxis* GetAxis() { return Axis; }

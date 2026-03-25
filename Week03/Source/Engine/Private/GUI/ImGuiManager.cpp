@@ -63,23 +63,27 @@ void UImGuiManager::Update()
     ImGui::End();
 
     ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-    if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && (delta.x * delta.x + delta.y * delta.y) < 4.0f)
+    if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && !io.WantCaptureMouse &&
+        (delta.x * delta.x + delta.y * delta.y) < 4.0f)
     {
-        ImGui::SetNextWindowPos(io.MousePos);
-        FSpawnGUI.SetVisible(true);
+        ImGui::OpenPopup("ViewportContextMenu");
     }
 
-    if (FSpawnGUI.GetVisible())
+    if (ImGui::BeginPopup("ViewportContextMenu"))
     {
-        ImGui::Begin("Spawn", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
-        FSpawnGUI.ShowDetail();
-        ImGui::End();
-    }
-
-    if (ImGui::IsMouseDragging(ImGuiMouseButton_Right) ||
-        ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !io.WantCaptureMouse)
-    {
-        FSpawnGUI.SetVisible(false);
+        if (ImGui::BeginMenu("Spawn"))
+        {
+            FSpawnGUI.DrawContextMenu();
+            ImGui::EndMenu();
+        }
+        if (ImGui::MenuItem("Delete Selected"))
+        {
+            if (GWorld != nullptr)
+            {
+                GWorld->DeleteSelectedActors();
+            }
+        }
+        ImGui::EndPopup();
     }
 
     Toolbar.ShowToolbar({0, 0}, {io.DisplaySize.x - cellWidth * 4.f, 30});

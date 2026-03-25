@@ -141,11 +141,14 @@ bool UEditorEngine::ProcessKeyDown(const FKey& Key)
 }
 
 // 1회 클릭 시 Actor를 선택하고, 연속 클릭 시 Component를 선택한다.
-void UEditorEngine::UpdateSelection(UPrimitiveComponent* HitComp)
+void UEditorEngine::UpdateSelection(UPrimitiveComponent* HitComp, bool bMultiSelect)
 {
     if (HitComp == nullptr)
     {
-        Selection->Clear();
+        if (!bMultiSelect)
+        {
+            Selection->Clear();
+        }
         return;
     }
 
@@ -153,25 +156,51 @@ void UEditorEngine::UpdateSelection(UPrimitiveComponent* HitComp)
     if (HitActor == nullptr)
     {
         // 주인이 없는 단일 컴포넌트 처리
-        Selection->Clear();
-        Selection->AddObject(HitComp);
+        if (bMultiSelect)
+        {
+            if (Selection->IsSelected(HitComp))
+                Selection->RemoveObject(HitComp);
+            else
+                Selection->AddObject(HitComp);
+        }
+        else
+        {
+            Selection->Clear();
+            Selection->AddObject(HitComp);
+        }
         return;
     }
 
-    // 현재 부모 액터가 이미 선택되어 있는지 확인
-    bool bIsActorAlreadySelected = Selection->IsSelected(HitActor);
-
-    Selection->Clear();
-
-    if (!bIsActorAlreadySelected)
+    if (bMultiSelect)
     {
-        // 첫 클릭 -> 부모 액터 전체를 저장 (TargetObject가 Actor가 됨)
-        Selection->AddObject(HitActor);
+        // 멀티 셀렉트 모드: 이미 선택되어 있다면 제거, 아니면 추가
+        if (Selection->IsSelected(HitActor))
+        {
+            Selection->RemoveObject(HitActor);
+        }
+        else if (Selection->IsSelected(HitComp))
+        {
+            Selection->RemoveObject(HitComp);
+        }
+        else
+        {
+            Selection->AddObject(HitActor);
+        }
     }
     else
     {
-        // 부모 액터가 선택된 상태에서 또 클릭 -> 해당 컴포넌트 하나만 저장
-        Selection->AddObject(HitComp);
+        // 단일 셀렉트 모드 (기존 로직: 1회 클릭 시 Actor, 연속 클릭 시 Component)
+        bool bIsActorAlreadySelected = Selection->IsSelected(HitActor);
+        Selection->Clear();
+
+        if (!bIsActorAlreadySelected)
+        {
+            Selection->AddObject(HitActor);
+        }
+        else
+        {
+            Selection->AddObject(HitComp);
+        }
     }
 }
 
@@ -249,6 +278,27 @@ void USelection::RemoveObject(UObject* InObject)
     auto it = std::find(SelectedObjects.begin(), SelectedObjects.end(), InObject);
     if (it != SelectedObjects.end())
     {
+        // 제거 전 선택 효과 해제
+        UObject* obj = *it;
+        UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(obj);
+        if (PrimComp)
+        {
+            PrimComp->SetSelectEffect(false);
+        }
+
+        AActor* Actor = Cast<AActor>(obj);
+        if (Actor)
+        {
+            for (auto Comp : Actor->GetOwnedComponents())
+            {
+                UPrimitiveComponent* ChildPrimComp = Cast<UPrimitiveComponent>(Comp);
+                if (ChildPrimComp)
+                {
+                    ChildPrimComp->SetSelectEffect(false);
+                }
+            }
+        }
+
         SelectedObjects.erase(it);
     }
 }
