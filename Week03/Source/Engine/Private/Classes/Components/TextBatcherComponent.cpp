@@ -1,6 +1,5 @@
 ﻿#include "Source/Engine/Public/Classes/Components/TextBatcherComponent.h"
 #include "Source/Engine/Public/Classes/TextMeshBuilder.h"
-#include <iostream>
 
 UTextBatcherComponent::UTextBatcherComponent(const FString& InString) : UPrimitiveComponent(InString)
 {

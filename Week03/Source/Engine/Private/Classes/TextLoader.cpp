@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <iostream>
 
 bool UTextLoader::LoadTextFromFile(const FString& InFilePath, FString& OutResult)
 {
@@ -13,8 +12,8 @@ bool UTextLoader::LoadTextFromFile(const FString& InFilePath, FString& OutResult
 	if (!FileStream.is_open())
 	{
 		// 프로젝트의 로그 시스템(예: FLogger)이 있다면 std::cout 대신 사용하는 것이 좋습니다.
-		std::cout << "[CTextLoader] 오류: 텍스트 파일을 열 수 없습니다. 경로: " 
-		          << InFilePath.c_str() << std::endl;
+		//std::cout << "[CTextLoader] 오류: 텍스트 파일을 열 수 없습니다. 경로: " 
+		//          << InFilePath.c_str() << std::endl;
 		return false;
 	}
 
@@ -38,8 +37,8 @@ bool UTextLoader::SaveTextToFile(const FString& InFilePath, const FString& InTex
 
 	if (!FileStream.is_open())
 	{
-		std::cout << "[CTextLoader] 오류: 파일에 쓰기 위해 열 수 없습니다. 경로: " 
-		          << InFilePath.c_str() << std::endl;
+		//std::cout << "[CTextLoader] 오류: 파일에 쓰기 위해 열 수 없습니다. 경로: " 
+		//          << InFilePath.c_str() << std::endl;
 		return false;
 	}
 

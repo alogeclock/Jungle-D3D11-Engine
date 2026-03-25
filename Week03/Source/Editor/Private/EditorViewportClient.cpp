@@ -9,8 +9,6 @@
 #include "Source/Engine/Object/Public/Actor.h"
 #include "World.h"
 
-#include <iostream>
-
 FViewportCameraTransform::FViewportCameraTransform()
     : ViewLocation(-2.0f, 0.5f, 2.f), ViewRotation(-30.f, 0.f, 0.f), LookAt(0.f, 0.f, 0.f), OrthoZoom(1.f), Max_OrthoZoom(1000.f), Min_OrthoZoom(1.f),
       MaxLocation(1000.0)
@@ -56,7 +54,7 @@ FEditorViewportClient::FEditorViewportClient(FViewport *viewport)
     if (GEditor)
         GEditor->SetEditorViewportClient(this);
     else
-        std::cout << "[Error] EditorViewportClient is failed to register in GEditor." << std::endl;
+        //std::cout << "[Error] EditorViewportClient is failed to register in GEditor." << std::endl;
 
     LoadConfig();
 }

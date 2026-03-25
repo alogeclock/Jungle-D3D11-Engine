@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
-#include <iostream>
 class USphereComponent : public UPrimitiveComponent
 {
 public:
@@ -35,7 +34,7 @@ public:
             cls->AddProperty(
                 {"SphereRadius", EPropertyType::Float,
                  ((::size_t) & reinterpret_cast<char const volatile&>((((USphereComponent*)0)->SphereRadius))), false});
-            std::cout << cls->GetProperties().size() << std::endl;
+            //std::cout << cls->GetProperties().size() << std::endl;
             return cls;
         }();
         return s_Class;

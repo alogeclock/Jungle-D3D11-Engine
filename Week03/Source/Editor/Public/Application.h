@@ -24,8 +24,6 @@
 #include "Source/Engine/Public/Rendering/Renderer.h"
 #include "Source/Engine/Public/Rendering/Scene.h"
 
-#include <iostream>
-
 extern UWorld* GWorld;
 extern UEditorEngine* GEditor;
 extern FScene* GMainScene;

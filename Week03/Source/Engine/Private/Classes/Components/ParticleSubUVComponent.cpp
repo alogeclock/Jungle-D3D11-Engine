@@ -3,7 +3,6 @@
 #include "Source/Engine/Public/Classes/TextMeshBuilder.h"
 #include <CMath>
 #include "CoreTypes.h"
-#include <iostream>
 
 UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UPrimitiveComponent(InString)
 { 

@@ -4,7 +4,6 @@
 #include "Source/Core/Public/Math/TranslationMatrix.h"
 #include "World.h"
 #include <cmath>
-#include <iostream>
 
 UTextComponent::UTextComponent(const FString &InString) : UPrimitiveComponent(InString)
 {

@@ -2,7 +2,6 @@
 #include "Source/Core/Public/Memory.h"
 
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
-#include <iostream>
 
 AActor::AActor(const FString& InString) : UObject(InString)
 {
