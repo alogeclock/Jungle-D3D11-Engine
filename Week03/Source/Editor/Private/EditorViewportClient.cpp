@@ -101,6 +101,11 @@ bool FEditorViewportClient::InputKey(const FInputEventState &InputState)
     // 1. 키보드 눌림 이벤트 위임 (SpaceBar 모드 전환 등은 기즈모가 스스로 처리함)
     if (Event == EInputEvent::Pressed)
     {
+        if (Key == EKeys::Delete)
+        {
+            return GWorld != nullptr && GWorld->DeleteSelectedActors();
+        }
+
         if (GEditor && GEditor->ProcessKeyDown(Key))
         {
             return true;

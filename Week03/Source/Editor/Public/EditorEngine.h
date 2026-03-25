@@ -28,6 +28,7 @@ namespace EKeys
     inline const FKey D{'D'};
     inline const FKey Q{'Q'};
     inline const FKey E{'E'};
+    inline const FKey Delete{VK_DELETE};
     inline const FKey Space{VK_SPACE};
     inline const FKey LeftMouseButton{VK_LBUTTON};
     inline const FKey RightMouseButton{VK_RBUTTON};
