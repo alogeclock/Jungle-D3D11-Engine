@@ -10,13 +10,13 @@ UGridComponent::UGridComponent(const FString& InString) : UPrimitiveComponent(In
 
 UGridComponent::~UGridComponent()
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
     if (DynamicVertexBuffer)
     {
         DynamicVertexBuffer->Release();
         DynamicVertexBuffer = nullptr;
     }
-#endif
+//#endif
 }
 
 void UGridComponent::SetGridStep(float InGridStep)
@@ -34,7 +34,7 @@ void UGridComponent::Render(URenderer& renderer)
     {
         RebuildGridLines();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
         if (!GridLines.empty())
         {
             uint32 RequiredVertexBufferSize = static_cast<uint32>(GridLines.size() * 2 * sizeof(FVertex));
@@ -56,17 +56,17 @@ void UGridComponent::Render(URenderer& renderer)
             }
             renderer.UpdateDynamicBuffer(DynamicVertexBuffer, Vertices.data(), RequiredVertexBufferSize);
         }
-#endif
+//#endif
 
         bNeedRebuild = false;
     }
 
-#ifndef _DEBUG
-    if (!GridLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)
-    {
-        GWorld->GetLineBatcherComponent()->DrawLines(GridLines);
-    }
-#else
+//#ifndef _DEBUG
+//    if (!GridLines.empty() && GWorld != nullptr && GWorld->GetLineBatcherComponent() != nullptr)
+//    {
+//        GWorld->GetLineBatcherComponent()->DrawLines(GridLines);
+//    }
+//#else
     if (!GridLines.empty() && DynamicVertexBuffer != nullptr)
     {
         renderer.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -81,7 +81,7 @@ void UGridComponent::Render(URenderer& renderer)
         renderer.DeviceContext->IASetVertexBuffers(0, 1, &DynamicVertexBuffer, &renderer.Stride, &offset);
         renderer.DeviceContext->Draw(static_cast<UINT>(GridLines.size() * 2), 0);
     }
-#endif
+//#endif
 }
 
 void UGridComponent::RebuildGridLines()
