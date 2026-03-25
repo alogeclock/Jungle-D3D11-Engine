@@ -360,9 +360,11 @@ FRay FEditorViewportClient::GetPickingRay()
 
 void FEditorViewportClient::PickingRay(const FVector<float>& RayOrigin, const FVector<float>& RayDirection)
 {
+    bool bIsControlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+
     if ((ShowFlags & EEngineShowFlags::SF_Primitives) == EEngineShowFlags::None)
     {
-        if (GEditor) GEditor->UpdateSelection(nullptr);
+        if (GEditor) GEditor->UpdateSelection(nullptr, bIsControlDown);
         return;
     }
 
@@ -371,7 +373,7 @@ void FEditorViewportClient::PickingRay(const FVector<float>& RayOrigin, const FV
     // 뷰포트는 그저 UEditorEngine에게 피킹된 컴포넌트를 던져주고 갱신을 위임한다.
     if (GEditor) 
     {
-        GEditor->UpdateSelection(ClosestHit.bHit ? ClosestHit.HitComponent : nullptr);
+        GEditor->UpdateSelection(ClosestHit.bHit ? ClosestHit.HitComponent : nullptr, bIsControlDown);
     }
 }
 
