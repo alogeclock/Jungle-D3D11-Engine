@@ -335,25 +335,57 @@ FRay FEditorViewportClient::GetPickingRay()
     FVector4<float> NDCNear = FVector4(NDC_X, NDC_Y, 0.0f, 1.0f);
     FVector4<float> NDCFar = FVector4(NDC_X, NDC_Y, 1.0f, 1.0f);
 
-    // 2. Inverse ViewProjection Matrix
-    FMatrix<float> ProjectionMatrix = GetProjectionMatrix(ViewportWidth, ViewportHeight);
     FMatrix<float> ViewMatrix = GetViewMatrix();
+    
+    if (UImGuiManager::Get().bIsOrthogonal)
+    {
+        // [수정됨] float 정밀도 붕괴를 막기 위한 직교 투영 전용 해석적(Analytical) 역투영 로직
+        float AspectRatio = ViewportWidth / (ViewportHeight > 0.0f ? ViewportHeight : 1.0f);
+        FVector<float> dir = CameraTransform.GetLocation() - CameraTransform.GetLookAt();
+        float Distance = dir.Length();
+        float OrthoWidth = Distance * 2.0f;
+        float OrthoHeight = OrthoWidth / AspectRatio;
 
-    FMatrix<float> ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
-    FMatrix<float> InvViewProjection = ViewProjectionMatrix.Inverse();
+        // 투영 행렬을 배제하고 View 행렬만 역연산 (회전/이동만 있으므로 정밀도 손실 없음)
+        FMatrix<float> InvView = ViewMatrix.Inverse();
 
-    FVector4<float> WorldNear = NDCNear * InvViewProjection;
-    FVector4<float> WorldFar = NDCFar * InvViewProjection;
+        // 마우스의 NDC 좌표를 View Space의 크기에 맞게 직접 곱함 
+        // (FOrthographicMatrix의 HalfWidth로 OrthoWidth가 들어갔으므로 그대로 사용)
+        FVector4<float> ViewNear(NDC_X * OrthoWidth, NDC_Y * OrthoHeight, 0.0f, 1.0f);
 
-    WorldNear /= WorldNear.W;
-    WorldFar /= WorldFar.W;
+        // View Space 좌표를 World Space로 직접 변환
+        FVector4<float> WorldNear = ViewNear * InvView;
 
-    // 3. Ray 생성
-    FVector<float> RayOrigin = FVector(WorldNear.X, WorldNear.Y, WorldNear.Z);
-    FVector<float> RayDirection = FVector(WorldFar.X, WorldFar.Y, WorldFar.Z) - RayOrigin;
-    RayDirection.Normalize();
+        FVector<float> RayOrigin = FVector<float>(WorldNear.X, WorldNear.Y, WorldNear.Z);
+        
+        // 카메라가 바라보는 정확한 정면(Forward) 벡터 도출 (InvView 행렬의 Z축)
+        FVector<float> RayDirection = FVector<float>(InvView.M[2][0], InvView.M[2][1], InvView.M[2][2]);
+        RayDirection.Normalize();
 
-    return FRay(RayOrigin, RayDirection);
+        return FRay(RayOrigin, RayDirection);
+    }
+    else
+    {
+        // 원근 투영 (Perspective) - 기존 로직 유지 (원근 투영은 스케일 붕괴가 덜함)
+        FMatrix<float> ProjectionMatrix = GetProjectionMatrix(ViewportWidth, ViewportHeight);
+        FMatrix<float> ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
+        FMatrix<float> InvViewProjection = ViewProjectionMatrix.Inverse();
+
+        FVector4<float> NDCNear = FVector4<float>(NDC_X, NDC_Y, 0.0f, 1.0f);
+        FVector4<float> NDCFar = FVector4<float>(NDC_X, NDC_Y, 1.0f, 1.0f);
+
+        FVector4<float> WorldNear = NDCNear * InvViewProjection;
+        FVector4<float> WorldFar = NDCFar * InvViewProjection;
+
+        if (WorldNear.W != 0.0f) WorldNear /= WorldNear.W;
+        if (WorldFar.W != 0.0f) WorldFar /= WorldFar.W;
+
+        FVector<float> RayOrigin = FVector<float>(WorldNear.X, WorldNear.Y, WorldNear.Z);
+        FVector<float> RayDirection = FVector<float>(WorldFar.X, WorldFar.Y, WorldFar.Z) - RayOrigin;
+        RayDirection.Normalize();
+
+        return FRay(RayOrigin, RayDirection);
+    }
 }
 
 void FEditorViewportClient::PickingRay(const FVector<float>& RayOrigin, const FVector<float>& RayDirection)

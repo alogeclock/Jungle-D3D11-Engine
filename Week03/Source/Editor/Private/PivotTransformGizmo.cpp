@@ -230,12 +230,16 @@ bool APivotTransformGizmo::OnMouseDown(const FVector<float>& RayOrigin, const FV
     }
     else
     {
-        float Denom = FVector<float>::DotProduct(RayDir, GizmoPlaneNormal);
-        if (std::abs(Denom) > 0.0001f)
+        FVector<float> w0 = RayOrigin - InitialGizmoTransform.Location;
+        float b = FVector<float>::DotProduct(RayDir, AxisDir);
+        float d = FVector<float>::DotProduct(RayDir, w0);
+        float e = FVector<float>::DotProduct(AxisDir, w0);
+        float Denom = 1.0f - b * b;
+
+        // 평행하지 않은 경우 축 위에서의 정확한 시작 위치(Parameter)를 구함
+        if (Denom > 0.0001f)
         {
-            float t = FVector<float>::DotProduct(InitialGizmoTransform.Location - RayOrigin, GizmoPlaneNormal) / Denom;
-            FVector<float> HitPoint = RayOrigin + (RayDir * t);
-            InitialRayDistance = FVector<float>::DotProduct(HitPoint - InitialGizmoTransform.Location, AxisDir);
+            InitialRayDistance = (e - d * b) / Denom;
         }
         else
         {
