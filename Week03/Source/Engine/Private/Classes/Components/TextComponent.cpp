@@ -20,7 +20,7 @@ UTextComponent::~UTextComponent() {
 
 void UTextComponent::SetText(const uint32 UUID){
 		char buf[64];
-		sprintf_s(buf, "UID:%u", UUID);
+		sprintf_s(buf, "UUID:%u", UUID);
 		Text = FString(buf);
 		bMeshDirty = true;
 }
