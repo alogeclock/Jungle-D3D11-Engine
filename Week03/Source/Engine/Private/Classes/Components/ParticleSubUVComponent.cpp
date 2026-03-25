@@ -7,6 +7,8 @@
 
 UParticleSubUVComponent::UParticleSubUVComponent(const FString &InString) : UPrimitiveComponent(InString)
 { 
+    bIsTextured = true;
+
     FilePath = "Data/Texture/Explosion.png"; 
     SpriteSize = 150;
     Height = 900;
@@ -41,7 +43,7 @@ void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
     UPrimitiveComponent::Submit(ViewOptions);
     FRenderCommand &Command = RenderProxy->RenderCommand;
 
-    Command.bIsTextured = true;
+    Command.bIsTextured = bIsTextured;
     Command.CurrentFrame = static_cast<uint32>(CurrentTime);
 
     // 정적 Vertex Buffer의 경우 처음 한 번 외에는 호출하지 않음

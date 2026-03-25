@@ -85,7 +85,7 @@ void UEditorEngine::Tick(float DeltaTime, FSceneViewOptions& ViewOptions)
     if (EditorSprite)
     {
         EditorSprite->Tick(DeltaTime);
-        EditorSprite->SubmitAllActorComponents(ViewOptions);
+        // EditorSprite->SubmitAllActorComponents(ViewOptions);
     }
 }
 
@@ -95,15 +95,15 @@ void UEditorEngine::Render(URenderer &renderer)
     {
         Axis->RenderAllActorComponents(renderer);
     }
+    
+    if (EditorSprite)
+    {
+        EditorSprite->RenderAllActorComponents(renderer);
+    }
 
     if (Gizmo)
     {
         Gizmo->RenderAllActorComponents(renderer);
-    }
-
-    if (EditorSprite)
-    {
-        EditorSprite->RenderAllActorComponents(renderer);
     }
 }
 

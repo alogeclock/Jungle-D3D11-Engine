@@ -61,6 +61,7 @@ FRenderProxy* UPrimitiveComponent::CreateRenderProxy()
 }
 
 // 오직 Editor용으로 사용되는 함수 (일반적인 컴포넌트는 쓸 수 없음!)
+// Texture가 있는 에디터 컴포넌트일 경우 오버라이딩해서 처리해야 함! (BillboardComponent 참조)
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
     if (!IsRenderable(renderer))
@@ -71,8 +72,13 @@ void UPrimitiveComponent::Render(URenderer &renderer)
 
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
+    renderer.SetTopology(this->Topology);
 
     FConstantsColor constantsColor(Color.X, Color.Y, Color.Z, Color.W);
+    
+    renderer.DeviceContext->VSSetShader(renderer.SimpleVertexShader, nullptr, 0);
+    renderer.DeviceContext->PSSetShader(renderer.SimplePixelShader, nullptr, 0);
+    renderer.DeviceContext->IASetInputLayout(renderer.SimpleInputLayout);
 
     renderer.RenderPrimitive(this, constants, constantsColor);
 }
@@ -287,32 +293,43 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
     if (PrimitiveType == EPrimitiveType::None || PrimitiveType == EPrimitiveType::Text)
         return Result;
 
-    TArray<FVertex> *vertices = UMeshManager::Get().GetVertexData(PrimitiveType);
-    uint32           NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
+    uint32 NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
+    TArray<uint16>* Indices = UMeshManager::Get().GetIndexData(PrimitiveType);
+    uint32 NumIndices = UMeshManager::Get().GetNumIndices(PrimitiveType);
+    FMatrix<float> WorldMatrix = GetWorldMatrix();
 
-    TArray<uint16> *indices = UMeshManager::Get().GetIndexData(PrimitiveType);
-    uint32          NumIndices = UMeshManager::Get().GetNumIndices(PrimitiveType);
+    // 1. 텍스처 여부에 따라 필요한 정점 배열 포인터만 미리 가져옵니다.
+    // (이 컴포넌트가 텍스처를 쓰는지 판별하는 로직은 상황에 맞게 넣어주세요)
+    TArray<FVertex>* Vertices = nullptr;
+    TArray<FTextureVertex>* TextureVertices = nullptr;
 
-    // World Matrix로 Vertex를 World Space로 변환
-    FMatrix<float> WorldMatrix = GetWorldMatrix(); // TRS 행렬
+    if (bIsTextured)
+        TextureVertices = UMeshManager::Get().GetVertexData<FTextureVertex>(PrimitiveType);
+    else
+        Vertices = UMeshManager::Get().GetVertexData<FVertex>(PrimitiveType);
 
-    if (indices && NumIndices > 0)
+    // 2. 핵심: 인덱스 번호를 넣으면 알맞은 배열에서 Position만 꺼내주는 람다 함수
+    auto GetPosition = [&](uint32 Index) -> FVector<float> {
+        if (bIsTextured && TextureVertices)
+            return TextureVertices->at(Index).Position;
+        else if (Vertices)
+            return Vertices->at(Index).Position;
+        return FVector<float>(0.f, 0.f, 0.f);
+    };
+
+    if (Indices && NumIndices > 0)
     {
         // Index buffer 있는 경우
         for (uint32 i = 0; i + 2 < NumIndices; i += 3)
         {
             // index로 vertex 참조
-            const FVertex &v0 = vertices->at(indices->at(i));
-            const FVertex &v1 = vertices->at(indices->at(i + 1));
-            const FVertex &v2 = vertices->at(indices->at(i + 2));
+            FVector<float> p0 = GetPosition(Indices->at(i));
+            FVector<float> p1 = GetPosition(Indices->at(i + 1));
+            FVector<float> p2 = GetPosition(Indices->at(i + 2));
 
-            FVector4<float> V0_L = {v0.Position.X, v0.Position.Y, v0.Position.Z, 1.f};
-            FVector4<float> V1_L = {v1.Position.X, v1.Position.Y, v1.Position.Z, 1.f};
-            FVector4<float> V2_L = {v2.Position.X, v2.Position.Y, v2.Position.Z, 1.f};
-
-            FVector4<float> V0_W = V0_L * WorldMatrix;
-            FVector4<float> V1_W = V1_L * WorldMatrix;
-            FVector4<float> V2_W = V2_L * WorldMatrix;
+            FVector4<float> V0_W = FVector4<float>(p0.X, p0.Y, p0.Z, 1.f) * WorldMatrix;
+            FVector4<float> V1_W = FVector4<float>(p1.X, p1.Y, p1.Z, 1.f) * WorldMatrix;
+            FVector4<float> V2_W = FVector4<float>(p2.X, p2.Y, p2.Z, 1.f) * WorldMatrix;
 
             FVector<float> V0 = {V0_W.X, V0_W.Y, V0_W.Z};
             FVector<float> V1 = {V1_W.X, V1_W.Y, V1_W.Z};
@@ -337,13 +354,13 @@ FHitResult UPrimitiveComponent::IntersectRayMeshTriangle(const FVector<float> &R
         // Index 없이 Vertex 3개씩 = Triangle 1개
         for (uint32 i = 0; i + 2 < NumVertices; i += 3)
         {
-            FVector4<float> V0_L = FVector4<float>(vertices->at(i).Position.X, vertices->at(i).Position.Y, vertices->at(i).Position.Z, 1.0f);
-            FVector4<float> V1_L = FVector4<float>(vertices->at(i + 1).Position.X, vertices->at(i + 1).Position.Y, vertices->at(i + 1).Position.Z, 1.0f);
-            FVector4<float> V2_L = FVector4<float>(vertices->at(i + 2).Position.X, vertices->at(i + 2).Position.Y, vertices->at(i + 2).Position.Z, 1.0f);
+            FVector<float> p0 = GetPosition(i);
+            FVector<float> p1 = GetPosition(i + 1);
+            FVector<float> p2 = GetPosition(i + 2);
 
-            FVector4<float> V0_W = FVector4<float>(V0_L * WorldMatrix);
-            FVector4<float> V1_W = FVector4<float>(V1_L * WorldMatrix);
-            FVector4<float> V2_W = FVector4<float>(V2_L * WorldMatrix);
+            FVector4<float> V0_W = FVector4<float>(p0.X, p0.Y, p0.Z, 1.f) * WorldMatrix;
+            FVector4<float> V1_W = FVector4<float>(p1.X, p1.Y, p1.Z, 1.f) * WorldMatrix;
+            FVector4<float> V2_W = FVector4<float>(p2.X, p2.Y, p2.Z, 1.f) * WorldMatrix;
 
             FVector<float> V0 = FVector<float>(V0_W.X, V0_W.Y, V0_W.Z);
             FVector<float> V1 = FVector<float>(V1_W.X, V1_W.Y, V1_W.Z);

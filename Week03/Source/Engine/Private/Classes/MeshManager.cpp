@@ -7,60 +7,28 @@ UMeshManager::UMeshManager(const FString& InString) : UObject(InString)
 
 void UMeshManager::Initialize(URenderer& Renderer)
 {
-    TArray<EPrimitiveType> PrimitiveTypes = {EPrimitiveType::Cube,  EPrimitiveType::Sphere, EPrimitiveType::Triangle,
-                                             EPrimitiveType::Plane, EPrimitiveType::Arrow,  EPrimitiveType::CubeArrow,
-                                             EPrimitiveType::Ring,  EPrimitiveType::TextureQuad};
+    //TArray<EPrimitiveType> PrimitiveTypes = {EPrimitiveType::Cube,  EPrimitiveType::Sphere, EPrimitiveType::Triangle,
+    //                                         EPrimitiveType::Plane, EPrimitiveType::Arrow,  EPrimitiveType::CubeArrow,
+    //                                         EPrimitiveType::Ring,  EPrimitiveType::TextureQuad, EPrimitiveType::Billboard};
 
-    TArray<TArray<FVertex>*> VerticesPtr = {&cube_vertices,  &sphere_vertices, &triangle_vertices,
-                                            &plane_vertices, &arrow_vertices,  &cube_arrow_vertices,
-                                            &ring_vertices,  &texture_quad_vertices};
+    RegisterPrimitive(Renderer, EPrimitiveType::Cube, &cube_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::Sphere, &sphere_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::Triangle, &triangle_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::Plane, &plane_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::Arrow, &arrow_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::CubeArrow, &cube_arrow_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::Ring, &ring_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::TextureQuad, &texture_quad_vertices);
+    RegisterPrimitive(Renderer, EPrimitiveType::Billboard, &billboard_vertices);
 
-    for (int i = 0; i < PrimitiveTypes.size(); i++)
-    {
-        EPrimitiveType t = PrimitiveTypes[i];
-        TArray<FVertex>* vptr = VerticesPtr[i];
-
-        VertexData.emplace(t, vptr);
-        VertexBuffers.emplace(
-            t, Renderer.CreateVertexBuffer(vptr->data(), static_cast<int>(vptr->size()) * sizeof(FVertex)));
-        NumVertices.emplace(t, static_cast<uint32>(vptr->size()));
-        MeshAABB.emplace(t, ComputeAABB(*vptr));
-    }
+    TArray<FTextureVertex> subuv_vertices = RebuildMesh();
+    RegisterPrimitive(Renderer, EPrimitiveType::SubUV, &subuv_vertices);
 
     IndexData.emplace(EPrimitiveType::Sphere, &sphere_indices);
     IndexBuffers.emplace(
         EPrimitiveType::Sphere,
         Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
     NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
-
-    TArray<TArray<FTextureVertex>*> TextureVerticesPtr = {&billboard_vertices};
-    TArray<EPrimitiveType> TexturePrimitiveTypes = {EPrimitiveType::Billboard};
-    for (int i = 0; i < TexturePrimitiveTypes.size(); i++)
-    {
-        EPrimitiveType t = TexturePrimitiveTypes[i];
-        TArray<FTextureVertex>* vptr = TextureVerticesPtr[i];
-
-        TextureVertexData.emplace(t, vptr);
-        TextureVertexBuffers.emplace(
-            t, Renderer.CreateTextureVertexBuffer(vptr->data(), static_cast<int>(vptr->size()) * sizeof(FTextureVertex)));
-        NumTextureVertices.emplace(t, static_cast<uint32>(vptr->size()));
-    }
-
-    TArray<FTextureVertex> VerticesSubUV = RebuildMesh();
-
-    TextureVertexData.emplace(EPrimitiveType::SubUV, &VerticesSubUV);
-
-    VertexBuffers.emplace(EPrimitiveType::SubUV,
-        Renderer.CreateVertexBuffer(
-            VerticesSubUV.data(),
-            static_cast<int>(VerticesSubUV.size()) * sizeof(FTextureVertex)
-        )
-    );
-
-    NumVertices.emplace(EPrimitiveType::SubUV,
-        static_cast<uint32>(VerticesSubUV.size())
-    );
-    MeshAABB.emplace(EPrimitiveType::SubUV, ComputeAABB(VerticesSubUV));
 }
 
 TArray<FTextureVertex> UMeshManager::RebuildMesh()
@@ -128,31 +96,6 @@ void UMeshManager::Release(URenderer& renderer)
     }
     // TMap.Empty()
     IndexBuffers.clear();
-
-    for (auto& Pair : TextureVertexBuffers)
-    {
-        renderer.ReleaseTextureVertexBuffer(Pair.second);
-    }
-}
-
-FBox UMeshManager::ComputeAABB(const TArray<FVertex>& Vertices)
-{
-    FBox Box;
-
-    for (const auto& V : Vertices)
-        Box.Encapsulate(V.Position);
-
-    return Box;
-}
-
-FBox UMeshManager::ComputeAABB(const TArray<FTextureVertex>& Vertices)
-{
-    FBox Box;
-
-    for (const auto& V : Vertices)
-        Box.Encapsulate(V.Position);
-
-    return Box;
 }
 
 FBox UMeshManager::GetMeshAABB(EPrimitiveType Type) const
@@ -165,16 +108,6 @@ FBox UMeshManager::GetMeshAABB(EPrimitiveType Type) const
     }
 
     return FBox(); // 찾지 못했을 경우 기본 생성된 박스 반환
-}
-
-TArray<FVertex>* UMeshManager::GetVertexData(EPrimitiveType Type) const
-{
-    return VertexData.at(Type);
-}
-
-TArray<FTextureVertex>* UMeshManager::GetTextureVertexData(EPrimitiveType Type) const
-{
-    return TextureVertexData.at(Type);
 }
 
 ID3D11Buffer* UMeshManager::GetVertexBuffer(EPrimitiveType Type) const
@@ -207,22 +140,6 @@ TArray<uint16>* UMeshManager::GetIndexData(EPrimitiveType Type) const
 {
     auto it = IndexData.find(Type);
     if (it == IndexData.end())
-        return nullptr;
-    return it->second;
-}
-
-uint32 UMeshManager::GetNumTextureVertices(EPrimitiveType Type) const
-{
-    auto it = NumTextureVertices.find(Type);
-    if (it == NumTextureVertices.end())
-        return 0;
-    return it->second;
-}
-
-ID3D11Buffer* UMeshManager::GetTextureVertexBuffer(EPrimitiveType Type) const
-{
-    auto it = TextureVertexBuffers.find(Type);
-    if (it == TextureVertexBuffers.end())
         return nullptr;
     return it->second;
 }

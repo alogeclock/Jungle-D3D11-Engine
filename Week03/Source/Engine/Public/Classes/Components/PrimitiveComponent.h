@@ -80,6 +80,7 @@ class UPrimitiveComponent : public USceneComponent
     bool                     bEnableDepthTest = true;
     bool                     bLocalBoundsDirty = true;
     bool                     bIsInEditor = false;
+    bool                     bIsTextured = false;
     bool                     bIsVisible = true;
     bool                     bShowAABB = false;
     bool                     bShowUUID = false;
