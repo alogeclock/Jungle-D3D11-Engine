@@ -325,12 +325,15 @@ void URenderer::CreateDepthStencilBuffer(uint32 width, uint32 height)
     depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
     Device->CreateTexture2D(&depthDesc, nullptr, &DepthStencilBuffer);
+    Device->CreateTexture2D(&depthDesc, nullptr, &GizmoDepthStencilBuffer);
 
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
     dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-
+    
+    // for Gizmo
     Device->CreateDepthStencilView(DepthStencilBuffer, &dsvDesc, &DepthStencilView);
+    Device->CreateDepthStencilView(GizmoDepthStencilBuffer, &dsvDesc, &GizmoDepthStencilView);
 }
 
 void URenderer::ReleaseDepthStencilBuffer()
@@ -344,6 +347,18 @@ void URenderer::ReleaseDepthStencilBuffer()
     {
         DepthStencilView->Release();
         DepthStencilView = nullptr;
+    }
+
+    // for Gizmo
+    if (GizmoDepthStencilBuffer)
+    {
+        GizmoDepthStencilBuffer->Release();
+        GizmoDepthStencilBuffer = nullptr;
+    }
+    if (GizmoDepthStencilView)
+    {
+        GizmoDepthStencilView->Release();
+        GizmoDepthStencilView = nullptr;
     }
 }
 
@@ -473,6 +488,7 @@ void URenderer::Prepare(const FSceneViewOptions& ViewOptions)
 {
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
     DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    DeviceContext->ClearDepthStencilView(GizmoDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     DeviceContext->RSSetViewports(1, &ViewportInfo);
 
@@ -486,11 +502,6 @@ void URenderer::Prepare(const FSceneViewOptions& ViewOptions)
     DeviceContext->OMSetDepthStencilState(DepthStateDefault, 0);
 
     PrepareShader();
-
-    if (DepthStencilView == nullptr)
-    {
-        DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-    }
 }
 
 void URenderer::PrepareShader()

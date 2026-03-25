@@ -199,15 +199,14 @@ void UApplication::Render()
     GWorld->GetLineBatcherComponent()->Flush();
 
     Renderer->RenderScene(GMainScene);
-    
+        
     GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
     
-    GEditor->Render(*Renderer);
-    
-
     GWorld->GetTextBatcherComponent()->SetViewOption(ViewOptions);
     GWorld->GetTextBatcherComponent()->Render(*Renderer);
     GWorld->GetTextBatcherComponent()->Flush(*Renderer);
+    
+    GEditor->Render(*Renderer);
 
     // ViewportClient->Render(*Renderer);
     UImGuiManager::Get().Update();

@@ -82,6 +82,10 @@ class URenderer
 
     ID3D11SamplerState *LinearSamplerState;
 
+    // for gizmo
+    ID3D11Texture2D* GizmoDepthStencilBuffer = nullptr;
+    ID3D11DepthStencilView* GizmoDepthStencilView = nullptr;
+
     unsigned int Stride;
 
   public:

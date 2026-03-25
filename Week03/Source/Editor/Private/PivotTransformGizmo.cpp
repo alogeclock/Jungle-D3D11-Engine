@@ -61,7 +61,7 @@ APivotTransformGizmo::APivotTransformGizmo(const FString& InString) : ABaseTrans
                 Comp->SetRotation(Axes[Axis].Rotation);
                 Comp->SetColor(Axes[Axis].Color);
                 Comp->SetCullMode(ECullMode::None);
-                Comp->SetEnableDepthTest(false);
+                Comp->SetEnableDepthTest(true);
                 Comp->SetVisible(true);
             }
         }
