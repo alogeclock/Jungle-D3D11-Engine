@@ -89,6 +89,24 @@ void UEditorEngine::Tick(float DeltaTime, FSceneViewOptions& ViewOptions)
     }
 }
 
+void UEditorEngine::Render(URenderer &renderer)
+{
+    if (Axis)
+    {
+        Axis->RenderAllActorComponents(renderer);
+    }
+
+    if (Gizmo)
+    {
+        Gizmo->RenderAllActorComponents(renderer);
+    }
+
+    if (EditorSprite)
+    {
+        EditorSprite->RenderAllActorComponents(renderer);
+    }
+}
+
 void UEditorEngine::RegisterInputListener(IViewportInputListener* Listener)
 {
     if (Listener)

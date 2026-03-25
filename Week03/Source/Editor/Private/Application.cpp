@@ -203,6 +203,8 @@ void UApplication::Render()
     GWorld->GetTextBatcherComponent()->Render(*Renderer);
     GWorld->GetTextBatcherComponent()->Flush(*Renderer);
 
+    GEditor->Render(*Renderer);
+
     Renderer->RenderScene(GMainScene);
 
     // ViewportClient->Render(*Renderer);

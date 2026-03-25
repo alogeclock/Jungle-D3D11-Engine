@@ -30,6 +30,7 @@ class AActor : public UObject
     virtual void Tick(float deltaTime);
 
     void SubmitAllActorComponents(const FSceneViewOptions& ViewOptions) const;
+    void RenderAllActorComponents(URenderer &renderer) const;
 };
 
 template<typename T>

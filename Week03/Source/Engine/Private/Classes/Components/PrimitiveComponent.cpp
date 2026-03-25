@@ -60,16 +60,9 @@ FRenderProxy* UPrimitiveComponent::CreateRenderProxy()
     return RenderProxy;
 }
 
+// 오직 Editor용으로 사용되는 함수 (일반적인 컴포넌트는 쓸 수 없음!)
 void UPrimitiveComponent::Render(URenderer &renderer)
 {
-    // Show AABB 설정이 켜져 있고 에디터가 아니라면 AABB를 렌더링한다.
-    if (renderer.CheckShowFlag(EEngineShowFlags::SF_AABB) && !bIsInEditor && bShowAABB)
-    {
-        UpdateBounds();
-        GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
-    }
-
-    // 현재 프리미티브의 렌더링 여부를 판단하고 렌더링할 필요가 없을 시 생략한다.
     if (!IsRenderable(renderer))
         return;
 
@@ -110,6 +103,7 @@ void UPrimitiveComponent::SetSelectEffect(bool Selected)
     }
 }
 
+// 에디터 컴포넌트용 체크 함수
 bool UPrimitiveComponent::IsRenderable(URenderer &renderer)
 {
     if (!bIsVisible)
@@ -134,7 +128,7 @@ FHitResult UPrimitiveComponent::IntersectRay(const FVector<float> &RayOrigin, co
     // Vertex 적음 → 바로 Triangle 검사
     case EPrimitiveType::Triangle:
     case EPrimitiveType::Plane:
-    case EPrimitiveType::Text:
+    case EPrimitiveType::Text:   
         Result = IntersectRayMeshTriangle(RayOrigin, RayDirection);
         break;
 
