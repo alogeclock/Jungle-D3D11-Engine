@@ -19,6 +19,8 @@ public :
     virtual void Submit(const FSceneViewOptions& ViewOptions) override;
     
     const FString &GetText() const { return Text; }
+    const FString &GetFilePath() const { return FilePath; }
+    const FString &GetKoreanFilePath() const { return FilePathKor; }
  
     void SetText(const uint32 UUID);
     void SetText(const FString &InText)
@@ -28,6 +30,8 @@ public :
         Text = InText;
         bMeshDirty = true;
     }
+    void SetFilePath(const FString& InFilePath) { FilePath = InFilePath; }
+    void SetKoreanFilePath(const FString& InFilePath) { FilePathKor = InFilePath; }
 
 protected:
     virtual FHitResult IntersectRayMeshTriangle(const FVector<float> &RayOrigin, const FVector<float> &RayDirection) override;

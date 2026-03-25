@@ -11,6 +11,9 @@
 #include "Source/Engine/Public/Classes/Components/CubeComponent.h"
 #include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
 #include "Source/Engine/Public/Classes/Components/PlaneComponent.h"
+#include "Source/Engine/Public/Classes/Components/TextComponent.h"
+#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
+#include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
 #include "Source/Engine/Public/Classes/Components/ArrowComponent.h"
 #include "Source/Engine/Public/Classes/Components/CubeArrowComponent.h"
 #include "Source/Engine/Public/Classes/Components/RingComponent.h"
@@ -18,15 +21,541 @@
 #include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
 #include "Source/Engine/Public/GUI/ImGuiManager.h"
 #include "Source/Editor/Public/EditorEngine.h"
+#include "EngineStatics.h"
 
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <filesystem>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
 
 using json = nlohmann::json;
 
 struct FHitResult;
+
+namespace
+{
+constexpr uint32 SceneFormatVersion = 2;
+
+struct FSceneLoadContext
+{
+    uint32 SceneVersion = 0;
+    TMap<uint32, UObject*> ObjectsBySavedId;
+    TArray<FString> Errors;
+
+    void AddError(const FString& Message)
+    {
+        Errors.push_back(Message);
+    }
+};
+
+std::string WStringToUTF8(const std::wstring& Source)
+{
+    if (Source.empty())
+    {
+        return {};
+    }
+
+    int SizeNeeded = WideCharToMultiByte(CP_UTF8, 0, Source.c_str(), static_cast<int>(Source.size()), nullptr, 0, nullptr, nullptr);
+    std::string Result(SizeNeeded, 0);
+    WideCharToMultiByte(CP_UTF8, 0, Source.c_str(), static_cast<int>(Source.size()), Result.data(), SizeNeeded, nullptr, nullptr);
+    return Result;
+}
+
+std::string GetCurrentTimestampUtc()
+{
+    const auto Now = std::chrono::system_clock::now();
+    const std::time_t Time = std::chrono::system_clock::to_time_t(Now);
+    std::tm UtcTime {};
+    gmtime_s(&UtcTime, &Time);
+
+    std::ostringstream Stream;
+    Stream << std::put_time(&UtcTime, "%Y-%m-%dT%H:%M:%SZ");
+    return Stream.str();
+}
+
+json ToJson(const FVector<float>& Value)
+{
+    return json::array({Value.X, Value.Y, Value.Z});
+}
+
+json ToJson(const FVector4<float>& Value)
+{
+    return json::array({Value.X, Value.Y, Value.Z, Value.W});
+}
+
+json ToJson(const FTransform& Value)
+{
+    json Result;
+    Result["location"] = ToJson(Value.Location);
+    Result["rotation"] = ToJson(Value.Rotation);
+    Result["scale"] = ToJson(Value.Scale);
+    return Result;
+}
+
+bool TryReadVector3(const json& Value, FVector<float>& OutVector)
+{
+    if (!Value.is_array() || Value.size() != 3)
+    {
+        return false;
+    }
+
+    OutVector.X = Value[0].get<float>();
+    OutVector.Y = Value[1].get<float>();
+    OutVector.Z = Value[2].get<float>();
+    return true;
+}
+
+bool TryReadVector4(const json& Value, FVector4<float>& OutVector)
+{
+    if (!Value.is_array() || Value.size() != 4)
+    {
+        return false;
+    }
+
+    OutVector.X = Value[0].get<float>();
+    OutVector.Y = Value[1].get<float>();
+    OutVector.Z = Value[2].get<float>();
+    OutVector.W = Value[3].get<float>();
+    return true;
+}
+
+bool TryReadTransform(const json& Value, FTransform& OutTransform)
+{
+    if (!Value.is_object())
+    {
+        return false;
+    }
+
+    return Value.contains("location") && Value.contains("rotation") && Value.contains("scale") &&
+           TryReadVector3(Value["location"], OutTransform.Location) && TryReadVector3(Value["rotation"], OutTransform.Rotation) &&
+           TryReadVector3(Value["scale"], OutTransform.Scale);
+}
+
+bool ShouldSkipReflectedProperty(const FProperty& Property)
+{
+    return Property.Name == "OwnedComponents" || Property.Name == "RootComponent";
+}
+
+json SerializePropertyValue(const UObject* Object, const FProperty& Property)
+{
+    const void* ValuePtr = Property.GetValuePtr(Object);
+
+    switch (Property.Type)
+    {
+    case EPropertyType::Int:
+        return *reinterpret_cast<const int32*>(ValuePtr);
+    case EPropertyType::Float:
+        return *reinterpret_cast<const float*>(ValuePtr);
+    case EPropertyType::Bool:
+        return *reinterpret_cast<const bool*>(ValuePtr);
+    case EPropertyType::String:
+        return *reinterpret_cast<const FString*>(ValuePtr);
+    case EPropertyType::Vec3:
+        return ToJson(*reinterpret_cast<const FVector<float>*>(ValuePtr));
+    case EPropertyType::Transform:
+        return ToJson(*reinterpret_cast<const FTransform*>(ValuePtr));
+    case EPropertyType::UObjectPtr:
+    {
+        UObject* const* ReferencedObject = reinterpret_cast<UObject* const*>(ValuePtr);
+        return (*ReferencedObject != nullptr) ? json((*ReferencedObject)->GetUUID()) : json(nullptr);
+    }
+    default:
+        return json();
+    }
+}
+
+bool DeserializePropertyValue(UObject* Object, const FProperty& Property, const json& Value, FSceneLoadContext& LoadContext)
+{
+    void* ValuePtr = Property.GetValuePtr(Object);
+
+    try
+    {
+        switch (Property.Type)
+        {
+        case EPropertyType::Int:
+            *reinterpret_cast<int32*>(ValuePtr) = Value.get<int32>();
+            return true;
+        case EPropertyType::Float:
+            *reinterpret_cast<float*>(ValuePtr) = Value.get<float>();
+            return true;
+        case EPropertyType::Bool:
+            *reinterpret_cast<bool*>(ValuePtr) = Value.get<bool>();
+            return true;
+        case EPropertyType::String:
+            *reinterpret_cast<FString*>(ValuePtr) = Value.get<FString>();
+            return true;
+        case EPropertyType::Vec3:
+            return TryReadVector3(Value, *reinterpret_cast<FVector<float>*>(ValuePtr));
+        case EPropertyType::Transform:
+            return TryReadTransform(Value, *reinterpret_cast<FTransform*>(ValuePtr));
+        case EPropertyType::UObjectPtr:
+            return true;
+        default:
+            return false;
+        }
+    }
+    catch (const std::exception& Exception)
+    {
+        LoadContext.AddError("[DeserializeProperty] " + Object->GetName().ToString() + "." + Property.Name + ": " + Exception.what());
+        return false;
+    }
+}
+
+void ResolvePropertyReference(UObject* Object, const FProperty& Property, const json& Value, FSceneLoadContext& LoadContext)
+{
+    if (Property.Type != EPropertyType::UObjectPtr || Value.is_null())
+    {
+        return;
+    }
+
+    UObject** ReferencedObject = reinterpret_cast<UObject**>(Property.GetValuePtr(Object));
+    const uint32 SavedId = Value.get<uint32>();
+    auto It = LoadContext.ObjectsBySavedId.find(SavedId);
+    if (It == LoadContext.ObjectsBySavedId.end())
+    {
+        LoadContext.AddError("[ResolveReference] Missing object id " + std::to_string(SavedId) + " for " + Object->GetName().ToString() + "." + Property.Name);
+        return;
+    }
+
+    *ReferencedObject = It->second;
+}
+
+json SerializeReflectedProperties(const UObject* Object)
+{
+    json PropertiesJson = json::object();
+    UClass* ObjectClass = Object->GetClass();
+    if (ObjectClass == nullptr)
+    {
+        return PropertiesJson;
+    }
+
+    for (const FProperty& Property : ObjectClass->GetProperties())
+    {
+        if (ShouldSkipReflectedProperty(Property))
+        {
+            continue;
+        }
+
+        json Value = SerializePropertyValue(Object, Property);
+        if (!Value.is_discarded())
+        {
+            PropertiesJson[Property.Name] = Value;
+        }
+    }
+
+    return PropertiesJson;
+}
+
+void DeserializeReflectedProperties(UObject* Object, const json& PropertiesJson, FSceneLoadContext& LoadContext)
+{
+    if (!PropertiesJson.is_object())
+    {
+        return;
+    }
+
+    UClass* ObjectClass = Object->GetClass();
+    if (ObjectClass == nullptr)
+    {
+        return;
+    }
+
+    for (const FProperty& Property : ObjectClass->GetProperties())
+    {
+        if (ShouldSkipReflectedProperty(Property))
+        {
+            continue;
+        }
+
+        auto It = PropertiesJson.find(Property.Name);
+        if (It == PropertiesJson.end())
+        {
+            continue;
+        }
+
+        DeserializePropertyValue(Object, Property, *It, LoadContext);
+    }
+}
+
+void ResolveReflectedProperties(UObject* Object, const json& PropertiesJson, FSceneLoadContext& LoadContext)
+{
+    if (!PropertiesJson.is_object())
+    {
+        return;
+    }
+
+    UClass* ObjectClass = Object->GetClass();
+    if (ObjectClass == nullptr)
+    {
+        return;
+    }
+
+    for (const FProperty& Property : ObjectClass->GetProperties())
+    {
+        if (ShouldSkipReflectedProperty(Property))
+        {
+            continue;
+        }
+
+        auto It = PropertiesJson.find(Property.Name);
+        if (It == PropertiesJson.end())
+        {
+            continue;
+        }
+
+        ResolvePropertyReference(Object, Property, *It, LoadContext);
+    }
+}
+
+UClass* FindClassByName(const FString& ClassName)
+{
+    static const TMap<FString, UClass*> ClassMap = {
+        {"AActor", AActor::StaticClass()},
+        {"USceneComponent", USceneComponent::StaticClass()},
+        {"UPrimitiveComponent", UPrimitiveComponent::StaticClass()},
+        {"USphereComponent", USphereComponent::StaticClass()},
+        {"UCubeComponent", UCubeComponent::StaticClass()},
+        {"UTriangleComponent", UTriangleComponent::StaticClass()},
+        {"UPlaneComponent", UPlaneComponent::StaticClass()},
+        {"UTextComponent", UTextComponent::StaticClass()},
+        {"UUUIDTextComponent", UUUIDTextComponent::StaticClass()},
+        {"UParticleSubUVComponent", UParticleSubUVComponent::StaticClass()},
+        {"UArrowComponent", UArrowComponent::StaticClass()},
+        {"UCubeArrowComponent", UCubeArrowComponent::StaticClass()},
+        {"URingComponent", URingComponent::StaticClass()},
+        {"UAxisComponent", UAxisComponent::StaticClass()}
+    };
+
+    auto It = ClassMap.find(ClassName);
+    return (It != ClassMap.end()) ? It->second : nullptr;
+}
+
+json SerializeComponent(UActorComponent* Component)
+{
+    json ComponentJson;
+    ComponentJson["id"] = Component->GetUUID();
+    ComponentJson["class"] = Component->GetClass()->GetName();
+    ComponentJson["name"] = Component->GetName().ToString();
+    ComponentJson["active"] = Component->IsActive();
+    ComponentJson["properties"] = SerializeReflectedProperties(Component);
+
+    if (USceneComponent* SceneComponent = Cast<USceneComponent>(Component))
+    {
+        ComponentJson["transform"] = ToJson(SceneComponent->GetTransform());
+        ComponentJson["color"] = ToJson(SceneComponent->GetColor());
+        ComponentJson["attach_parent_id"] =
+            (SceneComponent->GetAttachParent() != nullptr) ? json(SceneComponent->GetAttachParent()->GetUUID()) : json(nullptr);
+    }
+
+    if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Component))
+    {
+        json RuntimeState;
+        RuntimeState["primitive_type"] = static_cast<uint32>(PrimitiveComponent->GetPrimitiveType());
+        RuntimeState["topology"] = static_cast<uint32>(PrimitiveComponent->GetTopology());
+        RuntimeState["cull_mode"] = static_cast<uint32>(PrimitiveComponent->GetCullMode());
+        RuntimeState["depth_test"] = PrimitiveComponent->GetEnableDepthTest();
+        RuntimeState["visible"] = PrimitiveComponent->IsVisible();
+        RuntimeState["editor_only"] = PrimitiveComponent->IsInEditor();
+        ComponentJson["runtime_state"] = RuntimeState;
+    }
+
+    if (UTextComponent* TextComponent = Cast<UTextComponent>(Component))
+    {
+        json Resources;
+        Resources["text_texture"] = TextComponent->GetFilePath();
+        Resources["text_texture_kor"] = TextComponent->GetKoreanFilePath();
+        ComponentJson["resources"] = Resources;
+        ComponentJson["custom"] = {{"text", TextComponent->GetText()}};
+    }
+    else if (UParticleSubUVComponent* ParticleComponent = Cast<UParticleSubUVComponent>(Component))
+    {
+        json Resources;
+        Resources["texture"] = ParticleComponent->FilePath;
+        ComponentJson["resources"] = Resources;
+        ComponentJson["custom"] = {
+            {"width", ParticleComponent->Width},
+            {"height", ParticleComponent->Height},
+            {"sprite_size", ParticleComponent->SpriteSize},
+            {"total_frame_count", ParticleComponent->TotalFrameCount}
+        };
+    }
+
+    return ComponentJson;
+}
+
+json SerializeActor(AActor* Actor)
+{
+    json ActorJson;
+    ActorJson["id"] = Actor->GetUUID();
+    ActorJson["class"] = Actor->GetClass()->GetName();
+    ActorJson["name"] = Actor->GetName().ToString();
+    ActorJson["active"] = Actor->IsActive();
+    ActorJson["properties"] = SerializeReflectedProperties(Actor);
+    ActorJson["transform"] = ToJson(Actor->GetTransform());
+    ActorJson["root_component_id"] = (Actor->GetRootComponent() != nullptr) ? json(Actor->GetRootComponent()->GetUUID()) : json(nullptr);
+
+    json Components = json::array();
+    for (UActorComponent* Component : Actor->GetOwnedComponents())
+    {
+        if (Component != nullptr)
+        {
+            Components.push_back(SerializeComponent(Component));
+        }
+    }
+    ActorJson["components"] = Components;
+    return ActorJson;
+}
+
+void ApplyComponentJson(UActorComponent* Component, const json& ComponentJson, FSceneLoadContext& LoadContext)
+{
+    if (ComponentJson.contains("name") && ComponentJson["name"].is_string())
+    {
+        Component->SetName(ComponentJson["name"].get<FString>());
+    }
+    if (ComponentJson.contains("active"))
+    {
+        Component->SetActive(ComponentJson["active"].get<bool>());
+    }
+    if (ComponentJson.contains("properties"))
+    {
+        DeserializeReflectedProperties(Component, ComponentJson["properties"], LoadContext);
+    }
+
+    if (USceneComponent* SceneComponent = Cast<USceneComponent>(Component))
+    {
+        if (ComponentJson.contains("transform"))
+        {
+            FTransform Transform;
+            if (TryReadTransform(ComponentJson["transform"], Transform))
+            {
+                SceneComponent->SetTransform(Transform);
+            }
+        }
+
+        if (ComponentJson.contains("color"))
+        {
+            FVector4<float> Color;
+            if (TryReadVector4(ComponentJson["color"], Color))
+            {
+                SceneComponent->SetColor(Color);
+            }
+        }
+    }
+
+    if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Component))
+    {
+        const json RuntimeState = ComponentJson.value("runtime_state", json::object());
+        if (RuntimeState.contains("primitive_type"))
+        {
+            PrimitiveComponent->SetPrimitiveType(static_cast<EPrimitiveType>(RuntimeState["primitive_type"].get<uint32>()));
+        }
+        if (RuntimeState.contains("topology"))
+        {
+            PrimitiveComponent->SetTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(RuntimeState["topology"].get<uint32>()));
+        }
+        if (RuntimeState.contains("cull_mode"))
+        {
+            PrimitiveComponent->SetCullMode(static_cast<ECullMode>(RuntimeState["cull_mode"].get<uint32>()));
+        }
+        if (RuntimeState.contains("depth_test"))
+        {
+            PrimitiveComponent->SetEnableDepthTest(RuntimeState["depth_test"].get<bool>());
+        }
+        if (RuntimeState.contains("visible"))
+        {
+            PrimitiveComponent->SetVisible(RuntimeState["visible"].get<bool>());
+        }
+        if (RuntimeState.contains("editor_only"))
+        {
+            PrimitiveComponent->SetIsInEditor(RuntimeState["editor_only"].get<bool>());
+        }
+    }
+
+    if (UTextComponent* TextComponent = Cast<UTextComponent>(Component))
+    {
+        const json Resources = ComponentJson.value("resources", json::object());
+        const json Custom = ComponentJson.value("custom", json::object());
+
+        if (Resources.contains("text_texture"))
+        {
+            TextComponent->SetFilePath(Resources["text_texture"].get<FString>());
+        }
+        if (Resources.contains("text_texture_kor"))
+        {
+            TextComponent->SetKoreanFilePath(Resources["text_texture_kor"].get<FString>());
+        }
+        if (Custom.contains("text"))
+        {
+            TextComponent->SetText(Custom["text"].get<FString>());
+        }
+    }
+    else if (UParticleSubUVComponent* ParticleComponent = Cast<UParticleSubUVComponent>(Component))
+    {
+        const json Resources = ComponentJson.value("resources", json::object());
+        const json Custom = ComponentJson.value("custom", json::object());
+
+        if (Resources.contains("texture"))
+        {
+            ParticleComponent->FilePath = Resources["texture"].get<FString>();
+        }
+        if (Custom.contains("width"))
+        {
+            ParticleComponent->Width = Custom["width"].get<uint32>();
+        }
+        if (Custom.contains("height"))
+        {
+            ParticleComponent->Height = Custom["height"].get<uint32>();
+        }
+        if (Custom.contains("sprite_size"))
+        {
+            ParticleComponent->SpriteSize = Custom["sprite_size"].get<uint32>();
+        }
+        if (Custom.contains("total_frame_count"))
+        {
+            ParticleComponent->TotalFrameCount = Custom["total_frame_count"].get<uint32>();
+        }
+    }
+}
+
+void ResolveComponentJson(UActorComponent* Component, const json& ComponentJson, FSceneLoadContext& LoadContext)
+{
+    if (ComponentJson.contains("properties"))
+    {
+        ResolveReflectedProperties(Component, ComponentJson["properties"], LoadContext);
+    }
+
+    USceneComponent* SceneComponent = Cast<USceneComponent>(Component);
+    if (SceneComponent == nullptr)
+    {
+        return;
+    }
+
+    const json AttachParentId = ComponentJson.value("attach_parent_id", json(nullptr));
+    if (AttachParentId.is_null())
+    {
+        return;
+    }
+
+    const uint32 SavedParentId = AttachParentId.get<uint32>();
+    auto It = LoadContext.ObjectsBySavedId.find(SavedParentId);
+    if (It == LoadContext.ObjectsBySavedId.end())
+    {
+        LoadContext.AddError("[ResolveAttachment] Missing component id " + std::to_string(SavedParentId));
+        return;
+    }
+
+    USceneComponent* AttachParent = Cast<USceneComponent>(It->second);
+    if (AttachParent == nullptr)
+    {
+        LoadContext.AddError("[ResolveAttachment] Object id " + std::to_string(SavedParentId) + " is not a scene component");
+        return;
+    }
+
+    SceneComponent->SetupAttachment(AttachParent);
+}
+}
 
 UWorld::UWorld(const FString &InString) : UObject(InString) 
 {
@@ -102,80 +631,30 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
         return false;
 
     std::filesystem::path path(FilePath);
+    std::filesystem::create_directories(path.parent_path());
 
-    // [추가됨] wstring을 UTF-8 인코딩의 string으로 안전하게 변환하는 람다 함수
-    auto WStringToUTF8 = [](const std::wstring& wstr) -> std::string {
-        if (wstr.empty()) return std::string();
-        int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-        std::string strTo(size_needed, 0);
-        WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
-        return strTo;
+    json SceneJson;
+    SceneJson["scene"] = {
+        {"name", WStringToUTF8(path.stem().wstring())},
+        {"format_version", SceneFormatVersion},
+        {"saved_at_utc", GetCurrentTimestampUtc()}
     };
 
-    FString CurrentSceneName = WStringToUTF8(path.stem().wstring());
-
-    json j;
-    j["Version"] = 1;
-    j["SceneName"] = CurrentSceneName;
-
-    json primitives;
-    int  currentUuid = 0;
-
-    // 소수점 6자리까지 반올림하는 람다 함수
-    auto Round6 = [](float val) -> float { return std::round(val * 1000000.0f) / 1000000.0f; };
-
-    // 현재 레벨의 모든 액터를 순회하며 저장
-    for (AActor *Actor : CurrentLevel->GetActors())
+    json ActorsJson = json::array();
+    for (AActor* Actor : CurrentLevel->GetActors())
     {
-        std::string primitiveType = "None";
-
-        // 추가된 모든 Primitive Component를 식별합니다.
-        for (UActorComponent *Component : Actor->GetOwnedComponents())
+        if (Actor != nullptr)
         {
-            if (Cast<USphereComponent>(Component))
-            {
-                primitiveType = "Sphere";
-                break;
-            }
-            if (Cast<UCubeComponent>(Component))
-            {
-                primitiveType = "Cube";
-                break;
-            }
-            if (Cast<UTriangleComponent>(Component))
-            {
-                primitiveType = "Triangle";
-                break;
-            }
-            if (Cast<UPlaneComponent>(Component))
-            {
-                primitiveType = "Plane";
-                break;
-            }
+            ActorsJson.push_back(SerializeActor(Actor));
         }
-
-        if (primitiveType == "None")
-            continue;
-
-        FTransform Transform = Actor->GetTransform();
-
-        json primitiveJson;
-        primitiveJson["Type"] = primitiveType;
-        primitiveJson["Location"] = {Round6(Transform.Location.X), Round6(Transform.Location.Y), Round6(Transform.Location.Z)};
-        primitiveJson["Rotation"] = {Round6(Transform.Rotation.X), Round6(Transform.Rotation.Y), Round6(Transform.Rotation.Z)};
-        primitiveJson["Scale"] = {Round6(Transform.Scale.X), Round6(Transform.Scale.Y), Round6(Transform.Scale.Z)};
-
-        primitives[std::to_string(currentUuid)] = primitiveJson;
-        currentUuid++;
     }
 
-    j["UUID"] = currentUuid;
-    j["Primitives"] = primitives;
+    SceneJson["actors"] = ActorsJson;
 
     std::ofstream file(path);
     if (file.is_open())
     {
-        file << j.dump(2);
+        file << SceneJson.dump(2);
         file.close();
         return true;
     }
@@ -192,6 +671,7 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
         return false;
 
     json j;
+     UEngineStatics::SetUUID(27);
 
     try
     {
@@ -212,132 +692,185 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
 
     file.close();
 
-    FString CurrentSceneName;
     ULevel *OldLevel = CurrentLevel;
+    FSceneLoadContext LoadContext;
 
-    // 1. contains()와 함께 is_string()을 추가로 확인하여 타입 불일치 오류 방지
     try
     {
-        if (j.contains("SceneName") && j["SceneName"].is_string())
+        FString SceneName = WStringToUTF8(path.stem().wstring());
+        if (j.contains("scene") && j["scene"].is_object())
         {
-            CurrentSceneName = j["SceneName"].get<std::string>();
-        }
-        else
-        {
-            // 2. else 블록으로 넘어왔을 때 한자/한글 경로로 프로그램이 종료되는 현상 차단
-            std::wstring wStem = path.stem().wstring();
-            int          size_needed = WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, NULL, 0, NULL, NULL);
-            std::string  utf8Stem(size_needed, 0);
-            WideCharToMultiByte(CP_UTF8, 0, wStem.c_str(), -1, &utf8Stem[0], size_needed, NULL, NULL);
-
-            CurrentSceneName = utf8Stem;
-        }
-        CurrentLevel = CreateNewLevel(CurrentSceneName);
-
-        if (j.contains("Primitives"))
-        {
-            json primitives = j["Primitives"];
-
-            for (auto &item : primitives.items())
+            const json& SceneHeader = j["scene"];
+            if (SceneHeader.contains("name") && SceneHeader["name"].is_string())
             {
-                json primData = item.value();
+                SceneName = SceneHeader["name"].get<FString>();
+            }
+            if (SceneHeader.contains("format_version"))
+            {
+                LoadContext.SceneVersion = SceneHeader["format_version"].get<uint32>();
+            }
+        }
+        else if (j.contains("SceneName") && j["SceneName"].is_string())
+        {
+            SceneName = j["SceneName"].get<FString>();
+            LoadContext.SceneVersion = j.value("Version", 1);
+        }
 
-                if (!primData.contains("Type") || !primData["Type"].is_string())
+        CurrentLevel = CreateNewLevel(SceneName);
+
+        const json ActorsJson = j.contains("actors") ? j["actors"] : json::array();
+        struct FPendingActorLoad
+        {
+            AActor* Instance = nullptr;
+            json Data;
+        };
+
+        struct FPendingComponentLoad
+        {
+            UActorComponent* Instance = nullptr;
+            json Data;
+        };
+
+        TArray<FPendingActorLoad> PendingActors;
+        TArray<FPendingComponentLoad> PendingComponents;
+
+        if (ActorsJson.is_array())
+        {
+            for (const json& ActorJson : ActorsJson)
+            {
+                if (!ActorJson.contains("class") || !ActorJson.contains("id"))
                 {
-                    throw std::runtime_error("Invalid or missing 'Type' format.");
+                    throw std::runtime_error("Actor entry missing class/id.");
                 }
 
-                std::string type = primData["Type"].get<std::string>();
-
-                AActor *NewActor = GWorld->SpawnActor<AActor>();
-                if (NewActor == nullptr)
-                    throw std::runtime_error("Failed to spawn actor.");
-
-                USceneComponent *Root = NewActor->CreateDefaultSubobject<USceneComponent>();
-                if (Root != nullptr)
+                UClass* ActorClass = FindClassByName(ActorJson["class"].get<FString>());
+                if (ActorClass == nullptr)
                 {
-                    NewActor->SetRootComponent(Root);
-                    Root->RegisterComponent();
-                    NewActor->SetOuter(CurrentLevel);
+                    throw std::runtime_error("Unknown actor class: " + ActorJson["class"].get<FString>());
                 }
 
-                // 회전, 위치, 크기 데이터 파싱
-                FTransform NewTransform;
-                if (primData.contains("Location") && primData["Location"].is_array() && primData["Location"].size() >= 3 &&
-                    primData["Location"][0].is_number() && primData["Location"][1].is_number() && primData["Location"][2].is_number())
+                AActor* Actor = Cast<AActor>(FObjectFactory::ConstructObject(ActorClass));
+                if (Actor == nullptr)
                 {
-                    auto &loc = primData["Location"];
-                    NewTransform.Location = {loc[0].get<float>(), loc[1].get<float>(), loc[2].get<float>()};
+                    throw std::runtime_error("Failed to create actor instance.");
                 }
-                else
-                    throw std::runtime_error("Invalid Location format.");
 
-                if (primData.contains("Rotation") && primData["Rotation"].is_array() && primData["Rotation"].size() >= 3 &&
-                    primData["Rotation"][0].is_number() && primData["Rotation"][1].is_number() && primData["Rotation"][2].is_number())
+                Actor->SetOuter(CurrentLevel);
+                CurrentLevel->GetActors().push_back(Actor);
+                LoadContext.ObjectsBySavedId[ActorJson["id"].get<uint32>()] = Actor;
+                PendingActors.push_back({Actor, ActorJson});
+
+                const json ComponentsJson = ActorJson.value("components", json::array());
+                if (!ComponentsJson.is_array())
                 {
-                    auto &rot = primData["Rotation"];
-                    NewTransform.Rotation = {rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>()};
-                }
-                else
-                    throw std::runtime_error("Invalid Rotation format.");
-
-                if (primData.contains("Scale") && primData["Scale"].is_array() && primData["Scale"].size() >= 3 && primData["Scale"][0].is_number() &&
-                    primData["Scale"][1].is_number() && primData["Scale"][2].is_number())
-                {
-                    auto &scale = primData["Scale"];
-                    NewTransform.Scale = {scale[0].get<float>(), scale[1].get<float>(), scale[2].get<float>()};
-                }
-                else
-                    throw std::runtime_error("Invalid Scale format.");
-
-                NewActor->SetTransform(NewTransform);
-
-                UObject *NewObj = nullptr;
-                if (type == "None")
                     continue;
-                else if (type == "Sphere")
-                    NewObj = FObjectFactory::ConstructObject(USphereComponent::StaticClass());
-                else if (type == "Cube")
-                    NewObj = FObjectFactory::ConstructObject(UCubeComponent::StaticClass());
-                else if (type == "Triangle")
-                    NewObj = FObjectFactory::ConstructObject(UTriangleComponent::StaticClass());
-                else if (type == "Plane")
-                    NewObj = FObjectFactory::ConstructObject(UPlaneComponent::StaticClass());
-                else
-                    throw std::runtime_error("Unknown Primitive Type."); // 알 수 없는 타입 시 중단
+                }
 
-                if (NewObj != nullptr)
+                for (const json& ComponentJson : ComponentsJson)
                 {
-                    UPrimitiveComponent *Primitive = Cast<UPrimitiveComponent>(NewObj);
-                    if (Primitive != nullptr)
+                    if (!ComponentJson.contains("class") || !ComponentJson.contains("id"))
                     {
-                        Primitive->SetOuter(NewActor);
-                        Primitive->RegisterComponent();
+                        throw std::runtime_error("Component entry missing class/id.");
                     }
-                    else
+
+                    UClass* ComponentClass = FindClassByName(ComponentJson["class"].get<FString>());
+                    if (ComponentClass == nullptr)
                     {
-                        delete NewObj;
-                        throw std::runtime_error("Failed to cast PrimitiveComponent.");
+                        throw std::runtime_error("Unknown component class: " + ComponentJson["class"].get<FString>());
+                    }
+
+                    UActorComponent* Component = Cast<UActorComponent>(FObjectFactory::ConstructObject(ComponentClass));
+                    if (Component == nullptr)
+                    {
+                        throw std::runtime_error("Failed to create component instance.");
+                    }
+
+                    Component->SetOuter(Actor);
+                    Component->RegisterComponent();
+                    LoadContext.ObjectsBySavedId[ComponentJson["id"].get<uint32>()] = Component;
+                    PendingComponents.push_back({Component, ComponentJson});
+                }
+            }
+        }
+        else if (j.contains("Primitives"))
+        {
+            throw std::runtime_error("Legacy primitive-only scene format is no longer supported by this loader.");
+        }
+
+        for (const auto& PendingActor : PendingActors)
+        {
+            AActor* Actor = PendingActor.Instance;
+            const json& ActorJson = PendingActor.Data;
+
+            if (ActorJson.contains("name"))
+            {
+                Actor->SetName(ActorJson["name"].get<FString>());
+            }
+            if (ActorJson.contains("active"))
+            {
+                Actor->SetActive(ActorJson["active"].get<bool>());
+            }
+            if (ActorJson.contains("properties"))
+            {
+                DeserializeReflectedProperties(Actor, ActorJson["properties"], LoadContext);
+            }
+        }
+
+        for (const auto& PendingComponent : PendingComponents)
+        {
+            ApplyComponentJson(PendingComponent.Instance, PendingComponent.Data, LoadContext);
+        }
+
+        for (const auto& PendingActor : PendingActors)
+        {
+            AActor* Actor = PendingActor.Instance;
+            const json& ActorJson = PendingActor.Data;
+
+            if (ActorJson.contains("properties"))
+            {
+                ResolveReflectedProperties(Actor, ActorJson["properties"], LoadContext);
+            }
+
+            const json RootComponentId = ActorJson.value("root_component_id", json(nullptr));
+            if (!RootComponentId.is_null())
+            {
+                auto It = LoadContext.ObjectsBySavedId.find(RootComponentId.get<uint32>());
+                if (It != LoadContext.ObjectsBySavedId.end())
+                {
+                    if (USceneComponent* RootComponent = Cast<USceneComponent>(It->second))
+                    {
+                        Actor->SetRootComponent(RootComponent);
                     }
                 }
             }
         }
 
-        // 모든 과정이 완벽하게 성공했을 때 기존 레벨을 삭제합니다.
+        for (const auto& PendingComponent : PendingComponents)
+        {
+            ResolveComponentJson(PendingComponent.Instance, PendingComponent.Data, LoadContext);
+        }
+
+        if (!LoadContext.Errors.empty())
+        {
+            for (const FString& Error : LoadContext.Errors)
+            {
+                UImGuiManager::Get().AddLog("[SceneLoad] " + Error);
+            }
+        }
+
         if (OldLevel != nullptr)
         {
             Levels.erase(OldLevel); 
             delete OldLevel;
         }
     }
-    catch (const std::exception&)
+    catch (const std::exception& Exception)
     {
-        // 1. 만들다 만 잘못된 씬(현재 레벨)을 월드 목록에서 지우고 메모리를 해제합니다.
         Levels.erase(CurrentLevel);
         delete CurrentLevel;
-
-        // 2. 아까 백업해두었던 기존 씬(OldLevel)을 다시 현재 씬으로 복구합니다.
         CurrentLevel = OldLevel;
+
+        UImGuiManager::Get().AddLog(FString("[SceneLoad] Failed: ") + Exception.what());
 
         return false;
     }

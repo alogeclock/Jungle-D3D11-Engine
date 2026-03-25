@@ -13,6 +13,7 @@ class AActor : public UObject
   private:
     TArray<UActorComponent *> OwnedComponents;
     USceneComponent        *RootComponent = nullptr;
+    bool                    bIsActive = true;
 
   public:
     AActor(const FString &InString);
@@ -23,6 +24,8 @@ class AActor : public UObject
 
     TArray<UActorComponent *> GetOwnedComponents() const { return OwnedComponents; }
     void                    AddOwnedComponent(UActorComponent *Component);
+    void                    SetActive(bool bInIsActive) { bIsActive = bInIsActive; }
+    bool                    IsActive() const { return bIsActive; }
 
     FTransform GetTransform() const;
     void       SetTransform(const FTransform &NewTransform);

@@ -71,9 +71,14 @@ void AActor::SetTransform(const FTransform& NewTransform)
 
 void AActor::Tick(float deltaTime)
 {
+    if (!bIsActive)
+    {
+        return;
+    }
+
     for (UActorComponent* Component : OwnedComponents)
     {
-        if (Component != nullptr)
+        if (Component != nullptr && Component->IsActive())
         {
             Component->Tick(deltaTime);
         }
@@ -83,8 +88,18 @@ void AActor::Tick(float deltaTime)
 // 렌더러에 모든 Components의 데이터를 전송한다.
 void AActor::SubmitAllActorComponents(const FSceneViewOptions& ViewOptions) const
 {
+    if (!bIsActive)
+    {
+        return;
+    }
+
     for (UActorComponent* Comp : this->GetOwnedComponents())
     {
+        if (Comp == nullptr || !Comp->IsActive())
+        {
+            continue;
+        }
+
         UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(Comp);
 
         if (PrimitiveComp != nullptr)

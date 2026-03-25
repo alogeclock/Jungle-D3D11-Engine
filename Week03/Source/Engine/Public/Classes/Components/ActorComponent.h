@@ -21,7 +21,10 @@ class UActorComponent : public UObject
 
     AActor *GetOwner() const;
     void SetOwner(AActor* InOwner) { Owner = InOwner; }
+    void SetActive(bool bInIsActive) { bIsActive = bInIsActive; }
+    bool IsActive() const { return bIsActive; }
 
   protected:
     AActor *Owner = nullptr;
+    bool    bIsActive = true;
 };
