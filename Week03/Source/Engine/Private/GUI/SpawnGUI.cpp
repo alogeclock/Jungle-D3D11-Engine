@@ -131,7 +131,7 @@ void FSpawnGUI::SpawnPrimitiveComponent(UClass* ComponentClassToSpawn, int Numbe
         {
             if (TextComp->IsExactly(UTextComponent::StaticClass()))
             {
-                TextComp->SetText(FString(reinterpret_cast<const char*>(u8"박상혁 김호준 전현길 김기홍")));
+                TextComp->SetText(("박상혁 김호준 전현길 김기홍"));
             }
         }
 
