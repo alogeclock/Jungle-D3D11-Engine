@@ -649,6 +649,7 @@ void URenderer::RenderPrimitive(UPrimitiveComponent* primitive, FConstants& cons
 
     // 3. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
+    ApplyRasterizerState(primitive->GetCullMode(), primitive->IsInEditor());
 
     uint32 offset = 0;
 

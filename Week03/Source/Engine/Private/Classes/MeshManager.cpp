@@ -33,6 +33,7 @@ void UMeshManager::Initialize(URenderer& Renderer)
 
 TArray<FTextureVertex> UMeshManager::RebuildMesh()
 {
+    TArray<FTextureVertex> Vertices;
     Vertices.clear();
 
     uint32 SpriteSize = 150;
@@ -78,6 +79,8 @@ TArray<FTextureVertex> UMeshManager::RebuildMesh()
         Vertices.push_back({FVector<float>(x1, y1, 0.f), fu1, fv1});
         Vertices.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
     }
+
+    return Vertices;
 }
 
 void UMeshManager::Release(URenderer& renderer)

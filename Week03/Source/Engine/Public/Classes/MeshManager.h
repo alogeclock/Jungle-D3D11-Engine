@@ -48,7 +48,8 @@ public:
 
     TArray<FTextureVertex> RebuildMesh();
 
-    template <class TVertex> FBox ComputeAABB(const TArray<TVertex>& Vertices)
+    template <class TVertex> 
+    FBox ComputeAABB(const TArray<TVertex>& Vertices)
     {
         FBox Box;
 
