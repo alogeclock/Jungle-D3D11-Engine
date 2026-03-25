@@ -21,6 +21,7 @@ class UMeshManager : public UObject
 
     void Initialize(URenderer &Renderer);
     void Release(URenderer &Renderer);
+    TArray<FTextureVertex> RebuildMesh();
 
     FBox ComputeAABB(const TArray<FVertex> &Vertices);
     FBox ComputeAABB(const TArray<FTextureVertex> &Vertices);
@@ -30,14 +31,20 @@ class UMeshManager : public UObject
     uint32           GetNumVertices(EPrimitiveType Type) const;
     TArray<FVertex> *GetVertexData(EPrimitiveType Type) const;
 
+    TArray<FTextureVertex> *GetTextureVertexData(EPrimitiveType Type) const;
+
     ID3D11Buffer *GetIndexBuffer(EPrimitiveType Type) const;
     uint32        GetNumIndices(EPrimitiveType Type) const;
     TArray<uint16> *GetIndexData(EPrimitiveType Type) const;
+
 
   private:
     TMap<EPrimitiveType, ID3D11Buffer *>    VertexBuffers;
     TMap<EPrimitiveType, uint32>            NumVertices;
     TMap<EPrimitiveType, TArray<FVertex> *> VertexData;
+
+    //subUV용 Vertex캐시
+    TMap<EPrimitiveType, TArray<FTextureVertex> *> TextureVertexData;
 
     TMap<EPrimitiveType, ID3D11Buffer *> IndexBuffers;
     TMap<EPrimitiveType, uint32>         NumIndices;

@@ -155,6 +155,7 @@ class URenderer
     void Draw(ID3D11Buffer *vertexBuffer, uint32 numVertices, uint32 InStride);
     void DrawIndexed(ID3D11Buffer *vertexBuffer, ID3D11Buffer *indexBuffer, uint32 numIndices, uint32 InStride);
 
+    ID3D11Buffer *CreateVertexBuffer(const FTextureVertex *vertices, uint32 byteWidth);
     ID3D11Buffer *CreateVertexBuffer(const FVertex *vertices, uint32 byteWidth);
     void          ReleaseVertexBuffer(ID3D11Buffer *vertexBuffer);
 

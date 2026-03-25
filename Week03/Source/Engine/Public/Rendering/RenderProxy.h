@@ -38,6 +38,7 @@ struct FRenderCommand
     uint32 NumVertices = 0;
     uint32 NumIndices = 0;
     uint32 Stride = 0;
+    uint32 CurrentFrame = -1;
 };
 
 class FRenderProxy

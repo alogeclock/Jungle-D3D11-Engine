@@ -666,6 +666,22 @@ void URenderer::RenderPrimitive(UPrimitiveComponent* primitive, FConstants& cons
     }
 }
 
+ID3D11Buffer* URenderer::CreateVertexBuffer(const FTextureVertex* vertices, uint32 byteWidth)
+{
+    D3D11_BUFFER_DESC vertexbufferdesc = {};
+    vertexbufferdesc.ByteWidth = byteWidth;
+    vertexbufferdesc.Usage = D3D11_USAGE_IMMUTABLE; // will never be updated
+    vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA vertexbufferSRD = {vertices};
+
+    ID3D11Buffer* vertexBuffer;
+
+    Device->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
+
+    return vertexBuffer;
+}
+
 ID3D11Buffer* URenderer::CreateVertexBuffer(const FVertex* vertices, uint32 byteWidth)
 {
     // Create a vertex buffer
@@ -993,7 +1009,15 @@ void URenderer::RenderScene(FScene* Scene)
         }
         else if (Command.VertexBuffer) // 인덱스 버퍼가 없는 경우
         {
-            DeviceContext->Draw(Command.NumVertices, 0);
+            uint32 NumVertices = Command.NumVertices;
+            uint32 index = 0;
+
+            if (Command.CurrentFrame != -1)
+            {
+                NumVertices = 6;
+                index = Command.CurrentFrame * 6;
+            }
+            DeviceContext->Draw(NumVertices, index);
         }
     }
 }

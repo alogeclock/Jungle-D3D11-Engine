@@ -8,11 +8,11 @@ void UMeshManager::Initialize(URenderer& Renderer)
 {
     TArray<EPrimitiveType> PrimitiveTypes = {EPrimitiveType::Cube,  EPrimitiveType::Sphere, EPrimitiveType::Triangle,
                                              EPrimitiveType::Plane, EPrimitiveType::Arrow,  EPrimitiveType::CubeArrow,
-                                             EPrimitiveType::Ring,  EPrimitiveType::SubUV,  EPrimitiveType::TextureQuad};
+                                             EPrimitiveType::Ring,  EPrimitiveType::TextureQuad};
 
     TArray<TArray<FVertex>*> VerticesPtr = {&cube_vertices,  &sphere_vertices, &triangle_vertices,
                                             &plane_vertices, &arrow_vertices,  &cube_arrow_vertices,
-                                            &ring_vertices,  &subUV_vertices,  &texture_quad_vertices};
+                                            &ring_vertices,  &texture_quad_vertices};
 
     for (int i = 0; i < PrimitiveTypes.size(); i++)
     {
@@ -31,6 +31,71 @@ void UMeshManager::Initialize(URenderer& Renderer)
         EPrimitiveType::Sphere,
         Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
     NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
+    
+    TArray<FTextureVertex> VerticesSubUV = RebuildMesh();
+
+    TextureVertexData.emplace(EPrimitiveType::SubUV, &VerticesSubUV);
+
+    VertexBuffers.emplace(EPrimitiveType::SubUV,
+        Renderer.CreateVertexBuffer(
+            VerticesSubUV.data(),
+            static_cast<int>(VerticesSubUV.size()) * sizeof(FTextureVertex)
+        )
+    );
+
+    NumVertices.emplace(EPrimitiveType::SubUV,
+        static_cast<uint32>(VerticesSubUV.size())
+    );
+}
+
+TArray<FTextureVertex> UMeshManager::RebuildMesh()
+{
+    TArray<FTextureVertex> VerticesSubUV;
+    VerticesSubUV.clear();
+
+    uint32 SpriteSize = 150;
+    uint32 Height = 900;
+    uint32  Width = 900;
+
+    uint32 Row = Height / SpriteSize;
+    uint32 Collum = Width / SpriteSize;
+
+    uint32 Size = Row * Collum;
+    //std::cout << Size << std::endl;
+
+    for (int CurrentIndex = 0; CurrentIndex < Size; ++CurrentIndex)
+    {
+        uint32 u0, u1, v0, v1;
+        u0 = CurrentIndex % Collum;
+        v0 = CurrentIndex / Collum;
+
+        u1 = u0 + 1;
+        v1 = v0 + 1;
+
+        u0 *= SpriteSize;
+        u1 *= SpriteSize;
+        v0 *= SpriteSize;
+        v1 *= SpriteSize;
+
+        float x0 = -0.5f;
+        float x1 = 0.5f;
+        float y0 = -0.5f;
+        float y1 = 0.5f;
+
+        float fu0 = (float)u0 / (float)Width;
+        float fu1 = (float)u1 / (float)Width;
+        float fv0 = (float)v0 / (float)Height;
+        float fv1 = (float)v1 / (float)Height;
+
+        VerticesSubUV.push_back({FVector<float>(x0, y0, 0.f), fu0, fv0});
+        VerticesSubUV.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
+        VerticesSubUV.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
+
+        VerticesSubUV.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
+        VerticesSubUV.push_back({FVector<float>(x1, y1, 0.f), fu1, fv1});
+        VerticesSubUV.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
+    }
+    return VerticesSubUV;
 }
 
 void UMeshManager::Release(URenderer& renderer)
@@ -85,6 +150,11 @@ FBox UMeshManager::GetMeshAABB(EPrimitiveType Type) const
 TArray<FVertex>* UMeshManager::GetVertexData(EPrimitiveType Type) const
 {
     return VertexData.at(Type);
+}
+
+TArray<FTextureVertex>* UMeshManager::GetTextureVertexData(EPrimitiveType Type) const
+{
+    return TextureVertexData.at(Type);
 }
 
 ID3D11Buffer* UMeshManager::GetVertexBuffer(EPrimitiveType Type) const
