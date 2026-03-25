@@ -28,6 +28,7 @@ public:
     bool LoadLevel(const std::wstring& FilePath);
 
     AActor* SpawnActor(UClass* ClassToSpawn);
+    bool DeleteSelectedActors();
 
     template <typename T> T* SpawnActor();
     void RemoveActor() const;
