@@ -100,6 +100,8 @@ void UBillboardComponent::ApplyBillboardTransform(const FTransform& TargetTransf
     CachedCameraForward = CameraForward;
 
     constexpr float SizeFactor = 0.3f;
+    constexpr float DistanceThreshold = 3.0f;
+
     float ScaleFactor = 1.0f;
     const bool bIsOrthogonal = UImGuiManager::Get().bIsOrthogonal;
 
@@ -108,7 +110,6 @@ void UBillboardComponent::ApplyBillboardTransform(const FTransform& TargetTransf
         const FVector<float> ToTarget = TargetTransform.Location - Camera.GetLocation();
         const float CorrectedDistance = ToTarget.Length();
 
-        const float DistanceThreshold = 5.0f;
         const float ClampedDistance = (std::min)(CorrectedDistance, DistanceThreshold);
 
         const float FOVRad = Camera.GetFOV();

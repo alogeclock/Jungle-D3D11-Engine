@@ -1031,16 +1031,17 @@ void URenderer::RenderScene(FScene* Scene)
         }
         else if (Command.VertexBuffer) // 인덱스 버퍼가 없는 경우
         {
-            uint32 NumVertices = Command.NumVertices;
-            uint32 index = 0;
+            UINT StartVertexLocation = 0;
+            UINT VertexCount = Command.NumVertices;
 
             // SubUV 컴포넌트인 경우 현재 프레임에 따라 그려준다.
             if (Command.CurrentFrame != -1)
             {
-                NumVertices = 6;
-                index = Command.CurrentFrame * 6;
+                VertexCount = 6;
+                StartVertexLocation = Command.CurrentFrame * 6;
             }
-            DeviceContext->Draw(NumVertices, index);
+
+            DeviceContext->Draw(VertexCount, StartVertexLocation);
         }
     }
 }
