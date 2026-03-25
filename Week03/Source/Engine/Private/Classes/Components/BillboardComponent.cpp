@@ -21,11 +21,6 @@ FVector<float> NormalizeOr(const FVector<float>& InVector, const FVector<float>&
     return Result;
 }
 
-float RowLength3(const FMatrix<float>& Matrix, int Row)
-{
-    return std::sqrt(Matrix.M[Row][0] * Matrix.M[Row][0] + Matrix.M[Row][1] * Matrix.M[Row][1] +
-                     Matrix.M[Row][2] * Matrix.M[Row][2]);
-}
 } // namespace
 
 void UBillboardComponent::Submit(const FSceneViewOptions& ViewOptions)
@@ -119,8 +114,7 @@ void UBillboardComponent::ApplyBillboardTransform(const FTransform& TargetTransf
     }
     else
     {
-        const FVector<float> Direction = Camera.GetLocation() - Camera.GetLookAt();
-        const float OrthoWidth = Direction.Length() * 2.0f;
+        const float OrthoWidth = Camera.GetOrthoZoom() * 2.0f;
         ScaleFactor = OrthoWidth * SizeFactor;
     }
 
@@ -134,9 +128,9 @@ void UBillboardComponent::ApplyBillboardTransform(const FTransform& TargetTransf
 
 FMatrix<float> UBillboardComponent::BuildBillboardWorldMatrix()
 {
-    const FMatrix<float>& World = GetWorldMatrix();
-    const FVector<float> WorldPos(World.M[3][0], World.M[3][1], World.M[3][2]);
-    const FVector<float> WorldScale(RowLength3(World, 0), RowLength3(World, 1), RowLength3(World, 2));
+    const FTransform WorldTransform = GetTransform();
+    const FVector<float> WorldPos = WorldTransform.Location;
+    const FVector<float> WorldScale = WorldTransform.Scale;
 
     const FVector<float> FacingToCamera = CachedCameraForward * -1.0f;
 
