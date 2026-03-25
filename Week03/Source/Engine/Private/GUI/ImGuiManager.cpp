@@ -33,7 +33,7 @@ void UImGuiManager::Create(HWND hWnd, URenderer* renderer)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    std::filesystem::path FontFilePath = "Data/Font/NanumGothic.ttf";
+    std::filesystem::path FontFilePath = "Data/Font/Pretendard-Regular.otf";
 
     if (!std::filesystem::exists(FontFilePath))
     {

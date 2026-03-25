@@ -1,34 +1,34 @@
 ﻿#include "World.h"
 #include "Source/Engine/Object/Public/Actor.h"
 
-#include "Source/Editor/Public/Grid.h"
-#include "Source/Editor/Public/PivotTransformGizmo.h"
 #include "Source/Editor/Public/Axis.h"
 #include "Source/Editor/Public/EditorSpriteActor.h"
+#include "Source/Editor/Public/Grid.h"
+#include "Source/Editor/Public/PivotTransformGizmo.h"
 
 // 모든 Primitive Component 헤더 포함
-#include "Source/Engine/Public/Classes/Components/SphereComponent.h"
-#include "Source/Engine/Public/Classes/Components/CubeComponent.h"
-#include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
-#include "Source/Engine/Public/Classes/Components/PlaneComponent.h"
-#include "Source/Engine/Public/Classes/Components/TextComponent.h"
-#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
-#include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
-#include "Source/Engine/Public/Classes/Components/ArrowComponent.h"
-#include "Source/Engine/Public/Classes/Components/CubeArrowComponent.h"
-#include "Source/Engine/Public/Classes/Components/RingComponent.h"
-#include "Source/Engine/Public/Classes/Components/AxisComponent.h"
-#include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
-#include "Source/Engine/Public/GUI/ImGuiManager.h"
-#include "Source/Editor/Public/EditorEngine.h"
 #include "EngineStatics.h"
+#include "Source/Editor/Public/EditorEngine.h"
+#include "Source/Engine/Public/Classes/Components/ArrowComponent.h"
+#include "Source/Engine/Public/Classes/Components/AxisComponent.h"
+#include "Source/Engine/Public/Classes/Components/CubeArrowComponent.h"
+#include "Source/Engine/Public/Classes/Components/CubeComponent.h"
+#include "Source/Engine/Public/Classes/Components/ParticleSubUVComponent.h"
+#include "Source/Engine/Public/Classes/Components/PlaneComponent.h"
+#include "Source/Engine/Public/Classes/Components/PrimitiveComponent.h"
+#include "Source/Engine/Public/Classes/Components/RingComponent.h"
+#include "Source/Engine/Public/Classes/Components/SphereComponent.h"
+#include "Source/Engine/Public/Classes/Components/TextComponent.h"
+#include "Source/Engine/Public/Classes/Components/TriangleComponent.h"
+#include "Source/Engine/Public/Classes/Components/UUIDTextComponent.h"
+#include "Source/Engine/Public/GUI/ImGuiManager.h"
 
+#include <chrono>
+#include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <filesystem>
-#include <chrono>
-#include <iomanip>
 #include <sstream>
 
 using json = nlohmann::json;
@@ -58,9 +58,11 @@ std::string WStringToUTF8(const std::wstring& Source)
         return {};
     }
 
-    int SizeNeeded = WideCharToMultiByte(CP_UTF8, 0, Source.c_str(), static_cast<int>(Source.size()), nullptr, 0, nullptr, nullptr);
+    int SizeNeeded =
+        WideCharToMultiByte(CP_UTF8, 0, Source.c_str(), static_cast<int>(Source.size()), nullptr, 0, nullptr, nullptr);
     std::string Result(SizeNeeded, 0);
-    WideCharToMultiByte(CP_UTF8, 0, Source.c_str(), static_cast<int>(Source.size()), Result.data(), SizeNeeded, nullptr, nullptr);
+    WideCharToMultiByte(CP_UTF8, 0, Source.c_str(), static_cast<int>(Source.size()), Result.data(), SizeNeeded, nullptr,
+                        nullptr);
     return Result;
 }
 
@@ -68,7 +70,7 @@ std::string GetCurrentTimestampUtc()
 {
     const auto Now = std::chrono::system_clock::now();
     const std::time_t Time = std::chrono::system_clock::to_time_t(Now);
-    std::tm UtcTime {};
+    std::tm UtcTime{};
     gmtime_s(&UtcTime, &Time);
 
     std::ostringstream Stream;
@@ -130,7 +132,8 @@ bool TryReadTransform(const json& Value, FTransform& OutTransform)
     }
 
     return Value.contains("location") && Value.contains("rotation") && Value.contains("scale") &&
-           TryReadVector3(Value["location"], OutTransform.Location) && TryReadVector3(Value["rotation"], OutTransform.Rotation) &&
+           TryReadVector3(Value["location"], OutTransform.Location) &&
+           TryReadVector3(Value["rotation"], OutTransform.Rotation) &&
            TryReadVector3(Value["scale"], OutTransform.Scale);
 }
 
@@ -157,8 +160,7 @@ json SerializePropertyValue(const UObject* Object, const FProperty& Property)
         return ToJson(*reinterpret_cast<const FVector<float>*>(ValuePtr));
     case EPropertyType::Transform:
         return ToJson(*reinterpret_cast<const FTransform*>(ValuePtr));
-    case EPropertyType::UObjectPtr:
-    {
+    case EPropertyType::UObjectPtr: {
         UObject* const* ReferencedObject = reinterpret_cast<UObject* const*>(ValuePtr);
         return (*ReferencedObject != nullptr) ? json((*ReferencedObject)->GetUUID()) : json(nullptr);
     }
@@ -167,7 +169,8 @@ json SerializePropertyValue(const UObject* Object, const FProperty& Property)
     }
 }
 
-bool DeserializePropertyValue(UObject* Object, const FProperty& Property, const json& Value, FSceneLoadContext& LoadContext)
+bool DeserializePropertyValue(UObject* Object, const FProperty& Property, const json& Value,
+                              FSceneLoadContext& LoadContext)
 {
     void* ValuePtr = Property.GetValuePtr(Object);
 
@@ -199,12 +202,14 @@ bool DeserializePropertyValue(UObject* Object, const FProperty& Property, const 
     }
     catch (const std::exception& Exception)
     {
-        LoadContext.AddError("[DeserializeProperty] " + Object->GetName().ToString() + "." + Property.Name + ": " + Exception.what());
+        LoadContext.AddError("[DeserializeProperty] " + Object->GetName().ToString() + "." + Property.Name + ": " +
+                             Exception.what());
         return false;
     }
 }
 
-void ResolvePropertyReference(UObject* Object, const FProperty& Property, const json& Value, FSceneLoadContext& LoadContext)
+void ResolvePropertyReference(UObject* Object, const FProperty& Property, const json& Value,
+                              FSceneLoadContext& LoadContext)
 {
     if (Property.Type != EPropertyType::UObjectPtr || Value.is_null())
     {
@@ -216,7 +221,8 @@ void ResolvePropertyReference(UObject* Object, const FProperty& Property, const 
     auto It = LoadContext.ObjectsBySavedId.find(SavedId);
     if (It == LoadContext.ObjectsBySavedId.end())
     {
-        LoadContext.AddError("[ResolveReference] Missing object id " + std::to_string(SavedId) + " for " + Object->GetName().ToString() + "." + Property.Name);
+        LoadContext.AddError("[ResolveReference] Missing object id " + std::to_string(SavedId) + " for " +
+                             Object->GetName().ToString() + "." + Property.Name);
         return;
     }
 
@@ -312,20 +318,20 @@ void ResolveReflectedProperties(UObject* Object, const json& PropertiesJson, FSc
 UClass* FindClassByName(const FString& ClassName)
 {
     static const TMap<FString, UClass*> ClassMap = {
-        {"AActor", AActor::StaticClass()},
-        {"USceneComponent", USceneComponent::StaticClass()},
-        {"UPrimitiveComponent", UPrimitiveComponent::StaticClass()},
-        {"USphereComponent", USphereComponent::StaticClass()},
-        {"UCubeComponent", UCubeComponent::StaticClass()},
-        {"UTriangleComponent", UTriangleComponent::StaticClass()},
-        {"UPlaneComponent", UPlaneComponent::StaticClass()},
-        {"UTextComponent", UTextComponent::StaticClass()},
-        {"UUUIDTextComponent", UUUIDTextComponent::StaticClass()},
+        {                 "AActor",                  AActor::StaticClass()},
+        {        "USceneComponent",         USceneComponent::StaticClass()},
+        {    "UPrimitiveComponent",     UPrimitiveComponent::StaticClass()},
+        {       "USphereComponent",        USphereComponent::StaticClass()},
+        {         "UCubeComponent",          UCubeComponent::StaticClass()},
+        {     "UTriangleComponent",      UTriangleComponent::StaticClass()},
+        {        "UPlaneComponent",         UPlaneComponent::StaticClass()},
+        {         "UTextComponent",          UTextComponent::StaticClass()},
+        {     "UUUIDTextComponent",      UUUIDTextComponent::StaticClass()},
         {"UParticleSubUVComponent", UParticleSubUVComponent::StaticClass()},
-        {"UArrowComponent", UArrowComponent::StaticClass()},
-        {"UCubeArrowComponent", UCubeArrowComponent::StaticClass()},
-        {"URingComponent", URingComponent::StaticClass()},
-        {"UAxisComponent", UAxisComponent::StaticClass()}
+        {        "UArrowComponent",         UArrowComponent::StaticClass()},
+        {    "UCubeArrowComponent",     UCubeArrowComponent::StaticClass()},
+        {         "URingComponent",          URingComponent::StaticClass()},
+        {         "UAxisComponent",          UAxisComponent::StaticClass()}
     };
 
     auto It = ClassMap.find(ClassName);
@@ -345,8 +351,9 @@ json SerializeComponent(UActorComponent* Component)
     {
         ComponentJson["transform"] = ToJson(SceneComponent->GetTransform());
         ComponentJson["color"] = ToJson(SceneComponent->GetColor());
-        ComponentJson["attach_parent_id"] =
-            (SceneComponent->GetAttachParent() != nullptr) ? json(SceneComponent->GetAttachParent()->GetUUID()) : json(nullptr);
+        ComponentJson["attach_parent_id"] = (SceneComponent->GetAttachParent() != nullptr)
+                                                ? json(SceneComponent->GetAttachParent()->GetUUID())
+                                                : json(nullptr);
     }
 
     if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Component))
@@ -367,7 +374,9 @@ json SerializeComponent(UActorComponent* Component)
         Resources["text_texture"] = TextComponent->GetFilePath();
         Resources["text_texture_kor"] = TextComponent->GetKoreanFilePath();
         ComponentJson["resources"] = Resources;
-        ComponentJson["custom"] = {{"text", TextComponent->GetText()}};
+        ComponentJson["custom"] = {
+            {"text", TextComponent->GetText()}
+        };
     }
     else if (UParticleSubUVComponent* ParticleComponent = Cast<UParticleSubUVComponent>(Component))
     {
@@ -375,9 +384,9 @@ json SerializeComponent(UActorComponent* Component)
         Resources["texture"] = ParticleComponent->FilePath;
         ComponentJson["resources"] = Resources;
         ComponentJson["custom"] = {
-            {"width", ParticleComponent->Width},
-            {"height", ParticleComponent->Height},
-            {"sprite_size", ParticleComponent->SpriteSize},
+            {            "width",           ParticleComponent->Width},
+            {           "height",          ParticleComponent->Height},
+            {      "sprite_size",      ParticleComponent->SpriteSize},
             {"total_frame_count", ParticleComponent->TotalFrameCount}
         };
     }
@@ -394,7 +403,8 @@ json SerializeActor(AActor* Actor)
     ActorJson["active"] = Actor->IsActive();
     ActorJson["properties"] = SerializeReflectedProperties(Actor);
     ActorJson["transform"] = ToJson(Actor->GetTransform());
-    ActorJson["root_component_id"] = (Actor->GetRootComponent() != nullptr) ? json(Actor->GetRootComponent()->GetUUID()) : json(nullptr);
+    ActorJson["root_component_id"] =
+        (Actor->GetRootComponent() != nullptr) ? json(Actor->GetRootComponent()->GetUUID()) : json(nullptr);
 
     json Components = json::array();
     for (UActorComponent* Component : Actor->GetOwnedComponents())
@@ -449,11 +459,13 @@ void ApplyComponentJson(UActorComponent* Component, const json& ComponentJson, F
         const json RuntimeState = ComponentJson.value("runtime_state", json::object());
         if (RuntimeState.contains("primitive_type"))
         {
-            PrimitiveComponent->SetPrimitiveType(static_cast<EPrimitiveType>(RuntimeState["primitive_type"].get<uint32>()));
+            PrimitiveComponent->SetPrimitiveType(
+                static_cast<EPrimitiveType>(RuntimeState["primitive_type"].get<uint32>()));
         }
         if (RuntimeState.contains("topology"))
         {
-            PrimitiveComponent->SetTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(RuntimeState["topology"].get<uint32>()));
+            PrimitiveComponent->SetTopology(
+                static_cast<D3D11_PRIMITIVE_TOPOLOGY>(RuntimeState["topology"].get<uint32>()));
         }
         if (RuntimeState.contains("cull_mode"))
         {
@@ -549,15 +561,16 @@ void ResolveComponentJson(UActorComponent* Component, const json& ComponentJson,
     USceneComponent* AttachParent = Cast<USceneComponent>(It->second);
     if (AttachParent == nullptr)
     {
-        LoadContext.AddError("[ResolveAttachment] Object id " + std::to_string(SavedParentId) + " is not a scene component");
+        LoadContext.AddError("[ResolveAttachment] Object id " + std::to_string(SavedParentId) +
+                             " is not a scene component");
         return;
     }
 
     SceneComponent->SetupAttachment(AttachParent);
 }
-}
+} // namespace
 
-UWorld::UWorld(const FString &InString) : UObject(InString) 
+UWorld::UWorld(const FString& InString) : UObject(InString)
 {
     CurrentLevel = CreateNewLevel("PersistentLevel");
     LineBatcherComponent = new ULineBatcherComponent("LineBatcherComponent");
@@ -594,13 +607,13 @@ void UWorld::Submit(const FSceneViewOptions& ViewOptions)
     if (CurrentLevel)
     {
         // 현재 레벨의 모든 액터를 순회
-        for (AActor *actor : CurrentLevel->GetActors())
+        for (AActor* actor : CurrentLevel->GetActors())
         {
             // 액터가 소유한 모든 컴포넌트 순회
-            for (UActorComponent *component : actor->GetOwnedComponents())
+            for (UActorComponent* component : actor->GetOwnedComponents())
             {
                 // PrimitiveComponent인 경우에만 Submit 호출
-                UPrimitiveComponent *primitive = Cast<UPrimitiveComponent>(component);
+                UPrimitiveComponent* primitive = Cast<UPrimitiveComponent>(component);
                 if (primitive != nullptr)
                 {
                     primitive->Submit(ViewOptions);
@@ -616,16 +629,16 @@ void UWorld::Submit(const FSceneViewOptions& ViewOptions)
     }
 }
 
-ULevel *UWorld::CreateNewLevel(const FString &NewLevelName)
+ULevel* UWorld::CreateNewLevel(const FString& NewLevelName)
 {
-    ULevel *NewLevel = new ULevel(NewLevelName);
+    ULevel* NewLevel = new ULevel(NewLevelName);
     NewLevel->SetOuter(this);
     Levels.insert(NewLevel);
 
     return NewLevel;
 }
 
-bool UWorld::SaveLevel(const std::wstring &FilePath)
+bool UWorld::SaveLevel(const std::wstring& FilePath)
 {
     if (CurrentLevel == nullptr)
         return false;
@@ -635,9 +648,9 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
 
     json SceneJson;
     SceneJson["scene"] = {
-        {"name", WStringToUTF8(path.stem().wstring())},
-        {"format_version", SceneFormatVersion},
-        {"saved_at_utc", GetCurrentTimestampUtc()}
+        {          "name", WStringToUTF8(path.stem().wstring())},
+        {"format_version",                   SceneFormatVersion},
+        {  "saved_at_utc",             GetCurrentTimestampUtc()}
     };
 
     json ActorsJson = json::array();
@@ -662,7 +675,7 @@ bool UWorld::SaveLevel(const std::wstring &FilePath)
     return false;
 }
 
-bool UWorld::LoadLevel(const std::wstring &FilePath)
+bool UWorld::LoadLevel(const std::wstring& FilePath)
 {
     std::filesystem::path path = std::filesystem::path(FilePath);
 
@@ -671,7 +684,7 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
         return false;
 
     json j;
-     UEngineStatics::SetUUID(27);
+    UEngineStatics::SetUUID();
 
     try
     {
@@ -692,7 +705,7 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
 
     file.close();
 
-    ULevel *OldLevel = CurrentLevel;
+    ULevel* OldLevel = CurrentLevel;
     FSceneLoadContext LoadContext;
 
     try
@@ -860,7 +873,7 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
 
         if (OldLevel != nullptr)
         {
-            Levels.erase(OldLevel); 
+            Levels.erase(OldLevel);
             delete OldLevel;
         }
     }
@@ -879,13 +892,13 @@ bool UWorld::LoadLevel(const std::wstring &FilePath)
 }
 
 // 팩토리를 이용한 액터 동적 스폰 로직 구현
-AActor *UWorld::SpawnActor(UClass *ClassToSpawn)
+AActor* UWorld::SpawnActor(UClass* ClassToSpawn)
 {
     // 1. 팩토리에게 신분증(UClass)을 주고 객체를 찍어내라고 명령합니다.
-    UObject *NewObj = FObjectFactory::ConstructObject(ClassToSpawn);
+    UObject* NewObj = FObjectFactory::ConstructObject(ClassToSpawn);
 
     // 2. 만들어진 객체가 진짜 AActor가 맞는지 확인합니다.
-    AActor *NewActor = Cast<AActor>(NewObj);
+    AActor* NewActor = Cast<AActor>(NewObj);
 
     if (NewActor != nullptr)
     {
@@ -973,26 +986,26 @@ void UWorld::Tick(float deltaTime)
 {
     if (CurrentLevel)
     {
-        for (AActor *actor : CurrentLevel->GetActors())
+        for (AActor* actor : CurrentLevel->GetActors())
         {
             actor->Tick(deltaTime);
         }
     }
 }
 
-FHitResult UWorld::PickingRay(const FVector<float> &RayOrigin, const FVector<float> &RayDirection)
+FHitResult UWorld::PickingRay(const FVector<float>& RayOrigin, const FVector<float>& RayDirection)
 {
     FHitResult ClosestHit;
 
-    // 선택된 액터의 컴포넌트 중 가장 가까운 오브젝트 하나만 색출 
+    // 선택된 액터의 컴포넌트 중 가장 가까운 오브젝트 하나만 색출
     // (시각적 선택 상태 갱신 로직, ImGuiManager 의존성 분리)
     if (CurrentLevel)
     {
-        for (AActor *actor : CurrentLevel->GetActors())
+        for (AActor* actor : CurrentLevel->GetActors())
         {
-            for (UActorComponent *actorC : actor->GetOwnedComponents())
+            for (UActorComponent* actorC : actor->GetOwnedComponents())
             {
-                UPrimitiveComponent *Object = Cast<UPrimitiveComponent>(actorC);
+                UPrimitiveComponent* Object = Cast<UPrimitiveComponent>(actorC);
                 if (Object != nullptr)
                 {
                     FHitResult Hit = Object->IntersectRay(RayOrigin, RayDirection);

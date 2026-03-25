@@ -82,6 +82,9 @@ void UTextComponent::Render(URenderer &renderer)
 void UTextComponent::RebuildMesh()
 {
     FTextMeshBuilder::BuildTextMesh(Text, &TextVertices, &TextIndeices);
+    LocalAABB = UMeshManager::Get().ComputeAABB(TextVertices);
+    bLocalBoundsDirty = false;
+    UpdateBounds();
     bMeshDirty   = false;
 }
 
@@ -109,4 +112,11 @@ void UTextComponent::Submit(const FSceneViewOptions& ViewOptions)
     }
 
     TextBatcher->Submit(FilePath, Text, GetWorldMatrix());
+
+    bool bGlobalDrawAABB = (ViewOptions.ShowFlags & EEngineShowFlags::SF_AABB) != EEngineShowFlags::None;
+    if (bShowAABB && bGlobalDrawAABB && GWorld && GWorld->GetLineBatcherComponent())
+    {
+        UpdateBounds(); 
+        GWorld->GetLineBatcherComponent()->DrawBox(WorldAABB, {0.3f, 1.0f, 0.3f, 1.0f});
+    }
 }

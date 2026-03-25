@@ -22,10 +22,10 @@ private:
     int GridSize = 1000;
     bool bNeedRebuild = true;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
     ID3D11Buffer* DynamicVertexBuffer = nullptr;
     uint32 VertexBufferSize = 0;
-#endif
+//#endif
 
     void RebuildGridLines();
 };

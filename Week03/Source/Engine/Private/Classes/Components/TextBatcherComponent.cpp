@@ -70,9 +70,19 @@ void UTextBatcherComponent::Submit(const FString& InFontPath, const FString& InT
     }
 }
 
+void UTextBatcherComponent::SetViewOption(FSceneViewOptions ViewOptions)
+{
+    ViewOption = ViewOptions;
+}
+
 void UTextBatcherComponent::Render(URenderer& renderer)
 {
     if (!IsVisible())
+    {
+        return;
+    }
+
+    if (!renderer.CheckShowFlag(EEngineShowFlags::SF_Primitives))
     {
         return;
     }
@@ -82,6 +92,7 @@ void UTextBatcherComponent::Render(URenderer& renderer)
 
     renderer.SetDepthStencilEnable(bEnableDepthTest);
     renderer.SetCullMode(CullMode);
+    renderer.SetViewMode(ViewOption.ViewMode);
 
     FConstants Constants = {};
     Constants.MVPMatrix = FMatrix<float>::Identity();

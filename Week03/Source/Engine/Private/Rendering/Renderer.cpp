@@ -335,7 +335,7 @@ void URenderer::CreateDepthStencilBuffer(uint32 width, uint32 height)
 
 void URenderer::ReleaseDepthStencilBuffer()
 {
-    if (DepthStencilBuffer)
+    if (DepthStencilBuffer) 
     {
         DepthStencilBuffer->Release();
         DepthStencilBuffer = nullptr;
@@ -595,7 +595,7 @@ void URenderer::DrawTextBuffers(const FString& FontPath, const FConstants& Const
     DeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
     DeviceContext->IASetInputLayout(TextInputLayout);
 
-    ApplyRasterizerState(ECullMode::None, true);
+    ApplyRasterizerState(ECullMode::None, false);
 
     DeviceContext->VSSetShader(TextVertexShader, nullptr, 0);
     DeviceContext->PSSetShader(TextPixelShader, nullptr, 0);
@@ -634,8 +634,6 @@ void URenderer::UndoRenderText()
 
 void URenderer::RenderPrimitive(UPrimitiveComponent* primitive, FConstants& constants, FConstantsColor& constantsColor)
 {
-    // [TODO: 상수 버퍼의 World Matrix는 프레임이 시작될 때 1번만 갱신하는 방식으로 최적화할 필요가 있다.]
-
     // 1. 전달받은 상수 데이터(constants)를 GPU의 Constant Buffer에 업데이트
     UpdateConstant(constants);
     UpdateConstant(constantsColor);
@@ -651,8 +649,11 @@ void URenderer::RenderPrimitive(UPrimitiveComponent* primitive, FConstants& cons
 
     // 3. 위상(Topology) 설정
     DeviceContext->IASetPrimitiveTopology(primitive->GetTopology());
+    ApplyRasterizerState(primitive->GetCullMode(), primitive->IsInEditor());
 
     uint32 offset = 0;
+
+    uint32 Stride = UMeshManager::Get().GetStride(Type); 
     DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &offset);
 
     if (IndexBuffer)
@@ -1031,15 +1032,17 @@ void URenderer::RenderScene(FScene* Scene)
         }
         else if (Command.VertexBuffer) // 인덱스 버퍼가 없는 경우
         {
-            uint32 NumVertices = Command.NumVertices;
-            uint32 index = 0;
+            UINT StartVertexLocation = 0;
+            UINT VertexCount = Command.NumVertices;
 
+            // SubUV 컴포넌트인 경우 현재 프레임에 따라 그려준다.
             if (Command.CurrentFrame != -1)
             {
-                NumVertices = 6;
-                index = Command.CurrentFrame * 6;
+                VertexCount = 6;
+                StartVertexLocation = Command.CurrentFrame * 6;
             }
-            DeviceContext->Draw(NumVertices, index);
+
+            DeviceContext->Draw(VertexCount, StartVertexLocation);
         }
     }
 }

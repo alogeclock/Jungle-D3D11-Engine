@@ -2,6 +2,8 @@
 #include "Source/Editor/Public/Application.h"
 #include "Source/Editor/Public/EditorEngine.h"
 #include "World.h"
+#include "EngineStatics.h"
+
 
 FSceneWindow::FSceneWindow(FString InName) : FGuiWindow(InName)
 {
@@ -24,6 +26,7 @@ FGuiMsg FSceneWindow::ShowDetail()
     ImGui::InputText("Scene Name", buffer, IM_ARRAYSIZE(buffer));
     if (ImGui::Button("New Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
+        UEngineStatics::SetUUID();
         if (GWorld && GWorld->GetCurrentLevel())
         {
             ULevel* OldLevel = GWorld->GetCurrentLevel();
@@ -77,7 +80,7 @@ FGuiMsg FSceneWindow::ShowDetail()
     if (ImGui::Button("Load Scene", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         std::wstring FilePath = OpenFileDialog();
-
+        UEngineStatics::SetUUID();
         // 선택된 객체 초기화
         if (GEditor && GEditor->GetSelection())
         {

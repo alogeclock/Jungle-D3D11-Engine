@@ -108,3 +108,16 @@ void AActor::SubmitAllActorComponents(const FSceneViewOptions& ViewOptions) cons
         }
     }
 }
+
+void AActor::RenderAllActorComponents(URenderer &renderer) const
+{
+    for (UActorComponent* Comp : this->GetOwnedComponents())
+    {
+        UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(Comp);
+
+        if (PrimitiveComp != nullptr)
+        {
+            PrimitiveComp->Render(renderer);
+        }
+    }
+}

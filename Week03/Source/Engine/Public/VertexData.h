@@ -11,7 +11,7 @@ extern TArray<FVertex> cube_arrow_vertices;
 extern TArray<FVertex> ring_vertices;
 // extern TArray<FVertex> axis_vertices;
 // extern TArray<FVertex> wirebox_vertices;
-extern TArray<FVertex> subUV_vertices;
+extern TArray<FTextureVertex> subUV_vertices;
 extern TArray<FVertex> texture_quad_vertices;
 
 extern TArray<uint16> sphere_indices;

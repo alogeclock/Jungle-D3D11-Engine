@@ -197,14 +197,17 @@ void UApplication::Render()
     
     GWorld->GetLineBatcherComponent()->Render(*Renderer);
     GWorld->GetLineBatcherComponent()->Flush();
-    GWorld->GetTextBatcherComponent()->Render(*Renderer);
-    GWorld->GetTextBatcherComponent()->Flush(*Renderer);
 
     Renderer->RenderScene(GMainScene);
-
-    // [TODO] LineBatcher, TextBatcher 역시 한 개의 함수로 관리하기
+    
     GEditor->GetGrid()->GetGridComponent()->Render(*Renderer);
-    GEditor->GetAxis()->GetAxisComponent()->Render(*Renderer);
+    
+    GEditor->Render(*Renderer);
+    
+
+    GWorld->GetTextBatcherComponent()->SetViewOption(ViewOptions);
+    GWorld->GetTextBatcherComponent()->Render(*Renderer);
+    GWorld->GetTextBatcherComponent()->Flush(*Renderer);
 
     // ViewportClient->Render(*Renderer);
     UImGuiManager::Get().Update();
