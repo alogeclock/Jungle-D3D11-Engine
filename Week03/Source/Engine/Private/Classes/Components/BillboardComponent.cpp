@@ -120,7 +120,7 @@ void UBillboardComponent::ApplyBillboardTransform(const FTransform& TargetTransf
     else
     {
         const FVector<float> Direction = Camera.GetLocation() - Camera.GetLookAt();
-        const float OrthoWidth = Direction.Length() * 2.0f;
+        const float OrthoWidth = Camera.GetOrthoZoom() * 2.0f;
         ScaleFactor = OrthoWidth * SizeFactor;
     }
 
