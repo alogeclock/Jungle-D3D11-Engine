@@ -32,9 +32,10 @@ void UMeshManager::Initialize(URenderer& Renderer)
         EPrimitiveType::Sphere,
         Renderer.CreateIndexBuffer(sphere_indices.data(), static_cast<int>(sphere_indices.size() * sizeof(uint16))));
     NumIndices.emplace(EPrimitiveType::Sphere, static_cast<uint32>(sphere_indices.size()));
-
-    TArray<TArray<FTextureVertex>*> TextureVerticesPtr = {&billboard_vertices};
-    TArray<EPrimitiveType> TexturePrimitiveTypes = {EPrimitiveType::Billboard};
+    
+    RebuildMesh(subUV_vertices);
+    TArray<TArray<FTextureVertex>*> TextureVerticesPtr = {&billboard_vertices, &subUV_vertices};
+    TArray<EPrimitiveType> TexturePrimitiveTypes = {EPrimitiveType::Billboard, EPrimitiveType::SubUV};
     for (int i = 0; i < TexturePrimitiveTypes.size(); i++)
     {
         EPrimitiveType t = TexturePrimitiveTypes[i];
@@ -46,27 +47,12 @@ void UMeshManager::Initialize(URenderer& Renderer)
         NumTextureVertices.emplace(t, static_cast<uint32>(vptr->size()));
     }
 
-    TArray<FTextureVertex> VerticesSubUV = RebuildMesh();
-
-    TextureVertexData.emplace(EPrimitiveType::SubUV, &VerticesSubUV);
-
-    VertexBuffers.emplace(EPrimitiveType::SubUV,
-        Renderer.CreateVertexBuffer(
-            VerticesSubUV.data(),
-            static_cast<int>(VerticesSubUV.size()) * sizeof(FTextureVertex)
-        )
-    );
-
-    NumVertices.emplace(EPrimitiveType::SubUV,
-        static_cast<uint32>(VerticesSubUV.size())
-    );
-    MeshAABB.emplace(EPrimitiveType::SubUV, ComputeAABB(VerticesSubUV));
+    MeshAABB.emplace(EPrimitiveType::SubUV, ComputeAABB(subUV_vertices));
 }
 
-TArray<FTextureVertex> UMeshManager::RebuildMesh()
+void UMeshManager:: RebuildMesh( TArray<FTextureVertex>& Vertices)
 {
-    TArray<FTextureVertex> VerticesSubUV;
-    VerticesSubUV.clear();
+    Vertices.clear();
 
     uint32 SpriteSize = 150;
     uint32 Height = 900;
@@ -76,6 +62,7 @@ TArray<FTextureVertex> UMeshManager::RebuildMesh()
     uint32 Collum = Width / SpriteSize;
 
     uint32 Size = Row * Collum;
+    Vertices.reserve(Size * 6);
     //std::cout << Size << std::endl;
 
     for (int CurrentIndex = 0; CurrentIndex < Size; ++CurrentIndex)
@@ -102,15 +89,14 @@ TArray<FTextureVertex> UMeshManager::RebuildMesh()
         float fv0 = (float)v0 / (float)Height;
         float fv1 = (float)v1 / (float)Height;
 
-        VerticesSubUV.push_back({FVector<float>(x0, y0, 0.f), fu0, fv0});
-        VerticesSubUV.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
-        VerticesSubUV.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
+        Vertices.push_back({FVector<float>(x0, y0, 0.f), fu0, fv0});
+        Vertices.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
+        Vertices.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
 
-        VerticesSubUV.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
-        VerticesSubUV.push_back({FVector<float>(x1, y1, 0.f), fu1, fv1});
-        VerticesSubUV.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
+        Vertices.push_back({FVector<float>(x1, y0, 0.f), fu1, fv0});
+        Vertices.push_back({FVector<float>(x1, y1, 0.f), fu1, fv1});
+        Vertices.push_back({FVector<float>(x0, y1, 0.f), fu0, fv1});
     }
-    return VerticesSubUV;
 }
 
 void UMeshManager::Release(URenderer& renderer)

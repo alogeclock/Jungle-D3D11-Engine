@@ -48,8 +48,8 @@ void UParticleSubUVComponent::Submit(const FSceneViewOptions& ViewOptions)
     if (Command.VertexBuffer == nullptr)
     {
         Command.TextureSRV = UTextureManager::Get().GetTexture(FilePath);
-        Command.VertexBuffer = UMeshManager::Get().GetVertexBuffer(PrimitiveType);
-        Command.NumVertices = UMeshManager::Get().GetNumVertices(PrimitiveType);
+        Command.VertexBuffer = UMeshManager::Get().GetTextureVertexBuffer(PrimitiveType);
+        Command.NumVertices = UMeshManager::Get().GetNumTextureVertices(PrimitiveType);
         Command.Stride = sizeof(FTextureVertex);
     }
 }
