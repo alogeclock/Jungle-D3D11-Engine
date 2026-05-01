@@ -1,0 +1,24 @@
+{
+  "BlendState": "",
+  "DepthStencilState": "",
+  "Parameters": {
+    "HasNormalMap": 0.0,
+    "SectionColor": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "_pad": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "PathFileName": "Asset/Content/Materials/Auto/BasicShapeMaterial.mat",
+  "RasterizerState": "",
+  "RenderPass": "Opaque",
+  "ShaderPath": "Shaders/Geometry/UberLit.hlsl",
+  "Textures": {},
+  "Origin": "ObjImport"
+}

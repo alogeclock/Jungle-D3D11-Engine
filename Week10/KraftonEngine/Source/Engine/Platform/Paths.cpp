@@ -28,8 +28,9 @@ std::wstring FPaths::RootDir()
 
 std::wstring FPaths::ShaderDir()   { return RootDir() + L"Shaders\\"; }
 std::wstring FPaths::AssetDir()    { return RootDir() + L"Asset\\"; }
-std::wstring FPaths::SceneDir()    { return RootDir() + L"Asset\\Scene\\"; }
-std::wstring FPaths::DataDir()     { return RootDir() + L"Data\\"; }
+std::wstring FPaths::ContentDir()  { return RootDir() + L"Asset\\Content\\"; }
+std::wstring FPaths::SceneDir()    { return RootDir() + L"Asset\\Content\\Scene\\"; }
+std::wstring FPaths::DataDir()     { return ContentDir(); }
 std::wstring FPaths::SaveDir()     { return RootDir() + L"Saves\\"; }
 std::wstring FPaths::DumpDir()     { return RootDir() + L"Saves\\Dump\\"; }
 std::wstring FPaths::LogDir()      { return RootDir() + L"Saves\\Logs\\"; }
@@ -39,7 +40,11 @@ std::wstring FPaths::SettingsDir() { return RootDir() + L"Settings\\"; }
 std::wstring FPaths::ScriptsDir()  { return RootDir() + L"Scripts\\"; }
 
 std::wstring FPaths::SettingsFilePath() { return RootDir() + L"Settings\\Editor.ini"; }
-std::wstring FPaths::ResourceFilePath() { return RootDir() + L"Settings\\Resource.ini"; }
+std::wstring FPaths::ResourceFilePath() { return DefaultContentResourceFilePath(); }
+std::wstring FPaths::ResourceSettingsDir() { return RootDir() + L"Settings\\Resource\\"; }
+std::wstring FPaths::EditorResourceFilePath() { return ResourceSettingsDir() + L"EditorResources.ini"; }
+std::wstring FPaths::DefaultContentResourceFilePath() { return ResourceSettingsDir() + L"DefaultContentResources.ini"; }
+std::wstring FPaths::ProjectResourceFilePath() { return ResourceSettingsDir() + L"ProjectResources.ini"; }
 std::wstring FPaths::ProjectSettingsFilePath() { return RootDir() + L"Settings\\ProjectSettings.ini"; }
 
 std::wstring FPaths::Combine(const std::wstring& Base, const std::wstring& Child)
