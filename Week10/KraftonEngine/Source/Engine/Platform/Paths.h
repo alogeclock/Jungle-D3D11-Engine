@@ -20,6 +20,7 @@ public:
 	static std::wstring DumpDir();        // Saves/Dump/
 	static std::wstring LogDir();         // Saves/Logs/
 	static std::wstring SettingsDir();    // Settings/
+	static std::wstring ScriptsDir();     // Scripts/
 
 	// 주요 파일 경로
 	static std::wstring SettingsFilePath();         // Settings/Editor.ini
