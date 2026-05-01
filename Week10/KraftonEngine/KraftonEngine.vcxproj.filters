@@ -795,7 +795,6 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\GameFramework\GameModeBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -1454,7 +1453,6 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\GameInstance.h" />
     <ClInclude Include="Source\Engine\GameFramework\GameModeBase.h" />
-    <ClInclude Include="Source\Engine\Core\TickType.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

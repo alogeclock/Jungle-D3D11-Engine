@@ -7,4 +7,5 @@ public:
 	DECLARE_CLASS(AGameModeBase, AActor);
 
 	virtual void StartPlay() {}
-};
+}; 
+IMPLEMENT_CLASS(AGameModeBase, UObject)
