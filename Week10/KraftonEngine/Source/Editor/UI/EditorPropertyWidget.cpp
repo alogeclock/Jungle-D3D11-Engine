@@ -11,6 +11,7 @@
 #include "Component/PrimitiveComponent.h"
 #include "Component/StaticMeshComponent.h"
 #include "Component/SceneComponent.h"
+#include "Component/ScriptComponent.h"
 #include "Component/TextRenderComponent.h"
 #include "Component/Light/LightComponentBase.h"
 #include "Component/DecalComponent.h"
@@ -87,6 +88,34 @@ namespace
 		}
 
 		return nullptr;
+	}
+
+	// ===========================================
+	// Lua Script 관련 상세 패널 액션
+	// ===========================================
+
+	void RenderScriptComponentControls(UScriptComponent* ScriptComponent)
+	{
+		if (!ScriptComponent)
+		{
+			return;
+		}
+
+		// ScriptComponent는 단순 속성 표시만으로 끝나지 않고
+		// 파일 생성/열기/reload 같은 명시적 액션이 필요해서 별도 버튼 묶음을 둔다.
+		ImGui::Separator();
+		ImGui::TextUnformatted("Lua Script");
+
+		if (ImGui::Button("Create Script"))
+		{
+			ScriptComponent->CreateScript();
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Edit Script"))
+		{
+			ScriptComponent->OpenScript();
+		}
 	}
 }
 
@@ -757,6 +786,10 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 	TArray<FPropertyDescriptor> Props;
 	SelectedComponent->GetEditableProperties(Props);
 
+	// ScriptComponent도 일반 PropertyDescriptor 목록은 제공하지만,
+	// create/open/reload 버튼은 범용 descriptor 파이프라인 밖에서 따로 그린다.
+	UScriptComponent* ScriptComponent = Cast<UScriptComponent>(SelectedComponent);
+
 	bool bIsRoot = false;
 	if (SelectedComponent->IsA<USceneComponent>())
 	{
@@ -806,6 +839,10 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 				break;
 		}
 	}
+
+	// 경로 필드를 먼저 보여준 뒤 스크립트 액션 버튼을 배치해야
+	// 사용자가 현재 어떤 파일을 대상으로 동작하는지 바로 확인할 수 있다.
+	RenderScriptComponentControls(ScriptComponent);
 
 	// 실제 변경이 있었을 때만 Transform dirty 마킹
 	if (bAnyChanged && SelectedComponent->IsA<USceneComponent>())

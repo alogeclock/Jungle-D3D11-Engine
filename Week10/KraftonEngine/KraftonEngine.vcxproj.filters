@@ -145,6 +145,9 @@
     <Filter Include="Source\Engine\Runtime">
       <UniqueIdentifier>{a1bbb40a-2c30-7ca6-caf9-d2e4532b09c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Scripting">
+      <UniqueIdentifier>{c5e4373f-3fb0-f94e-18c5-e52222f04bbb}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Engine\Serialization">
       <UniqueIdentifier>{b03fb85a-4e75-0b00-08fd-bb38cdc05e3f}</UniqueIdentifier>
     </Filter>
@@ -401,6 +404,9 @@
     <ClCompile Include="Source\Engine\Component\SceneComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Component\ScriptComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Component\StaticMeshComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
@@ -546,6 +552,9 @@
       <Filter>Source\Engine\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Platform\Paths.cpp">
+      <Filter>Source\Engine\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Platform\ScriptPaths.cpp">
       <Filter>Source\Engine\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Profiling\GPUProfiler.cpp">
@@ -739,6 +748,12 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Runtime\WindowsWindow.cpp">
       <Filter>Source\Engine\Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Scripting\LuaScriptInstance.cpp">
+      <Filter>Source\Engine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Scripting\LuaScriptRuntime.cpp">
+      <Filter>Source\Engine\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Serialization\SceneSaveManager.cpp">
       <Filter>Source\Engine\Serialization</Filter>
@@ -941,6 +956,9 @@
     <ClInclude Include="Source\Engine\Component\SceneComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Component\ScriptComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Component\StaticMeshComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
@@ -1131,6 +1149,9 @@
       <Filter>Source\Engine\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Platform\Paths.h">
+      <Filter>Source\Engine\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Platform\ScriptPaths.h">
       <Filter>Source\Engine\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Profiling\GPUProfiler.h">
@@ -1378,6 +1399,12 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Runtime\resource.h">
       <Filter>Source\Engine\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Scripting\LuaScriptInstance.h">
+      <Filter>Source\Engine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Scripting\LuaScriptRuntime.h">
+      <Filter>Source\Engine\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Serialization\Archive.h">
       <Filter>Source\Engine\Serialization</Filter>
