@@ -510,7 +510,7 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 	float VPHeight = Viewport ? static_cast<float>(Viewport->GetHeight()) : WindowHeight;
 	
 	FRay Ray = Camera->DeprojectScreenToWorld(LocalMouseX, LocalMouseY, VPWidth, VPHeight);
-	FHitResult HitResult;
+	FRayHitResult HitResult;
 
 	// 기즈모 hovering 효과를 주석처리해 일단 fps를 개선합니다
 	FRayUtils::RaycastComponent(Gizmo, Ray, HitResult);
@@ -616,7 +616,7 @@ void FEditorViewportClient::HandleDragStart(const FRay& Ray)
 {
 	FScopeCycleCounter PickCounter; //시간측정용 카운터 시작
 
-	FHitResult HitResult{};
+	FRayHitResult HitResult{};
 	//먼저 Ray와 기즈모의 충돌을 감지하고 
 	if (FRayUtils::RaycastComponent(Gizmo, Ray, HitResult))
 	{

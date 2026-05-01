@@ -169,6 +169,9 @@
     <Filter Include="ThirdParty\SimpleJSON">
       <UniqueIdentifier>{b5b63371-405e-e009-4e4e-e3b5a25ee7bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Component\Shape">
+      <UniqueIdentifier>{8c0a12e1-0787-4d3e-bee7-6115daf5be8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Common\ConstantBuffers.hlsli">
@@ -795,6 +798,21 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Engine\Component\Shape\ShapeComponent.cpp">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\Shape\BoxComponent.cpp">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\Shape\SphereComponent.cpp">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\Shape\CapsuleComponent.cpp">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Collision\OverlapInfo.cpp">
+      <Filter>Source\Engine\Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -1450,6 +1468,21 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\SimpleJSON\json.hpp">
       <Filter>ThirdParty\SimpleJSON</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\Shape\ShapeComponent.h">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\Shape\BoxComponent.h">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\Shape\SphereComponent.h">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\Shape\CapsuleComponent.h">
+      <Filter>Source\Engine\Component\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Collision\OverlapInfo.h">
+      <Filter>Source\Engine\Collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

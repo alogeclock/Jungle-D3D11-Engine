@@ -163,7 +163,7 @@ void UPrimitiveComponent::UpdateWorldAABB() const
 }
 
 /* 현재 쓰이지 않는 코드입니다*/
-bool UPrimitiveComponent::LineTraceComponent(const FRay& Ray, FHitResult& OutHitResult)
+bool UPrimitiveComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
 {
 	FMeshDataView View = GetMeshDataView();
 	if (!View.IsValid()) return false;
@@ -279,4 +279,21 @@ void UPrimitiveComponent::EnsureWorldAABBUpdated() const
 	{
 		UpdateWorldAABB();
 	}
+}
+
+const TArray<FOverlapInfo>& UPrimitiveComponent::GetOverlapInfos() const {
+	return OverlapInfo;
+}
+
+
+bool UPrimitiveComponent::IsOverlappingActor(const AActor* Other) const {
+	if (!Other) return false;
+	for (const auto* OtherComp : Other->GetPrimitiveComponents()) {
+		if (!OtherComp) continue;
+		if (IsOverlappingComponent(OtherComp)) {
+			return true;
+		}
+	}
+
+	return false;
 }
