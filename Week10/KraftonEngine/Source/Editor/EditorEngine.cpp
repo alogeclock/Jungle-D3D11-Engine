@@ -19,14 +19,23 @@
 #include "GameFramework/AActor.h"
 #include "Materials/MaterialManager.h"
 #include "Engine/Platform/Paths.h"
+#include "SimpleJSON/json.hpp"
 #include "Texture/Texture2D.h"
 #include "Object/Object.h"
 #include <filesystem>
+#include <set>
+#include <unordered_map>
 
 IMPLEMENT_CLASS(UEditorEngine, UEngine)
 
 namespace
 {
+struct FTrackedActorSnapshotEntry
+{
+	FString Signature;
+	bool bPresentInTargetSnapshot = false;
+};
+
 FString BuildScenePathFromStem(const FString& InStem)
 {
 	std::filesystem::path ScenePath = std::filesystem::path(FSceneSaveManager::GetSceneDirectory())
@@ -79,6 +88,55 @@ bool ImportAssetFile(
 	std::filesystem::copy_file(SourceAbsolute, DestinationPath, std::filesystem::copy_options::overwrite_existing);
 	OutImportedRelativePath = FPaths::ToUtf8(DestinationPath.lexically_relative(ProjectRoot).generic_wstring());
 	return true;
+}
+
+std::unordered_map<uint32, FTrackedActorSnapshotEntry> BuildTrackedActorSnapshotEntries(const FString& SerializedScene, bool bMarkAsTargetSnapshot)
+{
+	std::unordered_map<uint32, FTrackedActorSnapshotEntry> Entries;
+	if (SerializedScene.empty())
+	{
+		return Entries;
+	}
+
+	json::JSON Root = json::JSON::Load(SerializedScene);
+	std::unordered_map<uint32, FString> PrimitiveSignatures;
+
+	if (Root.hasKey("Primitives"))
+	{
+		const json::JSON& Primitives = Root.at("Primitives");
+		for (const auto& Pair : Primitives.ObjectRange())
+		{
+			const uint32 UUID = static_cast<uint32>(std::stoul(Pair.first));
+			PrimitiveSignatures[UUID] = Pair.second.dump();
+		}
+	}
+
+	if (!Root.hasKey("Actors"))
+	{
+		return Entries;
+	}
+
+	const json::JSON& Actors = Root.at("Actors");
+	for (const json::JSON& ActorJson : Actors.ArrayRange())
+	{
+		if (!ActorJson.hasKey("UUID"))
+		{
+			continue;
+		}
+
+		const uint32 UUID = static_cast<uint32>(ActorJson.at("UUID").ToInt());
+		FTrackedActorSnapshotEntry& Entry = Entries[UUID];
+		Entry.Signature = ActorJson.dump();
+		const auto PrimitiveIt = PrimitiveSignatures.find(UUID);
+		if (PrimitiveIt != PrimitiveSignatures.end())
+		{
+			Entry.Signature += "\n#Primitive\n";
+			Entry.Signature += PrimitiveIt->second;
+		}
+		Entry.bPresentInTargetSnapshot = bMarkAsTargetSnapshot;
+	}
+
+	return Entries;
 }
 
 }
@@ -707,7 +765,8 @@ void UEditorEngine::UndoTrackedSceneChange()
 	}
 
 	const FTrackedSceneChange& Change = SceneHistory[SceneHistoryCursor];
-	ApplyTrackedSceneSnapshot(Change.Before);
+	const TArray<uint32> ChangedUUIDs = GetChangedActorUUIDs(Change.Before, Change.After, false);
+	ApplyTrackedSceneSnapshot(Change.Before, &ChangedUUIDs);
 	--SceneHistoryCursor;
 }
 
@@ -719,7 +778,9 @@ void UEditorEngine::RedoTrackedSceneChange()
 	}
 
 	const int32 RedoIndex = SceneHistoryCursor + 1;
-	ApplyTrackedSceneSnapshot(SceneHistory[RedoIndex].After);
+	const FTrackedSceneChange& Change = SceneHistory[RedoIndex];
+	const TArray<uint32> ChangedUUIDs = GetChangedActorUUIDs(Change.Before, Change.After, true);
+	ApplyTrackedSceneSnapshot(Change.After, &ChangedUUIDs);
 	SceneHistoryCursor = RedoIndex;
 }
 
@@ -767,6 +828,69 @@ bool UEditorEngine::HasMeaningfulSceneDelta(const FTrackedSceneSnapshot& Before,
 	return Before.SerializedScene != After.SerializedScene;
 }
 
+TArray<uint32> UEditorEngine::GetChangedActorUUIDs(const FTrackedSceneSnapshot& Before, const FTrackedSceneSnapshot& After, bool bSelectAfterSnapshot) const
+{
+	auto BeforeEntries = BuildTrackedActorSnapshotEntries(Before.SerializedScene, !bSelectAfterSnapshot);
+	auto AfterEntries = BuildTrackedActorSnapshotEntries(After.SerializedScene, bSelectAfterSnapshot);
+	std::set<uint32> ChangedUUIDSet;
+	const FTrackedSceneSnapshot& TargetSnapshot = bSelectAfterSnapshot ? After : Before;
+
+	for (const auto& BeforePair : BeforeEntries)
+	{
+		const uint32 UUID = BeforePair.first;
+		const FTrackedActorSnapshotEntry& BeforeEntry = BeforePair.second;
+		const auto AfterIt = AfterEntries.find(UUID);
+		if (AfterIt == AfterEntries.end() || BeforeEntry.Signature != AfterIt->second.Signature)
+		{
+			ChangedUUIDSet.insert(UUID);
+		}
+	}
+
+	for (const auto& AfterPair : AfterEntries)
+	{
+		const uint32 UUID = AfterPair.first;
+		if (BeforeEntries.find(UUID) == BeforeEntries.end())
+		{
+			ChangedUUIDSet.insert(UUID);
+		}
+	}
+
+	TArray<uint32> ChangedUUIDs;
+	ChangedUUIDs.reserve(ChangedUUIDSet.size());
+	std::set<uint32> AddedUUIDs;
+	const auto& TargetEntries = bSelectAfterSnapshot ? AfterEntries : BeforeEntries;
+
+	for (uint32 SelectedUUID : TargetSnapshot.SelectedActorUUIDs)
+	{
+		if (ChangedUUIDSet.find(SelectedUUID) == ChangedUUIDSet.end())
+		{
+			continue;
+		}
+
+		const auto TargetIt = TargetEntries.find(SelectedUUID);
+		if (TargetIt != TargetEntries.end() && TargetIt->second.bPresentInTargetSnapshot)
+		{
+			ChangedUUIDs.push_back(SelectedUUID);
+			AddedUUIDs.insert(SelectedUUID);
+		}
+	}
+
+	for (const auto& TargetPair : TargetEntries)
+	{
+		const uint32 UUID = TargetPair.first;
+		const FTrackedActorSnapshotEntry& TargetEntry = TargetPair.second;
+		if (TargetEntry.bPresentInTargetSnapshot
+			&& ChangedUUIDSet.find(UUID) != ChangedUUIDSet.end()
+			&& AddedUUIDs.find(UUID) == AddedUUIDs.end())
+		{
+			ChangedUUIDs.push_back(UUID);
+			AddedUUIDs.insert(UUID);
+		}
+	}
+
+	return ChangedUUIDs;
+}
+
 UEditorEngine::FTrackedSceneSnapshot UEditorEngine::CaptureTrackedSceneSnapshot() const
 {
 	FTrackedSceneSnapshot Snapshot;
@@ -809,7 +933,7 @@ UEditorEngine::FTrackedSceneSnapshot UEditorEngine::CaptureTrackedSceneSnapshot(
 	return Snapshot;
 }
 
-void UEditorEngine::ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snapshot)
+void UEditorEngine::ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snapshot, const TArray<uint32>* PreferredSelectionUUIDs)
 {
 	if (Snapshot.SerializedScene.empty() || IsPlayingInEditor())
 	{
@@ -835,7 +959,8 @@ void UEditorEngine::ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snaps
 	RestoreViewportCamera(CameraData);
 
 	TArray<AActor*> RestoredSelection;
-	for (uint32 SelectedUUID : Snapshot.SelectedActorUUIDs)
+	const TArray<uint32>* SelectionUUIDs = PreferredSelectionUUIDs ? PreferredSelectionUUIDs : &Snapshot.SelectedActorUUIDs;
+	for (uint32 SelectedUUID : *SelectionUUIDs)
 	{
 		if (AActor* Actor = Cast<AActor>(UObjectManager::Get().FindByUUID(SelectedUUID)))
 		{

@@ -161,8 +161,9 @@ private:
 	};
 
 	bool HasMeaningfulSceneDelta(const FTrackedSceneSnapshot& Before, const FTrackedSceneSnapshot& After) const;
+	TArray<uint32> GetChangedActorUUIDs(const FTrackedSceneSnapshot& Before, const FTrackedSceneSnapshot& After, bool bSelectAfterSnapshot) const;
 	FTrackedSceneSnapshot CaptureTrackedSceneSnapshot() const;
-	void ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snapshot);
+	void ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snapshot, const TArray<uint32>* PreferredSelectionUUIDs = nullptr);
 	void InvalidateTrackedSceneSnapshotCache();
 
 	FSelectionManager SelectionManager;
