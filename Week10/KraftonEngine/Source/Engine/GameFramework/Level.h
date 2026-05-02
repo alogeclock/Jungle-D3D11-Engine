@@ -31,9 +31,15 @@ public:
 	void BeginPlay();
 	void EndPlay();
 	void Tick(float DeltaTime);
+
+	// GameMode 클래스 — 비어있으면 ProjectSettings의 DefaultGameModeClass 사용
+	const FString& GetGameModeClassName() const { return GameModeClassName; }
+	void SetGameModeClassName(const FString& InName) { GameModeClassName = InName; }
+
 private:
 	FName LevelName;
 	TArray<AActor*> Actors;
 	UWorld* OwingWorld = nullptr;
+	FString GameModeClassName;
 };
 

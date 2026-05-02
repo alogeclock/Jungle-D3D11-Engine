@@ -20,6 +20,9 @@ namespace PSKey
 	constexpr const char* SceneDepth = "SceneDepth";
 	constexpr const char* SceneDepthMode = "SceneDepthMode";
 	constexpr const char* SceneDepthExponent = "SceneDepthExponent";
+	constexpr const char* Game = "Game";
+	constexpr const char* GameInstanceClass = "GameInstanceClass";
+	constexpr const char* DefaultGameModeClass = "DefaultGameModeClass";
 }
 
 void FProjectSettings::SaveToFile(const FString& Path) const
@@ -47,6 +50,11 @@ void FProjectSettings::SaveToFile(const FString& Path) const
 	SceneDepthObj[PSKey::SceneDepthMode] = static_cast<int>(SceneDepth.Mode);
 	SceneDepthObj[PSKey::SceneDepthExponent] = SceneDepth.Exponent;
 	Root[PSKey::SceneDepth] = SceneDepthObj;
+
+	JSON GameObj = Object();
+	GameObj[PSKey::GameInstanceClass] = Game.GameInstanceClass;
+	GameObj[PSKey::DefaultGameModeClass] = Game.DefaultGameModeClass;
+	Root[PSKey::Game] = GameObj;
 
 	std::filesystem::path FilePath(FPaths::ToWide(Path));
 	if (FilePath.has_parent_path())
@@ -133,6 +141,19 @@ void FProjectSettings::LoadFromFile(const FString& Path)
 		{
 			float v = static_cast<float>(D[PSKey::SceneDepthExponent].ToFloat());
 			SceneDepth.Exponent = (std::max)(1.0f, (std::min)(v, 512.0f));
+		}
+	}
+
+	if (Root.hasKey(PSKey::Game))
+	{
+		JSON G = Root[PSKey::Game];
+		if (G.hasKey(PSKey::GameInstanceClass))
+		{
+			Game.GameInstanceClass = G[PSKey::GameInstanceClass].ToString();
+		}
+		if (G.hasKey(PSKey::DefaultGameModeClass))
+		{
+			Game.DefaultGameModeClass = G[PSKey::DefaultGameModeClass].ToString();
 		}
 	}
 }

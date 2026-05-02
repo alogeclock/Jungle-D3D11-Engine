@@ -123,6 +123,8 @@ void ULevel::Serialize(FArchive& Ar)
 	Super::Serialize(Ar);
 	if (Ar.IsSaving())
 	{
+		Ar << GameModeClassName;
+
 		int32 ActorCount = static_cast<int32>(Actors.size());
 		Ar << ActorCount;
 
@@ -136,6 +138,8 @@ void ULevel::Serialize(FArchive& Ar)
 	}
 	else if (Ar.IsLoading())
 	{
+		Ar << GameModeClassName;
+
 		int32 ActorCount = 0;
 		Ar << ActorCount;
 

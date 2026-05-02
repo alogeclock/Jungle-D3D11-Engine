@@ -16,6 +16,8 @@
 #include "GameFramework/World.h"
 #include "GameFramework/AActor.h"
 #include "GameFramework/GameInstance.h"
+#include "Object/ObjectFactory.h"
+#include "Core/ProjectSettings.h"
 
 #include "Core/TickFunction.h"
 #include "Collision/CollisionDispatcher.h"
@@ -48,8 +50,19 @@ void UEngine::Init(FWindowsWindow* InWindow)
 	// 싱글턴 초기화 순서 보장
 	FNamePool::Get();
 	FObjectFactory::Get();
-	GameInstance = UObjectManager::Get().CreateObject<UGameInstance>();
-// FInputManager does not have SetOwnerWindow in the provided code, so remove it or replace if needed.
+
+	// GameInstance를 만들기 전에 ProjectSettings 로드 — 에디터가 다시 로드해도 안전
+	FProjectSettings::Get().LoadFromFile(FProjectSettings::GetDefaultPath());
+
+	const FString& GameInstanceClassName = FProjectSettings::Get().Game.GameInstanceClass;
+	UObject* GameInstanceObj = FObjectFactory::Get().Create(GameInstanceClassName);
+	GameInstance = Cast<UGameInstance>(GameInstanceObj);
+	if (!GameInstance)
+	{
+		// 잘못된 클래스 이름이거나 등록 안된 경우 베이스로 폴백
+		if (GameInstanceObj) UObjectManager::Get().DestroyObject(GameInstanceObj);
+		GameInstance = UObjectManager::Get().CreateObject<UGameInstance>();
+	}
 
 	{
 		SCOPE_STARTUP_STAT("Renderer::Create");
@@ -96,6 +109,13 @@ void UEngine::Init(FWindowsWindow* InWindow)
 
 void UEngine::Shutdown()
 {
+	if (GameInstance)
+	{
+		GameInstance->Shutdown();
+		UObjectManager::Get().DestroyObject(GameInstance);
+		GameInstance = nullptr;
+	}
+
 	FDirectoryWatcher::Get().Shutdown();
 	FLogManager::Get().Shutdown();
 	RenderPipeline.reset();

@@ -52,6 +52,8 @@ public:
 	void SetTimer(FTimer* InTimer) { Timer = InTimer; }
 	FTimer* GetTimer() const { return Timer; }
 
+	UGameInstance* GetGameInstance() const { return GameInstance; }
+
 	FRenderer& GetRenderer() { return Renderer; }
 
 	// Game Viewport Client — PIE/Standalone 용

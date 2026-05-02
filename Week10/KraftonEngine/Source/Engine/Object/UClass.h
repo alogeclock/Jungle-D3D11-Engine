@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/CoreTypes.h"
+#include <cstring>
 
 class UObject;
 
@@ -46,6 +47,16 @@ public:
 	{
 		static TArray<UClass*> Registry;
 		return Registry;
+	}
+
+	static UClass* FindByName(const char* InName)
+	{
+		if (!InName) return nullptr;
+		for (UClass* C : GetAllClasses())
+		{
+			if (C && C->Name && std::strcmp(C->Name, InName) == 0) return C;
+		}
+		return nullptr;
 	}
 
 private:

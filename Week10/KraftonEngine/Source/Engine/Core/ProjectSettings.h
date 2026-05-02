@@ -36,10 +36,17 @@ class FProjectSettings : public TSingleton<FProjectSettings>
 		float Exponent = 128.0f;
 	};
 
+	struct FGameOption
+	{
+		FString GameInstanceClass = "UGameInstance";
+		FString DefaultGameModeClass = "AGameModeBase";
+	};
+
 public:
 	FShadowOption Shadow;
 	FLightCullingOption LightCulling;
 	FSceneDepthOption SceneDepth;
+	FGameOption Game;
 
 	// --- 직렬화 ---
 	void SaveToFile(const FString& Path) const;

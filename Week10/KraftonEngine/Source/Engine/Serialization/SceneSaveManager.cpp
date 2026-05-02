@@ -163,6 +163,7 @@ namespace SceneKeys
 	static constexpr const char* Properties = "Properties";
 	static constexpr const char* Children = "Children";
 	static constexpr const char* HiddenInComponentTree = "bHiddenInComponentTree";
+	static constexpr const char* GameModeClass = "GameModeClass";
 }
 
 static void SerializeComponentEditorMetadata(json::JSON& Node, const UActorComponent* Comp)
@@ -273,6 +274,15 @@ json::JSON FSceneSaveManager::SerializeWorld(UWorld* World, const FWorldContext&
 	w[SceneKeys::WorldType] = WorldTypeToString(Ctx.WorldType);
 	w[SceneKeys::ContextName] = Ctx.ContextName;
 	w[SceneKeys::ContextHandle] = Ctx.ContextHandle.ToString();
+
+	if (ULevel* PersistentLevel = World->GetPersistentLevel())
+	{
+		const FString& GMClass = PersistentLevel->GetGameModeClassName();
+		if (!GMClass.empty())
+		{
+			w[SceneKeys::GameModeClass] = GMClass;
+		}
+	}
 
 	// ---- Primitives: gather static mesh components into a top-level block
 	JSON Primitives = json::Object();
