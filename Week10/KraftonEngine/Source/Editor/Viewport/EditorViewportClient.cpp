@@ -737,22 +737,6 @@ void FEditorViewportClient::TickEditorShortcuts()
 	}
 }
 
-void FEditorViewportClient::SetLightViewOverride(ULightComponentBase* Light)
-{
-	LightViewOverride = Light;
-	PointLightFaceIndex = 0;
-
-	if (Light && SelectionManager)
-	{
-		SelectionManager->ClearSelection();
-	}
-}
-
-void FEditorViewportClient::ClearLightViewOverride()
-{
-	LightViewOverride = nullptr;
-}
-
 void FEditorViewportClient::TickInput(float DeltaTime)
 {
 	if (!Camera) return;

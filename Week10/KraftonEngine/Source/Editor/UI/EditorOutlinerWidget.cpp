@@ -353,7 +353,7 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 	ImGui::Separator();
 	FSelectionManager& Selection = EditorEngine->GetSelectionManager();
 	ImGui::Text("%d Actors (%d selected)",
-		EditorEngine->GetWorld() ? static_cast<int32>(EditorEngine->GetWorld()->GetActors().size()) : 0,
+		EditorEngine->GetWorld() ? static_cast<int32>(EditorEngine->GetWorld()->GetActors().ToArray().size()) : 0,
 		static_cast<int32>(Selection.GetSelectedActors().size()));
 
 	const bool bOutlinerFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
@@ -416,7 +416,7 @@ void FEditorOutlinerWidget::SelectAllVisibleActors()
 		return;
 	}
 
-	const TArray<AActor*>& Actors = World->GetActors();
+	const TArray<AActor*> Actors = World->GetActors().ToArray();
 	TArray<AActor*> ActorsToSelect;
 	ActorsToSelect.reserve(ValidActorIndices.size());
 
@@ -878,7 +878,7 @@ void FEditorOutlinerWidget::HandleFolderDrop(AActor* DraggedActor, const FString
 		return;
 	}
 
-	const TArray<AActor*>& Actors = World->GetActors();
+	const TArray<AActor*> Actors = World->GetActors().ToArray();
 	size_t InsertIndex = Actors.size();
 	bool bFoundFolder = false;
 
@@ -917,7 +917,7 @@ void FEditorOutlinerWidget::HandleRootDrop(AActor* DraggedActor) const
 		return;
 	}
 
-	const TArray<AActor*>& Actors = World->GetActors();
+	const TArray<AActor*> Actors = World->GetActors().ToArray();
 	size_t RootInsertIndex = 0;
 
 	for (size_t Index = 0; Index < Actors.size(); ++Index)
