@@ -149,6 +149,7 @@ namespace SceneKeys
 {
 	static constexpr const char* Version = "Version";
 	static constexpr const char* Name = "Name";
+	static constexpr const char* ObjectName = "ObjectName";
 	static constexpr const char* ClassName = "ClassName";
 	static constexpr const char* WorldType = "WorldType";
 	static constexpr const char* ContextName = "ContextName";
@@ -359,6 +360,7 @@ json::JSON FSceneSaveManager::SerializeActor(AActor* Actor)
 	using namespace json;
 	JSON a = json::Object();
 	a[SceneKeys::ClassName] = Actor->GetClass()->GetName();
+	a[SceneKeys::ObjectName] = Actor->GetFName().ToString();
 	a[SceneKeys::UUID] = static_cast<int32>(Actor->GetUUID());
 	a[SceneKeys::Visible] = Actor->IsVisible();
 	if (!Actor->GetFolderPath().empty())
@@ -379,6 +381,7 @@ json::JSON FSceneSaveManager::SerializeActor(AActor* Actor)
 
 		JSON c = json::Object();
 		c[SceneKeys::ClassName] = Comp->GetClass()->GetName();
+		c[SceneKeys::ObjectName] = Comp->GetFName().ToString();
 		c[SceneKeys::Properties] = SerializeProperties(Comp);
 		SerializeComponentEditorMetadata(c, Comp);
 		NonScene.append(c);
@@ -393,6 +396,7 @@ json::JSON FSceneSaveManager::SerializeSceneComponentTree(USceneComponent* Comp)
 	using namespace json;
 	JSON c = json::Object();
 	c[SceneKeys::ClassName] = Comp->GetClass()->GetName();
+	c[SceneKeys::ObjectName] = Comp->GetFName().ToString();
 	c[SceneKeys::Properties] = SerializeProperties(Comp);
 	SerializeComponentEditorMetadata(c, Comp);
 
@@ -701,6 +705,10 @@ void FSceneSaveManager::LoadSceneFromJSONString(const string& SceneJson, FWorldC
 			{
 				Actor->SetUUID(static_cast<uint32>(ActorJSON[SceneKeys::UUID].ToInt()));
 			}
+			if (ActorJSON.hasKey(SceneKeys::ObjectName))
+			{
+				Actor->SetFName(FName(ActorJSON[SceneKeys::ObjectName].ToString()));
+			}
 
 			if (ActorJSON.hasKey(SceneKeys::Visible)) {
 				Actor->SetVisible(ActorJSON[SceneKeys::Visible].ToBool());
@@ -725,6 +733,10 @@ void FSceneSaveManager::LoadSceneFromJSONString(const string& SceneJson, FWorldC
 
 					UActorComponent* Comp = static_cast<UActorComponent*>(CompObj);
 					Actor->RegisterComponent(Comp);
+					if (CompJSON.hasKey(SceneKeys::ObjectName))
+					{
+						Comp->SetFName(FName(CompJSON[SceneKeys::ObjectName].ToString()));
+					}
 
 					if (CompJSON.hasKey(SceneKeys::Properties)) {
 						JSON& PropsJSON = CompJSON[SceneKeys::Properties];
@@ -755,6 +767,10 @@ USceneComponent* FSceneSaveManager::DeserializeSceneComponentTree(json::JSON& No
 
 	USceneComponent* Comp = static_cast<USceneComponent*>(Obj);
 	Owner->RegisterComponent(Comp);
+	if (Node.hasKey(SceneKeys::ObjectName))
+	{
+		Comp->SetFName(FName(Node[SceneKeys::ObjectName].ToString()));
+	}
 
 	// Restore properties
 	if (Node.hasKey(SceneKeys::Properties)) {
