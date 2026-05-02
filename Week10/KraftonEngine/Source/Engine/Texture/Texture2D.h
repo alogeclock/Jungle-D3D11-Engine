@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <map>
 #include <string>
+#include <vector>
 
 struct ID3D11Device;
 struct ID3D11ShaderResourceView;
@@ -41,6 +42,7 @@ public:
 	uint32 GetWidth() const { return Width; }
 	uint32 GetHeight() const { return Height; }
 	bool IsLoaded() const { return SRV != nullptr; }
+	bool SampleAlpha(float U, float V, float& OutAlpha) const;
 
 private:
 	bool LoadInternal(const FString& FilePath, ID3D11Device* Device);
@@ -50,6 +52,7 @@ private:
 	uint32 Width = 0;
 	uint32 Height = 0;
 	uint64 TrackedTextureMemory = 0;
+	std::vector<uint8> CPUTextureRGBA;
 
 	// path → UTexture2D* 캐시 (소유권은 UObjectManager)
 	static std::map<FString, UTexture2D*> TextureCache;

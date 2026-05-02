@@ -13,6 +13,7 @@
 #include "Platform/Paths.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cwctype>
 #include <filesystem>
 
@@ -58,6 +59,21 @@ FString ResolveLegacyBillboardTexturePath(const FString& InPath)
 FPrimitiveSceneProxy* UBillboardComponent::CreateSceneProxy()
 {
 	return new FBillboardSceneProxy(this);
+}
+
+void UBillboardComponent::UpdateWorldAABB() const
+{
+	const FVector WorldScale = GetWorldScale();
+	const float HalfHeight = std::abs(WorldScale.Z) * 0.5f;
+	const float HalfWidth = std::abs(WorldScale.Y) * 0.5f;
+	const float Radius = std::sqrt((HalfWidth * HalfWidth) + (HalfHeight * HalfHeight));
+	const FVector Extent(Radius, Radius, Radius);
+	const FVector WorldCenter = GetWorldLocation();
+
+	WorldAABBMinLocation = WorldCenter - Extent;
+	WorldAABBMaxLocation = WorldCenter + Extent;
+	bWorldAABBDirty = false;
+	bHasValidWorldAABB = true;
 }
 
 void UBillboardComponent::Serialize(FArchive& Ar)
@@ -190,6 +206,57 @@ FMatrix UBillboardComponent::ComputeBillboardMatrix(const FVector& CameraForward
 	RotMatrix.SetAxes(Forward, Right, Up);
 
 	return FMatrix::MakeScaleMatrix(GetWorldScale()) * RotMatrix * FMatrix::MakeTranslationMatrix(GetWorldLocation());
+}
+
+bool UBillboardComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
+{
+	return IntersectBillboard(Ray, OutHitResult, true);
+}
+
+bool UBillboardComponent::IntersectBillboard(const FRay& Ray, FRayHitResult& OutHitResult, bool bRespectTextureAlpha) const
+{
+	const FMatrix BillboardWorldMatrix = ComputeBillboardMatrix(Ray.Direction);
+	const FMatrix InvWorldMatrix = BillboardWorldMatrix.GetInverse();
+
+	FRay LocalRay;
+	LocalRay.Origin = InvWorldMatrix.TransformPositionWithW(Ray.Origin);
+	LocalRay.Direction = InvWorldMatrix.TransformVector(Ray.Direction).Normalized();
+
+	if (std::abs(LocalRay.Direction.X) < 0.00111f)
+	{
+		return false;
+	}
+
+	const float T = -LocalRay.Origin.X / LocalRay.Direction.X;
+	if (T < 0.0f)
+	{
+		return false;
+	}
+
+	const FVector LocalHitPos = LocalRay.Origin + LocalRay.Direction * T;
+	if (LocalHitPos.Y < -0.5f || LocalHitPos.Y > 0.5f ||
+		LocalHitPos.Z < -0.5f || LocalHitPos.Z > 0.5f)
+	{
+		return false;
+	}
+
+	if (bRespectTextureAlpha && Texture)
+	{
+		const float U = LocalHitPos.Y + 0.5f;
+		const float V = 0.5f - LocalHitPos.Z;
+		float Alpha = 1.0f;
+		if (Texture->SampleAlpha(U, V, Alpha) && Alpha < 0.5f)
+		{
+			return false;
+		}
+	}
+
+	const FVector WorldHitPos = BillboardWorldMatrix.TransformPositionWithW(LocalHitPos);
+	OutHitResult.Distance = (WorldHitPos - Ray.Origin).Length();
+	OutHitResult.WorldHitLocation = WorldHitPos;
+	OutHitResult.HitComponent = const_cast<UBillboardComponent*>(this);
+	OutHitResult.bHit = true;
+	return true;
 }
 
 bool UBillboardComponent::ResolveTextureFromPath(const FString& InPath)
