@@ -270,6 +270,18 @@ void FDrawCommandBuilder::AddWorldText(const FTextRenderSceneProxy* TextProxy, c
 	);
 }
 
+static void AddScreenText(const FTextRenderSceneProxy* TextProxy, FFontGeometry& FontGeometry, const FFrameContext& Frame)
+{
+	FontGeometry.AddScreenText(
+		TextProxy->CachedText,
+		TextProxy->CachedScreenX,
+		TextProxy->CachedScreenY,
+		Frame.ViewportWidth,
+		Frame.ViewportHeight,
+		TextProxy->CachedFontScale
+	);
+}
+
 // ============================================================
 // BuildCommands — 프록시 커맨드 + 동적 커맨드 일괄 생성
 // ============================================================
@@ -294,7 +306,12 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 		{
 			const FTextRenderSceneProxy* TextProxy = static_cast<const FTextRenderSceneProxy*>(Proxy);
 			if (!TextProxy->CachedText.empty())
-				AddWorldText(TextProxy, Frame);
+			{
+				if (TextProxy->CachedRenderSpace == ETextRenderSpace::Screen)
+					AddScreenText(TextProxy, FontGeometry, Frame);
+				else
+					AddWorldText(TextProxy, Frame);
+			}
 		}
 		else if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::Decal))
 			BuildDecalCommands(Proxy, Frame, Output);
