@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Object/Object.h"
 #include "GameFramework/World.h"
@@ -8,6 +8,7 @@
 
 #include <memory>
 
+class UGameInstance;
 class FWindowsWindow;
 class FTimer;
 class UCameraComponent;
@@ -51,11 +52,15 @@ public:
 	void SetTimer(FTimer* InTimer) { Timer = InTimer; }
 	FTimer* GetTimer() const { return Timer; }
 
+	UGameInstance* GetGameInstance() const { return GameInstance; }
+
 	FRenderer& GetRenderer() { return Renderer; }
 
 	// Game Viewport Client — PIE/Standalone 용
 	void SetGameViewportClient(UGameViewportClient* InClient) { GameViewportClient = InClient; }
 	UGameViewportClient* GetGameViewportClient() const { return GameViewportClient; }
+	void SetGamePaused(bool bInPaused) { bGamePaused = bInPaused; }
+	bool IsGamePaused() const { return bGamePaused; }
 
 protected:
 	void Render(float DeltaTime);
@@ -72,11 +77,13 @@ protected:
 	FTimer* Timer = nullptr;
 
 	UGameViewportClient* GameViewportClient = nullptr;
+	bool bGamePaused = false;
 
 	FRenderer Renderer;
 
 private:
 	std::unique_ptr<IRenderPipeline> RenderPipeline;
+	UGameInstance* GameInstance = nullptr;
 };
 
 extern UEngine* GEngine;

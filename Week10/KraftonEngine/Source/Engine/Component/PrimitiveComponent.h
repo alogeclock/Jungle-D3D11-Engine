@@ -6,7 +6,9 @@
 #include "Core/RayTypes.h"
 #include "Core/CollisionTypes.h"
 #include "Collision/OverlapInfo.h"
+#include "Core/CollisionEventTypes.h"
 #include "Core/EngineTypes.h"
+#include "Core/ComponentMobility.h"
 #include "Render/Types/VertexTypes.h"
 #include "Render/Proxy/DirtyFlag.h"
 
@@ -85,17 +87,25 @@ public:
 	}
 
 	// Overlap
-	bool IsTransformDirty() const { return bTransformDirty; }
+	void MarkUpdateOverlaps();
+	//bool UpdateOverlapsOnNextTransform() const { return bUpdateOverlapsOnNextTransform; }
 	bool IsCollisionEnabled() const { return bCollisionEnabled; }
 	void SetCollisionEnabled(bool bInCollisionFlag) { bCollisionEnabled = bInCollisionFlag; }
-	bool CanGenerateOverlapEvents() const { return bGenerateOverlapEvents; }
-	void SetGenerateOverlapEvents(bool bShouldGenerateOverlapEvents) { bGenerateOverlapEvents = bShouldGenerateOverlapEvents; }
+	EOverlapBehaviour GetOverlapBehaviour() const { return bGenerateOverlapEvents; }
 
 	const TArray<FOverlapInfo>& GetOverlapInfos() const;
 	void  BeginComponentOverlap(const FOverlapInfo& OtherOverlap, bool bDoNotifies);
 	void  EndComponentOverlap(const UPrimitiveComponent* Other);
 	bool  IsOverlappingComponent(const UPrimitiveComponent* Other);
 	bool  IsOverlappingActor(const AActor* Other);
+
+	FComponentBeginOverlapSignature OnComponentBeginOverlap;
+	FComponentEndOverlapSignature   OnComponentEndOverlap;
+	FComponentHitSignature          OnComponentHit;
+
+	// Mobility
+	EComponentMobility GetMobility() const { return Mobility; }
+	void SetMobility(EComponentMobility InMobility) { Mobility = InMobility; } 
 
 protected:
 	void OnTransformDirty() override;
@@ -115,9 +125,11 @@ protected:
 	FOctree* OctreeNode = nullptr;
 	bool bInOctreeOverflow = false;
 
+	//bool bUpdateOverlapsOnNextTransform = false;
 	bool bCollisionEnabled		= true;
-	bool bGenerateOverlapEvents = true;
 	bool bBlockComponent		= false;
+	EOverlapBehaviour bGenerateOverlapEvents = EOverlapBehaviour::Overlap;
+	EComponentMobility Mobility = EComponentMobility::Movable;
 
 	TArray<FOverlapInfo> OverlapInfo;
 };

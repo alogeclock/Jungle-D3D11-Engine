@@ -12,6 +12,7 @@ public:
 	void	DrawDebugShape(FScene& Scene) const override;
 	void	SetRelativeScale(const FVector& NewScale) override;
 	void	GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void	Serialize(FArchive& Ar) override;
 
 private:
 	FVector BoxExtent = FVector(1.f, 1.f, 1.f);

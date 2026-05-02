@@ -9,11 +9,102 @@
 #include "GameFramework/WorldContext.h"
 #include "Render/Scene/FScene.h"
 #include "Render/Types/LODContext.h"
+#include <cstddef>
 #include <Collision/Octree.h>
 #include <Collision/SpatialPartition.h>
+#include "Serialization/Archive.h"
+#include <unordered_set>
 
 class UCameraComponent;
 class UPrimitiveComponent;
+class AGameModeBase;
+class ULevel;
+
+class FActorIterator
+{
+public:
+	FActorIterator(const TArray<ULevel*>& InLevels, int32 InLevelIndex, int32 InActorIndex)
+		: Levels(InLevels), LevelIndex(InLevelIndex), ActorIndex(InActorIndex)
+	{
+		AdvanceToValid();
+	}
+
+	FActorIterator& operator++()
+	{
+		++ActorIndex;
+		AdvanceToValid();
+		return *this;
+	}
+
+	bool operator!=(const FActorIterator& Other) const
+	{
+		return LevelIndex != Other.LevelIndex || ActorIndex != Other.ActorIndex;
+	}
+
+	bool operator==(const FActorIterator& Other) const
+	{
+		return LevelIndex == Other.LevelIndex && ActorIndex == Other.ActorIndex;
+	}
+
+	AActor* operator*() const
+	{
+		return Levels[LevelIndex]->GetActors()[ActorIndex];
+	}
+
+private:
+	void AdvanceToValid()
+	{
+		while (LevelIndex < Levels.size())
+		{
+			if (Levels[LevelIndex] && ActorIndex < Levels[LevelIndex]->GetActors().size())
+			{
+				return;
+			}
+			++LevelIndex;
+			ActorIndex = 0;
+		}
+	}
+
+	const TArray<ULevel*>& Levels;
+	int32 LevelIndex;
+	int32 ActorIndex;
+};
+
+class FActorRange
+{
+public:
+	FActorRange(const TArray<ULevel*>& InLevels) : Levels(InLevels) {}
+
+	FActorIterator begin() const { return FActorIterator(Levels, 0, 0); }
+	FActorIterator end() const { return FActorIterator(Levels, static_cast<int32>(Levels.size()), 0); }
+
+	bool IsEmpty() const
+	{
+		return begin() == end();
+	}
+
+	TArray<AActor*> ToArray() const
+	{
+		TArray<AActor*> Arr;
+		for (AActor* Actor : *this)
+		{
+			Arr.push_back(Actor);
+		}
+		return Arr;
+	}
+
+private:
+	const TArray<ULevel*>& Levels;
+};
+
+struct FStreamingLevelInfo
+{
+	FString LevelPath;
+	FName LevelName;
+	bool bIsLoaded = false;
+	bool bShouldBeVisible = true;
+	ULevel* LoadedLevel = nullptr;
+};
 
 class UWorld : public UObject {
 public:
@@ -34,11 +125,29 @@ public:
 	// EditorOnly 컴포넌트의 CreateRenderState()에서 올바르게 판별 가능.
 	UWorld* DuplicateAs(EWorldType InWorldType) const;
 
+	void Serialize(FArchive& Ar) override;
+
+	// 레벨 관리
+	void AddLevel(ULevel* InLevel);
+	void RemoveLevel(ULevel* InLevel);
+	void SetCurrentLevel(ULevel* InLevel) { CurrentLevel = InLevel; }
+	ULevel* GetCurrentLevel() const { return CurrentLevel; }
+	const TArray<ULevel*>& GetLevels() const { return Levels; }
+	void ClearLevels();
+
+	// 스트리밍 레벨
+	void AddStreamingLevel(const FString& LevelPath);
+	void LoadStreamingLevel(const FString& LevelPath);
+	void UnloadStreamingLevel(const FName& LevelName);
+	const TArray<FStreamingLevelInfo>& GetStreamingLevels() const { return StreamingLevels; }
+
 	// Actor lifecycle
 	template<typename T>
 	T* SpawnActor();
 	void DestroyActor(AActor* Actor);
 	void AddActor(AActor* Actor);
+	bool MoveActorBefore(AActor* ActorToMove, AActor* BeforeActor);
+	bool MoveActorToIndex(AActor* ActorToMove, size_t TargetIndex);
 	void MarkWorldPrimitivePickingBVHDirty();
 	void BuildWorldPrimitivePickingBVHNow() const;
 	void BeginDeferredPickingBVHUpdate();
@@ -46,7 +155,9 @@ public:
 	void WarmupPickingData() const;
 	bool RaycastPrimitives(const FRay& Ray, FRayHitResult& OutHitResult, AActor*& OutActor) const;
 
-	const TArray<AActor*>& GetActors() const { return PersistentLevel->GetActors(); }
+	FActorRange GetActors() const { return FActorRange(Levels); }
+
+	ULevel* GetPersistentLevel() const { return PersistentLevel; }
 
 	// LOD 컨텍스트를 FFrameContext에 전달 (Collect 단계에서 LOD 인라인 갱신용)
 	FLODUpdateContext PrepareLODContext();
@@ -72,12 +183,21 @@ public:
 	void RemoveActorToOctree(AActor* actor);
 	void UpdateActorInOctree(AActor* actor);
 
-	// Overlaps
-	void UpdateOverlaps();
+	// Adds a primitive component to the pending overlap update array
+	void AddPendingOverlapComponent(UPrimitiveComponent* InComp);
+	void RemovePendingOverlapComponent(UPrimitiveComponent* InComp);
 
 private:
-	//TArray<AActor*> Actors;
-	ULevel* PersistentLevel;
+	// Overlaps
+	void ProcessOverlapEvents();
+	void ResolvePenetration(UPrimitiveComponent* A, UPrimitiveComponent* B, const FHitResult& Hit);
+
+private:
+	ULevel* PersistentLevel = nullptr;
+	TArray<ULevel*> Levels;
+	TArray<FStreamingLevelInfo> StreamingLevels;
+	ULevel* CurrentLevel = nullptr;
+	AGameModeBase* AuthorGameMode = nullptr;
 
 	UCameraComponent* ActiveCamera = nullptr;
 	UCameraComponent* LastLODUpdateCamera = nullptr;
@@ -92,15 +212,16 @@ private:
 	FVector LastFullLODUpdateCameraPos = FVector(0, 0, 0);
 	FScene Scene;
 	FTickManager TickManager;
-
 	FSpatialPartition Partition;
+
+	std::unordered_set<UPrimitiveComponent*> PendingOverlapComponents;
 };
 
 template<typename T>
 inline T* UWorld::SpawnActor()
 {
 	// create and register an actor
-	T* Actor = UObjectManager::Get().CreateObject<T>(PersistentLevel);
+	T* Actor = UObjectManager::Get().CreateObject<T>(CurrentLevel);
 	AddActor(Actor); // BeginPlay 트리거는 AddActor 내부에서 bHasBegunPlay 가드로 처리
 	return Actor;
 }

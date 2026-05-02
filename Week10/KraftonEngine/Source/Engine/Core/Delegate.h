@@ -90,7 +90,7 @@ class TDelegate
     // Handler 자체는 비교하기 어렵기 때문에 Handle.ID를 기준으로 제거한다.
     void Remove(FDelegateHandle Handle)
     {
-        std::vector<FDelegateEntry>::iterator NewEnd;
+        typename std::vector<FDelegateEntry>::iterator NewEnd;
 
         NewEnd = std::remove_if(Handlers.begin(), Handlers.end(), [Handle](const FDelegateEntry &Entry) { return Entry.Handle == Handle; });
 

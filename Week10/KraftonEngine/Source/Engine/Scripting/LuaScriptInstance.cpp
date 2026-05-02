@@ -2,7 +2,7 @@
 
 #include "Component/ScriptComponent.h"
 #include "Core/Log.h"
-#include "Engine/Input/InputSystem.h"
+#include "Engine/Input/InputManager.h"
 #include "GameFramework/AActor.h"
 #include "GameFramework/StaticMeshActor.h"
 #include "GameFramework/World.h"
@@ -1013,19 +1013,58 @@ void FLuaScriptInstance::BindInputFunctions()
 	Impl->Env.set_function("GetKey", [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
-		return TryParseVirtualKey(KeyName, VirtualKey) ? InputSystem::Get().GetKey(VirtualKey) : false;
+		return TryParseVirtualKey(KeyName, VirtualKey) ? FInputManager::Get().IsKeyDown(VirtualKey) : false;
 	});
 
 	Impl->Env.set_function("GetKeyDown", [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
-		return TryParseVirtualKey(KeyName, VirtualKey) ? InputSystem::Get().GetKeyDown(VirtualKey) : false;
+		return TryParseVirtualKey(KeyName, VirtualKey) ? FInputManager::Get().IsKeyPressed(VirtualKey) : false;
 	});
 
 	Impl->Env.set_function("GetKeyUp", [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
-		return TryParseVirtualKey(KeyName, VirtualKey) ? InputSystem::Get().GetKeyUp(VirtualKey) : false;
+		return TryParseVirtualKey(KeyName, VirtualKey) ? FInputManager::Get().IsKeyReleased(VirtualKey) : false;
+	});
+
+	// Mouse Delta & Wheel
+	Impl->Env.set_function("GetMouseDeltaX", []() { return FInputManager::Get().GetMouseDeltaX(); });
+	Impl->Env.set_function("GetMouseDeltaY", []() { return FInputManager::Get().GetMouseDeltaY(); });
+	Impl->Env.set_function("GetMouseWheel", []() { return FInputManager::Get().GetMouseWheelDelta(); });
+	Impl->Env.set_function("MouseMoved", []() { return FInputManager::Get().MouseMoved(); });
+
+	// Dragging
+	Impl->Env.set_function("IsDragging", [](const FString& ButtonName)
+	{
+		int VirtualKey = 0;
+		if (TryParseVirtualKey(ButtonName, VirtualKey))
+			return FInputManager::Get().IsDragging(VirtualKey);
+		return false;
+	});
+
+	Impl->Env.set_function("GetDragDeltaX", [](const FString& ButtonName)
+	{
+		int VirtualKey = 0;
+		if (TryParseVirtualKey(ButtonName, VirtualKey))
+			return (float)FInputManager::Get().GetDragDelta(VirtualKey).x;
+		return 0.0f;
+	});
+
+	Impl->Env.set_function("GetDragDeltaY", [](const FString& ButtonName)
+	{
+		int VirtualKey = 0;
+		if (TryParseVirtualKey(ButtonName, VirtualKey))
+			return (float)FInputManager::Get().GetDragDelta(VirtualKey).y;
+		return 0.0f;
+	});
+
+	Impl->Env.set_function("GetDragDistance", [](const FString& ButtonName)
+	{
+		int VirtualKey = 0;
+		if (TryParseVirtualKey(ButtonName, VirtualKey))
+			return FInputManager::Get().GetDragDistance(VirtualKey);
+		return 0.0f;
 	});
 
 	Impl->Env.set_function("key", [](const FString& KeyName)

@@ -1,11 +1,17 @@
 ﻿#include "SphereComponent.h"
-#include "GameFramework/World.h"
+#include "Render/Scene/FScene.h"
+#include "Serialization/Archive.h"
 
 IMPLEMENT_CLASS(USphereComponent, UShapeComponent)
 
 void USphereComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) {
 	UShapeComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Sphere Radius", EPropertyType::Float, &SphereRadius, 0.0f, 2048.f, 0.1f });
+}
+
+void USphereComponent::Serialize(FArchive& Ar) {
+	UShapeComponent::Serialize(Ar);
+	Ar << SphereRadius;
 }
 
 void USphereComponent::DrawDebugShape(FScene& Scene) const {

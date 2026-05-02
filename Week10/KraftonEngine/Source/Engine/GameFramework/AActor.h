@@ -3,16 +3,18 @@
 #include "Object/ObjectFactory.h"
 #include "Component/SceneComponent.h"
 #include "Core/TickFunction.h"
+#include "Collision/OverlapInfo.h"
+
 
 class FArchive;
 
 #include <type_traits>
-
 enum ELevelTick;
 struct FActorTickFunction;
 class UWorld;
 class ULevel;
 class UPrimitiveComponent;
+class UBillboardComponent;
 
 class AActor : public UObject
 {
@@ -42,6 +44,7 @@ public:
 		bPrimitiveCacheDirty = true;
 		Comp->CreateRenderState();
 		MarkPickingDirty();
+		SyncEditorBillboardVisibility();
 		return Comp;
 	}
 
@@ -55,6 +58,8 @@ public:
 
 	void SetRootComponent(USceneComponent* Comp);
 	USceneComponent* GetRootComponent() const { return RootComponent; }
+	void EnsureEditorBillboardForActor();
+	void SyncEditorBillboardVisibility();
 
 	const TArray<UActorComponent*>& GetComponents() const { return OwnedComponents; }
 
@@ -80,6 +85,10 @@ public:
 
 	bool IsVisible() const { return bVisible; }
 	void SetVisible(bool Visible);
+	bool IsActorMovementLocked() const { return bLockActorMovement; }
+	void SetActorMovementLocked(bool bLocked) { bLockActorMovement = bLocked; }
+	const FString& GetFolderPath() const { return FolderPath; }
+	void SetFolderPath(const FString& InFolderPath) { FolderPath = InFolderPath; }
 
 	// Tick 필요 여부 — false면 Tick 호출 자체를 건너뜀 (StaticMesh 등)
 	bool bNeedsTick = true;
@@ -95,19 +104,27 @@ public:
 	void SetActorSelected(bool InFlag) { bIsSelected = InFlag; }
 
 	// Overlap
-	void MarkOverlappingDirty() { bIsOverlappingDirty; }
-	bool IsOverlappingDirty() const { return bIsOverlappingDirty; }
+	//void MarkOverlappingDirty() { bIsOverlappingDirty; }
+	//bool IsOverlappingDirty() const { return bIsOverlappingDirty; }
 	bool IsOverlappingActor(const AActor* Other) const;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) {}
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) {}
+	virtual void NotifyActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, const FHitResult& Hit) {}
 
 protected:
 	virtual void TickActor( float DeltaSeconds, ELevelTick TickType, FActorTickFunction& ThisTickFunction );
 	
 	void MarkPickingDirty();
+	UBillboardComponent* FindEditorOnlyBillboardComponent() const;
+	bool HasNonEditorOnlyPrimitiveComponent() const;
 
 	USceneComponent* RootComponent = nullptr;
 
 	FVector PendingActorLocation = FVector(0, 0, 0);
 	bool bVisible = true;
+	bool bLockActorMovement = false;
+	FString FolderPath;
 
 	TArray<UActorComponent*> OwnedComponents;
 

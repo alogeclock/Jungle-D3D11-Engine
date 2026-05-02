@@ -1,6 +1,7 @@
 ﻿#include "Editor/UI/EditorViewportWidget.h"
 
 #include "Editor/EditorEngine.h"
+#include "Editor/UI/EditorPanelTitleUtils.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
 #include "Viewport/Viewport.h"
 #include "ImGui/imgui.h"
@@ -23,7 +24,10 @@ void FEditorViewportWidget::Render(float DeltaTime)
 	(void)DeltaTime;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	ImGui::Begin(WindowName.c_str(), nullptr, ImGuiWindowFlags_MenuBar);
+	constexpr const char* PanelIconKey = "Editor.Icon.Panel.Viewport";
+	const std::string WindowTitle = EditorPanelTitleUtils::MakeClosablePanelTitle(WindowName.c_str(), PanelIconKey);
+	ImGui::Begin(WindowTitle.c_str(), nullptr, ImGuiWindowFlags_MenuBar);
+	EditorPanelTitleUtils::DrawPanelTitleIcon(PanelIconKey);
 
 	// 메뉴 바에 Split/Merge 토글 버튼
 	if (ImGui::BeginMenuBar())
@@ -48,6 +52,8 @@ void FEditorViewportWidget::Render(float DeltaTime)
 	// 뷰포트 패널 위에서 마우스 클릭 시 활성 뷰포트 전환
 	if (ViewportClient && EditorEngine)
 	{
+		ViewportClient->SetHovered(ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows));
+
 		if (ImGui::IsWindowHovered() && (ImGui::IsMouseClicked(0) || ImGui::IsMouseClicked(1)))
 		{
 			if (EditorEngine->GetActiveViewport() != ViewportClient)

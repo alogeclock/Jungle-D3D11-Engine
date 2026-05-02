@@ -6,7 +6,7 @@
 #include "Engine/Platform/DirectoryWatcher.h"
 #include "Profiling/Stats.h"
 #include "Profiling/StartupProfiler.h"
-#include "Engine/Input/InputSystem.h"
+#include "Engine/Input/InputManager.h"
 #include "Engine/Runtime/WindowsWindow.h"
 #include "Resource/ResourceManager.h"
 #include "Render/Pipeline/DefaultRenderPipeline.h"
@@ -15,6 +15,10 @@
 #include "Texture/Texture2D.h"
 #include "GameFramework/World.h"
 #include "GameFramework/AActor.h"
+#include "GameFramework/GameInstance.h"
+#include "Object/ObjectFactory.h"
+#include "Core/ProjectSettings.h"
+
 #include "Core/TickFunction.h"
 #include "Collision/CollisionDispatcher.h"
 
@@ -47,7 +51,18 @@ void UEngine::Init(FWindowsWindow* InWindow)
 	FNamePool::Get();
 	FObjectFactory::Get();
 
-	InputSystem::Get().SetOwnerWindow(Window->GetHWND());
+	// GameInstance를 만들기 전에 ProjectSettings 로드 — 에디터가 다시 로드해도 안전
+	FProjectSettings::Get().LoadFromFile(FProjectSettings::GetDefaultPath());
+
+	const FString& GameInstanceClassName = FProjectSettings::Get().Game.GameInstanceClass;
+	UObject* GameInstanceObj = FObjectFactory::Get().Create(GameInstanceClassName);
+	GameInstance = Cast<UGameInstance>(GameInstanceObj);
+	if (!GameInstance)
+	{
+		// 잘못된 클래스 이름이거나 등록 안된 경우 베이스로 폴백
+		if (GameInstanceObj) UObjectManager::Get().DestroyObject(GameInstanceObj);
+		GameInstance = UObjectManager::Get().CreateObject<UGameInstance>();
+	}
 
 	{
 		SCOPE_STARTUP_STAT("Renderer::Create");
@@ -85,6 +100,7 @@ void UEngine::Init(FWindowsWindow* InWindow)
 		SCOPE_STARTUP_STAT("RenderPipeline::Create");
 		SetRenderPipeline(std::make_unique<FDefaultRenderPipeline>(this, Renderer));
 	}
+	GameInstance->Init();
 
 	FLogManager::Get().Initialize();
 	FDirectoryWatcher::Get().Initialize();
@@ -93,6 +109,13 @@ void UEngine::Init(FWindowsWindow* InWindow)
 
 void UEngine::Shutdown()
 {
+	if (GameInstance)
+	{
+		GameInstance->Shutdown();
+		UObjectManager::Get().DestroyObject(GameInstance);
+		GameInstance = nullptr;
+	}
+
 	FDirectoryWatcher::Get().Shutdown();
 	FLogManager::Get().Shutdown();
 	RenderPipeline.reset();
@@ -119,7 +142,7 @@ void UEngine::Tick(float DeltaTime)
 {
 	FDirectoryWatcher::Get().ProcessChanges();
 	FNotificationManager::Get().Tick(DeltaTime);
-	InputSystem::Get().Tick();
+	FInputManager::Get().Tick();
 	WorldTick(DeltaTime);
 	Render(DeltaTime);
 }
@@ -180,7 +203,11 @@ void UEngine::WorldTick(float DeltaTime)
 			continue;
 		}
 
-		const ELevelTick TickType = ToLevelTickType(Ctx.WorldType);
+		ELevelTick TickType = ToLevelTickType(Ctx.WorldType);
+		if (bGamePaused && (Ctx.WorldType == EWorldType::PIE || Ctx.WorldType == EWorldType::Game))
+		{
+			TickType = LEVELTICK_PauseTick;
+		}
 
 		// 월드 단위 업데이트 (FlushPrimitive / VisibleProxies / DebugDraw /s TickManager)
 		World->Tick(DeltaTime, TickType);

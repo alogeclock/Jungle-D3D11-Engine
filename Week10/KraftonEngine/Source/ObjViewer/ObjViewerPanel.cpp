@@ -3,7 +3,7 @@
 #include "ObjViewer/ObjViewerEngine.h"
 #include "ObjViewer/ObjViewerViewportClient.h"
 #include "Engine/Runtime/WindowsWindow.h"
-#include "Engine/Input/InputSystem.h"
+#include "Engine/Input/InputManager.h"
 #include "Render/Pipeline/Renderer.h"
 #include "Mesh/ObjManager.h"
 #include "Viewport/Viewport.h"
@@ -28,6 +28,28 @@ namespace
 		Style.Colors[ImGuiCol_TabDimmed] = ImVec4(0.16f, 0.16f, 0.18f, 1.0f);
 		Style.Colors[ImGuiCol_TabDimmedSelected] = ImVec4(0.22f, 0.22f, 0.25f, 1.0f);
 	}
+
+	void ApplyEditorColorTheme()
+	{
+		ImGuiStyle& Style = ImGui::GetStyle();
+		Style.Colors[ImGuiCol_WindowBg] = ImVec4(0.09f, 0.09f, 0.10f, 1.0f);
+		Style.Colors[ImGuiCol_ChildBg] = ImVec4(0.12f, 0.12f, 0.13f, 1.0f);
+		Style.Colors[ImGuiCol_PopupBg] = ImVec4(0.13f, 0.13f, 0.14f, 0.98f);
+		Style.Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.10f, 0.11f, 1.0f);
+		Style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.12f, 0.12f, 0.13f, 1.0f);
+		Style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.08f, 0.08f, 0.09f, 1.0f);
+		Style.Colors[ImGuiCol_FrameBg] = ImVec4(0.11f, 0.11f, 0.12f, 1.0f);
+		Style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.18f, 0.18f, 0.20f, 1.0f);
+		Style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.22f, 0.22f, 0.24f, 1.0f);
+		Style.Colors[ImGuiCol_Button] = ImVec4(0.18f, 0.18f, 0.19f, 1.0f);
+		Style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.26f, 0.26f, 0.28f, 1.0f);
+		Style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.32f, 0.32f, 0.35f, 1.0f);
+		Style.Colors[ImGuiCol_Header] = ImVec4(0.18f, 0.18f, 0.20f, 1.0f);
+		Style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.24f, 0.24f, 0.27f, 1.0f);
+		Style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.28f, 0.28f, 0.31f, 1.0f);
+		Style.Colors[ImGuiCol_Separator] = ImVec4(0.20f, 0.20f, 0.22f, 1.0f);
+		Style.Colors[ImGuiCol_Border] = ImVec4(0.22f, 0.22f, 0.24f, 1.0f);
+	}
 }
 
 void FObjViewerPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, UObjViewerEngine* InEngine)
@@ -38,6 +60,7 @@ void FObjViewerPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, UO
 	ImGuiIO& IO = ImGui::GetIO();
 	IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_None;
+	ApplyEditorColorTheme();
 	ApplyEditorTabStyle();
 
 	Window = InWindow;
@@ -98,9 +121,6 @@ void FObjViewerPanel::Update()
 		// (뷰포트 ImGui::Image 위에 InvisibleButton이 있으므로 그걸로 판단)
 		bWantMouse = IO.WantCaptureMouse;
 	}
-	InputSystem::Get().GetGuiInputState().bUsingMouse = bWantMouse;
-	InputSystem::Get().GetGuiInputState().bUsingKeyboard = IO.WantCaptureKeyboard;
-	InputSystem::Get().GetGuiInputState().bUsingTextInput = IO.WantTextInput;
 }
 
 void FObjViewerPanel::RenderMeshList()
@@ -246,7 +266,7 @@ void FObjViewerPanel::RenderPreviewViewport(float DeltaTime)
 			ImGui::InvisibleButton("##PreviewViewport", Size);
 			if (ImGui::IsItemHovered())
 			{
-				InputSystem::Get().GetGuiInputState().bUsingMouse = false;
+				// InputSystem::Get().GetGuiInputState().bUsingMouse = false;
 			}
 		}
 	}

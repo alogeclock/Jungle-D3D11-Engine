@@ -8,6 +8,7 @@ public:
 	USphereComponent() = default;
 	USphereComponent(float InRadius) : SphereRadius(InRadius) {} 
 	void  GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void  Serialize(FArchive& Ar) override;
 
 	float GetSphereRadius() const { return SphereRadius; }
 	void  SetSphereRadius(float InRadius) { SphereRadius = InRadius; }

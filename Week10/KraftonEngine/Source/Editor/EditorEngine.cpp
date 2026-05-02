@@ -15,11 +15,12 @@
 #include "Object/ObjectFactory.h"
 #include "Mesh/ObjManager.h"
 #include "Core/ProjectSettings.h"
-#include "Input/InputSystem.h"
+#include "Engine/Input/InputManager.h"
 #include "GameFramework/AActor.h"
 #include "Materials/MaterialManager.h"
 #include "Engine/Platform/Paths.h"
 #include "Texture/Texture2D.h"
+#include "Object/Object.h"
 #include <filesystem>
 
 IMPLEMENT_CLASS(UEditorEngine, UEngine)
@@ -79,12 +80,18 @@ bool ImportAssetFile(
 	OutImportedRelativePath = FPaths::ToUtf8(DestinationPath.lexically_relative(ProjectRoot).generic_wstring());
 	return true;
 }
+
 }
 
 void UEditorEngine::Init(FWindowsWindow* InWindow)
 {
 	// 엔진 공통 초기화 (Renderer, D3D, 싱글턴 등)
 	UEngine::Init(InWindow);
+
+	if (InWindow)
+	{
+		FInputManager::Get().SetOwnerWindow(InWindow->GetHWND());
+	}
 
 	{
 		SCOPE_STARTUP_STAT("ObjManager::ScanMeshAssets");
@@ -159,6 +166,8 @@ void UEditorEngine::OnWindowResized(uint32 Width, uint32 Height)
 
 void UEditorEngine::Tick(float DeltaTime)
 {
+	FInputManager::Get().Tick();
+
 	// --- PIE 요청 처리 (프레임 경계에서 처리되도록 Tick 선두에서 소비) ---
 	if (bRequestEndPlayMapQueued)
 	{
@@ -173,9 +182,7 @@ void UEditorEngine::Tick(float DeltaTime)
 	ApplyTransformSettingsToGizmo();
 	FDirectoryWatcher::Get().ProcessChanges();
 	FNotificationManager::Get().Tick(DeltaTime);
-	InputSystem::Get().Tick();
 	MainPanel.Update();
-	InputSystem::Get().RefreshSnapshot();
 
 	for (FEditorViewportClient* VC : ViewportLayout.GetAllViewportClients())
 	{
@@ -194,6 +201,15 @@ UCameraComponent* UEditorEngine::GetCamera() const
 		return ActiveVC->GetCamera();
 	}
 	return nullptr;
+}
+
+bool UEditorEngine::FocusActorInViewport(AActor* Actor)
+{
+	if (FLevelEditorViewportClient* ActiveVC = ViewportLayout.GetActiveViewport())
+	{
+		return ActiveVC->FocusActor(Actor);
+	}
+	return false;
 }
 
 void UEditorEngine::RenderUI(float DeltaTime)
@@ -279,8 +295,8 @@ void UEditorEngine::StartQueuedPlaySessionRequest()
 
 void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Params)
 {
-	InputSystem::Get().ResetAllKeyStates();
-	InputSystem::Get().ResetTransientState();
+	SetGamePaused(false);
+	FInputManager::Get().ResetAllKeyStates();
 
 	// 1) 현재 에디터 월드를 복제해 PIE 월드 생성 (UE의 CreatePIEWorldByDuplication 대응).
 	UWorld* EditorWorld = GetWorld();
@@ -382,6 +398,7 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 
 void UEditorEngine::EndPlayMap()
 {
+	SetGamePaused(false);
 	if (!PlayInEditorSessionInfo.has_value())
 	{
 		return;
@@ -451,7 +468,7 @@ void UEditorEngine::EndPlayMap()
 
 	PlayInEditorSessionInfo.reset();
 	PIEControlMode = EPIEControlMode::Possessed;
-	InputSystem::Get().ResetCaptureStateForPIEEnd();
+	// InputSystem::Get().ResetCaptureStateForPIEEnd();
 }
 
 bool UEditorEngine::TogglePIEControlMode()
@@ -477,9 +494,7 @@ bool UEditorEngine::EnterPIEPossessedMode()
 
 	PIEControlMode = EPIEControlMode::Possessed;
 	SyncGameViewportPIEControlState(true);
-	InputSystem::Get().SetUseRawMouse(true);
-	InputSystem::Get().ResetAllKeyStates();
-	InputSystem::Get().ResetTransientState();
+	FInputManager::Get().ResetAllKeyStates();
 	return true;
 }
 
@@ -492,9 +507,7 @@ bool UEditorEngine::EnterPIEEjectedMode()
 
 	PIEControlMode = EPIEControlMode::Ejected;
 	SyncGameViewportPIEControlState(false);
-	InputSystem::Get().SetUseRawMouse(false);
-	InputSystem::Get().ResetAllKeyStates();
-	InputSystem::Get().ResetTransientState();
+	FInputManager::Get().ResetAllKeyStates();
 	return true;
 }
 
@@ -578,6 +591,16 @@ void UEditorEngine::LoadStartLevel()
 void UEditorEngine::ClearScene()
 {
 	StopPlayInEditorImmediate();
+	DestroyCurrentSceneWorlds(true, true);
+}
+
+void UEditorEngine::DestroyCurrentSceneWorlds(bool bClearHistory, bool bResetLevelPath)
+{
+	if (bClearHistory)
+	{
+		ClearTrackedTransformHistory();
+	}
+
 	SelectionManager.ClearSelection();
 	SelectionManager.SetWorld(nullptr);
 
@@ -593,9 +616,233 @@ void UEditorEngine::ClearScene()
 
 	WorldList.clear();
 	ActiveWorldHandle = FName::None;
-	CurrentLevelFilePath.clear();
+	if (bResetLevelPath)
+	{
+		CurrentLevelFilePath.clear();
+	}
 
 	ViewportLayout.DestroyAllCameras();
+}
+
+void UEditorEngine::BeginTrackedSceneChange()
+{
+	if (bTrackingSceneChange || IsPlayingInEditor())
+	{
+		return;
+	}
+
+	const FTrackedSceneSnapshot Snapshot = CaptureTrackedSceneSnapshot();
+	if (Snapshot.SerializedScene.empty())
+	{
+		return;
+	}
+
+	PendingTrackedSceneBefore = Snapshot;
+	bTrackingSceneChange = true;
+}
+
+void UEditorEngine::CommitTrackedSceneChange()
+{
+	if (!bTrackingSceneChange || !PendingTrackedSceneBefore.has_value())
+	{
+		return;
+	}
+
+	const FTrackedSceneSnapshot Before = *PendingTrackedSceneBefore;
+	const FTrackedSceneSnapshot After = CaptureTrackedSceneSnapshot();
+
+	PendingTrackedSceneBefore.reset();
+	bTrackingSceneChange = false;
+
+	if (!HasMeaningfulSceneDelta(Before, After))
+	{
+		return;
+	}
+
+	if (SceneHistoryCursor + 1 < static_cast<int32>(SceneHistory.size()))
+	{
+		SceneHistory.erase(SceneHistory.begin() + (SceneHistoryCursor + 1), SceneHistory.end());
+	}
+
+	SceneHistory.push_back({ Before, After });
+	if (SceneHistory.size() > 10)
+	{
+		SceneHistory.erase(SceneHistory.begin());
+	}
+	SceneHistoryCursor = static_cast<int32>(SceneHistory.size()) - 1;
+}
+
+void UEditorEngine::CancelTrackedSceneChange()
+{
+	PendingTrackedSceneBefore.reset();
+	bTrackingSceneChange = false;
+}
+
+bool UEditorEngine::CanUndoSceneChange() const
+{
+	return SceneHistoryCursor >= 0 && SceneHistoryCursor < static_cast<int32>(SceneHistory.size());
+}
+
+bool UEditorEngine::CanRedoSceneChange() const
+{
+	return SceneHistoryCursor + 1 < static_cast<int32>(SceneHistory.size());
+}
+
+void UEditorEngine::UndoTrackedSceneChange()
+{
+	if (!CanUndoSceneChange())
+	{
+		return;
+	}
+
+	const FTrackedSceneChange& Change = SceneHistory[SceneHistoryCursor];
+	ApplyTrackedSceneSnapshot(Change.Before);
+	--SceneHistoryCursor;
+}
+
+void UEditorEngine::RedoTrackedSceneChange()
+{
+	if (!CanRedoSceneChange())
+	{
+		return;
+	}
+
+	const int32 RedoIndex = SceneHistoryCursor + 1;
+	ApplyTrackedSceneSnapshot(SceneHistory[RedoIndex].After);
+	SceneHistoryCursor = RedoIndex;
+}
+
+void UEditorEngine::ClearTrackedTransformHistory()
+{
+	SceneHistory.clear();
+	SceneHistoryCursor = -1;
+	PendingTrackedSceneBefore.reset();
+	bTrackingSceneChange = false;
+}
+
+void UEditorEngine::BeginTrackedTransformChange()
+{
+	BeginTrackedSceneChange();
+}
+
+void UEditorEngine::CommitTrackedTransformChange()
+{
+	CommitTrackedSceneChange();
+}
+
+bool UEditorEngine::CanUndoTransformChange() const
+{
+	return CanUndoSceneChange();
+}
+
+bool UEditorEngine::CanRedoTransformChange() const
+{
+	return CanRedoSceneChange();
+}
+
+void UEditorEngine::UndoTrackedTransformChange()
+{
+	UndoTrackedSceneChange();
+}
+
+void UEditorEngine::RedoTrackedTransformChange()
+{
+	RedoTrackedSceneChange();
+}
+
+bool UEditorEngine::HasMeaningfulSceneDelta(const FTrackedSceneSnapshot& Before, const FTrackedSceneSnapshot& After) const
+{
+	return Before.SerializedScene != After.SerializedScene;
+}
+
+UEditorEngine::FTrackedSceneSnapshot UEditorEngine::CaptureTrackedSceneSnapshot() const
+{
+	FTrackedSceneSnapshot Snapshot;
+
+	if (!GetWorld())
+	{
+		return Snapshot;
+	}
+
+	const FWorldContext* Context = GetWorldContextFromHandle(GetActiveWorldHandle());
+	if (!Context || !Context->World)
+	{
+		return Snapshot;
+	}
+
+	FWorldContext MutableContext = *Context;
+	Snapshot.SerializedScene = FSceneSaveManager::SerializeWorldToJSONString(MutableContext, FindSceneViewportCamera());
+	if (UCameraComponent* Camera = FindSceneViewportCamera())
+	{
+		Snapshot.CameraData.Location = Camera->GetWorldLocation();
+		const FRotator Rotation = Camera->GetRelativeRotation();
+		Snapshot.CameraData.Rotation = FVector(Rotation.Roll, Rotation.Pitch, Rotation.Yaw);
+		const FCameraState CameraState = Camera->GetCameraState();
+		Snapshot.CameraData.FOV = CameraState.FOV;
+		Snapshot.CameraData.NearClip = CameraState.NearZ;
+		Snapshot.CameraData.FarClip = CameraState.FarZ;
+		Snapshot.CameraData.bValid = true;
+	}
+
+	for (AActor* Actor : SelectionManager.GetSelectedActors())
+	{
+		if (!Actor)
+		{
+			continue;
+		}
+
+		Snapshot.SelectedActorUUIDs.push_back(Actor->GetUUID());
+	}
+
+	return Snapshot;
+}
+
+void UEditorEngine::ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snapshot)
+{
+	if (Snapshot.SerializedScene.empty() || IsPlayingInEditor())
+	{
+		return;
+	}
+
+	DestroyCurrentSceneWorlds(false, false);
+
+	FWorldContext LoadContext;
+	FPerspectiveCameraData CameraData = Snapshot.CameraData;
+	FSceneSaveManager::LoadSceneFromJSONString(Snapshot.SerializedScene, LoadContext, CameraData);
+	if (!LoadContext.World)
+	{
+		return;
+	}
+
+	WorldList.push_back(LoadContext);
+	SetActiveWorld(LoadContext.ContextHandle);
+	SelectionManager.SetWorld(LoadContext.World);
+	LoadContext.World->WarmupPickingData();
+	ResetViewport();
+	RestoreViewportCamera(CameraData);
+
+	TArray<AActor*> RestoredSelection;
+	for (uint32 SelectedUUID : Snapshot.SelectedActorUUIDs)
+	{
+		if (AActor* Actor = Cast<AActor>(UObjectManager::Get().FindByUUID(SelectedUUID)))
+		{
+			RestoredSelection.push_back(Actor);
+		}
+	}
+
+	if (!RestoredSelection.empty())
+	{
+		SelectionManager.SelectActors(RestoredSelection);
+	}
+	else
+	{
+		SelectionManager.ClearSelection();
+	}
+
+	if (UGizmoComponent* Gizmo = GetGizmo())
+	{
+		Gizmo->UpdateGizmoTransform();
+	}
 }
 
 UCameraComponent* UEditorEngine::FindSceneViewportCamera() const
@@ -636,9 +883,9 @@ void UEditorEngine::RestoreViewportCamera(const FPerspectiveCameraData& CamData)
 	}
 }
 
-bool UEditorEngine::SaveSceneAs(const FString& InSceneName)
+bool UEditorEngine::SaveSceneAs(const FString& InScenePath)
 {
-	if (InSceneName.empty())
+	if (InScenePath.empty())
 	{
 		return false;
 	}
@@ -650,8 +897,18 @@ bool UEditorEngine::SaveSceneAs(const FString& InSceneName)
 		return false;
 	}
 
-	FSceneSaveManager::SaveSceneAsJSON(InSceneName, *Context, FindSceneViewportCamera());
-	CurrentLevelFilePath = BuildScenePathFromStem(InSceneName);
+	if (InScenePath.ends_with(".umap") || InScenePath.ends_with(".UMAP"))
+	{
+		FSceneSaveManager::SaveWorldToBinary(InScenePath, Context->World);
+	}
+	else
+	{
+		// Extract stem to pass to SaveSceneAsJSON
+		FString Stem = GetFileStem(InScenePath);
+		FSceneSaveManager::SaveSceneAsJSON(Stem, *Context, FindSceneViewportCamera());
+	}
+	
+	CurrentLevelFilePath = InScenePath;
 	return true;
 }
 
@@ -659,7 +916,7 @@ bool UEditorEngine::SaveScene()
 {
 	if (HasCurrentLevelFilePath())
 	{
-		return SaveSceneAs(GetFileStem(CurrentLevelFilePath));
+		return SaveSceneAs(CurrentLevelFilePath);
 	}
 
 	return SaveSceneAsWithDialog();
@@ -670,11 +927,10 @@ bool UEditorEngine::SaveSceneAsWithDialog()
 	const std::wstring InitialDir = FSceneSaveManager::GetSceneDirectory();
 	const std::wstring DefaultFile = HasCurrentLevelFilePath()
 		? std::filesystem::path(FPaths::ToWide(CurrentLevelFilePath)).filename().wstring()
-		: std::wstring(L"Untitled.Scene");
+		: std::wstring(L"Untitled"); // Removed the forced extension so the dialog uses the selected filter's default
 	const FString SelectedPath = FEditorFileUtils::SaveFileDialog({
-		.Filter = L"Scene Files (*.Scene)\0*.Scene\0All Files (*.*)\0*.*\0",
+		.Filter = L"Binary Scene (*.umap)\0*.umap\0JSON Scene (*.Scene)\0*.Scene\0All Files (*.*)\0*.*\0",
 		.Title = L"Save Scene As",
-		.DefaultExtension = L"Scene",
 		.InitialDirectory = InitialDir.c_str(),
 		.DefaultFileName = DefaultFile.c_str(),
 		.OwnerWindowHandle = Window ? Window->GetHWND() : nullptr,
@@ -688,7 +944,7 @@ bool UEditorEngine::SaveSceneAsWithDialog()
 		return false;
 	}
 
-	return SaveSceneAs(GetFileStem(SelectedPath));
+	return SaveSceneAs(SelectedPath);
 }
 
 bool UEditorEngine::LoadSceneFromPath(const FString& InScenePath)
@@ -703,7 +959,18 @@ bool UEditorEngine::LoadSceneFromPath(const FString& InScenePath)
 
 	FWorldContext LoadContext;
 	FPerspectiveCameraData CameraData;
-	FSceneSaveManager::LoadSceneFromJSON(InScenePath, LoadContext, CameraData);
+	if (InScenePath.ends_with(".Scene")||InScenePath.ends_with(".scene"))
+	{
+		FSceneSaveManager::LoadSceneFromJSON(InScenePath, LoadContext, CameraData);
+	}
+	else if (InScenePath.ends_with(".umap") || InScenePath.ends_with(".UMAP"))
+	{
+		LoadContext.World = UObjectManager::Get().CreateObject<UWorld>();
+		FSceneSaveManager::LoadWorldFromBinary(InScenePath, LoadContext.World);
+		LoadContext.WorldType = EWorldType::Editor;
+		LoadContext.ContextName = "Loaded Binary Scene";
+		LoadContext.ContextHandle = FName("Loaded Binary Scene");
+	}
 	if (!LoadContext.World)
 	{
 		return false;
@@ -724,7 +991,7 @@ bool UEditorEngine::LoadSceneWithDialog()
 {
 	const std::wstring InitialDir = FSceneSaveManager::GetSceneDirectory();
 	const FString SelectedPath = FEditorFileUtils::OpenFileDialog({
-		.Filter = L"Scene Files (*.Scene)\0*.Scene\0All Files (*.*)\0*.*\0",
+		.Filter = L"Scene Files (*.Scene;*.umap)\0*.Scene;*.umap\0All Files (*.*)\0*.*\0",
 		.Title = L"Load Scene",
 		.InitialDirectory = InitialDir.c_str(),
 		.OwnerWindowHandle = Window ? Window->GetHWND() : nullptr,
