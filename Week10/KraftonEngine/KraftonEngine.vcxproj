@@ -511,6 +511,7 @@
     <ClInclude Include="Source\Engine\Core\Delegate.h" />
     <ClInclude Include="Source\Engine\Core\EngineTypes.h" />
     <ClInclude Include="Source\Engine\Core\Log.h" />
+    <ClInclude Include="Source\Engine\Core\ComponentMobility.h" />
     <ClInclude Include="Source\Engine\Core\Notification.h" />
     <ClInclude Include="Source\Engine\Core\ProjectSettings.h" />
     <ClInclude Include="Source\Engine\Core\PropertyTypes.h" />

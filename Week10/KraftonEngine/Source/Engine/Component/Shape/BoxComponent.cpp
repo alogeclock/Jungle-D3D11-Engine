@@ -1,5 +1,6 @@
 ﻿#include "BoxComponent.h"
-#include "GameFramework/World.h"
+#include "Render/Scene/FScene.h"
+#include "Serialization/Archive.h"
 
 IMPLEMENT_CLASS(UBoxComponent, UShapeComponent)
 
@@ -58,4 +59,8 @@ void UBoxComponent::UpdateWorldAABB() const {
 	WorldAABBMaxLocation = WorldCenter + FVector(NewEx, NewEy, NewEz);
 	bWorldAABBDirty = false;
 	bHasValidWorldAABB = true;
+}
+void UBoxComponent::Serialize(FArchive& Ar) {  
+   UShapeComponent::Serialize(Ar);  
+   Ar << BoxExtent;  
 }

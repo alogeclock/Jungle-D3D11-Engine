@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <Collision/Octree.h>
 #include <Collision/SpatialPartition.h>
+#include <unordered_set>
 
 class UCameraComponent;
 class UPrimitiveComponent;
@@ -75,8 +76,13 @@ public:
 	void RemoveActorToOctree(AActor* actor);
 	void UpdateActorInOctree(AActor* actor);
 
+	// Adds a primitive component to the pending overlap update array
+	void AddPendingOverlapComponent(UPrimitiveComponent* InComp);
+
+private:
 	// Overlaps
-	void UpdateOverlaps();
+	void ProcessOverlapEvents();
+	void ResolvePenetration(UPrimitiveComponent* A, UPrimitiveComponent* B, const FHitResult& Hit);
 
 private:
 	//TArray<AActor*> Actors;
@@ -97,6 +103,8 @@ private:
 	FTickManager TickManager;
 
 	FSpatialPartition Partition;
+
+	std::unordered_set<UPrimitiveComponent*> PendingOverlapComponents;
 };
 
 template<typename T>

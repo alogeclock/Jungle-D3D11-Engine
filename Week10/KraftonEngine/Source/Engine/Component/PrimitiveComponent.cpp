@@ -2,6 +2,7 @@
 #include "Object/ObjectFactory.h"
 #include "Serialization/Archive.h"
 #include "Core/RayTypes.h"
+//#include "Core/CollisionEventTypes.h"
 #include "Collision/RayUtils.h"
 #include "Render/Resource/MeshBufferManager.h"
 #include "Core/CollisionTypes.h"
@@ -110,7 +111,10 @@ void UPrimitiveComponent::GetEditableProperties(TArray<FPropertyDescriptor>& Out
 	OutProps.push_back({ "Cast Shadow", EPropertyType::Bool, &bCastShadow });
 	OutProps.push_back({ "Two Sided Shadow", EPropertyType::Bool, &bCastShadowAsTwoSided });
 	OutProps.push_back({ "Is Collidable", EPropertyType::Bool, &bCollisionEnabled });
-	OutProps.push_back({ "Generates Overlap Event", EPropertyType::Bool, &bGenerateOverlapEvents });
+	static const char* OverlapBehaviourNames[] = { "Ignore", "Hit", "Overlap" };
+	OutProps.push_back({ "Generates Overlap Event", EPropertyType::Enum, &bGenerateOverlapEvents, 0.f, 0.f, 0.1f, OverlapBehaviourNames, 3 });
+	static const char* MobilityNames[] = { "Static", "Stationary", "Movable" };
+	OutProps.push_back({ "Mobility",				EPropertyType::Enum, &Mobility, 0.f, 0.f, 0.1f, MobilityNames, 3 });
 }
 
 void UPrimitiveComponent::PostEditProperty(const char* PropertyName)
@@ -274,7 +278,7 @@ void UPrimitiveComponent::OnTransformDirty()
 	// (basis 동일 + translation만 바뀐 경우 UpdateWorldMatrix가 이전 AABB를 평행이동만 적용)
 	bWorldAABBDirty = true;
 	MarkRenderTransformDirty();
-	Owner->MarkOverlappingDirty();
+	MarkUpdateOverlaps();
 }
 
 void UPrimitiveComponent::EnsureWorldAABBUpdated() const
@@ -295,12 +299,48 @@ void UPrimitiveComponent::BeginComponentOverlap(const FOverlapInfo& OtherOverlap
 	for (const FOverlapInfo& Existing : OverlapInfo)
 		if (Existing.HitResult.Component == OtherOverlap.HitResult.Component) return;
 	OverlapInfo.push_back(OtherOverlap);
+
+	if (!bDoNotifies) return;
+
+	UPrimitiveComponent* OtherComp = OtherOverlap.HitResult.Component;
+	AActor* OtherActor = OtherComp ? OtherComp->GetOwner() : nullptr;
+
+	if (OtherOverlap.HitResult.bBlocking) {
+		FComponentHitEvent Event;
+		Event.HitComponent   = this;
+		Event.OtherActor     = OtherActor;
+		Event.OtherComponent = OtherComp;
+		Event.Hit            = OtherOverlap.HitResult;
+		OnComponentHit.Broadcast(Event);
+		if (Owner) Owner->NotifyActorHit(this, OtherActor, OtherComp, OtherOverlap.HitResult);
+	} else {
+		FComponentOverlapEvent Event;
+		Event.OverlappedComponent = this;
+		Event.OtherActor          = OtherActor;
+		Event.OtherComponent      = OtherComp;
+		Event.SweepResult         = OtherOverlap.HitResult;
+		OnComponentBeginOverlap.Broadcast(Event);
+		if (Owner) Owner->NotifyActorBeginOverlap(OtherActor);
+	}
 }
 
 void UPrimitiveComponent::EndComponentOverlap(const UPrimitiveComponent* Other) {
 	for (uint32 i = 0; i < OverlapInfo.size(); i++) {
 		if (OverlapInfo[i].HitResult.Component && OverlapInfo[i].HitResult.Component == Other) {
+			FOverlapInfo Removed = OverlapInfo[i];
 			OverlapInfo.erase(OverlapInfo.begin() + i);
+
+			if (!Removed.HitResult.bBlocking) {
+				UPrimitiveComponent* OtherComp = Removed.HitResult.Component;
+				AActor* OtherActor = OtherComp ? OtherComp->GetOwner() : nullptr;
+				FComponentOverlapEvent Event;
+				Event.OverlappedComponent = this;
+				Event.OtherActor          = OtherActor;
+				Event.OtherComponent      = OtherComp;
+				Event.SweepResult         = Removed.HitResult;
+				OnComponentEndOverlap.Broadcast(Event);
+				if (Owner) Owner->NotifyActorEndOverlap(OtherActor);
+			} 
 			break;
 		}
 	}
@@ -322,4 +362,10 @@ bool UPrimitiveComponent::IsOverlappingActor(const AActor* Other) {
 		}
 	}
 	return false;
+}
+
+void UPrimitiveComponent::MarkUpdateOverlaps() {
+	if (!Owner) return;
+	if (!Owner->GetWorld()) return;
+	Owner->GetWorld()->AddPendingOverlapComponent(this);
 }

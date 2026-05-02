@@ -3,6 +3,7 @@
 #include "Object/ObjectFactory.h"
 #include "Component/SceneComponent.h"
 #include "Core/TickFunction.h"
+#include "Collision/OverlapInfo.h"
 
 class FArchive;
 
@@ -103,9 +104,13 @@ public:
 	void SetActorSelected(bool InFlag) { bIsSelected = InFlag; }
 
 	// Overlap
-	void MarkOverlappingDirty() { bIsOverlappingDirty; }
-	bool IsOverlappingDirty() const { return bIsOverlappingDirty; }
+	//void MarkOverlappingDirty() { bIsOverlappingDirty; }
+	//bool IsOverlappingDirty() const { return bIsOverlappingDirty; }
 	bool IsOverlappingActor(const AActor* Other) const;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) {}
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) {}
+	virtual void NotifyActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, const FHitResult& Hit) {}
 
 protected:
 	virtual void TickActor( float DeltaSeconds, ELevelTick TickType, FActorTickFunction& ThisTickFunction );

@@ -1,5 +1,6 @@
 ﻿#include "CapsuleComponent.h"
-#include "GameFramework/World.h"
+#include "Render/Scene/FScene.h"
+#include "Serialization/Archive.h"
 
 IMPLEMENT_CLASS(UCapsuleComponent, UShapeComponent)
 
@@ -15,6 +16,12 @@ void UCapsuleComponent::PostEditProperty(const char* PropertyName) {
 	else if (strcmp(PropertyName, "Capsule Half-Height") == 0)
 		CapsuleHalfHeight = CapsuleHalfHeight > CapsuleRadius ? CapsuleHalfHeight : CapsuleRadius;
 	UShapeComponent::PostEditProperty(PropertyName);
+}
+
+void UCapsuleComponent::Serialize(FArchive& Ar) {
+	UShapeComponent::Serialize(Ar);
+	Ar << CapsuleRadius;
+	Ar << CapsuleHalfHeight;
 }
 
 void UCapsuleComponent::DrawDebugShape(FScene& Scene) const {

@@ -1907,6 +1907,9 @@
     <ClInclude Include="ThirdParty\sol2\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\sol\utility</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Core\ComponentMobility.h">
+      <Filter>Source\Engine\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />
