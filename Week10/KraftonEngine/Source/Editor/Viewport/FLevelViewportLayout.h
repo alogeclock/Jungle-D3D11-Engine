@@ -89,7 +89,8 @@ public:
 		AmbientLight,
 		DirectionalLight,
 		PointLight,
-		SpotLight
+		SpotLight,
+		SimpleObstacle,
 	};
 
 	AActor* SpawnPlaceActor(EViewportPlaceActorType Type, const FVector& Location);
