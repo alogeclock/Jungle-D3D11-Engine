@@ -15,7 +15,7 @@
 
 // 이거 넣는 이유: sol/sol.hpp 내장 check하고 충돌 방지 목적
 // 내부에서 Sol/Sol.cpp include
-#pragma region check 충돌방지
+#pragma region SolInclude
 #ifdef check
 #pragma push_macro("check")
 #undef check
@@ -734,8 +734,8 @@ void FLuaScriptRuntime::RegisterBindings()
 	// 런타임 레벨에서 공통으로 노출할 타입은 모두 여기서 한 번만 등록한다.
 	BindVectorType();
 	BindActorProxyType();
-	// ComponentProxy/Color 바인딩은 유지 보수용 함수만 남기고 공개하지 않는다.
-	// TODO: 해당 기능이 실제 스크립트 요구사항으로 돌아오면 EngineAPI.lua와 함께 다시 노출한다.
+	BindComponentProxyType();
+	// Color 바인딩은 유지 보수용 함수만 남기고 공개하지 않는다.
 }
 
 void FLuaScriptRuntime::InitializeHotReload()
@@ -924,6 +924,12 @@ void FLuaScriptRuntime::BindActorProxyType()
 		"Rotation", sol::property(&FLuaActorProxy::GetRotation, &FLuaActorProxy::SetRotation),
 		"Scale", sol::property(&FLuaActorProxy::GetScale, &FLuaActorProxy::SetScale),
 		"Velocity", sol::property(&FLuaActorProxy::GetVelocity, &FLuaActorProxy::SetVelocity),
+
+		"GetComponent", &FLuaActorProxy::GetComponent,
+		"GetComponentByType", &FLuaActorProxy::GetComponentByType,
+		"GetScriptComponent", & FLuaActorProxy::GetScriptComponent,
+		"GetStaticMeshComponent", & FLuaActorProxy::GetStaticMeshComponent,
+
 		"AddWorldOffset", sol::overload(
 			static_cast<void(FLuaActorProxy::*)(const FVector&)>(&FLuaActorProxy::AddWorldOffset),
 			&FLuaActorProxy::AddWorldOffsetXYZ),
@@ -935,12 +941,14 @@ void FLuaScriptRuntime::BindActorProxyType()
 			static_cast<void(FLuaActorProxy::*)(const FVector&)>(&FLuaActorProxy::MoveBy),
 			&FLuaActorProxy::MoveBy2D,
 			&FLuaActorProxy::MoveBy3D),
+
 		"MoveToActor", &FLuaActorProxy::MoveToActor,
 		"StopMove", &FLuaActorProxy::StopMove,
 		"IsMoveDone", &FLuaActorProxy::IsMoveDone,
 		"SetMoveSpeed", &FLuaActorProxy::SetMoveSpeed,
 		"GetMoveSpeed", &FLuaActorProxy::GetMoveSpeed,
-		"PrintLocation", &FLuaActorProxy::PrintLocation);
+		"PrintLocation", &FLuaActorProxy::PrintLocation,
+		"Destroy", &FLuaActorProxy::Destroy);
 }
 
 void FLuaScriptRuntime::BindColorType()

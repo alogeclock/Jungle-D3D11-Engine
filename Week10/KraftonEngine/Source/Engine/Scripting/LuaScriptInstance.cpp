@@ -44,6 +44,7 @@
 #include <cctype>
 #include <functional>
 #include <iterator>
+#include "Input/InputAction.h"
 
 namespace
 {
@@ -741,6 +742,147 @@ bool FLuaScriptInstance::CallEndPlay()
 {
 	return Impl->CallFunction(this, "EndPlay", Impl->FnEndPlay);
 }
+
+#pragma region Event+Input 호출 함수
+bool FLuaScriptInstance::CallLuaFunction(const FString& FunctionName)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	// Lua에 해당 함수가 없는 경우 true 처리(필요없어서 구현하지 않은 경우 고려)
+	// TODO: 필수 함수가 없는 경우를 따로 고려하고 싶다면(BeginPlay, Tick, EndPlay) 이 부분만 false로 하는 기능 추가
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result = Function();
+	
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+
+	return true;
+}
+
+bool FLuaScriptInstance::CallLuaOverlapEvent(const FString& FunctionName, AActor* OtherActor, UActorComponent* OtherComponent, UActorComponent* SelfComponent)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	// 필수 함수가 아니기 때문에 굳이 false를 둘 필요 없음.
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+
+	// Lua ActorProxy 생성
+	FLuaActorProxy OtherActorProxy = MakeActorProxy(OtherActor);
+
+	// Lua Component Proxy 생성
+	FLuaComponentProxy OtherComponentProxy;
+	OtherComponentProxy.Component = OtherComponent;
+	FLuaComponentProxy SelfComponentProxy;
+	SelfComponentProxy.Component = SelfComponent;
+
+	// 스크립트 실행 및 오류 체크
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result =
+		Function(OtherActorProxy, OtherComponentProxy, SelfComponentProxy);
+
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+
+	return true;
+}
+
+bool FLuaScriptInstance::CallLuaHitEvent(const FString& FunctionName, AActor* OtherActor, UActorComponent* OtherComponent, UActorComponent* SelfComponent, const FVector& ImpactLocation, const FVector& ImpactNormal)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	// 필수 함수가 아니기 때문에 굳이 false를 둘 필요 없음.
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+
+	// Lua Actor Proxy 생성
+	FLuaActorProxy OtherActorProxy = MakeActorProxy(OtherActor);
+
+	// Lua Component proxy 생성
+	FLuaComponentProxy OtherComponentProxy;
+	OtherComponentProxy.Component = OtherComponent;
+
+	FLuaComponentProxy SelfComponentProxy;
+	SelfComponentProxy.Component = SelfComponent;
+
+	// 함수 호출 및 오류 검사
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result =
+		Function(
+			OtherActorProxy,
+			OtherComponentProxy,
+			SelfComponentProxy,
+			ImpactLocation,
+			ImpactNormal);
+
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+
+	return true;
+}
+
+bool FLuaScriptInstance::CallLuaInputAction(const FString& FunctionName, const FString& ActionName, const FInputActionValue& Value)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+
+	// Unreal Engine의 InputActionValue와 비슷
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result =
+		Function(ActionName, Value.GetVector(), Value.Get());
+
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+}
+#pragma endregion
 
 bool FLuaScriptInstance::StartCoroutine(const FString& FunctionName)
 {
