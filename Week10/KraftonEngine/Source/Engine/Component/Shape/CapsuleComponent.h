@@ -8,7 +8,7 @@ public:
 	UCapsuleComponent(float InHalfHeight, float InRadius) : CapsuleHalfHeight(InHalfHeight), CapsuleRadius(InRadius) {}
 
 	void  GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
-	//void  Serialize(FArchive& Ar) override;
+	void  Serialize(FArchive& Ar) override;
 
 	float GetCapsuleHalfHeight() const { return CapsuleHalfHeight; }
 	float GetCapsuleRadius() const { return CapsuleRadius; }

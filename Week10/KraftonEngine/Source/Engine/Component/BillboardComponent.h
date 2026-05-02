@@ -13,6 +13,8 @@ public:
 
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
+	void UpdateWorldAABB() const override;
+	bool LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult) override;
 
 	void Serialize(FArchive& Ar) override;
 	void PostDuplicate() override;
@@ -41,6 +43,7 @@ public:
 
 protected:
 	bool ResolveTextureFromPath(const FString& InPath);
+	bool IntersectBillboard(const FRay& Ray, FRayHitResult& OutHitResult, bool bRespectTextureAlpha) const;
 
 	bool bIsBillboard = true;
 

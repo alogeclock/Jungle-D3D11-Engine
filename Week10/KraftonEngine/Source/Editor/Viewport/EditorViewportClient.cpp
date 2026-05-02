@@ -541,6 +541,38 @@ void FEditorViewportClient::ResetCamera()
 	SyncCameraSmoothingTarget();
 }
 
+bool FEditorViewportClient::FocusActor(AActor* Actor)
+{
+	if (!Actor || !Camera)
+	{
+		return false;
+	}
+
+	const FVector TargetLoc = Actor->GetActorLocation();
+	const FVector CameraForward = Camera->GetForwardVector();
+
+	const FVector OriginalLoc = Camera->GetWorldLocation();
+	const FRotator OriginalRot = Camera->GetRelativeRotation();
+
+	constexpr float FocusDistance = 5.0f;
+	const FVector NewCameraLoc = TargetLoc - CameraForward * FocusDistance;
+
+	Camera->SetWorldLocation(NewCameraLoc);
+	Camera->LookAt(TargetLoc);
+	const FRotator TargetRot = Camera->GetRelativeRotation();
+
+	Camera->SetWorldLocation(OriginalLoc);
+	Camera->SetRelativeRotation(OriginalRot);
+
+	bIsFocusAnimating = true;
+	FocusAnimTimer = 0.0f;
+	FocusStartLoc = OriginalLoc;
+	FocusStartRot = OriginalRot;
+	FocusEndLoc = NewCameraLoc;
+	FocusEndRot = TargetRot;
+	return true;
+}
+
 void FEditorViewportClient::SetViewportType(ELevelViewportType NewType)
 {
 	if (!Camera) return;
@@ -628,7 +660,97 @@ void FEditorViewportClient::ApplySmoothedCameraLocation(float DeltaTime)
 	const float LerpAlpha = Clamp(DeltaTime * SmoothLocationSpeed, 0.0f, 1.0f);
 	const FVector NewLocation = CurrentLocation + (TargetLocation - CurrentLocation) * LerpAlpha;
 	Camera->SetWorldLocation(NewLocation);
-	LastAppliedCameraLocation = NewLocation; bLastAppliedCameraLocationInitialized = true;
+	LastAppliedCameraLocation = NewLocation;
+	bLastAppliedCameraLocationInitialized = true;
+}
+
+void FEditorViewportClient::TickEditorShortcuts()
+{
+	UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine);
+	if (!EditorEngine)
+	{
+		return;
+	}
+
+	if (EditorEngine->IsPlayingInEditor() && FInputManager::Get().IsKeyPressed(VK_ESCAPE))
+	{
+		EditorEngine->RequestEndPlayMap();
+	}
+
+	const bool bAllowKeyboardInput = !FInputManager::Get().IsGuiUsingKeyboard() && !ImGui::GetIO().WantTextInput;
+	if (!bAllowKeyboardInput)
+	{
+		return;
+	}
+
+	if (SelectionManager && FInputManager::Get().IsKeyPressed(VK_DELETE))
+	{
+		EditorEngine->BeginTrackedSceneChange();
+		SelectionManager->DeleteSelectedActors();
+		EditorEngine->CommitTrackedSceneChange();
+		return;
+	}
+
+	if (!FInputManager::Get().IsKeyDown(VK_CONTROL) && FInputManager::Get().IsKeyPressed('X'))
+	{
+		EditorEngine->ToggleCoordSystem();
+		return;
+	}
+
+	if (SelectionManager && FInputManager::Get().IsKeyPressed('F'))
+	{
+		AActor* Selected = SelectionManager->GetPrimarySelection();
+		FocusActor(Selected);
+	}
+
+	if (SelectionManager && FInputManager::Get().IsKeyDown(VK_CONTROL) && FInputManager::Get().IsKeyPressed('D'))
+	{
+		const TArray<AActor*> ToDuplicate = SelectionManager->GetSelectedActors();
+		if (!ToDuplicate.empty())
+		{
+			EditorEngine->BeginTrackedSceneChange();
+			const FVector DuplicateOffsetStep(0.1f, 0.1f, 0.1f);
+			TArray<AActor*> NewSelection;
+			int32 DuplicateIndex = 0;
+			for (AActor* Src : ToDuplicate)
+			{
+				if (!Src) continue;
+				AActor* Dup = Cast<AActor>(Src->Duplicate(nullptr));
+				if (Dup)
+				{
+					Dup->AddActorWorldOffset(DuplicateOffsetStep * static_cast<float>(DuplicateIndex + 1));
+					NewSelection.push_back(Dup);
+					++DuplicateIndex;
+				}
+			}
+			SelectionManager->ClearSelection();
+			for (AActor* Actor : NewSelection)
+			{
+				SelectionManager->ToggleSelect(Actor);
+			}
+			if (EditorEngine->GetGizmo())
+			{
+				EditorEngine->GetGizmo()->UpdateGizmoTransform();
+			}
+			EditorEngine->CommitTrackedSceneChange();
+		}
+	}
+}
+
+void FEditorViewportClient::SetLightViewOverride(ULightComponentBase* Light)
+{
+	LightViewOverride = Light;
+	PointLightFaceIndex = 0;
+
+	if (Light && SelectionManager)
+	{
+		SelectionManager->ClearSelection();
+	}
+}
+
+void FEditorViewportClient::ClearLightViewOverride()
+{
+	LightViewOverride = nullptr;
 }
 
 void FEditorViewportClient::TickInput(float DeltaTime)
@@ -716,6 +838,15 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 	(void)DeltaTime; if (!Camera || !Gizmo || !GetWorld()) return;
 	Gizmo->ApplyScreenSpaceScaling(Camera->GetWorldLocation(), Camera->IsOrthogonal(), Camera->GetOrthoWidth());
 	Gizmo->SetAxisMask(UGizmoComponent::ComputeAxisMask(RenderOptions.ViewportType, Gizmo->GetMode()));
+
+	uint32 CursorViewportX = 0;
+	uint32 CursorViewportY = 0;
+	const bool bCursorInViewport = GetCursorViewportPosition(CursorViewportX, CursorViewportY);
+	if (FInputManager::Get().IsGuiUsingMouse() && !bCursorInViewport && !Gizmo->IsHolding() && !bIsMarqueeSelecting)
+	{
+		return;
+	}
+
 	const float ZoomSpeed = Settings ? Settings->CameraZoomSpeed : 300.f;
 	if (std::abs(EditorZoomAccumulator) > 1e-6f)
 	{
@@ -783,17 +914,23 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 				}
 			}
 		}
-		else { Gizmo->DragEnd(); }
+		else
+		{
+			Gizmo->DragEnd();
+			if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
+			{
+				EditorEngine->CommitTrackedTransformChange();
+			}
+		}
 	}
-
-	if (bIsActive)
+	else if (Input.IsKeyReleased(VK_LBUTTON))
 	{
-		const FEditorSettings& S = FEditorSettings::Get();
-		ImDrawList* DrawList = ImGui::GetForegroundDrawList(ImGui::GetMainViewport());
-		ImVec2 TextPos(ViewportScreenRect.X + 10.0f, ViewportScreenRect.Y + 40.0f);
-		char Buf[256];
-		snprintf(Buf, sizeof(Buf), "Speed: %.1f | Snap: %.2f | RotSnap: %.1f", S.CameraSpeed, S.TranslationSnapSize, S.RotationSnapSize);
-		DrawList->AddText(TextPos, IM_COL32(255, 255, 0, 180), Buf);
+		Gizmo->SetPressedOnHandle(false);
+		if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
+		{
+			EditorEngine->CommitTrackedTransformChange();
+		}
+		bIsMarqueeSelecting = false;
 	}
 }
 
@@ -801,7 +938,25 @@ void FEditorViewportClient::HandleDragStart(const FRay& Ray)
 {
 	FInputManager& Input = FInputManager::Get(); if (!bIsHovered) return;
 	FScopeCycleCounter PickCounter; FRayHitResult HitResult{};
-	if (FRayUtils::RaycastComponent(Gizmo, Ray, HitResult)) { Gizmo->SetPressedOnHandle(true); }
+	if (FRayUtils::RaycastComponent(Gizmo, Ray, HitResult))
+	{
+		if (SelectionManager)
+		{
+			for (AActor* Actor : SelectionManager->GetSelectedActors())
+			{
+				if (Actor && Actor->IsActorMovementLocked())
+				{
+					Gizmo->SetPressedOnHandle(false);
+					return;
+				}
+			}
+		}
+		if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
+		{
+			EditorEngine->BeginTrackedTransformChange();
+		}
+		Gizmo->SetPressedOnHandle(true);
+	}
 	else
 	{
 		AActor* BestActor = nullptr;
@@ -831,7 +986,20 @@ void FEditorViewportClient::RenderViewportImage(bool bIsActiveViewport)
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
 	ImVec2 Min(R.X, R.Y); ImVec2 Max(R.X + R.Width, R.Y + R.Height);
 	DrawList->AddImage((ImTextureID)Viewport->GetSRV(), Min, Max);
-	if (bIsActiveViewport) DrawList->AddRect(Min, Max, IM_COL32(255, 165, 0, 220), 0.0f, 0, 2.0f);
+	if (bIsActiveViewport)
+	{
+		ImU32 BorderColor = IM_COL32(255, 165, 0, 220);
+		if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
+		{
+			if (EditorEngine->IsPlayingInEditor())
+			{
+				BorderColor = EditorEngine->IsGamePaused()
+					? IM_COL32(66, 133, 244, 255)
+					: IM_COL32(52, 199, 89, 255);
+			}
+		}
+		DrawList->AddRect(Min, Max, BorderColor, 0.0f, 0, 4.0f);
+	}
 	if (bIsMarqueeSelecting)
 	{
 		ImDrawList* ForegroundDrawList = ImGui::GetForegroundDrawList(ImGui::GetMainViewport());
@@ -850,4 +1018,3 @@ bool FEditorViewportClient::GetCursorViewportPosition(uint32& OutX, uint32& OutY
 	return false;
 }
 
-void FEditorViewportClient::TickEditorShortcuts() {}

@@ -8,6 +8,7 @@
 #include <cwctype>
 #include <d3d11.h>
 #include <filesystem>
+#include <wincodec.h>
 
 IMPLEMENT_CLASS(UTexture2D, UObject)
 
@@ -24,6 +25,95 @@ namespace
 			|| Name == L"Bin"
 			|| Name == L"Build"
 			|| Name == L"Intermediate";
+	}
+
+	bool LoadCPUTextureRGBA(const FString& FilePath, uint32& OutWidth, uint32& OutHeight, std::vector<uint8>& OutPixels)
+	{
+		OutWidth = 0;
+		OutHeight = 0;
+		OutPixels.clear();
+
+		IWICImagingFactory* Factory = nullptr;
+		HRESULT HR = CoCreateInstance(
+			CLSID_WICImagingFactory,
+			nullptr,
+			CLSCTX_INPROC_SERVER,
+			IID_PPV_ARGS(&Factory));
+		if (FAILED(HR) || !Factory)
+		{
+			return false;
+		}
+
+		IWICBitmapDecoder* Decoder = nullptr;
+		HR = Factory->CreateDecoderFromFilename(
+			FPaths::ToWide(FilePath).c_str(),
+			nullptr,
+			GENERIC_READ,
+			WICDecodeMetadataCacheOnDemand,
+			&Decoder);
+		if (FAILED(HR) || !Decoder)
+		{
+			Factory->Release();
+			return false;
+		}
+
+		IWICBitmapFrameDecode* Frame = nullptr;
+		HR = Decoder->GetFrame(0, &Frame);
+		if (FAILED(HR) || !Frame)
+		{
+			Decoder->Release();
+			Factory->Release();
+			return false;
+		}
+
+		HR = Frame->GetSize(&OutWidth, &OutHeight);
+		if (FAILED(HR) || OutWidth == 0 || OutHeight == 0)
+		{
+			Frame->Release();
+			Decoder->Release();
+			Factory->Release();
+			return false;
+		}
+
+		IWICFormatConverter* Converter = nullptr;
+		HR = Factory->CreateFormatConverter(&Converter);
+		if (FAILED(HR) || !Converter)
+		{
+			Frame->Release();
+			Decoder->Release();
+			Factory->Release();
+			return false;
+		}
+
+		HR = Converter->Initialize(
+			Frame,
+			GUID_WICPixelFormat32bppRGBA,
+			WICBitmapDitherTypeNone,
+			nullptr,
+			0.0f,
+			WICBitmapPaletteTypeCustom);
+		if (FAILED(HR))
+		{
+			Converter->Release();
+			Frame->Release();
+			Decoder->Release();
+			Factory->Release();
+			return false;
+		}
+
+		const size_t PixelCount = static_cast<size_t>(OutWidth) * static_cast<size_t>(OutHeight);
+		OutPixels.resize(PixelCount * 4ull);
+		HR = Converter->CopyPixels(
+			nullptr,
+			OutWidth * 4u,
+			static_cast<UINT>(OutPixels.size()),
+			OutPixels.data());
+
+		Converter->Release();
+		Frame->Release();
+		Decoder->Release();
+		Factory->Release();
+		return SUCCEEDED(HR);
 	}
 }
 
@@ -211,5 +301,30 @@ bool UTexture2D::LoadInternal(const FString& FilePath, ID3D11Device* Device)
 	}
 
 	SourceFilePath = FilePath;
+	LoadCPUTextureRGBA(FilePath, Width, Height, CPUTextureRGBA);
+	return true;
+}
+
+bool UTexture2D::SampleAlpha(float U, float V, float& OutAlpha) const
+{
+	OutAlpha = 1.0f;
+
+	if (CPUTextureRGBA.empty() || Width == 0 || Height == 0)
+	{
+		return false;
+	}
+
+	const float ClampedU = std::clamp(U, 0.0f, 1.0f);
+	const float ClampedV = std::clamp(V, 0.0f, 1.0f);
+	const uint32 X = std::min<uint32>(static_cast<uint32>(ClampedU * static_cast<float>(Width - 1)), Width - 1);
+	const uint32 Y = std::min<uint32>(static_cast<uint32>(ClampedV * static_cast<float>(Height - 1)), Height - 1);
+	const size_t PixelIndex = (static_cast<size_t>(Y) * static_cast<size_t>(Width) + static_cast<size_t>(X)) * 4ull;
+
+	if (PixelIndex + 3ull >= CPUTextureRGBA.size())
+	{
+		return false;
+	}
+
+	OutAlpha = static_cast<float>(CPUTextureRGBA[PixelIndex + 3ull]) / 255.0f;
 	return true;
 }

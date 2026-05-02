@@ -57,6 +57,8 @@ public:
 	// Game Viewport Client — PIE/Standalone 용
 	void SetGameViewportClient(UGameViewportClient* InClient) { GameViewportClient = InClient; }
 	UGameViewportClient* GetGameViewportClient() const { return GameViewportClient; }
+	void SetGamePaused(bool bInPaused) { bGamePaused = bInPaused; }
+	bool IsGamePaused() const { return bGamePaused; }
 
 protected:
 	void Render(float DeltaTime);
@@ -73,6 +75,7 @@ protected:
 	FTimer* Timer = nullptr;
 
 	UGameViewportClient* GameViewportClient = nullptr;
+	bool bGamePaused = false;
 
 	FRenderer Renderer;
 

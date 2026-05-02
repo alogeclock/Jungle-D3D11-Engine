@@ -9,9 +9,11 @@
 #include "GameFramework/WorldContext.h"
 #include "Render/Scene/FScene.h"
 #include "Render/Types/LODContext.h"
+#include <cstddef>
 #include <Collision/Octree.h>
 #include <Collision/SpatialPartition.h>
 #include "Serialization/Archive.h"
+#include <unordered_set>
 
 class UCameraComponent;
 class UPrimitiveComponent;
@@ -144,6 +146,8 @@ public:
 	T* SpawnActor();
 	void DestroyActor(AActor* Actor);
 	void AddActor(AActor* Actor);
+	bool MoveActorBefore(AActor* ActorToMove, AActor* BeforeActor);
+	bool MoveActorToIndex(AActor* ActorToMove, size_t TargetIndex);
 	void MarkWorldPrimitivePickingBVHDirty();
 	void BuildWorldPrimitivePickingBVHNow() const;
 	void BeginDeferredPickingBVHUpdate();
@@ -179,8 +183,13 @@ public:
 	void RemoveActorToOctree(AActor* actor);
 	void UpdateActorInOctree(AActor* actor);
 
+	// Adds a primitive component to the pending overlap update array
+	void AddPendingOverlapComponent(UPrimitiveComponent* InComp);
+
+private:
 	// Overlaps
-	void UpdateOverlaps();
+	void ProcessOverlapEvents();
+	void ResolvePenetration(UPrimitiveComponent* A, UPrimitiveComponent* B, const FHitResult& Hit);
 
 private:
 	ULevel* PersistentLevel = nullptr;
@@ -203,6 +212,8 @@ private:
 	FScene Scene;
 	FTickManager TickManager;
 	FSpatialPartition Partition;
+
+	std::unordered_set<UPrimitiveComponent*> PendingOverlapComponents;
 };
 
 template<typename T>
