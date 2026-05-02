@@ -154,6 +154,8 @@ public:
 	void EndDeferredPickingBVHUpdate();
 	void WarmupPickingData() const;
 	bool RaycastPrimitives(const FRay& Ray, FRayHitResult& OutHitResult, AActor*& OutActor) const;
+	void CollectWorldPrimitivePickingBVHDebugBounds(TArray<FBoundingBox>& OutBounds) const;
+	bool GetPartitionRootBounds(FBoundingBox& OutBounds) const;
 
 	FActorRange GetActors() const { return FActorRange(Levels); }
 

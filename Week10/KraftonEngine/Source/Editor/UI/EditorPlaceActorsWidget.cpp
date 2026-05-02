@@ -20,6 +20,19 @@ namespace
 	using ECategory = FEditorPlaceActorsWidget::EPlaceActorCategory;
 	using FEntry = FEditorPlaceActorsWidget::FPlaceActorEntry;
 
+	constexpr ImVec4 PlacePanelBg = ImVec4(28.0f / 255.0f, 28.0f / 255.0f, 28.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceSidebarButton = ImVec4(44.0f / 255.0f, 44.0f / 255.0f, 44.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceSidebarButtonHover = ImVec4(58.0f / 255.0f, 58.0f / 255.0f, 58.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceSidebarButtonActive = ImVec4(68.0f / 255.0f, 68.0f / 255.0f, 68.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceCategorySelected = ImVec4(0.00f, 0.47f, 0.92f, 1.0f);
+	constexpr ImVec4 PlaceCategorySelectedHover = ImVec4(0.10f, 0.54f, 0.96f, 1.0f);
+	constexpr ImVec4 PlaceCategorySelectedActive = ImVec4(0.00f, 0.40f, 0.84f, 1.0f);
+	constexpr ImVec4 PlaceEntryBg = ImVec4(63.0f / 255.0f, 63.0f / 255.0f, 63.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceEntryHover = ImVec4(78.0f / 255.0f, 78.0f / 255.0f, 78.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceEntryActive = ImVec4(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceBorder = ImVec4(70.0f / 255.0f, 70.0f / 255.0f, 70.0f / 255.0f, 1.0f);
+	constexpr ImVec4 PlaceSearchBg = ImVec4(18.0f / 255.0f, 18.0f / 255.0f, 18.0f / 255.0f, 1.0f);
+
 	FString GetEditorPathResource(const char* Key)
 	{
 		return FResourceManager::Get().ResolvePath(FName(Key));
@@ -57,10 +70,13 @@ namespace
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 11.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(Style.FramePadding.x + 26.0f, Style.FramePadding.y));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.42f, 0.42f, 0.45f, 0.90f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, PlaceSearchBg);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, PlaceSearchBg);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, PlaceSearchBg);
+		ImGui::PushStyleColor(ImGuiCol_Border, PlaceBorder);
 		const std::string PaddedHint = std::string("   ") + Hint;
 		const bool bChanged = ImGui::InputTextWithHint(Id, PaddedHint.c_str(), Buffer, BufferSize);
-		ImGui::PopStyleColor();
+		ImGui::PopStyleColor(4);
 		ImGui::PopStyleVar(3);
 
 		if (ID3D11ShaderResourceView* SearchIcon = FResourceManager::Get().FindLoadedTexture(
@@ -140,6 +156,10 @@ void FEditorPlaceActorsWidget::Render(float DeltaTime)
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 9.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6.0f, 6.0f));
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, PlacePanelBg);
+	ImGui::PushStyleColor(ImGuiCol_TableBorderLight, IM_COL32(5, 5, 5, 255));
+	ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, IM_COL32(5, 5, 5, 255));
 
 	DrawSearchInputWithIcon("##PlaceActorSearch", "Search Classes", SearchBuffer, sizeof(SearchBuffer));
 	ImGui::Spacing();
@@ -158,17 +178,13 @@ void FEditorPlaceActorsWidget::Render(float DeltaTime)
 		ImGui::EndTable();
 	}
 
-	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar(3);
 	ImGui::End();
 }
 
 void FEditorPlaceActorsWidget::RenderCategorySidebar()
 {
-	if (!ImGui::BeginChild("##PlaceActorCategories", ImVec2(0.0f, 0.0f), false))
-	{
-		ImGui::EndChild();
-		return;
-	}
 
 	const EPlaceActorCategory Categories[] = {
 		EPlaceActorCategory::Basic,
@@ -181,11 +197,15 @@ void FEditorPlaceActorsWidget::RenderCategorySidebar()
 	{
 		const bool bSelected = (ActiveCategory == Category);
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+		ImGui::PushStyleColor(ImGuiCol_Button, PlaceSidebarButton);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, PlaceSidebarButtonHover);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, PlaceSidebarButtonActive);
 		if (bSelected)
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.42f, 0.80f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.48f, 0.88f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.12f, 0.36f, 0.72f, 1.0f));
+			ImGui::PopStyleColor(3);
+			ImGui::PushStyleColor(ImGuiCol_Button, PlaceCategorySelected);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, PlaceCategorySelectedHover);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, PlaceCategorySelectedActive);
 		}
 
 		if (ImGui::Button((std::string("##Category") + GetCategoryLabel(Category)).c_str(), ImVec2(-1.0f, 62.0f)))
@@ -211,29 +231,29 @@ void FEditorPlaceActorsWidget::RenderCategorySidebar()
 			ImGui::GetColorU32(ImGuiCol_Text),
 			Label);
 		ImGui::PopStyleVar();
-
-		if (bSelected)
-		{
-			ImGui::PopStyleColor(3);
-		}
+		ImGui::PopStyleColor(3);
 	}
-
-	ImGui::EndChild();
 }
 
 void FEditorPlaceActorsWidget::RenderActorGrid()
 {
-	if (!ImGui::BeginChild("##PlaceActorGrid", ImVec2(0.0f, 0.0f), false))
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, PlacePanelBg);
+	if (!ImGui::BeginChild("##PlaceActorGrid", ImVec2(0.0f, 0.0f), true))
 	{
 		ImGui::EndChild();
+		ImGui::PopStyleColor();
 		return;
 	}
 
 	const float AvailableWidth = ImGui::GetContentRegionAvail().x;
-	const float MinCardWidth = 128.0f;
+	const float MinCardWidth = 122.0f;
 	const int32 ColumnCount = (std::max)(1, static_cast<int32>(AvailableWidth / MinCardWidth));
 
 	bool bAnyVisible = false;
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 4.0f));
+	ImGui::PushStyleColor(ImGuiCol_Button, PlaceEntryBg);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, PlaceEntryHover);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, PlaceEntryActive);
 	if (ImGui::BeginTable("##PlaceActorButtons", ColumnCount, ImGuiTableFlags_SizingStretchSame))
 	{
 		for (const FPlaceActorEntry& Entry : GPlaceActorEntries)
@@ -285,7 +305,10 @@ void FEditorPlaceActorsWidget::RenderActorGrid()
 		ImGui::TextDisabled("No actors match the current search.");
 	}
 
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar();
 	ImGui::EndChild();
+	ImGui::PopStyleColor();
 }
 
 bool FEditorPlaceActorsWidget::MatchesSearch(const FPlaceActorEntry& Entry) const

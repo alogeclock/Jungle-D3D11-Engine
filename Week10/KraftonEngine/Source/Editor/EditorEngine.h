@@ -163,6 +163,7 @@ private:
 	bool HasMeaningfulSceneDelta(const FTrackedSceneSnapshot& Before, const FTrackedSceneSnapshot& After) const;
 	FTrackedSceneSnapshot CaptureTrackedSceneSnapshot() const;
 	void ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snapshot);
+	void InvalidateTrackedSceneSnapshotCache();
 
 	FSelectionManager SelectionManager;
 	FEditorMainPanel MainPanel;
@@ -180,6 +181,7 @@ private:
 	TArray<FTrackedSceneChange> SceneHistory;
 	int32 SceneHistoryCursor = -1;
 	std::optional<FTrackedSceneSnapshot> PendingTrackedSceneBefore;
+	std::optional<FTrackedSceneSnapshot> CachedTrackedSceneSnapshot;
 	bool bTrackingSceneChange = false;
 
 };

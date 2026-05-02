@@ -885,7 +885,8 @@ void FSystemResources::UpdateLightBuffer(FD3DDevice& Device, const FScene& Scene
 	LastNumLights = static_cast<uint32>(Infos.size());
 
 	GlobalLightingData.LightCullingMode = static_cast<uint32>(Frame.RenderOptions.LightCullingMode);
-	GlobalLightingData.VisualizeLightCulling = Frame.RenderOptions.ViewMode == EViewMode::LightCulling ? 1u : 0u;
+	GlobalLightingData.VisualizeLightCulling =
+		(Frame.RenderOptions.ViewMode == EViewMode::LightCulling || Frame.RenderOptions.ShowFlags.bLightHitMap) ? 1u : 0u;
 	GlobalLightingData.HeatMapMax = Frame.RenderOptions.HeatMapMax;
 
 	ClusteredLightCuller.UpdateFrameState(Frame);

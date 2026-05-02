@@ -532,7 +532,7 @@ void FDrawCommandBuilder::BuildPostProcessCommands(const FFrameContext& Frame, c
 	}
 
 	// LightCulling (UserBits=4 → WorldNormal 뒤)
-	if (CollectViewMode == EViewMode::LightCulling)
+	if (CollectViewMode == EViewMode::LightCulling || Frame.RenderOptions.ShowFlags.bLightHitMap)
 	{
 		FShader* CullingShader = FShaderManager::Get().GetOrCreate(EShaderPath::LightCulling);
 		if (CullingShader)

@@ -22,6 +22,14 @@ struct FOverlayStatLayout
 	float TextScale = 1.0f;
 };
 
+enum class EOverlayStatType : uint8
+{
+	FPS,
+	PickingTime,
+	Memory,
+	Shadow,
+};
+
 class FOverlayStatSystem
 {
 public:
@@ -34,6 +42,10 @@ public:
 	bool ToggleFPS() { bShowFPS = !bShowFPS; return bShowFPS; }
 	bool ToggleMemory() { bShowMemory = !bShowMemory; return bShowMemory; }
 	bool ToggleShadow() { bShowShadow = !bShowShadow; return bShowShadow; }
+	bool IsStatVisible(EOverlayStatType StatType) const;
+	void SetStatVisible(EOverlayStatType StatType, bool bVisible);
+	bool ToggleStat(EOverlayStatType StatType);
+	static const char* GetStatDisplayName(EOverlayStatType StatType);
 	void RecordPickingAttempt(double ElapsedMs);
 	void HideAll()
 	{

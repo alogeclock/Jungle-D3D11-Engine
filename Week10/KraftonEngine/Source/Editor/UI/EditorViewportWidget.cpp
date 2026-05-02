@@ -24,17 +24,18 @@ void FEditorViewportWidget::Render(float DeltaTime)
 	(void)DeltaTime;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, ImGui::GetStyle().FramePadding.y + 1.0f));
 	constexpr const char* PanelIconKey = "Editor.Icon.Panel.Viewport";
 	const std::string WindowTitle = EditorPanelTitleUtils::MakeClosablePanelTitle(WindowName.c_str(), PanelIconKey);
-	ImGui::Begin(WindowTitle.c_str(), nullptr, ImGuiWindowFlags_MenuBar);
+	ImGui::Begin(WindowTitle.c_str(), nullptr);
 	EditorPanelTitleUtils::DrawPanelTitleIcon(PanelIconKey);
 
-	// 메뉴 바에 Split/Merge 토글 버튼
-	if (ImGui::BeginMenuBar())
+	const float ToolbarHeight = ImGui::GetFrameHeight() + 2.0f;
+	if (ImGui::BeginChild("##ViewportToolbar", ImVec2(0.0f, ToolbarHeight), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		// 오른쪽 정렬을 위해 커서를 이동
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
 		float ButtonWidth = ImGui::CalcTextSize("Split").x + ImGui::GetStyle().FramePadding.x * 2.0f;
-		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ButtonWidth);
+		ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ButtonWidth);
 
 		bool bIsSplit = EditorEngine ? EditorEngine->IsSplitViewport() : false;
 		const char* ButtonLabel = bIsSplit ? "Merge" : "Split";
@@ -46,7 +47,7 @@ void FEditorViewportWidget::Render(float DeltaTime)
 				EditorEngine->ToggleViewportSplit();
 			}
 		}
-		ImGui::EndMenuBar();
+		ImGui::EndChild();
 	}
 
 	// 뷰포트 패널 위에서 마우스 클릭 시 활성 뷰포트 전환
@@ -91,5 +92,5 @@ void FEditorViewportWidget::Render(float DeltaTime)
 	}
 
 	ImGui::End();
-	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(2);
 }

@@ -84,6 +84,8 @@ public:
 	// GUI state helpers (wrappers for ImGui check)
 	bool IsGuiUsingMouse() const;
 	bool IsGuiUsingKeyboard() const;
+	void SetGuiCaptureOverride(bool bInUsingMouse, bool bInUsingKeyboard, bool bInUsingTextInput);
+	void ClearGuiCaptureOverride();
 
 	// Resets
 	void ResetMouseDelta();
@@ -132,6 +134,10 @@ private:
 
 	HWND OwnerHWnd = nullptr;
 	bool bWindowFocused = true;
+	bool bHasGuiCaptureOverride = false;
+	bool bGuiUsingMouseOverride = false;
+	bool bGuiUsingKeyboardOverride = false;
+	bool bGuiUsingTextInputOverride = false;
 
 	void UpdateDragging();
 	

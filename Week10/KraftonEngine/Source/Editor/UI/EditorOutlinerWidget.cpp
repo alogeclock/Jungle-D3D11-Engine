@@ -23,9 +23,17 @@ namespace
 	constexpr ImVec4 OutlinerSelectionHeaderColor = ImVec4(0.06f, 0.33f, 0.75f, 0.95f);
 	constexpr ImVec4 OutlinerSelectionHeaderHoveredColor = ImVec4(0.09f, 0.39f, 0.84f, 1.0f);
 	constexpr ImVec4 OutlinerSelectionHeaderActiveColor = ImVec4(0.05f, 0.28f, 0.67f, 1.0f);
+	constexpr ImVec4 PopupMenuItemHoverColor = ImVec4(0.10f, 0.54f, 0.96f, 1.0f);
+	constexpr ImVec4 PopupMenuItemActiveColor = ImVec4(0.00f, 0.40f, 0.84f, 1.0f);
 	constexpr ImVec4 OutlinerFolderArrowColor = ImVec4(0.66f, 0.66f, 0.68f, 1.0f);
 	constexpr ImVec4 OutlinerItemLabelColor = ImVec4(0.86f, 0.86f, 0.88f, 1.0f);
 	constexpr ImU32 OutlinerFolderIconTint = IM_COL32(184, 140, 58, 255);
+	constexpr ImVec4 OutlinerButtonColor = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+	constexpr ImVec4 OutlinerButtonHoveredColor = ImVec4(0.24f, 0.24f, 0.24f, 1.0f);
+	constexpr ImVec4 OutlinerButtonActiveColor = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
+	constexpr ImVec4 OutlinerButtonBorderColor = ImVec4(0.42f, 0.42f, 0.45f, 0.90f);
+	constexpr float OutlinerToolbarButtonHeight = 0.0f;
+	constexpr float OutlinerFooterButtonHeight = 24.0f;
 
 	FString GetEditorPathResource(const char* Key)
 	{
@@ -76,20 +84,29 @@ namespace
 
 	bool DrawSearchInputWithIcon(const char* Id, const char* Hint, char* Buffer, size_t BufferSize, float Width)
 	{
-	ImGuiStyle& Style = ImGui::GetStyle();
-	ImGui::SetNextItemWidth(Width);
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 11.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(Style.FramePadding.x + 26.0f, Style.FramePadding.y));
+		ImGuiStyle& Style = ImGui::GetStyle();
+		ImGui::SetNextItemWidth(Width);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 11.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(Style.FramePadding.x + 26.0f, Style.FramePadding.y));
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.42f, 0.42f, 0.45f, 0.90f));
-	const std::string PaddedHint = std::string("   ") + Hint;
-	const bool bChanged = ImGui::InputTextWithHint(Id, PaddedHint.c_str(), Buffer, BufferSize);
-	ImGui::PopStyleColor();
-	ImGui::PopStyleVar(3);
+		const std::string PaddedHint = std::string("   ") + Hint;
+		const bool bChanged = ImGui::InputTextWithHint(Id, PaddedHint.c_str(), Buffer, BufferSize);
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(3);
+
+		const ImVec2 Min = ImGui::GetItemRectMin();
+		const ImVec2 Max = ImGui::GetItemRectMax();
+		const float LeadingSlotWidth = (std::min)(30.0f, Max.x - Min.x);
+		ImGui::GetWindowDrawList()->AddRectFilled(
+			ImVec2(Min.x + 1.0f, Min.y + 1.0f),
+			ImVec2(Min.x + LeadingSlotWidth, Max.y - 1.0f),
+			IM_COL32(5, 5, 5, 255),
+			11.0f,
+			ImDrawFlags_RoundCornersLeft);
 
 		if (ID3D11ShaderResourceView* SearchIcon = GetEditorIcon("Editor.Icon.Search"))
 		{
-			const ImVec2 Min = ImGui::GetItemRectMin();
 			const float IconSize = ImGui::GetFrameHeight() - 12.0f;
 			const float IconY = Min.y + (ImGui::GetFrameHeight() - IconSize) * 0.5f;
 			ImGui::GetWindowDrawList()->AddImage(
@@ -122,18 +139,50 @@ namespace
 		}
 	}
 
+	void PushOutlinerButtonStyle(float FrameRounding = 6.0f)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, FrameRounding);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+		ImGui::PushStyleColor(ImGuiCol_Button, OutlinerButtonColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, OutlinerButtonHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, OutlinerButtonActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_Border, OutlinerButtonBorderColor);
+	}
+
+	void PopOutlinerButtonStyle()
+	{
+		ImGui::PopStyleColor(4);
+		ImGui::PopStyleVar(2);
+	}
+
 	bool DrawIconLabelButton(const char* Id, const char* IconKey, const char* Label, const ImVec2& Size, ImU32 Tint = IM_COL32_WHITE)
 	{
-		const bool bClicked = ImGui::Button(Id, Size);
+		const float Width = Size.x > 0.0f ? Size.x : 140.0f;
+		const float Height = Size.y > 0.0f ? Size.y : 24.0f;
+		ImGui::InvisibleButton(Id, ImVec2(Width, Height));
+		const bool bClicked = ImGui::IsItemClicked();
 		const ImVec2 Min = ImGui::GetItemRectMin();
 		const ImVec2 Max = ImGui::GetItemRectMax();
 		ImDrawList* DrawList = ImGui::GetWindowDrawList();
-		float CursorX = Min.x + 10.0f;
+		const bool bHeld = ImGui::IsItemActive();
+		const bool bHovered = ImGui::IsItemHovered();
+		ImU32 BackgroundColor = ImGui::GetColorU32(ImGuiCol_Button);
+		if (bHeld)
+		{
+			BackgroundColor = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+		}
+		else if (bHovered)
+		{
+			BackgroundColor = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+		}
+		DrawList->AddRectFilled(Min, Max, BackgroundColor, ImGui::GetStyle().FrameRounding);
+		DrawList->AddRect(Min, Max, ImGui::GetColorU32(ImGuiCol_Border), ImGui::GetStyle().FrameRounding);
+		float CursorX = Min.x + 8.0f;
 		const float CenterY = Min.y + (Max.y - Min.y) * 0.5f;
 
 		if (ID3D11ShaderResourceView* Icon = GetEditorIcon(IconKey))
 		{
-			const float IconSize = (std::min)(ImGui::GetItemRectSize().y - 8.0f, 16.0f);
+			const float IconSize = (std::min)(ImGui::GetItemRectSize().y - 8.0f, 14.0f);
 			DrawList->AddImage(
 				reinterpret_cast<ImTextureID>(Icon),
 				ImVec2(CursorX, CenterY - IconSize * 0.5f),
@@ -141,7 +190,7 @@ namespace
 				ImVec2(0.0f, 0.0f),
 				ImVec2(1.0f, 1.0f),
 				Tint);
-			CursorX += IconSize + 6.0f;
+			CursorX += IconSize + 8.0f;
 		}
 
 		const ImVec2 LabelSize = ImGui::CalcTextSize(Label);
@@ -234,8 +283,8 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 		}
 	}
 
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
-	if (ImGui::Button("##OutlinerFilter", ImVec2(34.0f, 0.0f)))
+	PushOutlinerButtonStyle();
+	if (ImGui::Button("##OutlinerFilter", ImVec2(34.0f, OutlinerToolbarButtonHeight)))
 	{
 		ImGui::OpenPopup("##OutlinerTypeFilterPopup");
 	}
@@ -311,7 +360,7 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 	const float SearchWidth = (std::max)(120.0f, ImGui::GetContentRegionAvail().x - AddButtonWidth - ImGui::GetStyle().ItemSpacing.x);
 	DrawSearchInputWithIcon("##OutlinerSearch", "Search...", SearchBuffer, sizeof(SearchBuffer), SearchWidth);
 	ImGui::SameLine();
-	if (ImGui::Button("##OutlinerCreateFolder", ImVec2(AddButtonWidth, 0.0f)))
+	if (ImGui::Button("##OutlinerCreateFolder", ImVec2(AddButtonWidth, OutlinerToolbarButtonHeight)))
 	{
 		NewFolderBuffer[0] = '\0';
 		ImGui::OpenPopup("##NewOutlinerFolder");
@@ -343,7 +392,7 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 		}
 		ImGui::EndPopup();
 	}
-	ImGui::PopStyleVar();
+	PopOutlinerButtonStyle();
 	ImGui::Separator();
 	const float FooterHeight = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y + 8.0f;
 	ImGui::BeginChild("##OutlinerTableRegion", ImVec2(0.0f, -FooterHeight), false);
@@ -371,10 +420,12 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 	{
 		ImGui::BeginDisabled();
 	}
-	if (ImGui::Button("Select All", ImVec2(SelectAllWidth, 0.0f)))
+	PushOutlinerButtonStyle();
+	if (ImGui::Button("Select All", ImVec2(SelectAllWidth, OutlinerFooterButtonHeight)))
 	{
 		SelectAllVisibleActors();
 	}
+	PopOutlinerButtonStyle();
 	if (!bCanSelectAll)
 	{
 		ImGui::EndDisabled();
@@ -385,10 +436,11 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 	{
 		ImGui::BeginDisabled();
 	}
+	PushOutlinerButtonStyle();
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.42f, 0.16f, 0.16f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.50f, 0.20f, 0.20f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.34f, 0.12f, 0.12f, 1.0f));
-	if (DrawIconLabelButton("##DeleteSelectedActors", "Editor.Icon.Delete", "Delete Selected", ImVec2(RemoveWidth, 0.0f), IM_COL32(255, 225, 225, 255)))
+	if (DrawIconLabelButton("##DeleteSelectedActors", "Editor.Icon.Delete", "Delete Selected", ImVec2(RemoveWidth, OutlinerFooterButtonHeight), IM_COL32(255, 225, 225, 255)))
 	{
 		EditorEngine->BeginTrackedSceneChange();
 		Selection.DeleteSelectedActors();
@@ -396,6 +448,7 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 		EditorEngine->CommitTrackedSceneChange();
 	}
 	ImGui::PopStyleColor(3);
+	PopOutlinerButtonStyle();
 	if (!bCanRemove)
 	{
 		ImGui::EndDisabled();
@@ -429,6 +482,50 @@ void FEditorOutlinerWidget::SelectAllVisibleActors()
 	}
 
 	EditorEngine->GetSelectionManager().SelectActors(ActorsToSelect);
+}
+
+void FEditorOutlinerWidget::StartActorRename(AActor* Actor)
+{
+	if (!Actor)
+	{
+		return;
+	}
+
+	RenamingActor = Actor;
+	bFocusRenameInput = true;
+	const FString CurrentName = Actor->GetFName().ToString().empty() ? Actor->GetClass()->GetName() : Actor->GetFName().ToString();
+	strncpy_s(RenameBuffer, CurrentName.c_str(), _TRUNCATE);
+}
+
+void FEditorOutlinerWidget::CommitActorRename()
+{
+	if (!RenamingActor)
+	{
+		CancelActorRename();
+		return;
+	}
+
+	FString NewName = RenameBuffer;
+	if (NewName.empty())
+	{
+		NewName = RenamingActor->GetClass()->GetName();
+	}
+
+	if (EditorEngine)
+	{
+		EditorEngine->BeginTrackedSceneChange();
+		RenamingActor->SetFName(FName(NewName));
+		EditorEngine->CommitTrackedSceneChange();
+	}
+
+	CancelActorRename();
+}
+
+void FEditorOutlinerWidget::CancelActorRename()
+{
+	RenamingActor = nullptr;
+	bFocusRenameInput = false;
+	RenameBuffer[0] = '\0';
 }
 
 bool FEditorOutlinerWidget::DrawVisibilityToggle(const char* Id, bool bVisible) const
@@ -584,6 +681,7 @@ void FEditorOutlinerWidget::RenderActorOutliner()
 		const FString Label = Actor->GetFName().ToString().empty() ? Actor->GetClass()->GetName() : Actor->GetFName().ToString();
 		const FString Type = Actor->GetClass()->GetName();
 		const bool bIsSelected = Selection.IsSelected(Actor);
+		const bool bIsRenaming = RenamingActor == Actor;
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
@@ -614,7 +712,32 @@ void FEditorOutlinerWidget::RenderActorOutliner()
 			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, OutlinerSelectionHeaderHoveredColor);
 			ImGui::PushStyleColor(ImGuiCol_HeaderActive, OutlinerSelectionHeaderActiveColor);
 		}
-		if (ImGui::Selectable((Label + "##OutlinerRow" + std::to_string(StableIndex)).c_str(), bIsSelected, ImGuiSelectableFlags_SpanAllColumns))
+		if (bIsRenaming)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.0f, 3.0f));
+			ImGui::SetNextItemWidth((std::max)(120.0f, ImGui::GetContentRegionAvail().x));
+			if (bFocusRenameInput)
+			{
+				ImGui::SetKeyboardFocusHere();
+				bFocusRenameInput = false;
+			}
+
+			const bool bSubmitted = ImGui::InputText(
+				("##OutlinerRename" + std::to_string(StableIndex)).c_str(),
+				RenameBuffer,
+				sizeof(RenameBuffer),
+				ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+			if (bSubmitted || ImGui::IsItemDeactivatedAfterEdit())
+			{
+				CommitActorRename();
+			}
+			else if (ImGui::IsItemActive() && ImGui::IsKeyPressed(ImGuiKey_Escape))
+			{
+				CancelActorRename();
+			}
+			ImGui::PopStyleVar();
+		}
+		else if (ImGui::Selectable((Label + "##OutlinerRow" + std::to_string(StableIndex)).c_str(), bIsSelected, ImGuiSelectableFlags_SpanAllColumns))
 		{
 			if (ImGui::GetIO().KeyShift)
 			{
@@ -644,6 +767,12 @@ void FEditorOutlinerWidget::RenderActorOutliner()
 			if (DrawIconLabelButton("##FocusActorContext", "Editor.Icon.Search", "Focus", ImVec2(120.0f, 0.0f)))
 			{
 				EditorEngine->FocusActorInViewport(Actor);
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (DrawIconLabelButton("##RenameActorContext", "Editor.Icon.Actor", "Rename", ImVec2(120.0f, 0.0f)))
+			{
+				StartActorRename(Actor);
 				ImGui::CloseCurrentPopup();
 			}
 

@@ -10,12 +10,18 @@ IMPLEMENT_CLASS(USpotLightComponent, UPointLightComponent)
 
 void USpotLightComponent::ContributeSelectedVisuals(FScene& Scene) const
 {
+	const FScene::FLightVisualizationSettings& VisSettings = Scene.GetLightVisualizationSettings();
+	if (!VisSettings.bEnabled)
+	{
+		return;
+	}
+
 	const FVector Apex = GetWorldLocation();
 	const FVector Forward = GetForwardVector();
 	const FVector Right = GetRightVector();
 	const float ClampedOuterAngle = FMath::Clamp(OuterConeAngle, 0.0f, 89.0f);
 	const float ClampedInnerAngle = FMath::Clamp(InnerConeAngle, 0.0f, ClampedOuterAngle);
-	const float ConeLength = AttenuationRadius;
+	const float ConeLength = AttenuationRadius * VisSettings.SpotScale;
 
 	Scene.AddDebugLine(Apex, Apex + Forward * ConeLength, FColor::White());
 

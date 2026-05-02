@@ -199,12 +199,36 @@ void FInputManager::UpdateDragging()
 
 bool FInputManager::IsGuiUsingMouse() const
 {
+	if (bHasGuiCaptureOverride)
+	{
+		return bGuiUsingMouseOverride;
+	}
 	return ImGui::GetIO().WantCaptureMouse;
 }
 
 bool FInputManager::IsGuiUsingKeyboard() const
 {
+	if (bHasGuiCaptureOverride)
+	{
+		return bGuiUsingKeyboardOverride || bGuiUsingTextInputOverride;
+	}
 	return ImGui::GetIO().WantCaptureKeyboard || ImGui::GetIO().WantTextInput;
+}
+
+void FInputManager::SetGuiCaptureOverride(bool bInUsingMouse, bool bInUsingKeyboard, bool bInUsingTextInput)
+{
+	bHasGuiCaptureOverride = true;
+	bGuiUsingMouseOverride = bInUsingMouse;
+	bGuiUsingKeyboardOverride = bInUsingKeyboard;
+	bGuiUsingTextInputOverride = bInUsingTextInput;
+}
+
+void FInputManager::ClearGuiCaptureOverride()
+{
+	bHasGuiCaptureOverride = false;
+	bGuiUsingMouseOverride = false;
+	bGuiUsingKeyboardOverride = false;
+	bGuiUsingTextInputOverride = false;
 }
 
 void FInputManager::ResetAllStates()

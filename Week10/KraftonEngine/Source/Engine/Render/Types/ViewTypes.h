@@ -31,7 +31,11 @@ struct FShowFlags
 	bool bBillboardText = true;
 	bool bBoundingVolume = false;
 	bool bDebugDraw = true;
+	bool bSceneBVH = false;
 	bool bOctree = false;
+	bool bWorldBound = false;
+	bool bLightVisualization = true;
+	bool bLightHitMap = false;
 	bool bFog = true;
 	bool bFXAA = false;
 	bool bViewLightCulling = false;
@@ -79,4 +83,9 @@ struct FViewportRenderOptions
 	ELightCullingMode LightCullingMode = ELightCullingMode::Cluster;
 	float HeatMapMax = 20.0f;
 	bool Enable25DCulling = true;
+
+	// Light debug visualization
+	float DirectionalLightVisualizationScale = 1.0f;
+	float PointLightVisualizationScale = 1.0f;
+	float SpotLightVisualizationScale = 1.0f;
 };

@@ -19,9 +19,11 @@ private:
 	void RenderAddComponentButton(AActor* Actor);
 	void RenderComponentTree(AActor* Actor, float Height);
 	void RenderSceneComponentNode(class USceneComponent* Comp);
+	void RenderComponentContextMenu(AActor* Actor, UActorComponent* Component);
 	void RenderDetails(AActor* PrimaryActor, const TArray<AActor*>& SelectedActors);
 	void RenderComponentProperties(AActor* Actor, const TArray<AActor*>& SelectedActors);
 	void RenderActorProperties(AActor* PrimaryActor, const TArray<AActor*>& SelectedActors);
+	void DeleteSelectedComponent(AActor* Actor);
 	bool RenderPropertyWidget(TArray<struct FPropertyDescriptor>& Props, int32& Index);
 	void CommitActorNameEdit(AActor* Actor);
 	void RenderPropertySection(const char* SectionName, TArray<struct FPropertyDescriptor>& Props, const TArray<int32>& Indices, const TArray<AActor*>& SelectedActors, bool& bAnyChanged);

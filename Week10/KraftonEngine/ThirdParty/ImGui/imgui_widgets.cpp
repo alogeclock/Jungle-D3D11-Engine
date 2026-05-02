@@ -1246,7 +1246,8 @@ bool ImGui::Checkbox(const char* label, bool* v)
 
     const float square_sz = GetFrameHeight();
     const ImVec2 pos = window->DC.CursorPos;
-    const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
+    const float checkbox_label_spacing = label_size.x > 0.0f ? style.ItemInnerSpacing.x + 2.0f : 0.0f;
+    const ImRect total_bb(pos, pos + ImVec2(square_sz + checkbox_label_spacing + label_size.x, label_size.y + style.FramePadding.y * 2.0f));
     ItemSize(total_bb, style.FramePadding.y);
     const bool is_visible = ItemAdd(total_bb, id);
     const bool is_multi_select = (g.LastItemData.ItemFlags & ImGuiItemFlags_IsMultiSelect) != 0;
@@ -1278,27 +1279,33 @@ bool ImGui::Checkbox(const char* label, bool* v)
         MarkItemEdited(id);
     }
 
-    const ImRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
+    const float checkbox_sz = ImMax(12.0f, square_sz - 4.0f);
+    const ImVec2 check_offset(IM_TRUNC((square_sz - checkbox_sz) * 0.5f), IM_TRUNC((square_sz - checkbox_sz) * 0.5f));
+    const ImRect check_bb(pos + check_offset, pos + check_offset + ImVec2(checkbox_sz, checkbox_sz));
     const bool mixed_value = (g.LastItemData.ItemFlags & ImGuiItemFlags_MixedValue) != 0;
     if (is_visible)
     {
         RenderNavCursor(total_bb, id);
-        RenderFrame(check_bb.Min, check_bb.Max, GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg), true, style.FrameRounding);
+        const ImU32 checkbox_bg_col = held && hovered ? IM_COL32(28, 28, 28, 255)
+            : hovered ? IM_COL32(18, 18, 18, 255)
+            : IM_COL32(10, 10, 10, 255);
+        RenderFrame(check_bb.Min, check_bb.Max, checkbox_bg_col, true, 0.0f);
+        window->DrawList->AddRect(check_bb.Min, check_bb.Max, IM_COL32(118, 118, 118, 255), 0.0f, 0, 1.0f);
         ImU32 check_col = GetColorU32(ImGuiCol_CheckMark);
         if (mixed_value)
         {
             // Undocumented tristate/mixed/indeterminate checkbox (#2644)
             // This may seem awkwardly designed because the aim is to make ImGuiItemFlags_MixedValue supported by all widgets (not just checkbox)
-            ImVec2 pad(ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)), ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)));
-            window->DrawList->AddRectFilled(check_bb.Min + pad, check_bb.Max - pad, check_col, style.FrameRounding);
+            ImVec2 pad(ImMax(1.0f, IM_TRUNC(checkbox_sz / 3.6f)), ImMax(1.0f, IM_TRUNC(checkbox_sz / 3.6f)));
+            window->DrawList->AddRectFilled(check_bb.Min + pad, check_bb.Max - pad, check_col, 0.0f);
         }
         else if (*v)
         {
-            const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
-            RenderCheckMark(window->DrawList, check_bb.Min + ImVec2(pad, pad), check_col, square_sz - pad * 2.0f);
+            const float pad = ImMax(1.0f, IM_TRUNC(checkbox_sz / 6.0f));
+            RenderCheckMark(window->DrawList, check_bb.Min + ImVec2(pad, pad), check_col, checkbox_sz - pad * 2.0f);
         }
     }
-    const ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
+    const ImVec2 label_pos = ImVec2(check_bb.Max.x + checkbox_label_spacing, check_bb.Min.y + style.FramePadding.y);
     if (g.LogEnabled)
         LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
     if (is_visible && label_size.x > 0.0f)

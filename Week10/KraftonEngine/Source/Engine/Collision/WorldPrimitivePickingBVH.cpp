@@ -312,6 +312,18 @@ bool FWorldPrimitivePickingBVH::Raycast(const FRay& Ray, FRayHitResult& OutHitRe
 	return OutActor != nullptr;
 }
 
+void FWorldPrimitivePickingBVH::CollectDebugBounds(TArray<FBoundingBox>& OutBounds) const
+{
+	OutBounds.reserve(OutBounds.size() + Nodes.size());
+	for (const FNode& Node : Nodes)
+	{
+		if (Node.Bounds.IsValid())
+		{
+			OutBounds.push_back(Node.Bounds);
+		}
+	}
+}
+
 int32 FWorldPrimitivePickingBVH::BuildRecursive(int32 Start, int32 End)
 {
 	const int32 NodeIndex = static_cast<int32>(Nodes.size());

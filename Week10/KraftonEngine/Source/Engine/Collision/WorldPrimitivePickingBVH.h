@@ -20,6 +20,7 @@ public:
 	void EnsureBuilt(const TArray<AActor*>& Actors);
 	//트리를 순회해 가장 가까운 primitive hit 결과를 찾습니다.
 	bool Raycast(const FRay& Ray, FRayHitResult& OutHitResult, AActor*& OutActor) const;
+	void CollectDebugBounds(TArray<FBoundingBox>& OutBounds) const;
 
 private:
 	struct FLeaf

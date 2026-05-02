@@ -36,6 +36,7 @@ private:
 	void RenderMainMenuBar();
 	void RenderProjectSettingsWindow();
 	void RenderShortcutOverlay();
+	void RenderCreditsOverlay();
 	void HandleGlobalShortcuts();
 
 	FWindowsWindow* Window = nullptr;
@@ -51,6 +52,7 @@ private:
 	EditorShadowMapDebugWidget ShadowMapDebugWidget;
 	bool bShowWidgetList = false;
 	bool bShowShortcutOverlay = false;
+	bool bShowCreditsOverlay = false;
 	bool bShowProjectSettings = false;
 	bool bHideEditorWindows = false;
 	bool bHasSavedUIVisibility = false;

@@ -24,6 +24,8 @@ public:
 	void CollectOverlayText(const FOverlayStatSystem& OverlaySystem, const UEditorEngine& Editor, FScene& Scene);
 	void CollectDebugDraw(const FFrameContext& Frame, FScene& Scene);
 	void CollectOctreeDebug(const FOctree* Node, FScene& Scene, uint32 Depth = 0);
+	void CollectSceneBVHDebug(UWorld* World, FScene& Scene);
+	void CollectWorldBoundsDebug(UWorld* World, FScene& Scene);
 
 private:
 	void FilterVisibleProxies(const FFrameContext& Frame, FScene& Scene, FCollectOutput& Output, UWorld* World);

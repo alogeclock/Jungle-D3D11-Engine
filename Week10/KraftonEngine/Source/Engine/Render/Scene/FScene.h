@@ -67,6 +67,17 @@ public:
 	float GetGridSpacing() const { return Grid.Spacing; }
 	int32 GetGridHalfLineCount() const { return Grid.HalfLineCount; }
 
+	// --- Light visualization ---
+	struct FLightVisualizationSettings
+	{
+		bool bEnabled = true;
+		float DirectionalScale = 1.0f;
+		float PointScale = 1.0f;
+		float SpotScale = 1.0f;
+	};
+	void SetLightVisualizationSettings(bool bEnabled, float DirectionalScale, float PointScale, float SpotScale);
+	const FLightVisualizationSettings& GetLightVisualizationSettings() const { return LightVisualizationSettings; }
+
 	// --- DebugDraw (Duration 기반 디버그 라인) ---
 	FDebugDrawQueue& GetDebugDrawQueue() { return DebugDrawQueue; }
 	const FDebugDrawQueue& GetDebugDrawQueue() const { return DebugDrawQueue; }
@@ -107,6 +118,7 @@ private:
 	TArray<FDebugLine>   DebugLines;
 
 	FGridParams Grid;
+	FLightVisualizationSettings LightVisualizationSettings;
 	FDebugDrawQueue DebugDrawQueue;
 
 	FSceneEnvironment Environment;

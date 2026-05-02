@@ -225,12 +225,23 @@ void FEditorRenderPipeline::CollectCommands(FLevelEditorViewportClient* VC, UWor
 	{
 		SCOPE_STAT_CAT("CollectDebug", "3_Collect");
 		Collector.CollectGrid(Frame.RenderOptions.GridSpacing, Frame.RenderOptions.GridHalfLineCount, Scene);
+		Scene.SetLightVisualizationSettings(
+			Flags.bLightVisualization,
+			Frame.RenderOptions.DirectionalLightVisualizationScale,
+			Frame.RenderOptions.PointLightVisualizationScale,
+			Frame.RenderOptions.SpotLightVisualizationScale);
 
 		if (Flags.bShowShadowFrustum)
 			Scene.SubmitShadowFrustumDebug(World, Frame);
 
+		if (Flags.bSceneBVH)
+			Collector.CollectSceneBVHDebug(World, Scene);
+
 		if (Flags.bOctree)
 			Collector.CollectOctreeDebug(World->GetOctree(), Scene);
+
+		if (Flags.bWorldBound)
+			Collector.CollectWorldBoundsDebug(World, Scene);
 
 		Collector.CollectDebugDraw(Frame, Scene);
 	}

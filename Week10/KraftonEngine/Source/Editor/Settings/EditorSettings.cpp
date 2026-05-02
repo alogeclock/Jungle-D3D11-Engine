@@ -27,13 +27,20 @@ namespace Key
 	constexpr const char* bBillboardText = "bBillboardText";
 	constexpr const char* bBoundingVolume = "bBoundingVolume";
 	constexpr const char* bDebugDraw = "bDebugDraw";
+	constexpr const char* bSceneBVH = "bSceneBVH";
 	constexpr const char* bOctree = "bOctree";
+	constexpr const char* bWorldBound = "bWorldBound";
+	constexpr const char* bLightVisualization = "bLightVisualization";
+	constexpr const char* bLightHitMap = "bLightHitMap";
 	constexpr const char* bFog = "bFog";
 	constexpr const char* bShowShadowFrustum = "bShowShadowFrustum";
 	constexpr const char* GridSpacing = "GridSpacing";
 	constexpr const char* GridHalfLineCount = "GridHalfLineCount";
 	constexpr const char* CameraMoveSensitivity = "CameraMoveSensitivity";
 	constexpr const char* CameraRotateSensitivity = "CameraRotateSensitivity";
+	constexpr const char* DirectionalLightVisualizationScale = "DirectionalLightVisualizationScale";
+	constexpr const char* PointLightVisualizationScale = "PointLightVisualizationScale";
+	constexpr const char* SpotLightVisualizationScale = "SpotLightVisualizationScale";
 
 	// Paths
 	constexpr const char* EditorStartLevel = "EditorStartLevel";
@@ -121,13 +128,20 @@ void FEditorSettings::SaveToFile(const FString& Path) const
 		SlotObj[Key::bBillboardText] = Opts.ShowFlags.bBillboardText;
 		SlotObj[Key::bBoundingVolume] = Opts.ShowFlags.bBoundingVolume;
 		SlotObj[Key::bDebugDraw] = Opts.ShowFlags.bDebugDraw;
+		SlotObj[Key::bSceneBVH] = Opts.ShowFlags.bSceneBVH;
 		SlotObj[Key::bOctree] = Opts.ShowFlags.bOctree;
+		SlotObj[Key::bWorldBound] = Opts.ShowFlags.bWorldBound;
+		SlotObj[Key::bLightVisualization] = Opts.ShowFlags.bLightVisualization;
+		SlotObj[Key::bLightHitMap] = Opts.ShowFlags.bLightHitMap;
 		SlotObj[Key::bFog] = Opts.ShowFlags.bFog;
 		SlotObj[Key::bShowShadowFrustum] = Opts.ShowFlags.bShowShadowFrustum;
 		SlotObj[Key::GridSpacing] = Opts.GridSpacing;
 		SlotObj[Key::GridHalfLineCount] = Opts.GridHalfLineCount;
 		SlotObj[Key::CameraMoveSensitivity] = Opts.CameraMoveSensitivity;
 		SlotObj[Key::CameraRotateSensitivity] = Opts.CameraRotateSensitivity;
+		SlotObj[Key::DirectionalLightVisualizationScale] = Opts.DirectionalLightVisualizationScale;
+		SlotObj[Key::PointLightVisualizationScale] = Opts.PointLightVisualizationScale;
+		SlotObj[Key::SpotLightVisualizationScale] = Opts.SpotLightVisualizationScale;
 		SlotsArr.append(SlotObj);
 	}
 	LayoutObj[Key::Slots] = SlotsArr;
@@ -275,8 +289,16 @@ void FEditorSettings::LoadFromFile(const FString& Path)
 					Opts.ShowFlags.bBoundingVolume = S[Key::bBoundingVolume].ToBool();
 				if (S.hasKey(Key::bDebugDraw))
 					Opts.ShowFlags.bDebugDraw = S[Key::bDebugDraw].ToBool();
+				if (S.hasKey(Key::bSceneBVH))
+					Opts.ShowFlags.bSceneBVH = S[Key::bSceneBVH].ToBool();
 				if (S.hasKey(Key::bOctree))
 					Opts.ShowFlags.bOctree = S[Key::bOctree].ToBool();
+				if (S.hasKey(Key::bWorldBound))
+					Opts.ShowFlags.bWorldBound = S[Key::bWorldBound].ToBool();
+				if (S.hasKey(Key::bLightVisualization))
+					Opts.ShowFlags.bLightVisualization = S[Key::bLightVisualization].ToBool();
+				if (S.hasKey(Key::bLightHitMap))
+					Opts.ShowFlags.bLightHitMap = S[Key::bLightHitMap].ToBool();
 				if (S.hasKey(Key::bFog))
 					Opts.ShowFlags.bFog = S[Key::bFog].ToBool();
 				if (S.hasKey(Key::bShowShadowFrustum))
@@ -289,6 +311,12 @@ void FEditorSettings::LoadFromFile(const FString& Path)
 					Opts.CameraMoveSensitivity = static_cast<float>(S[Key::CameraMoveSensitivity].ToFloat());
 				if (S.hasKey(Key::CameraRotateSensitivity))
 					Opts.CameraRotateSensitivity = static_cast<float>(S[Key::CameraRotateSensitivity].ToFloat());
+				if (S.hasKey(Key::DirectionalLightVisualizationScale))
+					Opts.DirectionalLightVisualizationScale = static_cast<float>(S[Key::DirectionalLightVisualizationScale].ToFloat());
+				if (S.hasKey(Key::PointLightVisualizationScale))
+					Opts.PointLightVisualizationScale = static_cast<float>(S[Key::PointLightVisualizationScale].ToFloat());
+				if (S.hasKey(Key::SpotLightVisualizationScale))
+					Opts.SpotLightVisualizationScale = static_cast<float>(S[Key::SpotLightVisualizationScale].ToFloat());
 			}
 		}
 

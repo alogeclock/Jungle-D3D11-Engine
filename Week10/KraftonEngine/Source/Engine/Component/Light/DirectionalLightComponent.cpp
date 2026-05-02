@@ -13,15 +13,22 @@ namespace
 {
 	void AddDirectionalLightArrow(FScene& Scene, const FVector& Origin, const FVector& Direction)
 	{
+		const FScene::FLightVisualizationSettings& VisSettings = Scene.GetLightVisualizationSettings();
+		if (!VisSettings.bEnabled)
+		{
+			return;
+		}
+
+		const float Scale = VisSettings.DirectionalScale;
 		const FVector Forward = Direction.Normalized();
 		if (Forward.Length() <= 0.001f)
 		{
 			return;
 		}
 
-		constexpr float ArrowLength = 2.2f;
-		constexpr float HeadLength = 0.55f;
-		constexpr float HeadRadius = 0.22f;
+		const float ArrowLength = 2.2f * Scale;
+		const float HeadLength = 0.55f * Scale;
+		const float HeadRadius = 0.22f * Scale;
 		constexpr int32 RingSegments = 12;
 
 		FVector ReferenceUp(0.0f, 0.0f, 1.0f);

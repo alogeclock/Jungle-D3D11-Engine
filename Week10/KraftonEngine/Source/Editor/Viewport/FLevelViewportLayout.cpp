@@ -35,12 +35,21 @@
 
 namespace
 {
+namespace PopupPalette
+{
+	constexpr ImVec4 PopupBg = ImVec4(0.12f, 0.13f, 0.15f, 0.98f);
+	constexpr ImVec4 SurfaceBg = ImVec4(0.22f, 0.23f, 0.26f, 1.0f);
+	constexpr ImVec4 FieldBg = ImVec4(0.06f, 0.06f, 0.07f, 1.0f);
+	constexpr ImVec4 FieldHoverBg = ImVec4(0.09f, 0.09f, 0.11f, 1.0f);
+	constexpr ImVec4 FieldActiveBg = ImVec4(0.12f, 0.12f, 0.14f, 1.0f);
+	constexpr ImVec4 FieldBorder = ImVec4(0.34f, 0.35f, 0.38f, 1.0f);
+	constexpr ImVec4 CheckboxBg = ImVec4(0.03f, 0.03f, 0.04f, 1.0f);
+	constexpr ImVec4 CheckboxHoverBg = ImVec4(0.07f, 0.07f, 0.09f, 1.0f);
+	constexpr ImVec4 CheckboxActiveBg = ImVec4(0.10f, 0.10f, 0.12f, 1.0f);
+	constexpr ImVec4 CheckboxCheck = ImVec4(0.20f, 0.56f, 0.96f, 1.0f);
+}
+
 constexpr ImVec4 PopupSectionHeaderTextColor = ImVec4(0.82f, 0.82f, 0.84f, 1.0f);
-constexpr ImVec4 CameraPopupPanelBgColor = ImVec4(0.11f, 0.11f, 0.12f, 1.0f);
-constexpr ImVec4 CameraPopupFieldBgColor = ImVec4(0.05f, 0.05f, 0.06f, 1.0f);
-constexpr ImVec4 CameraPopupFieldHoverBgColor = ImVec4(0.08f, 0.08f, 0.10f, 1.0f);
-constexpr ImVec4 CameraPopupFieldActiveBgColor = ImVec4(0.10f, 0.10f, 0.12f, 1.0f);
-constexpr ImVec4 CameraPopupFieldBorderColor = ImVec4(0.22f, 0.22f, 0.24f, 1.0f);
 constexpr ImVec4 CameraPopupLabelColor = ImVec4(0.87f, 0.88f, 0.90f, 1.0f);
 constexpr ImVec4 CameraPopupHintColor = ImVec4(0.60f, 0.63f, 0.68f, 1.0f);
 constexpr ImVec2 PopupComfortWindowPadding = ImVec2(10.0f, 10.0f);
@@ -52,7 +61,6 @@ constexpr float CameraPopupFieldOffset = 78.0f;
 constexpr float CameraPopupMinFieldWidth = 88.0f;
 constexpr float CameraPopupMaxScalarFieldWidth = 112.0f;
 constexpr float CameraPopupMaxAxisFieldWidth = 52.0f;
-constexpr ImVec4 SnapPopupPanelBgColor = ImVec4(0.13f, 0.14f, 0.16f, 0.98f);
 constexpr ImVec4 SnapPopupBorderColor = ImVec4(0.30f, 0.31f, 0.35f, 1.0f);
 constexpr ImVec4 SnapPopupSelectedColor = ImVec4(0.20f, 0.44f, 0.78f, 0.98f);
 constexpr ImVec4 SnapPopupSelectedHoverColor = ImVec4(0.25f, 0.50f, 0.86f, 1.0f);
@@ -88,10 +96,15 @@ void ApplyProjectViewportSettings(FViewportRenderOptions& Opts)
 
 void PushCameraPopupFieldStyle()
 {
-	ImGui::PushStyleColor(ImGuiCol_FrameBg, CameraPopupFieldBgColor);
-	ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, CameraPopupFieldHoverBgColor);
-	ImGui::PushStyleColor(ImGuiCol_FrameBgActive, CameraPopupFieldActiveBgColor);
-	ImGui::PushStyleColor(ImGuiCol_Border, CameraPopupFieldBorderColor);
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, PopupPalette::FieldBg);
+	ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, PopupPalette::FieldHoverBg);
+	ImGui::PushStyleColor(ImGuiCol_FrameBgActive, PopupPalette::FieldActiveBg);
+	ImGui::PushStyleColor(ImGuiCol_Border, PopupPalette::FieldBorder);
+}
+
+void PushCommonPopupBgColor()
+{
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, PopupPalette::PopupBg);
 }
 
 bool DrawCameraPopupScalarRow(const char* Id, const char* Label, float& Value, float Speed, float Min, float Max, const char* Format)
@@ -161,7 +174,7 @@ void DrawCameraPopupContent(UCameraComponent* Camera, FEditorSettings& Settings)
 	ImGui::PopStyleColor();
 	ImGui::Spacing();
 
-	ImGui::PushStyleColor(ImGuiCol_ChildBg, CameraPopupPanelBgColor);
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, PopupPalette::SurfaceBg);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PopupComfortWindowPadding);
@@ -180,7 +193,7 @@ void DrawCameraPopupContent(UCameraComponent* Camera, FEditorSettings& Settings)
 		{
 			ImGui::Spacing();
 			float CameraFOV_Deg = Camera->GetFOV() * RAD_TO_DEG;
-			if (DrawCameraPopupScalarRow("FOV", "Field of View", CameraFOV_Deg, 0.5f, 1.0f, 170.0f, "%.1f"))
+			if (DrawCameraPopupScalarRow("FOV", "FOV", CameraFOV_Deg, 0.5f, 1.0f, 170.0f, "%.1f"))
 			{
 				Camera->SetFOV(Clamp(CameraFOV_Deg, 1.0f, 170.0f) * DEG_TO_RAD);
 			}
@@ -231,17 +244,19 @@ bool BeginPopupSection(const char* Label, ImGuiTreeNodeFlags Flags = ImGuiTreeNo
 void DrawCompactPopupSectionLabel(const char* Label)
 {
 	ImGui::Dummy(ImVec2(0.0f, 3.0f));
-	ImGui::PushStyleColor(ImGuiCol_Text, PopupSectionHeaderTextColor);
-	ImGui::TextUnformatted(Label);
-	ImGui::PopStyleColor();
-	ImGui::Separator();
+	DrawPopupSectionHeader(Label);
 }
 
 void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 {
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, PopupComfortFramePadding);
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(PopupComfortItemSpacing.x, 10.0f));
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, PopupComfortItemInnerSpacing);
+	const ImVec2 CompactFramePadding(6.0f, 3.0f);
+	const ImVec2 CompactItemSpacing(PopupComfortItemSpacing.x, 5.0f);
+	const ImVec2 CompactItemInnerSpacing(4.0f, 3.0f);
+	const float CompactSliderWidth = 150.0f;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, CompactFramePadding);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, CompactItemSpacing);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, CompactItemInnerSpacing);
 
 	ImGui::BeginGroup();
 	{
@@ -253,33 +268,42 @@ void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 		ImGui::Checkbox("Grid", &Opts.ShowFlags.bGrid);
 		if (Opts.ShowFlags.bGrid)
 		{
-			ImGui::SliderFloat("Grid Spacing", &Opts.GridSpacing, 0.1f, 10.0f, "%.1f");
-			ImGui::SliderInt("Grid Half Line Count", &Opts.GridHalfLineCount, 10, 500);
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Spacing", &Opts.GridSpacing, 0.1f, 10.0f, "%.1f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderInt("Half Line Count", &Opts.GridHalfLineCount, 10, 500);
 		}
 
 		ImGui::Checkbox("World Axis", &Opts.ShowFlags.bWorldAxis);
 		ImGui::Checkbox("Gizmo", &Opts.ShowFlags.bGizmo);
 
 		DrawCompactPopupSectionLabel("DEBUG");
-		ImGui::Checkbox("Bounding Volume", &Opts.ShowFlags.bBoundingVolume);
-		ImGui::Checkbox("Debug Draw", &Opts.ShowFlags.bDebugDraw);
-		ImGui::Checkbox("Octree", &Opts.ShowFlags.bOctree);
+		ImGui::Checkbox("Scene BVH (Green)", &Opts.ShowFlags.bSceneBVH);
+		ImGui::Checkbox("Scene Octree (Cyan)", &Opts.ShowFlags.bOctree);
+		ImGui::Checkbox("World Bound (Magenta)", &Opts.ShowFlags.bWorldBound);
+		ImGui::Checkbox("Light Visualization", &Opts.ShowFlags.bLightVisualization);
+		if (Opts.ShowFlags.bLightVisualization)
+		{
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Directional Scale", &Opts.DirectionalLightVisualizationScale, 0.1f, 5.0f, "%.2f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Point Scale", &Opts.PointLightVisualizationScale, 0.1f, 5.0f, "%.2f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Spot Scale", &Opts.SpotLightVisualizationScale, 0.1f, 5.0f, "%.2f");
+		}
+		ImGui::Checkbox("Light Hit Map", &Opts.ShowFlags.bLightHitMap);
 		ImGui::Checkbox("Shadow Frustum", &Opts.ShowFlags.bShowShadowFrustum);
-
-		DrawCompactPopupSectionLabel("LIGHTING");
-		ImGui::TextDisabled("Project-wide lighting settings moved to Edit > Project Settings...");
 
 		DrawCompactPopupSectionLabel("POST-PROCESSING");
 		ImGui::Checkbox("Height Distance Fog", &Opts.ShowFlags.bFog);
 		ImGui::Checkbox("Anti-Aliasing (FXAA)", &Opts.ShowFlags.bFXAA);
 		if (Opts.ShowFlags.bFXAA)
 		{
+			ImGui::SetNextItemWidth(CompactSliderWidth);
 			ImGui::SliderFloat("FXAA Edge Threshold", &Opts.EdgeThreshold, 0.06f, 0.333f, "%.3f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
 			ImGui::SliderFloat("FXAA Edge Threshold Min", &Opts.EdgeThresholdMin, 0.0312f, 0.0833f, "%.4f");
 		}
-
-		DrawCompactPopupSectionLabel("SCENE DEPTH");
-		ImGui::TextDisabled("Scene Depth settings moved to Edit > Project Settings...");
 	}
 	ImGui::EndGroup();
 	ImGui::PopStyleVar(3);
@@ -456,8 +480,8 @@ bool DrawToolbarIconLabelButton(const char* Id, EToolbarIcon Icon, const char* L
 {
 	constexpr float LabelLeftPadding = 6.0f;
 	constexpr float LabelSpacing = 4.0f;
-	constexpr float DropdownArrowReserve = 28.0f;
-	constexpr float LabelRightPadding = 4.0f;
+	constexpr float DropdownArrowReserve = 20.0f;
+	constexpr float LabelRightPadding = 1.0f;
 
 	const bool bClicked = ImGui::Button(Id, ImVec2(Width, Height));
 
@@ -520,13 +544,23 @@ float GetToolbarIconLabelButtonWidth(EToolbarIcon Icon, const char* Label, float
 {
 	constexpr float LabelLeftPadding = 6.0f;
 	constexpr float LabelSpacing = 4.0f;
-	constexpr float DropdownArrowReserve = 28.0f;
-	constexpr float LabelRightPadding = 4.0f;
+	constexpr float DropdownArrowReserve = 20.0f;
+	constexpr float LabelRightPadding = 1.0f;
 
 	const ImVec2 IconSize = GetToolbarIconRenderSize(Icon, FallbackSize, MaxIconSize);
 	const float TextWidth = (Label && Label[0] != '\0') ? ImGui::CalcTextSize(Label).x : 0.0f;
 	const float EffectiveLabelSpacing = (TextWidth > 0.0f) ? LabelSpacing : 0.0f;
 	return LabelLeftPadding + IconSize.x + EffectiveLabelSpacing + TextWidth + DropdownArrowReserve + LabelRightPadding;
+}
+
+float GetToolbarIconDropdownButtonWidth(EToolbarIcon Icon, float FallbackSize, float MaxIconSize)
+{
+	constexpr float LeftPadding = 8.0f;
+	constexpr float DropdownArrowReserve = 12.0f;
+	constexpr float RightPadding = 8.0f;
+
+	const ImVec2 IconSize = GetToolbarIconRenderSize(Icon, FallbackSize, MaxIconSize);
+	return LeftPadding + IconSize.x + DropdownArrowReserve + RightPadding;
 }
 
 void DrawToolbarDropdownArrowForLastItem()
@@ -618,7 +652,16 @@ void DrawSnapPopupOptions(const char* Label, bool& bEnabled, float& Value, const
 	ImGui::PopStyleColor();
 	ImGui::Spacing();
 
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f, 3.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(4.0f, 3.0f));
 	ImGui::Checkbox("Enabled", &bEnabled);
+	ImGui::Spacing();
+
+	ImGui::SetNextItemWidth(110.0f);
+	if (ImGui::InputFloat("Custom Size", &Value, 0.0f, 0.0f, "%.5g"))
+	{
+		Value = (std::max)(Value, 0.00001f);
+	}
 	ImGui::Spacing();
 
 	for (int32 Index = 0; Index < OptionCount; ++Index)
@@ -647,6 +690,7 @@ void DrawSnapPopupOptions(const char* Label, bool& bEnabled, float& Value, const
 		}
 	}
 
+	ImGui::PopStyleVar(2);
 	ImGui::PopID();
 }
 
@@ -723,6 +767,8 @@ void RenderSnapToolbarButton(int32 SlotIndex, FEditorSettings& Settings, float W
 	snprintf(ButtonId, sizeof(ButtonId), "##SnapSettings_%d", SlotIndex);
 	snprintf(PopupId, sizeof(PopupId), "SnapPopup_%d", SlotIndex);
 
+	Width = (std::max)(Width, GetToolbarIconDropdownButtonWidth(EToolbarIcon::TranslateSnap, FallbackSize, MaxIconSize));
+
 	const bool bAnySnapEnabled = Settings.bEnableTranslationSnap || Settings.bEnableRotationSnap || Settings.bEnableScaleSnap;
 	if (DrawSelectedToolbarIconDropdownButton(ButtonId, EToolbarIcon::TranslateSnap, bAnySnapEnabled, Width, 26.0f, FallbackSize, MaxIconSize))
 	{
@@ -739,7 +785,7 @@ void RenderSnapToolbarButton(int32 SlotIndex, FEditorSettings& Settings, float W
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 12.0f));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
-	ImGui::PushStyleColor(ImGuiCol_PopupBg, SnapPopupPanelBgColor);
+	PushCommonPopupBgColor();
 	ImGui::PushStyleColor(ImGuiCol_Border, SnapPopupBorderColor);
 	if (ImGui::BeginPopup(PopupId))
 	{
@@ -2218,12 +2264,14 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 					}
 				}
 				ImGui::SetNextWindowSize(ImVec2(260.0f, 0.0f), ImGuiCond_Appearing);
+				PushCommonPopupBgColor();
 				if (bShowCameraMenu && ImGui::BeginPopup(CameraPopupID))
 				{
 					DrawCameraPopupContent(Camera, Settings);
 
 					ImGui::EndPopup();
 				}
+				ImGui::PopStyleColor();
 
 				char ViewportPopupID[64];
 				snprintf(ViewportPopupID, sizeof(ViewportPopupID), "ViewportPopup_%d", SlotIndex);
@@ -2232,6 +2280,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 				{
 					ImGui::OpenPopup(ViewportPopupID);
 				}
+				PushCommonPopupBgColor();
 				if (ImGui::BeginPopup(ViewportPopupID))
 				{
 					auto DrawViewportTypeOptions = [&](const char* SectionLabel, int32 StartIndex, int32 EndIndex)
@@ -2261,6 +2310,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 					DrawViewportTypeOptions("ORTHOGRAPHIC", 1, 8);
 					ImGui::EndPopup();
 				}
+				ImGui::PopStyleColor();
 
 				char ViewModePopupID[64];
 				snprintf(ViewModePopupID, sizeof(ViewModePopupID), "ViewModePopup_%d", SlotIndex);
@@ -2272,6 +2322,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 						ImGui::OpenPopup(ViewModePopupID);
 					}
 				}
+				PushCommonPopupBgColor();
 				if (bShowViewModeButton && ImGui::BeginPopup(ViewModePopupID))
 				{
 					DrawPopupSectionHeader("VIEW MODE");
@@ -2308,6 +2359,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 					Opts.ViewMode = static_cast<EViewMode>(CurrentMode);
 					ImGui::EndPopup();
 				}
+				ImGui::PopStyleColor();
 
 				char SettingsPopupID[64];
 				snprintf(SettingsPopupID, sizeof(SettingsPopupID), "SettingsPopup_%d", SlotIndex);
@@ -2324,11 +2376,13 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 2.0f));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 3.0f));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(4.0f, 3.0f));
+				PushCommonPopupBgColor();
 				if (bShowShowMenu && ImGui::BeginPopup(SettingsPopupID))
 				{
 					DrawShowFlagsPopupContent(Opts);
 					ImGui::EndPopup();
 				}
+				ImGui::PopStyleColor();
 				ImGui::PopStyleVar(4);
 
 				char LayoutPopupID[64];
@@ -2341,6 +2395,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 						ImGui::OpenPopup(LayoutPopupID);
 					}
 				}
+				PushCommonPopupBgColor();
 				if (bShowLayoutButton && ImGui::BeginPopup(LayoutPopupID))
 				{
 					constexpr int32 LayoutCount = static_cast<int32>(EViewportLayout::MAX);
@@ -2390,6 +2445,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 
 					ImGui::EndPopup();
 				}
+				ImGui::PopStyleColor();
 
 				if (bShowToggleButton)
 				{
@@ -2449,6 +2505,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 		ShowItemTooltip("Viewport Layout");
 		//if (bIsTransitioning) ImGui::EndDisabled();
 
+		PushCommonPopupBgColor();
 		if (ImGui::BeginPopup(PopupID))
 		{
 			constexpr int32 LayoutCount = static_cast<int32>(EViewportLayout::MAX);
@@ -2496,6 +2553,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			}
 			ImGui::EndPopup();
 		}
+		ImGui::PopStyleColor();
 
 		// ?좉? 踰꾪듉 (媛숈? ??
 		ImGui::SameLine();
@@ -2616,6 +2674,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			}
 			ShowItemTooltip("View Mode");
 
+			PushCommonPopupBgColor();
 			if (ImGui::BeginPopup(ViewModePopupID))
 			{
 				ImGui::SeparatorText("View Mode");
@@ -2684,6 +2743,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 				Opts.ViewMode = static_cast<EViewMode>(CurrentMode);
 				ImGui::EndPopup();
 			}
+			ImGui::PopStyleColor();
 
 			// ?? Camera ?앹뾽 ??
 			ImGui::SameLine(0.0f, PaneToolbarButtonSpacing);
@@ -2697,6 +2757,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			}
 			ShowItemTooltip("Viewport Type");
 
+			PushCommonPopupBgColor();
 			if (ImGui::BeginPopup(ViewportPopupID))
 			{
 				auto DrawViewportTypeOptions = [&](const char* SectionLabel, int32 StartIndex, int32 EndIndex)
@@ -2726,6 +2787,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 				DrawViewportTypeOptions("ORTHOGRAPHIC", 1, 8);
 				ImGui::EndPopup();
 			}
+			ImGui::PopStyleColor();
 
 			ImGui::SameLine(0.0f, PaneToolbarButtonSpacing);
 
@@ -2739,6 +2801,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			ShowItemTooltip("Camera Settings");
 
 			ImGui::SetNextWindowSize(ImVec2(260.0f, 0.0f), ImGuiCond_Appearing);
+			PushCommonPopupBgColor();
 			if (ImGui::BeginPopup(CameraPopupID))
 			{
 				FEditorSettings& Settings = FEditorSettings::Get();
@@ -2746,6 +2809,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 
 				ImGui::EndPopup();
 			}
+			ImGui::PopStyleColor();
 
 			// ?? Settings ?앹뾽 ??
 			ImGui::SameLine(0.0f, PaneToolbarButtonSpacing);
@@ -2764,11 +2828,13 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 2.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 3.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(4.0f, 3.0f));
+			PushCommonPopupBgColor();
 			if (ImGui::BeginPopup(SettingsPopupID))
 			{
 				DrawShowFlagsPopupContent(Opts);
 				ImGui::EndPopup();
 			}
+			ImGui::PopStyleColor();
 			ImGui::PopStyleVar(4);
 
 			Editor->ApplyTransformSettingsToGizmo();
@@ -2880,8 +2946,10 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+	PushCommonPopupBgColor();
 	if (!ImGui::BeginPopup(PopupId))
 	{
+		ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
 		return;
 	}
@@ -2928,18 +2996,38 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 	const bool bCanDelete = SelectionManager && !SelectionManager->IsEmpty();
 	AActor* PrimarySelection = SelectionManager ? SelectionManager->GetPrimarySelection() : nullptr;
 	bool bLockMovement = PrimarySelection ? PrimarySelection->IsActorMovementLocked() : false;
+	const bool bCanFocus = PrimarySelection && ActiveViewportClient;
+
+	if (!bCanFocus)
+	{
+		ImGui::BeginDisabled();
+	}
+	if (ImGui::MenuItem("Focus", "F"))
+	{
+		ActiveViewportClient->FocusActor(PrimarySelection);
+		ImGui::CloseCurrentPopup();
+	}
+	if (!bCanFocus)
+	{
+		ImGui::EndDisabled();
+	}
 
 	if (!PrimarySelection)
 	{
 		ImGui::BeginDisabled();
 	}
-	if (ImGui::MenuItem("Lock Actor Movement", nullptr, &bLockMovement))
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, PopupPalette::CheckboxBg);
+	ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, PopupPalette::CheckboxHoverBg);
+	ImGui::PushStyleColor(ImGuiCol_FrameBgActive, PopupPalette::CheckboxActiveBg);
+	ImGui::PushStyleColor(ImGuiCol_CheckMark, PopupPalette::CheckboxCheck);
+	if (ImGui::Checkbox("Lock Actor Movement", &bLockMovement))
 	{
 		if (PrimarySelection)
 		{
 			PrimarySelection->SetActorMovementLocked(bLockMovement);
 		}
 	}
+	ImGui::PopStyleColor(4);
 	if (!PrimarySelection)
 	{
 		ImGui::EndDisabled();
@@ -2960,6 +3048,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 	}
 
 	ImGui::EndPopup();
+	ImGui::PopStyleColor();
 	ImGui::PopStyleVar();
 }
 

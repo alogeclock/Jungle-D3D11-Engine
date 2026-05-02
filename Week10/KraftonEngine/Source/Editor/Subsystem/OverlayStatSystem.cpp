@@ -28,6 +28,68 @@ static int FormatBytes(char* Buffer, int32 BufferSize, const char* Label, uint64
 	return snprintf(Buffer, BufferSize, "%s : %llu B", Label, static_cast<unsigned long long>(Bytes));
 }
 
+bool FOverlayStatSystem::IsStatVisible(EOverlayStatType StatType) const
+{
+	switch (StatType)
+	{
+	case EOverlayStatType::FPS:
+		return bShowFPS;
+	case EOverlayStatType::PickingTime:
+		return bShowPickingTime;
+	case EOverlayStatType::Memory:
+		return bShowMemory;
+	case EOverlayStatType::Shadow:
+		return bShowShadow;
+	default:
+		return false;
+	}
+}
+
+void FOverlayStatSystem::SetStatVisible(EOverlayStatType StatType, bool bVisible)
+{
+	switch (StatType)
+	{
+	case EOverlayStatType::FPS:
+		bShowFPS = bVisible;
+		break;
+	case EOverlayStatType::PickingTime:
+		bShowPickingTime = bVisible;
+		break;
+	case EOverlayStatType::Memory:
+		bShowMemory = bVisible;
+		break;
+	case EOverlayStatType::Shadow:
+		bShowShadow = bVisible;
+		break;
+	default:
+		break;
+	}
+}
+
+bool FOverlayStatSystem::ToggleStat(EOverlayStatType StatType)
+{
+	const bool bVisible = !IsStatVisible(StatType);
+	SetStatVisible(StatType, bVisible);
+	return bVisible;
+}
+
+const char* FOverlayStatSystem::GetStatDisplayName(EOverlayStatType StatType)
+{
+	switch (StatType)
+	{
+	case EOverlayStatType::FPS:
+		return "FPS";
+	case EOverlayStatType::PickingTime:
+		return "Picking Time";
+	case EOverlayStatType::Memory:
+		return "Memory";
+	case EOverlayStatType::Shadow:
+		return "Shadow";
+	default:
+		return "Unknown";
+	}
+}
+
 void FOverlayStatSystem::AppendLine(TArray<FOverlayStatLine>& OutLines, float Y, const FString& Text) const
 {
 	FOverlayStatLine Line;

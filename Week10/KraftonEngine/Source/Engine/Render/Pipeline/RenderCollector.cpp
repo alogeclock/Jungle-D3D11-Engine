@@ -90,6 +90,24 @@ void FRenderCollector::CollectDebugDraw(const FFrameContext& Frame, FScene& Scen
 	}
 }
 
+void FRenderCollector::CollectSceneBVHDebug(UWorld* World, FScene& Scene)
+{
+	if (!World)
+	{
+		return;
+	}
+
+	TArray<FBoundingBox> Bounds;
+	World->CollectWorldPrimitivePickingBVHDebugBounds(Bounds);
+	for (const FBoundingBox& Bound : Bounds)
+	{
+		if (Bound.IsValid())
+		{
+			Scene.AddDebugAABB(Bound.Min, Bound.Max, FColor::Green());
+		}
+	}
+}
+
 // ============================================================
 // Octree 디버그 시각화 — 깊이별 색상으로 노드 AABB 표시
 // ============================================================
@@ -109,11 +127,36 @@ void FRenderCollector::CollectOctreeDebug(const FOctree* Node, FScene& Scene, ui
 	const FBoundingBox& Bounds = Node->GetCellBounds();
 	if (!Bounds.IsValid()) return;
 
-	Scene.AddDebugAABB(Bounds.Min, Bounds.Max, OctreeDepthColors[Depth % 6]);
+	(void)Depth;
+	Scene.AddDebugAABB(Bounds.Min, Bounds.Max, FColor(0, 255, 255));
 
 	for (const FOctree* Child : Node->GetChildren())
 	{
 		CollectOctreeDebug(Child, Scene, Depth + 1);
+	}
+}
+
+void FRenderCollector::CollectWorldBoundsDebug(UWorld* World, FScene& Scene)
+{
+	if (!World)
+	{
+		return;
+	}
+
+	for (FPrimitiveSceneProxy* Proxy : Scene.GetAllProxies())
+	{
+		if (!Proxy)
+		{
+			continue;
+		}
+
+		const FBoundingBox& Bounds = Proxy->GetCachedBounds();
+		if (!Bounds.IsValid())
+		{
+			continue;
+		}
+
+		Scene.AddDebugAABB(Bounds.Min, Bounds.Max, FColor(255, 0, 255));
 	}
 }
 

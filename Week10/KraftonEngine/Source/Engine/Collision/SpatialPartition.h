@@ -30,6 +30,7 @@ class FSpatialPartition
     //void QueryAABB(const FBoundingBox& Box, TArray<UPrimitiveComponent*>& OutPrimitives) const;
 
     const FOctree* GetOctree() const { return Octree.get(); }
+	bool GetRootBounds(FBoundingBox& OutBounds) const;
 
 private:
     FBoundingBox BuildActorVisibleBounds(AActor* Actor, bool bUpdateWorldMatrices) const;

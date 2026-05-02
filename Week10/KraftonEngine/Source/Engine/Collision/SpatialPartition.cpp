@@ -306,6 +306,17 @@ void FSpatialPartition::Reset(const FBoundingBox& RootBounds)
 	OverflowPrimitives.clear();
 }
 
+bool FSpatialPartition::GetRootBounds(FBoundingBox& OutBounds) const
+{
+	if (!Octree)
+	{
+		return false;
+	}
+
+	OutBounds = Octree->GetCellBounds();
+	return OutBounds.IsValid();
+}
+
 void FSpatialPartition::InsertActor(AActor* Actor)
 {
 	if (!Actor) return;

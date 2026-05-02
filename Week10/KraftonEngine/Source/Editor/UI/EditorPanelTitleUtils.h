@@ -19,6 +19,16 @@ namespace EditorPanelTitleUtils
 		ImGuiWindow* Window = nullptr;
 		const char* IconKey = nullptr;
 		bool* VisibleFlag = nullptr;
+		ImRect TitleRect{};
+		bool bHasTitleRect = false;
+		bool bFocused = false;
+	};
+
+	struct FFocusedPanelOverlay
+	{
+		ImDrawList* DrawList = nullptr;
+		ImRect TitleRect{};
+		float TabRounding = 0.0f;
 	};
 
 	inline ImFont*& GetPanelChromeIconFontStorage()
@@ -31,6 +41,12 @@ namespace EditorPanelTitleUtils
 	{
 		static std::vector<FPendingPanelDecoration> Decorations;
 		return Decorations;
+	}
+
+	inline std::vector<FFocusedPanelOverlay>& GetFocusedPanelOverlays()
+	{
+		static std::vector<FFocusedPanelOverlay> Overlays;
+		return Overlays;
 	}
 
 	inline void EnsurePanelChromeIconFontLoaded()
@@ -57,6 +73,36 @@ namespace EditorPanelTitleUtils
 		return GetPanelChromeIconFontStorage();
 	}
 
+	inline ImU32 GetDockTabBarGapColor()
+	{
+		return IM_COL32(5, 5, 5, 255);
+	}
+
+	inline float GetPanelTitleTopGapHeight()
+	{
+		return 5.0f;
+	}
+
+	inline float GetPanelFrameGapThickness()
+	{
+		return 5.0f;
+	}
+
+	inline float GetSelectedPanelTopBorderThickness()
+	{
+		return 2.0f;
+	}
+
+	inline ImU32 GetSelectedPanelTopBorderColor()
+	{
+		return IM_COL32(28, 140, 255, 255);
+	}
+
+	inline float GetSelectedPanelTopBorderInset()
+	{
+		return 1.5f;
+	}
+
 	inline const char* GetChromeCloseGlyph()
 	{
 		return "\xEE\xA2\xBB";
@@ -65,6 +111,7 @@ namespace EditorPanelTitleUtils
 	inline void BeginPanelDecorationFrame()
 	{
 		GetPendingDecorations().clear();
+		GetFocusedPanelOverlays().clear();
 	}
 
 	inline FString GetEditorPathResource(const char* Key)
@@ -153,6 +200,74 @@ namespace EditorPanelTitleUtils
 		return Window ? Window->DrawList : ImGui::GetForegroundDrawList();
 	}
 
+	inline void PaintDockTabBarEmptyRegions(ImGuiWindow* Window)
+	{
+		if (!Window || !Window->DockIsActive || !Window->DockNode || !Window->DockNode->TabBar)
+		{
+			return;
+		}
+
+		ImGuiTabBar* TabBar = Window->DockNode->TabBar;
+		if (TabBar->Tabs.Size <= 0)
+		{
+			return;
+		}
+
+		float TabsMinX = FLT_MAX;
+		float TabsMaxX = -FLT_MAX;
+		for (int TabIndex = 0; TabIndex < TabBar->Tabs.Size; ++TabIndex)
+		{
+			const ImGuiTabItem& Tab = TabBar->Tabs[TabIndex];
+			const float TabMinX = TabBar->BarRect.Min.x + Tab.Offset;
+			const float TabMaxX = TabMinX + Tab.Width;
+			TabsMinX = (std::min)(TabsMinX, TabMinX);
+			TabsMaxX = (std::max)(TabsMaxX, TabMaxX);
+		}
+
+		if (TabsMinX > TabsMaxX)
+		{
+			return;
+		}
+
+		ImDrawList* DrawList = GetPanelTitleDrawList(Window);
+		DrawList->PushClipRect(TabBar->BarRect.Min, TabBar->BarRect.Max, true);
+
+		if (TabsMinX > TabBar->BarRect.Min.x)
+		{
+			DrawList->AddRectFilled(
+				TabBar->BarRect.Min,
+				ImVec2(TabsMinX, TabBar->BarRect.Max.y),
+				GetDockTabBarGapColor());
+		}
+
+		if (TabsMaxX < TabBar->BarRect.Max.x)
+		{
+			DrawList->AddRectFilled(
+				ImVec2(TabsMaxX, TabBar->BarRect.Min.y),
+				TabBar->BarRect.Max,
+				GetDockTabBarGapColor());
+		}
+
+		for (int TabIndex = 0; TabIndex + 1 < TabBar->Tabs.Size; ++TabIndex)
+		{
+			const ImGuiTabItem& CurrentTab = TabBar->Tabs[TabIndex];
+			const ImGuiTabItem& NextTab = TabBar->Tabs[TabIndex + 1];
+			const float CurrentTabMaxX = TabBar->BarRect.Min.x + CurrentTab.Offset + CurrentTab.Width;
+			const float NextTabMinX = TabBar->BarRect.Min.x + NextTab.Offset;
+			if (NextTabMinX <= CurrentTabMaxX)
+			{
+				continue;
+			}
+
+			DrawList->AddRectFilled(
+				ImVec2(CurrentTabMaxX, TabBar->BarRect.Min.y),
+				ImVec2(NextTabMinX, TabBar->BarRect.Max.y),
+				GetDockTabBarGapColor());
+		}
+
+		DrawList->PopClipRect();
+	}
+
 	inline void QueuePanelDecoration(const char* IconKey, bool* VisibleFlag)
 	{
 		ImGuiWindow* Window = ImGui::GetCurrentWindow();
@@ -160,6 +275,10 @@ namespace EditorPanelTitleUtils
 		{
 			return;
 		}
+
+		const ImRect TitleRect = GetPanelTitleRect();
+		const bool bHasTitleRect = TitleRect.GetWidth() > 0.0f && TitleRect.GetHeight() > 0.0f;
+		const bool bFocused = Window->DockTabIsVisible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 
 		std::vector<FPendingPanelDecoration>& Decorations = GetPendingDecorations();
 		for (FPendingPanelDecoration& Decoration : Decorations)
@@ -177,6 +296,9 @@ namespace EditorPanelTitleUtils
 			{
 				Decoration.VisibleFlag = VisibleFlag;
 			}
+			Decoration.TitleRect = TitleRect;
+			Decoration.bHasTitleRect = bHasTitleRect;
+			Decoration.bFocused = bFocused;
 			return;
 		}
 
@@ -184,6 +306,9 @@ namespace EditorPanelTitleUtils
 		Decoration.Window = Window;
 		Decoration.IconKey = IconKey;
 		Decoration.VisibleFlag = VisibleFlag;
+		Decoration.TitleRect = TitleRect;
+		Decoration.bHasTitleRect = bHasTitleRect;
+		Decoration.bFocused = bFocused;
 		Decorations.push_back(Decoration);
 	}
 
@@ -203,6 +328,7 @@ namespace EditorPanelTitleUtils
 
 	inline void FlushPanelDecorations()
 	{
+		std::vector<ImGuiTabBar*> PaintedTabBars;
 		for (FPendingPanelDecoration& Decoration : GetPendingDecorations())
 		{
 			ImGuiWindow* Window = Decoration.Window;
@@ -211,14 +337,65 @@ namespace EditorPanelTitleUtils
 				continue;
 			}
 
-			const ImRect TitleRect = GetPanelTitleRect(Window);
+			if (Window->DockIsActive && Window->DockNode && Window->DockNode->TabBar)
+			{
+				ImGuiTabBar* TabBar = Window->DockNode->TabBar;
+				if (std::find(PaintedTabBars.begin(), PaintedTabBars.end(), TabBar) == PaintedTabBars.end())
+				{
+					PaintDockTabBarEmptyRegions(Window);
+					PaintedTabBars.push_back(TabBar);
+				}
+			}
+
+			const ImRect TitleRect = Decoration.bHasTitleRect ? Decoration.TitleRect : GetPanelTitleRect(Window);
 			if (TitleRect.GetWidth() <= 0.0f || TitleRect.GetHeight() <= 0.0f)
 			{
 				continue;
 			}
 
 			ImDrawList* DrawList = GetPanelTitleDrawList(Window);
+			const float FrameGapThickness = GetPanelFrameGapThickness();
+			const ImRect WindowRect = Window->Rect();
+			const ImRect ExpandedWindowRect(
+				ImVec2(WindowRect.Min.x - FrameGapThickness, WindowRect.Min.y),
+				ImVec2(WindowRect.Max.x + FrameGapThickness, WindowRect.Max.y));
+			const float TabRounding = (std::min)(ImGui::GetStyle().TabRounding, TitleRect.GetHeight() * 0.5f);
+			const float BodyTopY = (std::max)(WindowRect.Min.y + FrameGapThickness, TitleRect.Max.y);
+			DrawList->PushClipRect(ExpandedWindowRect.Min, ExpandedWindowRect.Max, true);
+			DrawList->AddRectFilled(
+				ExpandedWindowRect.Min,
+				ImVec2(ExpandedWindowRect.Max.x, (std::min)(ExpandedWindowRect.Min.y + FrameGapThickness, ExpandedWindowRect.Max.y)),
+				GetDockTabBarGapColor(),
+				TabRounding,
+				ImDrawFlags_RoundCornersTop);
+			if (BodyTopY < ExpandedWindowRect.Max.y)
+			{
+				DrawList->AddRectFilled(
+					ImVec2(ExpandedWindowRect.Min.x, BodyTopY),
+					ImVec2((std::min)(WindowRect.Min.x + FrameGapThickness, ExpandedWindowRect.Max.x), ExpandedWindowRect.Max.y),
+					GetDockTabBarGapColor());
+				DrawList->AddRectFilled(
+					ImVec2((std::max)(WindowRect.Max.x - FrameGapThickness, ExpandedWindowRect.Min.x), BodyTopY),
+					ExpandedWindowRect.Max,
+					GetDockTabBarGapColor());
+			}
+			DrawList->PopClipRect();
+
 			DrawList->PushClipRect(TitleRect.Min, TitleRect.Max, true);
+			DrawList->AddRectFilled(
+				TitleRect.Min,
+				ImVec2(TitleRect.Max.x, TitleRect.Min.y + (std::min)(GetPanelTitleTopGapHeight(), TitleRect.GetHeight())),
+				GetDockTabBarGapColor(),
+				TabRounding,
+				ImDrawFlags_RoundCornersTop);
+			if (Decoration.bFocused)
+			{
+				FFocusedPanelOverlay Overlay;
+				Overlay.DrawList = DrawList;
+				Overlay.TitleRect = TitleRect;
+				Overlay.TabRounding = TabRounding;
+				GetFocusedPanelOverlays().push_back(Overlay);
+			}
 
 			if (ID3D11ShaderResourceView* Icon = GetEditorIcon(Decoration.IconKey))
 			{
@@ -272,6 +449,34 @@ namespace EditorPanelTitleUtils
 			}
 
 			DrawList->PopClipRect();
+		}
+
+		for (const FFocusedPanelOverlay& Overlay : GetFocusedPanelOverlays())
+		{
+			if (!Overlay.DrawList || Overlay.TitleRect.GetWidth() <= 0.0f || Overlay.TitleRect.GetHeight() <= 0.0f)
+			{
+				continue;
+			}
+
+			const float BorderThickness = (std::min)(GetSelectedPanelTopBorderThickness(), Overlay.TitleRect.GetHeight() * 0.5f);
+			const float BorderInset = GetSelectedPanelTopBorderInset();
+			const float TopGapHeight = (std::min)(GetPanelTitleTopGapHeight(), Overlay.TitleRect.GetHeight());
+			const ImRect InnerTopBorderRect(
+				ImVec2(Overlay.TitleRect.Min.x + BorderInset, Overlay.TitleRect.Min.y + TopGapHeight + BorderInset),
+				ImVec2(Overlay.TitleRect.Max.x - BorderInset, Overlay.TitleRect.Min.y + TopGapHeight + BorderInset + BorderThickness));
+			if (InnerTopBorderRect.GetWidth() <= 0.0f || InnerTopBorderRect.GetHeight() <= 0.0f)
+			{
+				continue;
+			}
+
+			Overlay.DrawList->PushClipRect(Overlay.TitleRect.Min, Overlay.TitleRect.Max, true);
+			Overlay.DrawList->AddRectFilled(
+				InnerTopBorderRect.Min,
+				InnerTopBorderRect.Max,
+				GetSelectedPanelTopBorderColor(),
+				(std::max)(Overlay.TabRounding - BorderInset, 0.0f),
+				ImDrawFlags_RoundCornersTop);
+			Overlay.DrawList->PopClipRect();
 		}
 	}
 }

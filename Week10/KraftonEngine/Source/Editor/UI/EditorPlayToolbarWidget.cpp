@@ -8,6 +8,12 @@
 
 #include <d3d11.h>
 
+namespace
+{
+	constexpr ImVec4 ToolbarAccentBlueHover = ImVec4(0.10f, 0.54f, 0.96f, 1.0f);
+	constexpr ImVec4 ToolbarAccentBlueActive = ImVec4(0.00f, 0.40f, 0.84f, 1.0f);
+}
+
 void FEditorPlayToolbarWidget::Initialize(UEditorEngine* InEditor, ID3D11Device* InDevice)
 {
 	Editor = InEditor;
@@ -77,8 +83,8 @@ void FEditorPlayToolbarWidget::Render(float Width)
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 7.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 7.0f));
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ToolbarAccentBlueHover);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ToolbarAccentBlueActive);
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.35f, 0.35f, 0.39f, 0.9f));
 
 	auto DrawIconButton = [&](const char* Id, ID3D11ShaderResourceView* Icon, const char* FallbackLabel, bool bDisabled, const ImVec4& TintColor) -> bool

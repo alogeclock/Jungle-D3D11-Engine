@@ -288,6 +288,7 @@ void FScene::ClearFrameData()
 	DebugAABBs.clear();
 	DebugLines.clear();
 	Grid = {};
+	LightVisualizationSettings = {};
 }
 
 void FScene::AddOverlayText(FString Text, const FVector2& Position, float Scale)
@@ -310,6 +311,14 @@ void FScene::SetGrid(float Spacing, int32 HalfLineCount)
 	Grid.Spacing = Spacing;
 	Grid.HalfLineCount = HalfLineCount;
 	Grid.bEnabled = true;
+}
+
+void FScene::SetLightVisualizationSettings(bool bEnabled, float DirectionalScale, float PointScale, float SpotScale)
+{
+	LightVisualizationSettings.bEnabled = bEnabled;
+	LightVisualizationSettings.DirectionalScale = DirectionalScale;
+	LightVisualizationSettings.PointScale = PointScale;
+	LightVisualizationSettings.SpotScale = SpotScale;
 }
 
 // ============================================================

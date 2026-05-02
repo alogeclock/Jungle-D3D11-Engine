@@ -348,6 +348,16 @@ bool UWorld::RaycastPrimitives(const FRay& Ray, FRayHitResult& OutHitResult, AAc
 	return WorldPrimitivePickingBVH.Raycast(Ray, OutHitResult, OutActor);
 }
 
+void UWorld::CollectWorldPrimitivePickingBVHDebugBounds(TArray<FBoundingBox>& OutBounds) const
+{
+	WorldPrimitivePickingBVH.EnsureBuilt(GetActors().ToArray());
+	WorldPrimitivePickingBVH.CollectDebugBounds(OutBounds);
+}
+
+bool UWorld::GetPartitionRootBounds(FBoundingBox& OutBounds) const
+{
+	return Partition.GetRootBounds(OutBounds);
+}
 void UWorld::InsertActorToOctree(AActor* Actor)
 {
 	Partition.InsertActor(Actor);

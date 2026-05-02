@@ -616,6 +616,7 @@ void UEditorEngine::DestroyCurrentSceneWorlds(bool bClearHistory, bool bResetLev
 
 	WorldList.clear();
 	ActiveWorldHandle = FName::None;
+	InvalidateTrackedSceneSnapshotCache();
 	if (bResetLevelPath)
 	{
 		CurrentLevelFilePath.clear();
@@ -631,7 +632,16 @@ void UEditorEngine::BeginTrackedSceneChange()
 		return;
 	}
 
-	const FTrackedSceneSnapshot Snapshot = CaptureTrackedSceneSnapshot();
+	FTrackedSceneSnapshot Snapshot;
+	if (CachedTrackedSceneSnapshot.has_value())
+	{
+		Snapshot = *CachedTrackedSceneSnapshot;
+	}
+	else
+	{
+		Snapshot = CaptureTrackedSceneSnapshot();
+	}
+
 	if (Snapshot.SerializedScene.empty())
 	{
 		return;
@@ -653,6 +663,7 @@ void UEditorEngine::CommitTrackedSceneChange()
 
 	PendingTrackedSceneBefore.reset();
 	bTrackingSceneChange = false;
+	CachedTrackedSceneSnapshot = After;
 
 	if (!HasMeaningfulSceneDelta(Before, After))
 	{
@@ -717,6 +728,7 @@ void UEditorEngine::ClearTrackedTransformHistory()
 	SceneHistory.clear();
 	SceneHistoryCursor = -1;
 	PendingTrackedSceneBefore.reset();
+	CachedTrackedSceneSnapshot.reset();
 	bTrackingSceneChange = false;
 }
 
@@ -818,6 +830,7 @@ void UEditorEngine::ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snaps
 	SetActiveWorld(LoadContext.ContextHandle);
 	SelectionManager.SetWorld(LoadContext.World);
 	LoadContext.World->WarmupPickingData();
+	CachedTrackedSceneSnapshot = Snapshot;
 	ResetViewport();
 	RestoreViewportCamera(CameraData);
 
@@ -843,6 +856,11 @@ void UEditorEngine::ApplyTrackedSceneSnapshot(const FTrackedSceneSnapshot& Snaps
 	{
 		Gizmo->UpdateGizmoTransform();
 	}
+}
+
+void UEditorEngine::InvalidateTrackedSceneSnapshotCache()
+{
+	CachedTrackedSceneSnapshot.reset();
 }
 
 UCameraComponent* UEditorEngine::FindSceneViewportCamera() const

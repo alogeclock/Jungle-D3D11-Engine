@@ -31,12 +31,19 @@ IMPLEMENT_CLASS(UPointLightComponent, ULightComponent)
 
 void UPointLightComponent::ContributeSelectedVisuals(FScene& Scene) const
 {
+	const FScene::FLightVisualizationSettings& VisSettings = Scene.GetLightVisualizationSettings();
+	if (!VisSettings.bEnabled)
+	{
+		return;
+	}
+
 	const FVector Center = GetWorldLocation();
 	constexpr int32 Segments = 24;
+	const float Radius = AttenuationRadius * VisSettings.PointScale;
 
-	AddWireCircle(Scene, Center, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 1.0f, 0.0f), AttenuationRadius, Segments, FColor::Yellow());
-	AddWireCircle(Scene, Center, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), AttenuationRadius, Segments, FColor::Yellow());
-	AddWireCircle(Scene, Center, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), AttenuationRadius, Segments, FColor::Yellow());
+	AddWireCircle(Scene, Center, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 1.0f, 0.0f), Radius, Segments, FColor::Yellow());
+	AddWireCircle(Scene, Center, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), Radius, Segments, FColor::Yellow());
+	AddWireCircle(Scene, Center, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), Radius, Segments, FColor::Yellow());
 }
 
 void UPointLightComponent::PushToScene()
