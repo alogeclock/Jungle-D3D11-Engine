@@ -1,4 +1,4 @@
----@meta LunaticEngine
+---@meta KraftonEngine
 
 -- VSCode/LuaLS 자동완성 전용 stub입니다.
 -- 런타임에서 require하지 않습니다. 실제 구현은 C++ LuaScriptRuntime/LuaScriptInstance 바인딩에 있습니다.
