@@ -100,6 +100,30 @@ FRay UCameraComponent::DeprojectScreenToWorld(float MouseX, float MouseY, float 
 	return Ray;
 }
 
+void UCameraComponent::StartCameraShake(float Intensity, float duration)
+{
+	ShakeDuration = duration;
+	ShakeRunningTime = duration;
+	ShakeIntensity = Intensity;
+}
+
+void UCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
+{
+	if (ShakeRunningTime > 0.0f)
+	{
+		ShakeRunningTime -= DeltaTime;
+		float Alpha = ShakeRunningTime / ShakeDuration;
+		float ElapsedTime = ShakeDuration - ShakeRunningTime;
+		float Frequency = 25.0f;
+		ShakeLocationOffset.X = sin(ElapsedTime * Frequency) * ShakeIntensity * Alpha;
+		ShakeLocationOffset.Y = cos(ElapsedTime * Frequency * 0.5f) * ShakeIntensity * Alpha;
+	}
+	else
+	{
+		ShakeLocationOffset = FVector::ZeroVector;
+	}
+}
+
 void UCameraComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
 {
 	USceneComponent::GetEditableProperties(OutProps);

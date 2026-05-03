@@ -24,8 +24,8 @@ public:
 
 	UCameraComponent() = default;
 
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
 	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
-
 	void LookAt(const FVector& Target);
 	void SetCameraState(const FCameraState& NewState);
 	const FCameraState& GetCameraState() const { return CameraState; }
@@ -48,7 +48,17 @@ public:
 	bool IsOrthogonal() const { return CameraState.bIsOrthogonal; }
 
 	FRay DeprojectScreenToWorld(float MouseX, float MouseY, float ScreenWidth, float ScreenHeight);
+public://expose in lua 
+	void StartCameraShake(float Intensity, float duration);
+
 
 private:
 	FCameraState CameraState;
+
+	FVector ShakeLocationOffset;
+	FRotator ShakeRotationOffset;
+
+	float ShakeRunningTime = 0.0f;
+	float ShakeDuration = 0.0f;
+	float ShakeIntensity = 0.0f;
 };
