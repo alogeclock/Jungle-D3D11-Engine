@@ -2008,6 +2008,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="KraftonEngine.rc" />
+    <ResourceCompile Include="LunaticEngine.rc" />
   </ItemGroup>
 </Project>

@@ -158,7 +158,7 @@ bool FWindowsApplication::Init(HINSTANCE InHInstance)
 	HInstance = InHInstance;
 
 	WCHAR WindowClass[] = L"JungleWindowClass";
-	WCHAR Title[] = L"Lunatic Engine";
+	WCHAR Title[] = L"LunaticEngine";
 	WNDCLASSEXW WndClass = {};
 	WndClass.cbSize = sizeof(WNDCLASSEXW);
 	WndClass.lpfnWndProc = StaticWndProc;
