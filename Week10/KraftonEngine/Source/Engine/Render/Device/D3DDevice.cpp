@@ -36,6 +36,13 @@ void FD3DDevice::Present()
 	SwapChain->Present(0, PresentFlags);
 }
 
+void FD3DDevice::CopyToBackbuffer(ID3D11Texture2D* Source)
+{
+	if (!Source || !DeviceContext || !FrameBuffer) return;
+	// 같은 크기/포맷이면 CopyResource로 직접 복사. 다르면 D3D 런타임이 경고만 남기고 실패는 silent.
+	DeviceContext->CopyResource(FrameBuffer, Source);
+}
+
 void FD3DDevice::OnResizeViewport(int Width, int Height)
 {
 	if (!SwapChain) return;

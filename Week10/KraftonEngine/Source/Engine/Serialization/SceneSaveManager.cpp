@@ -1047,7 +1047,21 @@ int32 FSceneSaveManager::CookAllScenes()
 	return Cooked;
 }
 
-USceneComponent* FSceneSaveManager::DeserializeSceneComponentTree(json::JSON& Node, AActor* Owner)
+	bool FSceneSaveManager::IsJsonFile(const FString& FilePath)
+	{
+	std::ifstream File(std::filesystem::path(FPaths::ToWide(FilePath)), std::ios::binary);
+	if (!File.is_open()) return false;
+	char Ch = 0;
+	while (File.get(Ch))
+	{
+		// Skip whitespace and BOM
+		if (Ch == ' ' || Ch == '\t' || Ch == '\r' || Ch == '\n' || Ch == '\xEF' || Ch == '\xBB' || Ch == '\xBF') continue;
+		return Ch == '{';
+	}
+	return false;
+	}
+
+	USceneComponent* FSceneSaveManager::DeserializeSceneComponentTree(json::JSON& Node, AActor* Owner)
 {
 	string ClassName = Node[SceneKeys::ClassName].ToString();
 	UObject* Obj = FObjectFactory::Get().Create(ClassName, Owner);

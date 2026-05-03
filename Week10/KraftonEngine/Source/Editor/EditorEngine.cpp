@@ -197,7 +197,11 @@ void UEditorEngine::Tick(float DeltaTime)
 
 	WorldTick(DeltaTime);
 	Render(DeltaTime);
-	SelectionManager.Tick();
+
+	if (!IsPIEPossessedMode())
+	{
+		SelectionManager.Tick();
+	}
 }
 
 UCameraComponent* UEditorEngine::GetCamera() const
@@ -1047,22 +1051,7 @@ bool UEditorEngine::LoadSceneFromPath(const FString& InScenePath)
 	FWorldContext LoadContext;
 	FPerspectiveCameraData CameraData;
 
-	// 파일 내용으로 형식 판별 — 쿠킹된 .umap도 현재는 JSON 텍스트로 저장되어 있어 binary parser로는 못 읽는다.
-	// 첫 non-whitespace 바이트가 '{'이면 JSON.
-	auto IsJsonContent = [](const FString& Path)
-	{
-		std::ifstream File(std::filesystem::path(FPaths::ToWide(Path)), std::ios::binary);
-		if (!File.is_open()) return false;
-		char Ch = 0;
-		while (File.get(Ch))
-		{
-			if (Ch == ' ' || Ch == '\t' || Ch == '\r' || Ch == '\n' || Ch == '\xEF' || Ch == '\xBB' || Ch == '\xBF') continue;
-			return Ch == '{';
-		}
-		return false;
-	};
-
-	if (IsJsonContent(InScenePath))
+	if (FSceneSaveManager::IsJsonFile(InScenePath))
 	{
 		FSceneSaveManager::LoadSceneFromJSON(InScenePath, LoadContext, CameraData);
 	}

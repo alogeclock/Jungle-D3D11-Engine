@@ -122,6 +122,15 @@ void UWorld::Serialize(FArchive& Ar)
 		Levels.push_back(PersistentLevel);
 		CurrentLevel = PersistentLevel;
 
+		for (AActor* Actor : PersistentLevel->GetActors())
+		{
+			if (Actor)
+			{
+				InsertActorToOctree(Actor);
+			}
+		}
+		MarkWorldPrimitivePickingBVHDirty();
+
 		// Deserialize Streaming Levels Metadata
 		int32 StreamingCount = 0;
 		Ar << StreamingCount;
@@ -489,6 +498,7 @@ void UWorld::SpawnGameMode()
 
 void UWorld::BeginPlay()
 {
+	if (bHasBegunPlay) return;
 	bHasBegunPlay = true;
 
 	SpawnGameMode();

@@ -9,7 +9,9 @@
 #include "Component/ActorComponent.h"
 #include "Input/InputManager.h"
 #include "Viewport/GameViewportClient.h"
+#include "Viewport/Viewport.h"
 #include "Engine/Runtime/WindowsWindow.h"
+#include "Render/Pipeline/Renderer.h"
 #include <filesystem>
 
 IMPLEMENT_CLASS(UGameEngine, UEngine)
@@ -33,11 +35,22 @@ void UGameEngine::Init(FWindowsWindow* InWindow)
 		ViewportClient->SetOwnerWindow(InWindow->GetHWND());
 	}
 
+	// Game/Shipping은 ImGui가 없으므로 백버퍼에 합성해줄 손이 없다.
+	// 윈도우 크기로 FViewport를 만들고 DefaultRenderPipeline이 여기에 렌더 → 백버퍼 복사하도록.
+	if (InWindow)
+	{
+		const uint32 Width  = static_cast<uint32>((std::max)(1.0f, InWindow->GetWidth()));
+		const uint32 Height = static_cast<uint32>((std::max)(1.0f, InWindow->GetHeight()));
+		FViewport* GameViewport = new FViewport();
+		GameViewport->Initialize(GetRenderer().GetFD3DDevice().GetDevice(), Width, Height);
+		ViewportClient->SetViewport(GameViewport);
+	}
+
 	LoadStartLevel();
 
 	if (FWorldContext* Context = GetWorldContextFromHandle(GetActiveWorldHandle()))
 	{
-		ViewportClient->OnBeginPIE(Context->World ? Context->World->GetActiveCamera() : nullptr, nullptr);
+		ViewportClient->OnBeginPIE(Context->World ? Context->World->GetActiveCamera() : nullptr, ViewportClient->GetViewport());
 		ViewportClient->SetPIEPossessedInputEnabled(true);
 	}
 }
@@ -98,11 +111,30 @@ void UGameEngine::LoadStartLevel()
 	}
 
 	const FName OriginalHandle = Context->ContextHandle;
-
 	FPerspectiveCameraData CamData;
-	FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, CamData);
 
-	// LoadSceneFromJSON이 새 World를 만들어 Context를 덮어쓰고, JSON에서 읽은 WorldType("Editor")을 Game으로 강제 복구
+	if (FSceneSaveManager::IsJsonFile(FilePath))
+	{
+		// 쿠킹된 .umap도 현재는 JSON 텍스트로 저장되어 있어 binary parser로는 못 읽는다.
+		// JSON인 경우 LoadSceneFromJSON이 새 World를 생성하므로 기존 World 정리 필요
+		UWorld* OldWorld = Context->World;
+		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, CamData);
+		if (OldWorld && OldWorld != Context->World)
+		{
+			OldWorld->EndPlay();
+			UObjectManager::Get().DestroyObject(OldWorld);
+		}
+	}
+	else if (ChosenPath.extension() == ".umap")
+	{
+		FSceneSaveManager::LoadWorldFromBinary(FilePath, Context->World);
+	}
+	else
+	{
+		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, CamData);
+	}
+
+	// LoadSceneFromJSON/LoadWorldFromBinary 이후 WorldType/Handle 강제 복구
 	Context->WorldType = EWorldType::Game;
 	Context->ContextHandle = OriginalHandle;
 	SetActiveWorld(OriginalHandle);
