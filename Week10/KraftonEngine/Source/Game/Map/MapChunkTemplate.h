@@ -11,6 +11,9 @@ enum class EChunkType {
 	//TurnRight,
 	//TwoWay,
 	StraightWithHole,
+	StraightOneLaneL,
+	StraightOneLaneM,
+	StraightOneLaneR,
 };
 
 enum EObstacleDecision {

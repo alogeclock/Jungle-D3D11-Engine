@@ -838,8 +838,8 @@ bool FLuaComponentProxy::SetBoxExtent(const FVector& Extent)
 	UBoxComponent* BoxComponent = Cast<UBoxComponent>(GetComponent());
 	if (!BoxComponent)
 	{
-		return false;
-	}
+	return false;
+}
 
 	const FVector SafeExtent(
 		std::max(1.0f, Extent.X),

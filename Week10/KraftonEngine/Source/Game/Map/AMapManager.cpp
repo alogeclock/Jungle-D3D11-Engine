@@ -1,6 +1,6 @@
 ﻿#include "AMapManager.h"
 #include "GameFramework/World.h"
-#include <random>
+#include "Game/Map/MapRandom.h"
 
 IMPLEMENT_CLASS(AMapManager, AActor)
 
@@ -191,8 +191,94 @@ void AMapManager::BuildTemplateLibrary() {
 
 	// Obstacles
 	AddDefaultDecisionSlots(StraightWithHole, StraightWithHole.Length * 0.5f, StraightWithHole.Length - 2.f, 2.f);
-
 	Templates.push_back(StraightWithHole);
+
+	//-----------------------------------------------------------------
+	// Straight With One Lane (Left)
+	//-----------------------------------------------------------------
+	FMapChunkTemplate StraightWithOneLaneL;
+	StraightWithOneLaneL.ChunkType = EChunkType::StraightOneLaneL;
+	StraightWithOneLaneL.Length	   = ChunkLength;
+	StraightWithOneLaneL.Width	   = ChunkWidth;
+	StraightWithOneLaneL.ExitOffset = FVector(StraightWithOneLaneL.Length, 0.f, 0.f);
+
+	// StraightWithOneLaneL Floor
+	FFloorBlock StraightWithOneLaneL1 = {};
+	StraightWithOneLaneL1.LocalPosition = FVector(StraightWithOneLaneL.Length / 8.f, 0, 0);
+	StraightWithOneLaneL1.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneL1.Scale			= FVector(StraightWithOneLaneL.Length / 8, ChunkWidth, 1);
+	StraightWithOneLaneL.FloorBlockInfos.push_back(StraightWithOneLaneL1);
+
+	FFloorBlock StraightWithOneLaneL2 = {};
+	StraightWithOneLaneL2.LocalPosition = FVector(StraightWithOneLaneL.Length / 2.f, LaneY[0], 0);
+	StraightWithOneLaneL2.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneL2.Scale			= FVector(StraightWithOneLaneL.Length / 4, 1, 1); 
+	StraightWithOneLaneL.FloorBlockInfos.push_back(StraightWithOneLaneL2);
+
+	FFloorBlock StraightWithOneLaneL3 = {};
+	StraightWithOneLaneL3.LocalPosition = FVector(StraightWithOneLaneL.Length * 7 / 8.f, 0, 0);
+	StraightWithOneLaneL3.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneL3.Scale			= FVector(StraightWithOneLaneL.Length / 8, ChunkWidth, 1);
+	StraightWithOneLaneL.FloorBlockInfos.push_back(StraightWithOneLaneL3);
+	Templates.push_back(StraightWithOneLaneL);
+
+	//-----------------------------------------------------------------
+	// Straight With One Lane (Middle)
+	//-----------------------------------------------------------------
+	FMapChunkTemplate StraightWithOneLaneM;
+	StraightWithOneLaneM.ChunkType = EChunkType::StraightOneLaneM;
+	StraightWithOneLaneM.Length = ChunkLength;
+	StraightWithOneLaneM.Width = ChunkWidth;
+	StraightWithOneLaneM.ExitOffset = FVector(StraightWithOneLaneM.Length, 0.f, 0.f);
+
+	// StraightWithOneLaneM Floor
+	FFloorBlock StraightWithOneLaneM1 = {};
+	StraightWithOneLaneM1.LocalPosition = FVector(StraightWithOneLaneM.Length / 8.f, 0, 0);
+	StraightWithOneLaneM1.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneM1.Scale = FVector(StraightWithOneLaneM.Length / 8, ChunkWidth, 1);
+	StraightWithOneLaneM.FloorBlockInfos.push_back(StraightWithOneLaneM1);
+
+	FFloorBlock StraightWithOneLaneM2 = {};
+	StraightWithOneLaneM2.LocalPosition = FVector(StraightWithOneLaneM.Length / 2.f, LaneY[1], 0);
+	StraightWithOneLaneM2.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneM2.Scale = FVector(StraightWithOneLaneM.Length / 4, 1, 1);
+	StraightWithOneLaneM.FloorBlockInfos.push_back(StraightWithOneLaneM2);
+
+	FFloorBlock StraightWithOneLaneM3 = {};
+	StraightWithOneLaneM3.LocalPosition = FVector(StraightWithOneLaneM.Length * 7 / 8.f, 0, 0);
+	StraightWithOneLaneM3.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneM3.Scale = FVector(StraightWithOneLaneM.Length / 8, ChunkWidth, 1);
+	StraightWithOneLaneM.FloorBlockInfos.push_back(StraightWithOneLaneM3);
+	Templates.push_back(StraightWithOneLaneM);
+
+	//-----------------------------------------------------------------
+	// Straight With One Lane (Right)
+	//-----------------------------------------------------------------
+	FMapChunkTemplate StraightWithOneLaneR;
+	StraightWithOneLaneR.ChunkType = EChunkType::StraightOneLaneR;
+	StraightWithOneLaneR.Length = ChunkLength;
+	StraightWithOneLaneR.Width = ChunkWidth;
+	StraightWithOneLaneR.ExitOffset = FVector(StraightWithOneLaneR.Length, 0.f, 0.f);
+
+	// StraightWithOneLaneM Floor
+	FFloorBlock StraightWithOneLaneR1 = {};
+	StraightWithOneLaneR1.LocalPosition = FVector(StraightWithOneLaneR.Length / 8.f, 0, 0);
+	StraightWithOneLaneR1.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneR1.Scale = FVector(StraightWithOneLaneR.Length / 8, ChunkWidth, 1);
+	StraightWithOneLaneR.FloorBlockInfos.push_back(StraightWithOneLaneR1);
+
+	FFloorBlock StraightWithOneLaneR2 = {};
+	StraightWithOneLaneR2.LocalPosition = FVector(StraightWithOneLaneR.Length / 2.f, LaneY[2], 0);
+	StraightWithOneLaneR2.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneR2.Scale = FVector(StraightWithOneLaneR.Length / 4, 1, 1);
+	StraightWithOneLaneR.FloorBlockInfos.push_back(StraightWithOneLaneR2);
+
+	FFloorBlock StraightWithOneLaneR3 = {};
+	StraightWithOneLaneR3.LocalPosition = FVector(StraightWithOneLaneR.Length * 7 / 8.f, 0, 0);
+	StraightWithOneLaneR3.LocalRotation = FRotator(0, 0, 0);
+	StraightWithOneLaneR3.Scale = FVector(StraightWithOneLaneR.Length / 8, ChunkWidth, 1);
+	StraightWithOneLaneR.FloorBlockInfos.push_back(StraightWithOneLaneR3);
+	Templates.push_back(StraightWithOneLaneR);
 }
 
 void AMapManager::SpawnNextChunk(bool Init)
@@ -233,5 +319,5 @@ int32 AMapManager::SelectNextTemplateIndex()
 		Candidates.push_back(i);
 	}
 
-	return Candidates[rand() % Candidates.size()];
+	return Candidates[MapRandom::Index(static_cast<int32>(Candidates.size()))];
 }

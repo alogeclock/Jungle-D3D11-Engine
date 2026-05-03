@@ -120,6 +120,14 @@ function ActorProxy:MoveTo(location) end
 
 ---@param x number
 ---@param y number
+---@param z number
+function ActorProxy:Translate(x, y, z) end
+
+---@param location Vector
+function ActorProxy:MoveTo(location) end
+
+---@param x number
+---@param y number
 ---@param z? number
 function ActorProxy:MoveTo(x, y, z) end
 

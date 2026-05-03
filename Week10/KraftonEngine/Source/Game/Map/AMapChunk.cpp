@@ -4,6 +4,7 @@
 #include "Engine/Runtime/Engine.h"
 #include "Game/GameActors/Obstacle/SimpleObstacleActor.h"
 #include "Game/GameActors/Obstacle/BarrierObstacleActor.h"
+#include "Game/Map/MapRandom.h"
 #include "Materials/MaterialManager.h"
 #include "Resource/ResourceManager.h"
 
@@ -146,10 +147,11 @@ void AMapChunk::SpawnObstacle()
 	constexpr float ObstacleZ = 1.0f;
 
 	for (const FDecisionSlot& DecisionSlot : Template.ObstacleSlotDecisions) {
-		if ((float)rand() / RAND_MAX > ObstacleFillRate) continue;
+		if (!MapRandom::Chance(ObstacleFillRate)) continue;
 		if (DecisionSlot.AllowedDecisions.empty()) continue;
 
-		EObstacleDecision Decision = DecisionSlot.AllowedDecisions[rand() % DecisionSlot.AllowedDecisions.size()];
+		const int32 DecisionIndex = MapRandom::Index(static_cast<int32>(DecisionSlot.AllowedDecisions.size()));
+		EObstacleDecision Decision = DecisionSlot.AllowedDecisions[DecisionIndex];
 
 		auto WorldPositionForLane = [&](int32 LaneIndex)
 		{

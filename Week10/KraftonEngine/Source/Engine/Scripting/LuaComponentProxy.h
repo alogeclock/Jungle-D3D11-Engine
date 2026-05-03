@@ -86,7 +86,7 @@ struct FLuaComponentProxy
 	bool StopMove();
 	bool IsMoveDone() const;
 
-	// Box Extent (충돌 처리) 관련
+	// Box Extent (�浹 ó��) ����
 	bool SetBoxExtent(const FVector& Extent);
 	bool SetBoxExtentXYZ(float X, float Y, float Z);
 	sol::optional<FVector> GetBoxExtent() const;
