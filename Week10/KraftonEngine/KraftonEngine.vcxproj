@@ -319,12 +319,17 @@
     <ClCompile Include="Source\Engine\Component\ActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\BillboardComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\CameraComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\CanvasRootComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\CylindricalBillboardComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\DecalComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\GizmoComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\HeightFogComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\MeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\PrimitiveComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\UIButtonComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\UIImageComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\UIScreenTextComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\UWindowPanelComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\SceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\ScriptComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\StaticMeshComponent.cpp" />
@@ -357,6 +362,7 @@
     <ClCompile Include="Source\Engine\GameFramework\DecalActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\HeightFogActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\ScreenTextActor.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\UIRootActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\WorldTextActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\Level.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\PawnActor.cpp" />
@@ -404,6 +410,7 @@
     <ClCompile Include="Source\Engine\Render\Device\D3DDevice.cpp" />
     <ClCompile Include="Source\Engine\Render\Geometry\FontGeometry.cpp" />
     <ClCompile Include="Source\Engine\Render\Geometry\LineGeometry.cpp" />
+    <ClCompile Include="Source\Engine\Render\Geometry\ScreenQuadGeometry.cpp" />
     <ClCompile Include="Source\Engine\Render\Pipeline\DefaultRenderPipeline.cpp" />
     <ClCompile Include="Source\Engine\Render\Pipeline\RenderCollector.cpp" />
     <ClCompile Include="Source\Engine\Render\Pipeline\Renderer.cpp" />
@@ -433,6 +440,8 @@
     <ClCompile Include="Source\Engine\Render\RenderPass\RenderPassRegistry.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderPass\SelectionMaskPass.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderPass\ShadowMapPass.cpp" />
+    <ClCompile Include="Source\Engine\Render\RenderPass\UIPass.cpp" />
+    <ClCompile Include="Source\Engine\Render\RenderPass\WorldTextPass.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderState\BlendStateManager.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderState\DepthStencilStateManager.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderState\RasterizerStateManager.cpp" />
@@ -533,12 +542,17 @@
     <ClInclude Include="Source\Engine\Component\ActorComponent.h" />
     <ClInclude Include="Source\Engine\Component\BillboardComponent.h" />
     <ClInclude Include="Source\Engine\Component\CameraComponent.h" />
+    <ClInclude Include="Source\Engine\Component\CanvasRootComponent.h" />
     <ClInclude Include="Source\Engine\Component\CylindricalBillboardComponent.h" />
     <ClInclude Include="Source\Engine\Component\DecalComponent.h" />
     <ClInclude Include="Source\Engine\Component\GizmoComponent.h" />
     <ClInclude Include="Source\Engine\Component\HeightFogComponent.h" />
     <ClInclude Include="Source\Engine\Component\MeshComponent.h" />
     <ClInclude Include="Source\Engine\Component\PrimitiveComponent.h" />
+    <ClInclude Include="Source\Engine\Component\UIButtonComponent.h" />
+    <ClInclude Include="Source\Engine\Component\UIImageComponent.h" />
+    <ClInclude Include="Source\Engine\Component\UIScreenTextComponent.h" />
+    <ClInclude Include="Source\Engine\Component\UWindowPanelComponent.h" />
     <ClInclude Include="Source\Engine\Component\SceneComponent.h" />
     <ClInclude Include="Source\Engine\Component\ScriptComponent.h" />
     <ClInclude Include="Source\Engine\Component\StaticMeshComponent.h" />
@@ -584,6 +598,7 @@
     <ClInclude Include="Source\Engine\GameFramework\GameModeBase.h" />
     <ClInclude Include="Source\Engine\GameFramework\HeightFogActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\ScreenTextActor.h" />
+    <ClInclude Include="Source\Engine\GameFramework\UIRootActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\WorldTextActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\Level.h" />
     <ClInclude Include="Source\Engine\GameFramework\PawnActor.h" />
@@ -641,6 +656,7 @@
     <ClInclude Include="Source\Engine\Render\Device\D3DDevice.h" />
     <ClInclude Include="Source\Engine\Render\Geometry\FontGeometry.h" />
     <ClInclude Include="Source\Engine\Render\Geometry\LineGeometry.h" />
+    <ClInclude Include="Source\Engine\Render\Geometry\ScreenQuadGeometry.h" />
     <ClInclude Include="Source\Engine\Render\Pipeline\DefaultRenderPipeline.h" />
     <ClInclude Include="Source\Engine\Render\Pipeline\IRenderPipeline.h" />
     <ClInclude Include="Source\Engine\Render\Pipeline\RenderCollector.h" />
@@ -672,6 +688,8 @@
     <ClInclude Include="Source\Engine\Render\RenderPass\RenderPassRegistry.h" />
     <ClInclude Include="Source\Engine\Render\RenderPass\SelectionMaskPass.h" />
     <ClInclude Include="Source\Engine\Render\RenderPass\ShadowMapPass.h" />
+    <ClInclude Include="Source\Engine\Render\RenderPass\UIPass.h" />
+    <ClInclude Include="Source\Engine\Render\RenderPass\WorldTextPass.h" />
     <ClInclude Include="Source\Engine\Render\RenderState\BlendStateManager.h" />
     <ClInclude Include="Source\Engine\Render\RenderState\DepthStencilStateManager.h" />
     <ClInclude Include="Source\Engine\Render\RenderState\RasterizerStateManager.h" />
@@ -1071,6 +1089,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\UI\Font.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ObjViewDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\UI\Image.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ObjViewDebug|x64'">true</ExcludedFromBuild>

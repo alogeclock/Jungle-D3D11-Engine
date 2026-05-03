@@ -97,8 +97,8 @@ void FFontGeometry::ClearScreen()
 
 void FFontGeometry::AddWorldText(const FString& Text,
 	const FVector& WorldPos,
-	const FVector& CamRight,
-	const FVector& CamUp,
+	const FVector& TextRight,
+	const FVector& TextUp,
 	const FVector& WorldScale,
 	float Scale)
 {
@@ -116,8 +116,8 @@ void FFontGeometry::AddWorldText(const FString& Text,
 	FTextureVertex* pV = WorldVertices.data() + Base;
 	uint32* pI = WorldIndices.data() + IdxBase;
 
-	const FVector HalfRight = CamRight * (CharW * 0.5f);
-	const FVector HalfUp    = CamUp    * (CharH * 0.5f);
+	const FVector HalfRight = TextRight * (CharW * 0.5f);
+	const FVector HalfUp    = TextUp    * (CharH * 0.5f);
 
 	const uint8* Ptr = reinterpret_cast<const uint8*>(Text.c_str());
 	const uint8* const End = Ptr + Text.size();
@@ -135,7 +135,7 @@ void FFontGeometry::AddWorldText(const FString& Text,
 		FVector2 UVMin, UVMax;
 		GetCharUV(CP, UVMin, UVMax);
 
-		const FVector Center = WorldPos + CamRight * CharCursorX;
+		const FVector Center = WorldPos + TextRight * CharCursorX;
 
 		pV[0] = { Center                 + HalfUp, { UVMin.X, UVMin.Y } };
 		pV[1] = { Center + HalfRight * 2 + HalfUp, { UVMax.X, UVMin.Y } };

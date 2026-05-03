@@ -26,8 +26,8 @@ public:
 	// 월드 좌표 빌보드 텍스트
 	void AddWorldText(const FString& Text,
 		const FVector& WorldPos,
-		const FVector& CamRight,
-		const FVector& CamUp,
+		const FVector& TextRight,
+		const FVector& TextUp,
 		const FVector& WorldScale,
 		float Scale = 1.0f);
 

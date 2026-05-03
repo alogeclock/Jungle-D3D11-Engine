@@ -46,6 +46,8 @@ enum class ERenderPass : uint32
 	FXAA,			// FXAA 안티앨리어싱 (SceneColor 복사 후 실행)
 	GizmoOuter,		// 기즈모 외곽 (깊이 테스트 O)
 	GizmoInner,		// 기즈모 내부 (깊이 무시)
+	WorldText,		// 월드 공간 텍스트 전용 패스
+	UI,				// 스크린 공간 UI 쿼드 (깊이 무시)
 	ScreenText,		// 스크린 공간 텍스트 (깊이 무시)
 	MAX
 };
@@ -66,6 +68,8 @@ inline const char* GetRenderPassName(ERenderPass Pass)
 		"RenderPass::FXAA",
 		"RenderPass::GizmoOuter",
 		"RenderPass::GizmoInner",
+		"RenderPass::WorldText",
+		"RenderPass::UI",
 		"RenderPass::ScreenText",
 	};
 	static_assert(ARRAYSIZE(Names) == (uint32)ERenderPass::MAX, "Names must match ERenderPass entries");
@@ -89,6 +93,8 @@ namespace RenderStateStrings
 		{ "FXAA",          (int)ERenderPass::FXAA },
 		{ "GizmoOuter",    (int)ERenderPass::GizmoOuter },
 		{ "GizmoInner",    (int)ERenderPass::GizmoInner },
+		{ "WorldText",     (int)ERenderPass::WorldText },
+		{ "UI",            (int)ERenderPass::UI },
 		{ "ScreenText",    (int)ERenderPass::ScreenText },
 	};
 

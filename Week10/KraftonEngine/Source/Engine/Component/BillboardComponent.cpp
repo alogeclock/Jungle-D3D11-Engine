@@ -131,6 +131,7 @@ void UBillboardComponent::SetMaterial(UMaterial* InMaterial)
 void UBillboardComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
 {
 	UPrimitiveComponent::GetEditableProperties(OutProps);
+	OutProps.push_back({ "Billboard", EPropertyType::Bool, &bIsBillboard });
 	OutProps.push_back({ "Texture", EPropertyType::TextureSlot, &TextureSlot });
 	OutProps.push_back({ "Width",  EPropertyType::Float, &Width,  0.1f, 100.0f, 0.1f });
 	OutProps.push_back({ "Height", EPropertyType::Float, &Height, 0.1f, 100.0f, 0.1f });
@@ -157,6 +158,10 @@ void UBillboardComponent::PostEditProperty(const char* PropertyName)
 		// Width/Height??鍮뚮낫??荑쇰뱶 ?ш린瑜?寃곗젙?섎?濡??몃옖?ㅽ뤌/?붾뱶 諛붿슫??紐⑤몢 媛깆떊?댁빞 ?쒕떎.
 		MarkProxyDirty(EDirtyFlag::Transform);
 		MarkWorldBoundsDirty();
+	}
+	else if (strcmp(PropertyName, "Billboard") == 0)
+	{
+		MarkProxyDirty(EDirtyFlag::Transform);
 	}
 }
 

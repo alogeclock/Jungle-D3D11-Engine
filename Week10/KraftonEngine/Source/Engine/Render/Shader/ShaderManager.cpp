@@ -40,6 +40,7 @@ void FShaderManager::Initialize(ID3D11Device* InDevice)
 	GetOrCreate(EShaderPath::SceneNormal, StartupError);
 	GetOrCreate(EShaderPath::FXAA, StartupError);
 	GetOrCreate(EShaderPath::Font, StartupError);
+	GetOrCreate(EShaderPath::Image, StartupError);
 	GetOrCreate(EShaderPath::ScreenText, StartupError);
 	GetOrCreate(EShaderPath::SubUV, StartupError);
 	GetOrCreate(EShaderPath::Billboard, StartupError);

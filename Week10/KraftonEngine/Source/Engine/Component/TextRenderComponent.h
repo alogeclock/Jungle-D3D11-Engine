@@ -4,13 +4,6 @@
 #include "Core/ResourceTypes.h"
 #include "Object/FName.h"
 
-// 텍스트 렌더링 공간 모드
-enum class ETextRenderSpace : int32
-{
-	World,		// 3D 공간에 빌보드로 렌더링
-	Screen		// 2D 스크린 좌표에 고정 렌더링
-};
-
 // 텍스트 수평 정렬
 enum class ETextHAlign : int32
 {
@@ -67,22 +60,12 @@ public:
 	void SetFontSize(float InSize) { FontSize = InSize; }
 	float GetFontSize() const { return FontSize; }
 
-	// --- Space ---
-	void SetRenderSpace(ETextRenderSpace InSpace) { RenderSpace = InSpace; }
-	ETextRenderSpace GetRenderSpace() const { return RenderSpace; }
-
-	// Screen 모드 전용: 스크린 좌표 (픽셀)
-	void SetScreenPosition(float X, float Y) { ScreenX = X; ScreenY = Y; }
-	float GetScreenX() const { return ScreenX; }
-	float GetScreenY() const { return ScreenY; }
-
 	// --- Alignment ---
 	void SetHorizontalAlignment(ETextHAlign InAlign) { HAlign = InAlign; }
 	ETextHAlign GetHorizontalAlignment() const { return HAlign; }
 
 	void SetVerticalAlignment(ETextVAlign InAlign) { VAlign = InAlign; }
 	ETextVAlign GetVerticalAlignment() const { return VAlign; }
-	bool IsScreenSpace() const { return RenderSpace == ETextRenderSpace::Screen; }
 
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
 
@@ -108,11 +91,6 @@ private:
 	float CharWidth = 0.5f;
 	float CharHeight = 0.5f;
 
-	ETextRenderSpace RenderSpace = ETextRenderSpace::World;
 	ETextHAlign HAlign = ETextHAlign::Center;
 	ETextVAlign VAlign = ETextVAlign::Center;
-
-	// Screen 모드 전용
-	float ScreenX = 0.0f;
-	float ScreenY = 0.0f;
 };

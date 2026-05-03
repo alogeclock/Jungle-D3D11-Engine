@@ -285,15 +285,27 @@ bool FScene::IsProxySelected(const FPrimitiveSceneProxy* Proxy) const
 void FScene::ClearFrameData()
 {
 	ScreenTexts.clear();
+	ScreenQuads.clear();
 	DebugAABBs.clear();
 	DebugLines.clear();
 	Grid = {};
 	LightVisualizationSettings = {};
 }
 
-void FScene::AddScreenText(FString Text, const FVector2& Position, float Scale)
+void FScene::AddScreenText(FString Text, const FVector2& Position, float Scale, const FVector4& Color)
 {
-	ScreenTexts.push_back({ std::move(Text), Position, Scale });
+	ScreenTexts.push_back({ std::move(Text), Position, Scale, Color });
+}
+
+void FScene::AddScreenQuad(ID3D11ShaderResourceView* TextureSRV, const FVector2& Position, const FVector2& Size, const FVector4& Color, int32 ZOrder,
+	const FVector2& UVMin, const FVector2& UVMax)
+{
+	if (!TextureSRV)
+	{
+		return;
+	}
+
+	ScreenQuads.push_back({ TextureSRV, Position, Size, UVMin, UVMax, Color, ZOrder });
 }
 
 void FScene::AddDebugAABB(const FVector& Min, const FVector& Max, const FColor& Color)

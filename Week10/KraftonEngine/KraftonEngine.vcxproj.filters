@@ -294,6 +294,9 @@
     <FxCompile Include="Shaders\UI\Font.hlsl">
       <Filter>Shaders\UI</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\UI\Image.hlsl">
+      <Filter>Shaders\UI</Filter>
+    </FxCompile>
     <FxCompile Include="Shaders\UI\ScreenText.hlsl">
       <Filter>Shaders\UI</Filter>
     </FxCompile>
@@ -419,6 +422,9 @@
     <ClCompile Include="Source\Engine\Component\CameraComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Component\CanvasRootComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Component\CylindricalBillboardComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
@@ -435,6 +441,18 @@
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Component\PrimitiveComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UIButtonComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UIImageComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UIScreenTextComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UWindowPanelComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Component\SceneComponent.cpp">
@@ -531,6 +549,9 @@
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\ScreenTextActor.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\UIRootActor.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\WorldTextActor.cpp">
@@ -674,6 +695,9 @@
     <ClCompile Include="Source\Engine\Render\Geometry\LineGeometry.cpp">
       <Filter>Source\Engine\Render\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Render\Geometry\ScreenQuadGeometry.cpp">
+      <Filter>Source\Engine\Render\Geometry</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Render\Pipeline\DefaultRenderPipeline.cpp">
       <Filter>Source\Engine\Render\Pipeline</Filter>
     </ClCompile>
@@ -759,6 +783,12 @@
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\RenderPass\ShadowMapPass.cpp">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Render\RenderPass\UIPass.cpp">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Render\RenderPass\WorldTextPass.cpp">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\RenderState\BlendStateManager.cpp">
@@ -1043,6 +1073,9 @@
     <ClInclude Include="Source\Engine\Component\CameraComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Component\CanvasRootComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Component\CylindricalBillboardComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
@@ -1059,6 +1092,18 @@
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\PrimitiveComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UIButtonComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UIImageComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UIScreenTextComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UWindowPanelComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\SceneComponent.h">
@@ -1194,6 +1239,9 @@
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\ScreenTextActor.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\UIRootActor.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\WorldTextActor.h">
@@ -1367,6 +1415,9 @@
     <ClInclude Include="Source\Engine\Render\Geometry\LineGeometry.h">
       <Filter>Source\Engine\Render\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Render\Geometry\ScreenQuadGeometry.h">
+      <Filter>Source\Engine\Render\Geometry</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Render\Pipeline\DefaultRenderPipeline.h">
       <Filter>Source\Engine\Render\Pipeline</Filter>
     </ClInclude>
@@ -1458,6 +1509,12 @@
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\RenderPass\ShadowMapPass.h">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Render\RenderPass\UIPass.h">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Render\RenderPass\WorldTextPass.h">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\RenderState\BlendStateManager.h">

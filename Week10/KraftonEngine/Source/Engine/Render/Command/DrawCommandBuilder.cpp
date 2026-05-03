@@ -30,6 +30,7 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 	EditorLines.Create(InDevice);
 	GridLines.Create(InDevice);
 	FontGeometry.Create(InDevice);
+	ScreenQuads.Create(InDevice);
 
 	FogCB.Create(InDevice, sizeof(FFogConstants));
 	OutlineCB.Create(InDevice, sizeof(FOutlinePostProcessConstants));
@@ -42,6 +43,7 @@ void FDrawCommandBuilder::Release()
 	EditorLines.Release();
 	GridLines.Release();
 	FontGeometry.Release();
+	ScreenQuads.Release();
 
 	for (FConstantBuffer& CB : PerObjectCBPool)
 	{
@@ -74,6 +76,7 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame, uint32 MaxPro
 	GridLines.Clear();
 	FontGeometry.Clear();
 	FontGeometry.ClearScreen();
+	ScreenQuads.Clear();
 
 	if (const FFontResource* FontRes = FResourceManager::Get().FindFont(FName("Default")))
 		FontGeometry.EnsureCharInfoMap(FontRes);
@@ -260,24 +263,13 @@ void FDrawCommandBuilder::BuildDecalCommandForReceiver(const FPrimitiveSceneProx
 // ============================================================
 void FDrawCommandBuilder::AddWorldText(const FTextRenderSceneProxy* TextProxy, const FFrameContext& Frame)
 {
+	(void)Frame;
 	FontGeometry.AddWorldText(
 		TextProxy->CachedText,
-		TextProxy->CachedBillboardMatrix.GetLocation(),
-		Frame.CameraRight,
-		Frame.CameraUp,
-		TextProxy->CachedBillboardMatrix.GetScale(),
-		TextProxy->CachedFontScale
-	);
-}
-
-static void AddScreenText(const FTextRenderSceneProxy* TextProxy, FFontGeometry& FontGeometry, const FFrameContext& Frame)
-{
-	FontGeometry.AddScreenText(
-		TextProxy->CachedText,
-		TextProxy->CachedScreenX,
-		TextProxy->CachedScreenY,
-		Frame.ViewportWidth,
-		Frame.ViewportHeight,
+		TextProxy->CachedTextWorldMatrix.GetLocation(),
+		TextProxy->CachedTextRight,
+		TextProxy->CachedTextUp,
+		TextProxy->CachedTextWorldMatrix.GetScale(),
 		TextProxy->CachedFontScale
 	);
 }
@@ -307,10 +299,7 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 			const FTextRenderSceneProxy* TextProxy = static_cast<const FTextRenderSceneProxy*>(Proxy);
 			if (!TextProxy->CachedText.empty())
 			{
-				if (TextProxy->CachedRenderSpace == ETextRenderSpace::Screen)
-					AddScreenText(TextProxy, FontGeometry, Frame);
-				else
-					AddWorldText(TextProxy, Frame);
+				AddWorldText(TextProxy, Frame);
 			}
 		}
 		else if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::Decal))
@@ -408,6 +397,23 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 	}
 
 	// --- ScreenText 패스: 스크린 공간 텍스트 ---
+	for (const auto& Quad : Scene->GetScreenQuads())
+	{
+		ScreenQuads.AddScreenQuad(
+			Quad.Position.X,
+			Quad.Position.Y,
+			Quad.Size.X,
+			Quad.Size.Y,
+			Frame.ViewportWidth,
+			Frame.ViewportHeight,
+			Quad.Color,
+			Quad.UVMin,
+			Quad.UVMax,
+			Quad.TextureSRV,
+			static_cast<uint16>((Quad.ZOrder < 0) ? 0 : ((Quad.ZOrder > 65535) ? 65535 : Quad.ZOrder)));
+	}
+
+	// --- ScreenText 패스: 스크린 공간 텍스트 ---
 	for (const auto& Text : Scene->GetScreenTexts())
 	{
 		if (!Text.Text.empty())
@@ -432,6 +438,7 @@ void FDrawCommandBuilder::BuildDynamicDrawCommands(const FFrameContext& Frame, c
 	EViewMode ViewMode = Frame.RenderOptions.ViewMode;
 	BuildEditorLineCommands(ViewMode);
 	BuildPostProcessCommands(Frame, Scene);
+	BuildUICommands(ViewMode);
 	BuildFontCommands(ViewMode);
 }
 
@@ -581,8 +588,41 @@ void FDrawCommandBuilder::BuildPostProcessCommands(const FFrameContext& Frame, c
 	}
 }
 
+void FDrawCommandBuilder::BuildUICommands(EViewMode ViewMode)
+{
+	if (!ScreenQuads.HasAnyQuads() || !ScreenQuads.UploadBuffers(CachedContext))
+	{
+		return;
+	}
+
+	FShader* UIShader = FShaderManager::Get().GetOrCreate(EShaderPath::Image);
+	if (!UIShader)
+	{
+		return;
+	}
+
+	const FDrawCommandRenderState UIRS = PassRenderStateTable->ToDrawCommandState(ERenderPass::UI, ViewMode);
+	for (const FScreenQuadGeometry::FBatch& Batch : ScreenQuads.GetBatches())
+	{
+		if (!Batch.SRV || Batch.IndexCount == 0)
+		{
+			continue;
+		}
+
+		FDrawCommand& Cmd = DrawCommandList.AddCommand();
+		Cmd.Pass = ERenderPass::UI;
+		Cmd.Shader = UIShader;
+		Cmd.RenderState = UIRS;
+		Cmd.Buffer = { ScreenQuads.GetVBBuffer(), ScreenQuads.GetVBStride(), ScreenQuads.GetIBBuffer() };
+		Cmd.Buffer.FirstIndex = Batch.FirstIndex;
+		Cmd.Buffer.IndexCount = Batch.IndexCount;
+		Cmd.Bindings.SRVs[(int)EMaterialTextureSlot::Diffuse] = Batch.SRV;
+		Cmd.BuildSortKey(Batch.ZOrder);
+	}
+}
+
 // ============================================================
-// BuildFontCommands — World text (AlphaBlend) + Screen text (ScreenText)
+// BuildFontCommands — World text (WorldText) + Screen text (ScreenText)
 // ============================================================
 void FDrawCommandBuilder::BuildFontCommands(EViewMode ViewMode)
 {
@@ -594,9 +634,9 @@ void FDrawCommandBuilder::BuildFontCommands(EViewMode ViewMode)
 	if (FontGeometry.GetWorldQuadCount() > 0 && FontGeometry.UploadWorldBuffers(Ctx))
 	{
 		FDrawCommand& Cmd = DrawCommandList.AddCommand();
-		Cmd.Pass = ERenderPass::AlphaBlend;
+		Cmd.Pass = ERenderPass::WorldText;
 		Cmd.Shader = FShaderManager::Get().GetOrCreate(EShaderPath::Font);
-		Cmd.RenderState = PassRenderStateTable->ToDrawCommandState(ERenderPass::AlphaBlend, ViewMode);
+		Cmd.RenderState = PassRenderStateTable->ToDrawCommandState(ERenderPass::WorldText, ViewMode);
 		Cmd.Buffer = { FontGeometry.GetWorldVBBuffer(), FontGeometry.GetWorldVBStride(), FontGeometry.GetWorldIBBuffer() };
 		Cmd.Buffer.IndexCount = FontGeometry.GetWorldIndexCount();
 		Cmd.Bindings.SRVs[(int)EMaterialTextureSlot::Diffuse] = FontRes->SRV;

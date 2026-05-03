@@ -23,6 +23,7 @@ public:
 	void PostEditProperty(const char* PropertyName) override;
 
 	void SetBillboardEnabled(bool bEnable) { bIsBillboard = bEnable; }
+	bool IsBillboardEnabled() const { return bIsBillboard; }
 
 	// --- Texture ---
 	void SetTexture(class UTexture2D* InTexture);

@@ -4,6 +4,7 @@
 #include "Render/Types/FrameContext.h"
 #include "Render/Geometry/LineGeometry.h"
 #include "Render/Geometry/FontGeometry.h"
+#include "Render/Geometry/ScreenQuadGeometry.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 
 class FPassRenderStateTable;
@@ -54,6 +55,7 @@ private:
 	// BuildDynamicDrawCommands 서브 메서드
 	void BuildEditorLineCommands(EViewMode ViewMode);
 	void BuildPostProcessCommands(const FFrameContext& Frame, const FScene* Scene);
+	void BuildUICommands(EViewMode ViewMode);
 	void BuildFontCommands(EViewMode ViewMode);
 
 	// 공통 헬퍼
@@ -76,6 +78,7 @@ private:
 	FLineGeometry  EditorLines;
 	FLineGeometry  GridLines;
 	FFontGeometry  FontGeometry;
+	FScreenQuadGeometry ScreenQuads;
 
 	// PerObject CB 풀
 	TArray<FConstantBuffer> PerObjectCBPool;

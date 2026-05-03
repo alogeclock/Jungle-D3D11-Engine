@@ -1,0 +1,111 @@
+#include "Component/UIButtonComponent.h"
+
+#include "Input/InputManager.h"
+#include "Object/ObjectFactory.h"
+#include "Render/Scene/FScene.h"
+#include "Serialization/Archive.h"
+
+#include <Windows.h>
+
+IMPLEMENT_CLASS(UIButtonComponent, UUIImageComponent)
+
+UIButtonComponent::UIButtonComponent()
+{
+	bTickEnable = true;
+	PrimaryComponentTick.SetTickEnabled(true);
+}
+
+void UIButtonComponent::Serialize(FArchive& Ar)
+{
+	UUIImageComponent::Serialize(Ar);
+	Ar << Label;
+	Ar << LabelOffset;
+	Ar << LabelScale;
+	Ar << NormalTint;
+	Ar << HoverTint;
+	Ar << PressedTint;
+}
+
+void UIButtonComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+{
+	UUIImageComponent::GetEditableProperties(OutProps);
+	OutProps.push_back({ "Label", EPropertyType::String, &Label });
+	OutProps.push_back({ "Label Offset", EPropertyType::Vec3, &LabelOffset, -4096.0f, 4096.0f, 1.0f });
+	OutProps.push_back({ "Label Scale", EPropertyType::Float, &LabelScale, 0.1f, 10.0f, 0.05f });
+	OutProps.push_back({ "Normal Tint", EPropertyType::Color4, &NormalTint });
+	OutProps.push_back({ "Hover Tint", EPropertyType::Color4, &HoverTint });
+	OutProps.push_back({ "Pressed Tint", EPropertyType::Color4, &PressedTint });
+}
+
+void UIButtonComponent::PostEditProperty(const char* PropertyName)
+{
+	UUIImageComponent::PostEditProperty(PropertyName);
+	(void)PropertyName;
+}
+
+void UIButtonComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
+{
+	UUIImageComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	bClickedThisFrame = false;
+
+	POINT CursorPoint = FInputManager::Get().GetMousePos();
+	HWND ForegroundWindow = ::GetForegroundWindow();
+	if (ForegroundWindow)
+	{
+		::ScreenToClient(ForegroundWindow, &CursorPoint);
+	}
+
+	bHovered = IsPointInsideButton(static_cast<float>(CursorPoint.x), static_cast<float>(CursorPoint.y));
+	bPressed = bHovered && FInputManager::Get().IsMouseButtonDown(FInputManager::MOUSE_LEFT);
+	bClickedThisFrame = bHovered && FInputManager::Get().IsMouseButtonPressed(FInputManager::MOUSE_LEFT);
+}
+
+void UIButtonComponent::ContributeVisuals(FScene& Scene) const
+{
+	if (!IsVisible())
+	{
+		return;
+	}
+
+	if (ID3D11ShaderResourceView* SRV = GetResolvedTextureSRV())
+	{
+		Scene.AddScreenQuad(
+			SRV,
+			FVector2(ScreenPosition.X, ScreenPosition.Y),
+			FVector2(ScreenSize.X, ScreenSize.Y),
+			GetCurrentTint(),
+			ZOrder);
+	}
+
+	if (!Label.empty())
+	{
+		Scene.AddScreenText(
+			Label,
+			FVector2(ScreenPosition.X + LabelOffset.X, ScreenPosition.Y + LabelOffset.Y),
+			LabelScale);
+	}
+}
+
+FVector4 UIButtonComponent::GetCurrentTint() const
+{
+	if (bPressed)
+	{
+		return PressedTint;
+	}
+
+	if (bHovered)
+	{
+		return HoverTint;
+	}
+
+	return NormalTint;
+}
+
+bool UIButtonComponent::IsPointInsideButton(float X, float Y) const
+{
+	return X >= ScreenPosition.X
+		&& X <= ScreenPosition.X + ScreenSize.X
+		&& Y >= ScreenPosition.Y
+		&& Y <= ScreenPosition.Y + ScreenSize.Y;
+}
