@@ -13,10 +13,21 @@ enum class EChunkType {
 	StraightWithHole,
 };
 
-struct FObstacleSlot
+enum EObstacleDecision {
+	SingleBarrierLeft,
+	SingleBarrierMiddle,
+	SingleBarrierRight,
+	DoubleBarrierLeft,
+	DoubleBarrierRight,
+	MustJump,
+	MustSlide,
+	Count,
+};
+
+struct FDecisionSlot
 {
-	FVector			LocalPosition;  // where in the chunk this obstacle can appear
-	EObstacleType	AllowedTypes;   // bitmask - which obstacle types fit here
+	float X;
+	TArray<EObstacleDecision> AllowedDecisions; // pick one at spawn time
 };
 
 struct FFloorBlock
@@ -34,9 +45,9 @@ struct FFloorBlock
 struct FMapChunkTemplate {
 	EChunkType				ChunkType = EChunkType::Straight;
 	float					Length = 0.0f;
+	float					Width  = 0.0f;
 	FVector					ExitOffset = FVector(0.0f, 0.0f, 0.0f);	// local-space offset from entry to next chunk's origin
 	FRotator				ExitRotation = FRotator(0.0f, 0.0f, 0.0f);	// e.g. (0, 0, -90) for a left turn around Z
-	TArray<FObstacleSlot>	ObstacleSlots;						// available slots, defined per template
-
-	TArray<FFloorBlock> FloorBlockInfos;
+	TArray<FDecisionSlot>	ObstacleSlotDecisions;			// Available obstacles at Coordinate X. Defined per template
+	TArray<FFloorBlock>		FloorBlockInfos;
 };

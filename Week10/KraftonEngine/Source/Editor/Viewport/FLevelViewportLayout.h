@@ -91,9 +91,6 @@ public:
 		DirectionalLight,
 		PointLight,
 		SpotLight,
-		SimpleObstacle,
-		Wireball,
-		VerticalWires,
 		MapManager,
 	};
 

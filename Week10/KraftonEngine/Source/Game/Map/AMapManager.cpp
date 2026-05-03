@@ -43,12 +43,26 @@ void AMapManager::Tick(float DeltaTime) {
 }
 
 void AMapManager::BuildTemplateLibrary() {
-	constexpr float ChunkWidth  = 6.f;	// Recommended multiple of 3
+	constexpr float ChunkWidth = 6.f;	// Recommended multiple of 3
 	constexpr float ChunkLength = 20.f; // Recommended multiple of 2
 	constexpr float TurnLength = 10.f;
 	constexpr float LaneY[3] = { -ChunkWidth / 1.5, 0, ChunkWidth / 1.5f };
 
 	Templates.clear();
+
+	auto AddDefaultDecisionSlots = [](FMapChunkTemplate& Template, float StartX, float EndX, float Step)
+	{
+		for (float X = StartX; X <= EndX; X += Step)
+		{
+			FDecisionSlot Slot = {};
+			Slot.X = X;
+			for (int32 DecisionIndex = 0; DecisionIndex < static_cast<int32>(EObstacleDecision::Count); ++DecisionIndex)
+			{
+				Slot.AllowedDecisions.push_back(static_cast<EObstacleDecision>(DecisionIndex));
+			}
+			Template.ObstacleSlotDecisions.push_back(Slot);
+		}
+	};
 
 	//-----------------------------------------------------------------
 	// Start
@@ -56,6 +70,7 @@ void AMapManager::BuildTemplateLibrary() {
 	FMapChunkTemplate Start;
 	Start.ChunkType = EChunkType::Start;
 	Start.Length = 10.f;
+	Start.Width  = ChunkWidth;
 	Start.ExitOffset = FVector(10.f, 0.f, 0.f);
 
 	// Start Floor infos
@@ -73,6 +88,7 @@ void AMapManager::BuildTemplateLibrary() {
 	FMapChunkTemplate Straight;
 	Straight.ChunkType = EChunkType::Straight;
 	Straight.Length = ChunkLength;
+	Straight.Width  = ChunkWidth;
 	Straight.ExitOffset = FVector(ChunkLength, 0.0f, 0.0f);
 
 	// Straight floor infos
@@ -86,14 +102,7 @@ void AMapManager::BuildTemplateLibrary() {
 	float LeftLaneY  = -ChunkWidth / 1.5;
 	float MidLaneY   = 0.f;
 	float RightLaneY = ChunkWidth / 1.5f;
-	for (float X = 2.f; X <= Straight.Length - 2.f; X += 2.f)
-		for (uint8 i = 0; i < 3; i++)
-		{
-			FObstacleSlot Slot{};
-			Slot.LocalPosition = FVector(X, LaneY[i], 1.f);
-			Slot.AllowedTypes  = static_cast<EObstacleType>(AllTypes);
-			Straight.ObstacleSlots.push_back(Slot);
-		}
+	AddDefaultDecisionSlots(Straight, 2.f, Straight.Length - 2.f, 2.f);
 
 	Templates.push_back(Straight);
 
@@ -164,6 +173,7 @@ void AMapManager::BuildTemplateLibrary() {
 	FMapChunkTemplate StraightWithHole;
 	StraightWithHole.ChunkType = EChunkType::StraightWithHole;
 	StraightWithHole.Length = ChunkLength / 2;
+	StraightWithHole.Width  = ChunkWidth;
 	StraightWithHole.ExitOffset = FVector(StraightWithHole.Length, 0.f, 0.f);
 
 	// Straight With Hole Floor
@@ -178,6 +188,9 @@ void AMapManager::BuildTemplateLibrary() {
 	StraightWithHoleFloor2.LocalRotation = FRotator(0, 0, 0);
 	StraightWithHoleFloor2.Scale		 = FVector(StraightWithHole.Length / 4, ChunkWidth, 1);
 	StraightWithHole.FloorBlockInfos.push_back(StraightWithHoleFloor2);
+
+	// Obstacles
+	AddDefaultDecisionSlots(StraightWithHole, StraightWithHole.Length * 0.5f, StraightWithHole.Length - 2.f, 2.f);
 
 	Templates.push_back(StraightWithHole);
 }
@@ -195,7 +208,7 @@ void AMapManager::SpawnNextChunk(bool Init)
 	Chunk->SetActorRotation(SpawnRot);
 
 	// TODO: Obstacle fill rate should ramp with time logarithmically, clamped to some reasonable value
-	Chunk->InitFromTemplate(T, 0.2);
+	Chunk->InitFromTemplate(T, 0.2f);
 	ActiveChunks.push_back(Chunk);
 
 	//bool bIsTurn = (T.ChunkType == EChunkType::TurnLeft || T.ChunkType == EChunkType::TurnRight);
