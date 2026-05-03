@@ -378,19 +378,19 @@ namespace
 			return true;
 		}
 
-		if (UpperKey == "CTRL" || UpperKey == "CONTROL")
+		if (UpperKey == "CTRL" || UpperKey == "CONTROL" || UpperKey == "LCONTROL" || UpperKey == "LCTRL" || UpperKey == "RCONTROL" || UpperKey == "RCTRL")
 		{
 			OutVirtualKey = VK_CONTROL;
 			return true;
 		}
 
-		if (UpperKey == "SHIFT")
+		if (UpperKey == "SHIFT" || UpperKey == "LSHIFT" || UpperKey == "RSHIFT")
 		{
 			OutVirtualKey = VK_SHIFT;
 			return true;
 		}
 
-		if (UpperKey == "ALT")
+		if (UpperKey == "ALT" || UpperKey == "MENU" || UpperKey == "LALT" || UpperKey == "RALT")
 		{
 			OutVirtualKey = VK_MENU;
 			return true;

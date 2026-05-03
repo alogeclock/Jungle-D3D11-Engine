@@ -869,10 +869,7 @@ void FEditorMainPanel::RenderProjectSettingsWindow()
 		? "Resize is locked. Editor and packaged game will keep this size."
 		: "Editor and packaged game will use this size on next launch.");
 
-	DrawPopupSectionHeader("GAME");
-	DrawClassDropdown("GameInstance Class", UGameInstance::StaticClass(), ProjectSettings.Game.GameInstanceClass);
-	DrawClassDropdown("Default GameMode Class", AGameModeBase::StaticClass(), ProjectSettings.Game.DefaultGameModeClass);
-	ImGui::TextDisabled("(GameInstance class change requires restart)");
+	
 
 	DrawPopupSectionHeader("PERFORMANCE");
 	bool bPerformanceChanged = false;

@@ -1,4 +1,4 @@
-#include "Engine/Runtime/GameEngine.h"
+﻿#include "Engine/Runtime/GameEngine.h"
 #include "Core/ProjectSettings.h"
 #include "Engine/Serialization/SceneSaveManager.h"
 #include "Engine/Platform/Paths.h"
@@ -51,7 +51,10 @@ void UGameEngine::Init(FWindowsWindow* InWindow)
 	if (FWorldContext* Context = GetWorldContextFromHandle(GetActiveWorldHandle()))
 	{
 		ViewportClient->OnBeginPIE(Context->World ? Context->World->GetActiveCamera() : nullptr, ViewportClient->GetViewport());
-		ViewportClient->SetPIEPossessedInputEnabled(true);
+		// Game/Shipping build에서는 기본 스펙테이터 이동 로직을 비활성화 (플레이어 스크립트와 충돌 방지)
+		ViewportClient->SetPIEPossessedInputEnabled(false);
+		// 스펙테이터 이동은 끄되, 윈도우 마우스 메시지가 InputManager로 흐르도록 트래킹은 켠다.
+		FInputManager::Get().SetTrackingMouse(true);
 	}
 }
 
