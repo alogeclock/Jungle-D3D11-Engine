@@ -18,6 +18,8 @@ FDefaultRenderPipeline::~FDefaultRenderPipeline()
 
 void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 {
+	Renderer.BeginFrame();
+
 	Frame.ClearViewportResources();
 
 	FDrawCommandBuilder& Builder = Renderer.GetBuilder();
@@ -65,7 +67,6 @@ void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 		Builder.BuildCommands(Frame, nullptr, EmptyOutput);
 	}
 
-	Renderer.BeginFrame();
 	if (Scene)
 	{
 		Renderer.Render(Frame, *Scene);
