@@ -2,6 +2,7 @@
 
 #include "Component/CameraComponent.h"
 #include "Editor/EditorEngine.h"
+#include "Editor/UI/EditorAccentColor.h"
 #include "Editor/UI/EditorPanelTitleUtils.h"
 #include "Editor/Settings/EditorSettings.h"
 #include "GameFramework/AActor.h"
@@ -24,9 +25,9 @@ namespace
 	constexpr ImVec4 PlaceSidebarButton = ImVec4(44.0f / 255.0f, 44.0f / 255.0f, 44.0f / 255.0f, 1.0f);
 	constexpr ImVec4 PlaceSidebarButtonHover = ImVec4(58.0f / 255.0f, 58.0f / 255.0f, 58.0f / 255.0f, 1.0f);
 	constexpr ImVec4 PlaceSidebarButtonActive = ImVec4(68.0f / 255.0f, 68.0f / 255.0f, 68.0f / 255.0f, 1.0f);
-	constexpr ImVec4 PlaceCategorySelected = ImVec4(0.00f, 0.47f, 0.92f, 1.0f);
-	constexpr ImVec4 PlaceCategorySelectedHover = ImVec4(0.10f, 0.54f, 0.96f, 1.0f);
-	constexpr ImVec4 PlaceCategorySelectedActive = ImVec4(0.00f, 0.40f, 0.84f, 1.0f);
+	constexpr ImVec4 PlaceCategorySelected = EditorAccentColor::Value;
+	constexpr ImVec4 PlaceCategorySelectedHover = EditorAccentColor::Value;
+	constexpr ImVec4 PlaceCategorySelectedActive = EditorAccentColor::Value;
 	constexpr ImVec4 PlaceEntryBg = ImVec4(63.0f / 255.0f, 63.0f / 255.0f, 63.0f / 255.0f, 1.0f);
 	constexpr ImVec4 PlaceEntryHover = ImVec4(78.0f / 255.0f, 78.0f / 255.0f, 78.0f / 255.0f, 1.0f);
 	constexpr ImVec4 PlaceEntryActive = ImVec4(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f, 1.0f);
@@ -46,6 +47,8 @@ namespace
 			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.Icon.PlaceActors.Basic")).Get();
 		case FEditorPlaceActorsWidget::EPlaceActorCategory::Text:
 			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.Icon.ScreenText")).Get();
+		case FEditorPlaceActorsWidget::EPlaceActorCategory::UI:
+			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.ToolIcon.WorldSpace")).Get();
 		case FEditorPlaceActorsWidget::EPlaceActorCategory::Lights:
 			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.Icon.PlaceActors.Lights")).Get();
 		case FEditorPlaceActorsWidget::EPlaceActorCategory::Shapes:
@@ -104,8 +107,6 @@ namespace
 		{ "Pawn", "pawn actor basic", "Editor.Icon.Pawn", EPlaceType::Pawn, ECategory::Basic },
 		{ "Character", "character actor basic", "Editor.Icon.Character", EPlaceType::Character, ECategory::Basic },
 		{ "Static Mesh", "static mesh actor mesh basic", "Editor.Icon.StaticMeshActor", EPlaceType::StaticMeshActor, ECategory::Basic },
-		{ "World Text", "world text 3d billboard font label", "Editor.Icon.ScreenText", EPlaceType::WorldText, ECategory::Text },
-		{ "Screen Text", "screen text overlay ui hud widget", "Editor.Icon.ScreenText", EPlaceType::ScreenText, ECategory::Text },
 		{ "Ambient Light", "ambient light", "Editor.Icon.AmbientLight", EPlaceType::AmbientLight, ECategory::Lights },
 		{ "Directional Light", "directional light sun", "Editor.Icon.DirectionalLight", EPlaceType::DirectionalLight, ECategory::Lights },
 		{ "Point Light", "point light bulb", "Editor.Icon.PointLight", EPlaceType::PointLight, ECategory::Lights },
@@ -117,9 +118,10 @@ namespace
 		{ "Plane", "plane quad floor shape", "Editor.Icon.Plane", EPlaceType::Plane, ECategory::Shapes },
 		{ "Decal", "decal projection vfx", "Editor.Icon.Decal", EPlaceType::Decal, ECategory::VFX },
 		{ "Height Fog", "height fog vfx atmosphere", "Editor.Icon.HeightFog", EPlaceType::HeightFog, ECategory::VFX },
-		{ "Obstacle", "Basic Obstacle", "Editor.Icon.Cube", EPlaceType::SimpleObstacle, ECategory::Basic },
-		{ "Wireball", "Wireball Obstacle", "Editor.Icon.Cube", EPlaceType::Wireball, ECategory::Basic },
-		{ "Vertical Wires", "Vertical Wire Obstacle", "Editor.Icon.Cube", EPlaceType::VerticalWires, ECategory::Basic },
+		{ "World Text", "world text 3d billboard font label", "Editor.Icon.ScreenText", EPlaceType::WorldText, ECategory::Text },
+		{ "Screen Text", "screen text overlay ui hud widget", "Editor.Icon.ScreenText", EPlaceType::ScreenText, ECategory::Text },
+		{ "UI Root", "ui root canvas hud menu widget", "Editor.ToolIcon.WorldSpace", EPlaceType::UIRoot, ECategory::UI },
+		{ "Map Manager", "Map Manager", "Editor.Icon.Cube", EPlaceType::MapManager, ECategory::Basic },
 	};
 
 	const char* GetCategoryLabel(ECategory Category)
@@ -128,6 +130,7 @@ namespace
 		{
 		case ECategory::Basic: return "Basic";
 		case ECategory::Text: return "Text";
+		case ECategory::UI: return "UI";
 		case ECategory::Lights: return "Lights";
 		case ECategory::Shapes: return "Shapes";
 		case ECategory::VFX: return "VFX";
@@ -161,6 +164,7 @@ void FEditorPlaceActorsWidget::Render(float DeltaTime)
 		ImGui::End();
 		return;
 	}
+	EditorPanelTitleUtils::ApplyPanelContentTopInset();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 9.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
@@ -196,10 +200,11 @@ void FEditorPlaceActorsWidget::RenderCategorySidebar()
 
 	const EPlaceActorCategory Categories[] = {
 		EPlaceActorCategory::Basic,
-		EPlaceActorCategory::Text,
 		EPlaceActorCategory::Lights,
 		EPlaceActorCategory::Shapes,
-		EPlaceActorCategory::VFX
+		EPlaceActorCategory::VFX,
+		EPlaceActorCategory::Text,
+		EPlaceActorCategory::UI
 	};
 
 	for (EPlaceActorCategory Category : Categories)

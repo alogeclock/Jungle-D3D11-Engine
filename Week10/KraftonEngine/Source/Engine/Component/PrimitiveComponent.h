@@ -49,6 +49,9 @@ public:
 	void UpdateWorldMatrix() const override;
 
 	virtual bool SupportsOutline() const { return true; }
+	virtual bool ParticipatesInSpatialStructure() const { return !IsEditorOnly(); }
+	virtual bool ParticipatesInRenderSpatialStructure() const { return ParticipatesInSpatialStructure(); }
+	virtual bool ParticipatesInPickingSpatialStructure() const { return ParticipatesInSpatialStructure(); }
 
 	// --- 렌더 상태 관리 ---
 	void CreateRenderState() override;
@@ -90,8 +93,9 @@ public:
 	void MarkUpdateOverlaps();
 	//bool UpdateOverlapsOnNextTransform() const { return bUpdateOverlapsOnNextTransform; }
 	bool IsCollisionEnabled() const { return bCollisionEnabled; }
-	void SetCollisionEnabled(bool bInCollisionFlag) { bCollisionEnabled = bInCollisionFlag; }
+	void SetCollisionEnabled(bool bInCollisionFlag);
 	EOverlapBehaviour GetOverlapBehaviour() const { return bGenerateOverlapEvents; }
+	void SetGenerateOverlapEvents(bool bInGenerateOverlapEvents);
 
 	const TArray<FOverlapInfo>& GetOverlapInfos() const;
 	void  BeginComponentOverlap(const FOverlapInfo& OtherOverlap, bool bDoNotifies);

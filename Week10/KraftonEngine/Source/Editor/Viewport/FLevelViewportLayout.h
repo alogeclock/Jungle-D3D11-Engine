@@ -79,6 +79,7 @@ public:
 		StaticMeshActor,
 		WorldText,
 		ScreenText,
+		UIRoot,
 		Cube,
 		Sphere,
 		Cylinder,
@@ -90,9 +91,7 @@ public:
 		DirectionalLight,
 		PointLight,
 		SpotLight,
-		SimpleObstacle,
-		Wireball,
-		VerticalWires,
+		MapManager,
 	};
 
 	AActor* SpawnPlaceActor(EViewportPlaceActorType Type, const FVector& Location);

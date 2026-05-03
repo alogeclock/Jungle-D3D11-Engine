@@ -137,14 +137,6 @@ bool AActor::HasNonEditorOnlyPrimitiveComponent() const
 			continue;
 		}
 
-		if (UTextRenderComponent* TextRenderComponent = Cast<UTextRenderComponent>(PrimitiveComponent))
-		{
-			if (TextRenderComponent->IsScreenSpace())
-			{
-				continue;
-			}
-		}
-
 		if (PrimitiveComponent->IsVisible())
 		{
 			return true;

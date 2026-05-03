@@ -267,6 +267,7 @@ EBlendState FMaterialManager::StringToBlendState(const FString& Str, ERenderPass
 	switch (Pass)
 	{
 	case ERenderPass::AlphaBlend:
+	case ERenderPass::WorldText:
 	case ERenderPass::Decal:
 	case ERenderPass::EditorLines:
 	case ERenderPass::PostProcess:
@@ -291,6 +292,8 @@ EDepthStencilState FMaterialManager::StringToDepthStencilState(const FString& St
 	// 문자열이 비어있으면 Pass 기반 기본값
 	switch (Pass)
 	{
+	case ERenderPass::WorldText:
+		return EDepthStencilState::Default;
 	case ERenderPass::Decal:
 	case ERenderPass::AdditiveDecal:
 		return EDepthStencilState::DepthReadOnly;

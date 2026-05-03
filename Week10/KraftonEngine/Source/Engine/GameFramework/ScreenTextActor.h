@@ -2,7 +2,7 @@
 
 #include "GameFramework/AActor.h"
 
-class UTextRenderComponent;
+class UUIScreenTextComponent;
 
 class AScreenTextActor : public AActor
 {
@@ -14,5 +14,5 @@ public:
 	void InitDefaultComponents();
 
 private:
-	UTextRenderComponent* TextRenderComponent = nullptr;
+	UUIScreenTextComponent* TextRenderComponent = nullptr;
 };

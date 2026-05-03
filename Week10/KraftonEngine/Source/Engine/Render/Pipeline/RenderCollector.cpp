@@ -1,6 +1,9 @@
 ﻿#include "RenderCollector.h"
 
 #include "Component/ActorComponent.h"
+#include "Component/UIButtonComponent.h"
+#include "Component/UIImageComponent.h"
+#include "Component/UIScreenTextComponent.h"
 #include "GameFramework/AActor.h"
 #include "Editor/EditorEngine.h"
 #include "Editor/Subsystem/OverlayStatSystem.h"
@@ -38,6 +41,7 @@ void FRenderCollector::Collect(UWorld* World, const FFrameContext& Frame, FColle
 
 	FScene& Scene = World->GetScene();
 	Scene.UpdateDirtyProxies();
+	CollectScreenUI(World, Scene);
 
 	Output.FrustumVisibleProxies.clear();
 	{
@@ -77,6 +81,35 @@ void FRenderCollector::CollectScreenText(const FOverlayStatSystem& OverlaySystem
 	for (FOverlayStatLine& Line : Lines)
 	{
 		Scene.AddScreenText(std::move(Line.Text), Line.ScreenPosition, TextScale);
+	}
+}
+
+void FRenderCollector::CollectScreenUI(UWorld* World, FScene& Scene)
+{
+	if (!World)
+	{
+		return;
+	}
+
+	for (AActor* Actor : World->GetActors())
+	{
+		if (!Actor)
+		{
+			continue;
+		}
+
+		for (UActorComponent* Comp : Actor->GetComponents())
+		{
+			if (!Comp || !Comp->IsActive())
+			{
+				continue;
+			}
+
+			if (Cast<UUIImageComponent>(Comp) || Cast<UIButtonComponent>(Comp) || Cast<UUIScreenTextComponent>(Comp))
+			{
+				Comp->ContributeVisuals(Scene);
+			}
+		}
 	}
 }
 
@@ -150,6 +183,12 @@ void FRenderCollector::CollectWorldBoundsDebug(UWorld* World, FScene& Scene)
 			continue;
 		}
 
+		const UPrimitiveComponent* OwnerComponent = Proxy->GetOwnerComponent();
+		if (!OwnerComponent || !OwnerComponent->ParticipatesInRenderSpatialStructure())
+		{
+			continue;
+		}
+
 		const FBoundingBox& Bounds = Proxy->GetCachedBounds();
 		if (!Bounds.IsValid())
 		{
@@ -211,10 +250,14 @@ void FRenderCollector::FilterVisibleProxies(const FFrameContext& Frame, FScene& 
 	}
 
 #ifndef SHIPPING
-	// 선택된 Actor의 컴포넌트 디버그 시각화 (빛 등 프록시 없는 Comp 포함)
-	CollectSelectedActorVisuals(Scene);
-	// 항상 표시되는 컴포넌트 시각화 (bDrawOnlyIfSelected == false)
-	CollectActorVisuals(World, Scene);
+	const bool bAllowComponentDebugVisuals = World && World->GetWorldType() != EWorldType::PIE;
+	if (bAllowComponentDebugVisuals)
+	{
+		// 선택된 Actor의 컴포넌트 디버그 시각화 (빛 등 프록시 없는 Comp 포함)
+		CollectSelectedActorVisuals(Scene);
+		// 항상 표시되는 컴포넌트 시각화 (bDrawOnlyIfSelected == false)
+		CollectActorVisuals(World, Scene);
+	}
 #endif
 
 	if (OcclusionMut && OcclusionMut->IsInitialized())
@@ -247,6 +290,16 @@ void FRenderCollector::CollectActorVisuals(UWorld* World, FScene& Scene)
 		if (!Actor) continue;
 		for (UActorComponent* Comp : Actor->GetComponents())
 		{
+			if (!Comp)
+			{
+				continue;
+			}
+
+			if (Cast<UUIImageComponent>(Comp) || Cast<UIButtonComponent>(Comp) || Cast<UUIScreenTextComponent>(Comp))
+			{
+				continue;
+			}
+
 			if (Comp)
 				Comp->ContributeVisuals(Scene);
 		}

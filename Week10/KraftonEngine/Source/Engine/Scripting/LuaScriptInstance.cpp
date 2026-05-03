@@ -1,6 +1,7 @@
 ﻿#include "Scripting/LuaScriptInstance.h"
 
 #include "Component/ScriptComponent.h"
+#include "Audio/AudioManager.h"
 #include "Core/Log.h"
 #include "Engine/Input/InputManager.h"
 #include "GameFramework/AActor.h"
@@ -44,6 +45,7 @@
 #include <cctype>
 #include <functional>
 #include <iterator>
+#include "Input/InputAction.h"
 
 namespace
 {
@@ -586,8 +588,8 @@ bool FLuaScriptInstance::Initialize(UScriptComponent* InOwnerComponent)
 	BindInputFunctions();
 	BindDebugTimeFunctions();
 	BindPropertyFunctions();
-	// Actor 생성/탐색 전역 API를 노출하지 않는다.
-	// 필요가 확정되면 BindWorldFunctions 호출을 되살리고 공개 API 문서도 같이 갱신한다.
+	BindSoundFunctions();
+	BindWorldFunctions();
 	return true;
 }
 
@@ -645,8 +647,8 @@ bool FLuaScriptInstance::LoadFromFile(const FString& InScriptPath)
 	BindInputFunctions();
 	BindDebugTimeFunctions();
 	BindPropertyFunctions();
-	// Actor 생성/탐색 전역 API를 노출하지 않는다.
-	// 필요가 확정되면 BindWorldFunctions 호출을 되살리고 공개 API 문서도 같이 갱신한다.
+	BindSoundFunctions();
+	BindWorldFunctions();
 
 	FString ScriptSource;
 	FString FileReadError;
@@ -741,6 +743,145 @@ bool FLuaScriptInstance::CallEndPlay()
 {
 	return Impl->CallFunction(this, "EndPlay", Impl->FnEndPlay);
 }
+
+#pragma region Event+Input 호출 함수
+bool FLuaScriptInstance::CallLuaFunction(const FString& FunctionName)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	// Lua에 해당 함수가 없는 경우 true 처리(필요없어서 구현하지 않은 경우 고려)
+	// TODO: 필수 함수가 없는 경우를 따로 고려하고 싶다면(BeginPlay, Tick, EndPlay) 이 부분만 false로 하는 기능 추가
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result = Function();
+	
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+
+	return true;
+}
+
+bool FLuaScriptInstance::CallLuaOverlapEvent(const FString& FunctionName, AActor* OtherActor, UActorComponent* OtherComponent, UActorComponent* SelfComponent)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	// 필수 함수가 아니기 때문에 굳이 false를 둘 필요 없음.
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+
+	// Lua ActorProxy 생성
+	FLuaActorProxy OtherActorProxy = MakeActorProxy(OtherActor);
+
+	// Lua Component Proxy 생성
+	FLuaComponentProxy OtherComponentProxy = MakeComponentProxy(OtherComponent);
+	FLuaComponentProxy SelfComponentProxy = MakeComponentProxy(SelfComponent);
+
+	// 스크립트 실행 및 오류 체크
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result =
+		Function(OtherActorProxy, OtherComponentProxy, SelfComponentProxy);
+
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+
+	return true;
+}
+
+bool FLuaScriptInstance::CallLuaHitEvent(const FString& FunctionName, AActor* OtherActor, UActorComponent* OtherComponent, UActorComponent* SelfComponent, const FVector& ImpactLocation, const FVector& ImpactNormal)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	// 필수 함수가 아니기 때문에 굳이 false를 둘 필요 없음.
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+
+	// Lua Actor Proxy 생성
+	FLuaActorProxy OtherActorProxy = MakeActorProxy(OtherActor);
+
+	// Lua Component proxy 생성
+	FLuaComponentProxy OtherComponentProxy = MakeComponentProxy(OtherComponent);
+	FLuaComponentProxy SelfComponentProxy = MakeComponentProxy(SelfComponent);
+
+	// 함수 호출 및 오류 검사
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result =
+		Function(
+			OtherActorProxy,
+			OtherComponentProxy,
+			SelfComponentProxy,
+			ImpactLocation,
+			ImpactNormal);
+
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+
+	return true;
+}
+
+bool FLuaScriptInstance::CallLuaInputAction(const FString& FunctionName, const FString& ActionName, const FInputActionValue& Value)
+{
+	if (!Impl || !Impl->bLoaded)
+	{
+		return false;
+	}
+
+	sol::object FunctionObject = Impl->Env[FunctionName];
+
+	if (!FunctionObject.valid() || FunctionObject.get_type() != sol::type::function)
+	{
+		return true;
+	}
+
+	// TODO: InputMapping에서 발생한 ActionValue를 ScriptComponent까지 전달하는 정식 경로가 필요합니다.
+	// 현재는 Lua 프로토타입용 최소 호출 함수만 제공합니다.
+	sol::protected_function Function = FunctionObject.as<sol::protected_function>();
+	sol::protected_function_result Result =
+		Function(ActionName, Value.GetVector(), Value.Get());
+
+	if (!Result.valid())
+	{
+		sol::error Error = Result;
+		SetError(Error.what());
+		return false;
+	}
+
+	return true;
+}
+#pragma endregion
 
 bool FLuaScriptInstance::StartCoroutine(const FString& FunctionName)
 {
@@ -998,35 +1139,50 @@ void FLuaScriptInstance::BindInputFunctions()
 		return;
 	}
 
-	// 입력 바인딩은 문자열 기반 API로 노출해서
-	// Lua 스크립트가 엔진 키코드 상수를 직접 알 필요 없게 만든다.
+	// 입력 바인딩은 문자열 기반 API로 노출해서 Lua 스크립트가 엔진 키코드 상수를 직접 알 필요 없게 만든다.
 	// ImGui가 키보드를 캡처 중이면(text input 등) 게임 입력을 받지 않는다 — PIE에서 입력 분리.
-	Impl->Env.set_function("GetKey", [](const FString& KeyName)
+	auto GetKey = [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
 		if (!TryParseVirtualKey(KeyName, VirtualKey)) return false;
 		FInputManager& Input = FInputManager::Get();
 		if (Input.IsGuiUsingKeyboard()) return false;
 		return Input.IsKeyDown(VirtualKey);
-	});
+	};
 
-	Impl->Env.set_function("GetKeyDown", [](const FString& KeyName)
+	auto GetKeyDown = [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
 		if (!TryParseVirtualKey(KeyName, VirtualKey)) return false;
 		FInputManager& Input = FInputManager::Get();
 		if (Input.IsGuiUsingKeyboard()) return false;
 		return Input.IsKeyPressed(VirtualKey);
-	});
+	};
 
-	Impl->Env.set_function("GetKeyUp", [](const FString& KeyName)
+	auto GetKeyUp = [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
 		if (!TryParseVirtualKey(KeyName, VirtualKey)) return false;
 		FInputManager& Input = FInputManager::Get();
 		if (Input.IsGuiUsingKeyboard()) return false;
 		return Input.IsKeyReleased(VirtualKey);
-	});
+	};
+
+	Impl->Env.set_function("GetKey", GetKey);
+	Impl->Env.set_function("GetKeyDown", GetKeyDown);
+	Impl->Env.set_function("GetKeyUp", GetKeyUp);
+	Impl->Env.set_function("get_key", GetKey);
+	Impl->Env.set_function("get_key_down", GetKeyDown);
+	Impl->Env.set_function("get_key_up", GetKeyUp);
+
+	sol::table InputTable = FLuaScriptRuntime::Get().GetLuaState().create_table();
+	InputTable.set_function("GetKey", GetKey);
+	InputTable.set_function("GetKeyDown", GetKeyDown);
+	InputTable.set_function("GetKeyUp", GetKeyUp);
+	InputTable.set_function("get_key", GetKey);
+	InputTable.set_function("get_key_down", GetKeyDown);
+	InputTable.set_function("get_key_up", GetKeyUp);
+	Impl->Env["Input"] = InputTable;
 
 	// Mouse Delta & Wheel
 	Impl->Env.set_function("GetMouseDeltaX", []() { return FInputManager::Get().GetMouseDeltaX(); });
@@ -1075,7 +1231,7 @@ void FLuaScriptInstance::BindDebugTimeFunctions()
 		return;
 	}
 
-	auto LogLuaMessage = [](const char* Prefix, sol::variadic_args Args)
+	auto LogLuaMessage = [](ELogLevel Level, const char* Prefix, sol::variadic_args Args)
 	{
 		FString Message;
 		for (auto Arg : Args)
@@ -1088,28 +1244,28 @@ void FLuaScriptInstance::BindDebugTimeFunctions()
 			Message += Arg.as<FString>();
 		}
 
-		UE_LOG("%s %s", Prefix, Message.c_str());
+		FLogManager::Get().LogMessage(Level, "Lua", "%s %s", Prefix, Message.c_str());
 	};
 
 	Impl->Env.set_function("log", [LogLuaMessage](sol::variadic_args Args)
 	{
-		LogLuaMessage("[Lua]", Args);
+		LogLuaMessage(ELogLevel::Info, "[Lua]", Args);
 	});
 
 	Impl->Env.set_function("warn", [LogLuaMessage](sol::variadic_args Args)
 	{
-		LogLuaMessage("[Lua][Warn]", Args);
+		LogLuaMessage(ELogLevel::Warning, "[Lua][Warn]", Args);
 	});
 
 	Impl->Env.set_function("error_log", [LogLuaMessage](sol::variadic_args Args)
 	{
-		LogLuaMessage("[Lua][Error]", Args);
+		LogLuaMessage(ELogLevel::Error, "[Lua][Error]", Args);
 	});
 
 	Impl->Env.set_function("print", [LogLuaMessage](sol::variadic_args Args)
 	{
 		// print도 인스턴스 환경에서 엔진 로그로 보내면 WinMain 환경에서도 Lua 로그를 놓치지 않는다.
-		LogLuaMessage("[Lua]", Args);
+		LogLuaMessage(ELogLevel::Info, "[Lua]", Args);
 	});
 
 	Impl->Env.set_function("time", [this]()
@@ -1166,6 +1322,64 @@ void FLuaScriptInstance::BindPropertyFunctions()
 	});
 }
 
+void FLuaScriptInstance::BindSoundFunctions()
+{
+	if (!Impl)
+	{
+		return;
+	}
+
+	Impl->Env.set_function("play_sfx", [](const FString& SoundPath, sol::optional<bool> Looping)
+	{
+		return FAudioManager::Get().PlaySFX(SoundPath, Looping.value_or(false));
+	});
+
+	Impl->Env.set_function("play_background", [](const FString& SoundPath, sol::optional<bool> Looping)
+	{
+		return FAudioManager::Get().PlayBackground(SoundPath, Looping.value_or(true));
+	});
+
+	Impl->Env.set_function("stop_sound", [](const FString& Handle)
+	{
+		return FAudioManager::Get().StopSound(Handle);
+	});
+
+	Impl->Env.set_function("pause_sound", [](const FString& Handle)
+	{
+		return FAudioManager::Get().PauseSound(Handle);
+	});
+
+	Impl->Env.set_function("resume_sound", [](const FString& Handle)
+	{
+		return FAudioManager::Get().ResumeSound(Handle);
+	});
+
+	Impl->Env.set_function("is_sound_playing", [](const FString& Handle)
+	{
+		return FAudioManager::Get().IsSoundPlaying(Handle);
+	});
+
+	Impl->Env.set_function("stop_background", []()
+	{
+		return FAudioManager::Get().StopBackground();
+	});
+
+	Impl->Env.set_function("pause_background", []()
+	{
+		return FAudioManager::Get().PauseBackground();
+	});
+
+	Impl->Env.set_function("resume_background", []()
+	{
+		return FAudioManager::Get().ResumeBackground();
+	});
+
+	Impl->Env.set_function("is_background_playing", []()
+	{
+		return FAudioManager::Get().IsBackgroundPlaying();
+	});
+}
+
 void FLuaScriptInstance::BindWorldFunctions()
 {
 	if (!Impl)
@@ -1173,12 +1387,16 @@ void FLuaScriptInstance::BindWorldFunctions()
 		return;
 	}
 
-	Impl->Env.set_function("spawn_actor", [this](const FString& ClassName, const FVector& Location)
+	auto GetOwnerWorld = [this]() -> UWorld*
 	{
-		UScriptComponent* OwnerComponent = GetOwnerComponent();
 		AActor* OwnerActor = GetOwnerActor();
-		UWorld* World = OwnerActor ? OwnerActor->GetWorld() : nullptr;
-		if (!OwnerComponent || !OwnerActor || !World)
+		return OwnerActor ? OwnerActor->GetWorld() : nullptr;
+	};
+
+	Impl->Env.set_function("spawn_actor", [this, GetOwnerWorld](const FString& ClassName, const FVector& Location)
+	{
+		UWorld* World = GetOwnerWorld();
+		if (!World)
 		{
 			return FLuaActorProxy();
 		}
@@ -1196,10 +1414,9 @@ void FLuaScriptInstance::BindWorldFunctions()
 		return Impl->TrackProxy(MakeActorProxy(SpawnedActor));
 	});
 
-	Impl->Env.set_function("find_actor", [this](const FString& ActorName)
+	Impl->Env.set_function("find_actor", [this, GetOwnerWorld](const FString& ActorName)
 	{
-		AActor* OwnerActor = GetOwnerActor();
-		UWorld* World = OwnerActor ? OwnerActor->GetWorld() : nullptr;
+		UWorld* World = GetOwnerWorld();
 		if (!World)
 		{
 			return FLuaActorProxy();
@@ -1221,6 +1438,80 @@ void FLuaScriptInstance::BindWorldFunctions()
 		return FLuaActorProxy();
 	});
 
+	Impl->Env.set_function("find_actor_by_uuid", [this, GetOwnerWorld](uint32 ActorUUID)
+	{
+		UWorld* World = GetOwnerWorld();
+		if (!World || ActorUUID == 0)
+		{
+			return FLuaActorProxy();
+		}
+
+		for (AActor* Actor : World->GetActors())
+		{
+			if (!Actor || !IsAliveObject(Actor))
+			{
+				continue;
+			}
+
+			if (Actor->GetUUID() == ActorUUID)
+			{
+				return Impl->TrackProxy(MakeActorProxy(Actor));
+			}
+		}
+
+		return FLuaActorProxy();
+	});
+
+	Impl->Env.set_function("find_actor_by_tag", [this, GetOwnerWorld](const FString& Tag)
+	{
+		UWorld* World = GetOwnerWorld();
+		if (!World || Tag.empty())
+		{
+			return FLuaActorProxy();
+		}
+
+		for (AActor* Actor : World->GetActors())
+		{
+			if (!Actor || !IsAliveObject(Actor))
+			{
+				continue;
+			}
+
+			if (Actor->HasTag(Tag))
+			{
+				return Impl->TrackProxy(MakeActorProxy(Actor));
+			}
+		}
+
+		return FLuaActorProxy();
+	});
+
+	Impl->Env.set_function("find_actors_by_tag", [this, GetOwnerWorld](const FString& Tag)
+	{
+		sol::table Result = FLuaScriptRuntime::Get().GetLuaState().create_table();
+		UWorld* World = GetOwnerWorld();
+		if (!World || Tag.empty())
+		{
+			return Result;
+		}
+
+		int LuaIndex = 1;
+		for (AActor* Actor : World->GetActors())
+		{
+			if (!Actor || !IsAliveObject(Actor))
+			{
+				continue;
+			}
+
+			if (Actor->HasTag(Tag))
+			{
+				Result[LuaIndex++] = Impl->TrackProxy(MakeActorProxy(Actor));
+			}
+		}
+
+		return Result;
+	});
+
 	Impl->Env.set_function("destroy_actor", [](FLuaActorProxy& ActorProxy)
 	{
 		// destroy_actor는 Lua가 Actor를 소유한다는 뜻이 아니라 Proxy의 Destroy 래퍼일 뿐이다.
@@ -1236,6 +1527,14 @@ FLuaActorProxy FLuaScriptInstance::MakeActorProxy(AActor* Actor) const
 	return Proxy;
 }
 
+FLuaComponentProxy FLuaScriptInstance::MakeComponentProxy(UActorComponent* Component)
+{
+	FLuaComponentProxy Proxy;
+	// Lua에 넘기는 순간에도 한 번 거르지만, Proxy가 복사되어 오래 살아남을 수 있으므로 실제 안전성은 각 함수의 재검증이 책임진다.
+	Proxy.Component = IsAliveObject(Component) ? Component : nullptr;
+	return Proxy;
+}
+
 void FLuaScriptInstance::SetError(const FString& ErrorMessage)
 {
 	if (!Impl)
@@ -1245,5 +1544,5 @@ void FLuaScriptInstance::SetError(const FString& ErrorMessage)
 
 	Impl->bHasError = true;
 	Impl->LastError = ErrorMessage;
-	UE_LOG("[LuaScript] %s", ErrorMessage.c_str());
+	UE_LOG_CATEGORY(LuaScript, Error, "%s", ErrorMessage.c_str());
 }

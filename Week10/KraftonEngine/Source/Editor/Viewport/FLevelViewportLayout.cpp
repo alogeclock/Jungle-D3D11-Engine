@@ -3,6 +3,7 @@
 #include "Editor/EditorEngine.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
 #include "Editor/Settings/EditorSettings.h"
+#include "Editor/UI/EditorAccentColor.h"
 #include "Editor/UI/EditorPanelTitleUtils.h"
 #include "Core/ProjectSettings.h"
 #include "Editor/Selection/SelectionManager.h"
@@ -13,14 +14,14 @@
 #include "GameFramework/CharacterActor.h"
 #include "GameFramework/HeightFogActor.h"
 #include "GameFramework/ScreenTextActor.h"
+#include "GameFramework/UIRootActor.h"
 #include "GameFramework/WorldTextActor.h"
 #include "GameFramework/Light/AmbientLightActor.h"
 #include "GameFramework/Light/DirectionalLightActor.h"
 #include "GameFramework/Light/PointLightActor.h"
 #include "GameFramework/Light/SpotLightActor.h"
 #include "Game/GameActors/Obstacle/SimpleObstacleActor.h"
-#include "Game/GameActors/Obstacle/WireballActor.h"
-#include "Game/GameActors/Obstacle/VerticalWireActor.h"
+#include "Game/Map/AMapManager.h"
 #include "GameFramework/World.h"
 #include "Render/Pipeline/Renderer.h"
 #include "Viewport/Viewport.h"
@@ -51,12 +52,15 @@ namespace PopupPalette
 	constexpr ImVec4 CheckboxBg = ImVec4(0.03f, 0.03f, 0.04f, 1.0f);
 	constexpr ImVec4 CheckboxHoverBg = ImVec4(0.07f, 0.07f, 0.09f, 1.0f);
 	constexpr ImVec4 CheckboxActiveBg = ImVec4(0.10f, 0.10f, 0.12f, 1.0f);
-	constexpr ImVec4 CheckboxCheck = ImVec4(0.20f, 0.56f, 0.96f, 1.0f);
+	constexpr ImVec4 CheckboxCheck = EditorAccentColor::Value;
 }
 
 constexpr ImVec4 PopupSectionHeaderTextColor = ImVec4(0.82f, 0.82f, 0.84f, 1.0f);
 constexpr ImVec4 CameraPopupLabelColor = ImVec4(0.87f, 0.88f, 0.90f, 1.0f);
 constexpr ImVec4 CameraPopupHintColor = ImVec4(0.60f, 0.63f, 0.68f, 1.0f);
+constexpr ImVec4 PopupMenuItemColor = ImVec4(0.18f, 0.18f, 0.20f, 0.96f);
+constexpr ImVec4 PopupMenuItemHoverColor = EditorAccentColor::Value;
+constexpr ImVec4 PopupMenuItemActiveColor = EditorAccentColor::Value;
 constexpr ImVec2 PopupComfortWindowPadding = ImVec2(10.0f, 10.0f);
 constexpr ImVec2 PopupComfortFramePadding = ImVec2(7.0f, 5.0f);
 constexpr ImVec2 PopupComfortItemSpacing = ImVec2(6.0f, 6.0f);
@@ -67,14 +71,14 @@ constexpr float CameraPopupMinFieldWidth = 88.0f;
 constexpr float CameraPopupMaxScalarFieldWidth = 112.0f;
 constexpr float CameraPopupMaxAxisFieldWidth = 52.0f;
 constexpr ImVec4 SnapPopupBorderColor = ImVec4(0.30f, 0.31f, 0.35f, 1.0f);
-constexpr ImVec4 SnapPopupSelectedColor = ImVec4(0.20f, 0.44f, 0.78f, 0.98f);
-constexpr ImVec4 SnapPopupSelectedHoverColor = ImVec4(0.25f, 0.50f, 0.86f, 1.0f);
-constexpr ImVec4 SnapPopupSelectedActiveColor = ImVec4(0.16f, 0.37f, 0.68f, 1.0f);
+constexpr ImVec4 SnapPopupSelectedColor = EditorAccentColor::WithAlpha(0.98f);
+constexpr ImVec4 SnapPopupSelectedHoverColor = EditorAccentColor::Value;
+constexpr ImVec4 SnapPopupSelectedActiveColor = EditorAccentColor::Value;
 constexpr ImVec4 SnapPopupSelectedTextColor = ImVec4(0.97f, 0.98f, 1.0f, 1.0f);
 constexpr ImVec4 SnapPopupSelectedCheckColor = ImVec4(0.97f, 0.98f, 1.0f, 1.0f);
-constexpr ImVec4 SnapPopupTabSelectedColor = ImVec4(0.17f, 0.41f, 0.78f, 1.0f);
-constexpr ImVec4 SnapPopupTabSelectedHoverColor = ImVec4(0.22f, 0.48f, 0.87f, 1.0f);
-constexpr ImVec4 SnapPopupTabSelectedActiveColor = ImVec4(0.13f, 0.34f, 0.67f, 1.0f);
+constexpr ImVec4 SnapPopupTabSelectedColor = EditorAccentColor::Value;
+constexpr ImVec4 SnapPopupTabSelectedHoverColor = EditorAccentColor::Value;
+constexpr ImVec4 SnapPopupTabSelectedActiveColor = EditorAccentColor::Value;
 constexpr ImVec4 SnapPopupTabSelectedTextColor = ImVec4(0.97f, 0.98f, 1.0f, 1.0f);
 
 void DrawPopupSectionHeader(const char* Label);
@@ -110,6 +114,13 @@ void PushCameraPopupFieldStyle()
 void PushCommonPopupBgColor()
 {
 	ImGui::PushStyleColor(ImGuiCol_PopupBg, PopupPalette::PopupBg);
+}
+
+void PushCommonPopupMenuItemStyle()
+{
+	ImGui::PushStyleColor(ImGuiCol_Header, PopupMenuItemColor);
+	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, PopupMenuItemHoverColor);
+	ImGui::PushStyleColor(ImGuiCol_HeaderActive, PopupMenuItemActiveColor);
 }
 
 bool DrawCameraPopupScalarRow(const char* Id, const char* Label, float& Value, float Speed, float Min, float Max, const char* Format)
@@ -281,8 +292,12 @@ void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 
 		ImGui::Checkbox("World Axis", &Opts.ShowFlags.bWorldAxis);
 		ImGui::Checkbox("Gizmo", &Opts.ShowFlags.bGizmo);
+		ImGui::SetNextItemWidth(CompactSliderWidth);
+		ImGui::SliderFloat("Billboard Icon Scale", &Opts.ActorHelperBillboardScale, 0.1f, 5.0f, "%.2f");
 
 		DrawCompactPopupSectionLabel("DEBUG");
+		ImGui::SetNextItemWidth(CompactSliderWidth);
+		ImGui::SliderFloat("Line Thickness", &Opts.DebugLineThickness, 1.0f, 12.0f, "%.1f");
 		ImGui::Checkbox("Scene BVH (Green)", &Opts.ShowFlags.bSceneBVH);
 		ImGui::Checkbox("Scene Octree (Cyan)", &Opts.ShowFlags.bOctree);
 		ImGui::Checkbox("World Bound (Magenta)", &Opts.ShowFlags.bWorldBound);
@@ -539,7 +554,7 @@ bool DrawToolbarIconDropdownButton(const char* Id, EToolbarIcon Icon, float Widt
 	return bClicked;
 }
 
-bool DrawSelectedToolbarIconDropdownButton(const char* Id, EToolbarIcon Icon, bool bSelected, float Width, float Height, float FallbackSize, float MaxIconSize, ImU32 SelectedTint = IM_COL32(70, 170, 255, 255))
+bool DrawSelectedToolbarIconDropdownButton(const char* Id, EToolbarIcon Icon, bool bSelected, float Width, float Height, float FallbackSize, float MaxIconSize, ImU32 SelectedTint = EditorAccentColor::ToU32())
 {
 	const ImU32 Tint = bSelected ? SelectedTint : IM_COL32_WHITE;
 	return DrawToolbarIconDropdownButton(Id, Icon, Width, Height, FallbackSize, MaxIconSize, Tint);
@@ -1833,8 +1848,10 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 				}
 			}
 
+			const bool bLockViewportResolution = FProjectSettings::Get().Game.bLockWindowResolution;
+
 			// 遺꾪븷 諛??쒕옒洹?
-			if (RootSplitter && LayoutTransition == EViewportLayoutTransition::None)
+			if (RootSplitter && LayoutTransition == EViewportLayoutTransition::None && !bLockViewportResolution)
 			{
 				if (ImGui::IsMouseClicked(0))
 				{
@@ -1874,6 +1891,10 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 							ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
 					}
 				}
+			}
+			else if (bLockViewportResolution)
+			{
+				DraggingSplitter = nullptr;
 			}
 
 			// ?쒖꽦 酉고룷???꾪솚 (遺꾪븷 諛??쒕옒洹?以묒씠 ?꾨땺 ??
@@ -1946,9 +1967,9 @@ void FLevelViewportLayout::RenderMainToolbar(float ToolbarLeft, float ToolbarTop
 		const bool bSelected = (Gizmo->GetMode() == TargetMode);
 		if (bSelected)
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.43f, 0.72f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.31f, 0.49f, 0.78f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.21f, 0.38f, 0.64f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Button, EditorAccentColor::Value);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorAccentColor::Value);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorAccentColor::Value);
 		}
 		const bool bClicked = DrawToolbarIconButton(Id, Icon, FallbackLabel, ToolbarFallbackIconSize, ToolbarMaxIconSize);
 		if (bSelected)
@@ -2011,9 +2032,9 @@ void FLevelViewportLayout::RenderMainToolbar(float ToolbarLeft, float ToolbarTop
 	const bool bWorldCoord = Settings.CoordSystem == EEditorCoordSystem::World;
 	if (bWorldCoord)
 	{
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.43f, 0.72f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.31f, 0.49f, 0.78f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.21f, 0.38f, 0.64f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, EditorAccentColor::Value);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorAccentColor::Value);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorAccentColor::Value);
 	}
 	if (DrawToolbarIconButton("##SharedCoordSystemIcon",
 		bWorldCoord ? EToolbarIcon::WorldSpace : EToolbarIcon::LocalSpace,
@@ -2037,9 +2058,9 @@ void FLevelViewportLayout::RenderMainToolbar(float ToolbarLeft, float ToolbarTop
 		const bool bWasEnabled = bEnabled;
 		if (bWasEnabled)
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.43f, 0.72f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.31f, 0.49f, 0.78f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.21f, 0.38f, 0.64f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Button, EditorAccentColor::Value);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorAccentColor::Value);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorAccentColor::Value);
 		}
 		if (DrawToolbarIconButton("##SnapToggle", Icon, FallbackLabel, ToolbarFallbackIconSize, ToolbarMaxIconSize))
 		{
@@ -2134,7 +2155,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 
 				auto DrawSelectedToolbarIcon = [&](const char* Id, EToolbarIcon Icon, bool bSelected, const char* Tooltip) -> bool
 				{
-					const ImU32 Tint = bSelected ? IM_COL32(70, 170, 255, 255) : IM_COL32_WHITE;
+					const ImU32 Tint = bSelected ? EditorAccentColor::ToU32() : IM_COL32_WHITE;
 					const bool bClicked = DrawToolbarIconButton(Id, Icon, Tooltip, PaneToolbarFallbackIconSize, PaneToolbarMaxIconSize, Tint);
 					ShowItemTooltip(Tooltip);
 					return bClicked;
@@ -2286,6 +2307,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 					ImGui::OpenPopup(ViewportPopupID);
 				}
 				PushCommonPopupBgColor();
+				PushCommonPopupMenuItemStyle();
 				if (ImGui::BeginPopup(ViewportPopupID))
 				{
 					auto DrawViewportTypeOptions = [&](const char* SectionLabel, int32 StartIndex, int32 EndIndex)
@@ -2315,7 +2337,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 					DrawViewportTypeOptions("ORTHOGRAPHIC", 1, 8);
 					ImGui::EndPopup();
 				}
-				ImGui::PopStyleColor();
+				ImGui::PopStyleColor(4);
 
 				char ViewModePopupID[64];
 				snprintf(ViewModePopupID, sizeof(ViewModePopupID), "ViewModePopup_%d", SlotIndex);
@@ -2328,6 +2350,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 					}
 				}
 				PushCommonPopupBgColor();
+				PushCommonPopupMenuItemStyle();
 				if (bShowViewModeButton && ImGui::BeginPopup(ViewModePopupID))
 				{
 					DrawPopupSectionHeader("VIEW MODE");
@@ -2364,7 +2387,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 					Opts.ViewMode = static_cast<EViewMode>(CurrentMode);
 					ImGui::EndPopup();
 				}
-				ImGui::PopStyleColor();
+				ImGui::PopStyleColor(4);
 
 				char SettingsPopupID[64];
 				snprintf(SettingsPopupID, sizeof(SettingsPopupID), "SettingsPopup_%d", SlotIndex);
@@ -2413,7 +2436,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 						const bool bSelected = (static_cast<EViewportLayout>(i) == CurrentLayout);
 						if (bSelected)
 						{
-							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
+							ImGui::PushStyleColor(ImGuiCol_Button, EditorAccentColor::Value);
 						}
 
 						bool bClicked = false;
@@ -2524,7 +2547,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 				bool bSelected = (static_cast<EViewportLayout>(i) == CurrentLayout);
 				if (bSelected)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Button, EditorAccentColor::Value);
 				}
 
 				bool bClicked = false;
@@ -2601,9 +2624,9 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			{
 				if (bSelected)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.43f, 0.72f, 1.0f));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.31f, 0.49f, 0.78f, 1.0f));
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.21f, 0.38f, 0.64f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Button, EditorAccentColor::Value);
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorAccentColor::Value);
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorAccentColor::Value);
 				}
 				const bool bClicked = DrawToolbarIconButton(Id, Icon, Tooltip, PaneToolbarFallbackIconSize, PaneToolbarMaxIconSize);
 				if (bSelected)
@@ -2986,6 +3009,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 		PlaceActorMenuItem("Static Mesh", EViewportPlaceActorType::StaticMeshActor);
 		PlaceActorMenuItem("World Text", EViewportPlaceActorType::WorldText);
 		PlaceActorMenuItem("Screen Text", EViewportPlaceActorType::ScreenText);
+		PlaceActorMenuItem("UI Root", EViewportPlaceActorType::UIRoot);
 		PlaceActorMenuItem("Sphere", EViewportPlaceActorType::Sphere);
 		PlaceActorMenuItem("Cylinder", EViewportPlaceActorType::Cylinder);
 		PlaceActorMenuItem("Cone", EViewportPlaceActorType::Cone);
@@ -2996,9 +3020,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 		PlaceActorMenuItem("Directional Light", EViewportPlaceActorType::DirectionalLight);
 		PlaceActorMenuItem("Point Light", EViewportPlaceActorType::PointLight);
 		PlaceActorMenuItem("Spot Light", EViewportPlaceActorType::SpotLight);
-		PlaceActorMenuItem("Obstacle", EViewportPlaceActorType::SimpleObstacle);
-		PlaceActorMenuItem("Obstacle", EViewportPlaceActorType::Wireball);
-		PlaceActorMenuItem("Obstacle", EViewportPlaceActorType::VerticalWires);
+		PlaceActorMenuItem("Map", EViewportPlaceActorType::MapManager);
 
 		ImGui::EndMenu();
 	}
@@ -3190,6 +3212,17 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		}
 		break;
 	}
+	case EViewportPlaceActorType::UIRoot:
+	{
+		AUIRootActor* Actor = World->SpawnActor<AUIRootActor>();
+		if (Actor)
+		{
+			Actor->InitDefaultComponents();
+			SpawnedActor = Actor;
+			SpawnLocation.Z += 1.0f;
+		}
+		break;
+	}
 	case EViewportPlaceActorType::Cube:
 	{
 		AStaticMeshActor* Actor = World->SpawnActor<AStaticMeshActor>();
@@ -3307,37 +3340,14 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		}
 		break;
 	}
-	case EViewportPlaceActorType::SimpleObstacle:
+	case EViewportPlaceActorType::MapManager:
 	{
-		ASimpleObstacleActor* Actor = World->SpawnActor<ASimpleObstacleActor>();
-		if (Actor)
+		AMapManager* Actor = World->SpawnActor<AMapManager>();
+		if (Actor) 
 		{
-			Actor->InitDefaultComponents(GetRegisteredMeshPath("Default.Mesh.BasicShape.Cube"));
 			SpawnedActor = Actor;
-			SpawnLocation.Z += 1.0f;
 		}
 		break;
-	}
-	case EViewportPlaceActorType::Wireball: 
-	{
-		AWireballActor* Actor = World->SpawnActor<AWireballActor>();
-		if (Actor)
-		{
-			Actor->InitDefaultComponents(GetRegisteredMeshPath(""));
-			SpawnedActor = Actor;
-			SpawnLocation.Z += 1.0f;
-		}
-		break;
-	}
-	case EViewportPlaceActorType::VerticalWires:
-	{
-		AVerticalWireActor* Actor = World->SpawnActor<AVerticalWireActor>();
-		if (Actor)
-		{
-			Actor->InitDefaultComponents(GetRegisteredMeshPath(""));
-			SpawnedActor = Actor;
-			SpawnLocation.Z += 1.0f;
-		}
 	}
 	default:
 		break;

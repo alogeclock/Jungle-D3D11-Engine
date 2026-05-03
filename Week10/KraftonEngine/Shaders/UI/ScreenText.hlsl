@@ -3,20 +3,37 @@
 
 Texture2D FontAtlas : register(t0);
 
-PS_Input_Tex VS(VS_Input_PT input)
+float GetFontCoverage(float4 Sampled, float TintAlpha)
 {
-    PS_Input_Tex output;
+    if (TintAlpha < 0.0f)
+    {
+        return Sampled.r;
+    }
+
+    return max(Sampled.a, max(Sampled.r, max(Sampled.g, Sampled.b)));
+}
+
+PS_Input_TexColor VS(VS_Input_PTC input)
+{
+    PS_Input_TexColor output;
     output.position = float4(input.position, 1.0f);
+    output.color = input.color;
     output.texcoord = input.texcoord;
     return output;
 }
 
-float4 PS(PS_Input_Tex input) : SV_TARGET
+float4 PS(PS_Input_TexColor input) : SV_TARGET
 {
-    float4 col = FontAtlas.Sample(PointClampSampler, input.texcoord);
+    if (input.texcoord.x < 0.0f || input.texcoord.y < 0.0f)
+    {
+        return float4(input.color.rgb, 1.0f);
+    }
 
-    if (col.r < 0.1f)
+    float4 col = FontAtlas.Sample(LinearClampSampler, input.texcoord);
+    const float coverage = GetFontCoverage(col, input.color.a);
+
+    if (coverage < 0.1f)
         discard;
 
-    return float4(0.6f, 1.0f, 1.0f, col.r);
+    return float4(input.color.rgb, coverage * abs(input.color.a));
 }

@@ -76,6 +76,31 @@ void UPrimitiveComponent::SetCastShadow(bool bNewCastShadow)
 	MarkRenderVisibilityDirty();
 }
 
+void UPrimitiveComponent::SetCollisionEnabled(bool bInCollisionFlag)
+{
+	if (bCollisionEnabled == bInCollisionFlag)
+	{
+		return;
+	}
+
+	bCollisionEnabled = bInCollisionFlag;
+	MarkUpdateOverlaps();
+}
+
+void UPrimitiveComponent::SetGenerateOverlapEvents(bool bInGenerateOverlapEvents)
+{
+	const EOverlapBehaviour NewBehaviour = bInGenerateOverlapEvents
+		? EOverlapBehaviour::Overlap
+		: EOverlapBehaviour::Ignore;
+	if (bGenerateOverlapEvents == NewBehaviour)
+	{
+		return;
+	}
+
+	bGenerateOverlapEvents = NewBehaviour;
+	MarkUpdateOverlaps();
+}
+
 // ============================================================
 // MarkRenderTransformDirty / MarkRenderVisibilityDirty
 //   프록시 dirty + Octree(액터 단위 dirty) + PickingBVH dirty
@@ -90,8 +115,14 @@ void UPrimitiveComponent::MarkRenderTransformDirty()
 	UWorld* World = OwnerActor->GetWorld();
 	if (!World) return;
 
-	World->UpdateActorInOctree(OwnerActor);
-	World->MarkWorldPrimitivePickingBVHDirty();
+	if (ParticipatesInRenderSpatialStructure())
+	{
+		World->UpdateActorInOctree(OwnerActor);
+	}
+	if (ParticipatesInPickingSpatialStructure())
+	{
+		World->MarkWorldPrimitivePickingBVHDirty();
+	}
 }
 
 void UPrimitiveComponent::MarkRenderVisibilityDirty()
@@ -104,8 +135,14 @@ void UPrimitiveComponent::MarkRenderVisibilityDirty()
 	if (!World) return;
 
 	// 가시성 변화는 Octree 포함 여부도 좌우하므로 액터 dirty로 반영한다.
-	World->UpdateActorInOctree(OwnerActor);
-	World->MarkWorldPrimitivePickingBVHDirty();
+	if (ParticipatesInRenderSpatialStructure())
+	{
+		World->UpdateActorInOctree(OwnerActor);
+	}
+	if (ParticipatesInPickingSpatialStructure())
+	{
+		World->MarkWorldPrimitivePickingBVHDirty();
+	}
 }
 
 void UPrimitiveComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)

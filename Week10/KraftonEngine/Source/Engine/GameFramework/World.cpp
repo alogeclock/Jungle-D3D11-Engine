@@ -12,7 +12,73 @@
 #include "Platform/Paths.h"
 #include "Serialization/WindowsArchive.h"
 #include "Core/ProjectSettings.h"
+#include "Collision/RayUtils.h"
 IMPLEMENT_CLASS(UWorld, UObject)
+
+namespace
+{
+	bool RaycastPrimitivesFallback(const TArray<ULevel*>& Levels, const FRay& Ray, FRayHitResult& OutHitResult, AActor*& OutActor)
+	{
+		FRayHitResult BestHit{};
+		AActor* BestActor = nullptr;
+
+		for (ULevel* Level : Levels)
+		{
+			if (!Level)
+			{
+				continue;
+			}
+
+			for (AActor* Actor : Level->GetActors())
+			{
+				if (!Actor || !Actor->IsVisible())
+				{
+					continue;
+				}
+
+				for (UPrimitiveComponent* Primitive : Actor->GetPrimitiveComponents())
+				{
+					if (!Primitive || !Primitive->IsVisible() || !Primitive->ParticipatesInPickingSpatialStructure())
+					{
+						continue;
+					}
+
+					FRayHitResult CandidateHit{};
+					if (!Primitive->LineTraceComponent(Ray, CandidateHit))
+					{
+						float AABBTMin = 0.0f;
+						float AABBTMax = 0.0f;
+						const FBoundingBox Bounds = Primitive->GetWorldBoundingBox();
+						if (!FRayUtils::IntersectRayAABB(Ray, Bounds.Min, Bounds.Max, AABBTMin, AABBTMax))
+						{
+							continue;
+						}
+
+						CandidateHit.HitComponent = Primitive;
+						CandidateHit.Distance = AABBTMin >= 0.0f ? AABBTMin : AABBTMax;
+						CandidateHit.WorldHitLocation = Ray.Origin + Ray.Direction * CandidateHit.Distance;
+						CandidateHit.bHit = true;
+					}
+
+					if (CandidateHit.Distance < BestHit.Distance)
+					{
+						BestHit = CandidateHit;
+						BestActor = Actor;
+					}
+				}
+			}
+		}
+
+		if (!BestActor)
+		{
+			return false;
+		}
+
+		OutHitResult = BestHit;
+		OutActor = BestActor;
+		return true;
+	}
+}
 
 
 UWorld::~UWorld()
@@ -28,6 +94,11 @@ UObject* UWorld::Duplicate(UObject* NewOuter) const
 		return nullptr;
 	}
 	NewWorld->SetOuter(NewOuter);
+	NewWorld->InitWorld();
+	if (PersistentLevel && NewWorld->GetPersistentLevel())
+	{
+		NewWorld->GetPersistentLevel()->SetOutlinerFolders(PersistentLevel->GetOutlinerFolders());
+	}
 
 	if (PersistentLevel)
 	{
@@ -61,6 +132,14 @@ UWorld* UWorld::DuplicateAs(EWorldType InWorldType) const
 	if (!NewWorld) return nullptr;
 
 	NewWorld->SetWorldType(InWorldType);
+	NewWorld->InitWorld();
+	if (PersistentLevel && NewWorld->GetPersistentLevel())
+	{
+		NewWorld->GetPersistentLevel()->SetOutlinerFolders(PersistentLevel->GetOutlinerFolders());
+	}
+
+	// TODO: 임시 처리. 추후 제거 하고 Level Duplicate 하는 과정 추가해야할듯
+	NewWorld->PersistentLevel->SetGameModeClassName(PersistentLevel->GetGameModeClassName());
 
 	if (PersistentLevel)
 	{
@@ -385,7 +464,14 @@ void UWorld::WarmupPickingData() const
 bool UWorld::RaycastPrimitives(const FRay& Ray, FRayHitResult& OutHitResult, AActor*& OutActor) const
 {
 	WorldPrimitivePickingBVH.EnsureBuilt(GetActors().ToArray());
-	return WorldPrimitivePickingBVH.Raycast(Ray, OutHitResult, OutActor);
+	if (WorldPrimitivePickingBVH.Raycast(Ray, OutHitResult, OutActor))
+	{
+		return true;
+	}
+
+	// BVH broad-phase가 stale bounds나 특수 primitive 때문에 miss하는 경우를 위해
+	// 클릭 입력에서는 느리지만 정확한 직접 교차 검사로 한 번 더 확인한다.
+	return RaycastPrimitivesFallback(Levels, Ray, OutHitResult, OutActor);
 }
 
 void UWorld::CollectWorldPrimitivePickingBVHDebugBounds(TArray<FBoundingBox>& OutBounds) const

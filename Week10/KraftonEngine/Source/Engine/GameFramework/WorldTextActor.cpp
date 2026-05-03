@@ -15,7 +15,6 @@ void AWorldTextActor::InitDefaultComponents()
 	TextRenderComponent->SetCanDeleteFromDetails(false);
 	TextRenderComponent->SetText("World Text");
 	TextRenderComponent->SetFont(FName("Default"));
-	TextRenderComponent->SetRenderSpace(ETextRenderSpace::World);
 	TextRenderComponent->SetFontSize(1.0f);
 	SetRootComponent(TextRenderComponent);
 }

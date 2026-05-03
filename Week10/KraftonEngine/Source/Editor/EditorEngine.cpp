@@ -1,5 +1,6 @@
 ﻿#include "Editor/EditorEngine.h"
 
+#include "Audio/AudioManager.h"
 #include "Profiling/StartupProfiler.h"
 #include "Core/Notification.h"
 #include "Engine/Runtime/WindowsWindow.h"
@@ -188,6 +189,7 @@ void UEditorEngine::Tick(float DeltaTime)
 	ApplyTransformSettingsToGizmo();
 	FDirectoryWatcher::Get().ProcessChanges();
 	FNotificationManager::Get().Tick(DeltaTime);
+	FAudioManager::Get().Update();
 	MainPanel.Update();
 
 	for (FEditorViewportClient* VC : ViewportLayout.GetAllViewportClients())
@@ -307,6 +309,7 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 {
 	SetGamePaused(false);
 	FInputManager::Get().ResetAllKeyStates();
+	FAudioManager::Get().StopAll();
 
 	// 1) 현재 에디터 월드를 복제해 PIE 월드 생성 (UE의 CreatePIEWorldByDuplication 대응).
 	UWorld* EditorWorld = GetWorld();
@@ -404,11 +407,21 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 	//    UWorld::BeginPlay가 bHasBegunPlay를 먼저 세팅하므로 BeginPlay 도중
 	//    SpawnActor로 만든 신규 액터도 자동으로 BeginPlay된다.
 	PIEWorld->BeginPlay();
+
+	// 임시 코드
+	if (UGameViewportClient* PIEViewportClient = GetGameViewportClient())
+	{
+		if (UCameraComponent* GameCamera = PIEWorld->GetActiveCamera())
+		{
+			PIEViewportClient->Possess(GameCamera);
+		}
+	}
 }
 
 void UEditorEngine::EndPlayMap()
 {
 	SetGamePaused(false);
+	FAudioManager::Get().StopAll();
 	if (!PlayInEditorSessionInfo.has_value())
 	{
 		return;
@@ -542,15 +555,24 @@ void UEditorEngine::SyncGameViewportPIEControlState(bool bPossessedMode)
 
 	if (FLevelEditorViewportClient* ActiveVC = ViewportLayout.GetActiveViewport())
 	{
-		PIEViewportClient->Possess(ActiveVC->GetCamera());
+		// PIEViewportClient->Possess(ActiveVC->GetCamera());
 		PIEViewportClient->SetViewport(ActiveVC->GetViewport());
 		PIEViewportClient->SetCursorClipRect(ActiveVC->GetViewportScreenRect());
-		return;
+		// return;
 	}
-
+	// CameraComponent 우선 Possess 시도
 	if (UWorld* World = GetWorld())
 	{
-		PIEViewportClient->Possess(World->GetActiveCamera());
+		if (UCameraComponent* GameCamera = World->GetActiveCamera())
+		{
+			PIEViewportClient->Possess(GameCamera);
+			return;
+		}
+	}
+	// 이후 ViewportClient Possess 시도
+	if (FLevelEditorViewportClient* ActiveVC = ViewportLayout.GetActiveViewport())
+	{
+		PIEViewportClient->Possess(ActiveVC->GetCamera());
 	}
 }
 
@@ -775,6 +797,7 @@ void UEditorEngine::ApplyTrackedSceneChange(const FTrackedSceneChange& Change, b
 	SelectionManager.ClearSelection();
 	ApplyTrackedActorDeltas(Change, bRedo);
 	RestoreTrackedActorOrder(bRedo ? Change.AfterActorOrderUUIDs : Change.BeforeActorOrderUUIDs);
+	RestoreTrackedFolderOrder(bRedo ? Change.AfterOutlinerFolders : Change.BeforeOutlinerFolders);
 	if (UWorld* World = GetWorld())
 	{
 		World->WarmupPickingData();
@@ -903,6 +926,18 @@ void UEditorEngine::RestoreTrackedActorOrder(const TArray<uint32>& OrderedUUIDs)
 
 		World->MoveActorToIndex(Actor, PrefixCount + Index);
 	}
+}
+
+void UEditorEngine::RestoreTrackedFolderOrder(const TArray<FString>& OrderedFolders)
+{
+	UWorld* World = GetWorld();
+	ULevel* PersistentLevel = World ? World->GetPersistentLevel() : nullptr;
+	if (!PersistentLevel)
+	{
+		return;
+	}
+
+	PersistentLevel->SetOutlinerFolders(OrderedFolders);
 }
 
 void UEditorEngine::RestoreTrackedSelection(const TArray<uint32>& SelectedUUIDs)

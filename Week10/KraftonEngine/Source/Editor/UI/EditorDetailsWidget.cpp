@@ -2,23 +2,33 @@
 
 #include "Editor/EditorEngine.h"
 #include "Editor/Settings/EditorSettings.h"
+#include "Editor/UI/EditorAccentColor.h"
 #include "Editor/UI/EditorPanelTitleUtils.h"
 
 #include "Component/ActorComponent.h"
 #include "Component/BillboardComponent.h"
+#include "Component/CanvasRootComponent.h"
 #include "Component/DecalComponent.h"
 #include "Component/GizmoComponent.h"
 #include "Component/HeightFogComponent.h"
+#include "Component/UIButtonComponent.h"
+#include "Component/UIBackgroundComponent.h"
+#include "Component/UIImageComponent.h"
+#include "Component/UIScreenTextComponent.h"
+#include "Component/UWindowPanelComponent.h"
 #include "Component/Light/LightComponentBase.h"
 #include "Component/MeshComponent.h"
 #include "Component/Movement/MovementComponent.h"
 #include "Component/PrimitiveComponent.h"
 #include "Component/SceneComponent.h"
 #include "Component/ScriptComponent.h"
+#include "Component/SoundComponent.h"
 #include "Component/StaticMeshComponent.h"
 #include "Component/TextRenderComponent.h"
 #include "Core/ClassTypes.h"
 #include "Core/PropertyTypes.h"
+#include "Engine/Runtime/Engine.h"
+#include "Engine/Runtime/WindowsWindow.h"
 #include "GameFramework/World.h"
 #include "ImGui/imgui.h"
 #include "Materials/Material.h"
@@ -39,6 +49,7 @@
 #include <commdlg.h>
 #include <cstring>
 #include <filesystem>
+#include <functional>
 #include <string>
 
 
@@ -54,8 +65,9 @@
 
 namespace
 {
-    constexpr ImVec4 PopupMenuItemHoverColor = ImVec4(0.10f, 0.54f, 0.96f, 1.0f);
-    constexpr ImVec4 PopupMenuItemActiveColor = ImVec4(0.00f, 0.40f, 0.84f, 1.0f);
+    constexpr ImVec4 PopupMenuItemColor = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+    constexpr ImVec4 PopupMenuItemHoverColor = EditorAccentColor::Value;
+    constexpr ImVec4 PopupMenuItemActiveColor = EditorAccentColor::Value;
     constexpr ImVec4 DetailsHeaderButtonColor = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
     constexpr ImVec4 DetailsHeaderButtonHoveredColor = ImVec4(0.24f, 0.24f, 0.24f, 1.0f);
     constexpr ImVec4 DetailsHeaderButtonActiveColor = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
@@ -89,6 +101,14 @@ namespace
     {
         ImGui::PopStyleColor(4);
         ImGui::PopStyleVar(2);
+    }
+
+    void PushPopupMenuStyle()
+    {
+        ImGui::PushStyleColor(ImGuiCol_PopupBg, PopupPalette::PopupBg);
+        ImGui::PushStyleColor(ImGuiCol_Header, PopupMenuItemColor);
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, PopupMenuItemHoverColor);
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, PopupMenuItemActiveColor);
     }
 
     const char *GetActorHeaderIconKey(const AActor *Actor)
@@ -334,7 +354,17 @@ namespace
 
     constexpr ImVec4 AddComponentGroupHeaderTextColor = ImVec4(0.82f, 0.82f, 0.84f, 1.0f);
     constexpr ImVec4 DetailsVectorLabelColor = ImVec4(0.83f, 0.84f, 0.87f, 1.0f);
-    constexpr float  DetailsVectorLabelWidth = 76.0f;
+    constexpr ImVec4 DetailsVectorFieldBg = ImVec4(10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 1.0f);
+    constexpr ImVec4 DetailsVectorFieldHoverBg = ImVec4(15.0f / 255.0f, 15.0f / 255.0f, 15.0f / 255.0f, 1.0f);
+    constexpr ImVec4 DetailsVectorFieldActiveBg = ImVec4(20.0f / 255.0f, 20.0f / 255.0f, 20.0f / 255.0f, 1.0f);
+    constexpr ImVec4 DetailsVectorResetButtonColor = ImVec4(0.22f, 0.22f, 0.23f, 1.0f);
+    constexpr ImVec4 DetailsVectorResetButtonHoveredColor = ImVec4(0.30f, 0.30f, 0.32f, 1.0f);
+    constexpr ImVec4 DetailsVectorResetButtonActiveColor = ImVec4(0.36f, 0.36f, 0.38f, 1.0f);
+    constexpr ImVec4 DetailsVectorResetButtonBorderColor = ImVec4(0.52f, 0.52f, 0.55f, 0.95f);
+    constexpr float  DetailsVectorLabelWidth = 124.0f;
+    constexpr float  DetailsPropertyLabelWidth = 124.0f;
+    constexpr float  DetailsPropertyVerticalSpacing = 6.0f;
+    constexpr float  DetailsVectorResetSpacing = 6.0f;
 
     void PushDetailsFieldStyle()
     {
@@ -345,6 +375,203 @@ namespace
     }
 
     void PopDetailsFieldStyle() { ImGui::PopStyleColor(4); }
+
+    void PushDetailsVectorFieldStyle()
+    {
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, DetailsVectorFieldBg);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, DetailsVectorFieldHoverBg);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, DetailsVectorFieldActiveBg);
+        ImGui::PushStyleColor(ImGuiCol_Border, PopupPalette::FieldBorder);
+    }
+
+    void PopDetailsVectorFieldStyle() { ImGui::PopStyleColor(4); }
+
+    void PushDetailsVectorResetButtonStyle()
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+        ImGui::PushStyleColor(ImGuiCol_Button, DetailsVectorResetButtonColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, DetailsVectorResetButtonHoveredColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, DetailsVectorResetButtonActiveColor);
+        ImGui::PushStyleColor(ImGuiCol_Border, DetailsVectorResetButtonBorderColor);
+    }
+
+    void PopDetailsVectorResetButtonStyle()
+    {
+        ImGui::PopStyleColor(4);
+        ImGui::PopStyleVar();
+    }
+
+    bool DrawLabeledField(const char *Label, const std::function<bool()> &DrawField)
+    {
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted(Label);
+        ImGui::SameLine(DetailsPropertyLabelWidth);
+
+        const float AvailableWidth = ImGui::GetContentRegionAvail().x;
+        if (AvailableWidth > 0.0f)
+        {
+            ImGui::SetNextItemWidth(AvailableWidth);
+        }
+
+        return DrawField();
+    }
+
+    bool IsUIComponentForDetails(const UActorComponent *Component)
+    {
+        return Component
+            && (Component->IsA<UCanvasRootComponent>()
+                || Component->IsA<UUIImageComponent>()
+                || Component->IsA<UIButtonComponent>()
+                || Component->IsA<UUIScreenTextComponent>()
+                || Component->IsA<UNineSlicePanelComponent>());
+    }
+
+    bool IsScreenCoordinateLayoutProperty(const FString& Name)
+    {
+        return Name == "ScreenPosition" || Name == "Screen Position";
+    }
+
+    bool IsAnchorLayoutProperty(const FString& Name)
+    {
+        return Name == "Anchor"
+            || Name == "Alignment"
+            || Name == "AnchorOffset"
+            || Name == "Anchor Offset";
+    }
+
+    bool IsAnchoredLayoutEnabledForDetails(const UActorComponent* Component)
+    {
+        if (const UUIImageComponent* ImageComponent = dynamic_cast<const UUIImageComponent*>(Component))
+        {
+            return ImageComponent->IsAnchoredLayoutEnabled();
+        }
+
+        if (const UUIScreenTextComponent* TextComponent = dynamic_cast<const UUIScreenTextComponent*>(Component))
+        {
+            return TextComponent->IsAnchoredLayoutEnabled();
+        }
+
+        return false;
+    }
+
+    bool ShouldRenderDetailsProperty(const UActorComponent* Component, const FPropertyDescriptor& Prop)
+    {
+        if (!IsUIComponentForDetails(Component))
+        {
+            return true;
+        }
+
+        if (IsScreenCoordinateLayoutProperty(Prop.Name))
+        {
+            return !IsAnchoredLayoutEnabledForDetails(Component);
+        }
+
+        if (IsAnchorLayoutProperty(Prop.Name))
+        {
+            return IsAnchoredLayoutEnabledForDetails(Component);
+        }
+
+        return true;
+    }
+
+    int32 GetDetailsSectionPriority(const char *SectionName)
+    {
+        if (!SectionName)
+        {
+            return 100;
+        }
+        if (strcmp(SectionName, "Default") == 0)
+        {
+            return 0;
+        }
+        if (strcmp(SectionName, "Transform") == 0)
+        {
+            return 1;
+        }
+        if (strcmp(SectionName, "Visibility") == 0)
+        {
+            return 2;
+        }
+        if (strcmp(SectionName, "Appearance") == 0)
+        {
+            return 3;
+        }
+        if (strcmp(SectionName, "Content") == 0)
+        {
+            return 4;
+        }
+        if (strcmp(SectionName, "Behavior") == 0)
+        {
+            return 5;
+        }
+        if (strcmp(SectionName, "Layout") == 0)
+        {
+            return 6;
+        }
+        if (strcmp(SectionName, "Materials") == 0)
+        {
+            return 7;
+        }
+        if (strcmp(SectionName, "Static Mesh") == 0)
+        {
+            return 8;
+        }
+        return 50;
+    }
+
+    void SortDetailsSections(TArray<const char *> &Sections)
+    {
+        std::sort(Sections.begin(), Sections.end(), [](const char *A, const char *B)
+        {
+            const int32 PriorityA = GetDetailsSectionPriority(A);
+            const int32 PriorityB = GetDetailsSectionPriority(B);
+            if (PriorityA != PriorityB)
+            {
+                return PriorityA < PriorityB;
+            }
+            return strcmp(A, B) < 0;
+        });
+    }
+
+    float GetAxisFieldWidth(int32 AxisCount, float AdditionalReservedWidth = 0.0f)
+    {
+        const float AvailableWidth = ImGui::GetContentRegionAvail().x - AdditionalReservedWidth;
+        const float InterAxisSpacing = ImGui::GetStyle().ItemSpacing.x;
+        const float BarWidth = 3.0f;
+        const float BarSpacing = 3.0f;
+        const float TotalReserved = (BarWidth + BarSpacing) * static_cast<float>(AxisCount);
+        const float TotalSpacing = InterAxisSpacing * static_cast<float>((std::max)(0, AxisCount - 1));
+        return (std::max)(22.0f, (AvailableWidth - TotalReserved - TotalSpacing) / static_cast<float>(AxisCount));
+    }
+
+    int32 GetUIComponentSortPriority(const UClass* ComponentClass)
+    {
+        if (ComponentClass == UCanvasRootComponent::StaticClass())
+        {
+            return 0;
+        }
+        if (ComponentClass == UUIBackgroundComponent::StaticClass())
+        {
+            return 1;
+        }
+        if (ComponentClass == UUIImageComponent::StaticClass())
+        {
+            return 2;
+        }
+        if (ComponentClass == UIButtonComponent::StaticClass())
+        {
+            return 3;
+        }
+        if (ComponentClass == UUIScreenTextComponent::StaticClass())
+        {
+            return 4;
+        }
+        if (ComponentClass == UNineSlicePanelComponent::StaticClass())
+        {
+            return 5;
+        }
+        return 100;
+    }
 
     void AddComponentClassGroup(TArray<FComponentClassGroup> &Groups, const char *Label, UClass *AnchorClass)
     {
@@ -361,8 +588,22 @@ namespace
             return nullptr;
         }
 
-        // UTextRenderComponent는 C++ 상속은 Billboard지만 RTTI 등록 부모가 Primitive라서 명시적으로 묶는다.
+        // UI 전용/밀접 컴포넌트는 상속 체계와 무관하게 한 섹션으로 모은다.
+        if (ComponentClass->IsA(UCanvasRootComponent::StaticClass())
+            || ComponentClass->IsA(UUIImageComponent::StaticClass())
+            || ComponentClass->IsA(UUIScreenTextComponent::StaticClass()))
+        {
+            return UCanvasRootComponent::StaticClass();
+        }
+
+        // TextRender는 월드/스크린 겸용이라 Add Component에서는 OTHER에 둔다.
         if (ComponentClass == UTextRenderComponent::StaticClass())
+        {
+            return nullptr;
+        }
+
+        // Height Fog는 SceneComponent 기반이지만 Add Component에서는 Effects 쪽이 더 자연스럽다.
+        if (ComponentClass == UHeightFogComponent::StaticClass())
         {
             return UBillboardComponent::StaticClass();
         }
@@ -392,11 +633,13 @@ namespace
         CachedGroups.clear();
         CachedClassCount = AllClasses.size();
 
-        AddComponentClassGroup(CachedGroups, "LIGHT", ULightComponentBase::StaticClass());
-        AddComponentClassGroup(CachedGroups, "MOVEMENT", UMovementComponent::StaticClass());
-        AddComponentClassGroup(CachedGroups, "EFFECTS", UBillboardComponent::StaticClass());
         AddComponentClassGroup(CachedGroups, "PRIMITIVE", UPrimitiveComponent::StaticClass());
+        AddComponentClassGroup(CachedGroups, "LIGHT", ULightComponentBase::StaticClass());
+        AddComponentClassGroup(CachedGroups, "EFFECTS", UBillboardComponent::StaticClass());
+        AddComponentClassGroup(CachedGroups, "MOVEMENT", UMovementComponent::StaticClass());
+        AddComponentClassGroup(CachedGroups, "SOUND", USoundComponent::StaticClass());
         AddComponentClassGroup(CachedGroups, "SCENE", USceneComponent::StaticClass());
+        AddComponentClassGroup(CachedGroups, "UI", UCanvasRootComponent::StaticClass());
         AddComponentClassGroup(CachedGroups, "OTHER", nullptr);
 
         for (UClass *Cls : AllClasses)
@@ -420,7 +663,19 @@ namespace
         for (FComponentClassGroup &Group : CachedGroups)
         {
             std::sort(Group.Classes.begin(), Group.Classes.end(),
-                      [](const UClass *A, const UClass *B) { return strcmp(A->GetName(), B->GetName()) < 0; });
+                      [AnchorClass = Group.AnchorClass](const UClass *A, const UClass *B)
+                      {
+                          if (AnchorClass == UCanvasRootComponent::StaticClass())
+                          {
+                              const int32 PriorityA = GetUIComponentSortPriority(A);
+                              const int32 PriorityB = GetUIComponentSortPriority(B);
+                              if (PriorityA != PriorityB)
+                              {
+                                  return PriorityA < PriorityB;
+                              }
+                          }
+                          return strcmp(A->GetName(), B->GetName()) < 0;
+                      });
         }
 
         return CachedGroups;
@@ -536,12 +791,137 @@ FString FEditorDetailsWidget::GetDisplayPropertyLabel(const FString &RawName)
     return Result.empty() ? RawName : Result;
 }
 
-FString FEditorDetailsWidget::GetPropertySectionName(const FPropertyDescriptor &Prop)
+static FString GetDisplayClassLabel(const UClass *Class)
+{
+    if (!Class)
+    {
+        return "Unknown";
+    }
+
+    if (Class == UBackgroundSoundComponent::StaticClass())
+    {
+        return "BGM";
+    }
+    if (Class == UCanvasRootComponent::StaticClass())
+    {
+        return "Canvas";
+    }
+    if (Class == UUIBackgroundComponent::StaticClass())
+    {
+        return "Screen";
+    }
+    if (Class == UUIImageComponent::StaticClass())
+    {
+        return "Image";
+    }
+    if (Class == UIButtonComponent::StaticClass())
+    {
+        return "Button";
+    }
+    if (Class == UUIScreenTextComponent::StaticClass())
+    {
+        return "Text";
+    }
+
+    FString RawName = Class->GetName();
+    const bool bStartsWithUIAcronym = RawName.size() > 2
+        && RawName[0] == 'U'
+        && RawName[1] == 'I'
+        && std::isupper(static_cast<unsigned char>(RawName[2])) != 0;
+    if (!bStartsWithUIAcronym
+        && RawName.size() > 1
+        && (RawName[0] == 'U' || RawName[0] == 'A')
+        && std::isupper(static_cast<unsigned char>(RawName[1])) != 0)
+    {
+        RawName.erase(RawName.begin());
+    }
+
+    constexpr const char *ComponentSuffix = "Component";
+    const size_t SuffixLength = strlen(ComponentSuffix);
+    if (RawName.size() > SuffixLength)
+    {
+        const size_t SuffixPos = RawName.size() - SuffixLength;
+        if (RawName.compare(SuffixPos, SuffixLength, ComponentSuffix) == 0)
+        {
+            RawName.erase(SuffixPos);
+        }
+    }
+
+    FString Result;
+    Result.reserve(RawName.size() + 8);
+    for (size_t i = 0; i < RawName.size(); ++i)
+    {
+        const char C = RawName[i];
+        if ((C == '_' || C == '-') && !Result.empty() && Result.back() != ' ')
+        {
+            Result.push_back(' ');
+            continue;
+        }
+
+        const bool bIsUpper = std::isupper(static_cast<unsigned char>(C)) != 0;
+        const bool bPrevIsUpper = i > 0 && std::isupper(static_cast<unsigned char>(RawName[i - 1])) != 0;
+        const bool bPrevIsLowerOrDigit = i > 0
+            && (std::islower(static_cast<unsigned char>(RawName[i - 1])) != 0 || std::isdigit(static_cast<unsigned char>(RawName[i - 1])) != 0);
+        const bool bNextIsLower = i + 1 < RawName.size() && std::islower(static_cast<unsigned char>(RawName[i + 1])) != 0;
+        const bool bNeedsSpace = i > 0
+            && bIsUpper
+            && Result.back() != ' '
+            && (bPrevIsLowerOrDigit || (bPrevIsUpper && bNextIsLower));
+        if (bNeedsSpace)
+        {
+            Result.push_back(' ');
+        }
+        Result.push_back(C);
+    }
+
+    return Result.empty() ? RawName : Result;
+}
+
+FString FEditorDetailsWidget::GetPropertySectionName(const FPropertyDescriptor &Prop) const
 {
     if (Prop.Name == "Location" || Prop.Name == "Rotation" || Prop.Name == "Scale")
     {
         return "Transform";
     }
+
+    if (IsUIComponentForDetails(SelectedComponent))
+    {
+        if (Prop.Name == "ScreenPosition" || Prop.Name == "Screen Position"
+            || Prop.Name == "ScreenSize" || Prop.Name == "Screen Size"
+            || Prop.Name == "CanvasSize" || Prop.Name == "Canvas Size"
+            || Prop.Name == "UseAnchoredLayout" || Prop.Name == "Use Anchored Layout"
+            || Prop.Name == "Anchor"
+            || Prop.Name == "Alignment"
+            || Prop.Name == "AnchorOffset" || Prop.Name == "Anchor Offset"
+            || Prop.Name == "LabelOffset" || Prop.Name == "Label Offset"
+            || Prop.Name == "Slice"
+            || Prop.Name == "Nine Slice Border"
+            || Prop.Name == "ZOrder" || Prop.Name == "Z Order")
+        {
+            return "Layout";
+        }
+
+        if (Prop.Name == "Text" || Prop.Name == "Font"
+            || Prop.Name == "FontSize" || Prop.Name == "Font Size"
+            || Prop.Name == "Label"
+            || Prop.Name == "LabelScale" || Prop.Name == "Label Scale")
+        {
+            return "Content";
+        }
+
+        if (Prop.Type == EPropertyType::TextureSlot
+            || Prop.Name == "Tint"
+            || Prop.Name == "Color"
+            || Prop.Name == "NormalTint" || Prop.Name == "Normal Tint"
+            || Prop.Name == "HoverTint" || Prop.Name == "Hover Tint"
+            || Prop.Name == "PressedTint" || Prop.Name == "Pressed Tint"
+            || Prop.Name == "DrawBorder" || Prop.Name == "Draw Border"
+            || Prop.Name == "DrawCenter" || Prop.Name == "Draw Center")
+        {
+            return "Appearance";
+        }
+    }
+
     if (Prop.Type == EPropertyType::StaticMeshRef)
     {
         return "Static Mesh";
@@ -561,7 +941,7 @@ FString FEditorDetailsWidget::GetPropertySectionName(const FPropertyDescriptor &
     return "Default";
 }
 
-bool FEditorDetailsWidget::DrawColoredFloat3(const char *Label, float Values[3], float Speed)
+bool FEditorDetailsWidget::DrawColoredFloat3(const char *Label, float Values[3], float Speed, bool bShowReset, const float *ResetValues)
 {
     ImGui::PushID(Label);
     ImGui::AlignTextToFramePadding();
@@ -570,8 +950,9 @@ bool FEditorDetailsWidget::DrawColoredFloat3(const char *Label, float Values[3],
     ImGui::PopStyleColor();
     ImGui::SameLine(DetailsVectorLabelWidth);
 
-    const float  AvailableWidth = ImGui::GetContentRegionAvail().x;
-    const float  Width = (AvailableWidth - ImGui::GetStyle().ItemSpacing.x * 2.0f) / 3.0f;
+    const float  ResetButtonWidth =
+        bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f + DetailsVectorResetSpacing : 0.0f;
+    const float  Width = GetAxisFieldWidth(3, ResetButtonWidth);
     const ImVec4 AxisColors[3] = {ImVec4(0.85f, 0.22f, 0.22f, 1.0f), ImVec4(0.36f, 0.74f, 0.25f, 1.0f), ImVec4(0.23f, 0.54f, 0.92f, 1.0f)};
 
     bool bChanged = false;
@@ -583,20 +964,143 @@ bool FEditorDetailsWidget::DrawColoredFloat3(const char *Label, float Values[3],
         }
         const ImVec2 Start = ImGui::GetCursorScreenPos();
         const float  BarWidth = 3.0f;
-        const float  Spacing = 4.0f;
+        const float  Spacing = 3.0f;
         ImGui::GetWindowDrawList()->AddRectFilled(Start, ImVec2(Start.x + BarWidth, Start.y + ImGui::GetFrameHeight()),
                                                   ImGui::ColorConvertFloat4ToU32(AxisColors[Axis]), 2.0f);
         ImGui::SetCursorScreenPos(ImVec2(Start.x + BarWidth + Spacing, Start.y));
-        PushDetailsFieldStyle();
-        ImGui::SetNextItemWidth(Width - (BarWidth + Spacing));
+        PushDetailsVectorFieldStyle();
+        ImGui::SetNextItemWidth((std::max)(18.0f, Width));
         bChanged |= ImGui::DragFloat(Axis == 0 ? "##X" : Axis == 1 ? "##Y" : "##Z", &Values[Axis], Speed, 0.0f, 0.0f, "%.3f");
-        PopDetailsFieldStyle();
+        PopDetailsVectorFieldStyle();
+    }
+    if (bShowReset)
+    {
+        ImGui::SameLine(0.0f, DetailsVectorResetSpacing);
+        PushDetailsVectorResetButtonStyle();
+        if (ImGui::Button("RESET"))
+        {
+            Values[0] = ResetValues ? ResetValues[0] : 0.0f;
+            Values[1] = ResetValues ? ResetValues[1] : 0.0f;
+            Values[2] = ResetValues ? ResetValues[2] : 0.0f;
+            bChanged = true;
+        }
+        PopDetailsVectorResetButtonStyle();
     }
     ImGui::PopID();
     return bChanged;
 }
 
-bool FEditorDetailsWidget::DrawColoredFloat4(const char *Label, float Values[4], float Speed) { return ImGui::DragFloat4(Label, Values, Speed); }
+bool FEditorDetailsWidget::DrawColoredFloat4(const char *Label, float Values[4], float Speed, bool bShowReset)
+{
+    ImGui::PushID(Label);
+    ImGui::AlignTextToFramePadding();
+    ImGui::PushStyleColor(ImGuiCol_Text, DetailsVectorLabelColor);
+    ImGui::TextUnformatted(Label);
+    ImGui::PopStyleColor();
+    ImGui::SameLine(DetailsVectorLabelWidth);
+
+    const float  ResetButtonWidth =
+        bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f + DetailsVectorResetSpacing : 0.0f;
+    const float  Width = GetAxisFieldWidth(4, ResetButtonWidth);
+    const ImVec4 AxisColors[4] = {
+        ImVec4(0.85f, 0.22f, 0.22f, 1.0f),
+        ImVec4(0.36f, 0.74f, 0.25f, 1.0f),
+        ImVec4(0.23f, 0.54f, 0.92f, 1.0f),
+        ImVec4(0.72f, 0.72f, 0.72f, 1.0f)
+    };
+
+    bool bChanged = false;
+    for (int32 Axis = 0; Axis < 4; ++Axis)
+    {
+        if (Axis > 0)
+        {
+            ImGui::SameLine();
+        }
+
+        const ImVec2 Start = ImGui::GetCursorScreenPos();
+        const float  BarWidth = 3.0f;
+        const float  Spacing = 3.0f;
+        ImGui::GetWindowDrawList()->AddRectFilled(Start, ImVec2(Start.x + BarWidth, Start.y + ImGui::GetFrameHeight()),
+                                                  ImGui::ColorConvertFloat4ToU32(AxisColors[Axis]), 2.0f);
+        ImGui::SetCursorScreenPos(ImVec2(Start.x + BarWidth + Spacing, Start.y));
+        PushDetailsVectorFieldStyle();
+        ImGui::SetNextItemWidth((std::max)(16.0f, Width));
+        bChanged |= ImGui::DragFloat(Axis == 0 ? "##X" : Axis == 1 ? "##Y" : Axis == 2 ? "##Z" : "##W", &Values[Axis], Speed, 0.0f, 0.0f, "%.3f");
+        PopDetailsVectorFieldStyle();
+    }
+    if (bShowReset)
+    {
+        ImGui::SameLine(0.0f, DetailsVectorResetSpacing);
+        PushDetailsVectorResetButtonStyle();
+        if (ImGui::Button("RESET"))
+        {
+            Values[0] = 0.0f;
+            Values[1] = 0.0f;
+            Values[2] = 0.0f;
+            Values[3] = 0.0f;
+            bChanged = true;
+        }
+        PopDetailsVectorResetButtonStyle();
+    }
+
+    ImGui::PopID();
+    return bChanged;
+}
+
+bool FEditorDetailsWidget::DrawNamedFloat4(const char *Label, float Values[4], float Speed, const char *AxisLabels[4], bool bShowReset)
+{
+    ImGui::PushID(Label);
+    ImGui::AlignTextToFramePadding();
+    ImGui::PushStyleColor(ImGuiCol_Text, DetailsVectorLabelColor);
+    ImGui::TextUnformatted(Label);
+    ImGui::PopStyleColor();
+    ImGui::SameLine(DetailsVectorLabelWidth);
+
+    const float ResetButtonWidth =
+        bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f + DetailsVectorResetSpacing : 0.0f;
+    const float Width = (std::max)(52.0f, GetAxisFieldWidth(4, ResetButtonWidth));
+    bool        bChanged = false;
+    for (int32 Axis = 0; Axis < 4; ++Axis)
+    {
+        if (Axis > 0)
+        {
+            ImGui::SameLine();
+        }
+
+        const char *AxisLabel = (AxisLabels && AxisLabels[Axis]) ? AxisLabels[Axis] : "";
+        const float AxisLabelWidth = AxisLabel[0] != '\0' ? ImGui::CalcTextSize(AxisLabel).x + 6.0f : 0.0f;
+        const float FieldWidth = (std::max)(28.0f, Width - AxisLabelWidth);
+
+        if (AxisLabel[0] != '\0')
+        {
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted(AxisLabel);
+            ImGui::SameLine(0.0f, 6.0f);
+        }
+
+        PushDetailsVectorFieldStyle();
+        ImGui::SetNextItemWidth(FieldWidth);
+        bChanged |= ImGui::DragFloat(Axis == 0 ? "##Left" : Axis == 1 ? "##Top" : Axis == 2 ? "##Right" : "##Bottom", &Values[Axis], Speed, 0.0f, 0.0f, "%.3f");
+        PopDetailsVectorFieldStyle();
+    }
+    if (bShowReset)
+    {
+        ImGui::SameLine(0.0f, DetailsVectorResetSpacing);
+        PushDetailsVectorResetButtonStyle();
+        if (ImGui::Button("RESET"))
+        {
+            Values[0] = 0.0f;
+            Values[1] = 0.0f;
+            Values[2] = 0.0f;
+            Values[3] = 0.0f;
+            bChanged = true;
+        }
+        PopDetailsVectorResetButtonStyle();
+    }
+
+    ImGui::PopID();
+    return bChanged;
+}
 
 FString FEditorPropertyWidget::OpenObjFileDialog()
 {
@@ -645,6 +1149,7 @@ void FEditorPropertyWidget::Render(float DeltaTime)
     ImGui::Begin(WindowTitle.c_str());
     EditorPanelTitleUtils::DrawPanelTitleIcon(PanelIconKey);
     EditorPanelTitleUtils::DrawSmallPanelCloseButton("    Details", Settings.UI.bProperty, "x##CloseDetails");
+    EditorPanelTitleUtils::ApplyPanelContentTopInset();
 
     FSelectionManager &Selection = EditorEngine->GetSelectionManager();
     AActor            *PrimaryActor = bSelectionLocked ? LockedActor : Selection.GetPrimarySelection();
@@ -669,10 +1174,10 @@ void FEditorPropertyWidget::Render(float DeltaTime)
     // Actor 선택이 바뀌면 초기화
     if (PrimaryActor != LastSelectedActor)
     {
-        SelectedComponent = nullptr;
+        SelectedComponent = PrimaryActor->GetRootComponent();
         ScriptPathEditComponent = nullptr;
         LastSelectedActor = PrimaryActor;
-        bActorSelected = true;
+        bActorSelected = (SelectedComponent == nullptr);
         bEditingActorName = false;
         bScriptPathEditActive = false;
         ScriptPathEditBuffer[0] = '\0';
@@ -687,7 +1192,6 @@ void FEditorPropertyWidget::Render(float DeltaTime)
         SelectedActorsPtr = &DisplayedActors;
     }
     const TArray<AActor *> &SelectedActors = *SelectedActorsPtr;
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
     RenderHeader(PrimaryActor, SelectedActors);
 
     constexpr float ResizeHandleHeight = 8.0f;
@@ -715,7 +1219,7 @@ void FEditorPropertyWidget::Render(float DeltaTime)
 
     ImDrawList *DrawList = ImGui::GetWindowDrawList();
     const float LineY = HandleCursor.y + ResizeHandleHeight * 0.5f;
-    const ImU32 LineColor = ImGui::GetColorU32(bHandleActive    ? ImVec4(0.22f, 0.55f, 0.95f, 1.0f)
+    const ImU32 LineColor = ImGui::GetColorU32(bHandleActive    ? EditorAccentColor::Value
                                                : bHandleHovered ? ImVec4(0.45f, 0.48f, 0.55f, 1.0f)
                                                                 : ImVec4(0.26f, 0.28f, 0.32f, 1.0f));
     DrawList->AddLine(ImVec2(HandleCursor.x, LineY), ImVec2(HandleCursor.x + HandleWidth, LineY), LineColor, 2.0f);
@@ -741,12 +1245,15 @@ void FEditorDetailsWidget::RenderDetailsFilterBar(const TArray<const char *> &Av
     DrawSearchInputWithIcon("##DetailsSearch", "Search", DetailSearchBuffer, sizeof(DetailSearchBuffer), SearchWidth);
     ImGui::Spacing();
 
+    TArray<const char *> SortedSections = AvailableSections;
+    SortDetailsSections(SortedSections);
+
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 5.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
-    for (int32 SectionIndex = -1; SectionIndex < static_cast<int32>(AvailableSections.size()); ++SectionIndex)
+    for (int32 SectionIndex = -1; SectionIndex < static_cast<int32>(SortedSections.size()); ++SectionIndex)
     {
-        const char       *Label = SectionIndex < 0 ? "All" : AvailableSections[SectionIndex];
+        const char       *Label = SectionIndex < 0 ? "All" : SortedSections[SectionIndex];
         const std::string ButtonId = std::string(Label) + "##DetailsFilter";
         const bool        bActive = ActiveSectionFilter == Label;
         if (SectionIndex >= 0)
@@ -754,9 +1261,9 @@ void FEditorDetailsWidget::RenderDetailsFilterBar(const TArray<const char *> &Av
             ImGui::SameLine(0.0f, 4.0f);
         }
 
-        ImGui::PushStyleColor(ImGuiCol_Button, bActive ? ImVec4(64.0f / 255.0f, 64.0f / 255.0f, 64.0f / 255.0f, 1.0f) : ImVec4(36.0f / 255.0f, 36.0f / 255.0f, 36.0f / 255.0f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, bActive ? ImVec4(76.0f / 255.0f, 76.0f / 255.0f, 76.0f / 255.0f, 1.0f) : ImVec4(44.0f / 255.0f, 44.0f / 255.0f, 44.0f / 255.0f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, bActive ? ImVec4(52.0f / 255.0f, 52.0f / 255.0f, 52.0f / 255.0f, 1.0f) : ImVec4(30.0f / 255.0f, 30.0f / 255.0f, 30.0f / 255.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button, bActive ? EditorAccentColor::WithAlpha(0.92f) : ImVec4(36.0f / 255.0f, 36.0f / 255.0f, 36.0f / 255.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, bActive ? EditorAccentColor::Value : ImVec4(44.0f / 255.0f, 44.0f / 255.0f, 44.0f / 255.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, bActive ? EditorAccentColor::Value : ImVec4(30.0f / 255.0f, 30.0f / 255.0f, 30.0f / 255.0f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(58.0f / 255.0f, 58.0f / 255.0f, 58.0f / 255.0f, 1.0f));
         if (ImGui::Button(ButtonId.c_str()))
         {
@@ -787,6 +1294,11 @@ bool FEditorDetailsWidget::SectionMatchesSearch(const char *SectionName, const T
             continue;
         }
 
+        if (!ShouldRenderDetailsProperty(SelectedComponent, Props[PropIndex]))
+        {
+            continue;
+        }
+
         if (ContainsCaseInsensitive(GetDisplayPropertyLabel(Props[PropIndex].Name), Query) || ContainsCaseInsensitive(Props[PropIndex].Name, Query))
         {
             return true;
@@ -804,6 +1316,26 @@ bool FEditorDetailsWidget::ShouldDisplaySection(const char *SectionName, const T
     }
 
     if (ActiveSectionFilter != "All" && ActiveSectionFilter != SectionName)
+    {
+        return false;
+    }
+
+    bool bHasVisibleProperty = false;
+    for (int32 PropIndex : Indices)
+    {
+        if (PropIndex < 0 || PropIndex >= static_cast<int32>(Props.size()))
+        {
+            continue;
+        }
+
+        if (ShouldRenderDetailsProperty(SelectedComponent, Props[PropIndex]))
+        {
+            bHasVisibleProperty = true;
+            break;
+        }
+    }
+
+    if (!bHasVisibleProperty)
     {
         return false;
     }
@@ -894,7 +1426,7 @@ void FEditorDetailsWidget::RenderHeader(AActor *PrimaryActor, const TArray<AActo
     const bool  bLocked = bSelectionLocked && LockedActor == PrimaryActor;
     const char *LockIconKey = bLocked ? "Editor.Icon.Locked" : "Editor.Icon.Unlocked";
     const char *LockTooltip = bLocked ? "Unlock Details Panel" : "Lock Details Panel to Selection";
-    const ImU32 LockTint = bLocked ? IM_COL32(94, 170, 255, 255) : IM_COL32(215, 215, 215, 255);
+    const ImU32 LockTint = bLocked ? EditorAccentColor::ToU32() : IM_COL32(215, 215, 215, 255);
     if (DrawHeaderIconButton("##LockDetailsSelection", LockIconKey, bLocked ? "Unlock" : "Lock", LockTooltip, ImVec2(28.0f, 0.0f), LockTint))
     {
         if (bLocked)
@@ -924,8 +1456,10 @@ void FEditorDetailsWidget::RenderAddComponentButton(AActor *Actor)
         ImGui::OpenPopup("##AddComponentPopup");
     }
 
+    PushPopupMenuStyle();
     if (!ImGui::BeginPopup("##AddComponentPopup"))
     {
+        ImGui::PopStyleColor(4);
         return;
     }
 
@@ -942,7 +1476,8 @@ void FEditorDetailsWidget::RenderAddComponentButton(AActor *Actor)
         ImGui::PopStyleColor();
         for (UClass *Cls : Group.Classes)
         {
-            if (!ImGui::MenuItem(Cls->GetName()))
+            const FString DisplayClassName = GetDisplayClassLabel(Cls);
+            if (!ImGui::MenuItem(DisplayClassName.c_str()))
             {
                 continue;
             }
@@ -994,6 +1529,18 @@ void FEditorDetailsWidget::RenderAddComponentButton(AActor *Actor)
             {
                 World->EndDeferredPickingBVHUpdate();
             }
+
+            SelectedComponent = Comp;
+            bActorSelected = false;
+            ScriptPathEditComponent = nullptr;
+            bScriptPathEditActive = false;
+            ScriptPathEditBuffer[0] = '\0';
+
+            if (USceneComponent* SceneComponent = Cast<USceneComponent>(Comp))
+            {
+                EditorEngine->GetSelectionManager().SelectComponent(SceneComponent);
+            }
+
             EditorEngine->CommitTrackedSceneChange();
             ImGui::CloseCurrentPopup();
             break;
@@ -1001,6 +1548,7 @@ void FEditorDetailsWidget::RenderAddComponentButton(AActor *Actor)
     }
 
     ImGui::EndPopup();
+    ImGui::PopStyleColor(4);
 }
 
 void FEditorPropertyWidget::RenderDetails(AActor *PrimaryActor, const TArray<AActor *> &SelectedActors)
@@ -1062,6 +1610,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor *PrimaryActor, const TA
         AvailableSections.push_back("Transform");
     }
     AvailableSections.push_back("Visibility");
+    SortDetailsSections(AvailableSections);
     RenderDetailsFilterBar(AvailableSections);
 
     const FString SearchQuery = DetailSearchBuffer;
@@ -1088,7 +1637,10 @@ void FEditorPropertyWidget::RenderActorProperties(AActor *PrimaryActor, const TA
                 FVector Scale = PrimaryActor->GetActorScale();
                 float   ScaleArray[3] = {Scale.X, Scale.Y, Scale.Z};
 
-                if (DrawColoredFloat3("Location", PosArray, 0.1f))
+                static const float ZeroVectorReset[3] = { 0.0f, 0.0f, 0.0f };
+                static const float UnitScaleReset[3] = { 1.0f, 1.0f, 1.0f };
+
+                if (DrawColoredFloat3("Location", PosArray, 0.1f, true, ZeroVectorReset))
                 {
                     EditorEngine->BeginTrackedSceneChange();
                     FVector Delta = FVector(PosArray[0], PosArray[1], PosArray[2]) - Pos;
@@ -1105,7 +1657,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor *PrimaryActor, const TA
                     FRotator  PrevRot = CachedRot;
                     float     RotXYZ[3] = {CachedRot.Roll, CachedRot.Pitch, CachedRot.Yaw};
 
-                    if (DrawColoredFloat3("Rotation", RotXYZ, 0.1f))
+                    if (DrawColoredFloat3("Rotation", RotXYZ, 0.1f, true, ZeroVectorReset))
                     {
                         EditorEngine->BeginTrackedSceneChange();
                         CachedRot.Roll = RotXYZ[0];
@@ -1132,7 +1684,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor *PrimaryActor, const TA
                         EditorEngine->CommitTrackedSceneChange();
                     }
                 }
-                if (DrawColoredFloat3("Scale", ScaleArray, 0.1f))
+                if (DrawColoredFloat3("Scale", ScaleArray, 0.1f, true, UnitScaleReset))
                 {
                     EditorEngine->BeginTrackedSceneChange();
                     FVector Delta = FVector(ScaleArray[0], ScaleArray[1], ScaleArray[2]) - Scale;
@@ -1198,7 +1750,7 @@ void FEditorPropertyWidget::RenderComponentTree(AActor *Actor, float Height)
             continue;
 
         FString       Name = Comp->GetFName().ToString();
-        const FString TypeName = Comp->GetClass()->GetName();
+        const FString TypeName = GetDisplayClassLabel(Comp->GetClass());
         const FString DefaultNamePrefix = TypeName + "_";
         const bool    bUseTypeAsLabel = Name.empty() || Name == TypeName || Name.rfind(DefaultNamePrefix, 0) == 0;
         FString       LabelText = bUseTypeAsLabel ? TypeName : Name;
@@ -1208,9 +1760,9 @@ void FEditorPropertyWidget::RenderComponentTree(AActor *Actor, float Height)
         if (bIsSelected)
         {
             Flags |= ImGuiTreeNodeFlags_Selected;
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.06f, 0.33f, 0.75f, 0.95f));
-            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.09f, 0.39f, 0.84f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.05f, 0.28f, 0.67f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_Header, EditorAccentColor::WithAlpha(0.95f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, EditorAccentColor::Value);
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, EditorAccentColor::Value);
         }
 
         ImGui::TreeNodeEx(Comp, Flags, "%s%s", ComponentTreeLabelPadding, LabelText.c_str());
@@ -1239,7 +1791,7 @@ void FEditorPropertyWidget::RenderSceneComponentNode(USceneComponent *Comp)
 
     FString Name = Comp->GetFName().ToString();
     if (Name.empty())
-        Name = Comp->GetClass()->GetName();
+        Name = GetDisplayClassLabel(Comp->GetClass());
 
     const auto &Children = Comp->GetChildren();
     bool        bHasVisibleChildren = false;
@@ -1259,9 +1811,9 @@ void FEditorPropertyWidget::RenderSceneComponentNode(USceneComponent *Comp)
     if (bIsSelected)
     {
         Flags |= ImGuiTreeNodeFlags_Selected;
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.06f, 0.33f, 0.75f, 0.95f));
-        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.09f, 0.39f, 0.84f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.05f, 0.28f, 0.67f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Header, EditorAccentColor::WithAlpha(0.95f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, EditorAccentColor::Value);
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, EditorAccentColor::Value);
     }
 
     bool    bIsRoot = (Comp->GetParent() == nullptr);
@@ -1271,7 +1823,8 @@ void FEditorPropertyWidget::RenderSceneComponentNode(USceneComponent *Comp)
         LabelText = "[Root] ";
     }
     LabelText += Name;
-    bool bOpen = ImGui::TreeNodeEx(Comp, Flags, "%s%s (%s)", ComponentTreeLabelPadding, LabelText.c_str(), Comp->GetClass()->GetName());
+    const FString DisplayClassName = GetDisplayClassLabel(Comp->GetClass());
+    bool bOpen = ImGui::TreeNodeEx(Comp, Flags, "%s%s (%s)", ComponentTreeLabelPadding, LabelText.c_str(), DisplayClassName.c_str());
     if (bIsSelected)
     {
         ImGui::PopStyleColor(3);
@@ -1404,6 +1957,9 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
     TArray<int32>     TransformIndices;
     TArray<int32>     StaticMeshIndices;
     TArray<int32>     MaterialIndices;
+    TArray<int32>     LayoutIndices;
+    TArray<int32>     ContentIndices;
+    TArray<int32>     AppearanceIndices;
     TArray<int32>     VisibilityIndices;
     TArray<int32>     BehaviorIndices;
     TArray<int32>     DefaultIndices;
@@ -1422,6 +1978,18 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
         else if (SectionName == "Materials")
         {
             MaterialIndices.push_back(i);
+        }
+        else if (SectionName == "Layout")
+        {
+            LayoutIndices.push_back(i);
+        }
+        else if (SectionName == "Content")
+        {
+            ContentIndices.push_back(i);
+        }
+        else if (SectionName == "Appearance")
+        {
+            AppearanceIndices.push_back(i);
         }
         else if (SectionName == "Visibility")
         {
@@ -1444,12 +2012,19 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
         AvailableSections.push_back("Static Mesh");
     if (!MaterialIndices.empty() || (SelectedComponent && SelectedComponent->IsA<UStaticMeshComponent>()))
         AvailableSections.push_back("Materials");
+    if (!LayoutIndices.empty())
+        AvailableSections.push_back("Layout");
+    if (!ContentIndices.empty())
+        AvailableSections.push_back("Content");
+    if (!AppearanceIndices.empty())
+        AvailableSections.push_back("Appearance");
     if (!VisibilityIndices.empty())
         AvailableSections.push_back("Visibility");
     if (!BehaviorIndices.empty())
         AvailableSections.push_back("Behavior");
     if (!DefaultIndices.empty())
         AvailableSections.push_back("Default");
+    SortDetailsSections(AvailableSections);
     RenderDetailsFilterBar(AvailableSections);
 
     bool bRenderedAnySection = false;
@@ -1511,6 +2086,21 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
             }
         }
     }
+    if (ShouldDisplaySection("Layout", Props, LayoutIndices))
+    {
+        bRenderedAnySection = true;
+        RenderPropertySection("Layout", Props, LayoutIndices, SelectedActors, bAnyChanged);
+    }
+    if (ShouldDisplaySection("Content", Props, ContentIndices))
+    {
+        bRenderedAnySection = true;
+        RenderPropertySection("Content", Props, ContentIndices, SelectedActors, bAnyChanged);
+    }
+    if (ShouldDisplaySection("Appearance", Props, AppearanceIndices))
+    {
+        bRenderedAnySection = true;
+        RenderPropertySection("Appearance", Props, AppearanceIndices, SelectedActors, bAnyChanged);
+    }
     if (ShouldDisplaySection("Visibility", Props, VisibilityIndices))
     {
         bRenderedAnySection = true;
@@ -1568,6 +2158,11 @@ void FEditorDetailsWidget::RenderPropertySection(const char *SectionName, TArray
 
     for (int32 PropIndex : Indices)
     {
+        if (!ShouldRenderDetailsProperty(SelectedComponent, Props[PropIndex]))
+        {
+            continue;
+        }
+
         if (DetailSearchBuffer[0] != '\0' && !ContainsCaseInsensitive(GetDisplayPropertyLabel(Props[PropIndex].Name), Query) &&
             !ContainsCaseInsensitive(Props[PropIndex].Name, Query))
         {
@@ -1587,6 +2182,8 @@ void FEditorDetailsWidget::RenderPropertySection(const char *SectionName, TArray
         {
             EditorEngine->CancelTrackedSceneChange();
         }
+
+        ImGui::Dummy(ImVec2(0.0f, DetailsPropertyVerticalSpacing));
     }
 
     ImGui::PopStyleColor(7);
@@ -1719,29 +2316,69 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
     case EPropertyType::Int:
     {
         int32 *Val = static_cast<int32 *>(Prop.ValuePtr);
-        PushDetailsFieldStyle();
-        if (Prop.Min != 0.0f || Prop.Max != 0.0f)
-            bChanged = ImGui::DragInt(Label, Val, Prop.Speed, (int32)Prop.Min, (int32)Prop.Max);
-        else
-            bChanged = ImGui::DragInt(Label, Val, Prop.Speed);
-        PopDetailsFieldStyle();
+        bChanged = DrawLabeledField(Label, [&]()
+                                    {
+                                        PushDetailsFieldStyle();
+                                        bool bLocalChanged = false;
+                                        if (Prop.Min != 0.0f || Prop.Max != 0.0f)
+                                            bLocalChanged = ImGui::DragInt("##Value", Val, Prop.Speed, (int32)Prop.Min, (int32)Prop.Max);
+                                        else
+                                            bLocalChanged = ImGui::DragInt("##Value", Val, Prop.Speed);
+                                        PopDetailsFieldStyle();
+                                        return bLocalChanged;
+                                    });
         break;
     }
     case EPropertyType::Float:
     {
         float *Val = static_cast<float *>(Prop.ValuePtr);
-        PushDetailsFieldStyle();
-        if (Prop.Min != 0.0f || Prop.Max != 0.0f)
-            bChanged = ImGui::DragFloat(Label, Val, Prop.Speed, Prop.Min, Prop.Max, "%.4f");
-        else
-            bChanged = ImGui::DragFloat(Label, Val, Prop.Speed);
-        PopDetailsFieldStyle();
+        bChanged = DrawLabeledField(Label, [&]()
+                                    {
+                                        PushDetailsFieldStyle();
+                                        bool bLocalChanged = false;
+                                        if (Prop.Min != 0.0f || Prop.Max != 0.0f)
+                                            bLocalChanged = ImGui::DragFloat("##Value", Val, Prop.Speed, Prop.Min, Prop.Max, "%.4f");
+                                        else
+                                            bLocalChanged = ImGui::DragFloat("##Value", Val, Prop.Speed);
+                                        PopDetailsFieldStyle();
+                                        return bLocalChanged;
+                                    });
         break;
     }
     case EPropertyType::Vec3:
     {
         float *Val = static_cast<float *>(Prop.ValuePtr);
-        bChanged = DrawColoredFloat3(Label, Val, Prop.Speed);
+        const bool bIsCanvasSizeProperty = SelectedComponent
+            && SelectedComponent->IsA<UCanvasRootComponent>()
+            && (Prop.Name == "CanvasSize" || Prop.Name == "Canvas Size");
+        static const float ZeroVectorReset[3] = { 0.0f, 0.0f, 0.0f };
+        static const float UnitScaleReset[3] = { 1.0f, 1.0f, 1.0f };
+        static const float DefaultCanvasSizeReset[3] = { 1920.0f, 1080.0f, 0.0f };
+        const float *ResetValues = ZeroVectorReset;
+        if (Prop.Name == "Scale")
+        {
+            ResetValues = UnitScaleReset;
+        }
+        else if (bIsCanvasSizeProperty)
+        {
+            ResetValues = DefaultCanvasSizeReset;
+        }
+        bChanged = DrawColoredFloat3(Label, Val, Prop.Speed, true, ResetValues);
+        if (bIsCanvasSizeProperty)
+        {
+            ImGui::SameLine();
+            PushDetailsVectorResetButtonStyle();
+            if (ImGui::Button("FULL SCREEN") && GEngine)
+            {
+                if (FWindowsWindow *Window = GEngine->GetWindow())
+                {
+                    Val[0] = (std::max)(1.0f, Window->GetWidth());
+                    Val[1] = (std::max)(1.0f, Window->GetHeight());
+                    bChanged = true;
+                }
+            }
+            PopDetailsVectorResetButtonStyle();
+        }
         break;
     }
     case EPropertyType::Rotator:
@@ -1749,7 +2386,8 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         // FRotator 메모리 레이아웃 [Pitch,Yaw,Roll] → UI X=Roll(X축), Y=Pitch(Y축), Z=Yaw(Z축)
         FRotator *Rot = static_cast<FRotator *>(Prop.ValuePtr);
         float     RotXYZ[3] = {Rot->Roll, Rot->Pitch, Rot->Yaw};
-        bChanged = DrawColoredFloat3(Label, RotXYZ, Prop.Speed);
+        static const float ZeroVectorReset[3] = { 0.0f, 0.0f, 0.0f };
+        bChanged = DrawColoredFloat3(Label, RotXYZ, Prop.Speed, true, ZeroVectorReset);
         if (bChanged)
         {
             Rot->Roll = RotXYZ[0];
@@ -1766,14 +2404,23 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
     {
         float *Val = static_cast<float *>(Prop.ValuePtr);
         PushDetailsFieldStyle();
-        bChanged = DrawColoredFloat4(Label, Val, Prop.Speed);
+        if (Prop.Name == "Slice" || Prop.Name == "Nine Slice Border")
+        {
+            const char *AxisLabels[4] = {"Left", "Top", "Right", "Bottom"};
+            bChanged = DrawNamedFloat4(Label, Val, Prop.Speed, AxisLabels, true);
+        }
+        else
+        {
+            bChanged = DrawColoredFloat4(Label, Val, Prop.Speed, true);
+        }
         PopDetailsFieldStyle();
         break;
     }
     case EPropertyType::Color4:
     {
         float *Val = static_cast<float *>(Prop.ValuePtr);
-        bChanged = ImGui::ColorEdit4(Label, Val);
+        bChanged = DrawLabeledField(Label, [&]()
+                                    { return ImGui::ColorEdit4("##Value", Val, ImGuiColorEditFlags_DisplayRGB); });
         break;
     }
     case EPropertyType::String:
@@ -1819,11 +2466,15 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         {
             char Buf[256];
             strncpy_s(Buf, sizeof(Buf), Val->c_str(), _TRUNCATE);
-            if (ImGui::InputText(Label, Buf, sizeof(Buf)))
-            {
-                *Val = Buf;
-                bChanged = true;
-            }
+            bChanged = DrawLabeledField(Label, [&]()
+                                        {
+                                            if (ImGui::InputText("##Value", Buf, sizeof(Buf)))
+                                            {
+                                                *Val = Buf;
+                                                return true;
+                                            }
+                                            return false;
+                                        });
         }
         PopDetailsFieldStyle();
         break;
@@ -1834,54 +2485,59 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         UMovementComponent *MovementComp = SelectedComponent ? Cast<UMovementComponent>(SelectedComponent) : nullptr;
         FString             Preview = MovementComp ? MovementComp->GetUpdatedComponentDisplayName() : FString("None");
 
-        if (ImGui::BeginCombo(Label, Preview.c_str()))
+        bChanged = DrawLabeledField(Label, [&]()
         {
-            bool bSelectedAuto = Val->empty();
-            if (ImGui::Selectable("Auto (Root)", bSelectedAuto))
+            bool bLocalChanged = false;
+            if (ImGui::BeginCombo("##Value", Preview.c_str()))
             {
-                Val->clear();
-                bChanged = true;
-            }
-            if (bSelectedAuto)
-            {
-                ImGui::SetItemDefaultFocus();
-            }
-
-            if (MovementComp)
-            {
-                for (USceneComponent *Candidate : MovementComp->GetOwnerSceneComponents())
+                bool bSelectedAuto = Val->empty();
+                if (ImGui::Selectable("Auto (Root)", bSelectedAuto))
                 {
-                    if (!Candidate)
-                    {
-                        continue;
-                    }
+                    Val->clear();
+                    bLocalChanged = true;
+                }
+                if (bSelectedAuto)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
 
-                    FString CandidatePath = MovementComp->BuildUpdatedComponentPath(Candidate);
-                    FString CandidateName = Candidate->GetFName().ToString();
-                    if (CandidateName.empty())
+                if (MovementComp)
+                {
+                    for (USceneComponent *Candidate : MovementComp->GetOwnerSceneComponents())
                     {
-                        CandidateName = Candidate->GetClass()->GetName();
-                    }
-                    if (!CandidatePath.empty())
-                    {
-                        CandidateName += " (" + CandidatePath + ")";
-                    }
+                        if (!Candidate)
+                        {
+                            continue;
+                        }
 
-                    bool bSelected = (*Val == CandidatePath);
-                    if (ImGui::Selectable(CandidateName.c_str(), bSelected))
-                    {
-                        *Val = CandidatePath;
-                        bChanged = true;
-                    }
-                    if (bSelected)
-                    {
-                        ImGui::SetItemDefaultFocus();
+                        FString CandidatePath = MovementComp->BuildUpdatedComponentPath(Candidate);
+                        FString CandidateName = Candidate->GetFName().ToString();
+                        if (CandidateName.empty())
+                        {
+                            CandidateName = Candidate->GetClass()->GetName();
+                        }
+                        if (!CandidatePath.empty())
+                        {
+                            CandidateName += " (" + CandidatePath + ")";
+                        }
+
+                        bool bSelected = (*Val == CandidatePath);
+                        if (ImGui::Selectable(CandidateName.c_str(), bSelected))
+                        {
+                            *Val = CandidatePath;
+                            bLocalChanged = true;
+                        }
+                        if (bSelected)
+                        {
+                            ImGui::SetItemDefaultFocus();
+                        }
                     }
                 }
-            }
 
-            ImGui::EndCombo();
-        }
+                ImGui::EndCombo();
+            }
+            return bLocalChanged;
+        });
         break;
     }
     case EPropertyType::StaticMeshRef:
@@ -2050,42 +2706,47 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         FTextureSlot *Slot = static_cast<FTextureSlot *>(Prop.ValuePtr);
         FString       Preview = MakeAssetPreviewLabel(Slot->Path);
 
-        if (ImGui::BeginCombo(Label, Preview.c_str()))
+        bChanged = DrawLabeledField(Label, [&]()
         {
-            bool bSelectedNone = (Slot->Path == "None" || Slot->Path.empty());
-            if (ImGui::Selectable("None", bSelectedNone))
+            bool bLocalChanged = false;
+            if (ImGui::BeginCombo("##Value", Preview.c_str()))
             {
-                Slot->Path = "None";
-                bChanged = true;
-            }
-            if (bSelectedNone)
-            {
-                ImGui::SetItemDefaultFocus();
-            }
-
-            const TArray<FTextureAssetListItem> &TextureFiles = UTexture2D::GetAvailableTextureFiles();
-            for (const FTextureAssetListItem &Item : TextureFiles)
-            {
-                bool        bSelected = (Slot->Path == Item.FullPath);
-                UTexture2D *PreviewTexture = UTexture2D::LoadFromCached(Item.FullPath);
-                if (PreviewTexture && PreviewTexture->GetSRV())
+                bool bSelectedNone = (Slot->Path == "None" || Slot->Path.empty());
+                if (ImGui::Selectable("None", bSelectedNone))
                 {
-                    ImGui::Image(PreviewTexture->GetSRV(), ImVec2(24.0f, 24.0f));
-                    ImGui::SameLine();
+                    Slot->Path = "None";
+                    bLocalChanged = true;
                 }
-
-                if (ImGui::Selectable(Item.DisplayName.c_str(), bSelected))
-                {
-                    Slot->Path = Item.FullPath;
-                    bChanged = true;
-                }
-                if (bSelected)
+                if (bSelectedNone)
                 {
                     ImGui::SetItemDefaultFocus();
                 }
+
+                const TArray<FTextureAssetListItem> &TextureFiles = UTexture2D::GetAvailableTextureFiles();
+                for (const FTextureAssetListItem &Item : TextureFiles)
+                {
+                    bool        bSelected = (Slot->Path == Item.FullPath);
+                    UTexture2D *PreviewTexture = UTexture2D::LoadFromCached(Item.FullPath);
+                    if (PreviewTexture && PreviewTexture->GetSRV())
+                    {
+                        ImGui::Image(PreviewTexture->GetSRV(), ImVec2(24.0f, 24.0f));
+                        ImGui::SameLine();
+                    }
+
+                    if (ImGui::Selectable(Item.DisplayName.c_str(), bSelected))
+                    {
+                        Slot->Path = Item.FullPath;
+                        bLocalChanged = true;
+                    }
+                    if (bSelected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
             }
-            ImGui::EndCombo();
-        }
+            return bLocalChanged;
+        });
 
         if (ImGui::BeginDragDropTarget())
         {
@@ -2110,36 +2771,52 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
             Names = FResourceManager::Get().GetFontNames();
         else if (strcmp(Prop.Name.c_str(), "Particle") == 0)
             Names = FResourceManager::Get().GetParticleNames();
+        else if (strcmp(Prop.Name.c_str(), "FilePath") == 0)
+        {
+            if (USoundComponent *SoundComponent = Cast<USoundComponent>(SelectedComponent))
+                Names = FResourceManager::Get().GetSoundNames(SoundComponent->GetCategory());
+            else
+                Names = FResourceManager::Get().GetSoundNames();
+        }
         else if (strcmp(Prop.Name.c_str(), "Texture") == 0)
-            Names = FResourceManager::Get().GetTextureNames();
+            Names = FResourceManager::Get().GetTextureNames(false);
 
         if (!Names.empty())
         {
-            if (ImGui::BeginCombo(Label, Current.c_str()))
+            bChanged = DrawLabeledField(Label, [&]()
             {
-                for (const auto &Name : Names)
+                bool bLocalChanged = false;
+                if (ImGui::BeginCombo("##Value", Current.c_str()))
                 {
-                    bool bSelected = (Current == Name);
-                    if (ImGui::Selectable(Name.c_str(), bSelected))
+                    for (const auto &Name : Names)
                     {
-                        *Val = FName(Name);
-                        bChanged = true;
+                        bool bSelected = (Current == Name);
+                        if (ImGui::Selectable(Name.c_str(), bSelected))
+                        {
+                            *Val = FName(Name);
+                            bLocalChanged = true;
+                        }
+                        if (bSelected)
+                            ImGui::SetItemDefaultFocus();
                     }
-                    if (bSelected)
-                        ImGui::SetItemDefaultFocus();
+                    ImGui::EndCombo();
                 }
-                ImGui::EndCombo();
-            }
+                return bLocalChanged;
+            });
         }
         else
         {
             char Buf[256];
             strncpy_s(Buf, sizeof(Buf), Current.c_str(), _TRUNCATE);
-            if (ImGui::InputText(Label, Buf, sizeof(Buf)))
-            {
-                *Val = FName(Buf);
-                bChanged = true;
-            }
+            bChanged = DrawLabeledField(Label, [&]()
+                                        {
+                                            if (ImGui::InputText("##Value", Buf, sizeof(Buf)))
+                                            {
+                                                *Val = FName(Buf);
+                                                return true;
+                                            }
+                                            return false;
+                                        });
         }
         break;
     }
@@ -2149,21 +2826,26 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
             break;
         int32      *Val = static_cast<int32 *>(Prop.ValuePtr);
         const char *Preview = ((uint32)*Val < Prop.EnumCount) ? Prop.EnumNames[*Val] : "Unknown";
-        if (ImGui::BeginCombo(Label, Preview))
+        bChanged = DrawLabeledField(Label, [&]()
         {
-            for (uint32 i = 0; i < Prop.EnumCount; ++i)
+            bool bLocalChanged = false;
+            if (ImGui::BeginCombo("##Value", Preview))
             {
-                bool bSelected = (*Val == (int32)i);
-                if (ImGui::Selectable(Prop.EnumNames[i], bSelected))
+                for (uint32 i = 0; i < Prop.EnumCount; ++i)
                 {
-                    *Val = (int32)i;
-                    bChanged = true;
+                    bool bSelected = (*Val == (int32)i);
+                    if (ImGui::Selectable(Prop.EnumNames[i], bSelected))
+                    {
+                        *Val = (int32)i;
+                        bLocalChanged = true;
+                    }
+                    if (bSelected)
+                        ImGui::SetItemDefaultFocus();
                 }
-                if (bSelected)
-                    ImGui::SetItemDefaultFocus();
+                ImGui::EndCombo();
             }
-            ImGui::EndCombo();
-        }
+            return bLocalChanged;
+        });
         break;
     }
     case EPropertyType::Vec3Array:

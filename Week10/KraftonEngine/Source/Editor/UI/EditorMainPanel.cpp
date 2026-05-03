@@ -21,6 +21,7 @@
 
 #include "Editor/UI/ImGuiSetting.h"
 #include "Editor/UI/NotificationToast.h"
+#include "Editor/UI/EditorAccentColor.h"
 #include "Editor/UI/EditorPanelTitleUtils.h"
 #include "Core/ProjectSettings.h"
 #include "Platform/Paths.h"
@@ -44,9 +45,6 @@ namespace
 	constexpr ImVec4 UnrealDockEmpty = ImVec4(5.0f / 255.0f, 5.0f / 255.0f, 5.0f / 255.0f, 1.0f);
 	constexpr ImVec4 UnrealPopupSurface = ImVec4(42.0f / 255.0f, 42.0f / 255.0f, 42.0f / 255.0f, 0.98f);
 	constexpr ImVec4 UnrealBorder = ImVec4(58.0f / 255.0f, 58.0f / 255.0f, 58.0f / 255.0f, 1.0f);
-	constexpr ImVec4 UnrealAccentBlueHover = ImVec4(0.10f, 0.54f, 0.96f, 1.0f);
-	constexpr ImVec4 UnrealAccentBlueActive = ImVec4(0.00f, 0.40f, 0.84f, 1.0f);
-
 	constexpr ImVec4 PopupSectionHeaderTextColor = ImVec4(0.82f, 0.82f, 0.84f, 1.0f);
 	constexpr EOverlayStatType SupportedOverlayStats[] = {
 		EOverlayStatType::FPS,
@@ -80,6 +78,34 @@ namespace
 		ImGui::PushStyleColor(ImGuiCol_Text, PopupSectionHeaderTextColor);
 		ImGui::SeparatorText(Label);
 		ImGui::PopStyleColor();
+	}
+
+	void SetNextPopupWindowPosition(ImGuiCond Condition = ImGuiCond_Appearing)
+	{
+		if (const ImGuiViewport* MainViewport = ImGui::GetMainViewport())
+		{
+			const ImVec2 PopupAnchor(
+				MainViewport->Pos.x + MainViewport->Size.x * 0.5f,
+				MainViewport->Pos.y + MainViewport->Size.y * 0.42f);
+			ImGui::SetNextWindowPos(PopupAnchor, Condition, ImVec2(0.5f, 0.5f));
+			ImGui::SetNextWindowViewport(MainViewport->ID);
+		}
+	}
+
+	bool BeginUtilityPopupWindow(const char* Title, bool* bOpen, const ImVec2& InitialSize, ImGuiCond SizeCondition, ImGuiWindowFlags Flags = 0)
+	{
+		SetNextPopupWindowPosition(ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(InitialSize, SizeCondition);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+		ImGui::PushStyleColor(ImGuiCol_TitleBg, UnrealPanelSurfaceHover);
+		ImGui::PushStyleColor(ImGuiCol_TitleBgActive, UnrealPanelSurfaceHover);
+		ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, UnrealPanelSurfaceHover);
+		ImGui::PushStyleColor(ImGuiCol_Border, UnrealBorder);
+		const bool bVisible = ImGui::Begin(Title, bOpen, Flags);
+		ImGui::PopStyleColor(4);
+		ImGui::PopStyleVar(2);
+		return bVisible;
 	}
 
 	bool ConfirmNewScene(HWND OwnerWindowHandle)
@@ -123,7 +149,7 @@ namespace
 		Style.Colors[ImGuiCol_FrameBg] = UnrealDockEmpty;
 		Style.Colors[ImGuiCol_FrameBgHovered] = UnrealPanelSurfaceHover;
 		Style.Colors[ImGuiCol_FrameBgActive] = UnrealPanelSurfaceActive;
-		Style.Colors[ImGuiCol_CheckMark] = ImVec4(0.20f, 0.56f, 0.96f, 1.0f);
+		Style.Colors[ImGuiCol_CheckMark] = EditorAccentColor::Value;
 		Style.Colors[ImGuiCol_Button] = UnrealPanelSurface;
 		Style.Colors[ImGuiCol_ButtonHovered] = UnrealPanelSurfaceHover;
 		Style.Colors[ImGuiCol_ButtonActive] = UnrealPanelSurfaceActive;
@@ -467,8 +493,8 @@ void FEditorMainPanel::RenderMainMenuBar()
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10.0f, 8.0f));
 		ImGui::PushStyleColor(ImGuiCol_PopupBg, UnrealPanelSurface);
 		ImGui::PushStyleColor(ImGuiCol_Header, UnrealPanelSurface);
-		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, UnrealAccentBlueHover);
-		ImGui::PushStyleColor(ImGuiCol_HeaderActive, UnrealAccentBlueActive);
+		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, EditorAccentColor::Value);
+		ImGui::PushStyleColor(ImGuiCol_HeaderActive, EditorAccentColor::Value);
 
 		if (ImGui::BeginMenu("File"))
 		{
@@ -608,8 +634,6 @@ void FEditorMainPanel::RenderMainMenuBar()
 			}
 			ImGui::EndMenu();
 		}
-		ImGui::PopStyleColor(4);
-		ImGui::PopStyleVar(4);
 
 		if (ImGui::BeginMenu("Levels"))
 		{
@@ -689,6 +713,8 @@ void FEditorMainPanel::RenderMainMenuBar()
 			}
 			ImGui::EndMenu();
 		}
+		ImGui::PopStyleColor(4);
+		ImGui::PopStyleVar(4);
 
 		MenuEndX = ImGui::GetCursorPosX();
 
@@ -783,14 +809,70 @@ void FEditorMainPanel::RenderProjectSettingsWindow()
 		return;
 	}
 
-	ImGui::SetNextWindowSize(ImVec2(560.0f, 460.0f), ImGuiCond_Appearing);
-	if (!ImGui::Begin("Project Settings", &bShowProjectSettings))
+	if (!BeginUtilityPopupWindow(
+		"Project Settings",
+		&bShowProjectSettings,
+		ImVec2(560.0f, 460.0f),
+		ImGuiCond_Appearing))
 	{
 		ImGui::End();
 		return;
 	}
 
 	FProjectSettings& ProjectSettings = FProjectSettings::Get();
+
+	auto DrawClassDropdown = [](const char* Label, UClass* BaseClass, FString& InOutValue)
+	{
+		const TArray<UClass*> Candidates = UClass::GetSubclassesOf(BaseClass);
+		const char* Preview = InOutValue.empty() ? "(none)" : InOutValue.c_str();
+		if (ImGui::BeginCombo(Label, Preview))
+		{
+			for (UClass* C : Candidates)
+			{
+				const bool bSelected = (InOutValue == C->GetName());
+				if (ImGui::Selectable(C->GetName(), bSelected))
+				{
+					InOutValue = C->GetName();
+				}
+				if (bSelected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	};
+
+	DrawPopupSectionHeader("WINDOW");
+	ImGui::InputScalar("Window Width", ImGuiDataType_U32, &ProjectSettings.Game.WindowWidth);
+	ImGui::InputScalar("Window Height", ImGuiDataType_U32, &ProjectSettings.Game.WindowHeight);
+	ImGui::Checkbox("Lock Resolution", &ProjectSettings.Game.bLockWindowResolution);
+	if (ProjectSettings.Game.WindowWidth < 320) ProjectSettings.Game.WindowWidth = 320;
+	if (ProjectSettings.Game.WindowHeight < 240) ProjectSettings.Game.WindowHeight = 240;
+
+	ImGui::PushStyleColor(ImGuiCol_Button, EditorAccentColor::WithAlpha(0.92f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorAccentColor::Value);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorAccentColor::Value);
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.97f, 0.98f, 1.0f, 1.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(14.0f, 8.0f));
+	if (ImGui::Button("Apply Resolution"))
+	{
+		ProjectSettings.SaveToFile(FProjectSettings::GetDefaultPath());
+		if (Window)
+		{
+			Window->SetResizeLocked(ProjectSettings.Game.bLockWindowResolution);
+			Window->ResizeClientArea(ProjectSettings.Game.WindowWidth, ProjectSettings.Game.WindowHeight);
+		}
+	}
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(4);
+	ImGui::SameLine();
+	ImGui::TextDisabled(ProjectSettings.Game.bLockWindowResolution
+		? "Resize is locked. Editor and packaged game will keep this size."
+		: "Editor and packaged game will use this size on next launch.");
+
+	DrawPopupSectionHeader("GAME");
+	DrawClassDropdown("GameInstance Class", UGameInstance::StaticClass(), ProjectSettings.Game.GameInstanceClass);
+	DrawClassDropdown("Default GameMode Class", AGameModeBase::StaticClass(), ProjectSettings.Game.DefaultGameModeClass);
+	ImGui::TextDisabled("(GameInstance class change requires restart)");
 
 	DrawPopupSectionHeader("PERFORMANCE");
 	bool bPerformanceChanged = false;
@@ -840,24 +922,6 @@ void FEditorMainPanel::RenderProjectSettingsWindow()
 	ImGui::SliderFloat("Exponent", &ProjectSettings.SceneDepth.Exponent, 1.0f, 512.0f, "%.0f");
 
 	DrawPopupSectionHeader("GAME");
-	auto DrawClassDropdown = [](const char* Label, UClass* BaseClass, FString& InOutValue)
-	{
-		const TArray<UClass*> Candidates = UClass::GetSubclassesOf(BaseClass);
-		const char* Preview = InOutValue.empty() ? "(none)" : InOutValue.c_str();
-		if (ImGui::BeginCombo(Label, Preview))
-		{
-			for (UClass* C : Candidates)
-			{
-				const bool bSelected = (InOutValue == C->GetName());
-				if (ImGui::Selectable(C->GetName(), bSelected))
-				{
-					InOutValue = C->GetName();
-				}
-				if (bSelected) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-	};
 	DrawClassDropdown("GameInstance Class", UGameInstance::StaticClass(), ProjectSettings.Game.GameInstanceClass);
 	DrawClassDropdown("Default GameMode Class", AGameModeBase::StaticClass(), ProjectSettings.Game.DefaultGameModeClass);
 
@@ -901,8 +965,12 @@ void FEditorMainPanel::RenderShortcutOverlay()
 		return;
 	}
 
-	ImGui::SetNextWindowSize(ImVec2(320.0f, 150.0f), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin("Shortcut Help", &bShowShortcutOverlay, ImGuiWindowFlags_AlwaysAutoResize))
+	if (!BeginUtilityPopupWindow(
+		"Shortcut Help",
+		&bShowShortcutOverlay,
+		ImVec2(320.0f, 150.0f),
+		ImGuiCond_Appearing,
+		ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::End();
 		return;
@@ -933,14 +1001,18 @@ void FEditorMainPanel::RenderCreditsOverlay()
 		return;
 	}
 
-	ImGui::SetNextWindowSize(ImVec2(420.0f, 560.0f), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin("Credits", &bShowCreditsOverlay, ImGuiWindowFlags_AlwaysAutoResize))
+	if (!BeginUtilityPopupWindow(
+		"Credits",
+		&bShowCreditsOverlay,
+		ImVec2(420.0f, 560.0f),
+		ImGuiCond_Appearing,
+		ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::End();
 		return;
 	}
 
-	ID3D11ShaderResourceView* CreditsTexture = FResourceManager::Get().FindLoadedTexture("Asset/lunatic_icon.png").Get();
+	ID3D11ShaderResourceView* CreditsTexture = FResourceManager::Get().FindLoadedTexture("Asset/Editor/App/lunatic_icon.png").Get();
 	if (!CreditsTexture)
 	{
 		CreditsTexture = FResourceManager::Get().FindLoadedTexture(

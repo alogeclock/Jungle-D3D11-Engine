@@ -11,6 +11,7 @@
 #include "Engine/Render/Types/ForwardLightData.h"
 #include "Component/Light/LightComponentBase.h"
 #include "Core/ProjectSettings.h"
+#include "Viewport/GameViewportClient.h"
 
 FEditorRenderPipeline::FEditorRenderPipeline(UEditorEngine* InEditor, FRenderer& InRenderer)
 	: Editor(InEditor)
@@ -93,6 +94,27 @@ void FEditorRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 void FEditorRenderPipeline::RenderViewport(FLevelEditorViewportClient* VC, FRenderer& Renderer)
 {
 	UCameraComponent* Camera = VC->GetCamera();
+
+	// PIE 고려한 구조.
+	if (Editor && Editor->IsPIEPossessedMode())
+	{
+		if (UGameViewportClient* GameViewportClient = Editor->GetGameViewportClient())
+		{
+			if (UCameraComponent* GameCamera = GameViewportClient->GetDrivingCamera())
+			{
+				Camera = GameCamera;
+			}
+		}
+
+		if (!Camera)
+		{
+			if (UWorld* World = Editor->GetWorld())
+			{
+				Camera = World->GetActiveCamera();
+			}
+		}
+	}
+
 	if (!Camera) return;
 
 	FViewport* VP = VC->GetViewport();
@@ -224,26 +246,34 @@ void FEditorRenderPipeline::CollectCommands(FLevelEditorViewportClient* VC, UWor
 	// ── 2. Debug: Scene에 디버그 데이터 주입 ──
 	{
 		SCOPE_STAT_CAT("CollectDebug", "3_Collect");
-		Collector.CollectGrid(Frame.RenderOptions.GridSpacing, Frame.RenderOptions.GridHalfLineCount, Scene);
-		Scene.SetLightVisualizationSettings(
-			Flags.bLightVisualization,
-			Frame.RenderOptions.DirectionalLightVisualizationScale,
-			Frame.RenderOptions.PointLightVisualizationScale,
-			Frame.RenderOptions.SpotLightVisualizationScale);
+		const bool bAllowDebugVisuals = World && World->GetWorldType() != EWorldType::PIE;
+		if (bAllowDebugVisuals)
+		{
+			Collector.CollectGrid(Frame.RenderOptions.GridSpacing, Frame.RenderOptions.GridHalfLineCount, Scene);
+			Scene.SetLightVisualizationSettings(
+				Flags.bLightVisualization,
+				Frame.RenderOptions.DirectionalLightVisualizationScale,
+				Frame.RenderOptions.PointLightVisualizationScale,
+				Frame.RenderOptions.SpotLightVisualizationScale);
 
-		if (Flags.bShowShadowFrustum)
-			Scene.SubmitShadowFrustumDebug(World, Frame);
+			if (Flags.bShowShadowFrustum)
+				Scene.SubmitShadowFrustumDebug(World, Frame);
 
-		if (Flags.bSceneBVH)
-			Collector.CollectSceneBVHDebug(World, Scene);
+			if (Flags.bSceneBVH)
+				Collector.CollectSceneBVHDebug(World, Scene);
 
-		if (Flags.bOctree)
-			Collector.CollectOctreeDebug(World->GetOctree(), Scene);
+			if (Flags.bOctree)
+				Collector.CollectOctreeDebug(World->GetOctree(), Scene);
 
-		if (Flags.bWorldBound)
-			Collector.CollectWorldBoundsDebug(World, Scene);
+			if (Flags.bWorldBound)
+				Collector.CollectWorldBoundsDebug(World, Scene);
 
-		Collector.CollectDebugDraw(Frame, Scene);
+			Collector.CollectDebugDraw(Frame, Scene);
+		}
+		else
+		{
+			Scene.SetLightVisualizationSettings(false, 0.0f, 0.0f, 0.0f);
+		}
 	}
 
 	// ── 3. 커맨드 일괄 생성 (프록시 + 동적) ──

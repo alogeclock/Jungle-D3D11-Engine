@@ -1,6 +1,6 @@
 ---@meta KraftonEngine
 
--- 이 파일은 VSCode/LuaLS 자동완성 전용 타입 stub입니다.
+-- VSCode/LuaLS 자동완성 전용 stub입니다.
 -- 런타임에서 require하지 않습니다. 실제 구현은 C++ LuaScriptRuntime/LuaScriptInstance 바인딩에 있습니다.
 
 ---@class Vector
@@ -19,66 +19,414 @@ local Vector = {}
 ---@return Vector
 function Vector.new(x, y, z) end
 
----@class Actor
----@field Name string
----@field UUID integer
----@field Location Vector
----@field Rotation Vector
----@field Scale Vector
----@field Velocity Vector
-local Actor = {}
-
----@return boolean
-function Actor:IsValid() end
-
----@param delta Vector
-function Actor:AddWorldOffset(delta) end
-
----@param x number
----@param y number
----@param z number
-function Actor:AddWorldOffset(x, y, z) end
-
----@param target Vector
-function Actor:MoveTo(target) end
-
----@param x number
----@param y number
----@param z? number
-function Actor:MoveTo(x, y, z) end
-
----@param delta Vector
-function Actor:MoveBy(delta) end
-
----@param x number
----@param y number
----@param z? number
-function Actor:MoveBy(x, y, z) end
-
----@param target Actor
-function Actor:MoveToActor(target) end
-
-function Actor:StopMove() end
-
----@return boolean
-function Actor:IsMoveDone() end
-
----@param speed number
-function Actor:SetMoveSpeed(speed) end
-
----@return number
-function Actor:GetMoveSpeed() end
-
-function Actor:PrintLocation() end
-
----@type Actor
-obj = nil
-
 ---@param x number
 ---@param y number
 ---@param z number
 ---@return Vector
 function vec3(x, y, z) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return Vector
+function Vector3(x, y, z) end
+
+---@class GroundHit
+---@field hit boolean
+---@field location Vector
+---@field normal Vector
+---@field ground_z number
+---@field distance number
+---@field actor ActorProxy
+---@field component ComponentProxy
+local GroundHit = {}
+
+---@class ActorProxy
+---@field Name string
+---@field UUID integer
+---@field Tag string 임시 프로토타입용 태그입니다. 장기적으로 정식 식별 방식으로 교체해야 합니다.
+---@field Velocity Vector
+local ActorProxy = {}
+
+---@return boolean
+function ActorProxy:IsValid() end
+
+---@return Vector
+function ActorProxy:GetWorldLocation() end
+
+---@param location Vector
+function ActorProxy:SetWorldLocation(location) end
+
+---@param x number
+---@param y number
+---@param z number
+function ActorProxy:SetWorldLocationXYZ(x, y, z) end
+
+---@return Vector
+function ActorProxy:GetWorldRotation() end
+
+---@param rotation Vector
+function ActorProxy:SetWorldRotation(rotation) end
+
+---@param x number
+---@param y number
+---@param z number
+function ActorProxy:SetWorldRotationXYZ(x, y, z) end
+
+---@return Vector
+function ActorProxy:GetWorldScale() end
+
+---@param scale Vector
+function ActorProxy:SetWorldScale(scale) end
+
+---@param x number
+---@param y number
+---@param z number
+function ActorProxy:SetWorldScaleXYZ(x, y, z) end
+
+---@param maxDistance number
+---@param skinWidth number
+---@return GroundHit
+function ActorProxy:FindGround(maxDistance, skinWidth) end
+
+---@param tag string
+---@return boolean
+function ActorProxy:HasTag(tag) end
+
+---@param componentName string
+---@return ComponentProxy
+function ActorProxy:GetComponent(componentName) end
+
+---@param typeName string
+---@return ComponentProxy
+function ActorProxy:GetComponentByType(typeName) end
+
+---@return ComponentProxy
+function ActorProxy:GetStaticMeshComponent() end
+
+---@return ComponentProxy
+function ActorProxy:GetScriptComponent() end
+
+---@param delta Vector
+function ActorProxy:AddWorldOffset(delta) end
+
+---@param x number
+---@param y number
+---@param z number
+function ActorProxy:AddWorldOffset(x, y, z) end
+
+---@param location Vector
+function ActorProxy:MoveTo(location) end
+
+---@param x number
+---@param y number
+---@param z number
+function ActorProxy:Translate(x, y, z) end
+
+---@param location Vector
+function ActorProxy:MoveTo(location) end
+
+---@param x number
+---@param y number
+---@param z? number
+function ActorProxy:MoveTo(x, y, z) end
+
+---@param delta Vector
+function ActorProxy:MoveBy(delta) end
+
+---@param x number
+---@param y number
+---@param z? number
+function ActorProxy:MoveBy(x, y, z) end
+
+---@param target ActorProxy
+function ActorProxy:MoveToActor(target) end
+
+function ActorProxy:StopMove() end
+
+---@return boolean
+function ActorProxy:IsMoveDone() end
+
+---@param speed number
+function ActorProxy:SetMoveSpeed(speed) end
+
+---@return number
+function ActorProxy:GetMoveSpeed() end
+
+function ActorProxy:PrintLocation() end
+
+function ActorProxy:Destroy() end
+
+---@class ComponentProxy
+---@field Name string
+---@field Owner ActorProxy
+---@field TypeName string
+local ComponentProxy = {}
+
+---@return boolean
+function ComponentProxy:IsValid() end
+
+---@return string
+function ComponentProxy:GetTypeName() end
+
+---@param active boolean
+---@return boolean
+function ComponentProxy:SetActive(active) end
+
+---@return boolean
+function ComponentProxy:IsActive() end
+
+---@return Vector|nil
+function ComponentProxy:GetWorldLocation() end
+
+---@param location Vector
+---@return boolean
+function ComponentProxy:SetWorldLocation(location) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:SetWorldLocationXYZ(x, y, z) end
+
+---@return Vector|nil
+function ComponentProxy:GetLocalLocation() end
+
+---@param location Vector
+---@return boolean
+function ComponentProxy:SetLocalLocation(location) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:SetLocalLocationXYZ(x, y, z) end
+
+---@param delta Vector
+---@return boolean
+function ComponentProxy:AddWorldOffset(delta) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:AddWorldOffsetXYZ(x, y, z) end
+
+---@param delta Vector
+---@return boolean
+function ComponentProxy:AddLocalOffset(delta) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:AddLocalOffsetXYZ(x, y, z) end
+
+---@return Vector|nil
+function ComponentProxy:GetWorldRotation() end
+
+---@param rotation Vector
+---@return boolean
+function ComponentProxy:SetWorldRotation(rotation) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:SetWorldRotationXYZ(x, y, z) end
+
+---@return Vector|nil
+function ComponentProxy:GetLocalRotation() end
+
+---@param rotation Vector
+---@return boolean
+function ComponentProxy:SetLocalRotation(rotation) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:SetLocalRotationXYZ(x, y, z) end
+
+---@return Vector|nil
+function ComponentProxy:GetWorldScale() end
+
+---@param scale Vector
+---@return boolean
+function ComponentProxy:SetWorldScale(scale) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:SetWorldScaleXYZ(x, y, z) end
+
+---@return Vector|nil
+function ComponentProxy:GetLocalScale() end
+
+---@param scale Vector
+---@return boolean
+function ComponentProxy:SetLocalScale(scale) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:SetLocalScaleXYZ(x, y, z) end
+
+---@param enabled boolean
+---@return boolean
+function ComponentProxy:SetCollisionEnabled(enabled) end
+
+---@param enabled boolean
+---@return boolean
+function ComponentProxy:SetGenerateOverlapEvents(enabled) end
+
+---@param other ActorProxy
+---@return boolean
+function ComponentProxy:IsOverlappingActor(other) end
+
+---@return '"Box"'|'"Sphere"'|'"Capsule"'|'"Unknown"'
+function ComponentProxy:GetShapeType() end
+
+---@return number|nil
+function ComponentProxy:GetShapeHalfHeight() end
+
+---@param halfHeight number
+---@return boolean
+function ComponentProxy:SetShapeHalfHeight(halfHeight) end
+
+---@return number|nil
+function ComponentProxy:GetShapeRadius() end
+
+---@param radius number
+---@return boolean
+function ComponentProxy:SetShapeRadius(radius) end
+
+---@return Vector|nil
+function ComponentProxy:GetShapeExtent() end
+
+---@param extent Vector
+---@return boolean
+function ComponentProxy:SetShapeExtent(extent) end
+
+---@param meshPath string 현재 프로젝트의 OBJ/StaticMesh 경로 문자열을 사용합니다.
+---@return boolean
+function ComponentProxy:SetStaticMesh(meshPath) end
+
+---@param text string
+---@return boolean
+function ComponentProxy:SetText(text) end
+
+---@return string|nil
+function ComponentProxy:GetText() end
+
+---@param texturePath string
+---@return boolean
+function ComponentProxy:SetTexture(texturePath) end
+
+---@return string|nil
+function ComponentProxy:GetTexturePath() end
+
+---@param tint Vector
+---@return boolean
+function ComponentProxy:SetTint(tint) end
+
+---@param r number
+---@param g number
+---@param b number
+---@param a number
+---@return boolean
+function ComponentProxy:SetTint(r, g, b, a) end
+
+---@param label string
+---@return boolean
+function ComponentProxy:SetLabel(label) end
+
+---@return string|nil
+function ComponentProxy:GetLabel() end
+
+---@return boolean
+function ComponentProxy:IsHovered() end
+
+---@return boolean
+function ComponentProxy:IsPressed() end
+
+---@return boolean
+function ComponentProxy:WasClicked() end
+
+---@param soundPath string
+---@return boolean
+function ComponentProxy:SetSoundPath(soundPath) end
+
+---@return string|nil
+function ComponentProxy:GetSoundPath() end
+
+---@param category '"sfx"'|'"background"'|'"bgm"'
+---@return boolean
+function ComponentProxy:SetSoundCategory(category) end
+
+---@return string|nil
+function ComponentProxy:GetSoundCategory() end
+
+---@param looping boolean
+---@return boolean
+function ComponentProxy:SetSoundLooping(looping) end
+
+---@return boolean
+function ComponentProxy:IsSoundLooping() end
+
+---@param soundPath? string
+---@return boolean
+function ComponentProxy:PlaySound(soundPath) end
+
+---@return boolean
+function ComponentProxy:StopSound() end
+
+---@return boolean
+function ComponentProxy:PauseSound() end
+
+---@return boolean
+function ComponentProxy:ResumeSound() end
+
+---@return boolean
+function ComponentProxy:IsSoundPlaying() end
+
+---@param speed number
+---@return boolean
+function ComponentProxy:SetSpeed(speed) end
+
+---@return number|nil
+function ComponentProxy:GetSpeed() end
+
+---@param target Vector
+---@return boolean
+function ComponentProxy:MoveTo(target) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:MoveTo(x, y, z) end
+
+---@param delta Vector
+---@return boolean
+function ComponentProxy:MoveBy(delta) end
+
+---@param x number
+---@param y number
+---@param z number
+---@return boolean
+function ComponentProxy:MoveBy(x, y, z) end
+
+---@return boolean
+function ComponentProxy:StopMove() end
+
+---@return boolean
+function ComponentProxy:IsMoveDone() end
+
+---@type ActorProxy
+obj = nil
 
 ---@param ... any
 function log(...) end
@@ -100,15 +448,82 @@ function delta_time() end
 
 ---@param keyName string
 ---@return boolean
-function key(keyName) end
+function GetKey(keyName) end
 
 ---@param keyName string
 ---@return boolean
-function key_down(keyName) end
+function GetKeyDown(keyName) end
 
 ---@param keyName string
 ---@return boolean
-function key_up(keyName) end
+function GetKeyUp(keyName) end
+
+---@param keyName string
+---@return boolean
+function get_key(keyName) end
+
+---@param keyName string
+---@return boolean
+function get_key_down(keyName) end
+
+---@param keyName string
+---@return boolean
+function get_key_up(keyName) end
+
+---@class InputAPI
+Input = {}
+
+---@param keyName string
+---@return boolean
+function Input.GetKey(keyName) end
+
+---@param keyName string
+---@return boolean
+function Input.GetKeyDown(keyName) end
+
+---@param keyName string
+---@return boolean
+function Input.GetKeyUp(keyName) end
+
+---@param keyName string
+---@return boolean
+function Input.get_key(keyName) end
+
+---@param keyName string
+---@return boolean
+function Input.get_key_down(keyName) end
+
+---@param keyName string
+---@return boolean
+function Input.get_key_up(keyName) end
+
+---@return number
+function GetMouseDeltaX() end
+
+---@return number
+function GetMouseDeltaY() end
+
+---@return number
+function GetMouseWheel() end
+
+---@return boolean
+function MouseMoved() end
+
+---@param buttonName string
+---@return boolean
+function IsDragging(buttonName) end
+
+---@param buttonName string
+---@return number
+function GetDragDeltaX(buttonName) end
+
+---@param buttonName string
+---@return number
+function GetDragDeltaY(buttonName) end
+
+---@param buttonName string
+---@return number
+function GetDragDistance(buttonName) end
 
 ---@param functionName string
 ---@return boolean
@@ -117,8 +532,19 @@ function StartCoroutine(functionName) end
 ---@param seconds number
 function wait(seconds) end
 
+---@param seconds number
+function Wait(seconds) end
+
 ---@param frames integer
 function wait_frames(frames) end
+
+function wait_until_move_done() end
+
+---@param keyName string
+function wait_key_down(keyName) end
+
+-- TODO: wait_signal/signal은 현재 런타임 바인딩에서 꺼져 있습니다.
+-- 필요해지면 C++ 바인딩을 켠 뒤 이 문서에 함수 stub을 다시 추가하세요.
 
 ---@alias ScriptPropertyType '"bool"'|'"int"'|'"float"'|'"string"'|'"vector"'
 
@@ -137,22 +563,95 @@ function DeclareProperties(properties) end
 ---@return T
 function property(name, defaultValue) end
 
----@param keyName string
+---@param className string
+---@param location Vector
+---@return ActorProxy
+function spawn_actor(className, location) end
+
+---@param actorName string
+---@return ActorProxy
+function find_actor(actorName) end
+
+---@param uuid integer
+---@return ActorProxy
+function find_actor_by_uuid(uuid) end
+
+---@param tag string
+---@return ActorProxy
+function find_actor_by_tag(tag) end
+
+---@param tag string
+---@return ActorProxy[] ipairs로 순회 가능한 Lua table입니다.
+function find_actors_by_tag(tag) end
+
+---@param actor ActorProxy
+function destroy_actor(actor) end
+
+---@param soundPath string
+---@param looping? boolean
+---@return string
+function play_sfx(soundPath, looping) end
+
+---@param soundPath string
+---@param looping? boolean
+---@return string
+function play_background(soundPath, looping) end
+
+---@param handle string
 ---@return boolean
-function GetKey(keyName) end
+function stop_sound(handle) end
 
----@param keyName string
+---@param handle string
 ---@return boolean
-function GetKeyDown(keyName) end
+function pause_sound(handle) end
 
----@param keyName string
+---@param handle string
 ---@return boolean
-function GetKeyUp(keyName) end
+function resume_sound(handle) end
 
----@param seconds number
-function Wait(seconds) end
+---@param handle string
+---@return boolean
+function is_sound_playing(handle) end
 
-function wait_until_move_done() end
+---@return boolean
+function stop_background() end
 
----@param keyName string
-function wait_key_down(keyName) end
+---@return boolean
+function pause_background() end
+
+---@return boolean
+function resume_background() end
+
+---@return boolean
+function is_background_playing() end
+
+function BeginPlay() end
+
+---@param dt number
+function Tick(dt) end
+
+function EndPlay() end
+
+---@param otherActor ActorProxy
+---@param otherComp ComponentProxy
+---@param selfComp ComponentProxy
+function OnBeginOverlap(otherActor, otherComp, selfComp) end
+
+---@param otherActor ActorProxy
+---@param otherComp ComponentProxy
+---@param selfComp ComponentProxy
+function OnEndOverlap(otherActor, otherComp, selfComp) end
+
+---@param otherActor ActorProxy
+---@param otherComp ComponentProxy
+---@param selfComp ComponentProxy
+---@param impactLocation Vector
+---@param impactNormal Vector
+function OnHit(otherActor, otherComp, selfComp, impactLocation, impactNormal) end
+
+-- TODO: InputMapping에서 발생한 ActionValue를 ScriptComponent까지 전달하는 정식 경로가 필요합니다.
+-- 현재 C++에는 CallLuaInputAction 호출 함수만 있으며, 엔진 입력 루프와의 연결은 아직 정식 완료 상태가 아닙니다.
+---@param actionName string
+---@param value Vector
+---@param scalar number
+function OnInputAction(actionName, value, scalar) end
