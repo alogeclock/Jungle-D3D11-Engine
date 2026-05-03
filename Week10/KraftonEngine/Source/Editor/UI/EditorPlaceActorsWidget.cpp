@@ -46,6 +46,8 @@ namespace
 			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.Icon.PlaceActors.Basic")).Get();
 		case FEditorPlaceActorsWidget::EPlaceActorCategory::Text:
 			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.Icon.ScreenText")).Get();
+		case FEditorPlaceActorsWidget::EPlaceActorCategory::UI:
+			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.ToolIcon.WorldSpace")).Get();
 		case FEditorPlaceActorsWidget::EPlaceActorCategory::Lights:
 			return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource("Editor.Icon.PlaceActors.Lights")).Get();
 		case FEditorPlaceActorsWidget::EPlaceActorCategory::Shapes:
@@ -106,6 +108,7 @@ namespace
 		{ "Static Mesh", "static mesh actor mesh basic", "Editor.Icon.StaticMeshActor", EPlaceType::StaticMeshActor, ECategory::Basic },
 		{ "World Text", "world text 3d billboard font label", "Editor.Icon.ScreenText", EPlaceType::WorldText, ECategory::Text },
 		{ "Screen Text", "screen text overlay ui hud widget", "Editor.Icon.ScreenText", EPlaceType::ScreenText, ECategory::Text },
+		{ "UI Root", "ui root canvas hud menu widget", "Editor.ToolIcon.WorldSpace", EPlaceType::UIRoot, ECategory::UI },
 		{ "Ambient Light", "ambient light", "Editor.Icon.AmbientLight", EPlaceType::AmbientLight, ECategory::Lights },
 		{ "Directional Light", "directional light sun", "Editor.Icon.DirectionalLight", EPlaceType::DirectionalLight, ECategory::Lights },
 		{ "Point Light", "point light bulb", "Editor.Icon.PointLight", EPlaceType::PointLight, ECategory::Lights },
@@ -128,6 +131,7 @@ namespace
 		{
 		case ECategory::Basic: return "Basic";
 		case ECategory::Text: return "Text";
+		case ECategory::UI: return "UI";
 		case ECategory::Lights: return "Lights";
 		case ECategory::Shapes: return "Shapes";
 		case ECategory::VFX: return "VFX";
@@ -197,6 +201,7 @@ void FEditorPlaceActorsWidget::RenderCategorySidebar()
 	const EPlaceActorCategory Categories[] = {
 		EPlaceActorCategory::Basic,
 		EPlaceActorCategory::Text,
+		EPlaceActorCategory::UI,
 		EPlaceActorCategory::Lights,
 		EPlaceActorCategory::Shapes,
 		EPlaceActorCategory::VFX

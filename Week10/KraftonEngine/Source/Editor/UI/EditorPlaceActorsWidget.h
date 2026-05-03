@@ -10,6 +10,7 @@ public:
 	{
 		Basic,
 		Text,
+		UI,
 		Lights,
 		Shapes,
 		VFX
