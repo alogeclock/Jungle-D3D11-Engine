@@ -1,4 +1,4 @@
-#include "Engine/Runtime/GameEngine.h"
+﻿#include "Engine/Runtime/GameEngine.h"
 #include "Core/ProjectSettings.h"
 #include "Engine/Serialization/SceneSaveManager.h"
 #include "Engine/Platform/Paths.h"
@@ -10,6 +10,10 @@
 #include "Input/InputManager.h"
 #include "Object/Object.h"
 #include <cctype>
+#include "Viewport/GameViewportClient.h"
+#include "Viewport/Viewport.h"
+#include "Engine/Runtime/WindowsWindow.h"
+#include "Render/Pipeline/Renderer.h"
 #include <filesystem>
 
 IMPLEMENT_CLASS(UGameEngine, UEngine)
@@ -55,12 +59,49 @@ void UGameEngine::Init(FWindowsWindow* InWindow)
 	SetActiveWorld(FName("GameWorld"));
 	GetWorld()->InitWorld();
 
+	UGameViewportClient* ViewportClient = UObjectManager::Get().CreateObject<UGameViewportClient>();
+	SetGameViewportClient(ViewportClient);
+	if (InWindow)
+	{
+		ViewportClient->SetOwnerWindow(InWindow->GetHWND());
+	}
+
+	// Game/Shipping은 ImGui가 없으므로 백버퍼에 합성해줄 손이 없다.
+	// 윈도우 크기로 FViewport를 만들고 DefaultRenderPipeline이 여기에 렌더 → 백버퍼 복사하도록.
+	if (InWindow)
+	{
+		const uint32 Width  = static_cast<uint32>((std::max)(1.0f, InWindow->GetWidth()));
+		const uint32 Height = static_cast<uint32>((std::max)(1.0f, InWindow->GetHeight()));
+		FViewport* GameViewport = new FViewport();
+		GameViewport->Initialize(GetRenderer().GetFD3DDevice().GetDevice(), Width, Height);
+		ViewportClient->SetViewport(GameViewport);
+	}
+
 	LoadStartLevel();
+
+	if (FWorldContext* Context = GetWorldContextFromHandle(GetActiveWorldHandle()))
+	{
+		ViewportClient->OnBeginPIE(Context->World ? Context->World->GetActiveCamera() : nullptr, ViewportClient->GetViewport());
+		// Game/Shipping build에서는 기본 스펙테이터 이동 로직을 비활성화 (플레이어 스크립트와 충돌 방지)
+		ViewportClient->SetPIEPossessedInputEnabled(false);
+		// 스펙테이터 이동은 끄되, 윈도우 마우스 메시지가 InputManager로 흐르도록 트래킹은 켠다.
+		FInputManager::Get().SetTrackingMouse(true);
+	}
 }
 
 void UGameEngine::BeginPlay()
 {
 	UEngine::BeginPlay();
+}
+
+void UGameEngine::Tick(float DeltaTime)
+{
+	if (UGameViewportClient* GameVC = GetGameViewportClient())
+	{
+		GameVC->ProcessPIEInput(DeltaTime);
+		GameVC->Tick(DeltaTime);
+	}
+	UEngine::Tick(DeltaTime);
 }
 
 void UGameEngine::LoadStartLevel()
@@ -109,11 +150,30 @@ void UGameEngine::LoadStartLevel()
 	}
 
 	const FName OriginalHandle = Context->ContextHandle;
+	FPerspectiveCameraData CamData;
 
-	FPerspectiveCameraData DummyCamera;
-	FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, DummyCamera);
+	if (FSceneSaveManager::IsJsonFile(FilePath))
+	{
+		// 쿠킹된 .umap도 현재는 JSON 텍스트로 저장되어 있어 binary parser로는 못 읽는다.
+		// JSON인 경우 LoadSceneFromJSON이 새 World를 생성하므로 기존 World 정리 필요
+		UWorld* OldWorld = Context->World;
+		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, CamData);
+		if (OldWorld && OldWorld != Context->World)
+		{
+			OldWorld->EndPlay();
+			UObjectManager::Get().DestroyObject(OldWorld);
+		}
+	}
+	else if (ChosenPath.extension() == ".umap")
+	{
+		FSceneSaveManager::LoadWorldFromBinary(FilePath, Context->World);
+	}
+	else
+	{
+		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, CamData);
+	}
 
-	// LoadSceneFromJSON이 새 World를 만들어 Context를 덮어쓰고, JSON에서 읽은 WorldType("Editor")을 Game으로 강제 복구
+	// LoadSceneFromJSON/LoadWorldFromBinary 이후 WorldType/Handle 강제 복구
 	Context->WorldType = EWorldType::Game;
 	Context->ContextHandle = OriginalHandle;
 	SetActiveWorld(OriginalHandle);
@@ -138,6 +198,31 @@ void UGameEngine::LoadStartLevel()
 					}
 				}
 				if (Context->World->GetActiveCamera()) break;
+			}
+		}
+
+		// 씬 어디에도 UCameraComponent가 없으면(에디터에서 PerspectiveCamera만 저장된 일반 .Scene)
+		// 저장된 에디터 뷰포트 좌표를 사용해 기본 카메라 액터를 한 개 스폰한다.
+		if (!Context->World->GetActiveCamera())
+		{
+			AActor* CamActor = Context->World->SpawnActor<AActor>();
+			if (CamActor)
+			{
+				CamActor->SetFName(FName("DefaultGameCamera"));
+				UCameraComponent* Cam = CamActor->AddComponent<UCameraComponent>();
+				CamActor->SetRootComponent(Cam);
+				if (CamData.bValid)
+				{
+					Cam->SetRelativeLocation(CamData.Location);
+					Cam->SetRelativeRotation(CamData.Rotation);
+				}
+				else
+				{
+					// fallback: 위에서 비스듬히 바라보기
+					Cam->SetRelativeLocation(FVector(0.0f, -10.0f, 5.0f));
+					Cam->SetRelativeRotation(FVector(0.0f, -25.0f, 90.0f));
+				}
+				Context->World->SetActiveCamera(Cam);
 			}
 		}
 	}
@@ -215,23 +300,25 @@ bool UGameEngine::LoadScene(const FString& InSceneReference)
 		Context->World = nullptr;
 	}
 
-	FPerspectiveCameraData DummyCamera;
+	FPerspectiveCameraData CameraData;
 	const FString FilePath = FPaths::ToUtf8(ChosenPath.wstring());
-	if (EndsWithIgnoreCase(FilePath, ".umap"))
+	if (FSceneSaveManager::IsJsonFile(FilePath))
+	{
+		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, CameraData);
+	}
+	else if (EndsWithIgnoreCase(FilePath, ".umap"))
 	{
 		Context->World = UObjectManager::Get().CreateObject<UWorld>();
 		FSceneSaveManager::LoadWorldFromBinary(FilePath, Context->World);
-		Context->WorldType = EWorldType::Game;
-		Context->ContextName = RawPath.stem().empty() ? "GameWorld" : FPaths::ToUtf8(RawPath.stem().wstring());
-		Context->ContextHandle = GetActiveWorldHandle();
 	}
 	else
 	{
-		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, DummyCamera);
-		Context->WorldType = EWorldType::Game;
-		Context->ContextHandle = GetActiveWorldHandle();
+		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, CameraData);
 	}
 
+	Context->WorldType = EWorldType::Game;
+	Context->ContextName = RawPath.stem().empty() ? "GameWorld" : FPaths::ToUtf8(RawPath.stem().wstring());
+	Context->ContextHandle = GetActiveWorldHandle();
 	SetActiveWorld(Context->ContextHandle);
 
 	if (!Context->World)
@@ -241,9 +328,66 @@ bool UGameEngine::LoadScene(const FString& InSceneReference)
 
 	Context->World->SetWorldType(EWorldType::Game);
 	Context->World->WarmupPickingData();
+
+	if (!Context->World->GetActiveCamera())
+	{
+		for (AActor* Actor : Context->World->GetActors())
+		{
+			if (!Actor)
+			{
+				continue;
+			}
+
+			for (UActorComponent* Comp : Actor->GetComponents())
+			{
+				if (UCameraComponent* Cam = Cast<UCameraComponent>(Comp))
+				{
+					Context->World->SetActiveCamera(Cam);
+					break;
+				}
+			}
+
+			if (Context->World->GetActiveCamera())
+			{
+				break;
+			}
+		}
+	}
+
+	if (!Context->World->GetActiveCamera())
+	{
+		AActor* CamActor = Context->World->SpawnActor<AActor>();
+		if (CamActor)
+		{
+			CamActor->SetFName(FName("DefaultGameCamera"));
+			UCameraComponent* Cam = CamActor->AddComponent<UCameraComponent>();
+			CamActor->SetRootComponent(Cam);
+			if (CameraData.bValid)
+			{
+				Cam->SetRelativeLocation(CameraData.Location);
+				Cam->SetRelativeRotation(CameraData.Rotation);
+			}
+			else
+			{
+				Cam->SetRelativeLocation(FVector(0.0f, -10.0f, 5.0f));
+				Cam->SetRelativeRotation(FVector(0.0f, -25.0f, 90.0f));
+			}
+			Context->World->SetActiveCamera(Cam);
+		}
+	}
+
 	if (!Context->World->HasBegunPlay())
 	{
 		Context->World->BeginPlay();
 	}
+
+	if (UGameViewportClient* ViewportClient = GetGameViewportClient())
+	{
+		if (UCameraComponent* GameCamera = Context->World->GetActiveCamera())
+		{
+			ViewportClient->Possess(GameCamera);
+		}
+	}
+
 	return true;
 }

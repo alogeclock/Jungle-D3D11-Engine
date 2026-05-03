@@ -882,10 +882,7 @@ void FEditorMainPanel::RenderProjectSettingsWindow()
 		? "Packaged game resize is locked. The editor window stays resizable."
 		: "The editor stays resizable. Packaged game uses this size on next launch.");
 
-	DrawPopupSectionHeader("GAME");
-	DrawClassDropdown("GameInstance Class", UGameInstance::StaticClass(), ProjectSettings.Game.GameInstanceClass);
-	DrawClassDropdown("Default GameMode Class", AGameModeBase::StaticClass(), ProjectSettings.Game.DefaultGameModeClass);
-	ImGui::TextDisabled("(GameInstance class change requires restart)");
+	
 
 	DrawPopupSectionHeader("PERFORMANCE");
 	bool bPerformanceChanged = false;
@@ -933,6 +930,30 @@ void FEditorMainPanel::RenderProjectSettingsWindow()
 	ImGui::Combo("Mode", &SceneDepthMode, "Power\0Linear\0");
 	ProjectSettings.SceneDepth.Mode = static_cast<uint32>(SceneDepthMode);
 	ImGui::SliderFloat("Exponent", &ProjectSettings.SceneDepth.Exponent, 1.0f, 512.0f, "%.0f");
+
+	DrawPopupSectionHeader("GAME");
+	DrawClassDropdown("GameInstance Class", UGameInstance::StaticClass(), ProjectSettings.Game.GameInstanceClass);
+	DrawClassDropdown("Default GameMode Class", AGameModeBase::StaticClass(), ProjectSettings.Game.DefaultGameModeClass);
+
+	// Default Map
+	{
+		const TArray<FString> Scenes = FSceneSaveManager::GetSceneFileList();
+		const char* Preview = ProjectSettings.Game.DefaultScene.empty() ? "(none)" : ProjectSettings.Game.DefaultScene.c_str();
+		if (ImGui::BeginCombo("Default Map", Preview))
+		{
+			for (const FString& Stem : Scenes)
+			{
+				const bool bSelected = (ProjectSettings.Game.DefaultScene == Stem);
+				if (ImGui::Selectable(Stem.c_str(), bSelected))
+				{
+					ProjectSettings.Game.DefaultScene = Stem;
+				}
+				if (bSelected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
+	ImGui::TextDisabled("(GameInstance class change requires restart)");
 
 	if (ImGui::Button("Save"))
 	{
