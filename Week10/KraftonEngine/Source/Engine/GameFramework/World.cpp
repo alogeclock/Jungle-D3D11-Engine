@@ -477,9 +477,7 @@ void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 		SCOPE_STAT_CAT("FlushPrimitive", "1_WorldTick");
 		Partition.FlushPrimitive();
 	}
-
 	Scene.GetDebugDrawQueue().Tick(DeltaTime);
-
 	TickManager.Tick(this, DeltaTime, TickType);
 	ProcessOverlapEvents();
 }

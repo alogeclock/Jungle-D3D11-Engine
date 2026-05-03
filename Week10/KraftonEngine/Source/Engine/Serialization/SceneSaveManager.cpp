@@ -25,6 +25,7 @@
 #include "Object/FName.h"
 #include "Profiling/PlatformTime.h"
 #include "Engine/Serialization/WindowsArchive.h"
+#include "Engine/Runtime/Engine.h"  // GIsEditor 플래그
 // ---- JSON vector helpers ---------------------------------------------------
 
 static void WriteVec3(json::JSON& Obj, const char* Key, const FVector& V)
@@ -194,6 +195,9 @@ static void DeserializeComponentEditorMetadata(UActorComponent* Comp, json::JSON
 
 static void EnsureEditorBillboardMetadata(UActorComponent* Comp)
 {
+	// Game/Shipping에서는 에디터 빌보드(아이콘 sprite)가 필요 없음 — 텍스처가 누락돼 로드 실패함.
+	if (!GIsEditor) return;
+
 	if (ULightComponentBase* LightComponent = Cast<ULightComponentBase>(Comp))
 	{
 		LightComponent->EnsureEditorBillboard();
@@ -765,7 +769,10 @@ void FSceneSaveManager::LoadSceneFromJSONString(const string& SceneJson, FWorldC
 				}
 			}
 
-			Actor->EnsureEditorBillboardForActor();
+			if (GIsEditor)
+			{
+				Actor->EnsureEditorBillboardForActor();
+			}
 
 			World->RemoveActorToOctree(Actor);
 			World->InsertActorToOctree(Actor);
@@ -880,13 +887,25 @@ bool FSceneSaveManager::CookSceneToBinary(const FString& InSceneJsonPath, const 
 	// 런타임용으로 WorldType 강제
 	World->SetWorldType(EWorldType::Game);
 
-	// 출력 디렉터리 보장 + 바이너리 저장
+	// 다시 JSON으로 직렬화 — 바이너리 경로(AActor::Serialize)가 컴포넌트를 저장하지 않으므로
+	// "stripped JSON"을 .umap에 쓴다. 런타임은 .umap을 만나면 JSON 파서로 처리한다.
+	TempCtx.WorldType = EWorldType::Game;
+	const std::string CookedJson = SerializeWorldToJSONString(TempCtx, /*PerspectiveCam=*/nullptr);
+
 	std::filesystem::path OutPath(FPaths::ToWide(OutUmapPath));
 	if (OutPath.has_parent_path())
 	{
 		std::filesystem::create_directories(OutPath.parent_path());
 	}
-	SaveWorldToBinary(OutUmapPath, World);
+
+	std::ofstream Out(OutPath, std::ios::binary);
+	if (!Out.is_open())
+	{
+		std::cerr << "[Cook] Failed to open output: " << OutUmapPath << std::endl;
+		return false;
+	}
+	Out << CookedJson;
+	Out.close();
 
 	const bool bOk = std::filesystem::exists(OutPath);
 	if (bOk)
@@ -899,7 +918,6 @@ bool FSceneSaveManager::CookSceneToBinary(const FString& InSceneJsonPath, const 
 	}
 
 	// 임시 World는 의도적으로 누수 — destroy 시 외부 참조(Render proxy 등)와 충돌 위험
-	// 쿠킹은 짧은 일회성 작업이므로 프로세스 종료 시 정리됨
 	return bOk;
 }
 

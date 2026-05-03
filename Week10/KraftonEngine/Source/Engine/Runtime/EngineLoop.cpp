@@ -1,5 +1,7 @@
 ﻿#include "Engine/Runtime/EngineLoop.h"
 #include "Profiling/StartupProfiler.h"
+#include "Engine/Serialization/SceneSaveManager.h"
+#include <iostream>
 
 #if IS_OBJ_VIEWER
 #include "ObjViewer/ObjViewerEngine.h"
@@ -62,6 +64,13 @@ bool FEngineLoop::Init(HINSTANCE hInstance, int nShowCmd)
 	FStartupProfiler::Get().Finish();
 
 	return true;
+}
+
+int FEngineLoop::RunCookOnly()
+{
+	const int32 Cooked = FSceneSaveManager::CookAllScenes();
+	std::cerr << "[Cook] Total cooked: " << Cooked << " scenes" << std::endl;
+	return Cooked > 0 ? 0 : 1;
 }
 
 int FEngineLoop::Run()

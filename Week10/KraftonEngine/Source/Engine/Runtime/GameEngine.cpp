@@ -4,22 +4,26 @@
 #include "Engine/Platform/Paths.h"
 #include "Object/ObjectFactory.h"
 #include "GameFramework/World.h"
+#include "GameFramework/AActor.h"
+#include "Component/CameraComponent.h"
+#include "Component/ActorComponent.h"
+#include "Input/InputManager.h"
 #include <filesystem>
-#include <iostream>
 
 IMPLEMENT_CLASS(UGameEngine, UEngine)
 
 void UGameEngine::Init(FWindowsWindow* InWindow)
 {
-	// 기본 엔진 초기화 (Renderer 등)
 	UEngine::Init(InWindow);
 
-	// 게임용 월드 컨텍스트 생성
+	// Shipping/Game에서는 ImGui 컨텍스트가 없으므로 InputManager가 ImGui::GetIO()를 호출하지 않도록
+	// GUI capture를 명시적으로 false override 한다 (ImGui 미초기화 시 GetIO() 사용은 크래시).
+	FInputManager::Get().SetGuiCaptureOverride(false, false, false);
+
 	CreateWorldContext(EWorldType::Game, FName("GameWorld"));
 	SetActiveWorld(FName("GameWorld"));
 	GetWorld()->InitWorld();
 
-	// 프로젝트 설정에서 시작 씬 로드
 	LoadStartLevel();
 }
 
@@ -39,8 +43,7 @@ void UGameEngine::LoadStartLevel()
 	const std::filesystem::path SceneDir = FSceneSaveManager::GetSceneDirectory();
 	const std::wstring StemW = FPaths::ToWide(StartLevel);
 
-	// 우선순위: 쿠킹된 .umap → .Scene(JSON, dev/fallback)
-	// Shipping에서는 .umap만 시도. JSON 경로는 dev 환경에서만 동작.
+	// 우선순위: 쿠킹된 .umap → .Scene(JSON, dev/fallback). Shipping에서는 .umap 전용.
 	const std::filesystem::path UmapPath = SceneDir / (StemW + L".umap");
 	const std::filesystem::path ScenePath = SceneDir / (StemW + FSceneSaveManager::SceneExtension);
 
@@ -58,32 +61,23 @@ void UGameEngine::LoadStartLevel()
 
 	if (ChosenPath.empty())
 	{
-		std::cerr << "[GameEngine] Start level not found. Did you run --cook? Looked for "
-		          << UmapPath.string() << std::endl;
 		return;
 	}
 
 	const FString FilePath = FPaths::ToUtf8(ChosenPath.wstring());
 
 	FWorldContext* Context = GetWorldContextFromHandle(GetActiveWorldHandle());
-	if (!Context || !Context->World) return;
+	if (!Context || !Context->World)
+	{
+		return;
+	}
 
 	const FName OriginalHandle = Context->ContextHandle;
-	const std::wstring ChosenExt = ChosenPath.extension().wstring();
 
-	if (ChosenExt == L".umap" || ChosenExt == L".UMAP")
-	{
-		// 바이너리(쿠킹된) 경로 — 가장 안정적. World->Serialize가 자체 InitWorld+BeginPlay 처리.
-		FSceneSaveManager::LoadWorldFromBinary(FilePath, Context->World);
-	}
-	else
-	{
-		// JSON 경로 — LoadSceneFromJSON이 새 World를 만들어 Context를 덮어씀
-		FPerspectiveCameraData DummyCamera;
-		FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, DummyCamera);
-	}
+	FPerspectiveCameraData DummyCamera;
+	FSceneSaveManager::LoadSceneFromJSON(FilePath, *Context, DummyCamera);
 
-	// 어느 경로든 WorldType/Handle을 Game으로 강제 복구
+	// LoadSceneFromJSON이 새 World를 만들어 Context를 덮어쓰고, JSON에서 읽은 WorldType("Editor")을 Game으로 강제 복구
 	Context->WorldType = EWorldType::Game;
 	Context->ContextHandle = OriginalHandle;
 	SetActiveWorld(OriginalHandle);
@@ -92,5 +86,23 @@ void UGameEngine::LoadStartLevel()
 	{
 		Context->World->SetWorldType(EWorldType::Game);
 		Context->World->WarmupPickingData();
+
+		// Game/Shipping에서는 에디터 뷰포트가 없으므로 씬 안의 첫 카메라 컴포넌트를 ActiveCamera로 잡음.
+		if (!Context->World->GetActiveCamera())
+		{
+			for (AActor* Actor : Context->World->GetActors())
+			{
+				if (!Actor) continue;
+				for (UActorComponent* Comp : Actor->GetComponents())
+				{
+					if (UCameraComponent* Cam = Cast<UCameraComponent>(Comp))
+					{
+						Context->World->SetActiveCamera(Cam);
+						break;
+					}
+				}
+				if (Context->World->GetActiveCamera()) break;
+			}
+		}
 	}
 }

@@ -85,6 +85,9 @@ bool ImportAssetFile(
 
 void UEditorEngine::Init(FWindowsWindow* InWindow)
 {
+	
+	GIsEditor = true;
+
 	// 엔진 공통 초기화 (Renderer, D3D, 싱글턴 등)
 	UEngine::Init(InWindow);
 
