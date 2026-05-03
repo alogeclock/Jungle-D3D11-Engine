@@ -50,7 +50,8 @@ void UUIScreenTextComponent::ContributeVisuals(FScene& Scene) const
 		return;
 	}
 
-	Scene.AddScreenText(Text, FVector2(ScreenPosition.X, ScreenPosition.Y), FontSize, Color);
+	const FFontResource* ResolvedFont = FResourceManager::Get().FindFont(FontName);
+	Scene.AddScreenText(Text, FVector2(ScreenPosition.X, ScreenPosition.Y), FontSize, Color, ResolvedFont ? ResolvedFont : CachedFont);
 }
 
 void UUIScreenTextComponent::SetFont(const FName& InFontName)

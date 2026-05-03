@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <filesystem>
+#include <algorithm>
 #include <d3d11.h>
 #include "DDSTextureLoader.h"
 #include "WICTextureLoader.h"
@@ -24,6 +25,56 @@ namespace ResourceKey
 	constexpr const char* Path     = "Path";
 	constexpr const char* Columns  = "Columns";
 	constexpr const char* Rows     = "Rows";
+}
+
+namespace
+{
+	uint32 SafeJsonUInt(const json::JSON& Value, uint32 Fallback = 0)
+	{
+		bool bInt = false;
+		const long IntValue = Value.ToInt(bInt);
+		if (bInt)
+		{
+			return static_cast<uint32>(IntValue);
+		}
+
+		bool bFloat = false;
+		const double FloatValue = Value.ToFloat(bFloat);
+		if (bFloat)
+		{
+			return static_cast<uint32>(FloatValue);
+		}
+
+		return Fallback;
+	}
+
+	float SafeJsonFloat(const json::JSON& Value, float Fallback = 0.0f)
+	{
+		bool bFloat = false;
+		const double FloatValue = Value.ToFloat(bFloat);
+		if (bFloat)
+		{
+			return static_cast<float>(FloatValue);
+		}
+
+		bool bInt = false;
+		const long IntValue = Value.ToInt(bInt);
+		if (bInt)
+		{
+			return static_cast<float>(IntValue);
+		}
+
+		return Fallback;
+	}
+
+	FString ToLowerCopy(FString Value)
+	{
+		for (char& C : Value)
+		{
+			C = static_cast<char>(::tolower(static_cast<unsigned char>(C)));
+		}
+		return Value;
+	}
 }
 
 void FResourceManager::LoadFromFile(const FString& Path, ID3D11Device* InDevice)
@@ -138,6 +189,8 @@ void FResourceManager::LoadFromFile(const FString& Path, ID3D11Device* InDevice)
 		}
 	}
 
+	DiscoverBitmapFonts("Asset/Content/Font");
+
 	if (LoadGPUResources(InDevice))
 	{
 		UE_LOG("Complete Load Resources!");
@@ -151,6 +204,144 @@ void FResourceManager::LoadFromFile(const FString& Path, ID3D11Device* InDevice)
 	{
 		FMaterialManager::Get().GetOrCreateMaterial(Resource.Path);
 	}
+}
+
+void FResourceManager::DiscoverBitmapFonts(const FString& DirectoryPath)
+{
+	const std::filesystem::path RootPath(FPaths::RootDir());
+	const std::filesystem::path FontRoot = RootPath / FPaths::ToWide(DirectoryPath);
+	if (!std::filesystem::exists(FontRoot))
+	{
+		return;
+	}
+
+	for (const auto& Entry : std::filesystem::recursive_directory_iterator(FontRoot))
+	{
+		if (!Entry.is_regular_file())
+		{
+			continue;
+		}
+
+		FString Extension = Entry.path().extension().string();
+		for (char& C : Extension)
+		{
+			C = static_cast<char>(::tolower(static_cast<unsigned char>(C)));
+		}
+		if (Extension != ".json")
+		{
+			continue;
+		}
+
+		FFontResource Resource;
+		if (!LoadBitmapFontMetadata(FPaths::ToUtf8(Entry.path().lexically_normal().wstring()), Resource))
+		{
+			continue;
+		}
+
+		const FString FontKey = Resource.Name.ToString();
+		if (FontKey.empty() || FontResources.find(FontKey) != FontResources.end())
+		{
+			continue;
+		}
+
+		FontResources[FontKey] = std::move(Resource);
+	}
+}
+
+bool FResourceManager::LoadBitmapFontMetadata(const FString& JsonPath, FFontResource& OutResource) const
+{
+	using namespace json;
+
+	std::ifstream File(std::filesystem::path(FPaths::ToWide(JsonPath)));
+	if (!File.is_open())
+	{
+		return false;
+	}
+
+	FString Content((std::istreambuf_iterator<char>(File)), std::istreambuf_iterator<char>());
+	JSON Root = JSON::Load(Content);
+	if (!Root.hasKey("common") || !Root.hasKey("pages") || !Root.hasKey("chars"))
+	{
+		return false;
+	}
+
+	JSON Common = Root["common"];
+	JSON Pages = Root["pages"];
+	bool bHasPage = false;
+	FString PageFile;
+	for (auto& PageValue : Pages.ArrayRange())
+	{
+		PageFile = PageValue.ToString();
+		bHasPage = true;
+		break;
+	}
+	if (!bHasPage)
+	{
+		return false;
+	}
+
+	FString FontName = std::filesystem::path(JsonPath).stem().string();
+	if (Root.hasKey("info") && Root["info"].hasKey("face"))
+	{
+		FontName = Root["info"]["face"].ToString();
+	}
+
+	const std::filesystem::path JsonFilePath(FPaths::ToWide(JsonPath));
+	const std::filesystem::path ImagePath = JsonFilePath.parent_path() / FPaths::ToWide(PageFile);
+	if (!std::filesystem::exists(ImagePath))
+	{
+		return false;
+	}
+
+	const std::filesystem::path RootPath(FPaths::RootDir());
+	const std::filesystem::path RelativeImagePath = ImagePath.lexically_normal().lexically_relative(RootPath);
+
+	OutResource = {};
+	OutResource.Name = FName(FontName);
+	OutResource.Path = FPaths::ToUtf8(RelativeImagePath.generic_wstring());
+	OutResource.Columns = 1;
+	OutResource.Rows = 1;
+	OutResource.AtlasWidth = SafeJsonUInt(Common["scaleW"]);
+	OutResource.AtlasHeight = SafeJsonUInt(Common["scaleH"]);
+	OutResource.LineHeight = SafeJsonFloat(Common["lineHeight"], 1.0f);
+	OutResource.Base = SafeJsonFloat(Common["base"], OutResource.LineHeight);
+	OutResource.bHasGlyphMetrics = OutResource.AtlasWidth > 0 && OutResource.AtlasHeight > 0;
+
+	if (!OutResource.bHasGlyphMetrics)
+	{
+		return false;
+	}
+
+	for (auto& CharValue : Root["chars"].ArrayRange())
+	{
+		const uint32 Codepoint = SafeJsonUInt(CharValue["id"]);
+		FFontGlyph Glyph;
+		const float X = SafeJsonFloat(CharValue["x"]);
+		const float Y = SafeJsonFloat(CharValue["y"]);
+		Glyph.Width = SafeJsonFloat(CharValue["width"]);
+		Glyph.Height = SafeJsonFloat(CharValue["height"]);
+		Glyph.XOffset = SafeJsonFloat(CharValue["xoffset"]);
+		Glyph.YOffset = SafeJsonFloat(CharValue["yoffset"]);
+		Glyph.XAdvance = SafeJsonFloat(CharValue["xadvance"]);
+		Glyph.U0 = X / static_cast<float>(OutResource.AtlasWidth);
+		Glyph.V0 = Y / static_cast<float>(OutResource.AtlasHeight);
+		Glyph.U1 = (X + Glyph.Width) / static_cast<float>(OutResource.AtlasWidth);
+		Glyph.V1 = (Y + Glyph.Height) / static_cast<float>(OutResource.AtlasHeight);
+		OutResource.Glyphs[Codepoint] = Glyph;
+	}
+
+	if (Root.hasKey("kernings"))
+	{
+		for (auto& KerningValue : Root["kernings"].ArrayRange())
+		{
+			const uint32 First = SafeJsonUInt(KerningValue["first"]);
+			const uint32 Second = SafeJsonUInt(KerningValue["second"]);
+			const uint64 Key = (static_cast<uint64>(First) << 32) | static_cast<uint64>(Second);
+			OutResource.Kernings[Key] = SafeJsonFloat(KerningValue["amount"]);
+		}
+	}
+
+	return !OutResource.Glyphs.empty();
 }
 
 void FResourceManager::LoadFromDirectory(const FString& Path, ID3D11Device* InDevice)
@@ -308,14 +499,41 @@ void FResourceManager::ReleaseGPUResources()
 // --- Font ---
 FFontResource* FResourceManager::FindFont(const FName& FontName)
 {
-	auto It = FontResources.find(FontName.ToString());
-	return (It != FontResources.end()) ? &It->second : nullptr;
+	const FString LookupKey = FontName.ToString();
+	auto It = FontResources.find(LookupKey);
+	if (It != FontResources.end())
+	{
+		return &It->second;
+	}
+
+	const FString LowerLookupKey = ToLowerCopy(LookupKey);
+	for (auto& [Key, Resource] : FontResources)
+	{
+		if (ToLowerCopy(Key) == LowerLookupKey)
+		{
+			return &Resource;
+		}
+	}
+
+	return nullptr;
 }
 
 const FFontResource* FResourceManager::FindFont(const FName& FontName) const
 {
-	auto It = FontResources.find(FontName.ToString());
+	const FString LookupKey = FontName.ToString();
+	auto It = FontResources.find(LookupKey);
 	return (It != FontResources.end()) ? &It->second : nullptr;
+
+	const FString LowerLookupKey = ToLowerCopy(LookupKey);
+	for (const auto& [Key, Resource] : FontResources)
+	{
+		if (ToLowerCopy(Key) == LowerLookupKey)
+		{
+			return &Resource;
+		}
+	}
+
+	return nullptr;
 }
 
 void FResourceManager::RegisterFont(const FName& FontName, const FString& InPath, uint32 Columns, uint32 Rows)
@@ -361,6 +579,7 @@ TArray<FString> FResourceManager::GetFontNames() const
 	{
 		Names.push_back(Key);
 	}
+	std::sort(Names.begin(), Names.end());
 	return Names;
 }
 

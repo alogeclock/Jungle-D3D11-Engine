@@ -73,6 +73,9 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> FindLoadedTexture(FString InPath);
 
 private:
+	void DiscoverBitmapFonts(const FString& DirectoryPath);
+	bool LoadBitmapFontMetadata(const FString& JsonPath, FFontResource& OutResource) const;
+
 	FResourceManager() = default;
 	~FResourceManager() { ReleaseGPUResources(); }
 

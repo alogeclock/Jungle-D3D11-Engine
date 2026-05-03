@@ -5,6 +5,7 @@
 #include "Object/ObjectFactory.h"
 #include "Render/Shader/ShaderManager.h"
 #include "Render/Types/FrameContext.h"
+#include "Resource/ResourceManager.h"
 
 FTextRenderSceneProxy::FTextRenderSceneProxy(UTextRenderComponent* InComponent)
 	: FBillboardSceneProxy(static_cast<UBillboardComponent*>(InComponent))
@@ -50,7 +51,12 @@ void FTextRenderSceneProxy::UpdateMesh()
 	UTextRenderComponent* TextComp = GetTextRenderComponent();
 	CachedText = TextComp->GetText();
 	CachedFontScale = TextComp->GetFontSize();
-	CachedFont = TextComp->GetFont();
+	CachedColor = TextComp->GetColor();
+	CachedFont = FResourceManager::Get().FindFont(TextComp->GetFontName());
+	if (!CachedFont)
+	{
+		CachedFont = TextComp->GetFont();
+	}
 	CachedCharWidth = TextComp->GetCharWidth();
 	CachedCharHeight = TextComp->GetCharHeight();
 }

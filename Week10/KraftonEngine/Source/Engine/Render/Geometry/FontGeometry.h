@@ -20,6 +20,13 @@ struct FCharacterInfo
 class FFontGeometry
 {
 public:
+	struct FTextBatch
+	{
+		uint32 FirstIndex = 0;
+		uint32 IndexCount = 0;
+		const FFontResource* Font = nullptr;
+	};
+
 	void Create(ID3D11Device* InDevice);
 	void Release();
 
@@ -29,12 +36,16 @@ public:
 		const FVector& TextRight,
 		const FVector& TextUp,
 		const FVector& WorldScale,
+		const FVector4& Color,
+		const FFontResource* Font,
 		float Scale = 1.0f);
 
 	// 스크린 공간 오버레이 텍스트
 	void AddScreenText(const FString& Text,
 		float ScreenX, float ScreenY,
 		float ViewportWidth, float ViewportHeight,
+		const FVector4& Color,
+		const FFontResource* Font,
 		float Scale = 1.0f);
 
 	void Clear();
@@ -57,16 +68,22 @@ public:
 
 	uint32 GetWorldQuadCount() const { return static_cast<uint32>(WorldVertices.size() / 4); }
 	uint32 GetScreenQuadCount() const { return static_cast<uint32>(ScreenVertices.size() / 4); }
+	const TArray<FTextBatch>& GetWorldBatches() const { return WorldBatches; }
+	const TArray<FTextBatch>& GetScreenBatches() const { return ScreenBatches; }
 
 private:
 	void BuildCharInfoMap(uint32 Columns, uint32 Rows);
-	void GetCharUV(uint32 Codepoint, FVector2& OutUVMin, FVector2& OutUVMax) const;
+	const FFontResource* ResolveFontForText(const FFontResource* PreferredFont, const FString& Text) const;
+	bool HasGlyphForText(const FFontResource* Font, const FString& Text) const;
+	bool GetGlyph(const FFontResource* Resource, uint32 Codepoint, FFontGlyph& OutGlyph) const;
 
 	// CPU 누적 배열
 	TArray<FTextureVertex> WorldVertices;
 	TArray<uint32>         WorldIndices;
 	TArray<FTextureVertex> ScreenVertices;
 	TArray<uint32>         ScreenIndices;
+	TArray<FTextBatch>     WorldBatches;
+	TArray<FTextBatch>     ScreenBatches;
 
 	// GPU Dynamic Buffers
 	FDynamicVertexBuffer WorldVB;

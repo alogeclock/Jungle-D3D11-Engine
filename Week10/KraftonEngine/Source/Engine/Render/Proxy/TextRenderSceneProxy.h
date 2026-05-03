@@ -22,6 +22,7 @@ public:
 	FMatrix CachedTextWorldMatrix;
 	FVector CachedTextRight = FVector(0.0f, 1.0f, 0.0f);
 	FVector CachedTextUp = FVector(0.0f, 0.0f, 1.0f);
+	FVector4 CachedColor = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
 	const FFontResource* CachedFont = nullptr;
 
 private:

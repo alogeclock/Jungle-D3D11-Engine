@@ -3,6 +3,7 @@
 #include "Input/InputManager.h"
 #include "Object/ObjectFactory.h"
 #include "Render/Scene/FScene.h"
+#include "Resource/ResourceManager.h"
 #include "Serialization/Archive.h"
 
 #include <Windows.h>
@@ -13,12 +14,15 @@ UIButtonComponent::UIButtonComponent()
 {
 	bTickEnable = true;
 	PrimaryComponentTick.SetTickEnabled(true);
+	SetFont(FontName);
 }
 
 void UIButtonComponent::Serialize(FArchive& Ar)
 {
 	UUIImageComponent::Serialize(Ar);
 	Ar << Label;
+	Ar << FontName;
+	Ar << LabelColor;
 	Ar << LabelOffset;
 	Ar << LabelScale;
 	Ar << NormalTint;
@@ -30,6 +34,8 @@ void UIButtonComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutPr
 {
 	UUIImageComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Label", EPropertyType::String, &Label });
+	OutProps.push_back({ "Font", EPropertyType::Name, &FontName });
+	OutProps.push_back({ "Label Color", EPropertyType::Color4, &LabelColor });
 	OutProps.push_back({ "Label Offset", EPropertyType::Vec3, &LabelOffset, -4096.0f, 4096.0f, 1.0f });
 	OutProps.push_back({ "Label Scale", EPropertyType::Float, &LabelScale, 0.1f, 10.0f, 0.05f });
 	OutProps.push_back({ "Normal Tint", EPropertyType::Color4, &NormalTint });
@@ -40,7 +46,11 @@ void UIButtonComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutPr
 void UIButtonComponent::PostEditProperty(const char* PropertyName)
 {
 	UUIImageComponent::PostEditProperty(PropertyName);
-	(void)PropertyName;
+
+	if (strcmp(PropertyName, "Font") == 0)
+	{
+		SetFont(FontName);
+	}
 }
 
 void UIButtonComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
@@ -80,11 +90,20 @@ void UIButtonComponent::ContributeVisuals(FScene& Scene) const
 
 	if (!Label.empty())
 	{
+		const FFontResource* ResolvedFont = FResourceManager::Get().FindFont(FontName);
 		Scene.AddScreenText(
 			Label,
 			FVector2(ScreenPosition.X + LabelOffset.X, ScreenPosition.Y + LabelOffset.Y),
-			LabelScale);
+			LabelScale,
+			LabelColor,
+			ResolvedFont ? ResolvedFont : CachedFont);
 	}
+}
+
+void UIButtonComponent::SetFont(const FName& InFontName)
+{
+	FontName = InFontName;
+	CachedFont = FResourceManager::Get().FindFont(FontName);
 }
 
 FVector4 UIButtonComponent::GetCurrentTint() const

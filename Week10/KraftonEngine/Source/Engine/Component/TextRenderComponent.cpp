@@ -128,6 +128,7 @@ void UTextRenderComponent::GetEditableProperties(TArray<FPropertyDescriptor>& Ou
 	USceneComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Text", EPropertyType::String, &Text });
 	OutProps.push_back({ "Font", EPropertyType::Name, &FontName });
+	OutProps.push_back({ "Color", EPropertyType::Color4, &Color });
 	OutProps.push_back({ "Font Size", EPropertyType::Float, &FontSize, 0.1f, 100.0f, 0.1f });
 	OutProps.push_back({ "Visible", EPropertyType::Bool, &bIsVisible });
 }
@@ -153,6 +154,10 @@ void UTextRenderComponent::PostEditProperty(const char* PropertyName)
 	{
 		MarkProxyDirty(EDirtyFlag::Mesh);
 		MarkProxyDirty(EDirtyFlag::Transform);
+	}
+	else if (strcmp(PropertyName, "Color") == 0)
+	{
+		MarkProxyDirty(EDirtyFlag::Mesh);
 	}
 	else if (strcmp(PropertyName, "Visible") == 0)
 	{

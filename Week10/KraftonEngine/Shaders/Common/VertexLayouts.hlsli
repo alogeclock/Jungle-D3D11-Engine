@@ -39,8 +39,17 @@ struct VS_Input_PNCTT
     float4 tangent : TANGENT;
 };
 
-// FTextureVertex (Position + TexCoord)
-// 사용: Font, SubUV, ScreenText
+// FTextureVertex (Position + Color + TexCoord)
+// 사용: Font, ScreenText
+struct VS_Input_PTC
+{
+    float3 position : POSITION;
+    float4 color    : COLOR;
+    float2 texcoord : TEXCOORD;
+};
+
+// Position + TexCoord
+// 사용: SubUV
 struct VS_Input_PT
 {
     float3 position : POSITION;
@@ -75,6 +84,13 @@ struct PS_Input_Gizmo
 struct PS_Input_Tex
 {
     float4 position : SV_POSITION;
+    float2 texcoord : TEXCOORD;
+};
+
+struct PS_Input_TexColor
+{
+    float4 position : SV_POSITION;
+    float4 color    : COLOR;
     float2 texcoord : TEXCOORD;
 };
 

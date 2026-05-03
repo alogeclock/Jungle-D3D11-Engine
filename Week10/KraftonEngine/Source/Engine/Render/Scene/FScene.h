@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
+#include "Core/ResourceTypes.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 #include "Render/Scene/SceneEnvironment.h"
 #include "Debug/DebugDrawQueue.h"
@@ -47,8 +48,16 @@ public:
 	void ClearFrameData();
 
 	// --- Screen text (screen-space) ---
-	struct FScreenTextEntry { FString Text; FVector2 Position; float Scale; FVector4 Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f); };
-	void AddScreenText(FString Text, const FVector2& Position, float Scale, const FVector4& Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f));
+	struct FScreenTextEntry
+	{
+		FString Text;
+		FVector2 Position;
+		float Scale;
+		FVector4 Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+		const FFontResource* Font = nullptr;
+	};
+	void AddScreenText(FString Text, const FVector2& Position, float Scale, const FVector4& Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f),
+		const FFontResource* Font = nullptr);
 	const TArray<FScreenTextEntry>& GetScreenTexts() const { return ScreenTexts; }
 	struct FScreenQuadEntry
 	{

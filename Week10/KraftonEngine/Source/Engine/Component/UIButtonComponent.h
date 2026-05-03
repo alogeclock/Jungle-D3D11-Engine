@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Component/UIImageComponent.h"
+#include "Core/ResourceTypes.h"
+#include "Object/FName.h"
 
 class UIButtonComponent : public UUIImageComponent
 {
@@ -17,6 +19,9 @@ public:
 
 	const FString& GetLabel() const { return Label; }
 	void SetLabel(const FString& InLabel) { Label = InLabel; }
+	void SetFont(const FName& InFontName);
+	const FName& GetFontName() const { return FontName; }
+	const FFontResource* GetFont() const { return CachedFont; }
 
 	bool IsHovered() const { return bHovered; }
 	bool IsPressed() const { return bPressed; }
@@ -28,6 +33,9 @@ private:
 
 private:
 	FString Label = "Button";
+	FName FontName = FName("Default");
+	FFontResource* CachedFont = nullptr;
+	FVector4 LabelColor = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
 	FVector LabelOffset = FVector(24.0f, 18.0f, 0.0f);
 	float LabelScale = 1.0f;
 	FVector4 NormalTint = FVector4(1.0f, 1.0f, 1.0f, 0.95f);

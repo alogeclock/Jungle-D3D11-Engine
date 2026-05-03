@@ -292,9 +292,9 @@ void FScene::ClearFrameData()
 	LightVisualizationSettings = {};
 }
 
-void FScene::AddScreenText(FString Text, const FVector2& Position, float Scale, const FVector4& Color)
+void FScene::AddScreenText(FString Text, const FVector2& Position, float Scale, const FVector4& Color, const FFontResource* Font)
 {
-	ScreenTexts.push_back({ std::move(Text), Position, Scale, Color });
+	ScreenTexts.push_back({ std::move(Text), Position, Scale, Color, Font });
 }
 
 void FScene::AddScreenQuad(ID3D11ShaderResourceView* TextureSRV, const FVector2& Position, const FVector2& Size, const FVector4& Color, int32 ZOrder,
