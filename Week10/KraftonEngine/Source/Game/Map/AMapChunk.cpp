@@ -322,7 +322,9 @@ void AMapChunk::SpawnObstacle()
 		}
 		case (MustSlide):
 		{
-			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::HighBar, WorldPositionForLane(1)))
+			FVector SpawnLoc = WorldPositionForLane(1);
+			SpawnLoc.Z = SpawnLoc.Z + 1.25f;
+			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::HighBar, SpawnLoc))
 				SpawnedObstacles.push_back(Obs);
 			break;
 		}

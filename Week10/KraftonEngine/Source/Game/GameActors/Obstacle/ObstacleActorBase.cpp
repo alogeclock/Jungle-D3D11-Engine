@@ -43,7 +43,8 @@ void AObstacleActorBase::InitDefaultComponents(const FString& UStaticMeshFileNam
 	UBoxComponent* CollisionBox = AddComponent<UBoxComponent>();
 	CollisionBox->SetCanDeleteFromDetails(false);
 	CollisionBox->AttachToComponent(StaticMeshComponent);
-	CollisionBox->SetBoxExtent(FVector(0.75f, 0.75f, 1.0f));
+	CollisionBox->SetBoxExtent(CollisionBoxExtent);
+	CollisionBox->SetRelativeLocation(CollisionBoxOffset);
 	CollisionBox->SetCollisionEnabled(true);
 	CollisionBox->SetGenerateOverlapEvents(true);
 	if (HasActorBegunPlay())
