@@ -33,10 +33,10 @@
   },
   "assets": {
     "images": {
-      "jungle_tech_lab_logo": "Asset/Content/Texture/UI/EngineDive/logo_color.png",
-      "control_room_screen": "Asset/Content/Texture/Cutscene/EngineDive/intro.png",
-      "debug_pod_silhouette": "Asset/Content/Texture/Reference/EngineDive/image (2).png",
-      "grid_runtime_space": "Asset/Content/Texture/UI/EngineDive/title_background.png"
+      "jungle_tech_lab_logo": "Asset/Content/Texture/UI/logo_techlab_color.png",
+      "control_room_screen": "Asset/Content/Texture/Story/control_room_screen_on.png",
+      "debug_pod_silhouette": "Asset/Content/Texture/Story/debug_pod_silhouette.png",
+      "grid_runtime_space": "Asset/Content/Texture/background/title_background.png"
     },
     "sounds": {
       "boot_low": "Sound.SFX.windows.98.startup",
