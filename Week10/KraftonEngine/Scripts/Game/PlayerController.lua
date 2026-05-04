@@ -477,6 +477,7 @@ local function handle_obstacle_collision(event_name, other_actor)
     log("[PlayerController] Obstacle collision damage=" .. tostring(damage))
     if PlayerStatus.DamageStability(damage) and camera and camera:IsValid() then
         camera:StartCameraShake(hit_camera_shake_intensity, hit_camera_shake_duration)
+        camera:AddHitEffect(2.0, 0.7)
     end
 end
 
