@@ -47,7 +47,7 @@
             "ObjectName" : "UUIBackgroundComponent_1",
             "Properties" : {
               "Texture" : {
-                "Path" : "Asset/Content/Texture/UI/EngineDive/title_background.png"
+                "Path" : "Asset/Content/Texture/UI/title_background.png"
               },
               "Tint" : [1.000000, 1.000000, 1.000000, 1.000000],
               "Visible" : true,
@@ -68,7 +68,7 @@
               "Screen Position" : [378.694214, 80.439621, 0.000000],
               "Screen Size" : [1203.000000, 300.000000, 0.000000],
               "Texture" : {
-                "Path" : "Asset/Content/Texture/UI/EngineDive/logo.png"
+                "Path" : "Asset/Content/Texture/UI/logo.png"
               },
               "Tint" : [1.000000, 1.000000, 1.000000, 1.000000],
               "Use Anchored Layout" : false,
@@ -90,7 +90,7 @@
               },
               "Border Color" : [1.000000, 1.000000, 1.000000, 1.000000],
               "Border Thickness" : 10.600000,
-              "Click Sound" : "Sound.SFX.agents.are.go",
+              "Click Sound" : "Sound.SFX.arwing.hit.obstacle",
               "Content Alignment" : 1,
               "Draw Background" : false,
               "Fit Mode" : 2,
@@ -114,7 +114,7 @@
               "Screen Position" : [696.255188, 507.829773, 0.000000],
               "Screen Size" : [530.000000, 120.000000, 0.000000],
               "Texture" : {
-                "Path" : "Asset/Content/Texture/UI/EngineDive/button_start.png"
+                "Path" : "Asset/Content/Texture/UI/button_start.png"
               },
               "Use Anchored Layout" : false,
               "Visible" : true,
