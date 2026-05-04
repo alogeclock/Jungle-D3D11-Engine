@@ -373,7 +373,6 @@
     <ClCompile Include="Source\Engine\GameFramework\CharacterActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\DecalActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\HeightFogActor.cpp" />
-    <ClCompile Include="Source\Engine\GameFramework\ItemActorBase.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\ScreenTextActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\UIRootActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\WorldTextActor.cpp" />
@@ -490,6 +489,7 @@
     <ClCompile Include="Source\Engine\Viewport\GameViewportClient.cpp" />
     <ClCompile Include="Source\Engine\Viewport\Viewport.cpp" />
     <ClCompile Include="Source\Engine\Viewport\ViewportClient.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Items\ItemActorBase.cpp" />
     <ClCompile Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.cpp" />
     <ClCompile Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.cpp" />
     <ClCompile Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.cpp" />
@@ -769,6 +769,7 @@
     <ClInclude Include="Source\Engine\Viewport\GameViewportClient.h" />
     <ClInclude Include="Source\Engine\Viewport\Viewport.h" />
     <ClInclude Include="Source\Engine\Viewport\ViewportClient.h" />
+    <ClCompile Include="Source\Game\GameActors\Items\ItemActorBase.h" />
     <ClInclude Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.h" />
     <ClInclude Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.h" />
     <ClInclude Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.h" />
