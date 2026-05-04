@@ -1,5 +1,5 @@
 {
-        "Name" : "Asset/Mesh/Lumine/LumineModel_Inst_0.matinst",
+        "Name" : "Asset/Material/Auto/VillageDemo_sky_mat_Inst_0.matinst",
         "OverridedParams" : [{
             "Name" : "EmissiveColor",
             "Type" : "Vector3",
@@ -9,13 +9,13 @@
             "Type" : "Texture",
             "Value" : "Asset/Texture/Decal/T_Graffiti12_MSK.png"
           }, {
+            "Name" : "SpecularColor",
+            "Type" : "Vector3",
+            "Value" : [0.000000, 0.000000, 0.000000]
+          }, {
             "Name" : "Shininess",
             "Type" : "Float",
             "Value" : 250.000000
-          }, {
-            "Name" : "AmbientColor",
-            "Type" : "Vector3",
-            "Value" : [0.740000, 0.800000, 0.820000]
           }],
-        "Parent" : "Asset/Material/Auto/LumineModel_______.mat"
+        "Parent" : "Asset/Material/Auto/VillageDemo_sky_mat.mat"
       }
