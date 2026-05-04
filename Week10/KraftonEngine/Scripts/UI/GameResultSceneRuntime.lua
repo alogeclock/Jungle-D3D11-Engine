@@ -2,11 +2,23 @@ local Config = require("Game.Config")
 local GameManager = require("Game.GameManager")
 local Scoreboard = require("Game.Scoreboard")
 
+local DIALOGUE_PATH = "Asset/Content/Data/Dialogues/game_over.dialogue.json"
+local DEFAULT_RANK_TEXTURE = "Asset/Content/Texture/UI/rank_c.png"
+local RANK_TEXTURE_BY_CODE = {
+    s = "Asset/Content/Texture/UI/rank_s.png",
+    a = "Asset/Content/Texture/UI/rank_a.png",
+    b = "Asset/Content/Texture/UI/rank_b.png",
+    c = "Asset/Content/Texture/UI/rank_c.png",
+    d = "Asset/Content/Texture/UI/rank_c.png",
+    f = "Asset/Content/Texture/UI/rank_f.png",
+}
+
 local result_data = nil
 local title_text = nil
 local body_text = nil
 local status_text = nil
 local save_button = nil
+local rank_badge = nil
 local score_saved = false
 local title_loading = false
 local waiting_title_confirm = false
@@ -36,6 +48,12 @@ local function set_label(component, text)
     end
 end
 
+local function set_texture(component, texture_path)
+    if component and texture_path and texture_path ~= "" then
+        component:SetTexture(texture_path)
+    end
+end
+
 local function format_number(value)
     local formatted = tostring(math.floor(value or 0))
     local sign = ""
@@ -58,6 +76,7 @@ local function build_fallback_result_data()
     return {
         score = GameManager.GetScore and GameManager.GetScore() or 0,
         logs = GameManager.GetLogs and GameManager.GetLogs() or 0,
+        trace = GameManager.GetTrace and GameManager.GetTrace() or 0,
         hotfix_count = GameManager.GetHotfixCount and GameManager.GetHotfixCount() or 0,
         critical_analysis_count = GameManager.GetCriticalAnalysisCount and GameManager.GetCriticalAnalysisCount() or 0,
         distance = GameManager.GetDistance and GameManager.GetDistance() or 0,
@@ -65,31 +84,83 @@ local function build_fallback_result_data()
     }
 end
 
-local function build_result_body(data)
+local function format_metric_line(label, value)
+    local target_width = 17
+    local padding = target_width - #label
+    if padding < 2 then
+        padding = 2
+    end
+    return label .. string.rep(" ", padding) .. value
+end
+
+local function pick_dialogue_condition(data)
+    if (data.logs or 0) <= 0 then
+        return "logs_zero"
+    end
+    if (data.hotfix_count or 0) > 0 then
+        return "hotfix_success"
+    end
+    if (data.trace or 0) >= ((Config.collectible and Config.collectible.trace_max) or 100) * 0.5 then
+        return "trace_high"
+    end
+    return "default"
+end
+
+local function load_coach_dialogues(data)
     local screen_config = Config.result_screen or {}
-    local score = format_number(data.score or 0)
-    local logs = format_number(data.logs or 0)
-    local hotfix_count = tostring(math.floor(data.hotfix_count or 0)) .. "회"
-    local crash_dump_analysis_count = tostring(math.floor(data.critical_analysis_count or 0)) .. "회"
-    local depth = format_number(data.distance or 0) .. "m"
+    local result = {
+        baek_name = screen_config.coach_name_baek or "백승현 코치",
+        lim_name = screen_config.coach_name_lim or "임창근 코치",
+        baek_message = screen_config.coach_comment_baek or "",
+        lim_message = screen_config.coach_comment_lim or "",
+    }
+
+    local dialogue_root = load_json_file(DIALOGUE_PATH)
+    if type(dialogue_root) ~= "table" or type(dialogue_root.dialogues) ~= "table" then
+        return result
+    end
+
+    local condition = pick_dialogue_condition(data)
+    local dialogues = dialogue_root.dialogues
+    for index = 1, #dialogues do
+        local entry = dialogues[index]
+        if type(entry) == "table" and entry.condition == condition then
+            if entry.speaker == "BAEK_COMMANDER" and entry.message and entry.message ~= "" then
+                result.baek_message = tostring(entry.message)
+            elseif entry.speaker == "LIM_COMMANDER" and entry.message and entry.message ~= "" then
+                result.lim_message = tostring(entry.message)
+            end
+        end
+    end
+
+    return result
+end
+
+local function build_result_body(data)
+    local coach_dialogues = load_coach_dialogues(data)
     local coach_rank = tostring(data.coach_rank or "C")
 
     return table.concat({
         "",
-        "훈련 점수        " .. score,
-        "수집 로그        " .. logs,
-        "Hotfix 성공      " .. hotfix_count,
-        "Crash Dump 분석  " .. crash_dump_analysis_count,
-        "최대 진입 깊이    " .. depth,
+        format_metric_line("훈련 점수", format_number(data.score or 0)),
+        format_metric_line("수집 로그", format_number(data.logs or 0)),
+        format_metric_line("Hotfix 성공", tostring(math.floor(data.hotfix_count or 0)) .. "회"),
+        format_metric_line("Crash Dump 분석", tostring(math.floor(data.critical_analysis_count or 0)) .. "회"),
+        format_metric_line("최대 진입 깊이", format_number(data.distance or 0) .. "m"),
         "",
-        "코치 인정도      " .. coach_rank,
+        format_metric_line("코치 인정도", coach_rank),
         "",
-        tostring(screen_config.coach_name_baek or "백승현 코치") .. ":",
-        "“" .. tostring(screen_config.coach_comment_baek or "") .. "”",
+        tostring(coach_dialogues.baek_name) .. ":",
+        "\"" .. tostring(coach_dialogues.baek_message or "") .. "\"",
         "",
-        tostring(screen_config.coach_name_lim or "임창근 코치") .. ":",
-        "“" .. tostring(screen_config.coach_comment_lim or "") .. "”",
+        tostring(coach_dialogues.lim_name) .. ":",
+        "\"" .. tostring(coach_dialogues.lim_message or "") .. "\"",
     }, "\n")
+end
+
+local function resolve_rank_texture(rank_code)
+    local normalized = string.lower(tostring(rank_code or "c"))
+    return RANK_TEXTURE_BY_CODE[normalized] or DEFAULT_RANK_TEXTURE
 end
 
 function BeginPlay()
@@ -97,19 +168,24 @@ function BeginPlay()
 
     title_text = get_component("ResultTitle", "UUIScreenTextComponent_0")
     body_text = get_component("ResultBody", "UUIScreenTextComponent_1")
+    rank_badge = get_component("RankBadge", "UUIImageComponent_1")
     status_text = get_component("SaveStatusText", "UUIScreenTextComponent_2")
     save_button = get_component("SaveScoreButton", "UIButtonComponent_0")
 
     if not title_text then
-        warn("GameOverScene missing ResultTitle component")
+        warn("GameResultScene missing ResultTitle component")
     end
     if not body_text then
-        warn("GameOverScene missing ResultBody component")
+        warn("GameResultScene missing ResultBody component")
+    end
+    if not rank_badge then
+        warn("GameResultScene missing RankBadge component")
     end
 
     result_data = GameManager.GetResultData() or build_fallback_result_data()
     set_text(title_text, (Config.result_screen and Config.result_screen.title) or "DEBUG SESSION RESULT")
     set_text(body_text, build_result_body(result_data))
+    set_texture(rank_badge, resolve_rank_texture(result_data and result_data.coach_rank))
     set_text(status_text, "")
     set_label(save_button, "SAVE SCORE")
     score_saved = false
@@ -127,7 +203,7 @@ function Tick(dt)
             set_text(status_text, "SAVED: " .. tostring(safe_nickname))
             set_label(save_button, "SAVED")
             print("[Scoreboard] Saved to " .. tostring(save_path) .. " nickname=" .. tostring(safe_nickname) .. " score=" .. tostring(math.floor((result_data and result_data.score) or 0)))
-            open_message_popup("타이틀로 돌아갑니다")
+            open_message_popup("타이틀로 돌아갑니다.")
         else
             set_text(status_text, "SAVE FAILED")
         end
