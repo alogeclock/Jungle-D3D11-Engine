@@ -1,4 +1,4 @@
--- PlayerController.lua
+w-- PlayerController.lua
 -- Runner Pawn의 입력, 자동 전진, 레인 이동, 중력, 바닥 판정, Stability/GameOver 연결을 담당한다.
 -- C++ Runner는 최소한의 Actor/Component 구성만 만들고, 실제 플레이 수치와 상태 전이는 Lua에서 조정한다.
 -- Map과 Player 충돌 문제를 추적하기 쉽도록 Ground Query 관련 값과 상태 변화는 이벤트 단위로 로그를 남긴다.
@@ -10,7 +10,7 @@ local AudioManager = require("Game.AudioManager")
 local PlayerSlide = require("Game.PlayerSlide")
 
 local PlayerConfig = Config.player
-
+local is_input_locked = false;
 DeclareProperties({
     { name = "ForwardSpeed", type = "float", default = PlayerConfig.forward_speed },
     { name = "LaneWidth", type = "float", default = PlayerConfig.lane_width },
@@ -476,6 +476,10 @@ function BeginPlay()
 end
 
 function Tick(dt)
+    if GameManager.IsPaused and GameManager.IsPaused() then
+        return
+    end
+
     -- GameOver 이후에는 이동, 입력, 중력, score 갱신을 모두 멈춘다.
     -- 로그는 최초 1회만 남겨 Tick마다 콘솔이 도배되지 않게 한다.
     if GameManager.IsGameOver() then

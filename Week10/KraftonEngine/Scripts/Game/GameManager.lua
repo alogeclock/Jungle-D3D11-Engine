@@ -8,6 +8,7 @@ local GameManager = {
     State = {
         Ready = "Ready",
         Running = "Running",
+        Paused = "Paused",
         GameOver = "GameOver",
     },
 
@@ -384,6 +385,24 @@ end
 
 function GameManager.IsRunning()
     return GameManager.state == GameManager.State.Running
+end
+
+function GameManager.Pause()
+    if GameManager.state == GameManager.State.Running then
+        GameManager.state = GameManager.State.Paused
+        log("[GameManager] Paused")
+    end
+end
+
+function GameManager.Resume()
+    if GameManager.state == GameManager.State.Paused then
+        GameManager.state = GameManager.State.Running
+        log("[GameManager] Resumed")
+    end
+end
+
+function GameManager.IsPaused()
+    return GameManager.state == GameManager.State.Paused
 end
 
 function GameManager.GameOver(reason)

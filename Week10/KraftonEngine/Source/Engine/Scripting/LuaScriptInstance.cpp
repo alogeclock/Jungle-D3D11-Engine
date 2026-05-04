@@ -14,6 +14,7 @@
 #include "Platform/ScriptPaths.h"
 #include "SimpleJSON/json.hpp"
 #include "Scripting/ScriptProperty.h"
+#include "Engine/Viewport/GameViewportClient.h"
 
 // Sol.hpp에 있는 Check 매크로 겹침 방지 목적 제거
 #pragma region SolInclude
@@ -1524,6 +1525,11 @@ void FLuaScriptInstance::BindSoundFunctions()
 	Impl->Env.set_function("is_bgm_playing", []()
 	{
 		return FAudioManager::Get().IsBackgroundPlaying();
+	});
+
+	Impl->Env.set_function("stop_all_audio", []()
+	{
+		FAudioManager::Get().StopAll();
 	});
 }
 
