@@ -276,7 +276,7 @@ void AMapChunk::SpawnObstacle()
 
 		auto WorldPositionForLane = [&](int32 LaneIndex)
 		{
-			return GetActorLocation() + WorldQuat.RotateVector(FVector(DecisionSlot.X, LaneY[LaneIndex], ObstacleZ));
+			return GetActorLocation() + WorldQuat.RotateVector(FVector(DecisionSlot.X, LaneY[LaneIndex], ObstacleZ + 1.f));
 		};
 
 		switch (Decision) {
@@ -324,7 +324,7 @@ void AMapChunk::SpawnObstacle()
 		case (MustSlide):
 		{
 			FVector SpawnLoc = WorldPositionForLane(1);
-			SpawnLoc.Z = SpawnLoc.Z + 1.35f;
+			SpawnLoc.Z = SpawnLoc.Z + 0.35f;
 			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::HighBar, SpawnLoc)) {
 				SpawnedObstacles.push_back(Obs);
 			}

@@ -61,10 +61,10 @@ void AObstacleActorBase::InitDefaultComponents(const FString& UStaticMeshFileNam
 		UStaticMesh* Asset = FObjManager::LoadObjStaticMesh(UStaticMeshFileName, Device);
 		StaticMeshComponent->SetStaticMesh(Asset);
 
-		if (Asset && IsBasicShapeAssetPath(UStaticMeshFileName))
+		if (Asset)
 		{
-			const FString DefaultShapeMaterialPath = FResourceManager::Get().ResolvePath(FName("Default.Material.BasicShape"));
-			if (UMaterial* DefaultShapeMaterial = FMaterialManager::Get().GetOrCreateMaterial(DefaultShapeMaterialPath))
+			const FString RedGridMaterialPath = FResourceManager::Get().ResolvePath(FName("Sample.Material.RedGrid"));
+			if (UMaterial* RedGridMaterial = FMaterialManager::Get().GetOrCreateMaterial(RedGridMaterialPath))
 			{
 				int32 MaterialCount = static_cast<int32>(Asset->GetStaticMaterials().size());
 				if (MaterialCount == 0 && Asset->GetStaticMeshAsset() &&
@@ -74,7 +74,7 @@ void AObstacleActorBase::InitDefaultComponents(const FString& UStaticMeshFileNam
 				}
 				for (int32 MaterialIndex = 0; MaterialIndex < MaterialCount; ++MaterialIndex)
 				{
-					StaticMeshComponent->SetMaterial(MaterialIndex, DefaultShapeMaterial);
+					StaticMeshComponent->SetMaterial(MaterialIndex, RedGridMaterial);
 				}
 			}
 		}

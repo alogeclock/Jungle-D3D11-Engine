@@ -54,6 +54,6 @@ protected:
 	// TODO: 장애물 Damage 테이블을 Lua Config로 완전히 옮길 수 있으면 타입별 밸런스를 Lua에서 관리하면 됨.
 	int Damage = 1;
 
-	FVector CollisionBoxExtent = FVector(0.75f, 0.75f, 1.f);
+	FVector CollisionBoxExtent = FVector(1.f, 1.f, 1.f);
 	FVector CollisionBoxOffset = FVector();
 };
