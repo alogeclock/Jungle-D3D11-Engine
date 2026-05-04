@@ -177,7 +177,7 @@ static bool IsLaneBlockedByObstacle(EObstacleDecision Decision, int32 LaneIndex)
 	case DoubleBarrierRight:
 		return LaneIndex == 1 || LaneIndex == 2;
 
-	case MustJump:
+	//case MustJump:
 	case MustSlide:
 		return LaneIndex == 1;
 
@@ -314,17 +314,17 @@ void AMapChunk::SpawnObstacle()
 				SpawnedObstacles.push_back(Obs1);
 			break;
 		}
-		case (MustJump):
-		{
-			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::LowBar, WorldPositionForLane(1))) {
-				SpawnedObstacles.push_back(Obs);
-			}
-			break;
-		}
+		//case (MustJump):
+		//{
+		//	if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::LowBar, WorldPositionForLane(1))) {
+		//		SpawnedObstacles.push_back(Obs);
+		//	}
+		//	break;
+		//}
 		case (MustSlide):
 		{
 			FVector SpawnLoc = WorldPositionForLane(1);
-			SpawnLoc.Z = SpawnLoc.Z + 1.25f;
+			SpawnLoc.Z = SpawnLoc.Z + 1.35f;
 			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::HighBar, SpawnLoc)) {
 				SpawnedObstacles.push_back(Obs);
 			}

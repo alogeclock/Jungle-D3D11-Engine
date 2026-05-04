@@ -22,7 +22,7 @@ enum EObstacleDecision {
 	SingleBarrierRight,
 	DoubleBarrierLeft,
 	DoubleBarrierRight,
-	MustJump,
+	//MustJump,
 	MustSlide,
 	Count,
 };
