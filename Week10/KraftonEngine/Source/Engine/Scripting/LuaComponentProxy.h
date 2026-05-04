@@ -2,6 +2,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Vector.h"
+#include "Math/Rotator.h"
 #include "Collision/OverlapInfo.h"
 
 class UActorComponent;
@@ -39,12 +40,12 @@ struct FLuaComponentProxy
 	bool AddWorldOffsetXYZ(float X, float Y, float Z);
 	bool AddLocalOffset(const FVector& Delta);
 	bool AddLocalOffsetXYZ(float X, float Y, float Z);
-	sol::optional<FVector> GetWorldRotation() const;
-	bool SetWorldRotation(const FVector& InRotation);
-	bool SetWorldRotationXYZ(float X, float Y, float Z);
-	sol::optional<FVector> GetLocalRotation() const;
-	bool SetLocalRotation(const FVector& InRotation);
-	bool SetLocalRotationXYZ(float X, float Y, float Z);
+	sol::optional<FRotator> GetWorldRotation() const;
+	bool SetWorldRotation(const FRotator& InRotation);
+	bool SetWorldRotationXYZ(float Pitch, float Yaw, float Roll);
+	sol::optional<FRotator> GetLocalRotation() const;
+	bool SetLocalRotation(const FRotator& InRotation);
+	bool SetLocalRotationXYZ(float Pitch, float Yaw, float Roll);
 	sol::optional<FVector> GetWorldScale() const;
 	bool SetWorldScale(const FVector& InScale);
 	bool SetWorldScaleXYZ(float X, float Y, float Z);

@@ -1,4 +1,4 @@
-#include "Scripting/LuaActorProxy.h"
+﻿#include "Scripting/LuaActorProxy.h"
 
 #include "Component/ActorComponent.h"
 #include "Component/PrimitiveComponent.h"
@@ -262,13 +262,13 @@ void FLuaActorProxy::SetWorldLocationXYZ(float X, float Y, float Z)
 	SetWorldLocation(FVector(X, Y, Z));
 }
 
-FVector FLuaActorProxy::GetWorldRotation() const
+FRotator FLuaActorProxy::GetWorldRotation() const
 {
 	AActor* TargetActor = GetActor();
-	return TargetActor ? TargetActor->GetActorRotation().ToVector() : FVector(0.0f, 0.0f, 0.0f);
+	return TargetActor ? TargetActor->GetActorRotation() : FRotator::ZeroRotator;
 }
 
-void FLuaActorProxy::SetWorldRotation(const FVector& InRotation)
+void FLuaActorProxy::SetWorldRotation(const FRotator& InRotation)
 {
 	AActor* TargetActor = GetActor();
 	if (!TargetActor)
@@ -276,13 +276,12 @@ void FLuaActorProxy::SetWorldRotation(const FVector& InRotation)
 		return;
 	}
 
-	// Lua에는 Vector 하나로 단순화해 회전 값을 노출한다.
 	TargetActor->SetActorRotation(InRotation);
 }
 
-void FLuaActorProxy::SetWorldRotationXYZ(float X, float Y, float Z)
+void FLuaActorProxy::SetWorldRotationXYZ(float Pitch, float Yaw, float Roll)
 {
-	SetWorldRotation(FVector(X, Y, Z));
+	SetWorldRotation(FRotator(Pitch, Yaw, Roll));
 }
 
 FVector FLuaActorProxy::GetWorldScale() const

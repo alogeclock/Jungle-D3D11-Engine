@@ -1,4 +1,4 @@
-#include "Scripting/LuaComponentProxy.h"
+﻿#include "Scripting/LuaComponentProxy.h"
 
 #include "Component/ActorComponent.h"
 #include "Component/Movement/InterpToMovementComponent.h"
@@ -193,16 +193,6 @@ bool FLuaComponentProxy::SetWorldLocationXYZ(float X, float Y, float Z)
 	return SetWorldLocation(FVector(X, Y, Z));
 }
 
-sol::optional<FVector> FLuaComponentProxy::GetLocalLocation() const
-{
-	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
-	if (!SceneComponent)
-	{
-		return sol::nullopt;
-	}
-
-	return SceneComponent->GetRelativeLocation();
-}
 
 bool FLuaComponentProxy::SetLocalLocation(const FVector& InLocation)
 {
@@ -255,7 +245,7 @@ bool FLuaComponentProxy::AddLocalOffsetXYZ(float X, float Y, float Z)
 	return AddLocalOffset(FVector(X, Y, Z));
 }
 
-sol::optional<FVector> FLuaComponentProxy::GetWorldRotation() const
+sol::optional<FRotator> FLuaComponentProxy::GetWorldRotation() const
 {
 	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
 	if (!SceneComponent)
@@ -263,11 +253,10 @@ sol::optional<FVector> FLuaComponentProxy::GetWorldRotation() const
 		return sol::nullopt;
 	}
 
-	// TODO: USceneComponent에 World Rotation getter가 추가되면 그 API로 교체한다.
-	return SceneComponent->GetRelativeRotation().ToVector();
+	return SceneComponent->GetComponentRotation();
 }
 
-bool FLuaComponentProxy::SetWorldRotation(const FVector& InRotation)
+bool FLuaComponentProxy::SetWorldRotation(const FRotator& InRotation)
 {
 	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
 	if (!SceneComponent)
@@ -275,28 +264,17 @@ bool FLuaComponentProxy::SetWorldRotation(const FVector& InRotation)
 		return false;
 	}
 
-	// TODO: USceneComponent에 World Rotation setter가 추가되면 그 API로 교체한다.
-	SceneComponent->SetRelativeRotation(InRotation);
+	SceneComponent->SetWorldRotation(InRotation);
 	return true;
 }
 
-bool FLuaComponentProxy::SetWorldRotationXYZ(float X, float Y, float Z)
+bool FLuaComponentProxy::SetWorldRotationXYZ(float Pitch, float Yaw, float Roll)
 {
-	return SetWorldRotation(FVector(X, Y, Z));
+	return SetWorldRotation(FRotator(Pitch, Yaw, Roll));
 }
 
-sol::optional<FVector> FLuaComponentProxy::GetLocalRotation() const
-{
-	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
-	if (!SceneComponent)
-	{
-		return sol::nullopt;
-	}
 
-	return SceneComponent->GetRelativeRotation().ToVector();
-}
-
-bool FLuaComponentProxy::SetLocalRotation(const FVector& InRotation)
+bool FLuaComponentProxy::SetLocalRotation(const FRotator& InRotation)
 {
 	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
 	if (!SceneComponent)
@@ -308,9 +286,20 @@ bool FLuaComponentProxy::SetLocalRotation(const FVector& InRotation)
 	return true;
 }
 
-bool FLuaComponentProxy::SetLocalRotationXYZ(float X, float Y, float Z)
+bool FLuaComponentProxy::SetLocalRotationXYZ(float Pitch, float Yaw, float Roll)
 {
-	return SetLocalRotation(FVector(X, Y, Z));
+	return SetLocalRotation(FRotator(Pitch, Yaw, Roll));
+}
+
+sol::optional<FRotator> FLuaComponentProxy::GetLocalRotation() const
+{
+	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
+	if (!SceneComponent)
+	{
+		return sol::nullopt;
+	}
+
+	return SceneComponent->GetRelativeRotation();
 }
 
 sol::optional<FVector> FLuaComponentProxy::GetWorldScale() const
@@ -341,8 +330,7 @@ bool FLuaComponentProxy::SetWorldScaleXYZ(float X, float Y, float Z)
 {
 	return SetWorldScale(FVector(X, Y, Z));
 }
-
-sol::optional<FVector> FLuaComponentProxy::GetLocalScale() const
+sol::optional<FVector> FLuaComponentProxy::GetLocalLocation() const
 {
 	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
 	if (!SceneComponent)
@@ -350,8 +338,10 @@ sol::optional<FVector> FLuaComponentProxy::GetLocalScale() const
 		return sol::nullopt;
 	}
 
-	return SceneComponent->GetRelativeScale();
+	return SceneComponent->GetRelativeLocation();
 }
+
+
 
 bool FLuaComponentProxy::SetLocalScale(const FVector& InScale)
 {
@@ -368,6 +358,17 @@ bool FLuaComponentProxy::SetLocalScale(const FVector& InScale)
 bool FLuaComponentProxy::SetLocalScaleXYZ(float X, float Y, float Z)
 {
 	return SetLocalScale(FVector(X, Y, Z));
+}
+
+sol::optional<FVector> FLuaComponentProxy::GetLocalScale() const
+{
+	USceneComponent* SceneComponent = Cast<USceneComponent>(GetComponent());
+	if (!SceneComponent)
+	{
+		return sol::nullopt;
+	}
+
+	return SceneComponent->GetRelativeScale();
 }
 
 sol::optional<FVector> FLuaComponentProxy::GetForwardVector() const

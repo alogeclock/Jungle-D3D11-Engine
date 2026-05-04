@@ -1,4 +1,5 @@
 #include "Scripting/LuaScriptRuntime.h"
+#include "Math/Rotator.h"
 
 #ifdef check
 #pragma push_macro("check")
@@ -59,12 +60,12 @@ void FLuaScriptRuntime::BindComponentProxyType()
 		"AddLocalOffsetXYZ", &FLuaComponentProxy::AddLocalOffsetXYZ,
 		"GetWorldRotation", &FLuaComponentProxy::GetWorldRotation,
 		"SetWorldRotation", sol::overload(
-			static_cast<bool(FLuaComponentProxy::*)(const FVector&)>(&FLuaComponentProxy::SetWorldRotation),
+			static_cast<bool(FLuaComponentProxy::*)(const FRotator&)>(&FLuaComponentProxy::SetWorldRotation),
 			&FLuaComponentProxy::SetWorldRotationXYZ),
 		"SetWorldRotationXYZ", &FLuaComponentProxy::SetWorldRotationXYZ,
 		"GetLocalRotation", &FLuaComponentProxy::GetLocalRotation,
 		"SetLocalRotation", sol::overload(
-			static_cast<bool(FLuaComponentProxy::*)(const FVector&)>(&FLuaComponentProxy::SetLocalRotation),
+			static_cast<bool(FLuaComponentProxy::*)(const FRotator&)>(&FLuaComponentProxy::SetLocalRotation),
 			&FLuaComponentProxy::SetLocalRotationXYZ),
 		"SetLocalRotationXYZ", &FLuaComponentProxy::SetLocalRotationXYZ,
 		"GetWorldScale", &FLuaComponentProxy::GetWorldScale,
@@ -156,7 +157,7 @@ void FLuaScriptRuntime::BindActorProxyType()
 		"SetWorldLocationXYZ", &FLuaActorProxy::SetWorldLocationXYZ,
 		"GetWorldRotation", &FLuaActorProxy::GetWorldRotation,
 		"SetWorldRotation", sol::overload(
-			static_cast<void(FLuaActorProxy::*)(const FVector&)>(&FLuaActorProxy::SetWorldRotation),
+			static_cast<void(FLuaActorProxy::*)(const FRotator&)>(&FLuaActorProxy::SetWorldRotation),
 			&FLuaActorProxy::SetWorldRotationXYZ),
 		"SetWorldRotationXYZ", &FLuaActorProxy::SetWorldRotationXYZ,
 		"GetWorldScale", &FLuaActorProxy::GetWorldScale,
@@ -166,6 +167,7 @@ void FLuaScriptRuntime::BindActorProxyType()
 		"SetWorldScaleXYZ", &FLuaActorProxy::SetWorldScaleXYZ,
 		"GetComponent", &FLuaActorProxy::GetComponent,
 		"GetComponentByType", &FLuaActorProxy::GetComponentByType,
+		"FindComponentByClass", &FLuaActorProxy::FindComponentByClass,
 		"GetScriptComponent", &FLuaActorProxy::GetScriptComponent,
 		"GetStaticMeshComponent", &FLuaActorProxy::GetStaticMeshComponent,
 		"AddWorldOffset", sol::overload(

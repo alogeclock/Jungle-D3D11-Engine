@@ -340,7 +340,6 @@ namespace
 		if (UpperKey.size() == 1)
 		{
 			unsigned char KeyChar = static_cast<unsigned char>(UpperKey[0]);
-			// A-Z or 0-9
 			if ((KeyChar >= 'A' && KeyChar <= 'Z') || (KeyChar >= '0' && KeyChar <= '9'))
 			{
 				OutVirtualKey = KeyChar;
@@ -1150,7 +1149,10 @@ void FLuaScriptInstance::BindInputFunctions()
 	auto GetKey = [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
-		if (!TryParseVirtualKey(KeyName, VirtualKey)) return false;
+		if (!TryParseVirtualKey(KeyName, VirtualKey))
+		{
+			return false;
+		}
 		FInputManager& Input = FInputManager::Get();
 		if (Input.IsGuiUsingKeyboard()) return false;
 		return Input.IsKeyDown(VirtualKey);
@@ -1159,7 +1161,10 @@ void FLuaScriptInstance::BindInputFunctions()
 	auto GetKeyDown = [](const FString& KeyName)
 	{
 		int VirtualKey = 0;
-		if (!TryParseVirtualKey(KeyName, VirtualKey)) return false;
+		if (!TryParseVirtualKey(KeyName, VirtualKey))
+		{
+			return false;
+		}
 		FInputManager& Input = FInputManager::Get();
 		if (Input.IsGuiUsingKeyboard()) return false;
 		return Input.IsKeyPressed(VirtualKey);
