@@ -11,7 +11,7 @@ public:
 
 	void BeginPlay() override;
 	void EndPlay()	 override;
-	void InitFromTemplate(const FMapChunkTemplate& InTemplate, float ObstacleFillRate, float InChunkBuggedRate);
+	void InitFromTemplate(const FMapChunkTemplate& InTemplate, float InChunkBuggedRate);
 	void SetChunkBuggedRate(float InRate) { ChunkBuggedRate = InRate; }
 
 	FVector    GetExitLocation() const;
@@ -39,4 +39,6 @@ private:
 	TArray<UStaticMeshComponent*> FloorMeshes;
 	TArray<AObstacleActorBase*> SpawnedObstacles;
 	TArray<AItemActorBase*> SpawnedItems;
+
+	bool bWasObstacleSpawned = false;
 };

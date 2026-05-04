@@ -59,9 +59,9 @@ void AMapChunk::EndPlay() {
 	AActor::EndPlay();
 }
 
-void AMapChunk::InitFromTemplate(const FMapChunkTemplate& InTemplate, float InObstacleFillRate, float InChunkBuggedRate) {
+void AMapChunk::InitFromTemplate(const FMapChunkTemplate& InTemplate, float InChunkBuggedRate) {
 	Template         = InTemplate;
-	ObstacleFillRate = InObstacleFillRate;
+	ObstacleFillRate = InTemplate.ObstacleSpawnRate;
 	ChunkBuggedRate = InChunkBuggedRate;
 	BuildFloor();
 	SpawnObstacle();
@@ -270,6 +270,8 @@ void AMapChunk::SpawnObstacle()
 	for (const FDecisionSlot& DecisionSlot : Template.ObstacleSlotDecisions) {
 		if (!MapRandom::Chance(ObstacleFillRate)) continue;
 		if (DecisionSlot.AllowedDecisions.empty()) continue;
+		if (bWasObstacleSpawned) continue;
+		bWasObstacleSpawned = true;
 
 		const int32 DecisionIndex = MapRandom::Index(static_cast<int32>(DecisionSlot.AllowedDecisions.size()));
 		EObstacleDecision Decision = DecisionSlot.AllowedDecisions[DecisionIndex];

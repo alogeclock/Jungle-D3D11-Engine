@@ -52,7 +52,7 @@ void AMapManager::Tick(float DeltaTime) {
 void AMapManager::BuildTemplateLibrary() {
 	constexpr float ChunkWidth = 6.f;	// Recommended multiple of 3
 	constexpr float ChunkLength = 20.f; // Recommended multiple of 2
-	constexpr float TurnLength = 10.f;
+	constexpr float TurnLength = 20.f;
 	constexpr float LaneY[3] = { -ChunkWidth / 1.5, 0, ChunkWidth / 1.5f };
 
 	Templates.clear();
@@ -87,6 +87,22 @@ void AMapManager::BuildTemplateLibrary() {
 			}
 		};
 
+	auto AddNonSlideDecisionSlots = [](FMapChunkTemplate& Template, float StartX, float EndX, float Step)
+		{
+			for (float X = StartX; X <= EndX; X += Step)
+			{
+				FDecisionSlot Slot = {};
+				Slot.X = X;
+				for (int32 DecisionIndex = 0; DecisionIndex < static_cast<int32>(EObstacleDecision::Count); ++DecisionIndex)
+				{
+					EObstacleDecision Decision = static_cast<EObstacleDecision>(DecisionIndex);
+					if (Decision != EObstacleDecision::MustSlide)
+						Slot.AllowedDecisions.push_back(static_cast<EObstacleDecision>(DecisionIndex));
+				}
+				Template.ObstacleSlotDecisions.push_back(Slot);
+			}
+		};
+
 	//-----------------------------------------------------------------
 	// Start
 	//-----------------------------------------------------------------
@@ -113,6 +129,7 @@ void AMapManager::BuildTemplateLibrary() {
 	Straight.Length = ChunkLength;
 	Straight.Width  = ChunkWidth;
 	Straight.ExitOffset = FVector(ChunkLength, 0.0f, 0.0f);
+	Straight.ObstacleSpawnRate = 0.7f;
 
 	// Straight floor infos
 	FFloorBlock StraightFloor = {};
@@ -127,6 +144,8 @@ void AMapManager::BuildTemplateLibrary() {
 	float RightLaneY = ChunkWidth / 1.5f;
 	AddDefaultDecisionSlots(Straight, 2.f, Straight.Length - 2.f, 2.f);
 
+	Templates.push_back(Straight);
+	Templates.push_back(Straight);
 	Templates.push_back(Straight);
 
 	//-----------------------------------------------------------------
@@ -198,6 +217,7 @@ void AMapManager::BuildTemplateLibrary() {
 	StraightWithHole.Length = ChunkLength / 2;
 	StraightWithHole.Width  = ChunkWidth;
 	StraightWithHole.ExitOffset = FVector(StraightWithHole.Length, 0.f, 0.f);
+	StraightWithHole.ObstacleSpawnRate = 0.4f;
 
 	// Straight With Hole Floor
 	FFloorBlock StraightWithHoleFloor1 = {};
@@ -213,7 +233,7 @@ void AMapManager::BuildTemplateLibrary() {
 	StraightWithHole.FloorBlockInfos.push_back(StraightWithHoleFloor2);
 
 	// Obstacles
-	AddDefaultDecisionSlots(StraightWithHole, StraightWithHole.Length * 0.5f, StraightWithHole.Length - 2.f, 2.f);
+	AddNonSlideDecisionSlots(StraightWithHole, StraightWithHole.Length * 0.5f, StraightWithHole.Length - 2.f, 1.f);
 	Templates.push_back(StraightWithHole);
 
 	//-----------------------------------------------------------------
@@ -224,6 +244,7 @@ void AMapManager::BuildTemplateLibrary() {
 	StraightWithOneLaneL.Length	   = ChunkLength;
 	StraightWithOneLaneL.Width	   = ChunkWidth;
 	StraightWithOneLaneL.ExitOffset = FVector(StraightWithOneLaneL.Length, 0.f, 0.f);
+	StraightWithOneLaneL.ObstacleSpawnRate = 0.2f;
 
 	// StraightWithOneLaneL Floor
 	FFloorBlock StraightWithOneLaneL1 = {};
@@ -256,6 +277,7 @@ void AMapManager::BuildTemplateLibrary() {
 	StraightWithOneLaneM.Length = ChunkLength;
 	StraightWithOneLaneM.Width = ChunkWidth;
 	StraightWithOneLaneM.ExitOffset = FVector(StraightWithOneLaneM.Length, 0.f, 0.f);
+	StraightWithOneLaneM.ObstacleSpawnRate = 0.2f;
 
 	// StraightWithOneLaneM Floor
 	FFloorBlock StraightWithOneLaneM1 = {};
@@ -288,6 +310,7 @@ void AMapManager::BuildTemplateLibrary() {
 	StraightWithOneLaneR.Length = ChunkLength;
 	StraightWithOneLaneR.Width = ChunkWidth;
 	StraightWithOneLaneR.ExitOffset = FVector(StraightWithOneLaneR.Length, 0.f, 0.f);
+	StraightWithOneLaneR.ObstacleSpawnRate = 0.2f;
 
 	// StraightWithOneLaneM Floor
 	FFloorBlock StraightWithOneLaneR1 = {};
@@ -327,7 +350,7 @@ void AMapManager::SpawnNextChunk(bool Init)
 
 	// TODO: 장애물 생성 확률은 생존 시간/거리 기반으로 서서히 증가시키되,
 	// 플레이 불가능한 수준으로 올라가지 않게 적당한 상한을 둔다.
-	Chunk->InitFromTemplate(T, ObstacleSpawnRate, ChunkBuggedRate);
+	Chunk->InitFromTemplate(T, ObstacleSpawnRate);
 	if (ChunkBuggedRate < 1.0f) ChunkBuggedRate += 0.05;
 	ActiveChunks.push_back(Chunk);
 

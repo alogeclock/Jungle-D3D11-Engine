@@ -49,6 +49,7 @@ struct FMapChunkTemplate {
 	EChunkType				ChunkType = EChunkType::Straight;
 	float					Length = 0.0f;
 	float					Width  = 0.0f;
+	float					ObstacleSpawnRate = 0.f;
 	FVector					ExitOffset = FVector(0.0f, 0.0f, 0.0f);	// local-space offset from entry to next chunk's origin
 	FRotator				ExitRotation = FRotator(0.0f, 0.0f, 0.0f);	// e.g. (0, 0, -90) for a left turn around Z
 	TArray<FDecisionSlot>	ObstacleSlotDecisions;			// Available obstacles at Coordinate X. Defined per template
