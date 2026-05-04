@@ -12,7 +12,7 @@ void AMustSlideObstacleActor::InitDefaultComponents(const FString& UStaticMeshFi
 		}
 	}
 
-	SetCollisionBoxExtent(FVector(0.95f, 6.f, 0.3f));
+	SetCollisionBoxExtent(FVector(0.35f, 6.f, 0.3f));
 	SetCollisionBoxOffset(FVector(-0.3f, 0, 0.2f));
 	Super::InitDefaultComponents(MeshPath);
 }
