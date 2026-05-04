@@ -23,12 +23,6 @@ local DefaultFeatures = {
     CrashDumpReward = false,
     -- SingleUse는 같은 overlap이 여러 번 들어와도 한 번만 처리하게 합니다.
     SingleUse = true,
-    -- AutoRespawn은 나중에 아이템 재생성 시스템을 붙일 때 쓸 자리입니다.
-    AutoRespawn = false,
-    -- FloatingMotion은 나중에 둥실거리는 연출을 붙일 수 있는 자리입니다.
-    FloatingMotion = false,
-    -- RotatingMotion은 나중에 회전 연출을 붙일 수 있는 자리입니다.
-    RotatingMotion = false,
     -- DebugLog는 아이템 pickup 흐름을 콘솔로 확인할 때 켭니다.
     DebugLog = false,
 }

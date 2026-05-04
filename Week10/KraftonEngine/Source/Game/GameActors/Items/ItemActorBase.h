@@ -16,13 +16,10 @@ enum class EItemFeatureFlags : uint32
 	ScoreReward = 1 << 2,       // GameManager.AddScore()로 점수 보상을 지급합니다.
 	GameplayEffect = 1 << 3,    // SpeedBoost, Shield 같은 효과 적용을 위한 확장 지점입니다.
 	SingleUse = 1 << 4,         // 중복 overlap으로 같은 아이템이 여러 번 발동되는 것을 막습니다.
-	AutoRespawn = 1 << 5,       // 향후 respawn item을 위한 예약 플래그입니다.
-	FloatingMotion = 1 << 6,    // 향후 떠다니는 연출을 위한 예약 플래그입니다.
-	RotatingMotion = 1 << 7,    // 향후 회전 연출을 위한 예약 플래그입니다.
-	DebugLog = 1 << 8,          // Lua item script에서 디버그 로그를 켭니다.
+	DebugLog = 1 << 5,          // Lua item script에서 디버그 로그를 켭니다.
 };
 
-// 아이템별로 반복되는 값을 한곳에 묶어 둡니다.
+// 아이템별로 반복되는 값
 struct FItemInteractionConfig
 {
 	int32 ScoreValue = 0;
@@ -59,7 +56,10 @@ public:
 
 	void SetItemScript(const FString& ScriptPath);
 
-	UBillboardComponent* AddBillboardPresentation(const FString& TexturePath = "None");
+	// Texture는 생성자에서 로드하지 않고 경로만 저장한다.
+	// 실제 적용은 BeginPlay에서 한다.
+	void SetItemTexturePath(const FString& TexturePath);
+	const FString& GetItemTexturePath() const { return ItemTexturePath; }
 
 	// Item Flag 관련
 	bool HasFeature(EItemFeatureFlags Feature) const;
@@ -69,21 +69,26 @@ public:
 	uint32 GetFeatureFlags() const { return ItemFeatureFlags; }
 	void SetFeatureFlags(uint32 InFlags) { ItemFeatureFlags = InFlags; }
 
+	// Config
 	FItemInteractionConfig& GetInteractionConfig() { return InteractionConfig; }
 	const FItemInteractionConfig& GetInteractionConfig() const { return InteractionConfig; }
 
+	// BoxComponent와 Trigger 활성화 여부
 	void SetTriggerEnabled(bool bEnabled);
 	bool IsTriggerEnabled() const;
 
 protected:
-	void ApplyBillboardDefaults();
-	void ApplyTriggerDefaults();
 
-	
+	// Item Actor Component
 	UBoxComponent* ItemTrigger = nullptr;
 	UScriptComponent* ItemScript = nullptr;
 	UBillboardComponent* ItemImage = nullptr;
 
+	// BeginPlay에서 적용할 Texture 경로
+	FString ItemTexturePath = "None";
+
+
+	// Item Config값
 	FItemInteractionConfig InteractionConfig;
 
 	// default flag값

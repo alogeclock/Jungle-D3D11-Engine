@@ -11,28 +11,64 @@ IMPLEMENT_CLASS(AItemActorBase, AActor)
 
 AItemActorBase::AItemActorBase()
 {
-	// Trigger를 root로 두면 Actor transform과 overlap bounds가 같은 기준으로 움직입니다.
-	// visual component는 이 trigger 아래에 attach되고, collision은 기본적으로 꺼집니다.
+	// BoxComponent
 	ItemTrigger = AddComponent<UBoxComponent>();
 	ItemTrigger->SetCanDeleteFromDetails(false);
 	ItemTrigger->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
-	ApplyTriggerDefaults();
+	ItemTrigger->SetCollisionEnabled(InteractionConfig.bStartsEnabled);
+	ItemTrigger->SetGenerateOverlapEvents(true);
 	SetRootComponent(ItemTrigger);
 
+	// Billboard
 	ItemImage = AddComponent<UBillboardComponent>();
-	ApplyBillboardDefaults();
+	ItemImage->SetCollisionEnabled(false);
+	ItemImage->SetGenerateOverlapEvents(false);
+	ItemImage->AttachToComponent(GetRootComponent());
 
-	// 기본 script만 붙여도 overlap pickup 흐름을 탈 수 있게 합니다.
-	// item별 동작은 SetItemScript("Scripts/Game/Items/LogItem.lua")처럼 교체해서 확장합니다.
+	// 기본 script 부착
+	// item별 동작은 SetItemScript("Scripts/Game/Items/LogItem.lua")로 확장
 	ItemScript = AddComponent<UScriptComponent>();
 	ItemScript->SetScriptPath("Scripts/Game/Items/ItemBase.lua");
 }
 
 void AItemActorBase::BeginPlay()
 {
-	// 저장/복제/스크립트 수정 과정에서 설정이 바뀌었을 수 있으므로 BeginPlay 직전에 한 번 더 보정합니다.
-	ApplyTriggerDefaults();
-	ApplyBillboardDefaults();
+	// BeginPlay 직전에 다시 보정.
+	// Details 창 수정, deserialize, spawn 이후 값 변경이 섞여도 최종 상태를 맞춘다.
+	if (ItemTrigger)
+	{
+		ItemTrigger->SetCollisionEnabled(InteractionConfig.bStartsEnabled);
+		ItemTrigger->SetGenerateOverlapEvents(InteractionConfig.bStartsEnabled);
+	}
+
+	if (ItemImage)
+	{
+		ItemImage->SetCollisionEnabled(false);
+		ItemImage->SetGenerateOverlapEvents(false);
+
+		if (GetRootComponent())
+		{
+			ItemImage->AttachToComponent(GetRootComponent());
+		}
+	}
+
+	// Texture는 반드시 BeginPlay에서 적용.
+	// 생성자에서 넣으면 renderer/resource 준비 시점 문제로 적용이 안 되는 경우가 있었음.
+	if (ItemImage && !ItemTexturePath.empty() && ItemTexturePath != "None" && GEngine)
+	{
+		ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
+		if (Device)
+		{
+			if (UTexture2D* Texture = UTexture2D::LoadFromFile(ItemTexturePath, Device))
+			{
+				ItemImage->SetTexture(Texture);
+			}
+		}
+	}
+
+	// 중요:
+	// ScriptComponent의 BeginPlay/Lua BeginPlay가 Super::BeginPlay() 내부에서 돈다면,
+	// texture 적용이 Lua BeginPlay보다 먼저 끝난다.
 	Super::BeginPlay();
 }
 
@@ -60,6 +96,9 @@ void AItemActorBase::Serialize(FArchive& Ar)
 	Ar << InteractionConfig.Cooldown;
 	Ar << InteractionConfig.bStartsEnabled;
 	Ar << InteractionConfig.bDestroyOnPickup;
+
+	// BeginPlay에서 texture를 다시 적용할 수 있게 경로도 저장.
+	Ar << ItemTexturePath;
 }
 
 UPrimitiveComponent* AItemActorBase::GetItemTrigger() const
@@ -69,30 +108,26 @@ UPrimitiveComponent* AItemActorBase::GetItemTrigger() const
 
 void AItemActorBase::SetItemScript(const FString& ScriptPath)
 {
+	if (!ItemScript)
+	{
+		ItemScript = AddComponent<UScriptComponent>();
+	}
+
 	if (ItemScript)
 	{
 		ItemScript->SetScriptPath(ScriptPath);
 	}
 }
 
-UBillboardComponent* AItemActorBase::AddBillboardPresentation(const FString& TexturePath)
+void AItemActorBase::SetItemTexturePath(const FString& TexturePath)
 {
-	if (!ItemImage)
+	if (TexturePath.empty())
 	{
-		ItemImage = AddComponent<UBillboardComponent>();
+		ItemTexturePath = "None";
+		return;
 	}
 
-	ApplyBillboardDefaults();
-
-	if (ItemImage && !TexturePath.empty() && TexturePath != "None" && GEngine)
-	{
-		ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
-		if (UTexture2D* Texture = UTexture2D::LoadFromFile(TexturePath, Device))
-		{
-			ItemImage->SetTexture(Texture);
-		}
-	}
-	return ItemImage;
+	ItemTexturePath = TexturePath;
 }
 
 bool AItemActorBase::HasFeature(EItemFeatureFlags Feature) const
@@ -124,41 +159,16 @@ void AItemActorBase::RemoveFeature(EItemFeatureFlags Feature)
 
 void AItemActorBase::SetTriggerEnabled(bool bEnabled)
 {
+	InteractionConfig.bStartsEnabled = bEnabled;
+
 	if (ItemTrigger)
 	{
 		ItemTrigger->SetCollisionEnabled(bEnabled);
+		ItemTrigger->SetGenerateOverlapEvents(bEnabled);
 	}
 }
 
 bool AItemActorBase::IsTriggerEnabled() const
 {
 	return ItemTrigger && ItemTrigger->IsCollisionEnabled();
-}
-
-void AItemActorBase::ApplyBillboardDefaults()
-{
-	if (!ItemImage)
-	{
-		return;
-	}
-
-	ItemImage->SetCollisionEnabled(false);
-	ItemImage->SetGenerateOverlapEvents(false);
-	if (ItemTrigger)
-	{
-		ItemImage->AttachToComponent(ItemTrigger);
-	}
-}
-
-void AItemActorBase::ApplyTriggerDefaults()
-{
-	if (!ItemTrigger)
-	{
-		return;
-	}
-
-	// Trigger는 query overlap 전용입니다. 
-	// block/hit 처리는 player/obstacle 같은 gameplay collider에 맡깁니다.
-	ItemTrigger->SetCollisionEnabled(InteractionConfig.bStartsEnabled);
-	ItemTrigger->SetGenerateOverlapEvents(true);
 }
