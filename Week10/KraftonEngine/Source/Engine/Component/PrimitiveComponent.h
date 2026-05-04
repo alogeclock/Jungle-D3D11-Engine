@@ -100,6 +100,7 @@ public:
 	const TArray<FOverlapInfo>& GetOverlapInfos() const;
 	void  BeginComponentOverlap(const FOverlapInfo& OtherOverlap, bool bDoNotifies);
 	void  EndComponentOverlap(const UPrimitiveComponent* Other);
+	void  RemoveOverlapPeerSilent(const UPrimitiveComponent* Other);
 	bool  IsOverlappingComponent(const UPrimitiveComponent* Other);
 	bool  IsOverlappingActor(const AActor* Other);
 
