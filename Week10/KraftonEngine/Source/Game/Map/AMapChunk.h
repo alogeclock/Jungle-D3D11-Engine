@@ -11,7 +11,7 @@ public:
 
 	void BeginPlay() override;
 	void EndPlay()	 override;
-	void InitFromTemplate(const FMapChunkTemplate& InTemplate, float ObstacleFillRate);
+	void InitFromTemplate(const FMapChunkTemplate& InTemplate, float ObstacleFillRate, float InChunkBuggedRate);
 	void SetChunkBuggedRate(float InRate) { ChunkBuggedRate = InRate; }
 
 	FVector    GetExitLocation() const;

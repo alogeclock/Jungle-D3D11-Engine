@@ -18,8 +18,17 @@
 IMPLEMENT_CLASS(AMapChunk, AActor)
 
 namespace {  
-	// idx 0 = "Bugged", idx 1 = "Normal"
-	constexpr const char* Materials[2] = { "Default.Material.BasicShape", "Sample.Material.BlueGrid" };  
+	constexpr const char* BuggedMaterialKey = "Default.Material.BasicShape";
+	constexpr const char* NormalMaterialKey = "Sample.Material.BlueGrid";
+
+	static FString SelectChunkMaterialPath(float ChunkBuggedRate)
+	{
+		const char* MaterialKey = MapRandom::Chance(ChunkBuggedRate)
+			? BuggedMaterialKey
+			: NormalMaterialKey;
+
+		return FResourceManager::Get().ResolvePath(FName(MaterialKey));
+	}
 }
 
 void AMapChunk::BeginPlay() {
@@ -50,9 +59,10 @@ void AMapChunk::EndPlay() {
 	AActor::EndPlay();
 }
 
-void AMapChunk::InitFromTemplate(const FMapChunkTemplate& InTemplate, float InObstacleFillRate) {
+void AMapChunk::InitFromTemplate(const FMapChunkTemplate& InTemplate, float InObstacleFillRate, float InChunkBuggedRate) {
 	Template         = InTemplate;
 	ObstacleFillRate = InObstacleFillRate;
+	ChunkBuggedRate = InChunkBuggedRate;
 	BuildFloor();
 	SpawnObstacle();
 }
@@ -206,14 +216,13 @@ static FString GetMeshPath(const char* MeshKey)
 	return "";
 }
 
-static void ApplyBasicShapeMaterial(UStaticMeshComponent* MeshComponent, UStaticMesh* Mesh)
+static void ApplyBasicShapeMaterial(UStaticMeshComponent* MeshComponent, UStaticMesh* Mesh, const FString& MaterialPath)
 {
 	if (!MeshComponent || !Mesh)
 	{
 		return;
 	}
 
-	const FString MaterialPath = FResourceManager::Get().ResolvePath(FName("Sample.Material.BlueGrid"));
 	UMaterial* Material = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath);
 	if (!Material)
 	{
@@ -233,7 +242,7 @@ static void ApplyBasicShapeMaterial(UStaticMeshComponent* MeshComponent, UStatic
 	}
 }
 
-static void ApplyCubeMesh(UStaticMeshComponent* MeshComponent)
+static void ApplyCubeMesh(UStaticMeshComponent* MeshComponent, const FString& MaterialPath)
 {
 	if (!MeshComponent || !GEngine)
 	{
@@ -249,7 +258,7 @@ static void ApplyCubeMesh(UStaticMeshComponent* MeshComponent)
 	ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
 	UStaticMesh* Mesh = FObjManager::LoadObjStaticMesh(MeshPath, Device);
 	MeshComponent->SetStaticMesh(Mesh);
-	ApplyBasicShapeMaterial(MeshComponent, Mesh);
+	ApplyBasicShapeMaterial(MeshComponent, Mesh, MaterialPath);
 }
 
 void AMapChunk::SpawnObstacle()
@@ -380,6 +389,8 @@ void AMapChunk::BuildFloor() {
 	}
 	FloorMeshes.clear();
 
+	const FString ChunkMaterialPath = SelectChunkMaterialPath(ChunkBuggedRate);
+
 	for (const FFloorBlock& BlockInfo : Template.FloorBlockInfos) {
 		UStaticMeshComponent* Block = AddComponent<UStaticMeshComponent>();
 		if (GetRootComponent())
@@ -387,7 +398,7 @@ void AMapChunk::BuildFloor() {
 			Block->AttachToComponent(GetRootComponent());
 		}
 
-		ApplyCubeMesh(Block);
+		ApplyCubeMesh(Block, ChunkMaterialPath);
 		FVector BlockPos = BlockInfo.LocalPosition;
 		Block->SetRelativeLocation(FVector(BlockPos.X, BlockPos.Y, BlockPos.Z));
 		Block->SetRelativeRotation(BlockInfo.LocalRotation);
