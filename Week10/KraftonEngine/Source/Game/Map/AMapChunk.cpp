@@ -317,7 +317,6 @@ void AMapChunk::SpawnObstacle()
 		case (MustJump):
 		{
 			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::LowBar, WorldPositionForLane(1))) {
-				Obs->SetActorScale(FVector(0.2f, 1.f, 1.f));
 				SpawnedObstacles.push_back(Obs);
 			}
 			break;
@@ -327,7 +326,6 @@ void AMapChunk::SpawnObstacle()
 			FVector SpawnLoc = WorldPositionForLane(1);
 			SpawnLoc.Z = SpawnLoc.Z + 1.25f;
 			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::HighBar, SpawnLoc)) {
-				Obs->SetActorScale(FVector(0.2f, 1.f, 1.f));
 				SpawnedObstacles.push_back(Obs);
 			}
 			break;

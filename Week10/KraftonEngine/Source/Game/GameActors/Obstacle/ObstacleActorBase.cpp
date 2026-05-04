@@ -36,10 +36,6 @@ void AObstacleActorBase::OnOverlap(const FComponentOverlapEvent& Other) {
 }
 
 void AObstacleActorBase::InitDefaultComponents(const FString& UStaticMeshFileName) {
-	StaticMeshComponent = AddComponent<UStaticMeshComponent>();
-	StaticMeshComponent->SetCanDeleteFromDetails(false);
-	StaticMeshComponent->SetCollisionEnabled(false);
-	SetRootComponent(StaticMeshComponent);
 	UBoxComponent* CollisionBox = AddComponent<UBoxComponent>();
 	CollisionBox->SetCanDeleteFromDetails(false);
 	CollisionBox->AttachToComponent(StaticMeshComponent);
@@ -47,12 +43,17 @@ void AObstacleActorBase::InitDefaultComponents(const FString& UStaticMeshFileNam
 	CollisionBox->SetRelativeLocation(CollisionBoxOffset);
 	CollisionBox->SetCollisionEnabled(true);
 	CollisionBox->SetGenerateOverlapEvents(true);
+	SetRootComponent(CollisionBox);
 	if (HasActorBegunPlay())
 	{
 		CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AObstacleActorBase::OnOverlap);
 		CollisionBox->OnComponentHit.AddDynamic(this, &AObstacleActorBase::OnHit);
 	}
-	//CollisionBox->SetWorldLocation(StaticMeshComponent->GetWorldLocation());
+	
+	StaticMeshComponent = AddComponent<UStaticMeshComponent>();
+	StaticMeshComponent->SetCanDeleteFromDetails(false);
+	StaticMeshComponent->SetCollisionEnabled(false);
+	StaticMeshComponent->AttachToComponent(CollisionBox);
 
 	if (!UStaticMeshFileName.empty() && UStaticMeshFileName != "None")
 	{
