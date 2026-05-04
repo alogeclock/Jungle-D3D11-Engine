@@ -40,7 +40,7 @@ void AMapManager::Tick(float DeltaTime) {
 		FVector ToPlayer = Player->GetActorLocation() - Front->GetExitLocation();
 		float ExitProgress = ToPlayer.Dot(ExitQuat.GetForwardVector());
 
-		if (ExitProgress > 0.0f)
+		if (ExitProgress > 10.0f)
 		{
 			DespawnFrontChunk();
 			TrySpawnGimmickAtChunkEnd();
