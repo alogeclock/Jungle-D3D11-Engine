@@ -4,11 +4,10 @@ local AudioManager = require("Game.AudioManager")
 -- GameManager는 게임 전체 점수/진행도/HUD용 수치를 모아두는 전역 매니저입니다.
 -- UI는 여기서 화면을 만들지 않고, 아래 getter만 읽어서 표시하면 됩니다.
 local GameManager = {
-    -- State는 게임 흐름 상태 문자열입니다. 기존 코드 호환을 위해 Playing도 Running과 같은 값으로 둡니다.
+    -- State는 게임 흐름 상태 문자열입니다. 실행 중 상태는 Running으로만 판정합니다.
     State = {
         Ready = "Ready",
         Running = "Running",
-        Playing = "Running",
         GameOver = "GameOver",
     },
 
@@ -36,7 +35,7 @@ local GameManager = {
     -- critical_analysis_count는 Critical Analysis가 몇 번 발동됐는지 보여주는 수치입니다.
     critical_analysis_count = 0,
 
-    -- stability/max_stability는 기존 HP와 같은 개념인데, 기획상 포드 안정도라고 부르기로 함.
+    -- stability/max_stability는 포드 안정도 HUD에 표시할 생존 수치입니다.
     -- 실제 감소/회복은 PlayerStatus가 담당하고, HUD가 읽기 쉽도록 여기에도 최신값을 동기화합니다.
     stability = Config.player.max_hp,
     max_stability = Config.player.max_hp,
@@ -126,6 +125,7 @@ end
 function GameManager.StartGame()
     -- StartGame은 한 런의 모든 HUD용 수치를 초기화하는 지점입니다.
     -- 비주얼/HUD 담당자가 "게임 시작 시 초기값"을 확인해야 하면 여기 값을 보면 됩니다.
+    -- 게임 시작 진입점은 StartGame 하나로 고정해 호출 흐름을 추적하기 쉽게 합니다.
     GameManager.state = GameManager.State.Running
     GameManager.score = 0
     GameManager.bonus_score = 0
@@ -198,7 +198,7 @@ function GameManager.AddScore(amount, reason)
 end
 
 function GameManager.SetStabilitySnapshot(stability, max_stability)
-    -- 기존 HP와 같은 개념인데, 기획상 포드 안정도라고 부르기로 함.
+    -- PlayerStatus 내부 저장값을 포드 안정도 HUD 스냅샷으로 반영합니다.
     -- PlayerStatus가 실제 값을 바꾼 직후 이 함수로 GameManager/HUD 수치를 동기화합니다.
     GameManager.max_stability = max_stability or GameManager.max_stability or Config.player.max_hp
     GameManager.stability = clamp(stability or GameManager.stability or GameManager.max_stability, 0, GameManager.max_stability)
@@ -478,8 +478,5 @@ function GameManager.ChangeLevel(level_name)
     -- TODO: 실제 결과창/씬 전환 흐름이 정해지면 여기서 안전하게 연결하면 됨.
     log("[GameManager] TODO ChangeLevel: " .. tostring(level_name))
 end
-
--- Compatibility for older prototype scripts. New code should call StartGame().
-GameManager.Start = GameManager.StartGame
 
 return GameManager

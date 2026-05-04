@@ -1,9 +1,9 @@
 local ItemBase = require("Game.Items.ItemBase")
 
--- og Fragment입니다. 여기서 logs/score/trace/coach approval을 올리면 됨.
+local Config = require("Game.Config")
+
+-- Log Fragment입니다. 여기서 logs/score/trace/coach approval을 올리면 됨.
 DeclareProperties({
-    -- ScoreValue는  Config.collectible에서 관리합니다.
-    { name = "ScoreValue", type = "int", default = 10 },
     -- RequiredInteractorTag는 어떤 actor가 이 Log Fragment를 먹을 수 있는지 정합니다.
     { name = "RequiredInteractorTag", type = "string", default = "Player" },
 })
@@ -11,7 +11,8 @@ DeclareProperties({
 -- item은 ItemBase 공통 pickup 객체입니다.
 -- LogFragmentReward feature가 켜져 있어서 overlap 시 GameManager.CollectLogFragment()가 호출됩니다.
 local item = ItemBase.New({
-    ScoreValue = property("ScoreValue", 10),
+    -- Log Fragment 점수는 Config.collectible.log_fragment_score에서만 관리합니다.
+    ScoreValue = Config.collectible.log_fragment_score,
     RequiredInteractorTag = property("RequiredInteractorTag", "Player"),
     Features = {
         PickupOnOverlap = true,

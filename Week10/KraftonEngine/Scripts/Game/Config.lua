@@ -9,9 +9,9 @@ local Config = {
     },
 
     -- player는 Runner 조작과 생존 수치입니다.
-    -- max_hp/hp 내부 이름은 기존 코드 호환 때문에 남기지만, 새 코드에서는 Stability라고 부릅니다.
+    -- max_hp 값은 PlayerStatus에서 포드 안정도 최대치로 읽어 GameManager HUD 스냅샷과 연결합니다.
     player = {
-        -- max_hp는 기획상 "포드 안정도 최대치"입니다. 기존 HP와 같은 값입니다.
+        -- max_hp는 PlayerStatus 내부 저장 이름이고, 게임 규칙상 "포드 안정도 최대치"입니다.
         max_hp = 3,
         -- invincible_time은 피격 직후 같은 장애물에 여러 번 맞지 않도록 막는 시간입니다.
         invincible_time = 1.0,
@@ -31,9 +31,8 @@ local Config = {
         gravity = -25.0,
         -- jump_power는 점프 시작 순간 수직 속도입니다.
         jump_power = 10.0,
-        -- slide_duration은 예전 duration 기반 슬라이드 호환 값입니다.
-        -- 지금은 누르고 있는 동안 유지하는 방식이라 새 로직에서는 타이머로 쓰지 않습니다.
-        slide_duration = 0.45,
+        -- 슬라이드는 duration 타이머가 아니라 입력을 누르고 있는 동안 유지합니다.
+        -- 유지/종료 판단은 PlayerController.slide_key_pressed()와 PlayerSlide:Begin/End가 담당합니다.
 
         -- fall_dead_z 아래로 떨어지면 안정도와 무관하게 낙사 처리합니다.
         fall_dead_z = -10.0,
@@ -118,7 +117,7 @@ local Config = {
         high_risk_damage = 2,
     },
 
-    -- audio는 기존 사운드 설정입니다. 이번 작업에서는 SFX/Audio 파일과 로직은 건드리지 않습니다.
+    -- audio는 현재 사운드 설정입니다. 이번 작업에서는 SFX/Audio 파일과 로직은 건드리지 않습니다.
     audio = {
         enabled = true,
 
@@ -145,27 +144,7 @@ local Config = {
     },
 }
 
--- Compatibility aliases for older prototype scripts and editor property defaults.
-Config.forward_speed = Config.player.forward_speed
-Config.max_move_step = Config.player.max_move_step
-Config.lane_width = Config.player.lane_width
-Config.lane_count = Config.player.lane_count
-Config.lane_change_speed = Config.player.lane_change_speed
-Config.gravity = Config.player.gravity
-Config.jump_power = Config.player.jump_power
-Config.slide_duration = Config.player.slide_duration
-
-Config.road_tile_length = Config.map.road_tile_length
-Config.road_tile_count = Config.map.road_tile_count
-Config.road_recycle_behind_distance = Config.map.road_recycle_behind_distance
-Config.obstacle_spawn_ahead_distance = Config.map.obstacle_spawn_ahead_distance
-Config.obstacle_spacing = Config.map.obstacle_spacing
-Config.obstacle_recycle_behind_distance = Config.map.obstacle_recycle_behind_distance
-
-Config.camera_back_distance = -Config.camera.relative_x
-Config.camera_height = Config.camera.relative_z
-Config.camera_follow_speed = 0.0
-Config.camera_look_ahead = Config.camera.look_ahead
-Config.camera_look_height = Config.camera.look_height
+-- Config는 도메인별 table(Config.player/map/camera/collectible)만 공개합니다.
+-- 새 스크립트는 평면 alias 없이 필요한 묶음을 직접 읽어 값의 출처를 분명하게 유지합니다.
 
 return Config

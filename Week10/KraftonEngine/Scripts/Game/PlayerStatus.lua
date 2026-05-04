@@ -3,11 +3,11 @@ local GameManager = require("Game.GameManager")
 local AudioManager = require("Game.AudioManager")
 
 -- PlayerStatus는 플레이어 생존 상태를 관리합니다.
--- 내부 hp/max_hp 이름은 기존 코드 호환을 위해 유지하지만, 새 코드와 HUD에서는 Stability 이름을 우선 사용합니다.
+-- 외부 Lua 코드는 Stability API를 사용하고, 내부 hp/max_hp 값은 실제 저장 슬롯으로만 다룹니다.
 local PlayerStatus = {
-    -- max_hp는 기존 HP 최대값입니다. 기획상으로는 포드 안정도 최대치(max_stability)입니다.
+    -- max_hp는 내부 저장 이름이고, 공개 API에서는 포드 안정도 최대치(max_stability)로 다룹니다.
     max_hp = Config.player.max_hp,
-    -- hp는 기존 HP 현재값입니다. 기획상으로는 포드 안정도 현재값(stability)입니다.
+    -- hp는 내부 저장 이름이고, 공개 API에서는 포드 안정도 현재값(stability)로 다룹니다.
     hp = Config.player.max_hp,
     -- invincible_time은 피격/방어막 발동 직후 중복 충돌을 막는 시간입니다.
     invincible_time = Config.player.invincible_time,
@@ -35,7 +35,7 @@ local function safe_amount(amount, fallback)
     return value
 end
 
--- sync_stability_to_manager는 실제 HP 값을 GameManager HUD 스냅샷에 맞춰 둡니다.
+-- sync_stability_to_manager는 실제 안정도 값을 GameManager HUD 스냅샷에 맞춰 둡니다.
 -- HUD 작업자는 PlayerStatus를 직접 몰라도 GameManager getter만 읽으면 안정도 표시가 가능합니다.
 local function sync_stability_to_manager()
     GameManager.SetStabilitySnapshot(PlayerStatus.hp, PlayerStatus.max_hp)
@@ -49,7 +49,7 @@ end
 
 function PlayerStatus.ResetForStart()
     -- ResetForStart는 새 게임 시작 시 안정도/무적/사망 상태를 초기화합니다.
-    -- 기존 HP와 같은 개념인데, 기획상 포드 안정도라고 부르기로 함.
+    -- 초기화 직후 GameManager에도 같은 안정도 값을 동기화합니다.
     PlayerStatus.max_hp = Config.player.max_hp
     PlayerStatus.hp = PlayerStatus.max_hp
     PlayerStatus.invincible_time = Config.player.invincible_time
@@ -83,8 +83,8 @@ function PlayerStatus.Tick(dt)
 end
 
 function PlayerStatus.DamageStability(amount)
-    -- 기존 HP와 같은 개념인데, 기획상 포드 안정도라고 부르기로 함.
-    -- 새 코드에서는 TakeDamage 대신 이 함수를 우선 사용하면 됩니다.
+    -- 포드 안정도 피해를 적용하는 단일 진입점입니다.
+    -- 장애물 충돌 피해는 PlayerController에서 이 함수로 바로 연결합니다.
     local damage = safe_amount(amount, Config.obstacle.default_damage)
 
     if PlayerStatus.is_dead then
@@ -138,7 +138,7 @@ function PlayerStatus.DamageStability(amount)
 end
 
 function PlayerStatus.RecoverStability(amount)
-    -- 기존 HP와 같은 개념인데, 기획상 포드 안정도라고 부르기로 함.
+    -- 포드 안정도 회복을 적용하는 단일 진입점입니다.
     -- Hotfix 성공 같은 회복 이벤트는 이 함수만 호출하면 HUD 값까지 같이 갱신됩니다.
     if PlayerStatus.is_dead then
         log("[PlayerStatus] RecoverStability ignored: dead")
@@ -159,12 +159,6 @@ function PlayerStatus.RecoverStability(amount)
     return PlayerStatus.hp > old_hp
 end
 
-function PlayerStatus.TakeDamage(amount)
-    -- deprecated 호환 함수입니다. 기존 코드가 깨지지 않게 남기고 내부는 Stability 함수로 넘깁니다.
-    -- 새 코드에서는 DamageStability(amount)를 우선 사용하면 됩니다.
-    return PlayerStatus.DamageStability(amount)
-end
-
 function PlayerStatus.Kill(reason)
     -- Kill은 낙사처럼 안정도 계산과 무관하게 즉시 GameOver가 필요할 때 쓰는 함수입니다.
     if PlayerStatus.is_dead then
@@ -179,12 +173,6 @@ function PlayerStatus.Kill(reason)
     log("[PlayerStatus] Kill reason=" .. tostring(reason or "Unknown"))
     GameManager.GameOver(reason or "Kill")
     return true
-end
-
-function PlayerStatus.Heal(amount)
-    -- deprecated 호환 함수입니다. 기존 코드가 깨지지 않게 남기고 내부는 Stability 함수로 넘깁니다.
-    -- 새 코드에서는 RecoverStability(amount)를 우선 사용하면 됩니다.
-    return PlayerStatus.RecoverStability(amount)
 end
 
 function PlayerStatus.IsDead()
@@ -218,16 +206,6 @@ end
 function PlayerStatus.IsStabilityEmpty()
     -- 안정도가 0인지 확인하는 함수입니다. GameOver 조건 연출을 붙일 때 읽으면 됩니다.
     return PlayerStatus.hp <= 0
-end
-
-function PlayerStatus.GetHP()
-    -- deprecated 호환 getter입니다. 기존 HUD/테스트가 깨지지 않게 남깁니다.
-    return PlayerStatus.GetStability()
-end
-
-function PlayerStatus.GetMaxHP()
-    -- deprecated 호환 getter입니다. 기존 HUD/테스트가 깨지지 않게 남깁니다.
-    return PlayerStatus.GetMaxStability()
 end
 
 return PlayerStatus

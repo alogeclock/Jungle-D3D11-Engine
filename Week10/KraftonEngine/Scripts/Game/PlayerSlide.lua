@@ -142,7 +142,7 @@ function PlayerSlide:IsSliding()
 end
 
 function PlayerSlide:Begin()
-    -- 기존에는 duration 기반이었지만, 조작감 때문에 누르고 있는 동안 유지하는 방식으로 변경함.
+    -- 슬라이드는 duration 기반 타이머가 아니라 누르고 있는 동안 유지하는 방식입니다.
     -- 이 함수는 슬라이드 시작 1회만 호출되어야 하며, 반복 호출은 바로 무시합니다.
     if self.is_sliding then
         return

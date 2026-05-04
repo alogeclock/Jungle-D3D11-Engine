@@ -1172,17 +1172,11 @@ void FLuaScriptInstance::BindInputFunctions()
 	Impl->Env.set_function("GetKey", GetKey);
 	Impl->Env.set_function("GetKeyDown", GetKeyDown);
 	Impl->Env.set_function("GetKeyUp", GetKeyUp);
-	Impl->Env.set_function("get_key", GetKey);
-	Impl->Env.set_function("get_key_down", GetKeyDown);
-	Impl->Env.set_function("get_key_up", GetKeyUp);
 
 	sol::table InputTable = FLuaScriptRuntime::Get().GetLuaState().create_table();
 	InputTable.set_function("GetKey", GetKey);
 	InputTable.set_function("GetKeyDown", GetKeyDown);
 	InputTable.set_function("GetKeyUp", GetKeyUp);
-	InputTable.set_function("get_key", GetKey);
-	InputTable.set_function("get_key_down", GetKeyDown);
-	InputTable.set_function("get_key_up", GetKeyUp);
 	Impl->Env["Input"] = InputTable;
 
 	// Mouse Delta & Wheel

@@ -7,7 +7,7 @@ local ItemBase = {}
 ItemBase.__index = ItemBase
 
 -- C++ EItemFeatureFlags와 같은 이름을 사용
--- C++ actor config와 Lua script config 호환성 고려
+-- C++ actor config와 Lua script config가 같은 feature 이름으로 직접 연결됩니다.
 local DefaultFeatures = {
     -- PickupOnOverlap은 플레이어와 닿자마자 먹는 아이템인지 여부입니다.
     PickupOnOverlap = true,
@@ -60,7 +60,7 @@ end
 
 function ItemBase.New(config)
     -- ItemBase는 기본 동작이 있는 Lua 객체
-    -- CoinItem.lua처럼 이 객체를 만들고 OnBeginOverlap만 위임하면 바로 pickup item
+    -- LogItem.lua/CrashDumpItem.lua처럼 이 객체를 만들고 OnBeginOverlap만 위임하면 바로 pickup item
     config = config or {}
 
     local self = setmetatable({}, ItemBase)

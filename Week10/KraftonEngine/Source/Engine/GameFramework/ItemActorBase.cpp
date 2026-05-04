@@ -24,7 +24,7 @@ AItemActorBase::AItemActorBase()
 	SetRootComponent(ItemTrigger);
 
 	// 기본 script만 붙여도 overlap pickup 흐름을 탈 수 있게 합니다.
-	// item별 동작은 SetItemScript("Scripts/Game/Items/CoinItem.lua")처럼 교체해서 확장합니다.
+	// item별 동작은 SetItemScript("Scripts/Game/Items/LogItem.lua")처럼 교체해서 확장합니다.
 	ItemScript = AddComponent<UScriptComponent>();
 	ItemScript->SetScriptPath("Scripts/Game/Items/ItemBase.lua");
 }

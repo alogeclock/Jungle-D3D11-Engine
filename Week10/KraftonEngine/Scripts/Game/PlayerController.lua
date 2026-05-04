@@ -1,5 +1,5 @@
 -- PlayerController.lua
--- Runner Pawn의 입력, 자동 전진, 레인 이동, 중력, 바닥 판정, HP/GameOver 연결을 담당한다.
+-- Runner Pawn의 입력, 자동 전진, 레인 이동, 중력, 바닥 판정, Stability/GameOver 연결을 담당한다.
 -- C++ Runner는 최소한의 Actor/Component 구성만 만들고, 실제 플레이 수치와 상태 전이는 Lua에서 조정한다.
 -- Map과 Player 충돌 문제를 추적하기 쉽도록 Ground Query 관련 값과 상태 변화는 이벤트 단위로 로그를 남긴다.
 
@@ -138,27 +138,13 @@ local function lane_max()
     return math.floor(PlayerConfig.lane_count / 2)
 end
 
-local function key_down(name)
-    -- key_down은 엔진이 제공하는 edge trigger가 있을 때 쓰는 호환 함수입니다.
-    if GetKeyDown then
-        return GetKeyDown(name)
-    end
-    if get_key_down then
-        return get_key_down(name)
-    end
-    return false
-end
-
 local function key_held(name)
     -- key_held는 "지금 키를 누르고 있는가"만 확인합니다.
     -- 슬라이드는 조작감 때문에 누르고 있는 동안 유지해야 하므로 edge trigger가 아니라 held 상태를 씁니다.
     if GetKey then
         return GetKey(name)
     end
-    if get_key then
-        return get_key(name)
-    end
-    return key_down(name)
+    return false
 end
 
 local function key_pressed_once(name)
@@ -331,7 +317,7 @@ end
 -- =========================================================
 
 local function slide_key_pressed()
-    -- 기존에는 duration 기반이었지만, 조작감 때문에 누르고 있는 동안 유지하는 방식으로 변경함.
+    -- 슬라이드는 duration 기반 타이머가 아니라 누르고 있는 동안 유지하는 방식입니다.
     -- S/아래/CTRL 중 하나를 잡고 있으면 slide 유지, 모두 떼면 종료합니다.
     return key_held("S") or key_held("DOWN") or key_held("Down") or key_held("CTRL") or key_held("Control")
 end
@@ -363,7 +349,7 @@ local function update_slide(dt, wants_slide)
         return
     end
 
-    -- 기존 slide_duration 타이머는 더 이상 사용하지 않습니다.
+    -- 슬라이드는 Config.player에 남은 타이머 값이 아니라 현재 입력 상태와 지상 여부로 끝냅니다.
     -- 키를 떼거나 공중으로 뜨면 안전하게 slide를 끝냅니다.
     if not wants_slide or not is_grounded then
         slide:End()
@@ -414,7 +400,7 @@ local function handle_obstacle_collision(event_name, other_actor)
 
     local damage = Config.obstacle.default_damage
     -- 장애물별 피해량을 다르게 줄 수 있게 C++ Damage 값을 Lua에서 읽는다.
-    -- 바인딩 안 된 장애물은 기존 Config.obstacle.default_damage fallback을 그대로 사용.
+    -- 바인딩 안 된 장애물은 Config.obstacle.default_damage를 사용합니다.
     if other_actor and other_actor.GetDamage then
         local obstacle_damage = other_actor:GetDamage()
         if obstacle_damage and obstacle_damage > 0 then
