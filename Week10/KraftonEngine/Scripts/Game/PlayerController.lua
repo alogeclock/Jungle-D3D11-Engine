@@ -1,4 +1,4 @@
-w-- PlayerController.lua
+-- PlayerController.lua
 -- Runner Pawn의 입력, 자동 전진, 레인 이동, 중력, 바닥 판정, Stability/GameOver 연결을 담당한다.
 -- C++ Runner는 최소한의 Actor/Component 구성만 만들고, 실제 플레이 수치와 상태 전이는 Lua에서 조정한다.
 -- Map과 Player 충돌 문제를 추적하기 쉽도록 Ground Query 관련 값과 상태 변화는 이벤트 단위로 로그를 남긴다.

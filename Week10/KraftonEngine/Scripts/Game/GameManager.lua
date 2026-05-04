@@ -256,6 +256,11 @@ function GameManager.OnCrashDumpAnalyzed()
     GameManager.AddCoachApproval(Config.coach.critical_analysis_delta or 10, "CrashDumpAnalyzed")
 end
 
+function GameManager.OnCrashDumpCollected()
+    -- Crash Dump를 한 개 주울 때마다 호출되는 훅입니다.
+    -- FakeCrashEvent 등 외부 스크립트가 여기 hook을 덮어써서 매 픽업 연출을 붙입니다.
+end
+
 function GameManager.OnPlayerHit()
     -- 장애물 충돌 이벤트입니다. 여기서 화면 흔들림/위험 HUD 연출을 나중에 붙이면 됨.
     GameManager.AddCoachApproval(Config.coach.player_hit_delta or -5, "PlayerHit")
@@ -323,6 +328,11 @@ function GameManager.CollectCrashDump()
     -- dumps가 3개가 되는 순간 Critical Analysis가 발동되고 shield_count가 올라갑니다.
     GameManager.dumps = GameManager.dumps + 1
     log("[GameManager] CrashDump dumps=" .. tostring(GameManager.dumps))
+
+    -- 매 픽업마다 외부 hook을 호출한다. FakeCrashEvent는 여기에 연결되어
+    -- 줍는 즉시 가짜 크래시 UI를 띄운다. ApplyCriticalAnalysis 분기는
+    -- coroutine과 별개이므로 3개째에 함께 발동돼도 문제 없다.
+    GameManager.OnCrashDumpCollected()
 
     if GameManager.dumps >= (Config.collectible.crash_dump_required or 3) then
         return GameManager.ApplyCriticalAnalysis()
