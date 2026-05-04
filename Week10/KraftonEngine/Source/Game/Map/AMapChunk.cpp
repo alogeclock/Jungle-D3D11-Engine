@@ -8,6 +8,9 @@
 #include "Game/GameActors/Obstacle/MustJumpObstacleActor.h"
 #include "Game/GameActors/Obstacle/MustSlideObstacleActor.h"
 #include "Game/GameActors/Obstacle/WireballActor.h"
+#include "Game/GameActors/Items/CrashDumpItemActor.h"
+#include "Game/GameActors/Items/ItemActorBase.h"
+#include "Game/GameActors/Items/LogFragmentItemActor.h"
 #include "Game/Map/MapRandom.h"
 #include "Materials/MaterialManager.h"
 #include "Resource/ResourceManager.h"
@@ -15,10 +18,13 @@
 IMPLEMENT_CLASS(AMapChunk, AActor)
 
 void AMapChunk::BeginPlay() {
-	AActor::BeginPlay();
+	Super::BeginPlay();
 }
 
 void AMapChunk::EndPlay() {
+	/*
+	* 이 코드외에서 절대로 Destroy 처리를 하지 않는다.
+	*/
 	for (auto* Obstacle : SpawnedObstacles) {
 		if (Obstacle && Obstacle->GetWorld() && Obstacle->GetWorld()->HasBegunPlay()) {
 			Obstacle->GetWorld()->DestroyActor(Obstacle);
@@ -26,6 +32,16 @@ void AMapChunk::EndPlay() {
 	}
 
 	SpawnedObstacles.clear();
+
+	// Item은 Collision만 비활성화 하고 삭제는 Endplay에서만 한다.
+	for (auto* Item : SpawnedItems) {
+		if (Item && Item->GetWorld() && Item->GetWorld()->HasBegunPlay()) {
+			Item->GetWorld()->DestroyActor(Item);
+		}
+	}
+
+	SpawnedItems.clear();
+
 	AActor::EndPlay();
 }
 
@@ -78,6 +94,10 @@ static AObstacleActorBase* SpawnObstacleAt(UWorld* World, EObstacleType Type, co
 
 	Obstacle->InitDefaultComponents("");
 	Obstacle->SetTag("Obstacle");
+	// Lua PlayerController가 obstacle:GetDamage()로 읽을 기본 피해량입니다.
+	// 기본 장애물은 1, 고위험으로 취급할 수 있는 Wireball/Misc는 2를 줄 수 있게 연결점만 둡니다.
+	// TODO: 마감 이후 장애물별 Damage 테이블을 Lua Config로 옮기면 여기 하드코딩은 제거하면 됨.
+	Obstacle->SetDamage(Type == EObstacleType::Misc ? 2 : 1);
 	Obstacle->SetActorLocation(Location);
 	World->InsertActorToOctree(Obstacle);
 
@@ -87,6 +107,88 @@ static AObstacleActorBase* SpawnObstacleAt(UWorld* World, EObstacleType Type, co
 	}
 
 	return Obstacle;
+}
+
+static AItemActorBase* SpawnItemOfType(UWorld* World, bool bCrashDump)
+{
+	if (!World)
+	{
+		return nullptr;
+	}
+
+	if (bCrashDump)
+	{
+		return World->SpawnActor<ACrashDumpItemActor>();
+	}
+
+	return World->SpawnActor<ALogFragmentItemActor>();
+}
+
+static AItemActorBase* SpawnItemAt(UWorld* World, bool bCrashDump, const FVector& Location)
+{
+	AItemActorBase* Item = SpawnItemOfType(World, bCrashDump);
+	if (!Item)
+	{
+		return nullptr;
+	}
+
+	Item->SetActorLocation(Location);
+	World->InsertActorToOctree(Item);
+
+	if (!Item->HasActorBegunPlay())
+	{
+		Item->BeginPlay();
+	}
+
+	return Item;
+}
+
+static bool IsLaneBlockedByObstacle(EObstacleDecision Decision, int32 LaneIndex)
+{
+	switch (Decision)
+	{
+	case SingleBarrierLeft:
+		return LaneIndex == 0;
+
+	case SingleBarrierMiddle:
+		return LaneIndex == 1;
+
+	case SingleBarrierRight:
+		return LaneIndex == 2;
+
+	case DoubleBarrierLeft:
+		return LaneIndex == 0 || LaneIndex == 1;
+
+	case DoubleBarrierRight:
+		return LaneIndex == 1 || LaneIndex == 2;
+
+	case MustJump:
+	case MustSlide:
+		return LaneIndex == 1;
+
+	default:
+		return false;
+	}
+}
+
+static int32 PickOpenLane(EObstacleDecision Decision)
+{
+	TArray<int32> OpenLanes;
+
+	for (int32 LaneIndex = 0; LaneIndex < 3; ++LaneIndex)
+	{
+		if (!IsLaneBlockedByObstacle(Decision, LaneIndex))
+		{
+			OpenLanes.push_back(LaneIndex);
+		}
+	}
+
+	if (OpenLanes.empty())
+	{
+		return -1;
+	}
+
+	return OpenLanes[MapRandom::Index(static_cast<int32>(OpenLanes.size()))];
 }
 
 static FString GetMeshPath(const char* MeshKey)
@@ -214,6 +316,55 @@ void AMapChunk::SpawnObstacle()
 			break;
 		}
 		}
+
+		SpawnItemForSlot(DecisionSlot, Decision);
+	}
+}
+
+void AMapChunk::SpawnItemForSlot(const FDecisionSlot& DecisionSlot, EObstacleDecision Decision)
+{
+	if (!GetWorld())
+	{
+		return;
+	}
+
+	// 아이템은 모든 슬롯에 나오지 않도록 확률로 제한한다.
+	if (!MapRandom::Chance(0.60f))
+	{
+		return;
+	}
+	// Item이 호출될 Index를 결정한다.
+	const int32 LaneIndex = PickOpenLane(Decision);
+	if (LaneIndex < 0)
+	{
+		return;
+	}
+
+	// Item이 Spawn될 위치 지정
+	FQuat WorldQuat = FQuat::FromRotator(GetActorRotation());
+
+	const float LaneY[3] =
+	{
+		-Template.Width / 1.5f,
+		0.0f,
+		Template.Width / 1.5f
+	};
+
+	constexpr float ItemZ = 2.5f;
+
+	// 장애물과 정확히 같은 X에 놓지 않는다.
+	const float ItemX = DecisionSlot.X - 3.0f;
+
+	const FVector LocalPosition(ItemX, LaneY[LaneIndex], ItemZ);
+	const FVector WorldPosition = GetActorLocation() + WorldQuat.RotateVector(LocalPosition);
+
+	// Crash Dump는 희귀 아이템(이지만 지금은 테스트를 위해 30%로 고정)
+	// TODO: 변수로 관리하게 고려
+	const bool bCrashDump = MapRandom::Chance(0.30f);
+
+	if (AItemActorBase* Item = SpawnItemAt(GetWorld(), bCrashDump, WorldPosition))
+	{
+		SpawnedItems.push_back(Item);
 	}
 }
 

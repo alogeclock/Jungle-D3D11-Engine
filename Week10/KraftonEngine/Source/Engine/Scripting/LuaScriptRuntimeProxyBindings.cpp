@@ -202,6 +202,8 @@ void FLuaScriptRuntime::BindActorProxyType()
 		"IsMoveDone", &FLuaActorProxy::IsMoveDone,
 		"SetMoveSpeed", &FLuaActorProxy::SetMoveSpeed,
 		"GetMoveSpeed", &FLuaActorProxy::GetMoveSpeed,
+		"GetDamage", &FLuaActorProxy::GetDamage,
+		"SetDamage", &FLuaActorProxy::SetDamage,
 		"PrintLocation", &FLuaActorProxy::PrintLocation,
 		"Destroy", &FLuaActorProxy::Destroy);
 }

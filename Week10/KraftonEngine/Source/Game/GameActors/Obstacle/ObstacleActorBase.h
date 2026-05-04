@@ -10,10 +10,10 @@ class UCapsuleComponent;
 
 enum class EObstacleType : uint8
 {
-	Barrier = 1 << 0,   // must switch lanes
-	LowBar  = 1 << 1,   // must jump
-	HighBar = 1 << 2,   // must slide
-	Misc	= 1 << 3,
+	Barrier,	// must switch lanes
+	LowBar,		// must jump
+	HighBar,	// must slide
+	Misc,
 };
 
 class AObstacleActorBase : public AStaticMeshActor {
@@ -47,7 +47,7 @@ protected:
 
 protected:
 	float OnHitDamage = 0.f;
-	// TODO: Expose obstacle GetDamage to Lua.
-	// TODO: Move obstacle damage table to Lua Config when binding is available.
+	// Lua PlayerController가 충돌 시 읽는 장애물 피해량입니다.
+	// TODO: 장애물 Damage 테이블을 Lua Config로 완전히 옮길 수 있으면 타입별 밸런스를 Lua에서 관리하면 됨.
 	int Damage = 1;
 };
