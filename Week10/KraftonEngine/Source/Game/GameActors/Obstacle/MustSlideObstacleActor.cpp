@@ -7,7 +7,7 @@ IMPLEMENT_CLASS(AMustSlideObstacleActor, AObstacleActorBase)
 void AMustSlideObstacleActor::InitDefaultComponents(const FString& UStaticMeshFileName) {
 	FString MeshPath = UStaticMeshFileName;
 	if (MeshPath.empty() || MeshPath == "None") {
-		if (const FMeshResource* Res = FResourceManager::Get().FindMesh("Game.Mesh.Obstacle.MustSlide0")) {
+		if (const FMeshResource* Res = FResourceManager::Get().FindMesh("Game.Mesh.Obstacle.MustJumpOrSlide0")) {
 			MeshPath = Res->Path;
 		}
 	}
