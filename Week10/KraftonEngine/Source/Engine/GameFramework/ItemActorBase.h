@@ -97,7 +97,7 @@ protected:
 
 	// 실제 overlap 판정을 담당합니다.
 	UBoxComponent* ItemTrigger = nullptr;
-	// ItemBase.lua, CoinItem.lua/EffectItem.lua 같은 item별 script로 교체 가능
+	// ItemBase.lua, LogItem.lua/CrashDumpItem.lua/EffectItem.lua 같은 item별 script로 교체 가능
 	// 상속받은 페이지에서 접근해서 수정 (아이템 공통 속성)
 	UScriptComponent* ItemScript = nullptr;
 	// StaticMesh/Text/Billboard 등 표시용 component 추적 (충돌X)

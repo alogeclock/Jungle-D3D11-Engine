@@ -514,6 +514,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Engine\Camera\CameraShake.h" />
     <ClInclude Include="Source\Game\GameMode\ARunnerGameMode.h" />
+    <ClInclude Include="Source\Game\Map\MapRandom.h" />
     <ClInclude Include="Source\Game\Player\Runner.h" />
     <ClInclude Include="Source\Editor\EditorEngine.h" />
     <ClInclude Include="Source\Editor\History\SceneHistoryBuilder.h" />

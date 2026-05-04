@@ -11,6 +11,7 @@
 #include "Core/Log.h"
 #include "GameFramework/AActor.h"
 #include "GameFramework/World.h"
+#include "Game/GameActors/Obstacle/ObstacleActorBase.h"
 #include "Object/Object.h"
 #include "Object/UClass.h"
 #include "Scripting/LuaComponentProxy.h"
@@ -699,4 +700,30 @@ void FLuaActorProxy::Destroy()
 	World->DestroyActor(TargetActor);
 	Actor = nullptr;
 	StopMove();
+}
+
+int FLuaActorProxy::GetDamage() const
+{
+	// 장애물별 피해량을 다르게 줄 수 있게 C++ Damage 값을 Lua에서 읽는다.
+	// ActorProxy는 모든 actor에 붙는 타입이라, 장애물이 아니면 Lua fallback과 같은 기본 피해량 1을 돌려준다.
+	AActor* TargetActor = GetActor();
+	if (AObstacleActorBase* Obstacle = Cast<AObstacleActorBase>(TargetActor))
+	{
+		return Obstacle->GetDamage();
+	}
+
+	return 1;
+}
+
+bool FLuaActorProxy::SetDamage(int InDamage)
+{
+	// 나중에 생성자/툴에서 장애물별 Damage를 바꾸고 싶을 때 쓰는 안전한 setter입니다.
+	AActor* TargetActor = GetActor();
+	if (AObstacleActorBase* Obstacle = Cast<AObstacleActorBase>(TargetActor))
+	{
+		Obstacle->SetDamage((std::max)(0, InDamage));
+		return true;
+	}
+
+	return false;
 }
