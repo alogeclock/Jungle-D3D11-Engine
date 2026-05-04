@@ -60,7 +60,7 @@
                 0.0
               ],
               "Texture": {
-                "Path": "Asset/Content/Texture/UI/EngineDive/title_background.png"
+                "Path": "Asset/Content/Texture/UI/title_background.png"
               },
               "Tint": [
                 0.05,
@@ -144,7 +144,7 @@
                 0.0
               ],
               "Texture": {
-                "Path": "Asset/Content/Texture/UI/EngineDive/logo_color.png"
+                "Path": "Asset/Content/Texture/UI/logo_color.png"
               },
               "Tint": [
                 1.0,
@@ -173,7 +173,7 @@
                 280.0,
                 0.0
               ],
-              "Style Json": "Asset/Content/Texture/UI/EngineDive/nineslice.json",
+              "Style Json": "Asset/Content/Texture/UI/nineslice.json",
               "Tint": [
                 0.72,
                 0.9,
@@ -200,7 +200,7 @@
                 0.0
               ],
               "Texture": {
-                "Path": "Asset/Content/Texture/Character/EngineDive/Profile/profile_baek.png"
+                "Path": "Asset/Content/Texture/Character/Profile/profile_baek.png"
               },
               "Tint": [
                 1.0,
