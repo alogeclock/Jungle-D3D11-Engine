@@ -285,6 +285,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickActorBase.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickManager.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.cpp" />
     <ClCompile Include="Source\Game\GameActors\Items\CrashDumpItemActor.cpp" />
     <ClCompile Include="Source\Game\GameActors\Items\LogFragmentItemActor.cpp" />
     <ClCompile Include="Source\Engine\Camera\CameraShake.cpp" />
@@ -514,6 +520,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickActorBase.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickManager.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.h" />
     <ClInclude Include="Source\Game\GameActors\Items\CrashDumpItemActor.h" />
     <ClInclude Include="Source\Game\GameActors\Items\LogFragmentItemActor.h" />
     <ClInclude Include="Source\Engine\Camera\CameraShake.h" />
