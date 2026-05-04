@@ -13,6 +13,7 @@ local AUTO_ADVANCE_DELAY = property("AutoAdvanceDelay", 3.0)
 local ui = {}
 local intro_finished = false
 local scenario = nil
+local IMMEDIATE_SCENE = "PlayerDev.Scene"
 
 local SPEAKER_COLORS = {
     BAEK_COMMANDER = { 0.62, 0.86, 1.0 },
@@ -374,6 +375,10 @@ function finish_intro(target_scene)
     load_scene(target_scene or NEXT_SCENE)
 end
 
+local function load_playerdev_immediately()
+    finish_intro(IMMEDIATE_SCENE)
+end
+
 local function run_step(step)
     if intro_finished or type(step) ~= "table" then
         return
@@ -459,6 +464,8 @@ function RunIntro()
 end
 
 function BeginPlay()
+    play_sfx("Sound.SFX.windows.98.startup", false)
+
     local names = {
         "BgBase",
         "BgTexture",
@@ -510,7 +517,7 @@ function BeginPlay()
         cache_component(name)
     end
 
-    StartCoroutine("RunIntro")
+    load_playerdev_immediately()
 end
 
 function Tick(dt)
