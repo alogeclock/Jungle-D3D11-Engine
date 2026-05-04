@@ -24,6 +24,7 @@ enum EObstacleDecision {
 	DoubleBarrierRight,
 	//MustJump,
 	MustSlide,
+	Pendulum,
 	Count,
 };
 

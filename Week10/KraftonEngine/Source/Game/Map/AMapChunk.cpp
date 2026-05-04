@@ -7,7 +7,7 @@
 #include "Game/GameActors/Obstacle/BarrierObstacleActor.h"
 #include "Game/GameActors/Obstacle/MustJumpObstacleActor.h"
 #include "Game/GameActors/Obstacle/MustSlideObstacleActor.h"
-#include "Game/GameActors/Obstacle/WireballActor.h"
+#include "Game/GameActors/Obstacle/PendulumObstacleActor.h"
 #include "Game/GameActors/Items/CrashDumpItemActor.h"
 #include "Game/GameActors/Items/ItemActorBase.h"
 #include "Game/GameActors/Items/LogFragmentItemActor.h"
@@ -94,6 +94,7 @@ static AObstacleActorBase* SpawnObstacleOfType(UWorld* World, EObstacleType Type
 	case EObstacleType::Barrier: return World->SpawnActor<ABarrierObstacleActor>();
 	case EObstacleType::LowBar:	 return World->SpawnActor<AMustJumpObstacleActor>();
 	case EObstacleType::HighBar: return World->SpawnActor<AMustSlideObstacleActor>();
+	case EObstacleType::Pendulum: return World->SpawnActor<APendulumObstacleActor>();
 	case EObstacleType::Misc:    return World->SpawnActor<ASimpleObstacleActor>();
 	default:                     return nullptr;
 	}
@@ -328,6 +329,15 @@ void AMapChunk::SpawnObstacle()
 			FVector SpawnLoc = WorldPositionForLane(1);
 			SpawnLoc.Z = SpawnLoc.Z + 0.35f;
 			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::HighBar, SpawnLoc)) {
+				SpawnedObstacles.push_back(Obs);
+			}
+			break;
+		}
+		case (Pendulum):
+		{
+			FVector SpawnLoc = WorldPositionForLane(1);
+			SpawnLoc.Z = SpawnLoc.Z + 0.35f;
+			if (AObstacleActorBase* Obs = SpawnObstacleAt(GetWorld(), EObstacleType::Pendulum, SpawnLoc)) {
 				SpawnedObstacles.push_back(Obs);
 			}
 			break;

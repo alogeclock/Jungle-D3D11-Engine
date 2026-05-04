@@ -13,6 +13,7 @@ enum class EObstacleType : uint8
 	Barrier,	// must switch lanes
 	LowBar,		// must jump
 	HighBar,	// must slide
+	Pendulum,
 	Misc,
 };
 
