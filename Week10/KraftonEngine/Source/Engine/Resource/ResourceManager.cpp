@@ -16,6 +16,34 @@
 #include "Materials/MaterialManager.h"
 
 
+// SEH-guarded WIC 호출 (C++ 객체 unwind가 없는 별도 함수여야 __try/__except 사용 가능).
+static HRESULT SafeCreateWICTextureFromFile(
+	ID3D11Device* Device,
+	const wchar_t* FullPath,
+	ID3D11ShaderResourceView** OutSRV)
+{
+	HRESULT hr = E_FAIL;
+	__try
+	{
+		hr = DirectX::CreateWICTextureFromFileEx(
+			Device,
+			FullPath,
+			0,
+			D3D11_USAGE_IMMUTABLE,
+			D3D11_BIND_SHADER_RESOURCE,
+			0, 0,
+			DirectX::WIC_LOADER_FORCE_RGBA32,
+			nullptr,
+			OutSRV);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		hr = E_FAIL;
+		if (OutSRV) { *OutSRV = nullptr; }
+	}
+	return hr;
+}
+
 namespace ResourceKey
 {
 	constexpr const char* Font     = "Font";
@@ -881,20 +909,12 @@ bool FResourceManager::LoadGPUResources(ID3D11Device* Device)
 		}
 		else
 		{
-			// .png/.jpg/.bmp/.tga 등 — WIC 경유
-			hr = DirectX::CreateWICTextureFromFileEx(
-				Device,
-				FullPath.c_str(),
-				0,
-				D3D11_USAGE_IMMUTABLE,
-				D3D11_BIND_SHADER_RESOURCE,
-				0, 0,
-				// 이 버전의 DirectXTK 에는 PREMULTIPLY_ALPHA 플래그가 없다.
-				// straight-alpha 보간으로 생기는 검은 헤일로는 PS 측 알파 컷오프(0.5) 로 회피.
-				DirectX::WIC_LOADER_FORCE_RGBA32,
-				nullptr,
-				&Resource.SRV
-			);
+			// .png/.jpg/.bmp/.tga 등 — WIC 경유 (WIC 팩토리 손상 시 AV가 나도 게임 전체가 죽지 않도록 SEH 가드)
+			hr = SafeCreateWICTextureFromFile(Device, FullPath.c_str(), &Resource.SRV);
+			if (FAILED(hr))
+			{
+				UE_LOG_CATEGORY(ResourceManager, Error, "[INIT] WIC load failed (path=%s)", Resource.Path.c_str());
+			}
 		}
 		if (FAILED(hr) || !Resource.SRV)
 		{

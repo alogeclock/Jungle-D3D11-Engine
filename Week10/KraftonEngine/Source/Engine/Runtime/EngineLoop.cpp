@@ -5,6 +5,8 @@
 #include "Engine/Serialization/SceneSaveManager.h"
 #include "Engine/Input/InputManager.h"
 #include <iostream>
+#include <objbase.h>
+#include <wincodec.h>
 
 #if IS_OBJ_VIEWER
 #include "ObjViewer/ObjViewerEngine.h"
@@ -28,6 +30,43 @@ void FEngineLoop::CreateEngine()
 bool FEngineLoop::Init(HINSTANCE hInstance, int nShowCmd)
 {
 	FLogManager::Get().Initialize();
+
+	// WIC inproc factory는 MTA에서 가장 안정적으로 동작한다.
+	HRESULT ComInitHr = CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+	if (FAILED(ComInitHr) && ComInitHr != RPC_E_CHANGED_MODE)
+	{
+		UE_LOG_CATEGORY(EngineInit, Warning, "[INIT] CoInitializeEx failed: 0x%08X", static_cast<unsigned int>(ComInitHr));
+	}
+
+	// WindowsCodecs.dll을 미리 로드해 두어 lazy-load 실패로 인한 WIC 팩토리 vtable 손상을 차단.
+	if (HMODULE WicModule = LoadLibraryW(L"WindowsCodecs.dll"))
+	{
+		UE_LOG_CATEGORY(EngineInit, Info, "[INIT] WindowsCodecs.dll loaded at 0x%p", WicModule);
+	}
+	else
+	{
+		UE_LOG_CATEGORY(EngineInit, Error, "[INIT] WindowsCodecs.dll load failed: GLE=%lu", GetLastError());
+	}
+
+	// WIC 팩토리 사전 생성: 초기 실패는 명시적 로그로 노출.
+	{
+		IWICImagingFactory* WicFactory = nullptr;
+		HRESULT WicHr = CoCreateInstance(
+			CLSID_WICImagingFactory,
+			nullptr,
+			CLSCTX_INPROC_SERVER,
+			IID_PPV_ARGS(&WicFactory));
+		if (SUCCEEDED(WicHr) && WicFactory)
+		{
+			UE_LOG_CATEGORY(EngineInit, Info, "[INIT] WIC ImagingFactory pre-warmed");
+			WicFactory->Release();
+		}
+		else
+		{
+			UE_LOG_CATEGORY(EngineInit, Error, "[INIT] WIC ImagingFactory creation failed: 0x%08X", static_cast<unsigned int>(WicHr));
+		}
+	}
+
 	UE_LOG_CATEGORY(EngineInit, Info, "[INIT] Engine loop init begin");
 	UE_LOG_CATEGORY(EngineInit, Info, "[INIT] Loading project settings: %s", FProjectSettings::GetDefaultPath().c_str());
 	FProjectSettings::Get().LoadFromFile(FProjectSettings::GetDefaultPath());
@@ -110,20 +149,20 @@ int FEngineLoop::Run()
 
 		FInputManager::Get().Tick();
 
-		if (FInputManager::Get().IsKeyPressed(VK_ESCAPE))
-		{
-#if WITH_EDITOR
-			if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
-			{
-				if (EditorEngine->IsPlayingInEditor())
-				{
-					EditorEngine->RequestEndPlayMap();
-				}
-			}
-#else
-			Application.RequestExit();
-#endif
-		}
+//		if (FInputManager::Get().IsKeyPressed(VK_ESCAPE))
+//		{
+//#if WITH_EDITOR
+//			if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
+//			{
+//				if (EditorEngine->IsPlayingInEditor())
+//				{
+//					EditorEngine->RequestEndPlayMap();
+//				}
+//			}
+//#else
+//			Application.RequestExit();
+//#endif
+//		}
 
 		Timer.Tick();
 		float DeltaTime = Timer.GetDeltaTime();
@@ -158,4 +197,6 @@ void FEngineLoop::Shutdown()
 		UObjectManager::Get().DestroyObject(GEngine);
 		GEngine = nullptr;
 	}
+
+	CoUninitialize();
 }
