@@ -26,6 +26,9 @@ local Config = {
         lane_count = 3,
         -- lane_change_speed??target lane源뚯? 蹂닿컙 ?대룞?섎뒗 ?띾룄?낅땲??
         lane_change_speed = 12.0,
+        barrel_roll_enabled = true,
+        barrel_roll_degrees = 360.0,
+        barrel_roll_duration = 0.34,
 
         -- gravity??怨듭쨷???덉쓣 ??留??꾨젅???뷀빐吏???섏쭅 媛?띾룄?낅땲??
         gravity = -25.0,

@@ -325,9 +325,19 @@ void UWorld::RemoveLevel(ULevel* InLevel)
 
 void UWorld::ClearLevels()
 {
+	TickManager.Reset();
+	AuthorGameMode = nullptr;
+	ActiveCamera = nullptr;
+	LastLODUpdateCamera = nullptr;
+	bHasLastFullLODUpdateCameraPos = false;
+
 	for (ULevel* Level : Levels)
 	{
-		if (Level) UObjectManager::Get().DestroyObject(Level);
+		if (Level)
+		{
+			Level->EndPlay();
+			UObjectManager::Get().DestroyObject(Level);
+		}
 	}
 	Levels.clear();
 	PersistentLevel = nullptr;
@@ -539,6 +549,10 @@ FLODUpdateContext UWorld::PrepareLODContext()
 void UWorld::InitWorld()
 {
 	Partition.Reset(FBoundingBox());
+	AuthorGameMode = nullptr;
+	ActiveCamera = nullptr;
+	LastLODUpdateCamera = nullptr;
+	bHasLastFullLODUpdateCameraPos = false;
 	ClearLevels();
 
 	PersistentLevel = UObjectManager::Get().CreateObject<ULevel>(this);
@@ -567,6 +581,10 @@ void UWorld::SpawnGameMode()
 	if (ClassName.empty())
 	{
 		ClassName = "AGameModeBase";
+	}
+	if (ClassName == "None" || ClassName == "none" || ClassName == "NoneGameMode")
+	{
+		return;
 	}
 
 	UObject* Obj = FObjectFactory::Get().Create(ClassName, CurrentLevel);
@@ -725,6 +743,7 @@ void UWorld::EndPlay()
 	{
 		if (Level) Level->EndPlay();
 	}
+	AuthorGameMode = nullptr;
 
 	Partition.Reset(FBoundingBox());
 
