@@ -42,6 +42,20 @@ UPrimitiveComponent::~UPrimitiveComponent()
 	{
 		Owner->GetWorld()->RemovePendingOverlapComponent(this);
 	}
+
+	// 피어들의 OverlapInfo에 남아 있는 자신을 정리하지 않으면 다음 ProcessOverlapEvents에서
+	// dynamic_cast 크래시 Owner가 파괴 중
+	// EndOverlap 이벤트 없이 제거
+	for (const FOverlapInfo& Info : OverlapInfo)
+	{
+		UPrimitiveComponent* Other = Info.HitResult.Component;
+		if (Other && Other != this)
+		{
+			Other->RemoveOverlapPeerSilent(this);
+		}
+	}
+	OverlapInfo.clear();
+
 	DestroyRenderState();
 }
 
@@ -383,6 +397,15 @@ void UPrimitiveComponent::EndComponentOverlap(const UPrimitiveComponent* Other) 
 				if (Owner) Owner->NotifyActorEndOverlap(OtherActor);
 			} 
 			break;
+		}
+	}
+}
+
+void UPrimitiveComponent::RemoveOverlapPeerSilent(const UPrimitiveComponent* Other) {
+	for (uint32 i = 0; i < OverlapInfo.size(); i++) {
+		if (OverlapInfo[i].HitResult.Component == Other) {
+			OverlapInfo.erase(OverlapInfo.begin() + i);
+			return;
 		}
 	}
 }
