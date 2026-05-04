@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Vector.h"
+#include "Math/Rotator.h"
 #include "Scripting/LuaComponentProxy.h"
 
 #include <memory>
@@ -46,9 +47,9 @@ struct FLuaActorProxy
 	void SetWorldLocation(const FVector& InLocation);
 	void SetWorldLocationXYZ(float X, float Y, float Z);
 
-	FVector GetWorldRotation() const;
-	void SetWorldRotation(const FVector& InRotation);
-	void SetWorldRotationXYZ(float X, float Y, float Z);
+	FRotator GetWorldRotation() const;
+	void SetWorldRotation(const FRotator& InRotation);
+	void SetWorldRotationXYZ(float Pitch, float Yaw, float Roll);
 
 	FVector GetWorldScale() const;
 	void SetWorldScale(const FVector& InScale);
@@ -85,6 +86,7 @@ struct FLuaActorProxy
 	// Actor가 가진 Component를 Lua에 직접 포인터로 넘기지 않고, 항상 ComponentProxy로 감싸서 반환한다.
 	FLuaComponentProxy GetComponent(const FString& ComponentName);
 	FLuaComponentProxy GetComponentByType(const FString& TypeName);
+	FLuaComponentProxy FindComponentByClass(const FString& TypeName) { return GetComponentByType(TypeName); }
 	FLuaComponentProxy GetScriptComponent();
 	FLuaComponentProxy GetStaticMeshComponent();
 
