@@ -12,11 +12,9 @@ ACrashDumpItemActor::ACrashDumpItemActor()
 	// 생성자에서는 texture 경로만 지정
 	SetItemTexturePath("Asset/Content/Texture/item_crash_dump.png");
 
-	// Crash Dump = 희귀 수집 카운터 / 3개 수집 시 Critical Analysis
 	InteractionConfig.ScoreValue = 0;
 	InteractionConfig.RequiredInteractorTag = "Player";
 	InteractionConfig.bStartsEnabled = true;
-	InteractionConfig.bDestroyOnPickup = true;
 
 	SetFeatureFlags(
 		static_cast<uint32>(EItemFeatureFlags::PickupOnOverlap)

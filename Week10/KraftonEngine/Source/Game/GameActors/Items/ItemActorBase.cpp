@@ -33,6 +33,8 @@ AItemActorBase::AItemActorBase()
 
 void AItemActorBase::BeginPlay()
 {
+	bPicked = false;
+
 	// BeginPlay 직전에 다시 보정.
 	// Details 창 수정, deserialize, spawn 이후 값 변경이 섞여도 최종 상태를 맞춘다.
 	if (ItemTrigger)
@@ -62,14 +64,18 @@ void AItemActorBase::BeginPlay()
 			if (UTexture2D* Texture = UTexture2D::LoadFromFile(ItemTexturePath, Device))
 			{
 				ItemImage->SetTexture(Texture);
+				// 생성자에서 만든 컴포넌트는 World 연결 전이라 렌더 프록시가 없을 수 있다.
+				ItemImage->MarkRenderStateDirty();
 			}
 		}
 	}
 
-	// 중요:
-	// ScriptComponent의 BeginPlay/Lua BeginPlay가 Super::BeginPlay() 내부에서 돈다면,
-	// texture 적용이 Lua BeginPlay보다 먼저 끝난다.
 	Super::BeginPlay();
+
+	if (ItemTrigger)
+	{
+		ItemTrigger->OnComponentBeginOverlap.AddDynamic(this, &AItemActorBase::OnItemBeginOverlap);
+	}
 }
 
 void AItemActorBase::Tick(float DeltaTime)
@@ -90,12 +96,9 @@ void AItemActorBase::Serialize(FArchive& Ar)
 	Ar << ItemFeatureFlags;
 	Ar << InteractionConfig.ScoreValue;
 	Ar << InteractionConfig.RequiredInteractorTag;
-	Ar << InteractionConfig.EffectName;
-	Ar << InteractionConfig.EffectDuration;
 	Ar << InteractionConfig.RespawnDelay;
 	Ar << InteractionConfig.Cooldown;
 	Ar << InteractionConfig.bStartsEnabled;
-	Ar << InteractionConfig.bDestroyOnPickup;
 
 	// BeginPlay에서 texture를 다시 적용할 수 있게 경로도 저장.
 	Ar << ItemTexturePath;
@@ -104,6 +107,56 @@ void AItemActorBase::Serialize(FArchive& Ar)
 UPrimitiveComponent* AItemActorBase::GetItemTrigger() const
 {
 	return ItemTrigger;
+}
+
+bool AItemActorBase::IsValidInteractor(AActor* OtherActor) const
+{
+	if (!OtherActor)
+	{
+		return false;
+	}
+
+	if (InteractionConfig.RequiredInteractorTag.empty())
+	{
+		return true;
+	}
+
+	return OtherActor->HasTag(InteractionConfig.RequiredInteractorTag);
+}
+
+void AItemActorBase::OnItemBeginOverlap(const FComponentOverlapEvent& Event)
+{
+	if (!HasFeature(EItemFeatureFlags::PickupOnOverlap))
+	{
+		return;
+	}
+
+	if (HasFeature(EItemFeatureFlags::SingleUse) && bPicked)
+	{
+		return;
+	}
+
+	if (!IsValidInteractor(Event.OtherActor))
+	{
+		return;
+	}
+
+	bPicked = true;
+
+	if (HasFeature(EItemFeatureFlags::ConsumeOnPickup))
+	{
+		ConsumeItem();
+	}
+}
+
+void AItemActorBase::ConsumeItem()
+{
+	// 안보이게 처리만 한다 Chunk가 소멸될 때 같이 처리
+	SetTriggerEnabled(false);
+	ItemImage->SetTexture(nullptr);
+
+	// overlap dispatch 중 즉시 Destroy하면 dispatcher가 들고 있는 component/owner 포인터가 무효화된다.
+	// 실제 해제는 AMapChunk::EndPlay에서 처리한다.
 }
 
 void AItemActorBase::SetItemScript(const FString& ScriptPath)

@@ -9,14 +9,12 @@ ALogFragmentItemActor::ALogFragmentItemActor()
 
 	SetItemScript("Scripts/Game/Items/LogItem.lua");
 
-	// path만 저장
+	// 생성자에서는 texture 경로만 지정한다.
 	SetItemTexturePath("Asset/Content/Texture/item_log.png");
 
-	// Log Fragment = 기본 수집 아이템 / Logs +1 / Score +10 / Trace +2%
 	InteractionConfig.ScoreValue = 10;
 	InteractionConfig.RequiredInteractorTag = "Player";
 	InteractionConfig.bStartsEnabled = true;
-	InteractionConfig.bDestroyOnPickup = true;
 
 	SetFeatureFlags(
 		static_cast<uint32>(EItemFeatureFlags::PickupOnOverlap)

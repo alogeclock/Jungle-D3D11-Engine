@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Core/CollisionEventTypes.h"
 #include "GameFramework/AActor.h"
 
 class UBillboardComponent;
@@ -14,7 +15,6 @@ enum class EItemFeatureFlags : uint32
 	PickupOnOverlap = 1 << 0,   // Trigger overlap이 발생하면 자동으로 pickup/interact를 시도합니다.
 	ConsumeOnPickup = 1 << 1,   // pickup 성공 후 item actor를 제거하는 기본 동작입니다.
 	ScoreReward = 1 << 2,       // GameManager.AddScore()로 점수 보상을 지급합니다.
-	GameplayEffect = 1 << 3,    // SpeedBoost, Shield 같은 효과 적용을 위한 확장 지점입니다.
 	SingleUse = 1 << 4,         // 중복 overlap으로 같은 아이템이 여러 번 발동되는 것을 막습니다.
 	DebugLog = 1 << 5,          // Lua item script에서 디버그 로그를 켭니다.
 };
@@ -24,17 +24,17 @@ struct FItemInteractionConfig
 {
 	int32 ScoreValue = 0;
 	FString RequiredInteractorTag = "Player";
-	FString EffectName;
-	float EffectDuration = 0.0f;
 	float RespawnDelay = 0.0f;
 	float Cooldown = 0.0f;
 	bool bStartsEnabled = true;
-	bool bDestroyOnPickup = true;
 };
 
 // Item Actor 기반 클래스
-// Trigger: overlap / 아이템 표시: Billboard component
-// Item 별 동작 흐름은 Lua script에서 구현
+// Trigger와 Actor 생명주기는 C++에서, 보상 처리는 Lua에서 담당
+
+/****************************************************************
+절대로 Item의 소멸을 Chunk EndPlay를 제외한 곳에서 진행하지 말 것
+****************************************************************/
 class AItemActorBase : public AActor
 {
 public:
@@ -78,6 +78,9 @@ public:
 	bool IsTriggerEnabled() const;
 
 protected:
+	void OnItemBeginOverlap(const FComponentOverlapEvent& Event);
+	bool IsValidInteractor(AActor* OtherActor) const;
+	void ConsumeItem();
 
 	// Item Actor Component
 	UBoxComponent* ItemTrigger = nullptr;
@@ -90,6 +93,8 @@ protected:
 
 	// Item Config값
 	FItemInteractionConfig InteractionConfig;
+
+	bool bPicked = false;
 
 	// default flag값
 	uint32 ItemFeatureFlags =
