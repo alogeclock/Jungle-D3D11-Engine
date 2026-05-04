@@ -44,6 +44,11 @@ void AImposterRotationGizmo::Transform(float DeltaTime) {
 		TargetRotation = (StartRotation + GetRotationOffset()).GetClamped();
 		Elapsed = 0.0f;
 		bTransforming = true;
+
+		if (PreviewGizmo)
+		{
+			PreviewGizmo->SetHolding(true);
+		}
 	}
 
 	Elapsed += (std::max)(0.0f, DeltaTime);

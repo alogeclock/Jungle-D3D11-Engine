@@ -51,10 +51,6 @@ void AImposterGizmoActorBase::Capture(AActor* InActor) {
 	{
 		PreviewGizmo = AddComponent<UGizmoComponent>();
 	}
-	if (PreviewGizmo)
-	{
-		PreviewGizmo->SetHolding(true);
-	}
 }
 
 bool AImposterGizmoActorBase::HasAliveTarget() const

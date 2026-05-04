@@ -52,6 +52,11 @@ void AImposterTranslateGizmo::Transform(float DeltaTime) {
 		TargetLocation = StartLocation + GetTranslateOffset();
 		Elapsed = 0.0f;
 		bTransforming = true;
+
+		if (PreviewGizmo)
+		{
+			PreviewGizmo->SetHolding(true);
+		}
 	}
 
 	Elapsed += (std::max)(0.0f, DeltaTime);
