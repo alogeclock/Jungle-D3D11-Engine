@@ -346,7 +346,6 @@ function GameManager.ConsumeShield()
 end
 
 function GameManager.GameOver(reason)
-    -- GameOver는 결과 데이터를 보존하는 지점입니다.
     if GameManager.state == GameManager.State.GameOver then
         log("[GameManager] GameOver ignored: already GameOver")
         return
@@ -379,13 +378,9 @@ function GameManager.GameOver(reason)
         " rank=" .. tostring(GameManager.coach_rank)
     )
 
-    local result_scene = Config.result_screen and Config.result_screen.scene_path or "game/gameresult.scene"
+    local result_scene = Config.result_screen and Config.result_screen.scene_path or "gameresult.scene"
     log("[GameManager] LoadResultScene scene=" .. tostring(result_scene))
-    if type(load_scene) == "function" then
-        load_scene(result_scene)
-    else
-        log("[GameManager] LoadResultScene skipped: load_scene is not bound")
-    end
+    load_scene(result_scene)
 end
 
 function GameManager.IsRunning()
