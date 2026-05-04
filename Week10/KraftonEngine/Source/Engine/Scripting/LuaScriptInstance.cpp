@@ -500,7 +500,28 @@ namespace
 			return InputPath.lexically_normal();
 		}
 
-		return (std::filesystem::path(FPaths::RootDir()) / InputPath).lexically_normal();
+		// Root relative (ProjectDir/Asset/Content/...)
+		std::filesystem::path FullPath = std::filesystem::path(FPaths::RootDir()) / InputPath;
+		if (std::filesystem::exists(FullPath))
+		{
+			return FullPath.lexically_normal();
+		}
+
+		// Content relative fallback
+		std::filesystem::path ContentPath = std::filesystem::path(FPaths::ProjectContentDir()) / InputPath;
+		if (std::filesystem::exists(ContentPath))
+		{
+			return ContentPath.lexically_normal();
+		}
+
+		// Asset relative fallback
+		std::filesystem::path AssetPath = std::filesystem::path(FPaths::AssetDir()) / InputPath;
+		if (std::filesystem::exists(AssetPath))
+		{
+			return AssetPath.lexically_normal();
+		}
+
+		return FullPath.lexically_normal();
 	}
 
 	sol::object MakeLuaObjectFromJson(sol::state_view Lua, const json::JSON& Value)
