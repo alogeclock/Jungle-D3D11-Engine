@@ -225,6 +225,12 @@ local HUD_LAYOUT = {
     approval_value = { x = 1768.0, y = 220.0 },
 }
 
+local DIALOGUE_LAYOUT = {
+    window = { x = 32.0, y = 32.0 },
+    speaker = { x = 292.0, y = 74.0 },
+    message = { x = 292.0, y = 124.0 },
+}
+
 local function apply_hud_layout()
     set_screen_position(title_text, HUD_LAYOUT.title.x, HUD_LAYOUT.title.y)
     set_screen_position(core_metrics_text, HUD_LAYOUT.core_text.x, HUD_LAYOUT.core_text.y)
@@ -233,6 +239,9 @@ local function apply_hud_layout()
     set_screen_position(approval_value_text, HUD_LAYOUT.approval_value.x, HUD_LAYOUT.approval_value.y)
     set_screen_position(approval_gauge_track, APPROVAL_GAUGE.x, APPROVAL_GAUGE.y)
     set_screen_position(approval_gauge_fill, APPROVAL_GAUGE.x, APPROVAL_GAUGE.y)
+    set_screen_position(dialogue_window, DIALOGUE_LAYOUT.window.x, DIALOGUE_LAYOUT.window.y)
+    set_screen_position(dialogue_speaker_text, DIALOGUE_LAYOUT.speaker.x, DIALOGUE_LAYOUT.speaker.y)
+    set_screen_position(dialogue_message_text, DIALOGUE_LAYOUT.message.x, DIALOGUE_LAYOUT.message.y)
 end
 
 local function refresh_approval_gauge(data)

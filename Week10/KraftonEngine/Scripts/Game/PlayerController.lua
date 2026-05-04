@@ -688,8 +688,6 @@ function Tick(dt)
         return
     end
 
-    consume_coach_dialogue_triggers()
-
     -- GameOver 이후에는 이동, 입력, 중력, score 갱신을 모두 멈춘다.
     -- 로그는 최초 1회만 남겨 Tick마다 콘솔이 도배되지 않게 한다.
     if GameManager.IsGameOver() then

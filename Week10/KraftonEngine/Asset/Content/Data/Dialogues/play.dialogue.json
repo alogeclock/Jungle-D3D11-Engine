@@ -109,7 +109,7 @@
       "trigger": "onCollectTrace",
       "speaker": "LIM_COMMANDER",
       "emotion": "normal",
-      "message": "흔적을 잡았다. 이제 저 버그가 도망갈 곳은 없다. 아마도.",
+      "message": "자취를 보았다. 이제 저 버그가 도망갈 곳은 없다. 아마도.",
       "shake": {
         "enabled": false
       },
@@ -141,7 +141,7 @@
       "trigger": "onHitObstacle",
       "speaker": "LIM_COMMANDER",
       "emotion": "surprised",
-      "message": "방금 그건 디버깅이 아니라 몸으로 예외 처리를 한 거다.",
+      "message": "방금 그건 디버깅이 아니라 직접 예외 처리를 한 거다.",
       "shake": {
         "enabled": true,
         "intensity": 0.6,
@@ -175,7 +175,7 @@
       "trigger": "onStabilityLow",
       "speaker": "LIM_COMMANDER",
       "emotion": "serious",
-      "message": "지금부터는 농담 줄인다. 진짜로 조심해라.",
+      "message": "지금부터는 장난 줄인다. 정말로 조심해라.",
       "shake": {
         "enabled": false
       },
@@ -235,7 +235,7 @@
       "trigger": "onApplyHotfix",
       "speaker": "LIM_COMMANDER",
       "emotion": "joke",
-      "message": "봤나? 이것이 마감 직전의 생존 본능이다.",
+      "message": "보았나? 이것이 마감 직전의 생존 본능이다.",
       "shake": {
         "enabled": false
       },
@@ -265,7 +265,7 @@
       "trigger": "onSpeedUp",
       "speaker": "LIM_COMMANDER",
       "emotion": "excited",
-      "message": "좋다, 이제 진짜 엔진 다이브답게 빨라지는군.",
+      "message": "좋다, 이제 정말 기계 다이브답게 빨라지는군.",
       "shake": {
         "enabled": false
       },

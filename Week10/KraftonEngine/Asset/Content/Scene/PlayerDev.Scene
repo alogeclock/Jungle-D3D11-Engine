@@ -148,6 +148,28 @@
               "Is Collidable" : true,
               "Location" : [0.000000, 0.000000, 0.000000],
               "Mobility" : 2,
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_DirectionalLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : false,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }, {
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_350",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
               "Rotation" : [-0.000000, 0.000000, 0.000000],
               "Scale" : [1.000000, 1.000000, 1.000000],
               "Texture" : {
@@ -416,7 +438,7 @@
               "Bottom Border Thickness" : 0.000000,
               "Color" : [0.720000, 0.900000, 1.000000, 1.000000],
               "Font" : "Orbitron Bold",
-              "Font Size" : 1.180000,
+              "Font Size" : 1.300000,
               "Letter Spacing" : 0.000000,
               "Line Spacing" : 1.140000,
               "Screen Position" : [1202.000000, 56.000000, 0.000000],
@@ -831,7 +853,7 @@
     "FarClip" : 1000.000000,
     "Location" : [659.252991, -811.941589, 401.598511],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000002, 40.851223, 91.153961]
+    "Rotation" : [0.000011, 40.851219, 91.153961]
   },
   "Version" : 2,
   "WorldType" : "Editor"
