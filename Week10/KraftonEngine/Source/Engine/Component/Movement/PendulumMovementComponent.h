@@ -35,4 +35,5 @@ private:
 	float AngleOffset  = 0.0f;	// 기본 회전 오프셋 (도) — 진동 중심을 기울임
 
 	float ElapsedTime = 0.0f;	// 누적 시간 (직렬화 제외)
+	bool bInitialized = false;	// true after first tick captures world-space anchor
 };

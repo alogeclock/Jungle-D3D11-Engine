@@ -37,16 +37,7 @@ void UPendulumMovementComponent::BeginPlay()
 {
 	UMovementComponent::BeginPlay();
 	ElapsedTime = 0.0f;
-
-	if (USceneComponent* Target = GetUpdatedComponent())
-	{
-		InitialRelativeRotation = Target->GetRelativeQuat();
-		InitialWorldRotation = Target->GetWorldMatrix().ToQuat().GetNormalized();
-
-		const FVector InitialWorldLocation = Target->GetWorldLocation();
-		InitialWorldPivotLocation = InitialWorldLocation + InitialWorldRotation.RotateVector(PivotOffset);
-		InitialWorldOrbitOffset = InitialWorldLocation - InitialWorldPivotLocation;
-	}
+	bInitialized = false;
 }
 
 void UPendulumMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
@@ -58,7 +49,17 @@ void UPendulumMovementComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	{
 		return;
 	}
-	
+
+	if (!bInitialized)
+	{
+		bInitialized = true;
+		InitialRelativeRotation = Target->GetRelativeQuat();
+		InitialWorldRotation = Target->GetWorldMatrix().ToQuat().GetNormalized();
+		const FVector InitialWorldLocation = Target->GetWorldLocation();
+		InitialWorldPivotLocation = InitialWorldLocation + InitialWorldRotation.RotateVector(PivotOffset);
+		InitialWorldOrbitOffset = InitialWorldLocation - InitialWorldPivotLocation;
+	}
+
 	ElapsedTime += DeltaTime;
 
 	// angle = Amplitude * sin(2π * Frequency * t + Phase)

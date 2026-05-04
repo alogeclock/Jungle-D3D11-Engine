@@ -332,7 +332,7 @@ void AMapManager::BuildTemplateLibrary() {
 	StraightWithOneLaneR.FloorBlockInfos.push_back(StraightWithOneLaneR3);
 
 	//Obstacles
-	AddNonBarrierDecisionSlots(StraightWithOneLaneM, 2.f, StraightWithOneLaneL.Length - 2.f, 2.f);
+	AddNonBarrierDecisionSlots(StraightWithOneLaneR, 2.f, StraightWithOneLaneR.Length - 2.f, 2.f);
 	Templates.push_back(StraightWithOneLaneR);
 }
 
