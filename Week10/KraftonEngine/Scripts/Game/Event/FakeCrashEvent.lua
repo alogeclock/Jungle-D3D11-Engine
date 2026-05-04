@@ -119,7 +119,7 @@ function RunFakeCrashSequence()
 	AudioManager.StopBGM()
 	stop_all_audio()
 
-	wait_frames(5)
+	wait_frames(10)
 	-- ResourceManager에 사운드 키가 등록돼 있지 않아 "Sound.SFX.*" 이름은 resolve에 실패한다.
 	-- 새로 추가한 .wav/.mp3 파일이므로 RootDir 기준 상대경로를 직접 넘긴다.
 	play_sfx("Asset/Content/Sound/SFX/windows-98-error.mp3", false)
