@@ -94,6 +94,11 @@ struct FLuaActorProxy
 
 	void PrintLocation() const;
 	void Destroy();
+
+	// 장애물별 피해량을 Lua에서 읽기 위한 얇은 연결점입니다.
+	// 실제 Damage 값은 AObstacleActorBase가 들고 있고, 장애물이 아니면 안전한 기본값을 돌려줍니다.
+	int GetDamage() const;
+	bool SetDamage(int InDamage);
 };
 
 struct FLuaGroundHit
