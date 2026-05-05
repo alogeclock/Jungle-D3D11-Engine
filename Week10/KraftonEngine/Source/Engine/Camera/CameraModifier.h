@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "Component/CameraComponent.h"
 #include "Core/CoreTypes.h"
 #include "Object/Object.h"
 
@@ -11,14 +11,38 @@ public:
 	DECLARE_CLASS(UCameraModifier, UObject)
 	UCameraModifier();
 
+	virtual void AddedToCamera(APlayerCameraManager* Camera)				= 0;
+
+	/**
+	 * Directly modifies variables in the owning camera
+	 * @param	DeltaTime	Change in time since last update
+	 * @param	InOutPOV	Current Point of View, to be updated.
+	 * @return	bool		True if should STOP looping the chain, false otherwise
+	 */
+	virtual bool ModifyCamera(float DeltaTime, UCameraComponent& InOutPOV)  = 0;
+
+
+	virtual void UpdateAlpha(float DeltaTime)								= 0;
+
+	virtual bool IsDisabled() const { return bDisabled; }
+	virtual void EnableModifier()	{ bDisabled = true; }
+	virtual void ToggleModifier()	{ bDisabled = ~bDisabled; }
+	virtual void DisableModifier(bool bImmediate = false);
+
+protected:
+	virtual ~UCameraModifier() = default;
+
+public:
 	// Unreal Engine도 Public에 넣어둠
 	uint8 Priority;
 
-private:
-	APlayerCameraManager* CameraOwner;
-	float AlphaInTime;
-	float AlphaOutTime;
-	float Alpha;
-	uint32 bDisabled;
+protected:
+	APlayerCameraManager* CameraOwner = nullptr;
+
+	float AlphaInTime		= 0.f;;
+	float AlphaOutTime		= 0.f;
+	float Alpha				= 0.f;
+	uint32 bPendingDisable	= false;
+	uint32 bDisabled		= false;
 };
 

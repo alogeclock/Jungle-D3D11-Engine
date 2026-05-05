@@ -29,7 +29,7 @@
       <UniqueIdentifier>{879fdc11-4e44-c448-2bbf-5fd281dc244f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Editor\History">
-      <UniqueIdentifier>{a8b3c5d7-91b4-4e07-9f6a-7d9c3f12ab45}</UniqueIdentifier>
+      <UniqueIdentifier>{38dff259-40e0-534f-5ec6-58bc14765725}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Editor\PIE">
       <UniqueIdentifier>{1485fbd8-4084-14c8-cd14-33798c9651d4}</UniqueIdentifier>
@@ -55,11 +55,14 @@
     <Filter Include="Source\Engine">
       <UniqueIdentifier>{d0b56061-5521-9f21-3d03-1e11f47e99a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Audio">
+      <UniqueIdentifier>{60f7fb11-d80b-bf66-98c3-689d6f8326ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Camera">
+      <UniqueIdentifier>{1a0cd112-6dba-ed82-ebfb-199f0bda9443}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Engine\Collision">
       <UniqueIdentifier>{0a1ac0a6-fa86-45a3-c38e-91b60c7ce3cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Engine\Audio">
-      <UniqueIdentifier>{f4b8ec8e-7d8a-42a4-b87f-0b68a36495f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Engine\Component">
       <UniqueIdentifier>{22bbd7c0-73bc-1bc4-992f-be08238b1609}</UniqueIdentifier>
@@ -169,6 +172,30 @@
     <Filter Include="Source\Engine\Viewport">
       <UniqueIdentifier>{b95fbad5-2f3a-0600-c7ff-db94055fd64b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Game">
+      <UniqueIdentifier>{7b75b017-e44b-6189-2a88-30dc16a5724f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game\GameActors">
+      <UniqueIdentifier>{ad268b91-cc50-9e7a-aad7-d4287963241f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game\GameActors\Enemy">
+      <UniqueIdentifier>{97e7efb3-887e-b7dc-cfa3-549c8bb396b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game\GameActors\Items">
+      <UniqueIdentifier>{78b1ae44-76eb-972e-d86f-27a667240079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game\GameActors\Obstacle">
+      <UniqueIdentifier>{97b96418-90dc-9dc2-e360-7dea2a5286d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game\GameMode">
+      <UniqueIdentifier>{180756f8-cd60-823a-2895-cf41347cb361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game\Map">
+      <UniqueIdentifier>{68bb23a9-deae-fc46-03f7-d41811bcc4ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game\Player">
+      <UniqueIdentifier>{252615ec-332b-2a2c-add4-f1ad943f5178}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\ObjViewer">
       <UniqueIdentifier>{3e63d691-bd37-40d8-2cea-c874f8e3a95b}</UniqueIdentifier>
     </Filter>
@@ -178,11 +205,11 @@
     <Filter Include="ThirdParty\ImGui">
       <UniqueIdentifier>{5fdcaaee-156a-a40d-82bd-8b77a5a402df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThirdParty\miniaudio">
-      <UniqueIdentifier>{8f7457b3-bd9f-4b8f-9302-2bbd2b2f6e1d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty\SimpleJSON">
       <UniqueIdentifier>{b5b63371-405e-e009-4e4e-e3b5a25ee7bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\miniaudio">
+      <UniqueIdentifier>{675200d3-e8a7-1335-2c7b-2b469a8118b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="ThirdParty\sol2">
       <UniqueIdentifier>{1b8ce1bd-cdc9-e609-8022-e114e291285f}</UniqueIdentifier>
@@ -276,6 +303,9 @@
     <FxCompile Include="Shaders\PostProcess\HeightFog.hlsl">
       <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\PostProcess\HitVignette.hlsl">
+      <Filter>Shaders\PostProcess</Filter>
+    </FxCompile>
     <FxCompile Include="Shaders\PostProcess\LightCulling.hlsl">
       <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
@@ -314,11 +344,11 @@
     <ClCompile Include="Source\Editor\EditorEngine.cpp">
       <Filter>Source\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Editor\History\SceneHistoryBuilder.cpp">
-      <Filter>Source\Editor\History</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Editor\EditorRenderPipeline.cpp">
       <Filter>Source\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\History\SceneHistoryBuilder.cpp">
+      <Filter>Source\Editor\History</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\Selection\SelectionManager.cpp">
       <Filter>Source\Editor\Selection</Filter>
@@ -392,6 +422,18 @@
     <ClCompile Include="Source\Editor\Viewport\FLevelViewportLayout.cpp">
       <Filter>Source\Editor\Viewport</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Audio\AudioManager.cpp">
+      <Filter>Source\Engine\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Camera\CameraModifier.cpp">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Camera\CameraShake.cpp">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Camera\PlayerCameraManager.cpp">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Collision\CollisionDispatcher.cpp">
       <Filter>Source\Engine\Collision</Filter>
     </ClCompile>
@@ -418,12 +460,6 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Collision\WorldPrimitivePickingBVH.cpp">
       <Filter>Source\Engine\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Audio\AudioManager.cpp">
-      <Filter>Source\Engine\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\miniaudio\miniaudio.c">
-      <Filter>ThirdParty\miniaudio</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Component\ActorComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
@@ -455,28 +491,13 @@
     <ClCompile Include="Source\Engine\Component\PrimitiveComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Component\SoundComponent.cpp">
-      <Filter>Source\Engine\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Component\UIButtonComponent.cpp">
-      <Filter>Source\Engine\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Component\UIBackgroundComponent.cpp">
-      <Filter>Source\Engine\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Component\UIImageComponent.cpp">
-      <Filter>Source\Engine\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Component\UIScreenTextComponent.cpp">
-      <Filter>Source\Engine\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Component\UWindowPanelComponent.cpp">
-      <Filter>Source\Engine\Component</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Component\SceneComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Component\ScriptComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\SoundComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Component\StaticMeshComponent.cpp">
@@ -486,6 +507,21 @@
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Component\TextRenderComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UIBackgroundComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UIButtonComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UIImageComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UIScreenTextComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Component\UWindowPanelComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Component\Light\AmbientLightComponent.cpp">
@@ -563,16 +599,13 @@
     <ClCompile Include="Source\Engine\GameFramework\DecalActor.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\GameInstance.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\GameModeBase.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\HeightFogActor.cpp">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\GameFramework\ScreenTextActor.cpp">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\GameFramework\UIRootActor.cpp">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\GameFramework\WorldTextActor.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\Level.cpp">
@@ -584,16 +617,19 @@
     <ClCompile Include="Source\Engine\GameFramework\PlayerController.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\GameFramework\GameModeBase.cpp">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\GameFramework\GameInstance.cpp">
+    <ClCompile Include="Source\Engine\GameFramework\ScreenTextActor.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\StaticMeshActor.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\UIRootActor.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\World.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\WorldTextActor.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\Light\AmbientLightActor.cpp">
@@ -609,12 +645,6 @@
       <Filter>Source\Engine\GameFramework\Light</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Input\EnhancedInputManager.cpp">
-      <Filter>Source\Engine\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Input\InputManager.cpp">
-      <Filter>Source\Engine\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Input\InputMappingContext.cpp">
       <Filter>Source\Engine\Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Input\InputManager.cpp">
@@ -782,9 +812,6 @@
     <ClCompile Include="Source\Engine\Render\RenderPass\OpaquePass.cpp">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Render\RenderPass\ScreenTextPass.cpp">
-      <Filter>Source\Engine\Render\RenderPass</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Render\RenderPass\PassRenderStateTable.cpp">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
@@ -801,6 +828,9 @@
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\RenderPass\RenderPassRegistry.cpp">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Render\RenderPass\ScreenTextPass.cpp">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\RenderPass\SelectionMaskPass.cpp">
@@ -923,6 +953,66 @@
     <ClCompile Include="Source\Engine\Viewport\ViewportClient.cpp">
       <Filter>Source\Engine\Viewport</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickActorBase.cpp">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickManager.cpp">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.cpp">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.cpp">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.cpp">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.cpp">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Items\CrashDumpItemActor.cpp">
+      <Filter>Source\Game\GameActors\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Items\ItemActorBase.cpp">
+      <Filter>Source\Game\GameActors\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Items\LogFragmentItemActor.cpp">
+      <Filter>Source\Game\GameActors\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Obstacle\BarrierObstacleActor.cpp">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.cpp">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.cpp">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.cpp">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Obstacle\PendulumObstacleActor.cpp">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Obstacle\SimpleObstacleActor.cpp">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameActors\Obstacle\WireballActor.cpp">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameMode\ARunnerGameMode.cpp">
+      <Filter>Source\Game\GameMode</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\Map\AMapChunk.cpp">
+      <Filter>Source\Game\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\Map\AMapManager.cpp">
+      <Filter>Source\Game\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\Player\Runner.cpp">
+      <Filter>Source\Game\Player</Filter>
+    </ClCompile>
     <ClCompile Include="Source\ObjViewer\ObjViewerEngine.cpp">
       <Filter>Source\ObjViewer</Filter>
     </ClCompile>
@@ -956,33 +1046,19 @@
     <ClCompile Include="ThirdParty\ImGui\imgui_widgets.cpp">
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="ThirdParty\miniaudio\miniaudio.c">
+      <Filter>ThirdParty\miniaudio</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Items\ItemActorBase.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\SimpleObstacleActor.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\WireballActor.cpp" />
-    <ClCompile Include="Source\Game\Player\Runner.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickActorBase.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickManager.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Items\CrashDumpItemActor.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Items\LogFragmentItemActor.cpp" />
-    <ClCompile Include="Source\Engine\Camera\CameraShake.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\PendulumObstacleActor.cpp" />
-    <ClCompile Include="Source\Game\GameMode\ARunnerGameMode.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\BarrierObstacleActor.cpp" />
-    <ClCompile Include="Source\Game\Map\AMapChunk.cpp" />
-    <ClCompile Include="Source\Game\Map\AMapManager.cpp" />
-    <ClCompile Include="Source\Engine\Camera\PlayerCameraManager.cpp" />
-    <ClCompile Include="Source\Engine\Camera\CameraModifier.cpp" />
+    <ClCompile Include="Source\Engine\Camera\CameraModifier_CameraShake.cpp">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
+      <Filter>Source\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\EditorRenderPipeline.h">
       <Filter>Source\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\History\SceneHistoryBuilder.h">
@@ -990,9 +1066,6 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\History\SceneHistoryTypes.h">
       <Filter>Source\Editor\History</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Editor\EditorRenderPipeline.h">
-      <Filter>Source\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\PIE\PIETypes.h">
       <Filter>Source\Editor\PIE</Filter>
@@ -1005,6 +1078,9 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\Subsystem\OverlayStatSystem.h">
       <Filter>Source\Editor\Subsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\EditorAccentColor.h">
+      <Filter>Source\Editor\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\UI\EditorConsoleWidget.h">
       <Filter>Source\Editor\UI</Filter>
@@ -1087,6 +1163,21 @@
     <ClInclude Include="Source\Editor\Viewport\LevelEditorViewportClient.h">
       <Filter>Source\Editor\Viewport</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Audio\AudioManager.h">
+      <Filter>Source\Engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Audio\AudioTypes.h">
+      <Filter>Source\Engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Camera\CameraModifier.h">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Camera\CameraShake.h">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Camera\PlayerCameraManager.h">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Collision\CollisionDispatcher.h">
       <Filter>Source\Engine\Collision</Filter>
     </ClInclude>
@@ -1116,12 +1207,6 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Collision\WorldPrimitivePickingBVH.h">
       <Filter>Source\Engine\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Audio\AudioManager.h">
-      <Filter>Source\Engine\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Audio\AudioTypes.h">
-      <Filter>Source\Engine\Audio</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\ActorComponent.h">
       <Filter>Source\Engine\Component</Filter>
@@ -1153,28 +1238,13 @@
     <ClInclude Include="Source\Engine\Component\PrimitiveComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Component\SoundComponent.h">
-      <Filter>Source\Engine\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Component\UIButtonComponent.h">
-      <Filter>Source\Engine\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Component\UIBackgroundComponent.h">
-      <Filter>Source\Engine\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Component\UIImageComponent.h">
-      <Filter>Source\Engine\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Component\UIScreenTextComponent.h">
-      <Filter>Source\Engine\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Component\UWindowPanelComponent.h">
-      <Filter>Source\Engine\Component</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Component\SceneComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\ScriptComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\SoundComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\StaticMeshComponent.h">
@@ -1184,6 +1254,21 @@
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\TextRenderComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UIBackgroundComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UIButtonComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UIImageComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UIScreenTextComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Component\UWindowPanelComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\Light\AmbientLightComponent.h">
@@ -1230,6 +1315,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Component\Shape\SphereComponent.h">
       <Filter>Source\Engine\Component\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Core\AsciiUtils.h">
+      <Filter>Source\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Core\ClassTypes.h">
       <Filter>Source\Engine\Core</Filter>
@@ -1303,15 +1391,6 @@
     <ClInclude Include="Source\Engine\GameFramework\HeightFogActor.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\GameFramework\ScreenTextActor.h">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\GameFramework\UIRootActor.h">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\GameFramework\WorldTextActor.h">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\Level.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
@@ -1321,13 +1400,22 @@
     <ClInclude Include="Source\Engine\GameFramework\PlayerController.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\ScreenTextActor.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\StaticMeshActor.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\UIRootActor.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\World.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\WorldContext.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\WorldTextActor.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\Light\AmbientLightActor.h">
@@ -1549,9 +1637,6 @@
     <ClInclude Include="Source\Engine\Render\RenderPass\OpaquePass.h">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Render\RenderPass\ScreenTextPass.h">
-      <Filter>Source\Engine\Render\RenderPass</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Render\RenderPass\PassRenderStateTable.h">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
@@ -1568,6 +1653,9 @@
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\RenderPass\RenderPassRegistry.h">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Render\RenderPass\ScreenTextPass.h">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\RenderPass\SelectionMaskPass.h">
@@ -1741,6 +1829,72 @@
     <ClInclude Include="Source\Engine\Viewport\ViewportClient.h">
       <Filter>Source\Engine\Viewport</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickActorBase.h">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickManager.h">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.h">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.h">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.h">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.h">
+      <Filter>Source\Game\GameActors\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Items\CrashDumpItemActor.h">
+      <Filter>Source\Game\GameActors\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Items\ItemActorBase.h">
+      <Filter>Source\Game\GameActors\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Items\LogFragmentItemActor.h">
+      <Filter>Source\Game\GameActors\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Obstacle\BarrierObstacleActor.h">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.h">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.h">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.h">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Obstacle\PendulumObstacleActor.h">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Obstacle\SimpleObstacleActor.h">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameActors\Obstacle\WireballActor.h">
+      <Filter>Source\Game\GameActors\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameMode\ARunnerGameMode.h">
+      <Filter>Source\Game\GameMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\Map\AMapChunk.h">
+      <Filter>Source\Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\Map\AMapManager.h">
+      <Filter>Source\Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\Map\MapChunkTemplate.h">
+      <Filter>Source\Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\Map\MapRandom.h">
+      <Filter>Source\Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\Player\Runner.h">
+      <Filter>Source\Game\Player</Filter>
+    </ClInclude>
     <ClInclude Include="Source\ObjViewer\ObjViewerEngine.h">
       <Filter>Source\ObjViewer</Filter>
     </ClInclude>
@@ -1759,9 +1913,6 @@
     <ClInclude Include="ThirdParty\ImGui\imgui.h">
       <Filter>ThirdParty\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="ThirdParty\miniaudio\miniaudio.h">
-      <Filter>ThirdParty\miniaudio</Filter>
-    </ClInclude>
     <ClInclude Include="ThirdParty\ImGui\imgui_impl_dx11.h">
       <Filter>ThirdParty\ImGui</Filter>
     </ClInclude>
@@ -1779,6 +1930,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\ImGui\imstb_truetype.h">
       <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\miniaudio\miniaudio.h">
+      <Filter>ThirdParty\miniaudio</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\SimpleJSON\json.hpp">
       <Filter>ThirdParty\SimpleJSON</Filter>
@@ -2134,35 +2288,11 @@
     <ClInclude Include="ThirdParty\sol2\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.h" />
-    <ClInclude Include="Source\Game\GameActors\Obstacle\SimpleObstacleActor.h" />
-    <ClInclude Include="Source\Game\GameActors\Obstacle\WireballActor.h" />
-    <ClInclude Include="Source\Game\Player\Runner.h" />
-    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickActorBase.h" />
-    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickManager.h" />
-    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.h" />
-    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.h" />
-    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.h" />
-    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.h" />
-    <ClInclude Include="Source\Game\GameActors\Items\CrashDumpItemActor.h" />
-    <ClInclude Include="Source\Game\GameActors\Items\LogFragmentItemActor.h" />
-    <ClInclude Include="Source\Engine\Camera\CameraShake.h" />
-    <ClInclude Include="Source\Game\GameActors\Obstacle\PendulumObstacleActor.h" />
-    <ClInclude Include="Source\Game\GameMode\ARunnerGameMode.h" />
-    <ClInclude Include="Source\Game\Map\MapRandom.h" />
-    <ClInclude Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.h" />
-    <ClInclude Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.h" />
-    <ClInclude Include="Source\Game\GameActors\Obstacle\BarrierObstacleActor.h" />
-    <ClInclude Include="Source\Game\Map\AMapChunk.h" />
-    <ClInclude Include="Source\Game\Map\AMapManager.h" />
-    <ClInclude Include="Source\Game\Map\MapChunkTemplate.h" />
-    <ClInclude Include="Source\Engine\Camera\PlayerCameraManager.h" />
-    <ClInclude Include="Source\Engine\Camera\CameraModifier.h" />
+    <ClInclude Include="Source\Engine\Camera\CameraModifier_CameraShake.h">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Manifest Include="KraftonEngine.exe.manifest" />
   </ItemGroup>
 </Project>

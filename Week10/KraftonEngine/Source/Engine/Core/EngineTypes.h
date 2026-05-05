@@ -31,6 +31,33 @@ struct FColor
 };
 
 // ============================================================
+// FLinearColor — RGBA 색상 (0~1 부동소수점 기반)
+// ============================================================
+struct FLinearColor
+{
+	float R, G, B, A;
+
+	FLinearColor() : R(1.f), G(1.f), B(1.f), A(1.f) {}
+	FLinearColor(float InR, float InG, float InB, float InA = 1.f)
+		: R(InR), G(InG), B(InB), A(InA) {
+	}
+
+	// 0.0~1.0 범위의 FVector4로 변환
+	FVector4 ToVector4() const
+	{
+		return FVector4(R, G, B, A);
+	}
+
+	static FLinearColor Red() { return FLinearColor(1.f, 0.f, 0.f); }
+	static FLinearColor Green() { return FLinearColor(0.f, 1.f, 0.f); }
+	static FLinearColor Blue() { return FLinearColor(0.f, 0.f, 1.f); }
+	static FLinearColor White() { return FLinearColor(1.f, 1.f, 1.f); }
+	static FLinearColor Black() { return FLinearColor(0.f, 0.f, 0.f); }
+	static FLinearColor Yellow() { return FLinearColor(1.f, 1.f, 0.f); }
+	static FLinearColor Gray() { return FLinearColor(0.5f, 0.5f, 0.5f); }
+};
+
+// ============================================================
 // FBoundingBox — AABB (Axis-Aligned Bounding Box)
 // ============================================================
 struct FBoundingBox
