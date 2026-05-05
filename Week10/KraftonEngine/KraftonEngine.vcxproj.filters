@@ -960,9 +960,26 @@
     <ClCompile Include="Source\Game\GameActors\Items\ItemActorBase.cpp" />
     <ClCompile Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.cpp" />
     <ClCompile Include="Source\Game\GameActors\Obstacle\SimpleObstacleActor.cpp" />
-    <ClCompile Include="Source\Game\GameActors\Obstacle\VerticalWireActor.cpp" />
     <ClCompile Include="Source\Game\GameActors\Obstacle\WireballActor.cpp" />
     <ClCompile Include="Source\Game\Player\Runner.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickActorBase.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\GimmickManager.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Items\CrashDumpItemActor.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Items\LogFragmentItemActor.cpp" />
+    <ClCompile Include="Source\Engine\Camera\CameraShake.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Obstacle\PendulumObstacleActor.cpp" />
+    <ClCompile Include="Source\Game\GameMode\ARunnerGameMode.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.cpp" />
+    <ClCompile Include="Source\Game\GameActors\Obstacle\BarrierObstacleActor.cpp" />
+    <ClCompile Include="Source\Game\Map\AMapChunk.cpp" />
+    <ClCompile Include="Source\Game\Map\AMapManager.cpp" />
+    <ClCompile Include="Source\Engine\Camera\PlayerCameraManager.cpp" />
+    <ClCompile Include="Source\Engine\Camera\CameraModifier.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -2117,14 +2134,35 @@
     <ClInclude Include="ThirdParty\sol2\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Game\GameActors\Items\ItemActorBase.h" />
     <ClInclude Include="Source\Game\GameActors\Obstacle\ObstacleActorBase.h" />
     <ClInclude Include="Source\Game\GameActors\Obstacle\SimpleObstacleActor.h" />
-    <ClInclude Include="Source\Game\GameActors\Obstacle\VerticalWireActor.h" />
     <ClInclude Include="Source\Game\GameActors\Obstacle\WireballActor.h" />
     <ClInclude Include="Source\Game\Player\Runner.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickActorBase.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\GimmickManager.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterRotationGizmo.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterScaleGizmo.h" />
+    <ClInclude Include="Source\Game\GameActors\Enemy\ImposterTranslateGizmo.h" />
+    <ClInclude Include="Source\Game\GameActors\Items\CrashDumpItemActor.h" />
+    <ClInclude Include="Source\Game\GameActors\Items\LogFragmentItemActor.h" />
+    <ClInclude Include="Source\Engine\Camera\CameraShake.h" />
+    <ClInclude Include="Source\Game\GameActors\Obstacle\PendulumObstacleActor.h" />
+    <ClInclude Include="Source\Game\GameMode\ARunnerGameMode.h" />
+    <ClInclude Include="Source\Game\Map\MapRandom.h" />
+    <ClInclude Include="Source\Game\GameActors\Obstacle\MustJumpObstacleActor.h" />
+    <ClInclude Include="Source\Game\GameActors\Obstacle\MustSlideObstacleActor.h" />
+    <ClInclude Include="Source\Game\GameActors\Obstacle\BarrierObstacleActor.h" />
+    <ClInclude Include="Source\Game\Map\AMapChunk.h" />
+    <ClInclude Include="Source\Game\Map\AMapManager.h" />
+    <ClInclude Include="Source\Game\Map\MapChunkTemplate.h" />
+    <ClInclude Include="Source\Engine\Camera\PlayerCameraManager.h" />
+    <ClInclude Include="Source\Engine\Camera\CameraModifier.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="KraftonEngine.exe.manifest" />
   </ItemGroup>
 </Project>

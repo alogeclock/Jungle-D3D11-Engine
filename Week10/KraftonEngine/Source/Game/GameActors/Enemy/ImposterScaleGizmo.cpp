@@ -81,7 +81,7 @@ FVector AImposterScaleGizmo::GetScaleOffset() {
 	default:
 		float ScaleFactor = RandomScaleFactor();
 		if (Target && Target->IsA<AMustSlideObstacleActor>())
-				ScaleFactor = ScaleFactor > 1.2 ? 1.2 : ScaleFactor;
+				ScaleFactor = ScaleFactor > 1.2f ? 1.2f : ScaleFactor;
 		return FVector(1, 1, ScaleFactor);
 		break;
 	}

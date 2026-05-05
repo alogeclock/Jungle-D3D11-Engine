@@ -285,6 +285,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Camera\CameraModifier.cpp" />
+    <ClCompile Include="Source\Engine\Camera\PlayerCameraManager.cpp" />
     <ClCompile Include="Source\Game\GameActors\Enemy\GimmickActorBase.cpp" />
     <ClCompile Include="Source\Game\GameActors\Enemy\GimmickManager.cpp" />
     <ClCompile Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.cpp" />
@@ -522,6 +524,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Engine\Camera\CameraModifier.h" />
+    <ClInclude Include="Source\Engine\Camera\PlayerCameraManager.h" />
     <ClInclude Include="Source\Game\GameActors\Enemy\GimmickActorBase.h" />
     <ClInclude Include="Source\Game\GameActors\Enemy\GimmickManager.h" />
     <ClInclude Include="Source\Game\GameActors\Enemy\ImposterGizmoActorBase.h" />
