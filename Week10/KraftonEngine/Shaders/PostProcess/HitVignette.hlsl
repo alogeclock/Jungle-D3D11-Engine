@@ -36,7 +36,7 @@ float4 PS(PS_Input_UV input) : SV_TARGET
     
     // Blend with deep red
     float3 redColor = float3(0.8f, 0.0f, 0.0f);
-    color.rgb = lerp(color.rgb, redColor, hitEffect);
+    color.rgb = lerp(color.rgb, redColor, saturate(hitEffect));
     
     // Subtle overall red tint based on intensity
     color.rgb += redColor * HitEffectIntensity * 0.05f;
