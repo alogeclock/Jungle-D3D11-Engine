@@ -137,7 +137,7 @@ void APlayerCameraManager::EndCameraShake() {
 void APlayerCameraManager::StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color) {
 	// 호출 시 Fade 정보들을 즉시 매개변수값으로 초기화
 	FadeColor		  = Color;
-	FadeAmount		  = FromAlpha;
+	FadeAlpha		  = FVector2(FromAlpha, ToAlpha);
 	FadeTimeRemaining = Duration;
 	bEnableFading	  = true;
 }
