@@ -3,6 +3,7 @@
 
 class UScriptComponent;
 class UCameraComponent;
+class USpringArmComponent;
 class UBoxComponent;
 class UStaticMeshComponent;
 class USFXComponent;
@@ -35,6 +36,7 @@ private:
 	// Script
 	UScriptComponent* PlayerMove = nullptr;
 	// Camera
+	USpringArmComponent* CameraBoom = nullptr;
 	UCameraComponent* MainCamera = nullptr;
 	// StaticMesh
 	UStaticMeshComponent* MeshComponent = nullptr;
