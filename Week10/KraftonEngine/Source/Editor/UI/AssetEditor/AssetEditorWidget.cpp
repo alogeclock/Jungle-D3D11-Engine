@@ -28,6 +28,8 @@ namespace
 	constexpr ImVec4 AssetEditorBlueSoft = ImVec4(0.18f, 0.36f, 0.62f, 0.38f);
 	constexpr ImVec4 AssetEditorBorder = ImVec4(0.34f, 0.36f, 0.40f, 0.96f);
 	constexpr ImVec4 AssetEditorButtonBg = ImVec4(0.12f, 0.16f, 0.23f, 1.0f);
+
+    constexpr ImVec4 AssetEditorHeaderBg = ImVec4(0.15f, 0.19f, 0.27f, 1.0f);
 	constexpr ImVec4 AssetEditorVectorLabelColor = ImVec4(0.83f, 0.84f, 0.87f, 1.0f);
 	constexpr ImVec4 AssetEditorVectorFieldBg = ImVec4(10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 1.0f);
 	constexpr ImVec4 AssetEditorVectorFieldHoverBg = ImVec4(15.0f / 255.0f, 15.0f / 255.0f, 15.0f / 255.0f, 1.0f);
@@ -305,6 +307,7 @@ void FAssetEditorWidget::Render(float DeltaTime)
 	ImGui::PushStyleColor(ImGuiCol_FrameBgActive, AssetEditorBlueSoft);
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, AssetEditorBlueHover);
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, AssetEditorBlueActive);
+	ImGui::PushStyleColor(ImGuiCol_Header, AssetEditorHeaderBg);
 	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, AssetEditorBlueHover);
 	ImGui::PushStyleColor(ImGuiCol_HeaderActive, AssetEditorBlueActive);
 	ImGui::PushStyleColor(ImGuiCol_CheckMark, AssetEditorBlue);
@@ -317,7 +320,7 @@ void FAssetEditorWidget::Render(float DeltaTime)
 	if (!ImGui::Begin(WindowTitle.c_str(), &bWindowOpen, WindowFlags))
 	{
 		ImGui::End();
-		ImGui::PopStyleColor(13);
+		ImGui::PopStyleColor(14);
 		ImGui::PopStyleVar(2);
 		bOpen = bWindowOpen;
 		bCapturingInput = bOpen;
@@ -335,7 +338,7 @@ void FAssetEditorWidget::Render(float DeltaTime)
 	{
 		ImGui::TextDisabled("Open a .uasset file from File > Open... or the Content Browser.");
 		ImGui::End();
-		ImGui::PopStyleColor(13);
+		ImGui::PopStyleColor(14);
 		ImGui::PopStyleVar(2);
 		return;
 	}
@@ -355,7 +358,7 @@ void FAssetEditorWidget::Render(float DeltaTime)
 	}
 
 	ImGui::End();
-	ImGui::PopStyleColor(13);
+	ImGui::PopStyleColor(14);
 	ImGui::PopStyleVar(2);
 }
 
