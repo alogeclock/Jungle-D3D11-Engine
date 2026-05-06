@@ -174,8 +174,10 @@ void FShadowMapPass::EndPass(const FPassContext& Ctx)
 
 	// 메인 뷰포트 복원
 	D3D11_VIEWPORT MainVP = {};
-	MainVP.Width    = Ctx.Frame.ViewportWidth;
-	MainVP.Height   = Ctx.Frame.ViewportHeight;
+	MainVP.TopLeftX = Ctx.Frame.ViewRectX;
+	MainVP.TopLeftY = Ctx.Frame.ViewRectY;
+	MainVP.Width    = Ctx.Frame.ViewRectWidth;
+	MainVP.Height   = Ctx.Frame.ViewRectHeight;
 	MainVP.MinDepth = 0.0f;
 	MainVP.MaxDepth = 1.0f;
 	DC->RSSetViewports(1, &MainVP);

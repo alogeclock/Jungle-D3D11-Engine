@@ -36,7 +36,12 @@ struct FFrameContext
 	uint8 bIsLightView : 1;
 	float OrthoWidth = 10.0f;
 
-	float ViewportWidth = 0.0f;
+	// Viewport
+	float ViewRectX = 0.0f;
+	float ViewRectY = 0.0f;
+	float ViewRectWidth = 0.0f;
+	float ViewRectHeight = 0.0f;
+	float ViewportWidth  = 0.0f;
 	float ViewportHeight = 0.0f;
 
 	ID3D11RenderTargetView* ViewportRTV = nullptr;
@@ -77,6 +82,7 @@ struct FFrameContext
 	void SetCameraInfo(const UCameraComponent* Camera);
 	void SetCameraInfo(const FMinimalViewInfo& POV);
 	void SetViewportInfo(const FViewport* VP);
+	void ApplyConstrainedAR(float TargetAspect);
 
 	void SetViewportSize(float InWidth, float InHeight)
 	{

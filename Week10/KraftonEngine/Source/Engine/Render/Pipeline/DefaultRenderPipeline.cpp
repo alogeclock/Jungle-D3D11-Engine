@@ -1,4 +1,4 @@
-#include "DefaultRenderPipeline.h"
+﻿#include "DefaultRenderPipeline.h"
 
 #include "Renderer.h"
 #include "Engine/Runtime/Engine.h"
@@ -61,6 +61,7 @@ void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 	if (Camera && VP)
 	{
 		Camera->OnResize(static_cast<int32>(VP->GetWidth()), static_cast<int32>(VP->GetHeight()));
+		const FMinimalViewInfo* ActivePOV = nullptr;
 
 		const float ClearColor[4] = { 0.10f, 0.10f, 0.12f, 1.0f };
 		VP->BeginRender(Ctx, ClearColor);
@@ -73,12 +74,19 @@ void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 		APlayerCameraManager* CameraManager = GameMode ? GameMode->GetPlayerCameraManager() : nullptr;
 		if (CameraManager && CameraManager->HasValidCameraCachePOV())
 		{
-			Frame.SetCameraInfo(CameraManager->GetCameraCachePOV());
+			ActivePOV = &CameraManager->GetCameraCachePOV();
+			Frame.SetCameraInfo(*ActivePOV);
 		}
 		else
 		{
 			Frame.SetCameraInfo(Camera);
 		}
+
+		const FMinimalViewInfo& CameraState = ActivePOV ? *ActivePOV : Camera->GetCameraState();
+		const float AR = CameraState.bConstrainAspectRatio
+			? CameraState.LetterBoxingAspectW / CameraState.LetterBoxingAspectH
+			: CameraState.AspectRatio;
+		Frame.ApplyConstrainedAR(AR);
 
 		FViewportRenderOptions Opts;
 		Opts.ViewMode = EViewMode::Lit_Phong;

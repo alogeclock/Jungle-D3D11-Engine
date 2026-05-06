@@ -69,7 +69,7 @@ void FD3DDevice::CopyToBackbuffer(ID3D11Texture2D* Source)
 	// RTV/DSV에 바로 그리므로, 여기서 백버퍼를 다시 바인딩해 줘야 popup이 보인다.
 	DeviceContext->RSSetViewports(1, &ViewportInfo);
 	DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, DepthStencilView);
-}
+}                 
 
 void FD3DDevice::OnResizeViewport(int Width, int Height)
 {
