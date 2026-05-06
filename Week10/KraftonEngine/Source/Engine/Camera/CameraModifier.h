@@ -32,6 +32,9 @@ public:
 	virtual void ToggleModifier()	{ bDisabled = ~bDisabled; }
 	virtual void DisableModifier(bool bImmediate = false);
 
+	UCurveFloat* GetCurve() const { return CameraCurve != nullptr ? CameraCurve : nullptr; }
+	virtual void SetCurve(UCurveFloat* InCurve) { if (InCurve) CameraCurve = InCurve; }
+
 protected:
 	virtual ~UCameraModifier() = default;
 
@@ -41,6 +44,7 @@ public:
 
 protected:
 	APlayerCameraManager* CameraOwner = nullptr;
+	UCurveFloat* CameraCurve = nullptr;
 
 	float AlphaInTime		= 0.f;
 	float AlphaOutTime		= 0.f;

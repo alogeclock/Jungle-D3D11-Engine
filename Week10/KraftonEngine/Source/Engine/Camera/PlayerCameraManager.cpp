@@ -38,7 +38,8 @@ void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier) {
 
 void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV) {
 	for (auto* CameraModifier : ModifierList){
-		if (CameraModifier)
+		if (CameraModifier) {
 			CameraModifier->ModifyCamera(DeltaTime, *InOutPOV);
+		}
 	}
 }
