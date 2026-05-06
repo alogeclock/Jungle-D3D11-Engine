@@ -19,6 +19,8 @@ local HitEffects = require_env("Game.HitEffect")
 local Vector = require("Common.Vector")
 local HitFeedback = require("Game.Camera.HitFeedback")
 local letterBox = require("Game.Camera.LetterBox")
+local CameraFade = require("Game.Camera.CameraFade")
+local CameraTransition = require("Game.Camera.CameraTransition")
 
 if HitEffects and HitEffects.SetRuntime then
     HitEffects.SetRuntime({
@@ -41,6 +43,7 @@ local hit_obstacles = setmetatable({}, { __mode = "k" })
 -- require()로 캐시되는 공유 table이므로 런타임 상태를 저장하지 않는다.
 -- 런타임 중 바뀌는 값은 PlayerController.lua의 local state에 둔다.
 local forward_speed = PlayerConfig.forward_speed                            -- Runner가 매 프레임 자동으로 앞으로 가는 속도
+local dream_billboard_offset_x = PlayerConfig.dream_billboard_offset_x or 1000.0 -- Dream billboard의 Player 앞 X+ 초기 거리
 local lane_width = PlayerConfig.lane_width                                  -- 레인 사이 간격
 local lane_change_speed = PlayerConfig.lane_change_speed                    -- 목표 레인으로 부드럽게 이동하는 속도
 local gravity = PlayerConfig.gravity                                        -- 공중에 있을 때 적용되는 수직 가속도
@@ -65,6 +68,8 @@ local fall_dead_z = PlayerConfig.fall_dead_z                                -- �
 local DIALOGUE_DATA_PATH = PlayerConfig.dialogue_data_path                  -- Player dialogue 경로
 
 local camera = nil
+local dream_billboard = nil
+local dream_billboard_location = nil
 local slide = nil                                                           --  PlayerSlide 모듈 인스턴스입니다. collision/mesh 변경은 여기서 위임
 local pod_mesh = nil
 local pod_base_local_rotation = nil
@@ -96,6 +101,42 @@ local COACH_WINDOW_TEXTURES = PlayerConfig.coach_window_textures
 ------------------------------------------------
 
 local log = Log.MakeLogger(DebugConfig, "[Player]")
+
+local function cache_dream_billboard()
+    dream_billboard = Engine.GetComponent(obj, "DreamBillboard")
+    if not Engine.IsValidComponent(dream_billboard) then
+        log("[PlayerController] DreamBillboard component not found")
+        return false
+    end
+
+    local player_loc = obj:GetWorldLocation()
+    dream_billboard_location = Vector.Make(
+        player_loc.x + dream_billboard_offset_x,
+        player_loc.y,
+        player_loc.z - 25.0
+    )
+    dream_billboard:SetWorldLocation(dream_billboard_location)
+
+    log("[PlayerController] DreamBillboard initialized offset_x=" .. tostring(dream_billboard_offset_x))
+    return true
+end
+
+local function advance_dream_billboard(delta_x)
+    if not Engine.IsValidComponent(dream_billboard) then
+        return
+    end
+
+    if not dream_billboard_location then
+        local current_location = dream_billboard:GetWorldLocation()
+        if not current_location then
+            return
+        end
+        dream_billboard_location = Vector.Copy(current_location)
+    end
+
+    dream_billboard_location.x = dream_billboard_location.x + delta_x
+    dream_billboard:SetWorldLocation(dream_billboard_location)
+end
 
 -- 가장 왼쪽 Lane 번호
 local function lane_min()
@@ -573,6 +614,21 @@ end
 -- PlayerController 생명주기 함수들
 ------------------------------------------------
 
+function TestCameraFadeIn()
+    return CameraFade.FadeIn(obj, 0.8, 0.0, 0.0, 0.0, 1.0)
+end
+
+function TestCameraFadeOut()
+    return CameraFade.FadeOut(obj, 0.8, 0.0, 0.0, 0.0, 1.0)
+end
+
+function TestCameraTransitionTo(target)
+    return CameraTransition.To(obj, target, 1.0, "EaseInOut", 2.0, true)
+end
+
+-- BeginPlay example:
+-- CameraFade.FadeIn(obj, 0.8, 0.0, 0.0, 0.0, 1.0)
+
 -- Runner C++ 생성자에서 시작 위치를 바닥보다 약간 높은 Z로 둔다.
 -- MapManager가 Player BeginPlay 이후에 Chunk를 만들 수 있으므로,
 -- 첫 ground query가 실패하더라도 다음 Tick에서 생성된 floor를 찾고 중력으로 snap되게 한다.
@@ -595,6 +651,8 @@ function BeginPlay()
     previous_key_state = {}
     current_key_state = {}
     camera = obj:FindComponentByClass("CameraComponent")
+    dream_billboard = nil
+    dream_billboard_location = nil
     pod_mesh = obj:GetStaticMeshComponent()
     pod_base_local_rotation = nil
     if Engine.IsValidComponent(pod_mesh) then
@@ -605,6 +663,7 @@ function BeginPlay()
     barrel_roll_direction = 0.0
 
     obj.Tag = "Player"
+    cache_dream_billboard()
 
     slide = PlayerSlide.new(obj)
     if slide and slide.Configure then
@@ -744,6 +803,7 @@ function Tick(dt)
         end
 
         obj:SetWorldLocation(loc)
+        advance_dream_billboard(step_distance)
         apply_gravity(step_dt)
 
         if check_fall_death() then
@@ -767,6 +827,8 @@ function EndPlay()
         slide:Restore()
     end
     reset_pod_barrel_roll()
+    dream_billboard = nil
+    dream_billboard_location = nil
     log("[PlayerController] EndPlay")
 end
 

@@ -108,15 +108,15 @@ void AMapManager::BuildTemplateLibrary() {
 	//-----------------------------------------------------------------
 	FMapChunkTemplate Start;
 	Start.ChunkType = EChunkType::Start;
-	Start.Length = 10.f;
+	Start.Length = 30.f;
 	Start.Width  = ChunkWidth;
-	Start.ExitOffset = FVector(10.f, 0.f, 0.f);
+	Start.ExitOffset = FVector(30.f, 0.f, 0.f);
 
 	// Start Floor infos
 	FFloorBlock StartFloor = {};
-	StartFloor.LocalPosition = FVector(5.f, 0, 0);
+	StartFloor.LocalPosition = FVector(15.f, 0, 0);
 	StartFloor.LocalRotation = FRotator(0, 0, 0);
-	StartFloor.Scale		 = FVector(5.f, ChunkWidth, 1);
+	StartFloor.Scale		 = FVector(15.f, ChunkWidth, 1);
 	Start.FloorBlockInfos.push_back(StartFloor);
 	Templates.push_back(Start);
 	// No obstacles should spawn in the start region; leave the array blank
