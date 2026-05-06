@@ -89,7 +89,7 @@ void APlayerCameraManager::EndPlay()
 void APlayerCameraManager::Tick(float DeltaTime)
 {
 	AActor::Tick(DeltaTime);
-	ApplyCameraModifiers(DeltaTime, ViewTarget.POV);
+	UpdateCamera(DeltaTime);
 }
 
 void APlayerCameraManager::UpdateCamera(float DeltaTime) {
