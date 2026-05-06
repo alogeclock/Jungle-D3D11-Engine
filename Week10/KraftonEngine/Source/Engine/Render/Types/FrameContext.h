@@ -31,9 +31,11 @@ struct FFrameContext
 	FVector CameraUp;
 	float NearClip = 0.1f;
 	float FarClip = 1000.0f;
+	FPostProcessSettings PostProcessSettings;
 
-	bool  bIsOrtho     = false;
-	bool  bIsLightView = false;
+	uint8 bIsOrtho : 1;
+	uint8 bIsLightView : 1;
+	
 	float OrthoWidth = 10.0f;
 
 	// Viewport
@@ -78,9 +80,6 @@ struct FFrameContext
 
 	// LOD
 	FLODUpdateContext LODContext;
-
-	// Post Process Settings (moved to end to prevent ABI offset shifts for older object files)
-	FPostProcessSettings PostProcessSettings;
 
 	// Derived helpers
 	bool IsFixedOrtho() const
