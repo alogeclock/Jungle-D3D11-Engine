@@ -58,6 +58,9 @@
     <Filter Include="Source\Engine">
       <UniqueIdentifier>{d0b56061-5521-9f21-3d03-1e11f47e99a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Asset">
+      <UniqueIdentifier>{2f0b65be-8e5f-4d94-b517-373d13b9b2a3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Engine\Audio">
       <UniqueIdentifier>{60f7fb11-d80b-bf66-98c3-689d6f8326ab}</UniqueIdentifier>
     </Filter>
@@ -410,13 +413,7 @@
     <ClCompile Include="Source\Editor\UI\NotificationToast.cpp">
       <Filter>Source\Editor\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Editor\UI\AssetEditor\AssetData.cpp">
-      <Filter>Source\Editor\UI\AssetEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Editor\UI\AssetEditor\AssetEditorWidget.cpp">
-      <Filter>Source\Editor\UI\AssetEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Editor\UI\AssetEditor\AssetFileSerializer.cpp">
       <Filter>Source\Editor\UI\AssetEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\UI\AssetEditor\ImGuiBezierWidget.cpp">
@@ -436,6 +433,12 @@
     </ClCompile>
     <ClCompile Include="Source\Editor\Viewport\FLevelViewportLayout.cpp">
       <Filter>Source\Editor\Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Asset\AssetData.cpp">
+      <Filter>Source\Engine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Asset\AssetFileSerializer.cpp">
+      <Filter>Source\Engine\Asset</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Audio\AudioManager.cpp">
       <Filter>Source\Engine\Audio</Filter>
@@ -1163,13 +1166,7 @@
     <ClInclude Include="Source\Editor\UI\NotificationToast.h">
       <Filter>Source\Editor\UI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Editor\UI\AssetEditor\AssetData.h">
-      <Filter>Source\Editor\UI\AssetEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Editor\UI\AssetEditor\AssetEditorWidget.h">
-      <Filter>Source\Editor\UI\AssetEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Editor\UI\AssetEditor\AssetFileSerializer.h">
       <Filter>Source\Editor\UI\AssetEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\UI\AssetEditor\ImGuiBezierWidget.h">
@@ -1198,6 +1195,12 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\Viewport\LevelEditorViewportClient.h">
       <Filter>Source\Editor\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Asset\AssetData.h">
+      <Filter>Source\Engine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Asset\AssetFileSerializer.h">
+      <Filter>Source\Engine\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Audio\AudioManager.h">
       <Filter>Source\Engine\Audio</Filter>

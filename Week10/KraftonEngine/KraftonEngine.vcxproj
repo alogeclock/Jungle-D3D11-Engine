@@ -302,15 +302,15 @@
     <ClCompile Include="Source\Editor\UI\EditorWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\ImGuiSetting.cpp" />
     <ClCompile Include="Source\Editor\UI\NotificationToast.cpp" />
-    <ClCompile Include="Source\Editor\UI\AssetEditor\AssetData.cpp" />
     <ClCompile Include="Source\Editor\UI\AssetEditor\AssetEditorWidget.cpp" />
-    <ClCompile Include="Source\Editor\UI\AssetEditor\AssetFileSerializer.cpp" />
     <ClCompile Include="Source\Editor\UI\AssetEditor\ImGuiBezierWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\ContentBrowser\ContentBrowser.cpp" />
     <ClCompile Include="Source\Editor\UI\ContentBrowser\ContentBrowserElement.cpp" />
     <ClCompile Include="Source\Editor\UI\ContentBrowser\EditorPrefabWidget.cpp" />
     <ClCompile Include="Source\Editor\Viewport\EditorViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Viewport\FLevelViewportLayout.cpp" />
+    <ClCompile Include="Source\Engine\Asset\AssetData.cpp" />
+    <ClCompile Include="Source\Engine\Asset\AssetFileSerializer.cpp" />
     <ClCompile Include="Source\Engine\Audio\AudioManager.cpp" />
     <ClCompile Include="Source\Engine\Camera\CameraModifier.cpp" />
     <ClCompile Include="Source\Engine\Camera\CameraShake.cpp" />
@@ -555,9 +555,7 @@
     <ClInclude Include="Source\Editor\UI\EditorWidget.h" />
     <ClInclude Include="Source\Editor\UI\ImGuiSetting.h" />
     <ClInclude Include="Source\Editor\UI\NotificationToast.h" />
-    <ClInclude Include="Source\Editor\UI\AssetEditor\AssetData.h" />
     <ClInclude Include="Source\Editor\UI\AssetEditor\AssetEditorWidget.h" />
-    <ClInclude Include="Source\Editor\UI\AssetEditor\AssetFileSerializer.h" />
     <ClInclude Include="Source\Editor\UI\AssetEditor\ImGuiBezierWidget.h" />
     <ClInclude Include="Source\Editor\UI\ContentBrowser\ContentBrowser.h" />
     <ClInclude Include="Source\Editor\UI\ContentBrowser\ContentBrowserContext.h" />
@@ -567,6 +565,8 @@
     <ClInclude Include="Source\Editor\Viewport\EditorViewportClient.h" />
     <ClInclude Include="Source\Editor\Viewport\FLevelViewportLayout.h" />
     <ClInclude Include="Source\Editor\Viewport\LevelEditorViewportClient.h" />
+    <ClInclude Include="Source\Engine\Asset\AssetData.h" />
+    <ClInclude Include="Source\Engine\Asset\AssetFileSerializer.h" />
     <ClInclude Include="Source\Engine\Audio\AudioManager.h" />
     <ClInclude Include="Source\Engine\Audio\AudioTypes.h" />
     <ClInclude Include="Source\Engine\Camera\CameraModifier.h" />

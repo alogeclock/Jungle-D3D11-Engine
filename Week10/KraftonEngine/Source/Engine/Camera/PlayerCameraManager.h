@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "GameFramework/AActor.h"
 #include "CameraModifier.h"
+#include <filesystem>
 #include "Core/EngineTypes.h"
 #include "Core/CollisionEventTypes.h"  
 
@@ -45,6 +46,7 @@ public:
 
 	// 카메라 모디파이어 적용 (매 틱 호출됨)
 	void ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV);
+	void LoadCameraModifierStackAsset(const std::filesystem::path& AssetPath);
 
 	//void StartCameraShake();
 	//void EndCameraShake();
