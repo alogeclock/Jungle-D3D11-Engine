@@ -41,7 +41,7 @@ public:
 protected:
 	APlayerCameraManager* CameraOwner = nullptr;
 
-	float AlphaInTime		= 0.f;;
+	float AlphaInTime		= 0.f;
 	float AlphaOutTime		= 0.f;
 	float Alpha				= 0.f;
 	uint32 bPendingDisable	= false;
