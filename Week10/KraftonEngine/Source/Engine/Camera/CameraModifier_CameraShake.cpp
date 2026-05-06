@@ -5,7 +5,7 @@ IMPLEMENT_CLASS(UCameraModifier_CameraShake, UCameraModifier)
 
 void UCameraModifier_CameraShake::AddedToCamera(APlayerCameraManager* Camera) {}
 
-bool UCameraModifier_CameraShake::ModifyCamera(float DeltaTime, UCameraComponent& InOutPOV) {
+bool UCameraModifier_CameraShake::ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutPOV) {
 	return false;
 }
 
