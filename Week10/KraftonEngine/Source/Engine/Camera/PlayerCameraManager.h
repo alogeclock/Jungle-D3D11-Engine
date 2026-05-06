@@ -40,5 +40,4 @@ public:
 private:
 	APlayerController* Owner = nullptr;
 	TArray<UCameraModifier*> ModifierList;
-
 };

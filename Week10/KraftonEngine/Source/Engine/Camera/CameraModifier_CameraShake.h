@@ -1,6 +1,10 @@
 ﻿#pragma once
 #include "CameraModifier.h"
 
+struct FCameraShakeState {
+
+};
+
 class UCameraModifier_CameraShake : public UCameraModifier {
 public:
 	DECLARE_CLASS(UCameraModifier_CameraShake, UCameraModifier)

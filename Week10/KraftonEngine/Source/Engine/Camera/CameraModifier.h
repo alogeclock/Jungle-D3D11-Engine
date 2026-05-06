@@ -11,7 +11,7 @@ public:
 	DECLARE_CLASS(UCameraModifier, UObject)
 	UCameraModifier();
 
-	virtual void AddedToCamera(APlayerCameraManager* Camera)				= 0;
+	virtual void AddedToCamera(APlayerCameraManager* Camera);
 
 	/**
 	 * Directly modifies variables in the owning camera
@@ -19,8 +19,8 @@ public:
 	 * @param	InOutPOV	Current Point of View, to be updated.
 	 * @return	bool		True if should STOP looping the chain, false otherwise
 	 */
-	 // 원래는 FMinimalViewInfo 라는 이름의 struct를 사용해야 함
-	 // TODO: FCameraState 에다 월드 위치 정보 추가
+	// 원래는 FMinimalViewInfo 라는 이름의 struct를 사용해야 함
+	// TODO: FCameraState 에다 월드 위치 정보 추가
 	virtual bool ModifyCamera(float DeltaTime, UCameraComponent& InOutPOV)  = 0;
 
 
