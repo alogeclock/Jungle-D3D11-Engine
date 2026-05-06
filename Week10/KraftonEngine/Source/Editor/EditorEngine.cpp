@@ -526,6 +526,16 @@ void UEditorEngine::OpenScoreboardPopup(const FString& InFilePath)
 	PIEOverlay.OpenScoreboardPopup(InFilePath);
 }
 
+void UEditorEngine::OpenTitleOptionsPopup()
+{
+	PIEOverlay.OpenTitleOptionsPopup();
+}
+
+void UEditorEngine::OpenTitleCreditsPopup()
+{
+	PIEOverlay.OpenTitleCreditsPopup();
+}
+
 bool UEditorEngine::IsScoreSavePopupOpen() const
 {
 	return PIEOverlay.IsScoreSavePopupOpen();

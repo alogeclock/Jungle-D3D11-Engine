@@ -24,6 +24,7 @@ public:
 	bool ConsumeMessagePopupConfirmed() override;
 	void OpenScoreboardPopup(const FString& InFilePath) override;
 	void OpenTitleOptionsPopup() override;
+	void OpenTitleCreditsPopup() override;
 	bool IsScoreSavePopupOpen() const override;
 
 protected:

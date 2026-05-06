@@ -639,6 +639,9 @@ function open_scoreboard_popup(filePath) end
 function open_title_options_popup() end
 
 ---@return boolean
+function open_title_credits_popup() end
+
+---@return boolean
 function request_exit_game() end
 
 ---@param handle string

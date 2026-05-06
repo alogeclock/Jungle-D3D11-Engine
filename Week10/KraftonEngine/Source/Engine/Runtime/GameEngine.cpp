@@ -103,6 +103,7 @@ void UGameEngine::BeginPlay()
 void UGameEngine::Tick(float DeltaTime)
 {
 	const bool bPopupOpen = IsScoreSavePopupOpen();
+	FInputManager::Get().SetGuiCaptureOverride(bPopupOpen, bPopupOpen, bPopupOpen);
 	if (UGameViewportClient* GameVC = GetGameViewportClient())
 	{
 		if (bPopupOpen)
@@ -152,6 +153,11 @@ void UGameEngine::OpenScoreboardPopup(const FString& InFilePath)
 void UGameEngine::OpenTitleOptionsPopup()
 {
 	ImGuiOverlay.OpenTitleOptionsPopup();
+}
+
+void UGameEngine::OpenTitleCreditsPopup()
+{
+	ImGuiOverlay.OpenTitleCreditsPopup();
 }
 
 bool UGameEngine::IsScoreSavePopupOpen() const

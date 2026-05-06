@@ -5,6 +5,7 @@
 class FWindowsWindow;
 class FRenderer;
 struct FRect;
+struct ImFont;
 
 class FGameImGuiOverlay
 {
@@ -20,6 +21,7 @@ public:
 	bool ConsumeMessagePopupConfirmed();
 	void OpenScoreboardPopup(const FString& InFilePath);
 	void OpenTitleOptionsPopup();
+	void OpenTitleCreditsPopup();
 	bool IsScoreSavePopupOpen() const;
 
 private:
@@ -68,6 +70,12 @@ private:
 		bool bRequestOpen = false;
 	};
 
+	struct FCreditsPopupState
+	{
+		bool bPopupOpen = false;
+		bool bRequestOpen = false;
+	};
+
 	static bool IsAlphabetCharacter(char Character);
 	void ResetNicknameBuffer();
 	void SanitizeNicknameBuffer();
@@ -76,11 +84,14 @@ private:
 	void LoadScoreboardEntries();
 	void RenderScoreboardPopup(const FRect* AnchorRect = nullptr);
 	void RenderOptionsPopup(const FRect* AnchorRect = nullptr);
+	void RenderCreditsPopup(const FRect* AnchorRect = nullptr);
 
 private:
 	bool bInitialized = false;
+	ImFont* KoreanFont = nullptr;
 	FScoreSavePopupState ScoreSavePopup;
 	FMessagePopupState MessagePopup;
 	FScoreboardPopupState ScoreboardPopup;
 	FOptionsPopupState OptionsPopup;
+	FCreditsPopupState CreditsPopup;
 };

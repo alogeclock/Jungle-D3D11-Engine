@@ -1560,6 +1560,17 @@ void FLuaScriptInstance::BindDataFunctions()
 		return true;
 	};
 
+	auto OpenTitleCreditsPopup = []()
+	{
+		if (!GEngine)
+		{
+			return false;
+		}
+
+		GEngine->OpenTitleCreditsPopup();
+		return true;
+	};
+
 	auto RequestExitGame = []()
 	{
 		if (!GEngine || !GEngine->GetWindow())
@@ -1579,6 +1590,7 @@ void FLuaScriptInstance::BindDataFunctions()
 	Impl->Env.set_function("consume_message_popup_ok", ConsumeMessagePopupConfirmed);
 	Impl->Env.set_function("open_scoreboard_popup", OpenScoreboardPopup);
 	Impl->Env.set_function("open_title_options_popup", OpenTitleOptionsPopup);
+	Impl->Env.set_function("open_title_credits_popup", OpenTitleCreditsPopup);
 	Impl->Env.set_function("request_exit_game", RequestExitGame);
 
 	sol::state& Lua = FLuaScriptRuntime::Get().GetLuaState();
@@ -1590,6 +1602,7 @@ void FLuaScriptInstance::BindDataFunctions()
 	Lua.set_function("consume_message_popup_ok", ConsumeMessagePopupConfirmed);
 	Lua.set_function("open_scoreboard_popup", OpenScoreboardPopup);
 	Lua.set_function("open_title_options_popup", OpenTitleOptionsPopup);
+	Lua.set_function("open_title_credits_popup", OpenTitleCreditsPopup);
 	Lua.set_function("request_exit_game", RequestExitGame);
 }
 

@@ -6,6 +6,7 @@
 #include "UI/SWindow.h"
 #include "Render/Pipeline/Renderer.h"
 #include "Platform/Paths.h"
+#include "Resource/ResourceManager.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
@@ -34,6 +35,7 @@ namespace
 	constexpr ImVec4 ScoreboardTextDim = ImVec4(129.0f / 255.0f, 171.0f / 255.0f, 153.0f / 255.0f, 1.0f);
 	constexpr ImVec4 ScoreboardWarning = ImVec4(255.0f / 255.0f, 145.0f / 255.0f, 102.0f / 255.0f, 1.0f);
 	constexpr ImVec4 ScoreboardDanger = ImVec4(255.0f / 255.0f, 97.0f / 255.0f, 97.0f / 255.0f, 1.0f);
+	constexpr ImVec4 CreditsAccent = ImVec4(151.0f / 255.0f, 210.0f / 255.0f, 1.0f, 1.0f);
 
 	ImVec4 GetScoreboardRankColor(size_t Index)
 	{
@@ -74,6 +76,14 @@ void FGameImGuiOverlay::Initialize(FWindowsWindow* InWindow, FRenderer& InRender
 	IO.IniFilename = nullptr;
 	ImGui::StyleColorsDark();
 
+	const FString FontPath = FResourceManager::Get().ResolvePath(FName("Default.Font.UI"));
+	const std::filesystem::path UIFontPath = std::filesystem::path(FPaths::RootDir()) / FPaths::ToWide(FontPath);
+	const FString UIFontPathAbsolute = FPaths::ToUtf8(UIFontPath.lexically_normal().wstring());
+	if (std::filesystem::exists(UIFontPath))
+	{
+		KoreanFont = IO.Fonts->AddFontFromFileTTF(UIFontPathAbsolute.c_str(), 20.0f, nullptr, IO.Fonts->GetGlyphRangesKorean());
+	}
+
 	ImGui_ImplWin32_Init((void*)InWindow->GetHWND());
 	ImGui_ImplDX11_Init(
 		InRenderer.GetFD3DDevice().GetDevice(),
@@ -93,10 +103,12 @@ void FGameImGuiOverlay::Shutdown()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
+	KoreanFont = nullptr;
 	ScoreSavePopup = FScoreSavePopupState();
 	MessagePopup = FMessagePopupState();
 	ScoreboardPopup = FScoreboardPopupState();
 	OptionsPopup = FOptionsPopupState();
+	CreditsPopup = FCreditsPopupState();
 	bInitialized = false;
 }
 
@@ -116,6 +128,7 @@ void FGameImGuiOverlay::Render(FRenderer& InRenderer)
 	RenderMessagePopup();
 	RenderScoreboardPopup();
 	RenderOptionsPopup();
+	RenderCreditsPopup();
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -127,6 +140,7 @@ void FGameImGuiOverlay::RenderWithinCurrentFrame(const FRect* AnchorRect)
 	RenderMessagePopup(AnchorRect);
 	RenderScoreboardPopup(AnchorRect);
 	RenderOptionsPopup(AnchorRect);
+	RenderCreditsPopup(AnchorRect);
 }
 
 void FGameImGuiOverlay::OpenScoreSavePopup(int32 InScore)
@@ -187,6 +201,12 @@ void FGameImGuiOverlay::OpenTitleOptionsPopup()
 	OptionsPopup.bPopupOpen = true;
 }
 
+void FGameImGuiOverlay::OpenTitleCreditsPopup()
+{
+	CreditsPopup.bRequestOpen = true;
+	CreditsPopup.bPopupOpen = true;
+}
+
 bool FGameImGuiOverlay::IsScoreSavePopupOpen() const
 {
 	return
@@ -197,7 +217,9 @@ bool FGameImGuiOverlay::IsScoreSavePopupOpen() const
 		ScoreboardPopup.bPopupOpen ||
 		ScoreboardPopup.bRequestOpen ||
 		OptionsPopup.bPopupOpen ||
-		OptionsPopup.bRequestOpen;
+		OptionsPopup.bRequestOpen ||
+		CreditsPopup.bPopupOpen ||
+		CreditsPopup.bRequestOpen;
 }
 
 void FGameImGuiOverlay::ResetNicknameBuffer()
@@ -654,5 +676,83 @@ void FGameImGuiOverlay::RenderOptionsPopup(const FRect* AnchorRect)
 	if (OptionsPopup.bPopupOpen && !ImGui::IsPopupOpen("Options"))
 	{
 		OptionsPopup.bPopupOpen = false;
+	}
+}
+
+void FGameImGuiOverlay::RenderCreditsPopup(const FRect* AnchorRect)
+{
+	if (CreditsPopup.bRequestOpen)
+	{
+		ImGui::OpenPopup("Credits");
+		CreditsPopup.bRequestOpen = false;
+		CreditsPopup.bPopupOpen = true;
+	}
+
+	ImVec2 PopupCenter;
+	if (AnchorRect && AnchorRect->Width > 0.0f && AnchorRect->Height > 0.0f)
+	{
+		PopupCenter = ImVec2(
+			AnchorRect->X + AnchorRect->Width * 0.5f,
+			AnchorRect->Y + AnchorRect->Height * 0.5f);
+	}
+	else
+	{
+		ImGuiViewport* MainViewport = ImGui::GetMainViewport();
+		PopupCenter = MainViewport->GetCenter();
+	}
+
+	ImGui::SetNextWindowPos(PopupCenter, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(460.0f, 0.0f), ImGuiCond_Appearing);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(18.0f, 16.0f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ScorePopupSurface);
+	ImGui::PushStyleColor(ImGuiCol_TitleBg, ScorePopupTitle);
+	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ScorePopupTitle);
+	ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, ScorePopupTitle);
+	ImGui::PushStyleColor(ImGuiCol_Border, ScorePopupBorder);
+	ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg, ScorePopupDim);
+
+	if (ImGui::BeginPopupModal("Credits", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::TextColored(CreditsAccent, "6Team");
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		if (KoreanFont)
+		{
+			ImGui::PushFont(KoreanFont);
+		}
+
+		ImGui::TextUnformatted("김연하");
+		ImGui::TextUnformatted("김형준");
+		ImGui::TextUnformatted("강건우");
+		ImGui::TextUnformatted("조상현");
+
+		if (KoreanFont)
+		{
+			ImGui::PopFont();
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		if (ImGui::Button("Close", ImVec2(140.0f, 0.0f)))
+		{
+			CreditsPopup.bPopupOpen = false;
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopStyleColor(6);
+	ImGui::PopStyleVar(3);
+
+	if (CreditsPopup.bPopupOpen && !ImGui::IsPopupOpen("Credits"))
+	{
+		CreditsPopup.bPopupOpen = false;
 	}
 }

@@ -228,6 +228,19 @@ void UIButtonComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	const bool bWasHovered = bHovered;
 	const bool bWasPressed = bPressed;
 
+	if (FInputManager::Get().IsGuiUsingMouse())
+	{
+		bHovered = false;
+		bPressed = false;
+
+		if (bWasHovered)
+		{
+			TriggerAction(OnHoverExitAction);
+		}
+
+		return;
+	}
+
 	float CursorX = 0.0f;
 	float CursorY = 0.0f;
 	bool bHasViewportCursor = false;

@@ -1095,12 +1095,22 @@ void FEditorMainPanel::Update()
 	bool bWantMouse = IO.WantCaptureMouse;
 	bool bWantKeyboard = IO.WantCaptureKeyboard || bShowShortcutOverlay || bShowCreditsOverlay;
 	const bool bAssetEditorCapturingInput = AssetEditorWidget.IsCapturingInput();
+	const bool bPIEPopupOpen = EditorEngine && EditorEngine->IsScoreSavePopupOpen();
+	if (bPIEPopupOpen)
+	{
+		bWantMouse = true;
+		bWantKeyboard = true;
+	}
+
 	if (EditorEngine && EditorEngine->IsMouseOverViewport() && !bAssetEditorCapturingInput)
 	{
-		bWantMouse = false;
-		if (!IO.WantTextInput && !bShowShortcutOverlay && !bShowCreditsOverlay)
+		if (!bPIEPopupOpen)
 		{
-			bWantKeyboard = false;
+			bWantMouse = false;
+			if (!IO.WantTextInput && !bShowShortcutOverlay && !bShowCreditsOverlay)
+			{
+				bWantKeyboard = false;
+			}
 		}
 	}
 	FInputManager::Get().SetGuiCaptureOverride(bWantMouse, bWantKeyboard, IO.WantTextInput);

@@ -6,11 +6,12 @@ local loading_text = nil
 local start_button = nil
 local score_button = nil
 local options_button = nil
+local credit_button = nil
 local exit_button = nil
 local logo_image = nil
 
 ------------------------------------------------
--- TitleScene 생명주기 함수들
+-- TitleScene 버튼 찾기 함수들
 ------------------------------------------------
 
 function BeginPlay()
@@ -19,6 +20,7 @@ function BeginPlay()
     start_button = Engine.GetRequiredComponent(obj, "TitleScene 컴포넌트를 찾을 수 없습니다:", "UIButtonComponent_0")
     score_button = Engine.GetRequiredComponent(obj, "TitleScene 컴포넌트를 찾을 수 없습니다:", "ScoreButton")
     options_button = Engine.GetRequiredComponent(obj, "TitleScene 컴포넌트를 찾을 수 없습니다:", "OptionsButton")
+    credit_button = Engine.GetRequiredComponent(obj, "TitleScene 컴포넌트를 찾을 수 없습니다:", "CreditButton")
     exit_button = Engine.GetRequiredComponent(obj, "TitleScene 컴포넌트를 찾을 수 없습니다:", "ExitButton")
     logo_image = Engine.GetRequiredComponent(obj, "TitleScene 컴포넌트를 찾을 수 없습니다:", "UUIImageComponent_0")
 
@@ -38,6 +40,11 @@ end
 function ShowOptions()
     play_sfx("Sound.SFX.arwing.hit.obstacle", false)
     return open_title_options_popup()
+end
+
+function ShowCredits()
+    play_sfx("Sound.SFX.arwing.hit.obstacle", false)
+    return open_title_credits_popup()
 end
 
 function ExitGame()
@@ -77,6 +84,11 @@ function Tick(dt)
 
     if options_button and options_button:WasClicked() then
         ShowOptions()
+        return
+    end
+
+    if credit_button and credit_button:WasClicked() then
+        ShowCredits()
         return
     end
 
