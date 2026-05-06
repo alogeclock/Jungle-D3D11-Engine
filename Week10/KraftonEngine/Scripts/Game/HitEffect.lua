@@ -28,7 +28,7 @@ local function get_raw_delta_time()
         end
     end
 
-    return 1.0 / 60.0 -- 실패한다면 60fps 가정하고 return 해줌
+    return 1.0 / 60.0 -- 실패한다면 60fps 가정하고 return
 end
 
 local function apply_scale(use_component, component, actor, scale)
@@ -53,6 +53,7 @@ function HitEffects.StopTimeEffects()
     set_time_dilation(1.0)
 end
 
+-- HitStop 함수
 function HitEffects.HitStop(duration)
     duration = Math.SafeNumber(duration, 0.055)
 
@@ -69,6 +70,7 @@ function HitEffects.HitStop(duration)
     end
 end
 
+-- Slomo 함수
 function HitEffects.Slomo(scale, duration)
     scale = Math.Clamp(Math.SafeNumber(scale, 0.25), 0.05, 1.0)
     duration = Math.SafeNumber(duration, 0.18)
@@ -79,34 +81,6 @@ function HitEffects.Slomo(scale, duration)
     if duration > 0.0 then
         set_time_dilation(scale)
         wait_real_seconds(duration)
-    end
-
-    if token == active_time_token then
-        set_time_dilation(1.0)
-    end
-end
-
--- duration만큼 Hit Stop 을 수행한 후 slomo를 수행하는 함수
-function HitEffects.HitStopThenSlomo(hit_stop_duration, slomo_scale, slomo_duration)
-    hit_stop_duration = Math.SafeNumber(hit_stop_duration, 0.055)
-    slomo_scale = Math.Clamp(Math.SafeNumber(slomo_scale, 0.25), 0.05, 1.0)
-    slomo_duration = Math.SafeNumber(slomo_duration, 0.18)
-
-    active_time_token = active_time_token + 1
-    local token = active_time_token
-
-    if hit_stop_duration > 0.0 then
-        set_time_dilation(0.0)
-        wait_real_seconds(hit_stop_duration)
-    end
-
-    if token ~= active_time_token then
-        return
-    end
-
-    if slomo_duration > 0.0 then
-        set_time_dilation(slomo_scale)
-        wait_real_seconds(slomo_duration)
     end
 
     if token == active_time_token then

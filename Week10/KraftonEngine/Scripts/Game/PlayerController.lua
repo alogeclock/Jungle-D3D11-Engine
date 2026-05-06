@@ -85,27 +85,6 @@ local COACH_WINDOW_TEXTURES = PlayerConfig.coach_window_textures
 
 local log = Log.MakeLogger(DebugConfig, "[Player]")
 
-
-local function start_hit_stop_then_slomo(hit_stop_duration, slomo_scale, slomo_duration)
-    if not HitEffects or not HitEffects.HitStopThenSlomo then
-        warn("[PlayerController] HitEffects.HitStopThenSlomo missing.")
-        return
-    end
-
-    if not StartCoroutine then
-        warn("[PlayerController] StartCoroutine missing. Hit time effect skipped.")
-        return
-    end
-
-    local started = StartCoroutine(function()
-        HitEffects.HitStopThenSlomo(hit_stop_duration, slomo_scale, slomo_duration)
-    end)
-
-    if started == false then
-        warn("[PlayerController] Failed to start hit time effect coroutine.")
-    end
-end
-
 -- 가장 왼쪽 Lane 번호
 local function lane_min()
     return -math.floor(PlayerConfig.lane_count / 2)
