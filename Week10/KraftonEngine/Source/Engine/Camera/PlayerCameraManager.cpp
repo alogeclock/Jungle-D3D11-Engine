@@ -1,5 +1,6 @@
 ﻿#include "PlayerCameraManager.h"
 #include "Engine/GameFramework/PlayerController.h"
+#include "Engine/GameFramework/PawnActor.h"
 
 IMPLEMENT_CLASS(APlayerCameraManager, AActor)
 
