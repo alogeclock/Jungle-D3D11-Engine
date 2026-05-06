@@ -50,6 +50,9 @@ void FFrameContext::SetCameraInfo(const FMinimalViewInfo& POV)
 	FrustumVolume.UpdateFromMatrix(View * Proj);
 }
 
+// Function : Populate frame viewport render resources
+// input : VP
+// VP : viewport that owns render target, depth, and post process textures
 void FFrameContext::SetViewportInfo(const FViewport* VP)
 {
 	ViewportWidth = static_cast<float>(VP->GetWidth());

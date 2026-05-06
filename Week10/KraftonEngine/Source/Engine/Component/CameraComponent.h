@@ -19,7 +19,15 @@ public:
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
 	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
 	void LookAt(const FVector& Target);
+
+	// Function : Replace camera component state and sync transform
+	// input : NewState
+	// NewState : full camera POV stored by this component
 	void SetCameraState(const FMinimalViewInfo& NewState);
+
+	// Function : Read camera component state as POV
+	// input : none
+	// CameraState : returned after world transform is refreshed
 	const FMinimalViewInfo& GetCameraState() const;
 
 	void SetFOV(float InFOV) { CameraState.FOV = InFOV; }
@@ -48,6 +56,9 @@ public:
 	FRay DeprojectScreenToWorld(float MouseX, float MouseY, float ScreenWidth, float ScreenHeight);
 
 private:
+	// Function : Copy current world transform into camera state
+	// input : none
+	// CameraState : mutable cached POV owned by the component
 	void RefreshCameraStateTransform() const;
 
 private:

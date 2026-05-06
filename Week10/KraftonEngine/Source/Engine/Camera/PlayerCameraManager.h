@@ -15,9 +15,16 @@ class UCameraModifier_CameraShake;
 struct FViewTarget
 {
 public:
+	// Function : Set actor used as current camera view target
+	// input : InTarget
+	// InTarget : actor that provides camera POV through CalcCamera
 	void SetNewTarget(AActor* InTarget);
 	APawnActor* GetTargetPawn() const;
 	bool Equal(const FViewTarget& OtherTarget) const;
+
+	// Function : Ensure view target follows owning controller pawn
+	// input : OwningController
+	// OwningController : controller that owns the current player pawn
 	void CheckViewTarget(APlayerController* OwningController);
 
 public:
@@ -38,8 +45,13 @@ public:
 
 	void BeginPlay() override;
 	void EndPlay() override;
+
+	// PlayerCameraManager keeps the modifier list alive and evaluates it every tick.
 	void Tick(float DeltaTime) override;
 
+	// Function : Bind camera manager to player controller
+	// input : InPlayerController
+	// InPlayerController : controller that owns the pawn used as default view target
 	void SetOwner(APlayerController* InPlayerController);
 
 	// Function : Add camera modifier to manager and sort by priority
@@ -64,7 +76,14 @@ public:
 	// DeltaTime : frame delta time used by CalcCamera and modifiers
 	void UpdateCamera(float DeltaTime);
 
+	// Function : Sort active camera modifiers by priority
+	// input : none
+	// Priority : modifier with higher priority is processed first
 	void SortModifiersByPriority();
+
+	// Function : Remove camera modifiers that finished their lifecycle
+	// input : none
+	// ModifierList : active modifiers owned by PlayerCameraManager
 	void RemoveFinishedModifiers();
 
 	// Function : Enable camera shake modifier owned by PlayerCameraManager
@@ -76,8 +95,23 @@ public:
 	// input : none
 	// CameraShakeModifier : modifier that owns active camera shake instances
 	void EndCameraShake();
+
+	// Function : Start camera fade applied to final POV post process settings
+	// input : FromAlpha, ToAlpha, Duration, Color
+	// FromAlpha : starting fade opacity
+	// ToAlpha : target fade opacity
+	// Duration : fade blend time in seconds
+	// Color : fade color written to final POV
 	void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color);
+
+	// Function : Stop camera fade immediately
+	// input : none
+	// FadeAmount : reset to zero when fade ends
 	void EndCameraFade();
+
+	// Function : Load camera shake data asset and add shakes to camera shake modifier
+	// input : AssetPath
+	// AssetPath : camera modifier stack asset path
 	void LoadCameraModifierStackAsset(const std::filesystem::path& AssetPath);
 
 	const FMinimalViewInfo& GetCameraCachePOV() const { return CameraCache.POV; }
@@ -88,9 +122,9 @@ public:
 	FName CameraStyle;
 
 	bool bEnableFading = false;
-	FLinearColor FadeColor = FLinearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	FLinearColor FadeColor = FLinearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black
 	float FadeAmount = 0.0f;
-	FVector2 FadeAlpha;
+	FVector2 FadeAlpha; // X : start opacity, Y : target opacity
 	float FadeTime = 0.0f;
 	float FadeTimeRemaining = 0.0f;
 
@@ -98,8 +132,19 @@ public:
 	FCameraCacheEntry LastFrameCameraCache;
 
 private:
+	// Function : Find camera component on target actor
+	// input : Target
+	// Target : actor searched for UCameraComponent
 	UCameraComponent* FindCameraComponent(AActor* Target);
+
+	// Function : Build default POV when no view target can provide one
+	// input : Target
+	// Target : optional actor used for fallback location and rotation
 	FMinimalViewInfo BuildFallbackCameraView(AActor* Target) const;
+
+	// Function : Get or create the camera shake modifier owned by this manager
+	// input : none
+	// CameraShakeModifier : single modifier that owns active camera shake instances
 	UCameraModifier_CameraShake* EnsureCameraShakeModifier();
 
 private:

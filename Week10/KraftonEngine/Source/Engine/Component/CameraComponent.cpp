@@ -104,6 +104,7 @@ FRay UCameraComponent::DeprojectScreenToWorld(float MouseX, float MouseY, float 
 	float NdcX = (2.0f * MouseX) / ScreenWidth - 1.0f;
 	float NdcY = 1.0f - (2.0f * MouseY) / ScreenHeight;
 
+	// Reversed-Z projection: near plane maps to 1, far plane maps to 0.
 	const FVector NdcNear(NdcX, NdcY, 1.0f);
 	const FVector NdcFar(NdcX, NdcY, 0.0f);
 

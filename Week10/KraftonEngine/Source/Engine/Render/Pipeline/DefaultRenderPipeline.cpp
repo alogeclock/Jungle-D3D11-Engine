@@ -67,6 +67,8 @@ void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 
 		Frame.SetViewportInfo(VP);
 
+		// PlayerCameraManager owns the final runtime camera POV.
+		// The active camera component is only a fallback when the manager has not produced a cache yet.
 		AGameModeBase* GameMode = World->GetAuthGameMode();
 		APlayerCameraManager* CameraManager = GameMode ? GameMode->GetPlayerCameraManager() : nullptr;
 		if (CameraManager && CameraManager->HasValidCameraCachePOV())

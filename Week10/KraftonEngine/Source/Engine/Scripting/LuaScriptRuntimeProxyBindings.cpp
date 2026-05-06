@@ -220,6 +220,8 @@ void FLuaScriptRuntime::BindActorProxyType()
 		"SetDamage", &FLuaActorProxy::SetDamage,
 		"PlayCameraModifier", [](FLuaActorProxy& ActorProxy, const FString& ScriptPath, sol::optional<sol::table> ParamsTable)
 		{
+			// Lua gameplay scripts can live on the pawn.
+			// Camera playback is routed to the player controller so modifiers affect the current player view.
 			AActor* Actor = ActorProxy.GetActor();
 			APlayerController* PlayerController = Cast<APlayerController>(Actor);
 			if (!PlayerController && Actor && Actor->GetWorld())
