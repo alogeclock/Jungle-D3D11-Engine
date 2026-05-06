@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/CoreTypes.h"
 
@@ -89,7 +89,7 @@ public:
 
 	void StopAll();
 
-	void Signal(const FString& Name);
+	void InsertPendingSignal(const FString& Name);
 
 private:
 	void Enqueue(std::unique_ptr<FRunningCoroutine> Entry);

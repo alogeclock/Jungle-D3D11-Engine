@@ -1,4 +1,4 @@
-#include "Scripting/LuaCoroutineScheduler.h"
+﻿#include "Scripting/LuaCoroutineScheduler.h"
 
 #include "Core/AsciiUtils.h"
 #include "Core/Log.h"
@@ -282,7 +282,7 @@ void FLuaCoroutineScheduler::BindToEnvironment()
 
 	Env->set_function("signal", [this](const FString& Name)
 	{
-		Signal(Name);
+		InsertPendingSignal(Name);
 	});
 }
 
@@ -498,7 +498,7 @@ void FLuaCoroutineScheduler::StopAll()
 	bTicking = false;
 }
 
-void FLuaCoroutineScheduler::Signal(const FString& Name)
+void FLuaCoroutineScheduler::InsertPendingSignal(const FString& Name)
 {
 	if (Name.empty())
 	{
