@@ -586,7 +586,7 @@ void FDrawCommandBuilder::BuildPostProcessCommands(const FFrameContext& Frame, c
 	}
 
 	UWorld* CurrentWorld = GEngine ? GEngine->GetWorld() : nullptr;
-	if (CurrentWorld && CurrentWorld->GetActiveCamera() && CurrentWorld->GetActiveCamera()->GetCameraState().PostProcessSettings.FadeAmount > 0.001f)
+	if (CurrentWorld && CurrentWorld->GetActiveCamera() && CurrentWorld->GetActiveCamera()->GetHitEffectIntensity() > 0.001f)
 	{
 		// Use direct path string if EShaderPath constant is causing issues
 		FShader* HitShader = FShaderManager::Get().GetOrCreate("Shaders/PostProcess/HitVignette.hlsl");
