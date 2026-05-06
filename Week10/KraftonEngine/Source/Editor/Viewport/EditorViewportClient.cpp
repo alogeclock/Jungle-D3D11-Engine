@@ -1259,7 +1259,7 @@ void FEditorViewportClient::TickInput(float DeltaTime)
 		}
 	}
 	EnhancedInputManager.ProcessInput(&Input, DeltaTime, bForceInput);
-	const FCameraState& CameraState = Camera->GetCameraState();
+	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
 	const bool bIsOrtho = CameraState.bIsOrthogonal;
 	const float MoveSensitivity = RenderOptions.CameraMoveSensitivity;
 	const float CameraSpeed = (Settings ? Settings->CameraSpeed : 10.f) * MoveSensitivity;

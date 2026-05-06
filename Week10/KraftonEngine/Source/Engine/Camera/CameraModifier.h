@@ -23,7 +23,7 @@ public:
 	 */
 	// 원래는 FMinimalViewInfo 라는 이름의 struct를 사용해야 함
 	// TODO: FCameraState 에다 월드 위치 정보 추가
-	virtual bool ModifyCamera(float DeltaTime, UCameraComponent* InOutPOV);
+	virtual bool ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutPOV);
 
 
 	virtual void UpdateAlpha(float DeltaTime);
@@ -57,13 +57,13 @@ protected:
 	UCameraShakePattern* ShakePattern = nullptr;
 
 	// Time it takes for Alpha to go from 0.0 to 1.0
-	float AlphaInTime		= 0.f;
+	float AlphaInTime		= 1.f;
 
 	// Time it takes for Alpha to go from 1.0 to 0.0
-	float AlphaOutTime		= 0.f;
+	float AlphaOutTime		= 1.f;
 
 	float Alpha				= 0.f;
 	uint32 bPendingDisable	= false;
-	uint32 bDisabled		= false;
+	uint32 bDisabled		= true;
 };
 

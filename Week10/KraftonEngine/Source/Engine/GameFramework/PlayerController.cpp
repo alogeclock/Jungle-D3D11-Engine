@@ -1,10 +1,11 @@
-#include "PlayerController.h"
+﻿#include "PlayerController.h"
 
 #include "GameFramework/PawnActor.h"
 #include "Input/InputManager.h"
 #include "Component/CameraComponent.h"
 #include "GameFramework/World.h"
 #include "Engine/Runtime/Engine.h"
+#include "Engine/Camera/PlayerCameraManager.h"
 #include "Viewport/GameViewportClient.h"
 
 IMPLEMENT_CLASS(APlayerController, AActor)
@@ -66,4 +67,10 @@ void APlayerController::Possess(APawnActor* InPawn)
 void APlayerController::UnPossess()
 {
 	PossessedPawn = nullptr;
+}
+
+void APlayerController::AcquirePlayerCameraManager(APlayerCameraManager* InCameraManager) {
+	if (!InCameraManager) return;
+	CameraManager = InCameraManager;
+	CameraManager->SetOwner(this);
 }

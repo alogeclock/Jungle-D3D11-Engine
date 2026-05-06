@@ -58,10 +58,10 @@ APawnActor* FViewTarget::GetTargetPawn() const
 
 bool FViewTarget::Equal(const FViewTarget& OtherTarget) const
 {
-	if (!POV || !OtherTarget.POV)
-	{
-		return POV == OtherTarget.POV;
+	if (Target && OtherTarget.Target) {
+		return Target == OtherTarget.Target;
 	}
+
 	return false;
 }
 
@@ -73,10 +73,15 @@ void FViewTarget::CheckViewTarget(APlayerController* OwningController)
 void APlayerCameraManager::BeginPlay()
 {
 	AActor::BeginPlay();
+	LoadCameraModifierStackAsset("Asset/CameraShakeStack.uasset");
 }
 
 void APlayerCameraManager::EndPlay()
 {
+	for (UCameraModifier* Modifier : ModifierList) {
+		if (!Modifier) continue;
+		UObjectManager::Get().DestroyObject(Modifier);
+	}
 	ModifierList.clear();
 	AActor::EndPlay();
 }
@@ -84,7 +89,41 @@ void APlayerCameraManager::EndPlay()
 void APlayerCameraManager::Tick(float DeltaTime)
 {
 	AActor::Tick(DeltaTime);
+	UpdateCamera(DeltaTime);
+}
+
+void APlayerCameraManager::UpdateCamera(float DeltaTime) {
+	// Reset Camera Snapshot
+	bHasValidCameraCachePOV = false;
+	if (ViewTarget.GetTargetPawn()) {
+		APawnActor* Pawn = ViewTarget.GetTargetPawn();
+		for (UActorComponent* Comp : Pawn->GetComponents())
+		{
+			if (UCameraComponent* Cam = Cast<UCameraComponent>(Comp))
+			{
+				ViewTarget.POV = Cam->GetCameraState();
+				bHasValidCameraCachePOV = true;
+				break;
+			}
+		}
+	}
+
+	if (!bHasValidCameraCachePOV)
+	{
+		return;
+	}
+
 	ApplyCameraModifiers(DeltaTime, ViewTarget.POV);
+
+	// Fade
+	if (bEnableFading && FadeTimeRemaining) {
+		FadeTimeRemaining = FadeTimeRemaining < 0.f ? 0.f : FadeTimeRemaining;	// Non-negative
+		FadeAmount = FadeAlpha.X + (FadeAlpha.Y - FadeAlpha.X) * (FadeTime - FadeTimeRemaining) / FadeTime;
+		FadeTimeRemaining -= DeltaTime;
+	}
+
+	ViewTarget.POV.PostProcessSettings.FadeColor = FadeColor;
+	ViewTarget.POV.PostProcessSettings.FadeAmount = FadeAmount;
 }
 
 void APlayerCameraManager::LoadCameraModifierStackAsset(const std::filesystem::path& AssetPath)
@@ -124,6 +163,15 @@ void APlayerCameraManager::LoadCameraModifierStackAsset(const std::filesystem::p
 	UObjectManager::Get().DestroyObject(LoadedAsset);
 }
 
+void APlayerCameraManager::SetOwner(APlayerController* InController) {
+	if (!InController) return;
+	Owner = InController;
+	if (InController->GetPawn()) {
+		APawnActor* Pawn = InController->GetPawn();
+		ViewTarget.SetNewTarget(Pawn);
+	}
+}
+
 void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier)
 {
 	if (!InModifier) return;
@@ -132,26 +180,19 @@ void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier)
 	{
 		if (ExistingModifier == InModifier)
 		{
-			InModifier->EnableModifier();
 			return;
 		}
 	}
 
 	InModifier->AddedToCamera(this);
-	InModifier->EnableModifier();
 	ModifierList.push_back(InModifier);
 	std::sort(ModifierList.begin(), ModifierList.end(), [](const UCameraModifier* A, const UCameraModifier* B) {
 		return A->Priority > B->Priority;
 	});
 }
 
-void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV)
+void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV)
 {
-	if (!InOutPOV)
-	{
-		return;
-	}
-
 	for (UCameraModifier* CameraModifier : ModifierList)
 	{
 		if (!CameraModifier || CameraModifier->IsDisabled())
@@ -171,4 +212,34 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, UCameraComponen
 			break;
 		}
 	}
+}
+
+void APlayerCameraManager::StartCameraShake() {
+	for (UCameraModifier* Modifier : ModifierList) {
+		if (!Modifier) continue;
+		Modifier->EnableModifier();
+	}
+}
+
+void APlayerCameraManager::EndCameraShake() {
+	for (UCameraModifier* Modifier : ModifierList) {
+		if (!Modifier) continue;
+		Modifier->DisableModifier();
+	}
+}
+
+void APlayerCameraManager::StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color) {
+	// 호출 시 Fade 정보들을 즉시 매개변수값으로 초기화
+	FadeColor		  = Color;
+	FadeAlpha		  = FVector2(FromAlpha, ToAlpha);
+	FadeTimeRemaining = Duration;
+	FadeTime		  = Duration;
+	bEnableFading	  = true;
+}
+
+void APlayerCameraManager::EndCameraFade() {
+	// 호출 시 Fade 즉시 제거 (보간하지 않음)
+	bEnableFading	  = false;
+	FadeAmount		  = 0.0f;
+	FadeTimeRemaining = 0.0f;
 }

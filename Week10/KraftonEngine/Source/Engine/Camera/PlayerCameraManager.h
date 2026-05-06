@@ -18,10 +18,7 @@ public:
 
 public:
 	AActor*			  Target = nullptr;
-
-	// 원래는 FMinimalViewInfo 라는 이름의 struct를 사용해야 함
-	// TODO: FCameraState 에다 월드 위치 정보 추가
-	UCameraComponent* POV	 = nullptr;
+	FMinimalViewInfo  POV;
 };
 
 
@@ -39,14 +36,25 @@ public:
 	// PlayerManager는 모디파이어 리스트를 상시 순회함
 	void Tick(float DeltaTime) override;
 
-	void SetOwner(APlayerController* InPlayerController) { Owner = InPlayerController; }
+	// 매 틱마다 호출
+	void UpdateCamera(float DeltaTime);
+
+	void SetOwner(APlayerController* InPlayerController);
 
 	// 카메라 모디파이어 추가 후 중요도에 따라 정렬
 	void AddCameraModifier(UCameraModifier* InModifier);
 
 	// 카메라 모디파이어 적용 (매 틱 호출됨)
-	void ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV);
+	void ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV);
+
+	void StartCameraShake();
+	void EndCameraShake();
+
+	void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color);
+	void EndCameraFade();
 	void LoadCameraModifierStackAsset(const std::filesystem::path& AssetPath);
+	const FMinimalViewInfo& GetCameraCachePOV() const { return ViewTarget.POV; }
+	bool HasValidCameraCachePOV() const { return bHasValidCameraCachePOV; }
 
 	//void StartCameraShake();
 	//void EndCameraShake();
@@ -57,13 +65,18 @@ public:
 public:
 	FViewTarget		ViewTarget;
 	FName			CameraStyle;
-	FLinearColor	FadeColor;
-	float			FadeAmount;
-	FVector2		FadeAlpha;
-	float			FadeTime;
-	float			FadeTimeRemaining;
+
+	// Fade
+	bool			bEnableFading = false;
+	FLinearColor	FadeColor	  = FLinearColor(0, 0, 0, 1); // Black
+	float			FadeAmount    = 0.f;
+	FVector2		FadeAlpha;		// FadeAlpha.X = Start Alpha = Initial Opacity
+									// FadeAlpha.Y = End Alpha	 = Target Opacity
+	float			FadeTime;		
+	float			FadeTimeRemaining = 0.f;
 
 private:
 	APlayerController* Owner = nullptr;
 	TArray<UCameraModifier*> ModifierList;
+	bool bHasValidCameraCachePOV = false;
 };
