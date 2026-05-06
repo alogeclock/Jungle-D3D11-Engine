@@ -5,6 +5,7 @@
 #include "Component/CameraComponent.h"
 #include "GameFramework/World.h"
 #include "Engine/Runtime/Engine.h"
+#include "Engine/Camera/PlayerCameraManager.h"
 #include "Viewport/GameViewportClient.h"
 
 IMPLEMENT_CLASS(APlayerController, AActor)
@@ -71,5 +72,5 @@ void APlayerController::UnPossess()
 void APlayerController::AcquirePlayerCameraManager(APlayerCameraManager* InCameraManager) {
 	if (!InCameraManager) return;
 	CameraManager = InCameraManager;
-	
+	CameraManager->SetOwner(this);
 }

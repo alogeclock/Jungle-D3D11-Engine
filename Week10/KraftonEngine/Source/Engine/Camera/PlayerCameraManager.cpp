@@ -53,6 +53,15 @@ void APlayerCameraManager::Tick(float DeltaTime)
 	ApplyCameraModifiers(DeltaTime, ViewTarget.POV);
 }
 
+void APlayerCameraManager::SetOwner(APlayerController* InController) {
+	if (!InController) return;
+	Owner = InController;
+	if (InController->GetPawn()) {
+		APawnActor* Pawn = InController->GetPawn();
+		ViewTarget.SetNewTarget(Pawn);
+	}
+}
+
 void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier)
 {
 	if (!InModifier) return;
