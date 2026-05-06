@@ -6,6 +6,7 @@ function DamagePostProcess:Begin(params)
     self.elapsed = 0.0
     self.duration = params.duration or 0.7
     self.intensity = params.intensity or 1.0
+    self.material = params.material or "Game/PostProcess/Damage"
 end
 
 function DamagePostProcess:Update(deltaTime, view)
@@ -15,15 +16,9 @@ function DamagePostProcess:Update(deltaTime, view)
     local intensity = self.intensity * alpha
     local chromaticAberration = 0.2 * alpha
 
-    view.postProcess:SetScalar(
-        "HitEffectIntensity",
-        math.max(view.postProcess:GetScalar("HitEffectIntensity", 0.0), intensity)
-    )
-
-    view.postProcess:SetScalar(
-        "ChromaticAberration",
-        math.max(view.postProcess:GetScalar("ChromaticAberration", 0.0), chromaticAberration)
-    )
+    view.postProcess:AddMaterial(self.material, 1.0)
+    view.postProcess:SetMaterialScalar(self.material, "HitEffectIntensity", intensity)
+    view.postProcess:SetMaterialScalar(self.material, "ChromaticAberration", chromaticAberration)
 
     return self.elapsed >= self.duration
 end

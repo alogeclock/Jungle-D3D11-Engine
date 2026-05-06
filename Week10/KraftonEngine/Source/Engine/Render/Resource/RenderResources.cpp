@@ -827,8 +827,6 @@ void FSystemResources::UpdateFrameBuffer(FD3DDevice& Device, const FFrameContext
 	{
 		frameConstantData.Time = static_cast<float>(GEngine->GetTimer()->GetTotalTime());
 	}
-	frameConstantData.HitEffectIntensity =
-		Frame.PostProcessSettings.GetScalar(FName("HitEffectIntensity"), 0.0f);
 
 	FrameBuffer.Update(Ctx, &frameConstantData, sizeof(FFrameConstants));
 	ID3D11Buffer* b0 = FrameBuffer.GetBuffer();

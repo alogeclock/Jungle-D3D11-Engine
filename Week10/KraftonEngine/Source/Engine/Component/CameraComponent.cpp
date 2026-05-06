@@ -123,63 +123,15 @@ FRay UCameraComponent::DeprojectScreenToWorld(float MouseX, float MouseY, float 
 void UCameraComponent::BeginPlay()
 {
 	USceneComponent::BeginPlay();
-	// 카메라 쉐이크/히트 이펙트는 엔진 내부 갱신 로직이라 사용자 bTickEnable과 무관하게 항상 tick
 	SetComponentTickEnabled(true);
 }
-//ToDelete
-
-//void UCameraComponent::StartCameraShake(float Intensity, float duration)
-//{
-//	UCameraShakeBase* NewShake = UObjectManager::Get().CreateObject<UCameraShakeBase>(this);
-//	NewShake->SetRootShakePattern(UObjectManager::Get().CreateObject<USinWaveCameraShakePattern>(NewShake));
-//	NewShake->Intensity = Intensity;
-//	NewShake->Duration = duration;
-//	ActiveShakes.push_back(NewShake);
-//}
-//
-//void UCameraComponent::AddHitEffect(float Intensity, float Duration)
-//{
-//	HitEffectIntensity = Intensity;
-//	HitEffectDuration = (Duration > 0.0f) ? Duration : 1.0f;
-//}
 
 void UCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
 {
 	USceneComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	//ToDelete
-
-	// Hit Effect Fade out
-	//if (HitEffectIntensity > 0.0f)
-	//{
-	//	HitEffectIntensity -= (1.0f / HitEffectDuration) * DeltaTime;
-	//	if (HitEffectIntensity < 0.0f) HitEffectIntensity = 0.0f;
-	//}
 
 	AdditiveLocationOffset = FVector::ZeroVector;
 	AdditiveRotationOffset = FRotator::ZeroRotator;
-	//ToDelete
-
-	//for (int32 i = static_cast<int32>(ActiveShakes.size()) - 1; i >= 0; --i)
-	//{
-	//	UCameraShakeBase* Shake = ActiveShakes[i];
-	//	if (!Shake) continue;
-
-	//	FVector LocOffset = FVector::ZeroVector;
-	//	FRotator RotOffset = FRotator::ZeroRotator;
-
-	//	Shake->UpdateShake(DeltaTime, LocOffset, RotOffset);
-
-	//	AdditiveLocationOffset += LocOffset;
-	//	AdditiveRotationOffset.Pitch += RotOffset.Pitch;
-	//	AdditiveRotationOffset.Yaw += RotOffset.Yaw;
-	//	AdditiveRotationOffset.Roll += RotOffset.Roll;
-
-	//	if (Shake->IsFinished())
-	//	{
-	//		UObjectManager::Get().DestroyObject(Shake);
-	//		ActiveShakes.erase(ActiveShakes.begin() + i);
-	//	}
-	//}
 }
 
 void UCameraComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)

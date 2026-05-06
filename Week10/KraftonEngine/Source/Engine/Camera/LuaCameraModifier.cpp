@@ -33,6 +33,41 @@ struct FLuaPostProcessView
 			Settings->SetScalar(FName(Name), Value);
 		}
 	}
+
+	// Function : Add post process material to the current camera view
+	// input : MaterialPath, BlendWeight
+	// MaterialPath : content-defined post process material path
+	// BlendWeight : material blend weight used by post process pass
+	void AddMaterial(const FString& MaterialPath, float BlendWeight = 1.0f)
+	{
+		if (Settings)
+		{
+			Settings->AddMaterial(MaterialPath, BlendWeight);
+		}
+	}
+
+	// Function : Write scalar parameter to a post process material entry
+	// input : MaterialPath, Name, Value
+	// MaterialPath : content-defined post process material path
+	// Name : scalar parameter name inside material shader
+	// Value : scalar value to apply when material is rendered
+	void SetMaterialScalar(const FString& MaterialPath, const FString& Name, float Value)
+	{
+		if (Settings)
+		{
+			Settings->SetMaterialScalar(MaterialPath, FName(Name), Value);
+		}
+	}
+
+	// Function : Read scalar parameter from a post process material entry
+	// input : MaterialPath, Name, DefaultValue
+	// MaterialPath : content-defined post process material path
+	// Name : scalar parameter name inside material shader
+	// DefaultValue : value returned when the parameter does not exist
+	float GetMaterialScalar(const FString& MaterialPath, const FString& Name, float DefaultValue = 0.0f) const
+	{
+		return Settings ? Settings->GetMaterialScalar(MaterialPath, FName(Name), DefaultValue) : DefaultValue;
+	}
 };
 
 struct FLuaCameraView
@@ -94,7 +129,10 @@ struct FLuaCameraModifierBinding
 		Lua.new_usertype<FLuaPostProcessView>(
 			"CameraPostProcessView",
 			"GetScalar", &FLuaPostProcessView::GetScalar,
-			"SetScalar", &FLuaPostProcessView::SetScalar);
+			"SetScalar", &FLuaPostProcessView::SetScalar,
+			"AddMaterial", &FLuaPostProcessView::AddMaterial,
+			"SetMaterialScalar", &FLuaPostProcessView::SetMaterialScalar,
+			"GetMaterialScalar", &FLuaPostProcessView::GetMaterialScalar);
 
 		Lua.new_usertype<FLuaCameraView>(
 			"CameraView",
