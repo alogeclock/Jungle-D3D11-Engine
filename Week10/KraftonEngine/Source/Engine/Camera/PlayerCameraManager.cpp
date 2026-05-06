@@ -134,6 +134,7 @@ void APlayerCameraManager::Tick(float DeltaTime)
 {
 	AActor::Tick(DeltaTime);
 	UpdateCamera(DeltaTime);
+	StartLetterBoxing(10.f, 10.f);
 }
 
 // Function : Bind camera manager to controller and initialize view target from pawn
@@ -250,6 +251,12 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime)
 
 	NewPOV.PostPorcessSettings.FadeColor = FadeColor;
 	NewPOV.PostPorcessSettings.FadeAmount = FadeAmount;
+	NewPOV.bConstrainAspectRatio = bEnableLetterBoxing;
+	if (bEnableLetterBoxing)
+	{
+		NewPOV.LetterBoxingAspectW = LetterBoxingAspectW;
+		NewPOV.LetterBoxingAspectH = LetterBoxingAspectH;
+	}
 
 	ViewTarget.POV = NewPOV;
 	CameraCache.TimeStamp += DeltaTime;
@@ -425,4 +432,36 @@ UCameraModifier_CameraShake* APlayerCameraManager::EnsureCameraShakeModifier()
 
 	AddCameraModifier(CameraShakeModifier);
 	return CameraShakeModifier;
+}
+
+void APlayerCameraManager::StartLetterBoxing(float LBAspectW, float LBAspectH) {
+	if (LBAspectW <= 0.0f || LBAspectH <= 0.0f)
+	{
+		return;
+	}
+
+	bEnableLetterBoxing = true;
+	LetterBoxingAspectW = LBAspectW;
+	LetterBoxingAspectH = LBAspectH;
+
+	ViewTarget.POV.bConstrainAspectRatio = true;
+	ViewTarget.POV.LetterBoxingAspectW = LBAspectW;
+	ViewTarget.POV.LetterBoxingAspectH = LBAspectH;
+
+	if (bHasValidCameraCachePOV)
+	{
+		CameraCache.POV.bConstrainAspectRatio = true;
+		CameraCache.POV.LetterBoxingAspectW = LBAspectW;
+		CameraCache.POV.LetterBoxingAspectH = LBAspectH;
+	}
+}
+
+void APlayerCameraManager::EndLetterBoxing() {
+	bEnableLetterBoxing = false;
+	ViewTarget.POV.bConstrainAspectRatio = false;
+
+	if (bHasValidCameraCachePOV)
+	{
+		CameraCache.POV.bConstrainAspectRatio = false;
+	}
 }

@@ -179,6 +179,7 @@ void FEditorRenderPipeline::PrepareViewport(FViewport* VP, UCameraComponent* Cam
 void FEditorRenderPipeline::BuildFrame(FLevelEditorViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
 {
 	Frame.ClearViewportResources();
+	const FMinimalViewInfo* ActivePOV = nullptr;
 	if (World && Camera == World->GetActiveCamera())
 	{
 		if (AGameModeBase* GameMode = World->GetAuthGameMode())
@@ -186,7 +187,8 @@ void FEditorRenderPipeline::BuildFrame(FLevelEditorViewportClient* VC, UCameraCo
 			if (APlayerCameraManager* CameraManager = GameMode->GetPlayerCameraManager();
 				CameraManager && CameraManager->HasValidCameraCachePOV())
 			{
-				Frame.SetCameraInfo(CameraManager->GetCameraCachePOV());
+				ActivePOV = &CameraManager->GetCameraCachePOV();
+				Frame.SetCameraInfo(*ActivePOV);
 			}
 			else
 			{
@@ -229,6 +231,11 @@ void FEditorRenderPipeline::BuildFrame(FLevelEditorViewportClient* VC, UCameraCo
 	Frame.bIsLightView = VC->IsViewingFromLight();
 	Frame.SetRenderOptions(VC->GetRenderOptions());
 	Frame.SetViewportInfo(VP);
+	const FMinimalViewInfo& CameraState = ActivePOV ? *ActivePOV : Camera->GetCameraState();
+	const float AR = CameraState.bConstrainAspectRatio
+		? CameraState.LetterBoxingAspectW / CameraState.LetterBoxingAspectH
+		: CameraState.AspectRatio;
+	Frame.ApplyConstrainedAR(AR);
 	Frame.OcclusionCulling = &GetOcclusionForViewport(VC);
 	Frame.LODContext = World->PrepareLODContext();
 

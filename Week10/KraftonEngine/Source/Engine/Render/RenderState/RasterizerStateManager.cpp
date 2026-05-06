@@ -7,6 +7,7 @@ void FRasterizerStateManager::Create(ID3D11Device* InDevice)
 	D3D11_RASTERIZER_DESC Desc = {};
 	Desc.FillMode = D3D11_FILL_SOLID;
 	Desc.CullMode = D3D11_CULL_BACK;
+	Desc.ScissorEnable = TRUE;
 	InDevice->CreateRasterizerState(&Desc, &BackCull);
 
 	Desc.CullMode = D3D11_CULL_FRONT;

@@ -117,6 +117,8 @@ public:
 	const FMinimalViewInfo& GetCameraCachePOV() const { return CameraCache.POV; }
 	bool HasValidCameraCachePOV() const { return bHasValidCameraCachePOV; }
 
+	void StartLetterBoxing(float LBAspectW, float LBAspectH);
+	void EndLetterBoxing();
 public:
 	FViewTarget ViewTarget;
 	FName CameraStyle;
@@ -127,6 +129,9 @@ public:
 	FVector2 FadeAlpha; // X : start opacity, Y : target opacity
 	float FadeTime = 0.0f;
 	float FadeTimeRemaining = 0.0f;
+	bool bEnableLetterBoxing = false;
+	float LetterBoxingAspectW = 16.0f;
+	float LetterBoxingAspectH = 9.0f;
 
 	FCameraCacheEntry CameraCache;
 	FCameraCacheEntry LastFrameCameraCache;

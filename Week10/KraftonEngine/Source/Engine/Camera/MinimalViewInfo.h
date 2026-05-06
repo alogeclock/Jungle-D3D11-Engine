@@ -50,6 +50,11 @@ struct FMinimalViewInfo
 	float FarZ = 1000.0f;
 	bool bIsOrthogonal = false;
 	float OrthoWidth = 10.0f;
+
+	// Letterboxing
+	float    LetterBoxingAspectW = 16.0f;
+	float	 LetterBoxingAspectH = 9.0f;
+	bool	 bConstrainAspectRatio = false;
 	
 	FPostProcessSettings PostPorcessSettings;
 	float PostProcessBlendWeight = 1.0f;
