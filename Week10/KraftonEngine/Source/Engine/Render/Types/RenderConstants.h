@@ -244,6 +244,14 @@ struct FFXAAConstants
 	float _pad[2];
 };
 
+struct FGammaCorrectionConstants
+{
+	float DisplayGamma = 2.2f;
+	float BlendWeight = 1.0f;
+	uint32 bUseSRGBCurve = 1;
+	float _pad = 0.0f;
+};
+
 // ============================================================
 // 타입별 CB 바인딩 디스크립터 — GPU CB에 업로드할 데이터를 인라인 보관
 // ============================================================

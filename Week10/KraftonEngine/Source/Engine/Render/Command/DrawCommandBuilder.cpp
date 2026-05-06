@@ -70,6 +70,7 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 	OutlineCB.Create(InDevice, sizeof(FOutlinePostProcessConstants));
 	SceneDepthCB.Create(InDevice, sizeof(FSceneDepthPConstants));
 	FXAACB.Create(InDevice, sizeof(FFXAAConstants));
+	GammaCorrectionCB.Create(InDevice, sizeof(FGammaCorrectionConstants));
 }
 
 void FDrawCommandBuilder::Release()
@@ -89,6 +90,7 @@ void FDrawCommandBuilder::Release()
 	OutlineCB.Release();
 	SceneDepthCB.Release();
 	FXAACB.Release();
+	GammaCorrectionCB.Release();
 }
 
 // ============================================================
@@ -665,11 +667,19 @@ void FDrawCommandBuilder::BuildPostProcessCommands(const FFrameContext& Frame, c
 		FShader* GammaShader = FShaderManager::Get().GetOrCreate(EShaderPath::GammaCorrection);
 		if (GammaShader)
 		{
+			const FViewportRenderOptions Opts = Frame.RenderOptions;
+			FGammaCorrectionConstants GammaData = {};
+			GammaData.DisplayGamma = (std::max)(Opts.DisplayGamma, 0.001f);
+			GammaData.BlendWeight = (std::clamp)(Opts.GammaCorrectionBlend, 0.0f, 1.0f);
+			GammaData.bUseSRGBCurve = Opts.bUseSRGBCurve ? 1u : 0u;
+			GammaCorrectionCB.Update(Ctx, &GammaData, sizeof(FGammaCorrectionConstants));
+
 			FDrawCommand& Cmd = DrawCommandList.AddCommand();
 			Cmd.InitFullscreenTriangle(
 				GammaShader,
 				ERenderPass::GammaCorrection,
 				PassRenderStateTable->ToDrawCommandState(ERenderPass::GammaCorrection, ViewMode));
+			Cmd.Bindings.PerShaderCB[0] = &GammaCorrectionCB;
 			Cmd.BuildSortKey(0);
 		}
 	}

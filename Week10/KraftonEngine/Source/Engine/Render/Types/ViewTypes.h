@@ -80,6 +80,11 @@ struct FViewportRenderOptions
 	float EdgeThreshold = 0.125f;
 	float EdgeThresholdMin = 0.0625f;
 
+	// Gamma correction output settings
+	float DisplayGamma = 2.2f;
+	float GammaCorrectionBlend = 1.0f;
+	bool bUseSRGBCurve = true;
+
 	// Light Culling 뷰모드 전용 설정
 	ELightCullingMode LightCullingMode = ELightCullingMode::Cluster;
 	float HeatMapMax = 20.0f;

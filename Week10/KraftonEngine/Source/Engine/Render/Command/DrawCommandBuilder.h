@@ -88,6 +88,7 @@ private:
 	FConstantBuffer OutlineCB;
 	FConstantBuffer SceneDepthCB;
 	FConstantBuffer FXAACB;
+	FConstantBuffer GammaCorrectionCB;
 
 	// D3D 디바이스 캐시 (Create 시 설정, 변하지 않음)
 	ID3D11Device*        CachedDevice  = nullptr;
