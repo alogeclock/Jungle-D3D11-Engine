@@ -12,7 +12,6 @@ class UCameraModifier : public UObject
 public:
 	DECLARE_CLASS(UCameraModifier, UObject)
 	UCameraModifier();
-	~UCameraModifier();
 
 	virtual void AddedToCamera(APlayerCameraManager* Camera);
 
@@ -45,7 +44,7 @@ public:
 	UCameraShakePattern* GetCameraShakePattern() const { return ShakePattern != nullptr ? ShakePattern : nullptr; }
 
 protected:
-	virtual ~UCameraModifier() = default;
+	virtual ~UCameraModifier();
 
 public:
 	// Unreal Engine도 Public에 넣어둠
