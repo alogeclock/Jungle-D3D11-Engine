@@ -75,7 +75,8 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime) {
 		FadeTimeRemaining -= DeltaTime;
 	}
 
-	ViewTarget.POV.PostProcessSettings.FadeColor = FLinearColor(FadeColor.R * FadeAmount, FadeColor.G * FadeAmount, FadeColor.B * FadeAmount, FadeColor.A);
+	ViewTarget.POV.PostProcessSettings.FadeColor = FadeColor;
+	ViewTarget.POV.PostProcessSettings.FadeAmount = FadeAmount;
 }
 
 void APlayerCameraManager::SetOwner(APlayerController* InController) {

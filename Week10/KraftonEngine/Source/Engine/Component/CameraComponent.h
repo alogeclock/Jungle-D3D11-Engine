@@ -10,7 +10,9 @@
 
 struct FPostProcessSettings
 {
+	// Fade
 	FLinearColor FadeColor  = FLinearColor(0, 0, 0, 1);
+	float		 FadeAmount = 0.f;
 };
 
 // Frame snapshot of the current camera state
