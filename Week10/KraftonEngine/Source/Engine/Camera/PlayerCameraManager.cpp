@@ -15,6 +15,7 @@
 #include "Object/ObjectFactory.h"
 
 #include <algorithm>
+#include <cmath>
 
 IMPLEMENT_CLASS(APlayerCameraManager, AActor)
 
@@ -224,13 +225,40 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime)
 	ViewTarget.CheckViewTarget(Owner);
 
 	FMinimalViewInfo NewPOV;
-	if (ViewTarget.Target)
+
+	if (bIsBlendingViewTarget)
 	{
-		ViewTarget.Target->CalcCamera(DeltaTime, NewPOV);
+		FMinimalViewInfo FromPOV = BlendParams.bLockOutgoing
+			? OutgoingViewTarget.POV
+			: CalcViewTargetPOV(OutgoingViewTarget, DeltaTime);
+
+		FMinimalViewInfo ToPOV = CalcViewTargetPOV(PendingViewTarget, DeltaTime);
+
+		const float RawAlpha = BlendTotalTime > 0.0f
+			? 1.0f - (BlendTimeToGo / BlendTotalTime)
+			: 1.0f;
+
+		const float Alpha = ApplyViewTargetBlendFunction(RawAlpha);
+		NewPOV = BlendViewInfo(FromPOV, ToPOV, Alpha);
+
+		BlendTimeToGo -= DeltaTime;
+
+		if (BlendTimeToGo <= 0.0f)
+		{
+			ViewTarget = PendingViewTarget;
+			ViewTarget.POV = ToPOV;
+			NewPOV = ToPOV;
+
+			PendingViewTarget = {};
+			OutgoingViewTarget = {};
+			BlendTimeToGo = 0.0f;
+			BlendTotalTime = 0.0f;
+			bIsBlendingViewTarget = false;
+		}
 	}
 	else
 	{
-		NewPOV = BuildFallbackCameraView(nullptr);
+		NewPOV = CalcViewTargetPOV(ViewTarget, DeltaTime);
 	}
 
 	ApplyCameraModifiers(DeltaTime, NewPOV);
@@ -383,6 +411,50 @@ void APlayerCameraManager::LoadCameraModifierStackAsset(const std::filesystem::p
 	UObjectManager::Get().DestroyObject(LoadedAsset);
 }
 
+void APlayerCameraManager::SetViewTarget(AActor* NewTarget)
+{
+	if (!NewTarget)
+	{
+		return;
+	}
+
+	ViewTarget.SetNewTarget(NewTarget);
+	PendingViewTarget = {};
+	OutgoingViewTarget = {};
+	BlendTimeToGo = 0.0f;
+	BlendTotalTime = 0.0f;
+	bIsBlendingViewTarget = false;
+}
+
+
+void APlayerCameraManager::SetViewTargetWithBlend(AActor* NewTarget, const FViewTargetTransitionParams& Params)
+{
+	if (!NewTarget)
+	{
+		return;
+	}
+
+	if (Params.BlendTime <= 0.0f || !ViewTarget.Target)
+	{
+		SetViewTarget(NewTarget);
+		return;
+	}
+
+	BlendParams = Params;
+	BlendTotalTime = Params.BlendTime;
+	BlendTimeToGo = Params.BlendTime;
+	bIsBlendingViewTarget = true;
+
+	OutgoingViewTarget = ViewTarget;
+	if (BlendParams.bLockOutgoing)
+	{
+		OutgoingViewTarget.POV = CameraCache.POV;
+	}
+
+	PendingViewTarget.SetNewTarget(NewTarget);
+}
+
+
 UCameraComponent* APlayerCameraManager::FindCameraComponent(AActor* Target)
 {
 	if (!Target)
@@ -425,4 +497,53 @@ UCameraModifier_CameraShake* APlayerCameraManager::EnsureCameraShakeModifier()
 
 	AddCameraModifier(CameraShakeModifier);
 	return CameraShakeModifier;
+}
+
+FMinimalViewInfo APlayerCameraManager::CalcViewTargetPOV(FViewTarget& InViewTarget, float DeltaTime)
+{
+	if (InViewTarget.Target)
+	{
+		InViewTarget.Target->CalcCamera(DeltaTime, InViewTarget.POV);
+		return InViewTarget.POV;
+	}
+
+	InViewTarget.POV = BuildFallbackCameraView(nullptr);
+	return InViewTarget.POV;
+}
+
+
+FMinimalViewInfo APlayerCameraManager::BlendViewInfo(const FMinimalViewInfo& FromPOV, const FMinimalViewInfo& ToPOV, float Alpha) const
+{
+	FMinimalViewInfo Result = ToPOV;
+
+	Result.Location = FromPOV.Location + (ToPOV.Location - FromPOV.Location) * Alpha;
+	Result.Rotation.Pitch = FromPOV.Rotation.Pitch + (ToPOV.Rotation.Pitch - FromPOV.Rotation.Pitch) * Alpha;
+	Result.Rotation.Yaw = FromPOV.Rotation.Yaw + (ToPOV.Rotation.Yaw - FromPOV.Rotation.Yaw) * Alpha;
+	Result.Rotation.Roll = FromPOV.Rotation.Roll + (ToPOV.Rotation.Roll - FromPOV.Rotation.Roll) * Alpha;
+	Result.FOV = FromPOV.FOV + (ToPOV.FOV - FromPOV.FOV) * Alpha;
+	Result.OrthoWidth = FromPOV.OrthoWidth + (ToPOV.OrthoWidth - FromPOV.OrthoWidth) * Alpha;
+	Result.PostProcessBlendWeight =
+		FromPOV.PostProcessBlendWeight + (ToPOV.PostProcessBlendWeight - FromPOV.PostProcessBlendWeight) * Alpha;
+
+	return Result;
+}
+
+float APlayerCameraManager::ApplyViewTargetBlendFunction(float Alpha) const
+{
+	Alpha = (std::clamp)(Alpha, 0.0f, 1.0f);
+
+	switch (BlendParams.BlendFunction)
+	{
+	case EViewTargetBlendFunction::EaseIn:
+		return std::pow(Alpha, BlendParams.BlendExp);
+	case EViewTargetBlendFunction::EaseOut:
+		return 1.0f - std::pow(1.0f - Alpha, BlendParams.BlendExp);
+	case EViewTargetBlendFunction::EaseInOut:
+		return Alpha < 0.5f
+			? 0.5f * std::pow(Alpha * 2.0f, BlendParams.BlendExp)
+			: 1.0f - 0.5f * std::pow((1.0f - Alpha) * 2.0f, BlendParams.BlendExp);
+	case EViewTargetBlendFunction::Linear:
+	default:
+		return Alpha;
+	}
 }

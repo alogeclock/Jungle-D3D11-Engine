@@ -87,6 +87,7 @@ namespace EShaderPath
 	inline constexpr const char* ShadowDepth = "Shaders/Lighting/ShadowDepth.hlsl";
 	inline constexpr const char* VSMBlur = "Shaders/Lighting/VSMBlur.hlsl";
 	inline constexpr const char* ShadowMapVis = "Shaders/PostProcess/ShadowMapVis.hlsl";
+	inline constexpr const char* GammaCorrection = "Shaders/PostProcess/GammaCorrection.hlsl";
 }
 
 namespace EUberLitDefines

@@ -660,6 +660,20 @@ void FDrawCommandBuilder::BuildPostProcessCommands(const FFrameContext& Frame, c
 			Cmd.BuildSortKey(0);
 		}
 	}
+	if (Frame.RenderOptions.ShowFlags.bGammaCorrection)
+	{
+		FShader* GammaShader = FShaderManager::Get().GetOrCreate(EShaderPath::GammaCorrection);
+		if (GammaShader)
+		{
+			FDrawCommand& Cmd = DrawCommandList.AddCommand();
+			Cmd.InitFullscreenTriangle(
+				GammaShader,
+				ERenderPass::GammaCorrection,
+				PassRenderStateTable->ToDrawCommandState(ERenderPass::GammaCorrection, ViewMode));
+			Cmd.BuildSortKey(0);
+		}
+	}
+
 }
 
 void FDrawCommandBuilder::BuildUICommands(EViewMode ViewMode)

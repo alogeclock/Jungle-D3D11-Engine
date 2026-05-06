@@ -32,11 +32,28 @@ public:
 	FMinimalViewInfo POV;
 };
 
+enum class EViewTargetBlendFunction
+{
+	Linear,
+	EaseIn,
+	EaseOut,
+	EaseInOut,
+};
+
+struct FViewTargetTransitionParams
+{
+	float BlendTime = 0.f;
+	EViewTargetBlendFunction BlendFunction = EViewTargetBlendFunction::Linear;
+	float BlendExp = 2.0f;
+	bool bLockOutgoing = false;
+};
+
 struct FCameraCacheEntry
 {
-	float TimeStamp = 0.0f;
+	float TimeStamp = 0.f;
 	FMinimalViewInfo POV;
 };
+
 
 class APlayerCameraManager : public AActor
 {
@@ -117,6 +134,9 @@ public:
 	const FMinimalViewInfo& GetCameraCachePOV() const { return CameraCache.POV; }
 	bool HasValidCameraCachePOV() const { return bHasValidCameraCachePOV; }
 
+
+	void SetViewTarget(AActor* NewTarget);
+	void SetViewTargetWithBlend(AActor* NewTarget, const FViewTargetTransitionParams& Params);
 public:
 	FViewTarget ViewTarget;
 	FName CameraStyle;
@@ -130,6 +150,14 @@ public:
 
 	FCameraCacheEntry CameraCache;
 	FCameraCacheEntry LastFrameCameraCache;
+
+	FViewTarget PendingViewTarget;
+	FViewTarget OutgoingViewTarget;
+
+	FViewTargetTransitionParams BlendParams;
+	float BlendTimeToGo = 0.0f;
+	float BlendTotalTime = 0.0f;
+	bool bIsBlendingViewTarget = false;
 
 private:
 	// Function : Find camera component on target actor
@@ -146,6 +174,12 @@ private:
 	// input : none
 	// CameraShakeModifier : single modifier that owns active camera shake instances
 	UCameraModifier_CameraShake* EnsureCameraShakeModifier();
+
+
+	FMinimalViewInfo CalcViewTargetPOV(FViewTarget& InViewTarget, float DeltaTime);
+	FMinimalViewInfo BlendViewInfo(const FMinimalViewInfo& FromPOV, const FMinimalViewInfo& ToPOV, float Alpha) const;
+	float ApplyViewTargetBlendFunction(float Alpha) const;
+
 
 private:
 	APlayerController* Owner = nullptr;
