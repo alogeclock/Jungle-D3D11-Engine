@@ -2,7 +2,9 @@
 #include "GameFramework/AActor.h"
 #include "CameraModifier.h"
 #include "Core/EngineTypes.h"
+#include "Core/CollisionEventTypes.h"  
 
+class USciptComponent;
 class APawnActor;
 class APlayerController;
 
@@ -41,7 +43,6 @@ public:
 
 	// 카메라 모디파이어 적용 (매 틱 호출됨)
 	void ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV);
-
 
 	//void StartCameraShake();
 	//void EndCameraShake();

@@ -90,7 +90,7 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, UCameraComponen
 			continue;
 		}
 
-		const bool bStopProcessing = CameraModifier->ModifyCamera(DeltaTime, *InOutPOV);
+		const bool bStopProcessing = CameraModifier->ModifyCamera(DeltaTime, InOutPOV);
 		if (bStopProcessing)
 		{
 			break;
