@@ -146,6 +146,7 @@ void APlayerCameraManager::StartCameraFade(float FromAlpha, float ToAlpha, float
 }
 
 void APlayerCameraManager::EndCameraFade() {
+	// 호출 시 Fade 즉시 제거 (보간하지 않음)
 	bEnableFading	  = false;
 	FadeAmount		  = 0.0f;
 	FadeTimeRemaining = 0.0f;
