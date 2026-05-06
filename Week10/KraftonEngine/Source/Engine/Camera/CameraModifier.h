@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Component/CameraComponent.h"
 #include "Core/CoreTypes.h"
+#include "Math/CurveFloat.h"
 #include "Object/Object.h"
 
 class APlayerCameraManager;
@@ -24,7 +25,7 @@ public:
 	virtual bool ModifyCamera(float DeltaTime, UCameraComponent& InOutPOV)  = 0;
 
 
-	virtual void UpdateAlpha(float DeltaTime)								= 0;
+	virtual void UpdateAlpha(float DeltaTime);
 
 	virtual bool IsDisabled() const { return bDisabled; }
 	virtual void EnableModifier()	{ bDisabled = true; }

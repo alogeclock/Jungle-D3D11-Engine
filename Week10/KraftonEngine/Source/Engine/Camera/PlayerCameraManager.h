@@ -26,8 +26,18 @@ class APlayerCameraManager : public AActor
 {
 public:
 	DECLARE_CLASS(APlayerCameraManager, AActor)
+
+	// PlayerManager Always Iterates through the modifier list.
+	void Tick(float DeltaTime) override;
+
 	void AddCameraModifier(UCameraModifier* InModifier);
 	void ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV);
+
+	//void StartCameraShake();
+	//void EndCameraShake();
+
+	//void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color);
+	//void EndCameraFade();
 
 public:
 	FViewTarget		ViewTarget;

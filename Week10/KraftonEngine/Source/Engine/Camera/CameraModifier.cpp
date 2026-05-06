@@ -16,3 +16,9 @@ void UCameraModifier::DisableModifier(bool bImmediate) {
 	if (bImmediate) bDisabled = true; return;
 	bPendingDisable = true;
 }
+
+void UCameraModifier::UpdateAlpha(float DeltaTime) {
+	Alpha += DeltaTime;
+	if (Alpha >= 1.f)
+		Alpha = 0.f;
+}
