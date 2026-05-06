@@ -20,7 +20,7 @@ APawnActor* FViewTarget::GetTargetPawn() const
 
 bool FViewTarget::Equal(const FViewTarget& OtherTarget) const
 {
-	if (!POV || !OtherTarget.POV)
+	if (POV && OtherTarget.POV)
 	{
 		return POV == OtherTarget.POV;
 	}
@@ -58,7 +58,7 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime) {
 
 	// Fade
 	if (bEnableFading) {
-		
+		FadeAmount = FadeAlpha.X + (FadeAlpha.Y - FadeAlpha.X) * (FadeTime - FadeTimeRemaining) / FadeTime;
 	}
 }
 
@@ -136,6 +136,7 @@ void APlayerCameraManager::EndCameraShake() {
 
 void APlayerCameraManager::StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color) {
 	// 호출 시 Fade 정보들을 즉시 매개변수값으로 초기화
+	FadeColor		  = Color;
 	FadeAmount		  = FromAlpha;
 	FadeTimeRemaining = Duration;
 	bEnableFading	  = true;

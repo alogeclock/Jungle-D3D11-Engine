@@ -63,8 +63,9 @@ public:
 	bool			bEnableFading = false;
 	FLinearColor	FadeColor	  = FLinearColor(0, 0, 0, 1); // Black
 	float			FadeAmount    = 0.f;
-	FVector2		FadeAlpha;  
-	float			FadeTime;
+	FVector2		FadeAlpha;		// FadeAlpha.X = Start Alpha = Initial Opacity
+									// FadeAlpha.Y = End Alpha	 = Target Opacity
+	float			FadeTime;		
 	float			FadeTimeRemaining = 0.f;
 
 private:
