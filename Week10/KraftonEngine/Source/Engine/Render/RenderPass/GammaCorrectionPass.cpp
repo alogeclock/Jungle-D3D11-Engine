@@ -5,6 +5,7 @@
 #include "Render/Types/FrameContext.h"
 #include "Render/Types/RenderConstants.h"
 #include "Render/Command/DrawCommandList.h"
+#include "Render/Resource/RenderResources.h"
 REGISTER_RENDER_PASS(FGammaCorrectionPass)
 
 FGammaCorrectionPass::FGammaCorrectionPass()
@@ -30,6 +31,7 @@ bool FGammaCorrectionPass::BeginPass(const FPassContext& Ctx)
 	ID3D11DeviceContext* DC = Ctx.Device.GetDeviceContext();
 	FStateCache& Cache = Ctx.Cache;
 
+	Ctx.Resources.UnbindSystemTextures(Ctx.Device);
 	DC->CopyResource(Frame.SceneColorCopyTexture, Frame.ViewportRenderTexture);
 	DC->OMSetRenderTargets(1, &Cache.RTV, Cache.DSV);
 
