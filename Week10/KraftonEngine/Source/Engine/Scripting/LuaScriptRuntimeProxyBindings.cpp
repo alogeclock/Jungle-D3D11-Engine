@@ -1,5 +1,7 @@
 ﻿#include "Scripting/LuaScriptRuntime.h"
+#include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/World.h"
 #include "Math/Rotator.h"
 
 #ifdef check
@@ -218,7 +220,14 @@ void FLuaScriptRuntime::BindActorProxyType()
 		"SetDamage", &FLuaActorProxy::SetDamage,
 		"PlayCameraModifier", [](FLuaActorProxy& ActorProxy, const FString& ScriptPath, sol::optional<sol::table> ParamsTable)
 		{
-			APlayerController* PlayerController = Cast<APlayerController>(ActorProxy.GetActor());
+			AActor* Actor = ActorProxy.GetActor();
+			APlayerController* PlayerController = Cast<APlayerController>(Actor);
+			if (!PlayerController && Actor && Actor->GetWorld())
+			{
+				AGameModeBase* GameMode = Actor->GetWorld()->GetAuthGameMode();
+				PlayerController = GameMode ? GameMode->GetSpawnedController() : nullptr;
+			}
+
 			if (!PlayerController)
 			{
 				return false;
