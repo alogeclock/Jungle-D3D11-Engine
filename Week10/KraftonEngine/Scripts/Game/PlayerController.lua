@@ -710,7 +710,7 @@ function BeginPlay()
 
     update_ground_state(0.0, true)
 
-    -- LetterBox
+    letterBox.End(obj)
 end
 
 -- 매 프레임 입력, 레인 이동, 점프/슬라이드, 중력, 점수 갱신을 순서대로 처리합니다.
@@ -812,8 +812,6 @@ function Tick(dt)
     end
 
     GameManager.Tick(dt, actual_moved_distance)
-    -- LetterBox 처리
-    letterBox.Start(obj, 10, 10);
 end
 
 function EndPlay()
