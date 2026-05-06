@@ -20,7 +20,11 @@ APawnActor* FViewTarget::GetTargetPawn() const
 
 bool FViewTarget::Equal(const FViewTarget& OtherTarget) const
 {
-	return POV->GetUUID() == OtherTarget.POV->GetUUID();
+	if (!POV || !OtherTarget.POV)
+	{
+		return POV == OtherTarget.POV;
+	}
+	return false;
 }
 
 void FViewTarget::CheckViewTarget(APlayerController* OwningController)
@@ -28,18 +32,68 @@ void FViewTarget::CheckViewTarget(APlayerController* OwningController)
 
 }
 
-void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier) {
+void APlayerCameraManager::BeginPlay()
+{
+	AActor::BeginPlay();
+}
+
+void APlayerCameraManager::EndPlay()
+{
+	ModifierList.clear();
+	AActor::EndPlay();
+}
+
+void APlayerCameraManager::Tick(float DeltaTime)
+{
+	AActor::Tick(DeltaTime);
+	ApplyCameraModifiers(DeltaTime, ViewTarget.POV);
+}
+
+void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier)
+{
 	if (!InModifier) return;
+
+	for (UCameraModifier* ExistingModifier : ModifierList)
+	{
+		if (ExistingModifier == InModifier)
+		{
+			InModifier->EnableModifier();
+			return;
+		}
+	}
+
+	InModifier->AddedToCamera(this);
+	InModifier->EnableModifier();
 	ModifierList.push_back(InModifier);
 	std::sort(ModifierList.begin(), ModifierList.end(), [](const UCameraModifier* A, const UCameraModifier* B) {
-		return A->Priority >= B->Priority;	
+		return A->Priority > B->Priority;
 	});
 }
 
-void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV) {
-	for (auto* CameraModifier : ModifierList){
-		if (CameraModifier) {
-			CameraModifier->ModifyCamera(DeltaTime, *InOutPOV);
+void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, UCameraComponent* InOutPOV)
+{
+	if (!InOutPOV)
+	{
+		return;
+	}
+
+	for (UCameraModifier* CameraModifier : ModifierList)
+	{
+		if (!CameraModifier || CameraModifier->IsDisabled())
+		{
+			continue;
+		}
+
+		CameraModifier->UpdateAlpha(DeltaTime);
+		if (CameraModifier->IsDisabled())
+		{
+			continue;
+		}
+
+		const bool bStopProcessing = CameraModifier->ModifyCamera(DeltaTime, *InOutPOV);
+		if (bStopProcessing)
+		{
+			break;
 		}
 	}
 }

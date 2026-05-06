@@ -28,19 +28,26 @@ public:
 	virtual void UpdateAlpha(float DeltaTime);
 
 	virtual bool IsDisabled() const { return bDisabled; }
-	virtual void EnableModifier()	{ bDisabled = true; }
-	virtual void ToggleModifier()	{ bDisabled = ~bDisabled; }
+	virtual void EnableModifier();
+	virtual void ToggleModifier();
 	virtual void DisableModifier(bool bImmediate = false);
 
 	UCurveFloat* GetCurve() const { return CameraCurve != nullptr ? CameraCurve : nullptr; }
-	virtual void SetCurve(UCurveFloat* InCurve) { if (InCurve) CameraCurve = InCurve; }
+	virtual void SetCurve(UCurveFloat* InCurve) { CameraCurve = InCurve; }
+	float GetAlpha() const { return Alpha; }
+	float GetCurveAlpha() const;
+	bool IsPendingDisable() const { return bPendingDisable != 0; }
+	void SetAlphaInTime(float InAlphaInTime) { AlphaInTime = InAlphaInTime > 0.0f ? InAlphaInTime : 0.0f; }
+	void SetAlphaOutTime(float InAlphaOutTime) { AlphaOutTime = InAlphaOutTime > 0.0f ? InAlphaOutTime : 0.0f; }
+	float GetAlphaInTime() const { return AlphaInTime; }
+	float GetAlphaOutTime() const { return AlphaOutTime; }
 
 protected:
 	virtual ~UCameraModifier() = default;
 
 public:
 	// Unreal Engine도 Public에 넣어둠
-	uint8 Priority;
+	uint8 Priority = 0;
 
 protected:
 	APlayerCameraManager* CameraOwner = nullptr;
