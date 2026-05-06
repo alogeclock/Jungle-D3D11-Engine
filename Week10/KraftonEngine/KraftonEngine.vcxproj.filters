@@ -1053,6 +1053,7 @@
     <ClCompile Include="Source\Engine\Camera\CameraModifier_CameraShake.cpp">
       <Filter>Source\Engine\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\GamePlayStatics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -2291,6 +2292,7 @@
     <ClInclude Include="Source\Engine\Camera\CameraModifier_CameraShake.h">
       <Filter>Source\Engine\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\GamePlayStatics.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

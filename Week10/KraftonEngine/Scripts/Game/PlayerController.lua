@@ -581,11 +581,19 @@ local function has_obstacle_tag(actor)
     return false
 end
 
+function Slomo_Sample()
+    set_global_time_dilation(0.0)
+    wait_real(0.1)
+    set_global_time_dilation(1.0)
+end
+
 local function handle_obstacle_collision(event_name, other_actor)
+    -- 플레이어가 사망했거나 게임이 종료된 상태라면 스킵
     if PlayerStatus.IsDead() or GameManager.IsGameOver() then
         return
     end
 
+    -- actor가 유효하지 않다면 바로 스킵
     if not is_valid_actor(other_actor) then
         return
     end
@@ -603,6 +611,8 @@ local function handle_obstacle_collision(event_name, other_actor)
         local obstacle_damage = other_actor:GetDamage()
         if obstacle_damage and obstacle_damage > 0 then
             damage = obstacle_damage
+            log("Start Coroutine")
+            StartCoroutine("Slomo_Sample")
         end
     end
     log("[PlayerController] Obstacle collision damage=" .. tostring(damage))

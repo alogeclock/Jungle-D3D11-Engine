@@ -17,6 +17,7 @@
 #include "SimpleJSON/json.hpp"
 #include "Scripting/ScriptProperty.h"
 #include "Engine/Viewport/GameViewportClient.h"
+#include "GameFramework/GamePlayStatics.h"
 
 // Sol.hpp에 있는 Check 매크로 겹침 방지 목적 제거
 #pragma region SolInclude
@@ -52,6 +53,7 @@
 #include <functional>
 #include <iterator>
 #include "Input/InputAction.h"
+#include "sol/types.hpp"
 
 namespace
 {
@@ -68,6 +70,7 @@ struct FLuaScriptInstance::FInstanceImpl
 	{
 		None,
 		Time,
+		RealTime,
 		Frames,
 		MoveDone,
 		KeyDown,
@@ -229,6 +232,13 @@ struct FLuaScriptInstance::FInstanceImpl
 			return true;
 		}
 
+		if (Type == "real_time")
+		{
+			Entry.Wait.Kind = ELuaWaitKind::RealTime;
+			Entry.Wait.TimeRemaining = (std::max)(0.f, Command["seconds"].get_or(0.0f));
+			return true;
+		}
+
 		if (Type == "frames")
 		{
 			Entry.Wait.Kind = ELuaWaitKind::Frames;
@@ -260,7 +270,7 @@ struct FLuaScriptInstance::FInstanceImpl
 		return false;
 	}
 
-	bool ShouldResumeCoroutine(FRunningCoroutine& Entry, float DeltaTime)
+	bool ShouldResumeCoroutine(FRunningCoroutine& Entry, float DeltaTime, float RawDeltaTime)
 	{
 		// WaitCondition마다 resume 가능 조건이 다르므로 한 곳에서 판단한다.
 		// 이 함수가 false를 반환하면 해당 coroutine만 대기하고 게임 전체 Tick은 계속 진행된다.
@@ -268,16 +278,25 @@ struct FLuaScriptInstance::FInstanceImpl
 		{
 		case ELuaWaitKind::None:
 			return true;
+
 		case ELuaWaitKind::Time:
 			Entry.Wait.TimeRemaining -= DeltaTime;
 			return Entry.Wait.TimeRemaining <= 0.0f;
+
+		case ELuaWaitKind::RealTime:
+			Entry.Wait.TimeRemaining -= RawDeltaTime;
+			return Entry.Wait.TimeRemaining <= 0.0f;
+
 		case ELuaWaitKind::Frames:
 			--Entry.Wait.FramesRemaining;
 			return Entry.Wait.FramesRemaining <= 0;
+
 		case ELuaWaitKind::MoveDone:
 			return OwnerProxy.IsMoveDone();
+
 		case ELuaWaitKind::Signal:
 			return PendingSignals.find(Entry.Wait.Name) != PendingSignals.end();
+
 		default:
 			return true;
 		}
@@ -1109,6 +1128,17 @@ void FLuaScriptInstance::TickCoroutines(float DeltaTime)
 		return;
 	}
 
+	// Raw DeltaTime 가져오기
+	float RawDeltaTime = DeltaTime;
+
+	if (AActor* OwnerActor = GetOwnerActor())
+	{
+		if (UWorld* World = OwnerActor->GetWorld())
+		{
+			RawDeltaTime = World->GetRawDeltaTime();
+		}
+	}
+
 	Impl->LastDeltaTime = DeltaTime;
 	Impl->TickLuaProxyTasks(DeltaTime);
 	Impl->bTickingCoroutines = true;
@@ -1117,7 +1147,8 @@ void FLuaScriptInstance::TickCoroutines(float DeltaTime)
 	for (size_t Index = 0; Index < Impl->Coroutines.size();)
 	{
 		FInstanceImpl::FRunningCoroutine& CoroutineEntry = Impl->Coroutines[Index];
-		if (!Impl->ShouldResumeCoroutine(CoroutineEntry, DeltaTime))
+
+		if (!Impl->ShouldResumeCoroutine(CoroutineEntry, DeltaTime, RawDeltaTime))
 		{
 			++Index;
 			continue;
@@ -1230,12 +1261,18 @@ void FLuaScriptInstance::BindCoroutineFunctions()
 		return StartCoroutine(FunctionName);
 	});
 
+	Impl->Env.set_function("start_coroutine", [this](const FString& FunctionName)
+	{
+		return StartCoroutine(FunctionName);
+	});
+
 	// wait 함수들은 실제로 C++ thread를 sleep하지 않는다.
-	// Lua coroutine에서 table command를 yield하고, C++ Scheduler가 그 command를 WaitCondition으로 바꿔 다음 resume 시점을 결정한다.
+	// Lua coroutine에서 table command를 yield하고, 
+	// C++ Scheduler가 그 command를 WaitCondition으로 바꿔 다음 resume 시점을 결정한다.
+	// table 자체는 Lua VM에 생성하고 environment를 통해 yield한다.
+	// sol::environment는 lookup 범위일 뿐 table factory가 아니므로 Runtime의 state를 사용한다.
 	auto MakeWaitCommand = [this](const FString& Type)
 	{
-		// table 자체는 Lua VM에 생성하고 environment를 통해 yield한다.
-		// sol::environment는 lookup 범위일 뿐 table factory가 아니므로 Runtime의 state를 사용한다.
 		sol::table Command = FLuaScriptRuntime::Get().GetLuaState().create_table();
 		Command["type"] = Type;
 		return Command;
@@ -1253,6 +1290,22 @@ void FLuaScriptInstance::BindCoroutineFunctions()
 		sol::table Command = MakeWaitCommand("time");
 		Command["seconds"] = (std::max)(0.0f, Seconds);
 		return Command;
+	}));
+
+	Impl->Env.set_function("wait_real", sol::yielding([MakeWaitCommand](float Seconds)
+	{
+		sol::table Command = MakeWaitCommand("real_time");
+		Command["seconds"] = (std::max)(0.0f, Seconds);
+		return Command;
+		
+	}));
+
+	Impl->Env.set_function("WaitReal", sol::yielding([MakeWaitCommand](float Seconds)
+	{
+		sol::table Command = MakeWaitCommand("real_time");
+		Command["seconds"] = (std::max)(0.0f, Seconds);
+		return Command;
+
 	}));
 
 	Impl->Env.set_function("wait_frames", sol::yielding([MakeWaitCommand](int Frames)
@@ -1700,11 +1753,44 @@ void FLuaScriptInstance::BindWorldFunctions()
 		return GEngine ? GEngine->RequestSceneLoad(SceneReference) : false;
 	});
 
+	Impl->Env.set_function("set_global_time_dilation", [](const float TimeDilation)
+	{
+		if (!GEngine) return false;
+
+		UWorld* World = GEngine->GetWorld();
+		if (!World) return false;
+		
+		World->SetGlobalTimeDilation(TimeDilation);
+		return true;
+	});
+
+	Impl->Env.set_function("get_global_time_dilation", []()
+	{
+		if (!GEngine)
+		{
+			return 1.0f;
+		}
+
+		UWorld* World = GEngine->GetWorld();
+		return World ? World->GetGlobalTimeDilation() : 1.0f;
+	});
+
+	Impl->Env.set_function("raw_delta_time", []()
+	{
+		if (!GEngine)
+		{
+			return 0.0f;
+		}
+
+		UWorld* World = GEngine->GetWorld();
+		return World ? World->GetRawDeltaTime() : 0.0f;
+	});
+
 	// Global에 load Scene Binding
 	FLuaScriptRuntime::Get().GetLuaState().set_function("load_scene", [](const FString& SceneReference)
 	{
 		return GEngine ? GEngine->RequestSceneLoad(SceneReference) : false;
-	});
+	});	
 }
 
 void FLuaScriptInstance::BindDataFunctions()

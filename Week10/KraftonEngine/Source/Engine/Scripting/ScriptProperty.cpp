@@ -165,6 +165,11 @@ namespace
 			function start_coroutine() return false end
 			function wait() return nil end
 			function wait_frames() return nil end
+			function wait_real() return nil end
+			function WaitReal() return nil end
+			function raw_delta_time() return 0 end
+			function set_global_time_dilation() return true end
+			function get_global_time_dilation() return 1 end
 			)";
 
 		sol::protected_function_result StubResult = Lua.safe_script(
