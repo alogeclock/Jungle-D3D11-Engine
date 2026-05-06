@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
+#include "Camera/MinimalViewInfo.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
 #include "Render/Types/ViewTypes.h"
@@ -30,6 +31,7 @@ struct FFrameContext
 	FVector CameraUp;
 	float NearClip = 0.1f;
 	float FarClip = 1000.0f;
+	FPostProcessSettings PostProcessSettings;
 
 	bool  bIsOrtho     = false;
 	bool  bIsLightView = false;
@@ -88,6 +90,7 @@ struct FFrameContext
 
 	// Batch setters - populate multiple fields at once
 	void SetCameraInfo(const UCameraComponent* Camera);
+	void SetCameraInfo(const FMinimalViewInfo& POV, float AspectRatio);
 	void SetViewportInfo(const FViewport* VP);
 
 	void SetViewportSize(float InWidth, float InHeight)

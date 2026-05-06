@@ -111,6 +111,27 @@ local function start_hit_stop_then_slomo(hit_stop_duration, slomo_scale, slomo_d
     end
 end
 
+-- Function : Play hit camera feedback through PlayerCameraManager modifier chain
+-- input : none
+-- HitCameraShake : Lua camera modifier that edits final POV location and rotation
+-- DamagePostProcess : Lua camera modifier that writes post process scalar parameters
+local function play_hit_camera_feedback()
+    if not obj or not obj.PlayCameraModifier then
+        warn("[PlayerController] PlayCameraModifier missing. Hit camera feedback skipped.")
+        return
+    end
+
+    obj:PlayCameraModifier("Game/Camera/HitCameraShake", {
+        intensity = hit_camera_shake_intensity,
+        duration = hit_camera_shake_duration,
+    })
+
+    obj:PlayCameraModifier("Game/Camera/DamagePostProcess", {
+        intensity = 2.0,
+        duration = 0.7,
+    })
+end
+
 -- 가장 왼쪽 Lane 번호
 local function lane_min()
     return -math.floor(PlayerConfig.lane_count / 2)
@@ -549,9 +570,8 @@ local function handle_obstacle_collision(event_name, other_actor)
         end
     end
     log("[PlayerController] Obstacle collision damage=" .. tostring(damage))
-    if PlayerStatus.DamageStability(damage) and Engine.IsValidObject(camera) then
-        camera:StartCameraShake(hit_camera_shake_intensity, hit_camera_shake_duration)
-        camera:AddHitEffect(2.0, 0.7)
+    if PlayerStatus.DamageStability(damage) then
+        play_hit_camera_feedback()
     end
 end
 

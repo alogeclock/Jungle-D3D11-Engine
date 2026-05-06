@@ -2,7 +2,9 @@
 
 #include "Renderer.h"
 #include "Engine/Runtime/Engine.h"
+#include "Engine/Camera/PlayerCameraManager.h"
 #include "Component/CameraComponent.h"
+#include "GameFramework/GameModeBase.h"
 #include "GameFramework/World.h"
 #include "Viewport/Viewport.h"
 #include "Viewport/GameViewportClient.h"
@@ -16,6 +18,10 @@ FDefaultRenderPipeline::~FDefaultRenderPipeline()
 {
 }
 
+// Function : Execute default render pipeline for current frame
+// input : DeltaTime, Renderer
+// DeltaTime : frame delta time
+// Renderer : renderer that consumes final frame context and scene draw commands
 void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 {
 	Renderer.BeginFrame();
@@ -62,8 +68,21 @@ void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 		const float ClearColor[4] = { 0.10f, 0.10f, 0.12f, 1.0f };
 		VP->BeginRender(Ctx, ClearColor);
 
-		Frame.SetCameraInfo(Camera);
 		Frame.SetViewportInfo(VP);
+
+		AGameModeBase* GameMode = World->GetAuthGameMode();
+		APlayerCameraManager* CameraManager = GameMode ? GameMode->GetPlayerCameraManager() : nullptr;
+		if (CameraManager && CameraManager->CameraCache.TimeStamp > 0.0f)
+		{
+			const float AspectRatio = VP->GetHeight() > 0
+				? static_cast<float>(VP->GetWidth()) / static_cast<float>(VP->GetHeight())
+				: 16.0f / 9.0f;
+			Frame.SetCameraInfo(CameraManager->CameraCache.POV, AspectRatio);
+		}
+		else
+		{
+			Frame.SetCameraInfo(Camera);
+		}
 
 		FViewportRenderOptions Opts;
 		Opts.ViewMode = EViewMode::Lit_Phong;

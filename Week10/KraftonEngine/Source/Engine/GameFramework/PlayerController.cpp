@@ -69,6 +69,9 @@ void APlayerController::UnPossess()
 	PossessedPawn = nullptr;
 }
 
+// Function : Assign PlayerCameraManager to this controller
+// input : InCameraManager
+// InCameraManager : camera manager responsible for final player camera POV
 void APlayerController::AcquirePlayerCameraManager(APlayerCameraManager* InCameraManager)
 {
 	PlayerCameraManager = InCameraManager;
@@ -78,6 +81,10 @@ void APlayerController::AcquirePlayerCameraManager(APlayerCameraManager* InCamer
 	}
 }
 
+// Function : Request camera modifier playback on the owned PlayerCameraManager
+// input : ScriptPath, Params
+// ScriptPath : Lua modifier script path under Scripts
+// Params : numeric parameters passed to Lua modifier Begin(params)
 void APlayerController::PlayCameraModifier(const FString& ScriptPath, const TMap<FString, float>& Params)
 {
 	if (PlayerCameraManager)

@@ -60,6 +60,9 @@ void APlayerCameraManager::Tick(float DeltaTime)
 	UpdateCamera(DeltaTime);
 }
 
+// Function : Add camera modifier to manager and sort by priority
+// input : InModifier
+// InModifier : modifier instance that will edit final camera POV
 void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier)
 {
 	if (!InModifier)
@@ -82,6 +85,10 @@ void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier)
 	SortModifiersByPriority();
 }
 
+// Function : Create and play a Lua camera modifier through PlayerCameraManager
+// input : ScriptPath, Params
+// ScriptPath : Lua modifier script path under Scripts
+// Params : numeric parameters passed to Lua modifier Begin(params)
 void APlayerCameraManager::PlayCameraModifier(const FString& ScriptPath, const TMap<FString, float>& Params)
 {
 	ULuaCameraModifier* Modifier = UObjectManager::Get().CreateObject<ULuaCameraModifier>(this);
@@ -99,6 +106,10 @@ void APlayerCameraManager::PlayCameraModifier(const FString& ScriptPath, const T
 	AddCameraModifier(Modifier);
 }
 
+// Function : Apply active camera modifiers to the current POV
+// input : DeltaTime, InOutPOV
+// DeltaTime : frame delta time
+// InOutPOV : camera POV modified by active modifiers in priority order
 void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV)
 {
 	RemoveFinishedModifiers();
@@ -126,6 +137,9 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInf
 	RemoveFinishedModifiers();
 }
 
+// Function : Update view target POV and camera cache for this frame
+// input : DeltaTime
+// DeltaTime : frame delta time used by CalcCamera and modifiers
 void APlayerCameraManager::UpdateCamera(float DeltaTime)
 {
 	LastFrameCameraCache = CameraCache;
@@ -149,6 +163,9 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime)
 	CameraCache.POV = NewPOV;
 }
 
+// Function : Sort active camera modifiers by priority
+// input : none
+// Priority : modifier with higher priority is processed first
 void APlayerCameraManager::SortModifiersByPriority()
 {
 	std::sort(ModifierList.begin(), ModifierList.end(),
@@ -166,6 +183,9 @@ void APlayerCameraManager::SortModifiersByPriority()
 		});
 }
 
+// Function : Remove modifiers that finished or became invalid
+// input : none
+// ModifierList : active modifier list owned by PlayerCameraManager
 void APlayerCameraManager::RemoveFinishedModifiers()
 {
 	ModifierList.erase(
