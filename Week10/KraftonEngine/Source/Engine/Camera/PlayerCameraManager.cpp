@@ -1,4 +1,4 @@
-#include "PlayerCameraManager.h"
+﻿#include "PlayerCameraManager.h"
 
 #include "Camera/CameraModifier_CameraShake.h"
 #include "Camera/CameraShake.h"
@@ -18,6 +18,10 @@
 
 IMPLEMENT_CLASS(APlayerCameraManager, AActor)
 
+// Function : Build camera shake instance from serialized asset description
+// input : Outer, Desc
+// Outer : UObject owner for created shake and pattern objects
+// Desc : asset description that defines duration, intensity, and pattern data
 static UCameraShakeBase* BuildCameraShakeFromAssetDesc(UObject* Outer, const FCameraShakeModifierAssetDesc& Desc)
 {
 	UCameraShakeBase* Shake = UObjectManager::Get().CreateObject<UCameraShakeBase>(Outer);
@@ -108,6 +112,9 @@ void APlayerCameraManager::BeginPlay()
 	AActor::BeginPlay();
 }
 
+// Function : Destroy owned camera modifiers when manager leaves play
+// input : none
+// ModifierList : manager-owned modifier instances to release
 void APlayerCameraManager::EndPlay()
 {
 	for (UCameraModifier* Modifier : ModifierList)
@@ -129,6 +136,9 @@ void APlayerCameraManager::Tick(float DeltaTime)
 	UpdateCamera(DeltaTime);
 }
 
+// Function : Bind camera manager to controller and initialize view target from pawn
+// input : InPlayerController
+// InPlayerController : owning controller that supplies the current pawn
 void APlayerCameraManager::SetOwner(APlayerController* InPlayerController)
 {
 	Owner = InPlayerController;
@@ -206,6 +216,8 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInf
 
 void APlayerCameraManager::UpdateCamera(float DeltaTime)
 {
+	// Reset Camera Snapshot.
+	// UpdateCamera owns the final runtime POV for this frame.
 	bHasValidCameraCachePOV = false;
 	LastFrameCameraCache = CameraCache;
 
@@ -227,6 +239,7 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime)
 	{
 		if (FadeTimeRemaining < 0.0f)
 		{
+			// Keep remaining fade time non-negative before evaluating the blend.
 			FadeTimeRemaining = 0.0f;
 		}
 
@@ -305,6 +318,7 @@ void APlayerCameraManager::EndCameraShake()
 
 void APlayerCameraManager::StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color)
 {
+	// Initialize fade state immediately from call parameters.
 	FadeColor = Color;
 	FadeAlpha = FVector2(FromAlpha, ToAlpha);
 	FadeTimeRemaining = Duration;
@@ -314,6 +328,7 @@ void APlayerCameraManager::StartCameraFade(float FromAlpha, float ToAlpha, float
 
 void APlayerCameraManager::EndCameraFade()
 {
+	// Remove fade immediately without interpolation.
 	bEnableFading = false;
 	FadeAmount = 0.0f;
 	FadeTimeRemaining = 0.0f;

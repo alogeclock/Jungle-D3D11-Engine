@@ -27,6 +27,7 @@ public:
 	// 서브클래스가 BeginPlay 시점에 매핑 컨텍스트/액션 바인딩을 등록하기 위한 훅 (UE의 SetupPlayerInputComponent 대응).
 	virtual void SetupInputComponent() {}
 
+	// Mapping/binding helpers are called by subclasses from SetupInputComponent.
 	// Function : Add mapping context to manager and sort by priority
 	// input : Context, Priority
 	// Context : mapping context to add
