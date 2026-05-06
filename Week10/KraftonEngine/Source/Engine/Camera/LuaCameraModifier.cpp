@@ -1,0 +1,274 @@
+#include "LuaCameraModifier.h"
+
+#include "Core/Log.h"
+#include "Object/ObjectFactory.h"
+#include "Platform/Paths.h"
+#include "Platform/ScriptPaths.h"
+#include "Scripting/SolInclude.h"
+#include "Scripting/LuaScriptRuntime.h"
+
+IMPLEMENT_CLASS(ULuaCameraModifier, UCameraModifier)
+
+struct FLuaPostProcessView
+{
+	FPostProcessSettings* Settings = nullptr;
+
+	float GetScalar(const FString& Name, float DefaultValue = 0.0f) const
+	{
+		return Settings ? Settings->GetScalar(FName(Name), DefaultValue) : DefaultValue;
+	}
+
+	void SetScalar(const FString& Name, float Value)
+	{
+		if (Settings)
+		{
+			Settings->SetScalar(FName(Name), Value);
+		}
+	}
+};
+
+struct FLuaCameraView
+{
+	FVector Location = FVector::ZeroVector;
+	FRotator Rotation = FRotator::ZeroRotator;
+	float FOV = 0.0f;
+	float NearZ = 0.0f;
+	float FarZ = 0.0f;
+	bool bIsOrthogonal = false;
+	float OrthoWidth = 0.0f;
+	FLuaPostProcessView PostProcess;
+
+	static FLuaCameraView FromPOV(FMinimalViewInfo& POV)
+	{
+		FLuaCameraView View;
+		View.Location = POV.Location;
+		View.Rotation = POV.Rotation;
+		View.FOV = POV.FOV;
+		View.NearZ = POV.NearZ;
+		View.FarZ = POV.FarZ;
+		View.bIsOrthogonal = POV.bIsOrthogonal;
+		View.OrthoWidth = POV.OrthoWidth;
+		View.PostProcess.Settings = &POV.PostPorcessSettings;
+		return View;
+	}
+
+	void ApplyToPOV(FMinimalViewInfo& POV) const
+	{
+		POV.Location = Location;
+		POV.Rotation = Rotation;
+		POV.FOV = FOV;
+		POV.NearZ = NearZ;
+		POV.FarZ = FarZ;
+		POV.bIsOrthogonal = bIsOrthogonal;
+		POV.OrthoWidth = OrthoWidth;
+	}
+};
+
+struct FLuaCameraModifierBinding
+{
+	static void Register(sol::state& Lua)
+	{
+		static bool bRegistered = false;
+		if (bRegistered)
+		{
+			return;
+		}
+
+		Lua.new_usertype<FLuaPostProcessView>(
+			"CameraPostProcessView",
+			"GetScalar", &FLuaPostProcessView::GetScalar,
+			"SetScalar", &FLuaPostProcessView::SetScalar);
+
+		Lua.new_usertype<FLuaCameraView>(
+			"CameraView",
+			"location", &FLuaCameraView::Location,
+			"rotation", &FLuaCameraView::Rotation,
+			"fov", &FLuaCameraView::FOV,
+			"nearZ", &FLuaCameraView::NearZ,
+			"farZ", &FLuaCameraView::FarZ,
+			"isOrthogonal", &FLuaCameraView::bIsOrthogonal,
+			"orthoWidth", &FLuaCameraView::OrthoWidth,
+			"postProcess", &FLuaCameraView::PostProcess);
+
+		bRegistered = true;
+	}
+
+	static FString GetLuaError(sol::protected_function_result& Result)
+	{
+		const sol::optional<sol::error> MaybeError = Result.get<sol::optional<sol::error>>();
+		return MaybeError ? MaybeError->what() : FString("Unknown Lua error.");
+	}
+};
+
+struct ULuaCameraModifier::FLuaModifierImpl
+{
+	sol::environment Env;
+	sol::table Instance;
+	sol::protected_function Begin;
+	sol::protected_function Update;
+	bool bLoaded = false;
+	FString LastError;
+};
+
+ULuaCameraModifier::ULuaCameraModifier()
+	: Impl(std::make_unique<FLuaModifierImpl>())
+{
+}
+
+ULuaCameraModifier::~ULuaCameraModifier() = default;
+
+bool ULuaCameraModifier::Initialize(const FString& InScriptPath, const TMap<FString, float>& Params)
+{
+	if (!Impl)
+	{
+		Impl = std::make_unique<FLuaModifierImpl>();
+	}
+
+	Impl->bLoaded = false;
+	Impl->LastError.clear();
+	ScriptPath = FScriptPaths::NormalizeScriptPath(InScriptPath);
+
+	if (ScriptPath.empty())
+	{
+		Impl->LastError = "Lua camera modifier script path is empty.";
+		UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+		DisableModifier(true);
+		return false;
+	}
+
+	sol::state& Lua = FLuaScriptRuntime::Get().GetLuaState();
+	FLuaCameraModifierBinding::Register(Lua);
+
+	Impl->Env = sol::environment(Lua, sol::create, Lua.globals());
+	Impl->Env["_G"] = Impl->Env;
+
+	FString ScriptSource;
+	FString FileReadError;
+	if (!FScriptPaths::ReadScriptFile(ScriptPath, ScriptSource, FileReadError))
+	{
+		Impl->LastError = FileReadError;
+		UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+		DisableModifier(true);
+		return false;
+	}
+
+	const std::filesystem::path ResolvedPath = FScriptPaths::ResolveScriptPath(ScriptPath);
+	const FString ChunkName = FPaths::ToUtf8(ResolvedPath.generic_wstring());
+	sol::protected_function_result LoadResult =
+		Lua.safe_script(
+			ScriptSource,
+			Impl->Env,
+			sol::script_pass_on_error,
+			ChunkName,
+			sol::load_mode::text);
+
+	if (!LoadResult.valid() || LoadResult.status() == sol::call_status::yielded)
+	{
+		Impl->LastError = "Load " + ScriptPath + ": " + FLuaCameraModifierBinding::GetLuaError(LoadResult);
+		UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+		DisableModifier(true);
+		return false;
+	}
+
+	if (LoadResult.return_count() <= 0)
+	{
+		Impl->LastError = "Lua camera modifier must return a table: " + ScriptPath;
+		UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+		DisableModifier(true);
+		return false;
+	}
+
+	sol::object ReturnedObject = LoadResult.get<sol::object>(0);
+	if (!ReturnedObject.valid() || ReturnedObject.get_type() != sol::type::table)
+	{
+		Impl->LastError = "Lua camera modifier return value is not a table: " + ScriptPath;
+		UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+		DisableModifier(true);
+		return false;
+	}
+
+	Impl->Instance = ReturnedObject.as<sol::table>();
+
+	sol::object BeginObject = Impl->Instance["Begin"];
+	if (BeginObject.valid() && BeginObject.get_type() == sol::type::function)
+	{
+		Impl->Begin = BeginObject.as<sol::protected_function>();
+	}
+
+	sol::object UpdateObject = Impl->Instance["Update"];
+	if (UpdateObject.valid() && UpdateObject.get_type() == sol::type::function)
+	{
+		Impl->Update = UpdateObject.as<sol::protected_function>();
+	}
+
+	if (!Impl->Update.valid())
+	{
+		Impl->LastError = "Lua camera modifier must define Update(deltaTime, view): " + ScriptPath;
+		UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+		DisableModifier(true);
+		return false;
+	}
+
+	if (Impl->Begin.valid())
+	{
+		sol::table LuaParams = Lua.create_table();
+		for (const auto& Pair : Params)
+		{
+			LuaParams[Pair.first] = Pair.second;
+		}
+
+		sol::protected_function_result BeginResult = Impl->Begin(Impl->Instance, LuaParams);
+		if (!BeginResult.valid() || BeginResult.status() == sol::call_status::yielded)
+		{
+			Impl->LastError = "Begin " + ScriptPath + ": " + FLuaCameraModifierBinding::GetLuaError(BeginResult);
+			UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+			DisableModifier(true);
+			return false;
+		}
+	}
+
+	Impl->bLoaded = true;
+	EnableModifier();
+	return true;
+}
+
+bool ULuaCameraModifier::ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutPOV)
+{
+	if (!Impl || !Impl->bLoaded || !Impl->Update.valid())
+	{
+		DisableModifier(true);
+		return false;
+	}
+
+	FLuaCameraView View = FLuaCameraView::FromPOV(InOutPOV);
+	sol::protected_function_result UpdateResult =
+		Impl->Update(Impl->Instance, DeltaTime, std::ref(View));
+
+	if (!UpdateResult.valid() || UpdateResult.status() == sol::call_status::yielded)
+	{
+		Impl->LastError = "Update " + ScriptPath + ": " + FLuaCameraModifierBinding::GetLuaError(UpdateResult);
+		UE_LOG_CATEGORY(LuaScript, Error, "%s", Impl->LastError.c_str());
+		DisableModifier(true);
+		return false;
+	}
+
+	View.ApplyToPOV(InOutPOV);
+
+	const bool bFinished =
+		UpdateResult.return_count() > 0
+		&& UpdateResult.get_type(0) == sol::type::boolean
+		&& UpdateResult.get<bool>(0);
+
+	if (bFinished)
+	{
+		DisableModifier(true);
+	}
+
+	return false;
+}
+
+const FString& ULuaCameraModifier::GetLastError() const
+{
+	static const FString EmptyError;
+	return Impl ? Impl->LastError : EmptyError;
+}

@@ -42,8 +42,10 @@ public:
 	}
 
 	void AcquirePlayerCameraManager(APlayerCameraManager* InCameraManager);
+	void PlayCameraModifier(const FString& ScriptPath, const TMap<FString, float>& Params = {});
 
 protected:
 	APawnActor* PossessedPawn = nullptr;
+	APlayerCameraManager* PlayerCameraManager = nullptr;
 	FEnhancedInputManager EnhancedInput;
 };

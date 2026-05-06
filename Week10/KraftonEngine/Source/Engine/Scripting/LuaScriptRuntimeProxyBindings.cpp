@@ -1,4 +1,5 @@
 ﻿#include "Scripting/LuaScriptRuntime.h"
+#include "GameFramework/PlayerController.h"
 #include "Math/Rotator.h"
 
 #ifdef check
@@ -215,6 +216,33 @@ void FLuaScriptRuntime::BindActorProxyType()
 		"GetMoveSpeed", &FLuaActorProxy::GetMoveSpeed,
 		"GetDamage", &FLuaActorProxy::GetDamage,
 		"SetDamage", &FLuaActorProxy::SetDamage,
+		"PlayCameraModifier", [](FLuaActorProxy& ActorProxy, const FString& ScriptPath, sol::optional<sol::table> ParamsTable)
+		{
+			APlayerController* PlayerController = Cast<APlayerController>(ActorProxy.GetActor());
+			if (!PlayerController)
+			{
+				return false;
+			}
+
+			TMap<FString, float> Params;
+			if (ParamsTable)
+			{
+				for (auto& Pair : *ParamsTable)
+				{
+					sol::object Key = Pair.first.as<sol::object>();
+					sol::object Value = Pair.second.as<sol::object>();
+					if (Key.get_type() != sol::type::string || Value.get_type() != sol::type::number)
+					{
+						continue;
+					}
+
+					Params[Key.as<FString>()] = Value.as<float>();
+				}
+			}
+
+			PlayerController->PlayCameraModifier(ScriptPath, Params);
+			return true;
+		},
 		"PrintLocation", &FLuaActorProxy::PrintLocation,
 		"Destroy", &FLuaActorProxy::Destroy);
 }

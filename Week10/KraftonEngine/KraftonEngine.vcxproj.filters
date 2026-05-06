@@ -1050,6 +1050,9 @@
     <ClCompile Include="Source\Engine\Camera\CameraModifier_CameraShake.cpp">
       <Filter>Source\Engine\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Camera\LuaCameraModifier.cpp">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Math\CurveFloat.cpp">
       <Filter>Source\Engine\Math</Filter>
     </ClCompile>
@@ -2288,6 +2291,9 @@
     <ClInclude Include="Source\Engine\Camera\CameraModifier_CameraShake.h">
       <Filter>Source\Engine\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Camera\LuaCameraModifier.h">
+      <Filter>Source\Engine\Camera</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Math\CurveFloat.h">
       <Filter>Source\Engine\Math</Filter>
     </ClInclude>
@@ -2295,6 +2301,9 @@
       <Filter>Source\Editor\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\GamePlayStatics.h" />
+    <ClInclude Include="Source\Engine\Scripting\SolInclude.h">
+      <Filter>Source\Engine\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

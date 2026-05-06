@@ -313,6 +313,7 @@
     <ClCompile Include="Source\Engine\Camera\CameraModifier_CameraShake.cpp" />
     <ClCompile Include="Source\Engine\Camera\CameraShake.cpp" />
     <ClCompile Include="Source\Engine\Camera\CameraShakePattern.cpp" />
+    <ClCompile Include="Source\Engine\Camera\LuaCameraModifier.cpp" />
     <ClCompile Include="Source\Engine\Camera\MinimalViewInfo.cpp" />
     <ClCompile Include="Source\Engine\Camera\PlayerCameraManager.cpp" />
     <ClCompile Include="Source\Engine\Collision\CollisionDispatcher.cpp" />
@@ -567,6 +568,7 @@
     <ClInclude Include="Source\Engine\Camera\CameraModifier_CameraShake.h" />
     <ClInclude Include="Source\Engine\Camera\CameraShake.h" />
     <ClInclude Include="Source\Engine\Camera\CameraShakePattern.h" />
+    <ClInclude Include="Source\Engine\Camera\LuaCameraModifier.h" />
     <ClInclude Include="Source\Engine\Camera\MinimalViewInfo.h" />
     <ClInclude Include="Source\Engine\Camera\PlayerCameraManager.h" />
     <ClInclude Include="Source\Engine\Collision\CollisionDispatcher.h" />
@@ -775,6 +777,7 @@
     <ClInclude Include="Source\Engine\Scripting\LuaComponentProxy.h" />
     <ClInclude Include="Source\Engine\Scripting\LuaScriptInstance.h" />
     <ClInclude Include="Source\Engine\Scripting\LuaScriptRuntime.h" />
+    <ClInclude Include="Source\Engine\Scripting\SolInclude.h" />
     <ClInclude Include="Source\Engine\Serialization\Archive.h" />
     <ClInclude Include="Source\Engine\Serialization\MemoryArchive.h" />
     <ClInclude Include="Source\Engine\Serialization\SceneSaveManager.h" />

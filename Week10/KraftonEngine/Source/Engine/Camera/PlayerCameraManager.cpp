@@ -1,4 +1,5 @@
 #include "PlayerCameraManager.h"
+#include "Camera/LuaCameraModifier.h"
 #include "Engine/GameFramework/PlayerController.h"
 #include "Engine/GameFramework/PawnActor.h"
 #include "Object/Object.h"
@@ -79,6 +80,23 @@ void APlayerCameraManager::AddCameraModifier(UCameraModifier* InModifier)
 	InModifier->EnableModifier();
 	ModifierList.push_back(InModifier);
 	SortModifiersByPriority();
+}
+
+void APlayerCameraManager::PlayCameraModifier(const FString& ScriptPath, const TMap<FString, float>& Params)
+{
+	ULuaCameraModifier* Modifier = UObjectManager::Get().CreateObject<ULuaCameraModifier>(this);
+	if (!Modifier)
+	{
+		return;
+	}
+
+	if (!Modifier->Initialize(ScriptPath, Params))
+	{
+		UObjectManager::Get().DestroyObject(Modifier);
+		return;
+	}
+
+	AddCameraModifier(Modifier);
 }
 
 void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV)

@@ -40,6 +40,7 @@ public:
 	void SetOwner(APlayerController* InPlayerController) { Owner = InPlayerController; }
 
 	void AddCameraModifier(UCameraModifier* InModifier);
+	void PlayCameraModifier(const FString& ScriptPath, const TMap<FString, float>& Params = {});
 	void ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV);
 	void UpdateCamera(float DeltaTime);
 	void SortModifiersByPriority();
