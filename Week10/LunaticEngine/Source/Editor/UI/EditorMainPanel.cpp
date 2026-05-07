@@ -1273,7 +1273,7 @@ void FEditorMainPanel::CookCurrentScene()
 void FEditorMainPanel::PackageGameBuild(const char* BatFileName)
 {
 	// 솔루션 루트(.bat 위치)를 찾는다 — 후보 경로를 차례대로 검사.
-	// FPaths::RootDir()은 보통 KraftonEngine/ (개발) 또는 exe 디렉터리(배포)를 반환한다.
+	// FPaths::RootDir()은 보통 LunaticEngine/ (개발) 또는 exe 디렉터리(배포)를 반환한다.
 	// 트레일링 슬래시 때문에 parent_path()가 의도대로 안 나올 수 있으므로 lexically_normal로 정규화.
 	std::filesystem::path RootDir = std::filesystem::path(FPaths::RootDir()).lexically_normal();
 
@@ -1281,7 +1281,7 @@ void FEditorMainPanel::PackageGameBuild(const char* BatFileName)
 	std::filesystem::path BatPath;
 	const std::filesystem::path Candidates[] = {
 		RootDir,                                            // exe 디렉터리에 .bat이 있는 경우 (배포)
-		RootDir.parent_path(),                              // KraftonEngine/의 상위 = 솔루션 루트 (개발)
+		RootDir.parent_path(),                              // LunaticEngine/의 상위 = 솔루션 루트 (개발)
 		RootDir.parent_path().parent_path(),                // 한 단계 더 (혹시 모를 중첩)
 		std::filesystem::current_path(),                    // 마지막 폴백
 	};

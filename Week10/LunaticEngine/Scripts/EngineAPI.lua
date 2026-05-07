@@ -1,4 +1,4 @@
----@meta KraftonEngine
+---@meta LunaticEngine
 
 -- VSCode/LuaLS 자동완성 전용 stub
 -- 런타임에서 require하지 않는다

@@ -293,10 +293,10 @@ bool UStaticMeshComponent::LineTraceStaticMeshFast(
 	//	OutHitResult.HitComponent = this;
 	//}
 	/*codex의 답변
-왜 빨라졌냐면, 주석 처리된 Jungle_Week5_Team3/KraftonEngine/Source/Engine/Collision/RayUtils.cpp:60의
+왜 빨라졌냐면, 주석 처리된 Jungle_Week5_Team3/LunaticEngine/Source/Engine/Collision/RayUtils.cpp:60의
 RaycastTriangles()는 BVH 없이 Indices를 처음부터 끝까지 3개씩 돌면서 모든 triangle에 IntersectTriangle()를 합니다.
 즉 후보 메시에 대해 매번 풀 스캔입니다.
-월드 단계에서 이미 Jungle_Week5_Team3/KraftonEngine/Source/Engine/Collision/WorldPrimitivePickingBVH.cpp:87가
+월드 단계에서 이미 Jungle_Week5_Team3/LunaticEngine/Source/Engine/Collision/WorldPrimitivePickingBVH.cpp:87가
 primitive AABB 기준으로 후보만 추립니다.
 그런데 AABB는 보수적이라 “박스는 맞았지만 실제 삼각형은 안 맞는” 후보가 꽤 나옵니다.
 예전 코드에서는 이런 BVH miss 후보마다 fallback 전체 triangle 스캔이 한 번 더 돌았습니다.
