@@ -411,7 +411,7 @@
               "Draw Shadow" : true,
               "Fit Mode" : 0,
               "Screen Position" : [1168.000000, 32.000000, 0.000000],
-              "Screen Size" : [707.000000, 343.000000, 0.000000],
+              "Screen Size" : [707.000000, 320.000000, 0.000000],
               "Shadow Blur" : 6.000000,
               "Shadow Bottom Tint" : [1.000000, 1.000000, 1.000000, 0.180000],
               "Shadow Offset" : [4.000000, 4.000000, 6.000000],
@@ -505,7 +505,7 @@
               "Letter Spacing" : 0.000000,
               "Line Spacing" : 1.140000,
               "Screen Position" : [1240.056396, 149.000000, 0.000000],
-              "Text" : "SCORE           128,450\nLOGS            24\nTRACE           88%\nDUMPS           2/3\nSTABILITY       67%",
+              "Text" : "SCORE     128,450\nLOGS      24\nTRACE     88%\nDUMPS     2/3\nSTABILITY 67%",
               "Use Anchored Layout" : false,
               "Visible" : true
             }
@@ -526,7 +526,7 @@
               "Letter Spacing" : 0.000000,
               "Line Spacing" : 1.140000,
               "Screen Position" : [1510.000000, 149.000000, 0.000000],
-              "Text" : "DISTANCE        1842.0m\nTIME            153.4s",
+              "Text" : "DISTANCE 1842.0m\nTIME     153.4s",
               "Use Anchored Layout" : false,
               "Visible" : true
             }
@@ -549,7 +549,7 @@
               "Screen Position" : [1510.000000, 200.000000, 0.000000],
               "Text" : "COACH APPROVAL",
               "Use Anchored Layout" : false,
-              "Visible" : true
+              "Visible" : false
             }
           }, {
             "Children" : [],
@@ -570,7 +570,7 @@
               "Screen Position" : [1768.000000, 200.000000, 0.000000],
               "Text" : "84",
               "Use Anchored Layout" : false,
-              "Visible" : true
+              "Visible" : false
             }
           }, {
             "Children" : [],
@@ -605,7 +605,7 @@
               },
               "Tint" : [0.180000, 0.270000, 0.330000, 1.000000],
               "Use Anchored Layout" : false,
-              "Visible" : true,
+              "Visible" : false,
               "Z Order" : 11
             }
           }, {
@@ -641,7 +641,7 @@
               },
               "Tint" : [0.470000, 0.920000, 1.000000, 1.000000],
               "Use Anchored Layout" : false,
-              "Visible" : true,
+              "Visible" : false,
               "Z Order" : 12
             }
           }, {

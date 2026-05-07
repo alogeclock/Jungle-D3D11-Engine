@@ -4,8 +4,8 @@
   "name": "Play Scene Dialogues",
   "characters": {
     "BAEK_COMMANDER": {
-      "displayName": "백 사령관",
-      "shortName": "백 사령관",
+      "displayName": "백 지휘관",
+      "shortName": "백 지휘관",
       "defaultPortrait": "portrait_baek_normal",
       "emotions": {
         "normal": "portrait_baek_normal",
@@ -86,6 +86,36 @@
       "sounds": [
         "voice_im_normal",
         "pickup_log"
+      ],
+      "cooldown": 5.0
+    },
+    {
+      "id": "play_collect_dump_001",
+      "trigger": "onCollectCrashDump",
+      "speaker": "BAEK_COMMANDER",
+      "emotion": "serious",
+      "message": "Crash Dump 확보. 분석 가능한 핵심 데이터가 들어왔다.",
+      "shake": {
+        "enabled": false
+      },
+      "sounds": [
+        "voice_baek_serious",
+        "pickup_dump"
+      ],
+      "cooldown": 5.0
+    },
+    {
+      "id": "play_collect_dump_002",
+      "trigger": "onCollectCrashDump",
+      "speaker": "LIM_COMMANDER",
+      "emotion": "excited",
+      "message": "좋아, 이건 제법 진한 기록이네. 여기서부터 실마리가 보인다.",
+      "shake": {
+        "enabled": false
+      },
+      "sounds": [
+        "voice_im_excited",
+        "pickup_dump"
       ],
       "cooldown": 5.0
     },
@@ -242,6 +272,36 @@
       "sounds": [
         "voice_im_joke",
         "hotfix_apply"
+      ],
+      "cooldown": 0
+    },
+    {
+      "id": "play_critical_analysis_001",
+      "trigger": "onCriticalAnalysis",
+      "speaker": "BAEK_COMMANDER",
+      "emotion": "calm",
+      "message": "Critical Analysis 완료. 방어 프로토콜이 즉시 활성화된다.",
+      "shake": {
+        "enabled": false
+      },
+      "sounds": [
+        "voice_baek_calm",
+        "critical_analysis"
+      ],
+      "cooldown": 0
+    },
+    {
+      "id": "play_critical_analysis_002",
+      "trigger": "onCriticalAnalysis",
+      "speaker": "LIM_COMMANDER",
+      "emotion": "excited",
+      "message": "오, 이 정도면 꽤 깔끔하군. 이제 한 번은 더 버틸 수 있겠다.",
+      "shake": {
+        "enabled": false
+      },
+      "sounds": [
+        "voice_im_excited",
+        "critical_analysis"
       ],
       "cooldown": 0
     },

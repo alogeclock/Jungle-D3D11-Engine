@@ -26,7 +26,9 @@ local WINDOW_TEXTURES = HUDConfig.window_textures
 local DEFAULT_RANK_TEXTURE = RankConfig.default_texture
 local RANK_TEXTURE_BY_CODE = RankConfig.texture_by_code
 local title_text = nil
+local hud_panel = nil
 local core_metrics_text = nil
+local run_details_title_text = nil
 local run_details_text = nil
 local approval_label_text = nil
 local approval_value_text = nil
@@ -87,23 +89,35 @@ local function build_snapshot_key(data)
     }, "|")
 end
 
+local function build_aligned_line(label, value, pad_width)
+    local safe_label = tostring(label or "")
+    local safe_value = tostring(value or "")
+    local width = pad_width or 9
+    local padding = width - string.len(safe_label)
+    if padding < 0 then
+        padding = 0
+    end
+
+    return safe_label .. string.rep(" ", padding) .. " " .. safe_value
+end
+
 local function build_core_metrics_text(data)
     local trace_max = CollectibleConfig.trace_max or 100
     local dumps_required = CollectibleConfig.crash_dump_required or 3
 
     return table.concat({
-        "SCORE           " .. Format.Number(data.score or 0),
-        "LOGS            " .. Format.Number(data.logs or 0),
-        "TRACE           " .. Format.Percent(data.trace or 0, trace_max),
-        "DUMPS           " .. Format.Number(data.dumps or 0) .. "/" .. Format.Number(dumps_required),
-        "STABILITY       " .. Format.Percent(data.stability or 0, data.max_stability or 0),
+        build_aligned_line("SCORE", Format.Number(data.score or 0)),
+        build_aligned_line("LOGS", Format.Number(data.logs or 0)),
+        build_aligned_line("TRACE", Format.Percent(data.trace or 0, trace_max)),
+        build_aligned_line("DUMPS", Format.Number(data.dumps or 0) .. "/" .. Format.Number(dumps_required)),
+        build_aligned_line("STABILITY", Format.Percent(data.stability or 0, data.max_stability or 0)),
     }, "\n")
 end
 
 local function build_run_details_text(data)
     return table.concat({
-        "DISTANCE        " .. Format.Decimal(data.distance or 0) .. "m",
-        "TIME            " .. Format.Decimal(data.elapsed_time or 0) .. "s",
+        build_aligned_line("DISTANCE", Format.Decimal(data.distance or 0) .. "m", 8),
+        build_aligned_line("TIME", Format.Decimal(data.elapsed_time or 0) .. "s", 8),
     }, "\n")
 end
 
@@ -111,10 +125,21 @@ local APPROVAL_GAUGE = HUDConfig.approval_gauge
 local RANK_MARKER = HUDConfig.rank_marker
 local HUD_LAYOUT = HUDConfig.hud_layout
 local DIALOGUE_LAYOUT = HUDConfig.dialogue_layout
+local PANEL_LAYOUT = HUDConfig.panel_layout
+
+local function hide_approval_ui()
+    UI.SetVisible(approval_label_text, false)
+    UI.SetVisible(approval_value_text, false)
+    UI.SetVisible(approval_gauge_track, false)
+    UI.SetVisible(approval_gauge_fill, false)
+    UI.SetVisible(rank_marker, false)
+end
 
 local function apply_hud_layout()
+    UI.SetScreenSize(hud_panel, PANEL_LAYOUT.width, PANEL_LAYOUT.height)
     UI.SetScreenPosition(title_text, HUD_LAYOUT.title.x, HUD_LAYOUT.title.y)
     UI.SetScreenPosition(core_metrics_text, HUD_LAYOUT.core_text.x, HUD_LAYOUT.core_text.y)
+    UI.SetScreenPosition(run_details_title_text, HUD_LAYOUT.details_title.x, HUD_LAYOUT.details_title.y)
     UI.SetScreenPosition(run_details_text, HUD_LAYOUT.details_text.x, HUD_LAYOUT.details_text.y)
     UI.SetScreenPosition(approval_label_text, HUD_LAYOUT.approval_label.x, HUD_LAYOUT.approval_label.y)
     UI.SetScreenPosition(approval_value_text, HUD_LAYOUT.approval_value.x, HUD_LAYOUT.approval_value.y)
@@ -155,20 +180,14 @@ local function refresh_hud()
         return
     end
 
+    apply_hud_layout()
+
     local snapshot_key = build_snapshot_key(data)
     if snapshot_key ~= last_snapshot_key then
         UI.SetText(title_text, "PLAYER DEV FUD  [" .. tostring(data.coach_rank or "C") .. "]")
         UI.SetText(core_metrics_text, build_core_metrics_text(data))
         UI.SetText(run_details_text, build_run_details_text(data))
         last_snapshot_key = snapshot_key
-    end
-
-    refresh_approval_gauge(data)
-
-    local rank_texture = resolve_rank_texture(data.coach_rank)
-    if rank_texture ~= last_rank_texture then
-        UI.SetTexture(rank_marker, rank_texture)
-        last_rank_texture = rank_texture
     end
 end
 
@@ -447,8 +466,10 @@ function BeginPlay()
     print("[PlayerDevHUD] BeginPlay entered")
     math.randomseed(math.floor(time() * 1000) % 2147483647)
 
+    hud_panel = Engine.GetComponent(obj, "FUDPanel")
     title_text = Engine.GetComponent(obj, "FUDTitle")
     core_metrics_text = Engine.GetComponent(obj, "FUDCoreMetricsText")
+    run_details_title_text = Engine.GetComponent(obj, "FUDRunDetailsTitle")
     run_details_text = Engine.GetComponent(obj, "FUDRunDetailsText")
     approval_label_text = Engine.GetComponent(obj, "FUDApprovalLabel")
     approval_value_text = Engine.GetComponent(obj, "FUDApprovalValue")
@@ -465,6 +486,7 @@ function BeginPlay()
     current_window_textures = WINDOW_TEXTURES.BAEK_COMMANDER
     DialogueUtils.reset_typewriter(typing_state, TYPEWRITER_INTERVAL_SECONDS)
 
+    hide_approval_ui()
     apply_hud_layout()
     refresh_hud()
     load_dialogue_entries()

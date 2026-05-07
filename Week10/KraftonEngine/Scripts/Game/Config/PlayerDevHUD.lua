@@ -64,8 +64,8 @@ local PlayerDevHUDConfig = {
 
     -- approval_gauge / rank_marker: 코치 평가 게이지와 랭크 마커 배치입니다.
     approval_gauge = {
-        x = 1496.0,
-        y = 258.0,
+        x = 1240.0,
+        y = 490.0,
         width = 316.0,
         height = 18.0,
     },
@@ -73,6 +73,10 @@ local PlayerDevHUDConfig = {
         width = 110.0,
         height = 48.0,
         offset_y = -42.0,
+    },
+    panel_layout = {
+        width = 707.0,
+        height = 320.0,
     },
 
     -- hud_layout / dialogue_layout: PlayerDev HUD 텍스트와 대화창 위치입니다.
@@ -82,8 +86,8 @@ local PlayerDevHUDConfig = {
         core_text = { x = 1240.0, y = 149.0 },
         details_title = { x = 1510.0, y = 118.0 },
         details_text = { x = 1510.0, y = 149.0 },
-        approval_label = { x = 1510.0, y = 220.0 },
-        approval_value = { x = 1768.0, y = 220.0 },
+        approval_label = { x = 1510.0, y = 200.0 },
+        approval_value = { x = 1768.0, y = 200.0 },
     },
     dialogue_layout = {
         window = { x = 32.0, y = 32.0 },
