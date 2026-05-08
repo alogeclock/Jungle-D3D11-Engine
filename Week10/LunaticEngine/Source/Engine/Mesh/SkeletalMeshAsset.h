@@ -8,6 +8,14 @@
 
 #include <algorithm>
 
+namespace SkeletalMeshSerialization
+{
+    inline void SerializeMatrix(FArchive& Ar, FMatrix& Matrix)
+    {
+        Ar.Serialize(&Matrix.M[0][0], sizeof(Matrix.M));
+    }
+}
+
 // ============================================================================
 // FSkeletalVertex
 //
@@ -91,9 +99,10 @@ struct FBoneInfo
     {
         Ar << B.Name;
         Ar << B.ParentIndex;
-        Ar << B.LocalBindPose;
-        Ar << B.GlobalBindPose;
-        Ar << B.InverseBindPose;
+
+        SkeletalMeshSerialization::SerializeMatrix(Ar, B.LocalBindPose);
+        SkeletalMeshSerialization::SerializeMatrix(Ar, B.GlobalBindPose);
+        SkeletalMeshSerialization::SerializeMatrix(Ar, B.InverseBindPose);
 
         return Ar;
     }
