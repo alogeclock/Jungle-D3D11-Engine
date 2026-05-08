@@ -2,7 +2,9 @@
 
 #include <filesystem>
 #include <algorithm>
+#include <cwctype>
 
+#include "Core/Log.h"
 #include "Mesh/SkeletalMeshBake.h"
 #include "Mesh/FbxImporter.h"
 #include "Engine/Platform/Paths.h"
@@ -105,7 +107,10 @@ USkeletalMesh* FSkeletalMeshManager::LoadSkeletalMesh(const FString& PathFileNam
 
         NewMeshAsset->PathFileName = PathFileName;
         const bool bSaved          = SaveBakedSkeletalMesh(CacheKey, *NewMeshAsset, Materials);
-        (void)bSaved;
+        if (!bSaved)
+        {
+            UE_LOG("Failed to save skeletal mesh bake: %s", CacheKey.c_str());
+        }
     }
     
     USkeletalMesh* SkeletalMesh = UObjectManager::Get().CreateObject<USkeletalMesh>();

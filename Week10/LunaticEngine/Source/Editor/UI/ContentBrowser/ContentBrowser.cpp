@@ -444,6 +444,11 @@ void FEditorContentBrowserWidget::RefreshContent()
 			element = std::make_shared<FbxElement>();
 			element.get()->SetIcon(ICons["Default"].Get());
 		}
+		else if (Extension == ".skm")
+		{
+			element = std::make_shared<SkeletalMeshElement>();
+			element.get()->SetIcon(ICons["Default"].Get());
+		}
 		else if (Extension == ".mat")
 		{
 			element = std::make_shared<MaterialElement>();

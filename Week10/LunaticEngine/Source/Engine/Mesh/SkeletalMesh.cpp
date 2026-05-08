@@ -1,4 +1,5 @@
 ﻿#include "SkeletalMesh.h"
+#include "Object/ObjectFactory.h"
 #include "Engine/Profiling/MemoryStats.h"
 
 static const FString EmptyPath;
@@ -18,6 +19,27 @@ static uint32 CalculateSkeletalMeshCPUSize(const FSkeletalMesh& Mesh)
         CPUSize += static_cast<uint32>(LOD.Sections.size()) * sizeof(FStaticMeshSection);
     }
 
+    for (const FSkeletalAnimationClip& Clip : Mesh.Animations)
+    {
+        CPUSize += sizeof(FSkeletalAnimationClip);
+        CPUSize += static_cast<uint32>(Clip.Tracks.size()) * sizeof(FBoneAnimationTrack);
+
+        for (const FBoneAnimationTrack& Track : Clip.Tracks)
+        {
+            CPUSize += static_cast<uint32>(Track.Keys.size()) * sizeof(FBoneTransformKey);
+        }
+    }
+
+    for (const FMorphTarget& Morph : Mesh.MorphTargets)
+    {
+        CPUSize += sizeof(FMorphTarget);
+
+        for (const FMorphTargetLOD& LOD : Morph.LODModels)
+        {
+            CPUSize += static_cast<uint32>(LOD.Deltas.size()) * sizeof(FMorphTargetDelta);
+        }
+    }
+
     return CPUSize;
 }
 
@@ -27,6 +49,9 @@ USkeletalMesh::~USkeletalMesh()
     {
         const uint32 CPUSize = CalculateSkeletalMeshCPUSize(*SkeletalMeshAsset);
         MemoryStats::SubSkeletalMeshCPUMemory(CPUSize);
+
+        delete SkeletalMeshAsset;
+        SkeletalMeshAsset = nullptr;
     }
 }
 
@@ -67,10 +92,29 @@ const FString& USkeletalMesh::GetAssetPathFileName() const
 
 void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
 {
+    if (SkeletalMeshAsset == InMesh)
+    {
+        if (SkeletalMeshAsset)
+        {
+            SkeletalMeshAsset->Skeleton.RebuildChildren();
+
+            for (FSkeletalMeshLOD& LOD : SkeletalMeshAsset->LODModels)
+            {
+                LOD.CacheBounds();
+            }
+        }
+
+        RebuildSectionMaterialIndices();
+        return;
+    }
+
     if (SkeletalMeshAsset)
     {
         const uint32 OldSize = CalculateSkeletalMeshCPUSize(*SkeletalMeshAsset);
         MemoryStats::SubSkeletalMeshCPUMemory(OldSize);
+
+        delete SkeletalMeshAsset;
+        SkeletalMeshAsset = nullptr;
     }
 
     SkeletalMeshAsset = InMesh;

@@ -3,6 +3,18 @@
 #include "Core/CoreTypes.h"
 #include "Serialization/Archive.h"
 
+namespace SkeletalMeshBake
+{
+    // 현재 엔진이 기대하는 SkeletalMesh Bake 파일 식별자.
+    static constexpr uint32 Magic = 0x534B4D31;
+    // 현재 엔진이 지원하는 SkeletalMesh Bake 포맷 버전.
+    // Version 3: multi UV + animation clip + morph target 데이터 포함.
+    static constexpr uint32 Version = 3;
+
+    bool Save(const FString& BakePath, FSkeletalMesh& Mesh, TArray<FStaticMaterial>& Materials);
+    bool Load(const FString& BakePath, FSkeletalMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials);
+}
+
 // ============================================================================
 // FSkeletalMeshBakeHeader
 //
@@ -12,8 +24,8 @@
 // ============================================================================
 struct FSkeletalMeshBakeHeader
 {
-    uint32 Magic   = 0x534B4D31;
-    uint32 Version = 1;
+    uint32 Magic   = SkeletalMeshBake::Magic;
+    uint32 Version = SkeletalMeshBake::Version;
 
     friend FArchive& operator<<(FArchive& Ar, FSkeletalMeshBakeHeader& Header)
     {
@@ -22,14 +34,3 @@ struct FSkeletalMeshBakeHeader
         return Ar;
     }
 };
-
-namespace SkeletalMeshBake
-{
-    // 현재 엔진이 기대하는 SkeletalMesh Bake 파일 식별자.
-    static constexpr uint32 Magic = 0x534B4D31;
-    // 현재 엔진이 지원하는 SkeletalMesh Bake 포맷 버전.
-    static constexpr uint32 Version = 1;
-
-    bool Save(const FString& BakePath, FSkeletalMesh& Mesh, TArray<FStaticMaterial>& Materials);
-    bool Load(const FString& BakePath, FSkeletalMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials);
-}

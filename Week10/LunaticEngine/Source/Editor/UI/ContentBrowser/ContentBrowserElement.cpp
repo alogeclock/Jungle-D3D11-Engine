@@ -375,3 +375,20 @@ void FbxElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 	Context.bIsNeedRefresh = true;
 	FNotificationManager::Get().AddNotification("Loaded StaticMesh: " + RelativeFbxPath, ENotificationType::Success, 4.0f);
 }
+
+void SkeletalMeshElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
+{
+	const FString RelativeSkmPath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
+
+	USkeletalMesh* SkeletalMesh = FSkeletalMeshManager::LoadSkeletalMesh(RelativeSkmPath);
+
+	if (!SkeletalMesh)
+	{
+		FNotificationManager::Get().AddNotification("Failed to open SkeletalMesh: " + RelativeSkmPath, ENotificationType::Error, 6.0f);
+		return;
+	}
+
+	(void)Context;
+
+	FNotificationManager::Get().AddNotification("Loaded SkeletalMesh: " + RelativeSkmPath, ENotificationType::Success, 4.0f);
+}

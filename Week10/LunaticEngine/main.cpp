@@ -2,8 +2,6 @@
 #include <string>
 #include "Engine/Runtime/Launch.h"
 #include "Engine/Runtime/EngineLoop.h"
-#include "Core/Log.h"
-#include "Mesh/Importer/FbxImporter.h"
 
 namespace
 {
@@ -61,7 +59,7 @@ namespace
 		EngineLoop.Shutdown();
 		return Result;
 	}
-	}
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nShowCmd)
 {

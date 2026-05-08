@@ -3,10 +3,13 @@
 #include "Core/CoreTypes.h"
 #include "Math/Vector.h"
 #include "Math/Matrix.h"
+#include "Math/Quat.h"
 #include "Serialization/Archive.h"
 #include "StaticMeshAsset.h"
 
 #include <algorithm>
+
+static constexpr int32 MAX_SKELETAL_MESH_UV_CHANNELS = 4;
 
 namespace SkeletalMeshSerialization
 {
@@ -40,18 +43,28 @@ struct FSkeletalVertex
     FVector  Pos;
     FVector  Normal;
     FVector4 Color;
-    FVector2 UV;
+
+    // UV[0]이 기본 렌더링 UV0이다.
+    FVector2 UV[MAX_SKELETAL_MESH_UV_CHANNELS] = {};
+    uint8    NumUVs                            = 1;
+
     FVector4 Tangent;
 
     uint16 BoneIndices[4] = { 0, 0, 0, 0 };
-    float  BoneWeights[4] = { 0, 0, 0, 0 };
+    float  BoneWeights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     friend FArchive& operator<<(FArchive& Ar, FSkeletalVertex& V)
     {
         Ar << V.Pos;
         Ar << V.Normal;
         Ar << V.Color;
-        Ar << V.UV;
+
+        for (int32 i = 0; i < MAX_SKELETAL_MESH_UV_CHANNELS; ++i)
+        {
+            Ar << V.UV[i];
+        }
+
+        Ar << V.NumUVs;
         Ar << V.Tangent;
 
         for (int32 i = 0; i < 4; ++i)
@@ -89,8 +102,13 @@ struct FBoneInfo
     FString Name;
     int32   ParentIndex = -1;
 
+    // Parent 기준 bind pose.
     FMatrix LocalBindPose;
+
+    // SkeletalMesh reference mesh bind space 기준 bind pose.
     FMatrix GlobalBindPose;
+
+    // inverse(GlobalBindPose)
     FMatrix InverseBindPose;
 
     TArray<int32> Children;
@@ -161,6 +179,12 @@ struct FSkeleton
         {
             RebuildChildren();
         }
+    }
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeleton& Skeleton)
+    {
+        Skeleton.Serialize(Ar);
+        return Ar;
     }
 };
 
@@ -238,6 +262,110 @@ struct FSkeletalMeshLOD
 };
 
 // ============================================================================
+// Animation
+// ============================================================================
+
+struct FBoneTransformKey
+{
+    float TimeSeconds = 0.0f;
+
+    FVector Translation;
+    FQuat   Rotation;
+    FVector Scale = FVector(1.0f, 1.0f, 1.0f);
+
+    friend FArchive& operator<<(FArchive& Ar, FBoneTransformKey& Key)
+    {
+        Ar << Key.TimeSeconds;
+        Ar << Key.Translation;
+        Ar << Key.Rotation;
+        Ar << Key.Scale;
+        return Ar;
+    }
+};
+
+struct FBoneAnimationTrack
+{
+    int32   BoneIndex = -1;
+    FString BoneName;
+
+    TArray<FBoneTransformKey> Keys;
+
+    friend FArchive& operator<<(FArchive& Ar, FBoneAnimationTrack& Track)
+    {
+        Ar << Track.BoneIndex;
+        Ar << Track.BoneName;
+        Ar << Track.Keys;
+        return Ar;
+    }
+};
+
+struct FSkeletalAnimationClip
+{
+    FString Name;
+
+    float DurationSeconds = 0.0f;
+    float SampleRate      = 30.0f;
+
+    TArray<FBoneAnimationTrack> Tracks;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalAnimationClip& Clip)
+    {
+        Ar << Clip.Name;
+        Ar << Clip.DurationSeconds;
+        Ar << Clip.SampleRate;
+        Ar << Clip.Tracks;
+        return Ar;
+    }
+};
+
+// ============================================================================
+// Morph Target
+// ============================================================================
+
+struct FMorphTargetDelta
+{
+    uint32 VertexIndex = 0;
+
+    FVector  PositionDelta;
+    FVector  NormalDelta;
+    FVector4 TangentDelta;
+
+    friend FArchive& operator<<(FArchive& Ar, FMorphTargetDelta& Delta)
+    {
+        Ar << Delta.VertexIndex;
+        Ar << Delta.PositionDelta;
+        Ar << Delta.NormalDelta;
+        Ar << Delta.TangentDelta;
+        return Ar;
+    }
+};
+
+struct FMorphTargetLOD
+{
+    TArray<FMorphTargetDelta> Deltas;
+
+    friend FArchive& operator<<(FArchive& Ar, FMorphTargetLOD& LOD)
+    {
+        Ar << LOD.Deltas;
+        return Ar;
+    }
+};
+
+struct FMorphTarget
+{
+    FString Name;
+
+    TArray<FMorphTargetLOD> LODModels;
+
+    friend FArchive& operator<<(FArchive& Ar, FMorphTarget& Morph)
+    {
+        Ar << Morph.Name;
+        Ar << Morph.LODModels;
+        return Ar;
+    }
+};
+
+// ============================================================================
 // FSkeletalMesh
 //
 // Bake 파일 또는 FBX Importer가 만들어내는 최종 SkeletalMesh 원본 리소스.
@@ -252,6 +380,9 @@ struct FSkeletalMesh
     FSkeleton Skeleton;
 
     TArray<FSkeletalMeshLOD> LODModels;
+
+    TArray<FSkeletalAnimationClip> Animations;
+    TArray<FMorphTarget>           MorphTargets;
 
     FSkeletalMeshLOD* GetLOD(int32 LODIndex)
     {
@@ -280,9 +411,13 @@ struct FSkeletalMesh
         Skeleton.Serialize(Ar);
 
         Ar << LODModels;
+        Ar << Animations;
+        Ar << MorphTargets;
 
         if (Ar.IsLoading())
         {
+            Skeleton.RebuildChildren();
+
             for (FSkeletalMeshLOD& LOD : LODModels)
             {
                 LOD.CacheBounds();
