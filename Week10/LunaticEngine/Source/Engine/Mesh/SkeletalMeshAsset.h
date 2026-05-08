@@ -40,7 +40,7 @@ struct FSkeletalVertex
     FVector  Pos;
     FVector  Normal;
     FVector4 Color;
-    FVector2 Tex;
+    FVector2 UV;
     FVector4 Tangent;
 
     uint16 BoneIndices[4] = { 0, 0, 0, 0 };
@@ -51,7 +51,7 @@ struct FSkeletalVertex
         Ar << V.Pos;
         Ar << V.Normal;
         Ar << V.Color;
-        Ar << V.Tex;
+        Ar << V.UV;
         Ar << V.Tangent;
 
         for (int32 i = 0; i < 4; ++i)
