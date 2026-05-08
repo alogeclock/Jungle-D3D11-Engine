@@ -2,14 +2,14 @@
 setlocal EnableExtensions EnableDelayedExpansion
 
 set "SOLUTION_DIR=%~dp0"
-set "PROJECT_DIR=%SOLUTION_DIR%KraftonEngine"
-set "SOLUTION_FILE=%SOLUTION_DIR%KraftonEngine.sln"
+set "PROJECT_DIR=%SOLUTION_DIR%LunaticEngine"
+set "SOLUTION_FILE=%SOLUTION_DIR%LunaticEngine.sln"
 set "CONFIGURATION=Shipping"
 set "PLATFORM=x64"
 set "BUILD_OUTPUT=%PROJECT_DIR%\Bin\%CONFIGURATION%"
 set "STAGE_DIR=%SOLUTION_DIR%ShippingBuild"
 set "COOKED_SCENE_DIR=%SOLUTION_DIR%Saved\Cooked\%CONFIGURATION%\Asset\Content\Scene"
-set "EXE_NAME=KraftonEngine.exe"
+set "EXE_NAME=LunaticEngine.exe"
 set "NO_PAUSE=0"
 if /I "%~1"=="-NoPause" set "NO_PAUSE=1"
 
