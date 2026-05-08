@@ -1,10 +1,11 @@
-﻿#include "SkeletalMeshManager.h"
+﻿#include "Mesh/SkeletalMeshManager.h"
 
 #include <filesystem>
 #include <algorithm>
 
-#include "SkeletalMeshBake.h"
-#include "Platform/Paths.h"
+#include "Mesh/SkeletalMeshBake.h"
+#include "Mesh/FbxImporter.h"
+#include "Engine/Platform/Paths.h"
 #include "Object/Object.h"
 #include "Materials/MaterialManager.h"
 
@@ -46,7 +47,7 @@ FString FSkeletalMeshManager::GetBakedFilePath(const FString& SourcePath)
 USkeletalMesh* FSkeletalMeshManager::LoadSkeletalMesh(const FString& PathFileName)
 {
     const FString CacheKey = GetBakedFilePath(PathFileName);
-
+    
     auto It = SkeletalMeshCache.find(CacheKey);
     if (It != SkeletalMeshCache.end())
     {
@@ -56,25 +57,66 @@ USkeletalMesh* FSkeletalMeshManager::LoadSkeletalMesh(const FString& PathFileNam
     FSkeletalMesh*          NewMeshAsset = new FSkeletalMesh();
     TArray<FStaticMaterial> Materials;
 
-    const bool bLoaded = LoadBakedSkeletalMesh(CacheKey, *NewMeshAsset, Materials);
+    bool bNeedRebuild = true;
 
-    if (!bLoaded)
+    const std::filesystem::path RequestedPathW(FPaths::ToWide(PathFileName));
+    std::wstring                RequestedExt = RequestedPathW.extension().wstring();
+    std::transform(RequestedExt.begin(), RequestedExt.end(), RequestedExt.begin(), ::towlower);
+
+    const std::filesystem::path BakedPathW(FPaths::ToWide(CacheKey));
+
+    if (RequestedExt == L".skm")
     {
-        delete NewMeshAsset;
+        if (LoadBakedSkeletalMesh(CacheKey, *NewMeshAsset, Materials))
+        {
+            bNeedRebuild = false;
+        }
+        else
+        {
+            delete NewMeshAsset;
+            return nullptr;
+        }
+    }
+    else if (std::filesystem::exists(BakedPathW))
+    {
+        const bool bSourceMissing = !std::filesystem::exists(RequestedPathW);
+        const bool bBakedIsFresh  = bSourceMissing || std::filesystem::last_write_time(BakedPathW) >= std::filesystem::last_write_time(RequestedPathW);
 
-        // TODO : FBX Importer fallback
-        return nullptr;
+        if (bBakedIsFresh)
+        {
+            if (LoadBakedSkeletalMesh(CacheKey, *NewMeshAsset, Materials))
+            {
+                bNeedRebuild = false;
+            }
+            else
+            {
+                bNeedRebuild = true;
+            }
+        }
     }
 
+    if (bNeedRebuild)
+    {
+        if (!FFbxImporter::ImportSkeletalMesh(PathFileName, *NewMeshAsset, Materials))
+        {
+            delete NewMeshAsset;
+            return nullptr;
+        }
+
+        NewMeshAsset->PathFileName = PathFileName;
+        const bool bSaved          = SaveBakedSkeletalMesh(CacheKey, *NewMeshAsset, Materials);
+        (void)bSaved;
+    }
+    
     USkeletalMesh* SkeletalMesh = UObjectManager::Get().CreateObject<USkeletalMesh>();
 
     SkeletalMesh->SetSkeletalMaterials(std::move(Materials));
     SkeletalMesh->SetSkeletalMeshAsset(NewMeshAsset);
-
+    
     SkeletalMeshCache[CacheKey] = SkeletalMesh;
-
+    
     FMaterialManager::Get().ScanMaterialAssets();
-
+    
     return SkeletalMesh;
 }
 

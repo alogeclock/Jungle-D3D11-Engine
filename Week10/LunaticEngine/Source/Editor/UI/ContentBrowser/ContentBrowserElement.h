@@ -88,3 +88,9 @@ class UAssetElement final : public ContentBrowserElement
 public:
 	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
 };
+
+class FbxElement final : public ContentBrowserElement
+{
+public:
+	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
+};

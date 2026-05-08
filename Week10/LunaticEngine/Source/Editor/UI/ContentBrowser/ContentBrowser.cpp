@@ -439,6 +439,11 @@ void FEditorContentBrowserWidget::RefreshContent()
 			element = std::make_shared<ObjectElement>();
 			element.get()->SetIcon(ICons[".obj"].Get());
 		}
+		else if (Extension == ".fbx")
+		{
+			element = std::make_shared<FbxElement>();
+			element.get()->SetIcon(ICons["Default"].Get());
+		}
 		else if (Extension == ".mat")
 		{
 			element = std::make_shared<MaterialElement>();
