@@ -427,6 +427,9 @@
     <ClCompile Include="Source\Engine\Mesh\MeshSimplifier.cpp" />
     <ClCompile Include="Source\Engine\Mesh\ObjImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\ObjManager.cpp" />
+      <ClCompile Include="Source\Engine\Mesh\SkeletalMesh.cpp"/>
+      <ClCompile Include="Source\Engine\Mesh\SkeletalMeshBake.cpp"/>
+      <ClCompile Include="Source\Engine\Mesh\SkeletalMeshManager.cpp"/>
     <ClCompile Include="Source\Engine\Mesh\StaticMesh.cpp" />
     <ClCompile Include="Source\Engine\Object\FName.cpp" />
     <ClCompile Include="Source\Engine\Object\Object.cpp" />
@@ -710,6 +713,10 @@
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h" />
     <ClInclude Include="Source\Engine\Mesh\ObjImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\ObjManager.h" />
+      <ClInclude Include="Source\Engine\Mesh\SkeletalMesh.h"/>
+      <ClInclude Include="Source\Engine\Mesh\SkeletalMeshAsset.h"/>
+      <ClInclude Include="Source\Engine\Mesh\SkeletalMeshBake.h"/>
+      <ClInclude Include="Source\Engine\Mesh\SkeletalMeshManager.h"/>
     <ClInclude Include="Source\Engine\Mesh\StaticMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshAsset.h" />
     <ClInclude Include="Source\Engine\Object\FName.h" />

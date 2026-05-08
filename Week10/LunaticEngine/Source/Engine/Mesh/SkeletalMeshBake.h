@@ -1,0 +1,35 @@
+﻿#pragma once
+#include "SkeletalMeshAsset.h"
+#include "Core/CoreTypes.h"
+#include "Serialization/Archive.h"
+
+// ============================================================================
+// FSkeletalMeshBakeHeader
+//
+// .skm 파일 맨 앞에 저장되는 헤더.
+// 이 파일이 정말 SkeletalMesh Bake 파일인지, 현재 코드와 호환되는 버전인지
+// 확인하기 위해 사용한다.
+// ============================================================================
+struct FSkeletalMeshBakeHeader
+{
+    uint32 Magic   = 0x534B4D31;
+    uint32 Version = 1;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalMeshBakeHeader& Header)
+    {
+        Ar << Header.Magic;
+        Ar << Header.Version;
+        return Ar;
+    }
+};
+
+namespace SkeletalMeshBake
+{
+    // 현재 엔진이 기대하는 SkeletalMesh Bake 파일 식별자.
+    static constexpr uint32 Magic = 0x534B4D31;
+    // 현재 엔진이 지원하는 SkeletalMesh Bake 포맷 버전.
+    static constexpr uint32 Version = 1;
+
+    bool Save(const FString& BakePath, FSkeletalMesh& Mesh, TArray<FStaticMaterial>& Materials);
+    bool Load(const FString& BakePath, FSkeletalMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials);
+}
