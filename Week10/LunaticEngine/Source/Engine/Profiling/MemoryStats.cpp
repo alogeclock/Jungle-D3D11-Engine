@@ -291,14 +291,15 @@ namespace
 	}
 }
 
-uint64 MemoryStats::TotalAllocationBytes = 0;
-uint32 MemoryStats::TotalAllocationCount = 0;
-uint64 MemoryStats::PixelShaderMemory = 0;
-uint64 MemoryStats::VertexShaderMemory = 0;
-uint64 MemoryStats::TextureMemory = 0;
-uint64 MemoryStats::VertexBufferMemory = 0;
-uint64 MemoryStats::IndexBufferMemory = 0;
-uint64 MemoryStats::StaticMeshCPUMemory = 0;
+uint64 MemoryStats::TotalAllocationBytes  = 0;
+uint32 MemoryStats::TotalAllocationCount  = 0;
+uint64 MemoryStats::PixelShaderMemory     = 0;
+uint64 MemoryStats::VertexShaderMemory    = 0;
+uint64 MemoryStats::TextureMemory         = 0;
+uint64 MemoryStats::VertexBufferMemory    = 0;
+uint64 MemoryStats::IndexBufferMemory     = 0;
+uint64 MemoryStats::StaticMeshCPUMemory   = 0;
+uint64 MemoryStats::SkeletalMeshCPUMemory = 0;
 
 uint64 MemoryStats::CalculateTextureMemory(ID3D11Resource* Resource)
 {
