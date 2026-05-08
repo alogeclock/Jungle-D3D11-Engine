@@ -1250,15 +1250,27 @@ void FEditorViewportClient::TickInput(float DeltaTime)
 	EditorRotateAccumulator = FVector::ZeroVector;
 	EditorPanAccumulator = FVector::ZeroVector;
 	EditorZoomAccumulator = 0.0f;
-	bool bForceInput = bIsHovered || bIsActive || Input.IsMouseButtonDown(VK_RBUTTON);
-	if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
+	const bool bGuiWantsMouse = Input.IsGuiUsingMouse();
+	const bool bGuiWantsKeyboard = Input.IsGuiUsingKeyboard();
+
+	if (bIsHovered && Input.IsMouseButtonPressed(VK_RBUTTON) && !bGuiWantsMouse && !bGuiWantsKeyboard)
 	{
-		if (EditorEngine->IsAssetEditorCapturingInput())
-		{
-			bForceInput = false;
-		}
+		bCameraInputCaptured = true;
 	}
-	EnhancedInputManager.ProcessInput(&Input, DeltaTime, bForceInput);
+
+	if (Input.IsMouseButtonReleased(VK_RBUTTON) || !Input.IsWindowFocused())
+	{
+		bCameraInputCaptured = false;
+	}
+
+	const bool bAllowNewViewportInput =
+		bIsHovered && !bGuiWantsMouse && !bGuiWantsKeyboard;
+
+	const bool bIgnoreGui =
+		bCameraInputCaptured || bAllowNewViewportInput;
+
+	EnhancedInputManager.ProcessInput(&Input, DeltaTime, bIgnoreGui);
+
 	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
 	const bool bIsOrtho = CameraState.bIsOrthogonal;
 	const float MoveSensitivity = RenderOptions.CameraMoveSensitivity;

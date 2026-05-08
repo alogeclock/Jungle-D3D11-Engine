@@ -205,6 +205,9 @@ private:
 	float EditorZoomAccumulator = 0.0f;
 	int32 HoveredUIScreenGizmoAxis = 0;
 	int32 ActiveUIScreenGizmoAxis = 0;
+	bool bCameraInputCaptured = false;
 	bool bDraggingUIScreenGizmo = false;
+	bool bViewportMouseCaptured = false;
+	bool bCameraNavigationActive = false;
 	ImVec2 LastUIScreenGizmoMousePos = ImVec2(0.0f, 0.0f);
 };
