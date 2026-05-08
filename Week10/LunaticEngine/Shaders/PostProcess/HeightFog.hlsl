@@ -43,7 +43,7 @@ float4 PS(PS_Input_UV input) : SV_TARGET
     // Reconstruct world position from depth
     float2 ndc = float2(input.uv.x * 2.0 - 1.0, 1.0 - input.uv.y * 2.0);
     float4 clipPos = float4(ndc, depth, 1.0);
-    float4 worldH = mul(clipPos, InvViewProj);
+    float4 worldH = mul(InvViewProj, clipPos);
     float3 worldPos = worldH.xyz / worldH.w;
 
     // Camera position from FrameBuffer (b0)

@@ -76,7 +76,7 @@ float SampleShadowVSM(Texture2DArray shadowMap, float3 uvw, float fragDepth, flo
 }
 
 // ── Cascade 선택 ────────────────────────────────────────────────
-// viewDepth = abs(mul(worldPos, View).z)  (카메라 뷰 공간 깊이)
+// viewDepth = abs(mul(View, worldPos).z)  (카메라 뷰 공간 깊이)
 uint SelectCascade(float viewDepth)
 {
     // CascadeSplits.xyzw = [split0, split1, split2, split3]
@@ -91,7 +91,7 @@ uint SelectCascade(float viewDepth)
 
 bool SampleDirectionalCascade(float3 biasedPos, uint cascade, out float shadowFactor)
 {
-    float4 lightSpacePos = mul(float4(biasedPos, 1.0f), CSMViewProj[cascade]);
+    float4 lightSpacePos = mul(CSMViewProj[cascade], float4(biasedPos, 1.0f));
     float3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 
     float2 shadowUV = projCoords.xy * float2(0.5f, -0.5f) + 0.5f;
@@ -189,7 +189,7 @@ float CalcSpotShadowFactor(uint lightIndex, float3 worldPos, float3 N, float3 li
     FSpotShadowData sd = SpotShadowDatas[lightIndex];
 
     float3 biasedPos = worldPos + N * sd.ShadowNormalBias;
-    float4 lightSpacePos = mul(float4(biasedPos, 1.0f), sd.ViewProj);
+    float4 lightSpacePos = mul(sd.ViewProj, float4(biasedPos, 1.0f));
     float3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 
     float2 shadowUV = projCoords.xy * float2(0.5f, -0.5f) + 0.5f;
@@ -245,7 +245,7 @@ float CalcPointShadowFactor(uint lightIndex, float3 worldPos, float3 lightPos, f
     float slope = 1.0f - saturate(dot(N, -lightDir));
 
     float3 biasedPos = worldPos + N * pointLightData.ShadowNormalBias;
-    float4 lightSpacePos = mul(float4(biasedPos, 1.0f), pointLightData.FaceViewProj[face]);
+    float4 lightSpacePos = mul(pointLightData.FaceViewProj[face], float4(biasedPos, 1.0f));
     float3 ndc = lightSpacePos.xyz / lightSpacePos.w;
 
     float2 projUV = ndc.xy * float2(0.5f, -0.5f) + 0.5f;

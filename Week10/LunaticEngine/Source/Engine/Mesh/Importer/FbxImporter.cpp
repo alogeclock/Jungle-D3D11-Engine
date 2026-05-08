@@ -65,7 +65,7 @@ bool FFbxImporter::LoadSceneSummary(const FString& FilePath, FFbxImportStats& Ou
 }
 
 
-bool FFbxImporter::ImportStaticMesh(const FString& FilePath, const FFbxImportOptions& Options, FStaticMesh& OutMesh, TArray<FStaticMesh>& OutMaterial)
+bool FFbxImporter::ImportStaticMesh(const FString& FilePath, const FFbxImportOptions& Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
 {
 	return false;
 }

@@ -1,7 +1,7 @@
 #ifndef CONSTANT_BUFFERS_HLSL
 #define CONSTANT_BUFFERS_HLSL
 
-#pragma pack_matrix(row_major)
+#pragma pack_matrix(column_major)
 
 // b0: 프레임 공통 — ViewProj, 와이어프레임 설정
 cbuffer FrameBuffer : register(b0)

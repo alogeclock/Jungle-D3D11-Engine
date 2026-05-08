@@ -8,8 +8,8 @@ PS_Input_ColorWorld VS(VS_Input_PC input)
     float3 worldPos = input.position.xyz;
     output.worldPos = worldPos;
 
-    float4 viewPos = mul(float4(worldPos, 1.0f), View);
-    output.position = mul(viewPos, Projection);
+    float4 viewPos = mul(View, float4(worldPos, 1.0f));
+    output.position = mul(Projection, viewPos);
 
     output.color = input.color;
 
