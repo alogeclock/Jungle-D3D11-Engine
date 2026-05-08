@@ -160,6 +160,25 @@ void FObjViewerPanel::RenderMeshList()
 
 	ImGui::Separator();
 
+	if (ImGui::CollapsingHeader("FBX Summary", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::InputText("FBX Path", FbxPathInput, IM_ARRAYSIZE(FbxPathInput));
+		ImGui::SameLine();
+
+		const bool bHasFbxPath = FbxPathInput[0] != '\0';
+		if (!bHasFbxPath) ImGui::BeginDisabled();
+		if (ImGui::Button("Log Summary"))
+		{
+			if (Engine)
+			{
+				Engine->LogFbxSceneSummary(FbxPathInput);
+			}
+		}
+		if (!bHasFbxPath) ImGui::EndDisabled();
+	}
+
+	ImGui::Separator();
+
 	// Cached Meshes (.bin) 섹션
 	if (ImGui::CollapsingHeader("Cached Meshes (.bin)", ImGuiTreeNodeFlags_DefaultOpen))
 	{

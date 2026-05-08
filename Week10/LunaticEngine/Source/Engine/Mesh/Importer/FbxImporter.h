@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <string>
 #include "Core/CoreTypes.h"
+
+struct FStaticMesh;
 struct FFbxImportOptions
 {
 	float Scale = 1.0f;
@@ -22,5 +24,6 @@ struct FFbxImporter
 {
 	static bool SmokeTest();
 	static bool LoadSceneSummary(const FString& FilePath, FFbxImportStats& OutStats);
+	static bool ImportStaticMesh(const FString& FilePath, const FFbxImportOptions& Options, FStaticMesh& OutMesh, TArray<FStaticMesh>& OutMaterial);
 
 };

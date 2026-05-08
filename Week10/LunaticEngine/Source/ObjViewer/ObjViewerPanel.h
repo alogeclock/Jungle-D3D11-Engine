@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
-#include "Mesh/ObjImporter.h"
+#include "Mesh/Importer/ObjImporter.h"
 
 class FRenderer;
 class FWindowsWindow;
@@ -29,4 +29,5 @@ private:
 	int32 SelectedObjIndex = -1;
 	bool bShowImportPopup = false;
 	FImportOptions PendingImportOptions;
+	char FbxPathInput[512] = "";
 };

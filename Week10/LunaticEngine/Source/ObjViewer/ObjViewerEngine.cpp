@@ -5,6 +5,7 @@
 #include "GameFramework/World.h"
 #include "Object/ObjectFactory.h"
 #include "Mesh/ObjManager.h"
+#include "Mesh/Importer/FbxImporter.h"
 #include "Component/StaticMeshComponent.h"
 #include "GameFramework/AActor.h"
 #include "Viewport/Viewport.h"
@@ -130,4 +131,10 @@ void UObjViewerEngine::ImportObjWithOptions(const FString& ObjPath, const FImpor
 	// 리프레시 + 카메라 리셋
 	FObjManager::ScanObjSourceFiles();
 	ViewportClient.ResetCamera();
+}
+
+void UObjViewerEngine::LogFbxSceneSummary(const FString& FbxPath)
+{
+	FFbxImportStats Stats;
+	FFbxImporter::LoadSceneSummary(FbxPath, Stats);
 }
