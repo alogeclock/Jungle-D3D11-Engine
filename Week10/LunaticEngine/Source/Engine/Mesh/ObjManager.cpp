@@ -1,6 +1,6 @@
 ﻿#include "Mesh/ObjManager.h"
 #include "Mesh/StaticMesh.h"
-#include "Mesh/ObjImporter.h"
+#include "Mesh/Importer/ObjImporter.h"
 #include "Materials/Material.h"
 #include "Core/Log.h"
 #include "Serialization/WindowsArchive.h"

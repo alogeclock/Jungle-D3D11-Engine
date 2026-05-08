@@ -799,6 +799,11 @@ void FEditorViewportClient::OnEditorMove(const FInputActionValue& Value)
 void FEditorViewportClient::OnEditorRotate(const FInputActionValue& Value)
 {
 	FInputManager& Input = FInputManager::Get();
+	if (Input.IsKeyDown(VK_MENU))
+	{
+		return;
+	}
+
 	if (Input.IsMouseButtonDown(VK_RBUTTON))
 	{
 		EditorRotateAccumulator = EditorRotateAccumulator + Value.GetVector();
@@ -819,11 +824,8 @@ void FEditorViewportClient::OnEditorRotate(const FInputActionValue& Value)
 
 void FEditorViewportClient::OnEditorPan(const FInputActionValue& Value)
 {
-	if (FInputManager::Get().IsMouseButtonDown(VK_MBUTTON))
-	{
-		EditorPanAccumulator = EditorPanAccumulator + Value.GetVector();
-	}
-	else if (FInputManager::Get().IsKeyDown(VK_MENU) && FInputManager::Get().IsMouseButtonDown(VK_MBUTTON)) // Alt + MMB
+	FInputManager& Input = FInputManager::Get();
+	if (Input.IsMouseButtonDown(VK_MBUTTON))
 	{
 		EditorPanAccumulator = EditorPanAccumulator + Value.GetVector();
 	}
@@ -832,7 +834,7 @@ void FEditorViewportClient::OnEditorPan(const FInputActionValue& Value)
 void FEditorViewportClient::OnEditorZoom(const FInputActionValue& Value)
 {
 	FInputManager& Input = FInputManager::Get();
-	if (Input.IsMouseButtonDown(VK_RBUTTON))
+	if (Input.IsMouseButtonDown(VK_RBUTTON) && !Input.IsKeyDown(VK_MENU))
 	{
 		float& Speed = FEditorSettings::Get().CameraSpeed;
 		Speed = Clamp(Speed + Value.Get() * 2.0f, 1.0f, 100.0f);
