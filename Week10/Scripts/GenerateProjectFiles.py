@@ -80,6 +80,7 @@ INCLUDE_PATHS = [
     "ThirdParty\\sol2",
     "Source\\Editor",
     "Source\\ObjViewer",
+    "ThirdParty\\FBXSDK\\include",
     ".",
 ]
 
