@@ -4,8 +4,8 @@
   "name": "Play Scene Dialogues",
   "characters": {
     "BAEK_COMMANDER": {
-      "displayName": "백 지휘관",
-      "shortName": "백 지휘관",
+      "displayName": "백 사령관",
+      "shortName": "백 사령관",
       "defaultPortrait": "portrait_baek_normal",
       "emotions": {
         "normal": "portrait_baek_normal",
