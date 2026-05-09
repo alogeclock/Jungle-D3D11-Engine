@@ -84,6 +84,7 @@ ROOT_FILES = ["main.cpp"]
 
 # Include paths (relative to project dir)
 INCLUDE_PATHS = [
+    "Shaders",
     "Source\\Engine",
     "Source",
     "ThirdParty",
