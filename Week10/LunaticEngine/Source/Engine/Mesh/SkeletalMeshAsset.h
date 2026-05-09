@@ -431,8 +431,11 @@ struct FSkeletalImportSummary
     int32 LODCount          = 0;
     int32 MaterialSlotCount = 0;
 
-    int32 VertexCount   = 0;
-    int32 TriangleCount = 0;
+    int32 VertexCount             = 0;
+    int32 CandidateVertexCount    = 0;
+    int32 DeduplicatedVertexCount = 0;
+    float DeduplicationRatio      = 0.0f;
+    int32 TriangleCount           = 0;
 
     int32 AnimationClipCount = 0;
     int32 MorphTargetCount   = 0;
@@ -460,8 +463,11 @@ struct FSkeletalImportSummary
         Ar << Summary.BoneCount;
         Ar << Summary.LODCount;
         Ar << Summary.MaterialSlotCount;
-
+        
         Ar << Summary.VertexCount;
+        Ar << Summary.CandidateVertexCount;
+        Ar << Summary.DeduplicatedVertexCount;
+        Ar << Summary.DeduplicationRatio;
         Ar << Summary.TriangleCount;
 
         Ar << Summary.AnimationClipCount;
