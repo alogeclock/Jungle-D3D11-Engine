@@ -1708,7 +1708,7 @@ namespace
         )
     {
         for (FbxNode* MeshNode : SkinnedMeshNodes)
-        {
+        { 
             FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
             if (!Mesh)
             {
