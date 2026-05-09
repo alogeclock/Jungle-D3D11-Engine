@@ -40,6 +40,10 @@ struct FVertexPNCTT
 	FVector Normal;
 	FVector4 Color;
 	FVector2 UV;
+	FVector2 UV1;
+	FVector2 UV2;
+	FVector2 UV3;
+	float NumUVs = 1.0f;
 	FVector4 Tangent;
 };
 

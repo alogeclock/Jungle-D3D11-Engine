@@ -52,6 +52,9 @@ public:
     // UMaterial 생성
 	UMaterial* GetOrCreateMaterial(const FString& MatFilePath);
 
+	// 자동 생성 .mat처럼 파일을 덮어쓴 뒤 기존 런타임 캐시를 버릴 때 사용한다.
+	void InvalidateMaterial(const FString& MatFilePath);
+
 	void ScanMaterialAssets();
 	const TArray<FMaterialAssetListItem>& GetAvailableMaterialFiles() const { return AvailableMaterialFiles; }
 	UTexture2D* GetMaterialPreviewTexture(UMaterial* Material) const;

@@ -731,6 +731,7 @@
     <ClInclude Include="Source\Engine\Mesh\SkeletalMeshManager.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshAsset.h" />
+      <ClInclude Include="Source\Engine\Mesh\StaticMeshBake.h"/>
     <ClInclude Include="Source\Engine\Object\FName.h" />
     <ClInclude Include="Source\Engine\Object\Object.h" />
     <ClInclude Include="Source\Engine\Object\ObjectFactory.h" />

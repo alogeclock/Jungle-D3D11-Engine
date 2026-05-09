@@ -76,6 +76,10 @@ void UStaticMesh::InitResources(ID3D11Device* InDevice)
 		RenderVert.Normal = RawVert.normal;
 		RenderVert.Color = RawVert.color;
 		RenderVert.UV = RawVert.tex;
+		RenderVert.UV1 = RawVert.UV[1];
+		RenderVert.UV2 = RawVert.UV[2];
+		RenderVert.UV3 = RawVert.UV[3];
+		RenderVert.NumUVs = static_cast<float>(RawVert.NumUVs);
 		RenderVert.Tangent = RawVert.tangent;
 		RenderMeshData.Vertices.push_back(RenderVert);
 	}

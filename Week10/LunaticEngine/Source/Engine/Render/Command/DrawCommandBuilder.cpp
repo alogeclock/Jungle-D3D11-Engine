@@ -172,6 +172,15 @@ void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy
 
 	const bool bDepthOnly = (Pass == ERenderPass::PreDepth);
 
+	auto GetSectionRenderPass = [&Proxy](const FMeshSectionDraw& Section) -> ERenderPass
+	{
+		if (Section.Material)
+		{
+			return Section.Material->GetRenderPass();
+		}
+		return Proxy.GetRenderPass();
+	};
+
 	// MeshBuffer → FDrawCommandBuffer 변환
 	FDrawCommandBuffer ProxyBuffer;
 	ProxyBuffer.VB = Proxy.GetMeshBuffer()->GetVertexBuffer().GetBuffer();
@@ -183,6 +192,20 @@ void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy
 	{
 		if (Section.IndexCount == 0) continue;
 		if (!ProxyBuffer.IB) continue;
+
+		const ERenderPass SectionPass = GetSectionRenderPass(Section);
+
+		// PreDepth는 불투명 섹션만 기록한다. AlphaBlend 섹션은 깊이 프리패스에서 제외한다.
+		if (Pass == ERenderPass::PreDepth && SectionPass != ERenderPass::Opaque)
+		{
+			continue;
+		}
+
+		// 일반 mesh pass는 섹션 material의 RenderPass와 일치하는 pass에서만 draw command를 만든다.
+		if ((Pass == ERenderPass::Opaque || Pass == ERenderPass::AlphaBlend) && SectionPass != Pass)
+		{
+			continue;
+		}
 
 		// Section Material이 셰이더를 가지면 사용, 없으면 Proxy 폴백
 		FShader* SectionShader = (Section.Material && Section.Material->GetShader())
@@ -374,10 +397,43 @@ void FDrawCommandBuilder::BuildDecalCommands(FPrimitiveSceneProxy* Proxy, const 
 // ============================================================
 void FDrawCommandBuilder::BuildMeshCommands(const FPrimitiveSceneProxy* Proxy)
 {
-	if (Proxy->GetRenderPass() == ERenderPass::Opaque)
-		BuildCommandForProxy(*Proxy, ERenderPass::PreDepth);
+	bool bHasOpaqueSection = false;
+	bool bHasAlphaBlendSection = false;
 
-	BuildCommandForProxy(*Proxy, Proxy->GetRenderPass());
+	for (const FMeshSectionDraw& Section : Proxy->GetSectionDraws())
+	{
+		const ERenderPass SectionPass = Section.Material ? Section.Material->GetRenderPass() : Proxy->GetRenderPass();
+		if (SectionPass == ERenderPass::Opaque)
+		{
+			bHasOpaqueSection = true;
+		}
+		else if (SectionPass == ERenderPass::AlphaBlend)
+		{
+			bHasAlphaBlendSection = true;
+		}
+	}
+
+	// 섹션 정보가 없는 legacy/default proxy는 기존 동작을 유지한다.
+	if (Proxy->GetSectionDraws().empty())
+	{
+		if (Proxy->GetRenderPass() == ERenderPass::Opaque)
+		{
+			BuildCommandForProxy(*Proxy, ERenderPass::PreDepth);
+		}
+		BuildCommandForProxy(*Proxy, Proxy->GetRenderPass());
+		return;
+	}
+
+	if (bHasOpaqueSection)
+	{
+		BuildCommandForProxy(*Proxy, ERenderPass::PreDepth);
+		BuildCommandForProxy(*Proxy, ERenderPass::Opaque);
+	}
+
+	if (bHasAlphaBlendSection)
+	{
+		BuildCommandForProxy(*Proxy, ERenderPass::AlphaBlend);
+	}
 }
 
 // ============================================================

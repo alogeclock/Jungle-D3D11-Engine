@@ -14,28 +14,47 @@ void FMaterialManager::ScanMaterialAssets()
 {
 	AvailableMaterialFiles.clear();
 
-	const std::filesystem::path MaterialRoot = std::filesystem::path(FPaths::RootDir()) / L"Asset" / L"Content" / L"Materials";
-
-	if (!std::filesystem::exists(MaterialRoot))
-	{
-		return;
-	}
-
 	const std::filesystem::path ProjectRoot(FPaths::RootDir());
-
-	for (const auto& Entry : std::filesystem::recursive_directory_iterator(MaterialRoot))
+	const std::filesystem::path Roots[] =
 	{
-		if (!Entry.is_regular_file()) continue;
+		std::filesystem::path(FPaths::RootDir()) / L"Asset" / L"Content" / L"Materials",
+		std::filesystem::path(FPaths::RootDir()) / L"Asset" / L"Materials"
+	};
 
-		const std::filesystem::path& Path = Entry.path();
+	for (const std::filesystem::path& MaterialRoot : Roots)
+	{
+		if (!std::filesystem::exists(MaterialRoot))
+		{
+			continue;
+		}
 
-		if (Path.extension() != L".mat") continue;
-		if (Path.stem() == L"None") continue; // Fallback 머티리얼은 목록에서 제외
+		for (const auto& Entry : std::filesystem::recursive_directory_iterator(MaterialRoot))
+		{
+			if (!Entry.is_regular_file()) continue;
 
-		FMaterialAssetListItem Item;
-		Item.DisplayName = FPaths::ToUtf8(Path.stem().wstring());
-		Item.FullPath = FPaths::ToUtf8(Path.lexically_relative(ProjectRoot).generic_wstring());
-		AvailableMaterialFiles.push_back(std::move(Item));
+			const std::filesystem::path& Path = Entry.path();
+			if (Path.extension() != L".mat") continue;
+			if (Path.stem() == L"None") continue;
+
+			FMaterialAssetListItem Item;
+			Item.DisplayName = FPaths::ToUtf8(Path.stem().wstring());
+			Item.FullPath = FPaths::ToUtf8(Path.lexically_relative(ProjectRoot).generic_wstring());
+
+			bool bDuplicate = false;
+			for (const FMaterialAssetListItem& Existing : AvailableMaterialFiles)
+			{
+				if (Existing.FullPath == Item.FullPath)
+				{
+					bDuplicate = true;
+					break;
+				}
+			}
+
+			if (!bDuplicate)
+			{
+				AvailableMaterialFiles.push_back(std::move(Item));
+			}
+		}
 	}
 
 	std::sort(
@@ -91,6 +110,13 @@ UTexture2D* FMaterialManager::GetMaterialPreviewTexture(UMaterial* Material) con
 UTexture2D* FMaterialManager::GetMaterialPreviewTexture(const FString& MaterialPath)
 {
 	return GetMaterialPreviewTexture(GetOrCreateMaterial(MaterialPath));
+}
+
+void FMaterialManager::InvalidateMaterial(const FString& MatFilePath)
+{
+	std::filesystem::path Path(FPaths::ToWide(MatFilePath));
+	FString GenericPath = FPaths::ToUtf8(Path.generic_wstring());
+	MaterialCache.erase(GenericPath);
 }
 
 UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
@@ -357,7 +383,34 @@ bool FMaterialManager::InjectDefaultParameters(json::JSON& JsonData, FMaterialTe
 			case sizeof(float) : // 4바이트 - Scalar
 			{
 				float Value = 0.f;
-				Material->GetScalarParameter(ParamName, Value);
+
+				// 새 UberLit 확장 파라미터는 기존 .mat에 없을 수 있다.
+				// 기존 머티리얼이 전부 투명해지는 것을 막기 위해 의미 있는 기본값을 먼저 넣는다.
+				if (ParamName == "Opacity")
+				{
+					Value = 1.0f;
+				}
+				else if (ParamName == "AlphaClip")
+				{
+					Value = 0.0f;
+				}
+				else if (ParamName == "HasOpacityTexture")
+				{
+					Value = 0.0f;
+				}
+				else if (ParamName == "HasEmissiveTexture")
+				{
+					Value = 0.0f;
+				}
+				else if (ParamName == "EmissiveIntensity")
+				{
+					Value = 0.0f;
+				}
+				else
+				{
+					Material->GetScalarParameter(ParamName, Value);
+				}
+
 				JsonData[MatKeys::Parameters][ParamName] = Value;
 				break;
 			}

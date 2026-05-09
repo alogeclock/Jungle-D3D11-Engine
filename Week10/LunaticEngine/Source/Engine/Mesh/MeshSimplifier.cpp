@@ -1,4 +1,4 @@
-#include "Mesh/MeshSimplifier.h"
+﻿#include "Mesh/MeshSimplifier.h"
 
 #include <algorithm>
 #include <vector>
@@ -348,6 +348,15 @@ FSimplifiedMesh FMeshSimplifier::Simplify(
 
 				V[Keep].tex.X = V[Keep].tex.X*(1-T)+V[Rem].tex.X*T;
 				V[Keep].tex.Y = V[Keep].tex.Y*(1-T)+V[Rem].tex.Y*T;
+				V[Keep].SetUV(0, V[Keep].tex);
+				const int32 NumMergedUVs = (std::min)(static_cast<int32>((std::max)(V[Keep].NumUVs, V[Rem].NumUVs)), MAX_STATIC_MESH_UV_CHANNELS);
+				for (int32 UVIndex = 1; UVIndex < NumMergedUVs; ++UVIndex)
+				{
+					FVector2 MergedUV;
+					MergedUV.X = V[Keep].UV[UVIndex].X*(1-T)+V[Rem].UV[UVIndex].X*T;
+					MergedUV.Y = V[Keep].UV[UVIndex].Y*(1-T)+V[Rem].UV[UVIndex].Y*T;
+					V[Keep].SetUV(UVIndex, MergedUV);
+				}
 			}
 
 			Q[Keep] = Q[Keep] + Q[Rem];

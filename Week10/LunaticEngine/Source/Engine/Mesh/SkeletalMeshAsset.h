@@ -132,9 +132,25 @@ struct FBoneInfo
 // - ParentIndex 기반 Children 재구성
 // - Bone 이름으로 Bone Index 검색
 // ============================================================================
+struct FSkeletalSocket
+{
+    FString Name;
+    int32   ParentBoneIndex = -1;
+    FMatrix LocalTransform = FMatrix::Identity;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalSocket& Socket)
+    {
+        Ar << Socket.Name;
+        Ar << Socket.ParentBoneIndex;
+        SkeletalMeshSerialization::SerializeMatrix(Ar, Socket.LocalTransform);
+        return Ar;
+    }
+};
+
 struct FSkeleton
 {
     TArray<FBoneInfo> Bones;
+    TArray<FSkeletalSocket> Sockets;
 
     void RebuildChildren()
     {
@@ -167,9 +183,29 @@ struct FSkeleton
         return -1;
     }
 
+    int32 FindSocketIndexByName(const FString& SocketName) const
+    {
+        for (int32 SocketIndex = 0; SocketIndex < static_cast<int32>(Sockets.size()); ++SocketIndex)
+        {
+            if (Sockets[SocketIndex].Name == SocketName)
+            {
+                return SocketIndex;
+            }
+        }
+
+        return -1;
+    }
+
+    const FSkeletalSocket* FindSocketByName(const FString& SocketName) const
+    {
+        const int32 SocketIndex = FindSocketIndexByName(SocketName);
+        return SocketIndex >= 0 ? &Sockets[SocketIndex] : nullptr;
+    }
+
     void Serialize(FArchive& Ar)
     {
         Ar << Bones;
+        Ar << Sockets;
 
         if (Ar.IsLoading())
         {
@@ -215,6 +251,12 @@ struct FSkeletalMeshLOD
 
     uint8 NumUVChannels = 1;
 
+    // FBX LODGroup / node name에서 온 원본 LOD 메타데이터.
+    int32 SourceLODIndex = 0;
+    float ScreenSize = 1.0f;
+    float SwitchDistance = 0.0f;
+    bool  bHasSwitchDistance = false;
+
     void CacheBounds()
     {
         bBoundsValid  = false;
@@ -252,6 +294,10 @@ struct FSkeletalMeshLOD
         Ar << Indices;
         Ar << Sections;
         Ar << NumUVChannels;
+        Ar << SourceLODIndex;
+        Ar << ScreenSize;
+        Ar << SwitchDistance;
+        Ar << bHasSwitchDistance;
 
         if (Ar.IsLoading())
         {
@@ -345,13 +391,31 @@ struct FMorphTargetDelta
     }
 };
 
+struct FMorphTargetInBetween
+{
+    float Weight = 1.0f;
+    TArray<FMorphTargetDelta> Deltas;
+
+    friend FArchive& operator<<(FArchive& Ar, FMorphTargetInBetween& Target)
+    {
+        Ar << Target.Weight;
+        Ar << Target.Deltas;
+        return Ar;
+    }
+};
+
 struct FMorphTargetLOD
 {
+    // 호환성과 기본 런타임 평가용 최종 target delta. 일반적으로 Weight=1.0 또는 마지막 in-between이다.
     TArray<FMorphTargetDelta> Deltas;
+
+    // FBX blend shape channel이 여러 target shape를 가질 때 weight별 delta를 보존한다.
+    TArray<FMorphTargetInBetween> InBetweens;
 
     friend FArchive& operator<<(FArchive& Ar, FMorphTargetLOD& LOD)
     {
         Ar << LOD.Deltas;
+        Ar << LOD.InBetweens;
         return Ar;
     }
 };
@@ -407,6 +471,9 @@ enum class ESkeletalImportWarningType : uint8
     MaterialNameCollision,
     InvalidMaterialIndex,
     SkippedNonTrianglePolygon,
+    ImportedSocketNode,
+    LODThresholdImported,
+    UnsupportedAssociateModelSkinning,
     BindPoseValidationFailed,
 };
 
