@@ -4,10 +4,11 @@
 #include "Materials/Material.h"
 #include "Core/Log.h"
 #include "Core/Notification.h"
-#include "Engine/Platform/Paths.h"
+#include "Platform/Paths.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
