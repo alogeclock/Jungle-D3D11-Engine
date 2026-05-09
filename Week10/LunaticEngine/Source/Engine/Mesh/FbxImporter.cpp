@@ -53,6 +53,19 @@ namespace
         float Weight    = 0.0f;
     };
 
+    struct FImportBuildContext
+    {
+        FSkeletalImportSummary Summary;
+
+        void AddWarning(ESkeletalImportWarningType Type, const FString& Message)
+        {
+            FSkeletalImportWarning Warning;
+            Warning.Type    = Type;
+            Warning.Message = Message;
+            Summary.Warnings.push_back(Warning);
+        }
+    };
+
     static bool LoadFbxScene(const FString& SourcePath, FFbxSceneHandle& OutScene, FString* OutMessage = nullptr)
     {
         const FString FullPath = FPaths::ConvertRelativePathToFull(SourcePath);
@@ -466,16 +479,30 @@ namespace
         return FVector(static_cast<float>(P[0]), static_cast<float>(P[1]), static_cast<float>(P[2]));
     }
 
-    static FVector ReadNormal(FbxMesh* Mesh, int32 PolygonIndex, int32 CornerIndex)
+    static bool TryReadNormal(FbxMesh* Mesh, int32 PolygonIndex, int32 CornerIndex, FVector& OutNormal)
     {
         FbxVector4 Normal;
 
         if (Mesh && Mesh->GetPolygonVertexNormal(PolygonIndex, CornerIndex, Normal))
         {
-            return FVector(static_cast<float>(Normal[0]), static_cast<float>(Normal[1]), static_cast<float>(Normal[2])).Normalized();
+            OutNormal = FVector(static_cast<float>(Normal[0]), static_cast<float>(Normal[1]), static_cast<float>(Normal[2])).Normalized();
+            return true;
         }
 
-        return FVector(0.0f, 0.0f, 1.0f);
+        OutNormal = FVector(0.0f, 0.0f, 1.0f);
+        return false;
+    }
+
+    static FVector ComputeTriangleNormal(const FVector& P0, const FVector& P1, const FVector& P2)
+    {
+        const FVector E0 = P1 - P0;
+        const FVector E1 = P2 - P0;
+        const FVector N  = E0.Cross(E1);
+        if (N.IsNearlyZero(1.0e-6f))
+        {
+            return FVector(0.0f, 0.0f, 1.0f);
+        }
+        return N.Normalized();
     }
 
     static FVector2 ReadUV(FbxMesh* Mesh, int32 PolygonIndex, int32 CornerIndex)
@@ -893,7 +920,7 @@ namespace
         return Key;
     }
 
-    static bool TryGetFirstMeshBindMatrix(FbxNode* MeshNode, FbxAMatrix& OutMeshBindMatrix)
+    static bool TryGetFirstMeshBindMatrix(FbxNode* MeshNode, FMatrix& OutMeshBindMatrix)
     {
         FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
         if (!Mesh)
@@ -921,13 +948,13 @@ namespace
                     continue;
                 }
 
-                FbxAMatrix MeshNodeBind;
-                Cluster->GetTransformMatrix(MeshNodeBind);
+                FbxAMatrix MeshNodeBindFbx;
+                Cluster->GetTransformMatrix(MeshNodeBindFbx);
 
-                // FBX geometric transforms are not inherited by child nodes, but they do affect
-                // control-point positions.  Keep mesh vertices, morph deltas and the reference bind
-                // space in the same geometric bind space.
-                OutMeshBindMatrix = GetNodeGeometryTransform(MeshNode) * MeshNodeBind;
+                const FMatrix GeometryTransform = ToEngineMatrix(GetNodeGeometryTransform(MeshNode));
+                const FMatrix MeshNodeBind      = ToEngineMatrix(MeshNodeBindFbx);
+
+                OutMeshBindMatrix = GeometryTransform * MeshNodeBind;
                 return true;
             }
         }
@@ -935,7 +962,7 @@ namespace
         return false;
     }
 
-    static bool TryGetReferenceMeshBindMatrix(const TArray<FbxNode*>& SkinnedMeshNodes, FbxAMatrix& OutReferenceMeshBindMatrix)
+    static bool TryGetReferenceMeshBindMatrix(const TArray<FbxNode*>& SkinnedMeshNodes, FMatrix& OutReferenceMeshBindMatrix)
     {
         for (FbxNode* MeshNode : SkinnedMeshNodes)
         {
@@ -948,7 +975,7 @@ namespace
         return false;
     }
 
-    static void ExtractSkinWeightsOnly(FbxMesh* Mesh, const TMap<FbxNode*, int32>& BoneNodeToIndex, TArray<TArray<FImportedBoneWeight>>& OutControlPointWeight)
+    static void ExtractSkinWeightsOnly(FbxMesh* Mesh, const TMap<FbxNode*, int32>& BoneNodeToIndex, TArray<TArray<FImportedBoneWeight>>& OutControlPointWeight, FImportBuildContext& BuildContext)
     {
         OutControlPointWeight.clear();
 
@@ -970,6 +997,13 @@ namespace
                 continue;
             }
 
+            const FbxSkin::EType SkinningType = Skin->GetSkinningType();
+
+            if (SkinningType != FbxSkin::eLinear && SkinningType != FbxSkin::eRigid)
+            {
+                BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedSkinningType, "Unsupported FBX skinning type. Imported with linear skinning fallback.");
+            }
+
             const int32 ClusterCount = Skin->GetClusterCount();
 
             for (int32 ClusterIndex = 0; ClusterIndex < ClusterCount; ++ClusterIndex)
@@ -978,6 +1012,13 @@ namespace
                 if (!Cluster || !Cluster->GetLink())
                 {
                     continue;
+                }
+
+                const FbxCluster::ELinkMode LinkMode = Cluster->GetLinkMode();
+
+                if (LinkMode != FbxCluster::eNormalize && LinkMode != FbxCluster::eTotalOne)
+                {
+                    BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedClusterLinkMode, "Unsupported FBX cluster link mode. Additive/associate model is not fully supported.");
                 }
 
                 auto BoneIt = BoneNodeToIndex.find(Cluster->GetLink());
@@ -1096,9 +1137,9 @@ namespace
         }
     }
 
-    static void PackTop4Weights(const TArray<FImportedBoneWeight>& SourceWeight, uint16 OutBoneIndices[4], float OutBoneWeights[4])
+    static void PackTopBoneWeights(const TArray<FImportedBoneWeight>& SourceWeight, uint16 OutBoneIndices[MAX_SKELETAL_MESH_BONE_INFLUENCES], float OutBoneWeights[MAX_SKELETAL_MESH_BONE_INFLUENCES], FImportBuildContext& BuildContext)
     {
-        for (int32 i = 0; i < 4; ++i)
+        for (int32 i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++i)
         {
             OutBoneIndices[i] = 0;
             OutBoneWeights[i] = 0.0f;
@@ -1108,6 +1149,7 @@ namespace
         {
             OutBoneIndices[0] = 0;
             OutBoneWeights[0] = 1.0f;
+            BuildContext.Summary.MissingWeightVertexCount++;
             return;
         }
 
@@ -1117,12 +1159,34 @@ namespace
             return A.Weight > B.Weight;
         });
 
-        const int32 Count = static_cast<int32>(std::min<size_t>(4, SortedWeights.size()));
+        BuildContext.Summary.MaxInfluenceCount = (std::max)(BuildContext.Summary.MaxInfluenceCount, static_cast<int32>(SortedWeights.size()));
 
+        if (static_cast<int32>(SortedWeights.size()) > MAX_SKELETAL_MESH_BONE_INFLUENCES)
+        {
+            BuildContext.Summary.VertexCountOverMaxInfluences++;
+
+            float DiscardedWeight = 0.0f;
+
+            for (int32 i = MAX_SKELETAL_MESH_BONE_INFLUENCES; i < static_cast<int32>(SortedWeights.size()); ++i)
+            {
+                DiscardedWeight += SortedWeights[i].Weight;
+            }
+
+            BuildContext.Summary.TotalDiscardedWeight += DiscardedWeight;
+        }
+
+        const int32 Count = static_cast<int32>((std::min<size_t>)(static_cast<size_t>(MAX_SKELETAL_MESH_BONE_INFLUENCES), SortedWeights.size()));
+        
         float Sum = 0.0f;
 
         for (int32 i = 0; i < Count; ++i)
         {
+            if (SortedWeights[i].BoneIndex < 0 || SortedWeights[i].BoneIndex > 65535)
+            {
+                BuildContext.AddWarning(ESkeletalImportWarningType::BoneIndexOverflow, "Bone index is outside uint16 range.");
+                continue;
+            }
+
             OutBoneIndices[i] = static_cast<uint16>(SortedWeights[i].BoneIndex);
             OutBoneWeights[i] = SortedWeights[i].Weight;
             Sum               += OutBoneWeights[i];
@@ -1133,11 +1197,12 @@ namespace
             OutBoneIndices[0] = 0;
             OutBoneWeights[0] = 1.0f;
 
-            for (int32 i = 1; i < 4; ++i)
+            for (int32 i = 1; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++i)
             {
                 OutBoneIndices[i] = 0;
                 OutBoneWeights[i] = 0.0f;
             }
+            BuildContext.Summary.MissingWeightVertexCount++;
             return;
         }
 
@@ -1585,9 +1650,44 @@ namespace
             }
         }
     }
+
+    static float ValidateBindPoseSkinningError(const FSkeletalMeshLOD& LOD, const FSkeleton& Skeleton)
+    {
+        float MaxError = 0.0f;
+
+        for (const FSkeletalVertex& Src : LOD.Vertices)
+        {
+            FVector SkinnedPos(0.0f, 0.0f, 0.0f);
+
+            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+            {
+                const uint16 BoneIndex = Src.BoneIndices[InfluenceIndex];
+                const float  Weight    = Src.BoneWeights[InfluenceIndex];
+
+                if (Weight <= 0.0f)
+                {
+                    continue;
+                }
+
+                if (BoneIndex >= Skeleton.Bones.size())
+                {
+                    continue;
+                }
+
+                const FMatrix SkinningMatrix = Skeleton.Bones[BoneIndex].InverseBindPose * Skeleton.Bones[BoneIndex].GlobalBindPose;
+
+                SkinnedPos += (Src.Pos * SkinningMatrix) * Weight;
+            }
+
+            const float Error = (SkinnedPos - Src.Pos).Length();
+            MaxError          = (std::max)(MaxError, Error);
+        }
+
+        return MaxError;
+    }
 }
 
-static bool BuildSkeletalMeshLODFromNodes(const TArray<FbxNode*>& MeshNodes, const TMap<FbxNode*, int32>& BoneNodeToIndex, const FMatrix& ReferenceMeshBindInverse, TArray<FStaticMaterial>& OutMaterials, FSkeletalMeshLOD& OutLOD, TArray<FImportedMorphSourceVertex>* OutMorphSources)
+static bool BuildSkeletalMeshLODFromNodes(const TArray<FbxNode*>& MeshNodes, const TMap<FbxNode*, int32>& BoneNodeToIndex, const FMatrix& ReferenceMeshBindInverse, TArray<FStaticMaterial>& OutMaterials, FSkeletalMeshLOD& OutLOD, TArray<FImportedMorphSourceVertex>* OutMorphSources, FImportBuildContext& BuildContext)
 {
     OutLOD = FSkeletalMeshLOD();
 
@@ -1607,18 +1707,17 @@ static bool BuildSkeletalMeshLODFromNodes(const TArray<FbxNode*>& MeshNodes, con
             continue;
         }
 
-        FbxAMatrix MeshBindFbx;
-        if (!TryGetFirstMeshBindMatrix(MeshNode, MeshBindFbx))
+        FMatrix MeshBind;
+        if (!TryGetFirstMeshBindMatrix(MeshNode, MeshBind))
         {
             continue;
         }
 
-        const FMatrix MeshBind          = ToEngineMatrix(MeshBindFbx);
         const FMatrix MeshToReference   = MeshBind * ReferenceMeshBindInverse;
         const FMatrix NormalToReference = MeshToReference.GetInverse().GetTransposed();
 
         TArray<TArray<FImportedBoneWeight>> ControlPointWeight;
-        ExtractSkinWeightsOnly(Mesh, BoneNodeToIndex, ControlPointWeight);
+        ExtractSkinWeightsOnly(Mesh, BoneNodeToIndex, ControlPointWeight, BuildContext);
 
         int32 PolygonVertexIndex = 0;
 
@@ -1660,6 +1759,7 @@ static bool BuildSkeletalMeshLODFromNodes(const TArray<FbxNode*>& MeshNodes, con
                 UV0[CornerIndex] = ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, 0);
             }
 
+            const FVector FallbackNormal  = ComputeTriangleNormal(Positions[0], Positions[1], Positions[2]);
             const FVector FallbackTangent = ComputeTriangleTangent(Positions[0], Positions[1], Positions[2], UV0[0], UV0[1], UV0[2]);
 
             for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
@@ -1672,9 +1772,25 @@ static bool BuildSkeletalMeshLODFromNodes(const TArray<FbxNode*>& MeshNodes, con
 
                 Vertex.Pos = Positions[CornerIndex];
 
-                Vertex.Normal = TransformNormalByMatrix(ReadNormal(Mesh, PolygonIndex, CornerIndex), NormalToReference);
+                FVector LocalNormal;
+                if (TryReadNormal(Mesh, PolygonIndex, CornerIndex, LocalNormal))
+                {
+                    Vertex.Normal = TransformNormalByMatrix(LocalNormal, NormalToReference);
+                }
+                else
+                {
+                    Vertex.Normal = FallbackNormal;
+                    BuildContext.Summary.GeneratedNormalCount++;
+                }
 
-                const int32 UVCount = static_cast<int32>((std::min<size_t>)(static_cast<size_t>(MAX_SKELETAL_MESH_UV_CHANNELS), static_cast<size_t>(GetUVSetCount(Mesh))));
+                const int32 RawUVSetCount = GetUVSetCount(Mesh);
+
+                if (RawUVSetCount <= 0)
+                {
+                    BuildContext.Summary.MissingUVCount++;
+                }
+
+                const int32 UVCount = static_cast<int32>((std::min<size_t>)(static_cast<size_t>(MAX_SKELETAL_MESH_UV_CHANNELS), static_cast<size_t>(RawUVSetCount)));
 
                 Vertex.NumUVs = static_cast<uint8>(UVCount > 0 ? UVCount : 1);
 
@@ -1697,21 +1813,23 @@ static bool BuildSkeletalMeshLODFromNodes(const TArray<FbxNode*>& MeshNodes, con
                     const FVector T = OrthogonalizeTangentToNormal(FallbackTangent, Vertex.Normal);
 
                     Vertex.Tangent = FVector4(T.X, T.Y, T.Z, 1.0f);
+                    BuildContext.Summary.GeneratedTangentCount++;
                 }
 
                 if (ControlPointIndex >= 0 && ControlPointIndex < static_cast<int32>(ControlPointWeight.size()))
                 {
-                    PackTop4Weights(ControlPointWeight[ControlPointIndex], Vertex.BoneIndices, Vertex.BoneWeights);
+                    PackTopBoneWeights(ControlPointWeight[ControlPointIndex], Vertex.BoneIndices, Vertex.BoneWeights, BuildContext);
                 }
                 else
                 {
                     TArray<FImportedBoneWeight> EmptyWeight;
-                    PackTop4Weights(EmptyWeight, Vertex.BoneIndices, Vertex.BoneWeights);
+                    PackTopBoneWeights(EmptyWeight, Vertex.BoneIndices, Vertex.BoneWeights, BuildContext);
                 }
 
                 const uint32 NewIndex = static_cast<uint32>(OutLOD.Vertices.size());
 
                 OutLOD.Vertices.push_back(Vertex);
+                BuildContext.Summary.VertexCount++;
                 SectionBuild->Indices.push_back(NewIndex);
 
                 if (OutMorphSources)
@@ -1732,6 +1850,7 @@ static bool BuildSkeletalMeshLODFromNodes(const TArray<FbxNode*>& MeshNodes, con
                 }
             }
 
+            BuildContext.Summary.TriangleCount++;
             PolygonVertexIndex += PolygonSize;
         }
     }
@@ -1808,7 +1927,15 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
 
                 FNormalVertex Vertex;
                 Vertex.pos     = ReadPosition(Mesh, ControlPointIndex);
-                Vertex.normal  = ReadNormal(Mesh, PolygonIndex, CornerIndex);
+                FVector StaticNormal;
+                if (TryReadNormal(Mesh, PolygonIndex, CornerIndex, StaticNormal))
+                {
+                    Vertex.normal = StaticNormal;
+                }
+                else
+                {
+                    Vertex.normal = FVector(0.0f, 0.0f, 1.0f);
+                }
                 Vertex.tex     = ReadUV(Mesh, PolygonIndex, CornerIndex);
                 Vertex.color   = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                 Vertex.tangent = FVector4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -1839,7 +1966,9 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
     OutMesh = FSkeletalMesh();
     OutMaterials.clear();
 
-    FFbxSceneHandle SceneHandle;
+    FFbxSceneHandle     SceneHandle;
+    FImportBuildContext BuildContext;
+    BuildContext.Summary.SourcePath = SourcePath;
 
     if (!LoadFbxScene(SourcePath, SceneHandle))
     {
@@ -1854,6 +1983,7 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
 
     TArray<FbxNode*> MeshNodes;
     CollectMeshNodes(SceneHandle.Scene->GetRootNode(), MeshNodes);
+    BuildContext.Summary.SourceMeshCount = static_cast<int32>(MeshNodes.size());
 
     TArray<FbxNode*> SkinnedMeshNodes;
 
@@ -1866,6 +1996,8 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
             SkinnedMeshNodes.push_back(MeshNode);
         }
     }
+
+    BuildContext.Summary.ImportedSkinnedMeshCount = static_cast<int32>(SkinnedMeshNodes.size());
 
     if (SkinnedMeshNodes.empty())
     {
@@ -1902,13 +2034,12 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
     const int32             ReferenceLODIndex = SortedLODIndices[0];
     const TArray<FbxNode*>& ReferenceLODNodes = MeshNodesByLOD[ReferenceLODIndex];
 
-    FbxAMatrix ReferenceMeshBindFbx;
-    if (!TryGetReferenceMeshBindMatrix(ReferenceLODNodes, ReferenceMeshBindFbx))
+    FMatrix ReferenceMeshBind;
+    if (!TryGetReferenceMeshBindMatrix(ReferenceLODNodes, ReferenceMeshBind))
     {
         return false;
     }
 
-    const FMatrix ReferenceMeshBind        = ToEngineMatrix(ReferenceMeshBindFbx);
     const FMatrix ReferenceMeshBindInverse = ReferenceMeshBind.GetInverse();
 
     InitializeBoneBindPoseFromSceneNodes(BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton);
@@ -1928,7 +2059,7 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
         FSkeletalMeshLOD                   NewLOD;
         TArray<FImportedMorphSourceVertex> MorphSources;
 
-        if (!BuildSkeletalMeshLODFromNodes(MeshNodesByLOD[LODIndex], BoneNodeToIndex, ReferenceMeshBindInverse, OutMaterials, NewLOD, &MorphSources))
+        if (!BuildSkeletalMeshLODFromNodes(MeshNodesByLOD[LODIndex], BoneNodeToIndex, ReferenceMeshBindInverse, OutMaterials, NewLOD, &MorphSources, BuildContext))
         {
             continue;
         }
@@ -1945,6 +2076,27 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
     ImportMorphTargets(MorphSourcesByLOD, OutMesh.MorphTargets);
 
     ImportAnimations(SceneHandle.Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, OutMesh.Animations);
+
+    float MaxBindPoseError = 0.0f;
+    for (const FSkeletalMeshLOD& LOD : OutMesh.LODModels)
+    {
+        MaxBindPoseError = (std::max)(MaxBindPoseError, ValidateBindPoseSkinningError(LOD, OutMesh.Skeleton));
+    }
+
+    BuildContext.Summary.MaxBindPoseValidationError = MaxBindPoseError;
+
+    if (MaxBindPoseError > 0.001f)
+    {
+        BuildContext.AddWarning(ESkeletalImportWarningType::MissingBindPose, "Bind pose validation error is larger than tolerance.");
+    }
+
+    BuildContext.Summary.BoneCount          = static_cast<int32>(OutMesh.Skeleton.Bones.size());
+    BuildContext.Summary.LODCount           = static_cast<int32>(OutMesh.LODModels.size());
+    BuildContext.Summary.MaterialSlotCount  = static_cast<int32>(OutMaterials.size());
+    BuildContext.Summary.AnimationClipCount = static_cast<int32>(OutMesh.Animations.size());
+    BuildContext.Summary.MorphTargetCount   = static_cast<int32>(OutMesh.MorphTargets.size());
+
+    OutMesh.ImportSummary = BuildContext.Summary;
 
     return true;
 }

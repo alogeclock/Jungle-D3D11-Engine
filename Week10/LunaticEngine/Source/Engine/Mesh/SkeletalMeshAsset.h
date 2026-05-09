@@ -9,7 +9,8 @@
 
 #include <algorithm>
 
-static constexpr int32 MAX_SKELETAL_MESH_UV_CHANNELS = 4;
+static constexpr int32 MAX_SKELETAL_MESH_UV_CHANNELS     = 4;
+static constexpr int32 MAX_SKELETAL_MESH_BONE_INFLUENCES = 4;
 
 namespace SkeletalMeshSerialization
 {
@@ -27,14 +28,14 @@ namespace SkeletalMeshSerialization
 //
 // CPU Skinning 시 이 정점은 다음 과정을 거친다.
 //   원본 위치/노멀/탄젠트
-//   + BoneIndices[4]
-//   + BoneWeights[4]
+//   + BoneIndices
+//   + BoneWeights
 //   + 현재 Bone Skinning Matrix
 //   → Skinned Vertex 생성
 //
 // BoneIndices / BoneWeights 규칙:
-// - 정점 하나는 최대 4개의 Bone 영향을 가진다.
-// - Importer에서 Weight가 큰 순서대로 상위 4개만 남기는 것을 권장한다.
+// - 정점 하나는 최대 MAX_SKELETAL_MESH_BONE_INFLUENCES개의 Bone 영향을 가진다.
+// - Importer에서 Weight가 큰 순서대로 상위 N개만 남긴다.
 // - BoneWeights의 합은 Importer에서 1.0으로 정규화되어 있어야 한다.
 // - Weight가 하나도 없는 정점은 Root Bone 100%로 보정하는 것이 안전하다.
 // ============================================================================
@@ -50,8 +51,8 @@ struct FSkeletalVertex
 
     FVector4 Tangent;
 
-    uint16 BoneIndices[4] = { 0, 0, 0, 0 };
-    float  BoneWeights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    uint16 BoneIndices[MAX_SKELETAL_MESH_BONE_INFLUENCES] = { 0, 0, 0, 0 };
+    float  BoneWeights[MAX_SKELETAL_MESH_BONE_INFLUENCES] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     friend FArchive& operator<<(FArchive& Ar, FSkeletalVertex& V)
     {
@@ -67,7 +68,7 @@ struct FSkeletalVertex
         Ar << V.NumUVs;
         Ar << V.Tangent;
 
-        for (int32 i = 0; i < 4; ++i)
+        for (int32 i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++i)
         {
             Ar << V.BoneIndices[i];
             Ar << V.BoneWeights[i];
@@ -87,28 +88,23 @@ struct FSkeletalVertex
 //   부모 Bone 기준의 Bind Pose Transform.
 //
 // - GlobalBindPose
-//   메시 로컬 공간 기준의 Bind Pose Transform.
-//   즉 Root부터 이 Bone까지 계층 Transform을 누적한 결과.
+//   SkeletalMesh reference mesh bind space 기준의 Bind Pose Transform.
+//   즉 FBX world space가 아니라, importer에서 정규화한 스켈레탈 메시 기준 공간이다.
 //
 // - InverseBindPose
 //   GlobalBindPose의 역행렬.
-//   Skinning Matrix 계산에 사용된다.
+//   CPU/GPU Skinning Matrix 계산에 사용된다.
 //
-// 일반적인 Skinning Matrix 개념:
-// SkinningMatrix = InverseBindPose * CurrentGlobalBoneTransform
+// row-vector 방식 기준 Skinning Matrix 개념:
+//   SkinningMatrix = InverseBindPose * CurrentGlobalBoneTransform
 // ============================================================================
 struct FBoneInfo
 {
     FString Name;
     int32   ParentIndex = -1;
 
-    // Parent 기준 bind pose.
     FMatrix LocalBindPose;
-
-    // SkeletalMesh reference mesh bind space 기준 bind pose.
     FMatrix GlobalBindPose;
-
-    // inverse(GlobalBindPose)
     FMatrix InverseBindPose;
 
     TArray<int32> Children;
@@ -192,17 +188,20 @@ struct FSkeleton
 // FSkeletalMeshLOD
 //
 // SkeletalMesh의 LOD 하나.
-// LOD... 해야할까?
+// LOD별로 독립적인 vertex/index/section/bounds를 가진다.
+//
+// Mesh 전체가 공유하는 것:
+// - Skeleton
+// - Materials
+// - Animations
 //
 // LOD별로 달라질 수 있는 것:
 // - Vertices
 // - Indices
 // - Sections
 // - Bounds
-//
-// LOD와 무관하게 Mesh 전체가 공유하는 것:
-// - Skeleton
-// - Materials
+// - NumUVChannels
+// - MorphTarget delta
 // ============================================================================
 struct FSkeletalMeshLOD
 {
@@ -214,9 +213,12 @@ struct FSkeletalMeshLOD
     FVector BoundsExtent = FVector(0, 0, 0);
     bool    bBoundsValid = false;
 
+    uint8 NumUVChannels = 1;
+
     void CacheBounds()
     {
-        bBoundsValid = false;
+        bBoundsValid  = false;
+        NumUVChannels = 1;
 
         if (Vertices.empty())
         {
@@ -235,6 +237,8 @@ struct FSkeletalMeshLOD
             LocalMax.X = (std::max)(LocalMax.X, V.Pos.X);
             LocalMax.Y = (std::max)(LocalMax.Y, V.Pos.Y);
             LocalMax.Z = (std::max)(LocalMax.Z, V.Pos.Z);
+
+            NumUVChannels = (std::max)(NumUVChannels, V.NumUVs);
         }
 
         BoundsCenter = (LocalMin + LocalMax) * 0.5f;
@@ -247,6 +251,7 @@ struct FSkeletalMeshLOD
         Ar << Vertices;
         Ar << Indices;
         Ar << Sections;
+        Ar << NumUVChannels;
 
         if (Ar.IsLoading())
         {
@@ -366,6 +371,120 @@ struct FMorphTarget
 };
 
 // ============================================================================
+// Import Summary
+// ============================================================================
+
+enum class ESkeletalImportWarningType : uint8
+{
+    None = 0,
+
+    MissingNormal,
+    GeneratedNormal,
+    MissingTangent,
+    GeneratedTangent,
+    MissingUV,
+    MissingSkinWeight,
+
+    MoreThanFourInfluences,
+    BoneIndexOverflow,
+
+    UnsupportedSkinningType,
+    UnsupportedClusterLinkMode,
+    MissingBindPose,
+    UsedClusterBindPoseFallback,
+    UsedSceneTransformFallback,
+
+    UnsupportedMorphInBetween,
+    UnsupportedMorphAnimation,
+    UnsupportedMaterialProperty,
+};
+
+struct FSkeletalImportWarning
+{
+    ESkeletalImportWarningType Type = ESkeletalImportWarningType::None;
+    FString                    Message;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalImportWarning& Warning)
+    {
+        uint8 TypeValue = static_cast<uint8>(Warning.Type);
+        Ar << TypeValue;
+
+        if (Ar.IsLoading())
+        {
+            Warning.Type = static_cast<ESkeletalImportWarningType>(TypeValue);
+        }
+
+        Ar << Warning.Message;
+
+        return Ar;
+    }
+};
+
+struct FSkeletalImportSummary
+{
+    FString SourcePath;
+
+    int32 SourceMeshCount          = 0;
+    int32 ImportedSkinnedMeshCount = 0;
+
+    int32 BoneCount         = 0;
+    int32 LODCount          = 0;
+    int32 MaterialSlotCount = 0;
+
+    int32 VertexCount   = 0;
+    int32 TriangleCount = 0;
+
+    int32 AnimationClipCount = 0;
+    int32 MorphTargetCount   = 0;
+
+    int32 GeneratedNormalCount     = 0;
+    int32 GeneratedTangentCount    = 0;
+    int32 MissingUVCount           = 0;
+    int32 MissingWeightVertexCount = 0;
+
+    int32 MaxInfluenceCount            = 0;
+    int32 VertexCountOverMaxInfluences = 0;
+    float TotalDiscardedWeight         = 0.0f;
+
+    float MaxBindPoseValidationError = 0.0f;
+
+    TArray<FSkeletalImportWarning> Warnings;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalImportSummary& Summary)
+    {
+        Ar << Summary.SourcePath;
+
+        Ar << Summary.SourceMeshCount;
+        Ar << Summary.ImportedSkinnedMeshCount;
+
+        Ar << Summary.BoneCount;
+        Ar << Summary.LODCount;
+        Ar << Summary.MaterialSlotCount;
+
+        Ar << Summary.VertexCount;
+        Ar << Summary.TriangleCount;
+
+        Ar << Summary.AnimationClipCount;
+        Ar << Summary.MorphTargetCount;
+
+        Ar << Summary.GeneratedNormalCount;
+        Ar << Summary.GeneratedTangentCount;
+        Ar << Summary.MissingUVCount;
+        Ar << Summary.MissingWeightVertexCount;
+
+        Ar << Summary.MaxInfluenceCount;
+        Ar << Summary.VertexCountOverMaxInfluences;
+        Ar << Summary.TotalDiscardedWeight;
+
+        Ar << Summary.MaxBindPoseValidationError;
+
+        Ar << Summary.Warnings;
+
+        return Ar;
+    }
+};
+
+// ============================================================================
 // FSkeletalMesh
 //
 // Bake 파일 또는 FBX Importer가 만들어내는 최종 SkeletalMesh 원본 리소스.
@@ -383,6 +502,8 @@ struct FSkeletalMesh
 
     TArray<FSkeletalAnimationClip> Animations;
     TArray<FMorphTarget>           MorphTargets;
+
+    FSkeletalImportSummary ImportSummary;
 
     FSkeletalMeshLOD* GetLOD(int32 LODIndex)
     {
@@ -413,6 +534,7 @@ struct FSkeletalMesh
         Ar << LODModels;
         Ar << Animations;
         Ar << MorphTargets;
+        Ar << ImportSummary;
 
         if (Ar.IsLoading())
         {
