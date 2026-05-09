@@ -1,4 +1,4 @@
-﻿#include "DrawCommandBuilder.h"
+#include "DrawCommandBuilder.h"
 
 #include "Resource/ResourceManager.h"
 #include "Render/Types/RenderTypes.h"
@@ -16,6 +16,7 @@
 #include "Texture/Texture2D.h"
 
 #include <algorithm>
+#include <cmath>
 
 // UpdateProxyLOD defined in RenderCollector.cpp (shared)
 extern void UpdateProxyLOD(FPrimitiveSceneProxy* Proxy, const FLODUpdateContext& LODCtx);
@@ -48,6 +49,218 @@ namespace
 		return (static_cast<uint64>(ERenderPass::PostProcess) & 0xF) << 60
 			| (static_cast<uint64>(UserBits) & 0xFFF);
 	}
+
+	struct FGridShaderConstants
+	{
+		float GridSize = 1.0f;
+		float Range = 100.0f;
+		float LineThickness = 1.0f;
+		float MajorLineInterval = 10.0f;
+
+		float MajorLineThickness = 1.25f;
+		float MinorIntensity = 0.45f;
+		float MajorIntensity = 0.9f;
+		float MaxDistance = 125.0f;
+
+		float AxisThickness = 1.5f;
+		float AxisLength = 100.0f;
+		float AxisIntensity = 1.0f;
+		float Padding0 = 0.0f;
+
+		FVector4 GridCenter = FVector4(0.0f, 0.0f, 0.0f, 0.0f);
+		FVector4 GridAxisA = FVector4(1.0f, 0.0f, 0.0f, 0.0f);
+		FVector4 GridAxisB = FVector4(0.0f, 1.0f, 0.0f, 0.0f);
+		FVector4 AxisColorA = FVector4(1.0f, 0.2f, 0.2f, 1.0f);
+		FVector4 AxisColorB = FVector4(0.2f, 1.0f, 0.2f, 1.0f);
+		FVector4 AxisColorN = FVector4(0.2f, 0.2f, 1.0f, 1.0f);
+	};
+
+	static_assert(sizeof(FGridShaderConstants) % 16 == 0, "FGridShaderConstants must be 16-byte aligned");
+
+	struct FGridPlaneDesc
+	{
+		int32 A0 = 0;
+		int32 A1 = 1;
+		int32 N = 2;
+		FVector Axis0 = FVector(1.0f, 0.0f, 0.0f);
+		FVector Axis1 = FVector(0.0f, 1.0f, 0.0f);
+		FVector4 AxisColor0 = FVector4(1.0f, 0.2f, 0.2f, 1.0f);
+		FVector4 AxisColor1 = FVector4(0.2f, 1.0f, 0.2f, 1.0f);
+	};
+
+	struct FGridDrawParams
+	{
+		FGridPlaneDesc Plane;
+		FVector Center;
+		float Spacing = 1.0f;
+		float Range = 100.0f;
+		float MaxDistance = 125.0f;
+		float AxisLength = 100.0f;
+	};
+
+	float Component(const FVector& V, int32 Index)
+	{
+		return (&V.X)[Index];
+	}
+
+	void SetComponent(FVector& V, int32 Index, float Value)
+	{
+		(&V.X)[Index] = Value;
+	}
+
+	int32 DominantAxis(const FVector& V)
+	{
+		const float AX = std::fabs(V.X);
+		const float AY = std::fabs(V.Y);
+		const float AZ = std::fabs(V.Z);
+		if (AX >= AY && AX >= AZ) return 0;
+		if (AY >= AX && AY >= AZ) return 1;
+		return 2;
+	}
+
+	FVector UnitAxis(int32 Axis)
+	{
+		FVector V;
+		SetComponent(V, Axis, 1.0f);
+		return V;
+	}
+
+	FVector4 GridAxisColor(int32 Axis)
+	{
+		switch (Axis)
+		{
+		case 0: return FVector4(1.0f, 0.2f, 0.2f, 1.0f);
+		case 1: return FVector4(0.2f, 1.0f, 0.2f, 1.0f);
+		default: return FVector4(0.2f, 0.2f, 1.0f, 1.0f);
+		}
+	}
+
+	FVector MakeGridPoint(const FGridPlaneDesc& Plane, float V0, float V1, float VN)
+	{
+		FVector P;
+		SetComponent(P, Plane.A0, V0);
+		SetComponent(P, Plane.A1, V1);
+		SetComponent(P, Plane.N, VN);
+		return P;
+	}
+
+	float SnapToGrid(float Value, float Spacing)
+	{
+		return std::round(Value / Spacing) * Spacing;
+	}
+
+	FGridPlaneDesc MakeGridPlaneDesc(bool bFixedOrtho, const FVector& CameraForward)
+	{
+		int32 N = 2;
+		if (bFixedOrtho)
+		{
+			N = DominantAxis(CameraForward);
+		}
+
+		const int32 A0 = (N == 0) ? 1 : 0;
+		const int32 A1 = (N == 2) ? 1 : 2;
+
+		FGridPlaneDesc Desc;
+		Desc.A0 = A0;
+		Desc.A1 = A1;
+		Desc.N = N;
+		Desc.Axis0 = UnitAxis(A0);
+		Desc.Axis1 = UnitAxis(A1);
+		Desc.AxisColor0 = GridAxisColor(A0);
+		Desc.AxisColor1 = GridAxisColor(A1);
+		return Desc;
+	}
+
+	FVector ComputeGridFocusPoint(const FVector& CameraPosition, const FVector& CameraForward, const FGridPlaneDesc& Plane)
+	{
+		const float PosN = Component(CameraPosition, Plane.N);
+		const float FwdN = Component(CameraForward, Plane.N);
+		if (std::fabs(FwdN) > 1.0e-4f)
+		{
+			const float T = -PosN / FwdN;
+			const float MaxT = std::fabs(PosN) * 10.0f;
+			if (T > 0.0f && T < MaxT)
+			{
+				return CameraPosition + CameraForward * T;
+			}
+		}
+
+		FVector Fallback = CameraPosition;
+		SetComponent(Fallback, Plane.N, 0.0f);
+		return Fallback;
+	}
+
+	int32 ComputeGridHalfCount(float Spacing, int32 BaseHalfCount, const FVector& CameraPosition, const FGridPlaneDesc& Plane)
+	{
+		const float BaseExtent = Spacing * static_cast<float>(std::max(BaseHalfCount, 1));
+		const float HeightDrivenExtent = (std::fabs(Component(CameraPosition, Plane.N)) * 2.0f) + (Spacing * 4.0f);
+		const float RequiredExtent = std::max(BaseExtent, HeightDrivenExtent);
+		return std::max(BaseHalfCount, static_cast<int32>(std::ceil(RequiredExtent / Spacing)));
+	}
+
+	FGridDrawParams BuildGridDrawParams(const FFrameContext& Frame, const FScene* Scene)
+	{
+		FGridDrawParams Params;
+		Params.Spacing = std::max(Scene ? Scene->GetGridSpacing() : 1.0f, 0.0001f);
+
+		FVector CameraForward = Frame.CameraRight.Cross(Frame.CameraUp);
+		CameraForward.Normalize();
+		Params.Plane = MakeGridPlaneDesc(Frame.IsFixedOrtho(), CameraForward);
+
+		const FVector FocusPoint = ComputeGridFocusPoint(Frame.CameraPosition, CameraForward, Params.Plane);
+		const float Center0 = SnapToGrid(Component(FocusPoint, Params.Plane.A0), Params.Spacing);
+		const float Center1 = SnapToGrid(Component(FocusPoint, Params.Plane.A1), Params.Spacing);
+		const int32 DynamicHalfCount = ComputeGridHalfCount(
+			Params.Spacing,
+			std::max(Scene ? Scene->GetGridHalfLineCount() : 1, 1),
+			Frame.CameraPosition,
+			Params.Plane);
+
+		Params.Center = MakeGridPoint(Params.Plane, Center0, Center1, 0.0f);
+		Params.Range = Params.Spacing * static_cast<float>(DynamicHalfCount);
+		Params.MaxDistance = std::max(Params.Range * 1.25f, Params.Spacing * 16.0f);
+		Params.AxisLength = std::max(Params.Range, Params.Spacing * 10.0f);
+		return Params;
+	}
+
+	FGridRenderSettings SanitizeGridSettings(FGridRenderSettings Settings)
+	{
+		Settings.LineThickness = std::clamp(Settings.LineThickness, 0.0f, 8.0f);
+		Settings.MajorLineThickness = std::clamp(Settings.MajorLineThickness, 0.0f, 12.0f);
+		Settings.MajorLineInterval = std::clamp<int32>(Settings.MajorLineInterval, 1, 100);
+		Settings.MinorIntensity = std::clamp(Settings.MinorIntensity, 0.0f, 2.0f);
+		Settings.MajorIntensity = std::clamp(Settings.MajorIntensity, 0.0f, 2.0f);
+		Settings.AxisThickness = std::clamp(Settings.AxisThickness, 0.0f, 12.0f);
+		Settings.AxisIntensity = std::clamp(Settings.AxisIntensity, 0.0f, 2.0f);
+		return Settings;
+	}
+
+	FGridShaderConstants MakeGridShaderConstants(
+		const FGridDrawParams& Params,
+		const FGridRenderSettings& Settings,
+		bool bDrawGrid,
+		bool bDrawAxis)
+	{
+		FGridShaderConstants Constants;
+		Constants.GridSize = Params.Spacing;
+		Constants.Range = Params.Range;
+		Constants.LineThickness = Settings.LineThickness;
+		Constants.MajorLineInterval = static_cast<float>(Settings.MajorLineInterval);
+		Constants.MajorLineThickness = Settings.MajorLineThickness;
+		Constants.MinorIntensity = bDrawGrid ? Settings.MinorIntensity : 0.0f;
+		Constants.MajorIntensity = bDrawGrid ? Settings.MajorIntensity : 0.0f;
+		Constants.MaxDistance = Params.MaxDistance;
+		Constants.AxisThickness = bDrawAxis ? Settings.AxisThickness : 0.0f;
+		Constants.AxisLength = Params.AxisLength;
+		Constants.AxisIntensity = bDrawAxis ? Settings.AxisIntensity : 0.0f;
+		Constants.GridCenter = FVector4(Params.Center.X, Params.Center.Y, Params.Center.Z, 0.0f);
+		Constants.GridAxisA = FVector4(Params.Plane.Axis0.X, Params.Plane.Axis0.Y, Params.Plane.Axis0.Z, 0.0f);
+		Constants.GridAxisB = FVector4(Params.Plane.Axis1.X, Params.Plane.Axis1.Y, Params.Plane.Axis1.Z, 0.0f);
+		Constants.AxisColorA = Params.Plane.AxisColor0;
+		Constants.AxisColorB = Params.Plane.AxisColor1;
+		Constants.AxisColorN = GridAxisColor(2);
+		return Constants;
+	}
 }
 
 // ============================================================
@@ -65,6 +278,7 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 	FontGeometry.Create(InDevice);
 	ScreenQuads.Create(InDevice);
 
+	GridCB.Create(InDevice, sizeof(FGridShaderConstants));
 	FogCB.Create(InDevice, sizeof(FFogConstants));
 	FadeCB.Create(InDevice, sizeof(FFadeConstants));
 	OutlineCB.Create(InDevice, sizeof(FOutlinePostProcessConstants));
@@ -86,6 +300,7 @@ void FDrawCommandBuilder::Release()
 	}
 	PerObjectCBPool.clear();
 
+	GridCB.Release();
 	FogCB.Release();
 	FadeCB.Release();
 	OutlineCB.Release();
@@ -419,18 +634,7 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 	}
 
 	// --- Grid 패스: 월드 그리드 + 축 ---
-	if (Scene->HasGrid())
-	{
-		const FVector CameraPos = Frame.View.GetInverseFast().GetLocation();
-		FVector CameraFwd = Frame.CameraRight.Cross(Frame.CameraUp);
-		CameraFwd.Normalize();
-
-		GridLines.AddWorldHelpers(
-			Frame.RenderOptions.ShowFlags,
-			Scene->GetGridSpacing(),
-			Scene->GetGridHalfLineCount(),
-			CameraPos, CameraFwd, Frame.IsFixedOrtho());
-	}
+	// Pixel shader 기반 EditorGrid 패스가 평면 축과 법선 축을 모두 처리합니다.
 
 	// --- ScreenText 패스: 스크린 공간 텍스트 ---
 	for (const auto& Quad : Scene->GetScreenQuads())
@@ -478,6 +682,7 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 void FDrawCommandBuilder::BuildDynamicDrawCommands(const FFrameContext& Frame, const FScene* Scene)
 {
 	EViewMode ViewMode = Frame.RenderOptions.ViewMode;
+	BuildEditorGridCommand(Frame, Scene);
 	BuildEditorLineCommands(ViewMode);
 	BuildPostProcessCommands(Frame, Scene);
 	BuildUICommands(ViewMode);
@@ -500,6 +705,47 @@ void FDrawCommandBuilder::EmitLineCommand(FLineGeometry& Lines, FShader* Shader,
 		Cmd.Buffer.IndexCount = Lines.GetIndexCount();
 		Cmd.BuildSortKey();
 	}
+}
+
+// ============================================================
+// BuildEditorGridCommand — pixel shader 기반 에디터 그리드
+// ============================================================
+void FDrawCommandBuilder::BuildEditorGridCommand(const FFrameContext& Frame, const FScene* Scene)
+{
+	if (!Scene || !Scene->HasGrid())
+	{
+		return;
+	}
+
+	const FShowFlags& ShowFlags = Frame.RenderOptions.ShowFlags;
+	if (!ShowFlags.bGrid && !ShowFlags.bWorldAxis)
+	{
+		return;
+	}
+
+	FShader* GridShader = FShaderManager::Get().GetOrCreate(EShaderPath::Grid);
+	if (!GridShader)
+	{
+		return;
+	}
+
+	const FGridDrawParams Params = BuildGridDrawParams(Frame, Scene);
+	const FGridRenderSettings Settings = SanitizeGridSettings(Frame.RenderOptions.GridRenderSettings);
+	const FGridShaderConstants Constants = MakeGridShaderConstants(
+		Params,
+		Settings,
+		ShowFlags.bGrid,
+		ShowFlags.bWorldAxis);
+
+	GridCB.Update(CachedContext, &Constants, sizeof(Constants));
+
+	FDrawCommand& Cmd = DrawCommandList.AddCommand();
+	Cmd.Pass = ERenderPass::EditorGrid;
+	Cmd.Shader = GridShader;
+	Cmd.RenderState = PassRenderStateTable->ToDrawCommandState(ERenderPass::EditorGrid, Frame.RenderOptions.ViewMode);
+	Cmd.Buffer.VertexCount = ShowFlags.bWorldAxis ? 18 : 6;
+	Cmd.Bindings.PerShaderCB[0] = &GridCB;
+	Cmd.BuildSortKey();
 }
 
 // ============================================================
