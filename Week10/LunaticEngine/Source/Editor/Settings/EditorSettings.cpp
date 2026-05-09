@@ -68,6 +68,7 @@ namespace Key
 	constexpr const char* ShowPlaceActors = "ShowPlaceActors";
 	constexpr const char* ShowStatProfiler = "ShowStatProfiler";
 	constexpr const char* ShowContentBrowser = "ShowContentBrowser";
+	constexpr const char* ShowSkeletalMeshViewer = "ShowSkeletalMeshViewer";
 	constexpr const char* ShowImGuiSettings = "ShowImGuiSettings";
 	constexpr const char* ShowShadowMapDebug = "ShowShadowMapDebug";
 
@@ -176,6 +177,7 @@ void FEditorSettings::SaveToFile(const FString& Path) const
 	WidgetsObj[Key::ShowPlaceActors] = UI.bPlaceActors;
 	WidgetsObj[Key::ShowStatProfiler] = UI.bStat;
 	WidgetsObj[Key::ShowContentBrowser] = UI.bContentBrowser;
+	WidgetsObj[Key::ShowSkeletalMeshViewer] = UI.bSkeletalMeshViewer;
 	WidgetsObj[Key::ShowImGuiSettings] = UI.bImGUISettings;
 	WidgetsObj[Key::ShowShadowMapDebug] = UI.bShadowMapDebug;
 	Root[Key::UIWidgets] = WidgetsObj;
@@ -369,6 +371,7 @@ void FEditorSettings::LoadFromFile(const FString& Path)
 		if (W.hasKey(Key::ShowPlaceActors))    UI.bPlaceActors = W[Key::ShowPlaceActors].ToBool();
 		if (W.hasKey(Key::ShowStatProfiler))   UI.bStat = W[Key::ShowStatProfiler].ToBool();
 		if (W.hasKey(Key::ShowContentBrowser)) UI.bContentBrowser = W[Key::ShowContentBrowser].ToBool();
+		if (W.hasKey(Key::ShowSkeletalMeshViewer)) UI.bSkeletalMeshViewer = W[Key::ShowSkeletalMeshViewer].ToBool();
 		if (W.hasKey(Key::ShowImGuiSettings))  UI.bImGUISettings = W[Key::ShowImGuiSettings].ToBool();
 		if (W.hasKey(Key::ShowShadowMapDebug)) UI.bShadowMapDebug = W[Key::ShowShadowMapDebug].ToBool();
 	}

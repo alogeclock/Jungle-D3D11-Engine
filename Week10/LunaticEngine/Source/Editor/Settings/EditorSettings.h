@@ -61,6 +61,7 @@ public:
 		bool bPlaceActors = true;
 		bool bStat = false;
 		bool bContentBrowser = true;
+		bool bSkeletalMeshViewer = false;
 		bool bImGUISettings = false;
 		bool bShadowMapDebug = false;
 	} UI;
