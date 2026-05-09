@@ -98,6 +98,17 @@ namespace
 		float AxisLength = 100.0f;
 	};
 
+	struct FGridPlaneCoverage
+	{
+		bool bValid = false;
+		int32 PointCount = 0;
+		float Min0 = 0.0f;
+		float Max0 = 0.0f;
+		float Min1 = 0.0f;
+		float Max1 = 0.0f;
+		float MaxViewDistance = 0.0f;
+	};
+
 	float Component(const FVector& V, int32 Index)
 	{
 		return (&V.X)[Index];
@@ -149,6 +160,11 @@ namespace
 		return std::round(Value / Spacing) * Spacing;
 	}
 
+	bool IsFiniteVector(const FVector& V)
+	{
+		return std::isfinite(V.X) && std::isfinite(V.Y) && std::isfinite(V.Z);
+	}
+
 	FGridPlaneDesc MakeGridPlaneDesc(bool bFixedOrtho, const FVector& CameraForward)
 	{
 		int32 N = 2;
@@ -198,6 +214,90 @@ namespace
 		return std::max(BaseHalfCount, static_cast<int32>(std::ceil(RequiredExtent / Spacing)));
 	}
 
+	void IncludeGridCoveragePoint(
+		FGridPlaneCoverage& Coverage,
+		const FVector& Point,
+		const FGridPlaneDesc& Plane,
+		const FVector& CameraPosition)
+	{
+		if (!IsFiniteVector(Point))
+		{
+			return;
+		}
+
+		const float P0 = Component(Point, Plane.A0);
+		const float P1 = Component(Point, Plane.A1);
+		if (!Coverage.bValid)
+		{
+			Coverage.bValid = true;
+			Coverage.Min0 = Coverage.Max0 = P0;
+			Coverage.Min1 = Coverage.Max1 = P1;
+		}
+		else
+		{
+			Coverage.Min0 = std::min(Coverage.Min0, P0);
+			Coverage.Max0 = std::max(Coverage.Max0, P0);
+			Coverage.Min1 = std::min(Coverage.Min1, P1);
+			Coverage.Max1 = std::max(Coverage.Max1, P1);
+		}
+
+		Coverage.MaxViewDistance = std::max(Coverage.MaxViewDistance, FVector::Distance(CameraPosition, Point));
+		++Coverage.PointCount;
+	}
+
+	bool TryBuildFrustumPlaneCoverage(const FFrameContext& Frame, const FGridPlaneDesc& Plane, FGridPlaneCoverage& OutCoverage)
+	{
+		const FMatrix InvViewProj = (Frame.View * Frame.Proj).GetInverse();
+
+		static const FVector NDCCorners[8] = {
+			FVector(-1.0f, -1.0f, 1.0f), FVector( 1.0f, -1.0f, 1.0f),
+			FVector( 1.0f,  1.0f, 1.0f), FVector(-1.0f,  1.0f, 1.0f),
+			FVector(-1.0f, -1.0f, 0.0f), FVector( 1.0f, -1.0f, 0.0f),
+			FVector( 1.0f,  1.0f, 0.0f), FVector(-1.0f,  1.0f, 0.0f),
+		};
+
+		FVector WorldCorners[8];
+		for (int32 Index = 0; Index < 8; ++Index)
+		{
+			WorldCorners[Index] = InvViewProj.TransformPositionWithW(NDCCorners[Index]);
+		}
+
+		static const int32 FrustumEdges[12][2] = {
+			{0, 1}, {1, 2}, {2, 3}, {3, 0},
+			{4, 5}, {5, 6}, {6, 7}, {7, 4},
+			{0, 4}, {1, 5}, {2, 6}, {3, 7},
+		};
+
+		constexpr float PlaneEpsilon = 1.0e-3f;
+		for (const auto& Edge : FrustumEdges)
+		{
+			const FVector& P0 = WorldCorners[Edge[0]];
+			const FVector& P1 = WorldCorners[Edge[1]];
+			const float D0 = Component(P0, Plane.N);
+			const float D1 = Component(P1, Plane.N);
+			const bool bOnPlane0 = std::fabs(D0) <= PlaneEpsilon;
+			const bool bOnPlane1 = std::fabs(D1) <= PlaneEpsilon;
+
+			if (bOnPlane0)
+			{
+				IncludeGridCoveragePoint(OutCoverage, P0, Plane, Frame.CameraPosition);
+			}
+			if (bOnPlane1)
+			{
+				IncludeGridCoveragePoint(OutCoverage, P1, Plane, Frame.CameraPosition);
+			}
+
+			if ((D0 < -PlaneEpsilon && D1 > PlaneEpsilon) || (D0 > PlaneEpsilon && D1 < -PlaneEpsilon))
+			{
+				const float T = D0 / (D0 - D1);
+				const FVector Intersection = P0 + (P1 - P0) * T;
+				IncludeGridCoveragePoint(OutCoverage, Intersection, Plane, Frame.CameraPosition);
+			}
+		}
+
+		return OutCoverage.bValid && OutCoverage.PointCount >= 2;
+	}
+
 	FGridDrawParams BuildGridDrawParams(const FFrameContext& Frame, const FScene* Scene)
 	{
 		FGridDrawParams Params;
@@ -207,12 +307,37 @@ namespace
 		CameraForward.Normalize();
 		Params.Plane = MakeGridPlaneDesc(Frame.IsFixedOrtho(), CameraForward);
 
+		const int32 BaseHalfCount = std::max(Scene ? Scene->GetGridHalfLineCount() : 1, 1);
+
+		FGridPlaneCoverage Coverage;
+		if (TryBuildFrustumPlaneCoverage(Frame, Params.Plane, Coverage))
+		{
+			const float Span0 = std::max(Coverage.Max0 - Coverage.Min0, 0.0f);
+			const float Span1 = std::max(Coverage.Max1 - Coverage.Min1, 0.0f);
+			const float CoverageHalfExtent = std::max(Span0, Span1) * 0.5f;
+			const float CoverageMargin = std::max(Params.Spacing * 4.0f, CoverageHalfExtent * 0.05f);
+			const int32 DynamicHalfCount = std::max(
+				BaseHalfCount,
+				static_cast<int32>(std::ceil((CoverageHalfExtent + CoverageMargin) / Params.Spacing)));
+
+			const float Center0 = SnapToGrid((Coverage.Min0 + Coverage.Max0) * 0.5f, Params.Spacing);
+			const float Center1 = SnapToGrid((Coverage.Min1 + Coverage.Max1) * 0.5f, Params.Spacing);
+
+			Params.Center = MakeGridPoint(Params.Plane, Center0, Center1, 0.0f);
+			Params.Range = Params.Spacing * static_cast<float>(DynamicHalfCount);
+			Params.MaxDistance = std::max(
+				std::max(Params.Range * 1.25f, Coverage.MaxViewDistance + Params.Spacing * 8.0f),
+				Params.Spacing * 16.0f);
+			Params.AxisLength = std::max(Params.Range, Params.Spacing * 10.0f);
+			return Params;
+		}
+
 		const FVector FocusPoint = ComputeGridFocusPoint(Frame.CameraPosition, CameraForward, Params.Plane);
 		const float Center0 = SnapToGrid(Component(FocusPoint, Params.Plane.A0), Params.Spacing);
 		const float Center1 = SnapToGrid(Component(FocusPoint, Params.Plane.A1), Params.Spacing);
 		const int32 DynamicHalfCount = ComputeGridHalfCount(
 			Params.Spacing,
-			std::max(Scene ? Scene->GetGridHalfLineCount() : 1, 1),
+			BaseHalfCount,
 			Frame.CameraPosition,
 			Params.Plane);
 
