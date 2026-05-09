@@ -8,12 +8,16 @@
 
 #include <fbxsdk.h>
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cmath>
-#include <cstring>
+#include <cstddef>
+ #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 namespace
@@ -106,6 +110,240 @@ namespace
         }
 
         return Result;
+    }
+
+    static uint32 FloatToStableBits(float Value)
+    {
+        if (Value == 0.0f)
+        {
+            Value = 0.0f;
+        }
+
+        uint32 Bits = 0;
+        static_assert(sizeof(Bits) == sizeof(Value), "float and uint32 size mismatch");
+        std::memcpy(&Bits, &Value, sizeof(float));
+        return Bits;
+    }
+
+    static void HashCombineSizeT(std::size_t& Seed, std::size_t Value)
+    {
+        Seed ^= Value + 0x9e3779b97f4a7c15ull + (Seed << 6) + (Seed >> 2);
+    }
+
+    static void HashCombineUInt32(std::size_t& Seed, uint32 Value)
+    {
+        HashCombineSizeT(Seed, static_cast<std::size_t>(Value));
+    }
+
+    static void HashCombineInt32(std::size_t& Seed, int32 Value)
+    {
+        HashCombineSizeT(Seed, static_cast<std::size_t>(static_cast<uint32>(Value)));
+    }
+
+    static void HashCombineUInt16(std::size_t& Seed, uint16 Value)
+    {
+        HashCombineSizeT(Seed, static_cast<std::size_t>(Value));
+    }
+
+    static void HashCombinePointer(std::size_t& Seed, const void* Pointer)
+    {
+        HashCombineSizeT(Seed, std::hash<const void*> {}(Pointer));
+    }
+
+    static std::array<uint32, 2> MakeVector2Bits(const FVector2& V)
+    {
+        return { FloatToStableBits(V.X), FloatToStableBits(V.Y) };
+    }
+
+    static std::array<uint32, 3> MakeVector3Bits(const FVector& V)
+    {
+        return { FloatToStableBits(V.X), FloatToStableBits(V.Y), FloatToStableBits(V.Z) };
+    }
+
+    static std::array<uint32, 4> MakeVector4Bits(const FVector4& V)
+    {
+        return { FloatToStableBits(V.X), FloatToStableBits(V.Y), FloatToStableBits(V.Z), FloatToStableBits(V.W) };
+    }
+
+    struct FStaticVertexDedupKey
+    {
+        const FbxMesh* Mesh              = nullptr;
+        int32          ControlPointIndex = -1;
+
+        std::array<uint32, 3> Position = {};
+        std::array<uint32, 3> Normal   = {};
+        std::array<uint32, 2> UV       = {};
+        std::array<uint32, 4> Color    = {};
+        std::array<uint32, 4> Tangent  = {};
+
+        bool operator==(const FStaticVertexDedupKey& Other) const
+        {
+            return Mesh == Other.Mesh && ControlPointIndex == Other.ControlPointIndex && Position == Other.Position && Normal == Other.Normal && UV == Other.UV
+            && Color == Other.Color && Tangent == Other.Tangent;
+        }
+    };
+
+    struct FStaticVertexDedupKeyHasher
+    {
+        std::size_t operator()(const FStaticVertexDedupKey& Key) const
+        {
+            std::size_t Seed = 0;
+
+            HashCombinePointer(Seed, Key.Mesh);
+            HashCombineInt32(Seed, Key.ControlPointIndex);
+
+            for (uint32 Value : Key.Position) HashCombineUInt32(Seed, Value);
+            for (uint32 Value : Key.Normal) HashCombineUInt32(Seed, Value);
+            for (uint32 Value : Key.UV) HashCombineUInt32(Seed, Value);
+            for (uint32 Value : Key.Color) HashCombineUInt32(Seed, Value);
+            for (uint32 Value : Key.Tangent) HashCombineUInt32(Seed, Value);
+
+            return Seed;
+        }
+    };
+
+    static FStaticVertexDedupKey MakeStaticVertexDedupKey(const FNormalVertex& Vertex, const FbxMesh* Mesh, int32 ControlPointIndex)
+    {
+        FStaticVertexDedupKey Key;
+        Key.Mesh              = Mesh;
+        Key.ControlPointIndex = ControlPointIndex;
+        Key.Position          = MakeVector3Bits(Vertex.pos);
+        Key.Normal            = MakeVector3Bits(Vertex.normal);
+        Key.UV                = MakeVector2Bits(Vertex.tex);
+        Key.Color             = MakeVector4Bits(Vertex.color);
+        Key.Tangent           = MakeVector4Bits(Vertex.tangent);
+        return Key;
+    }
+
+    static uint32 FindOrAddStaticVertex(
+        const FNormalVertex&                                                            Vertex,
+        const FbxMesh*                                                                  Mesh,
+        int32                                                                           ControlPointIndex,
+        std::unordered_map<FStaticVertexDedupKey, uint32, FStaticVertexDedupKeyHasher>& VertexToIndex,
+        TArray<FNormalVertex>&                                                          OutVertices,
+        bool&                                                                           bOutAddedNewVertex
+        )
+    {
+        const FStaticVertexDedupKey Key = MakeStaticVertexDedupKey(Vertex, Mesh, ControlPointIndex);
+
+        auto It = VertexToIndex.find(Key);
+        if (It != VertexToIndex.end())
+        {
+            bOutAddedNewVertex = false;
+            return It->second;
+        }
+
+        const uint32 NewIndex = static_cast<uint32>(OutVertices.size());
+        OutVertices.push_back(Vertex);
+        VertexToIndex.emplace(Key, NewIndex);
+        bOutAddedNewVertex = true;
+        return NewIndex;
+    }
+
+    struct FSkeletalVertexDedupKey
+    {
+        const FbxMesh* Mesh              = nullptr;
+        int32          ControlPointIndex = -1;
+        int32          MaterialIndex     = 0;
+
+        std::array<uint32, 3>                                 Position    = {};
+        std::array<uint32, 3>                                 Normal      = {};
+        std::array<std::array<uint32, 2>, 4>                  UV          = {};
+        std::array<uint32, 4>                                 Color       = {};
+        std::array<uint32, 4>                                 Tangent     = {};
+        uint8                                                 NumUV       = 0;
+        std::array<uint16, MAX_SKELETAL_MESH_BONE_INFLUENCES> BoneIndices = {};
+        std::array<uint32, MAX_SKELETAL_MESH_BONE_INFLUENCES> BoneWeights = {};
+
+        bool operator==(const FSkeletalVertexDedupKey& Other) const
+        {
+            return Mesh == Other.Mesh && ControlPointIndex == Other.ControlPointIndex && MaterialIndex == Other.MaterialIndex && Position == Other.Position &&
+            Normal == Other.Normal && UV == Other.UV && Color == Other.Color && Tangent == Other.Tangent && NumUV == Other.NumUV && BoneIndices == Other.
+            BoneIndices && BoneWeights == Other.BoneWeights;
+        }
+    };
+
+    struct FSkeletalVertexDedupKeyHasher
+    {
+        std::size_t operator()(const FSkeletalVertexDedupKey& Key) const
+        {
+            std::size_t Seed = 0;
+
+            HashCombinePointer(Seed, Key.Mesh);
+            HashCombineInt32(Seed, Key.ControlPointIndex);
+            HashCombineInt32(Seed, Key.MaterialIndex);
+
+            for (uint32 Value : Key.Position) HashCombineUInt32(Seed, Value);
+            for (uint32 Value : Key.Normal) HashCombineUInt32(Seed, Value);
+            for (uint32 Value : Key.Color) HashCombineUInt32(Seed, Value);
+
+            for (const std::array<uint32, 2>& UV : Key.UV)
+            {
+                HashCombineUInt32(Seed, UV[0]);
+                HashCombineUInt32(Seed, UV[1]);
+            }
+
+            HashCombineInt32(Seed, static_cast<int32>(Key.NumUV));
+
+            for (uint32 Value : Key.Tangent) HashCombineUInt32(Seed, Value);
+
+            for (uint16 Value : Key.BoneIndices) HashCombineUInt16(Seed, Value);
+            for (uint32 Value : Key.BoneWeights) HashCombineUInt32(Seed, Value);
+
+            return Seed;
+        }
+    };
+
+    static FSkeletalVertexDedupKey MakeSkeletalVertexDedupKey(const FSkeletalVertex& Vertex, const FbxMesh* Mesh, int32 ControlPointIndex, int32 MaterialIndex)
+    {
+        FSkeletalVertexDedupKey Key;
+        Key.Mesh              = Mesh;
+        Key.ControlPointIndex = ControlPointIndex;
+        Key.MaterialIndex     = MaterialIndex;
+        Key.Position          = MakeVector3Bits(Vertex.Pos);
+        Key.Normal            = MakeVector3Bits(Vertex.Normal);
+        Key.Color             = MakeVector4Bits(Vertex.Color);
+        Key.Tangent           = MakeVector4Bits(Vertex.Tangent);
+        Key.NumUV             = Vertex.NumUVs;
+
+        for (int32 UVIndex = 0; UVIndex < Vertex.NumUVs; ++UVIndex)
+        {
+            Key.UV[UVIndex] = MakeVector2Bits(Vertex.UV[UVIndex]);
+        }
+
+        for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+        {
+            Key.BoneIndices[InfluenceIndex] = Vertex.BoneIndices[InfluenceIndex];
+            Key.BoneWeights[InfluenceIndex] = FloatToStableBits(Vertex.BoneWeights[InfluenceIndex]);
+        }
+
+        return Key;
+    }
+
+    static uint32 FindOrAddSkeletalVertex(
+        const FSkeletalVertex&                                                              Vertex,
+        const FbxMesh*                                                                      Mesh,
+        int32                                                                               ControlPointIndex,
+        int32                                                                               MaterialIndex,
+        std::unordered_map<FSkeletalVertexDedupKey, uint32, FSkeletalVertexDedupKeyHasher>& VertexToIndex,
+        TArray<FSkeletalVertex>&                                                            OutVertices,
+        bool&                                                                               bOutAddedNewVertex
+        )
+    {
+        const FSkeletalVertexDedupKey Key = MakeSkeletalVertexDedupKey(Vertex, Mesh, ControlPointIndex, MaterialIndex);
+
+        auto It = VertexToIndex.find(Key);
+        if (It != VertexToIndex.end())
+        {
+            bOutAddedNewVertex = false;
+            return It->second;
+        }
+
+        const uint32 NewIndex = static_cast<uint32>(OutVertices.size());
+        OutVertices.push_back(Vertex);
+        VertexToIndex.emplace(Key, NewIndex);
+        bOutAddedNewVertex = true;
+        return NewIndex;
     }
 
     // FBX texture property에서 외부 texture 경로를 추출해 엔진 asset 상대경로로 변환한다.
@@ -1433,7 +1671,7 @@ namespace
     static void ApplyBindPoseFromSkinClusters(const TArray<FbxNode*>& SkinnedMeshNodes, const TMap<FbxNode*, int32>& BoneNodeToIndex, const FMatrix& ReferenceMeshBindInverse, FSkeleton& Skeleton, TArray<bool>* InOutAppliedBoneMask = nullptr)
     {
         for (FbxNode* MeshNode : SkinnedMeshNodes)
-        {
+        { 
             FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
             if (!Mesh)
             {
@@ -1497,9 +1735,26 @@ namespace
         }
     }
 
-    // control point weight를 상위 N개 influence로 압축하고 통계/경고를 기록한다.
-    static void PackTopBoneWeights(const TArray<FImportedBoneWeight>& SourceWeight, uint16 OutBoneIndices[MAX_SKELETAL_MESH_BONE_INFLUENCES], float OutBoneWeights[MAX_SKELETAL_MESH_BONE_INFLUENCES], FImportBuildContext& BuildContext)
+    struct FPackedBoneWeightStats
     {
+        bool  bMissingWeight       = false;
+        bool  bOverMaxInfluences   = false;
+        bool  bBoneIndexOverflow   = false;
+        int32 SourceInfluenceCount = 0;
+        float DiscardedWeight      = 0.0f;
+    };
+
+    // control point weight를 상위 N개 influence로 압축한다.
+    // 통계는 dedup 후 실제로 채택된 unique vertex에 대해서만 CommitUniqueVertexImportStats()에서 반영한다.
+    static void PackTopBoneWeights(
+        const TArray<FImportedBoneWeight>& SourceWeight,
+        uint16                             OutBoneIndices[MAX_SKELETAL_MESH_BONE_INFLUENCES],
+        float                              OutBoneWeights[MAX_SKELETAL_MESH_BONE_INFLUENCES],
+        FPackedBoneWeightStats&            OutStats
+        )
+    {
+        OutStats = FPackedBoneWeightStats();
+
         for (int32 i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++i)
         {
             OutBoneIndices[i] = 0;
@@ -1508,9 +1763,9 @@ namespace
 
         if (SourceWeight.empty())
         {
-            OutBoneIndices[0] = 0;
-            OutBoneWeights[0] = 1.0f;
-            BuildContext.Summary.MissingWeightVertexCount++;
+            OutBoneIndices[0]       = 0;
+            OutBoneWeights[0]       = 1.0f;
+            OutStats.bMissingWeight = true;
             return;
         }
 
@@ -1520,31 +1775,27 @@ namespace
             return A.Weight > B.Weight;
         });
 
-        BuildContext.Summary.MaxInfluenceCount = (std::max)(BuildContext.Summary.MaxInfluenceCount, static_cast<int32>(SortedWeights.size()));
+        OutStats.SourceInfluenceCount = static_cast<int32>(SortedWeights.size());
 
         if (static_cast<int32>(SortedWeights.size()) > MAX_SKELETAL_MESH_BONE_INFLUENCES)
         {
-            BuildContext.Summary.VertexCountOverMaxInfluences++;
-
-            float DiscardedWeight = 0.0f;
+            OutStats.bOverMaxInfluences = true;
 
             for (int32 i = MAX_SKELETAL_MESH_BONE_INFLUENCES; i < static_cast<int32>(SortedWeights.size()); ++i)
             {
-                DiscardedWeight += SortedWeights[i].Weight;
+                OutStats.DiscardedWeight += SortedWeights[i].Weight;
             }
-
-            BuildContext.Summary.TotalDiscardedWeight += DiscardedWeight;
         }
 
-        const int32 Count = static_cast<int32>((std::min<size_t>)(static_cast<size_t>(MAX_SKELETAL_MESH_BONE_INFLUENCES), SortedWeights.size()));
-        
+        const int32 Count = static_cast<int32>((std::min<std::size_t>)(static_cast<std::size_t>(MAX_SKELETAL_MESH_BONE_INFLUENCES), SortedWeights.size()));
+
         float Sum = 0.0f;
 
         for (int32 i = 0; i < Count; ++i)
         {
             if (SortedWeights[i].BoneIndex < 0 || SortedWeights[i].BoneIndex > 65535)
             {
-                BuildContext.AddWarning(ESkeletalImportWarningType::BoneIndexOverflow, "Bone index is outside uint16 range.");
+                OutStats.bBoneIndexOverflow = true;
                 continue;
             }
 
@@ -1563,13 +1814,58 @@ namespace
                 OutBoneIndices[i] = 0;
                 OutBoneWeights[i] = 0.0f;
             }
-            BuildContext.Summary.MissingWeightVertexCount++;
+
+            OutStats.bMissingWeight = true;
             return;
         }
 
         for (int32 i = 0; i < Count; ++i)
         {
             OutBoneWeights[i] /= Sum;
+        }
+    }
+
+    static void CommitUniqueVertexImportStats(
+        FImportBuildContext&          BuildContext,
+        bool                          bGeneratedNormal,
+        bool                          bGeneratedTangent,
+        bool                          bMissingUV,
+        const FPackedBoneWeightStats& BoneWeightStats
+        )
+    {
+        BuildContext.Summary.VertexCount++;
+
+        if (bGeneratedNormal)
+        {
+            BuildContext.Summary.GeneratedNormalCount++;
+        }
+
+        if (bGeneratedTangent)
+        {
+            BuildContext.Summary.GeneratedTangentCount++;
+        }
+
+        if (bMissingUV)
+        {
+            BuildContext.Summary.MissingUVCount++;
+        }
+
+        if (BoneWeightStats.bMissingWeight)
+        {
+            BuildContext.Summary.MissingWeightVertexCount++;
+        }
+
+        BuildContext.Summary.MaxInfluenceCount = (std::max)(BuildContext.Summary.MaxInfluenceCount, BoneWeightStats.SourceInfluenceCount);
+
+        if (BoneWeightStats.bOverMaxInfluences)
+        {
+            BuildContext.Summary.VertexCountOverMaxInfluences++;
+            BuildContext.Summary.TotalDiscardedWeight += BoneWeightStats.DiscardedWeight;
+        }
+
+        if (BoneWeightStats.bBoneIndexOverflow)
+        {
+            BuildContext.AddWarning(ESkeletalImportWarningType::BoneIndexOverflow, "Bone index is outside uint16 range.");
         }
     }
 
@@ -2078,6 +2374,8 @@ static bool BuildSkeletalMeshLODFromNodes(FbxScene* Scene, const FString& Source
 
     TArray<FImportedSectionBuild> SectionBuilds;
 
+    std::unordered_map<FSkeletalVertexDedupKey, uint32, FSkeletalVertexDedupKeyHasher> VertexToIndex;
+
     for (FbxNode* MeshNode : MeshNodes)
     {
         FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
@@ -2150,6 +2448,11 @@ static bool BuildSkeletalMeshLODFromNodes(FbxScene* Scene, const FString& Source
 
                 FSkeletalVertex Vertex;
 
+                bool                   bGeneratedNormal  = false;
+                bool                   bGeneratedTangent = false;
+                bool                   bMissingUV        = false;
+                FPackedBoneWeightStats BoneWeightStats;
+
                 Vertex.Pos = Positions[CornerIndex];
 
                 FVector LocalNormal;
@@ -2159,18 +2462,21 @@ static bool BuildSkeletalMeshLODFromNodes(FbxScene* Scene, const FString& Source
                 }
                 else
                 {
-                    Vertex.Normal = FallbackNormal;
-                    BuildContext.Summary.GeneratedNormalCount++;
+                    Vertex.Normal    = FallbackNormal;
+                    bGeneratedNormal = true;
                 }
 
                 const int32 RawUVSetCount = GetUVSetCount(Mesh);
 
                 if (RawUVSetCount <= 0)
                 {
-                    BuildContext.Summary.MissingUVCount++;
+                    bMissingUV = true;
                 }
 
-                const int32 UVCount = static_cast<int32>((std::min<size_t>)(static_cast<size_t>(MAX_SKELETAL_MESH_UV_CHANNELS), static_cast<size_t>(RawUVSetCount)));
+                const int32 UVCount = static_cast<int32>((std::min<std::size_t>)(
+                    static_cast<std::size_t>(MAX_SKELETAL_MESH_UV_CHANNELS),
+                    static_cast<std::size_t>(RawUVSetCount)
+                ));
 
                 Vertex.NumUVs = static_cast<uint8>(UVCount > 0 ? UVCount : 1);
 
@@ -2192,27 +2498,46 @@ static bool BuildSkeletalMeshLODFromNodes(FbxScene* Scene, const FString& Source
                 {
                     const FVector T = OrthogonalizeTangentToNormal(FallbackTangent, Vertex.Normal);
 
-                    Vertex.Tangent = FVector4(T.X, T.Y, T.Z, 1.0f);
-                    BuildContext.Summary.GeneratedTangentCount++;
+                    Vertex.Tangent    = FVector4(T.X, T.Y, T.Z, 1.0f);
+                    bGeneratedTangent = true;
                 }
 
                 if (ControlPointIndex >= 0 && ControlPointIndex < static_cast<int32>(ControlPointWeight.size()))
                 {
-                    PackTopBoneWeights(ControlPointWeight[ControlPointIndex], Vertex.BoneIndices, Vertex.BoneWeights, BuildContext);
+                    PackTopBoneWeights(ControlPointWeight[ControlPointIndex], Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
                 }
                 else
                 {
                     TArray<FImportedBoneWeight> EmptyWeight;
-                    PackTopBoneWeights(EmptyWeight, Vertex.BoneIndices, Vertex.BoneWeights, BuildContext);
+                    PackTopBoneWeights(EmptyWeight, Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
                 }
 
-                const uint32 NewIndex = static_cast<uint32>(OutLOD.Vertices.size());
+                BuildContext.Summary.CandidateVertexCount++;
 
-                OutLOD.Vertices.push_back(Vertex);
-                BuildContext.Summary.VertexCount++;
-                SectionBuild->Indices.push_back(NewIndex);
+                bool bAddedNewVertex = false;
 
-                if (OutMorphSources)
+                const uint32 VertexIndex = FindOrAddSkeletalVertex(
+                    Vertex,
+                    Mesh,
+                    ControlPointIndex,
+                    MaterialIndex,
+                    VertexToIndex,
+                    OutLOD.Vertices,
+                    bAddedNewVertex
+                );
+
+                if (bAddedNewVertex)
+                {
+                    CommitUniqueVertexImportStats(BuildContext, bGeneratedNormal, bGeneratedTangent, bMissingUV, BoneWeightStats);
+                }
+                else
+                {
+                    BuildContext.Summary.DeduplicatedVertexCount++;
+                }
+
+                SectionBuild->Indices.push_back(VertexIndex);
+
+                if (OutMorphSources && bAddedNewVertex)
                 {
                     FImportedMorphSourceVertex Source;
                     Source.Mesh                   = Mesh;
@@ -2220,7 +2545,7 @@ static bool BuildSkeletalMeshLODFromNodes(FbxScene* Scene, const FString& Source
                     Source.PolygonIndex           = PolygonIndex;
                     Source.CornerIndex            = CornerIndex;
                     Source.PolygonVertexIndex     = CurrentPolygonVertexIndex;
-                    Source.VertexIndex            = NewIndex;
+                    Source.VertexIndex            = VertexIndex;
                     Source.MeshToReference        = MeshToReference;
                     Source.NormalToReference      = NormalToReference;
                     Source.BaseNormalInReference  = Vertex.Normal;
@@ -2284,6 +2609,8 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
     Section.FirstIndex       = 0;
     Section.NumTriangles     = 0;
 
+    std::unordered_map<FStaticVertexDedupKey, uint32, FStaticVertexDedupKeyHasher> VertexToIndex;
+
     for (FbxNode* MeshNode : MeshNodes)
     {
         FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
@@ -2321,10 +2648,11 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
                 Vertex.color   = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                 Vertex.tangent = FVector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-                const uint32 NewIndex = static_cast<uint32>(OutMesh.Vertices.size());
+                bool bAddedNewVertex = false;
 
-                OutMesh.Vertices.push_back(Vertex);
-                OutMesh.Indices.push_back(NewIndex);
+                const uint32 VertexIndex = FindOrAddStaticVertex(Vertex, Mesh, ControlPointIndex, VertexToIndex, OutMesh.Vertices, bAddedNewVertex);
+
+                OutMesh.Indices.push_back(VertexIndex);
             }
 
             Section.NumTriangles++;
@@ -2479,6 +2807,16 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
     BuildContext.Summary.MaterialSlotCount  = static_cast<int32>(OutMaterials.size());
     BuildContext.Summary.AnimationClipCount = static_cast<int32>(OutMesh.Animations.size());
     BuildContext.Summary.MorphTargetCount   = static_cast<int32>(OutMesh.MorphTargets.size());
+
+    if (BuildContext.Summary.CandidateVertexCount > 0)
+    {
+        BuildContext.Summary.DeduplicationRatio = static_cast<float>(BuildContext.Summary.DeduplicatedVertexCount) / static_cast<float>(BuildContext.Summary.
+            CandidateVertexCount);
+    }
+    else
+    {
+        BuildContext.Summary.DeduplicationRatio = 0.0f;
+    }
 
     OutMesh.ImportSummary = BuildContext.Summary;
 
