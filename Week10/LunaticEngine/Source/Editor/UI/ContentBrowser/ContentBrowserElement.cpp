@@ -6,6 +6,12 @@
 #include "Core/Notification.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/ObjImporter.h"
+#include "Mesh/FbxImporter.h"
+#include "Mesh/ObjManager.h"
+#include "Mesh/StaticMesh.h"
+#include "Mesh/SkeletalMesh.h"
+#include "Mesh/SkeletalMeshManager.h"
+#include "Engine/Runtime/Engine.h"
 
 #include <algorithm>
 #include <vector>
@@ -324,4 +330,65 @@ void UAssetElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 	{
 		FNotificationManager::Get().AddNotification("Failed to open asset: " + GetDisplayName(), ENotificationType::Error, 5.0f);
 	}
+}
+
+void FbxElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
+{
+	const FString RelativeFbxPath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
+
+	if (FFbxImporter::HasSkinDeformer(RelativeFbxPath))
+	{
+		USkeletalMesh* SkeletalMesh = FSkeletalMeshManager::LoadSkeletalMesh(RelativeFbxPath);
+
+		if (!SkeletalMesh)
+		{
+			FNotificationManager::Get().AddNotification("Failed to open SkeletalMesh: " + RelativeFbxPath, ENotificationType::Error, 6.0f);
+			return;
+		}
+
+		Context.bIsNeedRefresh = true;
+
+		// TODO:
+		// SkeletalMesh Viewer
+
+		FNotificationManager::Get().AddNotification("Loaded SkeletalMesh: " + RelativeFbxPath, ENotificationType::Success, 4.0f);
+
+		return;
+	}
+
+	ID3D11Device* Device = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
+
+	if (!Device)
+	{
+		FNotificationManager::Get().AddNotification("Failed to open StaticMesh FBX: D3D device is null.", ENotificationType::Error, 6.0f);
+		return;
+	}
+
+	UStaticMesh* StaticMesh = FObjManager::LoadFbxStaticMesh(RelativeFbxPath, Device);
+
+	if (!StaticMesh)
+	{
+		FNotificationManager::Get().AddNotification("Failed to open StaticMesh: " + RelativeFbxPath, ENotificationType::Error, 6.0f);
+		return;
+	}
+
+	Context.bIsNeedRefresh = true;
+	FNotificationManager::Get().AddNotification("Loaded StaticMesh: " + RelativeFbxPath, ENotificationType::Success, 4.0f);
+}
+
+void SkeletalMeshElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
+{
+	const FString RelativeSkmPath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
+
+	USkeletalMesh* SkeletalMesh = FSkeletalMeshManager::LoadSkeletalMesh(RelativeSkmPath);
+
+	if (!SkeletalMesh)
+	{
+		FNotificationManager::Get().AddNotification("Failed to open SkeletalMesh: " + RelativeSkmPath, ENotificationType::Error, 6.0f);
+		return;
+	}
+
+	(void)Context;
+
+	FNotificationManager::Get().AddNotification("Loaded SkeletalMesh: " + RelativeSkmPath, ENotificationType::Success, 4.0f);
 }

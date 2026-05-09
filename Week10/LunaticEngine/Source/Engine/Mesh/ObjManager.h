@@ -27,12 +27,13 @@ class FObjManager
 
 
 public:
-	static std::string GetBinaryFilePath(const std::string& OriginalPath);
-	static UStaticMesh* LoadObjStaticMesh(const std::string& PathFileName, ID3D11Device* InDevice);
-	static UStaticMesh* LoadObjStaticMesh(const FString& PathFileName, const FImportOptions& Options, ID3D11Device* InDevice);
-	static void ScanMeshAssets();
+	static std::string                       GetBinaryFilePath(const std::string& OriginalPath);
+	static UStaticMesh*                      LoadObjStaticMesh(const std::string& PathFileName, ID3D11Device* InDevice);
+	static UStaticMesh*                      LoadObjStaticMesh(const FString& PathFileName, const FImportOptions& Options, ID3D11Device* InDevice);
+	static UStaticMesh*                      LoadFbxStaticMesh(const FString& PathFileName, ID3D11Device* InDevice);
+	static void                              ScanMeshAssets();
 	static const TArray<FMeshAssetListItem>& GetAvailableMeshFiles();
-	static void ScanObjSourceFiles();
+	static void                              ScanObjSourceFiles();
 	static const TArray<FMeshAssetListItem>& GetAvailableObjFiles();
 
 	// 캐시된 StaticMesh GPU 리소스 해제 (Shutdown 시 Device 해제 전 호출)

@@ -2,19 +2,21 @@
 setlocal EnableExtensions EnableDelayedExpansion
 
 set "SOLUTION_DIR=%~dp0"
-set "PROJECT_DIR=%SOLUTION_DIR%KraftonEngine"
-set "SOLUTION_FILE=%SOLUTION_DIR%KraftonEngine.sln"
 set "CONFIGURATION=Shipping"
 set "PLATFORM=x64"
-set "BUILD_OUTPUT=%PROJECT_DIR%\Bin\%CONFIGURATION%"
 set "STAGE_DIR=%SOLUTION_DIR%ShippingBuild"
-set "COOKED_SCENE_DIR=%SOLUTION_DIR%Saved\Cooked\%CONFIGURATION%\Asset\Content\Scene"
-set "EXE_NAME=KraftonEngine.exe"
+set "COOKED_ROOT=%SOLUTION_DIR%Saved\Cooked\%CONFIGURATION%"
+set "COOKED_SCENE_DIR=%COOKED_ROOT%\Asset\Content\Scene"
 set "NO_PAUSE=0"
 if /I "%~1"=="-NoPause" set "NO_PAUSE=1"
 
+call :FindProject || goto :Failed
+
+set "BUILD_OUTPUT=%PROJECT_DIR%\Bin\%CONFIGURATION%"
+set "EXE_NAME=%PROJECT_NAME%.exe"
+
 echo ============================================
-echo  KraftonEngine BuildCookRun
+echo  %PROJECT_NAME% BuildCookRun
 echo  Configuration: %CONFIGURATION% %PLATFORM%
 echo ============================================
 
@@ -35,10 +37,10 @@ if not exist "%BUILD_OUTPUT%\%EXE_NAME%" (
 
 echo.
 echo [2/5] Cook
-if exist "%COOKED_SCENE_DIR%" (
-    rmdir /s /q "%COOKED_SCENE_DIR%"
-    if exist "%COOKED_SCENE_DIR%" (
-        echo ERROR: Could not clean "%COOKED_SCENE_DIR%".
+if exist "%COOKED_ROOT%" (
+    rmdir /s /q "%COOKED_ROOT%"
+    if exist "%COOKED_ROOT%" (
+        echo ERROR: Could not clean "%COOKED_ROOT%".
         goto :Failed
     )
 )
@@ -54,7 +56,20 @@ if not "%COOK_RESULT%"=="0" (
 )
 
 echo.
-echo [3/5] Prepare staging directory
+echo [3/5] Build cooked asset root
+if not exist "%PROJECT_DIR%\Asset" (
+    echo ERROR: Required directory was not found: "%PROJECT_DIR%\Asset"
+    goto :Failed
+)
+
+robocopy "%PROJECT_DIR%\Asset" "%COOKED_ROOT%\Asset" /MIR /NFL /NDL /NJH /NJS /NP /XD "%PROJECT_DIR%\Asset\Content\Scene" /XF *.Scene *.umap *.pdb *.ilk *.obj.recipe
+if errorlevel 8 (
+    echo ERROR: Failed to build cooked Asset root.
+    goto :Failed
+)
+
+echo.
+echo [4/5] Prepare staging directory
 if exist "%STAGE_DIR%" (
     rmdir /s /q "%STAGE_DIR%"
     if exist "%STAGE_DIR%" (
@@ -65,40 +80,23 @@ if exist "%STAGE_DIR%" (
 mkdir "%STAGE_DIR%" || goto :Failed
 
 echo.
-echo [4/5] Stage runtime files
-
+echo [5/5] Stage runtime files
 copy /y "%BUILD_OUTPUT%\%EXE_NAME%" "%STAGE_DIR%\" >nul
 if errorlevel 1 (
     echo ERROR: Failed to copy executable.
     goto :Failed
 )
 
-if exist "%BUILD_OUTPUT%\*.dll" (
-    copy /y "%BUILD_OUTPUT%\*.dll" "%STAGE_DIR%\" >nul
-)
-
-if exist "%BUILD_OUTPUT%\*.ini" (
-    copy /y "%BUILD_OUTPUT%\*.ini" "%STAGE_DIR%\" >nul
-)
+if exist "%BUILD_OUTPUT%\*.dll" copy /y "%BUILD_OUTPUT%\*.dll" "%STAGE_DIR%\" >nul
+if exist "%BUILD_OUTPUT%\*.ini" copy /y "%BUILD_OUTPUT%\*.ini" "%STAGE_DIR%\" >nul
 
 call :MirrorDir "%PROJECT_DIR%\Shaders" "%STAGE_DIR%\Shaders" || goto :Failed
 call :MirrorDir "%PROJECT_DIR%\Settings" "%STAGE_DIR%\Settings" || goto :Failed
 call :MirrorDir "%PROJECT_DIR%\Scripts" "%STAGE_DIR%\Scripts" || goto :Failed
 
-rem Unreal-style staging: copy the cooked runtime roots as roots, then exclude editor/source-only artifacts.
-if not exist "%PROJECT_DIR%\Asset" (
-    echo ERROR: Required directory was not found: "%PROJECT_DIR%\Asset"
-    goto :Failed
-)
-robocopy "%PROJECT_DIR%\Asset" "%STAGE_DIR%\Asset" /MIR /NFL /NDL /NJH /NJS /NP /XF *.Scene *.umap *.pdb *.ilk *.obj.recipe
+robocopy "%COOKED_ROOT%\Asset" "%STAGE_DIR%\Asset" /MIR /NFL /NDL /NJH /NJS /NP
 if errorlevel 8 (
-    echo ERROR: Failed to stage Asset.
-    goto :Failed
-)
-
-robocopy "%COOKED_SCENE_DIR%" "%STAGE_DIR%\Asset\Content\Scene" /MIR /NFL /NDL /NJH /NJS /NP
-if errorlevel 8 (
-    echo ERROR: Failed to stage cooked scenes.
+    echo ERROR: Failed to stage cooked Asset root.
     goto :Failed
 )
 
@@ -111,13 +109,21 @@ if exist "%PROJECT_DIR%\Data" (
 )
 
 echo.
-echo [5/5] Verify staged build
+echo Verify staged build
 call :RequireFile "%STAGE_DIR%\%EXE_NAME%" || goto :Failed
 call :RequireDir "%STAGE_DIR%\Shaders" || goto :Failed
 call :RequireDir "%STAGE_DIR%\Asset\Content" || goto :Failed
 call :RequireDir "%STAGE_DIR%\Settings" || goto :Failed
 call :RequireDir "%STAGE_DIR%\Scripts" || goto :Failed
 call :RequireFile "%STAGE_DIR%\Settings\Resource\ProjectResourcePaths.ini" || goto :Failed
+call :RequireFile "%STAGE_DIR%\Asset\Content\Data\Dialogues\play.dialogue.json" || goto :Failed
+call :RequireFile "%STAGE_DIR%\Asset\Content\Data\Dialogues\game_result.dialogue.json" || goto :Failed
+call :RequireFile "%STAGE_DIR%\Asset\Content\Data\Scenarios\story.json" || goto :Failed
+call :RequireMeshAsset "%STAGE_DIR%\Asset\Content\Model\BasicShape\cube.obj" "%STAGE_DIR%\Asset\Content\Model\BasicShape\Cache\cube.bin" || goto :Failed
+call :RequireMeshAsset "%STAGE_DIR%\Asset\Content\Model\BasicShape\sphere.obj" "%STAGE_DIR%\Asset\Content\Model\BasicShape\Cache\sphere.bin" || goto :Failed
+call :RequireMeshAsset "%STAGE_DIR%\Asset\Content\Model\BasicShape\cylinder.obj" "%STAGE_DIR%\Asset\Content\Model\BasicShape\Cache\cylinder.bin" || goto :Failed
+call :RequireMeshAsset "%STAGE_DIR%\Asset\Content\Model\POD\Spaceship.obj" "%STAGE_DIR%\Asset\Content\Model\POD\Cache\Spaceship.bin" || goto :Failed
+call :RequireMeshAsset "%STAGE_DIR%\Asset\Content\Model\SlideOrJump\SlideOrJump.obj" "%STAGE_DIR%\Asset\Content\Model\SlideOrJump\Cache\SlideOrJump.bin" || goto :Failed
 
 set /a UMAPPED=0
 for /r "%STAGE_DIR%\Asset\Content\Scene" %%F in (*.umap) do set /a UMAPPED+=1
@@ -140,6 +146,31 @@ echo  Cooked maps staged: !UMAPPED!
 echo ============================================
 echo.
 call :PauseIfNeeded
+exit /b 0
+
+:FindProject
+pushd "%SOLUTION_DIR%" >nul
+for %%F in (*.sln) do if not defined SOLUTION_FILE set "SOLUTION_FILE=%SOLUTION_DIR%%%F"
+popd >nul
+if not defined SOLUTION_FILE (
+    echo ERROR: Solution file was not found in "%SOLUTION_DIR%".
+    exit /b 1
+)
+
+for /d %%D in ("%SOLUTION_DIR%*") do (
+    for %%P in ("%%~fD\*.vcxproj") do (
+        if exist "%%~fP" if not defined PROJECT_FILE (
+            set "PROJECT_FILE=%%~fP"
+            set "PROJECT_DIR=%%~dpP"
+            set "PROJECT_NAME=%%~nP"
+        )
+    )
+)
+
+if not defined PROJECT_FILE (
+    echo ERROR: Project file was not found under "%SOLUTION_DIR%".
+    exit /b 1
+)
 exit /b 0
 
 :FindVisualStudio
@@ -178,6 +209,14 @@ if not exist "%~1" (
     exit /b 1
 )
 exit /b 0
+
+:RequireMeshAsset
+if exist "%~1" exit /b 0
+if exist "%~2" exit /b 0
+echo ERROR: Required mesh is missing. Expected source or cache:
+echo   Source: "%~1"
+echo   Cache:  "%~2"
+exit /b 1
 
 :RequireDir
 if not exist "%~1\" (
