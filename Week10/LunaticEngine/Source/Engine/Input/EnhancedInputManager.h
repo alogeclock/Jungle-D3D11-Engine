@@ -4,6 +4,7 @@
 #include <functional>
 
 class FInputManager;
+struct FInputSystemSnapshot;
 
 struct FInputMappingContext;
 struct FInputAction;
@@ -24,9 +25,10 @@ public:
 	void BindAction(FInputAction* Action, ETriggerEvent TriggerEvent, FInputActionCallback Callback);
 	void ClearBindings();
 
+	void ProcessInput(const FInputSystemSnapshot& Snapshot, float DeltaTime, bool bIgnoreGui = false);
 	void ProcessInput(FInputManager* RawInput, float DeltaTime, bool bIgnoreGui = false);
 private:
-	FInputActionValue GetRawActionValue(FInputManager* Input, int32 Key);
+	FInputActionValue GetRawActionValue(const FInputSystemSnapshot& Snapshot, int32 Key);
 	struct FMappingContextEntry
 	{
 		FInputMappingContext* Context;

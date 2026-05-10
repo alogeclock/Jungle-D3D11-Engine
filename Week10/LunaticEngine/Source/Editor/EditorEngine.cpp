@@ -18,6 +18,8 @@
 #include "Mesh/ObjManager.h"
 #include "Core/ProjectSettings.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputRouter.h"
+#include "Engine/Input/InputSystem.h"
 #include "GameFramework/AActor.h"
 #include "Materials/MaterialManager.h"
 #include "Engine/Platform/Paths.h"
@@ -304,6 +306,20 @@ void UEditorEngine::Tick(float DeltaTime)
 	{
 		VC->Tick(DeltaTime);
 	}
+
+	const FInputSystemSnapshot InputSnapshot = FInputSystem::MakeSnapshot();
+	if (IsPlayingInEditor())
+	{
+		if (InputSnapshot.IsKeyPressed(VK_ESCAPE))
+		{
+			RequestEndPlayMap();
+		}
+		else if (InputSnapshot.IsKeyPressed(VK_F8))
+		{
+			TogglePIEControlMode();
+		}
+	}
+	FInputRouter::Get().RouteSnapshot(InputSnapshot, DeltaTime);
 
 	WorldTick(DeltaTime);
 	Render(DeltaTime);
@@ -712,6 +728,7 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 			PIEViewportClient->SetCursorClipRect(ActiveVC->GetViewportScreenRect());
 		}
 		PIEViewportClient->OnBeginPIE(InitialTargetCamera, InitialViewport);
+		FInputRouter::Get().BeginPIEMode(PIEViewportClient);
 	}
 	EnterPIEPossessedMode();
 	
@@ -816,6 +833,7 @@ void UEditorEngine::EndPlayMap()
 
 	if (UGameViewportClient* PIEViewportClient = GetGameViewportClient())
 	{
+		FInputRouter::Get().EndPIEMode();
 		PIEViewportClient->OnEndPIE();
 		UObjectManager::Get().DestroyObject(PIEViewportClient);
 		SetGameViewportClient(nullptr);

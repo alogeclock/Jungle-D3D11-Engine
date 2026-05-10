@@ -68,8 +68,12 @@ void FInputManager::ProcessMessage(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LP
 	}
 
 	case WM_MOUSEWHEEL:
-		PendingWheelDelta += static_cast<float>(GET_WHEEL_DELTA_WPARAM(WParam)) / static_cast<float>(WHEEL_DELTA);
+	{
+		const float WheelDelta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(WParam)) / static_cast<float>(WHEEL_DELTA);
+		PendingWheelDelta += WheelDelta;
+		EventQueue.push_back({ EInputEventType::MouseWheel, 0, WheelDelta });
 		break;
+	}
 
 	case WM_INPUT:
 	{
@@ -111,6 +115,7 @@ void FInputManager::Tick()
 
 	// Save previous frame state
 	std::memcpy(PrevKeyState, KeyState, sizeof(KeyState));
+	FrameEventQueue = EventQueue;
 
 	// Clear transient drag states
 	for (int i = 0; i < MAX_KEYS; ++i)
@@ -215,6 +220,15 @@ bool FInputManager::IsGuiUsingKeyboard() const
 	return ImGui::GetIO().WantCaptureKeyboard || ImGui::GetIO().WantTextInput;
 }
 
+bool FInputManager::IsGuiUsingTextInput() const
+{
+	if (bHasGuiCaptureOverride)
+	{
+		return bGuiUsingTextInputOverride;
+	}
+	return ImGui::GetIO().WantTextInput;
+}
+
 void FInputManager::SetGuiCaptureOverride(bool bInUsingMouse, bool bInUsingKeyboard, bool bInUsingTextInput)
 {
 	bHasGuiCaptureOverride = true;
@@ -236,6 +250,7 @@ void FInputManager::ResetAllStates()
 	ResetAllKeyStates();
 	ResetMouseDelta();
 	ResetWheelDelta();
+	FrameEventQueue.clear();
 }
 
 void FInputManager::ResetMouseDelta()
@@ -260,12 +275,19 @@ void FInputManager::ResetAllKeyStates()
 	std::memset(bIsDragging, 0, sizeof(bIsDragging));
 	std::memset(bDragCandidate, 0, sizeof(bDragCandidate));
 	EventQueue.clear();
+	FrameEventQueue.clear();
 }
 
 bool FInputManager::IsKeyDown(int32 Key) const
 {
 	if (Key < 0 || Key >= MAX_KEYS) return false;
 	return KeyState[Key];
+}
+
+bool FInputManager::WasKeyDown(int32 Key) const
+{
+	if (Key < 0 || Key >= MAX_KEYS) return false;
+	return PrevKeyState[Key];
 }
 
 bool FInputManager::IsKeyPressed(int32 Key) const

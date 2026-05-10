@@ -713,6 +713,12 @@
     <ClCompile Include="Source\Engine\Input\InputMappingContext.cpp">
       <Filter>Source\Engine\Input</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Input\InputRouter.cpp">
+      <Filter>Source\Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Input\InputSystem.cpp">
+      <Filter>Source\Engine\Input</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Materials\Material.cpp">
       <Filter>Source\Engine\Materials</Filter>
     </ClCompile>
@@ -1572,6 +1578,12 @@
       <Filter>Source\Engine\Input</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Input\InputModifier.h">
+      <Filter>Source\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Input\InputRouter.h">
+      <Filter>Source\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Input\InputSystem.h">
       <Filter>Source\Engine\Input</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Input\inputTrigger.h">

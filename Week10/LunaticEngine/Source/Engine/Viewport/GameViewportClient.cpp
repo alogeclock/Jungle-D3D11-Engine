@@ -4,6 +4,7 @@
 #include "Component/ScriptComponent.h"
 #include "GameFramework/AActor.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputSystem.h"
 #include "Engine/Input/InputModifier.h"
 #include "Engine/Input/InputTrigger.h"
 #include "Math/MathUtils.h"
@@ -54,7 +55,7 @@ void UGameViewportClient::OnEndPIE()
 
 bool UGameViewportClient::ProcessPIEInput(float DeltaTime)
 {
-	return Tick(DeltaTime);
+	return ProcessInputSnapshot(FInputSystem::MakeSnapshot(), DeltaTime);
 }
 
 void UGameViewportClient::SetPIEPossessedInputEnabled(bool bEnabled)
@@ -184,6 +185,17 @@ void UGameViewportClient::ResetInputState()
 
 bool UGameViewportClient::Tick(float DeltaTime)
 {
+	(void)DeltaTime;
+	return false;
+}
+
+bool UGameViewportClient::HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
+{
+	return ProcessInputSnapshot(Snapshot, DeltaTime);
+}
+
+bool UGameViewportClient::ProcessInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
+{
 	if (!HasPossessedTarget())
 	{
 		return false;
@@ -202,7 +214,7 @@ bool UGameViewportClient::Tick(float DeltaTime)
 		LookInputAccumulator = FVector::ZeroVector;
 
 		// Process Enhanced Input
-		EnhancedInputManager.ProcessInput(&FInputManager::Get(), DeltaTime);
+		EnhancedInputManager.ProcessInput(Snapshot, DeltaTime);
 
 		// Apply Accumulated Input
 		UCameraComponent* TargetCamera = GetDrivingCamera();

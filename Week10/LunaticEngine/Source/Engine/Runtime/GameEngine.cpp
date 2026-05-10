@@ -9,6 +9,8 @@
 #include "Component/ActorComponent.h"
 #include "Core/AsciiUtils.h"
 #include "Input/InputManager.h"
+#include "Input/InputRouter.h"
+#include "Input/InputSystem.h"
 #include "Object/Object.h"
 #include "Viewport/GameViewportClient.h"
 #include "Viewport/Viewport.h"
@@ -60,6 +62,8 @@ void UGameEngine::Init(FWindowsWindow* InWindow)
 
 	UGameViewportClient* ViewportClient = UObjectManager::Get().CreateObject<UGameViewportClient>();
 	SetGameViewportClient(ViewportClient);
+	FInputRouter::Get().SetKeyboardFocusedViewport(ViewportClient);
+	FInputRouter::Get().SetHoveredViewport(ViewportClient);
 	if (InWindow)
 	{
 		ViewportClient->SetOwnerWindow(InWindow->GetHWND());
@@ -91,6 +95,10 @@ void UGameEngine::Init(FWindowsWindow* InWindow)
 void UGameEngine::Shutdown()
 {
 	ImGuiOverlay.Shutdown();
+	if (UGameViewportClient* ViewportClient = GetGameViewportClient())
+	{
+		FInputRouter::Get().ClearViewport(ViewportClient);
+	}
 	FInputManager::Get().SetGuiCaptureOverride(false, false, false);
 	UEngine::Shutdown();
 }
@@ -113,10 +121,11 @@ void UGameEngine::Tick(float DeltaTime)
 
 		if (!bPopupOpen)
 		{
-			GameVC->ProcessPIEInput(DeltaTime);
-			GameVC->Tick(DeltaTime);
+			FInputRouter::Get().SetKeyboardFocusedViewport(GameVC);
+			FInputRouter::Get().SetHoveredViewport(GameVC);
 		}
 	}
+	FInputRouter::Get().RouteSnapshot(FInputSystem::MakeSnapshot(), DeltaTime);
 	UEngine::Tick(DeltaTime);
 }
 

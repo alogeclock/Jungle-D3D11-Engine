@@ -9,6 +9,7 @@
 #include "Editor/Selection/SelectionManager.h"
 #include "Engine/Runtime/WindowsWindow.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputRouter.h"
 #include "GameFramework/DecalActor.h"
 #include "GameFramework/PawnActor.h"
 #include "GameFramework/CharacterActor.h"
@@ -1075,11 +1076,16 @@ void FLevelViewportLayout::SetActiveViewport(FLevelEditorViewportClient* InClien
 	if (ActiveViewportClient)
 	{
 		ActiveViewportClient->SetActive(true);
+		FInputRouter::Get().SetKeyboardFocusedViewport(ActiveViewportClient);
 		UWorld* World = Editor->GetWorld();
 		if (World && ActiveViewportClient->GetCamera())
 		{
 			World->SetActiveCamera(ActiveViewportClient->GetCamera());
 		}
+	}
+	else
+	{
+		FInputRouter::Get().SetKeyboardFocusedViewport(nullptr);
 	}
 }
 
@@ -1744,6 +1750,7 @@ void FLevelViewportLayout::ToggleViewportSplit(int32 SourceSlotIndex)
 void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 {
 	bMouseOverViewport = false;
+	FInputRouter::Get().SetHoveredViewport(nullptr);
 	UpdateLayoutTransition(DeltaTime);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -1886,6 +1893,10 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 				if (i < static_cast<int32>(LevelViewportClients.size()))
 				{
 					LevelViewportClients[i]->SetHovered(bSlotHovered);
+					if (bSlotHovered)
+					{
+						FInputRouter::Get().SetHoveredViewport(LevelViewportClients[i]);
+					}
 				}
 
 				if (bSlotHovered)

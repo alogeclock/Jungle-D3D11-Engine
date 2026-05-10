@@ -36,6 +36,7 @@ public:
 
 	// FViewportClient overrides
 	void Draw(FViewport* Viewport, float DeltaTime) override {}
+	bool HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime) override;
 	bool InputKey(int32 Key, bool bPressed) override { return false; }
 
 	// Viewport 소유
@@ -62,6 +63,7 @@ public:
 	bool ProcessPIEInput(float DeltaTime);
 
 private:
+	bool ProcessInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime);
 	void SetupInput();
 	void OnMove(const FInputActionValue& Value);
 	void OnLook(const FInputActionValue& Value);

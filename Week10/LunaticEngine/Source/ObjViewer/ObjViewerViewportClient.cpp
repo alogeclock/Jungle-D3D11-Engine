@@ -1,5 +1,6 @@
 #include "ObjViewer/ObjViewerViewportClient.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputSystem.h"
 #include "Engine/Input/InputModifier.h"
 #include "Engine/Input/InputTrigger.h"
 #include "Component/CameraComponent.h"
@@ -67,7 +68,13 @@ void FObjViewerViewportClient::ResetCamera()
 
 void FObjViewerViewportClient::Tick(float DeltaTime)
 {
-	TickInput(DeltaTime);
+	(void)DeltaTime;
+}
+
+bool FObjViewerViewportClient::HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
+{
+	TickInput(Snapshot, DeltaTime);
+	return true;
 }
 
 void FObjViewerViewportClient::SetViewportRect(float X, float Y, float Width, float Height)
@@ -142,18 +149,17 @@ void FObjViewerViewportClient::OnZoom(const FInputActionValue& Value)
 	ZoomAccumulator += Value.Get();
 }
 
-void FObjViewerViewportClient::TickInput(float DeltaTime)
+void FObjViewerViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
 	if (!Camera) return;
 
-	FInputManager& Input = FInputManager::Get();
-	if (Input.IsGuiUsingKeyboard()) return;
+	if (Snapshot.IsGuiUsingKeyboard()) return;
 
 	OrbitAccumulator = FVector::ZeroVector;
 	PanAccumulator = FVector::ZeroVector;
 	ZoomAccumulator = 0.0f;
 
-	EnhancedInputManager.ProcessInput(&Input, DeltaTime);
+	EnhancedInputManager.ProcessInput(Snapshot, DeltaTime);
 
 	// Orbit
 	if (!OrbitAccumulator.IsNearlyZero())

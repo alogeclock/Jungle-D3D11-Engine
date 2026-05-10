@@ -31,6 +31,7 @@ public:
 	FViewport* GetViewport() const { return Viewport; }
 
 	void Tick(float DeltaTime);
+	bool HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime) override;
 
 	// 뷰포트 영역 설정 (ImGui 패널에서 호출)
 	void SetViewportRect(float X, float Y, float Width, float Height);
@@ -44,7 +45,7 @@ private:
 	void OnPan(const FInputActionValue& Value);
 	void OnZoom(const FInputActionValue& Value);
 
-	void TickInput(float DeltaTime);
+	void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
 
 private:
 	FViewport* Viewport = nullptr;

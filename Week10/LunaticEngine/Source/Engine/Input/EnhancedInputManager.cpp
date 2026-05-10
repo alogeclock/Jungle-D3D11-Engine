@@ -1,6 +1,7 @@
 ﻿#include "Input/EnhancedInputManager.h"
 #include "Input/InputModifier.h"
 #include "Input/InputManager.h"
+#include "Input/InputSystem.h"
 #include "Input/InputAction.h"
 #include "Input/InputMappingContext.h"
 #include "ImGui/imgui.h"
@@ -56,30 +57,30 @@ void FEnhancedInputManager::ClearBindings()
 }
 
 // Function : Get raw action value from input manager
-FInputActionValue FEnhancedInputManager::GetRawActionValue(FInputManager* Input, int32 Key)
+FInputActionValue FEnhancedInputManager::GetRawActionValue(const FInputSystemSnapshot& Snapshot, int32 Key)
 {
 	if (Key == static_cast<int32>(EInputKey::MouseX))
-		return FInputActionValue(Input->GetMouseDeltaX());
+		return FInputActionValue(Snapshot.GetMouseDeltaX());
 	if (Key == static_cast<int32>(EInputKey::MouseY))
-		return FInputActionValue(Input->GetMouseDeltaY());
+		return FInputActionValue(Snapshot.GetMouseDeltaY());
 	if (Key == static_cast<int32>(EInputKey::MouseWheel))
-		return FInputActionValue(Input->GetMouseWheelDelta());
+		return FInputActionValue(Snapshot.GetMouseWheelDelta());
 
 	if (Key == static_cast<int32>(EInputKey::MouseDragL_X))
-		return FInputActionValue(static_cast<float>(Input->GetDragDelta(FInputManager::MOUSE_LEFT).x));
+		return FInputActionValue(static_cast<float>(Snapshot.GetDragDelta(FInputManager::MOUSE_LEFT).x));
 	if (Key == static_cast<int32>(EInputKey::MouseDragL_Y))
-		return FInputActionValue(static_cast<float>(Input->GetDragDelta(FInputManager::MOUSE_LEFT).y));
+		return FInputActionValue(static_cast<float>(Snapshot.GetDragDelta(FInputManager::MOUSE_LEFT).y));
 	if (Key == static_cast<int32>(EInputKey::MouseDragR_X))
-		return FInputActionValue(static_cast<float>(Input->GetDragDelta(FInputManager::MOUSE_RIGHT).x));
+		return FInputActionValue(static_cast<float>(Snapshot.GetDragDelta(FInputManager::MOUSE_RIGHT).x));
 	if (Key == static_cast<int32>(EInputKey::MouseDragR_Y))
-		return FInputActionValue(static_cast<float>(Input->GetDragDelta(FInputManager::MOUSE_RIGHT).y));
+		return FInputActionValue(static_cast<float>(Snapshot.GetDragDelta(FInputManager::MOUSE_RIGHT).y));
 	if (Key == static_cast<int32>(EInputKey::MouseDragM_X))
-		return FInputActionValue(static_cast<float>(Input->GetDragDelta(FInputManager::MOUSE_MIDDLE).x));
+		return FInputActionValue(static_cast<float>(Snapshot.GetDragDelta(FInputManager::MOUSE_MIDDLE).x));
 	if (Key == static_cast<int32>(EInputKey::MouseDragM_Y))
-		return FInputActionValue(static_cast<float>(Input->GetDragDelta(FInputManager::MOUSE_MIDDLE).y));
+		return FInputActionValue(static_cast<float>(Snapshot.GetDragDelta(FInputManager::MOUSE_MIDDLE).y));
 
 	if (Key >= 0 && Key < 256)
-		return FInputActionValue(Input->IsKeyDown(Key) ? 1.0f : 0.0f);
+		return FInputActionValue(Snapshot.IsKeyDown(Key) ? 1.0f : 0.0f);
 	
 	return FInputActionValue(0.0f);
 }
@@ -90,10 +91,10 @@ FInputActionValue FEnhancedInputManager::GetRawActionValue(FInputManager* Input,
 // raw input : input manager to get raw input from
 // delta time : time since last frame,
 // used for trigger state update
-void FEnhancedInputManager::ProcessInput(FInputManager* RawInput, float DeltaTime, bool bIgnoreGui)
+void FEnhancedInputManager::ProcessInput(const FInputSystemSnapshot& Snapshot, float DeltaTime, bool bIgnoreGui)
 {
-	bool bGuiWantsKeyboard = !bIgnoreGui && RawInput->IsGuiUsingKeyboard();
-	bool bGuiWantsMouse = !bIgnoreGui && RawInput->IsGuiUsingMouse();
+	bool bGuiWantsKeyboard = !bIgnoreGui && Snapshot.IsGuiUsingKeyboard();
+	bool bGuiWantsMouse = !bIgnoreGui && Snapshot.IsGuiUsingMouse();
 
 	TMap<FInputAction*, FInputActionValue> ActionValues;
 	TMap<FInputAction*, ETriggerState> NewTriggerStates;
@@ -113,7 +114,7 @@ void FEnhancedInputManager::ProcessInput(FInputManager* RawInput, float DeltaTim
 			if (bIsMouseKey && bGuiWantsMouse) continue;
 			if (!bIsMouseKey && bGuiWantsKeyboard) continue;
 
-			FInputActionValue Value = GetRawActionValue(RawInput, Mapping.Key);
+			FInputActionValue Value = GetRawActionValue(Snapshot, Mapping.Key);
 
 			for (auto& Modifier : Mapping.Modifiers)
 			{
@@ -210,4 +211,10 @@ void FEnhancedInputManager::ProcessInput(FInputManager* RawInput, float DeltaTim
 			++It;
 		}
 	}
+}
+
+void FEnhancedInputManager::ProcessInput(FInputManager* RawInput, float DeltaTime, bool bIgnoreGui)
+{
+	(void)RawInput;
+	ProcessInput(FInputSystem::MakeSnapshot(), DeltaTime, bIgnoreGui);
 }

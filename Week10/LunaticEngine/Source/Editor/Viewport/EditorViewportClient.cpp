@@ -5,6 +5,7 @@
 #include "Editor/Settings/EditorSettings.h"
 #include "Core/ProjectSettings.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputSystem.h"
 #include "Engine/Input/InputModifier.h"
 #include "Engine/Input/InputTrigger.h"
 #include "Engine/Profiling/PlatformTime.h"
@@ -1097,10 +1098,6 @@ void FEditorViewportClient::Tick(float DeltaTime)
 	{
 		if (EditorEngine->IsPlayingInEditor())
 		{
-			FInputManager& Input = FInputManager::Get();
-			if (Input.IsKeyPressed(VK_ESCAPE)) { EditorEngine->RequestEndPlayMap(); return; }
-			if (Input.IsKeyPressed(VK_F8)) { EditorEngine->TogglePIEControlMode(); }
-
 			// 매 Tick마다 SetDrivingCamera(EditorViewportCamera)를 하지 말 것
 			if (EditorEngine->IsPIEPossessedMode())
 			{
@@ -1121,8 +1118,6 @@ void FEditorViewportClient::Tick(float DeltaTime)
 							GameViewportClient->Possess(Camera);
 						}
 					}
-
-					GameViewportClient->ProcessPIEInput(DeltaTime);
 				}
 				return;
 			}
@@ -1144,8 +1139,18 @@ void FEditorViewportClient::Tick(float DeltaTime)
 		TargetLocation = NewLoc; LastAppliedCameraLocation = NewLoc; bLastAppliedCameraLocationInitialized = true;
 	}
 	else { ApplySmoothedCameraLocation(DeltaTime); }
-	TickInput(DeltaTime);
-	TickInteraction(DeltaTime);
+}
+
+bool FEditorViewportClient::HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
+{
+	if (!bIsActive && !bIsHovered && !bCameraInputCaptured && !bDraggingUIScreenGizmo && !bIsMarqueeSelecting)
+	{
+		return false;
+	}
+
+	TickInput(Snapshot, DeltaTime);
+	TickInteraction(Snapshot, DeltaTime);
+	return true;
 }
 
 void FEditorViewportClient::SyncCameraSmoothingTarget()
@@ -1241,24 +1246,23 @@ void FEditorViewportClient::TickEditorShortcuts()
 	}
 }
 
-void FEditorViewportClient::TickInput(float DeltaTime)
+void FEditorViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
 	if (!Camera) return;
 	if (IsViewingFromLight()) return;
-	FInputManager& Input = FInputManager::Get();
 	EditorMoveAccumulator = FVector::ZeroVector;
 	EditorRotateAccumulator = FVector::ZeroVector;
 	EditorPanAccumulator = FVector::ZeroVector;
 	EditorZoomAccumulator = 0.0f;
-	const bool bGuiWantsMouse = Input.IsGuiUsingMouse();
-	const bool bGuiWantsKeyboard = Input.IsGuiUsingKeyboard();
+	const bool bGuiWantsMouse = Snapshot.IsGuiUsingMouse();
+	const bool bGuiWantsKeyboard = Snapshot.IsGuiUsingKeyboard();
 
-	if (bIsHovered && Input.IsMouseButtonPressed(VK_RBUTTON) && !bGuiWantsMouse && !bGuiWantsKeyboard)
+	if (bIsHovered && Snapshot.IsMouseButtonPressed(VK_RBUTTON) && !bGuiWantsMouse && !bGuiWantsKeyboard)
 	{
 		bCameraInputCaptured = true;
 	}
 
-	if (Input.IsMouseButtonReleased(VK_RBUTTON) || !Input.IsWindowFocused())
+	if (Snapshot.IsMouseButtonReleased(VK_RBUTTON) || !Snapshot.IsWindowFocused())
 	{
 		bCameraInputCaptured = false;
 	}
@@ -1269,7 +1273,7 @@ void FEditorViewportClient::TickInput(float DeltaTime)
 	const bool bIgnoreGui =
 		bCameraInputCaptured || bAllowNewViewportInput;
 
-	EnhancedInputManager.ProcessInput(&Input, DeltaTime, bIgnoreGui);
+	EnhancedInputManager.ProcessInput(Snapshot, DeltaTime, bIgnoreGui);
 
 	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
 	const bool bIsOrtho = CameraState.bIsOrthogonal;
@@ -1292,14 +1296,14 @@ void FEditorViewportClient::TickInput(float DeltaTime)
 			const float MouseRotationSpeed = 0.15f * RotateSensitivity;
 			const float AngleVelocity = (Settings ? Settings->CameraRotationSpeed : 60.f) * RotateSensitivity;
 			float Yaw = 0.0f, Pitch = 0.0f;
-			if (!Input.IsMouseButtonDown(VK_RBUTTON)) { Yaw = EditorRotateAccumulator.X * AngleVelocity * DeltaTime; Pitch = EditorRotateAccumulator.Y * AngleVelocity * DeltaTime; }
+			if (!Snapshot.IsMouseButtonDown(VK_RBUTTON)) { Yaw = EditorRotateAccumulator.X * AngleVelocity * DeltaTime; Pitch = EditorRotateAccumulator.Y * AngleVelocity * DeltaTime; }
 			else { Yaw = EditorRotateAccumulator.X * MouseRotationSpeed; Pitch = EditorRotateAccumulator.Y * MouseRotationSpeed; }
 			Camera->Rotate(Yaw, Pitch);
 		}
 	}
 	else
 	{
-		if (!EditorRotateAccumulator.IsNearlyZero() && Input.IsMouseButtonDown(VK_RBUTTON))
+		if (!EditorRotateAccumulator.IsNearlyZero() && Snapshot.IsMouseButtonDown(VK_RBUTTON))
 		{
 			float PanScale = CameraState.OrthoWidth * 0.002f * MoveSensitivity;
 			Camera->MoveLocal(FVector(0, -EditorRotateAccumulator.Y * PanScale, EditorRotateAccumulator.Z * PanScale));
@@ -1340,7 +1344,7 @@ static FVector FindClosestVertex(UWorld* World, const FRay& Ray, float MaxDistan
 	return bFound ? BestVertex : FVector::ZeroVector;
 }
 
-void FEditorViewportClient::TickInteraction(float DeltaTime)
+void FEditorViewportClient::TickInteraction(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
 	(void)DeltaTime; if (!Camera || !Gizmo || !GetWorld()) return;
 	Gizmo->ApplyScreenSpaceScaling(Camera->GetWorldLocation(), Camera->IsOrthogonal(), Camera->GetOrthoWidth());
@@ -1349,7 +1353,7 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 	uint32 CursorViewportX = 0;
 	uint32 CursorViewportY = 0;
 	const bool bCursorInViewport = GetCursorViewportPosition(CursorViewportX, CursorViewportY);
-	if (FInputManager::Get().IsGuiUsingMouse() && !bCursorInViewport && !Gizmo->IsHolding() && !bIsMarqueeSelecting)
+	if (Snapshot.IsGuiUsingMouse() && !bCursorInViewport && !Gizmo->IsHolding() && !bIsMarqueeSelecting)
 	{
 		return;
 	}
@@ -1360,7 +1364,6 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 		if (Camera->IsOrthogonal()) { float NewWidth = Camera->GetOrthoWidth() - EditorZoomAccumulator * ZoomSpeed * DeltaTime; Camera->SetOrthoWidth(Clamp(NewWidth, 0.1f, 1000.0f)); }
 		else { TargetLocation += Camera->GetForwardVector() * (EditorZoomAccumulator * ZoomSpeed * 0.015f); }
 	}
-	FInputManager& Input = FInputManager::Get();
 	ImVec2 MousePos = ImGui::GetIO().MousePos;
 	HoveredUIScreenGizmoAxis = HasUIScreenTranslateGizmo() ? HitTestUIScreenTranslateGizmo(MousePos) : 0;
 	float VPWidth = Viewport ? static_cast<float>(Viewport->GetWidth()) : WindowWidth;
@@ -1375,12 +1378,12 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 	FRay Ray = Camera->DeprojectScreenToWorld(LocalMouseX, LocalMouseY, VPWidth, VPHeight);
 	FRayHitResult HitResult;
 	bool bGizmoHit = FRayUtils::RaycastComponent(Gizmo, Ray, HitResult);
-	if (Input.IsKeyPressed(FInputManager::MOUSE_LEFT) && bIsHovered)
+	if (Snapshot.IsKeyPressed(FInputManager::MOUSE_LEFT) && bIsHovered)
 	{
-		if (Input.IsKeyDown(VK_CONTROL) && Input.IsKeyDown(VK_MENU)) { bIsMarqueeSelecting = true; MarqueeStartPos = FVector(MousePos.x, MousePos.y, 0); MarqueeCurrentPos = FVector(MousePos.x, MousePos.y, 0); }
+		if (Snapshot.IsKeyDown(VK_CONTROL) && Snapshot.IsKeyDown(VK_MENU)) { bIsMarqueeSelecting = true; MarqueeStartPos = FVector(MousePos.x, MousePos.y, 0); MarqueeCurrentPos = FVector(MousePos.x, MousePos.y, 0); }
 		else 
 		{ 
-			if (Input.IsKeyDown(VK_MENU) && bGizmoHit && SelectionManager && !SelectionManager->IsEmpty())
+			if (Snapshot.IsKeyDown(VK_MENU) && bGizmoHit && SelectionManager && !SelectionManager->IsEmpty())
 			{
 				const TArray<AActor*> ToDuplicate = SelectionManager->GetSelectedActors();
 				TArray<AActor*> NewSelection;
@@ -1388,10 +1391,10 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 				SelectionManager->ClearSelection();
 				for (AActor* Actor : NewSelection) SelectionManager->ToggleSelect(Actor);
 			}
-			HandleDragStart(Ray); 
+			HandleDragStart(Snapshot, Ray);
 		}
 	}
-	else if (Input.IsMouseButtonDown(FInputManager::MOUSE_LEFT))
+	else if (Snapshot.IsMouseButtonDown(FInputManager::MOUSE_LEFT))
 	{
 		if (bIsMarqueeSelecting) { MarqueeCurrentPos = FVector(MousePos.x, MousePos.y, 0); }
 		else if (bDraggingUIScreenGizmo)
@@ -1403,12 +1406,12 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 			if (Gizmo->IsPressedOnHandle() && !Gizmo->IsHolding()) Gizmo->SetHolding(true); 
 			if (Gizmo->IsHolding()) 
 			{
-				if (Input.IsKeyDown('V')) { FVector BestV = FindClosestVertex(GetWorld(), Ray, 2.0f); if (!BestV.IsNearlyZero()) { Gizmo->SetTargetLocation(BestV); TargetLocation = BestV; } }
+				if (Snapshot.IsKeyDown('V')) { FVector BestV = FindClosestVertex(GetWorld(), Ray, 2.0f); if (!BestV.IsNearlyZero()) { Gizmo->SetTargetLocation(BestV); TargetLocation = BestV; } }
 				Gizmo->UpdateDrag(Ray); 
 			}
 		}
 	}
-	else if (Input.IsKeyReleased(FInputManager::MOUSE_LEFT))
+	else if (Snapshot.IsKeyReleased(FInputManager::MOUSE_LEFT))
 	{
 		if (bDraggingUIScreenGizmo)
 		{
@@ -1424,7 +1427,7 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 				UWorld* World = GetWorld();
 				if (World && SelectionManager)
 				{
-					if (!Input.IsKeyDown(VK_CONTROL)) SelectionManager->ClearSelection();
+					if (!Snapshot.IsKeyDown(VK_CONTROL)) SelectionManager->ClearSelection();
 					FMatrix VP = Camera->GetViewProjectionMatrix();
 					for (AActor* Actor : World->GetActors())
 					{
@@ -1445,7 +1448,7 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 			}
 		}
 	}
-	else if (Input.IsKeyReleased(VK_LBUTTON))
+	else if (Snapshot.IsKeyReleased(VK_LBUTTON))
 	{
 		if (bDraggingUIScreenGizmo)
 		{
@@ -1460,9 +1463,9 @@ void FEditorViewportClient::TickInteraction(float DeltaTime)
 	}
 }
 
-void FEditorViewportClient::HandleDragStart(const FRay& Ray)
+void FEditorViewportClient::HandleDragStart(const FInputSystemSnapshot& Snapshot, const FRay& Ray)
 {
-	FInputManager& Input = FInputManager::Get(); if (!bIsHovered) return;
+	if (!bIsHovered) return;
 	if (BeginUIScreenTranslateDrag(ImGui::GetIO().MousePos))
 	{
 		return;
@@ -1497,7 +1500,7 @@ void FEditorViewportClient::HandleDragStart(const FRay& Ray)
 		if (HitUIComponent)
 		{
 			AActor* HitActor = HitUIComponent->GetOwner();
-			const bool bCtrlHeld = Input.IsKeyDown(VK_CONTROL);
+			const bool bCtrlHeld = Snapshot.IsKeyDown(VK_CONTROL);
 			if (HitActor)
 			{
 				if (bCtrlHeld)
@@ -1547,7 +1550,7 @@ void FEditorViewportClient::HandleDragStart(const FRay& Ray)
 					}
 				}
 			}
-			bool bCtrlHeld = Input.IsKeyDown(VK_CONTROL);
+			bool bCtrlHeld = Snapshot.IsKeyDown(VK_CONTROL);
 			if (BestActor == nullptr) { if (!bCtrlHeld) SelectionManager->ClearSelection(); }
 			else
 			{

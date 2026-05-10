@@ -57,6 +57,7 @@ public:
 	bool FocusActor(AActor* Actor);
 
 	void Tick(float DeltaTime);
+	bool HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime) override;
 
 	// 활성 상태 — 활성 뷰포트만 입력 처리
 	void SetActive(bool bInActive) { bIsActive = bInActive; }
@@ -114,9 +115,9 @@ private:
 	void OnEditorTogglePIE(const FInputActionValue& Value);
 
 	void TickEditorShortcuts();
-	void TickInput(float DeltaTime);
-	void TickInteraction(float DeltaTime);
-	void HandleDragStart(const FRay& Ray); //픽킹 시작
+	void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
+	void TickInteraction(const FInputSystemSnapshot& Snapshot, float DeltaTime);
+	void HandleDragStart(const FInputSystemSnapshot& Snapshot, const FRay& Ray); //픽킹 시작
 	void DrawUIScreenTranslateGizmo();
 	bool HasUIScreenTranslateGizmo() const;
 	int32 HitTestUIScreenTranslateGizmo(const ImVec2& MousePos) const;
