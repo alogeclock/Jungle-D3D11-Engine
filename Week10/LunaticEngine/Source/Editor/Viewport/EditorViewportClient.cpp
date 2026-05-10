@@ -5,6 +5,7 @@
 #include "Editor/Settings/EditorSettings.h"
 #include "Core/ProjectSettings.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputRouter.h"
 #include "Engine/Input/InputSystem.h"
 #include "Engine/Input/InputModifier.h"
 #include "Engine/Input/InputTrigger.h"
@@ -1260,11 +1261,13 @@ void FEditorViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, floa
 	if (bIsHovered && Snapshot.IsMouseButtonPressed(VK_RBUTTON) && !bGuiWantsMouse && !bGuiWantsKeyboard)
 	{
 		bCameraInputCaptured = true;
+		FInputRouter::Get().SetMouseCapturedViewport(this);
 	}
 
-	if (Snapshot.IsMouseButtonReleased(VK_RBUTTON) || !Snapshot.IsWindowFocused())
+	if ((Snapshot.IsMouseButtonReleased(VK_RBUTTON) && !Snapshot.IsMouseButtonDown(FInputManager::MOUSE_LEFT)) || !Snapshot.IsWindowFocused())
 	{
 		bCameraInputCaptured = false;
+		FInputRouter::Get().ReleaseMouseCapture(this);
 	}
 
 	const bool bAllowNewViewportInput =
@@ -1380,6 +1383,7 @@ void FEditorViewportClient::TickInteraction(const FInputSystemSnapshot& Snapshot
 	bool bGizmoHit = FRayUtils::RaycastComponent(Gizmo, Ray, HitResult);
 	if (Snapshot.IsKeyPressed(FInputManager::MOUSE_LEFT) && bIsHovered)
 	{
+		FInputRouter::Get().SetMouseCapturedViewport(this);
 		if (Snapshot.IsKeyDown(VK_CONTROL) && Snapshot.IsKeyDown(VK_MENU)) { bIsMarqueeSelecting = true; MarqueeStartPos = FVector(MousePos.x, MousePos.y, 0); MarqueeCurrentPos = FVector(MousePos.x, MousePos.y, 0); }
 		else 
 		{ 
@@ -1447,6 +1451,10 @@ void FEditorViewportClient::TickInteraction(const FInputSystemSnapshot& Snapshot
 				EditorEngine->CommitTrackedTransformChange();
 			}
 		}
+		if (!bCameraInputCaptured && !Snapshot.IsMouseButtonDown(VK_RBUTTON))
+		{
+			FInputRouter::Get().ReleaseMouseCapture(this);
+		}
 	}
 	else if (Snapshot.IsKeyReleased(VK_LBUTTON))
 	{
@@ -1460,6 +1468,10 @@ void FEditorViewportClient::TickInteraction(const FInputSystemSnapshot& Snapshot
 			EditorEngine->CommitTrackedTransformChange();
 		}
 		bIsMarqueeSelecting = false;
+		if (!bCameraInputCaptured && !Snapshot.IsMouseButtonDown(VK_RBUTTON))
+		{
+			FInputRouter::Get().ReleaseMouseCapture(this);
+		}
 	}
 }
 

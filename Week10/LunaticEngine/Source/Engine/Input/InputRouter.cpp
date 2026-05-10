@@ -11,6 +11,11 @@ FInputRouter& FInputRouter::Get()
 
 bool FInputRouter::RouteSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
+	if (MouseCapturedViewport)
+	{
+		return MouseCapturedViewport->HandleInputSnapshot(Snapshot, DeltaTime);
+	}
+
 	if (DoesUILayerConsumeInput(Snapshot))
 	{
 		return false;
