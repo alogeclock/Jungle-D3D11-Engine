@@ -107,6 +107,7 @@ private:
 
 	float RawMouseDeltaAccumX = 0.0f;
 	float RawMouseDeltaAccumY = 0.0f;
+	bool bSuppressNextMouseDelta = false;
 
 	POINT LastMousePos = {};
 	bool bTrackingMouse = false;

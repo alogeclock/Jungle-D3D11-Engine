@@ -33,7 +33,8 @@ void FInputManager::ProcessMessage(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LP
 
 	case WM_RBUTTONDOWN:
 		EventQueue.push_back({ EInputEventType::MouseButtonDown, MOUSE_RIGHT });
-		GetCursorPos(&LastMousePos);
+		ResetMouseDelta();
+		bSuppressNextMouseDelta = true;
 		bTrackingMouse = true;
 		SetCapture(Hwnd);
 		break;
@@ -77,6 +78,11 @@ void FInputManager::ProcessMessage(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LP
 
 	case WM_INPUT:
 	{
+		if (OwnerHWnd && GetForegroundWindow() != OwnerHWnd)
+		{
+			break;
+		}
+
 		UINT Size = 0;
 		GetRawInputData((HRAWINPUT)LParam, RID_INPUT, NULL, &Size, sizeof(RAWINPUTHEADER));
 		if (Size > 0)
@@ -109,9 +115,19 @@ void FInputManager::Tick()
 			ResetAllStates();
 			return;
 		}
+
+		ResetMouseDelta();
+		bSuppressNextMouseDelta = true;
 	}
 
-	if (!bWindowFocused) return;
+	if (!bWindowFocused)
+	{
+		ResetMouseDelta();
+		ResetWheelDelta();
+		EventQueue.clear();
+		FrameEventQueue.clear();
+		return;
+	}
 
 	// Save previous frame state
 	std::memcpy(PrevKeyState, KeyState, sizeof(KeyState));
@@ -176,6 +192,13 @@ void FInputManager::Tick()
 	{
 		MouseDeltaX = static_cast<float>(CurrentPos.x - LastMousePos.x);
 		MouseDeltaY = static_cast<float>(CurrentPos.y - LastMousePos.y);
+	}
+
+	if (bSuppressNextMouseDelta)
+	{
+		MouseDeltaX = 0.0f;
+		MouseDeltaY = 0.0f;
+		bSuppressNextMouseDelta = false;
 	}
 	
 	LastMousePos = CurrentPos;
