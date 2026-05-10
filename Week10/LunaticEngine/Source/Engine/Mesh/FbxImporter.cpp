@@ -12,7 +12,7 @@
 #include <cctype>
 #include <cmath>
 #include <cstddef>
- #include <cstring>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -448,13 +448,26 @@ namespace
         return Info;
     }
 
-    // 추출한 FBX material 정보를 엔진 .mat JSON 파일로 저장하고 material asset path를 반환한다.
-    static FString ConvertFbxMaterialInfoToMat(const FFbxImportedMaterialInfo& Info, FImportBuildContext& BuildContext)
+    // FBX source와 slot 이름을 이용해 충돌 가능성이 낮은 자동 material asset path를 만든다.
+    static FString MakeAutoFbxMaterialPath(const FString& SourceFbxPath, const FString& SlotName)
     {
-        const FString SafeSlotName = MakeSafeAssetName(Info.SlotName);
-        const FString MatPath      = "Asset/Materials/Auto/Fbx/" + SafeSlotName + ".mat";
+        const std::filesystem::path SourcePath(FPaths::ToWide(SourceFbxPath));
 
-        const std::filesystem::path DiskPath(FPaths::ToWide(MatPath));
+        FString SourceAssetName = FPaths::ToUtf8(SourcePath.stem().wstring());
+        if (SourceAssetName.empty())
+        {
+            SourceAssetName = "UnknownFbx";
+        }
+
+        return "Asset/Materials/Auto/Fbx/" + MakeSafeAssetName(SourceAssetName) + "/" + MakeSafeAssetName(SlotName) + ".mat";
+    }
+
+    // 추출한 FBX material 정보를 엔진 .mat JSON 파일로 저장하고 material asset path를 반환한다.
+    static FString ConvertFbxMaterialInfoToMat(const FFbxImportedMaterialInfo& Info, const FString& SourceFbxPath, FImportBuildContext& BuildContext)
+    {
+        const FString MatPath = MakeAutoFbxMaterialPath(SourceFbxPath, Info.SlotName);
+        const FString FullDiskPath = FPaths::ConvertRelativePathToFull(MatPath);
+        const std::filesystem::path DiskPath(FPaths::ToWide(FullDiskPath));
 
         if (std::filesystem::exists(DiskPath))
         {
@@ -1974,8 +1987,8 @@ namespace
         return 0;
     }
 
-    // FBX material을 외부 texture path 기반 .mat 파일로 변환하고 skeletal material slot에 연결한다.
-    static int32 FindOrAddSkeletalMaterial(
+    // FBX material을 외부 texture path 기반 .mat 파일로 변환하고 material slot에 연결한다.
+    static int32 FindOrAddFbxMaterial(
         FbxSurfaceMaterial*      FbxMaterial,
         const FString&           SourceFbxPath,
         TArray<FStaticMaterial>& OutMaterials,
@@ -1997,7 +2010,7 @@ namespace
         if (FbxMaterial)
         {
             const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath);
-            MaterialPath                                = ConvertFbxMaterialInfoToMat(MaterialInfo, BuildContext);
+            MaterialPath                                = ConvertFbxMaterialInfoToMat(MaterialInfo, SourceFbxPath, BuildContext);
         }
 
         FStaticMaterial NewMaterial;
@@ -2008,7 +2021,7 @@ namespace
     }
 
     // 임시 section별 index 목록을 최종 index buffer와 section 배열로 병합한다.
-    static void BuildFinalSkeletalSections(
+    static void BuildFinalImportedSections(
         const TArray<FImportedSectionBuild>& SectionBuilds,
         const TArray<FStaticMaterial>&       Materials,
         TArray<uint32>&                      OutIndices,
@@ -2498,7 +2511,7 @@ static bool BuildSkeletalMeshLODFromNodes(
                 FbxMat = MeshNode->GetMaterial(LocalMaterialIndex);
             }
 
-            const int32 MaterialIndex = FindOrAddSkeletalMaterial(FbxMat, SourcePath, OutMaterials, BuildContext);
+            const int32 MaterialIndex = FindOrAddFbxMaterial(FbxMat, SourcePath, OutMaterials, BuildContext);
 
             FImportedSectionBuild* SectionBuild = FindOrAddImportedSection(SectionBuilds, MaterialIndex);
 
@@ -2649,7 +2662,7 @@ static bool BuildSkeletalMeshLODFromNodes(
         return false;
     }
 
-    BuildFinalSkeletalSections(SectionBuilds, OutMaterials, OutLOD.Indices, OutLOD.Sections);
+    BuildFinalImportedSections(SectionBuilds, OutMaterials, OutLOD.Indices, OutLOD.Sections);
 
     if (OutLOD.Indices.empty() || OutLOD.Sections.empty())
     {
@@ -2661,7 +2674,300 @@ static bool BuildSkeletalMeshLODFromNodes(
     return true;
 }
 
-// FBX 파일에서 static mesh geometry와 기본 material 정보를 import한다.
+struct FFbxMeshImportSpace
+{
+    FMatrix VertexTransform = FMatrix::Identity;
+    FMatrix NormalTransform = FMatrix::Identity;
+
+    static FFbxMeshImportSpace FromStaticMeshNode(FbxNode* MeshNode)
+    {
+        FFbxMeshImportSpace Result;
+
+        if (!MeshNode)
+        {
+            return Result;
+        }
+
+        const FMatrix GeometryTransform = ToEngineMatrix(GetNodeGeometryTransform(MeshNode));
+        const FMatrix GlobalTransform   = ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
+
+        Result.VertexTransform = GeometryTransform * GlobalTransform;
+        Result.NormalTransform = Result.VertexTransform.GetInverse().GetTransposed();
+        return Result;
+    }
+};
+
+struct FFbxTriangleSample
+{
+    int32    ControlPointIndices[3] = { -1, -1, -1 };
+    FVector  Positions[3];
+    FVector2 UV0[3];
+    FVector  FallbackNormal;
+    FVector  FallbackTangent;
+};
+
+static FbxSurfaceMaterial* ResolvePolygonFbxMaterial(FbxNode* MeshNode, FbxMesh* Mesh, int32 PolygonIndex)
+{
+    if (!MeshNode || !Mesh)
+    {
+        return nullptr;
+    }
+
+    const int32 LocalMaterialIndex = GetPolygonMaterialIndex(Mesh, PolygonIndex);
+    if (LocalMaterialIndex < 0 || LocalMaterialIndex >= MeshNode->GetMaterialCount())
+    {
+        return nullptr;
+    }
+
+    return MeshNode->GetMaterial(LocalMaterialIndex);
+}
+
+static bool ReadTriangleSample(FbxMesh* Mesh, int32 PolygonIndex, const FFbxMeshImportSpace& ImportSpace, FFbxTriangleSample& OutTriangle)
+{
+    if (!Mesh || Mesh->GetPolygonSize(PolygonIndex) != 3)
+    {
+        return false;
+    }
+
+    for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
+    {
+        const int32 ControlPointIndex = Mesh->GetPolygonVertex(PolygonIndex, CornerIndex);
+        OutTriangle.ControlPointIndices[CornerIndex] = ControlPointIndex;
+
+        const FVector LocalPosition = ReadPosition(Mesh, ControlPointIndex);
+        OutTriangle.Positions[CornerIndex] = TransformPositionByMatrix(LocalPosition, ImportSpace.VertexTransform);
+        OutTriangle.UV0[CornerIndex]       = ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, 0);
+    }
+
+    OutTriangle.FallbackNormal = ComputeTriangleNormal(
+        OutTriangle.Positions[0],
+        OutTriangle.Positions[1],
+        OutTriangle.Positions[2]
+    );
+
+    OutTriangle.FallbackTangent = ComputeTriangleTangent(
+        OutTriangle.Positions[0],
+        OutTriangle.Positions[1],
+        OutTriangle.Positions[2],
+        OutTriangle.UV0[0],
+        OutTriangle.UV0[1],
+        OutTriangle.UV0[2]
+    );
+
+    return true;
+}
+
+class FFbxStaticMeshBuilder
+{
+public:
+    FFbxStaticMeshBuilder(
+        const FString&           InSourcePath,
+        TArray<FStaticMaterial>& InOutMaterials,
+        FStaticMesh&             InOutMesh,
+        FImportBuildContext&     InBuildContext
+        )
+        : SourcePath(InSourcePath)
+        , Materials(InOutMaterials)
+        , MeshAsset(InOutMesh)
+        , BuildContext(InBuildContext)
+    {
+    }
+
+    bool Build(const TArray<FbxNode*>& MeshNodes)
+    {
+        ResetOutput();
+
+        for (FbxNode* MeshNode : MeshNodes)
+        {
+            AppendMeshNode(MeshNode);
+        }
+
+        return Finalize();
+    }
+
+private:
+    const FString& SourcePath;
+    TArray<FStaticMaterial>& Materials;
+    FStaticMesh& MeshAsset;
+    FImportBuildContext& BuildContext;
+
+    TArray<FImportedSectionBuild> SectionBuilds;
+    std::unordered_map<FStaticVertexDedupKey, uint32, FStaticVertexDedupKeyHasher> VertexToIndex;
+
+    void ResetOutput()
+    {
+        MeshAsset.Vertices.clear();
+        MeshAsset.Indices.clear();
+        MeshAsset.Sections.clear();
+        SectionBuilds.clear();
+        VertexToIndex.clear();
+    }
+
+    void AppendMeshNode(FbxNode* MeshNode)
+    {
+        FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
+        if (!Mesh)
+        {
+            return;
+        }
+
+        const FFbxMeshImportSpace ImportSpace = FFbxMeshImportSpace::FromStaticMeshNode(MeshNode);
+
+        int32 PolygonVertexIndex = 0;
+
+        for (int32 PolygonIndex = 0; PolygonIndex < Mesh->GetPolygonCount(); ++PolygonIndex)
+        {
+            const int32 PolygonSize = Mesh->GetPolygonSize(PolygonIndex);
+
+            if (PolygonSize == 3)
+            {
+                AppendTriangle(MeshNode, Mesh, PolygonIndex, PolygonVertexIndex, ImportSpace);
+            }
+
+            PolygonVertexIndex += PolygonSize;
+        }
+    }
+
+    void AppendTriangle(
+        FbxNode*                    MeshNode,
+        FbxMesh*                    Mesh,
+        int32                       PolygonIndex,
+        int32                       PolygonVertexStartIndex,
+        const FFbxMeshImportSpace&  ImportSpace
+        )
+    {
+        FFbxTriangleSample Triangle;
+        if (!ReadTriangleSample(Mesh, PolygonIndex, ImportSpace, Triangle))
+        {
+            return;
+        }
+
+        const int32 MaterialIndex = ResolveMaterialIndex(MeshNode, Mesh, PolygonIndex);
+        FImportedSectionBuild* SectionBuild = FindOrAddImportedSection(SectionBuilds, MaterialIndex);
+        if (!SectionBuild)
+        {
+            return;
+        }
+
+        for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
+        {
+            const uint32 VertexIndex = AddCornerVertex(
+                Mesh,
+                PolygonIndex,
+                CornerIndex,
+                PolygonVertexStartIndex + CornerIndex,
+                Triangle,
+                ImportSpace
+            );
+
+            SectionBuild->Indices.push_back(VertexIndex);
+        }
+    }
+
+    int32 ResolveMaterialIndex(FbxNode* MeshNode, FbxMesh* Mesh, int32 PolygonIndex)
+    {
+        FbxSurfaceMaterial* FbxMaterial = ResolvePolygonFbxMaterial(MeshNode, Mesh, PolygonIndex);
+        return FindOrAddFbxMaterial(FbxMaterial, SourcePath, Materials, BuildContext);
+    }
+
+    uint32 AddCornerVertex(
+        FbxMesh*                    Mesh,
+        int32                       PolygonIndex,
+        int32                       CornerIndex,
+        int32                       PolygonVertexIndex,
+        const FFbxTriangleSample&   Triangle,
+        const FFbxMeshImportSpace&  ImportSpace
+        )
+    {
+        const int32 ControlPointIndex = Triangle.ControlPointIndices[CornerIndex];
+
+        FNormalVertex Vertex;
+        Vertex.pos     = Triangle.Positions[CornerIndex];
+        Vertex.normal  = ReadCornerNormal(Mesh, PolygonIndex, CornerIndex, Triangle, ImportSpace);
+        Vertex.tex     = Triangle.UV0[CornerIndex];
+        Vertex.color   = ReadVertexColor(Mesh, ControlPointIndex, PolygonVertexIndex);
+        Vertex.tangent = ReadCornerTangent(Mesh, ControlPointIndex, PolygonVertexIndex, Triangle, ImportSpace, Vertex.normal);
+
+        bool bAddedNewVertex = false;
+        return FindOrAddStaticVertex(
+            Vertex,
+            Mesh,
+            ControlPointIndex,
+            VertexToIndex,
+            MeshAsset.Vertices,
+            bAddedNewVertex
+        );
+    }
+
+    FVector ReadCornerNormal(
+        FbxMesh*                    Mesh,
+        int32                       PolygonIndex,
+        int32                       CornerIndex,
+        const FFbxTriangleSample&   Triangle,
+        const FFbxMeshImportSpace&  ImportSpace
+        ) const
+    {
+        FVector LocalNormal;
+        if (TryReadNormal(Mesh, PolygonIndex, CornerIndex, LocalNormal))
+        {
+            return TransformNormalByMatrix(LocalNormal, ImportSpace.NormalTransform);
+        }
+
+        return Triangle.FallbackNormal;
+    }
+
+    FVector4 ReadCornerTangent(
+        FbxMesh*                    Mesh,
+        int32                       ControlPointIndex,
+        int32                       PolygonVertexIndex,
+        const FFbxTriangleSample&   Triangle,
+        const FFbxMeshImportSpace&  ImportSpace,
+        const FVector&              ImportedNormal
+        ) const
+    {
+        FVector4 ImportedTangent;
+        if (TryReadTangent(Mesh, ControlPointIndex, PolygonVertexIndex, ImportedTangent))
+        {
+            const FVector Tangent = TransformTangentByMatrix(
+                FVector(ImportedTangent.X, ImportedTangent.Y, ImportedTangent.Z),
+                ImportSpace.VertexTransform,
+                ImportedNormal
+            );
+
+            return FVector4(Tangent.X, Tangent.Y, Tangent.Z, ImportedTangent.W);
+        }
+
+        const FVector Tangent = OrthogonalizeTangentToNormal(Triangle.FallbackTangent, ImportedNormal);
+        return FVector4(Tangent.X, Tangent.Y, Tangent.Z, 1.0f);
+    }
+
+    bool Finalize()
+    {
+        BuildFinalImportedSections(SectionBuilds, Materials, MeshAsset.Indices, MeshAsset.Sections);
+
+        if (MeshAsset.Vertices.empty() || MeshAsset.Indices.empty() || MeshAsset.Sections.empty())
+        {
+            return false;
+        }
+
+        MeshAsset.CacheBounds();
+        return true;
+    }
+};
+
+static bool BuildStaticMeshFromNodes(
+    const FString&           SourcePath,
+    const TArray<FbxNode*>&  MeshNodes,
+    TArray<FStaticMaterial>& OutMaterials,
+    FStaticMesh&             OutMesh,
+    FImportBuildContext&     BuildContext
+    )
+{
+    FFbxStaticMeshBuilder Builder(SourcePath, OutMaterials, OutMesh, BuildContext);
+    return Builder.Build(MeshNodes);
+}
+
+// FBX 파일에서 static mesh geometry, transform, vertex attributes, material section 정보를 import한다.
 bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
 {
     OutMesh = FStaticMesh();
@@ -2673,6 +2979,7 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
         return false;
     }
 
+    NormalizeFbxScene(SceneHandle.Scene);
     TriangulateScene(SceneHandle.Manager, SceneHandle.Scene);
 
     TArray<FbxNode*> MeshNodes;
@@ -2685,72 +2992,17 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
 
     OutMesh.PathFileName = SourcePath;
 
-    GetOrCreateDefaultMaterial(OutMaterials);
+    FImportBuildContext BuildContext;
+    BuildContext.Summary.SourcePath = SourcePath;
 
-    FStaticMeshSection Section;
-    Section.MaterialIndex    = 0;
-    Section.MaterialSlotName = OutMaterials[0].MaterialSlotName;
-    Section.FirstIndex       = 0;
-    Section.NumTriangles     = 0;
-
-    std::unordered_map<FStaticVertexDedupKey, uint32, FStaticVertexDedupKeyHasher> VertexToIndex;
-
-    for (FbxNode* MeshNode : MeshNodes)
+    if (!BuildStaticMeshFromNodes(SourcePath, MeshNodes, OutMaterials, OutMesh, BuildContext))
     {
-        FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
-
-        if (!Mesh)
-        {
-            continue;
-        }
-
-        for (int32 PolygonIndex = 0; PolygonIndex < Mesh->GetPolygonCount(); ++PolygonIndex)
-        {
-            const int32 PolygonSize = Mesh->GetPolygonSize(PolygonIndex);
-
-            if (PolygonSize != 3)
-            {
-                continue;
-            }
-
-            for (int32 CornerIndex = 0; CornerIndex < PolygonSize; ++CornerIndex)
-            {
-                const int32 ControlPointIndex = Mesh->GetPolygonVertex(PolygonIndex, CornerIndex);
-
-                FNormalVertex Vertex;
-                Vertex.pos = ReadPosition(Mesh, ControlPointIndex);
-                FVector StaticNormal;
-                if (TryReadNormal(Mesh, PolygonIndex, CornerIndex, StaticNormal))
-                {
-                    Vertex.normal = StaticNormal;
-                }
-                else
-                {
-                    Vertex.normal = FVector(0.0f, 0.0f, 1.0f);
-                }
-                Vertex.tex     = ReadUV(Mesh, PolygonIndex, CornerIndex);
-                Vertex.color   = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                Vertex.tangent = FVector4(1.0f, 0.0f, 0.0f, 1.0f);
-
-                bool bAddedNewVertex = false;
-
-                const uint32 VertexIndex = FindOrAddStaticVertex(Vertex, Mesh, ControlPointIndex, VertexToIndex, OutMesh.Vertices, bAddedNewVertex);
-
-                OutMesh.Indices.push_back(VertexIndex);
-            }
-
-            Section.NumTriangles++;
-        }
-    }
-
-    if (OutMesh.Vertices.empty() || OutMesh.Indices.empty())
-    {
+        OutMesh = FStaticMesh();
+        OutMaterials.clear();
         return false;
     }
 
-    OutMesh.Sections.push_back(Section);
-    OutMesh.CacheBounds();
-
+    OutMesh.PathFileName = SourcePath;
     return true;
 }
 
