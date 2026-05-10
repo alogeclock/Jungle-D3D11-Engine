@@ -1380,7 +1380,8 @@ void FEditorViewportClient::TickInteraction(const FInputSystemSnapshot& Snapshot
 	}
 	FRay Ray = Camera->DeprojectScreenToWorld(LocalMouseX, LocalMouseY, VPWidth, VPHeight);
 	FRayHitResult HitResult;
-	bool bGizmoHit = FRayUtils::RaycastComponent(Gizmo, Ray, HitResult);
+	const bool bCanInteractWithGizmo = SelectionManager && SelectionManager->GetSelectedComponent() && Gizmo->HasTarget();
+	bool bGizmoHit = bCanInteractWithGizmo && FRayUtils::RaycastComponent(Gizmo, Ray, HitResult);
 	if (Snapshot.IsKeyPressed(FInputManager::MOUSE_LEFT) && bIsHovered)
 	{
 		FInputRouter::Get().SetMouseCapturedViewport(this);
@@ -1483,7 +1484,8 @@ void FEditorViewportClient::HandleDragStart(const FInputSystemSnapshot& Snapshot
 		return;
 	}
 	FScopeCycleCounter PickCounter; FRayHitResult HitResult{};
-	if (FRayUtils::RaycastComponent(Gizmo, Ray, HitResult))
+	const bool bCanInteractWithGizmo = SelectionManager && SelectionManager->GetSelectedComponent() && Gizmo->HasTarget();
+	if (bCanInteractWithGizmo && FRayUtils::RaycastComponent(Gizmo, Ray, HitResult))
 	{
 		if (SelectionManager)
 		{
