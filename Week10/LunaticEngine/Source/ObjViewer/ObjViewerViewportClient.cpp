@@ -123,29 +123,30 @@ void FObjViewerViewportClient::SetupInput()
 
 	EnhancedInputManager.AddMappingContext(ObjMappingContext, 0);
 
-	EnhancedInputManager.BindAction(ActionObjOrbit, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnOrbit(V); });
-	EnhancedInputManager.BindAction(ActionObjPan, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnPan(V); });
-	EnhancedInputManager.BindAction(ActionObjZoom, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnZoom(V); });
+	EnhancedInputManager.BindAction(ActionObjOrbit, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnOrbit(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionObjPan, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnPan(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionObjZoom, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnZoom(V, Snapshot); });
 }
 
-void FObjViewerViewportClient::OnOrbit(const FInputActionValue& Value)
+void FObjViewerViewportClient::OnOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (FInputManager::Get().IsMouseButtonDown(VK_LBUTTON) || FInputManager::Get().IsMouseButtonDown(VK_RBUTTON))
+	if (Snapshot.IsMouseButtonDown(VK_LBUTTON) || Snapshot.IsMouseButtonDown(VK_RBUTTON))
 	{
 		OrbitAccumulator = OrbitAccumulator + Value.GetVector();
 	}
 }
 
-void FObjViewerViewportClient::OnPan(const FInputActionValue& Value)
+void FObjViewerViewportClient::OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (FInputManager::Get().IsMouseButtonDown(VK_MBUTTON))
+	if (Snapshot.IsMouseButtonDown(VK_MBUTTON))
 	{
 		PanAccumulator = PanAccumulator + Value.GetVector();
 	}
 }
 
-void FObjViewerViewportClient::OnZoom(const FInputActionValue& Value)
+void FObjViewerViewportClient::OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
+	(void)Snapshot;
 	ZoomAccumulator += Value.Get();
 }
 

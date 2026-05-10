@@ -100,21 +100,21 @@ private:
 	void SetupInput();
 
 	// Action Callbacks
-	void OnEditorMove(const FInputActionValue& Value);
-	void OnEditorRotate(const FInputActionValue& Value);
-	void OnEditorPan(const FInputActionValue& Value);
-	void OnEditorZoom(const FInputActionValue& Value);
-	void OnEditorOrbit(const FInputActionValue& Value);
+	void OnEditorMove(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorRotate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 
-	void OnEditorFocus(const FInputActionValue& Value);
-	void OnEditorDelete(const FInputActionValue& Value);
-	void OnEditorDuplicate(const FInputActionValue& Value);
-	void OnEditorToggleGizmoMode(const FInputActionValue& Value);
-	void OnEditorToggleCoordSystem(const FInputActionValue& Value);
-	void OnEditorEscape(const FInputActionValue& Value);
-	void OnEditorTogglePIE(const FInputActionValue& Value);
+	void OnEditorFocus(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorDelete(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorDuplicate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorToggleGizmoMode(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorToggleCoordSystem(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorEscape(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnEditorTogglePIE(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 
-	void TickEditorShortcuts();
+	void TickEditorShortcuts(const FInputSystemSnapshot& Snapshot);
 	void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
 	void TickInteraction(const FInputSystemSnapshot& Snapshot, float DeltaTime);
 	void HandleDragStart(const FInputSystemSnapshot& Snapshot, const FRay& Ray); //픽킹 시작

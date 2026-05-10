@@ -41,9 +41,9 @@ public:
 
 private:
 	void SetupInput();
-	void OnOrbit(const FInputActionValue& Value);
-	void OnPan(const FInputActionValue& Value);
-	void OnZoom(const FInputActionValue& Value);
+	void OnOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 
 	void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
 

@@ -47,6 +47,11 @@ void FEnhancedInputManager::ClearAllMappingContexts()
 // callback : function to call when trigger event occurs
 void FEnhancedInputManager::BindAction(FInputAction* Action, ETriggerEvent TriggerEvent, FInputActionCallback Callback)
 {
+	Bindings.push_back({ Action, TriggerEvent, [Callback = std::move(Callback)](const FInputActionValue& Value, const FInputSystemSnapshot&) { Callback(Value); } });
+}
+
+void FEnhancedInputManager::BindAction(FInputAction* Action, ETriggerEvent TriggerEvent, FInputActionSnapshotCallback Callback)
+{
 	Bindings.push_back({ Action, TriggerEvent, std::move(Callback) });
 }
 
@@ -181,7 +186,7 @@ void FEnhancedInputManager::ProcessInput(const FInputSystemSnapshot& Snapshot, f
 			{
 				if (Binding.Action == Action && (Event & Binding.TriggerEvent))
 				{
-					Binding.Callback(ActionValue);
+					Binding.Callback(ActionValue, Snapshot);
 				}
 			}
 		}
@@ -200,7 +205,7 @@ void FEnhancedInputManager::ProcessInput(const FInputSystemSnapshot& Snapshot, f
 				{
 					if (Binding.Action == It->first && (Event & Binding.TriggerEvent))
 					{
-						Binding.Callback(ZeroValue);
+						Binding.Callback(ZeroValue, Snapshot);
 					}
 				}
 			}

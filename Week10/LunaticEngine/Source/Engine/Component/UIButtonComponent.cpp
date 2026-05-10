@@ -228,6 +228,8 @@ void UIButtonComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	const bool bWasHovered = bHovered;
 	const bool bWasPressed = bPressed;
 
+	// TODO: FInputManager::Get()을 아무 데서나 불러오고 있음... (ex. Lua, EditorMainPanel, UIButton, PlayerController)
+	// FInputSystem - Tick마다 FInputSystemSnapshot 생성 - 개별 경로에 라우팅하는 흐름이 맞지만, 수정할 부분이 워낙 방대하여 포기
 	if (FInputManager::Get().IsGuiUsingMouse())
 	{
 		bHovered = false;

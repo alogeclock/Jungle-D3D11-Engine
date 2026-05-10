@@ -515,8 +515,6 @@ namespace
 				}
 
 				BestActor = Actor;
-				BestScore = DistanceSq;
-				BestDepth = Depth;
 				for (UActorComponent* Component : Actor->GetComponents())
 				{
 					UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(Component);
@@ -706,19 +704,19 @@ void FEditorViewportClient::SetupInput()
 	EnhancedInputManager.AddMappingContext(EditorMappingContext, 0);
 
 	// 4. Bind Actions
-	EnhancedInputManager.BindAction(ActionEditorMove, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnEditorMove(V); });
-	EnhancedInputManager.BindAction(ActionEditorRotate, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnEditorRotate(V); });
-	EnhancedInputManager.BindAction(ActionEditorPan, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnEditorPan(V); });
-	EnhancedInputManager.BindAction(ActionEditorZoom, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnEditorZoom(V); });
-	EnhancedInputManager.BindAction(ActionEditorOrbit, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnEditorOrbit(V); });
+	EnhancedInputManager.BindAction(ActionEditorMove, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorMove(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorRotate, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorRotate(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorPan, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorPan(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorZoom, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorZoom(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorOrbit, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorOrbit(V, Snapshot); });
 
-	EnhancedInputManager.BindAction(ActionEditorFocus, ETriggerEvent::Started, [this](const FInputActionValue& V) { OnEditorFocus(V); });
-	EnhancedInputManager.BindAction(ActionEditorDelete, ETriggerEvent::Started, [this](const FInputActionValue& V) { OnEditorDelete(V); });
-	EnhancedInputManager.BindAction(ActionEditorDuplicate, ETriggerEvent::Started, [this](const FInputActionValue& V) { OnEditorDuplicate(V); });
-	EnhancedInputManager.BindAction(ActionEditorToggleGizmoMode, ETriggerEvent::Started, [this](const FInputActionValue& V) { OnEditorToggleGizmoMode(V); });
-	EnhancedInputManager.BindAction(ActionEditorToggleCoordSystem, ETriggerEvent::Started, [this](const FInputActionValue& V) { OnEditorToggleCoordSystem(V); });
-	EnhancedInputManager.BindAction(ActionEditorEscape, ETriggerEvent::Started, [this](const FInputActionValue& V) { OnEditorEscape(V); });
-	EnhancedInputManager.BindAction(ActionEditorTogglePIE, ETriggerEvent::Started, [this](const FInputActionValue& V) { OnEditorTogglePIE(V); });
+	EnhancedInputManager.BindAction(ActionEditorFocus, ETriggerEvent::Started, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorFocus(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorDelete, ETriggerEvent::Started, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorDelete(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorDuplicate, ETriggerEvent::Started, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorDuplicate(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorToggleGizmoMode, ETriggerEvent::Started, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorToggleGizmoMode(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorToggleCoordSystem, ETriggerEvent::Started, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorToggleCoordSystem(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorEscape, ETriggerEvent::Started, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorEscape(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionEditorTogglePIE, ETriggerEvent::Started, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnEditorTogglePIE(V, Snapshot); });
 	
 	EnhancedInputManager.BindAction(ActionEditorDecreaseSnap, ETriggerEvent::Started, [this](const FInputActionValue& V) {
 		FEditorSettings& S = FEditorSettings::Get();
@@ -789,19 +787,18 @@ void FEditorViewportClient::SetupInput()
 	});
 }
 
-void FEditorViewportClient::OnEditorMove(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorMove(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (FInputManager::Get().IsKeyDown(VK_CONTROL)) return;
-	if (bCameraInputCaptured && FInputManager::Get().IsMouseButtonDown(VK_RBUTTON))
+	if (Snapshot.IsKeyDown(VK_CONTROL)) return;
+	if (bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
 	{
 		EditorMoveAccumulator = EditorMoveAccumulator + Value.GetVector();
 	}
 }
 
-void FEditorViewportClient::OnEditorRotate(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorRotate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	FInputManager& Input = FInputManager::Get();
-	if (Input.IsMouseButtonDown(VK_RBUTTON))
+	if (Snapshot.IsMouseButtonDown(VK_RBUTTON))
 	{
 		if (!bCameraInputCaptured)
 		{
@@ -813,10 +810,10 @@ void FEditorViewportClient::OnEditorRotate(const FInputActionValue& Value)
 	{
 		if (!bCameraInputCaptured) return;
 		FVector KeyboardRotate(0, 0, 0);
-		if (Input.IsKeyDown(VK_RIGHT)) KeyboardRotate.X += 1.0f;
-		if (Input.IsKeyDown(VK_LEFT)) KeyboardRotate.X -= 1.0f;
-		if (Input.IsKeyDown(VK_UP)) KeyboardRotate.Y += 1.0f;
-		if (Input.IsKeyDown(VK_DOWN)) KeyboardRotate.Y -= 1.0f;
+		if (Snapshot.IsKeyDown(VK_RIGHT)) KeyboardRotate.X += 1.0f;
+		if (Snapshot.IsKeyDown(VK_LEFT)) KeyboardRotate.X -= 1.0f;
+		if (Snapshot.IsKeyDown(VK_UP)) KeyboardRotate.Y += 1.0f;
+		if (Snapshot.IsKeyDown(VK_DOWN)) KeyboardRotate.Y -= 1.0f;
 		if (!KeyboardRotate.IsNearlyZero())
 		{
 			EditorRotateAccumulator = EditorRotateAccumulator + KeyboardRotate;
@@ -824,22 +821,21 @@ void FEditorViewportClient::OnEditorRotate(const FInputActionValue& Value)
 	}
 }
 
-void FEditorViewportClient::OnEditorPan(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (FInputManager::Get().IsMouseButtonDown(VK_MBUTTON))
+	if (Snapshot.IsMouseButtonDown(VK_MBUTTON))
 	{
 		EditorPanAccumulator = EditorPanAccumulator + Value.GetVector();
 	}
-	else if (FInputManager::Get().IsKeyDown(VK_MENU) && FInputManager::Get().IsMouseButtonDown(VK_MBUTTON)) // Alt + MMB
+	else if (Snapshot.IsKeyDown(VK_MENU) && Snapshot.IsMouseButtonDown(VK_MBUTTON)) // Alt + MMB
 	{
 		EditorPanAccumulator = EditorPanAccumulator + Value.GetVector();
 	}
 }
 
-void FEditorViewportClient::OnEditorZoom(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	FInputManager& Input = FInputManager::Get();
-	if (Input.IsMouseButtonDown(VK_RBUTTON))
+	if (Snapshot.IsMouseButtonDown(VK_RBUTTON))
 	{
 		if (!bCameraInputCaptured)
 		{
@@ -852,13 +848,12 @@ void FEditorViewportClient::OnEditorZoom(const FInputActionValue& Value)
 	EditorZoomAccumulator += Value.Get();
 }
 
-void FEditorViewportClient::OnEditorOrbit(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	FInputManager& Input = FInputManager::Get();
-	if (Input.IsKeyDown(VK_MENU))
+	if (Snapshot.IsKeyDown(VK_MENU))
 	{
 		// Alt + LMB = Selection Orbit
-		if (Input.IsMouseButtonDown(VK_LBUTTON))
+		if (Snapshot.IsMouseButtonDown(VK_LBUTTON))
 		{
 			if (SelectionManager && SelectionManager->GetPrimarySelection() && Camera)
 			{
@@ -880,7 +875,7 @@ void FEditorViewportClient::OnEditorOrbit(const FInputActionValue& Value)
 			}
 		}
 		// Alt + RMB = Scrub Zoom
-		else if (bCameraInputCaptured && Input.IsMouseButtonDown(VK_RBUTTON))
+		else if (bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
 		{
 			if (Camera)
 			{
@@ -891,9 +886,10 @@ void FEditorViewportClient::OnEditorOrbit(const FInputActionValue& Value)
 	}
 }
 
-void FEditorViewportClient::OnEditorFocus(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorFocus(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (FInputManager::Get().IsMouseButtonDown(VK_RBUTTON)) return;
+	(void)Value;
+	if (Snapshot.IsMouseButtonDown(VK_RBUTTON)) return;
 	if (SelectionManager && Camera)
 	{
 		AActor* Selected = SelectionManager->GetPrimarySelection();
@@ -928,14 +924,17 @@ void FEditorViewportClient::OnEditorFocus(const FInputActionValue& Value)
 	}
 }
 
-void FEditorViewportClient::OnEditorDelete(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorDelete(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
+	(void)Value;
+	(void)Snapshot;
 	if (SelectionManager) SelectionManager->DeleteSelectedActors();
 }
 
-void FEditorViewportClient::OnEditorDuplicate(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorDuplicate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (SelectionManager && FInputManager::Get().IsKeyDown(VK_CONTROL))
+	(void)Value;
+	if (SelectionManager && Snapshot.IsKeyDown(VK_CONTROL))
 	{
 		const TArray<AActor*> ToDuplicate = SelectionManager->GetSelectedActors();
 		if (!ToDuplicate.empty())
@@ -962,17 +961,17 @@ void FEditorViewportClient::OnEditorDuplicate(const FInputActionValue& Value)
 	}
 }
 
-void FEditorViewportClient::OnEditorToggleGizmoMode(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorToggleGizmoMode(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	FInputManager& Input = FInputManager::Get();
-	if (Input.IsMouseButtonDown(VK_RBUTTON)) return;
+	(void)Value;
+	if (Snapshot.IsMouseButtonDown(VK_RBUTTON)) return;
 
 	if (Gizmo)
 	{
-		if (Input.IsKeyPressed('W')) Gizmo->UpdateGizmoMode(EGizmoMode::Translate);
-		else if (Input.IsKeyPressed('E')) Gizmo->UpdateGizmoMode(EGizmoMode::Rotate);
-		else if (Input.IsKeyPressed('R')) Gizmo->UpdateGizmoMode(EGizmoMode::Scale);
-		else if (Input.IsKeyPressed('Q')) Gizmo->UpdateGizmoMode(EGizmoMode::Select);
+		if (Snapshot.IsKeyPressed('W')) Gizmo->UpdateGizmoMode(EGizmoMode::Translate);
+		else if (Snapshot.IsKeyPressed('E')) Gizmo->UpdateGizmoMode(EGizmoMode::Rotate);
+		else if (Snapshot.IsKeyPressed('R')) Gizmo->UpdateGizmoMode(EGizmoMode::Scale);
+		else if (Snapshot.IsKeyPressed('Q')) Gizmo->UpdateGizmoMode(EGizmoMode::Select);
 		else Gizmo->SetNextMode(); 
 
 		if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
@@ -980,25 +979,30 @@ void FEditorViewportClient::OnEditorToggleGizmoMode(const FInputActionValue& Val
 	}
 }
 
-void FEditorViewportClient::OnEditorToggleCoordSystem(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorToggleCoordSystem(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (!FInputManager::Get().IsKeyDown(VK_CONTROL))
+	(void)Value;
+	if (!Snapshot.IsKeyDown(VK_CONTROL))
 	{
 		if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
 			EditorEngine->ToggleCoordSystem();
 	}
 }
 
-void FEditorViewportClient::OnEditorEscape(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorEscape(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
+	(void)Value;
+	(void)Snapshot;
 	if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
 	{
 		if (EditorEngine->IsPlayingInEditor()) EditorEngine->RequestEndPlayMap();
 	}
 }
 
-void FEditorViewportClient::OnEditorTogglePIE(const FInputActionValue& Value)
+void FEditorViewportClient::OnEditorTogglePIE(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
+	(void)Value;
+	(void)Snapshot;
 	if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
 	{
 		if (EditorEngine->IsPlayingInEditor()) EditorEngine->TogglePIEControlMode();
@@ -1183,7 +1187,7 @@ void FEditorViewportClient::ApplySmoothedCameraLocation(float DeltaTime)
 	bLastAppliedCameraLocationInitialized = true;
 }
 
-void FEditorViewportClient::TickEditorShortcuts()
+void FEditorViewportClient::TickEditorShortcuts(const FInputSystemSnapshot& Snapshot)
 {
 	UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine);
 	if (!EditorEngine)
@@ -1191,18 +1195,18 @@ void FEditorViewportClient::TickEditorShortcuts()
 		return;
 	}
 
-	if (EditorEngine->IsPlayingInEditor() && FInputManager::Get().IsKeyPressed(VK_ESCAPE))
+	if (EditorEngine->IsPlayingInEditor() && Snapshot.IsKeyPressed(VK_ESCAPE))
 	{
 		EditorEngine->RequestEndPlayMap();
 	}
 
-	const bool bAllowKeyboardInput = !FInputManager::Get().IsGuiUsingKeyboard() && !ImGui::GetIO().WantTextInput;
+	const bool bAllowKeyboardInput = !Snapshot.IsGuiUsingKeyboard() && !ImGui::GetIO().WantTextInput;
 	if (!bAllowKeyboardInput)
 	{
 		return;
 	}
 
-	if (SelectionManager && FInputManager::Get().IsKeyPressed(VK_DELETE))
+	if (SelectionManager && Snapshot.IsKeyPressed(VK_DELETE))
 	{
 		EditorEngine->BeginTrackedSceneChange();
 		SelectionManager->DeleteSelectedActors();
@@ -1210,19 +1214,19 @@ void FEditorViewportClient::TickEditorShortcuts()
 		return;
 	}
 
-	if (!FInputManager::Get().IsKeyDown(VK_CONTROL) && FInputManager::Get().IsKeyPressed('X'))
+	if (!Snapshot.IsKeyDown(VK_CONTROL) && Snapshot.IsKeyPressed('X'))
 	{
 		EditorEngine->ToggleCoordSystem();
 		return;
 	}
 
-	if (SelectionManager && FInputManager::Get().IsKeyPressed('F'))
+	if (SelectionManager && Snapshot.IsKeyPressed('F'))
 	{
 		AActor* Selected = SelectionManager->GetPrimarySelection();
 		FocusActor(Selected);
 	}
-
-	if (SelectionManager && FInputManager::Get().IsKeyDown(VK_CONTROL) && FInputManager::Get().IsKeyPressed('D'))
+	
+	if (SelectionManager && Snapshot.IsKeyDown(VK_CONTROL) && Snapshot.IsKeyPressed('D'))
 	{
 		const TArray<AActor*> ToDuplicate = SelectionManager->GetSelectedActors();
 		if (!ToDuplicate.empty())
