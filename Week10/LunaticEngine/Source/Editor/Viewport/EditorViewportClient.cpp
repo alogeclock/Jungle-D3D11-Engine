@@ -860,7 +860,7 @@ void FEditorViewportClient::OnEditorOrbit(const FInputActionValue& Value)
 				FRotator Rotation = Camera->GetRelativeRotation();
 				Rotation.Yaw += Value.GetVector().X * Sensitivity;
 				Rotation.Pitch = Clamp(Rotation.Pitch + Value.GetVector().Y * Sensitivity, -89.0f, 89.0f);
-				FVector NewPos = Pivot - Rotation.ToVector() * (Dist > 0.1f ? Dist : 5.0f);
+				FVector NewPos = Pivot - Rotation.GetForwardVector() * (Dist > 0.1f ? Dist : 5.0f);
 				Camera->SetWorldLocation(NewPos);
 				Camera->SetRelativeRotation(Rotation);
 				SyncCameraSmoothingTarget();

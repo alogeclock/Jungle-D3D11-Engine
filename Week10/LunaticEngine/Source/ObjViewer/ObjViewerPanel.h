@@ -3,6 +3,8 @@
 #include "Core/CoreTypes.h"
 #include "Mesh/Importer/ObjImporter.h"
 
+struct ImFont;
+
 class FRenderer;
 class FWindowsWindow;
 class UObjViewerEngine;
@@ -17,6 +19,8 @@ public:
 	void Update();
 
 private:
+	void RenderTitleBar();
+	void RenderDockSpace();
 	void RenderMeshList();
 	void RenderPreviewViewport(float DeltaTime);
 	void RenderImportPopup();
@@ -24,6 +28,9 @@ private:
 private:
 	FWindowsWindow* Window = nullptr;
 	UObjViewerEngine* Engine = nullptr;
+
+	ImFont* TitleBarFont = nullptr;
+	ImFont* WindowControlIconFont = nullptr;
 
 	int32 SelectedMeshIndex = -1;
 	int32 SelectedObjIndex = -1;

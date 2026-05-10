@@ -2,8 +2,8 @@
 #include "Core/Log.h"
 #include "Mesh/StaticMesh.h"
 #include "Mesh/StaticMeshAsset.h"
+#include "Materials/MaterialManager.h"
 #include <fbxsdk.h>
-
 
 
 bool FFbxImporter::SmokeTest()
@@ -97,6 +97,8 @@ static void ImportNode(FbxNode* Node, const FFbxImportOptions& Options, FStaticM
 		return;
 	if (FbxMesh* Mesh = Node->GetMesh())
 	{
+		const FbxAMatrix NodeTransform = Node->EvaluateGlobalTransform();
+		const FbxVector4 TransformedOrigin = NodeTransform.MultT(FbxVector4(0.0, 0.0, 0.0));
 		const char* UVSetName = nullptr;
 		FbxStringList UVSetNames;
 		Mesh->GetUVSetNames(UVSetNames);
@@ -122,6 +124,10 @@ static void ImportNode(FbxNode* Node, const FFbxImportOptions& Options, FStaticM
 				FbxVector4 point = Mesh->GetControlPointAt(ControlPointIndex);
 				FbxVector4 normal;
 				Mesh->GetPolygonVertexNormal(Poly, Corner, normal);
+				normal.Normalize();
+
+				point = NodeTransform.MultT(point);
+				normal = NodeTransform.MultT(normal) - TransformedOrigin;
 				normal.Normalize();
 
 				FbxVector2 UV(0.0, 0.0);
@@ -187,6 +193,14 @@ bool FFbxImporter::ImportStaticMesh(const FString& FilePath, const FFbxImportOpt
 
 	ImportNode(Scene->GetRootNode(), Options, OutMesh);
 
+	if (OutMesh.Vertices.empty() || OutMesh.Indices.empty())
+	{
+		UE_LOG_CATEGORY(FbxImporter, Error, "FBX import produced empty mesh: %s", FilePath.c_str());
+		Scene->Destroy();
+		Manager->Destroy();
+		return false;
+	}
+
 	FStaticMeshSection Section;
 	Section.MaterialIndex = 0;
 	Section.MaterialSlotName = "None";
@@ -201,6 +215,20 @@ bool FFbxImporter::ImportStaticMesh(const FString& FilePath, const FFbxImportOpt
 
 	OutMesh.PathFileName = FilePath;
 	OutMesh.CacheBounds();
+
+	UE_LOG_CATEGORY(
+		FbxImporter,
+		Info,
+		"FBX static mesh imported: Vertices=%d Indices=%d Triangles=%d BoundsCenter=(%.3f, %.3f, %.3f) BoundsExtent=(%.3f, %.3f, %.3f)",
+		static_cast<int32>(OutMesh.Vertices.size()),
+		static_cast<int32>(OutMesh.Indices.size()),
+		static_cast<int32>(OutMesh.Indices.size() / 3),
+		OutMesh.BoundsCenter.X,
+		OutMesh.BoundsCenter.Y,
+		OutMesh.BoundsCenter.Z,
+		OutMesh.BoundsExtent.X,
+		OutMesh.BoundsExtent.Y,
+		OutMesh.BoundsExtent.Z);
 
 	Scene->Destroy();
 	Manager->Destroy();
