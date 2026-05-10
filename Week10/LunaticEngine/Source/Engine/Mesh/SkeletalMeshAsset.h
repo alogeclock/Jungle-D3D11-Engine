@@ -397,17 +397,6 @@ enum class ESkeletalImportWarningType : uint8
     UnsupportedMorphInBetween,
     UnsupportedMorphAnimation,
     UnsupportedMaterialProperty,
-
-    // Importer consistency diagnostics. Values are appended to keep old serialized warning values stable.
-    IncompleteBindPose,
-    InconsistentMeshBindMatrix,
-    InconsistentReferenceMeshBindMatrix,
-    InconsistentBoneBindMatrix,
-    MorphTargetControlPointMismatch,
-    MaterialNameCollision,
-    InvalidMaterialIndex,
-    SkippedNonTrianglePolygon,
-    BindPoseValidationFailed,
 };
 
 struct FSkeletalImportWarning
