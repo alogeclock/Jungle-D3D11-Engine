@@ -13,6 +13,10 @@
 
 #include <windows.h>
 
+static bool GetCursorClientPosition(HWND OwnerHWnd, POINT& OutClientPoint);
+static bool GetViewportContainerClientRect(HWND OwnerHWnd, bool bHasCursorClipRect, const RECT& CursorClipClientRect, FRect& OutClientRect);
+static FRect FitViewportToClientRect(const FRect& ContainerRect, float ViewportWidth, float ViewportHeight);
+
 DEFINE_CLASS(UGameViewportClient, UObject)
 
 void UGameViewportClient::OnBeginPIE(UCameraComponent* InitialTarget, FViewport* InViewport)
@@ -106,40 +110,47 @@ bool UGameViewportClient::TryGetCursorViewportPosition(float& OutViewportX, floa
 	OutViewportX = 0.0f;
 	OutViewportY = 0.0f;
 
-	if (!Viewport || !bHasCursorClipRect || !OwnerHWnd)
+	if (!Viewport || !OwnerHWnd)
 	{
 		return false;
 	}
 
 	const float ViewportWidth = static_cast<float>(Viewport->GetWidth());
 	const float ViewportHeight = static_cast<float>(Viewport->GetHeight());
-	const float RectWidth = static_cast<float>(CursorClipClientRect.right - CursorClipClientRect.left);
-	const float RectHeight = static_cast<float>(CursorClipClientRect.bottom - CursorClipClientRect.top);
-	if (ViewportWidth <= 0.0f || ViewportHeight <= 0.0f || RectWidth <= 0.0f || RectHeight <= 0.0f)
+	if (ViewportWidth <= 0.0f || ViewportHeight <= 0.0f)
+	{
+		return false;
+	}
+
+	FRect ClientRect{};
+	if (!GetViewportContainerClientRect(OwnerHWnd, bHasCursorClipRect, CursorClipClientRect, ClientRect))
+	{
+		return false;
+	}
+
+	const FRect ViewportClientRect = bHasCursorClipRect
+		? ClientRect
+		: FitViewportToClientRect(ClientRect, ViewportWidth, ViewportHeight);
+	if (ViewportClientRect.Width <= 0.0f || ViewportClientRect.Height <= 0.0f)
 	{
 		return false;
 	}
 
 	POINT CursorPoint{};
-	if (!::GetCursorPos(&CursorPoint))
+	if (!GetCursorClientPosition(OwnerHWnd, CursorPoint))
 	{
 		return false;
 	}
 
-	if (!::ScreenToClient(OwnerHWnd, &CursorPoint))
+	const float LocalX = static_cast<float>(CursorPoint.x) - ViewportClientRect.X;
+	const float LocalY = static_cast<float>(CursorPoint.y) - ViewportClientRect.Y;
+	if (LocalX < 0.0f || LocalY < 0.0f || LocalX >= ViewportClientRect.Width || LocalY >= ViewportClientRect.Height)
 	{
 		return false;
 	}
 
-	const float LocalX = static_cast<float>(CursorPoint.x - CursorClipClientRect.left);
-	const float LocalY = static_cast<float>(CursorPoint.y - CursorClipClientRect.top);
-	if (LocalX < 0.0f || LocalY < 0.0f || LocalX >= RectWidth || LocalY >= RectHeight)
-	{
-		return false;
-	}
-
-	OutViewportX = LocalX * (ViewportWidth / RectWidth);
-	OutViewportY = LocalY * (ViewportHeight / RectHeight);
+	OutViewportX = LocalX * (ViewportWidth / ViewportClientRect.Width);
+	OutViewportY = LocalY * (ViewportHeight / ViewportClientRect.Height);
 	return true;
 }
 
@@ -416,5 +427,66 @@ void UGameViewportClient::ApplyCursorClip()
 	{
 		::ClipCursor(&ScreenRect);
 	}
+}
+
+static bool GetCursorClientPosition(HWND OwnerHWnd, POINT& OutClientPoint)
+{
+	if (!OwnerHWnd || !::GetCursorPos(&OutClientPoint))
+	{
+		return false;
+	}
+
+	return ::ScreenToClient(OwnerHWnd, &OutClientPoint) != FALSE;
+}
+
+static bool GetViewportContainerClientRect(HWND OwnerHWnd, bool bHasCursorClipRect, const RECT& CursorClipClientRect, FRect& OutClientRect)
+{
+	RECT SourceRect{};
+	if (bHasCursorClipRect)
+	{
+		SourceRect = CursorClipClientRect;
+	}
+	else if (!OwnerHWnd || !::GetClientRect(OwnerHWnd, &SourceRect))
+	{
+		return false;
+	}
+
+	OutClientRect.X = static_cast<float>(SourceRect.left);
+	OutClientRect.Y = static_cast<float>(SourceRect.top);
+	OutClientRect.Width = static_cast<float>(SourceRect.right - SourceRect.left);
+	OutClientRect.Height = static_cast<float>(SourceRect.bottom - SourceRect.top);
+	return OutClientRect.Width > 0.0f && OutClientRect.Height > 0.0f;
+}
+
+static FRect FitViewportToClientRect(const FRect& ContainerRect, float ViewportWidth, float ViewportHeight)
+{
+	FRect Result = ContainerRect;
+	if (ContainerRect.Width <= 0.0f || ContainerRect.Height <= 0.0f || ViewportWidth <= 0.0f || ViewportHeight <= 0.0f)
+	{
+		return FRect{};
+	}
+
+	const float SourceAspect = ViewportWidth / ViewportHeight;
+	const float DestAspect = ContainerRect.Width / ContainerRect.Height;
+	if (DestAspect > SourceAspect)
+	{
+		Result.Width = static_cast<float>(static_cast<LONG>(ContainerRect.Height * SourceAspect));
+		if (Result.Width < 1.0f)
+		{
+			Result.Width = 1.0f;
+		}
+		Result.X += (ContainerRect.Width - Result.Width) * 0.5f;
+	}
+	else
+	{
+		Result.Height = static_cast<float>(static_cast<LONG>(ContainerRect.Width / SourceAspect));
+		if (Result.Height < 1.0f)
+		{
+			Result.Height = 1.0f;
+		}
+		Result.Y += (ContainerRect.Height - Result.Height) * 0.5f;
+	}
+
+	return Result;
 }
 

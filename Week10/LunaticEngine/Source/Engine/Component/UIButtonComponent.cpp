@@ -244,15 +244,17 @@ void UIButtonComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	float CursorX = 0.0f;
 	float CursorY = 0.0f;
 	bool bHasViewportCursor = false;
+	bool bHasGameViewportClient = false;
 	if (GEngine)
 	{
 		if (UGameViewportClient* GameViewportClient = GEngine->GetGameViewportClient())
 		{
+			bHasGameViewportClient = true;
 			bHasViewportCursor = GameViewportClient->TryGetCursorViewportPosition(CursorX, CursorY);
 		}
 	}
 
-	if (!bHasViewportCursor)
+	if (!bHasViewportCursor && !bHasGameViewportClient)
 	{
 		POINT CursorPoint = FInputManager::Get().GetMousePos();
 		HWND ForegroundWindow = ::GetForegroundWindow();
@@ -263,9 +265,10 @@ void UIButtonComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 		CursorX = static_cast<float>(CursorPoint.x);
 		CursorY = static_cast<float>(CursorPoint.y);
+		bHasViewportCursor = true;
 	}
 
-	bHovered = IsPointInsideButton(CursorX, CursorY);
+	bHovered = bHasViewportCursor && IsPointInsideButton(CursorX, CursorY);
 	const bool bMouseDown = FInputManager::Get().IsMouseButtonDown(FInputManager::MOUSE_LEFT);
 	const bool bMousePressedThisFrame = FInputManager::Get().IsMouseButtonPressed(FInputManager::MOUSE_LEFT);
 	const bool bMouseReleasedThisFrame = FInputManager::Get().IsMouseButtonReleased(FInputManager::MOUSE_LEFT);
