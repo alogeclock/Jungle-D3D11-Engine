@@ -27,6 +27,7 @@ namespace
 			PassType == ERenderPass::LightCulling ||
 			PassType == ERenderPass::PostProcess ||
 			PassType == ERenderPass::FXAA ||
+			PassType == ERenderPass::GammaCorrection ||
 			PassType == ERenderPass::UI ||
 			PassType == ERenderPass::ScreenText;
 

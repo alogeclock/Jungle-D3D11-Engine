@@ -12,9 +12,23 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, unsigned int Msg, WPARA
 namespace
 {
 #if WITH_EDITOR || IS_OBJ_VIEWER
-	constexpr LONG WindowedStyle = WS_POPUP | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU | WS_VISIBLE;
+	constexpr LONG WindowStyle = WS_POPUP | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU | WS_VISIBLE;
 #else
-	constexpr LONG WindowedStyle = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+	constexpr LONG WindowStyle = WS_POPUP | WS_VISIBLE;
+
+	RECT GetFullscreenMonitorRect()
+	{
+		RECT Rect{ 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
+
+		MONITORINFO MonitorInfo{};
+		MonitorInfo.cbSize = sizeof(MONITORINFO);
+		if (GetMonitorInfoW(MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY), &MonitorInfo))
+		{
+			Rect = MonitorInfo.rcMonitor;
+		}
+
+		return Rect;
+	}
 #endif
 	constexpr UINT ResizeRedrawTimerId = 1;
 	constexpr UINT ResizeRedrawIntervalMs = 16;
@@ -187,16 +201,26 @@ bool FWindowsApplication::Init(HINSTANCE InHInstance)
 
 	RegisterClassExW(&WndClass);
 
-	const uint32 WindowWidth = (std::max)(320u, FProjectSettings::Get().Game.WindowWidth);
-	const uint32 WindowHeight = (std::max)(240u, FProjectSettings::Get().Game.WindowHeight);
+#if WITH_EDITOR || IS_OBJ_VIEWER
+	const int WindowX = CW_USEDEFAULT;
+	const int WindowY = CW_USEDEFAULT;
+	const int WindowWidth = static_cast<int>((std::max)(320u, FProjectSettings::Get().Game.WindowWidth));
+	const int WindowHeight = static_cast<int>((std::max)(240u, FProjectSettings::Get().Game.WindowHeight));
+#else
+	const RECT FullscreenRect = GetFullscreenMonitorRect();
+	const int WindowX = FullscreenRect.left;
+	const int WindowY = FullscreenRect.top;
+	const int WindowWidth = (std::max)(1L, FullscreenRect.right - FullscreenRect.left);
+	const int WindowHeight = (std::max)(1L, FullscreenRect.bottom - FullscreenRect.top);
+#endif
 
 	HWND HWindow = CreateWindowExW(
 		0,
 		WindowClass,
 		Title,
-		WindowedStyle,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		static_cast<int>(WindowWidth), static_cast<int>(WindowHeight),
+		WindowStyle,
+		WindowX, WindowY,
+		WindowWidth, WindowHeight,
 		nullptr, nullptr, HInstance, this);
 
 	if (!HWindow)
@@ -214,10 +238,10 @@ bool FWindowsApplication::Init(HINSTANCE InHInstance)
 	Window.Initialize(HWindow);
 #if WITH_EDITOR || IS_OBJ_VIEWER
 	Window.SetResizeLocked(false);
+	Window.ResizeClientArea(static_cast<unsigned int>(WindowWidth), static_cast<unsigned int>(WindowHeight));
 #else
-	Window.SetResizeLocked(FProjectSettings::Get().Game.bLockWindowResolution);
+	SetWindowPos(HWindow, HWND_TOP, WindowX, WindowY, WindowWidth, WindowHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 #endif
-	Window.ResizeClientArea(WindowWidth, WindowHeight);
 	return true;
 }
 
