@@ -57,12 +57,8 @@ VSOutput VS(uint VertexID : SV_VertexID)
 {
 	static const float2 Positions[6] =
 	{
-		float2(-1.0f, -1.0f),
-		float2( 1.0f, -1.0f),
-		float2(-1.0f,  1.0f),
-		float2( 1.0f, -1.0f),
-		float2(-1.0f,  1.0f),
-		float2( 1.0f,  1.0f),
+		float2(-1.0f, -1.0f), float2( 1.0f, -1.0f), float2(-1.0f,  1.0f),
+		float2( 1.0f, -1.0f), float2(-1.0f,  1.0f), float2( 1.0f,  1.0f),
 	};
 	
 	VSOutput output;
@@ -70,10 +66,7 @@ VSOutput VS(uint VertexID : SV_VertexID)
 	if (VertexID < 6)
 	{
 		const float2 localPos = Positions[VertexID];
-		const float3 worldPos =
-			GridCenter.xyz 
-			+ GridAxisA.xyz * (localPos.x * Range)
-			+ GridAxisB.xyz * (localPos.y * Range);
+		const float3 worldPos = GridCenter.xyz  + GridAxisA.xyz * (localPos.x * Range) + GridAxisB.xyz * (localPos.y * Range);
 		output.WorldPos = worldPos;
 		output.LocalPos = localPos;
 		output.DrawKind = 0.0f;
