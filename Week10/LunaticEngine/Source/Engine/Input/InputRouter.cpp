@@ -1,4 +1,4 @@
-#include "Input/InputRouter.h"
+﻿#include "Input/InputRouter.h"
 
 #include "Input/InputSystem.h"
 #include "Viewport/ViewportClient.h"
@@ -9,6 +9,7 @@ FInputRouter& FInputRouter::Get()
 	return Instance;
 }
 
+// Main Snapshot Router: 캡쳐된 뷰포트 - UI - 호버링 중인 뷰포트 순으로 입력을 라우팅한다. 
 bool FInputRouter::RouteSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
 	if (MouseCapturedViewport)
@@ -141,6 +142,7 @@ void FInputRouter::EndPIEMode()
 	SavedHoveredViewport = nullptr;
 }
 
+// UI Layer에게 먼저 입력을 전송하고, 소비하지 않았을 경우에 Keyboard, Mouse가 입력을 소비한다.
 bool FInputRouter::DoesUILayerConsumeInput(const FInputSystemSnapshot& Snapshot) const
 {
 	if (UILayerConsumer)
