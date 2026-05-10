@@ -11,7 +11,6 @@ static uint32 CalculateSkeletalMeshCPUSize(const FSkeletalMesh& Mesh)
     uint32 CPUSize = 0;
 
     CPUSize += static_cast<uint32>(Mesh.Skeleton.Bones.size()) * sizeof(FBoneInfo);
-    CPUSize += static_cast<uint32>(Mesh.Skeleton.Sockets.size()) * sizeof(FSkeletalSocket);
 
     for (const FSkeletalMeshLOD& LOD : Mesh.LODModels)
     {
@@ -38,11 +37,6 @@ static uint32 CalculateSkeletalMeshCPUSize(const FSkeletalMesh& Mesh)
         for (const FMorphTargetLOD& LOD : Morph.LODModels)
         {
             CPUSize += static_cast<uint32>(LOD.Deltas.size()) * sizeof(FMorphTargetDelta);
-            CPUSize += static_cast<uint32>(LOD.InBetweens.size()) * sizeof(FMorphTargetInBetween);
-            for (const FMorphTargetInBetween& InBetween : LOD.InBetweens)
-            {
-                CPUSize += static_cast<uint32>(InBetween.Deltas.size()) * sizeof(FMorphTargetDelta);
-            }
         }
     }
 

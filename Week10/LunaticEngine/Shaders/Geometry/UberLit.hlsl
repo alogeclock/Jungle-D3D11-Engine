@@ -28,8 +28,6 @@
 // =============================================================================
 Texture2D DiffuseTexture : register(t0);
 Texture2D NormalTexture : register(t1);
-Texture2D EmissiveTexture : register(t4);
-Texture2D Custom0Texture : register(t6); // FBX opacity/alpha texture slot
 
 
 // ── Per-Object Material (b2) — 기존 StaticMesh 와 레이아웃 동일 (호환성) ──
@@ -37,14 +35,10 @@ cbuffer PerShader1 : register(b2)
 {
     float4 SectionColor;
     float HasNormalMap;
-    float Opacity;
-    float AlphaClip;
-    float HasOpacityTexture;
-    float EmissiveIntensity;
-    float HasEmissiveTexture;
-    float2 _pad;
+    float3 _pad;
 };
 
+// 머티리얼 확장 파라미터 — 팀원 A CB 시스템 완성 후 b2 확장 예정
 static const float4 g_DefaultEmissive = float4(0, 0, 0, 0);
 static const float g_DefaultShininess = 32.0f;
 
@@ -131,18 +125,6 @@ UberPS_Output PS(UberVS_Output input)
 
     float4 baseColor = texColor * input.color;
 
-    float materialOpacity = saturate(Opacity);
-    if (HasOpacityTexture > 0.5f)
-    {
-        materialOpacity *= Custom0Texture.Sample(LinearWrapSampler, input.texcoord).r;
-    }
-    baseColor.a *= materialOpacity;
-
-    if (AlphaClip > 0.0f && baseColor.a < AlphaClip)
-    {
-        discard;
-    }
-
     float3 N = normalize(input.normal);
 
 #if !defined(LIGHTING_MODEL_GOURAUD)
@@ -185,17 +167,9 @@ UberPS_Output PS(UberVS_Output input)
 #endif
 
     output.Culling = ComputeCullingHeatmap(input.position, input.worldPos);
-
-    float3 emissive = g_DefaultEmissive.rgb;
-    if (HasEmissiveTexture > 0.5f)
-    {
-        emissive += EmissiveTexture.Sample(LinearWrapSampler, input.texcoord).rgb;
-    }
-    emissive *= EmissiveIntensity;
-
     // Diffuse에만 albedo를 곱하고, Specular는 빛 색상 그대로 더한다
     // (비금속 표면: specular 반사 = 빛의 색, 물체 색이 아님)
-    float3 finalColor = baseColor.rgb * diffuse + specular + emissive;
+    float3 finalColor = baseColor.rgb * diffuse + specular + g_DefaultEmissive.rgb;
     finalColor = ApplyWireframe(finalColor);
 #endif
 

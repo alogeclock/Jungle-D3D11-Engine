@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Vector.h"
@@ -10,41 +10,14 @@
 #include "Materials/MaterialManager.h"
 #include <memory>
 #include <algorithm>
-static constexpr int32 MAX_STATIC_MESH_UV_CHANNELS = 4;
-
 // Cooked Data 내부용 정점
 struct FNormalVertex
 {
 	FVector pos;
 	FVector normal;
 	FVector4 color;
-
-	// tex는 기존 렌더링/충돌 코드 호환용 UV0 별칭이다.
-	FVector2 tex                             = FVector2(0.0f, 0.0f);
-	FVector2 UV[MAX_STATIC_MESH_UV_CHANNELS] = {};
-	uint8    NumUVs                          = 1;
-
+	FVector2 tex;
 	FVector4 tangent;
-
-	void SetUV(int32 ChannelIndex, const FVector2& Value)
-	{
-		if (ChannelIndex < 0 || ChannelIndex >= MAX_STATIC_MESH_UV_CHANNELS)
-		{
-			return;
-		}
-
-		UV[ChannelIndex] = Value;
-		if (ChannelIndex == 0)
-		{
-			tex = Value;
-		}
-
-		const uint8 RequiredNumUVs = static_cast<uint8>(ChannelIndex + 1);
-		if (NumUVs < RequiredNumUVs)
-		{
-			NumUVs = RequiredNumUVs;
-		}
-	}
 };
 
 

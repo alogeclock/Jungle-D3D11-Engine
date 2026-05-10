@@ -1,4 +1,4 @@
-﻿#include "Mesh/ObjImporter.h"
+#include "Mesh/ObjImporter.h"
 #include "Mesh/StaticMeshAsset.h"
 #include "Materials/Material.h"
 #include "Core/Log.h"
@@ -699,14 +699,13 @@ bool FObjImporter::Convert(const FObjInfo& ObjInfo, const TArray<FObjMaterialInf
 					// UV 예외 처리
 					if (Key.t == -1)
 					{
-						NewVertex.SetUV(0, FVector2(0.0f, 0.0f));
+						NewVertex.tex = { 0.0f, 0.0f };
 					}
 					else
 					{
-						FVector2 UV = ObjInfo.UVs[Key.t];
+						NewVertex.tex = ObjInfo.UVs[Key.t];
 						// UV 변환 (left-bottom -> left-top)
-						UV.V = 1.0f - UV.V;
-						NewVertex.SetUV(0, UV);
+						NewVertex.tex.V = 1.0f - NewVertex.tex.V;
 					}
 
 					NewVertex.color = { 1.0f, 1.0f, 1.0f, 1.0f };

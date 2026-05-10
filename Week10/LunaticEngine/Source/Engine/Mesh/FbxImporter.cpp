@@ -17,7 +17,6 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
-#include <map>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -99,14 +98,6 @@ namespace
         FString OpacityTexture;
 
         FVector4 BaseColor = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-
-        float Roughness         = 0.5f;
-        float Metallic          = 0.0f;
-        float Specular          = 0.5f;
-        float Opacity           = 1.0f;
-        float EmissiveIntensity = 1.0f;
-
-        bool bHasOpacity = false;
     };
 
     // 파일명으로 쓰기 어려운 문자를 안전한 '_' 문자로 바꾼다.
@@ -240,15 +231,14 @@ namespace
 
         std::array<uint32, 3> Position = {};
         std::array<uint32, 3> Normal   = {};
-        std::array<std::array<uint32, 2>, MAX_STATIC_MESH_UV_CHANNELS> UV = {};
-        uint8 NumUV = 0;
+        std::array<uint32, 2> UV       = {};
         std::array<uint32, 4> Color    = {};
         std::array<uint32, 4> Tangent  = {};
 
         bool operator==(const FStaticVertexDedupKey& Other) const
         {
             return Mesh == Other.Mesh && ControlPointIndex == Other.ControlPointIndex && Position == Other.Position && Normal == Other.Normal && UV == Other.UV
-            && NumUV == Other.NumUV && Color == Other.Color && Tangent == Other.Tangent;
+            && Color == Other.Color && Tangent == Other.Tangent;
         }
     };
 
@@ -263,12 +253,7 @@ namespace
 
             for (uint32 Value : Key.Position) HashCombineUInt32(Seed, Value);
             for (uint32 Value : Key.Normal) HashCombineUInt32(Seed, Value);
-            for (const std::array<uint32, 2>& UV : Key.UV)
-            {
-                HashCombineUInt32(Seed, UV[0]);
-                HashCombineUInt32(Seed, UV[1]);
-            }
-            HashCombineInt32(Seed, static_cast<int32>(Key.NumUV));
+            for (uint32 Value : Key.UV) HashCombineUInt32(Seed, Value);
             for (uint32 Value : Key.Color) HashCombineUInt32(Seed, Value);
             for (uint32 Value : Key.Tangent) HashCombineUInt32(Seed, Value);
 
@@ -283,11 +268,7 @@ namespace
         Key.ControlPointIndex = ControlPointIndex;
         Key.Position          = MakeVector3Bits(Vertex.pos);
         Key.Normal            = MakeVector3Bits(Vertex.normal);
-        Key.NumUV             = Vertex.NumUVs;
-        for (int32 UVIndex = 0; UVIndex < Vertex.NumUVs && UVIndex < MAX_STATIC_MESH_UV_CHANNELS; ++UVIndex)
-        {
-            Key.UV[UVIndex] = MakeVector2Bits(Vertex.UV[UVIndex]);
-        }
+        Key.UV                = MakeVector2Bits(Vertex.tex);
         Key.Color             = MakeVector4Bits(Vertex.color);
         Key.Tangent           = MakeVector4Bits(Vertex.tangent);
         return Key;
@@ -424,171 +405,6 @@ namespace
         return NewIndex;
     }
 
-    static bool PathStartsWithAssetRoot(const FString& Path)
-    {
-        return Path.rfind("Asset/", 0) == 0 || Path.rfind("Asset\\", 0) == 0;
-    }
-
-    static FString NormalizeAssetPathString(const FString& Path)
-    {
-        FString Result = FPaths::NormalizePath(Path);
-        for (char& C : Result)
-        {
-            if (C == '\\')
-            {
-                C = '/';
-            }
-        }
-        return Result;
-    }
-
-    static std::filesystem::path ToDiskPathFromAssetPath(const FString& AssetPath)
-    {
-        std::filesystem::path Path(FPaths::ToWide(AssetPath));
-        if (Path.is_absolute())
-        {
-            return Path.lexically_normal();
-        }
-
-        return (std::filesystem::path(FPaths::RootDir()) / Path).lexically_normal();
-    }
-
-    static FString MakeAutoTextureAssetPath(const FString& SourceFbxPath, const FString& TexturePath)
-    {
-        const FString SafeSourceName = MakeSafeAssetName(GetBaseFilenameWithoutExtension(SourceFbxPath));
-
-        std::filesystem::path TextureFsPath(FPaths::ToWide(TexturePath));
-        FString FileName = FPaths::ToUtf8(TextureFsPath.filename().wstring());
-        if (FileName.empty())
-        {
-            FileName = "Texture";
-        }
-
-        const size_t DotPos = FileName.find_last_of('.');
-        FString BaseName = (DotPos != FString::npos) ? FileName.substr(0, DotPos) : FileName;
-        FString ExtName  = (DotPos != FString::npos) ? FileName.substr(DotPos) : FString(".bin");
-
-        return "Asset/Textures/Auto/Fbx/" + SafeSourceName + "/" + MakeSafeAssetName(BaseName) + ExtName;
-    }
-
-    static bool TryFindTextureDiskPath(const FString& SourceFbxPath, const FString& TexturePath, std::filesystem::path& OutDiskPath)
-    {
-        if (TexturePath.empty())
-        {
-            return false;
-        }
-
-        std::filesystem::path RawPath(FPaths::ToWide(TexturePath));
-        if (RawPath.is_absolute() && std::filesystem::exists(RawPath))
-        {
-            OutDiskPath = RawPath.lexically_normal();
-            return true;
-        }
-
-        if (PathStartsWithAssetRoot(TexturePath))
-        {
-            std::filesystem::path AssetDiskPath = ToDiskPathFromAssetPath(TexturePath);
-            if (std::filesystem::exists(AssetDiskPath))
-            {
-                OutDiskPath = AssetDiskPath;
-                return true;
-            }
-        }
-
-        const std::filesystem::path SourcePath(FPaths::ToWide(FPaths::ConvertRelativePathToFull(SourceFbxPath)));
-        const std::filesystem::path SourceDir = SourcePath.parent_path();
-
-        const std::filesystem::path RelativeToSource = (SourceDir / RawPath).lexically_normal();
-        if (std::filesystem::exists(RelativeToSource))
-        {
-            OutDiskPath = RelativeToSource;
-            return true;
-        }
-
-        const std::filesystem::path FbmDir = SourceDir / (SourcePath.stem().wstring() + L".fbm");
-        const std::filesystem::path FbmByFilename = (FbmDir / RawPath.filename()).lexically_normal();
-        if (std::filesystem::exists(FbmByFilename))
-        {
-            OutDiskPath = FbmByFilename;
-            return true;
-        }
-
-        const std::filesystem::path SiblingByFilename = (SourceDir / RawPath.filename()).lexically_normal();
-        if (std::filesystem::exists(SiblingByFilename))
-        {
-            OutDiskPath = SiblingByFilename;
-            return true;
-        }
-
-        return false;
-    }
-
-    static FString CopyTextureToAutoAssetIfNeeded(const FString& SourceFbxPath, const FString& TexturePath)
-    {
-        if (TexturePath.empty())
-        {
-            return TexturePath;
-        }
-
-        const FString NormalizedTexturePath = NormalizeAssetPathString(TexturePath);
-        if (PathStartsWithAssetRoot(NormalizedTexturePath))
-        {
-            return NormalizedTexturePath;
-        }
-
-        std::filesystem::path SourceDiskPath;
-        if (!TryFindTextureDiskPath(SourceFbxPath, TexturePath, SourceDiskPath))
-        {
-            return NormalizeAssetPathString(FPaths::ResolveAssetPath(SourceFbxPath, TexturePath));
-        }
-
-        const FString AutoAssetPath = NormalizeAssetPathString(MakeAutoTextureAssetPath(SourceFbxPath, FPaths::ToUtf8(SourceDiskPath.filename().wstring())));
-        const std::filesystem::path DestDiskPath = ToDiskPathFromAssetPath(AutoAssetPath);
-
-        std::filesystem::create_directories(DestDiskPath.parent_path());
-
-        std::error_code ErrorCode;
-        const bool bNeedsCopy = !std::filesystem::exists(DestDiskPath) ||
-            std::filesystem::last_write_time(DestDiskPath, ErrorCode) < std::filesystem::last_write_time(SourceDiskPath, ErrorCode);
-
-        if (bNeedsCopy)
-        {
-            std::filesystem::copy_file(SourceDiskPath, DestDiskPath, std::filesystem::copy_options::overwrite_existing, ErrorCode);
-        }
-
-        return AutoAssetPath;
-    }
-
-    static bool TryGetFbxFileTexturePath(FbxFileTexture* FileTexture, const FString& SourceFbxPath, FString& OutTexturePath)
-    {
-        if (!FileTexture)
-        {
-            return false;
-        }
-
-        const char* RelativeName = FileTexture->GetRelativeFileName();
-        const char* FileName     = FileTexture->GetFileName();
-
-        FString TexturePath;
-
-        if (RelativeName && RelativeName[0] != '\0')
-        {
-            TexturePath = RelativeName;
-        }
-        else if (FileName && FileName[0] != '\0')
-        {
-            TexturePath = FileName;
-        }
-
-        if (TexturePath.empty())
-        {
-            return false;
-        }
-
-        OutTexturePath = CopyTextureToAutoAssetIfNeeded(SourceFbxPath, TexturePath);
-        return true;
-    }
-
     // FBX texture property에서 외부 texture 경로를 추출해 엔진 asset 상대경로로 변환한다.
     static bool TryGetFbxTexturePathFromProperty(const FbxProperty& Property, const FString& SourceFbxPath, FString& OutTexturePath)
     {
@@ -597,33 +413,45 @@ namespace
             return false;
         }
 
-        const int32 FileTextureCount = Property.GetSrcObjectCount<FbxFileTexture>();
+        const int32 TextureCount = Property.GetSrcObjectCount<FbxFileTexture>();
 
-        for (int32 TextureIndex = 0; TextureIndex < FileTextureCount; ++TextureIndex)
+        for (int32 TextureIndex = 0; TextureIndex < TextureCount; ++TextureIndex)
         {
-            if (TryGetFbxFileTexturePath(Property.GetSrcObject<FbxFileTexture>(TextureIndex), SourceFbxPath, OutTexturePath))
-            {
-                return true;
-            }
-        }
-
-        const int32 LayeredTextureCount = Property.GetSrcObjectCount<FbxLayeredTexture>();
-        for (int32 LayeredTextureIndex = 0; LayeredTextureIndex < LayeredTextureCount; ++LayeredTextureIndex)
-        {
-            FbxLayeredTexture* LayeredTexture = Property.GetSrcObject<FbxLayeredTexture>(LayeredTextureIndex);
-            if (!LayeredTexture)
+            FbxFileTexture* FileTexture = Property.GetSrcObject<FbxFileTexture>(TextureIndex);
+            if (!FileTexture)
             {
                 continue;
             }
 
-            const int32 NestedFileTextureCount = LayeredTexture->GetSrcObjectCount<FbxFileTexture>();
-            for (int32 NestedIndex = 0; NestedIndex < NestedFileTextureCount; ++NestedIndex)
+            const char* RelativeName = FileTexture->GetRelativeFileName();
+            const char* FileName     = FileTexture->GetFileName();
+
+            FString TexturePath;
+
+            if (RelativeName && RelativeName[0] != '\0')
             {
-                if (TryGetFbxFileTexturePath(LayeredTexture->GetSrcObject<FbxFileTexture>(NestedIndex), SourceFbxPath, OutTexturePath))
-                {
-                    return true;
-                }
+                TexturePath = RelativeName;
             }
+            else if (FileName && FileName[0] != '\0')
+            {
+                TexturePath = FileName;
+            }
+
+            if (TexturePath.empty())
+            {
+                continue;
+            }
+
+            if (TexturePath.rfind("Asset/", 0) == 0)
+            {
+                OutTexturePath = TexturePath;
+            }
+            else
+            {
+                OutTexturePath = FPaths::ResolveAssetPath(SourceFbxPath, TexturePath);
+            }
+
+            return true;
         }
 
         return false;
@@ -646,29 +474,6 @@ namespace
         const FbxDouble3 Value = Property.Get<FbxDouble3>();
         OutColor = FVector4(static_cast<float>(Value[0]), static_cast<float>(Value[1]), static_cast<float>(Value[2]), 1.0f);
         return true;
-    }
-
-    // FBX material의 scalar property를 float로 읽는다.
-    static bool TryGetFbxDoubleProperty(FbxSurfaceMaterial* Material, const char* PropertyName, float& OutValue)
-    {
-        if (!Material || !PropertyName)
-        {
-            return false;
-        }
-
-        FbxProperty Property = Material->FindProperty(PropertyName);
-        if (!Property.IsValid())
-        {
-            return false;
-        }
-
-        OutValue = static_cast<float>(Property.Get<FbxDouble>());
-        return true;
-    }
-
-    static float Clamp01(float Value)
-    {
-        return (std::max)(0.0f, (std::min)(1.0f, Value));
     }
 
     // FBX material에서 엔진 material 생성에 필요한 texture path와 base color를 추출한다.
@@ -702,43 +507,6 @@ namespace
 
         TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sTransparentColor), SourceFbxPath, Info.OpacityTexture);
 
-        float ScalarValue = 0.0f;
-
-        if (TryGetFbxDoubleProperty(FbxMaterial, "Roughness", ScalarValue))
-        {
-            Info.Roughness = Clamp01(ScalarValue);
-        }
-
-        if (TryGetFbxDoubleProperty(FbxMaterial, "Metalness", ScalarValue) || TryGetFbxDoubleProperty(FbxMaterial, "Metallic", ScalarValue))
-        {
-            Info.Metallic = Clamp01(ScalarValue);
-        }
-
-        if (TryGetFbxDoubleProperty(FbxMaterial, "SpecularFactor", ScalarValue) || TryGetFbxDoubleProperty(FbxMaterial, "Specular", ScalarValue))
-        {
-            Info.Specular = Clamp01(ScalarValue);
-        }
-
-        if (TryGetFbxDoubleProperty(FbxMaterial, "EmissiveFactor", ScalarValue) || TryGetFbxDoubleProperty(FbxMaterial, "EmissiveIntensity", ScalarValue))
-        {
-            Info.EmissiveIntensity = (std::max)(0.0f, ScalarValue);
-        }
-
-        float Transparency = 0.0f;
-        if (TryGetFbxDoubleProperty(FbxMaterial, "TransparencyFactor", Transparency))
-        {
-            Info.Opacity = 1.0f - Clamp01(Transparency);
-        }
-        else if (TryGetFbxDoubleProperty(FbxMaterial, "Opacity", ScalarValue))
-        {
-            Info.Opacity = Clamp01(ScalarValue);
-        }
-
-        if (!Info.OpacityTexture.empty() || Info.Opacity < 0.999f)
-        {
-            Info.bHasOpacity = true;
-        }
-
         return Info;
     }
 
@@ -757,17 +525,7 @@ namespace
         JsonData["PathFileName"] = MatPath;
         JsonData["Origin"] = "FbxImport";
         JsonData["ShaderPath"] = "Shaders/Geometry/UberLit.hlsl";
-
-        if (Info.bHasOpacity)
-        {
-            JsonData["RenderPass"] = "AlphaBlend";
-            JsonData["BlendState"] = "AlphaBlend";
-            JsonData["DepthStencilState"] = "DepthReadOnly";
-        }
-        else
-        {
-            JsonData["RenderPass"] = "Opaque";
-        }
+        JsonData["RenderPass"] = "Opaque";
 
         JsonData["Import"]["SourceFbx"]      = SourceFbxPath;
         JsonData["Import"]["SourceSlotName"] = Info.SlotName;
@@ -801,21 +559,12 @@ namespace
         if (!Info.OpacityTexture.empty())
         {
             JsonData["Textures"]["Custom0Texture"] = Info.OpacityTexture;
-            JsonData["Textures"]["OpacityTexture"] = Info.OpacityTexture;
         }
 
         JsonData["Parameters"]["SectionColor"][0] = Info.BaseColor.X;
         JsonData["Parameters"]["SectionColor"][1] = Info.BaseColor.Y;
         JsonData["Parameters"]["SectionColor"][2] = Info.BaseColor.Z;
         JsonData["Parameters"]["SectionColor"][3] = Info.BaseColor.W;
-        JsonData["Parameters"]["Roughness"] = Info.Roughness;
-        JsonData["Parameters"]["Metallic"] = Info.Metallic;
-        JsonData["Parameters"]["Specular"] = Info.Specular;
-        JsonData["Parameters"]["Opacity"] = Info.Opacity;
-        JsonData["Parameters"]["EmissiveIntensity"] = Info.EmissiveIntensity;
-        JsonData["Parameters"]["HasEmissiveTexture"] = Info.EmissiveTexture.empty() ? 0.0f : 1.0f;
-        JsonData["Parameters"]["HasOpacityTexture"] = Info.OpacityTexture.empty() ? 0.0f : 1.0f;
-        JsonData["Parameters"]["AlphaClip"] = 0.0f;
 
         std::ofstream File(DiskPath, std::ios::binary | std::ios::trunc);
         if (!File.is_open())
@@ -825,10 +574,6 @@ namespace
         }
 
         File << JsonData.dump();
-        File.close();
-
-        // 같은 경로의 자동 생성 material을 재import하는 경우, 기존 런타임 캐시가 낡은 JSON을 계속 들고 있지 않도록 무효화한다.
-        FMaterialManager::Get().InvalidateMaterial(MatPath);
         return MatPath;
     }
 
@@ -853,7 +598,6 @@ namespace
         }
 
         Manager->SetIOSettings(IOSettings);
-        Manager->GetIOSettings()->SetBoolProp(IMP_FBX_EXTRACT_EMBEDDED_DATA, true);
 
         FbxImporter* Importer = FbxImporter::Create(Manager, "");
         if (!Importer)
@@ -1234,77 +978,6 @@ namespace
 
         return ParseLODIndexFromName(MeshNode->GetName());
     }
-
-    static bool TryGetSkeletalMeshLODThreshold(FbxNode* MeshNode, int32 LODIndex, float& OutSwitchDistance, float& OutScreenSize)
-    {
-        OutSwitchDistance = 0.0f;
-        OutScreenSize = 1.0f;
-
-        if (!MeshNode)
-        {
-            return false;
-        }
-
-        FbxNode* Parent = MeshNode->GetParent();
-        if (!Parent || !Parent->GetNodeAttribute() || Parent->GetNodeAttribute()->GetAttributeType() != FbxNodeAttribute::eLODGroup)
-        {
-            return false;
-        }
-
-        FbxLODGroup* LODGroup = static_cast<FbxLODGroup*>(Parent->GetNodeAttribute());
-        if (!LODGroup)
-        {
-            return false;
-        }
-
-        int32 ChildLODIndex = -1;
-        for (int32 ChildIndex = 0; ChildIndex < Parent->GetChildCount(); ++ChildIndex)
-        {
-            if (Parent->GetChild(ChildIndex) == MeshNode)
-            {
-                ChildLODIndex = ChildIndex;
-                break;
-            }
-        }
-
-        if (ChildLODIndex < 0)
-        {
-            ChildLODIndex = LODIndex;
-        }
-
-        if (ChildLODIndex <= 0)
-        {
-            OutSwitchDistance = 0.0f;
-            OutScreenSize = 1.0f;
-            return true;
-        }
-
-        if (LODGroup->GetNumThresholds() <= ChildLODIndex - 1)
-        {
-            return false;
-        }
-
-        FbxDistance Threshold;
-        if (!LODGroup->GetThreshold(ChildLODIndex - 1, Threshold))
-        {
-            return false;
-        }
-
-        OutSwitchDistance = static_cast<float>(Threshold.value());
-
-        // FBX LOD threshold가 percentage로 저장된 경우 screen size 힌트로 같이 보존한다.
-        if (LODGroup->ThresholdsUsedAsPercentage.Get())
-        {
-            OutScreenSize = Clamp01(OutSwitchDistance / 100.0f);
-        }
-        else
-        {
-            OutScreenSize = 1.0f / (1.0f + (std::max)(0.0f, OutSwitchDistance));
-        }
-
-        return true;
-    }
-
 
     // Mesh의 첫 번째 UV set 이름을 반환한다.
     static const char* GetPrimaryUVSetName(FbxMesh* Mesh, FbxStringList& OutUVSetNames)
@@ -2021,19 +1694,7 @@ namespace
 
                 if (LinkMode != FbxCluster::eNormalize && LinkMode != FbxCluster::eTotalOne)
                 {
-                    if (LinkMode == FbxCluster::eAdditive)
-                    {
-                        BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedAssociateModelSkinning, "FBX additive cluster link mode was detected. Weights are imported and normalized, but additive associate-model deformation is approximated by linear skinning.");
-                    }
-                    else
-                    {
-                        BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedClusterLinkMode, "Unsupported FBX cluster link mode. Imported with normalized linear skinning fallback.");
-                    }
-                }
-
-                if (Cluster->GetAssociateModel())
-                {
-                    BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedAssociateModelSkinning, "FBX associate model skinning was detected. The associate model is recorded as unsupported and the vertex weights are imported with linear skinning fallback.");
+                    BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedClusterLinkMode, "Unsupported FBX cluster link mode. Additive/associate model is not fully supported.");
                 }
 
                 auto BoneIt = BoneNodeToIndex.find(Cluster->GetLink());
@@ -2260,116 +1921,6 @@ namespace
             Skeleton.Bones[BoneIndex].GlobalBindPose  = BoneInReferenceMeshSpace;
             Skeleton.Bones[BoneIndex].InverseBindPose = BoneInReferenceMeshSpace.GetInverse();
         }
-    }
-
-    static bool IsFbxNodeSocketCandidate(FbxNode* Node, const TMap<FbxNode*, int32>& BoneNodeToIndex)
-    {
-        if (!Node || IsSceneRootNode(Node))
-        {
-            return false;
-        }
-
-        if (BoneNodeToIndex.find(Node) != BoneNodeToIndex.end())
-        {
-            return false;
-        }
-
-        FbxNodeAttribute* Attribute = Node->GetNodeAttribute();
-        if (!Attribute)
-        {
-            return false;
-        }
-
-        const FbxNodeAttribute::EType Type = Attribute->GetAttributeType();
-        return Type == FbxNodeAttribute::eNull ||
-            Type == FbxNodeAttribute::eMarker ||
-            Type == FbxNodeAttribute::eSkeleton;
-    }
-
-    static int32 FindNearestImportedParentBoneIndex(FbxNode* Node, const TMap<FbxNode*, int32>& BoneNodeToIndex)
-    {
-        FbxNode* Parent = Node ? Node->GetParent() : nullptr;
-        while (Parent && !IsSceneRootNode(Parent))
-        {
-            auto It = BoneNodeToIndex.find(Parent);
-            if (It != BoneNodeToIndex.end())
-            {
-                return It->second;
-            }
-            Parent = Parent->GetParent();
-        }
-        return -1;
-    }
-
-    static FString MakeUniqueSocketName(const FString& BaseName, const FSkeleton& Skeleton)
-    {
-        FString Candidate = BaseName.empty() ? FString("Socket") : BaseName;
-        if (Skeleton.FindSocketIndexByName(Candidate) < 0)
-        {
-            return Candidate;
-        }
-
-        const FString RootName = Candidate;
-        int32 Suffix = 1;
-        while (Skeleton.FindSocketIndexByName(Candidate) >= 0)
-        {
-            Candidate = RootName + "_" + std::to_string(Suffix++);
-        }
-        return Candidate;
-    }
-
-    static void CollectFbxSocketNodesRecursive(
-        FbxNode* Node,
-        const TMap<FbxNode*, int32>& BoneNodeToIndex,
-        const FMatrix& ReferenceMeshBindInverse,
-        FSkeleton& Skeleton,
-        FImportBuildContext& BuildContext)
-    {
-        if (!Node)
-        {
-            return;
-        }
-
-        if (IsFbxNodeSocketCandidate(Node, BoneNodeToIndex))
-        {
-            const int32 ParentBoneIndex = FindNearestImportedParentBoneIndex(Node, BoneNodeToIndex);
-            const FMatrix SocketGlobalInReference = ToEngineMatrix(Node->EvaluateGlobalTransform()) * ReferenceMeshBindInverse;
-
-            FMatrix LocalTransform = SocketGlobalInReference;
-            if (ParentBoneIndex >= 0 && ParentBoneIndex < static_cast<int32>(Skeleton.Bones.size()))
-            {
-                LocalTransform = SocketGlobalInReference * Skeleton.Bones[ParentBoneIndex].GlobalBindPose.GetInverse();
-            }
-
-            FSkeletalSocket Socket;
-            Socket.Name = MakeUniqueSocketName(Node->GetName(), Skeleton);
-            Socket.ParentBoneIndex = ParentBoneIndex;
-            Socket.LocalTransform = LocalTransform;
-            Skeleton.Sockets.push_back(Socket);
-
-            BuildContext.AddWarning(ESkeletalImportWarningType::ImportedSocketNode, "Imported FBX helper/null/locator node as a skeletal socket.");
-        }
-
-        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
-        {
-            CollectFbxSocketNodesRecursive(Node->GetChild(ChildIndex), BoneNodeToIndex, ReferenceMeshBindInverse, Skeleton, BuildContext);
-        }
-    }
-
-    static void ImportFbxSockets(
-        FbxScene* Scene,
-        const TMap<FbxNode*, int32>& BoneNodeToIndex,
-        const FMatrix& ReferenceMeshBindInverse,
-        FSkeleton& Skeleton,
-        FImportBuildContext& BuildContext)
-    {
-        Skeleton.Sockets.clear();
-        if (!Scene || !Scene->GetRootNode())
-        {
-            return;
-        }
-
-        CollectFbxSocketNodesRecursive(Scene->GetRootNode(), BoneNodeToIndex, ReferenceMeshBindInverse, Skeleton, BuildContext);
     }
 
     // skeletal bind pose source를 asset 단위로 결정해 일관된 기준으로 적용한다.
@@ -2948,115 +2499,7 @@ namespace
         }
     }
 
-    static void AppendMorphDeltaToInBetween(FMorphTargetLOD& MorphLOD, float Weight, TArray<FMorphTargetDelta>&& Deltas)
-    {
-        if (Deltas.empty())
-        {
-            return;
-        }
-
-        for (FMorphTargetInBetween& Existing : MorphLOD.InBetweens)
-        {
-            if (std::fabs(Existing.Weight - Weight) <= 1.0e-4f)
-            {
-                Existing.Deltas.insert(Existing.Deltas.end(), Deltas.begin(), Deltas.end());
-                return;
-            }
-        }
-
-        FMorphTargetInBetween NewTarget;
-        NewTarget.Weight = Weight;
-        NewTarget.Deltas = std::move(Deltas);
-        MorphLOD.InBetweens.push_back(std::move(NewTarget));
-    }
-
-    static void BuildMorphDeltasForShape(
-        FbxMesh* Mesh,
-        FbxShape* Shape,
-        const TArray<const FImportedMorphSourceVertex*>& MeshSources,
-        TArray<FMorphTargetDelta>& OutDeltas,
-        FImportBuildContext& BuildContext
-        )
-    {
-        OutDeltas.clear();
-
-        if (!Mesh || !Shape)
-        {
-            return;
-        }
-
-        FbxVector4* BaseControlPoints   = Mesh->GetControlPoints();
-        FbxVector4* TargetControlPoints = Shape->GetControlPoints();
-
-        if (!BaseControlPoints || !TargetControlPoints)
-        {
-            return;
-        }
-
-        const int32 BaseControlPointCount   = Mesh->GetControlPointsCount();
-        const int32 TargetControlPointCount = Shape->GetControlPointsCount();
-
-        if (TargetControlPointCount != BaseControlPointCount)
-        {
-            BuildContext.AddWarning(
-                ESkeletalImportWarningType::MorphTargetControlPointMismatch,
-                "Morph target control point count does not match the base mesh control point count."
-            );
-        }
-
-        for (const FImportedMorphSourceVertex* Source : MeshSources)
-        {
-            if (!Source)
-            {
-                continue;
-            }
-
-            const int32 CPIndex = Source->ControlPointIndex;
-
-            if (CPIndex < 0 || CPIndex >= BaseControlPointCount || CPIndex >= TargetControlPointCount)
-            {
-                continue;
-            }
-
-            const FbxVector4 BaseP   = BaseControlPoints[CPIndex];
-            const FbxVector4 TargetP = TargetControlPoints[CPIndex];
-
-            FVector LocalDelta(static_cast<float>(TargetP[0] - BaseP[0]), static_cast<float>(TargetP[1] - BaseP[1]), static_cast<float>(TargetP[2] - BaseP[2]));
-
-            FMorphTargetDelta Delta;
-            Delta.VertexIndex   = Source->VertexIndex;
-            Delta.PositionDelta = TransformVectorNoNormalizeByMatrix(LocalDelta, Source->MeshToReference);
-            Delta.NormalDelta   = FVector(0.0f, 0.0f, 0.0f);
-            Delta.TangentDelta  = FVector4(0.0f, 0.0f, 0.0f, 0.0f);
-
-            FVector TargetNormalInReference = Source->BaseNormalInReference;
-
-            FVector TargetLocalNormal;
-            if (TryReadShapeNormal(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalNormal))
-            {
-                TargetNormalInReference = TransformNormalByMatrix(TargetLocalNormal, Source->NormalToReference);
-                Delta.NormalDelta = TargetNormalInReference - Source->BaseNormalInReference;
-            }
-
-            FVector4 TargetLocalTangent;
-            if (TryReadShapeTangent(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalTangent))
-            {
-                const FVector TargetTangentInReference = TransformTangentByMatrix(FVector(TargetLocalTangent.X, TargetLocalTangent.Y, TargetLocalTangent.Z), Source->MeshToReference, TargetNormalInReference);
-                Delta.TangentDelta = FVector4(TargetTangentInReference.X - Source->BaseTangentInReference.X, TargetTangentInReference.Y - Source->BaseTangentInReference.Y, TargetTangentInReference.Z - Source->BaseTangentInReference.Z, TargetLocalTangent.W - Source->BaseTangentInReference.W);
-            }
-
-            if (IsNearlyZeroVector(Delta.PositionDelta) && IsNearlyZeroVector(Delta.NormalDelta) && IsNearlyZeroVector4(Delta.TangentDelta))
-            {
-                continue;
-            }
-
-            OutDeltas.push_back(Delta);
-        }
-    }
-
     // FBX blend shape을 최종 vertex index 기준 morph target delta로 변환한다.
-    // In-between target shape가 여러 개 있으면 weight별 delta를 FMorphTargetLOD::InBetweens에 모두 보존하고,
-    // 기존 런타임 호환용 Deltas에는 마지막 target shape를 넣는다.
     static void ImportMorphTargets(
         const TArray<TArray<FImportedMorphSourceVertex>>& MorphSourcesByLOD,
         TArray<FMorphTarget>&                             OutMorphTargets,
@@ -3083,7 +2526,7 @@ namespace
 
             for (const auto& MeshPair : SourcesByMesh)
             {
-                FbxMesh* Mesh = MeshPair.first;
+                FbxMesh*                                         Mesh        = MeshPair.first;
                 const TArray<const FImportedMorphSourceVertex*>& MeshSources = MeshPair.second;
 
                 if (!Mesh)
@@ -3120,13 +2563,30 @@ namespace
                             continue;
                         }
 
-                        FString MorphName = Channel->GetName();
-                        if (MorphName.empty() && Channel->GetTargetShape(0))
+                        if (TargetShapeCount > 1)
                         {
-                            MorphName = Channel->GetTargetShape(0)->GetName();
+                            BuildContext.AddWarning(
+                                ESkeletalImportWarningType::UnsupportedMorphInBetween,
+                                "FBX blend shape channel has multiple in-between target shapes. Only the last target shape is imported."
+                            );
+                        }
+
+                        FbxShape* Shape = Channel->GetTargetShape(TargetShapeCount - 1);
+
+                        if (!Shape)
+                        {
+                            continue;
+                        }
+
+                        FString MorphName = Channel->GetName();
+
+                        if (MorphName.empty())
+                        {
+                            MorphName = Shape->GetName();
                         }
 
                         int32 MorphIndex = -1;
+
                         auto Existing = MorphNameToIndex.find(MorphName);
                         if (Existing != MorphNameToIndex.end())
                         {
@@ -3140,52 +2600,78 @@ namespace
 
                             OutMorphTargets.push_back(std::move(NewMorph));
 
-                            MorphIndex = static_cast<int32>(OutMorphTargets.size()) - 1;
+                            MorphIndex                  = static_cast<int32>(OutMorphTargets.size()) - 1;
                             MorphNameToIndex[MorphName] = MorphIndex;
                         }
 
                         FMorphTargetLOD& MorphLOD = OutMorphTargets[MorphIndex].LODModels[LODIndex];
 
-                        double* FullWeights = Channel->GetTargetShapeFullWeights();
+                        FbxVector4* BaseControlPoints   = Mesh->GetControlPoints();
+                        FbxVector4* TargetControlPoints = Shape->GetControlPoints();
 
-                        for (int32 TargetShapeIndex = 0; TargetShapeIndex < TargetShapeCount; ++TargetShapeIndex)
+                        if (!BaseControlPoints || !TargetControlPoints)
                         {
-                            FbxShape* Shape = Channel->GetTargetShape(TargetShapeIndex);
-                            if (!Shape)
+                            continue;
+                        }
+
+                        const int32 BaseControlPointCount   = Mesh->GetControlPointsCount();
+                        const int32 TargetControlPointCount = Shape->GetControlPointsCount();
+
+                        if (TargetControlPointCount != BaseControlPointCount)
+                        {
+                            BuildContext.AddWarning(
+                                ESkeletalImportWarningType::MorphTargetControlPointMismatch,
+                                "Morph target control point count does not match the base mesh control point count."
+                            );
+                        }
+
+                        for (const FImportedMorphSourceVertex* Source : MeshSources)
+                        {
+                            if (!Source)
                             {
                                 continue;
                             }
 
-                            float Weight = 1.0f;
-                            if (FullWeights)
-                            {
-                                Weight = static_cast<float>(FullWeights[TargetShapeIndex]);
-                                if (Weight > 1.0f)
-                                {
-                                    Weight *= 0.01f;
-                                }
-                                Weight = Clamp01(Weight);
-                            }
-                            else if (TargetShapeCount > 1)
-                            {
-                                Weight = static_cast<float>(TargetShapeIndex + 1) / static_cast<float>(TargetShapeCount);
-                            }
+                            const int32 CPIndex = Source->ControlPointIndex;
 
-                            TArray<FMorphTargetDelta> ShapeDeltas;
-                            BuildMorphDeltasForShape(Mesh, Shape, MeshSources, ShapeDeltas, BuildContext);
-
-                            if (ShapeDeltas.empty())
+                            if (CPIndex < 0 || CPIndex >= BaseControlPointCount || CPIndex >= TargetControlPointCount)
                             {
                                 continue;
                             }
 
-                            TArray<FMorphTargetDelta> InBetweenDeltas = ShapeDeltas;
-                            AppendMorphDeltaToInBetween(MorphLOD, Weight, std::move(InBetweenDeltas));
+                            const FbxVector4 BaseP   = BaseControlPoints[CPIndex];
+                            const FbxVector4 TargetP = TargetControlPoints[CPIndex];
 
-                            if (TargetShapeIndex == TargetShapeCount - 1)
+                            FVector LocalDelta(static_cast<float>(TargetP[0] - BaseP[0]), static_cast<float>(TargetP[1] - BaseP[1]), static_cast<float>(TargetP[2] - BaseP[2]));
+
+                            FMorphTargetDelta Delta;
+                            Delta.VertexIndex   = Source->VertexIndex;
+                            Delta.PositionDelta = TransformVectorNoNormalizeByMatrix(LocalDelta, Source->MeshToReference);
+                            Delta.NormalDelta   = FVector(0.0f, 0.0f, 0.0f);
+                            Delta.TangentDelta  = FVector4(0.0f, 0.0f, 0.0f, 0.0f);
+
+                            FVector TargetNormalInReference = Source->BaseNormalInReference;
+
+                            FVector TargetLocalNormal;
+                            if (TryReadShapeNormal(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalNormal))
                             {
-                                MorphLOD.Deltas.insert(MorphLOD.Deltas.end(), ShapeDeltas.begin(), ShapeDeltas.end());
+                                TargetNormalInReference = TransformNormalByMatrix(TargetLocalNormal, Source->NormalToReference);
+                                Delta.NormalDelta = TargetNormalInReference - Source->BaseNormalInReference;
                             }
+
+                            FVector4 TargetLocalTangent;
+                            if (TryReadShapeTangent(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalTangent))
+                            {
+                                const FVector TargetTangentInReference = TransformTangentByMatrix(FVector(TargetLocalTangent.X, TargetLocalTangent.Y, TargetLocalTangent.Z), Source->MeshToReference, TargetNormalInReference);
+                                Delta.TangentDelta = FVector4(TargetTangentInReference.X - Source->BaseTangentInReference.X, TargetTangentInReference.Y - Source->BaseTangentInReference.Y, TargetTangentInReference.Z - Source->BaseTangentInReference.Z, TargetLocalTangent.W - Source->BaseTangentInReference.W);
+                            }
+
+                            if (IsNearlyZeroVector(Delta.PositionDelta) && IsNearlyZeroVector(Delta.NormalDelta) && IsNearlyZeroVector4(Delta.TangentDelta))
+                            {
+                                continue;
+                            }
+
+                            MorphLOD.Deltas.push_back(Delta);
                         }
                     }
                 }
@@ -3546,8 +3032,6 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
             FVector  LocalPositions[3]      = {};
             FVector  WorldPositions[3]      = {};
             FVector2 UV0[3];
-            FVector2 CornerUVs[3][MAX_STATIC_MESH_UV_CHANNELS] = {};
-            const int32 StaticMeshUVCount = (std::min)(GetUVSetCount(Mesh), MAX_STATIC_MESH_UV_CHANNELS);
 
             for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
             {
@@ -3555,11 +3039,7 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
 
                 LocalPositions[CornerIndex] = ReadPosition(Mesh, ControlPointIndices[CornerIndex]);
                 WorldPositions[CornerIndex] = TransformPositionByMatrix(LocalPositions[CornerIndex], MeshToWorld);
-                for (int32 UVIndex = 0; UVIndex < StaticMeshUVCount; ++UVIndex)
-                {
-                    CornerUVs[CornerIndex][UVIndex] = ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, UVIndex);
-                }
-                UV0[CornerIndex] = (StaticMeshUVCount > 0) ? CornerUVs[CornerIndex][0] : FVector2(0.0f, 0.0f);
+                UV0[CornerIndex]            = ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, 0);
             }
 
             const FVector FallbackNormal  = ComputeTriangleNormal(WorldPositions[0], WorldPositions[1], WorldPositions[2]);
@@ -3583,15 +3063,7 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
                     Vertex.normal = FallbackNormal;
                 }
 
-                Vertex.NumUVs = static_cast<uint8>((std::max)(1, StaticMeshUVCount));
-                for (int32 UVIndex = 0; UVIndex < StaticMeshUVCount; ++UVIndex)
-                {
-                    Vertex.SetUV(UVIndex, CornerUVs[CornerIndex][UVIndex]);
-                }
-                if (StaticMeshUVCount <= 0)
-                {
-                    Vertex.SetUV(0, FVector2(0.0f, 0.0f));
-                }
+                Vertex.tex   = UV0[CornerIndex];
                 Vertex.color = ReadVertexColor(Mesh, ControlPointIndex, CurrentPolygonVertexIndex);
 
                 FVector4 ImportedTangent;
@@ -3722,7 +3194,6 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
     }
 
     RecomputeLocalBindPose(OutMesh.Skeleton);
-    ImportFbxSockets(SceneHandle.Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, BuildContext);
 
     TArray<TArray<FImportedMorphSourceVertex>> MorphSourcesByLOD;
     TMap<FbxSurfaceMaterial*, int32>           FbxMaterialToSlot;
@@ -3746,22 +3217,6 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
         ))
         {
             continue;
-        }
-
-        NewLOD.SourceLODIndex = LODIndex;
-
-        float SwitchDistance = 0.0f;
-        float ScreenSize = 1.0f;
-        for (FbxNode* LODMeshNode : MeshNodesByLOD[LODIndex])
-        {
-            if (TryGetSkeletalMeshLODThreshold(LODMeshNode, LODIndex, SwitchDistance, ScreenSize))
-            {
-                NewLOD.SwitchDistance = SwitchDistance;
-                NewLOD.ScreenSize = ScreenSize;
-                NewLOD.bHasSwitchDistance = true;
-                BuildContext.AddWarning(ESkeletalImportWarningType::LODThresholdImported, "Imported FBX LODGroup threshold metadata.");
-                break;
-            }
         }
 
         OutMesh.LODModels.push_back(NewLOD);

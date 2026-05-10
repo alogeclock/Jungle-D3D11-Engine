@@ -10,14 +10,14 @@
 struct VS_Input_PC
 {
     float3 position : POSITION;
-    float4 color : COLOR;
+    float4 color    : COLOR;
 };
 
 struct VS_Input_Gizmo
 {
     float3 position : POSITION;
-    float4 color : COLOR;
-    uint subID : TEXCOORD0;
+    float4 color    : COLOR;
+    uint   subID    : TEXCOORD0;
 };
 
 // FVertexPNCT (Position + Normal + Color + TexCoord)
@@ -25,9 +25,9 @@ struct VS_Input_Gizmo
 struct VS_Input_PNCT
 {
     float3 position : POSITION;
-    float3 normal : NORMAL;
-    float4 color : COLOR;
-    float2 texcoord : TEXCOORD0;
+    float3 normal   : NORMAL;
+    float4 color    : COLOR;
+    float2 texcoord : TEXTCOORD;
 };
 
 struct VS_Input_PNCTT
@@ -35,11 +35,7 @@ struct VS_Input_PNCTT
     float3 position : POSITION;
     float3 normal : NORMAL;
     float4 color : COLOR;
-    float2 texcoord : TEXCOORD0;
-    float2 texcoord1 : TEXCOORD1;
-    float2 texcoord2 : TEXCOORD2;
-    float2 texcoord3 : TEXCOORD3;
-    float numUVs : TEXCOORD4;
+    float2 texcoord : TEXTCOORD;
     float4 tangent : TANGENT;
 };
 
@@ -48,7 +44,7 @@ struct VS_Input_PNCTT
 struct VS_Input_PTC
 {
     float3 position : POSITION;
-    float4 color : COLOR;
+    float4 color    : COLOR;
     float2 texcoord : TEXCOORD;
 };
 
@@ -74,13 +70,13 @@ struct VS_Input_P
 struct PS_Input_Color
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float4 color    : COLOR;
 };
 
 struct PS_Input_Gizmo
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float4 color    : COLOR;
     nointerpolation uint subID : TEXCOORD0;
 };
 
@@ -94,7 +90,7 @@ struct PS_Input_Tex
 struct PS_Input_TexColor
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float4 color    : COLOR;
     float2 texcoord : TEXCOORD;
 };
 
@@ -102,9 +98,9 @@ struct PS_Input_TexColor
 struct PS_Input_Full
 {
     float4 position : SV_POSITION;
-    float3 normal : NORMAL;
-    float4 color : COLOR;
-    float2 texcoord : TEXCOORD0;
+    float3 normal   : NORMAL;
+    float4 color    : COLOR;
+    float2 texcoord : TEXTCOORD;
 };
 
 // SV_POSITION + UV (PostProcess: HeightFog, Outline, SceneDepth)
@@ -124,7 +120,7 @@ struct PS_Input_PosOnly
 struct PS_Input_ColorWorld
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float4 color    : COLOR;
     float3 worldPos : TEXCOORD0;
 };
 
@@ -140,7 +136,7 @@ struct PS_Input_Decal
 struct PS_Input_Shadow
 {
     float4 position : SV_POSITION;
-    float depth : TEXCOORD0; // VSM용 normalized depth
+    float  depth    : TEXCOORD0;    // VSM용 normalized depth
 };
 
 #endif // VERTEX_LAYOUTS_HLSL
