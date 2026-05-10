@@ -207,6 +207,7 @@ private:
 	int32 HoveredUIScreenGizmoAxis = 0;
 	int32 ActiveUIScreenGizmoAxis = 0;
 	bool bCameraInputCaptured = false;
+	bool bSuppressInputUntilRButtonUp = false;
 	bool bDraggingUIScreenGizmo = false;
 	bool bViewportMouseCaptured = false;
 	bool bCameraNavigationActive = false;

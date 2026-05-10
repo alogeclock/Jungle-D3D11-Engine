@@ -792,7 +792,7 @@ void FEditorViewportClient::SetupInput()
 void FEditorViewportClient::OnEditorMove(const FInputActionValue& Value)
 {
 	if (FInputManager::Get().IsKeyDown(VK_CONTROL)) return;
-	if (FInputManager::Get().IsMouseButtonDown(VK_RBUTTON))
+	if (bCameraInputCaptured && FInputManager::Get().IsMouseButtonDown(VK_RBUTTON))
 	{
 		EditorMoveAccumulator = EditorMoveAccumulator + Value.GetVector();
 	}
@@ -803,10 +803,15 @@ void FEditorViewportClient::OnEditorRotate(const FInputActionValue& Value)
 	FInputManager& Input = FInputManager::Get();
 	if (Input.IsMouseButtonDown(VK_RBUTTON))
 	{
+		if (!bCameraInputCaptured)
+		{
+			return;
+		}
 		EditorRotateAccumulator = EditorRotateAccumulator + Value.GetVector();
 	}
 	else
 	{
+		if (!bCameraInputCaptured) return;
 		FVector KeyboardRotate(0, 0, 0);
 		if (Input.IsKeyDown(VK_RIGHT)) KeyboardRotate.X += 1.0f;
 		if (Input.IsKeyDown(VK_LEFT)) KeyboardRotate.X -= 1.0f;
@@ -836,6 +841,10 @@ void FEditorViewportClient::OnEditorZoom(const FInputActionValue& Value)
 	FInputManager& Input = FInputManager::Get();
 	if (Input.IsMouseButtonDown(VK_RBUTTON))
 	{
+		if (!bCameraInputCaptured)
+		{
+			return;
+		}
 		float& Speed = FEditorSettings::Get().CameraSpeed;
 		Speed = Clamp(Speed + Value.Get() * 2.0f, 1.0f, 100.0f);
 		return;
@@ -871,7 +880,7 @@ void FEditorViewportClient::OnEditorOrbit(const FInputActionValue& Value)
 			}
 		}
 		// Alt + RMB = Scrub Zoom
-		else if (Input.IsMouseButtonDown(VK_RBUTTON))
+		else if (bCameraInputCaptured && Input.IsMouseButtonDown(VK_RBUTTON))
 		{
 			if (Camera)
 			{
@@ -1258,10 +1267,20 @@ void FEditorViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, floa
 	const bool bGuiWantsMouse = Snapshot.IsGuiUsingMouse();
 	const bool bGuiWantsKeyboard = Snapshot.IsGuiUsingKeyboard();
 
+	if (!Snapshot.IsMouseButtonDown(VK_RBUTTON) || !Snapshot.IsWindowFocused())
+	{
+		bSuppressInputUntilRButtonUp = false;
+	}
+
 	if (bIsHovered && Snapshot.IsMouseButtonPressed(VK_RBUTTON) && !bGuiWantsMouse && !bGuiWantsKeyboard)
 	{
 		bCameraInputCaptured = true;
+		bSuppressInputUntilRButtonUp = false;
 		FInputRouter::Get().SetMouseCapturedViewport(this);
+	}
+	else if (Snapshot.IsMouseButtonDown(VK_RBUTTON) && !bCameraInputCaptured && (bIsHovered || bIsActive))
+	{
+		bSuppressInputUntilRButtonUp = true;
 	}
 
 	if ((Snapshot.IsMouseButtonReleased(VK_RBUTTON) && !Snapshot.IsMouseButtonDown(FInputManager::MOUSE_LEFT)) || !Snapshot.IsWindowFocused())
@@ -1271,10 +1290,15 @@ void FEditorViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, floa
 	}
 
 	const bool bAllowNewViewportInput =
-		(bIsHovered || bIsActive) && !bGuiWantsMouse && !bGuiWantsKeyboard;
+		!bSuppressInputUntilRButtonUp && (bIsHovered || bIsActive) && !bGuiWantsMouse && !bGuiWantsKeyboard;
 
 	const bool bIgnoreGui =
-		bCameraInputCaptured || bAllowNewViewportInput;
+		!bSuppressInputUntilRButtonUp && (bCameraInputCaptured || bAllowNewViewportInput);
+
+	if (bSuppressInputUntilRButtonUp)
+	{
+		return;
+	}
 
 	EnhancedInputManager.ProcessInput(Snapshot, DeltaTime, bIgnoreGui);
 
@@ -1299,14 +1323,14 @@ void FEditorViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, floa
 			const float MouseRotationSpeed = 0.15f * RotateSensitivity;
 			const float AngleVelocity = (Settings ? Settings->CameraRotationSpeed : 60.f) * RotateSensitivity;
 			float Yaw = 0.0f, Pitch = 0.0f;
-			if (!Snapshot.IsMouseButtonDown(VK_RBUTTON)) { Yaw = EditorRotateAccumulator.X * AngleVelocity * DeltaTime; Pitch = EditorRotateAccumulator.Y * AngleVelocity * DeltaTime; }
+			if (!bCameraInputCaptured || !Snapshot.IsMouseButtonDown(VK_RBUTTON)) { Yaw = EditorRotateAccumulator.X * AngleVelocity * DeltaTime; Pitch = EditorRotateAccumulator.Y * AngleVelocity * DeltaTime; }
 			else { Yaw = EditorRotateAccumulator.X * MouseRotationSpeed; Pitch = EditorRotateAccumulator.Y * MouseRotationSpeed; }
 			Camera->Rotate(Yaw, Pitch);
 		}
 	}
 	else
 	{
-		if (!EditorRotateAccumulator.IsNearlyZero() && Snapshot.IsMouseButtonDown(VK_RBUTTON))
+		if (!EditorRotateAccumulator.IsNearlyZero() && bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
 		{
 			float PanScale = CameraState.OrthoWidth * 0.002f * MoveSensitivity;
 			Camera->MoveLocal(FVector(0, -EditorRotateAccumulator.Y * PanScale, EditorRotateAccumulator.Z * PanScale));
