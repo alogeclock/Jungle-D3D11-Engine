@@ -98,10 +98,7 @@ namespace
 
         for (char& C : Result)
         {
-            const bool bAlphaNumeric =
-                (C >= '0' && C <= '9') ||
-                (C >= 'A' && C <= 'Z') ||
-                (C >= 'a' && C <= 'z');
+            const bool bAlphaNumeric = (C >= '0' && C <= '9') || (C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z');
 
             if (!bAlphaNumeric && C != '_' && C != '-')
             {
@@ -413,7 +410,7 @@ namespace
         }
 
         const FbxDouble3 Value = Property.Get<FbxDouble3>();
-        OutColor = FVector4(static_cast<float>(Value[0]), static_cast<float>(Value[1]), static_cast<float>(Value[2]), 1.0f);
+        OutColor               = FVector4(static_cast<float>(Value[0]), static_cast<float>(Value[1]), static_cast<float>(Value[2]), 1.0f);
         return true;
     }
 
@@ -455,7 +452,7 @@ namespace
     static FString ConvertFbxMaterialInfoToMat(const FFbxImportedMaterialInfo& Info, FImportBuildContext& BuildContext)
     {
         const FString SafeSlotName = MakeSafeAssetName(Info.SlotName);
-        const FString MatPath = "Asset/Materials/Auto/Fbx/" + SafeSlotName + ".mat";
+        const FString MatPath      = "Asset/Materials/Auto/Fbx/" + SafeSlotName + ".mat";
 
         const std::filesystem::path DiskPath(FPaths::ToWide(MatPath));
 
@@ -468,9 +465,9 @@ namespace
 
         json::JSON JsonData;
         JsonData["PathFileName"] = MatPath;
-        JsonData["Origin"] = "FbxImport";
-        JsonData["ShaderPath"] = "Shaders/Geometry/UberLit.hlsl";
-        JsonData["RenderPass"] = "Opaque";
+        JsonData["Origin"]       = "FbxImport";
+        JsonData["ShaderPath"]   = "Shaders/Geometry/UberLit.hlsl";
+        JsonData["RenderPass"]   = "Opaque";
 
         if (!Info.DiffuseTexture.empty())
         {
@@ -776,7 +773,13 @@ namespace
     }
 
     // FBX bone node를 Skeleton에 추가하고 import 대상 child bone을 재귀 등록한다.
-    static int32 AddImportedBoneRecursive(FbxNode* BoneNode, int32 ParentIndex, const TArray<FbxNode*>& ImportedBoneNodes, FSkeleton& OutSkeleton, TMap<FbxNode*, int32>& OutBoneNodeToIndex)
+    static int32 AddImportedBoneRecursive(
+        FbxNode*                BoneNode,
+        int32                   ParentIndex,
+        const TArray<FbxNode*>& ImportedBoneNodes,
+        FSkeleton&              OutSkeleton,
+        TMap<FbxNode*, int32>&  OutBoneNodeToIndex
+        )
     {
         if (!BoneNode || !ContainsFbxNode(ImportedBoneNodes, BoneNode))
         {
@@ -919,7 +922,7 @@ namespace
 
         return ParseLODIndexFromName(MeshNode->GetName());
     }
-    
+
     // material 배열이 비어 있으면 기본 None material slot을 추가한다.
     static void GetOrCreateDefaultMaterial(TArray<FStaticMaterial>& OutMaterials)
     {
@@ -1282,7 +1285,14 @@ namespace
     }
 
     // 삼각형 position/UV로 tangent fallback을 계산한다.
-    static FVector ComputeTriangleTangent(const FVector& P0, const FVector& P1, const FVector& P2, const FVector2& UV0, const FVector2& UV1, const FVector2& UV2)
+    static FVector ComputeTriangleTangent(
+        const FVector&  P0,
+        const FVector&  P1,
+        const FVector&  P2,
+        const FVector2& UV0,
+        const FVector2& UV1,
+        const FVector2& UV2
+        )
     {
         const FVector Edge1 = P1 - P0;
         const FVector Edge2 = P2 - P0;
@@ -1526,7 +1536,12 @@ namespace
     }
 
     // Mesh의 skin cluster weight만 control point별로 추출하고 import 경고를 기록한다.
-    static void ExtractSkinWeightsOnly(FbxMesh* Mesh, const TMap<FbxNode*, int32>& BoneNodeToIndex, TArray<TArray<FImportedBoneWeight>>& OutControlPointWeight, FImportBuildContext& BuildContext)
+    static void ExtractSkinWeightsOnly(
+        FbxMesh*                             Mesh,
+        const TMap<FbxNode*, int32>&         BoneNodeToIndex,
+        TArray<TArray<FImportedBoneWeight>>& OutControlPointWeight,
+        FImportBuildContext&                 BuildContext
+        )
     {
         OutControlPointWeight.clear();
 
@@ -1552,7 +1567,10 @@ namespace
 
             if (SkinningType != FbxSkin::eLinear && SkinningType != FbxSkin::eRigid)
             {
-                BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedSkinningType, "Unsupported FBX skinning type. Imported with linear skinning fallback.");
+                BuildContext.AddWarning(
+                    ESkeletalImportWarningType::UnsupportedSkinningType,
+                    "Unsupported FBX skinning type. Imported with linear skinning fallback."
+                );
             }
 
             const int32 ClusterCount = Skin->GetClusterCount();
@@ -1569,7 +1587,10 @@ namespace
 
                 if (LinkMode != FbxCluster::eNormalize && LinkMode != FbxCluster::eTotalOne)
                 {
-                    BuildContext.AddWarning(ESkeletalImportWarningType::UnsupportedClusterLinkMode, "Unsupported FBX cluster link mode. Additive/associate model is not fully supported.");
+                    BuildContext.AddWarning(
+                        ESkeletalImportWarningType::UnsupportedClusterLinkMode,
+                        "Unsupported FBX cluster link mode. Additive/associate model is not fully supported."
+                    );
                 }
 
                 auto BoneIt = BoneNodeToIndex.find(Cluster->GetLink());
@@ -1623,7 +1644,14 @@ namespace
     }
 
     // FBX bind pose matrix를 bone bind pose로 우선 적용한다.
-    static void ApplyBindPoseFromFbxPose(FbxScene* Scene, const TMap<FbxNode*, int32>& BoneNodeToIndex, const FMatrix& ReferenceMeshBindInverse, FSkeleton& Skeleton, TArray<bool>& InOutAppliedBoneMask, FImportBuildContext& BuildContext)
+    static void ApplyBindPoseFromFbxPose(
+        FbxScene*                    Scene,
+        const TMap<FbxNode*, int32>& BoneNodeToIndex,
+        const FMatrix&               ReferenceMeshBindInverse,
+        FSkeleton&                   Skeleton,
+        TArray<bool>&                InOutAppliedBoneMask,
+        FImportBuildContext&         BuildContext
+        )
     {
         if (!Scene)
         {
@@ -1663,12 +1691,21 @@ namespace
 
         if (!bFoundAnyBindPose)
         {
-            BuildContext.AddWarning(ESkeletalImportWarningType::MissingBindPose, "No explicit FBX bind pose was found. Falling back to skin cluster bind matrices.");
+            BuildContext.AddWarning(
+                ESkeletalImportWarningType::MissingBindPose,
+                "No explicit FBX bind pose was found. Falling back to skin cluster bind matrices."
+            );
         }
     }
 
     // skin cluster의 link bind matrix로 bone bind pose를 reference space 기준으로 덮어쓴다.
-    static void ApplyBindPoseFromSkinClusters(const TArray<FbxNode*>& SkinnedMeshNodes, const TMap<FbxNode*, int32>& BoneNodeToIndex, const FMatrix& ReferenceMeshBindInverse, FSkeleton& Skeleton, TArray<bool>* InOutAppliedBoneMask = nullptr)
+    static void ApplyBindPoseFromSkinClusters(
+        const TArray<FbxNode*>&      SkinnedMeshNodes,
+        const TMap<FbxNode*, int32>& BoneNodeToIndex,
+        const FMatrix&               ReferenceMeshBindInverse,
+        FSkeleton&                   Skeleton,
+        TArray<bool>*                InOutAppliedBoneMask = nullptr
+        )
     {
         for (FbxNode* MeshNode : SkinnedMeshNodes)
         { 
@@ -1770,10 +1807,14 @@ namespace
         }
 
         TArray<FImportedBoneWeight> SortedWeights = SourceWeight;
-        std::sort(SortedWeights.begin(), SortedWeights.end(), [](const FImportedBoneWeight& A, const FImportedBoneWeight& B)
-        {
-            return A.Weight > B.Weight;
-        });
+        std::sort(
+            SortedWeights.begin(),
+            SortedWeights.end(),
+            [](const FImportedBoneWeight& A, const FImportedBoneWeight& B)
+            {
+                return A.Weight > B.Weight;
+            }
+        );
 
         OutStats.SourceInfluenceCount = static_cast<int32>(SortedWeights.size());
 
@@ -1934,7 +1975,12 @@ namespace
     }
 
     // FBX material을 외부 texture path 기반 .mat 파일로 변환하고 skeletal material slot에 연결한다.
-    static int32 FindOrAddSkeletalMaterial(FbxSurfaceMaterial* FbxMaterial, const FString& SourceFbxPath, TArray<FStaticMaterial>& OutMaterials, FImportBuildContext& BuildContext)
+    static int32 FindOrAddSkeletalMaterial(
+        FbxSurfaceMaterial*      FbxMaterial,
+        const FString&           SourceFbxPath,
+        TArray<FStaticMaterial>& OutMaterials,
+        FImportBuildContext&     BuildContext
+        )
     {
         const FString SlotName = FbxMaterial ? FbxMaterial->GetName() : "None";
 
@@ -1951,7 +1997,7 @@ namespace
         if (FbxMaterial)
         {
             const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath);
-            MaterialPath = ConvertFbxMaterialInfoToMat(MaterialInfo, BuildContext);
+            MaterialPath                                = ConvertFbxMaterialInfoToMat(MaterialInfo, BuildContext);
         }
 
         FStaticMaterial NewMaterial;
@@ -1962,7 +2008,12 @@ namespace
     }
 
     // 임시 section별 index 목록을 최종 index buffer와 section 배열로 병합한다.
-    static void BuildFinalSkeletalSections(const TArray<FImportedSectionBuild>& SectionBuilds, const TArray<FStaticMaterial>& Materials, TArray<uint32>& OutIndices, TArray<FStaticMeshSection>& OutSections)
+    static void BuildFinalSkeletalSections(
+        const TArray<FImportedSectionBuild>& SectionBuilds,
+        const TArray<FStaticMaterial>&       Materials,
+        TArray<uint32>&                      OutIndices,
+        TArray<FStaticMeshSection>&          OutSections
+        )
     {
         OutSections.clear();
         OutIndices.clear();
@@ -2036,7 +2087,13 @@ namespace
     }
 
     // FBX animation stack을 샘플링해 bone별 TRS animation track으로 변환한다.
-    static void ImportAnimations(FbxScene* Scene, const TMap<FbxNode*, int32>& BoneNodeToIndex, const FMatrix& ReferenceMeshBindInverse, const FSkeleton& Skeleton, TArray<FSkeletalAnimationClip>& OutAnimations)
+    static void ImportAnimations(
+        FbxScene*                       Scene,
+        const TMap<FbxNode*, int32>&    BoneNodeToIndex,
+        const FMatrix&                  ReferenceMeshBindInverse,
+        const FSkeleton&                Skeleton,
+        TArray<FSkeletalAnimationClip>& OutAnimations
+        )
     {
         OutAnimations.clear();
 
@@ -2288,7 +2345,11 @@ namespace
                             const FbxVector4 BaseP   = BaseControlPoints[CPIndex];
                             const FbxVector4 TargetP = TargetControlPoints[CPIndex];
 
-                            FVector LocalDelta(static_cast<float>(TargetP[0] - BaseP[0]), static_cast<float>(TargetP[1] - BaseP[1]), static_cast<float>(TargetP[2] - BaseP[2]));
+                            FVector LocalDelta(
+                                static_cast<float>(TargetP[0] - BaseP[0]),
+                                static_cast<float>(TargetP[1] - BaseP[1]),
+                                static_cast<float>(TargetP[2] - BaseP[2])
+                            );
 
                             FMorphTargetDelta Delta;
                             Delta.VertexIndex   = Source->VertexIndex;
@@ -2302,14 +2363,23 @@ namespace
                             if (TryReadShapeNormal(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalNormal))
                             {
                                 TargetNormalInReference = TransformNormalByMatrix(TargetLocalNormal, Source->NormalToReference);
-                                Delta.NormalDelta = TargetNormalInReference - Source->BaseNormalInReference;
+                                Delta.NormalDelta       = TargetNormalInReference - Source->BaseNormalInReference;
                             }
 
                             FVector4 TargetLocalTangent;
                             if (TryReadShapeTangent(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalTangent))
                             {
-                                const FVector TargetTangentInReference = TransformTangentByMatrix(FVector(TargetLocalTangent.X, TargetLocalTangent.Y, TargetLocalTangent.Z), Source->MeshToReference, TargetNormalInReference);
-                                Delta.TangentDelta = FVector4(TargetTangentInReference.X - Source->BaseTangentInReference.X, TargetTangentInReference.Y - Source->BaseTangentInReference.Y, TargetTangentInReference.Z - Source->BaseTangentInReference.Z, TargetLocalTangent.W - Source->BaseTangentInReference.W);
+                                const FVector TargetTangentInReference = TransformTangentByMatrix(
+                                    FVector(TargetLocalTangent.X, TargetLocalTangent.Y, TargetLocalTangent.Z),
+                                    Source->MeshToReference,
+                                    TargetNormalInReference
+                                );
+                                Delta.TangentDelta = FVector4(
+                                    TargetTangentInReference.X - Source->BaseTangentInReference.X,
+                                    TargetTangentInReference.Y - Source->BaseTangentInReference.Y,
+                                    TargetTangentInReference.Z - Source->BaseTangentInReference.Z,
+                                    TargetLocalTangent.W - Source->BaseTangentInReference.W
+                                );
                             }
 
                             if (IsNearlyZeroVector(Delta.PositionDelta) && IsNearlyZeroVector(Delta.NormalDelta) && IsNearlyZeroVector4(Delta.TangentDelta))
@@ -2363,7 +2433,17 @@ namespace
 }
 
 // LOD에 속한 skinned mesh node들을 하나의 FSkeletalMeshLOD로 빌드한다.
-static bool BuildSkeletalMeshLODFromNodes(FbxScene* Scene, const FString& SourcePath, const TArray<FbxNode*>& MeshNodes, const TMap<FbxNode*, int32>& BoneNodeToIndex, const FMatrix& ReferenceMeshBindInverse, TArray<FStaticMaterial>& OutMaterials, FSkeletalMeshLOD& OutLOD, TArray<FImportedMorphSourceVertex>* OutMorphSources, FImportBuildContext& BuildContext)
+static bool BuildSkeletalMeshLODFromNodes(
+    FbxScene*                           Scene,
+    const FString&                      SourcePath,
+    const TArray<FbxNode*>&             MeshNodes,
+    const TMap<FbxNode*, int32>&        BoneNodeToIndex,
+    const FMatrix&                      ReferenceMeshBindInverse,
+    TArray<FStaticMaterial>&            OutMaterials,
+    FSkeletalMeshLOD&                   OutLOD,
+    TArray<FImportedMorphSourceVertex>* OutMorphSources,
+    FImportBuildContext&                BuildContext
+    )
 {
     OutLOD = FSkeletalMeshLOD();
 
@@ -2490,7 +2570,11 @@ static bool BuildSkeletalMeshLODFromNodes(FbxScene* Scene, const FString& Source
                 FVector4 ImportedTangent;
                 if (TryReadTangent(Mesh, ControlPointIndex, CurrentPolygonVertexIndex, ImportedTangent))
                 {
-                    const FVector T = TransformTangentByMatrix(FVector(ImportedTangent.X, ImportedTangent.Y, ImportedTangent.Z), MeshToReference, Vertex.Normal);
+                    const FVector T = TransformTangentByMatrix(
+                        FVector(ImportedTangent.X, ImportedTangent.Y, ImportedTangent.Z),
+                        MeshToReference,
+                        Vertex.Normal
+                    );
 
                     Vertex.Tangent = FVector4(T.X, T.Y, T.Z, ImportedTangent.W);
                 }
@@ -2634,7 +2718,7 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
                 const int32 ControlPointIndex = Mesh->GetPolygonVertex(PolygonIndex, CornerIndex);
 
                 FNormalVertex Vertex;
-                Vertex.pos     = ReadPosition(Mesh, ControlPointIndex);
+                Vertex.pos = ReadPosition(Mesh, ControlPointIndex);
                 FVector StaticNormal;
                 if (TryReadNormal(Mesh, PolygonIndex, CornerIndex, StaticNormal))
                 {
@@ -2771,7 +2855,17 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
         FSkeletalMeshLOD                   NewLOD;
         TArray<FImportedMorphSourceVertex> MorphSources;
 
-        if (!BuildSkeletalMeshLODFromNodes(SceneHandle.Scene, SourcePath, MeshNodesByLOD[LODIndex], BoneNodeToIndex, ReferenceMeshBindInverse, OutMaterials, NewLOD, &MorphSources, BuildContext))
+        if (!BuildSkeletalMeshLODFromNodes(
+            SceneHandle.Scene,
+            SourcePath,
+            MeshNodesByLOD[LODIndex],
+            BoneNodeToIndex,
+            ReferenceMeshBindInverse,
+            OutMaterials,
+            NewLOD,
+            &MorphSources,
+            BuildContext
+        ))
         {
             continue;
         }
