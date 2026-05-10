@@ -638,6 +638,18 @@ namespace
         return Mesh && Mesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
     }
 
+    // FBX node가 skeleton bone node인지 확인한다.
+    static bool IsFbxSkeletonNode(FbxNode* Node)
+    {
+        if (!Node)
+        {
+            return false;
+        }
+
+        FbxNodeAttribute* Attribute = Node->GetNodeAttribute();
+        return Attribute && Attribute->GetAttributeType() == FbxNodeAttribute::eSkeleton;
+    }
+
     // FBX 행렬을 엔진 FMatrix 형식으로 복사 변환한다.
     static FMatrix ToEngineMatrix(const FbxAMatrix& Source)
     {
@@ -754,6 +766,24 @@ namespace
         return Node && Node->GetParent() == nullptr;
     }
 
+    // Mesh node의 parent chain에서 가장 가까운 skeleton bone node를 찾는다.
+    static FbxNode* FindNearestParentSkeletonNode(FbxNode* MeshNode)
+    {
+        FbxNode* Current = MeshNode ? MeshNode->GetParent() : nullptr;
+
+        while (Current && !IsSceneRootNode(Current))
+        {
+            if (IsFbxSkeletonNode(Current))
+            {
+                return Current;
+            }
+
+            Current = Current->GetParent();
+        }
+
+        return nullptr;
+    }
+
     // 특정 node부터 scene root 직전까지 parent chain을 중복 없이 추가한다.
     static void AddNodeAndParentsUntilSceneRoot(FbxNode* Node, TArray<FbxNode*>& OutNodes)
     {
@@ -830,8 +860,13 @@ namespace
         return BoneIndex;
     }
 
-    // skinned mesh의 skin cluster link를 기준으로 skeleton hierarchy를 구성한다.
-    static bool BuildSkeletonFromSkinClusters(const TArray<FbxNode*>& SkinnedMeshNodes, FSkeleton& OutSkeleton, TMap<FbxNode*, int32>& OutBoneNodeToIndex)
+    // skinned mesh의 skin cluster link와 bone parent 아래 rigid mesh를 기준으로 skeleton hierarchy를 구성한다.
+    static bool BuildSkeletonFromSkinClusters(
+        const TArray<FbxNode*>& SkinnedMeshNodes,
+        const TArray<FbxNode*>& AllMeshNodes,
+        FSkeleton&              OutSkeleton,
+        TMap<FbxNode*, int32>&  OutBoneNodeToIndex
+        )
     {
         OutSkeleton.Bones.clear();
         OutBoneNodeToIndex.clear();
@@ -858,6 +893,24 @@ namespace
         for (FbxNode* LinkNode : LinkNodes)
         {
             AddNodeAndParentsUntilSceneRoot(LinkNode, ImportedBoneNodes);
+        }
+
+        // skin은 없지만 skeleton bone parent 아래에 붙은 mesh를 rigid attachment로 처리할 수 있도록,
+        // 해당 parent skeleton bone도 skeleton 후보에 포함한다.
+        for (FbxNode* MeshNode : AllMeshNodes)
+        {
+            FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
+
+            if (!Mesh || MeshHasSkin(Mesh))
+            {
+                continue;
+            }
+
+            FbxNode* RigidParentBone = FindNearestParentSkeletonNode(MeshNode);
+            if (RigidParentBone)
+            {
+                AddNodeAndParentsUntilSceneRoot(RigidParentBone, ImportedBoneNodes);
+            }
         }
 
         TArray<FbxNode*> RootBones;
@@ -1365,6 +1418,86 @@ namespace
         FVector4 BaseTangentInReference;
     };
 
+    enum class ESkeletalImportMeshKind : uint8
+    {
+        Skinned,
+        RigidAttached,
+        Loose
+    };
+
+    struct FSkeletalImportMeshNode
+    {
+        FbxNode* MeshNode       = nullptr;
+        ESkeletalImportMeshKind Kind = ESkeletalImportMeshKind::Loose;
+        int32    RigidBoneIndex = -1;
+    };
+
+    // skin이 없는 mesh node의 parent chain에서 import skeleton에 포함된 가장 가까운 bone을 찾는다.
+    static bool FindNearestParentBoneIndex(
+        FbxNode*                      MeshNode,
+        const TMap<FbxNode*, int32>&  BoneNodeToIndex,
+        int32&                        OutBoneIndex
+        )
+    {
+        FbxNode* Current = MeshNode ? MeshNode->GetParent() : nullptr;
+
+        while (Current && !IsSceneRootNode(Current))
+        {
+            auto BoneIt = BoneNodeToIndex.find(Current);
+            if (BoneIt != BoneNodeToIndex.end())
+            {
+                OutBoneIndex = BoneIt->second;
+                return true;
+            }
+
+            Current = Current->GetParent();
+        }
+
+        OutBoneIndex = -1;
+        return false;
+    }
+
+    // skeletal import 대상 mesh를 skinned / rigid bone attachment / loose mesh로 분류한다.
+    static void ClassifySkeletalImportMeshNodes(
+        const TArray<FbxNode*>&       MeshNodes,
+        const TMap<FbxNode*, int32>&  BoneNodeToIndex,
+        TArray<FSkeletalImportMeshNode>& OutImportNodes
+        )
+    {
+        OutImportNodes.clear();
+
+        for (FbxNode* MeshNode : MeshNodes)
+        {
+            FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
+            if (!Mesh)
+            {
+                continue;
+            }
+
+            FSkeletalImportMeshNode ImportNode;
+            ImportNode.MeshNode = MeshNode;
+
+            if (MeshHasSkin(Mesh))
+            {
+                ImportNode.Kind = ESkeletalImportMeshKind::Skinned;
+                OutImportNodes.push_back(ImportNode);
+                continue;
+            }
+
+            int32 ParentBoneIndex = -1;
+            if (FindNearestParentBoneIndex(MeshNode, BoneNodeToIndex, ParentBoneIndex))
+            {
+                ImportNode.Kind           = ESkeletalImportMeshKind::RigidAttached;
+                ImportNode.RigidBoneIndex = ParentBoneIndex;
+                OutImportNodes.push_back(ImportNode);
+                continue;
+            }
+
+            ImportNode.Kind = ESkeletalImportMeshKind::Loose;
+            OutImportNodes.push_back(ImportNode);
+        }
+    }
+
     // position에 행렬의 전체 transform을 적용한다.
     static FVector TransformPositionByMatrix(const FVector& P, const FMatrix& M)
     {
@@ -1532,6 +1665,26 @@ namespace
         }
 
         return false;
+    }
+
+
+    // skin이 없는 rigid attachment mesh의 bind matrix를 얻는다.
+    static FMatrix GetRigidMeshBindMatrix(FbxScene* Scene, FbxNode* MeshNode)
+    {
+        if (!MeshNode)
+        {
+            return FMatrix::Identity;
+        }
+
+        const FMatrix GeometryTransform = ToEngineMatrix(GetNodeGeometryTransform(MeshNode));
+
+        FMatrix PoseMatrix;
+        if (TryGetBindPoseMatrixForNode(Scene, MeshNode, PoseMatrix))
+        {
+            return GeometryTransform * PoseMatrix;
+        }
+
+        return GeometryTransform * ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
     }
 
     // reference LOD node 목록에서 기준 mesh bind matrix를 FBX bind pose 우선으로 찾는다.
@@ -1793,6 +1946,37 @@ namespace
         int32 SourceInfluenceCount = 0;
         float DiscardedWeight      = 0.0f;
     };
+
+
+    // skin이 없는 rigid attachment mesh vertex를 특정 bone 100% weight로 채운다.
+    static void SetRigidBoneWeight(
+        int32  BoneIndex,
+        uint16 OutBoneIndices[MAX_SKELETAL_MESH_BONE_INFLUENCES],
+        float  OutBoneWeights[MAX_SKELETAL_MESH_BONE_INFLUENCES],
+        FPackedBoneWeightStats& OutStats
+        )
+    {
+        OutStats = FPackedBoneWeightStats();
+        OutStats.SourceInfluenceCount = 1;
+
+        for (int32 i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++i)
+        {
+            OutBoneIndices[i] = 0;
+            OutBoneWeights[i] = 0.0f;
+        }
+
+        if (BoneIndex < 0 || BoneIndex > 65535)
+        {
+            OutStats.bBoneIndexOverflow = true;
+            OutStats.bMissingWeight     = true;
+            OutBoneIndices[0]           = 0;
+            OutBoneWeights[0]           = 1.0f;
+            return;
+        }
+
+        OutBoneIndices[0] = static_cast<uint16>(BoneIndex);
+        OutBoneWeights[0] = 1.0f;
+    }
 
     // control point weight를 상위 N개 influence로 압축한다.
     // 통계는 dedup 후 실제로 채택된 unique vertex에 대해서만 CommitUniqueVertexImportStats()에서 반영한다.
@@ -2445,11 +2629,11 @@ namespace
     }
 }
 
-// LOD에 속한 skinned mesh node들을 하나의 FSkeletalMeshLOD로 빌드한다.
+// LOD에 속한 skeletal import mesh node들을 하나의 FSkeletalMeshLOD로 빌드한다.
 static bool BuildSkeletalMeshLODFromNodes(
     FbxScene*                           Scene,
     const FString&                      SourcePath,
-    const TArray<FbxNode*>&             MeshNodes,
+    const TArray<FSkeletalImportMeshNode>& MeshNodes,
     const TMap<FbxNode*, int32>&        BoneNodeToIndex,
     const FMatrix&                      ReferenceMeshBindInverse,
     TArray<FStaticMaterial>&            OutMaterials,
@@ -2469,26 +2653,37 @@ static bool BuildSkeletalMeshLODFromNodes(
 
     std::unordered_map<FSkeletalVertexDedupKey, uint32, FSkeletalVertexDedupKeyHasher> VertexToIndex;
 
-    for (FbxNode* MeshNode : MeshNodes)
+    for (const FSkeletalImportMeshNode& ImportNode : MeshNodes)
     {
+        FbxNode* MeshNode = ImportNode.MeshNode;
         FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
 
-        if (!Mesh)
+        if (!Mesh || ImportNode.Kind == ESkeletalImportMeshKind::Loose)
         {
             continue;
         }
 
         FMatrix MeshBind;
-        if (!TryGetFirstMeshBindMatrix(Scene, MeshNode, MeshBind))
+        if (ImportNode.Kind == ESkeletalImportMeshKind::Skinned)
         {
-            continue;
+            if (!TryGetFirstMeshBindMatrix(Scene, MeshNode, MeshBind))
+            {
+                continue;
+            }
+        }
+        else
+        {
+            MeshBind = GetRigidMeshBindMatrix(Scene, MeshNode);
         }
 
         const FMatrix MeshToReference   = MeshBind * ReferenceMeshBindInverse;
         const FMatrix NormalToReference = MeshToReference.GetInverse().GetTransposed();
 
         TArray<TArray<FImportedBoneWeight>> ControlPointWeight;
-        ExtractSkinWeightsOnly(Mesh, BoneNodeToIndex, ControlPointWeight, BuildContext);
+        if (ImportNode.Kind == ESkeletalImportMeshKind::Skinned)
+        {
+            ExtractSkinWeightsOnly(Mesh, BoneNodeToIndex, ControlPointWeight, BuildContext);
+        }
 
         int32 PolygonVertexIndex = 0;
 
@@ -2599,7 +2794,11 @@ static bool BuildSkeletalMeshLODFromNodes(
                     bGeneratedTangent = true;
                 }
 
-                if (ControlPointIndex >= 0 && ControlPointIndex < static_cast<int32>(ControlPointWeight.size()))
+                if (ImportNode.Kind == ESkeletalImportMeshKind::RigidAttached)
+                {
+                    SetRigidBoneWeight(ImportNode.RigidBoneIndex, Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
+                }
+                else if (ControlPointIndex >= 0 && ControlPointIndex < static_cast<int32>(ControlPointWeight.size()))
                 {
                     PackTopBoneWeights(ControlPointWeight[ControlPointIndex], Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
                 }
@@ -3051,17 +3250,31 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
     }
 
     TMap<FbxNode*, int32> BoneNodeToIndex;
-    if (!BuildSkeletonFromSkinClusters(SkinnedMeshNodes, OutMesh.Skeleton, BoneNodeToIndex))
+    if (!BuildSkeletonFromSkinClusters(SkinnedMeshNodes, MeshNodes, OutMesh.Skeleton, BoneNodeToIndex))
     {
         return false;
     }
 
-    TMap<int32, TArray<FbxNode*>> MeshNodesByLOD;
+    TArray<FSkeletalImportMeshNode> ImportMeshNodes;
+    ClassifySkeletalImportMeshNodes(MeshNodes, BoneNodeToIndex, ImportMeshNodes);
 
+    TMap<int32, TArray<FbxNode*>> SkinnedMeshNodesByLOD;
     for (FbxNode* MeshNode : SkinnedMeshNodes)
     {
         const int32 LODIndex = GetSkeletalMeshLODIndex(MeshNode);
-        MeshNodesByLOD[LODIndex].push_back(MeshNode);
+        SkinnedMeshNodesByLOD[LODIndex].push_back(MeshNode);
+    }
+
+    TMap<int32, TArray<FSkeletalImportMeshNode>> MeshNodesByLOD;
+    for (const FSkeletalImportMeshNode& ImportNode : ImportMeshNodes)
+    {
+        if (ImportNode.Kind == ESkeletalImportMeshKind::Loose || !ImportNode.MeshNode)
+        {
+            continue;
+        }
+
+        const int32 LODIndex = GetSkeletalMeshLODIndex(ImportNode.MeshNode);
+        MeshNodesByLOD[LODIndex].push_back(ImportNode);
     }
 
     TArray<int32> SortedLODIndices;
@@ -3077,8 +3290,21 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
         return false;
     }
 
-    const int32             ReferenceLODIndex = SortedLODIndices[0];
-    const TArray<FbxNode*>& ReferenceLODNodes = MeshNodesByLOD[ReferenceLODIndex];
+    TArray<int32> SortedSkinnedLODIndices;
+    for (const auto& Pair : SkinnedMeshNodesByLOD)
+    {
+        SortedSkinnedLODIndices.push_back(Pair.first);
+    }
+
+    std::sort(SortedSkinnedLODIndices.begin(), SortedSkinnedLODIndices.end());
+
+    if (SortedSkinnedLODIndices.empty())
+    {
+        return false;
+    }
+
+    const int32             ReferenceLODIndex = SortedSkinnedLODIndices[0];
+    const TArray<FbxNode*>& ReferenceLODNodes = SkinnedMeshNodesByLOD[ReferenceLODIndex];
 
     FMatrix ReferenceMeshBind;
     if (!TryGetReferenceMeshBindMatrix(SceneHandle.Scene, ReferenceLODNodes, ReferenceMeshBind))
