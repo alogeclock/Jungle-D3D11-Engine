@@ -9,7 +9,6 @@
 #include "Editor/UI/EditorPlaceActorsWidget.h"
 #include "Editor/UI/ContentBrowser/ContentBrowser.h"
 #include "Editor/UI/AssetEditor/AssetEditorWidget.h"
-#include "Editor/UI/EditorSkeletalMeshViewer.h"
 
 class FRenderer;
 class UEditorEngine;
@@ -55,7 +54,6 @@ private:
 	FEditorStatWidget StatWidget;
 	FEditorContentBrowserWidget ContentBrowserWidget;
 	FAssetEditorWidget AssetEditorWidget;
-	FEditorSkeletalMeshViewer SkeletalMeshViewerWidget;
 	EditorShadowMapDebugWidget ShadowMapDebugWidget;
 	bool bShowWidgetList = false;
 	bool bShowShortcutOverlay = false;

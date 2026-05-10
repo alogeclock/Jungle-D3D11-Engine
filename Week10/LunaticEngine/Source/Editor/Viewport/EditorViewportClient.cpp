@@ -874,15 +874,6 @@ void FEditorViewportClient::OnEditorOrbit(const FInputActionValue& Value, const 
 				EditorRotateAccumulator = EditorRotateAccumulator + Value.GetVector();
 			}
 		}
-		// Alt + RMB = Scrub Zoom
-		else if (bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
-		{
-			if (Camera)
-			{
-				float ScrubSpeed = 0.05f;
-				TargetLocation += Camera->GetForwardVector() * (Value.GetVector().X * ScrubSpeed);
-			}
-		}
 	}
 }
 

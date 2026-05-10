@@ -266,7 +266,6 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	PlaceActorsWidget.Initialize(InEditorEngine);
 	StatWidget.Initialize(InEditorEngine);
 	AssetEditorWidget.Initialize(InEditorEngine);
-	SkeletalMeshViewerWidget.Initialize(InEditorEngine);
 	ContentBrowserWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice());
 	ShadowMapDebugWidget.Initialize(InEditorEngine);
 }
@@ -390,12 +389,6 @@ void FEditorMainPanel::Render(float DeltaTime)
 	{
 		SCOPE_STAT_CAT("AssetEditorWidget.Render", "5_UI");
 		AssetEditorWidget.Render(DeltaTime);
-	}
-
-	if (!bHideEditorWindows && Settings.UI.bSkeletalMeshViewer)
-	{
-		SCOPE_STAT_CAT("SkeletalMeshViewerWidget.Render", "5_UI");
-		SkeletalMeshViewerWidget.Render(DeltaTime);
 	}
 
 	if (!bHideEditorWindows && Settings.UI.bShadowMapDebug)
@@ -613,7 +606,6 @@ void FEditorMainPanel::RenderMainMenuBar()
 			ImGui::Checkbox("Place Actors", &Settings.UI.bPlaceActors);
 			ImGui::Checkbox("Stat Profiler", &Settings.UI.bStat);
 			ImGui::Checkbox("Content Browser", &Settings.UI.bContentBrowser);
-			ImGui::Checkbox("Skeletal Mesh Viewer", &Settings.UI.bSkeletalMeshViewer);
 			ImGui::Checkbox("Shadow Map Debug", &Settings.UI.bShadowMapDebug);
 			ImGui::Separator();
 			ImGui::Checkbox("ImGuiSetting", &Settings.UI.bImGUISettings);
@@ -1227,7 +1219,6 @@ void FEditorMainPanel::HideEditorWindows()
 	Settings.UI.bPlaceActors = false;
 	Settings.UI.bStat = false;
 	Settings.UI.bContentBrowser = false;
-	Settings.UI.bSkeletalMeshViewer = false;
 	Settings.UI.bImGUISettings = false;
 	Settings.UI.bShadowMapDebug = false;
 }

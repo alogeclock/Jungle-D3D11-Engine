@@ -52,8 +52,14 @@
     <Filter Include="Source\Editor\UI\ContentBrowser">
       <UniqueIdentifier>{b89c06b2-3123-fd81-77a1-c383dea670f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Editor\UI\Preview">
+      <UniqueIdentifier>{8462da86-93ed-d88b-9e09-9a70eda5ade3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Editor\Viewport">
       <UniqueIdentifier>{43f3c7b7-4f3a-e600-3a95-a24704eeadce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Editor\Viewport\Preview">
+      <UniqueIdentifier>{2d56a49a-1f11-625e-9f68-618cd21ac21c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Engine">
       <UniqueIdentifier>{8c20c856-68f2-493d-c337-50a308bb832c}</UniqueIdentifier>
@@ -410,9 +416,6 @@
     <ClCompile Include="Source\Editor\UI\EditorShadowMapDebugWidget.cpp">
       <Filter>Source\Editor\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Editor\UI\EditorSkeletalMeshViewer.cpp">
-      <Filter>Source\Editor\UI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Editor\UI\EditorStatWidget.cpp">
       <Filter>Source\Editor\UI</Filter>
     </ClCompile>
@@ -443,11 +446,38 @@
     <ClCompile Include="Source\Editor\UI\ContentBrowser\EditorPrefabWidget.cpp">
       <Filter>Source\Editor\UI\ContentBrowser</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Preview\AnimationPreviewWidget.cpp">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Preview\AssetPreviewWidget.cpp">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Preview\PhysicsPreviewWidget.cpp">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Preview\SkeletalMeshEditorWidget.cpp">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Editor\Viewport\EditorViewportClient.cpp">
       <Filter>Source\Editor\Viewport</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\Viewport\FLevelViewportLayout.cpp">
       <Filter>Source\Editor\Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Viewport\Preview\AnimationPreviewViewportClient.cpp">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Viewport\Preview\PhysicsPreviewViewportClient.cpp">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Viewport\Preview\PreviewScene.cpp">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Viewport\Preview\PreviewViewportClient.cpp">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Viewport\Preview\SkeletalMeshPreviewViewportClient.cpp">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Asset\AssetCurveUtils.cpp">
       <Filter>Source\Engine\Asset</Filter>
@@ -1214,9 +1244,6 @@
     <ClInclude Include="Source\Editor\UI\EditorShadowMapDebugWidget.h">
       <Filter>Source\Editor\UI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Editor\UI\EditorSkeletalMeshViewer.h">
-      <Filter>Source\Editor\UI</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Editor\UI\EditorStatWidget.h">
       <Filter>Source\Editor\UI</Filter>
     </ClInclude>
@@ -1253,6 +1280,18 @@
     <ClInclude Include="Source\Editor\UI\ContentBrowser\EditorPrefabWidget.h">
       <Filter>Source\Editor\UI\ContentBrowser</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Preview\AnimationPreviewWidget.h">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Preview\AssetPreviewWidget.h">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Preview\PhysicsPreviewWidget.h">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Preview\SkeletalMeshEditorWidget.h">
+      <Filter>Source\Editor\UI\Preview</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Editor\Viewport\EditorViewportClient.h">
       <Filter>Source\Editor\Viewport</Filter>
     </ClInclude>
@@ -1261,6 +1300,21 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\Viewport\LevelEditorViewportClient.h">
       <Filter>Source\Editor\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Viewport\Preview\AnimationPreviewViewportClient.h">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Viewport\Preview\PhysicsPreviewViewportClient.h">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Viewport\Preview\PreviewScene.h">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Viewport\Preview\PreviewViewportClient.h">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Viewport\Preview\SkeletalMeshPreviewViewportClient.h">
+      <Filter>Source\Editor\Viewport\Preview</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Asset\AssetCurveUtils.h">
       <Filter>Source\Engine\Asset</Filter>
