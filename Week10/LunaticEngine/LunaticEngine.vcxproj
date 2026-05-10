@@ -113,49 +113,49 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;.;$(IncludePath)</IncludePath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;.;$(IncludePath)</IncludePath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;.;$(IncludePath)</IncludePath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;.;$(IncludePath)</IncludePath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ObjViewDebug|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;.;$(IncludePath)</IncludePath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;.;$(IncludePath)</IncludePath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;.;$(IncludePath)</IncludePath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
@@ -211,6 +211,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>ThirdParty\FBXSDK\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>LunaticEngine.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -232,6 +234,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>ThirdParty\FBXSDK\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>LunaticEngine.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -253,6 +257,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>ThirdParty\FBXSDK\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>LunaticEngine.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -274,6 +280,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>ThirdParty\FBXSDK\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>LunaticEngine.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -295,6 +303,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>ThirdParty\FBXSDK\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>LunaticEngine.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -424,9 +434,11 @@
     <ClCompile Include="Source\Engine\Math\Rotator.cpp" />
     <ClCompile Include="Source\Engine\Math\Transform.cpp" />
     <ClCompile Include="Source\Engine\Math\Vector.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Importer\FbxImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Importer\ObjImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\MeshSimplifier.cpp" />
-    <ClCompile Include="Source\Engine\Mesh\ObjImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\ObjManager.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\SkeletalMeshAsset.cpp" />
     <ClCompile Include="Source\Engine\Mesh\StaticMesh.cpp" />
     <ClCompile Include="Source\Engine\Object\FName.cpp" />
     <ClCompile Include="Source\Engine\Object\Object.cpp" />
@@ -707,9 +719,11 @@
     <ClInclude Include="Source\Engine\Math\Rotator.h" />
     <ClInclude Include="Source\Engine\Math\Transform.h" />
     <ClInclude Include="Source\Engine\Math\Vector.h" />
+    <ClInclude Include="Source\Engine\Mesh\Importer\FbxImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Importer\ObjImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h" />
-    <ClInclude Include="Source\Engine\Mesh\ObjImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\ObjManager.h" />
+    <ClInclude Include="Source\Engine\Mesh\SkeletalMeshAsset.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshAsset.h" />
     <ClInclude Include="Source\Engine\Object\FName.h" />
@@ -1265,5 +1279,15 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets'))" />
     <Error Condition="!Exists('packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets'))" />
+  </Target>
+  <Target Name="CopyFbxRuntime" AfterTargets="Build" Condition="'$(Platform)'=='x64'">
+    <PropertyGroup>
+      <_FbxBinFlavor Condition="'$(Configuration)'=='Debug'">debug</_FbxBinFlavor>
+      <_FbxBinFlavor Condition="'$(Configuration)'!='Debug'">release</_FbxBinFlavor>
+    </PropertyGroup>
+    <ItemGroup>
+      <_FbxRuntime Include="$(ProjectDir)ThirdParty\FBXSDK\bin\$(_FbxBinFlavor)\libfbxsdk.dll" Condition="Exists('$(ProjectDir)ThirdParty\FBXSDK\bin\$(_FbxBinFlavor)\libfbxsdk.dll')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_FbxRuntime)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" Condition="'@(_FbxRuntime)'!=''" />
   </Target>
 </Project>

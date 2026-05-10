@@ -42,6 +42,28 @@ struct FShowFlags
 	bool bVisualize25DCulling = false;
 	bool bShowShadowFrustum = false;
 	bool bGammaCorrection = true;
+	bool bSelectionOutline = true;
+
+
+	static void ApplyViewMode(EViewMode ViewMode, FShowFlags& Flags)
+	{
+		const bool bIsBufferVisualization =
+			ViewMode == EViewMode::SceneDepth ||
+			ViewMode == EViewMode::WorldNormal;
+
+		if (bIsBufferVisualization)
+		{
+			Flags.bSelectionOutline = false;
+			Flags.bFog              = false;
+			Flags.bGizmo            = false;
+			Flags.bDebugDraw        = false;
+			Flags.bGrid             = false;
+			Flags.bWorldAxis        = false;
+			Flags.bBillboardText    = false;
+			Flags.bLightVisualization = false;
+			Flags.bBoundingVolume   = false;
+		}
+	}
 };
 
 // 뷰포트 카메라 프리셋 (Perspective / 6방향 Orthographic)
