@@ -4,6 +4,8 @@
 #include "Object/FName.h"
 #include "Core/CoreTypes.h"
 #include "Serialization/Archive.h"
+#include "Mesh/StaticMeshAsset.h"
+
 constexpr int32 MAX_BONE_INFLUENCES = 4;
 
 struct FSkinVertex
@@ -16,6 +18,7 @@ struct FSkinVertex
 	uint32 BoneIndices[MAX_BONE_INFLUENCES];
 	float BoneWeights[MAX_BONE_INFLUENCES];
 };
+
 struct FBone
 {
 	FName Name;
@@ -23,30 +26,34 @@ struct FBone
 	FTransform BindPoseLocal;
 	FMatrix InverseBindPoseGlobal;
 };
+
 struct FSkeleton
 {
 	TArray<FBone> Bones;
 	int32 FindBoneIndex(FName Name) const;
 };
-struct FSkeletalMeshSection
+
+// FSkeletalMeshLOD — 단일 LOD의 정점/인덱스/섹션
+// FStaticMeshSection을 재사용해 머티리얼 매핑을 StaticMesh와 동일한 방식으로 처리한다
+// RenderBuffer는 GPU 업로드 단계에서 추가 예정
+struct FSkeletalMeshLOD
 {
-	int32 MaterialIndex = -1;
-	FString MaterialSlotName;
-	uint32 FirstIndex = 0;
-	uint32 NumTriangles = 0;
+	TArray<FSkinVertex> Vertices;
+	TArray<uint32> Indices;
+	TArray<FStaticMeshSection> Sections;
+
+	FVector BoundsCenter{ 0, 0, 0 };
+	FVector BoundsExtent{ 0, 0, 0 };
+	bool bBoundsValid = false;
+
+	void CacheBounds();
 };
+
 struct FSkeletalMesh
 {
 	FString PathFileName;
-	TArray<FSkinVertex> Vertices;
-	TArray<uint32> Indices;
-	TArray<FSkeletalMeshSection> Sections;
+	TArray<FSkeletalMeshLOD> LODModels;
 	FSkeleton Skeleton;
 
-	FVector BoundsCenter{ 0,0,0 };
-	FVector BoundsExtent{ 0,0,0 };
-	bool bBoundsValid = false;
-	
-	void CacheBounds();
 	void Serialize(FArchive& Ar);
 };
