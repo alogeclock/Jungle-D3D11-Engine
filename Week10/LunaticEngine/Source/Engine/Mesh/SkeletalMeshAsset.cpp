@@ -1,18 +1,8 @@
-#include "SkeletalMeshAsset.h"
+﻿#include "SkeletalMeshAsset.h"
 
 #include <algorithm>
 
-int32 FSkeleton::FindBoneIndex(FName Name) const
-{
-	for (int32 i = 0; i < (int32)Bones.size(); ++i)
-	{
-		if (Bones[i].Name == Name)
-		{
-			return i;
-		}
-	}
-	return -1;
-}
+
 
 void FSkeletalMeshLOD::CacheBounds()
 {
@@ -38,5 +28,5 @@ void FSkeletalMeshLOD::CacheBounds()
 
 void FSkeletalMesh::Serialize(FArchive& /*Ar*/)
 {
-	// Skinned LOD/Bone 직렬화는 후속 단계에서 추가.
+	//TODO
 }

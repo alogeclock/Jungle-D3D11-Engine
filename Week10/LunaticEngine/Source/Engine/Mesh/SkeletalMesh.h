@@ -2,11 +2,12 @@
 
 #include "Object/Object.h"
 #include "Mesh/SkeletalMeshAsset.h"
-#include "Mesh/StaticMeshAsset.h" // FStaticMaterial
+#include "Mesh/StaticMeshAsset.h"
 #include "Serialization/Archive.h"
 
 // USkeletalMesh — FSkeletalMesh 에셋을 소유하는 UObject 래퍼
 // UStaticMesh와 동일한 슬롯 모델(FStaticMaterial 배열)을 사용한다
+class USkeleton;
 class USkeletalMesh : public UObject
 {
 public:
@@ -19,6 +20,10 @@ public:
 
 	const FString& GetAssetPathFileName() const;
 
+
+	//Skeletal Binding
+	void SetSkeleton(USkeleton* InSkeleton) { Skeleton = InSkeleton; }
+	USkeleton* GetSkeleton() const { return Skeleton; }
 	void SetSkeletalMeshAsset(FSkeletalMesh* InMesh);
 	FSkeletalMesh* GetSkeletalMeshAsset() const { return SkeletalMeshAsset; }
 
@@ -27,5 +32,6 @@ public:
 
 private:
 	FSkeletalMesh* SkeletalMeshAsset = nullptr;
+	USkeleton* Skeleton = nullptr; //Weak reference
 	TArray<FStaticMaterial> SkeletalMaterials;
 };

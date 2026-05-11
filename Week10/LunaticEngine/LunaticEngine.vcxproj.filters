@@ -731,9 +731,6 @@
     <ClCompile Include="Source\Engine\Mesh\MeshSimplifier.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Mesh\ObjImporter.cpp">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\ObjManager.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
@@ -1113,6 +1110,12 @@
       <Filter>ThirdParty\miniaudio</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Importer\FbxImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Importer\ObjImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\SkeletalMesh.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\SkeletalMeshAsset.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Skeleton.cpp" />
+    <ClCompile Include="Source\Engine\Component\SkinnedMeshComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -1578,9 +1581,6 @@
       <Filter>Source\Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Mesh\ObjImporter.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\ObjManager.h">
@@ -2405,6 +2405,12 @@
     <ClInclude Include="ThirdParty\sol2\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\sol\utility</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\Importer\FbxImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Importer\ObjImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\SkeletalMesh.h" />
+    <ClInclude Include="Source\Engine\Mesh\SkeletalMeshAsset.h" />
+    <ClInclude Include="Source\Engine\Mesh\Skeleton.h" />
+    <ClInclude Include="Source\Engine\Component\SkinnedMeshComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunaticEngine.rc" />

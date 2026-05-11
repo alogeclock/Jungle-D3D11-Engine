@@ -1,5 +1,5 @@
 ﻿#include "Mesh/SkeletalMesh.h"
-
+#include "Mesh/Skeleton.h"
 #include "Object/ObjectFactory.h"
 
 IMPLEMENT_CLASS(USkeletalMesh, UObject)
@@ -14,18 +14,19 @@ USkeletalMesh::~USkeletalMesh()
 
 void USkeletalMesh::Serialize(FArchive& Ar)
 {
+	//vertex resource
 	if (Ar.IsLoading() && !SkeletalMeshAsset)
 	{
 		SkeletalMeshAsset = new FSkeletalMesh();
 	}
+	if (SkeletalMeshAsset) SkeletalMeshAsset->Serialize(Ar);
 
-	if (SkeletalMeshAsset)
-	{
-		SkeletalMeshAsset->Serialize(Ar);
-	}
-
+	//Material
 	Ar << SkeletalMaterials;
-
+	FString SkeletonPath;
+	if (Ar.IsSaving() && Skeleton) SkeletonPath = Skeleton->GetFName().ToString();
+	Ar << SkeletonPath;
+	//Section Material Index caching
 	if (Ar.IsLoading() && SkeletalMeshAsset)
 	{
 		for (FSkeletalMeshLOD& LOD : SkeletalMeshAsset->LODModels)
