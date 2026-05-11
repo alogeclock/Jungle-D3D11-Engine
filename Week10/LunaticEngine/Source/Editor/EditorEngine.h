@@ -18,7 +18,6 @@
 
 class UGizmoComponent;
 class FLevelEditorViewportClient;
-class FEditorViewportClient;
 class FOverlayStatSystem;
 class AActor;
 class UGameViewportClient;
@@ -101,7 +100,6 @@ public:
 	const FSelectionManager& GetSelectionManager() const { return SelectionManager; }
 
 	// 레이아웃에 위임
-	const TArray<FEditorViewportClient*>& GetAllViewportClients() const { return ViewportLayout.GetAllViewportClients(); }
 	const TArray<FLevelEditorViewportClient*>& GetLevelViewportClients() const { return ViewportLayout.GetLevelViewportClients(); }
 	bool ShouldRenderViewportClient(const FLevelEditorViewportClient* ViewportClient) const { return ViewportLayout.ShouldRenderViewportClient(ViewportClient); }
 

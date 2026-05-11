@@ -449,7 +449,7 @@ void FPreviewViewportClient::UpdateCameraPosition(float DeltaTime)
 	bLastAppliedCameraLocationInitialized = true;
 }
 
-// 누적된 Orbit 회전 입력을 적용하여, Orbit Target과의 거리를 유지한다.
+// 누적된 Orbit 회전 입력을 적용하여, Orbit Target과의 거리를 유지합니다.
 void FPreviewViewportClient::ApplyOrbitInput()
 {
 	if (!Camera || OrbitDelta.IsNearlyZero())
@@ -480,7 +480,7 @@ void FPreviewViewportClient::ApplyOrbitInput()
 
 namespace
 {
-	// Trigger, Modifier를 소거하여 Preview Mapping Context를 삭제한다.
+	// Trigger, Modifier를 소거하여 Preview Mapping Context를 삭제합니다.
 	void DeletePreviewMappingContext(FInputMappingContext* MappingContext)
 	{
 		if (!MappingContext)

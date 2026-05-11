@@ -60,19 +60,6 @@ bool EndsWithIgnoreCase(const FString& Value, const char* Suffix)
 	return true;
 }
 
-FString BuildScenePathFromStem(const FString& InStem)
-{
-	std::filesystem::path ScenePath = std::filesystem::path(FSceneSaveManager::GetSceneDirectory())
-		/ (FPaths::ToWide(InStem) + FSceneSaveManager::SceneExtension);
-	return FPaths::ToUtf8(ScenePath.wstring());
-}
-
-FString GetFileStem(const FString& InPath)
-{
-	const std::filesystem::path Path(FPaths::ToWide(InPath));
-	return FPaths::ToUtf8(Path.stem().wstring());
-}
-
 UCameraComponent* FindFirstCameraComponent(UWorld* World)
 {
 	if (!World)
@@ -302,7 +289,7 @@ void UEditorEngine::Tick(float DeltaTime)
 	FAudioManager::Get().Update();
 	MainPanel.Update();
 
-	for (FEditorViewportClient* VC : ViewportLayout.GetAllViewportClients())
+	for (FLevelEditorViewportClient* VC : ViewportLayout.GetLevelViewportClients())
 	{
 		VC->Tick(DeltaTime);
 	}

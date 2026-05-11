@@ -1024,7 +1024,6 @@ void FLevelViewportLayout::Initialize(UEditorEngine* InEditor, FWindowsWindow* I
 	LevelVC->ResetCamera();
 	ApplyProjectViewportSettings(LevelVC->GetRenderOptions());
 
-	AllViewportClients.push_back(LevelVC);
 	LevelViewportClients.push_back(LevelVC);
 	SetActiveViewport(LevelVC);
 
@@ -1047,7 +1046,7 @@ void FLevelViewportLayout::Release()
 	}
 
 	ActiveViewportClient = nullptr;
-	for (FEditorViewportClient* VC : AllViewportClients)
+	for (FLevelEditorViewportClient* VC : LevelViewportClients)
 	{
 		if (FViewport* VP = VC->GetViewport())
 		{
@@ -1056,7 +1055,6 @@ void FLevelViewportLayout::Release()
 		}
 		delete VC;
 	}
-	AllViewportClients.clear();
 	LevelViewportClients.clear();
 
 	ReleaseLayoutIcons();
@@ -1115,7 +1113,7 @@ void FLevelViewportLayout::ResetViewport(UWorld* InWorld)
 
 void FLevelViewportLayout::DestroyAllCameras()
 {
-	for (FEditorViewportClient* VC : AllViewportClients)
+	for (FLevelEditorViewportClient* VC : LevelViewportClients)
 	{
 		VC->DestroyCamera();
 	}
@@ -1195,7 +1193,6 @@ void FLevelViewportLayout::EnsureViewportSlots(int32 RequiredCount)
 		LevelVC->ResetCamera();
 		ApplyProjectViewportSettings(LevelVC->GetRenderOptions());
 
-		AllViewportClients.push_back(LevelVC);
 		LevelViewportClients.push_back(LevelVC);
 
 		ViewportWindows[Idx] = new SWindow();
@@ -1210,11 +1207,6 @@ void FLevelViewportLayout::ShrinkViewportSlots(int32 RequiredCount)
 		FLevelEditorViewportClient* VC = LevelViewportClients.back();
 		int32 Idx = static_cast<int32>(LevelViewportClients.size()) - 1;
 		LevelViewportClients.pop_back();
-
-		for (auto It = AllViewportClients.begin(); It != AllViewportClients.end(); ++It)
-		{
-			if (*It == VC) { AllViewportClients.erase(It); break; }
-		}
 
 		if (ActiveViewportClient == VC)
 			SetActiveViewport(LevelViewportClients[0]);

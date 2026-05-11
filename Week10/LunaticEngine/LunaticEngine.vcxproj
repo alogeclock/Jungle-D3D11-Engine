@@ -341,9 +341,11 @@
     <ClCompile Include="Source\Editor\UI\Preview\AnimationPreviewWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\Preview\AssetPreviewWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\Preview\PhysicsPreviewWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Preview\PreviewViewportWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\Preview\SkeletalMeshEditorWidget.cpp" />
     <ClCompile Include="Source\Editor\Viewport\EditorViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Viewport\FLevelViewportLayout.cpp" />
+    <ClCompile Include="Source\Editor\Viewport\LevelEditorViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Viewport\Preview\AnimationPreviewViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Viewport\Preview\PhysicsPreviewViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Viewport\Preview\PreviewScene.cpp" />
@@ -621,6 +623,7 @@
     <ClInclude Include="Source\Editor\UI\Preview\AnimationPreviewWidget.h" />
     <ClInclude Include="Source\Editor\UI\Preview\AssetPreviewWidget.h" />
     <ClInclude Include="Source\Editor\UI\Preview\PhysicsPreviewWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Preview\PreviewViewportWidget.h" />
     <ClInclude Include="Source\Editor\UI\Preview\SkeletalMeshEditorWidget.h" />
     <ClInclude Include="Source\Editor\Viewport\EditorViewportClient.h" />
     <ClInclude Include="Source\Editor\Viewport\FLevelViewportLayout.h" />

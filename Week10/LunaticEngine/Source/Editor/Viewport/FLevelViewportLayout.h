@@ -9,7 +9,6 @@ class SSplitter;
 struct FVector;
 class AActor;
 class FLevelEditorViewportClient;
-class FEditorViewportClient;
 class FSelectionManager;
 class FEditorSettings;
 class FWindowsWindow;
@@ -67,7 +66,6 @@ public:
 
 	bool IsMouseOverViewport() const { return bMouseOverViewport; }
 
-	const TArray<FEditorViewportClient*>& GetAllViewportClients() const { return AllViewportClients; }
 	const TArray<FLevelEditorViewportClient*>& GetLevelViewportClients() const { return LevelViewportClients; }
 	bool ShouldRenderViewportClient(const FLevelEditorViewportClient* ViewportClient) const;
 
@@ -156,7 +154,6 @@ private:
 
 	EViewportLayout CurrentLayout = EViewportLayout::OnePane;
 
-	TArray<FEditorViewportClient*> AllViewportClients;
 	TArray<FLevelEditorViewportClient*> LevelViewportClients;
 	FLevelEditorViewportClient* ActiveViewportClient = nullptr;
 
