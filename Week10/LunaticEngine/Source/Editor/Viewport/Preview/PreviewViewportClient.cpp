@@ -24,6 +24,7 @@ namespace
 }
 
 FPreviewViewportClient::FPreviewViewportClient()
+	: FEditorViewportClient(false)
 {
 	SetupInput();
 }
@@ -415,6 +416,11 @@ void FPreviewViewportClient::OnPan(const FInputActionValue& Value, const FInputS
 // 마우스 휠을 통한 줌 또는 오른쪽 버튼 캡처 중 카메라 이동 속도를 조절합니다.
 void FPreviewViewportClient::OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
+	if (!bIsHovered)
+	{
+		return;
+	}
+
 	if (bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
 	{
 		PreviewCameraSpeed = Clamp(PreviewCameraSpeed + Value.Get() * 2.0f, 1.0f, 100.0f);

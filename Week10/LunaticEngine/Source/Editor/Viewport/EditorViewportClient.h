@@ -22,7 +22,7 @@ struct FFrameContext;
 class FEditorViewportClient : public FViewportClient
 {
 public:
-	FEditorViewportClient();
+	explicit FEditorViewportClient(bool bSetupDefaultInput = true);
 	~FEditorViewportClient() override;
 
 	void Initialize(FWindowsWindow* InWindow);

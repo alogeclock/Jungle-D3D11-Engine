@@ -540,6 +540,9 @@ void UGizmoComponent::SetTarget(USceneComponent* NewTarget)
 {
 	if (!NewTarget)
 	{
+		TargetComponent = nullptr;
+		AllSelectedActors = nullptr;
+		SetVisibility(false);
 		return;
 	}
 

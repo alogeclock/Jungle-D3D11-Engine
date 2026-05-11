@@ -63,15 +63,9 @@ private:
 private:
 	FPreviewScene PreviewScene;
 
-	bool bCameraInputCaptured = false;
 	bool bSuppressInputUntilMouseUp = false;
 
 	FVector OrbitTarget = FVector::ZeroVector;
-	FVector TargetLocation = FVector::ZeroVector;
-	FVector LastAppliedCameraLocation = FVector::ZeroVector;
-	bool bTargetLocationInitialized = false;
-	bool bLastAppliedCameraLocationInitialized = false;
-	float SmoothLocationSpeed = 10.0f;
 	float PreviewCameraSpeed = 10.0f;
 
 	FInputMappingContext* PreviewMappingContext = nullptr;

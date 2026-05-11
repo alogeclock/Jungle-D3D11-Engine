@@ -19,9 +19,12 @@ namespace
 	bool TryConvertMouseToPixel(const ImVec2& Pos, const FRect& Rect, const FViewport* Viewport, float FallbackW, float FallbackH, float& OutX, float& OutY);
 }
 
-FEditorViewportClient::FEditorViewportClient()
+FEditorViewportClient::FEditorViewportClient(bool bSetupDefaultInput)
 {
-	SetupInput();
+	if (bSetupDefaultInput)
+	{
+		SetupInput();
+	}
 }
 
 FEditorViewportClient::~FEditorViewportClient()
