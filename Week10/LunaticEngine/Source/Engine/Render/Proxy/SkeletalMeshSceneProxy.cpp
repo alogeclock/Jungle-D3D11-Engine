@@ -1,8 +1,8 @@
-#include "Render/Proxy/SkeletalMeshSceneProxy.h"
+﻿#include "Render/Proxy/SkeletalMeshSceneProxy.h"
 
 #include <algorithm>
 
-#include "Component/SkeletalMeshComponent.h"
+#include "Component/SkinnedMeshComponent.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Materials/Material.h"
@@ -29,14 +29,14 @@ namespace
 	}
 }
 
-FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(USkeletalMeshComponent* InComponent)
+FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(USkinnedMeshComponent* InComponent)
 	: FPrimitiveSceneProxy(InComponent)
 {
 }
 
-USkeletalMeshComponent* FSkeletalMeshSceneProxy::GetSkeletalMeshComponent() const
+USkinnedMeshComponent* FSkeletalMeshSceneProxy::GetSkinnedMeshComponent() const
 {
-	return static_cast<USkeletalMeshComponent*>(GetOwner());
+	return static_cast<USkinnedMeshComponent*>(GetOwner());
 }
 
 void FSkeletalMeshSceneProxy::UpdateMaterial()
@@ -65,7 +65,7 @@ void FSkeletalMeshSceneProxy::UpdateLOD(uint32 LODLevel)
 
 void FSkeletalMeshSceneProxy::RebuildSectionDraws()
 {
-	USkeletalMeshComponent* SMC = GetSkeletalMeshComponent();
+	USkinnedMeshComponent* SMC = GetSkinnedMeshComponent();
 	USkeletalMesh* Mesh = SMC ? SMC->GetSkeletalMesh() : nullptr;
 	FSkeletalMesh* Asset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
 

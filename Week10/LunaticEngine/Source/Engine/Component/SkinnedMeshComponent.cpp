@@ -7,13 +7,14 @@
 #include "Object/ObjectFactory.h"
 #include "Core/PropertyTypes.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/Skeleton.h"
 #include "Engine/Runtime/Engine.h"
 #include "Materials/MaterialManager.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 #include "Serialization/Archive.h"
 
-IMPLEMENT_CLASS(USkeletalMeshComponent, UMeshComponent)
+IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
 
 namespace
 {
@@ -87,12 +88,12 @@ namespace
 	}
 }
 
-FPrimitiveSceneProxy* USkeletalMeshComponent::CreateSceneProxy()
+FPrimitiveSceneProxy* USkinnedMeshComponent::CreateSceneProxy()
 {
 	return new FSkeletalMeshSceneProxy(this);
 }
 
-void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
+void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {
 	SkeletalMesh = InMesh;
 	if (InMesh)
@@ -113,7 +114,7 @@ void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 	MarkWorldBoundsDirty();
 }
 
-void USkeletalMeshComponent::CacheLocalBounds()
+void USkinnedMeshComponent::CacheLocalBounds()
 {
 	bHasValidBounds = false;
 	if (!SkeletalMesh) return;
@@ -132,17 +133,12 @@ void USkeletalMeshComponent::CacheLocalBounds()
 	bHasValidBounds = LOD0.bBoundsValid;
 }
 
-USkeletalMesh* USkeletalMeshComponent::GetSkeletalMesh() const
-{
-	return SkeletalMesh;
-}
-
-void USkeletalMeshComponent::EnsureMaterialSlotsForEditing()
+void USkinnedMeshComponent::EnsureMaterialSlotsForEditing()
 {
 	EnsureMaterialSlotStorage(SkeletalMesh, OverrideMaterials, MaterialSlots);
 }
 
-void USkeletalMeshComponent::SetMaterial(int32 ElementIndex, UMaterial* InMaterial)
+void USkinnedMeshComponent::SetMaterial(int32 ElementIndex, UMaterial* InMaterial)
 {
 	if (ElementIndex < 0)
 	{
@@ -180,7 +176,7 @@ void USkeletalMeshComponent::SetMaterial(int32 ElementIndex, UMaterial* InMateri
 	}
 }
 
-UMaterial* USkeletalMeshComponent::GetMaterial(int32 ElementIndex) const
+UMaterial* USkinnedMeshComponent::GetMaterial(int32 ElementIndex) const
 {
 	if (ElementIndex >= 0 && ElementIndex < OverrideMaterials.size())
 	{
@@ -189,7 +185,7 @@ UMaterial* USkeletalMeshComponent::GetMaterial(int32 ElementIndex) const
 	return nullptr;
 }
 
-FMaterialSlot* USkeletalMeshComponent::GetMaterialSlot(int32 ElementIndex)
+FMaterialSlot* USkinnedMeshComponent::GetMaterialSlot(int32 ElementIndex)
 {
 	EnsureMaterialSlotsForEditing();
 	return (ElementIndex >= 0 && ElementIndex < static_cast<int32>(MaterialSlots.size()))
@@ -197,7 +193,7 @@ FMaterialSlot* USkeletalMeshComponent::GetMaterialSlot(int32 ElementIndex)
 		: nullptr;
 }
 
-const FMaterialSlot* USkeletalMeshComponent::GetMaterialSlot(int32 ElementIndex) const
+const FMaterialSlot* USkinnedMeshComponent::GetMaterialSlot(int32 ElementIndex) const
 {
 	return (ElementIndex >= 0 && ElementIndex < static_cast<int32>(MaterialSlots.size()))
 		? &MaterialSlots[ElementIndex]
@@ -206,18 +202,18 @@ const FMaterialSlot* USkeletalMeshComponent::GetMaterialSlot(int32 ElementIndex)
 
 // FSkeletalMeshLOD에는 RenderBuffer가 없음 (GPU 업로드 단계 미구현).
 // 일단 nullptr — 렌더 패스에서는 이 컴포넌트가 그려지지 않음.
-FMeshBuffer* USkeletalMeshComponent::GetMeshBuffer() const
+FMeshBuffer* USkinnedMeshComponent::GetMeshBuffer() const
 {
 	return nullptr;
 }
 
 // FSkeletalVertex 레이아웃이 FNormalVertex와 달라 직접 노출할 수 없음.
-FMeshDataView USkeletalMeshComponent::GetMeshDataView() const
+FMeshDataView USkinnedMeshComponent::GetMeshDataView() const
 {
 	return {};
 }
 
-void USkeletalMeshComponent::UpdateWorldAABB() const
+void USkinnedMeshComponent::UpdateWorldAABB() const
 {
 	if (!bHasValidBounds)
 	{
@@ -245,7 +241,7 @@ void USkeletalMeshComponent::UpdateWorldAABB() const
 
 // 스켈레탈 메시는 매 프레임 변형되므로 bind-pose BVH는 정확하지 않음.
 // 현재는 picking 미지원.
-bool USkeletalMeshComponent::LineTraceComponent(const FRay& /*Ray*/, FRayHitResult& /*OutHitResult*/)
+bool USkinnedMeshComponent::LineTraceComponent(const FRay& /*Ray*/, FRayHitResult& /*OutHitResult*/)
 {
 	return false;
 }
@@ -256,14 +252,14 @@ static FArchive& operator<<(FArchive& Ar, FMaterialSlot& Slot)
 	return Ar;
 }
 
-void USkeletalMeshComponent::Serialize(FArchive& Ar)
+void USkinnedMeshComponent::Serialize(FArchive& Ar)
 {
 	UMeshComponent::Serialize(Ar);
 	Ar << SkeletalMeshPath;
 	Ar << MaterialSlots;
 }
 
-void USkeletalMeshComponent::PostDuplicate()
+void USkinnedMeshComponent::PostDuplicate()
 {
 	UMeshComponent::PostDuplicate();
 
@@ -275,7 +271,7 @@ void USkeletalMeshComponent::PostDuplicate()
 	MarkWorldBoundsDirty();
 }
 
-void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void USkinnedMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
 {
 	EnsureMaterialSlotsForEditing();
 
@@ -292,7 +288,7 @@ void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& 
 	}
 }
 
-void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
+void USkinnedMeshComponent::PostEditProperty(const char* PropertyName)
 {
 	UPrimitiveComponent::PostEditProperty(PropertyName);
 
@@ -328,5 +324,60 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 				}
 			}
 		}
+	}
+}
+
+// ============================================================
+// Bone pose pipeline
+// ============================================================
+
+void USkinnedMeshComponent::RefreshBoneTransforms()
+{
+	// base는 fallback으로 RefPose만 채운다.
+	// 진짜 애니메이션은 USkeletalMeshComponent가 override해서 채움.
+	if (!SkeletalMesh) return;
+	USkeleton* Sk = SkeletalMesh->GetSkeleton();
+	if (!Sk) return;
+
+	const FReferenceSkeleton& Ref = Sk->GetReferenceSkeleton();
+	if ((int32)BoneSpaceTransforms.size() != Ref.GetNum())
+	{
+		BoneSpaceTransforms = Ref.RefBonePose;
+	}
+	FillComponentSpaceTransforms();
+}
+
+void USkinnedMeshComponent::FillComponentSpaceTransforms()
+{
+	if (!SkeletalMesh) return;
+	USkeleton* Sk = SkeletalMesh->GetSkeleton();
+	if (!Sk) return;
+	const FReferenceSkeleton& Ref = Sk->GetReferenceSkeleton();
+
+	const int32 N = Ref.GetNum();
+	if (N == 0)
+	{
+		ComponentSpaceMatrices.clear();
+		SkinningMatrices.clear();
+		return;
+	}
+	if ((int32)BoneSpaceTransforms.size() != N)
+	{
+		BoneSpaceTransforms = Ref.RefBonePose;
+	}
+
+	ComponentSpaceMatrices.assign(N, FMatrix::Identity);
+	SkinningMatrices.assign(N, FMatrix::Identity);
+
+	// ParentIndex < ChildIndex 보장 → forward sweep.
+	// 곱 순서는 Skeleton::RebuildRefBasesInvMatrix와 동일해야 한다 (Local * Parent).
+	for (int32 i = 0; i < N; ++i)
+	{
+		const FMatrix Local    = BoneSpaceTransforms[i].ToMatrix();
+		const int32   Parent   = Ref.Bones[i].ParentIndex;
+		const FMatrix ParentCS = (Parent >= 0) ? ComponentSpaceMatrices[Parent] : FMatrix::Identity;
+
+		ComponentSpaceMatrices[i] = Local * ParentCS;
+		SkinningMatrices[i]       = Ref.RefBasesInvMatrix[i] * ComponentSpaceMatrices[i];
 	}
 }

@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 
-class USkeletalMeshComponent;
+class USkinnedMeshComponent;
 
 // ============================================================
 // FSkeletalMeshSceneProxy — USkeletalMeshComponent 전용 프록시
@@ -15,14 +15,14 @@ class FSkeletalMeshSceneProxy : public FPrimitiveSceneProxy
 public:
 	static constexpr uint32 MAX_LOD = 4;
 
-	FSkeletalMeshSceneProxy(USkeletalMeshComponent* InComponent);
+	FSkeletalMeshSceneProxy(USkinnedMeshComponent* InComponent);
 
 	void UpdateMaterial() override;
 	void UpdateMesh() override;
 	void UpdateLOD(uint32 LODLevel) override;
 
 private:
-	USkeletalMeshComponent* GetSkeletalMeshComponent() const;
+	USkinnedMeshComponent* GetSkinnedMeshComponent() const;
 
 	void RebuildSectionDraws();
 
