@@ -115,15 +115,11 @@ namespace
 			return;
 		}
 
-		if (AAmbientLightActor* AmbientLight = World->SpawnActor<AAmbientLightActor>())
-		{
-			AmbientLight->InitDefaultComponents();
-		}
+		AAmbientLightActor* AmbientLight = World->SpawnActor<AAmbientLightActor>();
+		AmbientLight->InitDefaultComponents();
 
-		if (ADirectionalLightActor* DirectionalLight = World->SpawnActor<ADirectionalLightActor>())
-		{
-			DirectionalLight->InitDefaultComponents();
-			DirectionalLight->SetActorRotation(FVector(45.0f, -35.0f, 35.0f));
-		}
+		ADirectionalLightActor* DirectionalLight = World->SpawnActor<ADirectionalLightActor>();
+		DirectionalLight->InitDefaultComponents();
+		DirectionalLight->SetActorRotation(FVector(45.0f, -35.0f, 35.0f));
 	}
 }
