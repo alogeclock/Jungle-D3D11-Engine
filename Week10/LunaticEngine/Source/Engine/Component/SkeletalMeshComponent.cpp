@@ -4,6 +4,7 @@
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/SkeletalMeshManager.h"
 #include "Object/ObjectFactory.h"
 #include "Render/Proxy/DirtyFlag.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
@@ -25,8 +26,7 @@ namespace
 
 FMeshBuffer* USkeletalMeshComponent::GetMeshBuffer() const
 {
-	// GPU buffers belong to dedicated skeletal render data, not the component.
-	return nullptr;
+	return SkeletalMeshAsset ? SkeletalMeshAsset->GetMeshBuffer() : nullptr;
 }
 
 FMeshDataView USkeletalMeshComponent::GetMeshDataView() const
@@ -118,11 +118,12 @@ void USkeletalMeshComponent::MarkSkeletalPoseDirty()
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
 	SkeletalMeshAsset = InSkeletalMesh;
+	SkeletalMeshAssetPath = SkeletalMeshAsset ? SkeletalMeshAsset->GetAssetPathFileName() : "None";
 	SyncSkinnedAssetPathFromSkeletalMesh();
 	EnsureMaterialSlotsForEditing();
 	CacheLocalBounds();
-	MarkSkeletalPoseDirty();
 	MarkRenderStateDirty();
+	MarkSkeletalPoseDirty();
 }
 
 void USkeletalMeshComponent::EnsureMaterialSlotsForEditing()
@@ -227,13 +228,13 @@ void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& 
 
 	UMeshComponent::GetEditableProperties(OutProps);
 
-	OutProps.push_back({ "Skeletal Mesh", EPropertyType::String, &SkeletalMeshAssetPath });
+	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshAssetPath });
 	OutProps.push_back({ "CPU Skinning", EPropertyType::Bool, &bCPUSkinning });
 	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
 	OutProps.push_back({ "Hide Skin", EPropertyType::Bool, &bHideSkin });
 	OutProps.push_back({ "Force Ref Pose", EPropertyType::Bool, &bForceRefPose });
 	OutProps.push_back({ "Enable Skeleton Update", EPropertyType::Bool, &bEnableSkeletonUpdate });
-	OutProps.push_back({ "Root Bone Translation", EPropertyType::Vec3, &RootBoneTranslation });
+	OutProps.push_back({ "Root Bone", EPropertyType::Vec3, &RootBoneTranslation });
 	OutProps.push_back({ "Selected Bone Index", EPropertyType::Int, &SelectedBoneIndex, -1.0f, 100000.0f, 1.0f });
 	OutProps.push_back({ "Show Skeleton", EPropertyType::Bool, &bShowSkeleton });
 	OutProps.push_back({ "Show Bone Names", EPropertyType::Bool, &bShowBoneNames });
@@ -260,6 +261,10 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 		{
 			SkeletalMeshAsset = nullptr;
 			SkinnedAsset = nullptr;
+		}
+		else
+		{
+			SetSkeletalMesh(FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshAssetPath));
 		}
 
 		SyncSkinnedAssetPathFromSkeletalMesh();

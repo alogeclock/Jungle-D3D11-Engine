@@ -22,6 +22,7 @@
 #include "Component/PrimitiveComponent.h"
 #include "Component/SceneComponent.h"
 #include "Component/ScriptComponent.h"
+#include "Component/SkeletalMeshComponent.h"
 #include "Component/SoundComponent.h"
 #include "Component/StaticMeshComponent.h"
 #include "Component/TextRenderComponent.h"
@@ -34,6 +35,7 @@
 #include "ImGui/imgui.h"
 #include "Materials/Material.h"
 #include "Mesh/ObjManager.h"
+#include "Mesh/SkeletalMeshManager.h"
 #include "Mesh/StaticMesh.h"
 #include "Object/FName.h"
 #include "Object/ObjectIterator.h"
@@ -260,9 +262,17 @@ namespace
         {
             return "Editor.Icon.Decal";
         }
+        if (ClassName.find("SkeletalMeshActor") != FString::npos)
+        {
+            return "Editor.Icon.SkeletalMeshActor";
+        }
         if (Actor->GetRootComponent() && Actor->GetRootComponent()->IsA<UStaticMeshComponent>())
         {
             return "Editor.Icon.StaticMeshActor";
+        }
+        if (Actor->GetRootComponent() && Actor->GetRootComponent()->IsA<USkeletalMeshComponent>())
+        {
+            return "Editor.Icon.SkeletalMeshActor";
         }
         return "Editor.Icon.Actor";
     }
@@ -961,6 +971,10 @@ namespace
         {
             return 10;
         }
+        if (strcmp(SectionName, "Skeletal Mesh") == 0)
+        {
+            return 11;
+        }
         return 50;
     }
 
@@ -1398,6 +1412,10 @@ FString FEditorDetailsWidget::GetPropertySectionName(const FPropertyDescriptor &
     {
         return "Static Mesh";
     }
+    if (Prop.Type == EPropertyType::SkeletalMeshRef)
+    {
+        return "Skeletal Mesh";
+    }
     if (Prop.Type == EPropertyType::MaterialSlot)
     {
         return "Materials";
@@ -1648,6 +1666,35 @@ FString FEditorPropertyWidget::OpenObjFileDialog()
         std::filesystem::path RelPath = AbsPath.lexically_relative(RootPath);
 
         // 상대 경로 변환 실패 시 (드라이브가 다른 경우 등) 절대 경로를 그대로 반환
+        if (RelPath.empty() || RelPath.wstring().starts_with(L".."))
+        {
+            return FPaths::ToUtf8(AbsPath.generic_wstring());
+        }
+        return FPaths::ToUtf8(RelPath.generic_wstring());
+    }
+
+    return FString();
+}
+
+FString FEditorPropertyWidget::OpenFbxFileDialog()
+{
+    wchar_t FilePath[MAX_PATH] = {};
+
+    OPENFILENAMEW Ofn = {};
+    Ofn.lStructSize = sizeof(Ofn);
+    Ofn.hwndOwner = nullptr;
+    Ofn.lpstrFilter = L"FBX Files (*.fbx)\0*.fbx\0All Files (*.*)\0*.*\0";
+    Ofn.lpstrFile = FilePath;
+    Ofn.nMaxFile = MAX_PATH;
+    Ofn.lpstrTitle = L"Import FBX Skeletal Mesh";
+    Ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
+
+    if (GetOpenFileNameW(&Ofn))
+    {
+        std::filesystem::path AbsPath = std::filesystem::path(FilePath).lexically_normal();
+        std::filesystem::path RootPath = std::filesystem::path(FPaths::RootDir());
+        std::filesystem::path RelPath = AbsPath.lexically_relative(RootPath);
+
         if (RelPath.empty() || RelPath.wstring().starts_with(L".."))
         {
             return FPaths::ToUtf8(AbsPath.generic_wstring());
@@ -2592,6 +2639,7 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
     bool              bAnyChanged = false;
     TArray<int32>     TransformIndices;
     TArray<int32>     StaticMeshIndices;
+    TArray<int32>     SkeletalMeshIndices;
     TArray<int32>     MaterialIndices;
     TArray<int32>     LayoutIndices;
     TArray<int32>     ContentIndices;
@@ -2612,6 +2660,10 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
         else if (SectionName == "Static Mesh")
         {
             StaticMeshIndices.push_back(i);
+        }
+        else if (SectionName == "Skeletal Mesh")
+        {
+            SkeletalMeshIndices.push_back(i);
         }
         else if (SectionName == "Materials")
         {
@@ -2656,6 +2708,8 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
         AvailableSections.push_back("Transform");
     if (!StaticMeshIndices.empty())
         AvailableSections.push_back("Static Mesh");
+    if (!SkeletalMeshIndices.empty())
+        AvailableSections.push_back("Skeletal Mesh");
     if (!MaterialIndices.empty() || (SelectedComponent && SelectedComponent->IsA<UStaticMeshComponent>()))
         AvailableSections.push_back("Materials");
     if (!LayoutIndices.empty())
@@ -2695,6 +2749,14 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor *Actor, const TArra
             {
                 bRenderedAnySection = true;
                 RenderPropertySection("Static Mesh", Props, StaticMeshIndices, SelectedActors, bAnyChanged);
+            }
+        }
+        else if (strcmp(SectionName, "Skeletal Mesh") == 0)
+        {
+            if (ShouldDisplaySection("Skeletal Mesh", Props, SkeletalMeshIndices))
+            {
+                bRenderedAnySection = true;
+                RenderPropertySection("Skeletal Mesh", Props, SkeletalMeshIndices, SelectedActors, bAnyChanged);
             }
         }
         else if (strcmp(SectionName, "Materials") == 0)
@@ -2952,6 +3014,7 @@ void FEditorPropertyWidget::PropagatePropertyChange(const FString &PropName, con
                 case EPropertyType::String:
                 case EPropertyType::SceneComponentRef:
                 case EPropertyType::StaticMeshRef:
+                case EPropertyType::SkeletalMeshRef:
                     *static_cast<FString *>(DstProp.ValuePtr) = *static_cast<FString *>(SrcProp->ValuePtr);
                     break;
                 case EPropertyType::Name:
@@ -2988,6 +3051,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
     const FString        DisplayName = GetDisplayPropertyLabel(Prop.Name);
     const char          *Label = DisplayName.c_str();
     bool                 bChanged = false;
+    bool                 bPostEditHandled = false;
 
     switch (Prop.Type)
     {
@@ -3419,6 +3483,61 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         }
         break;
     }
+    case EPropertyType::SkeletalMeshRef:
+    {
+        FString* Val = static_cast<FString*>(Prop.ValuePtr);
+
+        ImGui::Text("%s", Label);
+        ImGui::SameLine(120);
+
+        const float ButtonWidth = ImGui::CalcTextSize("Import FBX").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float Spacing = ImGui::GetStyle().ItemSpacing.x;
+        ImGui::SetNextItemWidth(-(ButtonWidth + Spacing));
+
+        char Buffer[512] = {};
+        strncpy_s(Buffer, sizeof(Buffer), Val->c_str(), _TRUNCATE);
+        if (ImGui::InputText("##SkeletalMesh", Buffer, sizeof(Buffer)))
+        {
+            *Val = Buffer;
+            bChanged = true;
+        }
+
+        if (ImGui::IsItemHovered() && !Val->empty())
+        {
+            ImGui::SetTooltip("%s", Val->c_str());
+        }
+
+        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ButtonWidth);
+        if (ImGui::Button("Import FBX"))
+        {
+            FString FbxPath = OpenFbxFileDialog();
+            if (!FbxPath.empty())
+            {
+                USkeletalMesh* Loaded = FSkeletalMeshManager::LoadSkeletalMesh(FbxPath);
+                if (Loaded)
+                {
+                    if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent))
+                    {
+                        SkeletalMeshComponent->SetSkeletalMesh(Loaded);
+                        *Val = SkeletalMeshComponent->GetSkeletalMeshAssetPath();
+                        if (AActor* OwnerActor = SkeletalMeshComponent->GetOwner())
+                        {
+                            OwnerActor->SyncEditorBillboardVisibility();
+                        }
+                        bPostEditHandled = true;
+                    }
+                    else
+                    {
+                        const FString& LoadedPath = Loaded->GetAssetPathFileName();
+                        *Val = LoadedPath.empty() ? FbxPath : LoadedPath;
+                    }
+                    bChanged = true;
+                }
+            }
+        }
+        break;
+    }
     case EPropertyType::MaterialSlot:
     {
         FMaterialSlot *Slot = static_cast<FMaterialSlot *>(Prop.ValuePtr);
@@ -3744,7 +3863,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
     }
     }
 
-    if (bChanged && SelectedComponent)
+    if (bChanged && SelectedComponent && !bPostEditHandled)
     {
         SelectedComponent->PostEditProperty(Prop.Name.c_str());
     }

@@ -18,9 +18,11 @@
 
 class UGizmoComponent;
 class FLevelEditorViewportClient;
+class FPreviewViewportClient;
 class FOverlayStatSystem;
 class AActor;
 class UGameViewportClient;
+class USkeletalMesh;
 struct FPerspectiveCameraData;
 
 class UEditorEngine : public UEngine
@@ -102,6 +104,10 @@ public:
 	// 레이아웃에 위임
 	const TArray<FLevelEditorViewportClient*>& GetLevelViewportClients() const { return ViewportLayout.GetLevelViewportClients(); }
 	bool ShouldRenderViewportClient(const FLevelEditorViewportClient* ViewportClient) const { return ViewportLayout.ShouldRenderViewportClient(ViewportClient); }
+	void RegisterPreviewViewportClient(FPreviewViewportClient* ViewportClient);
+	void UnregisterPreviewViewportClient(FPreviewViewportClient* ViewportClient);
+	const TArray<FPreviewViewportClient*>& GetPreviewViewportClients() const { return PreviewViewportClients; }
+	void OpenSkeletalMeshEditor(USkeletalMesh* SkeletalMesh);
 
 	void SetActiveViewport(FLevelEditorViewportClient* InClient) { ViewportLayout.SetActiveViewport(InClient); }
 	FLevelEditorViewportClient* GetActiveViewport() const { return ViewportLayout.GetActiveViewport(); }
@@ -171,6 +177,7 @@ private:
 	FEditorMainPanel MainPanel;
 	FLevelViewportLayout ViewportLayout;
 	FOverlayStatSystem OverlayStatSystem;
+	TArray<FPreviewViewportClient*> PreviewViewportClients;
 
 	// PIE 요청 단일 슬롯 (UE TOptional<FRequestPlaySessionParams>).
 	std::optional<FRequestPlaySessionParams> PlaySessionRequest;

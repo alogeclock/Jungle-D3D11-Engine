@@ -14,6 +14,7 @@
 #include "Editor/EditorRenderPipeline.h"
 #include "Editor/UI/EditorFileUtils.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
+#include "Editor/Viewport/Preview/PreviewViewportClient.h"
 #include "Object/ObjectFactory.h"
 #include "Mesh/ObjManager.h"
 #include "Core/ProjectSettings.h"
@@ -26,6 +27,7 @@
 #include "Core/AsciiUtils.h"
 #include "Texture/Texture2D.h"
 #include "Object/Object.h"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <set>
@@ -244,6 +246,7 @@ void UEditorEngine::Shutdown()
 	CloseScene();
 	SelectionManager.Shutdown();
 	MainPanel.Release();
+	PreviewViewportClients.clear();
 
 	// 뷰포트 레이아웃 해제
 	ViewportLayout.Release();
@@ -292,6 +295,14 @@ void UEditorEngine::Tick(float DeltaTime)
 	for (FLevelEditorViewportClient* VC : ViewportLayout.GetLevelViewportClients())
 	{
 		VC->Tick(DeltaTime);
+	}
+
+	for (FPreviewViewportClient* VC : PreviewViewportClients)
+	{
+		if (VC)
+		{
+			VC->Tick(DeltaTime);
+		}
 	}
 
 	const FInputSystemSnapshot InputSnapshot = FInputSystem::MakeSnapshot();
@@ -481,6 +492,33 @@ bool UEditorEngine::FocusActorInViewport(AActor* Actor)
 		return ActiveVC->FocusActor(Actor);
 	}
 	return false;
+}
+
+void UEditorEngine::RegisterPreviewViewportClient(FPreviewViewportClient* ViewportClient)
+{
+	if (!ViewportClient)
+	{
+		return;
+	}
+
+	if (std::find(PreviewViewportClients.begin(), PreviewViewportClients.end(), ViewportClient) == PreviewViewportClients.end())
+	{
+		PreviewViewportClients.push_back(ViewportClient);
+	}
+}
+
+void UEditorEngine::UnregisterPreviewViewportClient(FPreviewViewportClient* ViewportClient)
+{
+	auto It = std::find(PreviewViewportClients.begin(), PreviewViewportClients.end(), ViewportClient);
+	if (It != PreviewViewportClients.end())
+	{
+		PreviewViewportClients.erase(It);
+	}
+}
+
+void UEditorEngine::OpenSkeletalMeshEditor(USkeletalMesh* SkeletalMesh)
+{
+	MainPanel.OpenSkeletalMeshEditor(SkeletalMesh);
 }
 
 void UEditorEngine::RenderUI(float DeltaTime)

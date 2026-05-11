@@ -4,6 +4,7 @@
 
 class USkeletalMesh;
 class USkeletalMeshComponent;
+class AActor;
 
 // 특정 스켈레탈 메시를 독립된 프리뷰 환경(Preview Scene)에 렌더링하고 제어합니다.
 // 메시 교체, 카메라 포커스 맞춤, 본 구조 시각화 등 스켈레탈 메시 에디터의 핵심 뷰포트 로직을 담당합니다.
@@ -28,5 +29,6 @@ private:
 
 private:
 	USkeletalMesh* PreviewSkeletalMesh = nullptr;
+	AActor* PreviewActor = nullptr;
 	USkeletalMeshComponent* PreviewComponent = nullptr;
 };

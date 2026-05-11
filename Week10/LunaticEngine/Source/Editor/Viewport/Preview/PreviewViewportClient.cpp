@@ -33,6 +33,7 @@ FPreviewViewportClient::~FPreviewViewportClient()
 	FInputRouter::Get().ClearViewport(this);
 	bCameraInputCaptured = false;
 	DestroyCamera();
+	PreviewScene.Release();
 	
 	EnhancedInputManager.ClearBindings();
 	EnhancedInputManager.ClearAllMappingContexts();
@@ -49,6 +50,13 @@ FPreviewViewportClient::~FPreviewViewportClient()
 void FPreviewViewportClient::Initialize(FWindowsWindow* InWindow)
 {
 	Window = InWindow;
+	PreviewScene.Initialize();
+	CreateCamera();
+
+	if (UWorld* World = PreviewScene.GetWorld())
+	{
+		World->SetActiveCamera(Camera);
+	}
 }
 
 void FPreviewViewportClient::CreateCamera()
@@ -90,6 +98,8 @@ void FPreviewViewportClient::ResetCamera()
 // 매 프레임 카메라가 부드럽게 이동하도록 보간 이동시킵니다.
 void FPreviewViewportClient::Tick(float DeltaTime)
 {
+	PreviewScene.Tick(DeltaTime);
+
 	if (!Camera)
 	{
 		return;

@@ -9,10 +9,12 @@
 #include "Editor/UI/EditorPlaceActorsWidget.h"
 #include "Editor/UI/ContentBrowser/ContentBrowser.h"
 #include "Editor/UI/AssetEditor/AssetEditorWidget.h"
+#include "Editor/UI/Preview/SkeletalMeshEditorWidget.h"
 
 class FRenderer;
 class UEditorEngine;
 class FWindowsWindow;
+class USkeletalMesh;
 struct ImFont;
 
 class FEditorMainPanel
@@ -32,7 +34,8 @@ public:
 	void RefreshContentBrowser() { ContentBrowserWidget.Refresh(); }
 	void SetContentBrowserIconSize(float Size) { ContentBrowserWidget.SetIconSize(Size); }
 	float GetContentBrowserIconSize() const { return ContentBrowserWidget.GetIconSize(); }
-	bool IsAssetEditorCapturingInput() const { return AssetEditorWidget.IsCapturingInput(); }
+	bool IsAssetEditorCapturingInput() const { return !bHideEditorWindows && (AssetEditorWidget.IsCapturingInput() || SkeletalMeshEditorWidget.IsCapturingInput()); }
+	void OpenSkeletalMeshEditor(USkeletalMesh* Mesh) { SkeletalMeshEditorWidget.OpenSkeletalMesh(Mesh); }
 
 private:
 	void RenderMainMenuBar();
@@ -54,6 +57,7 @@ private:
 	FEditorStatWidget StatWidget;
 	FEditorContentBrowserWidget ContentBrowserWidget;
 	FAssetEditorWidget AssetEditorWidget;
+	FSkeletalMeshEditorWidget SkeletalMeshEditorWidget;
 	EditorShadowMapDebugWidget ShadowMapDebugWidget;
 	bool bShowWidgetList = false;
 	bool bShowShortcutOverlay = false;

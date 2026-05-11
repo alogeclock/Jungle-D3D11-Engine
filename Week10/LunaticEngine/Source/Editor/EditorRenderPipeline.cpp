@@ -1,6 +1,7 @@
 ﻿#include "EditorRenderPipeline.h"
 #include "Editor/EditorEngine.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
+#include "Editor/Viewport/Preview/PreviewViewportClient.h"
 #include "Render/Pipeline/Renderer.h"
 #include "Render/Scene/FScene.h"
 #include "Viewport/Viewport.h"
@@ -14,6 +15,7 @@
 #include "Component/Light/LightComponentBase.h"
 #include "Core/ProjectSettings.h"
 #include "Viewport/GameViewportClient.h"
+#include "Viewport/ViewportClient.h"
 #include "Object/Object.h"
 
 FEditorRenderPipeline::FEditorRenderPipeline(UEditorEngine* InEditor, FRenderer& InRenderer)
@@ -68,13 +70,16 @@ void FEditorRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 
 	for (FLevelEditorViewportClient* ViewportClient : Editor->GetLevelViewportClients())
 	{
-		if (!Editor->ShouldRenderViewportClient(ViewportClient))
-		{
-			continue;
-		}
+		if (!Editor->ShouldRenderViewportClient(ViewportClient)) continue;
+		SCOPE_STAT_CAT("RenderEditorViewport", "2_Render");
+		RenderEditorViewport(ViewportClient, Renderer);
+	}
 
-		SCOPE_STAT_CAT("RenderViewport", "2_Render");
-		RenderViewport(ViewportClient, Renderer);
+	for (FPreviewViewportClient* ViewportClient : Editor->GetPreviewViewportClients())
+	{
+		if (!ViewportClient) continue;
+		SCOPE_STAT_CAT("RenderPreviewViewport", "2_Render");
+		RenderPreviewViewport(ViewportClient, Renderer);
 	}
 
 	// 스왑체인 백버퍼 복귀 → ImGui 합성 → Present
@@ -94,7 +99,7 @@ void FEditorRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 	}
 }
 
-void FEditorRenderPipeline::RenderViewport(FLevelEditorViewportClient* VC, FRenderer& Renderer)
+void FEditorRenderPipeline::RenderEditorViewport(FLevelEditorViewportClient* VC, FRenderer& Renderer)
 {
 	UCameraComponent* Camera = VC->GetCamera();
 	UWorld* World = Editor->GetWorld();
@@ -139,7 +144,7 @@ void FEditorRenderPipeline::RenderViewport(FLevelEditorViewportClient* VC, FRend
 	BuildFrame(VC, Camera, VP, World);
 
 	FCollectOutput Output;
-	CollectCommands(VC, World, Renderer, Output);
+	CollectCommands(World, Renderer, Output);
 
 	FScene& Scene = World->GetScene();
 
@@ -161,6 +166,32 @@ void FEditorRenderPipeline::RenderViewport(FLevelEditorViewportClient* VC, FRend
 	}
 }
 
+void FEditorRenderPipeline::RenderPreviewViewport(FPreviewViewportClient* VC, FRenderer& Renderer)
+{
+	UWorld* World = VC ? VC->GetWorld() : nullptr;
+	UCameraComponent* Camera = VC ? VC->GetCamera() : nullptr;
+	if (!World || !Camera || !IsAliveObject(Camera)) return;
+
+	FViewport* VP = VC->GetViewport();
+	if (!VP) return;
+
+	ID3D11DeviceContext* Ctx = Renderer.GetFD3DDevice().GetDeviceContext();
+	if (!Ctx) return;
+
+	PrepareViewport(VP, Camera, Ctx);
+	BuildFrame(VC, Camera, VP, World);
+
+	FCollectOutput Output;
+	CollectCommands(World, Renderer, Output);
+
+	FScene& Scene = World->GetScene();
+
+	{
+		SCOPE_STAT_CAT("Renderer.RenderPreview", "4_ExecutePass");
+		Renderer.Render(Frame, Scene);
+	}
+}
+
 // ============================================================
 // PrepareViewport — 지연 리사이즈 적용 + RT 클리어
 // ============================================================
@@ -177,7 +208,29 @@ void FEditorRenderPipeline::PrepareViewport(FViewport* VP, UCameraComponent* Cam
 // ============================================================
 // BuildFrame — FFrameContext 일괄 설정
 // ============================================================
-void FEditorRenderPipeline::BuildFrame(FLevelEditorViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
+void FEditorRenderPipeline::BuildFrame(FViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
+{
+	if (FLevelEditorViewportClient* LevelVC = dynamic_cast<FLevelEditorViewportClient*>(VC))
+	{
+		BuildEditorFrame(LevelVC, Camera, VP, World);
+		return;
+	}
+
+	if (FPreviewViewportClient* PreviewVC = dynamic_cast<FPreviewViewportClient*>(VC))
+	{
+		BuildPreviewFrame(PreviewVC, Camera, VP, World);
+		return;
+	}
+
+	Frame.ClearViewportResources();
+	if (Camera)
+	{
+		Frame.SetCameraInfo(Camera);
+	}
+	Frame.SetViewportInfo(VP);
+}
+
+void FEditorRenderPipeline::BuildEditorFrame(FLevelEditorViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
 {
 	Frame.ClearViewportResources();
 	const FMinimalViewInfo* ActivePOV = nullptr;
@@ -244,6 +297,25 @@ void FEditorRenderPipeline::BuildFrame(FLevelEditorViewportClient* VC, UCameraCo
 	}
 }
 
+void FEditorRenderPipeline::BuildPreviewFrame(FPreviewViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
+{
+	Frame.ClearViewportResources();
+	Frame.SetCameraInfo(Camera);
+	Frame.bIsLightView = false;
+	Frame.SetRenderOptions(VC->GetRenderOptions());
+	Frame.SetViewportInfo(VP);
+
+	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
+	const float AR = CameraState.bConstrainAspectRatio
+		? CameraState.LetterBoxingAspectW / CameraState.LetterBoxingAspectH
+		: CameraState.AspectRatio;
+	Frame.ApplyConstrainedAR(AR);
+	Frame.OcclusionCulling = nullptr;
+	Frame.LODContext = World->PrepareLODContext();
+	Frame.CursorViewportX = UINT32_MAX;
+	Frame.CursorViewportY = UINT32_MAX;
+}
+
 // ============================================================
 // CollectCommands — Scene 데이터 주입 + DrawCommand 생성
 // ============================================================
@@ -255,7 +327,7 @@ void FEditorRenderPipeline::BuildFrame(FLevelEditorViewportClient* VC, UCameraCo
 //
 // 마지막에 BuildDynamicCommands가 Scene 주입 데이터를 DrawCommand로 변환.
 
-void FEditorRenderPipeline::CollectCommands(FLevelEditorViewportClient* VC, UWorld* World, FRenderer& Renderer, FCollectOutput& Output)
+void FEditorRenderPipeline::CollectCommands(UWorld* World, FRenderer& Renderer, FCollectOutput& Output)
 {
 	SCOPE_STAT_CAT("Collector", "3_Collect");
 

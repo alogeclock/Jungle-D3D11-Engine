@@ -25,6 +25,7 @@
 #include "Game/Map/AMapManager.h"
 #include "Game/Player/Runner.h"
 #include "GameFramework/World.h"
+#include "GameFramework/SkeletalMeshActor.h"
 #include "Render/Pipeline/Renderer.h"
 #include "Viewport/Viewport.h"
 #include "UI/SSplitter.h"
@@ -3057,6 +3058,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 		PlaceActorMenuItem("Runner", EViewportPlaceActorType::Runner);
 		PlaceActorMenuItem("Character", EViewportPlaceActorType::Character);
 		PlaceActorMenuItem("Static Mesh", EViewportPlaceActorType::StaticMeshActor);
+		PlaceActorMenuItem("Skeletal Mesh", EViewportPlaceActorType::SkeletalMeshActor);
 		PlaceActorMenuItem("World Text", EViewportPlaceActorType::WorldText);
 		PlaceActorMenuItem("Screen Text", EViewportPlaceActorType::ScreenText);
 		PlaceActorMenuItem("UI Root", EViewportPlaceActorType::UIRoot);
@@ -3242,6 +3244,16 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 	case EViewportPlaceActorType::StaticMeshActor:
 	{
 		AStaticMeshActor* Actor = World->SpawnActor<AStaticMeshActor>();
+		if (Actor)
+		{
+			Actor->InitDefaultComponents();
+			SpawnedActor = Actor;
+		}
+		break;
+	}
+	case EViewportPlaceActorType::SkeletalMeshActor:
+	{
+		ASkeletalMeshActor* Actor = World->SpawnActor<ASkeletalMeshActor>();
 		if (Actor)
 		{
 			Actor->InitDefaultComponents();

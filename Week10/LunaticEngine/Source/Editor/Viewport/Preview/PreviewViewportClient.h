@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Editor/Viewport/Preview/PreviewScene.h"
 #include "Viewport/ViewportClient.h"
 #include "Input/EnhancedInputManager.h"
 #include "Input/InputAction.h"
@@ -11,6 +12,7 @@
 class FViewport;
 class FWindowsWindow;
 class UCameraComponent;
+class UWorld;
 
 // 에셋 프리뷰 뷰포트에서 공통으로 쓰는 카메라와 입력 처리 클라이언트입니다.
 // orbit, pan, zoom, focus 같은 기본 조작을 제공하고 에셋별 클라이언트가 상속합니다.
@@ -21,6 +23,9 @@ public:
 	~FPreviewViewportClient() override;
 
 	void Initialize(FWindowsWindow* InWindow);
+	UWorld* GetWorld() const { return PreviewScene.GetWorld(); }
+	FPreviewScene& GetPreviewScene() { return PreviewScene; }
+	const FPreviewScene& GetPreviewScene() const { return PreviewScene; }
 
 	void CreateCamera();
 	void DestroyCamera();
@@ -67,6 +72,7 @@ private:
 	void ApplyOrbitInput();
 
 private:
+	FPreviewScene PreviewScene;
 	FViewport* Viewport = nullptr;
 	FWindowsWindow* Window = nullptr;
 	UCameraComponent* Camera = nullptr;

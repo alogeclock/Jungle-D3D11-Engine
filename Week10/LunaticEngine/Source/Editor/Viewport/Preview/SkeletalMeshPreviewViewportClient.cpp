@@ -1,14 +1,17 @@
 #include "SkeletalMeshPreviewViewportClient.h"
 
 #include "Component/SkeletalMeshComponent.h"
+#include "GameFramework/AActor.h"
+#include "GameFramework/World.h"
 #include "Mesh/SkeletalMesh.h"
-#include "Object/Object.h"
 
-static bool GetSkeletalMeshBounds(USkeletalMesh* SkeletalMesh, FVector& OutCenter, FVector& OutExtent);
+namespace
+{
+	bool GetSkeletalMeshBounds(USkeletalMesh* SkeletalMesh, FVector& OutCenter, FVector& OutExtent);
+}
 
 FSkeletalMeshPreviewViewportClient::FSkeletalMeshPreviewViewportClient()
 {
-	CreatePreviewComponent();
 }
 
 FSkeletalMeshPreviewViewportClient::~FSkeletalMeshPreviewViewportClient()
@@ -19,8 +22,13 @@ FSkeletalMeshPreviewViewportClient::~FSkeletalMeshPreviewViewportClient()
 void FSkeletalMeshPreviewViewportClient::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
 	PreviewSkeletalMesh = InSkeletalMesh;
-	CreatePreviewComponent();
+	if (!PreviewSkeletalMesh)
+	{
+		DestroyPreviewComponent();
+		return;
+	}
 
+	CreatePreviewComponent();
 	if (PreviewComponent)
 	{
 		PreviewComponent->SetSkeletalMesh(PreviewSkeletalMesh);
@@ -48,41 +56,61 @@ void FSkeletalMeshPreviewViewportClient::OnCameraReset()
 
 void FSkeletalMeshPreviewViewportClient::CreatePreviewComponent()
 {
-	if (!PreviewComponent)
+	if (PreviewComponent)
 	{
-		PreviewComponent = UObjectManager::Get().CreateObject<USkeletalMeshComponent>();
+		return;
 	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	PreviewActor = GetPreviewScene().SpawnPreviewActor();
+	if (!PreviewActor)
+	{
+		return;
+	}
+
+	PreviewComponent = PreviewActor->AddComponent<USkeletalMeshComponent>();
+	PreviewActor->SetRootComponent(PreviewComponent);
 }
 
 void FSkeletalMeshPreviewViewportClient::DestroyPreviewComponent()
 {
-	if (PreviewComponent)
+	if (PreviewActor)
 	{
-		UObjectManager::Get().DestroyObject(PreviewComponent);
-		PreviewComponent = nullptr;
+		GetPreviewScene().DestroyPreviewActor(PreviewActor);
 	}
+
+	PreviewActor = nullptr;
+	PreviewComponent = nullptr;
 }
 
-static bool GetSkeletalMeshBounds(USkeletalMesh* SkeletalMesh, FVector& OutCenter, FVector& OutExtent)
+namespace
 {
-	if (!SkeletalMesh)
+	bool GetSkeletalMeshBounds(USkeletalMesh* SkeletalMesh, FVector& OutCenter, FVector& OutExtent)
 	{
-		return false;
-	}
+		if (!SkeletalMesh)
+		{
+			return false;
+		}
 
-	const FSkeletalMesh* MeshAsset = SkeletalMesh->GetSkeletalMeshAsset();
-	if (!MeshAsset)
-	{
-		return false;
-	}
+		const FSkeletalMesh* MeshAsset = SkeletalMesh->GetSkeletalMeshAsset();
+		if (!MeshAsset)
+		{
+			return false;
+		}
 
-	const FSkeletalMeshLOD* LOD = MeshAsset->GetLOD(0);
-	if (!LOD || !LOD->bBoundsValid)
-	{
-		return false;
-	}
+		const FSkeletalMeshLOD* LOD = MeshAsset->GetLOD(0);
+		if (!LOD || !LOD->bBoundsValid)
+		{
+			return false;
+		}
 
-	OutCenter = LOD->BoundsCenter;
-	OutExtent = LOD->BoundsExtent;
-	return true;
+		OutCenter = LOD->BoundsCenter;
+		OutExtent = LOD->BoundsExtent;
+		return true;
+	}
 }

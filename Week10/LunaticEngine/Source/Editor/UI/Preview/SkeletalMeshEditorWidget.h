@@ -1,10 +1,42 @@
 #pragma once
-#include "AssetPreviewWidget.h"
 
-// 스켈레탈 메시 에셋을 열어 확인하는 에디터 위젯입니다.
-// Preview Viewport와 Mesh Show Flags를 묶는 역할을 합니다.
+#include "AssetPreviewWidget.h"
+#include "Core/CoreTypes.h"
+#include "Editor/UI/Preview/PreviewViewportWidget.h"
+#include "Editor/Viewport/Preview/SkeletalMeshPreviewViewportClient.h"
+
+class FViewport;
+class FWindowsWindow;
+class UEditorEngine;
+class USkeletalMesh;
+struct ID3D11Device;
+
 class FSkeletalMeshEditorWidget : public FAssetPreviewWidget
 {
 public:
-	
+	void Initialize(UEditorEngine* InEditorEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow);
+	void Shutdown();
+	void OpenSkeletalMesh(USkeletalMesh* InMesh);
+	void Render(float DeltaTime);
+	void ClearInputCapture();
+
+	bool IsOpen() const { return bOpen; }
+	bool IsCapturingInput() const { return bCapturingInput; }
+
+private:
+	void Close();
+	void RegisterPreviewClient();
+	void UnregisterPreviewClient();
+	FString MakeWindowTitle() const;
+
+private:
+	FPreviewViewportWidget ViewportWidget;
+	FSkeletalMeshPreviewViewportClient ViewportClient;
+	FViewport* Viewport = nullptr;
+	UEditorEngine* EditorEngine = nullptr;
+	USkeletalMesh* EditingMesh = nullptr;
+	bool bOpen = false;
+	bool bInitialized = false;
+	bool bRegistered = false;
+	bool bCapturingInput = false;
 };

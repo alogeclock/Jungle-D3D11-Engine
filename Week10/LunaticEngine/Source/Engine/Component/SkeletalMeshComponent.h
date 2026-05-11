@@ -17,27 +17,6 @@ public:
 	void UpdateWorldAABB() const override;
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
 
-	USkeletalMesh* SkeletalMeshAsset = nullptr;
-	FString SkeletalMeshAssetPath = "None";
-
-	TArray<FTransform> BoneSpaceTransforms; // 부모 본에 대한 로컬 트랜스폼
-	TArray<int32> RequiredBones;
-
-	bool bRequiredBonesUpdated = true;
-	bool bForceRefPose = false;
-	bool bEnableSkeletonUpdate = true;
-
-	FVector RootBoneTranslation = FVector::ZeroVector;
-
-	int32 SelectedBoneIndex = -1;
-	bool bShowSkeleton = true;
-	bool bShowBoneNames = false;
-
-	// bool bUseRefPoseOnInitAnimation = true;
-	// bool bEnableAnimation = false;
-	// bool bPauseAnimation = false;
-	// float GlobalAnimationRate = 1.0f;
-
 	USkeletalMesh* GetSkeletalMeshAsset() const { return SkeletalMeshAsset; }
 	const FString& GetSkeletalMeshAssetPath() const { return SkeletalMeshAssetPath; }
 
@@ -69,7 +48,28 @@ private:
 	void CacheLocalBounds();
 
 private:
+	USkeletalMesh* SkeletalMeshAsset = nullptr;
+	FString SkeletalMeshAssetPath = "None";
+
+	TArray<FTransform> BoneSpaceTransforms; // 부모 본에 대한 로컬 트랜스폼
+	TArray<int32> RequiredBones;
+
 	FVector CachedLocalCenter = { 0.0f, 0.0f, 0.0f };
 	FVector CachedLocalExtent = { 0.5f, 0.5f, 0.5f };
 	bool bHasValidBounds = false;
+
+	bool bRequiredBonesUpdated = true;
+	bool bForceRefPose = false;
+	bool bEnableSkeletonUpdate = true;
+
+	FVector RootBoneTranslation = FVector::ZeroVector;
+
+	int32 SelectedBoneIndex = -1;
+	bool bShowSkeleton = true;
+	bool bShowBoneNames = false;
+
+	// bool bUseRefPoseOnInitAnimation = true;
+	// bool bEnableAnimation = false;
+	// bool bPauseAnimation = false;
+	// float GlobalAnimationRate = 1.0f;
 };
