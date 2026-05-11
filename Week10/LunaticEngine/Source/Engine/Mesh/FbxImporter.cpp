@@ -20,6 +20,8 @@
 #include <unordered_map>
 #include <utility>
 
+#include "UI/ContentBrowser/ContentBrowserElement.h"
+
 namespace
 {
     // OutMessage 포인터가 유효할 때 FString 메시지를 기록한다.
@@ -66,6 +68,8 @@ namespace
     struct FImportBuildContext
     {
         FSkeletalImportSummary Summary;
+
+        TMap<FbxSurfaceMaterial*, int32> FbxMaterialToIndex;
 
         // Skeletal import 중 발생한 경고를 ImportSummary에 누적한다.
         void AddWarning(ESkeletalImportWarningType Type, const FString& Message)
@@ -147,6 +151,34 @@ namespace
         HashCombineSizeT(Seed, std::hash<const void*> {}(Pointer));
     }
 
+    static void HashCombineString(std::size_t& Seed, const FString& Value)
+    {
+        for (char C : Value)
+        {
+            HashCombineSizeT(Seed, static_cast<std::size_t>(static_cast<unsigned char>(C)));
+        }
+    }
+
+    static std::size_t MakeFbxMaterialInfoHash(const FFbxImportedMaterialInfo& Info)
+    {
+        std::size_t Seed = 0;
+
+        HashCombineString(Seed, Info.SlotName);
+        HashCombineString(Seed, Info.DiffuseTexture);
+        HashCombineString(Seed, Info.NormalTexture);
+        HashCombineString(Seed, Info.RoughnessTexture);
+        HashCombineString(Seed, Info.MetallicTexture);
+        HashCombineString(Seed, Info.EmissiveTexture);
+        HashCombineString(Seed, Info.OpacityTexture);
+
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.X));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.Y));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.Z));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.W));
+
+        return Seed;
+    }
+    
     static std::array<uint32, 2> MakeVector2Bits(const FVector2& V)
     {
         return { FloatToStableBits(V.X), FloatToStableBits(V.Y) };
@@ -343,6 +375,44 @@ namespace
         return NewIndex;
     }
 
+    static bool TryResolveFbxFileTexturePath(FbxFileTexture* FileTexture, const FString& SourceFbxPath, FString& OutTexturePath)
+    {
+        if (!FileTexture)
+        {
+            return false;
+        }
+
+        const char* RelativeName = FileTexture->GetRelativeFileName();
+        const char* FileName     = FileTexture->GetFileName();
+
+        FString TexturePath;
+
+        if (RelativeName && RelativeName[0] != '\0')
+        {
+            TexturePath = RelativeName;
+        }
+        else if (FileName && FileName[0] != '\0')
+        {
+            TexturePath = FileName;
+        }
+
+        if (TexturePath.empty())
+        {
+            return false;
+        }
+
+        if (TexturePath.rfind("Asset/", 0) == 0)
+        {
+            OutTexturePath = TexturePath;
+        }
+        else
+        {
+            OutTexturePath = FPaths::ResolveAssetPath(SourceFbxPath, TexturePath);
+        }
+
+        return true;
+    }
+
     // FBX texture property에서 외부 texture 경로를 추출해 엔진 asset 상대경로로 변환한다.
     static bool TryGetFbxTexturePathFromProperty(const FbxProperty& Property, const FString& SourceFbxPath, FString& OutTexturePath)
     {
@@ -356,42 +426,34 @@ namespace
         for (int32 TextureIndex = 0; TextureIndex < TextureCount; ++TextureIndex)
         {
             FbxFileTexture* FileTexture = Property.GetSrcObject<FbxFileTexture>(TextureIndex);
-            if (!FileTexture)
-            {
-                continue;
-            }
 
-            const char* RelativeName = FileTexture->GetRelativeFileName();
-            const char* FileName     = FileTexture->GetFileName();
-
-            FString TexturePath;
-
-            if (RelativeName && RelativeName[0] != '\0')
+            if (TryResolveFbxFileTexturePath(FileTexture, SourceFbxPath, OutTexturePath))
             {
-                TexturePath = RelativeName;
+                return true;
             }
-            else if (FileName && FileName[0] != '\0')
-            {
-                TexturePath = FileName;
-            }
-
-            if (TexturePath.empty())
-            {
-                continue;
-            }
-
-            if (TexturePath.rfind("Asset/", 0) == 0)
-            {
-                OutTexturePath = TexturePath;
-            }
-            else
-            {
-                OutTexturePath = FPaths::ResolveAssetPath(SourceFbxPath, TexturePath);
-            }
-
-            return true;
         }
 
+        const int32 LayeredTextureCount = Property.GetSrcObjectCount<FbxLayeredTexture>();
+        for (int32 LayeredTextureIndex = 0; LayeredTextureIndex < LayeredTextureCount; ++LayeredTextureIndex)
+        {
+            FbxLayeredTexture* LayeredTexture = Property.GetSrcObject<FbxLayeredTexture>(LayeredTextureIndex);
+            if (!LayeredTexture)
+            {
+                continue;
+            }
+
+            const int32 LayerTextureCount = LayeredTexture->GetSrcObjectCount<FbxFileTexture>();
+
+            for (int32 LayerTextureIndex = 0; LayerTextureIndex < LayerTextureCount; ++LayerTextureIndex)
+            {
+                FbxFileTexture* FileTexture = LayeredTexture->GetSrcObject<FbxFileTexture>(LayerTextureIndex);
+
+                if (TryResolveFbxFileTexturePath(FileTexture, SourceFbxPath, OutTexturePath))
+                {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -449,24 +511,27 @@ namespace
     }
 
     // FBX source와 slot 이름을 이용해 충돌 가능성이 낮은 자동 material asset path를 만든다.
-    static FString MakeAutoFbxMaterialPath(const FString& SourceFbxPath, const FString& SlotName)
+    static FString MakeAutoFbxMaterialPath(const FString& SourceFbxPath, const FFbxImportedMaterialInfo& Info)
     {
-        const std::filesystem::path SourcePath(FPaths::ToWide(SourceFbxPath));
-
-        FString SourceAssetName = FPaths::ToUtf8(SourcePath.stem().wstring());
+        const std::filesystem::path SourcePath      = FPaths::ToWide(SourceFbxPath);
+        FString                     SourceAssetName = FPaths::ToUtf8(SourcePath.stem().wstring());
+        
         if (SourceAssetName.empty())
         {
             SourceAssetName = "UnknownFbx";
         }
 
-        return "Asset/Materials/Auto/Fbx/" + MakeSafeAssetName(SourceAssetName) + "/" + MakeSafeAssetName(SlotName) + ".mat";
+        const FString SafeSlotName = MakeSafeAssetName(Info.SlotName);
+        const FString HashSuffix   = std::to_string(MakeFbxMaterialInfoHash(Info));
+
+        return "Asset/Materials/Auto/Fbx/" + MakeSafeAssetName(SourceAssetName) + "/" + SafeSlotName + "-" + HashSuffix + ".mat";
     }
 
     // 추출한 FBX material 정보를 엔진 .mat JSON 파일로 저장하고 material asset path를 반환한다.
     static FString ConvertFbxMaterialInfoToMat(const FFbxImportedMaterialInfo& Info, const FString& SourceFbxPath, FImportBuildContext& BuildContext)
     {
-        const FString MatPath = MakeAutoFbxMaterialPath(SourceFbxPath, Info.SlotName);
-        const FString FullDiskPath = FPaths::ConvertRelativePathToFull(MatPath);
+        const FString               MatPath      = MakeAutoFbxMaterialPath(SourceFbxPath, Info);
+        const FString               FullDiskPath = FPaths::ConvertRelativePathToFull(MatPath);
         const std::filesystem::path DiskPath(FPaths::ToWide(FullDiskPath));
 
         if (std::filesystem::exists(DiskPath))
@@ -2136,46 +2201,78 @@ namespace
         return &Sections.back();
     }
 
+    static FbxLayerElementMaterial* FindFirstMaterialLayerElement(FbxMesh* Mesh)
+    {
+        if (!Mesh)
+        {
+            return nullptr;
+        }
+
+        const int32 LayerCount = Mesh->GetLayerCount();
+
+        for (int32 LayerIndex = 0; LayerIndex < LayerCount; ++LayerIndex)
+        {
+            FbxLayer* Layer = Mesh->GetLayer(LayerIndex);
+            if (!Layer)
+            {
+                continue;
+            }
+
+            FbxLayerElementMaterial* MaterialElement = Layer->GetMaterials();
+            if (MaterialElement)
+            {
+                return MaterialElement;
+            }
+        }
+
+        return nullptr;
+    }
+
     // FBX material layer에서 polygon의 material index를 읽는다.
     static int32 GetPolygonMaterialIndex(FbxMesh* Mesh, int32 PolygonIndex)
     {
-        if (!Mesh || !Mesh->GetLayer(0))
-        {
-            return 0;
-        }
-
-        FbxLayerElementMaterial* MaterialElement = Mesh->GetLayer(0)->GetMaterials();
+        FbxLayerElementMaterial* MaterialElement = FindFirstMaterialLayerElement(Mesh);
         if (!MaterialElement)
         {
             return 0;
         }
 
-        if (MaterialElement->GetMappingMode() == FbxLayerElement::eByPolygon)
+        const FbxLayerElement::EMappingMode   MappingMode   = MaterialElement->GetMappingMode();
+        const FbxLayerElement::EReferenceMode ReferenceMode = MaterialElement->GetReferenceMode();
+
+        int32 ElementIndex = 0;
+
+        switch (MappingMode)
         {
-            if (MaterialElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect || MaterialElement->GetReferenceMode() == FbxLayerElement::eIndex)
-            {
-                if (PolygonIndex >= 0 && PolygonIndex < MaterialElement->GetIndexArray().GetCount())
-                {
-                    return MaterialElement->GetIndexArray().GetAt(PolygonIndex);
-                }
-            }
+        case FbxLayerElement::eByPolygon:
+            ElementIndex = PolygonIndex;
+            break;
+
+        case FbxLayerElement::eAllSame:
+            ElementIndex = 0;
+            break;
+
+        default:
             return 0;
         }
-        if (MaterialElement->GetMappingMode() == FbxLayerElement::eAllSame)
+
+        if (ElementIndex < 0)
         {
-            if (MaterialElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect || MaterialElement->GetReferenceMode() == FbxLayerElement::eIndex)
+            return 0;
+        }
+
+        if (ReferenceMode == FbxLayerElement::eIndexToDirect || ReferenceMode == FbxLayerElement::eIndex)
+        {
+            if (ElementIndex >= 0 && ElementIndex < MaterialElement->GetIndexArray().GetCount())
             {
-                if (MaterialElement->GetIndexArray().GetCount() > 0)
-                {
-                    return MaterialElement->GetIndexArray().GetAt(0);
-                }
+                return MaterialElement->GetIndexArray().GetAt(ElementIndex);
             }
 
             return 0;
         }
 
         return 0;
-    }
+    } 
 
     // FBX material을 외부 texture path 기반 .mat 파일로 변환하고 material slot에 연결한다.
     static int32 FindOrAddFbxMaterial(
@@ -2185,29 +2282,41 @@ namespace
         FImportBuildContext&     BuildContext
         )
     {
-        const FString SlotName = FbxMaterial ? FbxMaterial->GetName() : "None";
-
-        for (int32 i = 0; i < static_cast<int32>(OutMaterials.size()); ++i)
+        if (!FbxMaterial)
         {
-            if (OutMaterials[i].MaterialSlotName == SlotName)
+            for (int32 i = 0; i < static_cast<int32>(OutMaterials.size()); ++i)
             {
-                return i;
+                if (OutMaterials[i].MaterialSlotName == "None")
+                {
+                    return i;
+                }
             }
+
+            FStaticMaterial NewMaterial;
+            NewMaterial.MaterialSlotName  = "None";
+            NewMaterial.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial("None");
+
+            OutMaterials.push_back(NewMaterial);
+            return static_cast<int32>(OutMaterials.size()) - 1;
         }
 
-        FString MaterialPath = "None";
-
-        if (FbxMaterial)
+        auto Existing = BuildContext.FbxMaterialToIndex.find(FbxMaterial);
+        if (Existing != BuildContext.FbxMaterialToIndex.end())
         {
-            const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath);
-            MaterialPath                                = ConvertFbxMaterialInfoToMat(MaterialInfo, SourceFbxPath, BuildContext);
+            return Existing->second;
         }
 
+        const FString                  SlotName     = FbxMaterial ? FbxMaterial->GetName() : "None";
+        const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath);
+        const FString                  MaterialPath = ConvertFbxMaterialInfoToMat(MaterialInfo, SourceFbxPath, BuildContext);
+       
         FStaticMaterial NewMaterial;
         NewMaterial.MaterialSlotName  = SlotName;
         NewMaterial.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath);
         OutMaterials.push_back(NewMaterial);
-        return static_cast<int32>(OutMaterials.size()) - 1;
+        const int32 NewIndex                         = static_cast<int32>(OutMaterials.size()) - 1;
+        BuildContext.FbxMaterialToIndex[FbxMaterial] = NewIndex;
+        return NewIndex;
     }
 
     // 임시 section별 index 목록을 최종 index buffer와 section 배열로 병합한다.
