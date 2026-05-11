@@ -16,6 +16,7 @@
 namespace
 {
 	FQuat GetStableWorldRotationQuat(const USceneComponent* Component);
+	bool IsActorInTargetWorld(const AActor* Actor, const USceneComponent* TargetComponent);
 }
 
 IMPLEMENT_CLASS(UGizmoComponent, UPrimitiveComponent)
@@ -310,7 +311,10 @@ void UGizmoComponent::TranslateTarget(float DragAmount)
 	{
 		for (AActor* Actor : *AllSelectedActors)
 		{
-			if (Actor) Actor->AddActorWorldOffset(ConstrainedDelta);
+			if (IsActorInTargetWorld(Actor, TargetComponent))
+			{
+				Actor->AddActorWorldOffset(ConstrainedDelta);
+			}
 		}
 	}
 	else
@@ -372,7 +376,7 @@ void UGizmoComponent::RotateTarget(float DragAmount)
 	{
 		for (AActor* Actor : *AllSelectedActors)
 		{
-			if (Actor && Actor->GetRootComponent())
+			if (IsActorInTargetWorld(Actor, TargetComponent) && Actor->GetRootComponent())
 			{
 				ApplyRotation(Actor->GetRootComponent());
 			}
@@ -411,7 +415,7 @@ void UGizmoComponent::ScaleTarget(float DragAmount)
 	{
 		for (AActor* Actor : *AllSelectedActors)
 		{
-			if (Actor && Actor->GetRootComponent())
+			if (IsActorInTargetWorld(Actor, TargetComponent) && Actor->GetRootComponent())
 			{
 				ApplyScale(Actor->GetRootComponent());
 			}
@@ -782,6 +786,11 @@ namespace
 			WorldQuat = WorldQuat * GetStableWorldRotationQuat(Parent);
 		}
 		return WorldQuat.GetNormalized();
+	}
+
+	bool IsActorInTargetWorld(const AActor* Actor, const USceneComponent* TargetComponent)
+	{
+		return Actor && TargetComponent && Actor->GetWorld() == TargetComponent->GetWorld();
 	}
 }
 

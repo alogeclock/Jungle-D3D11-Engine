@@ -91,6 +91,11 @@ namespace
 
     ID3D11ShaderResourceView *GetEditorIcon(const char *Key) { return FResourceManager::Get().FindLoadedTexture(GetEditorPathResource(Key)).Get(); }
 
+    bool IsActorInSameWorld(const AActor* Actor, const AActor* ReferenceActor)
+    {
+        return Actor && ReferenceActor && Actor->GetWorld() == ReferenceActor->GetWorld();
+    }
+
     UTexture2D *GetTexturePreviewTexture(const FString &TexturePath)
     {
         if (TexturePath.empty() || TexturePath == "None")
@@ -2250,7 +2255,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor *PrimaryActor, const TA
                         FVector Delta = FVector(PosArray[0], PosArray[1], PosArray[2]) - Pos;
                         for (AActor *Actor : SelectedActors)
                         {
-                            if (Actor)
+                            if (IsActorInSameWorld(Actor, PrimaryActor))
                                 Actor->AddActorWorldOffset(Delta);
                         }
                         EditorEngine->GetGizmo()->UpdateGizmoTransform();
@@ -2273,7 +2278,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor *PrimaryActor, const TA
                                 FRotator Delta = CachedRot - PrevRot;
                                 for (AActor *Actor : SelectedActors)
                                 {
-                                    if (!Actor || Actor == PrimaryActor)
+                                    if (!IsActorInSameWorld(Actor, PrimaryActor) || Actor == PrimaryActor)
                                         continue;
                                     USceneComponent *Root = Actor->GetRootComponent();
                                     if (Root)
@@ -2294,7 +2299,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor *PrimaryActor, const TA
                         FVector Delta = FVector(ScaleArray[0], ScaleArray[1], ScaleArray[2]) - Scale;
                         for (AActor *Actor : SelectedActors)
                         {
-                            if (Actor)
+                            if (IsActorInSameWorld(Actor, PrimaryActor))
                                 Actor->SetActorScale(Actor->GetActorScale() + Delta);
                         }
                         EditorEngine->CommitTrackedSceneChange();

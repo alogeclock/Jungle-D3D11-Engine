@@ -419,11 +419,11 @@ void FDrawCommandBuilder::Release()
 	FontGeometry.Release();
 	ScreenQuads.Release();
 
-	for (FConstantBuffer& CB : PerObjectCBPool)
+	for (auto& Pair : PerObjectCBMap)
 	{
-		CB.Release();
+		Pair.second.Release();
 	}
-	PerObjectCBPool.clear();
+	PerObjectCBMap.clear();
 
 	GridCB.Release();
 	FogCB.Release();
@@ -439,14 +439,11 @@ void FDrawCommandBuilder::Release()
 // ============================================================
 void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame, uint32 MaxProxyCount)
 {
+	(void)MaxProxyCount;
+
 	DrawCommandList.Reset();
 	CollectViewMode = Frame.RenderOptions.ViewMode;
 	bHasSelectionMaskCommands = false;
-
-	// PerObjectCBPool 미리 할당 — Collect 도중 resize로 FDrawCommand.PerObjectCB
-	// 포인터가 무효화되는 것을 방지
-	if (MaxProxyCount > 0)
-		EnsurePerObjectCBPoolCapacity(MaxProxyCount);
 
 	// 동적 지오메트리 초기화
 	EditorLines.Clear();
@@ -489,7 +486,7 @@ void FDrawCommandBuilder::ApplyMaterialRenderState(FDrawCommandRenderState& OutS
 // ============================================================
 // BuildCommandForProxy — Proxy → FDrawCommand 변환
 // ============================================================
-void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy, ERenderPass Pass)
+void FDrawCommandBuilder::BuildCommandForProxy(const FScene& Scene, const FPrimitiveSceneProxy& Proxy, ERenderPass Pass)
 {
 	if (!Proxy.GetMeshBuffer() || !Proxy.GetMeshBuffer()->IsValid()) return;
 
@@ -498,13 +495,7 @@ void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy
 	// PassState → RenderState 변환 (Wireframe 오버라이드 포함)
 	const FDrawCommandRenderState BaseRenderState = PassRenderStateTable->ToDrawCommandState(Pass, CollectViewMode);
 
-	// PerObjectCB 업데이트
-	FConstantBuffer* PerObjCB = GetPerObjectCBForProxy(Proxy);
-	if (PerObjCB && Proxy.NeedsPerObjectCBUpload())
-	{
-		PerObjCB->Update(Ctx, &Proxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
-		Proxy.ClearPerObjectCBDirty();
-	}
+	FConstantBuffer* PerObjCB = UploadPerObjectCBIfNeeded(Scene, Proxy);
 
 	// SelectionMask 커맨드 존재 추적
 	if (Pass == ERenderPass::SelectionMask)
@@ -566,7 +557,7 @@ void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy
 // ============================================================
 // BuildDecalCommandForReceiver
 // ============================================================
-void FDrawCommandBuilder::BuildDecalCommandForReceiver(const FPrimitiveSceneProxy& ReceiverProxy, const FPrimitiveSceneProxy& DecalProxy)
+void FDrawCommandBuilder::BuildDecalCommandForReceiver(const FScene& Scene, const FPrimitiveSceneProxy& ReceiverProxy, const FPrimitiveSceneProxy& DecalProxy)
 {
 	if (!ReceiverProxy.GetMeshBuffer() || !ReceiverProxy.GetMeshBuffer()->IsValid()) return;
 
@@ -578,12 +569,7 @@ void FDrawCommandBuilder::BuildDecalCommandForReceiver(const FPrimitiveSceneProx
 	const ERenderPass DecalPass = DecalProxy.GetRenderPass();
 	const FDrawCommandRenderState BaseRenderState = PassRenderStateTable->ToDrawCommandState(DecalPass, CollectViewMode);
 
-	FConstantBuffer* ReceiverPerObjCB = GetPerObjectCBForProxy(ReceiverProxy);
-	if (ReceiverPerObjCB && ReceiverProxy.NeedsPerObjectCBUpload())
-	{
-		ReceiverPerObjCB->Update(Ctx, &ReceiverProxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
-		ReceiverProxy.ClearPerObjectCBDirty();
-	}
+	FConstantBuffer* ReceiverPerObjCB = UploadPerObjectCBIfNeeded(Scene, ReceiverProxy);
 
 	// Decal Material의 CB 업로드 (PerShaderOverride 포함)
 	DecalMat->FlushDirtyBuffers(CachedDevice, Ctx);
@@ -679,9 +665,9 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 			}
 		}
 		else if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::Decal))
-			BuildDecalCommands(Proxy, Frame, Output);
+			BuildDecalCommands(Scene, Proxy, Frame, Output);
 		else
-			BuildMeshCommands(Proxy);
+			BuildMeshCommands(Scene, Proxy);
 
 		if (Proxy->IsSelected())
 			BuildSelectionCommands(Proxy, bShowBoundingVolume, Scene);
@@ -691,7 +677,7 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 // ============================================================
 // BuildDecalCommands — Decal → Receiver 순회 + 커맨드 생성
 // ============================================================
-void FDrawCommandBuilder::BuildDecalCommands(FPrimitiveSceneProxy* Proxy, const FFrameContext& Frame, const FCollectOutput& Output)
+void FDrawCommandBuilder::BuildDecalCommands(FScene& Scene, FPrimitiveSceneProxy* Proxy, const FFrameContext& Frame, const FCollectOutput& Output)
 {
 	FDecalSceneProxy* DecalProxy = static_cast<FDecalSceneProxy*>(Proxy);
 
@@ -705,19 +691,19 @@ void FDrawCommandBuilder::BuildDecalCommands(FPrimitiveSceneProxy* Proxy, const 
 		if (ReceiverProxy->HasProxyFlag(EPrimitiveProxyFlags::PerViewportUpdate))
 			ReceiverProxy->UpdatePerViewport(Frame);
 
-		BuildDecalCommandForReceiver(*ReceiverProxy, *DecalProxy);
+		BuildDecalCommandForReceiver(Scene, *ReceiverProxy, *DecalProxy);
 	}
 }
 
 // ============================================================
 // BuildMeshCommands — 일반 메시 (PreDepth + 메인 패스)
 // ============================================================
-void FDrawCommandBuilder::BuildMeshCommands(const FPrimitiveSceneProxy* Proxy)
+void FDrawCommandBuilder::BuildMeshCommands(FScene& Scene, const FPrimitiveSceneProxy* Proxy)
 {
 	if (Proxy->GetRenderPass() == ERenderPass::Opaque)
-		BuildCommandForProxy(*Proxy, ERenderPass::PreDepth);
+		BuildCommandForProxy(Scene, *Proxy, ERenderPass::PreDepth);
 
-	BuildCommandForProxy(*Proxy, Proxy->GetRenderPass());
+	BuildCommandForProxy(Scene, *Proxy, Proxy->GetRenderPass());
 }
 
 // ============================================================
@@ -726,7 +712,7 @@ void FDrawCommandBuilder::BuildMeshCommands(const FPrimitiveSceneProxy* Proxy)
 void FDrawCommandBuilder::BuildSelectionCommands(FPrimitiveSceneProxy* Proxy, bool bShowBoundingVolume, FScene& Scene)
 {
 	if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::SupportsOutline))
-		BuildCommandForProxy(*Proxy, ERenderPass::SelectionMask);
+		BuildCommandForProxy(Scene, *Proxy, ERenderPass::SelectionMask);
 
 	if (bShowBoundingVolume && Proxy->HasProxyFlag(EPrimitiveProxyFlags::ShowAABB))
 		Scene.AddDebugAABB(Proxy->GetCachedBounds().Min, Proxy->GetCachedBounds().Max, FColor::White());
@@ -1171,29 +1157,40 @@ void FDrawCommandBuilder::BuildFontCommands(EViewMode ViewMode)
 // ============================================================
 // PerObjectCB 풀 관리
 // ============================================================
-void FDrawCommandBuilder::EnsurePerObjectCBPoolCapacity(uint32 RequiredCount)
-{
-	if (PerObjectCBPool.size() >= RequiredCount)
-	{
-		return;
-	}
-
-	const size_t OldCount = PerObjectCBPool.size();
-	PerObjectCBPool.resize(RequiredCount);
-
-	for (size_t Index = OldCount; Index < PerObjectCBPool.size(); ++Index)
-	{
-		PerObjectCBPool[Index].Create(CachedDevice, sizeof(FPerObjectConstants));
-	}
-}
-
-FConstantBuffer* FDrawCommandBuilder::GetPerObjectCBForProxy(const FPrimitiveSceneProxy& Proxy)
+FConstantBuffer* FDrawCommandBuilder::GetPerObjectCBForProxy(const FScene& Scene, const FPrimitiveSceneProxy& Proxy)
 {
 	if (Proxy.GetProxyId() == UINT32_MAX)
 	{
 		return nullptr;
 	}
 
-	EnsurePerObjectCBPoolCapacity(Proxy.GetProxyId() + 1);
-	return &PerObjectCBPool[Proxy.GetProxyId()];
+	const FPerObjectCBKey Key{ &Scene, Proxy.GetProxyId() };
+	auto It = PerObjectCBMap.find(Key);
+	if (It != PerObjectCBMap.end())
+	{
+		return &It->second;
+	}
+
+	FConstantBuffer& NewBuffer = PerObjectCBMap[Key];
+	NewBuffer.Create(CachedDevice, sizeof(FPerObjectConstants));
+	NewBuffer.Update(CachedContext, &Proxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
+	Proxy.ClearPerObjectCBDirty();
+	return &NewBuffer;
+}
+
+FConstantBuffer* FDrawCommandBuilder::UploadPerObjectCBIfNeeded(const FScene& Scene, const FPrimitiveSceneProxy& Proxy)
+{
+	FConstantBuffer* PerObjCB = GetPerObjectCBForProxy(Scene, Proxy);
+	if (!PerObjCB)
+	{
+		return nullptr;
+	}
+
+	if (Proxy.NeedsPerObjectCBUpload())
+	{
+		PerObjCB->Update(CachedContext, &Proxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
+		Proxy.ClearPerObjectCBDirty();
+	}
+
+	return PerObjCB;
 }
