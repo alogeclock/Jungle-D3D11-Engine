@@ -365,6 +365,7 @@ void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 	{
 		DrawCompactPopupSectionLabel("COMMON SHOW FLAGS");
 		ImGui::Checkbox("Primitives", &Opts.ShowFlags.bPrimitives);
+		ImGui::Checkbox("Skeletal Mesh", &Opts.ShowFlags.bSkeletalMesh);
 		ImGui::Checkbox("Billboard Text", &Opts.ShowFlags.bBillboardText);
 
 		DrawCompactPopupSectionLabel("ACTOR HELPERS");

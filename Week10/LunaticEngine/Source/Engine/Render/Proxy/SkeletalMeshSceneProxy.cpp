@@ -32,6 +32,7 @@ namespace
 FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(USkinnedMeshComponent* InComponent)
 	: FPrimitiveSceneProxy(InComponent)
 {
+	ProxyFlags |= EPrimitiveProxyFlags::SkeletalMesh;
 }
 
 USkinnedMeshComponent* FSkeletalMeshSceneProxy::GetSkinnedMeshComponent() const
