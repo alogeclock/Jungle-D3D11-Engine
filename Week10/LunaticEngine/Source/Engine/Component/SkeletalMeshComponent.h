@@ -2,6 +2,8 @@
 
 #include "Component/SkinnedMeshComponent.h"
 
+class FPrimitiveSceneProxy;
+
 class USkeletalMeshComponent : public USkinnedMeshComponent
 {
 public:
@@ -9,6 +11,11 @@ public:
 
 	USkeletalMeshComponent() = default;
 	~USkeletalMeshComponent() override = default;
+
+	FMeshBuffer* GetMeshBuffer() const override;
+	FMeshDataView GetMeshDataView() const override;
+	void UpdateWorldAABB() const override;
+	FPrimitiveSceneProxy* CreateSceneProxy() override;
 
 	USkeletalMesh* SkeletalMeshAsset = nullptr;
 	FString SkeletalMeshAssetPath = "None";
@@ -48,6 +55,9 @@ public:
 	bool ShouldShowSkeleton() const { return bShowSkeleton; }
 	bool ShouldShowBoneNames() const { return bShowBoneNames; }
 
+	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh);
+	void EnsureMaterialSlotsForEditing();
+
 	void Serialize(FArchive& Ar) override;
 	void PostDuplicate() override;
 	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
@@ -56,4 +66,10 @@ public:
 private:
 	void SyncSkinnedAssetPathFromSkeletalMesh();
 	void MarkSkeletalPoseDirty();
+	void CacheLocalBounds();
+
+private:
+	FVector CachedLocalCenter = { 0.0f, 0.0f, 0.0f };
+	FVector CachedLocalExtent = { 0.5f, 0.5f, 0.5f };
+	bool bHasValidBounds = false;
 };

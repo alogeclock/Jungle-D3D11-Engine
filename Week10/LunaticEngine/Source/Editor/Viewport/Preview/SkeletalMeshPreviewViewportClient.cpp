@@ -23,14 +23,7 @@ void FSkeletalMeshPreviewViewportClient::SetSkeletalMesh(USkeletalMesh* InSkelet
 
 	if (PreviewComponent)
 	{
-		PreviewComponent->SkeletalMeshAsset = PreviewSkeletalMesh;
-		PreviewComponent->SkinnedAsset = PreviewSkeletalMesh;
-		PreviewComponent->SkeletalMeshAssetPath = PreviewSkeletalMesh ? PreviewSkeletalMesh->GetAssetPathFileName() : "None";
-		PreviewComponent->SkinnedMeshAssetPath = PreviewComponent->SkeletalMeshAssetPath;
-		PreviewComponent->bRequiredBonesUpdated = true;
-		PreviewComponent->bSkinningDirty = true;
-		PreviewComponent->bPoseDirty = true;
-		PreviewComponent->bBoundsDirty = true;
+		PreviewComponent->SetSkeletalMesh(PreviewSkeletalMesh);
 	}
 
 	FocusPreviewMesh();
