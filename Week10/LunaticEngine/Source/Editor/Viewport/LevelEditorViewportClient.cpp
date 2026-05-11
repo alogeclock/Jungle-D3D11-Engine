@@ -62,6 +62,7 @@ namespace
 	bool GetUIScreenComponentBounds(const USceneComponent* Component, float& OutX, float& OutY, float& OutWidth, float& OutHeight);
 	bool GetUIScreenComponentPosition(const USceneComponent* Component, FVector& OutPosition);
 	bool SetUIScreenComponentPosition(USceneComponent* Component, const FVector& InPosition);
+	bool ConvertMouseToViewportPixelUnclamped(const ImVec2& Pos, const FRect& Rect, const FViewport* Viewport, float FallbackW, float FallbackH, float& OutX, float& OutY);
 	bool TryConvertMouseToViewportPixel(const ImVec2& Pos,const FRect& Rect, const FViewport* Viewport, float FallbackW, float FallbackH, float& OutX, float& OutY);
 	bool TryConvertPixelToScreen(float PX, float PY, const FRect& ScreenRect, const FViewport* Viewport, float FallbackW, float FallbackH, float& OutX, float& OutY);
 	bool ProjectWorldToViewport(const FMatrix& ViewProjection, const FVector& WorldPosition, float ViewportWidth, float ViewportHeight, float& OutScreenX, float& OutScreenY, float& OutDepth);
@@ -599,7 +600,7 @@ void FLevelEditorViewportClient::TickInteraction(const FInputSystemSnapshot& Sna
 	const float VPHeight = Viewport ? static_cast<float>(Viewport->GetHeight()) : WindowHeight;
 	float LocalMouseX = 0.0f;
 	float LocalMouseY = 0.0f;
-	if (!TryConvertMouseToViewportPixel(MousePos, ViewportScreenRect, Viewport, WindowWidth, WindowHeight, LocalMouseX, LocalMouseY))
+	if (!ConvertMouseToViewportPixelUnclamped(MousePos, ViewportScreenRect, Viewport, WindowWidth, WindowHeight, LocalMouseX, LocalMouseY))
 	{
 		LocalMouseX = MousePos.x - ViewportScreenRect.X;
 		LocalMouseY = MousePos.y - ViewportScreenRect.Y;
@@ -1000,6 +1001,10 @@ void FLevelEditorViewportClient::UpdateUIScreenTranslateDrag(const ImVec2& Mouse
 	if (TryConvertMouseToViewportPixel(MousePos, ViewportScreenRect, Viewport, WindowWidth, WindowHeight, ViewportMouseX, ViewportMouseY))
 	{
 		CurrentMouseInViewport = ImVec2(ViewportMouseX, ViewportMouseY);
+	}
+	else
+	{
+		return;
 	}
 
 	const ImVec2 Delta(CurrentMouseInViewport.x - LastUIScreenGizmoMousePos.x, CurrentMouseInViewport.y - LastUIScreenGizmoMousePos.y);
@@ -1467,6 +1472,29 @@ namespace
 		});
 	}
 
+	bool ConvertMouseToViewportPixelUnclamped(const ImVec2& Pos, const FRect& Rect, const FViewport* Viewport, float FallbackW, float FallbackH, float& OutX, float& OutY)
+	{
+		if (Rect.Width <= 0.0f || Rect.Height <= 0.0f)
+		{
+			return false;
+		}
+
+		const float LocalX = Pos.x - Rect.X;
+		const float LocalY = Pos.y - Rect.Y;
+		const float TargetWidth = Viewport ? static_cast<float>(Viewport->GetWidth()) : FallbackW;
+		const float TargetHeight = Viewport ? static_cast<float>(Viewport->GetHeight()) : FallbackH;
+		if (TargetWidth <= 0.0f || TargetHeight <= 0.0f)
+		{
+			return false;
+		}
+
+		const float ScaleX = TargetWidth / Rect.Width;
+		const float ScaleY = TargetHeight / Rect.Height;
+		OutX = LocalX * ScaleX;
+		OutY = LocalY * ScaleY;
+		return true;
+	}
+
 	bool TryConvertMouseToViewportPixel(const ImVec2& Pos, const FRect& Rect, const FViewport* Viewport, float FallbackW, float FallbackH, float& OutX, float& OutY)
 	{
 		if (Rect.Width <= 0.0f || Rect.Height <= 0.0f)
@@ -1481,18 +1509,7 @@ namespace
 			return false;
 		}
 
-		const float TargetWidth = Viewport ? static_cast<float>(Viewport->GetWidth()) : FallbackW;
-		const float TargetHeight = Viewport ? static_cast<float>(Viewport->GetHeight()) : FallbackH;
-		if (TargetWidth <= 0.0f || TargetHeight <= 0.0f)
-		{
-			return false;
-		}
-
-		const float ScaleX = TargetWidth / Rect.Width;
-		const float ScaleY = TargetHeight / Rect.Height;
-		OutX = LocalX * ScaleX;
-		OutY = LocalY * ScaleY;
-		return true;
+		return ConvertMouseToViewportPixelUnclamped(Pos, Rect, Viewport, FallbackW, FallbackH, OutX, OutY);
 	}
 
 	bool TryConvertPixelToScreen(float PX, float PY, const FRect& ScreenRect, const FViewport* Viewport, float FallbackW, float FallbackH, float& OutX, float& OutY)

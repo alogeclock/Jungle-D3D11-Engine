@@ -10,7 +10,13 @@
 #include "Collision/RayUtils.h"
 #include "Render/Proxy/GizmoSceneProxy.h"
 #include "Render/Scene/FScene.h"
+#include <algorithm>
 #include <cfloat>
+
+namespace
+{
+	FQuat GetStableWorldRotationQuat(const USceneComponent* Component);
+}
 
 IMPLEMENT_CLASS(UGizmoComponent, UPrimitiveComponent)
 HIDE_FROM_COMPONENT_LIST(UGizmoComponent)
@@ -438,12 +444,7 @@ void UGizmoComponent::SetTargetScale(FVector NewScale)
 {
 	if (!TargetComponent) return;
 
-	FVector SafeScale = NewScale;
-	if (SafeScale.X < 0.001f) SafeScale.X = 0.001f;
-	if (SafeScale.Y < 0.001f) SafeScale.Y = 0.001f;
-	if (SafeScale.Z < 0.001f) SafeScale.Z = 0.001f;
-
-	TargetComponent->SetRelativeScale(SafeScale);
+	TargetComponent->SetRelativeScale(NewScale);
 }
 
 bool UGizmoComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
@@ -571,7 +572,16 @@ void UGizmoComponent::UpdateLinearDrag(const FRay& Ray)
 
 	FVector AxisVector = GetVectorForAxis(SelectedAxis);
 
-	FVector PlaneNormal = AxisVector.Cross(Ray.Direction);
+	FVector ViewDir = (GetWorldLocation() - Ray.Origin);
+	ViewDir.Normalize();
+
+	FVector PlaneNormal = AxisVector.Cross(ViewDir);
+	if (PlaneNormal.IsNearlyZero())
+	{
+		PlaneNormal = AxisVector.Cross(FVector::UpVector);
+	}
+	PlaneNormal.Normalize();
+
 	FVector ProjectDir = PlaneNormal.Cross(AxisVector);
 
 	float Denom = Ray.Direction.Dot(ProjectDir);
@@ -666,32 +676,42 @@ void UGizmoComponent::UpdateAngularDrag(const FRay& Ray)
 
 	float DeltaAngle = Sign * AngleRadians;
 
-	HandleDrag(DeltaAngle);
-
-	LastIntersectionLocation = CurrentIntersectionLocation;
+	constexpr float AngularThreshold = 0.001f;
+	if (std::abs(DeltaAngle) > AngularThreshold)
+	{
+		HandleDrag(DeltaAngle);
+		LastIntersectionLocation = CurrentIntersectionLocation;
+	}
 }
 
 void UGizmoComponent::UpdateHoveredAxis(int Index)
 {
+	if (IsHolding() || IsPressedOnHandle())
+	{
+		return;
+	}
+
 	if (Index < 0)
 	{
-		if (IsHolding() == false) SelectedAxis = -1;
+		SelectedAxis = -1;
 	}
 	else
 	{
-		if (IsHolding() == false)
+		if (!MeshData)
 		{
-			uint32 VertexIndex = MeshData->Indices[Index];
-			uint32 HitAxis = MeshData->Vertices[VertexIndex].SubID;
+			SelectedAxis = -1;
+			return;
+		}
 
-			if (HitAxis == 3 || (AxisMask & (1u << HitAxis)))
-			{
-				SelectedAxis = HitAxis;
-			}
-			else
-			{
-				SelectedAxis = -1;
-			}
+		uint32 VertexIndex = MeshData->Indices[Index];
+		uint32 HitAxis = MeshData->Vertices[VertexIndex].SubID;
+		if (HitAxis == 3 || (AxisMask & (1u << HitAxis)))
+		{
+			SelectedAxis = HitAxis;
+		}
+		else
+		{
+			SelectedAxis = -1;
 		}
 	}
 }
@@ -727,6 +747,7 @@ void UGizmoComponent::DragEnd()
 	ResetSnapAccumulation();
 	SetHolding(false);
 	SetPressedOnHandle(false);
+	SelectedAxis = -1;
 }
 
 void UGizmoComponent::SetNextMode()
@@ -741,6 +762,24 @@ void UGizmoComponent::UpdateGizmoMode(EGizmoMode NewMode)
 {
 	CurMode = NewMode;
 	UpdateGizmoTransform();
+}
+
+namespace
+{
+	FQuat GetStableWorldRotationQuat(const USceneComponent* Component)
+	{
+		if (!Component)
+		{
+			return FQuat::Identity;
+		}
+
+		FQuat WorldQuat = Component->GetRelativeQuat();
+		if (const USceneComponent* Parent = Component->GetParent())
+		{
+			WorldQuat = WorldQuat * GetStableWorldRotationQuat(Parent);
+		}
+		return WorldQuat.GetNormalized();
+	}
 }
 
 void UGizmoComponent::UpdateGizmoTransform()
@@ -768,7 +807,7 @@ void UGizmoComponent::UpdateGizmoTransform()
 	FRotator DesiredRotation = FRotator();
 	if (CurMode == EGizmoMode::Scale || !bIsWorldSpace)
 	{
-		DesiredRotation = TargetComponent->GetWorldMatrix().ToRotator();
+		DesiredRotation = GetStableWorldRotationQuat(TargetComponent).ToRotator();
 	}
 
 	const FMeshData* DesiredMeshData = nullptr;

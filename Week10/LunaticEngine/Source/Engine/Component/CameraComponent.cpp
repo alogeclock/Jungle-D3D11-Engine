@@ -123,7 +123,7 @@ FRay UCameraComponent::DeprojectScreenToWorld(float MouseX, float MouseY, float 
 	}
 	else
 	{
-		Ray.Origin = GetWorldLocation();
+		Ray.Origin = WorldNear;
 		Ray.Direction = Dir;
 	}
 
