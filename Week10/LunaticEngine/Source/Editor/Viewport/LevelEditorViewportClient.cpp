@@ -24,8 +24,11 @@
 #include "Component/StaticMeshComponent.h"
 #include "Component/UIImageComponent.h"
 #include "Component/UIScreenTextComponent.h"
+#include "Engine/Camera/PlayerCameraManager.h"
 #include "GameFramework/AActor.h"
+#include "GameFramework/GameModeBase.h"
 #include "GameFramework/World.h"
+#include "Render/Types/FrameContext.h"
 
 #include <algorithm>
 #include <cfloat>
@@ -404,6 +407,70 @@ void FLevelEditorViewportClient::SetLightViewOverride(ULightComponentBase* Light
 	if (Light && SelectionManager)
 	{
 		SelectionManager->ClearSelection();
+	}
+}
+
+// 기존의 EditorRenderPipeline 중앙 제어식 BuildFrame 방식에서 개별 ViewportClient가 FrameContext를 다형성으로 채우도록 개선
+void FLevelEditorViewportClient::SetupFrameContext(FFrameContext& OutFrame, UCameraComponent* InCamera, FViewport* InVP, UWorld* InWorld)
+{
+	OutFrame.ClearViewportResources();
+	const FMinimalViewInfo* ActivePOV = nullptr;
+	if (InWorld)
+	{
+		if (AGameModeBase* GameMode = InWorld->GetAuthGameMode())
+		{
+			if (APlayerCameraManager* CameraManager = GameMode->GetPlayerCameraManager();
+				CameraManager && CameraManager->HasValidCameraCachePOV())
+			{
+				ActivePOV = &CameraManager->GetCameraCachePOV();
+			}
+		}
+	}
+
+	if (ActivePOV)
+	{
+		OutFrame.SetCameraInfo(*ActivePOV);
+	}
+	else
+	{
+		OutFrame.SetCameraInfo(InCamera);
+	}
+
+	// Light View Override — 라이트 시점으로 View/Proj 교체
+	if (IsViewingFromLight())
+	{
+		ULightComponentBase* Light = GetLightViewOverride();
+		if (Light && Light->GetOwner())
+		{
+			FLightViewProjResult LVP;
+			if (Light->GetLightViewProj(LVP, InCamera, GetPointLightFaceIndex()))
+			{
+				OutFrame.View = LVP.View;
+				OutFrame.Proj = LVP.Proj;
+				OutFrame.bIsOrtho = LVP.bIsOrtho;
+				OutFrame.CameraPosition = Light->GetWorldLocation();
+				OutFrame.CameraForward = Light->GetForwardVector();
+				OutFrame.FrustumVolume.UpdateFromMatrix(OutFrame.View * OutFrame.Proj);
+			}
+		}
+	}
+
+	OutFrame.bIsLightView = IsViewingFromLight();
+	OutFrame.SetRenderOptions(GetRenderOptions());
+	OutFrame.SetViewportInfo(InVP);
+
+	const FMinimalViewInfo& CameraState = ActivePOV ? *ActivePOV : InCamera->GetCameraState();
+	const float AR = CameraState.bConstrainAspectRatio
+		? CameraState.LetterBoxingAspectW / CameraState.LetterBoxingAspectH
+		: CameraState.AspectRatio;
+	OutFrame.ApplyConstrainedAR(AR);
+	OutFrame.LODContext = InWorld ? InWorld->PrepareLODContext() : FLODUpdateContext();
+
+	// Cursor position relative to viewport (for 2.5D culling visualization)
+	if (!GetCursorViewportPosition(OutFrame.CursorViewportX, OutFrame.CursorViewportY))
+	{
+		OutFrame.CursorViewportX = UINT32_MAX;
+		OutFrame.CursorViewportY = UINT32_MAX;
 	}
 }
 

@@ -25,13 +25,8 @@ public:
 	void OnSceneCleared() override;
 
 private:
-	void RenderEditorViewport(FLevelEditorViewportClient* VC, FRenderer& Renderer);
-	void RenderPreviewViewport(FPreviewViewportClient* VC, FRenderer& Renderer);
-
+	void RenderViewport(FViewportClient* VC, FRenderer& Renderer);
 	void PrepareViewport(FViewport* VP, UCameraComponent* Camera, ID3D11DeviceContext* Ctx);
-	void BuildFrame(FViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World);
-	void BuildEditorFrame(FLevelEditorViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World);
-	void BuildPreviewFrame(FPreviewViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World);
 	void CollectCommands(UWorld* World, FRenderer& Renderer, FCollectOutput& Output);
 
 	FGPUOcclusionCulling& GetOcclusionForViewport(FLevelEditorViewportClient* VC);

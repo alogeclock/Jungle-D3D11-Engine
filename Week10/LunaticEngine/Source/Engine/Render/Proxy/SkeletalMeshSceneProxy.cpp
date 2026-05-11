@@ -132,6 +132,10 @@ void FSkeletalMeshSceneProxy::RebuildSectionDraws()
 			Draw.Material = !Overrides.empty() && Overrides[0]
 				? Overrides[0]
 				: (!Slots.empty() && Slots[0].MaterialInterface ? Slots[0].MaterialInterface : FMaterialManager::Get().GetOrCreateMaterial("None"));
+			if (Draw.Material)
+			{
+				Draw.Material->RebuildCachedSRVs();
+			}
 			Draw.FirstIndex = 0;
 			Draw.IndexCount = LODData[LODIndex].MeshBuffer->GetIndexBuffer().GetIndexCount();
 			LODData[LODIndex].SectionDraws.push_back(Draw);
@@ -144,6 +148,10 @@ void FSkeletalMeshSceneProxy::RebuildSectionDraws()
 			Draw.FirstIndex = Section.FirstIndex;
 			Draw.IndexCount = Section.NumTriangles * 3;
 			Draw.Material = ResolveMaterialForSection(Section);
+			if (Draw.Material)
+			{
+				Draw.Material->RebuildCachedSRVs();
+			}
 			LODData[LODIndex].SectionDraws.push_back(Draw);
 		}
 

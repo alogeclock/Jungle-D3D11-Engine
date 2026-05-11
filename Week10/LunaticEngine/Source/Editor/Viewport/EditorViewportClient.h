@@ -16,6 +16,8 @@ class FEditorSettings;
 class FViewport;
 class FWindowsWindow;
 class UCameraComponent;
+class UWorld;
+struct FFrameContext;
 
 class FEditorViewportClient : public FViewportClient
 {
@@ -25,6 +27,8 @@ public:
 
 	void Initialize(FWindowsWindow* InWindow);
 	void SetSettings(const FEditorSettings* InSettings) { Settings = InSettings; }
+
+	virtual void SetupFrameContext(FFrameContext& OutFrame, UCameraComponent* InCamera, FViewport* InVP, UWorld* InWorld) = 0;
 
 	FViewportRenderOptions& GetRenderOptions() { return RenderOptions; }
 	const FViewportRenderOptions& GetRenderOptions() const { return RenderOptions; }

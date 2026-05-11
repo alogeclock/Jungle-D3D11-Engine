@@ -8,6 +8,7 @@
 #include "Component/CameraComponent.h"
 #include "Math/MathUtils.h"
 #include "Object/Object.h"
+#include "Render/Types/FrameContext.h"
 #include "Viewport/Viewport.h"
 
 #include <algorithm>
@@ -47,6 +48,25 @@ FPreviewViewportClient::~FPreviewViewportClient()
 	delete ActionPreviewOrbit;
 }
 
+// 기존의 EditorRenderPipeline 중앙 제어식 BuildFrame 방식에서 개별 ViewportClient가 FrameContext를 다형성으로 채우도록 개선
+void FPreviewViewportClient::SetupFrameContext(FFrameContext& OutFrame, UCameraComponent* InCamera, FViewport* InVP, UWorld* InWorld)
+{
+	OutFrame.ClearViewportResources();
+	OutFrame.SetCameraInfo(InCamera);
+	OutFrame.bIsLightView = false;
+	OutFrame.SetRenderOptions(GetRenderOptions());
+	OutFrame.SetViewportInfo(InVP);
+
+	const FMinimalViewInfo& CameraState = InCamera->GetCameraState();
+	const float AR = CameraState.bConstrainAspectRatio
+		? CameraState.LetterBoxingAspectW / CameraState.LetterBoxingAspectH
+		: CameraState.AspectRatio;
+	OutFrame.ApplyConstrainedAR(AR);
+	OutFrame.LODContext = InWorld ? InWorld->PrepareLODContext() : FLODUpdateContext();
+	OutFrame.CursorViewportX = UINT32_MAX;
+	OutFrame.CursorViewportY = UINT32_MAX;
+}
+
 void FPreviewViewportClient::Initialize(FWindowsWindow* InWindow)
 {
 	Window = InWindow;
@@ -59,26 +79,20 @@ void FPreviewViewportClient::Initialize(FWindowsWindow* InWindow)
 	}
 }
 
+// 프리뷰 카메라를 에디터 기본 상태로 복원하고 보간 상태를 초기화한다.
 void FPreviewViewportClient::CreateCamera()
 {
-	DestroyCamera();
-	Camera = UObjectManager::Get().CreateObject<UCameraComponent>();
+	FEditorViewportClient::CreateCamera();
 	ResetCamera();
 }
 
 void FPreviewViewportClient::DestroyCamera()
 {
-	if (Camera)
-	{
-		UObjectManager::Get().DestroyObject(Camera);
-		Camera = nullptr;
-	}
-
+	FEditorViewportClient::DestroyCamera();
 	bTargetLocationInitialized = false;
 	bLastAppliedCameraLocationInitialized = false;
 }
 
-// 프리뷰 카메라를 에디터 기본 상태로 복원하고 보간 상태를 초기화한다.
 void FPreviewViewportClient::ResetCamera()
 {
 	if (!Camera)
@@ -96,6 +110,12 @@ void FPreviewViewportClient::ResetCamera()
 }
 
 // 매 프레임 카메라가 부드럽게 이동하도록 보간 이동시킵니다.
+void FPreviewViewportClient::SetViewportRect(float X, float Y, float Width, float Height)
+{
+	ViewportScreenRect = { X, Y, Width, Height };
+	SetViewportSize(Width, Height);
+}
+
 void FPreviewViewportClient::Tick(float DeltaTime)
 {
 	PreviewScene.Tick(DeltaTime);
@@ -119,44 +139,6 @@ bool FPreviewViewportClient::HandleInputSnapshot(const FInputSystemSnapshot& Sna
 
 	TickInput(Snapshot, DeltaTime);
 	return true;
-}
-
-// 프리뷰 뷰포트의 활성화 상태에 따라 Keyboard 라우팅 상태를 업데이트합니다.
-void FPreviewViewportClient::SetActive(bool bInActive)
-{
-	bIsActive = bInActive;
-	if (bIsActive)
-	{
-		FInputRouter::Get().SetKeyboardFocusedViewport(this);
-	}
-	else if (FInputRouter::Get().GetKeyboardFocusedViewport() == this)
-	{
-		FInputRouter::Get().SetKeyboardFocusedViewport(nullptr);
-	}
-}
-
-// InputRouter가 마우스 호버 상태에 따라 뷰포트를 타게팅할 수 있도록 업데이트합니다.
-void FPreviewViewportClient::SetHovered(bool bInHovered)
-{
-	bIsHovered = bInHovered;
-	if (bIsHovered)
-	{
-		FInputRouter::Get().SetHoveredViewport(this);
-	}
-	else if (FInputRouter::Get().GetHoveredViewport() == this)
-	{
-		FInputRouter::Get().SetHoveredViewport(nullptr);
-	}
-}
-
-void FPreviewViewportClient::SetViewportRect(float X, float Y, float Width, float Height)
-{
-	ViewportScreenRect = { X, Y, Width, Height };
-
-	if (Camera)
-	{
-		Camera->OnResize(static_cast<int32>(Width), static_cast<int32>(Height));
-	}
 }
 
 void FPreviewViewportClient::SetOrbitTarget(const FVector& InTarget)

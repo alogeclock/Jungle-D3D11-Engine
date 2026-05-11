@@ -72,14 +72,14 @@ void FEditorRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 	{
 		if (!Editor->ShouldRenderViewportClient(ViewportClient)) continue;
 		SCOPE_STAT_CAT("RenderEditorViewport", "2_Render");
-		RenderEditorViewport(ViewportClient, Renderer);
+		RenderViewport(ViewportClient, Renderer);
 	}
 
 	for (FPreviewViewportClient* ViewportClient : Editor->GetPreviewViewportClients())
 	{
 		if (!ViewportClient) continue;
 		SCOPE_STAT_CAT("RenderPreviewViewport", "2_Render");
-		RenderPreviewViewport(ViewportClient, Renderer);
+		RenderViewport(ViewportClient, Renderer);
 	}
 
 	// 스왑체인 백버퍼 복귀 → ImGui 합성 → Present
@@ -99,96 +99,99 @@ void FEditorRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 	}
 }
 
-void FEditorRenderPipeline::RenderEditorViewport(FLevelEditorViewportClient* VC, FRenderer& Renderer)
+void FEditorRenderPipeline::RenderViewport(FViewportClient* VC, FRenderer& Renderer)
 {
-	UCameraComponent* Camera = VC->GetCamera();
-	UWorld* World = Editor->GetWorld();
-	if (!World) return;
+	if (!VC) return;
 
-	// PIE 고려한 구조.
-	if (Editor && Editor->IsPIEPossessedMode())
+	UWorld* World = nullptr;
+	UCameraComponent* Camera = nullptr;
+	FViewport* VP = nullptr;
+	FGPUOcclusionCulling* Occlusion = nullptr;
+
+	if (FLevelEditorViewportClient* LevelVC = dynamic_cast<FLevelEditorViewportClient*>(VC))
 	{
-		if (UGameViewportClient* GameViewportClient = Editor->GetGameViewportClient())
+		World = Editor->GetWorld();
+		Camera = LevelVC->GetCamera();
+		VP = LevelVC->GetViewport();
+		Occlusion = &GetOcclusionForViewport(LevelVC);
+
+		// PIE 고려한 카메라 결정 로직
+		if (Editor && Editor->IsPIEPossessedMode())
 		{
-			if (UCameraComponent* GameCamera = GameViewportClient->GetDrivingCamera())
+			if (UGameViewportClient* GameViewportClient = Editor->GetGameViewportClient())
 			{
-				if (IsAliveObject(GameCamera) && GameCamera->GetWorld() == World)
+				if (UCameraComponent* GameCamera = GameViewportClient->GetDrivingCamera())
 				{
-					Camera = GameCamera;
+					if (IsAliveObject(GameCamera) && GameCamera->GetWorld() == World)
+					{
+						Camera = GameCamera;
+					}
 				}
 			}
-		}
 
-		if (!Camera || !IsAliveObject(Camera) || Camera->GetWorld() != World)
-		{
-			Camera = World->GetActiveCamera();
+			if (!Camera || !IsAliveObject(Camera) || Camera->GetWorld() != World)
+			{
+				Camera = (World ? World->GetActiveCamera() : nullptr);
+			}
 		}
 	}
+	else if (FPreviewViewportClient* PreviewVC = dynamic_cast<FPreviewViewportClient*>(VC))
+	{
+		World = PreviewVC->GetWorld();
+		Camera = PreviewVC->GetCamera();
+		VP = PreviewVC->GetViewport();
+	}
 
-	if (!Camera || !IsAliveObject(Camera)) return;
-	if (Editor && Editor->IsPlayingInEditor() && Camera->GetWorld() != World) return;
-	if (!Camera) return;
-
-	FViewport* VP = VC->GetViewport();
-	if (!VP) return;
+	if (!World || !Camera || !IsAliveObject(Camera) || !VP) return;
 
 	ID3D11DeviceContext* Ctx = Renderer.GetFD3DDevice().GetDeviceContext();
 	if (!Ctx) return;
 
-	FGPUOcclusionCulling& GPUOcclusion = GetOcclusionForViewport(VC);
-
-	// GPU Occlusion — 이전 프레임 결과 읽기 (이 뷰포트 전용)
-	GPUOcclusion.ReadbackResults(Ctx);
+	// GPU Occlusion — 이전 프레임 결과 읽기 (LevelEditor 전용)
+	if (Occlusion)
+	{
+		Occlusion->ReadbackResults(Ctx);
+	}
 
 	PrepareViewport(VP, Camera, Ctx);
-	BuildFrame(VC, Camera, VP, World);
+	
+	if (FEditorViewportClient* EVC = dynamic_cast<FEditorViewportClient*>(VC))
+	{
+		EVC->SetupFrameContext(Frame, Camera, VP, World);
+	}
+	else
+	{
+		Frame.ClearViewportResources();
+		if (Camera)
+		{
+			Frame.SetCameraInfo(Camera);
+		}
+		Frame.SetViewportInfo(VP);
+	}
+
+	// 파이프라인 전용 설정 주입 (Occlusion)
+	Frame.OcclusionCulling = Occlusion;
 
 	FCollectOutput Output;
 	CollectCommands(World, Renderer, Output);
 
 	FScene& Scene = World->GetScene();
 
-	// GPU 정렬 + 제출
 	{
 		SCOPE_STAT_CAT("Renderer.Render", "4_ExecutePass");
 		Renderer.Render(Frame, Scene);
 	}
 
-	// GPU Occlusion — Render 후 DepthBuffer가 유효할 때 디스패치 (이 뷰포트 전용)
+	// GPU Occlusion — Render 후 DepthBuffer가 유효할 때 디스패치 (LevelEditor 전용)
+	if (Occlusion)
 	{
 		SCOPE_STAT_CAT("GPUOcclusion", "4_ExecutePass");
-		GPUOcclusion.DispatchOcclusionTest(
+		Occlusion->DispatchOcclusionTest(
 			Ctx,
 			VP->GetDepthCopySRV(),
 			Output.FrustumVisibleProxies,
 			Frame.View, Frame.Proj,
 			VP->GetWidth(), VP->GetHeight());
-	}
-}
-
-void FEditorRenderPipeline::RenderPreviewViewport(FPreviewViewportClient* VC, FRenderer& Renderer)
-{
-	UWorld* World = VC ? VC->GetWorld() : nullptr;
-	UCameraComponent* Camera = VC ? VC->GetCamera() : nullptr;
-	if (!World || !Camera || !IsAliveObject(Camera)) return;
-
-	FViewport* VP = VC->GetViewport();
-	if (!VP) return;
-
-	ID3D11DeviceContext* Ctx = Renderer.GetFD3DDevice().GetDeviceContext();
-	if (!Ctx) return;
-
-	PrepareViewport(VP, Camera, Ctx);
-	BuildFrame(VC, Camera, VP, World);
-
-	FCollectOutput Output;
-	CollectCommands(World, Renderer, Output);
-
-	FScene& Scene = World->GetScene();
-
-	{
-		SCOPE_STAT_CAT("Renderer.RenderPreview", "4_ExecutePass");
-		Renderer.Render(Frame, Scene);
 	}
 }
 
@@ -203,117 +206,6 @@ void FEditorRenderPipeline::PrepareViewport(FViewport* VP, UCameraComponent* Cam
 	}
 	const float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	VP->BeginRender(Ctx, ClearColor);
-}
-
-// ============================================================
-// BuildFrame — FFrameContext 일괄 설정
-// ============================================================
-void FEditorRenderPipeline::BuildFrame(FViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
-{
-	if (FLevelEditorViewportClient* LevelVC = dynamic_cast<FLevelEditorViewportClient*>(VC))
-	{
-		BuildEditorFrame(LevelVC, Camera, VP, World);
-		return;
-	}
-
-	if (FPreviewViewportClient* PreviewVC = dynamic_cast<FPreviewViewportClient*>(VC))
-	{
-		BuildPreviewFrame(PreviewVC, Camera, VP, World);
-		return;
-	}
-
-	Frame.ClearViewportResources();
-	if (Camera)
-	{
-		Frame.SetCameraInfo(Camera);
-	}
-	Frame.SetViewportInfo(VP);
-}
-
-void FEditorRenderPipeline::BuildEditorFrame(FLevelEditorViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
-{
-	Frame.ClearViewportResources();
-	const FMinimalViewInfo* ActivePOV = nullptr;
-	if (World)
-	{
-		if (AGameModeBase* GameMode = World->GetAuthGameMode())
-		{
-			if (APlayerCameraManager* CameraManager = GameMode->GetPlayerCameraManager();
-				CameraManager && CameraManager->HasValidCameraCachePOV())
-			{
-				ActivePOV = &CameraManager->GetCameraCachePOV();
-			}
-		}
-	}
-
-	if (ActivePOV)
-	{
-		Frame.SetCameraInfo(*ActivePOV);
-	}
-	else
-	{
-		Frame.SetCameraInfo(Camera);
-	}
-
-	// Light View Override — 라이트 시점으로 View/Proj 교체
-	if (VC->IsViewingFromLight())
-	{
-		ULightComponentBase* Light = VC->GetLightViewOverride();
-		if (!Light || !Light->GetOwner())
-		{
-			VC->ClearLightViewOverride();
-		}
-		else
-		{
-			FLightViewProjResult LVP;
-			if (Light->GetLightViewProj(LVP, Camera, VC->GetPointLightFaceIndex()))
-			{
-				Frame.View = LVP.View;
-				Frame.Proj = LVP.Proj;
-				Frame.bIsOrtho = LVP.bIsOrtho;
-				Frame.CameraPosition = Light->GetWorldLocation();
-				Frame.CameraForward = Light->GetForwardVector();
-				Frame.FrustumVolume.UpdateFromMatrix(Frame.View * Frame.Proj);
-			}
-		}
-	}
-
-	Frame.bIsLightView = VC->IsViewingFromLight();
-	Frame.SetRenderOptions(VC->GetRenderOptions());
-	Frame.SetViewportInfo(VP);
-	const FMinimalViewInfo& CameraState = ActivePOV ? *ActivePOV : Camera->GetCameraState();
-	const float AR = CameraState.bConstrainAspectRatio
-		? CameraState.LetterBoxingAspectW / CameraState.LetterBoxingAspectH
-		: CameraState.AspectRatio;
-	Frame.ApplyConstrainedAR(AR);
-	Frame.OcclusionCulling = &GetOcclusionForViewport(VC);
-	Frame.LODContext = World->PrepareLODContext();
-
-	// Cursor position relative to viewport (for 2.5D culling visualization)
-	if (!VC->GetCursorViewportPosition(Frame.CursorViewportX, Frame.CursorViewportY))
-	{
-		Frame.CursorViewportX = UINT32_MAX;
-		Frame.CursorViewportY = UINT32_MAX;
-	}
-}
-
-void FEditorRenderPipeline::BuildPreviewFrame(FPreviewViewportClient* VC, UCameraComponent* Camera, FViewport* VP, UWorld* World)
-{
-	Frame.ClearViewportResources();
-	Frame.SetCameraInfo(Camera);
-	Frame.bIsLightView = false;
-	Frame.SetRenderOptions(VC->GetRenderOptions());
-	Frame.SetViewportInfo(VP);
-
-	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
-	const float AR = CameraState.bConstrainAspectRatio
-		? CameraState.LetterBoxingAspectW / CameraState.LetterBoxingAspectH
-		: CameraState.AspectRatio;
-	Frame.ApplyConstrainedAR(AR);
-	Frame.OcclusionCulling = nullptr;
-	Frame.LODContext = World->PrepareLODContext();
-	Frame.CursorViewportX = UINT32_MAX;
-	Frame.CursorViewportY = UINT32_MAX;
 }
 
 // ============================================================

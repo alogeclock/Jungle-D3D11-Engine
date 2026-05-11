@@ -79,6 +79,11 @@ void FSkeletalMeshPreviewViewportClient::CreatePreviewComponent()
 
 void FSkeletalMeshPreviewViewportClient::DestroyPreviewComponent()
 {
+	if (PreviewComponent)
+	{
+		PreviewComponent->DestroyRenderState();
+	}
+
 	if (PreviewActor)
 	{
 		GetPreviewScene().DestroyPreviewActor(PreviewActor);

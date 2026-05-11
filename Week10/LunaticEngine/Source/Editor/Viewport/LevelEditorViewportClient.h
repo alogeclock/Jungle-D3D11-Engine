@@ -40,6 +40,8 @@ public:
 	void UpdateLayoutRect();
 	void RenderViewportImage(bool bIsActiveViewport);
 
+	void SetupFrameContext(FFrameContext& OutFrame, UCameraComponent* InCamera, FViewport* InVP, UWorld* InWorld) override;
+
 	void SetLightViewOverride(ULightComponentBase* Light);
 	void ClearLightViewOverride();
 	bool IsViewingFromLight() const { return LightViewOverride != nullptr; }
