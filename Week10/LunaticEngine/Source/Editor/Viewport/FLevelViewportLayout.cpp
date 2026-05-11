@@ -34,6 +34,7 @@
 #include "WICTextureLoader.h"
 #include "Component/CameraComponent.h"
 #include "Component/GizmoComponent.h"
+#include "Component/SceneComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "GameFramework/StaticMeshActor.h"
 #include "Mesh/Skeleton.h"
@@ -3480,16 +3481,28 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		AActor* Actor = World->SpawnActor<AActor>();
 		if (Actor)
 		{
-			USkeletalMeshComponent* SMC = Actor->AddComponent<USkeletalMeshComponent>();
-			Actor->SetRootComponent(SMC);
+	
+			// SkeletalMeshComponent를 자식으로 attach + RelativeLocation으로 발밑 보정
+			USceneComponent* Root = Actor->AddComponent<USceneComponent>();
+			Actor->SetRootComponent(Root);
 
-			// 1차 시도: 지정된 FBX 로드. 실패 시 더미 큐브로 fallback.
+			USkeletalMeshComponent* SMC = Actor->AddComponent<USkeletalMeshComponent>();
+			SMC->AttachToComponent(Root);
+
 			USkeletalMesh* Mesh = CreateSkeletalMeshFromFBX("Asset/Content/Model/Fbx/test.fbx");
 			if (!Mesh)
 			{
 				Mesh = CreateTestSkeletalMesh();
 			}
 			SMC->SetSkeletalMesh(Mesh);
+
+			// 메시 BoundsMin.Z를 보정해서 발밑이 Root와 일치하도록.
+			if (Mesh && Mesh->GetSkeletalMeshAsset() && !Mesh->GetSkeletalMeshAsset()->LODModels.empty())
+			{
+				const FSkeletalMeshLOD& LOD = Mesh->GetSkeletalMeshAsset()->LODModels[0];
+				const float FootZ = LOD.BoundsCenter.Z - LOD.BoundsExtent.Z;   // = BoundsMin.Z
+				SMC->SetRelativeLocation(FVector(0.0f, 0.0f, -FootZ));
+			}
 
 			SpawnedActor = Actor;
 			SpawnLocation.Z += 1.0f;
