@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <algorithm>
 
+#include "FbxImporter.h"
+
 TMap<FString, UStaticMesh*> FObjManager::StaticMeshCache;
 TArray<FMeshAssetListItem> FObjManager::AvailableMeshFiles;
 TArray<FMeshAssetListItem> FObjManager::AvailableObjFiles;
@@ -149,6 +151,71 @@ UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName, const F
 	StaticMeshCache[CacheKey] = StaticMesh;
 
 	// 리프레시
+	ScanMeshAssets();
+	FMaterialManager::Get().ScanMaterialAssets();
+
+	return StaticMesh;
+}
+
+UStaticMesh* FObjManager::LoadFbxStaticMesh(const FString& PathFileName, ID3D11Device* InDevice)
+{
+	FString CacheKey = GetBinaryFilePath(PathFileName);
+
+	auto It = StaticMeshCache.find(CacheKey);
+	if (It != StaticMeshCache.end())
+	{
+		return It->second;
+	}
+
+	UStaticMesh* StaticMesh = UObjectManager::Get().CreateObject<UStaticMesh>();
+
+	FString BinPath      = CacheKey;
+	bool    bNeedRebuild = true;
+
+	const std::filesystem::path SourcePathW(FPaths::ToWide(PathFileName));
+	const std::filesystem::path BinPathW(FPaths::ToWide(BinPath));
+
+	if (std::filesystem::exists(BinPathW))
+	{
+		if (!std::filesystem::exists(SourcePathW) || std::filesystem::last_write_time(BinPathW) >= std::filesystem::last_write_time(SourcePathW))
+		{
+			FWindowsBinReader Reader(BinPath);
+			if (Reader.IsValid())
+			{
+				StaticMesh->Serialize(Reader);
+				bNeedRebuild = false;
+			}
+		}
+	}
+
+	if (bNeedRebuild)
+	{
+		FStaticMesh*            NewMeshAsset = new FStaticMesh();
+		TArray<FStaticMaterial> ParsedMaterials;
+
+		if (!FFbxImporter::ImportStaticMesh(PathFileName, *NewMeshAsset, ParsedMaterials))
+		{
+			delete NewMeshAsset;
+			return nullptr;
+		}
+
+		NewMeshAsset->PathFileName = PathFileName;
+
+		StaticMesh->SetStaticMaterials(std::move(ParsedMaterials));
+		StaticMesh->SetStaticMeshAsset(NewMeshAsset);
+
+		EnsureMeshCacheDirExists(PathFileName);
+
+		FWindowsBinWriter Writer(BinPath);
+		if (Writer.IsValid())
+		{
+			StaticMesh->Serialize(Writer);
+		}
+	}
+
+	StaticMesh->InitResources(InDevice);
+	StaticMeshCache[CacheKey] = StaticMesh;
+
 	ScanMeshAssets();
 	FMaterialManager::Get().ScanMaterialAssets();
 

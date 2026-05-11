@@ -1,37 +1,48 @@
 ﻿#pragma once
 
 #include "Object/Object.h"
-#include "Mesh/SkeletalMeshAsset.h"
-#include "Mesh/StaticMeshAsset.h"
 #include "Serialization/Archive.h"
+#include "SkeletalMeshAsset.h"
 
-// USkeletalMesh — FSkeletalMesh 에셋을 소유하는 UObject 래퍼
-// UStaticMesh와 동일한 슬롯 모델(FStaticMaterial 배열)을 사용한다
-class USkeleton;
+// ============================================================================
+// USkeletalMesh
+//
+// SkeletalMesh 리소스를 엔진 UObject 시스템에서 다루기 위한 에셋 래퍼.
+//
+// 역할:
+// - FSkeletalMesh 원본 데이터 포인터 보관
+// - SkeletalMesh 머티리얼 슬롯 보관
+// - Bake 파일 또는 에셋 파일 저장/로드 시 Serialize 수행
+// - Section.MaterialSlotName을 SkeletalMaterials 배열의 MaterialIndex로 매핑
+//
+// - FSkeletalMesh*
+//   실제 스켈레탈 메시 원본 데이터
+//
+// - SkeletalMaterials
+//   이 SkeletalMesh가 사용하는 머티리얼 슬롯 배열.
+// ============================================================================
 class USkeletalMesh : public UObject
 {
 public:
-	DECLARE_CLASS(USkeletalMesh, UObject)
+    DECLARE_CLASS(USkeletalMesh, UObject)
 
-	USkeletalMesh() = default;
-	~USkeletalMesh() override;
+    USkeletalMesh() = default;
+    ~USkeletalMesh() override;
 
-	void Serialize(FArchive& Ar);
+    void Serialize(FArchive& Ar) override;
 
-	const FString& GetAssetPathFileName() const;
+    const FString& GetAssetPathFileName() const;
 
+    void           SetSkeletalMeshAsset(FSkeletalMesh* InMesh);
+    FSkeletalMesh* GetSkeletalMeshAsset() const;
 
-	//Skeletal Binding
-	void SetSkeleton(USkeleton* InSkeleton) { Skeleton = InSkeleton; }
-	USkeleton* GetSkeleton() const { return Skeleton; }
-	void SetSkeletalMeshAsset(FSkeletalMesh* InMesh);
-	FSkeletalMesh* GetSkeletalMeshAsset() const { return SkeletalMeshAsset; }
-
-	void SetSkeletalMaterials(TArray<FStaticMaterial>&& InMaterials);
-	const TArray<FStaticMaterial>& GetSkeletalMaterials() const { return SkeletalMaterials; }
+    void                           SetSkeletalMaterials(TArray<FStaticMaterial>&& InMaterials);
+    const TArray<FStaticMaterial>& GetSkeletalMaterials() const;
 
 private:
-	FSkeletalMesh* SkeletalMeshAsset = nullptr;
-	USkeleton* Skeleton = nullptr; //Weak reference
-	TArray<FStaticMaterial> SkeletalMaterials;
+    void RebuildSectionMaterialIndices();
+
+private:
+    FSkeletalMesh*          SkeletalMeshAsset = nullptr;
+    TArray<FStaticMaterial> SkeletalMaterials;
 };

@@ -1,6 +1,6 @@
 """
 GenerateProjectFiles.py — Auto-generate .vcxproj, .vcxproj.filters
-for KraftonEngine from the on-disk folder structure.
+for LunaticEngine from the on-disk folder structure.
 
 Usage:
     python Scripts/GenerateProjectFiles.py
@@ -16,10 +16,21 @@ from pathlib import Path
 # ──────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
 
-PROJECT_NAME = "KraftonEngine"
+PROJECT_NAME = "LunaticEngine"
 PROJECT_DIR = ROOT / PROJECT_NAME
 PROJECT_GUID = "{55068e81-c0a0-49f9-ab7b-54aea968722b}"
 ROOT_NAMESPACE = "Week2"
+
+# Autodesk FBX SDK (installed locally)
+FBX_SDK_ROOT = r"C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9"
+FBX_INCLUDE_PATH = FBX_SDK_ROOT + r"\include"
+FBX_LIB_DEBUG_PATH = FBX_SDK_ROOT + r"\lib\x64\debug"
+FBX_LIB_RELEASE_PATH = FBX_SDK_ROOT + r"\lib\x64\release"
+FBX_LIBS_MD = [
+    "libfbxsdk-md.lib",
+    "libxml2-md.lib",
+    "zlib-md.lib",
+]
 
 SOLUTION_GUID = "{4EBC5DD2-CECA-4722-9D19-87C7CB5F481B}"
 VS_PROJECT_TYPE = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
@@ -80,7 +91,9 @@ INCLUDE_PATHS = [
     "ThirdParty\\sol2",
     "Source\\Editor",
     "Source\\ObjViewer",
+    "ThirdParty\\FBXSDK\\include",
     ".",
+    FBX_INCLUDE_PATH,
 ]
 
 # Library paths (relative to project dir)
@@ -312,9 +325,18 @@ def generate_vcxproj(files: dict[str, list[str]]):
         ET.SubElement(link, "SubSystem").text = subsystem
         ET.SubElement(link, "GenerateDebugInformation").text = "true"
 
+        if is_x64:
+            fbx_lib_path = FBX_LIB_RELEASE_PATH if is_release else FBX_LIB_DEBUG_PATH
+            ET.SubElement(link, "AdditionalLibraryDirectories").text = (
+                fbx_lib_path + ";%(AdditionalLibraryDirectories)"
+            )
+            ET.SubElement(link, "AdditionalDependencies").text = (
+                ";".join(FBX_LIBS_MD) + ";%(AdditionalDependencies)"
+            )
+
         manifest = ET.SubElement(idg, "Manifest")
         ET.SubElement(manifest, "AdditionalManifestFiles").text = (
-            "KraftonEngine.exe.manifest;%(AdditionalManifestFiles)"
+            f"{PROJECT_NAME}.exe.manifest;%(AdditionalManifestFiles)"
         )
 
     # ClCompile items

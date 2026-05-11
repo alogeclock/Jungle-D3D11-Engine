@@ -43,7 +43,7 @@ void UStaticMesh::Serialize(FArchive& Ar)
 		for (FStaticMeshSection& Section : StaticMeshAsset->Sections)
 		{
 			Section.MaterialIndex = -1;
-			for (int32 i = 0; i < (int32)StaticMaterials.size(); ++i)
+			for (int32 i = 0; i < static_cast<int32>(StaticMaterials.size()); ++i)
 			{
 				if (StaticMaterials[i].MaterialSlotName == Section.MaterialSlotName)
 				{
@@ -52,6 +52,7 @@ void UStaticMesh::Serialize(FArchive& Ar)
 				}
 			}
 		}
+		MeshTrianglePickingBVH.BuildNow(*StaticMeshAsset);
 	}
 }
 
@@ -131,23 +132,25 @@ void UStaticMesh::SetStaticMeshAsset(FStaticMesh* InMesh)
 	// 현재는 static mesh asset이 로드 후 고정된다고 보고, 메시 변경 dirty 갱신은 비활성화합니다.
 	// MarkMeshTrianglePickingBVHDirty();
 
-	// Section → MaterialIndex 캐싱 갱신
-	if (StaticMeshAsset)
+	if (!StaticMeshAsset)
 	{
-		for (FStaticMeshSection& Section : StaticMeshAsset->Sections)
+		return;
+	}
+
+	// Section → MaterialIndex 캐싱 갱신
+	for (FStaticMeshSection& Section : StaticMeshAsset->Sections)
+	{
+		Section.MaterialIndex = -1;
+		for (int32 i = 0; i < static_cast<int32>(StaticMaterials.size()); ++i)
 		{
-			Section.MaterialIndex = -1;
-			for (int32 i = 0; i < (int32)StaticMaterials.size(); ++i)
+			if (StaticMaterials[i].MaterialSlotName == Section.MaterialSlotName)
 			{
-				if (StaticMaterials[i].MaterialSlotName == Section.MaterialSlotName)
-				{
-					Section.MaterialIndex = i;
-					break;
-				}
+				Section.MaterialIndex = i;
+				break;
 			}
 		}
-		EnsureMeshTrianglePickingBVHBuilt();
 	}
+	MeshTrianglePickingBVH.BuildNow(*StaticMeshAsset);
 }
 
 FStaticMesh* UStaticMesh::GetStaticMeshAsset() const

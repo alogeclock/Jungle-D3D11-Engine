@@ -1266,7 +1266,7 @@ void FEditorViewportClient::TickInput(float DeltaTime)
 	}
 
 	const bool bAllowNewViewportInput =
-		bIsHovered && !bGuiWantsMouse && !bGuiWantsKeyboard;
+		(bIsHovered || bIsActive) && !bGuiWantsMouse && !bGuiWantsKeyboard;
 
 	const bool bIgnoreGui =
 		bCameraInputCaptured || bAllowNewViewportInput;
