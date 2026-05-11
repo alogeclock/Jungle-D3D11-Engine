@@ -42,6 +42,8 @@ public:
 	void SetViewportType(ELevelViewportType NewType);
 	float GetPreviewCameraSpeed() const { return PreviewCameraSpeed; }
 	void SetPreviewCameraSpeed(float InSpeed);
+	virtual void SetPreviewGizmoMode(int32 InMode) { (void)InMode; }
+	virtual int32 GetPreviewGizmoMode() const { return 0; }
 
 protected:
 	virtual void OnCameraReset() {}

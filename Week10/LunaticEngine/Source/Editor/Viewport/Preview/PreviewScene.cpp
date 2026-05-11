@@ -1,5 +1,7 @@
 #include "PreviewScene.h"
 
+#include "Component/ActorComponent.h"
+#include "Component/BillboardComponent.h"
 #include "Core/TickFunction.h"
 #include "GameFramework/Light/AmbientLightActor.h"
 #include "GameFramework/Light/DirectionalLightActor.h"
@@ -117,9 +119,12 @@ namespace
 
 		AAmbientLightActor* AmbientLight = World->SpawnActor<AAmbientLightActor>();
 		AmbientLight->InitDefaultComponents();
-
-		// ADirectionalLightActor* DirectionalLight = World->SpawnActor<ADirectionalLightActor>();
-		// DirectionalLight->InitDefaultComponents();
-		// DirectionalLight->SetActorRotation(FVector(45.0f, -35.0f, 35.0f));
+		for (UActorComponent* Component : AmbientLight->GetComponents())
+		{
+			if (UBillboardComponent* Billboard = Cast<UBillboardComponent>(Component))
+			{
+				Billboard->SetVisibility(false);
+			}
+		}
 	}
 }

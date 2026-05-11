@@ -19,7 +19,7 @@ class UCameraComponent;
 class UWorld;
 struct FFrameContext;
 
-class FEditorViewportClient : public FViewportClient
+class	FEditorViewportClient : public FViewportClient
 {
 public:
 	explicit FEditorViewportClient(bool bSetupDefaultInput = true);

@@ -23,7 +23,6 @@ public:
 	FMeshDataView GetMeshDataView() const override;
 	bool LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult) override;
 	bool LineTraceStaticMeshFast(const FRay& Ray, const FMatrix& WorldMatrix, const FMatrix& WorldInverse, FRayHitResult& OutHitResult);
-	void UpdateWorldAABB() const override;
 
 	// 구체 프록시 생성 (FStaticMeshSceneProxy)
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
@@ -56,7 +55,4 @@ private:
 	TArray<UMaterial*> OverrideMaterials;
 	TArray<FMaterialSlot> MaterialSlots; // 경로 + UVScroll 묶음
 
-	FVector CachedLocalCenter = { 0, 0, 0 };
-	FVector CachedLocalExtent = { 0.5f, 0.5f, 0.5f };
-	bool bHasValidBounds = false;
 };

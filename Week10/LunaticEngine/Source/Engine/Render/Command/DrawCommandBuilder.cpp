@@ -399,6 +399,7 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 	PassRenderStateTable = InPassRenderStateTable;
 
 	EditorLines.Create(InDevice);
+	ForegroundEditorLines.Create(InDevice);
 	GridLines.Create(InDevice);
 	FontGeometry.Create(InDevice);
 	ScreenQuads.Create(InDevice);
@@ -415,6 +416,7 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 void FDrawCommandBuilder::Release()
 {
 	EditorLines.Release();
+	ForegroundEditorLines.Release();
 	GridLines.Release();
 	FontGeometry.Release();
 	ScreenQuads.Release();
@@ -444,6 +446,8 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame, uint32 MaxPro
 	DrawCommandList.Reset();
 	CollectViewMode = Frame.RenderOptions.ViewMode;
 	bHasSelectionMaskCommands = false;
+	EditorLines.Clear();
+	ForegroundEditorLines.Clear();
 
 	// 동적 지오메트리 초기화
 	EditorLines.Clear();
@@ -743,6 +747,10 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 	{
 		EditorLines.AddBillboardLine(Line.Start, Line.End, Line.Color.ToVector4(), Frame, Frame.RenderOptions.DebugLineThickness);
 	}
+	for (const auto& Line : Scene->GetForegroundDebugLines())
+	{
+		ForegroundEditorLines.AddBillboardLine(Line.Start, Line.End, Line.Color.ToVector4(), Frame, Frame.RenderOptions.DebugLineThickness);
+	}
 
 	// --- Grid 패스: 월드 그리드 + 축 ---
 	// Pixel shader 기반 EditorGrid 패스가 평면 축과 법선 축을 모두 처리합니다.
@@ -866,8 +874,11 @@ void FDrawCommandBuilder::BuildEditorLineCommands(EViewMode ViewMode)
 {
 	FShader* EditorShader = FShaderManager::Get().GetOrCreate(EShaderPath::Editor);
 	const FDrawCommandRenderState EditorLinesRS = PassRenderStateTable->ToDrawCommandState(ERenderPass::EditorLines, ViewMode);
+	FDrawCommandRenderState ForegroundLinesRS = EditorLinesRS;
+	ForegroundLinesRS.DepthStencil = EDepthStencilState::NoDepth;
 
 	EmitLineCommand(EditorLines, EditorShader, EditorLinesRS);
+	EmitLineCommand(ForegroundEditorLines, EditorShader, ForegroundLinesRS);
 	EmitLineCommand(GridLines, EditorShader, EditorLinesRS);
 }
 

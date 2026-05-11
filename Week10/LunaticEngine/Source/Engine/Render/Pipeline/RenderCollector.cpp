@@ -304,7 +304,9 @@ void FRenderCollector::CollectActorVisuals(UWorld* World, FScene& Scene)
 			}
 
 			if (Comp)
+			{
 				Comp->ContributeVisuals(Scene);
+			}
 		}
 	}
 }

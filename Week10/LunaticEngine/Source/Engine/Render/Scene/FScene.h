@@ -90,7 +90,9 @@ public:
 	// --- Debug lines ---
 	struct FDebugLine { FVector Start; FVector End; FColor Color; };
 	void AddDebugLine(const FVector& Start, const FVector& End, const FColor& Color);
+	void AddForegroundDebugLine(const FVector& Start, const FVector& End, const FColor& Color);
 	const TArray<FDebugLine>& GetDebugLines() const { return DebugLines; }
+	const TArray<FDebugLine>& GetForegroundDebugLines() const { return ForegroundDebugLines; }
 
 	// --- Grid ---
 	struct FGridParams { float Spacing = 0.0f; int32 HalfLineCount = 0; bool bEnabled = false; };
@@ -150,6 +152,7 @@ private:
 	TArray<FScreenQuadEntry> ScreenQuads;
 	TArray<FDebugAABB>   DebugAABBs;
 	TArray<FDebugLine>   DebugLines;
+	TArray<FDebugLine>   ForegroundDebugLines;
 
 	FGridParams Grid;
 	FLightVisualizationSettings LightVisualizationSettings;

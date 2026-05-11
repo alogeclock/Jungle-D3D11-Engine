@@ -122,8 +122,8 @@ void UStaticMeshComponent::CacheLocalBounds()
 		Asset->CacheBounds();
 	}
 
-	CachedLocalCenter = Asset->BoundsCenter;
-	CachedLocalExtent = Asset->BoundsExtent;
+	LocalCenter = Asset->BoundsCenter;
+	LocalExtent = Asset->BoundsExtent;
 	bHasValidBounds = Asset->bBoundsValid;
 }
 
@@ -222,32 +222,6 @@ FMeshDataView UStaticMeshComponent::GetMeshDataView() const
 	View.IndexData   = Asset->Indices.data();
 	View.IndexCount  = (uint32)Asset->Indices.size();
 	return View;
-}
-
-void UStaticMeshComponent::UpdateWorldAABB() const
-{
-	if (!bHasValidBounds)
-	{
-		UPrimitiveComponent::UpdateWorldAABB();
-		return;
-	}
-
-	FVector WorldCenter = CachedWorldMatrix.TransformPositionWithW(CachedLocalCenter);
-
-	float Ex = std::abs(CachedWorldMatrix.M[0][0]) * CachedLocalExtent.X
-		+ std::abs(CachedWorldMatrix.M[1][0]) * CachedLocalExtent.Y
-		+ std::abs(CachedWorldMatrix.M[2][0]) * CachedLocalExtent.Z;
-	float Ey = std::abs(CachedWorldMatrix.M[0][1]) * CachedLocalExtent.X
-		+ std::abs(CachedWorldMatrix.M[1][1]) * CachedLocalExtent.Y
-		+ std::abs(CachedWorldMatrix.M[2][1]) * CachedLocalExtent.Z;
-	float Ez = std::abs(CachedWorldMatrix.M[0][2]) * CachedLocalExtent.X
-		+ std::abs(CachedWorldMatrix.M[1][2]) * CachedLocalExtent.Y
-		+ std::abs(CachedWorldMatrix.M[2][2]) * CachedLocalExtent.Z;
-
-	WorldAABBMinLocation = WorldCenter - FVector(Ex, Ey, Ez);
-	WorldAABBMaxLocation = WorldCenter + FVector(Ex, Ey, Ez);
-	bWorldAABBDirty = false;
-	bHasValidWorldAABB = true;
 }
 
 bool UStaticMeshComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)

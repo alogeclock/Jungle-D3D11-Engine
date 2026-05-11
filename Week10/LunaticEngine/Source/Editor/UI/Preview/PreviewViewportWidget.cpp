@@ -93,22 +93,26 @@ void FPreviewViewportWidget::Render(float DeltaTime)
 
 		FEditorSettings& Settings = FEditorSettings::Get();
 		FViewportRenderOptions& Opts = ViewportClient->GetRenderOptions();
+		PreviewGizmoMode = ViewportClient->GetPreviewGizmoMode();
 		const float Width = ImGui::GetContentRegionAvail().x;
 		const float ButtonSpacing = 4.0f;
 
 		if (DrawIconButton("##PreviewTranslateTool", EPreviewToolbarIcon::Translate, "Translate", PreviewGizmoMode == 0))
 		{
 			PreviewGizmoMode = 0;
+			ViewportClient->SetPreviewGizmoMode(PreviewGizmoMode);
 		}
 		ImGui::SameLine(0.0f, ButtonSpacing);
 		if (DrawIconButton("##PreviewRotateTool", EPreviewToolbarIcon::Rotate, "Rotate", PreviewGizmoMode == 1))
 		{
 			PreviewGizmoMode = 1;
+			ViewportClient->SetPreviewGizmoMode(PreviewGizmoMode);
 		}
 		ImGui::SameLine(0.0f, ButtonSpacing);
 		if (DrawIconButton("##PreviewScaleTool", EPreviewToolbarIcon::Scale, "Scale", PreviewGizmoMode == 2))
 		{
 			PreviewGizmoMode = 2;
+			ViewportClient->SetPreviewGizmoMode(PreviewGizmoMode);
 		}
 		ImGui::SameLine(0.0f, 10.0f);
 

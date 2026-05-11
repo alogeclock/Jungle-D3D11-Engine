@@ -2,19 +2,19 @@
 
 #include "AssetPreviewWidget.h"
 #include "Core/CoreTypes.h"
-#include "Editor/UI/Preview/PreviewViewportWidget.h"
 #include "Editor/Viewport/Preview/SkeletalMeshPreviewViewportClient.h"
 
 class FViewport;
 class FWindowsWindow;
 class UEditorEngine;
 class USkeletalMesh;
+struct FSkeleton;
 struct ID3D11Device;
 
-class FSkeletalMeshEditorWidget : public FAssetPreviewWidget
+class FSkeletalMeshPreviewWidget : public FAssetPreviewWidget
 {
 public:
-	void Initialize(UEditorEngine* InEditorEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow);
+	void Initialize(UEditorEngine* InEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow);
 	void Shutdown();
 	void OpenSkeletalMesh(USkeletalMesh* InMesh);
 	void Render(float DeltaTime);
@@ -27,13 +27,18 @@ private:
 	void Close();
 	void RegisterPreviewClient();
 	void UnregisterPreviewClient();
+	void DrawBoneHierarchyPanel();
+	void DrawBoneDetailsPanel();
+	void DrawBoneTreeNode(const FSkeleton& Skeleton, int32 BoneIndex);
+	void HandleViewportBoneSelection();
+	void ValidateSelectedBone();
 
 private:
-	FPreviewViewportWidget ViewportWidget;
 	FSkeletalMeshPreviewViewportClient ViewportClient;
 	FViewport* Viewport = nullptr;
-	UEditorEngine* EditorEngine = nullptr;
+	UEditorEngine* Engine = nullptr;
 	USkeletalMesh* EditingMesh = nullptr;
+	int32 SelectedBoneIndex = -1;
 	bool bOpen = false;
 	bool bInitialized = false;
 	bool bRegistered = false;

@@ -61,7 +61,7 @@ void UGizmoComponent::DestroyRenderState()
 UGizmoComponent::UGizmoComponent()
 {
 	MeshData = &FMeshBufferManager::Get().GetMeshData(EMeshShape::TransGizmo);
-	LocalExtents = FVector(1.5f, 1.5f, 1.5f);
+	LocalExtent = FVector(1.5f, 1.5f, 1.5f);
 }
 
 void UGizmoComponent::SetHolding(bool bHold)
