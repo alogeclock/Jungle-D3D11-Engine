@@ -1427,16 +1427,18 @@ namespace
 
     struct FSkeletalImportMeshNode
     {
-        FbxNode* MeshNode       = nullptr;
-        ESkeletalImportMeshKind Kind = ESkeletalImportMeshKind::Loose;
-        int32    RigidBoneIndex = -1;
+        FbxNode*                MeshNode       = nullptr;
+        ESkeletalImportMeshKind Kind           = ESkeletalImportMeshKind::Loose;
+        int32                   RigidBoneIndex = -1;
+        FbxNode*                RigidBoneNode  = nullptr;
     };
 
     // skin이 없는 mesh node의 parent chain에서 import skeleton에 포함된 가장 가까운 bone을 찾는다.
     static bool FindNearestParentBoneIndex(
-        FbxNode*                      MeshNode,
-        const TMap<FbxNode*, int32>&  BoneNodeToIndex,
-        int32&                        OutBoneIndex
+        FbxNode*                     MeshNode,
+        const TMap<FbxNode*, int32>& BoneNodeToIndex,
+        FbxNode*&                    OutBoneNode,
+        int32&                       OutBoneIndex
         )
     {
         FbxNode* Current = MeshNode ? MeshNode->GetParent() : nullptr;
@@ -1446,13 +1448,15 @@ namespace
             auto BoneIt = BoneNodeToIndex.find(Current);
             if (BoneIt != BoneNodeToIndex.end())
             {
+                OutBoneNode = Current;
                 OutBoneIndex = BoneIt->second;
                 return true;
             }
 
             Current = Current->GetParent();
         }
-
+        
+        OutBoneNode = nullptr;
         OutBoneIndex = -1;
         return false;
     }
@@ -1484,11 +1488,13 @@ namespace
                 continue;
             }
 
-            int32 ParentBoneIndex = -1;
-            if (FindNearestParentBoneIndex(MeshNode, BoneNodeToIndex, ParentBoneIndex))
+            int32    ParentBoneIndex = -1;
+            FbxNode* ParentBoneNode  = nullptr;
+            if (FindNearestParentBoneIndex(MeshNode, BoneNodeToIndex, ParentBoneNode, ParentBoneIndex))
             {
                 ImportNode.Kind           = ESkeletalImportMeshKind::RigidAttached;
                 ImportNode.RigidBoneIndex = ParentBoneIndex;
+                ImportNode.RigidBoneNode  = ParentBoneNode;
                 OutImportNodes.push_back(ImportNode);
                 continue;
             }
@@ -2636,6 +2642,7 @@ static bool BuildSkeletalMeshLODFromNodes(
     const TArray<FSkeletalImportMeshNode>& MeshNodes,
     const TMap<FbxNode*, int32>&        BoneNodeToIndex,
     const FMatrix&                      ReferenceMeshBindInverse,
+    const FSkeleton& Skeleton,
     TArray<FStaticMaterial>&            OutMaterials,
     FSkeletalMeshLOD&                   OutLOD,
     TArray<FImportedMorphSourceVertex>* OutMorphSources,
@@ -2663,20 +2670,31 @@ static bool BuildSkeletalMeshLODFromNodes(
             continue;
         }
 
-        FMatrix MeshBind;
+        FMatrix MeshToReference;
+        
         if (ImportNode.Kind == ESkeletalImportMeshKind::Skinned)
         {
+            FMatrix MeshBind;
             if (!TryGetFirstMeshBindMatrix(Scene, MeshNode, MeshBind))
             {
                 continue;
             }
+            MeshToReference = MeshBind * ReferenceMeshBindInverse;
         }
-        else
+        else if (ImportNode.Kind == ESkeletalImportMeshKind::RigidAttached)
         {
-            MeshBind = GetRigidMeshBindMatrix(Scene, MeshNode);
+            if (!ImportNode.RigidBoneNode || ImportNode.RigidBoneIndex < 0 || ImportNode.RigidBoneIndex >= static_cast<int32>(Skeleton.Bones.size()))
+            {
+                continue;
+            }
+            
+            const FMatrix MeshGlobalScene = ToEngineMatrix(GetNodeGeometryTransform(MeshNode)) * ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
+            const FMatrix BoneGlobalScene = ToEngineMatrix(ImportNode.RigidBoneNode->EvaluateGlobalTransform());
+            const FMatrix MeshRelativeToBone = MeshGlobalScene * BoneGlobalScene.GetInverse();
+            MeshToReference = MeshRelativeToBone * Skeleton.Bones[ImportNode.RigidBoneIndex].GlobalBindPose;
         }
+        
 
-        const FMatrix MeshToReference   = MeshBind * ReferenceMeshBindInverse;
         const FMatrix NormalToReference = MeshToReference.GetInverse().GetTransposed();
 
         TArray<TArray<FImportedBoneWeight>> ControlPointWeight;
@@ -3338,7 +3356,8 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
             SourcePath,
             MeshNodesByLOD[LODIndex],
             BoneNodeToIndex,
-            ReferenceMeshBindInverse,
+            ReferenceMeshBindInverse, 
+            OutMesh.Skeleton,
             OutMaterials,
             NewLOD,
             &MorphSources,
