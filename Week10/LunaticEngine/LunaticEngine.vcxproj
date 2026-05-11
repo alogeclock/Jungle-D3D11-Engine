@@ -513,6 +513,7 @@
     <ClCompile Include="Source\Engine\Render\Shadow\AtlasQuadTreeBase.cpp" />
     <ClCompile Include="Source\Engine\Render\Shadow\AtlasQuadTreePoint.cpp" />
     <ClCompile Include="Source\Engine\Render\Shadow\ShadowAtlasQuadTree.cpp" />
+    <ClCompile Include="Source\Engine\Render\Skeletal\SkeletalMeshObjectCPU.cpp" />
     <ClCompile Include="Source\Engine\Render\Types\FrameContext.cpp" />
     <ClCompile Include="Source\Engine\Resource\ResourceManager.cpp" />
     <ClCompile Include="Source\Engine\Runtime\Engine.cpp" />
@@ -813,6 +814,8 @@
     <ClInclude Include="Source\Engine\Render\Shadow\AtlasQuadTreeBase.h" />
     <ClInclude Include="Source\Engine\Render\Shadow\AtlasQuadTreePoint.h" />
     <ClInclude Include="Source\Engine\Render\Shadow\ShadowAtlasQuadTree.h" />
+    <ClInclude Include="Source\Engine\Render\Skeletal\SkeletalMeshObject.h" />
+    <ClInclude Include="Source\Engine\Render\Skeletal\SkeletalMeshObjectCPU.h" />
     <ClInclude Include="Source\Engine\Render\Types\FogParams.h" />
     <ClInclude Include="Source\Engine\Render\Types\ForwardLightData.h" />
     <ClInclude Include="Source\Engine\Render\Types\FrameContext.h" />

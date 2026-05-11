@@ -1116,6 +1116,7 @@
     <ClCompile Include="Source\Engine\Mesh\SkeletalMeshAsset.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Skeleton.cpp" />
     <ClCompile Include="Source\Engine\Component\SkinnedMeshComponent.cpp" />
+    <ClCompile Include="Source\Engine\Render\Skeletal\SkeletalMeshObjectCPU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -2411,6 +2412,8 @@
     <ClInclude Include="Source\Engine\Mesh\SkeletalMeshAsset.h" />
     <ClInclude Include="Source\Engine\Mesh\Skeleton.h" />
     <ClInclude Include="Source\Engine\Component\SkinnedMeshComponent.h" />
+    <ClInclude Include="Source\Engine\Render\Skeletal\SkeletalMeshObject.h" />
+    <ClInclude Include="Source\Engine\Render\Skeletal\SkeletalMeshObjectCPU.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunaticEngine.rc" />

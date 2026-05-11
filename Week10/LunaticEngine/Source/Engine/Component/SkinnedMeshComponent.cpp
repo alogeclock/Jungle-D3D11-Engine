@@ -221,7 +221,7 @@ void USkinnedMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// 본 행렬 재계산 (
+	// 본 행렬 재계산
 	RefreshBoneTransforms();
 
 	// 결과를 MeshObject로 전달 -> CPU 스키닝 + VB 재생성

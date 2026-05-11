@@ -52,49 +52,23 @@ namespace
 // 실패 시 nullptr 반환 (caller가 더미 큐브로 fallback).
 USkeletalMesh* CreateSkeletalMeshFromFBX(const FString& Path)
 {
-	FStaticMesh StaticAsset;
-	TArray<FStaticMaterial> StaticMaterials;
+	FSkeletalMesh* Asset = new FSkeletalMesh();
+	FReferenceSkeleton RefSkel;
+	TArray<FStaticMaterial> Materials;
 	FFbxImportOptions Opts;
-	if (!FFbxImporter::ImportStaticMesh(Path, Opts, StaticAsset, StaticMaterials))
+
+	if (!FFbxImporter::ImportSkeletalMesh(Path, Opts, *Asset, RefSkel, Materials))
 	{
+		delete Asset;
 		return nullptr;
 	}
 
-	// 1) Skeleton (본 1개)
 	USkeleton* Sk = UObjectManager::Get().CreateObject<USkeleton>();
-	FReferenceSkeleton Ref;
-	Ref.Allocate(1);
-	Ref.Bones[0] = { FName("root"), -1 };
-	Ref.RefBonePose[0] = FTransform();
-	Sk->SetReferenceSkeleton(std::move(Ref));
+	Sk->SetReferenceSkeleton(std::move(RefSkel));
 
-	// 2) Mesh asset (FStaticMesh → FSkeletalMesh 변환, 모든 정점 본 0번에 100% 가중치)
-	FSkeletalMesh* Asset = new FSkeletalMesh();
-	Asset->PathFileName = Path;
-	Asset->LODModels.resize(1);
-	FSkeletalMeshLOD& LOD = Asset->LODModels[0];
-
-	LOD.Vertices.resize(StaticAsset.Vertices.size());
-	for (size_t i = 0; i < StaticAsset.Vertices.size(); ++i)
-	{
-		const FNormalVertex& In = StaticAsset.Vertices[i];
-		FSkinVertex& Out = LOD.Vertices[i];
-		Out.Pos = In.pos;
-		Out.Normal = In.normal;
-		Out.Color = In.color;
-		Out.Tex = In.tex;
-		Out.Tangent = In.tangent;
-		for (int k = 0; k < MAX_BONE_INFLUENCES; ++k) { Out.BoneIndices[k] = 0; Out.BoneWeights[k] = 0.0f; }
-		Out.BoneWeights[0] = 1.0f;
-	}
-	LOD.Indices = StaticAsset.Indices;
-	LOD.Sections = StaticAsset.Sections;
-	LOD.CacheBounds();
-
-	// 3) Wrapper
 	USkeletalMesh* Mesh = UObjectManager::Get().CreateObject<USkeletalMesh>();
 	Mesh->SetSkeleton(Sk);
-	Mesh->SetSkeletalMaterials(std::move(StaticMaterials));
+	Mesh->SetSkeletalMaterials(std::move(Materials));
 	Mesh->SetSkeletalMeshAsset(Asset);
 	return Mesh;
 }
