@@ -17,11 +17,11 @@ public:
 	DECLARE_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
 	USkeletalMeshComponent() = default;
-	~USkeletalMeshComponent() override = default;
+	// base의 std::unique_ptr<FSkeletalMeshObject> 소멸을 위해 .cpp에서 정의.
+	~USkeletalMeshComponent() override;
 
 	void RefreshBoneTransforms() override;
 
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
 
 private:
 

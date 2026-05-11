@@ -10,9 +10,13 @@
 #include "Materials/MaterialManager.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
+#include "Render/Skeletal/SkeletalMeshObject.h"
 #include "Serialization/Archive.h"
 
 IMPLEMENT_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
+
+// base의 unique_ptr<FSkeletalMeshObject> 소멸 시 complete type을 보기 위해 여기서 정의.
+USkeletalMeshComponent::~USkeletalMeshComponent() = default;
 
 
 
@@ -20,10 +24,4 @@ IMPLEMENT_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 void USkeletalMeshComponent::RefreshBoneTransforms()
 {
 	Super::RefreshBoneTransforms();
-}
-
-void USkeletalMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	RefreshBoneTransforms();
 }

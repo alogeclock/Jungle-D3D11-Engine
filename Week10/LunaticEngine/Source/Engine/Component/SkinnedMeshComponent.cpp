@@ -13,8 +13,13 @@
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 #include "Serialization/Archive.h"
-
+#include "Render/Skeletal/SkeletalMeshObject.h"
+#include <Render/Skeletal/SkeletalMeshObjectCPU.h>
+#include "Render/Device/D3DDevice.h"
 IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
+
+// FSkeletalMeshObject 포함 후에 디스트럭터 정의 — unique_ptr<>가 complete type을 요구.
+USkinnedMeshComponent::~USkinnedMeshComponent() = default;
 
 namespace
 {
@@ -96,12 +101,19 @@ FPrimitiveSceneProxy* USkinnedMeshComponent::CreateSceneProxy()
 void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {
 	SkeletalMesh = InMesh;
+	MeshObject.reset();
 	if (InMesh)
 	{
 		SkeletalMeshPath = InMesh->GetAssetPathFileName();
 		OverrideMaterials.clear();
 		MaterialSlots.clear();
 		EnsureMaterialSlotStorage(SkeletalMesh, OverrideMaterials, MaterialSlots);
+
+		if (FSkeletalMesh* Asset = InMesh->GetSkeletalMeshAsset())
+		{
+			ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
+			MeshObject = std::make_unique<FSkeletalMeshObjectCPU>(Asset, Device);
+		}
 	}
 	else
 	{
@@ -200,11 +212,26 @@ const FMaterialSlot* USkinnedMeshComponent::GetMaterialSlot(int32 ElementIndex) 
 		: nullptr;
 }
 
+void USkinnedMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// 본 행렬 재계산 (
+	RefreshBoneTransforms();
+
+	// 결과를 MeshObject로 전달 -> CPU 스키닝 + VB 재생성
+	if (MeshObject)
+	{
+		MeshObject->Update(SkinningMatrices);
+		MarkProxyDirty(EDirtyFlag::Mesh);
+	}
+}
+
 // FSkeletalMeshLOD에는 RenderBuffer가 없음 (GPU 업로드 단계 미구현).
 // 일단 nullptr — 렌더 패스에서는 이 컴포넌트가 그려지지 않음.
 FMeshBuffer* USkinnedMeshComponent::GetMeshBuffer() const
 {
-	return nullptr;
+	return MeshObject ? MeshObject->GetMeshBuffer() : nullptr;
 }
 
 // FSkeletalVertex 레이아웃이 FNormalVertex와 달라 직접 노출할 수 없음.
@@ -380,4 +407,69 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 		ComponentSpaceMatrices[i] = Local * ParentCS;
 		SkinningMatrices[i]       = Ref.RefBasesInvMatrix[i] * ComponentSpaceMatrices[i];
 	}
+}
+
+// ============================================================
+// SelfTest — invariant 검증 (RefPose ⇒ SkinningMatrix == Identity + RTTI 체인)
+// ============================================================
+
+bool USkinnedMeshComponent::SelfTest()
+{
+	auto IsNearIdentity = [](const FMatrix& M, float Eps) -> bool
+	{
+		for (int r = 0; r < 4; ++r)
+		{
+			for (int c = 0; c < 4; ++c)
+			{
+				const float Expected = (r == c) ? 1.0f : 0.0f;
+				if (std::abs(M.M[r][c] - Expected) > Eps) return false;
+			}
+		}
+		return true;
+	};
+
+	// 본 3개: root → spine(+Z 1) → head(+Z 1)
+	FReferenceSkeleton R;
+	R.Allocate(3);
+	R.Bones[0] = { FName("root"),  -1 };
+	R.Bones[1] = { FName("spine"),  0 };
+	R.Bones[2] = { FName("head"),   1 };
+	R.RefBonePose[0] = FTransform();
+	R.RefBonePose[1] = FTransform(FVector(0, 0, 1), FQuat::Identity, FVector(1, 1, 1));
+	R.RefBonePose[2] = FTransform(FVector(0, 0, 1), FQuat::Identity, FVector(1, 1, 1));
+	R.RebuildRefBasesInvMatrix();
+
+	// FindBoneIndex sanity
+	check(R.FindBoneIndex(FName("spine")) == 1);
+	check(R.FindBoneIndex(FName("nope"))  == -1);
+
+	// FillComponentSpaceTransforms와 동일 수학을 인라인으로 재현 (UObject 의존 회피).
+	const int32 N = R.GetNum();
+	TArray<FMatrix> CS(N, FMatrix::Identity);
+	TArray<FMatrix> Skin(N, FMatrix::Identity);
+	for (int32 i = 0; i < N; ++i)
+	{
+		const FMatrix Local    = R.RefBonePose[i].ToMatrix();
+		const int32   Parent   = R.Bones[i].ParentIndex;
+		const FMatrix ParentCS = (Parent >= 0) ? CS[Parent] : FMatrix::Identity;
+		CS[i]   = Local * ParentCS;
+		Skin[i] = R.RefBasesInvMatrix[i] * CS[i];
+	}
+
+	// invariant 1: RefPose ⇒ 모든 SkinningMatrix가 Identity
+	for (int32 i = 0; i < N; ++i)
+	{
+		checkf(IsNearIdentity(Skin[i], 1e-3f),
+		       "Skinning matrix at RefPose must be Identity. Matrix multiply order mismatch between Skeleton::RebuildRefBasesInvMatrix and USkinnedMeshComponent::FillComponentSpaceTransforms.");
+	}
+
+	// invariant 2: head의 component-space translation == (0, 0, 2)
+	const FVector HeadPos = CS[2].TransformPositionWithW(FVector(0, 0, 0));
+	checkf(std::abs(HeadPos.Z - 2.0f) < 1e-3f, "Forward sweep produced incorrect component-space translation.");
+
+	// invariant 3: RTTI 체인
+	check(USkeletalMeshComponent::StaticClass()->IsA(USkinnedMeshComponent::StaticClass()));
+	check(USkinnedMeshComponent::StaticClass()->IsA(UMeshComponent::StaticClass()));
+
+	return true;
 }

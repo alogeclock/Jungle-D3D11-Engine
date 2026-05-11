@@ -8,6 +8,7 @@
 
 class UMaterial;
 class FPrimitiveSceneProxy;
+class FSkeletalMeshObject;
 
 // SkeletalMesh 자산을 들고, "외부에서 주어진 BoneSpaceTransforms"를
 // component-space matrix + skinning matrix로 가공하는 책임까지만 진다.
@@ -19,8 +20,10 @@ public:
 	DECLARE_CLASS(USkinnedMeshComponent, UMeshComponent)
 
 	USkinnedMeshComponent() = default;
-	~USkinnedMeshComponent() override = default;
+	// std::unique_ptr<FSkeletalMeshObject>가 complete type을 요구하므로 .cpp에서 정의.
+	~USkinnedMeshComponent() override;
 
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
 
 	FMeshBuffer* GetMeshBuffer() const override;
 	FMeshDataView GetMeshDataView() const override;
@@ -56,6 +59,12 @@ public:
 	const TArray<FMatrix>& GetComponentSpaceMatrices() const { return ComponentSpaceMatrices; }
 	const TArray<FMatrix>& GetSkinningMatrices() const { return SkinningMatrices; }
 
+	// 본 포즈 파이프라인 invariant 검증.
+	// 1) RefPose 입력 시 모든 SkinningMatrix가 Identity 인지
+	// 2) RTTI 체인이 USkeletalMeshComponent → USkinnedMeshComponent → UMeshComponent 인지
+	// EngineLoop::Init에서 한 번 호출 권장. 실패 시 check() 트립.
+	static bool SelfTest();
+
 protected:
 	USkeletalMesh* SkeletalMesh = nullptr;
 	FString SkeletalMeshPath = "None";
@@ -71,6 +80,7 @@ protected:
 	TArray<FTransform> BoneSpaceTransforms;        // 부모 로컬 [BoneCount]
 	TArray<FMatrix> ComponentSpaceMatrices;     // 컴포넌트 공간 [BoneCount]
 	TArray<FMatrix> SkinningMatrices;           // CS * RefBasesInvMatrix [BoneCount]
+	std::unique_ptr<FSkeletalMeshObject> MeshObject;
 
 	void CacheLocalBounds();
 };
