@@ -27,7 +27,6 @@ private:
 	void Close();
 	void RegisterPreviewClient();
 	void UnregisterPreviewClient();
-	FString MakeWindowTitle() const;
 
 private:
 	FPreviewViewportWidget ViewportWidget;

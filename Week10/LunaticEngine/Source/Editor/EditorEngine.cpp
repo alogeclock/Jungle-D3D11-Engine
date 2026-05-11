@@ -524,6 +524,53 @@ void UEditorEngine::OpenSkeletalMeshEditor(USkeletalMesh* SkeletalMesh)
 void UEditorEngine::RenderUI(float DeltaTime)
 {
 	MainPanel.Render(DeltaTime);
+	UpdatePreviewViewportRouting();
+}
+
+void UEditorEngine::UpdatePreviewViewportRouting()
+{
+	FPreviewViewportClient* HoveredPreviewViewport = nullptr;
+	FPreviewViewportClient* FocusedPreviewViewport = nullptr;
+	for (FPreviewViewportClient* ViewportClient : PreviewViewportClients)
+	{
+		if (!ViewportClient)
+		{
+			continue;
+		}
+
+		if (ViewportClient->IsHovered())
+		{
+			HoveredPreviewViewport = ViewportClient;
+		}
+		if (ViewportClient->IsActive())
+		{
+			FocusedPreviewViewport = ViewportClient;
+		}
+	}
+
+	auto IsRegisteredPreviewViewport = [this](FViewportClient* ViewportClient)
+		{
+			return std::find(PreviewViewportClients.begin(), PreviewViewportClients.end(), ViewportClient) != PreviewViewportClients.end();
+		};
+
+	FInputRouter& InputRouter = FInputRouter::Get();
+	if (HoveredPreviewViewport)
+	{
+		InputRouter.SetHoveredViewport(HoveredPreviewViewport);
+	}
+	else if (IsRegisteredPreviewViewport(InputRouter.GetHoveredViewport()))
+	{
+		InputRouter.SetHoveredViewport(nullptr);
+	}
+
+	if (FocusedPreviewViewport)
+	{
+		InputRouter.SetKeyboardFocusedViewport(FocusedPreviewViewport);
+	}
+	else if (IsRegisteredPreviewViewport(InputRouter.GetKeyboardFocusedViewport()))
+	{
+		InputRouter.SetKeyboardFocusedViewport(nullptr);
+	}
 }
 
 void UEditorEngine::RenderPIEOverlayPopups()

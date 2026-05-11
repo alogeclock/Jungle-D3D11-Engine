@@ -156,6 +156,7 @@ private:
 	// Tick 내에서 호출 — 큐에 요청이 있으면 StartPlayInEditorSession 실행
 	void StartQueuedPlaySessionRequest();
 	void ProcessDeferredEditorActions();
+	void UpdatePreviewViewportRouting();
 	void StartPlayInEditorSession(const FRequestPlaySessionParams& Params);
 	void EndPlayMap();
 	bool EnterPIEPossessedMode();

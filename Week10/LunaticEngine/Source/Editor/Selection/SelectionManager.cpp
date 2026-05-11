@@ -405,9 +405,9 @@ void FSelectionManager::SelectComponent(USceneComponent* Component)
 
 void FSelectionManager::SetActorProxiesSelected(AActor* Actor, bool bSelected)
 {
-	if (!Actor || !World) return;
+	if (!Actor || !Actor->GetWorld()) return;
 
-	FScene& Scene = World->GetScene();
+	FScene& Scene = Actor->GetWorld()->GetScene();
 	for (UPrimitiveComponent* Prim : Actor->GetPrimitiveComponents())
 	{
 		if (FPrimitiveSceneProxy* Proxy = Prim->GetSceneProxy())
@@ -430,6 +430,15 @@ void FSelectionManager::SyncGizmo()
 	USceneComponent* Primary = SelectedComponent;
 	if (Primary)
 	{
+		// 기즈모는 현재 SelectionManager가 관리하는 월드(Main World)에 속한 컴포넌트만 조작해야 합니다.
+		// 프리뷰 월드(Skeletal Mesh Editor 등)의 컴포넌트가 선택된 경우 기즈모를 비활성화하여 오작동을 방지합니다.
+		if (World && Primary->GetWorld() != World)
+		{
+			Gizmo->Deactivate();
+			Gizmo->SetSelectedActors(&SelectedActors);
+			return;
+		}
+
 		if (Primary->SupportsUIScreenPicking() || !Primary->SupportsWorldGizmo())
 		{
 			Gizmo->Deactivate();

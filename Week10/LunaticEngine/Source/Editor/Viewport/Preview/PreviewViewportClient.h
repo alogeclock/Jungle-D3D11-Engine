@@ -39,6 +39,9 @@ public:
 	void SetOrbitTarget(const FVector& InTarget);
 	const FVector& GetOrbitTarget() const { return OrbitTarget; }
 	bool FocusBounds(const FVector& Center, const FVector& Extent);
+	void SetViewportType(ELevelViewportType NewType);
+	float GetPreviewCameraSpeed() const { return PreviewCameraSpeed; }
+	void SetPreviewCameraSpeed(float InSpeed);
 
 protected:
 	virtual void OnCameraReset() {}

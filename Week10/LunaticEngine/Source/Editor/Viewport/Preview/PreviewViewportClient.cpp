@@ -20,7 +20,7 @@ namespace
 	bool WasNavigationButtonPressed(const FInputSystemSnapshot& Snapshot);
 	float GetMaxExtent(const FVector& Extent);
 	float GetFocusDistanceForExtent(const FVector& Extent);
-	FVector GetDefaultCameraLocation();
+	FVector GetDefaultPreviewCameraOffset(float FocusDistance);
 }
 
 FPreviewViewportClient::FPreviewViewportClient()
@@ -156,23 +156,61 @@ bool FPreviewViewportClient::FocusBounds(const FVector& Center, const FVector& E
 
 	OrbitTarget = Center;
 	const float FocusDistance = GetFocusDistanceForExtent(Extent);
-
-	FVector Forward = Camera->GetForwardVector();
-	if (Forward.IsNearlyZero())
-	{
-		Forward = (Center - GetDefaultCameraLocation());
-		if (Forward.IsNearlyZero())
-		{
-			Forward = FVector(1.0f, 0.0f, 0.0f);
-		}
-		Forward.Normalize();
-	}
-
-	const FVector NewLocation = Center - Forward * FocusDistance;
+	const FVector NewLocation = Center + GetDefaultPreviewCameraOffset(FocusDistance);
 	Camera->SetWorldLocation(NewLocation);
 	Camera->LookAt(Center);
 	SyncCamera();
 	return true;
+}
+
+void FPreviewViewportClient::SetViewportType(ELevelViewportType NewType)
+{
+	if (!Camera)
+	{
+		return;
+	}
+
+	RenderOptions.ViewportType = NewType;
+	if (NewType == ELevelViewportType::Perspective)
+	{
+		Camera->SetOrthographic(false);
+		SyncCamera();
+		return;
+	}
+	if (NewType == ELevelViewportType::FreeOrthographic)
+	{
+		Camera->SetOrthographic(true);
+		SyncCamera();
+		return;
+	}
+
+	Camera->SetOrthographic(true);
+	constexpr float OrthoDistance = 50.0f;
+	FVector Position = FVector::ZeroVector;
+	FVector Rotation = FVector::ZeroVector;
+	switch (NewType)
+	{
+	case ELevelViewportType::Top: Position = FVector(0.0f, 0.0f, OrthoDistance); Rotation = FVector(0.0f, 90.0f, 0.0f); break;
+	case ELevelViewportType::Bottom: Position = FVector(0.0f, 0.0f, -OrthoDistance); Rotation = FVector(0.0f, -90.0f, 0.0f); break;
+	case ELevelViewportType::Front: Position = FVector(OrthoDistance, 0.0f, 0.0f); Rotation = FVector(0.0f, 0.0f, 180.0f); break;
+	case ELevelViewportType::Back: Position = FVector(-OrthoDistance, 0.0f, 0.0f); Rotation = FVector(0.0f, 0.0f, 0.0f); break;
+	case ELevelViewportType::Left: Position = FVector(0.0f, -OrthoDistance, 0.0f); Rotation = FVector(0.0f, 0.0f, 90.0f); break;
+	case ELevelViewportType::Right: Position = FVector(0.0f, OrthoDistance, 0.0f); Rotation = FVector(0.0f, 0.0f, -90.0f); break;
+	default: break;
+	}
+
+	const FVector NewLocation = OrbitTarget + Position;
+	Camera->SetWorldLocation(NewLocation);
+	Camera->SetRelativeRotation(Rotation);
+	TargetLocation = NewLocation;
+	LastAppliedCameraLocation = NewLocation;
+	bTargetLocationInitialized = true;
+	bLastAppliedCameraLocationInitialized = true;
+}
+
+void FPreviewViewportClient::SetPreviewCameraSpeed(float InSpeed)
+{
+	PreviewCameraSpeed = Clamp(InSpeed, 0.1f, 1000.0f);
 }
 
 // 프리뷰 카메라용 입력 액션, 매핑 컨텍스트, 콜백 바인딩을 설정한다.
@@ -522,8 +560,9 @@ namespace
 		return (std::max)(5.0f, Radius * 2.5f);
 	}
 
-	FVector GetDefaultCameraLocation()
+	FVector GetDefaultPreviewCameraOffset(float FocusDistance)
 	{
-		return FVector(10.0f, 0.0f, 5.0f);
+		const FVector Direction = FVector(0.5f, -1.0f, 1.0f).Normalized();
+		return Direction * FocusDistance;
 	}
 }

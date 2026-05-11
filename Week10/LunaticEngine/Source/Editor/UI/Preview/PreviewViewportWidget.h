@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/CoreTypes.h"
+
 class FPreviewViewportClient;
 
 class FPreviewViewportWidget
@@ -10,4 +12,5 @@ public:
 
 private:
 	FPreviewViewportClient* ViewportClient = nullptr;
+	int32 PreviewGizmoMode = 0;
 };
