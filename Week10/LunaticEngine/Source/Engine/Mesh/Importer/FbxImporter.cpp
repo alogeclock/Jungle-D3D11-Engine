@@ -350,6 +350,36 @@ static void ImportSkeletalNodeRecursive(FbxNode* Node, const FFbxImportOptions& 
 				}
 			}
 		}
+
+		//Case.. Skine Count == 0 or some control point cover 
+		// rigid fallback bone decide
+		// parent FbxNode chain chase nearest bone index search
+		int32 RigidBoneIdx = -1;
+		for (FbxNode* point = Node->GetParent(); point; point = point->GetParent())
+		{
+			auto It = BoneNodeMap.find(point);
+			if (It != BoneNodeMap.end())
+			{
+				RigidBoneIdx = It->second;
+				break;
+			}
+		}
+		// Rigid binding 이 메시의 control point 중 영향이 비어있는 것들을 rigid bone에 weight=1로 묶음
+		if (RigidBoneIdx >= 0)
+		{
+			for (int32 cp = 0; cp < ControlPointCount; ++cp)
+			{
+				FRawSkinInfluence& Infl = OutControlPointInfluences[BaseCPOffset + cp];
+				if (Infl.BoneIndices.empty())
+				{
+					Infl.BoneIndices.push_back(RigidBoneIdx);
+					Infl.Weights.push_back(1.0f);
+				}
+			}
+		}
+		UE_LOG_CATEGORY(FbxImporter, Info,
+			"Mesh '%s': SkinCount=%d, RigidBoneIdx=%d, CP=%d",
+			Node->GetName(), SkinCount, RigidBoneIdx, ControlPointCount);
 		//UV setname
 		const char* UVSetName = nullptr;
 		FbxStringList UVSetNames;
@@ -408,7 +438,25 @@ static void FanOutSkinWeights(const TArray<FRawSkinInfluence>& CPInfluences,cons
 	{
 		const FRawSkinInfluence& Infl = CPInfluences[cp];
 		if (Infl.BoneIndices.empty())
+		{
+			// 본도 없고 부모 본도 못 찾은 경우 — 본 0번에 weight=1 강제 binding
+			// (Skeleton에 본이 1개라도 있으면 동작, 없으면 1-bone fallback에서 처리됨)
+			if (LOD.Vertices.size() > 0)
+			{
+				for (uint32 vIdx : CPToVertex[cp])
+				{
+					FSkinVertex& V = LOD.Vertices[vIdx];
+					V.BoneIndices[0] = 0;
+					V.BoneWeights[0] = 1.0f;
+					for (int k = 1; k < MAX_BONE_INFLUENCES; ++k)
+					{
+						V.BoneIndices[k] = 0;
+						V.BoneWeights[k] = 0.0f;
+					}
+				}
+			}
 			continue;
+		}
 	//weights sellect
 		TArray<int32> Order(Infl.Weights.size());
 		for (int32 i = 0; i < (int32)Order.size(); i++)

@@ -2,6 +2,7 @@
 #include <string>
 #include "Core/CoreTypes.h"
 
+struct FStaticMesh;
 struct FSkeletalMesh;
 struct FReferenceSkeleton;
 struct FStaticMaterial;

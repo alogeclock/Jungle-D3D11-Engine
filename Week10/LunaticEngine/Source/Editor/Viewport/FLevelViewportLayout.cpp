@@ -47,9 +47,9 @@
 
 namespace
 {
-// ─── FBX → SkeletalMesh: 정적 임포트 결과를 1-bone 스켈레톤으로 감싸기 ─────
-// 실제 본 가중치는 없으니 T-Pose 그대로 정지 상태. 캐릭터 메시 형상 시각 확인용.
-// 실패 시 nullptr 반환 (caller가 더미 큐브로 fallback).
+// FBX → SkeletalMesh: 정적 임포트 결과를 1-bone 스켈레톤으로 감싸기
+// 실제 본 가중치는 없으니 T-Pose 그대로 정지 상태. 캐릭터 메시 형상 시각 확인용
+// 실패 시 nullptr 반환 (caller가 더미 큐브로 fallback)
 USkeletalMesh* CreateSkeletalMeshFromFBX(const FString& Path)
 {
 	FSkeletalMesh* Asset = new FSkeletalMesh();
@@ -73,12 +73,12 @@ USkeletalMesh* CreateSkeletalMeshFromFBX(const FString& Path)
 	return Mesh;
 }
 
-// ─── 더미 SkeletalMesh: CPU 스키닝 파이프라인 시각 확인용 ─────────
-// 큐브 8정점 + 본 1개 + 가중치 100%. T-Pose에서 흰 큐브로 보여야 함.
-// AnimInstance 미구현 단계에서는 회전 없이 정지 상태.
+// 더미 SkeletalMesh: CPU 스키닝 파이프라인 시각 확인용
+// 큐브 8정점 + 본 1개 + 가중치 100%. T-Pose에서 흰 큐브로 보dla
+// AnimInstance 미구현 단계에서는 회전 없이 정지 상태
 USkeletalMesh* CreateTestSkeletalMesh()
 {
-	// 1) Skeleton (본 1개)
+	// Skeleton (본 1개)
 	USkeleton* Sk = UObjectManager::Get().CreateObject<USkeleton>();
 	FReferenceSkeleton Ref;
 	Ref.Allocate(1);
@@ -86,7 +86,7 @@ USkeletalMesh* CreateTestSkeletalMesh()
 	Ref.RefBonePose[0] = FTransform();
 	Sk->SetReferenceSkeleton(std::move(Ref));
 
-	// 2) Mesh asset (큐브 8정점, 12 삼각형, 모두 본 0번에 100% 가중치)
+	// Mesh asset (큐브 8정점, 12 삼각형, 모두 본 0번에 100% 가중치)
 	FSkeletalMesh* Asset = new FSkeletalMesh();
 	Asset->PathFileName = "DummyCube";
 	Asset->LODModels.resize(1);
