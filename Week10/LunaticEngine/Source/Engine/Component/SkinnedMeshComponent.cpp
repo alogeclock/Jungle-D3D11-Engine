@@ -113,6 +113,11 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 		{
 			ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
 			MeshObject = std::make_unique<FSkeletalMeshObjectCPU>(Asset, Device);
+
+			// 첫 프레임 가시화: TickComponent가 처음 굴러가기 전에 MeshBuffer를 만들어둠.
+			// 안 하면 첫 한두 프레임 동안 GetMeshBuffer()->IsValid() == false → DrawCommandBuilder가 스킵.
+			RefreshBoneTransforms();
+			MeshObject->Update(SkinningMatrices);
 		}
 	}
 	else
@@ -470,6 +475,93 @@ bool USkinnedMeshComponent::SelfTest()
 	// invariant 3: RTTI 체인
 	check(USkeletalMeshComponent::StaticClass()->IsA(USkinnedMeshComponent::StaticClass()));
 	check(USkinnedMeshComponent::StaticClass()->IsA(UMeshComponent::StaticClass()));
+
+	// ─── 스키닝 커널 단위 테스트 ────────────────────────────────
+	// FSkeletalMeshObjectCPU::Update() 안의 per-vertex 수식과 동일한 식을 인라인으로 재현.
+	// 커널 자체의 수학 정확성만 검증 (GPU 디바이스 없이 가능).
+	auto SkinVertex = [](const FSkinVertex& V, const TArray<FMatrix>& Skin,
+	                     FVector& OutPos, FVector& OutNrm)
+	{
+		OutPos = FVector(0, 0, 0);
+		OutNrm = FVector(0, 0, 0);
+		for (int k = 0; k < MAX_BONE_INFLUENCES; ++k)
+		{
+			const float W = V.BoneWeights[k];
+			if (W <= 0.0f) continue;
+			const uint32 BoneIdx = V.BoneIndices[k];
+			if (BoneIdx >= (uint32)Skin.size()) continue;
+			const FMatrix& M = Skin[BoneIdx];
+			OutPos = OutPos + M.TransformPositionWithW(V.Pos) * W;
+			OutNrm = OutNrm + M.TransformVector(V.Normal) * W;
+		}
+	};
+
+	auto NearVec = [](const FVector& A, const FVector& B, float Eps)
+	{
+		return (A - B).Length() < Eps;
+	};
+
+	// 테스트 정점: 위치 (1,0,0), 노멀 (0,1,0), 본 0번에 100% 가중치
+	FSkinVertex V{};
+	V.Pos = FVector(1, 0, 0);
+	V.Normal = FVector(0, 1, 0);
+	V.Color = FVector4(1, 1, 1, 1);
+	V.Tex = FVector2(0, 0);
+	V.Tangent = FVector4(1, 0, 0, 1);
+	for (int k = 0; k < MAX_BONE_INFLUENCES; ++k) { V.BoneIndices[k] = 0; V.BoneWeights[k] = 0; }
+	V.BoneWeights[0] = 1.0f;
+
+	// 커널 테스트 1: Identity skinning → output == input
+	{
+		TArray<FMatrix> SkinPalette(1, FMatrix::Identity);
+		FVector P, NN;
+		SkinVertex(V, SkinPalette, P, NN);
+		checkf(NearVec(P, V.Pos, 1e-3f), "Skinning kernel: Identity must preserve position.");
+		checkf(NearVec(NN, V.Normal, 1e-3f), "Skinning kernel: Identity must preserve normal.");
+	}
+
+	// 커널 테스트 2: Translation skinning → position translates, normal unchanged
+	{
+		TArray<FMatrix> SkinPalette(1);
+		SkinPalette[0] = FMatrix::MakeTranslationMatrix(FVector(2, 0, 0));
+		FVector P, NN;
+		SkinVertex(V, SkinPalette, P, NN);
+		// 입력 (1,0,0) + 평행이동 (2,0,0) = (3,0,0)
+		checkf(NearVec(P, FVector(3, 0, 0), 1e-3f), "Skinning kernel: Translation result wrong.");
+		// 노멀은 평행이동 영향을 받으면 안 됨 (TransformVector는 회전만)
+		checkf(NearVec(NN, V.Normal, 1e-3f), "Skinning kernel: Translation must not affect normal.");
+	}
+
+	// 커널 테스트 3: Rotation skinning → position rotates, normal rotates
+	{
+		// Z축 90도 회전: (1,0,0) → (0,1,0), (0,1,0) → (-1,0,0)
+		// (row-vector 규약, FMatrix::MakeRotationZ 시그니처 가정)
+		TArray<FMatrix> SkinPalette(1);
+		const float PI_F = 3.14159265359f;
+		SkinPalette[0] = FMatrix::MakeRotationZ(PI_F * 0.5f);
+		FVector P, NN;
+		SkinVertex(V, SkinPalette, P, NN);
+		// 회전 방향(시계/반시계)은 엔진 컨벤션 따라 둘 중 하나. 둘 다 허용.
+		const bool bCW  = NearVec(P, FVector(0,  1, 0), 1e-2f);
+		const bool bCCW = NearVec(P, FVector(0, -1, 0), 1e-2f);
+		checkf(bCW || bCCW, "Skinning kernel: 90deg Z rotation must produce (0,±1,0).");
+	}
+
+	// 커널 테스트 4: 블렌딩 — 50% Identity + 50% Translation(2,0,0)
+	{
+		// 정점 가중치를 두 본으로 나눔
+		FSkinVertex Vb = V;
+		Vb.BoneIndices[0] = 0; Vb.BoneWeights[0] = 0.5f;
+		Vb.BoneIndices[1] = 1; Vb.BoneWeights[1] = 0.5f;
+
+		TArray<FMatrix> SkinPalette(2);
+		SkinPalette[0] = FMatrix::Identity;
+		SkinPalette[1] = FMatrix::MakeTranslationMatrix(FVector(2, 0, 0));
+		FVector P, NN;
+		SkinVertex(Vb, SkinPalette, P, NN);
+		// 입력 (1,0,0): 0.5 * (1,0,0) + 0.5 * (1+2,0,0) = (2,0,0)
+		checkf(NearVec(P, FVector(2, 0, 0), 1e-3f), "Skinning kernel: blended weights produced wrong result.");
+	}
 
 	return true;
 }

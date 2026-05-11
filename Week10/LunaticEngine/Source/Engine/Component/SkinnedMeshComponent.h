@@ -5,10 +5,12 @@
 #include "Math/Matrix.h"
 #include "Math/Transform.h"
 #include "Mesh/SkeletalMesh.h"
+#include "Render/Skeletal/SkeletalMeshObject.h"   // unique_ptr<FSkeletalMeshObject> complete type 요구
+
+#include <memory>
 
 class UMaterial;
 class FPrimitiveSceneProxy;
-class FSkeletalMeshObject;
 
 // SkeletalMesh 자산을 들고, "외부에서 주어진 BoneSpaceTransforms"를
 // component-space matrix + skinning matrix로 가공하는 책임까지만 진다.

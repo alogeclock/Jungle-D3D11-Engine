@@ -41,7 +41,7 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 			const float Weight = In.BoneWeights[i];
 			if (Weight <= 0.0f)
 				continue;
-			const uint32 BoneIdx = In.BoneIndices[v];
+			const uint32 BoneIdx = In.BoneIndices[i];
 			if (BoneIdx >= (uint32)InSkinningMatrices.size())
 				continue;
 

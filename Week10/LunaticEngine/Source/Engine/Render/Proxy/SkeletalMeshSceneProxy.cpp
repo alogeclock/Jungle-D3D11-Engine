@@ -120,32 +120,22 @@ void FSkeletalMeshSceneProxy::RebuildSectionDraws()
 		return FallbackMaterial;
 	};
 
-	const uint32 AssetLODCount = static_cast<uint32>(Asset->LODModels.size());
-	LODCount = std::min<uint32>(AssetLODCount, MAX_LOD);
-
-	for (uint32 lod = 0; lod < LODCount; ++lod)
-	{
-		const FSkeletalMeshLOD& LOD = Asset->LODModels[lod];
-		// FSkeletalMeshLOD에는 RenderBuffer가 없음 — GPU 업로드는 후속 단계.
-		LODData[lod].MeshBuffer = nullptr;
-		LODData[lod].SectionDraws.clear();
-		LODData[lod].SectionDraws.reserve(LOD.Sections.size());
-
-		for (const FStaticMeshSection& Section : LOD.Sections)
-		{
-			FMeshSectionDraw Draw;
-			Draw.FirstIndex = Section.FirstIndex;
-			Draw.IndexCount = Section.NumTriangles * 3;
-			Draw.Material = ResolveMaterialForSection(Section);
-
-			LODData[lod].SectionDraws.push_back(Draw);
-		}
-
-		SortSectionDrawsByMaterial(LODData[lod].SectionDraws);
-	}
-
-	// LOD0을 활성 슬롯으로 설정
+	// CPU 스키닝 단계: LOD별 GPU 버퍼 개념 없음. MeshObject가 단일 동적 버퍼를 들고 다님.
+	// MeshBuffer는 UpdateMesh에서 이미 세팅된 상태이므로 여기선 건드리지 않는다.
+	// SectionDraws만 LOD0 기반으로 다시 빌드.
 	CurrentLOD = 0;
-	std::swap(MeshBuffer, LODData[0].MeshBuffer);
-	std::swap(SectionDraws, LODData[0].SectionDraws);
+	LODCount = 1;
+
+	const FSkeletalMeshLOD& LOD0 = Asset->LODModels[0];
+	SectionDraws.clear();
+	SectionDraws.reserve(LOD0.Sections.size());
+	for (const FStaticMeshSection& Section : LOD0.Sections)
+	{
+		FMeshSectionDraw Draw;
+		Draw.FirstIndex = Section.FirstIndex;
+		Draw.IndexCount = Section.NumTriangles * 3;
+		Draw.Material = ResolveMaterialForSection(Section);
+		SectionDraws.push_back(Draw);
+	}
+	SortSectionDrawsByMaterial(SectionDraws);
 }
