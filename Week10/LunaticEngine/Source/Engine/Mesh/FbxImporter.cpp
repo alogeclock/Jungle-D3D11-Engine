@@ -12,13 +12,15 @@
 #include <cctype>
 #include <cmath>
 #include <cstddef>
- #include <cstring>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <string>
 #include <unordered_map>
 #include <utility>
+
+#include "UI/ContentBrowser/ContentBrowserElement.h"
 
 namespace
 {
@@ -66,6 +68,8 @@ namespace
     struct FImportBuildContext
     {
         FSkeletalImportSummary Summary;
+
+        TMap<FbxSurfaceMaterial*, int32> FbxMaterialToIndex;
 
         // Skeletal import 중 발생한 경고를 ImportSummary에 누적한다.
         void AddWarning(ESkeletalImportWarningType Type, const FString& Message)
@@ -147,6 +151,34 @@ namespace
         HashCombineSizeT(Seed, std::hash<const void*> {}(Pointer));
     }
 
+    static void HashCombineString(std::size_t& Seed, const FString& Value)
+    {
+        for (char C : Value)
+        {
+            HashCombineSizeT(Seed, static_cast<std::size_t>(static_cast<unsigned char>(C)));
+        }
+    }
+
+    static std::size_t MakeFbxMaterialInfoHash(const FFbxImportedMaterialInfo& Info)
+    {
+        std::size_t Seed = 0;
+
+        HashCombineString(Seed, Info.SlotName);
+        HashCombineString(Seed, Info.DiffuseTexture);
+        HashCombineString(Seed, Info.NormalTexture);
+        HashCombineString(Seed, Info.RoughnessTexture);
+        HashCombineString(Seed, Info.MetallicTexture);
+        HashCombineString(Seed, Info.EmissiveTexture);
+        HashCombineString(Seed, Info.OpacityTexture);
+
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.X));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.Y));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.Z));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.W));
+
+        return Seed;
+    }
+    
     static std::array<uint32, 2> MakeVector2Bits(const FVector2& V)
     {
         return { FloatToStableBits(V.X), FloatToStableBits(V.Y) };
@@ -343,6 +375,44 @@ namespace
         return NewIndex;
     }
 
+    static bool TryResolveFbxFileTexturePath(FbxFileTexture* FileTexture, const FString& SourceFbxPath, FString& OutTexturePath)
+    {
+        if (!FileTexture)
+        {
+            return false;
+        }
+
+        const char* RelativeName = FileTexture->GetRelativeFileName();
+        const char* FileName     = FileTexture->GetFileName();
+
+        FString TexturePath;
+
+        if (RelativeName && RelativeName[0] != '\0')
+        {
+            TexturePath = RelativeName;
+        }
+        else if (FileName && FileName[0] != '\0')
+        {
+            TexturePath = FileName;
+        }
+
+        if (TexturePath.empty())
+        {
+            return false;
+        }
+
+        if (TexturePath.rfind("Asset/", 0) == 0)
+        {
+            OutTexturePath = TexturePath;
+        }
+        else
+        {
+            OutTexturePath = FPaths::ResolveAssetPath(SourceFbxPath, TexturePath);
+        }
+
+        return true;
+    }
+
     // FBX texture property에서 외부 texture 경로를 추출해 엔진 asset 상대경로로 변환한다.
     static bool TryGetFbxTexturePathFromProperty(const FbxProperty& Property, const FString& SourceFbxPath, FString& OutTexturePath)
     {
@@ -356,42 +426,34 @@ namespace
         for (int32 TextureIndex = 0; TextureIndex < TextureCount; ++TextureIndex)
         {
             FbxFileTexture* FileTexture = Property.GetSrcObject<FbxFileTexture>(TextureIndex);
-            if (!FileTexture)
-            {
-                continue;
-            }
 
-            const char* RelativeName = FileTexture->GetRelativeFileName();
-            const char* FileName     = FileTexture->GetFileName();
-
-            FString TexturePath;
-
-            if (RelativeName && RelativeName[0] != '\0')
+            if (TryResolveFbxFileTexturePath(FileTexture, SourceFbxPath, OutTexturePath))
             {
-                TexturePath = RelativeName;
+                return true;
             }
-            else if (FileName && FileName[0] != '\0')
-            {
-                TexturePath = FileName;
-            }
-
-            if (TexturePath.empty())
-            {
-                continue;
-            }
-
-            if (TexturePath.rfind("Asset/", 0) == 0)
-            {
-                OutTexturePath = TexturePath;
-            }
-            else
-            {
-                OutTexturePath = FPaths::ResolveAssetPath(SourceFbxPath, TexturePath);
-            }
-
-            return true;
         }
 
+        const int32 LayeredTextureCount = Property.GetSrcObjectCount<FbxLayeredTexture>();
+        for (int32 LayeredTextureIndex = 0; LayeredTextureIndex < LayeredTextureCount; ++LayeredTextureIndex)
+        {
+            FbxLayeredTexture* LayeredTexture = Property.GetSrcObject<FbxLayeredTexture>(LayeredTextureIndex);
+            if (!LayeredTexture)
+            {
+                continue;
+            }
+
+            const int32 LayerTextureCount = LayeredTexture->GetSrcObjectCount<FbxFileTexture>();
+
+            for (int32 LayerTextureIndex = 0; LayerTextureIndex < LayerTextureCount; ++LayerTextureIndex)
+            {
+                FbxFileTexture* FileTexture = LayeredTexture->GetSrcObject<FbxFileTexture>(LayerTextureIndex);
+
+                if (TryResolveFbxFileTexturePath(FileTexture, SourceFbxPath, OutTexturePath))
+                {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -448,13 +510,29 @@ namespace
         return Info;
     }
 
-    // 추출한 FBX material 정보를 엔진 .mat JSON 파일로 저장하고 material asset path를 반환한다.
-    static FString ConvertFbxMaterialInfoToMat(const FFbxImportedMaterialInfo& Info, FImportBuildContext& BuildContext)
+    // FBX source와 slot 이름을 이용해 충돌 가능성이 낮은 자동 material asset path를 만든다.
+    static FString MakeAutoFbxMaterialPath(const FString& SourceFbxPath, const FFbxImportedMaterialInfo& Info)
     {
-        const FString SafeSlotName = MakeSafeAssetName(Info.SlotName);
-        const FString MatPath      = "Asset/Materials/Auto/Fbx/" + SafeSlotName + ".mat";
+        const std::filesystem::path SourcePath      = FPaths::ToWide(SourceFbxPath);
+        FString                     SourceAssetName = FPaths::ToUtf8(SourcePath.stem().wstring());
+        
+        if (SourceAssetName.empty())
+        {
+            SourceAssetName = "UnknownFbx";
+        }
 
-        const std::filesystem::path DiskPath(FPaths::ToWide(MatPath));
+        const FString SafeSlotName = MakeSafeAssetName(Info.SlotName);
+        const FString HashSuffix   = std::to_string(MakeFbxMaterialInfoHash(Info));
+
+        return "Asset/Materials/Auto/Fbx/" + MakeSafeAssetName(SourceAssetName) + "/" + SafeSlotName + "-" + HashSuffix + ".mat";
+    }
+
+    // 추출한 FBX material 정보를 엔진 .mat JSON 파일로 저장하고 material asset path를 반환한다.
+    static FString ConvertFbxMaterialInfoToMat(const FFbxImportedMaterialInfo& Info, const FString& SourceFbxPath, FImportBuildContext& BuildContext)
+    {
+        const FString               MatPath      = MakeAutoFbxMaterialPath(SourceFbxPath, Info);
+        const FString               FullDiskPath = FPaths::ConvertRelativePathToFull(MatPath);
+        const std::filesystem::path DiskPath(FPaths::ToWide(FullDiskPath));
 
         if (std::filesystem::exists(DiskPath))
         {
@@ -625,6 +703,18 @@ namespace
         return Mesh && Mesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
     }
 
+    // FBX node가 skeleton bone node인지 확인한다.
+    static bool IsFbxSkeletonNode(FbxNode* Node)
+    {
+        if (!Node)
+        {
+            return false;
+        }
+
+        FbxNodeAttribute* Attribute = Node->GetNodeAttribute();
+        return Attribute && Attribute->GetAttributeType() == FbxNodeAttribute::eSkeleton;
+    }
+
     // FBX 행렬을 엔진 FMatrix 형식으로 복사 변환한다.
     static FMatrix ToEngineMatrix(const FbxAMatrix& Source)
     {
@@ -741,6 +831,24 @@ namespace
         return Node && Node->GetParent() == nullptr;
     }
 
+    // Mesh node의 parent chain에서 가장 가까운 skeleton bone node를 찾는다.
+    static FbxNode* FindNearestParentSkeletonNode(FbxNode* MeshNode)
+    {
+        FbxNode* Current = MeshNode ? MeshNode->GetParent() : nullptr;
+
+        while (Current && !IsSceneRootNode(Current))
+        {
+            if (IsFbxSkeletonNode(Current))
+            {
+                return Current;
+            }
+
+            Current = Current->GetParent();
+        }
+
+        return nullptr;
+    }
+
     // 특정 node부터 scene root 직전까지 parent chain을 중복 없이 추가한다.
     static void AddNodeAndParentsUntilSceneRoot(FbxNode* Node, TArray<FbxNode*>& OutNodes)
     {
@@ -817,8 +925,13 @@ namespace
         return BoneIndex;
     }
 
-    // skinned mesh의 skin cluster link를 기준으로 skeleton hierarchy를 구성한다.
-    static bool BuildSkeletonFromSkinClusters(const TArray<FbxNode*>& SkinnedMeshNodes, FSkeleton& OutSkeleton, TMap<FbxNode*, int32>& OutBoneNodeToIndex)
+    // skinned mesh의 skin cluster link와 bone parent 아래 rigid mesh를 기준으로 skeleton hierarchy를 구성한다.
+    static bool BuildSkeletonFromSkinClusters(
+        const TArray<FbxNode*>& SkinnedMeshNodes,
+        const TArray<FbxNode*>& AllMeshNodes,
+        FSkeleton&              OutSkeleton,
+        TMap<FbxNode*, int32>&  OutBoneNodeToIndex
+        )
     {
         OutSkeleton.Bones.clear();
         OutBoneNodeToIndex.clear();
@@ -845,6 +958,24 @@ namespace
         for (FbxNode* LinkNode : LinkNodes)
         {
             AddNodeAndParentsUntilSceneRoot(LinkNode, ImportedBoneNodes);
+        }
+
+        // skin은 없지만 skeleton bone parent 아래에 붙은 mesh를 rigid attachment로 처리할 수 있도록,
+        // 해당 parent skeleton bone도 skeleton 후보에 포함한다.
+        for (FbxNode* MeshNode : AllMeshNodes)
+        {
+            FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
+
+            if (!Mesh || MeshHasSkin(Mesh))
+            {
+                continue;
+            }
+
+            FbxNode* RigidParentBone = FindNearestParentSkeletonNode(MeshNode);
+            if (RigidParentBone)
+            {
+                AddNodeAndParentsUntilSceneRoot(RigidParentBone, ImportedBoneNodes);
+            }
         }
 
         TArray<FbxNode*> RootBones;
@@ -1352,6 +1483,92 @@ namespace
         FVector4 BaseTangentInReference;
     };
 
+    enum class ESkeletalImportMeshKind : uint8
+    {
+        Skinned,
+        RigidAttached,
+        Loose
+    };
+
+    struct FSkeletalImportMeshNode
+    {
+        FbxNode*                MeshNode       = nullptr;
+        ESkeletalImportMeshKind Kind           = ESkeletalImportMeshKind::Loose;
+        int32                   RigidBoneIndex = -1;
+        FbxNode*                RigidBoneNode  = nullptr;
+    };
+
+    // skin이 없는 mesh node의 parent chain에서 import skeleton에 포함된 가장 가까운 bone을 찾는다.
+    static bool FindNearestParentBoneIndex(
+        FbxNode*                     MeshNode,
+        const TMap<FbxNode*, int32>& BoneNodeToIndex,
+        FbxNode*&                    OutBoneNode,
+        int32&                       OutBoneIndex
+        )
+    {
+        FbxNode* Current = MeshNode ? MeshNode->GetParent() : nullptr;
+
+        while (Current && !IsSceneRootNode(Current))
+        {
+            auto BoneIt = BoneNodeToIndex.find(Current);
+            if (BoneIt != BoneNodeToIndex.end())
+            {
+                OutBoneNode = Current;
+                OutBoneIndex = BoneIt->second;
+                return true;
+            }
+
+            Current = Current->GetParent();
+        }
+        
+        OutBoneNode = nullptr;
+        OutBoneIndex = -1;
+        return false;
+    }
+
+    // skeletal import 대상 mesh를 skinned / rigid bone attachment / loose mesh로 분류한다.
+    static void ClassifySkeletalImportMeshNodes(
+        const TArray<FbxNode*>&       MeshNodes,
+        const TMap<FbxNode*, int32>&  BoneNodeToIndex,
+        TArray<FSkeletalImportMeshNode>& OutImportNodes
+        )
+    {
+        OutImportNodes.clear();
+
+        for (FbxNode* MeshNode : MeshNodes)
+        {
+            FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
+            if (!Mesh)
+            {
+                continue;
+            }
+
+            FSkeletalImportMeshNode ImportNode;
+            ImportNode.MeshNode = MeshNode;
+
+            if (MeshHasSkin(Mesh))
+            {
+                ImportNode.Kind = ESkeletalImportMeshKind::Skinned;
+                OutImportNodes.push_back(ImportNode);
+                continue;
+            }
+
+            int32    ParentBoneIndex = -1;
+            FbxNode* ParentBoneNode  = nullptr;
+            if (FindNearestParentBoneIndex(MeshNode, BoneNodeToIndex, ParentBoneNode, ParentBoneIndex))
+            {
+                ImportNode.Kind           = ESkeletalImportMeshKind::RigidAttached;
+                ImportNode.RigidBoneIndex = ParentBoneIndex;
+                ImportNode.RigidBoneNode  = ParentBoneNode;
+                OutImportNodes.push_back(ImportNode);
+                continue;
+            }
+
+            ImportNode.Kind = ESkeletalImportMeshKind::Loose;
+            OutImportNodes.push_back(ImportNode);
+        }
+    }
+
     // position에 행렬의 전체 transform을 적용한다.
     static FVector TransformPositionByMatrix(const FVector& P, const FMatrix& M)
     {
@@ -1519,6 +1736,26 @@ namespace
         }
 
         return false;
+    }
+
+
+    // skin이 없는 rigid attachment mesh의 bind matrix를 얻는다.
+    static FMatrix GetRigidMeshBindMatrix(FbxScene* Scene, FbxNode* MeshNode)
+    {
+        if (!MeshNode)
+        {
+            return FMatrix::Identity;
+        }
+
+        const FMatrix GeometryTransform = ToEngineMatrix(GetNodeGeometryTransform(MeshNode));
+
+        FMatrix PoseMatrix;
+        if (TryGetBindPoseMatrixForNode(Scene, MeshNode, PoseMatrix))
+        {
+            return GeometryTransform * PoseMatrix;
+        }
+
+        return GeometryTransform * ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
     }
 
     // reference LOD node 목록에서 기준 mesh bind matrix를 FBX bind pose 우선으로 찾는다.
@@ -1781,6 +2018,37 @@ namespace
         float DiscardedWeight      = 0.0f;
     };
 
+
+    // skin이 없는 rigid attachment mesh vertex를 특정 bone 100% weight로 채운다.
+    static void SetRigidBoneWeight(
+        int32  BoneIndex,
+        uint16 OutBoneIndices[MAX_SKELETAL_MESH_BONE_INFLUENCES],
+        float  OutBoneWeights[MAX_SKELETAL_MESH_BONE_INFLUENCES],
+        FPackedBoneWeightStats& OutStats
+        )
+    {
+        OutStats = FPackedBoneWeightStats();
+        OutStats.SourceInfluenceCount = 1;
+
+        for (int32 i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++i)
+        {
+            OutBoneIndices[i] = 0;
+            OutBoneWeights[i] = 0.0f;
+        }
+
+        if (BoneIndex < 0 || BoneIndex > 65535)
+        {
+            OutStats.bBoneIndexOverflow = true;
+            OutStats.bMissingWeight     = true;
+            OutBoneIndices[0]           = 0;
+            OutBoneWeights[0]           = 1.0f;
+            return;
+        }
+
+        OutBoneIndices[0] = static_cast<uint16>(BoneIndex);
+        OutBoneWeights[0] = 1.0f;
+    }
+
     // control point weight를 상위 N개 influence로 압축한다.
     // 통계는 dedup 후 실제로 채택된 unique vertex에 대해서만 CommitUniqueVertexImportStats()에서 반영한다.
     static void PackTopBoneWeights(
@@ -1933,82 +2201,126 @@ namespace
         return &Sections.back();
     }
 
+    static FbxLayerElementMaterial* FindFirstMaterialLayerElement(FbxMesh* Mesh)
+    {
+        if (!Mesh)
+        {
+            return nullptr;
+        }
+
+        const int32 LayerCount = Mesh->GetLayerCount();
+
+        for (int32 LayerIndex = 0; LayerIndex < LayerCount; ++LayerIndex)
+        {
+            FbxLayer* Layer = Mesh->GetLayer(LayerIndex);
+            if (!Layer)
+            {
+                continue;
+            }
+
+            FbxLayerElementMaterial* MaterialElement = Layer->GetMaterials();
+            if (MaterialElement)
+            {
+                return MaterialElement;
+            }
+        }
+
+        return nullptr;
+    }
+
     // FBX material layer에서 polygon의 material index를 읽는다.
     static int32 GetPolygonMaterialIndex(FbxMesh* Mesh, int32 PolygonIndex)
     {
-        if (!Mesh || !Mesh->GetLayer(0))
-        {
-            return 0;
-        }
-
-        FbxLayerElementMaterial* MaterialElement = Mesh->GetLayer(0)->GetMaterials();
+        FbxLayerElementMaterial* MaterialElement = FindFirstMaterialLayerElement(Mesh);
         if (!MaterialElement)
         {
             return 0;
         }
 
-        if (MaterialElement->GetMappingMode() == FbxLayerElement::eByPolygon)
+        const FbxLayerElement::EMappingMode   MappingMode   = MaterialElement->GetMappingMode();
+        const FbxLayerElement::EReferenceMode ReferenceMode = MaterialElement->GetReferenceMode();
+
+        int32 ElementIndex = 0;
+
+        switch (MappingMode)
         {
-            if (MaterialElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect || MaterialElement->GetReferenceMode() == FbxLayerElement::eIndex)
-            {
-                if (PolygonIndex >= 0 && PolygonIndex < MaterialElement->GetIndexArray().GetCount())
-                {
-                    return MaterialElement->GetIndexArray().GetAt(PolygonIndex);
-                }
-            }
+        case FbxLayerElement::eByPolygon:
+            ElementIndex = PolygonIndex;
+            break;
+
+        case FbxLayerElement::eAllSame:
+            ElementIndex = 0;
+            break;
+
+        default:
             return 0;
         }
-        if (MaterialElement->GetMappingMode() == FbxLayerElement::eAllSame)
+
+        if (ElementIndex < 0)
         {
-            if (MaterialElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect || MaterialElement->GetReferenceMode() == FbxLayerElement::eIndex)
+            return 0;
+        }
+
+        if (ReferenceMode == FbxLayerElement::eIndexToDirect || ReferenceMode == FbxLayerElement::eIndex)
+        {
+            if (ElementIndex >= 0 && ElementIndex < MaterialElement->GetIndexArray().GetCount())
             {
-                if (MaterialElement->GetIndexArray().GetCount() > 0)
-                {
-                    return MaterialElement->GetIndexArray().GetAt(0);
-                }
+                return MaterialElement->GetIndexArray().GetAt(ElementIndex);
             }
 
             return 0;
         }
 
         return 0;
-    }
+    } 
 
-    // FBX material을 외부 texture path 기반 .mat 파일로 변환하고 skeletal material slot에 연결한다.
-    static int32 FindOrAddSkeletalMaterial(
+    // FBX material을 외부 texture path 기반 .mat 파일로 변환하고 material slot에 연결한다.
+    static int32 FindOrAddFbxMaterial(
         FbxSurfaceMaterial*      FbxMaterial,
         const FString&           SourceFbxPath,
         TArray<FStaticMaterial>& OutMaterials,
         FImportBuildContext&     BuildContext
         )
     {
-        const FString SlotName = FbxMaterial ? FbxMaterial->GetName() : "None";
-
-        for (int32 i = 0; i < static_cast<int32>(OutMaterials.size()); ++i)
+        if (!FbxMaterial)
         {
-            if (OutMaterials[i].MaterialSlotName == SlotName)
+            for (int32 i = 0; i < static_cast<int32>(OutMaterials.size()); ++i)
             {
-                return i;
+                if (OutMaterials[i].MaterialSlotName == "None")
+                {
+                    return i;
+                }
             }
+
+            FStaticMaterial NewMaterial;
+            NewMaterial.MaterialSlotName  = "None";
+            NewMaterial.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial("None");
+
+            OutMaterials.push_back(NewMaterial);
+            return static_cast<int32>(OutMaterials.size()) - 1;
         }
 
-        FString MaterialPath = "None";
-
-        if (FbxMaterial)
+        auto Existing = BuildContext.FbxMaterialToIndex.find(FbxMaterial);
+        if (Existing != BuildContext.FbxMaterialToIndex.end())
         {
-            const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath);
-            MaterialPath                                = ConvertFbxMaterialInfoToMat(MaterialInfo, BuildContext);
+            return Existing->second;
         }
 
+        const FString                  SlotName     = FbxMaterial ? FbxMaterial->GetName() : "None";
+        const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath);
+        const FString                  MaterialPath = ConvertFbxMaterialInfoToMat(MaterialInfo, SourceFbxPath, BuildContext);
+       
         FStaticMaterial NewMaterial;
         NewMaterial.MaterialSlotName  = SlotName;
         NewMaterial.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath);
         OutMaterials.push_back(NewMaterial);
-        return static_cast<int32>(OutMaterials.size()) - 1;
+        const int32 NewIndex                         = static_cast<int32>(OutMaterials.size()) - 1;
+        BuildContext.FbxMaterialToIndex[FbxMaterial] = NewIndex;
+        return NewIndex;
     }
 
     // 임시 section별 index 목록을 최종 index buffer와 section 배열로 병합한다.
-    static void BuildFinalSkeletalSections(
+    static void BuildFinalImportedSections(
         const TArray<FImportedSectionBuild>& SectionBuilds,
         const TArray<FStaticMaterial>&       Materials,
         TArray<uint32>&                      OutIndices,
@@ -2432,13 +2744,14 @@ namespace
     }
 }
 
-// LOD에 속한 skinned mesh node들을 하나의 FSkeletalMeshLOD로 빌드한다.
+// LOD에 속한 skeletal import mesh node들을 하나의 FSkeletalMeshLOD로 빌드한다.
 static bool BuildSkeletalMeshLODFromNodes(
     FbxScene*                           Scene,
     const FString&                      SourcePath,
-    const TArray<FbxNode*>&             MeshNodes,
+    const TArray<FSkeletalImportMeshNode>& MeshNodes,
     const TMap<FbxNode*, int32>&        BoneNodeToIndex,
     const FMatrix&                      ReferenceMeshBindInverse,
+    const FSkeleton& Skeleton,
     TArray<FStaticMaterial>&            OutMaterials,
     FSkeletalMeshLOD&                   OutLOD,
     TArray<FImportedMorphSourceVertex>* OutMorphSources,
@@ -2456,26 +2769,48 @@ static bool BuildSkeletalMeshLODFromNodes(
 
     std::unordered_map<FSkeletalVertexDedupKey, uint32, FSkeletalVertexDedupKeyHasher> VertexToIndex;
 
-    for (FbxNode* MeshNode : MeshNodes)
+    for (const FSkeletalImportMeshNode& ImportNode : MeshNodes)
     {
+        FbxNode* MeshNode = ImportNode.MeshNode;
         FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
 
-        if (!Mesh)
+        if (!Mesh || ImportNode.Kind == ESkeletalImportMeshKind::Loose)
         {
             continue;
         }
 
-        FMatrix MeshBind;
-        if (!TryGetFirstMeshBindMatrix(Scene, MeshNode, MeshBind))
+        FMatrix MeshToReference;
+        
+        if (ImportNode.Kind == ESkeletalImportMeshKind::Skinned)
         {
-            continue;
+            FMatrix MeshBind;
+            if (!TryGetFirstMeshBindMatrix(Scene, MeshNode, MeshBind))
+            {
+                continue;
+            }
+            MeshToReference = MeshBind * ReferenceMeshBindInverse;
         }
+        else if (ImportNode.Kind == ESkeletalImportMeshKind::RigidAttached)
+        {
+            if (!ImportNode.RigidBoneNode || ImportNode.RigidBoneIndex < 0 || ImportNode.RigidBoneIndex >= static_cast<int32>(Skeleton.Bones.size()))
+            {
+                continue;
+            }
+            
+            const FMatrix MeshGlobalScene = ToEngineMatrix(GetNodeGeometryTransform(MeshNode)) * ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
+            const FMatrix BoneGlobalScene = ToEngineMatrix(ImportNode.RigidBoneNode->EvaluateGlobalTransform());
+            const FMatrix MeshRelativeToBone = MeshGlobalScene * BoneGlobalScene.GetInverse();
+            MeshToReference = MeshRelativeToBone * Skeleton.Bones[ImportNode.RigidBoneIndex].GlobalBindPose;
+        }
+        
 
-        const FMatrix MeshToReference   = MeshBind * ReferenceMeshBindInverse;
         const FMatrix NormalToReference = MeshToReference.GetInverse().GetTransposed();
 
         TArray<TArray<FImportedBoneWeight>> ControlPointWeight;
-        ExtractSkinWeightsOnly(Mesh, BoneNodeToIndex, ControlPointWeight, BuildContext);
+        if (ImportNode.Kind == ESkeletalImportMeshKind::Skinned)
+        {
+            ExtractSkinWeightsOnly(Mesh, BoneNodeToIndex, ControlPointWeight, BuildContext);
+        }
 
         int32 PolygonVertexIndex = 0;
 
@@ -2498,7 +2833,7 @@ static bool BuildSkeletalMeshLODFromNodes(
                 FbxMat = MeshNode->GetMaterial(LocalMaterialIndex);
             }
 
-            const int32 MaterialIndex = FindOrAddSkeletalMaterial(FbxMat, SourcePath, OutMaterials, BuildContext);
+            const int32 MaterialIndex = FindOrAddFbxMaterial(FbxMat, SourcePath, OutMaterials, BuildContext);
 
             FImportedSectionBuild* SectionBuild = FindOrAddImportedSection(SectionBuilds, MaterialIndex);
 
@@ -2586,7 +2921,11 @@ static bool BuildSkeletalMeshLODFromNodes(
                     bGeneratedTangent = true;
                 }
 
-                if (ControlPointIndex >= 0 && ControlPointIndex < static_cast<int32>(ControlPointWeight.size()))
+                if (ImportNode.Kind == ESkeletalImportMeshKind::RigidAttached)
+                {
+                    SetRigidBoneWeight(ImportNode.RigidBoneIndex, Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
+                }
+                else if (ControlPointIndex >= 0 && ControlPointIndex < static_cast<int32>(ControlPointWeight.size()))
                 {
                     PackTopBoneWeights(ControlPointWeight[ControlPointIndex], Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
                 }
@@ -2649,7 +2988,7 @@ static bool BuildSkeletalMeshLODFromNodes(
         return false;
     }
 
-    BuildFinalSkeletalSections(SectionBuilds, OutMaterials, OutLOD.Indices, OutLOD.Sections);
+    BuildFinalImportedSections(SectionBuilds, OutMaterials, OutLOD.Indices, OutLOD.Sections);
 
     if (OutLOD.Indices.empty() || OutLOD.Sections.empty())
     {
@@ -2661,7 +3000,300 @@ static bool BuildSkeletalMeshLODFromNodes(
     return true;
 }
 
-// FBX 파일에서 static mesh geometry와 기본 material 정보를 import한다.
+struct FFbxMeshImportSpace
+{
+    FMatrix VertexTransform = FMatrix::Identity;
+    FMatrix NormalTransform = FMatrix::Identity;
+
+    static FFbxMeshImportSpace FromStaticMeshNode(FbxNode* MeshNode)
+    {
+        FFbxMeshImportSpace Result;
+
+        if (!MeshNode)
+        {
+            return Result;
+        }
+
+        const FMatrix GeometryTransform = ToEngineMatrix(GetNodeGeometryTransform(MeshNode));
+        const FMatrix GlobalTransform   = ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
+
+        Result.VertexTransform = GeometryTransform * GlobalTransform;
+        Result.NormalTransform = Result.VertexTransform.GetInverse().GetTransposed();
+        return Result;
+    }
+};
+
+struct FFbxTriangleSample
+{
+    int32    ControlPointIndices[3] = { -1, -1, -1 };
+    FVector  Positions[3];
+    FVector2 UV0[3];
+    FVector  FallbackNormal;
+    FVector  FallbackTangent;
+};
+
+static FbxSurfaceMaterial* ResolvePolygonFbxMaterial(FbxNode* MeshNode, FbxMesh* Mesh, int32 PolygonIndex)
+{
+    if (!MeshNode || !Mesh)
+    {
+        return nullptr;
+    }
+
+    const int32 LocalMaterialIndex = GetPolygonMaterialIndex(Mesh, PolygonIndex);
+    if (LocalMaterialIndex < 0 || LocalMaterialIndex >= MeshNode->GetMaterialCount())
+    {
+        return nullptr;
+    }
+
+    return MeshNode->GetMaterial(LocalMaterialIndex);
+}
+
+static bool ReadTriangleSample(FbxMesh* Mesh, int32 PolygonIndex, const FFbxMeshImportSpace& ImportSpace, FFbxTriangleSample& OutTriangle)
+{
+    if (!Mesh || Mesh->GetPolygonSize(PolygonIndex) != 3)
+    {
+        return false;
+    }
+
+    for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
+    {
+        const int32 ControlPointIndex = Mesh->GetPolygonVertex(PolygonIndex, CornerIndex);
+        OutTriangle.ControlPointIndices[CornerIndex] = ControlPointIndex;
+
+        const FVector LocalPosition = ReadPosition(Mesh, ControlPointIndex);
+        OutTriangle.Positions[CornerIndex] = TransformPositionByMatrix(LocalPosition, ImportSpace.VertexTransform);
+        OutTriangle.UV0[CornerIndex]       = ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, 0);
+    }
+
+    OutTriangle.FallbackNormal = ComputeTriangleNormal(
+        OutTriangle.Positions[0],
+        OutTriangle.Positions[1],
+        OutTriangle.Positions[2]
+    );
+
+    OutTriangle.FallbackTangent = ComputeTriangleTangent(
+        OutTriangle.Positions[0],
+        OutTriangle.Positions[1],
+        OutTriangle.Positions[2],
+        OutTriangle.UV0[0],
+        OutTriangle.UV0[1],
+        OutTriangle.UV0[2]
+    );
+
+    return true;
+}
+
+class FFbxStaticMeshBuilder
+{
+public:
+    FFbxStaticMeshBuilder(
+        const FString&           InSourcePath,
+        TArray<FStaticMaterial>& InOutMaterials,
+        FStaticMesh&             InOutMesh,
+        FImportBuildContext&     InBuildContext
+        )
+        : SourcePath(InSourcePath)
+        , Materials(InOutMaterials)
+        , MeshAsset(InOutMesh)
+        , BuildContext(InBuildContext)
+    {
+    }
+
+    bool Build(const TArray<FbxNode*>& MeshNodes)
+    {
+        ResetOutput();
+
+        for (FbxNode* MeshNode : MeshNodes)
+        {
+            AppendMeshNode(MeshNode);
+        }
+
+        return Finalize();
+    }
+
+private:
+    const FString& SourcePath;
+    TArray<FStaticMaterial>& Materials;
+    FStaticMesh& MeshAsset;
+    FImportBuildContext& BuildContext;
+
+    TArray<FImportedSectionBuild> SectionBuilds;
+    std::unordered_map<FStaticVertexDedupKey, uint32, FStaticVertexDedupKeyHasher> VertexToIndex;
+
+    void ResetOutput()
+    {
+        MeshAsset.Vertices.clear();
+        MeshAsset.Indices.clear();
+        MeshAsset.Sections.clear();
+        SectionBuilds.clear();
+        VertexToIndex.clear();
+    }
+
+    void AppendMeshNode(FbxNode* MeshNode)
+    {
+        FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
+        if (!Mesh)
+        {
+            return;
+        }
+
+        const FFbxMeshImportSpace ImportSpace = FFbxMeshImportSpace::FromStaticMeshNode(MeshNode);
+
+        int32 PolygonVertexIndex = 0;
+
+        for (int32 PolygonIndex = 0; PolygonIndex < Mesh->GetPolygonCount(); ++PolygonIndex)
+        {
+            const int32 PolygonSize = Mesh->GetPolygonSize(PolygonIndex);
+
+            if (PolygonSize == 3)
+            {
+                AppendTriangle(MeshNode, Mesh, PolygonIndex, PolygonVertexIndex, ImportSpace);
+            }
+
+            PolygonVertexIndex += PolygonSize;
+        }
+    }
+
+    void AppendTriangle(
+        FbxNode*                    MeshNode,
+        FbxMesh*                    Mesh,
+        int32                       PolygonIndex,
+        int32                       PolygonVertexStartIndex,
+        const FFbxMeshImportSpace&  ImportSpace
+        )
+    {
+        FFbxTriangleSample Triangle;
+        if (!ReadTriangleSample(Mesh, PolygonIndex, ImportSpace, Triangle))
+        {
+            return;
+        }
+
+        const int32 MaterialIndex = ResolveMaterialIndex(MeshNode, Mesh, PolygonIndex);
+        FImportedSectionBuild* SectionBuild = FindOrAddImportedSection(SectionBuilds, MaterialIndex);
+        if (!SectionBuild)
+        {
+            return;
+        }
+
+        for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
+        {
+            const uint32 VertexIndex = AddCornerVertex(
+                Mesh,
+                PolygonIndex,
+                CornerIndex,
+                PolygonVertexStartIndex + CornerIndex,
+                Triangle,
+                ImportSpace
+            );
+
+            SectionBuild->Indices.push_back(VertexIndex);
+        }
+    }
+
+    int32 ResolveMaterialIndex(FbxNode* MeshNode, FbxMesh* Mesh, int32 PolygonIndex)
+    {
+        FbxSurfaceMaterial* FbxMaterial = ResolvePolygonFbxMaterial(MeshNode, Mesh, PolygonIndex);
+        return FindOrAddFbxMaterial(FbxMaterial, SourcePath, Materials, BuildContext);
+    }
+
+    uint32 AddCornerVertex(
+        FbxMesh*                    Mesh,
+        int32                       PolygonIndex,
+        int32                       CornerIndex,
+        int32                       PolygonVertexIndex,
+        const FFbxTriangleSample&   Triangle,
+        const FFbxMeshImportSpace&  ImportSpace
+        )
+    {
+        const int32 ControlPointIndex = Triangle.ControlPointIndices[CornerIndex];
+
+        FNormalVertex Vertex;
+        Vertex.pos     = Triangle.Positions[CornerIndex];
+        Vertex.normal  = ReadCornerNormal(Mesh, PolygonIndex, CornerIndex, Triangle, ImportSpace);
+        Vertex.tex     = Triangle.UV0[CornerIndex];
+        Vertex.color   = ReadVertexColor(Mesh, ControlPointIndex, PolygonVertexIndex);
+        Vertex.tangent = ReadCornerTangent(Mesh, ControlPointIndex, PolygonVertexIndex, Triangle, ImportSpace, Vertex.normal);
+
+        bool bAddedNewVertex = false;
+        return FindOrAddStaticVertex(
+            Vertex,
+            Mesh,
+            ControlPointIndex,
+            VertexToIndex,
+            MeshAsset.Vertices,
+            bAddedNewVertex
+        );
+    }
+
+    FVector ReadCornerNormal(
+        FbxMesh*                    Mesh,
+        int32                       PolygonIndex,
+        int32                       CornerIndex,
+        const FFbxTriangleSample&   Triangle,
+        const FFbxMeshImportSpace&  ImportSpace
+        ) const
+    {
+        FVector LocalNormal;
+        if (TryReadNormal(Mesh, PolygonIndex, CornerIndex, LocalNormal))
+        {
+            return TransformNormalByMatrix(LocalNormal, ImportSpace.NormalTransform);
+        }
+
+        return Triangle.FallbackNormal;
+    }
+
+    FVector4 ReadCornerTangent(
+        FbxMesh*                    Mesh,
+        int32                       ControlPointIndex,
+        int32                       PolygonVertexIndex,
+        const FFbxTriangleSample&   Triangle,
+        const FFbxMeshImportSpace&  ImportSpace,
+        const FVector&              ImportedNormal
+        ) const
+    {
+        FVector4 ImportedTangent;
+        if (TryReadTangent(Mesh, ControlPointIndex, PolygonVertexIndex, ImportedTangent))
+        {
+            const FVector Tangent = TransformTangentByMatrix(
+                FVector(ImportedTangent.X, ImportedTangent.Y, ImportedTangent.Z),
+                ImportSpace.VertexTransform,
+                ImportedNormal
+            );
+
+            return FVector4(Tangent.X, Tangent.Y, Tangent.Z, ImportedTangent.W);
+        }
+
+        const FVector Tangent = OrthogonalizeTangentToNormal(Triangle.FallbackTangent, ImportedNormal);
+        return FVector4(Tangent.X, Tangent.Y, Tangent.Z, 1.0f);
+    }
+
+    bool Finalize()
+    {
+        BuildFinalImportedSections(SectionBuilds, Materials, MeshAsset.Indices, MeshAsset.Sections);
+
+        if (MeshAsset.Vertices.empty() || MeshAsset.Indices.empty() || MeshAsset.Sections.empty())
+        {
+            return false;
+        }
+
+        MeshAsset.CacheBounds();
+        return true;
+    }
+};
+
+static bool BuildStaticMeshFromNodes(
+    const FString&           SourcePath,
+    const TArray<FbxNode*>&  MeshNodes,
+    TArray<FStaticMaterial>& OutMaterials,
+    FStaticMesh&             OutMesh,
+    FImportBuildContext&     BuildContext
+    )
+{
+    FFbxStaticMeshBuilder Builder(SourcePath, OutMaterials, OutMesh, BuildContext);
+    return Builder.Build(MeshNodes);
+}
+
+// FBX 파일에서 static mesh geometry, transform, vertex attributes, material section 정보를 import한다.
 bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
 {
     OutMesh = FStaticMesh();
@@ -2673,6 +3305,7 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
         return false;
     }
 
+    NormalizeFbxScene(SceneHandle.Scene);
     TriangulateScene(SceneHandle.Manager, SceneHandle.Scene);
 
     TArray<FbxNode*> MeshNodes;
@@ -2685,72 +3318,17 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
 
     OutMesh.PathFileName = SourcePath;
 
-    GetOrCreateDefaultMaterial(OutMaterials);
+    FImportBuildContext BuildContext;
+    BuildContext.Summary.SourcePath = SourcePath;
 
-    FStaticMeshSection Section;
-    Section.MaterialIndex    = 0;
-    Section.MaterialSlotName = OutMaterials[0].MaterialSlotName;
-    Section.FirstIndex       = 0;
-    Section.NumTriangles     = 0;
-
-    std::unordered_map<FStaticVertexDedupKey, uint32, FStaticVertexDedupKeyHasher> VertexToIndex;
-
-    for (FbxNode* MeshNode : MeshNodes)
+    if (!BuildStaticMeshFromNodes(SourcePath, MeshNodes, OutMaterials, OutMesh, BuildContext))
     {
-        FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
-
-        if (!Mesh)
-        {
-            continue;
-        }
-
-        for (int32 PolygonIndex = 0; PolygonIndex < Mesh->GetPolygonCount(); ++PolygonIndex)
-        {
-            const int32 PolygonSize = Mesh->GetPolygonSize(PolygonIndex);
-
-            if (PolygonSize != 3)
-            {
-                continue;
-            }
-
-            for (int32 CornerIndex = 0; CornerIndex < PolygonSize; ++CornerIndex)
-            {
-                const int32 ControlPointIndex = Mesh->GetPolygonVertex(PolygonIndex, CornerIndex);
-
-                FNormalVertex Vertex;
-                Vertex.pos = ReadPosition(Mesh, ControlPointIndex);
-                FVector StaticNormal;
-                if (TryReadNormal(Mesh, PolygonIndex, CornerIndex, StaticNormal))
-                {
-                    Vertex.normal = StaticNormal;
-                }
-                else
-                {
-                    Vertex.normal = FVector(0.0f, 0.0f, 1.0f);
-                }
-                Vertex.tex     = ReadUV(Mesh, PolygonIndex, CornerIndex);
-                Vertex.color   = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                Vertex.tangent = FVector4(1.0f, 0.0f, 0.0f, 1.0f);
-
-                bool bAddedNewVertex = false;
-
-                const uint32 VertexIndex = FindOrAddStaticVertex(Vertex, Mesh, ControlPointIndex, VertexToIndex, OutMesh.Vertices, bAddedNewVertex);
-
-                OutMesh.Indices.push_back(VertexIndex);
-            }
-
-            Section.NumTriangles++;
-        }
-    }
-
-    if (OutMesh.Vertices.empty() || OutMesh.Indices.empty())
-    {
+        OutMesh = FStaticMesh();
+        OutMaterials.clear();
         return false;
     }
 
-    OutMesh.Sections.push_back(Section);
-    OutMesh.CacheBounds();
-
+    OutMesh.PathFileName = SourcePath;
     return true;
 }
 
@@ -2799,17 +3377,31 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
     }
 
     TMap<FbxNode*, int32> BoneNodeToIndex;
-    if (!BuildSkeletonFromSkinClusters(SkinnedMeshNodes, OutMesh.Skeleton, BoneNodeToIndex))
+    if (!BuildSkeletonFromSkinClusters(SkinnedMeshNodes, MeshNodes, OutMesh.Skeleton, BoneNodeToIndex))
     {
         return false;
     }
 
-    TMap<int32, TArray<FbxNode*>> MeshNodesByLOD;
+    TArray<FSkeletalImportMeshNode> ImportMeshNodes;
+    ClassifySkeletalImportMeshNodes(MeshNodes, BoneNodeToIndex, ImportMeshNodes);
 
+    TMap<int32, TArray<FbxNode*>> SkinnedMeshNodesByLOD;
     for (FbxNode* MeshNode : SkinnedMeshNodes)
     {
         const int32 LODIndex = GetSkeletalMeshLODIndex(MeshNode);
-        MeshNodesByLOD[LODIndex].push_back(MeshNode);
+        SkinnedMeshNodesByLOD[LODIndex].push_back(MeshNode);
+    }
+
+    TMap<int32, TArray<FSkeletalImportMeshNode>> MeshNodesByLOD;
+    for (const FSkeletalImportMeshNode& ImportNode : ImportMeshNodes)
+    {
+        if (ImportNode.Kind == ESkeletalImportMeshKind::Loose || !ImportNode.MeshNode)
+        {
+            continue;
+        }
+
+        const int32 LODIndex = GetSkeletalMeshLODIndex(ImportNode.MeshNode);
+        MeshNodesByLOD[LODIndex].push_back(ImportNode);
     }
 
     TArray<int32> SortedLODIndices;
@@ -2825,8 +3417,21 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
         return false;
     }
 
-    const int32             ReferenceLODIndex = SortedLODIndices[0];
-    const TArray<FbxNode*>& ReferenceLODNodes = MeshNodesByLOD[ReferenceLODIndex];
+    TArray<int32> SortedSkinnedLODIndices;
+    for (const auto& Pair : SkinnedMeshNodesByLOD)
+    {
+        SortedSkinnedLODIndices.push_back(Pair.first);
+    }
+
+    std::sort(SortedSkinnedLODIndices.begin(), SortedSkinnedLODIndices.end());
+
+    if (SortedSkinnedLODIndices.empty())
+    {
+        return false;
+    }
+
+    const int32             ReferenceLODIndex = SortedSkinnedLODIndices[0];
+    const TArray<FbxNode*>& ReferenceLODNodes = SkinnedMeshNodesByLOD[ReferenceLODIndex];
 
     FMatrix ReferenceMeshBind;
     if (!TryGetReferenceMeshBindMatrix(SceneHandle.Scene, ReferenceLODNodes, ReferenceMeshBind))
@@ -2860,7 +3465,8 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
             SourcePath,
             MeshNodesByLOD[LODIndex],
             BoneNodeToIndex,
-            ReferenceMeshBindInverse,
+            ReferenceMeshBindInverse, 
+            OutMesh.Skeleton,
             OutMaterials,
             NewLOD,
             &MorphSources,
