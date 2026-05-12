@@ -57,6 +57,10 @@ public:
 
     static int32 GetMeshLODIndex(FbxNode* MeshNode);
 
+    static bool TryGetFloatProperty(FbxNode* Node, const char* PropertyName, float& OutValue);
+
+    static bool TryGetLODSettings(FbxNode* MeshNode, float& OutScreenSize, float& OutDistanceThreshold);
+
     static bool IsSocketName(const FString& Name);
 
     static bool IsSocketNode(FbxNode* Node);

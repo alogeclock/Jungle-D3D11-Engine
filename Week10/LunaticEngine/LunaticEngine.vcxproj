@@ -452,7 +452,6 @@
     <ClCompile Include="Source\Engine\Math\Transform.cpp" />
     <ClCompile Include="Source\Engine\Math\Vector.cpp" />
     <ClCompile Include="Source\Engine\Mesh\FbxImporter.cpp" />
-      <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSocketImporter.cpp"/>
     <ClCompile Include="Source\Engine\Mesh\MeshSimplifier.cpp" />
     <ClCompile Include="Source\Engine\Mesh\ObjImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\ObjManager.cpp" />
@@ -466,7 +465,9 @@
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxGeometryReader.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxImportValidation.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMaterialImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMetadataImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMorphTargetImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSceneHierarchyImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSceneLoader.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSceneQuery.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSectionBuilder.cpp" />
@@ -475,6 +476,8 @@
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshLODBuilder.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkeletonImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkinWeightImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSocketImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxStaticChildMeshImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxStaticMeshImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxTransformUtils.cpp" />
     <ClCompile Include="Source\Engine\Object\FName.cpp" />
@@ -776,7 +779,6 @@
     <ClInclude Include="Source\Engine\Math\Transform.h" />
     <ClInclude Include="Source\Engine\Math\Vector.h" />
     <ClInclude Include="Source\Engine\Mesh\FbxImporter.h" />
-      <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSocketImporter.h"/>
     <ClInclude Include="Source\Engine\Mesh\MeshCollisionAsset.h" />
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h" />
     <ClInclude Include="Source\Engine\Mesh\ObjImporter.h" />
@@ -794,7 +796,9 @@
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxImportContext.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxImportValidation.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMaterialImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMetadataImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMorphTargetImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSceneHierarchyImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSceneLoader.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSceneQuery.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSectionBuilder.h" />
@@ -803,6 +807,8 @@
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshLODBuilder.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkeletonImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkinWeightImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSocketImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxStaticChildMeshImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxStaticMeshImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxTransformUtils.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxVertexDeduplicator.h" />

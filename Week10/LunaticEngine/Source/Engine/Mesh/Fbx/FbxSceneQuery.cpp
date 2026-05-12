@@ -57,6 +57,15 @@ namespace
         return Prefix && Value.rfind(Prefix, 0) == 0;
     }
 
+    static FString ToUpperAscii(FString Value)
+    {
+        for (char& C : Value)
+        {
+            C = static_cast<char>(std::toupper(static_cast<unsigned char>(C)));
+        }
+        return Value;
+    }
+
     static FString StripPrefix(const FString& Value, const char* Prefix)
     {
         if (Prefix && Value.rfind(Prefix, 0) == 0)
@@ -347,7 +356,11 @@ FString FFbxSceneQuery::ReadStringProperty(FbxNode* Node, const char* PropertyNa
 
 bool FFbxSceneQuery::IsCollisionProxyName(const FString& Name)
 {
-    return StartsWith(Name, "UCX_") || StartsWith(Name, "UBX_") || StartsWith(Name, "USP_") || StartsWith(Name, "UCP_") || StartsWith(Name, "MCDCX_");
+    const FString UpperName = ToUpperAscii(Name);
+    return StartsWith(UpperName, "UCX_") || StartsWith(UpperName, "UBX_") || StartsWith(UpperName, "USP_") || StartsWith(UpperName, "UCP_") || StartsWith(
+        UpperName,
+        "MCDCX_"
+    );
 }
 
 bool FFbxSceneQuery::IsCollisionProxyNode(FbxNode* Node)
@@ -369,6 +382,116 @@ bool FFbxSceneQuery::IsCollisionProxyNode(FbxNode* Node)
 int32 FFbxSceneQuery::GetMeshLODIndex(FbxNode* MeshNode)
 {
     return GetSkeletalMeshLODIndex(MeshNode);
+}
+
+bool FFbxSceneQuery::TryGetFloatProperty(FbxNode* Node, const char* PropertyName, float& OutValue)
+{
+    if (!Node || !PropertyName)
+    {
+        return false;
+    }
+
+    FbxProperty Property = Node->FindProperty(PropertyName);
+    if (!Property.IsValid())
+    {
+        return false;
+    }
+
+    const EFbxType Type = Property.GetPropertyDataType().GetType();
+    switch (Type)
+    {
+    case eFbxFloat:
+        OutValue = static_cast<float>(Property.Get<FbxFloat>());
+        return true;
+    case eFbxDouble:
+        OutValue = static_cast<float>(Property.Get<FbxDouble>());
+        return true;
+    case eFbxInt:
+        OutValue = static_cast<float>(Property.Get<FbxInt>());
+        return true;
+    case eFbxUInt:
+        OutValue = static_cast<float>(Property.Get<FbxUInt>());
+        return true;
+    case eFbxLongLong:
+        OutValue = static_cast<float>(Property.Get<FbxLongLong>());
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool FFbxSceneQuery::TryGetLODSettings(FbxNode* MeshNode, float& OutScreenSize, float& OutDistanceThreshold)
+{
+    OutScreenSize        = 1.0f;
+    OutDistanceThreshold = 0.0f;
+
+    if (!MeshNode)
+    {
+        return false;
+    }
+
+    bool        bFound   = false;
+    const int32 LODIndex = GetMeshLODIndex(MeshNode);
+
+    auto TryReadFromNode = [&](FbxNode* Node)
+    {
+        if (!Node)
+        {
+            return;
+        }
+
+        float Value = 0.0f;
+        if (TryGetFloatProperty(Node, "ScreenSize", Value) || TryGetFloatProperty(Node, "LODScreenSize", Value) || TryGetFloatProperty(
+            Node,
+            "LodScreenSize",
+            Value
+        ))
+        {
+            OutScreenSize = Value;
+            bFound        = true;
+        }
+
+        if (TryGetFloatProperty(Node, "DistanceThreshold", Value) || TryGetFloatProperty(Node, "LODDistance", Value) || TryGetFloatProperty(
+            Node,
+            "LodDistance",
+            Value
+        ) || TryGetFloatProperty(Node, "LODThreshold", Value))
+        {
+            OutDistanceThreshold = Value;
+            bFound               = true;
+        }
+    };
+
+    TryReadFromNode(MeshNode);
+
+    FbxNode* Parent = MeshNode->GetParent();
+    if (Parent && Parent->GetNodeAttribute() && Parent->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eLODGroup)
+    {
+        TryReadFromNode(Parent);
+
+        const FString IndexSuffix = std::to_string(LODIndex);
+        float         Value       = 0.0f;
+        if (TryGetFloatProperty(Parent, ("LOD" + IndexSuffix + "_ScreenSize").c_str(), Value) || TryGetFloatProperty(
+            Parent,
+            ("LOD" + IndexSuffix + "ScreenSize").c_str(),
+            Value
+        ))
+        {
+            OutScreenSize = Value;
+            bFound        = true;
+        }
+        if (TryGetFloatProperty(Parent, ("LOD" + IndexSuffix + "_Distance").c_str(), Value) || TryGetFloatProperty(
+            Parent,
+            ("LOD" + IndexSuffix + "Distance").c_str(),
+            Value
+        ) || TryGetFloatProperty(Parent, ("LOD" + IndexSuffix + "_Threshold").c_str(), Value))
+        {
+            OutDistanceThreshold = Value;
+            bFound               = true;
+        }
+    }
+
+    return bFound;
 }
 
 bool FFbxSceneQuery::IsSocketName(const FString& Name)

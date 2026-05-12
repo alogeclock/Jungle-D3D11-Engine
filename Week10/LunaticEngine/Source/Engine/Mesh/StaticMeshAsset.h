@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Vector.h"
@@ -13,6 +13,107 @@
 #include "Mesh/MeshCollisionAsset.h"
 
 static constexpr int32 MAX_STATIC_MESH_UV_CHANNELS = 4;
+
+// ============================================================================
+// FBX imported metadata / scene hierarchy
+// ============================================================================
+
+enum class EFbxImportedMetadataValueType : uint8
+{
+	String = 0,
+	Bool,
+	Int,
+	Float,
+	Vector3,
+	Color,
+};
+
+struct FFbxImportedMetadataValue
+{
+	FString Key;
+	FString StringValue;
+
+	EFbxImportedMetadataValueType Type = EFbxImportedMetadataValueType::String;
+
+	bool     BoolValue   = false;
+	int32    IntValue    = 0;
+	float    FloatValue  = 0.0f;
+	FVector  VectorValue = FVector(0.0f, 0.0f, 0.0f);
+	FVector4 ColorValue  = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	friend FArchive& operator<<(FArchive& Ar, FFbxImportedMetadataValue& Value)
+	{
+		Ar << Value.Key;
+		Ar << Value.StringValue;
+
+		uint8 TypeValue = static_cast<uint8>(Value.Type);
+		Ar << TypeValue;
+		if (Ar.IsLoading())
+		{
+			Value.Type = static_cast<EFbxImportedMetadataValueType>(TypeValue);
+		}
+
+		Ar << Value.BoolValue;
+		Ar << Value.IntValue;
+		Ar << Value.FloatValue;
+		Ar << Value.VectorValue;
+		Ar << Value.ColorValue;
+		return Ar;
+	}
+};
+
+struct FFbxImportedNodeMetadata
+{
+	FString                           SourceNodeName;
+	FString                           NodePath;
+	TArray<FFbxImportedMetadataValue> Values;
+
+	friend FArchive& operator<<(FArchive& Ar, FFbxImportedNodeMetadata& Metadata)
+	{
+		Ar << Metadata.SourceNodeName;
+		Ar << Metadata.NodePath;
+		Ar << Metadata.Values;
+		return Ar;
+	}
+};
+
+struct FFbxImportedSceneNode
+{
+	FString Name;
+	FString NodePath;
+	FString AttributeType;
+
+	int32 ParentIndex    = -1;
+	int32 SourceLODIndex = 0;
+
+	bool bHasMesh     = false;
+	bool bHasSkeleton = false;
+	bool bIsSocket    = false;
+	bool bIsCollision = false;
+
+	FMatrix LocalMatrix          = FMatrix::Identity;
+	FMatrix GlobalMatrix         = FMatrix::Identity;
+	FMatrix GeometryMatrix       = FMatrix::Identity;
+	FMatrix GlobalGeometryMatrix = FMatrix::Identity;
+
+	friend FArchive& operator<<(FArchive& Ar, FFbxImportedSceneNode& Node)
+	{
+		Ar << Node.Name;
+		Ar << Node.NodePath;
+		Ar << Node.AttributeType;
+		Ar << Node.ParentIndex;
+		Ar << Node.SourceLODIndex;
+		Ar << Node.bHasMesh;
+		Ar << Node.bHasSkeleton;
+		Ar << Node.bIsSocket;
+		Ar << Node.bIsCollision;
+		MeshSerializationUtils::SerializeMatrix(Ar, Node.LocalMatrix);
+		MeshSerializationUtils::SerializeMatrix(Ar, Node.GlobalMatrix);
+		MeshSerializationUtils::SerializeMatrix(Ar, Node.GeometryMatrix);
+		MeshSerializationUtils::SerializeMatrix(Ar, Node.GlobalGeometryMatrix);
+		return Ar;
+	}
+};
 
 // Cooked Data 내부용 정점
 struct FNormalVertex
@@ -85,8 +186,10 @@ struct FStaticMaterial
 
 struct FStaticMeshLOD
 {
-    int32 SourceLODIndex = 0;
+    int32   SourceLODIndex = 0;
     FString SourceLODName;
+    float   ScreenSize        = 1.0f;
+    float   DistanceThreshold = 0.0f;
 
     TArray<FNormalVertex> Vertices;
     TArray<uint32> Indices;
@@ -125,6 +228,8 @@ struct FStaticMeshLOD
     {
         Ar << LOD.SourceLODIndex;
         Ar << LOD.SourceLODName;
+        Ar << LOD.ScreenSize;
+        Ar << LOD.DistanceThreshold;
         Ar << LOD.Vertices;
         Ar << LOD.Indices;
         Ar << LOD.Sections;
@@ -148,8 +253,10 @@ struct FStaticMesh
 
 	TArray<FStaticMeshSection> Sections;
 
-	TArray<FStaticMeshLOD> LODModels;
-	TArray<FImportedCollisionShape> CollisionShapes;
+	TArray<FStaticMeshLOD>           LODModels;
+	TArray<FImportedCollisionShape>  CollisionShapes;
+	TArray<FFbxImportedNodeMetadata> NodeMetadata;
+	TArray<FFbxImportedSceneNode>    SceneNodes;
 
 	std::unique_ptr<FMeshBuffer> RenderBuffer;
 
@@ -188,6 +295,8 @@ struct FStaticMesh
 		Ar << Sections;
 		Ar << LODModels;
 		Ar << CollisionShapes;
+		Ar << NodeMetadata;
+		Ar << SceneNodes;
 
 		if (Ar.IsLoading())
 		{

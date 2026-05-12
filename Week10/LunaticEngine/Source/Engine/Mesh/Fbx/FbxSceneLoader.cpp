@@ -56,6 +56,10 @@ bool FFbxSceneLoader::Load(const FString& SourcePath, FFbxSceneHandle& OutScene,
         return false;
     }
 
+    IOSettings->SetBoolProp(IMP_FBX_MATERIAL, true);
+    IOSettings->SetBoolProp(IMP_FBX_TEXTURE, true);
+    IOSettings->SetBoolProp(IMP_FBX_EXTRACT_EMBEDDED_DATA, true);
+
     Manager->SetIOSettings(IOSettings);
 
     FbxImporter* Importer = FbxImporter::Create(Manager, "");

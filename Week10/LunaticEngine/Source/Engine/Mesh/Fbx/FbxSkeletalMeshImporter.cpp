@@ -12,6 +12,10 @@
 #include "Mesh/StaticMeshAsset.h"
 #include "Mesh/Fbx/FbxCollisionImporter.h"
 #include "Mesh/Fbx/FbxSocketImporter.h"
+#include "Mesh/Fbx/FbxStaticChildMeshImporter.h"
+#include "Mesh/Fbx/FbxMetadataImporter.h"
+#include "Mesh/Fbx/FbxSceneHierarchyImporter.h"
+#include "Mesh/Fbx/FbxTransformUtils.h"
 
 #include <fbxsdk.h>
 
@@ -76,8 +80,11 @@ bool FFbxSkeletalMeshImporter::Import(
     TMap<int32, TArray<FFbxSkeletalImportMeshNode>> MeshNodesByLOD;
     OutMesh.LODModels.clear();
     OutMesh.StaticChildMeshes.clear();
+    OutMesh.SplitStaticMeshes.clear();
     OutMesh.Sockets.clear();
     OutMesh.CollisionShapes.clear();
+    OutMesh.NodeMetadata.clear();
+    OutMesh.SceneNodes.clear();
     OutMesh.Animations.clear();
     OutMesh.MorphTargets.clear();
 
@@ -130,6 +137,15 @@ bool FFbxSkeletalMeshImporter::Import(
             StaticChild.LocalMatrixToParentBone = ImportNode.LocalMatrixToParentBone;
             StaticChild.ImportAction            = ImportNode.StaticChildAction;
 
+            if (ImportNode.StaticChildAction == ESkeletalStaticChildImportAction::KeepAsAttachedStaticMesh)
+            {
+                FString GeneratedStaticMeshPath;
+                if (FFbxStaticChildMeshImporter::ImportAttachedStaticMesh(ImportNode.MeshNode, SourcePath, GeneratedStaticMeshPath, BuildContext))
+                {
+                    StaticChild.StaticMeshAssetPath = GeneratedStaticMeshPath;
+                }
+            }
+
             OutMesh.StaticChildMeshes.push_back(StaticChild);
             BuildContext.Summary.StaticChildMeshCount++;
 
@@ -139,7 +155,22 @@ bool FFbxSkeletalMeshImporter::Import(
             }
         }
 
-        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose || ImportNode.Kind == EFbxSkeletalImportMeshKind::Ignored || ImportNode.Kind ==
+        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose)
+        {
+            FString GeneratedStaticMeshPath;
+            if (FFbxStaticChildMeshImporter::ImportLooseStaticMesh(ImportNode.MeshNode, SourcePath, GeneratedStaticMeshPath, BuildContext))
+            {
+                FFbxSplitStaticMeshReference SplitRef;
+                SplitRef.SourceNodeName      = ImportNode.SourceNodeName;
+                SplitRef.StaticMeshAssetPath = GeneratedStaticMeshPath;
+                SplitRef.GlobalMatrix        = FFbxTransformUtils::ToEngineMatrix(ImportNode.MeshNode->EvaluateGlobalTransform());
+                OutMesh.SplitStaticMeshes.push_back(SplitRef);
+                BuildContext.Summary.SplitStaticMeshCount++;
+            }
+            continue;
+        }
+
+        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Ignored || ImportNode.Kind ==
             EFbxSkeletalImportMeshKind::CollisionProxy)
         {
             continue;
@@ -269,6 +300,10 @@ bool FFbxSkeletalMeshImporter::Import(
 
         NewLOD.SourceLODIndex = LODIndex;
         NewLOD.SourceLODName  = FString("LOD") + std::to_string(LODIndex);
+        if (!MeshNodesByLOD[LODIndex].empty())
+        {
+            FFbxSceneQuery::TryGetLODSettings(MeshNodesByLOD[LODIndex][0].MeshNode, NewLOD.ScreenSize, NewLOD.DistanceThreshold);
+        }
 
         OutMesh.LODModels.push_back(NewLOD);
         MorphSourcesByLOD.push_back(std::move(MorphSources));
@@ -345,6 +380,11 @@ bool FFbxSkeletalMeshImporter::Import(
             }
         }
     }
+
+    FFbxMetadataImporter::CollectSceneNodeMetadata(Scene, OutMesh.NodeMetadata);
+    FFbxSceneHierarchyImporter::CollectSceneNodes(Scene, OutMesh.SceneNodes);
+    BuildContext.Summary.MetadataNodeCount = static_cast<int32>(OutMesh.NodeMetadata.size());
+    BuildContext.Summary.SceneNodeCount    = static_cast<int32>(OutMesh.SceneNodes.size());
 
     if (BuildContext.Summary.CandidateVertexCount > 0)
     {
