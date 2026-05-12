@@ -435,7 +435,7 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 	}
 	PopOutlinerButtonStyle();
 	ImGui::Separator();
-	const float FooterHeight = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y + 8.0f;
+	const float FooterHeight = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y + 14.0f;
 	ImGui::BeginChild("##OutlinerTableRegion", ImVec2(0.0f, -FooterHeight), false);
 	RenderActorOutliner();
 	ImGui::EndChild();

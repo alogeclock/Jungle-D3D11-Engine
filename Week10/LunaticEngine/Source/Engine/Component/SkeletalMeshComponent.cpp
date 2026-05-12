@@ -212,8 +212,9 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
-	USkinnedMeshComponent::SetSkeletalMesh(InSkeletalMesh);
+	SetSkeletalMeshInternal(InSkeletalMesh, false, false);
 	InitializeBoneTransformsFromSkeleton();
+	FinalizeSkeletalMeshRenderState();
 }
 
 void USkeletalMeshComponent::Serialize(FArchive& Ar)
