@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
-#include "Mesh/Importer/ObjImporter.h"
+#include "Mesh/ObjImporter.h"
 
 struct ImFont;
 
