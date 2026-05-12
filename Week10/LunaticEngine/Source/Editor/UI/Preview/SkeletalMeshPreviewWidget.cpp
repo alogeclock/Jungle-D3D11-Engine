@@ -491,6 +491,11 @@ void FSkeletalMeshPreviewWidget::HandleViewportBoneSelection()
         return;
     }
 
+    if (ImGui::GetIO().KeyAlt)
+    {
+        return;
+    }
+
     const ImVec2 ItemMin = ImGui::GetItemRectMin();
     const ImVec2 ItemMax = ImGui::GetItemRectMax();
     const ImVec2 MousePos = ImGui::GetIO().MousePos;

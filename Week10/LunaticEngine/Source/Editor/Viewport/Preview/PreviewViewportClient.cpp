@@ -394,20 +394,37 @@ void FPreviewViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, flo
 
 		auto ApplyOrthoPan = [&](const FVector& MouseDelta)
 		{
-			const FVector DeltaPan = Camera->GetRightVector() * (-MouseDelta.X * WorldPerPixelX * MoveSensitivity) + Camera->GetUpVector() * (MouseDelta.Y *
-				WorldPerPixelY * MoveSensitivity);
+			const FVector DeltaPan =
+				Camera->GetRightVector() * (-MouseDelta.X * WorldPerPixelX * MoveSensitivity) +
+				Camera->GetUpVector() * (MouseDelta.Y * WorldPerPixelY * MoveSensitivity);
+
 			TargetLocation = TargetLocation + DeltaPan;
 			OrbitTarget    = OrbitTarget + DeltaPan;
 		};
 
-		if (!MoveDelta.IsNearlyZero())
+		// MMB drag: orthographic pan must use mouse pan delta, not keyboard move delta.
+		if (!PanDelta.IsNearlyZero())
 		{
-			ApplyOrthoPan(MoveDelta);
+			ApplyOrthoPan(PanDelta);
 		}
 
+		// RMB drag: fixed orthographic views should pan instead of rotating the camera.
 		if (!RotateDelta.IsNearlyZero() && bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
 		{
 			ApplyOrthoPan(RotateDelta);
+		}
+
+		// Alt + LMB: allow orbit only in FreeOrthographic; in fixed ortho views use it as pan.
+		if (!OrbitDelta.IsNearlyZero() && bCameraInputCaptured && Snapshot.IsKeyDown(VK_MENU) && Snapshot.IsMouseButtonDown(VK_LBUTTON))
+		{
+			if (RenderOptions.ViewportType == ELevelViewportType::FreeOrthographic)
+			{
+				ApplyOrbitInput();
+			}
+			else
+			{
+				ApplyOrthoPan(OrbitDelta);
+			}
 		}
 
 		if (std::abs(ZoomDelta) > 1e-6f)
@@ -565,6 +582,13 @@ void FPreviewViewportClient::ApplyOrbitInput()
 		return;
 	}
 
+	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
+	if (CameraState.bIsOrthogonal && RenderOptions.ViewportType != ELevelViewportType::FreeOrthographic)
+	{
+		OrbitDelta = FVector::ZeroVector;
+		return;
+	}
+
 	const float Sensitivity = 0.25f * RenderOptions.CameraRotateSensitivity;
 	FRotator Rotation = Camera->GetRelativeRotation();
 	Rotation.Yaw += OrbitDelta.X * Sensitivity;
@@ -577,7 +601,7 @@ void FPreviewViewportClient::ApplyOrbitInput()
 		Distance = GetFocusDistanceForExtent(FVector(1.0f, 1.0f, 1.0f));
 	}
 
-	const FVector NewLocation = OrbitTarget - Rotation.ToVector() * Distance;
+	const FVector NewLocation = OrbitTarget - Rotation.GetForwardVector() * Distance;
 	Camera->SetWorldLocation(NewLocation);
 	Camera->SetRelativeRotation(Rotation);
 	TargetLocation = NewLocation;

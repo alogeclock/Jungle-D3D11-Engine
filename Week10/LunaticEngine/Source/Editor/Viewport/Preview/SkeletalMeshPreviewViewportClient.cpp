@@ -84,11 +84,26 @@ void FSkeletalMeshPreviewViewportClient::Tick(float DeltaTime)
 
 bool FSkeletalMeshPreviewViewportClient::HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
-	if (HandlePreviewGizmoInput(Snapshot, DeltaTime))
+	const bool bAltLeftNavigation = Snapshot.IsKeyDown(VK_MENU) && (Snapshot.IsMouseButtonDown(FInputManager::MOUSE_LEFT) || Snapshot.IsMouseButtonPressed(
+		FInputManager::MOUSE_LEFT
+	));
+
+	// Alt + LMB orbit은 스켈레탈 뷰어의 현재 선택 본/프리뷰 메시를 기준으로 돌아야 합니다.
+	// 기본 FPreviewViewportClient는 마지막 FocusBounds()에서 잡힌 OrbitTarget을 계속 쓰므로,
+	// 본 선택 후에는 orbit 기준점이 메시 중심에 남아 조작이 어긋나 보일 수 있습니다.
+	if (bAltLeftNavigation && Snapshot.IsMouseButtonPressed(FInputManager::MOUSE_LEFT))
 	{
-		return true;
+		UpdateOrbitTargetForAltNavigation();
 	}
 
+	if (!bAltLeftNavigation || (PreviewGizmo && PreviewGizmo->IsHolding()))
+	{
+		if (HandlePreviewGizmoInput(Snapshot, DeltaTime))
+		{
+			return true;
+		}
+	}
+	
 	return FPreviewViewportClient::HandleInputSnapshot(Snapshot, DeltaTime);
 }
 
@@ -102,6 +117,34 @@ bool FSkeletalMeshPreviewViewportClient::FocusPreviewMesh()
 	}
 
 	return FocusBounds(Center, Extent);
+}
+
+void FSkeletalMeshPreviewViewportClient::UpdateOrbitTargetForAltNavigation()
+{
+	if (!PreviewComponent)
+	{
+		return;
+	}
+
+	// 본이 선택되어 있으면 Alt orbit의 기준점을 선택 본 위치로 맞춥니다.
+	const int32 SelectedBoneIndex = PreviewComponent->GetSelectedBoneIndex();
+	if (const FTransform* BoneComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(SelectedBoneIndex))
+	{
+		const FVector BoneWorldLocation = PreviewComponent->GetWorldMatrix().TransformPositionWithW(BoneComponentTransform->Location);
+		SetOrbitTarget(BoneWorldLocation);
+		return;
+	}
+
+	// 선택 본이 없으면 메시 bounds 중심을 world 위치로 변환해서 사용합니다.
+	FVector BoundsCenter = FVector::ZeroVector;
+	FVector BoundsExtent = FVector(1.0f, 1.0f, 1.0f);
+	if (GetSkeletalMeshBounds(PreviewSkeletalMesh, BoundsCenter, BoundsExtent))
+	{
+		SetOrbitTarget(PreviewComponent->GetWorldMatrix().TransformPositionWithW(BoundsCenter));
+		return;
+	}
+
+	SetOrbitTarget(PreviewComponent->GetWorldLocation());
 }
 
 int32 FSkeletalMeshPreviewViewportClient::PickBoneAtViewportPosition(float LocalX, float LocalY, float ViewportWidth, float ViewportHeight) const
@@ -288,7 +331,7 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 			Settings.bEnableTranslationSnap, Settings.TranslationSnapSize,
 			Settings.bEnableRotationSnap, Settings.RotationSnapSize,
 			Settings.bEnableScaleSnap, Settings.ScaleSnapSize);
-		PreviewGizmo->SetAxisMask(UGizmoComponent::ComputeAxisMask(GetRenderOptions().ViewportType, PreviewGizmo->GetMode()));
+		PreviewGizmo->SetAxisMask(PreviewGizmo->ComputeAxisMaskForView(GetRenderOptions().ViewportType, Camera->GetForwardVector(), PreviewGizmo->GetMode()));
 		PreviewGizmo->ApplyScreenSpaceScaling(Camera->GetWorldLocation(), Camera->IsOrthogonal(), Camera->GetOrthoWidth());
 		ApplyPreviewGizmoToSelectedBone();
 		return;
@@ -314,7 +357,7 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 		Settings.bEnableTranslationSnap, Settings.TranslationSnapSize,
 		Settings.bEnableRotationSnap, Settings.RotationSnapSize,
 		Settings.bEnableScaleSnap, Settings.ScaleSnapSize);
-	PreviewGizmo->SetAxisMask(UGizmoComponent::ComputeAxisMask(GetRenderOptions().ViewportType, PreviewGizmo->GetMode()));
+	PreviewGizmo->SetAxisMask(PreviewGizmo->ComputeAxisMaskForView(GetRenderOptions().ViewportType, Camera->GetForwardVector(), PreviewGizmo->GetMode()));
 	PreviewGizmo->ApplyScreenSpaceScaling(Camera->GetWorldLocation(), Camera->IsOrthogonal(), Camera->GetOrthoWidth());
 	PreviewGizmo->UpdateGizmoTransform();
 	PreviewGizmoBoneIndex = SelectedBoneIndex;
@@ -438,6 +481,11 @@ bool FSkeletalMeshPreviewViewportClient::HandlePreviewGizmoInput(const FInputSys
 
 	if (Snapshot.IsMouseButtonPressed(FInputManager::MOUSE_LEFT) && bIsHovered)
 	{
+		if (Snapshot.IsKeyDown(VK_MENU))
+		{
+			return false;
+		}
+
 		if (bGizmoHit)
 		{
 			FInputRouter::Get().SetMouseCapturedViewport(this);

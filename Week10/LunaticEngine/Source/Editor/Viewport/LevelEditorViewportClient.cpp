@@ -295,7 +295,7 @@ void FLevelEditorViewportClient::OnOrbit(const FInputActionValue& Value, const F
 			FRotator Rotation = Camera->GetRelativeRotation();
 			Rotation.Yaw += Value.GetVector().X * Sensitivity;
 			Rotation.Pitch = Clamp(Rotation.Pitch + Value.GetVector().Y * Sensitivity, -89.0f, 89.0f);
-			const FVector NewPos = Pivot - Rotation.ToVector() * (Dist > 0.1f ? Dist : 5.0f);
+			const FVector NewPos = Pivot - Rotation.GetForwardVector() * (Dist > 0.1f ? Dist : 5.0f);
 			Camera->SetWorldLocation(NewPos);
 			Camera->SetRelativeRotation(Rotation);
 			SyncCameraSmoothingTarget();
@@ -656,7 +656,7 @@ void FLevelEditorViewportClient::TickInteraction(const FInputSystemSnapshot& Sna
 	}
 
 	Gizmo->ApplyScreenSpaceScaling(Camera->GetWorldLocation(), Camera->IsOrthogonal(), Camera->GetOrthoWidth());
-	Gizmo->SetAxisMask(UGizmoComponent::ComputeAxisMask(RenderOptions.ViewportType, Gizmo->GetMode()));
+	Gizmo->SetAxisMask(Gizmo->ComputeAxisMaskForView(RenderOptions.ViewportType, Camera->GetForwardVector(), Gizmo->GetMode()));
 
 	uint32 CursorViewportX = 0;
 	uint32 CursorViewportY = 0;

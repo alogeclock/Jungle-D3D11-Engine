@@ -387,7 +387,7 @@ void FEditorViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, floa
 
 		if (!EditorPanAccumulator.IsNearlyZero())
 		{
-			ApplyOrthoPan(EditorMoveAccumulator);
+			ApplyOrthoPan(EditorPanAccumulator);
 		}
 
 		if (!EditorRotateAccumulator.IsNearlyZero() && bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
