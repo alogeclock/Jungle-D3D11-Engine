@@ -82,17 +82,18 @@ struct FFbxStaticVertexDedupKey
     const FbxMesh* Mesh              = nullptr;
     int32          ControlPointIndex = -1;
 
-    std::array<uint32, 3> Position = {};
-    std::array<uint32, 3> Normal   = {};
-    std::array<uint32, 2> UV       = {};
-    std::array<uint32, 4> Color    = {};
-    std::array<uint32, 4> Tangent  = {};
+    std::array<uint32, 3>                                          Position = {};
+    std::array<uint32, 3>                                          Normal   = {};
+    std::array<std::array<uint32, 2>, MAX_STATIC_MESH_UV_CHANNELS> UV       = {};
+    uint8                                                          NumUV    = 1; 
+    std::array<uint32, 4>                                          Color    = {};
+    std::array<uint32, 4>                                          Tangent  = {};
 
     // static vertex dedup key가 같은 vertex를 가리키는지 비교한다.
     bool operator==(const FFbxStaticVertexDedupKey& Other) const
     {
         return Mesh == Other.Mesh && ControlPointIndex == Other.ControlPointIndex && Position == Other.Position && Normal == Other.Normal && UV == Other.UV &&
-        Color == Other.Color && Tangent == Other.Tangent;
+        NumUV == Other.NumUV && Color == Other.Color && Tangent == Other.Tangent;
     }
 };
 
@@ -106,7 +107,12 @@ struct FFbxStaticVertexDedupKeyHasher
         FbxVertexDedupInternal::HashCombineInt32(Seed, Key.ControlPointIndex);
         for (uint32 Value : Key.Position) FbxVertexDedupInternal::HashCombineUInt32(Seed, Value);
         for (uint32 Value : Key.Normal) FbxVertexDedupInternal::HashCombineUInt32(Seed, Value);
-        for (uint32 Value : Key.UV) FbxVertexDedupInternal::HashCombineUInt32(Seed, Value);
+        for (const std::array<uint32, 2>& UV : Key.UV)
+        {
+            FbxVertexDedupInternal::HashCombineUInt32(Seed, UV[0]);
+            FbxVertexDedupInternal::HashCombineUInt32(Seed, UV[1]);
+        }
+        FbxVertexDedupInternal::HashCombineInt32(Seed, static_cast<int32>(Key.NumUV));
         for (uint32 Value : Key.Color) FbxVertexDedupInternal::HashCombineUInt32(Seed, Value);
         for (uint32 Value : Key.Tangent) FbxVertexDedupInternal::HashCombineUInt32(Seed, Value);
         return Seed;
@@ -124,7 +130,12 @@ public:
         Key.ControlPointIndex = ControlPointIndex;
         Key.Position          = FbxVertexDedupInternal::MakeVector3Bits(Vertex.pos);
         Key.Normal            = FbxVertexDedupInternal::MakeVector3Bits(Vertex.normal);
-        Key.UV                = FbxVertexDedupInternal::MakeVector2Bits(Vertex.tex);
+        Key.NumUV             = Vertex.NumUVs;
+        Key.UV[0]             = FbxVertexDedupInternal::MakeVector2Bits(Vertex.tex);
+        for (int32 UVIndex = 1; UVIndex < static_cast<int32>(Vertex.NumUVs) && UVIndex < MAX_STATIC_MESH_UV_CHANNELS; ++UVIndex)
+        {
+            Key.UV[UVIndex] = FbxVertexDedupInternal::MakeVector2Bits(Vertex.ExtraUV[UVIndex - 1]);
+        }
         Key.Color             = FbxVertexDedupInternal::MakeVector4Bits(Vertex.color);
         Key.Tangent           = FbxVertexDedupInternal::MakeVector4Bits(Vertex.tangent);
 

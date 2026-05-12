@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <utility>
+#include <algorithm>
 
 namespace
 {
@@ -251,6 +252,14 @@ void FFbxMorphTargetImporter::ImportMorphTargets(
                         continue;
                     }
 
+                    if (TargetShapeCount > 1)
+                    {
+                        BuildContext.AddWarningOnce(
+                            ESkeletalImportWarningType::UnsupportedMorphInBetween,
+                            "Morph target has in-between shapes. FullWeight data is imported; runtime interpolation must use it."
+                        );
+                    }
+
                     FString MorphName = Channel->GetName();
                     if (MorphName.empty() && Channel->GetTargetShape(0))
                     {
@@ -316,5 +325,27 @@ void FFbxMorphTargetImporter::ImportMorphTargets(
         }
     }
 
-    (void)BuildContext;
+
+    OutMorphTargets.erase(
+        std::remove_if(
+            OutMorphTargets.begin(),
+            OutMorphTargets.end(),
+            [](const FMorphTarget& Morph)
+            {
+                for (const FMorphTargetLOD& LOD : Morph.LODModels)
+                {
+                    for (const FMorphTargetShape& Shape : LOD.Shapes)
+                    {
+                        if (!Shape.Deltas.empty())
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        ),
+        OutMorphTargets.end()
+    );
 }
+

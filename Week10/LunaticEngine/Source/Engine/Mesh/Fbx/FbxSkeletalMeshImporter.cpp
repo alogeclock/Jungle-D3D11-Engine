@@ -10,6 +10,7 @@
 #include "Mesh/Fbx/FbxSkeletonImporter.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/StaticMeshAsset.h"
+#include "Mesh/Fbx/FbxCollisionImporter.h"
 
 #include <fbxsdk.h>
 
@@ -71,7 +72,11 @@ bool FFbxSkeletalMeshImporter::Import(
     }
 
     TMap<int32, TArray<FFbxSkeletalImportMeshNode>> MeshNodesByLOD;
+    OutMesh.LODModels.clear();
     OutMesh.StaticChildMeshes.clear();
+    OutMesh.CollisionShapes.clear();
+    OutMesh.Animations.clear();
+    OutMesh.MorphTargets.clear();
 
     for (const FFbxSkeletalImportMeshNode& ImportNode : ImportMeshNodes)
     {
@@ -82,7 +87,33 @@ bool FFbxSkeletalMeshImporter::Import(
 
         if (ImportNode.Kind == EFbxSkeletalImportMeshKind::CollisionProxy)
         {
+            FString ParentBoneName;
+
+            if (ImportNode.ParentBoneIndex >= 0 && ImportNode.ParentBoneIndex < static_cast<int32>(OutMesh.Skeleton.Bones.size()))
+            {
+                ParentBoneName = OutMesh.Skeleton.Bones[ImportNode.ParentBoneIndex].Name;
+            }
+
+            FImportedCollisionShape Shape;
+
+            if (FFbxCollisionImporter::ImportCollisionShape(
+                ImportNode.MeshNode,
+                ImportNode.LocalMatrixToParentBone,
+                ImportNode.ParentBoneIndex,
+                ParentBoneName,
+                Shape
+            ))
+            {
+                OutMesh.CollisionShapes.push_back(Shape);
+            }
+            
             BuildContext.Summary.CollisionProxyMeshCount++;
+
+            BuildContext.AddWarningOnce(
+                ESkeletalImportWarningType::CollisionProxySkippedFromRenderLOD,
+                "Collision proxy imported and skipped from render LOD: " + ImportNode.SourceNodeName
+            );
+
             continue;
         }
 

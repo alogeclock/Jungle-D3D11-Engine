@@ -6,6 +6,7 @@
 #include "Math/Quat.h"
 #include "Serialization/Archive.h"
 #include "StaticMeshAsset.h"
+#include "Mesh/MeshCollisionAsset.h"
 
 #include <algorithm>
 
@@ -445,6 +446,8 @@ struct FSkeletalStaticChildMesh
 
     ESkeletalStaticChildImportAction ImportAction = ESkeletalStaticChildImportAction::MergeAsRigidPart;
 
+    FString StaticMeshAssetPath;
+
     friend FArchive& operator<<(FArchive& Ar, FSkeletalStaticChildMesh& Mesh)
     {
         Ar << Mesh.SourceNodeName;
@@ -460,6 +463,8 @@ struct FSkeletalStaticChildMesh
         {
             Mesh.ImportAction = static_cast<ESkeletalStaticChildImportAction>(ActionValue);
         }
+
+        Ar << Mesh.StaticMeshAssetPath;
 
         return Ar;
     }
@@ -609,6 +614,7 @@ struct FSkeletalMesh
     TArray<FSkeletalMeshLOD> LODModels;
 
     TArray<FSkeletalStaticChildMesh> StaticChildMeshes;
+    TArray<FImportedCollisionShape>  CollisionShapes;
 
     TArray<FSkeletalAnimationClip> Animations;
     TArray<FMorphTarget>           MorphTargets;
@@ -643,6 +649,7 @@ struct FSkeletalMesh
 
         Ar << LODModels;
         Ar << StaticChildMeshes;
+        Ar << CollisionShapes;
         Ar << Animations;
         Ar << MorphTargets;
         Ar << ImportSummary;

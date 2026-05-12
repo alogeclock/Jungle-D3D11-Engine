@@ -7,49 +7,13 @@
 
 namespace
 {
-    static bool StartsWith(const FString& Value, const char* Prefix)
-    {
-        return Prefix && Value.rfind(Prefix, 0) == 0;
-    }
-
-    static bool IsCollisionProxyName(const FString& Name)
-    {
-        // 명시적 예약 prefix
-        return StartsWith(Name, "UCX_") || StartsWith(Name, "UBX_") || StartsWith(Name, "USP_") || StartsWith(Name, "UCP_") || StartsWith(Name, "MCDCX_");
-    }
-
-    static FString ReadStringProperty(FbxNode* Node, const char* PropertyName)
-    {
-        if (!Node || !PropertyName)
-        {
-            return FString();
-        }
-
-        FbxProperty Property = Node->FindProperty(PropertyName);
-        if (!Property.IsValid())
-        {
-            return FString();
-        }
-
-        const FbxDataType DataType = Property.GetPropertyDataType();
-        const EFbxType    Type     = DataType.GetType();
-
-        if (Type == eFbxString)
-        {
-            const FbxString Value = Property.Get<FbxString>();
-            return Value.Buffer() ? FString(Value.Buffer()) : FString();
-        }
-
-        return FString();
-    }
-
     static ESkeletalStaticChildImportAction ReadStaticChildAction(FbxNode* Node)
     {
         // 지원 값:
         //   ImportKind=RigidAttached / MergeAsRigidPart / StaticChild
         //   ImportKind=Attachment / KeepAsAttachedStaticMesh
         //   ImportKind=Ignore
-        const FString ImportKind = ReadStringProperty(Node, "ImportKind");
+        const FString ImportKind = FFbxSceneQuery::ReadStringProperty(Node, "ImportKind");
 
         if (ImportKind == "Attachment" || ImportKind == "KeepAsAttachedStaticMesh")
         {
@@ -66,12 +30,7 @@ namespace
 
     static bool IsExplicitIgnoredNode(FbxNode* Node)
     {
-        return ReadStringProperty(Node, "ImportKind") == "Ignore";
-    }
-
-    static bool IsExplicitCollisionNode(FbxNode* Node)
-    {
-        return ReadStringProperty(Node, "ImportKind") == "Collision";
+        return FFbxSceneQuery::ReadStringProperty(Node, "ImportKind") == "Ignore";
     }
 
     // mesh node parent chain에서 skeleton bone index를 찾는다.
@@ -151,7 +110,7 @@ void FFbxSkeletalMeshClassifier::Classify(
             continue;
         }
 
-        if (IsCollisionProxyName(ImportNode.SourceNodeName) || IsExplicitCollisionNode(MeshNode))
+        if (FFbxSceneQuery::IsCollisionProxyNode(MeshNode))
         {
             ImportNode.Kind                    = EFbxSkeletalImportMeshKind::CollisionProxy;
             ImportNode.ParentBoneIndex         = ParentBoneIndex;

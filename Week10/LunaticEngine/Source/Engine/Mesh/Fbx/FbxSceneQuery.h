@@ -48,4 +48,12 @@ public:
 
     // scene 안에 skin deformer를 가진 mesh가 하나라도 있는지 확인한다.
     static bool SceneHasSkinDeformer(FbxScene* Scene);
+
+    static FString ReadStringProperty(FbxNode* Node, const char* PropertyName);
+
+    static bool IsCollisionProxyName(const FString& Name);
+
+    static bool IsCollisionProxyNode(FbxNode* Node);
+
+    static int32 GetMeshLODIndex(FbxNode* MeshNode);
 };

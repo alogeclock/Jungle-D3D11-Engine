@@ -752,7 +752,13 @@
     <ClCompile Include="Source\Engine\Mesh\StaticMesh.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\StaticMeshBake.cpp">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxAnimationImporter.cpp">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxCollisionImporter.cpp">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxGeometryReader.cpp">
@@ -1631,6 +1637,9 @@
     <ClInclude Include="Source\Engine\Mesh\FbxImporter.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\MeshCollisionAsset.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
@@ -1658,7 +1667,13 @@
     <ClInclude Include="Source\Engine\Mesh\StaticMeshAsset.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\StaticMeshBake.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxAnimationImporter.h">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxCollisionImporter.h">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxGeometryReader.h">

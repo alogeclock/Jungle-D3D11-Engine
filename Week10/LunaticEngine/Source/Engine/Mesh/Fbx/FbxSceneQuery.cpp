@@ -51,6 +51,11 @@ namespace
             CollectFullSkeletonHierarchyRecursive(Node->GetChild(ChildIndex), SeedNodes, OutBoneNodes);
         }
     }
+
+    static bool StartsWith(const FString& Value, const char* Prefix)
+    {
+        return Prefix && Value.rfind(Prefix, 0) == 0;
+    }
 }
 
 // scene tree에서 mesh attribute를 가진 node를 모두 수집한다.
@@ -285,4 +290,55 @@ bool FFbxSceneQuery::SceneHasSkinDeformer(FbxScene* Scene)
     }
 
     return false;
+}
+
+FString FFbxSceneQuery::ReadStringProperty(FbxNode* Node, const char* PropertyName)
+{
+    if (!Node || !PropertyName)
+    {
+        return FString();
+    }
+
+    FbxProperty Property = Node->FindProperty(PropertyName);
+    if (!Property.IsValid())
+    {
+        return FString();
+    }
+
+    const FbxDataType DataType = Property.GetPropertyDataType();
+    const EFbxType    Type     = DataType.GetType();
+
+    if (Type == eFbxString)
+    {
+        const FbxString Value = Property.Get<FbxString>();
+        return Value.Buffer() ? FString(Value.Buffer()) : FString();
+    }
+
+    return FString();
+}
+
+bool FFbxSceneQuery::IsCollisionProxyName(const FString& Name)
+{
+    return StartsWith(Name, "UCX_") || StartsWith(Name, "UBX_") || StartsWith(Name, "USP_") || StartsWith(Name, "UCP_") || StartsWith(Name, "MCDCX_");
+}
+
+bool FFbxSceneQuery::IsCollisionProxyNode(FbxNode* Node)
+{
+    if (!Node)
+    {
+        return false;
+    }
+
+    const FString Name = Node->GetName();
+    if (IsCollisionProxyName(Name))
+    {
+        return true;
+    }
+
+    return ReadStringProperty(Node, "ImportKind") == "Collision";
+}
+
+int32 FFbxSceneQuery::GetMeshLODIndex(FbxNode* MeshNode)
+{
+    return GetSkeletalMeshLODIndex(MeshNode);
 }
