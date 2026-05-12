@@ -121,7 +121,7 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 			// 첫 프레임 가시화: TickComponent가 처음 굴러가기 전에 MeshBuffer를 만들어둠.
 			// 안 하면 첫 한두 프레임 동안 GetMeshBuffer()->IsValid() == false → DrawCommandBuilder가 스킵.
 			RefreshBoneTransforms();
-			MeshObject->Update(SkinningMatrices);
+			UpdateSkinnedMeshObject();
 		}
 	}
 	else
@@ -136,6 +136,18 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 	CacheLocalBounds();
 	MarkRenderStateDirty();
 	MarkWorldBoundsDirty();
+}
+
+void USkinnedMeshComponent::UpdateSkinnedMeshObject()
+{
+	if (!MeshObject)
+	{
+		return;
+	}
+
+	MeshObject->Update(SkinningMatrices);
+	bSkinningDirty = false;
+	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
 void USkinnedMeshComponent::CacheLocalBounds()
@@ -232,11 +244,7 @@ void USkinnedMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	RefreshBoneTransforms();
 
 	// 결과를 MeshObject로 전달 -> CPU 스키닝 + VB 재생성
-	if (MeshObject)
-	{
-		MeshObject->Update(SkinningMatrices);
-		MarkProxyDirty(EDirtyFlag::Mesh);
-	}
+	UpdateSkinnedMeshObject();
 }
 
 // FSkeletalMeshLOD에는 RenderBuffer가 없음 (GPU 업로드 단계 미구현).

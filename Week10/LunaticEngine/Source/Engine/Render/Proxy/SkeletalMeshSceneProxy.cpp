@@ -130,6 +130,19 @@ void FSkeletalMeshSceneProxy::RebuildSectionDraws()
 	const FSkeletalMeshLOD& LOD0 = Asset->LODModels[0];
 	SectionDraws.clear();
 	SectionDraws.reserve(LOD0.Sections.size());
+
+	if (LOD0.Sections.empty() && MeshBuffer)
+	{
+		FMeshSectionDraw Draw;
+		Draw.FirstIndex = 0;
+		Draw.IndexCount = MeshBuffer->GetIndexBuffer().GetIndexCount();
+		Draw.Material = !Overrides.empty() && Overrides[0]
+			? Overrides[0]
+			: (!Slots.empty() && Slots[0].MaterialInterface ? Slots[0].MaterialInterface : FMaterialManager::Get().GetOrCreateMaterial("None"));
+		SectionDraws.push_back(Draw);
+		return;
+	}
+
 	for (const FStaticMeshSection& Section : LOD0.Sections)
 	{
 		FMeshSectionDraw Draw;

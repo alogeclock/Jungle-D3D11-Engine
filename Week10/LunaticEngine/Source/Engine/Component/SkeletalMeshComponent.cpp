@@ -135,7 +135,7 @@ void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTrans
 
 	BoneSpaceTransforms[BoneIndex] = NewTransform;
 	RefreshBoneTransforms();
-	MarkProxyDirty(EDirtyFlag::Mesh);
+	UpdateSkinnedMeshObject();
 	MarkWorldBoundsDirty();
 }
 
@@ -221,6 +221,7 @@ void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
 	USkinnedMeshComponent::SetSkeletalMesh(InSkeletalMesh);
 	InitializeBoneTransformsFromSkeleton();
+	UpdateSkinnedMeshObject();
 }
 
 // 스켈레탈 메시 컴포넌트 전용 본 포즈와 표시 옵션을 직렬화한다.

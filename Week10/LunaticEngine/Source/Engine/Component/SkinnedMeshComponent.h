@@ -103,4 +103,5 @@ protected:
 	std::unique_ptr<FSkeletalMeshObject> MeshObject;
 
 	void CacheLocalBounds();
+	void UpdateSkinnedMeshObject();
 };
