@@ -227,20 +227,28 @@ void UEngine::OnWindowResized(uint32 Width, uint32 Height)
 	Renderer.GetFD3DDevice().OnResizeViewport(Width, Height);
 	Renderer.ResetRenderStateCache();
 
-	// Standalone Game/Shipping 모드에서는 윈도우 크기에 맞춰 오프스크린 뷰포트도 리사이즈해야 함.
-	// 그렇지 않으면 CopyResource(백버퍼, 뷰포트RT) 단계에서 크기 불일치로 렌더링이 중단됨.
+	// Standalone Game/Shipping 모드에서는 전체화면 백버퍼와 별개로
+	// ProjectSettings 해상도를 게임 렌더 타깃 크기로 유지한다.
 	if (!GIsEditor)
 	{
+		uint32 ViewportWidth = Width;
+		uint32 ViewportHeight = Height;
+		if (FProjectSettings::Get().Game.bLockWindowResolution)
+		{
+			ViewportWidth = (std::max)(320u, FProjectSettings::Get().Game.WindowWidth);
+			ViewportHeight = (std::max)(240u, FProjectSettings::Get().Game.WindowHeight);
+		}
+
 		if (GameViewportClient && GameViewportClient->GetViewport())
 		{
-			GameViewportClient->GetViewport()->Resize(Width, Height);
+			GameViewportClient->GetViewport()->Resize(ViewportWidth, ViewportHeight);
 		}
 
 		if (UWorld* World = GetWorld())
 		{
 			if (UCameraComponent* Camera = World->GetActiveCamera())
 			{
-				Camera->OnResize(Width, Height);
+				Camera->OnResize(ViewportWidth, ViewportHeight);
 			}
 		}
 	}

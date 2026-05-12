@@ -1,4 +1,4 @@
-﻿#include "Editor/Viewport/FLevelViewportLayout.h"
+#include "Editor/Viewport/FLevelViewportLayout.h"
 
 #include "Editor/EditorEngine.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
@@ -9,6 +9,7 @@
 #include "Editor/Selection/SelectionManager.h"
 #include "Engine/Runtime/WindowsWindow.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputRouter.h"
 #include "GameFramework/DecalActor.h"
 #include "GameFramework/PawnActor.h"
 #include "GameFramework/CharacterActor.h"
@@ -24,6 +25,7 @@
 #include "Game/Map/AMapManager.h"
 #include "Game/Player/Runner.h"
 #include "GameFramework/World.h"
+#include "GameFramework/SkeletalMeshActor.h"
 #include "Render/Pipeline/Renderer.h"
 #include "Viewport/Viewport.h"
 #include "UI/SSplitter.h"
@@ -369,9 +371,26 @@ void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 			ImGui::SliderFloat("Spacing", &Opts.GridSpacing, 0.1f, 10.0f, "%.1f");
 			ImGui::SetNextItemWidth(CompactSliderWidth);
 			ImGui::SliderInt("Half Line Count", &Opts.GridHalfLineCount, 10, 500);
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Grid Line", &Opts.GridRenderSettings.LineThickness, 0.0f, 4.0f, "%.2f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Major Line", &Opts.GridRenderSettings.MajorLineThickness, 0.0f, 6.0f, "%.2f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderInt("Major Interval", &Opts.GridRenderSettings.MajorLineInterval, 1, 50);
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Minor Intensity", &Opts.GridRenderSettings.MinorIntensity, 0.0f, 2.0f, "%.2f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Major Intensity", &Opts.GridRenderSettings.MajorIntensity, 0.0f, 2.0f, "%.2f");
 		}
 
 		ImGui::Checkbox("World Axis", &Opts.ShowFlags.bWorldAxis);
+		if (Opts.ShowFlags.bWorldAxis)
+		{
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Axis Thickness", &Opts.GridRenderSettings.AxisThickness, 0.0f, 8.0f, "%.2f");
+			ImGui::SetNextItemWidth(CompactSliderWidth);
+			ImGui::SliderFloat("Axis Intensity", &Opts.GridRenderSettings.AxisIntensity, 0.0f, 2.0f, "%.2f");
+		}
 		ImGui::Checkbox("Gizmo", &Opts.ShowFlags.bGizmo);
 		ImGui::SetNextItemWidth(CompactSliderWidth);
 		ImGui::SliderFloat("Billboard Icon Scale", &Opts.ActorHelperBillboardScale, 0.1f, 5.0f, "%.2f");
@@ -1087,7 +1106,6 @@ void FLevelViewportLayout::Initialize(UEditorEngine* InEditor, FWindowsWindow* I
 	LevelVC->ResetCamera();
 	ApplyProjectViewportSettings(LevelVC->GetRenderOptions());
 
-	AllViewportClients.push_back(LevelVC);
 	LevelViewportClients.push_back(LevelVC);
 	SetActiveViewport(LevelVC);
 
@@ -1110,7 +1128,7 @@ void FLevelViewportLayout::Release()
 	}
 
 	ActiveViewportClient = nullptr;
-	for (FEditorViewportClient* VC : AllViewportClients)
+	for (FLevelEditorViewportClient* VC : LevelViewportClients)
 	{
 		if (FViewport* VP = VC->GetViewport())
 		{
@@ -1119,7 +1137,6 @@ void FLevelViewportLayout::Release()
 		}
 		delete VC;
 	}
-	AllViewportClients.clear();
 	LevelViewportClients.clear();
 
 	ReleaseLayoutIcons();
@@ -1139,11 +1156,16 @@ void FLevelViewportLayout::SetActiveViewport(FLevelEditorViewportClient* InClien
 	if (ActiveViewportClient)
 	{
 		ActiveViewportClient->SetActive(true);
+		FInputRouter::Get().SetKeyboardFocusedViewport(ActiveViewportClient);
 		UWorld* World = Editor->GetWorld();
 		if (World && ActiveViewportClient->GetCamera())
 		{
 			World->SetActiveCamera(ActiveViewportClient->GetCamera());
 		}
+	}
+	else
+	{
+		FInputRouter::Get().SetKeyboardFocusedViewport(nullptr);
 	}
 }
 
@@ -1173,7 +1195,7 @@ void FLevelViewportLayout::ResetViewport(UWorld* InWorld)
 
 void FLevelViewportLayout::DestroyAllCameras()
 {
-	for (FEditorViewportClient* VC : AllViewportClients)
+	for (FLevelEditorViewportClient* VC : LevelViewportClients)
 	{
 		VC->DestroyCamera();
 	}
@@ -1253,7 +1275,6 @@ void FLevelViewportLayout::EnsureViewportSlots(int32 RequiredCount)
 		LevelVC->ResetCamera();
 		ApplyProjectViewportSettings(LevelVC->GetRenderOptions());
 
-		AllViewportClients.push_back(LevelVC);
 		LevelViewportClients.push_back(LevelVC);
 
 		ViewportWindows[Idx] = new SWindow();
@@ -1268,11 +1289,6 @@ void FLevelViewportLayout::ShrinkViewportSlots(int32 RequiredCount)
 		FLevelEditorViewportClient* VC = LevelViewportClients.back();
 		int32 Idx = static_cast<int32>(LevelViewportClients.size()) - 1;
 		LevelViewportClients.pop_back();
-
-		for (auto It = AllViewportClients.begin(); It != AllViewportClients.end(); ++It)
-		{
-			if (*It == VC) { AllViewportClients.erase(It); break; }
-		}
 
 		if (ActiveViewportClient == VC)
 			SetActiveViewport(LevelViewportClients[0]);
@@ -1808,6 +1824,7 @@ void FLevelViewportLayout::ToggleViewportSplit(int32 SourceSlotIndex)
 void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 {
 	bMouseOverViewport = false;
+	FInputRouter::Get().SetHoveredViewport(nullptr);
 	UpdateLayoutTransition(DeltaTime);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -1950,6 +1967,10 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 				if (i < static_cast<int32>(LevelViewportClients.size()))
 				{
 					LevelViewportClients[i]->SetHovered(bSlotHovered);
+					if (bSlotHovered)
+					{
+						FInputRouter::Get().SetHoveredViewport(LevelViewportClients[i]);
+					}
 				}
 
 				if (bSlotHovered)
@@ -3118,6 +3139,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 		PlaceActorMenuItem("Runner", EViewportPlaceActorType::Runner);
 		PlaceActorMenuItem("Character", EViewportPlaceActorType::Character);
 		PlaceActorMenuItem("Static Mesh", EViewportPlaceActorType::StaticMeshActor);
+		PlaceActorMenuItem("Skeletal Mesh", EViewportPlaceActorType::SkeletalMeshActor);
 		PlaceActorMenuItem("World Text", EViewportPlaceActorType::WorldText);
 		PlaceActorMenuItem("Screen Text", EViewportPlaceActorType::ScreenText);
 		PlaceActorMenuItem("UI Root", EViewportPlaceActorType::UIRoot);
@@ -3304,6 +3326,16 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 	case EViewportPlaceActorType::StaticMeshActor:
 	{
 		AStaticMeshActor* Actor = World->SpawnActor<AStaticMeshActor>();
+		if (Actor)
+		{
+			Actor->InitDefaultComponents();
+			SpawnedActor = Actor;
+		}
+		break;
+	}
+	case EViewportPlaceActorType::SkeletalMeshActor:
+	{
+		ASkeletalMeshActor* Actor = World->SpawnActor<ASkeletalMeshActor>();
 		if (Actor)
 		{
 			Actor->InitDefaultComponents();

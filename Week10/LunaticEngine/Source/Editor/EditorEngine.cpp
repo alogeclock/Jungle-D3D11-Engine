@@ -14,16 +14,20 @@
 #include "Editor/EditorRenderPipeline.h"
 #include "Editor/UI/EditorFileUtils.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
+#include "Editor/Viewport/Preview/PreviewViewportClient.h"
 #include "Object/ObjectFactory.h"
 #include "Mesh/ObjManager.h"
 #include "Core/ProjectSettings.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputRouter.h"
+#include "Engine/Input/InputSystem.h"
 #include "GameFramework/AActor.h"
 #include "Materials/MaterialManager.h"
 #include "Engine/Platform/Paths.h"
 #include "Core/AsciiUtils.h"
 #include "Texture/Texture2D.h"
 #include "Object/Object.h"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <set>
@@ -56,19 +60,6 @@ bool EndsWithIgnoreCase(const FString& Value, const char* Suffix)
 	}
 
 	return true;
-}
-
-FString BuildScenePathFromStem(const FString& InStem)
-{
-	std::filesystem::path ScenePath = std::filesystem::path(FSceneSaveManager::GetSceneDirectory())
-		/ (FPaths::ToWide(InStem) + FSceneSaveManager::SceneExtension);
-	return FPaths::ToUtf8(ScenePath.wstring());
-}
-
-FString GetFileStem(const FString& InPath)
-{
-	const std::filesystem::path Path(FPaths::ToWide(InPath));
-	return FPaths::ToUtf8(Path.stem().wstring());
 }
 
 UCameraComponent* FindFirstCameraComponent(UWorld* World)
@@ -255,6 +246,7 @@ void UEditorEngine::Shutdown()
 	CloseScene();
 	SelectionManager.Shutdown();
 	MainPanel.Release();
+	PreviewViewportClients.clear();
 
 	// 뷰포트 레이아웃 해제
 	ViewportLayout.Release();
@@ -295,15 +287,38 @@ void UEditorEngine::Tick(float DeltaTime)
 	if (UTexture2D::HasPendingTextureRefresh())
 	{
 		UTexture2D::RefreshChangedTextures(Renderer.GetFD3DDevice().GetDevice());
+		FMaterialManager::Get().RebuildCachedSRVs();
 	}
 	FNotificationManager::Get().Tick(DeltaTime);
 	FAudioManager::Get().Update();
 	MainPanel.Update();
 
-	for (FEditorViewportClient* VC : ViewportLayout.GetAllViewportClients())
+	for (FLevelEditorViewportClient* VC : ViewportLayout.GetLevelViewportClients())
 	{
 		VC->Tick(DeltaTime);
 	}
+
+	for (FPreviewViewportClient* VC : PreviewViewportClients)
+	{
+		if (VC)
+		{
+			VC->Tick(DeltaTime);
+		}
+	}
+
+	const FInputSystemSnapshot InputSnapshot = FInputSystem::MakeSnapshot();
+	if (IsPlayingInEditor())
+	{
+		if (InputSnapshot.IsKeyPressed(VK_ESCAPE))
+		{
+			RequestEndPlayMap();
+		}
+		else if (InputSnapshot.IsKeyPressed(VK_F8))
+		{
+			TogglePIEControlMode();
+		}
+	}
+	FInputRouter::Get().RouteSnapshot(InputSnapshot, DeltaTime);
 
 	WorldTick(DeltaTime);
 	Render(DeltaTime);
@@ -480,9 +495,83 @@ bool UEditorEngine::FocusActorInViewport(AActor* Actor)
 	return false;
 }
 
+void UEditorEngine::RegisterPreviewViewportClient(FPreviewViewportClient* ViewportClient)
+{
+	if (!ViewportClient)
+	{
+		return;
+	}
+
+	if (std::find(PreviewViewportClients.begin(), PreviewViewportClients.end(), ViewportClient) == PreviewViewportClients.end())
+	{
+		PreviewViewportClients.push_back(ViewportClient);
+	}
+}
+
+void UEditorEngine::UnregisterPreviewViewportClient(FPreviewViewportClient* ViewportClient)
+{
+	auto It = std::find(PreviewViewportClients.begin(), PreviewViewportClients.end(), ViewportClient);
+	if (It != PreviewViewportClients.end())
+	{
+		PreviewViewportClients.erase(It);
+	}
+}
+
+void UEditorEngine::OpenSkeletalMeshEditor(USkeletalMesh* SkeletalMesh)
+{
+	MainPanel.OpenSkeletalMeshEditor(SkeletalMesh);
+}
+
 void UEditorEngine::RenderUI(float DeltaTime)
 {
 	MainPanel.Render(DeltaTime);
+	UpdatePreviewViewportRouting();
+}
+
+void UEditorEngine::UpdatePreviewViewportRouting()
+{
+	FPreviewViewportClient* HoveredPreviewViewport = nullptr;
+	FPreviewViewportClient* FocusedPreviewViewport = nullptr;
+	for (FPreviewViewportClient* ViewportClient : PreviewViewportClients)
+	{
+		if (!ViewportClient)
+		{
+			continue;
+		}
+
+		if (ViewportClient->IsHovered())
+		{
+			HoveredPreviewViewport = ViewportClient;
+		}
+		if (ViewportClient->IsActive())
+		{
+			FocusedPreviewViewport = ViewportClient;
+		}
+	}
+
+	auto IsRegisteredPreviewViewport = [this](FViewportClient* ViewportClient)
+		{
+			return std::find(PreviewViewportClients.begin(), PreviewViewportClients.end(), ViewportClient) != PreviewViewportClients.end();
+		};
+
+	FInputRouter& InputRouter = FInputRouter::Get();
+	if (HoveredPreviewViewport)
+	{
+		InputRouter.SetHoveredViewport(HoveredPreviewViewport);
+	}
+	else if (IsRegisteredPreviewViewport(InputRouter.GetHoveredViewport()))
+	{
+		InputRouter.SetHoveredViewport(nullptr);
+	}
+
+	if (FocusedPreviewViewport)
+	{
+		InputRouter.SetKeyboardFocusedViewport(FocusedPreviewViewport);
+	}
+	else if (IsRegisteredPreviewViewport(InputRouter.GetKeyboardFocusedViewport()))
+	{
+		InputRouter.SetKeyboardFocusedViewport(nullptr);
+	}
 }
 
 void UEditorEngine::RenderPIEOverlayPopups()
@@ -712,6 +801,7 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 			PIEViewportClient->SetCursorClipRect(ActiveVC->GetViewportScreenRect());
 		}
 		PIEViewportClient->OnBeginPIE(InitialTargetCamera, InitialViewport);
+		FInputRouter::Get().BeginPIEMode(PIEViewportClient);
 	}
 	EnterPIEPossessedMode();
 	
@@ -816,6 +906,7 @@ void UEditorEngine::EndPlayMap()
 
 	if (UGameViewportClient* PIEViewportClient = GetGameViewportClient())
 	{
+		FInputRouter::Get().EndPIEMode();
 		PIEViewportClient->OnEndPIE();
 		UObjectManager::Get().DestroyObject(PIEViewportClient);
 		SetGameViewportClient(nullptr);

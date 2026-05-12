@@ -1,4 +1,6 @@
 ﻿#include "D3DDevice.h"
+#include <algorithm>
+#include <cstring>
 #include <fstream>
 
 //	Safe Release Macro
@@ -9,6 +11,7 @@ void FD3DDevice::Create(HWND InHWindow)
 	CreateDeviceAndSwapChain(InHWindow);
 	CreateFrameBuffer();
 	CreateDepthStencilBuffer();
+	CreateBackbufferBlitResources();
 }
 
 void FD3DDevice::Release()
@@ -18,6 +21,7 @@ void FD3DDevice::Release()
 
 	ReleaseDepthStencilBuffer();
 	ReleaseFrameBuffer();
+	ReleaseBackbufferBlitResources();
 
 	ReleaseDeviceAndSwapChain();
 }
@@ -43,26 +47,86 @@ void FD3DDevice::Present()
 	SwapChain->Present(0, PresentFlags);
 }
 
-void FD3DDevice::CopyToBackbuffer(ID3D11Texture2D* Source)
+void FD3DDevice::CopyToBackbuffer(ID3D11Texture2D* Source, ID3D11ShaderResourceView* SourceSRV)
 {
 	if (!Source || !DeviceContext || !FrameBuffer) return;
 
-	// 진단: Source/Dest 텍스처 크기/포맷 비교 — 다르면 CopyResource silent 실패.
+	D3D11_TEXTURE2D_DESC SrcDesc = {};
+	D3D11_TEXTURE2D_DESC DstDesc = {};
+	Source->GetDesc(&SrcDesc);
+	FrameBuffer->GetDesc(&DstDesc);
+
+	// 진단: Source/Dest 텍스처 크기/포맷 비교.
 	static bool s_DiagOnce = false;
 	if (!s_DiagOnce)
 	{
 		s_DiagOnce = true;
-		D3D11_TEXTURE2D_DESC SrcDesc = {};
-		D3D11_TEXTURE2D_DESC DstDesc = {};
-		Source->GetDesc(&SrcDesc);
-		FrameBuffer->GetDesc(&DstDesc);
 
 		std::ofstream Log("Saves/diag.log", std::ios::app);
 		Log << "[Copy] Src " << SrcDesc.Width << "x" << SrcDesc.Height << " fmt=" << SrcDesc.Format
 		    << " | Dst " << DstDesc.Width << "x" << DstDesc.Height << " fmt=" << DstDesc.Format << std::endl;
 	}
 
-	DeviceContext->CopyResource(FrameBuffer, Source);
+	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+	if (SrcDesc.Width == DstDesc.Width
+		&& SrcDesc.Height == DstDesc.Height
+		&& SrcDesc.Format == DstDesc.Format
+		&& SrcDesc.SampleDesc.Count == DstDesc.SampleDesc.Count)
+	{
+		DeviceContext->CopyResource(FrameBuffer, Source);
+	}
+	else if (BackbufferBlitVS && BackbufferBlitPS && BackbufferBlitSampler && BackbufferBlitRasterizerState)
+	{
+		ID3D11ShaderResourceView* TempSRV = nullptr;
+		if (!SourceSRV)
+		{
+			Device->CreateShaderResourceView(Source, nullptr, &TempSRV);
+			SourceSRV = TempSRV;
+		}
+
+		if (SourceSRV)
+		{
+			DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
+
+			const float SourceAspect = static_cast<float>(SrcDesc.Width) / static_cast<float>(SrcDesc.Height);
+			const float DestAspect = static_cast<float>(DstDesc.Width) / static_cast<float>(DstDesc.Height);
+			UINT DrawWidth = DstDesc.Width;
+			UINT DrawHeight = DstDesc.Height;
+			if (DestAspect > SourceAspect)
+			{
+				DrawWidth = (std::max)(1u, static_cast<UINT>(static_cast<float>(DstDesc.Height) * SourceAspect));
+			}
+			else
+			{
+				DrawHeight = (std::max)(1u, static_cast<UINT>(static_cast<float>(DstDesc.Width) / SourceAspect));
+			}
+
+			D3D11_VIEWPORT BlitViewport = {};
+			BlitViewport.TopLeftX = static_cast<float>(DstDesc.Width - DrawWidth) * 0.5f;
+			BlitViewport.TopLeftY = static_cast<float>(DstDesc.Height - DrawHeight) * 0.5f;
+			BlitViewport.Width = static_cast<float>(DrawWidth);
+			BlitViewport.Height = static_cast<float>(DrawHeight);
+			BlitViewport.MinDepth = 0.0f;
+			BlitViewport.MaxDepth = 1.0f;
+
+			DeviceContext->RSSetViewports(1, &BlitViewport);
+			DeviceContext->RSSetState(BackbufferBlitRasterizerState);
+			DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, nullptr);
+			DeviceContext->IASetInputLayout(nullptr);
+			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			DeviceContext->VSSetShader(BackbufferBlitVS, nullptr, 0);
+			DeviceContext->PSSetShader(BackbufferBlitPS, nullptr, 0);
+			DeviceContext->PSSetSamplers(0, 1, &BackbufferBlitSampler);
+			DeviceContext->PSSetShaderResources(0, 1, &SourceSRV);
+			DeviceContext->Draw(3, 0);
+
+			ID3D11ShaderResourceView* NullSRV = nullptr;
+			DeviceContext->PSSetShaderResources(0, 1, &NullSRV);
+		}
+
+		if (TempSRV) TempSRV->Release();
+	}
 
 	// Offscreen viewport RT를 백버퍼로 복사한 뒤에는 현재 OM target이 여전히
 	// viewport RT를 가리키고 있다. Shipping 게임 오버레이(ImGui)는 호출 시점의
@@ -70,6 +134,125 @@ void FD3DDevice::CopyToBackbuffer(ID3D11Texture2D* Source)
 	DeviceContext->RSSetViewports(1, &ViewportInfo);
 	DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, DepthStencilView);
 }                 
+
+void FD3DDevice::CreateBackbufferBlitResources()
+{
+	if (!Device) return;
+
+	ReleaseBackbufferBlitResources();
+
+	const char* ShaderSource = R"(
+Texture2D SourceTexture : register(t0);
+SamplerState SourceSampler : register(s0);
+
+struct VSOut
+{
+	float4 Position : SV_POSITION;
+	float2 UV : TEXCOORD0;
+};
+
+VSOut VSMain(uint VertexID : SV_VertexID)
+{
+	float2 Positions[3] =
+	{
+		float2(-1.0f, -1.0f),
+		float2(-1.0f,  3.0f),
+		float2( 3.0f, -1.0f)
+	};
+	float2 UVs[3] =
+	{
+		float2(0.0f,  1.0f),
+		float2(0.0f, -1.0f),
+		float2(2.0f,  1.0f)
+	};
+
+	VSOut Output;
+	Output.Position = float4(Positions[VertexID], 0.0f, 1.0f);
+	Output.UV = UVs[VertexID];
+	return Output;
+}
+
+float4 PSMain(VSOut Input) : SV_TARGET
+{
+	return SourceTexture.Sample(SourceSampler, Input.UV);
+}
+)";
+
+	ID3DBlob* VSBlob = nullptr;
+	ID3DBlob* PSBlob = nullptr;
+	ID3DBlob* ErrorBlob = nullptr;
+
+	HRESULT HR = D3DCompile(
+		ShaderSource,
+		std::strlen(ShaderSource),
+		"BackbufferBlit",
+		nullptr,
+		nullptr,
+		"VSMain",
+		"vs_5_0",
+		0,
+		0,
+		&VSBlob,
+		&ErrorBlob);
+	if (FAILED(HR))
+	{
+		SAFE_RELEASE(ErrorBlob);
+		SAFE_RELEASE(VSBlob);
+		return;
+	}
+	SAFE_RELEASE(ErrorBlob);
+
+	HR = D3DCompile(
+		ShaderSource,
+		std::strlen(ShaderSource),
+		"BackbufferBlit",
+		nullptr,
+		nullptr,
+		"PSMain",
+		"ps_5_0",
+		0,
+		0,
+		&PSBlob,
+		&ErrorBlob);
+	if (FAILED(HR))
+	{
+		SAFE_RELEASE(ErrorBlob);
+		SAFE_RELEASE(VSBlob);
+		SAFE_RELEASE(PSBlob);
+		return;
+	}
+	SAFE_RELEASE(ErrorBlob);
+
+	Device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, &BackbufferBlitVS);
+	Device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, &BackbufferBlitPS);
+
+	SAFE_RELEASE(VSBlob);
+	SAFE_RELEASE(PSBlob);
+
+	D3D11_SAMPLER_DESC SamplerDesc = {};
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	SamplerDesc.MinLOD = 0.0f;
+	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	Device->CreateSamplerState(&SamplerDesc, &BackbufferBlitSampler);
+
+	D3D11_RASTERIZER_DESC RasterizerDesc = {};
+	RasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	RasterizerDesc.CullMode = D3D11_CULL_NONE;
+	RasterizerDesc.DepthClipEnable = TRUE;
+	Device->CreateRasterizerState(&RasterizerDesc, &BackbufferBlitRasterizerState);
+}
+
+void FD3DDevice::ReleaseBackbufferBlitResources()
+{
+	SAFE_RELEASE(BackbufferBlitRasterizerState);
+	SAFE_RELEASE(BackbufferBlitSampler);
+	SAFE_RELEASE(BackbufferBlitPS);
+	SAFE_RELEASE(BackbufferBlitVS);
+}
 
 void FD3DDevice::OnResizeViewport(int Width, int Height)
 {

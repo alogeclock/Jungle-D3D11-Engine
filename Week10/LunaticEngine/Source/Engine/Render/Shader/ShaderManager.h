@@ -68,6 +68,7 @@ namespace EShaderPath
 	inline constexpr const char* Decal = "Shaders/Geometry/Decal.hlsl";
 
 	inline constexpr const char* Editor = "Shaders/Editor/Editor.hlsl";
+	inline constexpr const char* Grid = "Shaders/Editor/Grid.hlsl";
 	inline constexpr const char* Gizmo = "Shaders/Editor/Gizmo.hlsl";
 
 	inline constexpr const char* FXAA = "Shaders/PostProcess/FXAA.hlsl";

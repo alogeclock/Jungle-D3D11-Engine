@@ -116,7 +116,7 @@ void FTileCullingVisualizer::SubmitDebugLines(ID3D11DeviceContext* Ctx, UWorld* 
 
 	ReadbackData(Ctx);
 
-	// 이전 프레임에 Dispatch가 ���출되지 않았으면 (Cluster ���드 등)
+	// 이전 프레임에 Dispatch가 호출되지 않았으면 (Cluster 모드 등)
 	// stale bDataReady로 매 프레임 라인이 누적되는 것을 방지
 	if (!bDispatchedLastFrame)
 	{

@@ -18,10 +18,11 @@
 
 class UGizmoComponent;
 class FLevelEditorViewportClient;
-class FEditorViewportClient;
+class FPreviewViewportClient;
 class FOverlayStatSystem;
 class AActor;
 class UGameViewportClient;
+class USkeletalMesh;
 struct FPerspectiveCameraData;
 
 class UEditorEngine : public UEngine
@@ -101,9 +102,12 @@ public:
 	const FSelectionManager& GetSelectionManager() const { return SelectionManager; }
 
 	// 레이아웃에 위임
-	const TArray<FEditorViewportClient*>& GetAllViewportClients() const { return ViewportLayout.GetAllViewportClients(); }
 	const TArray<FLevelEditorViewportClient*>& GetLevelViewportClients() const { return ViewportLayout.GetLevelViewportClients(); }
 	bool ShouldRenderViewportClient(const FLevelEditorViewportClient* ViewportClient) const { return ViewportLayout.ShouldRenderViewportClient(ViewportClient); }
+	void RegisterPreviewViewportClient(FPreviewViewportClient* ViewportClient);
+	void UnregisterPreviewViewportClient(FPreviewViewportClient* ViewportClient);
+	const TArray<FPreviewViewportClient*>& GetPreviewViewportClients() const { return PreviewViewportClients; }
+	void OpenSkeletalMeshEditor(USkeletalMesh* SkeletalMesh);
 
 	void SetActiveViewport(FLevelEditorViewportClient* InClient) { ViewportLayout.SetActiveViewport(InClient); }
 	FLevelEditorViewportClient* GetActiveViewport() const { return ViewportLayout.GetActiveViewport(); }
@@ -152,6 +156,7 @@ private:
 	// Tick 내에서 호출 — 큐에 요청이 있으면 StartPlayInEditorSession 실행
 	void StartQueuedPlaySessionRequest();
 	void ProcessDeferredEditorActions();
+	void UpdatePreviewViewportRouting();
 	void StartPlayInEditorSession(const FRequestPlaySessionParams& Params);
 	void EndPlayMap();
 	bool EnterPIEPossessedMode();
@@ -173,6 +178,7 @@ private:
 	FEditorMainPanel MainPanel;
 	FLevelViewportLayout ViewportLayout;
 	FOverlayStatSystem OverlayStatSystem;
+	TArray<FPreviewViewportClient*> PreviewViewportClients;
 
 	// PIE 요청 단일 슬롯 (UE TOptional<FRequestPlaySessionParams>).
 	std::optional<FRequestPlaySessionParams> PlaySessionRequest;

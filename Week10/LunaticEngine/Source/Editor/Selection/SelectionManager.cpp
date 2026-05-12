@@ -29,6 +29,11 @@ void FSelectionManager::SetWorld(UWorld* InWorld)
 		Gizmo->CreateRenderState();
 	}
 
+	if (SelectedComponent && !IsComponentInManagedWorld(SelectedComponent))
+	{
+		ClearSelection();
+	}
+
 	SyncGizmo();
 	if (World)
 	{
@@ -49,6 +54,11 @@ void FSelectionManager::Shutdown()
 
 void FSelectionManager::Select(AActor* Actor)
 {
+	if (Actor && !IsActorInManagedWorld(Actor))
+	{
+		return;
+	}
+
 	if (SelectedActors.size() == 1 && SelectedActors.front() == Actor && (!Actor || SelectedComponent == Actor->GetRootComponent()))
 	{
 		return;
@@ -94,7 +104,7 @@ void FSelectionManager::SelectActors(const TArray<AActor*>& Actors)
 
 	for (AActor* Actor : Actors)
 	{
-		if (!Actor)
+		if (!Actor || !IsActorInManagedWorld(Actor))
 		{
 			continue;
 		}
@@ -123,7 +133,7 @@ void FSelectionManager::SelectActors(const TArray<AActor*>& Actors)
 
 void FSelectionManager::AddSelect(AActor* Actor)
 {
-	if (!Actor)
+	if (!Actor || !IsActorInManagedWorld(Actor))
 	{
 		return;
 	}
@@ -152,7 +162,7 @@ void FSelectionManager::AddSelect(AActor* Actor)
 
 void FSelectionManager::SelectRange(AActor* ClickedActor, const TArray<AActor*>& ActorList)
 {
-	if (!ClickedActor) return;
+	if (!ClickedActor || !IsActorInManagedWorld(ClickedActor)) return;
 
 	// Find index of clicked actor
 	int32 ClickedIdx = -1;
@@ -167,6 +177,11 @@ void FSelectionManager::SelectRange(AActor* ClickedActor, const TArray<AActor*>&
 	int32 MinDist = INT_MAX;
 	for (AActor* Sel : SelectedActors)
 	{
+		if (!IsActorInManagedWorld(Sel))
+		{
+			continue;
+		}
+
 		for (int32 i = 0; i < static_cast<int32>(ActorList.size()); ++i)
 		{
 			if (ActorList[i] == Sel)
@@ -201,7 +216,7 @@ void FSelectionManager::SelectRange(AActor* ClickedActor, const TArray<AActor*>&
 
 	for (int32 i = Lo; i <= Hi; ++i)
 	{
-		if (ActorList[i])
+		if (ActorList[i] && IsActorInManagedWorld(ActorList[i]))
 		{
 			ActorList[i]->SetActorSelected(true);
 			SelectedActors.push_back(ActorList[i]);
@@ -223,7 +238,7 @@ void FSelectionManager::SelectRange(AActor* ClickedActor, const TArray<AActor*>&
 
 void FSelectionManager::ToggleSelect(AActor* Actor)
 {
-	if (!Actor) return;
+	if (!Actor || !IsActorInManagedWorld(Actor)) return;
 
 	auto It = std::find(SelectedActors.begin(), SelectedActors.end(), Actor);
 	if (It != SelectedActors.end())
@@ -255,6 +270,11 @@ void FSelectionManager::ToggleSelect(AActor* Actor)
 
 void FSelectionManager::Deselect(AActor* Actor)
 {
+	if (Actor && !IsActorInManagedWorld(Actor))
+	{
+		return;
+	}
+
 	auto It = std::find(SelectedActors.begin(), SelectedActors.end(), Actor);
 	if (It != SelectedActors.end())
 	{
@@ -338,6 +358,11 @@ void FSelectionManager::Tick()
 	{
 		return;
 	}
+	if (!IsComponentInManagedWorld(Primary))
+	{
+		ClearSelection();
+		return;
+	}
 
 	if (Gizmo->GetTarget() != Primary)
 	{
@@ -361,7 +386,7 @@ void FSelectionManager::SetGizmoEnabled(bool bEnabled)
 
 void FSelectionManager::SelectComponent(USceneComponent* Component)
 {
-	if (!Component)
+	if (!Component || !IsComponentInManagedWorld(Component))
 	{
 		return;
 	}
@@ -379,6 +404,11 @@ void FSelectionManager::SelectComponent(USceneComponent* Component)
 		{
 			Target = Component->GetOwner()->GetRootComponent();
 		}
+	}
+
+	if (!Target || !IsComponentInManagedWorld(Target))
+	{
+		return;
 	}
 
 	if (SelectedComponent == Target)
@@ -405,9 +435,9 @@ void FSelectionManager::SelectComponent(USceneComponent* Component)
 
 void FSelectionManager::SetActorProxiesSelected(AActor* Actor, bool bSelected)
 {
-	if (!Actor || !World) return;
+	if (!Actor || !Actor->GetWorld()) return;
 
-	FScene& Scene = World->GetScene();
+	FScene& Scene = Actor->GetWorld()->GetScene();
 	for (UPrimitiveComponent* Prim : Actor->GetPrimitiveComponents())
 	{
 		if (FPrimitiveSceneProxy* Proxy = Prim->GetSceneProxy())
@@ -415,6 +445,16 @@ void FSelectionManager::SetActorProxiesSelected(AActor* Actor, bool bSelected)
 			Scene.SetProxySelected(Proxy, bSelected);
 		}
 	}
+}
+
+bool FSelectionManager::IsActorInManagedWorld(const AActor* Actor) const
+{
+	return !Actor || (World && Actor->GetWorld() == World);
+}
+
+bool FSelectionManager::IsComponentInManagedWorld(const USceneComponent* Component) const
+{
+	return !Component || (World && Component->GetWorld() == World);
 }
 
 void FSelectionManager::SyncGizmo()
@@ -430,6 +470,14 @@ void FSelectionManager::SyncGizmo()
 	USceneComponent* Primary = SelectedComponent;
 	if (Primary)
 	{
+		// 기즈모는 현재 SelectionManager가 관리하는 월드(Main World)에 속한 컴포넌트만 조작해야 합니다.
+		// 프리뷰 월드(Skeletal Mesh Editor 등)의 컴포넌트가 선택된 경우 기즈모를 비활성화하여 오작동을 방지합니다.
+		if (World && Primary->GetWorld() != World)
+		{
+			Gizmo->Deactivate();
+			return;
+		}
+
 		if (Primary->SupportsUIScreenPicking() || !Primary->SupportsWorldGizmo())
 		{
 			Gizmo->Deactivate();

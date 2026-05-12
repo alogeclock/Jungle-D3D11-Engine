@@ -9,6 +9,8 @@
 #include "Component/ActorComponent.h"
 #include "Core/AsciiUtils.h"
 #include "Input/InputManager.h"
+#include "Input/InputRouter.h"
+#include "Input/InputSystem.h"
 #include "Object/Object.h"
 #include "Viewport/GameViewportClient.h"
 #include "Viewport/Viewport.h"
@@ -60,17 +62,25 @@ void UGameEngine::Init(FWindowsWindow* InWindow)
 
 	UGameViewportClient* ViewportClient = UObjectManager::Get().CreateObject<UGameViewportClient>();
 	SetGameViewportClient(ViewportClient);
+	FInputRouter::Get().SetKeyboardFocusedViewport(ViewportClient);
+	FInputRouter::Get().SetHoveredViewport(ViewportClient);
 	if (InWindow)
 	{
 		ViewportClient->SetOwnerWindow(InWindow->GetHWND());
 	}
 
-	// Game/Shipping은 ImGui가 없으므로 백버퍼에 합성해줄 손이 없다.
-	// 윈도우 크기로 FViewport를 만들고 DefaultRenderPipeline이 여기에 렌더 → 백버퍼 복사하도록.
+	// Game/Shipping은 전체화면 백버퍼와 별개로 ProjectSettings 해상도에 맞춘
+	// 오프스크린 FViewport를 만들고, DefaultRenderPipeline이 이를 백버퍼에 복사하도록 한다.
 	if (InWindow)
 	{
-		const uint32 Width  = static_cast<uint32>((std::max)(1.0f, InWindow->GetWidth()));
-		const uint32 Height = static_cast<uint32>((std::max)(1.0f, InWindow->GetHeight()));
+		uint32 Width  = static_cast<uint32>((std::max)(1.0f, InWindow->GetWidth()));
+		uint32 Height = static_cast<uint32>((std::max)(1.0f, InWindow->GetHeight()));
+		if (FProjectSettings::Get().Game.bLockWindowResolution)
+		{
+			Width = (std::max)(320u, FProjectSettings::Get().Game.WindowWidth);
+			Height = (std::max)(240u, FProjectSettings::Get().Game.WindowHeight);
+		}
+
 		FViewport* GameViewport = new FViewport();
 		GameViewport->Initialize(GetRenderer().GetFD3DDevice().GetDevice(), Width, Height);
 		ViewportClient->SetViewport(GameViewport);
@@ -91,6 +101,10 @@ void UGameEngine::Init(FWindowsWindow* InWindow)
 void UGameEngine::Shutdown()
 {
 	ImGuiOverlay.Shutdown();
+	if (UGameViewportClient* ViewportClient = GetGameViewportClient())
+	{
+		FInputRouter::Get().ClearViewport(ViewportClient);
+	}
 	FInputManager::Get().SetGuiCaptureOverride(false, false, false);
 	UEngine::Shutdown();
 }
@@ -113,10 +127,11 @@ void UGameEngine::Tick(float DeltaTime)
 
 		if (!bPopupOpen)
 		{
-			GameVC->ProcessPIEInput(DeltaTime);
-			GameVC->Tick(DeltaTime);
+			FInputRouter::Get().SetKeyboardFocusedViewport(GameVC);
+			FInputRouter::Get().SetHoveredViewport(GameVC);
 		}
 	}
+	FInputRouter::Get().RouteSnapshot(FInputSystem::MakeSnapshot(), DeltaTime);
 	UEngine::Tick(DeltaTime);
 }
 

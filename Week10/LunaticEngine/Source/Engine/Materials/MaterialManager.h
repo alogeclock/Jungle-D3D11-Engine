@@ -57,6 +57,8 @@ public:
 	UTexture2D* GetMaterialPreviewTexture(UMaterial* Material) const;
 	UTexture2D* GetMaterialPreviewTexture(const FString& MaterialPath);
 
+	void RebuildCachedSRVs();
+
 	void Release();
 private:
 	// 셰이더로 Template 생성 또는 캐시에서 반환

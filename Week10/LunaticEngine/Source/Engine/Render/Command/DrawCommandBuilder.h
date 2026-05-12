@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Render/Command/DrawCommandList.h"
 #include "Render/Types/FrameContext.h"
@@ -6,6 +6,9 @@
 #include "Render/Geometry/FontGeometry.h"
 #include "Render/Geometry/ScreenQuadGeometry.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
+
+#include <functional>
+#include <unordered_map>
 
 class FPassRenderStateTable;
 class FTextRenderSceneProxy;
@@ -26,9 +29,6 @@ public:
 	void BeginCollect(const FFrameContext& Frame, uint32 MaxProxyCount = 0);
 
 	// Proxy → FDrawCommand 변환
-	void BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy, ERenderPass Pass);
-	void BuildDecalCommandForReceiver(const FPrimitiveSceneProxy& ReceiverProxy, const FPrimitiveSceneProxy& DecalProxy);
-
 	// Font proxy → FontGeometry 배칭
 	void AddWorldText(const FTextRenderSceneProxy* TextProxy, const FFrameContext& Frame);
 
@@ -40,10 +40,31 @@ public:
 	bool HasSelectionMaskCommands() const { return bHasSelectionMaskCommands; }
 
 private:
+	struct FPerObjectCBKey
+	{
+		const FScene* Scene = nullptr;
+		uint32 ProxyId = UINT32_MAX;
+
+		bool operator==(const FPerObjectCBKey& Other) const
+		{
+			return Scene == Other.Scene && ProxyId == Other.ProxyId;
+		}
+	};
+
+	struct FPerObjectCBKeyHash
+	{
+		size_t operator()(const FPerObjectCBKey& Key) const
+		{
+			const size_t SceneHash = std::hash<const FScene*>()(Key.Scene);
+			const size_t ProxyHash = std::hash<uint32>()(Key.ProxyId);
+			return SceneHash ^ (ProxyHash + 0x9e3779b9u + (SceneHash << 6) + (SceneHash >> 2));
+		}
+	};
+
 	// BuildCommands 서브 메서드
 	void BuildProxyCommands(const FFrameContext& Frame, FScene& Scene, const FCollectOutput& Output);
-	void BuildDecalCommands(FPrimitiveSceneProxy* Proxy, const FFrameContext& Frame, const FCollectOutput& Output);
-	void BuildMeshCommands(const FPrimitiveSceneProxy* Proxy);
+	void BuildDecalCommands(FScene& Scene, FPrimitiveSceneProxy* Proxy, const FFrameContext& Frame, const FCollectOutput& Output);
+	void BuildMeshCommands(FScene& Scene, const FPrimitiveSceneProxy* Proxy);
 	void BuildSelectionCommands(FPrimitiveSceneProxy* Proxy, bool bShowBoundingVolume, FScene& Scene);
 
 	// Scene 경량 데이터 → 동적 지오메트리 → FDrawCommand
@@ -53,6 +74,7 @@ private:
 	void BuildDynamicDrawCommands(const FFrameContext& Frame, const FScene* Scene);
 
 	// BuildDynamicDrawCommands 서브 메서드
+	void BuildEditorGridCommand(const FFrameContext& Frame, const FScene* Scene);
 	void BuildEditorLineCommands(EViewMode ViewMode);
 	void BuildPostProcessCommands(const FFrameContext& Frame, const FScene* Scene);
 	void BuildUICommands(EViewMode ViewMode);
@@ -63,8 +85,10 @@ private:
 	void ApplyMaterialRenderState(FDrawCommandRenderState& OutState, const UMaterial* Mat, const FDrawCommandRenderState& BaseState);
 	FShader* SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode);
 
-	FConstantBuffer* GetPerObjectCBForProxy(const FPrimitiveSceneProxy& Proxy);
-	void EnsurePerObjectCBPoolCapacity(uint32 RequiredCount);
+	void BuildCommandForProxy(const FScene& Scene, const FPrimitiveSceneProxy& Proxy, ERenderPass Pass);
+	void BuildDecalCommandForReceiver(const FScene& Scene, const FPrimitiveSceneProxy& ReceiverProxy, const FPrimitiveSceneProxy& DecalProxy);
+	FConstantBuffer* GetPerObjectCBForProxy(const FScene& Scene, const FPrimitiveSceneProxy& Proxy);
+	FConstantBuffer* UploadPerObjectCBIfNeeded(const FScene& Scene, const FPrimitiveSceneProxy& Proxy);
 
 	// 커맨드 버퍼
 	FDrawCommandList DrawCommandList;
@@ -76,14 +100,16 @@ private:
 
 	// 동적 지오메트리
 	FLineGeometry  EditorLines;
+	FLineGeometry  ForegroundEditorLines;
 	FLineGeometry  GridLines;
 	FFontGeometry  FontGeometry;
 	FScreenQuadGeometry ScreenQuads;
 
-	// PerObject CB 풀
-	TArray<FConstantBuffer> PerObjectCBPool;
+	// PerObject CB 캐시. ProxyId는 FScene 내부 인덱스이므로 Scene과 함께 키를 구성한다.
+	std::unordered_map<FPerObjectCBKey, FConstantBuffer, FPerObjectCBKeyHash> PerObjectCBMap;
 
 	// PostProcess CBs (Fog, Outline, SceneDepth, FXAA)
+	FConstantBuffer GridCB;
 	FConstantBuffer FogCB;
 	FConstantBuffer FadeCB;
 	FConstantBuffer OutlineCB;

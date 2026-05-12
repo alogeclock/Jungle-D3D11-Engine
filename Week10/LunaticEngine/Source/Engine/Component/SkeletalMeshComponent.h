@@ -1,28 +1,67 @@
-﻿#pragma once
+#pragma once
 
 #include "Component/SkinnedMeshComponent.h"
-#include "Core/PropertyTypes.h"
-#include "Mesh/SkeletalMesh.h"
 
-class UMaterial;
-class FPrimitiveSceneProxy;
+class FScene;
 
-namespace json { class JSON; }
-
-// USkinnedMeshComponent에 Animation으로 BoneSpaceTransforms를 채우는 책임을 추가
-// 현재 단계에서는 AnimInstance가 없어 base의 RefPose fallback을 그대로 씀
 class USkeletalMeshComponent : public USkinnedMeshComponent
 {
 public:
 	DECLARE_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
 	USkeletalMeshComponent() = default;
-	// base의 std::unique_ptr<FSkeletalMeshObject> 소멸을 위해 .cpp에서 정의.
 	~USkeletalMeshComponent() override;
 
+	FMeshDataView GetMeshDataView() const override;
+	void ContributeVisuals(FScene& Scene) const override;
+
+	void Serialize(FArchive& Ar) override;
+	void PostDuplicate() override;
+	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void PostEditProperty(const char* PropertyName) override;
+
+	// Asset
+	USkeletalMesh* GetSkeletalMeshAsset() const { return GetSkeletalMesh(); }
+	const FString& GetSkeletalMeshAssetPath() const { return GetSkeletalMeshPath(); }
+
+	// Bone Transform
+	void SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform);
+	bool SetBoneComponentSpaceTransform(int32 BoneIndex, const FTransform& NewTransform);
 	void RefreshBoneTransforms() override;
 
+	// Getter & Setter
+	const TArray<int32>& GetRequiredBones() const { return RequiredBones; }
+	const FTransform* GetBoneLocalTransform(int32 BoneIndex) const;
+	const FTransform* GetBoneComponentSpaceTransform(int32 BoneIndex) const;
+
+	bool AreRequiredBonesUpdated() const { return bRequiredBonesUpdated; }
+	bool IsForceRefPoseEnabled() const { return bForceRefPose; }
+	bool IsSkeletonUpdateEnabled() const { return bEnableSkeletonUpdate; }
+
+	const FVector& GetRootBoneTranslation() const { return RootBoneTranslation; }
+	int32 GetSelectedBoneIndex() const { return SelectedBoneIndex; }
+	bool ShouldShowSkeleton() const { return bShowSkeleton; }
+	bool ShouldShowBoneNames() const { return bShowBoneNames; }
+
+	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh);
+	void SetSelectedBoneIndex(int32 BoneIndex);
+	void SetShowSkeleton(bool bShow);
 
 private:
+	void MarkSkeletalPoseDirty();
+	void InitializeBoneTransformsFromSkeleton();
+	bool IsValidBoneIndex(int32 BoneIndex) const;
 
+private:
+	TArray<int32> RequiredBones;
+
+	bool bRequiredBonesUpdated = true;
+	bool bForceRefPose = false;
+	bool bEnableSkeletonUpdate = true;
+
+	FVector RootBoneTranslation = FVector::ZeroVector;
+
+	int32 SelectedBoneIndex = -1;
+	bool bShowSkeleton = false;
+	bool bShowBoneNames = false;
 };

@@ -331,8 +331,10 @@ void FbxElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 
 		Context.bIsNeedRefresh = true;
 
-		// TODO:
-		// SkeletalMesh Viewer
+		if (Context.EditorEngine)
+		{
+			Context.EditorEngine->OpenSkeletalMeshEditor(SkeletalMesh);
+		}
 
 		FNotificationManager::Get().AddNotification("Loaded SkeletalMesh: " + RelativeFbxPath, ENotificationType::Success, 4.0f);
 
@@ -371,7 +373,10 @@ void SkeletalMeshElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 		return;
 	}
 
-	(void)Context;
+	if (Context.EditorEngine)
+	{
+		Context.EditorEngine->OpenSkeletalMeshEditor(SkeletalMesh);
+	}
 
 	FNotificationManager::Get().AddNotification("Loaded SkeletalMesh: " + RelativeSkmPath, ENotificationType::Success, 4.0f);
 }

@@ -1,5 +1,6 @@
 #include "ObjViewer/ObjViewerViewportClient.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputSystem.h"
 #include "Engine/Input/InputModifier.h"
 #include "Engine/Input/InputTrigger.h"
 #include "Component/CameraComponent.h"
@@ -87,7 +88,13 @@ void FObjViewerViewportClient::ResetCameraToBounds(const FVector& Center, const 
 
 void FObjViewerViewportClient::Tick(float DeltaTime)
 {
-	TickInput(DeltaTime);
+	(void)DeltaTime;
+}
+
+bool FObjViewerViewportClient::HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
+{
+	TickInput(Snapshot, DeltaTime);
+	return true;
 }
 
 void FObjViewerViewportClient::SetViewportRect(float X, float Y, float Width, float Height)
@@ -136,44 +143,44 @@ void FObjViewerViewportClient::SetupInput()
 
 	EnhancedInputManager.AddMappingContext(ObjMappingContext, 0);
 
-	EnhancedInputManager.BindAction(ActionObjOrbit, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnOrbit(V); });
-	EnhancedInputManager.BindAction(ActionObjPan, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnPan(V); });
-	EnhancedInputManager.BindAction(ActionObjZoom, ETriggerEvent::Triggered, [this](const FInputActionValue& V) { OnZoom(V); });
+	EnhancedInputManager.BindAction(ActionObjOrbit, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnOrbit(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionObjPan, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnPan(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionObjZoom, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnZoom(V, Snapshot); });
 }
 
-void FObjViewerViewportClient::OnOrbit(const FInputActionValue& Value)
+void FObjViewerViewportClient::OnOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (FInputManager::Get().IsMouseButtonDown(VK_LBUTTON) || FInputManager::Get().IsMouseButtonDown(VK_RBUTTON))
+	if (Snapshot.IsMouseButtonDown(VK_LBUTTON) || Snapshot.IsMouseButtonDown(VK_RBUTTON))
 	{
 		OrbitAccumulator = OrbitAccumulator + Value.GetVector();
 	}
 }
 
-void FObjViewerViewportClient::OnPan(const FInputActionValue& Value)
+void FObjViewerViewportClient::OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
-	if (FInputManager::Get().IsMouseButtonDown(VK_MBUTTON))
+	if (Snapshot.IsMouseButtonDown(VK_MBUTTON))
 	{
 		PanAccumulator = PanAccumulator + Value.GetVector();
 	}
 }
 
-void FObjViewerViewportClient::OnZoom(const FInputActionValue& Value)
+void FObjViewerViewportClient::OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
 {
+	(void)Snapshot;
 	ZoomAccumulator += Value.Get();
 }
 
-void FObjViewerViewportClient::TickInput(float DeltaTime)
+void FObjViewerViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
 	if (!Camera) return;
 
-	FInputManager& Input = FInputManager::Get();
-	if (Input.IsGuiUsingKeyboard()) return;
+	if (Snapshot.IsGuiUsingKeyboard()) return;
 
 	OrbitAccumulator = FVector::ZeroVector;
 	PanAccumulator = FVector::ZeroVector;
 	ZoomAccumulator = 0.0f;
 
-	EnhancedInputManager.ProcessInput(&Input, DeltaTime);
+	EnhancedInputManager.ProcessInput(Snapshot, DeltaTime);
 
 	// Orbit
 	if (!OrbitAccumulator.IsNearlyZero())

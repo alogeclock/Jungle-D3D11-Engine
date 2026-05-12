@@ -47,6 +47,8 @@ public:
 private:
 	void SyncGizmo();
 	void SetActorProxiesSelected(AActor* Actor, bool bSelected);
+	bool IsActorInManagedWorld(const AActor* Actor) const;
+	bool IsComponentInManagedWorld(const USceneComponent* Component) const;
 
 	TArray<AActor*> SelectedActors;
 	USceneComponent* SelectedComponent = nullptr;

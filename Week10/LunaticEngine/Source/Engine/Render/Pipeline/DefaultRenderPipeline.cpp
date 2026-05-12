@@ -8,6 +8,7 @@
 #include "GameFramework/World.h"
 #include "Viewport/Viewport.h"
 #include "Viewport/GameViewportClient.h"
+#include "Core/ProjectSettings.h"
 
 #include <algorithm>
 
@@ -53,10 +54,19 @@ void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 	{
 		const uint32 BackbufferWidth = Renderer.GetFD3DDevice().GetBackbufferWidth();
 		const uint32 BackbufferHeight = Renderer.GetFD3DDevice().GetBackbufferHeight();
-		if (BackbufferWidth > 0 && BackbufferHeight > 0
-			&& (VP->GetWidth() != BackbufferWidth || VP->GetHeight() != BackbufferHeight))
+		uint32 TargetWidth = BackbufferWidth;
+		uint32 TargetHeight = BackbufferHeight;
+#if !WITH_EDITOR && !IS_OBJ_VIEWER
+		if (FProjectSettings::Get().Game.bLockWindowResolution)
 		{
-			VP->RequestResize(BackbufferWidth, BackbufferHeight);
+			TargetWidth = (std::max)(320u, FProjectSettings::Get().Game.WindowWidth);
+			TargetHeight = (std::max)(240u, FProjectSettings::Get().Game.WindowHeight);
+		}
+#endif
+		if (TargetWidth > 0 && TargetHeight > 0
+			&& (VP->GetWidth() != TargetWidth || VP->GetHeight() != TargetHeight))
+		{
+			VP->RequestResize(TargetWidth, TargetHeight);
 		}
 
 		if (VP->ApplyPendingResize())
@@ -124,7 +134,7 @@ void FDefaultRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 
 	if (VP && VP->GetRTTexture())
 	{
-		Renderer.GetFD3DDevice().CopyToBackbuffer(VP->GetRTTexture());
+		Renderer.GetFD3DDevice().CopyToBackbuffer(VP->GetRTTexture(), VP->GetSRV());
 	}
 
 	if (Engine)

@@ -1,4 +1,4 @@
-﻿#include "DrawCommandBuilder.h"
+#include "DrawCommandBuilder.h"
 
 #include "Resource/ResourceManager.h"
 #include "Render/Types/RenderTypes.h"
@@ -16,6 +16,7 @@
 #include "Texture/Texture2D.h"
 
 #include <algorithm>
+#include <cmath>
 
 // UpdateProxyLOD defined in RenderCollector.cpp (shared)
 extern void UpdateProxyLOD(FPrimitiveSceneProxy* Proxy, const FLODUpdateContext& LODCtx);
@@ -48,6 +49,343 @@ namespace
 		return (static_cast<uint64>(ERenderPass::PostProcess) & 0xFF) << 56
 			| (static_cast<uint64>(UserBits) & 0xFF);
 	}
+
+	struct FGridShaderConstants
+	{
+		float GridSize = 1.0f;
+		float Range = 100.0f;
+		float LineThickness = 1.0f;
+		float MajorLineInterval = 10.0f;
+
+		float MajorLineThickness = 1.25f;
+		float MinorIntensity = 0.45f;
+		float MajorIntensity = 0.9f;
+		float MaxDistance = 125.0f;
+
+		float AxisThickness = 1.5f;
+		float AxisLength = 100.0f;
+		float AxisIntensity = 1.0f;
+		float Padding0 = 0.0f;
+
+		FVector4 GridCenter = FVector4(0.0f, 0.0f, 0.0f, 0.0f);
+		FVector4 GridAxisA = FVector4(1.0f, 0.0f, 0.0f, 0.0f);
+		FVector4 GridAxisB = FVector4(0.0f, 1.0f, 0.0f, 0.0f);
+		FVector4 AxisColorA = FVector4(1.0f, 0.2f, 0.2f, 1.0f);
+		FVector4 AxisColorB = FVector4(0.2f, 1.0f, 0.2f, 1.0f);
+		FVector4 AxisColorN = FVector4(0.2f, 0.2f, 1.0f, 1.0f);
+	};
+
+	static_assert(sizeof(FGridShaderConstants) % 16 == 0, "FGridShaderConstants must be 16-byte aligned");
+
+	struct FGridPlaneDesc
+	{
+		int32 A0 = 0;
+		int32 A1 = 1;
+		int32 N = 2;
+		FVector Axis0 = FVector(1.0f, 0.0f, 0.0f);
+		FVector Axis1 = FVector(0.0f, 1.0f, 0.0f);
+		FVector4 AxisColor0 = FVector4(1.0f, 0.2f, 0.2f, 1.0f);
+		FVector4 AxisColor1 = FVector4(0.2f, 1.0f, 0.2f, 1.0f);
+	};
+
+	struct FGridDrawParams
+	{
+		FGridPlaneDesc Plane;
+		FVector Center;
+		float Spacing = 1.0f;
+		float Range = 100.0f;
+		float MaxDistance = 125.0f;
+		float AxisLength = 100.0f;
+	};
+
+	struct FGridPlaneCoverage
+	{
+		bool bValid = false;
+		int32 PointCount = 0;
+		float Min0 = 0.0f;
+		float Max0 = 0.0f;
+		float Min1 = 0.0f;
+		float Max1 = 0.0f;
+		float MaxViewDistance = 0.0f;
+	};
+
+	float Component(const FVector& V, int32 Index)
+	{
+		return (&V.X)[Index];
+	}
+
+	void SetComponent(FVector& V, int32 Index, float Value)
+	{
+		(&V.X)[Index] = Value;
+	}
+
+	int32 DominantAxis(const FVector& V)
+	{
+		const float AX = std::fabs(V.X);
+		const float AY = std::fabs(V.Y);
+		const float AZ = std::fabs(V.Z);
+		if (AX >= AY && AX >= AZ) return 0;
+		if (AY >= AX && AY >= AZ) return 1;
+		return 2;
+	}
+
+	FVector UnitAxis(int32 Axis)
+	{
+		FVector V;
+		SetComponent(V, Axis, 1.0f);
+		return V;
+	}
+
+	FVector4 GridAxisColor(int32 Axis)
+	{
+		switch (Axis)
+		{
+		case 0: return FVector4(1.0f, 0.2f, 0.2f, 1.0f);
+		case 1: return FVector4(0.2f, 1.0f, 0.2f, 1.0f);
+		default: return FVector4(0.2f, 0.2f, 1.0f, 1.0f);
+		}
+	}
+
+	FVector MakeGridPoint(const FGridPlaneDesc& Plane, float V0, float V1, float VN)
+	{
+		FVector P;
+		SetComponent(P, Plane.A0, V0);
+		SetComponent(P, Plane.A1, V1);
+		SetComponent(P, Plane.N, VN);
+		return P;
+	}
+
+	float SnapToGrid(float Value, float Spacing)
+	{
+		return std::round(Value / Spacing) * Spacing;
+	}
+
+	bool IsFiniteVector(const FVector& V)
+	{
+		return std::isfinite(V.X) && std::isfinite(V.Y) && std::isfinite(V.Z);
+	}
+
+	FGridPlaneDesc MakeGridPlaneDesc(bool bFixedOrtho, const FVector& CameraForward)
+	{
+		int32 N = 2;
+		if (bFixedOrtho)
+		{
+			N = DominantAxis(CameraForward);
+		}
+
+		const int32 A0 = (N == 0) ? 1 : 0;
+		const int32 A1 = (N == 2) ? 1 : 2;
+
+		FGridPlaneDesc Desc;
+		Desc.A0 = A0;
+		Desc.A1 = A1;
+		Desc.N = N;
+		Desc.Axis0 = UnitAxis(A0);
+		Desc.Axis1 = UnitAxis(A1);
+		Desc.AxisColor0 = GridAxisColor(A0);
+		Desc.AxisColor1 = GridAxisColor(A1);
+		return Desc;
+	}
+
+	FVector ComputeGridFocusPoint(const FVector& CameraPosition, const FVector& CameraForward, const FGridPlaneDesc& Plane)
+	{
+		const float PosN = Component(CameraPosition, Plane.N);
+		const float FwdN = Component(CameraForward, Plane.N);
+		if (std::fabs(FwdN) > 1.0e-4f)
+		{
+			const float T = -PosN / FwdN;
+			const float MaxT = std::fabs(PosN) * 10.0f;
+			if (T > 0.0f && T < MaxT)
+			{
+				return CameraPosition + CameraForward * T;
+			}
+		}
+
+		FVector Fallback = CameraPosition;
+		SetComponent(Fallback, Plane.N, 0.0f);
+		return Fallback;
+	}
+
+	int32 ComputeGridHalfCount(float Spacing, int32 BaseHalfCount, const FVector& CameraPosition, const FGridPlaneDesc& Plane)
+	{
+		const float BaseExtent = Spacing * static_cast<float>(std::max(BaseHalfCount, 1));
+		const float HeightDrivenExtent = (std::fabs(Component(CameraPosition, Plane.N)) * 2.0f) + (Spacing * 4.0f);
+		const float RequiredExtent = std::max(BaseExtent, HeightDrivenExtent);
+		return std::max(BaseHalfCount, static_cast<int32>(std::ceil(RequiredExtent / Spacing)));
+	}
+
+	void IncludeGridCoveragePoint(
+		FGridPlaneCoverage& Coverage,
+		const FVector& Point,
+		const FGridPlaneDesc& Plane,
+		const FVector& CameraPosition)
+	{
+		if (!IsFiniteVector(Point))
+		{
+			return;
+		}
+
+		const float P0 = Component(Point, Plane.A0);
+		const float P1 = Component(Point, Plane.A1);
+		if (!Coverage.bValid)
+		{
+			Coverage.bValid = true;
+			Coverage.Min0 = Coverage.Max0 = P0;
+			Coverage.Min1 = Coverage.Max1 = P1;
+		}
+		else
+		{
+			Coverage.Min0 = std::min(Coverage.Min0, P0);
+			Coverage.Max0 = std::max(Coverage.Max0, P0);
+			Coverage.Min1 = std::min(Coverage.Min1, P1);
+			Coverage.Max1 = std::max(Coverage.Max1, P1);
+		}
+
+		Coverage.MaxViewDistance = std::max(Coverage.MaxViewDistance, FVector::Distance(CameraPosition, Point));
+		++Coverage.PointCount;
+	}
+
+	bool TryBuildFrustumPlaneCoverage(const FFrameContext& Frame, const FGridPlaneDesc& Plane, FGridPlaneCoverage& OutCoverage)
+	{
+		const FMatrix InvViewProj = (Frame.View * Frame.Proj).GetInverse();
+
+		static const FVector NDCCorners[8] = {
+			FVector(-1.0f, -1.0f, 1.0f), FVector( 1.0f, -1.0f, 1.0f),
+			FVector( 1.0f,  1.0f, 1.0f), FVector(-1.0f,  1.0f, 1.0f),
+			FVector(-1.0f, -1.0f, 0.0f), FVector( 1.0f, -1.0f, 0.0f),
+			FVector( 1.0f,  1.0f, 0.0f), FVector(-1.0f,  1.0f, 0.0f),
+		};
+
+		FVector WorldCorners[8];
+		for (int32 Index = 0; Index < 8; ++Index)
+		{
+			WorldCorners[Index] = InvViewProj.TransformPositionWithW(NDCCorners[Index]);
+		}
+
+		static const int32 FrustumEdges[12][2] = {
+			{0, 1}, {1, 2}, {2, 3}, {3, 0},
+			{4, 5}, {5, 6}, {6, 7}, {7, 4},
+			{0, 4}, {1, 5}, {2, 6}, {3, 7},
+		};
+
+		constexpr float PlaneEpsilon = 1.0e-3f;
+		for (const auto& Edge : FrustumEdges)
+		{
+			const FVector& P0 = WorldCorners[Edge[0]];
+			const FVector& P1 = WorldCorners[Edge[1]];
+			const float D0 = Component(P0, Plane.N);
+			const float D1 = Component(P1, Plane.N);
+			const bool bOnPlane0 = std::fabs(D0) <= PlaneEpsilon;
+			const bool bOnPlane1 = std::fabs(D1) <= PlaneEpsilon;
+
+			if (bOnPlane0)
+			{
+				IncludeGridCoveragePoint(OutCoverage, P0, Plane, Frame.CameraPosition);
+			}
+			if (bOnPlane1)
+			{
+				IncludeGridCoveragePoint(OutCoverage, P1, Plane, Frame.CameraPosition);
+			}
+
+			if ((D0 < -PlaneEpsilon && D1 > PlaneEpsilon) || (D0 > PlaneEpsilon && D1 < -PlaneEpsilon))
+			{
+				const float T = D0 / (D0 - D1);
+				const FVector Intersection = P0 + (P1 - P0) * T;
+				IncludeGridCoveragePoint(OutCoverage, Intersection, Plane, Frame.CameraPosition);
+			}
+		}
+
+		return OutCoverage.bValid && OutCoverage.PointCount >= 2;
+	}
+
+	FGridDrawParams BuildGridDrawParams(const FFrameContext& Frame, const FScene* Scene)
+	{
+		FGridDrawParams Params;
+		Params.Spacing = std::max(Scene ? Scene->GetGridSpacing() : 1.0f, 0.0001f);
+
+		FVector CameraForward = Frame.CameraRight.Cross(Frame.CameraUp);
+		CameraForward.Normalize();
+		Params.Plane = MakeGridPlaneDesc(Frame.IsFixedOrtho(), CameraForward);
+
+		const int32 BaseHalfCount = std::max(Scene ? Scene->GetGridHalfLineCount() : 1, 1);
+
+		FGridPlaneCoverage Coverage;
+		if (TryBuildFrustumPlaneCoverage(Frame, Params.Plane, Coverage))
+		{
+			const float Span0 = std::max(Coverage.Max0 - Coverage.Min0, 0.0f);
+			const float Span1 = std::max(Coverage.Max1 - Coverage.Min1, 0.0f);
+			const float CoverageHalfExtent = std::max(Span0, Span1) * 0.5f;
+			const float CoverageMargin = std::max(Params.Spacing * 4.0f, CoverageHalfExtent * 0.05f);
+			const int32 DynamicHalfCount = std::max(
+				BaseHalfCount,
+				static_cast<int32>(std::ceil((CoverageHalfExtent + CoverageMargin) / Params.Spacing)));
+
+			const float Center0 = SnapToGrid((Coverage.Min0 + Coverage.Max0) * 0.5f, Params.Spacing);
+			const float Center1 = SnapToGrid((Coverage.Min1 + Coverage.Max1) * 0.5f, Params.Spacing);
+
+			Params.Center = MakeGridPoint(Params.Plane, Center0, Center1, 0.0f);
+			Params.Range = Params.Spacing * static_cast<float>(DynamicHalfCount);
+			Params.MaxDistance = std::max(
+				std::max(Params.Range * 1.25f, Coverage.MaxViewDistance + Params.Spacing * 8.0f),
+				Params.Spacing * 16.0f);
+			Params.AxisLength = std::max(Params.Range, Params.Spacing * 10.0f);
+			return Params;
+		}
+
+		const FVector FocusPoint = ComputeGridFocusPoint(Frame.CameraPosition, CameraForward, Params.Plane);
+		const float Center0 = SnapToGrid(Component(FocusPoint, Params.Plane.A0), Params.Spacing);
+		const float Center1 = SnapToGrid(Component(FocusPoint, Params.Plane.A1), Params.Spacing);
+		const int32 DynamicHalfCount = ComputeGridHalfCount(
+			Params.Spacing,
+			BaseHalfCount,
+			Frame.CameraPosition,
+			Params.Plane);
+
+		Params.Center = MakeGridPoint(Params.Plane, Center0, Center1, 0.0f);
+		Params.Range = Params.Spacing * static_cast<float>(DynamicHalfCount);
+		Params.MaxDistance = std::max(Params.Range * 1.25f, Params.Spacing * 16.0f);
+		Params.AxisLength = std::max(Params.Range, Params.Spacing * 10.0f);
+		return Params;
+	}
+
+	FGridRenderSettings SanitizeGridSettings(FGridRenderSettings Settings)
+	{
+		Settings.LineThickness = std::clamp(Settings.LineThickness, 0.0f, 8.0f);
+		Settings.MajorLineThickness = std::clamp(Settings.MajorLineThickness, 0.0f, 12.0f);
+		Settings.MajorLineInterval = std::clamp<int32>(Settings.MajorLineInterval, 1, 100);
+		Settings.MinorIntensity = std::clamp(Settings.MinorIntensity, 0.0f, 2.0f);
+		Settings.MajorIntensity = std::clamp(Settings.MajorIntensity, 0.0f, 2.0f);
+		Settings.AxisThickness = std::clamp(Settings.AxisThickness, 0.0f, 12.0f);
+		Settings.AxisIntensity = std::clamp(Settings.AxisIntensity, 0.0f, 2.0f);
+		return Settings;
+	}
+
+	FGridShaderConstants MakeGridShaderConstants(
+		const FGridDrawParams& Params,
+		const FGridRenderSettings& Settings,
+		bool bDrawGrid,
+		bool bDrawAxis)
+	{
+		FGridShaderConstants Constants;
+		Constants.GridSize = Params.Spacing;
+		Constants.Range = Params.Range;
+		Constants.LineThickness = Settings.LineThickness;
+		Constants.MajorLineInterval = static_cast<float>(Settings.MajorLineInterval);
+		Constants.MajorLineThickness = Settings.MajorLineThickness;
+		Constants.MinorIntensity = bDrawGrid ? Settings.MinorIntensity : 0.0f;
+		Constants.MajorIntensity = bDrawGrid ? Settings.MajorIntensity : 0.0f;
+		Constants.MaxDistance = Params.MaxDistance;
+		Constants.AxisThickness = bDrawAxis ? Settings.AxisThickness : 0.0f;
+		Constants.AxisLength = Params.AxisLength;
+		Constants.AxisIntensity = bDrawAxis ? Settings.AxisIntensity : 0.0f;
+		Constants.GridCenter = FVector4(Params.Center.X, Params.Center.Y, Params.Center.Z, 0.0f);
+		Constants.GridAxisA = FVector4(Params.Plane.Axis0.X, Params.Plane.Axis0.Y, Params.Plane.Axis0.Z, 0.0f);
+		Constants.GridAxisB = FVector4(Params.Plane.Axis1.X, Params.Plane.Axis1.Y, Params.Plane.Axis1.Z, 0.0f);
+		Constants.AxisColorA = Params.Plane.AxisColor0;
+		Constants.AxisColorB = Params.Plane.AxisColor1;
+		Constants.AxisColorN = GridAxisColor(2);
+		return Constants;
+	}
 }
 
 // ============================================================
@@ -61,10 +399,12 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 	PassRenderStateTable = InPassRenderStateTable;
 
 	EditorLines.Create(InDevice);
+	ForegroundEditorLines.Create(InDevice);
 	GridLines.Create(InDevice);
 	FontGeometry.Create(InDevice);
 	ScreenQuads.Create(InDevice);
 
+	GridCB.Create(InDevice, sizeof(FGridShaderConstants));
 	FogCB.Create(InDevice, sizeof(FFogConstants));
 	FadeCB.Create(InDevice, sizeof(FFadeConstants));
 	OutlineCB.Create(InDevice, sizeof(FOutlinePostProcessConstants));
@@ -76,16 +416,18 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 void FDrawCommandBuilder::Release()
 {
 	EditorLines.Release();
+	ForegroundEditorLines.Release();
 	GridLines.Release();
 	FontGeometry.Release();
 	ScreenQuads.Release();
 
-	for (FConstantBuffer& CB : PerObjectCBPool)
+	for (auto& Pair : PerObjectCBMap)
 	{
-		CB.Release();
+		Pair.second.Release();
 	}
-	PerObjectCBPool.clear();
+	PerObjectCBMap.clear();
 
+	GridCB.Release();
 	FogCB.Release();
 	FadeCB.Release();
 	OutlineCB.Release();
@@ -99,14 +441,13 @@ void FDrawCommandBuilder::Release()
 // ============================================================
 void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame, uint32 MaxProxyCount)
 {
+	(void)MaxProxyCount;
+
 	DrawCommandList.Reset();
 	CollectViewMode = Frame.RenderOptions.ViewMode;
 	bHasSelectionMaskCommands = false;
-
-	// PerObjectCBPool 미리 할당 — Collect 도중 resize로 FDrawCommand.PerObjectCB
-	// 포인터가 무효화되는 것을 방지
-	if (MaxProxyCount > 0)
-		EnsurePerObjectCBPoolCapacity(MaxProxyCount);
+	EditorLines.Clear();
+	ForegroundEditorLines.Clear();
 
 	// 동적 지오메트리 초기화
 	EditorLines.Clear();
@@ -149,7 +490,7 @@ void FDrawCommandBuilder::ApplyMaterialRenderState(FDrawCommandRenderState& OutS
 // ============================================================
 // BuildCommandForProxy — Proxy → FDrawCommand 변환
 // ============================================================
-void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy, ERenderPass Pass)
+void FDrawCommandBuilder::BuildCommandForProxy(const FScene& Scene, const FPrimitiveSceneProxy& Proxy, ERenderPass Pass)
 {
 	if (!Proxy.GetMeshBuffer() || !Proxy.GetMeshBuffer()->IsValid()) return;
 
@@ -158,13 +499,7 @@ void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy
 	// PassState → RenderState 변환 (Wireframe 오버라이드 포함)
 	const FDrawCommandRenderState BaseRenderState = PassRenderStateTable->ToDrawCommandState(Pass, CollectViewMode);
 
-	// PerObjectCB 업데이트
-	FConstantBuffer* PerObjCB = GetPerObjectCBForProxy(Proxy);
-	if (PerObjCB && Proxy.NeedsPerObjectCBUpload())
-	{
-		PerObjCB->Update(Ctx, &Proxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
-		Proxy.ClearPerObjectCBDirty();
-	}
+	FConstantBuffer* PerObjCB = UploadPerObjectCBIfNeeded(Scene, Proxy);
 
 	// SelectionMask 커맨드 존재 추적
 	if (Pass == ERenderPass::SelectionMask)
@@ -226,7 +561,7 @@ void FDrawCommandBuilder::BuildCommandForProxy(const FPrimitiveSceneProxy& Proxy
 // ============================================================
 // BuildDecalCommandForReceiver
 // ============================================================
-void FDrawCommandBuilder::BuildDecalCommandForReceiver(const FPrimitiveSceneProxy& ReceiverProxy, const FPrimitiveSceneProxy& DecalProxy)
+void FDrawCommandBuilder::BuildDecalCommandForReceiver(const FScene& Scene, const FPrimitiveSceneProxy& ReceiverProxy, const FPrimitiveSceneProxy& DecalProxy)
 {
 	if (!ReceiverProxy.GetMeshBuffer() || !ReceiverProxy.GetMeshBuffer()->IsValid()) return;
 
@@ -238,12 +573,7 @@ void FDrawCommandBuilder::BuildDecalCommandForReceiver(const FPrimitiveSceneProx
 	const ERenderPass DecalPass = DecalProxy.GetRenderPass();
 	const FDrawCommandRenderState BaseRenderState = PassRenderStateTable->ToDrawCommandState(DecalPass, CollectViewMode);
 
-	FConstantBuffer* ReceiverPerObjCB = GetPerObjectCBForProxy(ReceiverProxy);
-	if (ReceiverPerObjCB && ReceiverProxy.NeedsPerObjectCBUpload())
-	{
-		ReceiverPerObjCB->Update(Ctx, &ReceiverProxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
-		ReceiverProxy.ClearPerObjectCBDirty();
-	}
+	FConstantBuffer* ReceiverPerObjCB = UploadPerObjectCBIfNeeded(Scene, ReceiverProxy);
 
 	// Decal Material의 CB 업로드 (PerShaderOverride 포함)
 	DecalMat->FlushDirtyBuffers(CachedDevice, Ctx);
@@ -340,9 +670,9 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 			}
 		}
 		else if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::Decal))
-			BuildDecalCommands(Proxy, Frame, Output);
+			BuildDecalCommands(Scene, Proxy, Frame, Output);
 		else
-			BuildMeshCommands(Proxy);
+			BuildMeshCommands(Scene, Proxy);
 
 		if (bSelectionVisuals && Proxy->IsSelected())
 			BuildSelectionCommands(Proxy, bShowBoundingVolume, Scene);
@@ -352,7 +682,7 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 // ============================================================
 // BuildDecalCommands — Decal → Receiver 순회 + 커맨드 생성
 // ============================================================
-void FDrawCommandBuilder::BuildDecalCommands(FPrimitiveSceneProxy* Proxy, const FFrameContext& Frame, const FCollectOutput& Output)
+void FDrawCommandBuilder::BuildDecalCommands(FScene& Scene, FPrimitiveSceneProxy* Proxy, const FFrameContext& Frame, const FCollectOutput& Output)
 {
 	FDecalSceneProxy* DecalProxy = static_cast<FDecalSceneProxy*>(Proxy);
 
@@ -366,19 +696,19 @@ void FDrawCommandBuilder::BuildDecalCommands(FPrimitiveSceneProxy* Proxy, const 
 		if (ReceiverProxy->HasProxyFlag(EPrimitiveProxyFlags::PerViewportUpdate))
 			ReceiverProxy->UpdatePerViewport(Frame);
 
-		BuildDecalCommandForReceiver(*ReceiverProxy, *DecalProxy);
+		BuildDecalCommandForReceiver(Scene, *ReceiverProxy, *DecalProxy);
 	}
 }
 
 // ============================================================
 // BuildMeshCommands — 일반 메시 (PreDepth + 메인 패스)
 // ============================================================
-void FDrawCommandBuilder::BuildMeshCommands(const FPrimitiveSceneProxy* Proxy)
+void FDrawCommandBuilder::BuildMeshCommands(FScene& Scene, const FPrimitiveSceneProxy* Proxy)
 {
 	if (Proxy->GetRenderPass() == ERenderPass::Opaque)
-		BuildCommandForProxy(*Proxy, ERenderPass::PreDepth);
+		BuildCommandForProxy(Scene, *Proxy, ERenderPass::PreDepth);
 
-	BuildCommandForProxy(*Proxy, Proxy->GetRenderPass());
+	BuildCommandForProxy(Scene, *Proxy, Proxy->GetRenderPass());
 }
 
 // ============================================================
@@ -387,7 +717,7 @@ void FDrawCommandBuilder::BuildMeshCommands(const FPrimitiveSceneProxy* Proxy)
 void FDrawCommandBuilder::BuildSelectionCommands(FPrimitiveSceneProxy* Proxy, bool bShowBoundingVolume, FScene& Scene)
 {
 	if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::SupportsOutline))
-		BuildCommandForProxy(*Proxy, ERenderPass::SelectionMask);
+		BuildCommandForProxy(Scene, *Proxy, ERenderPass::SelectionMask);
 
 	if (bShowBoundingVolume && Proxy->HasProxyFlag(EPrimitiveProxyFlags::ShowAABB))
 		Scene.AddDebugAABB(Proxy->GetCachedBounds().Min, Proxy->GetCachedBounds().Max, FColor::White());
@@ -418,20 +748,13 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 	{
 		EditorLines.AddBillboardLine(Line.Start, Line.End, Line.Color.ToVector4(), Frame, Frame.RenderOptions.DebugLineThickness);
 	}
+	for (const auto& Line : Scene->GetForegroundDebugLines())
+	{
+		ForegroundEditorLines.AddBillboardLine(Line.Start, Line.End, Line.Color.ToVector4(), Frame, Frame.RenderOptions.DebugLineThickness);
+	}
 
 	// --- Grid 패스: 월드 그리드 + 축 ---
-	if (Scene->HasGrid())
-	{
-		const FVector CameraPos = Frame.View.GetInverseFast().GetLocation();
-		FVector CameraFwd = Frame.CameraRight.Cross(Frame.CameraUp);
-		CameraFwd.Normalize();
-
-		GridLines.AddWorldHelpers(
-			Frame.RenderOptions.ShowFlags,
-			Scene->GetGridSpacing(),
-			Scene->GetGridHalfLineCount(),
-			CameraPos, CameraFwd, Frame.IsFixedOrtho());
-	}
+	// Pixel shader 기반 EditorGrid 패스가 평면 축과 법선 축을 모두 처리합니다.
 
 	// --- ScreenText 패스: 스크린 공간 텍스트 ---
 	for (const auto& Quad : Scene->GetScreenQuads())
@@ -479,6 +802,7 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 void FDrawCommandBuilder::BuildDynamicDrawCommands(const FFrameContext& Frame, const FScene* Scene)
 {
 	EViewMode ViewMode = Frame.RenderOptions.ViewMode;
+	BuildEditorGridCommand(Frame, Scene);
 	BuildEditorLineCommands(ViewMode);
 	BuildPostProcessCommands(Frame, Scene);
 	BuildUICommands(ViewMode);
@@ -504,14 +828,58 @@ void FDrawCommandBuilder::EmitLineCommand(FLineGeometry& Lines, FShader* Shader,
 }
 
 // ============================================================
+// BuildEditorGridCommand — pixel shader 기반 에디터 그리드
+// ============================================================
+void FDrawCommandBuilder::BuildEditorGridCommand(const FFrameContext& Frame, const FScene* Scene)
+{
+	if (!Scene || !Scene->HasGrid())
+	{
+		return;
+	}
+
+	const FShowFlags& ShowFlags = Frame.RenderOptions.ShowFlags;
+	if (!ShowFlags.bGrid && !ShowFlags.bWorldAxis)
+	{
+		return;
+	}
+
+	FShader* GridShader = FShaderManager::Get().GetOrCreate(EShaderPath::Grid);
+	if (!GridShader)
+	{
+		return;
+	}
+
+	const FGridDrawParams Params = BuildGridDrawParams(Frame, Scene);
+	const FGridRenderSettings Settings = SanitizeGridSettings(Frame.RenderOptions.GridRenderSettings);
+	const FGridShaderConstants Constants = MakeGridShaderConstants(
+		Params,
+		Settings,
+		ShowFlags.bGrid,
+		ShowFlags.bWorldAxis);
+
+	GridCB.Update(CachedContext, &Constants, sizeof(Constants));
+
+	FDrawCommand& Cmd = DrawCommandList.AddCommand();
+	Cmd.Pass = ERenderPass::EditorGrid;
+	Cmd.Shader = GridShader;
+	Cmd.RenderState = PassRenderStateTable->ToDrawCommandState(ERenderPass::EditorGrid, Frame.RenderOptions.ViewMode);
+	Cmd.Buffer.VertexCount = ShowFlags.bWorldAxis ? 18 : 6;
+	Cmd.Bindings.PerShaderCB[0] = &GridCB;
+	Cmd.BuildSortKey();
+}
+
+// ============================================================
 // BuildEditorLineCommands — EditorLines + GridLines
 // ============================================================
 void FDrawCommandBuilder::BuildEditorLineCommands(EViewMode ViewMode)
 {
 	FShader* EditorShader = FShaderManager::Get().GetOrCreate(EShaderPath::Editor);
 	const FDrawCommandRenderState EditorLinesRS = PassRenderStateTable->ToDrawCommandState(ERenderPass::EditorLines, ViewMode);
+	FDrawCommandRenderState ForegroundLinesRS = EditorLinesRS;
+	ForegroundLinesRS.DepthStencil = EDepthStencilState::NoDepth;
 
 	EmitLineCommand(EditorLines, EditorShader, EditorLinesRS);
+	EmitLineCommand(ForegroundEditorLines, EditorShader, ForegroundLinesRS);
 	EmitLineCommand(GridLines, EditorShader, EditorLinesRS);
 }
 
@@ -801,29 +1169,40 @@ void FDrawCommandBuilder::BuildFontCommands(EViewMode ViewMode)
 // ============================================================
 // PerObjectCB 풀 관리
 // ============================================================
-void FDrawCommandBuilder::EnsurePerObjectCBPoolCapacity(uint32 RequiredCount)
-{
-	if (PerObjectCBPool.size() >= RequiredCount)
-	{
-		return;
-	}
-
-	const size_t OldCount = PerObjectCBPool.size();
-	PerObjectCBPool.resize(RequiredCount);
-
-	for (size_t Index = OldCount; Index < PerObjectCBPool.size(); ++Index)
-	{
-		PerObjectCBPool[Index].Create(CachedDevice, sizeof(FPerObjectConstants));
-	}
-}
-
-FConstantBuffer* FDrawCommandBuilder::GetPerObjectCBForProxy(const FPrimitiveSceneProxy& Proxy)
+FConstantBuffer* FDrawCommandBuilder::GetPerObjectCBForProxy(const FScene& Scene, const FPrimitiveSceneProxy& Proxy)
 {
 	if (Proxy.GetProxyId() == UINT32_MAX)
 	{
 		return nullptr;
 	}
 
-	EnsurePerObjectCBPoolCapacity(Proxy.GetProxyId() + 1);
-	return &PerObjectCBPool[Proxy.GetProxyId()];
+	const FPerObjectCBKey Key{ &Scene, Proxy.GetProxyId() };
+	auto It = PerObjectCBMap.find(Key);
+	if (It != PerObjectCBMap.end())
+	{
+		return &It->second;
+	}
+
+	FConstantBuffer& NewBuffer = PerObjectCBMap[Key];
+	NewBuffer.Create(CachedDevice, sizeof(FPerObjectConstants));
+	NewBuffer.Update(CachedContext, &Proxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
+	Proxy.ClearPerObjectCBDirty();
+	return &NewBuffer;
+}
+
+FConstantBuffer* FDrawCommandBuilder::UploadPerObjectCBIfNeeded(const FScene& Scene, const FPrimitiveSceneProxy& Proxy)
+{
+	FConstantBuffer* PerObjCB = GetPerObjectCBForProxy(Scene, Proxy);
+	if (!PerObjCB)
+	{
+		return nullptr;
+	}
+
+	if (Proxy.NeedsPerObjectCBUpload())
+	{
+		PerObjCB->Update(CachedContext, &Proxy.GetPerObjectConstants(), sizeof(FPerObjectConstants));
+		Proxy.ClearPerObjectCBDirty();
+	}
+
+	return PerObjCB;
 }

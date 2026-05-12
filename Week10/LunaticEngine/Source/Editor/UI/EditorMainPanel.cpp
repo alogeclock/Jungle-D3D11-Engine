@@ -267,11 +267,13 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	StatWidget.Initialize(InEditorEngine);
 	AssetEditorWidget.Initialize(InEditorEngine);
 	ContentBrowserWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice());
+	SkeletalMeshEditorWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice(), InWindow);
 	ShadowMapDebugWidget.Initialize(InEditorEngine);
 }
 
 void FEditorMainPanel::Release()
 {
+	SkeletalMeshEditorWidget.Shutdown();
 	AssetEditorWidget.Shutdown();
 	ConsoleWidget.Shutdown();
 	ImGui_ImplDX11_Shutdown();
@@ -389,6 +391,16 @@ void FEditorMainPanel::Render(float DeltaTime)
 	{
 		SCOPE_STAT_CAT("AssetEditorWidget.Render", "5_UI");
 		AssetEditorWidget.Render(DeltaTime);
+	}
+
+	if (!bHideEditorWindows && SkeletalMeshEditorWidget.IsOpen())
+	{
+		SCOPE_STAT_CAT("SkeletalMeshEditorWidget.Render", "5_UI");
+		SkeletalMeshEditorWidget.Render(DeltaTime);
+	}
+	else
+	{
+		SkeletalMeshEditorWidget.ClearInputCapture();
 	}
 
 	if (!bHideEditorWindows && Settings.UI.bShadowMapDebug)
@@ -1095,6 +1107,7 @@ void FEditorMainPanel::Update()
 	bool bWantMouse = IO.WantCaptureMouse;
 	bool bWantKeyboard = IO.WantCaptureKeyboard || bShowShortcutOverlay || bShowCreditsOverlay;
 	const bool bAssetEditorCapturingInput = AssetEditorWidget.IsCapturingInput();
+	const bool bPreviewViewportCapturingInput = !bHideEditorWindows && SkeletalMeshEditorWidget.IsCapturingInput();
 	const bool bPIEPopupOpen = EditorEngine && EditorEngine->IsScoreSavePopupOpen();
 	if (bPIEPopupOpen)
 	{
@@ -1111,6 +1124,14 @@ void FEditorMainPanel::Update()
 			{
 				bWantKeyboard = false;
 			}
+		}
+	}
+	else if (!bPIEPopupOpen && bPreviewViewportCapturingInput)
+	{
+		bWantMouse = false;
+		if (!IO.WantTextInput && !bShowShortcutOverlay && !bShowCreditsOverlay)
+		{
+			bWantKeyboard = false;
 		}
 	}
 	FInputManager::Get().SetGuiCaptureOverride(bWantMouse, bWantKeyboard, IO.WantTextInput);
