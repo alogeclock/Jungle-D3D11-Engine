@@ -158,7 +158,7 @@ void WriteSliceVisualization(uint2 tileCoord)
             );
 
             // 뷰 → 월드 변환
-            float3 worldPos = mul(float4(viewPos, 1.0), InvView).xyz;
+            float3 worldPos = mul(InvView, float4(viewPos, 1.0)).xyz;
 
             RWVisBuffer[baseOffset + b * 4 + c] = float4(worldPos, 1.0);
         }
@@ -222,7 +222,7 @@ void mainCS(uint3 groupID : SV_GroupID, uint3 dispatchID:SV_DispatchThreadID, ui
     {
         FLightInfo light = AllLights[i];
         Sphere s;
-        s.position = mul(float4(light.Position, 1), View).xyz;
+        s.position = mul(View, float4(light.Position, 1)).xyz;
         s.radius = light.AttenuationRadius;
 
         // 광원의 bounding sphere의 Min, Max

@@ -39,7 +39,7 @@ float3 NDCToViewSpace(float2 ndc, float viewDepth)
     else
     {
         float4 clipPos = float4(ndc.x, ndc.y, 1.0f, 1.0f);
-        float4 viewPos = mul(clipPos, InvProj);
+        float4 viewPos = mul(InvProj, clipPos);
         viewPos /= viewPos.w;
         return viewPos.xyz / viewPos.z * viewDepth;
     }
@@ -161,7 +161,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
         for (uint i = threadIndex; i < totalLights; i += CLUSTER_LIGHT_CULLING_THREADS)
         {
             FLightInfo light = gLights[i];
-            float4 viewPos = mul(float4(light.Position, 1.0f), View);
+            float4 viewPos = mul(View, float4(light.Position, 1.0f));
             if (SphereOverlapsClusterPlanes(viewPos.xyz, light.AttenuationRadius))
             {
                 uint slot;

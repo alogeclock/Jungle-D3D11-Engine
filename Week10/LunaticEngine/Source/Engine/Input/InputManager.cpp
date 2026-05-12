@@ -12,13 +12,27 @@ void FInputManager::ProcessMessage(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LP
 	switch (Msg)
 	{
 	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
 		if (WParam < MAX_KEYS)
 			EventQueue.push_back({ EInputEventType::KeyDown, static_cast<int32>(WParam) });
 		break;
 
 	case WM_KEYUP:
+	case WM_SYSKEYUP:
 		if (WParam < MAX_KEYS)
 			EventQueue.push_back({ EInputEventType::KeyUp, static_cast<int32>(WParam) });
+		break;
+
+	case WM_KILLFOCUS:
+	case WM_CANCELMODE:
+		ResetAllStates();
+		break;
+
+	case WM_ACTIVATEAPP:
+		if (!WParam)
+		{
+			ResetAllStates();
+		}
 		break;
 
 	case WM_LBUTTONDOWN:
@@ -152,6 +166,33 @@ void FInputManager::Tick()
 		}
 	}
 	EventQueue.clear();
+
+	// Modifier key-up messages can be swallowed by system/GUI handling paths
+	// (Alt uses WM_SYSKEY*, and ImGui may consume focused text input events).
+	// Keep the held-state authoritative from the OS so stale modifiers cannot
+	// leak into viewport navigation.
+	auto SyncPhysicalKey = [this](int32 Key)
+	{
+		if (Key >= 0 && Key < MAX_KEYS)
+		{
+			KeyState[Key] = (GetAsyncKeyState(Key) & 0x8000) != 0;
+		}
+	};
+
+	SyncPhysicalKey(VK_LCONTROL);
+	SyncPhysicalKey(VK_RCONTROL);
+	SyncPhysicalKey(VK_CONTROL);
+	KeyState[VK_CONTROL] = KeyState[VK_LCONTROL] || KeyState[VK_RCONTROL] || ((GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0);
+
+	SyncPhysicalKey(VK_LMENU);
+	SyncPhysicalKey(VK_RMENU);
+	SyncPhysicalKey(VK_MENU);
+	KeyState[VK_MENU] = KeyState[VK_LMENU] || KeyState[VK_RMENU] || ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0);
+
+	SyncPhysicalKey(VK_LSHIFT);
+	SyncPhysicalKey(VK_RSHIFT);
+	SyncPhysicalKey(VK_SHIFT);
+	KeyState[VK_SHIFT] = KeyState[VK_LSHIFT] || KeyState[VK_RSHIFT] || ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
 
 	// Mouse Wheel
 	MouseWheelDelta = PendingWheelDelta;

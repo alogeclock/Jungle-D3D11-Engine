@@ -1,7 +1,7 @@
 // GPU Occlusion Test — AABB visibility against Hi-Z mip chain
 // Dispatched with ceil(NumAABBs / 64) groups
 
-#pragma pack_matrix(row_major)
+#pragma pack_matrix(column_major)
 
 struct AABB
 {
@@ -45,7 +45,7 @@ void CSOcclusionTest(uint3 DTid : SV_DispatchThreadID)
     float3 center = (aabb.Min + aabb.Max) * 0.5;
     float radius = length(aabb.Max - center);
 
-    float4 centerClip = mul(float4(center, 1.0), ViewProj);
+    float4 centerClip = mul(ViewProj, float4(center, 1.0));
 
     if (centerClip.w > 0.0001)
     {
@@ -119,7 +119,7 @@ void CSOcclusionTest(uint3 DTid : SV_DispatchThreadID)
     [unroll]
     for (int i = 0; i < 8; i++)
     {
-        float4 clip = mul(float4(corners[i], 1.0), ViewProj);
+        float4 clip = mul(ViewProj, float4(corners[i], 1.0));
 
         if (clip.w <= 0.0001)
         {

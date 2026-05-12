@@ -45,11 +45,11 @@ uint DepthToClusterSlice(float viewDepth)
 
 uint ComputeClusterIndex(float4 pixelPos, float2 uv)
 {
-    float depth = SceneDepth.Load(int3(pixelPos.xy, 0));
+    float depth = SceneDepthTexture.Load(int3(pixelPos.xy, 0));
     float2 ndc = uv * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f);
 
     float4 clipPos = float4(ndc, depth, 1.0f);
-    float4 viewPos = mul(clipPos, InvProj);
+    float4 viewPos = mul(InvProj, clipPos);
     viewPos /= max(abs(viewPos.w), 0.00001f);
 
     uint tileX = min((uint) (pixelPos.x / CullState.ScreenWidth * CullState.ClusterX), CullState.ClusterX - 1);
@@ -63,7 +63,7 @@ uint ComputeClusterIndex(float4 pixelPos, float2 uv)
 
 float4 PS(PS_Input_UV input) : SV_TARGET
 {
-    float depth = SceneDepth.Load(int3(input.position.xy, 0));
+    float depth = SceneDepthTexture.Load(int3(input.position.xy, 0));
     if (depth <= 0.00001f)
         discard;
 

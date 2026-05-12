@@ -93,6 +93,8 @@ struct FFrameContext
 	void SetRenderOptions(const FViewportRenderOptions& InOptions)
 	{
 		RenderOptions = InOptions;
+	//showflag override
+		FShowFlags::ApplyViewMode(RenderOptions.ViewMode, RenderOptions.ShowFlags);
 	}
 
 	void ClearViewportResources()

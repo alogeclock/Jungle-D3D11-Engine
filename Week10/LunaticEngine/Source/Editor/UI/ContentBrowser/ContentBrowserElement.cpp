@@ -5,7 +5,7 @@
 #include "Platform/Paths.h"
 #include "Core/Notification.h"
 #include "Materials/MaterialManager.h"
-#include "Mesh/ObjImporter.h"
+#include "Mesh/Importer/ObjImporter.h"
 #include "Mesh/FbxImporter.h"
 #include "Mesh/ObjManager.h"
 #include "Mesh/StaticMesh.h"
@@ -301,25 +301,8 @@ void MaterialElement::RenderDetail()
 
 void MtlElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 {
-	TArray<FString> GeneratedMatPaths;
 	const FString RelativeMtlPath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
-
-	if (FObjImporter::ImportMtl(RelativeMtlPath, &GeneratedMatPaths))
-	{
-		FMaterialManager::Get().ScanMaterialAssets();
-		Context.bIsNeedRefresh = true;
-
-		FString Message = "Imported MTL: " + RelativeMtlPath;
-		if (!GeneratedMatPaths.empty())
-		{
-			Message += " (" + std::to_string(GeneratedMatPaths.size()) + " mat)";
-		}
-		FNotificationManager::Get().AddNotification(Message, ENotificationType::Success, 3.0f);
-	}
-	else
-	{
-		FNotificationManager::Get().AddNotification("Failed to import MTL: " + RelativeMtlPath, ENotificationType::Error, 5.0f);
-	}
+	FNotificationManager::Get().AddNotification("MTL import is no longer supported directly.", ENotificationType::Error, 4.0f);
 }
 
 
