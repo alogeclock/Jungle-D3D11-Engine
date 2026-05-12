@@ -319,6 +319,7 @@ void USkinnedMeshComponent::Serialize(FArchive& Ar)
 	Ar << bCPUSkinning;
 	Ar << bHideSkin;
 	Ar << bDisplayBones;
+	Ar << BoundsScale;
 }
 
 void USkinnedMeshComponent::PostDuplicate()
