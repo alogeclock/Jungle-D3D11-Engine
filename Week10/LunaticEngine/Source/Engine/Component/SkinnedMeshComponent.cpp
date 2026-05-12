@@ -305,7 +305,6 @@ void USkinnedMeshComponent::Serialize(FArchive& Ar)
 	Ar << SkeletalMeshPath;
 	Ar << MaterialSlots;
 	Ar << bCPUSkinning;
-	Ar << bDisplayBones;
 	Ar << bHideSkin;
 }
 

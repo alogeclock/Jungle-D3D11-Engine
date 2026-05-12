@@ -262,7 +262,6 @@ void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& 
 
 	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshPath });
 	OutProps.push_back({ "CPU Skinning", EPropertyType::Bool, &bCPUSkinning });
-	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
 	OutProps.push_back({ "Hide Skin", EPropertyType::Bool, &bHideSkin });
 	OutProps.push_back({ "Force Ref Pose", EPropertyType::Bool, &bForceRefPose });
 	OutProps.push_back({ "Enable Skeleton Update", EPropertyType::Bool, &bEnableSkeletonUpdate });

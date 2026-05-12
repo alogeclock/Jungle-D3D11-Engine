@@ -68,7 +68,6 @@ public:
 	bool IsSkinningDirty() const { return bSkinningDirty; }
 	bool IsPoseDirty() const { return bPoseDirty; }
 	bool IsSkinnedBoundsDirty() const { return bBoundsDirty; }
-	bool ShouldDisplayBones() const { return bDisplayBones; }
 	bool ShouldHideSkin() const { return bHideSkin; }
 
 	// 본 포즈 파이프라인 invariant 검증.
@@ -87,7 +86,6 @@ protected:
 	bool bSkinningDirty = true;
 	bool bPoseDirty = true;
 	bool bBoundsDirty = true;
-	bool bDisplayBones = false;
 	bool bHideSkin = false;
 
 	FVector CachedLocalCenter = { 0, 0, 0 };

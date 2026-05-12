@@ -11,6 +11,7 @@ class FEditorDetailsWidget : public FEditorWidget
 {
 public:
 	virtual void Render(float DeltaTime) override;
+	void RenderComponentDetails(UActorComponent* Component, bool bTrackSceneChanges = true);
 	void SetShowEditorOnlyComponents(bool bEnable) { bShowEditorOnlyComponents = bEnable; }
 	bool IsShowingEditorOnlyComponents() const { return bShowEditorOnlyComponents; }
 
@@ -50,6 +51,7 @@ private:
 	bool bShowEditorOnlyComponents = false;
 	bool bEditingActorName = false;
 	bool bSelectionLocked = false;
+	bool bTrackPropertyChanges = true;
 	char ActorNameBuffer[256] = {};
 	char DetailSearchBuffer[128] = {};
 	FString ActiveSectionFilter = "All";

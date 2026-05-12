@@ -2,6 +2,7 @@
 
 #include "AssetPreviewWidget.h"
 #include "Core/CoreTypes.h"
+#include "Editor/UI/EditorDetailsWidget.h"
 #include "Editor/Viewport/Preview/SkeletalMeshPreviewViewportClient.h"
 
 class FViewport;
@@ -30,12 +31,14 @@ private:
 	void UnregisterPreviewClient();
 	void DrawBoneHierarchyPanel();
 	void DrawBoneDetailsPanel();
+	void DrawPreviewComponentDetailsPanel();
 	void DrawBoneTreeNode(const FSkeleton& Skeleton, int32 BoneIndex);
 	void HandleViewportBoneSelection();
 	void ValidateSelectedBone();
 
 private:
 	FSkeletalMeshPreviewViewportClient ViewportClient;
+	FEditorDetailsWidget ComponentDetailsWidget;
 	FViewport* Viewport = nullptr;
 	UEditorEngine* Engine = nullptr;
 	USkeletalMesh* EditingMesh = nullptr;
