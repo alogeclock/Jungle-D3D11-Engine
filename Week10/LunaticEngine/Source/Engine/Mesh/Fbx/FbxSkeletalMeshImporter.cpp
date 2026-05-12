@@ -185,19 +185,50 @@ bool FFbxSkeletalMeshImporter::Import(
 
     FFbxSkeletonImporter::InitializeBoneBindPoseFromSceneNodes(BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton);
 
-    TArray<bool> AppliedClusterBindPose;
-    AppliedClusterBindPose.resize(OutMesh.Skeleton.Bones.size());
+    TArray<bool> AppliedPoseBindMask;
+    AppliedPoseBindMask.resize(OutMesh.Skeleton.Bones.size(), false);
 
-    FFbxSkeletonImporter::ApplyBindPoseFromFbxPose(Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, AppliedClusterBindPose, BuildContext);
+    TArray<bool> AppliedClusterBindMask;
+    AppliedClusterBindMask.resize(OutMesh.Skeleton.Bones.size(), false);
 
+    FFbxSkeletonImporter::ApplyBindPoseFromFbxPose(
+        Scene,
+        BoneNodeToIndex,
+        ReferenceMeshBindInverse,
+        OutMesh.Skeleton,
+        AppliedPoseBindMask,
+        BuildContext
+    );
+
+    // Reference LOD의 cluster link matrix를 weighted bone의 최우선 bind source로 사용한다.
     FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(
         ReferenceLODNodes,
         BoneNodeToIndex,
         ReferenceMeshBindInverse,
         OutMesh.Skeleton,
-        &AppliedClusterBindPose
+        &AppliedClusterBindMask,
+        true
     );
-    FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(SkinnedMeshNodes, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, &AppliedClusterBindPose);
+
+    // 다른 LOD의 cluster는 reference LOD에 없던 bone만 보완한다.
+    FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(
+        SkinnedMeshNodes,
+        BoneNodeToIndex,
+        ReferenceMeshBindInverse,
+        OutMesh.Skeleton,
+        &AppliedClusterBindMask,
+        false
+    );
+
+    // cluster가 없는 helper/end/IK/attachment bone은 pose global을 그대로 믿지 않는다.
+    FFbxSkeletonImporter::FinalizeNonClusterBoneBindPose(
+        Scene,
+        BoneNodeToIndex,
+        ReferenceMeshBindInverse,
+        AppliedClusterBindMask,
+        OutMesh.Skeleton,
+        BuildContext
+    );
 
     FFbxSkeletonImporter::RecomputeLocalBindPose(OutMesh.Skeleton);
 
