@@ -401,6 +401,7 @@ void USkinnedMeshComponent::PostEditProperty(const char* PropertyName)
 
 void USkinnedMeshComponent::RefreshBoneTransforms()
 {
+
 	// base는 fallback으로 RefPose만 채운다.
 	// 진짜 애니메이션은 USkeletalMeshComponent가 override해서 채움.
 	if (!SkeletalMesh) return;
@@ -418,6 +419,21 @@ void USkinnedMeshComponent::RefreshBoneTransforms()
 			BoneSpaceTransforms.push_back(FTransform(M.GetLocation(), M.ToQuat(), M.GetScale()));
 		}
 	}
+	TArray<bool> bBoneUpdated(N, false);
+
+	for (int32 BoneIndex = 0; BoneIndex < N; BoneIndex++)
+	{
+		const int32 ParentIndex = Sk.Bones[BoneIndex].ParentIndex;
+		FMatrix ParentCS = FMatrix::Identity;
+
+		if (ParentIndex >= 0)
+		{
+			ParentCS = ComponentSpaceMatrices[ParentIndex];
+		}
+		ComponentSpaceMatrices[BoneIndex] = BoneSpaceTransforms[BoneIndex].ToMatrix() * ParentCS;
+		SkinningMatrices[BoneIndex] = Sk.Bones[BoneIndex].InverseBindPose *ComponentSpaceMatrices[BoneIndex];
+	}
+
 	FillComponentSpaceTransforms();
 }
 

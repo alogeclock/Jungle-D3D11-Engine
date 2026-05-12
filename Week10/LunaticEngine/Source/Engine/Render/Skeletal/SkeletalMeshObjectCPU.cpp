@@ -53,6 +53,7 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 
 		}
 
+
 		if (TotalWeight <= 0.0f)
 		{
 			Pos = In.Pos;
@@ -73,6 +74,19 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 		Out.Color = In.Color;
 		Out.UV = In.UV[0];
 		Out.Tangent = In.Tangent;
+		ID3D11DeviceContext* Context = nullptr;
+		Device->GetImmediateContext(&Context);
+		FVertexBuffer& VB = MeshBuffer->GetVertexBuffer();
+		uint32 TotalSize = static_cast<uint32>(SkinnedMeshData.Vertices.size() * sizeof(FVertexPNCTT));
+		if (!VB.GetBuffer())
+		{
+			VB.Create(Device, SkinnedMeshData.Vertices.data(), (uint32)SkinnedMeshData.Vertices.size(), TotalSize, sizeof(FVertexPNCTT), true);
+		}
+		else
+		{
+			VB.Update(Context, SkinnedMeshData.Vertices.data(), TotalSize);
+		}
+		Context->Release();
 	}
 	MeshBuffer->Create(Device, SkinnedMeshData);
 }

@@ -32,7 +32,9 @@ FVertexBuffer& FVertexBuffer::operator=(FVertexBuffer&& Other) noexcept
 	return *this;
 }
 
-void FVertexBuffer::Create(ID3D11Device* InDevice, const void* InData, uint32 InVertexCount, uint32 InByteWidth, uint32 InStride)
+
+
+void FVertexBuffer::Create(ID3D11Device* InDevice, const void* InData, uint32 InVertexCount, uint32 InByteWidth, uint32 InStride, bool bIsDynamic)
 {
 	Release();
 
@@ -45,12 +47,13 @@ void FVertexBuffer::Create(ID3D11Device* InDevice, const void* InData, uint32 In
 
 	D3D11_BUFFER_DESC vertexBufferDesc = {};
 	vertexBufferDesc.ByteWidth = InByteWidth;
-	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	vertexBufferDesc.Usage = bIsDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = bIsDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 
 	D3D11_SUBRESOURCE_DATA vertexBufferSRD = { InData };
 
-	HRESULT hr = InDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferSRD, &Buffer);
+	HRESULT hr = InDevice->CreateBuffer(&vertexBufferDesc, InData ? &vertexBufferSRD : nullptr , &Buffer);
 	if (FAILED(hr))
 	{
 		VertexCount = 0;
@@ -61,6 +64,18 @@ void FVertexBuffer::Create(ID3D11Device* InDevice, const void* InData, uint32 In
 	VertexCount = InVertexCount;
 	Stride = InStride;
 	MemoryStats::AddVertexBufferMemory(InByteWidth);
+}
+
+void FVertexBuffer::Update(ID3D11DeviceContext* InContext, const void* InData, uint32 InByteWidth)
+{
+	if (!Buffer)
+		return;
+	D3D11_MAPPED_SUBRESOURCE Mapped;
+	if (SUCCEEDED(InContext->Map(Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped)))
+	{
+		memcpy(Mapped.pData, InData, InByteWidth);
+		InContext->Unmap(Buffer, 0);
+	}
 }
 
 void FVertexBuffer::Release()
