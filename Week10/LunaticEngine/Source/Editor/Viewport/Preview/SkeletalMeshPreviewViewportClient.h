@@ -15,12 +15,14 @@ struct FInputSystemSnapshot;
 class	FSkeletalMeshPreviewViewportClient : public FPreviewViewportClient
 {
 public:
-	FSkeletalMeshPreviewViewportClient();
+	FSkeletalMeshPreviewViewportClient() = default;
 	~FSkeletalMeshPreviewViewportClient() override;
 	
+	// Getter & Setter
 	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh);
-	USkeletalMesh* GetSkeletalMesh() const { return PreviewSkeletalMesh; }
 	USkeletalMeshComponent* GetPreviewComponent() const { return PreviewComponent; }
+	
+	// Picking & Gizmo 
 	int32 PickBoneAtViewportPosition(float LocalX, float LocalY, float ViewportWidth, float ViewportHeight) const;
 	bool IsPreviewGizmoHitAtViewportPosition(float LocalX, float LocalY, float ViewportWidth, float ViewportHeight) const;
 	UGizmoComponent* GetPreviewGizmo() const { return PreviewGizmo; }
@@ -51,6 +53,7 @@ private:
 	USkeletalMeshComponent* PreviewComponent = nullptr;
 	USceneComponent* PreviewGizmoTarget = nullptr;
 	UGizmoComponent* PreviewGizmo = nullptr;
+	
 	int32 PreviewGizmoBoneIndex = -1;
 	int32 PreviewGizmoRotationDragBoneIndex = -1;
 	FQuat PreviewGizmoDragStartRotation = FQuat::Identity;
