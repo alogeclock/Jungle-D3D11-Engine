@@ -1,13 +1,17 @@
 #include "AssetPreviewWidget.h"
 
 #include "Editor/EditorEngine.h"
+#include "Editor/UI/EditorCommonWidgetUtils.h"
 #include "Editor/Viewport/Preview/PreviewViewportClient.h"
 
 #include "ImGui/imgui.h"
 
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 #include <string>
+
+FAssetPreviewWidget::~FAssetPreviewWidget() = default;
 
 // 입력 정보를 초기화합니다.
 void FAssetPreviewWidget::ClearInputCapture()
@@ -21,33 +25,51 @@ void FAssetPreviewWidget::ClearInputCapture()
 }
 
 // Preview ViewportClient를 프리뷰 위젯에 바인딩합니다.
-void FAssetPreviewWidget::SetPreviewViewportClient(FPreviewViewportClient* InViewportClient)
+std::unique_ptr<FPreviewViewportClient> FAssetPreviewWidget::CreatePreviewViewportClient()
 {
-	PreviewViewportClient = InViewportClient;
-	ViewportWidget.SetViewportClient(InViewportClient);
+	return std::make_unique<FPreviewViewportClient>();
+}
+
+FPreviewViewportClient* FAssetPreviewWidget::EnsurePreviewViewportClient()
+{
+	if (!PreviewViewportClient)
+	{
+		PreviewViewportClient = CreatePreviewViewportClient();
+		ViewportWidget.SetViewportClient(PreviewViewportClient.get());
+	}
+
+	return PreviewViewportClient.get();
+}
+
+void FAssetPreviewWidget::ReleasePreviewViewportClient()
+{
+	ViewportWidget.SetViewportClient(nullptr);
+	PreviewViewportClient.reset();
 }
 
 // Preview ViewportClient를 엔진에 등록합니다.
-void FAssetPreviewWidget::RegisterPreviewClient(FPreviewViewportClient* InViewportClient)
+void FAssetPreviewWidget::RegisterPreviewClient()
 {
-	if (!Engine || bRegistered || !InViewportClient)
+	FPreviewViewportClient* Client = GetPreviewViewportClient();
+	if (!Engine || bRegistered || !Client)
 	{
 		return;
 	}
 
-	Engine->RegisterPreviewViewportClient(InViewportClient);
+	Engine->RegisterPreviewViewportClient(Client);
 	bRegistered = true;
 }
 
 // Preview ViewportClient를 엔진에서 등록 해제합니다.
-void FAssetPreviewWidget::UnregisterPreviewClient(FPreviewViewportClient* InViewportClient)
+void FAssetPreviewWidget::UnregisterPreviewClient()
 {
-	if (!Engine || !bRegistered || !InViewportClient)
+	FPreviewViewportClient* Client = GetPreviewViewportClient();
+	if (!Engine || !bRegistered || !Client)
 	{
 		return;
 	}
 
-	Engine->UnregisterPreviewViewportClient(InViewportClient);
+	Engine->UnregisterPreviewViewportClient(Client);
 	bRegistered = false;
 }
 
@@ -98,98 +120,19 @@ bool FAssetPreviewWidget::BeginPreviewDetailsSection(const char* SectionName) co
 // 이름, 입력 칸이 오는 표준 레이아웃 UI
 bool FAssetPreviewWidget::DrawPreviewLabeledField(const char* Label, const std::function<bool()>& DrawField) const
 {
-	const float RowStartX = ImGui::GetCursorPosX();
-	const float TotalWidth = ImGui::GetContentRegionAvail().x;
-	const float LabelTextWidth = ImGui::CalcTextSize(Label).x;
-	const ImGuiStyle& Style = ImGui::GetStyle();
-	const float DesiredLabelWidth = (std::max)(PreviewDetailsPropertyLabelWidth, LabelTextWidth + Style.ItemSpacing.x + Style.FramePadding.x * 2.0f);
-	const float MaxLabelWidth = (std::max)(PreviewDetailsPropertyLabelWidth, TotalWidth * 0.48f);
-	const float LabelColumnWidth = (std::min)(DesiredLabelWidth, MaxLabelWidth);
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::TextUnformatted(Label);
-	ImGui::SameLine(RowStartX + LabelColumnWidth);
-
-	const float FieldWidth = TotalWidth - LabelColumnWidth;
-	if (FieldWidth > 0.0f)
-	{
-		ImGui::SetNextItemWidth(FieldWidth);
-	}
-
-	return DrawField();
+	return FEditorCommonWidgetUtils::DrawLabeledField(Label, DrawField);
 }
 
 // Preview Widget 읽기 전용 필드
 void FAssetPreviewWidget::DrawPreviewReadOnlyField(const char* Label, const FString& Value) const
 {
-	DrawPreviewLabeledField(Label, [&]()
-	{
-		ImGui::TextDisabled("%s", Value.c_str());
-		return false;
-	});
+	FEditorCommonWidgetUtils::DrawReadOnlyField(Label, Value);
 }
 
 // FTransform 데이터를 X, Y, Z축으로 나눠 나타내는 3개 입력 필드
 bool FAssetPreviewWidget::DrawPreviewColoredFloat3(const char* Label, float Values[3], float Speed, const float* ResetValues) const
 {
-	return DrawPreviewLabeledField(Label, [&]()
-	{
-		bool bChanged = false;
-		const char* AxisLabels[3] = { "X", "Y", "Z" };
-		const ImVec4 AxisColors[3] =
-		{
-			ImVec4(0.86f, 0.24f, 0.24f, 1.0f),
-			ImVec4(0.38f, 0.72f, 0.28f, 1.0f),
-			ImVec4(0.28f, 0.48f, 0.92f, 1.0f)
-		};
-		const float ResetButtonWidth = ResetValues ? 48.0f : 0.0f;
-		const float AvailableWidth = ImGui::GetContentRegionAvail().x - ResetButtonWidth;
-		const float AxisWidth = (std::max)(36.0f, (AvailableWidth - ImGui::GetStyle().ItemSpacing.x * 2.0f) / 3.0f);
-
-		ImGui::PushID(Label);
-		for (int32 AxisIndex = 0; AxisIndex < 3; ++AxisIndex)
-		{
-			if (AxisIndex > 0)
-			{
-				ImGui::SameLine();
-			}
-
-			ImGui::BeginGroup();
-			ImGui::PushStyleColor(ImGuiCol_Text, AxisColors[AxisIndex]);
-			ImGui::TextUnformatted(AxisLabels[AxisIndex]);
-			ImGui::PopStyleColor();
-			ImGui::SameLine(0.0f, 4.0f);
-			ImGui::SetNextItemWidth((std::max)(20.0f, AxisWidth - 18.0f));
-			
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(26.0f / 255.0f, 26.0f / 255.0f, 26.0f / 255.0f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(33.0f / 255.0f, 33.0f / 255.0f, 33.0f / 255.0f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(43.0f / 255.0f, 43.0f / 255.0f, 43.0f / 255.0f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(58.0f / 255.0f, 58.0f / 255.0f, 58.0f / 255.0f, 1.0f));
-			
-			char FieldId[8] = {};
-			snprintf(FieldId, sizeof(FieldId), "##%s", AxisLabels[AxisIndex]);
-			bChanged |= ImGui::DragFloat(FieldId, &Values[AxisIndex], Speed, 0.0f, 0.0f, "%.3f");
-			
-			ImGui::PopStyleColor(4);
-			
-			ImGui::EndGroup();
-		}
-
-		if (ResetValues)
-		{
-			ImGui::SameLine();
-			if (ImGui::Button("Reset", ImVec2(ResetButtonWidth, 0.0f)))
-			{
-				Values[0] = ResetValues[0];
-				Values[1] = ResetValues[1];
-				Values[2] = ResetValues[2];
-				bChanged = true;
-			}
-		}
-
-		ImGui::PopID();
-		return bChanged;
-	});
+	return FEditorCommonWidgetUtils::DrawColoredFloat3(Label, Values, Speed, ResetValues != nullptr, ResetValues);
 }
 
 // ────────────────────────────────────────────────────────────

@@ -1,11 +1,12 @@
 #pragma once
 #include "Editor/UI/Preview/PreviewViewportWidget.h"
+#include "Editor/Viewport/Preview/PreviewViewportClient.h"
 #include "Core/CoreTypes.h"
 #include "Math/Matrix.h"
 
 #include <functional>
+#include <memory>
 
-class FPreviewViewportClient;
 class FViewport;
 class UEditorEngine;
 struct ID3D11Device;
@@ -15,7 +16,7 @@ struct ID3D11Device;
 class FAssetPreviewWidget
 {
 public:
-	virtual ~FAssetPreviewWidget() = default;
+	virtual ~FAssetPreviewWidget();
 	
 	virtual void Shutdown() {}
 	virtual void Render(float DeltaTime) { (void)DeltaTime; }
@@ -34,7 +35,7 @@ protected:
 	bool bCapturingInput = false;
 	
 private:
-	FPreviewViewportClient* PreviewViewportClient = nullptr;
+	std::unique_ptr<FPreviewViewportClient> PreviewViewportClient = nullptr;
 	
 	// ─────────────────────── AssetPreviewWidget 자식 클래스 공통 함수 ───────────────────────
 public:
@@ -48,9 +49,12 @@ public:
 	
 protected:
 	// Preview ViewportClient Register/Unregister
-	void SetPreviewViewportClient(FPreviewViewportClient* InViewportClient);
-	void RegisterPreviewClient(FPreviewViewportClient* InViewportClient);
-	void UnregisterPreviewClient(FPreviewViewportClient* InViewportClient);
+	virtual std::unique_ptr<FPreviewViewportClient> CreatePreviewViewportClient();
+	FPreviewViewportClient* EnsurePreviewViewportClient();
+	FPreviewViewportClient* GetPreviewViewportClient() const { return PreviewViewportClient.get(); }
+	void ReleasePreviewViewportClient();
+	void RegisterPreviewClient();
+	void UnregisterPreviewClient();
 	
 	// Preview Widget 전용 Window
 	bool IsMultiViewportEnabled() const;

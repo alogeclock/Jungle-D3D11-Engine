@@ -2,12 +2,10 @@
 
 #include "Editor/Viewport/EditorViewportClient.h"
 #include "Editor/Viewport/Preview/PreviewScene.h"
-#include "Input/EnhancedInputManager.h"
 #include "Input/InputAction.h"
 #include "Input/InputMappingContext.h"
 #include "Math/Vector.h"
 #include "Render/Types/ViewTypes.h"
-#include "UI/SWindow.h"
 
 class FViewport;
 class FWindowsWindow;
@@ -22,10 +20,10 @@ public:
 	FPreviewViewportClient();
 	~FPreviewViewportClient() override;
 
-	void Initialize(FWindowsWindow* InWindow);
-	void CreateCamera();
-	void DestroyCamera();
-	void ResetCamera();
+	void Initialize(FWindowsWindow* InWindow) override;
+	void CreateCamera() override;
+	void DestroyCamera() override;
+	void ResetCamera() override;
 	void Tick(float DeltaTime) override;
 	bool HandleInputSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime) override;
 
@@ -48,17 +46,17 @@ public:
 
 protected:
 	virtual void OnCameraReset() {}
-
+	void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime) override;
+	
 private:
-	void SetupInput();
-	void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
+	void SetupInput() override;
 
-	void OnMove(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnRotate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnToggleGizmoMode(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnMove(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot) override;
+	void OnRotate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot) override;
+	void OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot) override;
+	void OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot) override;
+	virtual void OnOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	virtual void OnToggleGizmoMode(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 
 	void SyncCamera();
 	void UpdateCameraPosition(float DeltaTime);

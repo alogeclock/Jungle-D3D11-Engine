@@ -2,6 +2,7 @@
 
 #include "Editor/EditorEngine.h"
 #include "Editor/Settings/EditorSettings.h"
+#include "Editor/UI/EditorCommonWidgetUtils.h"
 #include "Editor/UI/EditorAccentColor.h"
 #include "Editor/UI/EditorPanelTitleUtils.h"
 
@@ -835,25 +836,7 @@ namespace
 
     bool DrawLabeledField(const char *Label, const std::function<bool()> &DrawField)
     {
-        const float RowStartX = ImGui::GetCursorPosX();
-        const float TotalWidth = ImGui::GetContentRegionAvail().x;
-        const float LabelTextWidth = ImGui::CalcTextSize(Label).x;
-        const ImGuiStyle &Style = ImGui::GetStyle();
-        const float DesiredLabelWidth = (std::max)(DetailsPropertyLabelWidth, LabelTextWidth + Style.ItemSpacing.x + Style.FramePadding.x * 2.0f);
-        const float MaxLabelWidth = (std::max)(DetailsPropertyLabelWidth, TotalWidth * 0.48f);
-        const float LabelColumnWidth = (std::min)(DesiredLabelWidth, MaxLabelWidth);
-
-        ImGui::AlignTextToFramePadding();
-        ImGui::TextUnformatted(Label);
-        ImGui::SameLine(RowStartX + LabelColumnWidth);
-
-        const float FieldWidth = TotalWidth - LabelColumnWidth;
-        if (FieldWidth > 0.0f)
-        {
-            ImGui::SetNextItemWidth(FieldWidth);
-        }
-
-        return DrawField();
+        return FEditorCommonWidgetUtils::DrawLabeledField(Label, DrawField);
     }
 
     bool IsUIComponentForDetails(const UActorComponent *Component)
@@ -1443,212 +1426,22 @@ FString FEditorDetailsWidget::GetPropertySectionName(const FPropertyDescriptor &
 
 bool FEditorDetailsWidget::DrawColoredFloat3(const char *Label, float Values[3], float Speed, bool bShowReset, const float *ResetValues)
 {
-    ImGui::PushID(Label);
-    ImGui::AlignTextToFramePadding();
-    ImGui::PushStyleColor(ImGuiCol_Text, DetailsVectorLabelColor);
-    ImGui::TextUnformatted(Label);
-    ImGui::PopStyleColor();
-    ImGui::SameLine(DetailsVectorLabelWidth);
-
-    const float  ResetButtonWidth =
-        bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f + DetailsVectorResetSpacing : 0.0f;
-    const float  Width = GetAxisFieldWidth(3, ResetButtonWidth);
-    const ImVec4 AxisColors[3] = {ImVec4(0.85f, 0.22f, 0.22f, 1.0f), ImVec4(0.36f, 0.74f, 0.25f, 1.0f), ImVec4(0.23f, 0.54f, 0.92f, 1.0f)};
-
-    bool bChanged = false;
-    for (int32 Axis = 0; Axis < 3; ++Axis)
-    {
-        if (Axis > 0)
-        {
-            ImGui::SameLine();
-        }
-        const ImVec2 Start = ImGui::GetCursorScreenPos();
-        const float  BarWidth = 3.0f;
-        const float  Spacing = 3.0f;
-        ImGui::GetWindowDrawList()->AddRectFilled(Start, ImVec2(Start.x + BarWidth, Start.y + ImGui::GetFrameHeight()),
-                                                  ImGui::ColorConvertFloat4ToU32(AxisColors[Axis]), 2.0f);
-        ImGui::SetCursorScreenPos(ImVec2(Start.x + BarWidth + Spacing, Start.y));
-        PushDetailsVectorFieldStyle();
-        ImGui::SetNextItemWidth((std::max)(18.0f, Width));
-        bChanged |= ImGui::DragFloat(Axis == 0 ? "##X" : Axis == 1 ? "##Y" : "##Z", &Values[Axis], Speed, 0.0f, 0.0f, "%.3f");
-        PopDetailsVectorFieldStyle();
-    }
-    if (bShowReset)
-    {
-        ImGui::SameLine(0.0f, DetailsVectorResetSpacing);
-        PushDetailsVectorResetButtonStyle();
-        if (ImGui::Button("RESET"))
-        {
-            Values[0] = ResetValues ? ResetValues[0] : 0.0f;
-            Values[1] = ResetValues ? ResetValues[1] : 0.0f;
-            Values[2] = ResetValues ? ResetValues[2] : 0.0f;
-            bChanged = true;
-        }
-        PopDetailsVectorResetButtonStyle();
-    }
-    ImGui::PopID();
-    return bChanged;
+    return FEditorCommonWidgetUtils::DrawColoredFloat3(Label, Values, Speed, bShowReset, ResetValues);
 }
 
 bool FEditorDetailsWidget::DrawColoredFloat2(const char *Label, float Values[3], float Speed, bool bShowReset, const float *ResetValues)
 {
-    ImGui::PushID(Label);
-    ImGui::AlignTextToFramePadding();
-    ImGui::PushStyleColor(ImGuiCol_Text, DetailsVectorLabelColor);
-    ImGui::TextUnformatted(Label);
-    ImGui::PopStyleColor();
-    ImGui::SameLine(DetailsVectorLabelWidth);
-
-    const float  ResetButtonWidth =
-        bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f + DetailsVectorResetSpacing : 0.0f;
-    const float  Width = GetAxisFieldWidth(2, ResetButtonWidth);
-    const ImVec4 AxisColors[2] = {ImVec4(0.85f, 0.22f, 0.22f, 1.0f), ImVec4(0.36f, 0.74f, 0.25f, 1.0f)};
-
-    bool bChanged = false;
-    for (int32 Axis = 0; Axis < 2; ++Axis)
-    {
-        if (Axis > 0)
-        {
-            ImGui::SameLine();
-        }
-        const ImVec2 Start = ImGui::GetCursorScreenPos();
-        const float  BarWidth = 3.0f;
-        const float  Spacing = 3.0f;
-        ImGui::GetWindowDrawList()->AddRectFilled(Start, ImVec2(Start.x + BarWidth, Start.y + ImGui::GetFrameHeight()),
-                                                  ImGui::ColorConvertFloat4ToU32(AxisColors[Axis]), 2.0f);
-        ImGui::SetCursorScreenPos(ImVec2(Start.x + BarWidth + Spacing, Start.y));
-        PushDetailsVectorFieldStyle();
-        ImGui::SetNextItemWidth((std::max)(18.0f, Width));
-        bChanged |= ImGui::DragFloat(Axis == 0 ? "##X" : "##Y", &Values[Axis], Speed, 0.0f, 0.0f, "%.3f");
-        PopDetailsVectorFieldStyle();
-    }
-    if (bShowReset)
-    {
-        ImGui::SameLine(0.0f, DetailsVectorResetSpacing);
-        PushDetailsVectorResetButtonStyle();
-        if (ImGui::Button("RESET"))
-        {
-            Values[0] = ResetValues ? ResetValues[0] : 0.0f;
-            Values[1] = ResetValues ? ResetValues[1] : 0.0f;
-            Values[2] = ResetValues ? ResetValues[2] : 0.0f;
-            bChanged = true;
-        }
-        PopDetailsVectorResetButtonStyle();
-    }
-    ImGui::PopID();
-    return bChanged;
+    return FEditorCommonWidgetUtils::DrawColoredFloat2(Label, Values, Speed, bShowReset, ResetValues);
 }
 
 bool FEditorDetailsWidget::DrawColoredFloat4(const char *Label, float Values[4], float Speed, bool bShowReset)
 {
-    ImGui::PushID(Label);
-    ImGui::AlignTextToFramePadding();
-    ImGui::PushStyleColor(ImGuiCol_Text, DetailsVectorLabelColor);
-    ImGui::TextUnformatted(Label);
-    ImGui::PopStyleColor();
-    ImGui::SameLine(DetailsVectorLabelWidth);
-
-    const float  ResetButtonWidth =
-        bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f + DetailsVectorResetSpacing : 0.0f;
-    const float  Width = GetAxisFieldWidth(4, ResetButtonWidth);
-    const ImVec4 AxisColors[4] = {
-        ImVec4(0.85f, 0.22f, 0.22f, 1.0f),
-        ImVec4(0.36f, 0.74f, 0.25f, 1.0f),
-        ImVec4(0.23f, 0.54f, 0.92f, 1.0f),
-        ImVec4(0.72f, 0.72f, 0.72f, 1.0f)
-    };
-
-    bool bChanged = false;
-    for (int32 Axis = 0; Axis < 4; ++Axis)
-    {
-        if (Axis > 0)
-        {
-            ImGui::SameLine();
-        }
-
-        const ImVec2 Start = ImGui::GetCursorScreenPos();
-        const float  BarWidth = 3.0f;
-        const float  Spacing = 3.0f;
-        ImGui::GetWindowDrawList()->AddRectFilled(Start, ImVec2(Start.x + BarWidth, Start.y + ImGui::GetFrameHeight()),
-                                                  ImGui::ColorConvertFloat4ToU32(AxisColors[Axis]), 2.0f);
-        ImGui::SetCursorScreenPos(ImVec2(Start.x + BarWidth + Spacing, Start.y));
-        PushDetailsVectorFieldStyle();
-        ImGui::SetNextItemWidth((std::max)(16.0f, Width));
-        bChanged |= ImGui::DragFloat(Axis == 0 ? "##X" : Axis == 1 ? "##Y" : Axis == 2 ? "##Z" : "##W", &Values[Axis], Speed, 0.0f, 0.0f, "%.3f");
-        PopDetailsVectorFieldStyle();
-    }
-    if (bShowReset)
-    {
-        ImGui::SameLine(0.0f, DetailsVectorResetSpacing);
-        PushDetailsVectorResetButtonStyle();
-        if (ImGui::Button("RESET"))
-        {
-            Values[0] = 0.0f;
-            Values[1] = 0.0f;
-            Values[2] = 0.0f;
-            Values[3] = 0.0f;
-            bChanged = true;
-        }
-        PopDetailsVectorResetButtonStyle();
-    }
-
-    ImGui::PopID();
-    return bChanged;
+    return FEditorCommonWidgetUtils::DrawColoredFloat4(Label, Values, Speed, bShowReset);
 }
 
 bool FEditorDetailsWidget::DrawNamedFloat4(const char *Label, float Values[4], float Speed, const char *AxisLabels[4], bool bShowReset)
 {
-    ImGui::PushID(Label);
-    ImGui::AlignTextToFramePadding();
-    ImGui::PushStyleColor(ImGuiCol_Text, DetailsVectorLabelColor);
-    ImGui::TextUnformatted(Label);
-    ImGui::PopStyleColor();
-    ImGui::SameLine(DetailsVectorLabelWidth);
-
-    const float ResetButtonWidth =
-        bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f + DetailsVectorResetSpacing : 0.0f;
-    const float Width = (std::max)(52.0f, GetAxisFieldWidth(4, ResetButtonWidth));
-    bool        bChanged = false;
-    for (int32 Axis = 0; Axis < 4; ++Axis)
-    {
-        if (Axis > 0)
-        {
-            ImGui::SameLine();
-        }
-
-        const char *AxisLabel = (AxisLabels && AxisLabels[Axis]) ? AxisLabels[Axis] : "";
-        const float AxisLabelWidth = AxisLabel[0] != '\0' ? ImGui::CalcTextSize(AxisLabel).x + 6.0f : 0.0f;
-        const float FieldWidth = (std::max)(28.0f, Width - AxisLabelWidth);
-
-        if (AxisLabel[0] != '\0')
-        {
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted(AxisLabel);
-            ImGui::SameLine(0.0f, 6.0f);
-        }
-
-        PushDetailsVectorFieldStyle();
-        ImGui::SetNextItemWidth(FieldWidth);
-        bChanged |= ImGui::DragFloat(Axis == 0 ? "##Left" : Axis == 1 ? "##Top" : Axis == 2 ? "##Right" : "##Bottom", &Values[Axis], Speed, 0.0f, 0.0f, "%.3f");
-        PopDetailsVectorFieldStyle();
-    }
-    if (bShowReset)
-    {
-        ImGui::SameLine(0.0f, DetailsVectorResetSpacing);
-        PushDetailsVectorResetButtonStyle();
-        if (ImGui::Button("RESET"))
-        {
-            Values[0] = 0.0f;
-            Values[1] = 0.0f;
-            Values[2] = 0.0f;
-            Values[3] = 0.0f;
-            bChanged = true;
-        }
-        PopDetailsVectorResetButtonStyle();
-    }
-
-    ImGui::PopID();
-    return bChanged;
+    return FEditorCommonWidgetUtils::DrawNamedFloat4(Label, Values, Speed, AxisLabels, bShowReset);
 }
 
 FString FEditorPropertyWidget::OpenObjFileDialog()
