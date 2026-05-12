@@ -29,6 +29,7 @@ private:
 	void PrepareViewport(FViewport* VP, UCameraComponent* Camera, ID3D11DeviceContext* Ctx);
 	void CollectCommands(UWorld* World, FRenderer& Renderer, FCollectOutput& Output);
 
+	UCameraComponent* ResolveLevelViewportCamera(FLevelEditorViewportClient* LevelVC, UWorld* World);
 	FGPUOcclusionCulling& GetOcclusionForViewport(FLevelEditorViewportClient* VC);
 
 private:

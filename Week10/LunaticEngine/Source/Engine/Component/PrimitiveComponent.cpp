@@ -295,7 +295,6 @@ void UPrimitiveComponent::CreateRenderState()
 
 	FScene& Scene = Owner->GetWorld()->GetScene();
 	SceneProxy = Scene.AddPrimitive(this);
-	MarkWorldBoundsDirty();
 }
 
 void UPrimitiveComponent::DestroyRenderState()

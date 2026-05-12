@@ -11,9 +11,7 @@
 #include "GameFramework/World.h"
 #include "Profiling/Stats.h"
 #include "Profiling/GPUProfiler.h"
-#include "Engine/Render/Types/ForwardLightData.h"
 #include "Component/Light/LightComponentBase.h"
-#include "Core/ProjectSettings.h"
 #include "Viewport/GameViewportClient.h"
 #include "Viewport/ViewportClient.h"
 #include "Object/Object.h"
@@ -21,6 +19,7 @@
 FEditorRenderPipeline::FEditorRenderPipeline(UEditorEngine* InEditor, FRenderer& InRenderer)
 	: Editor(InEditor)
 	, CachedDevice(InRenderer.GetFD3DDevice().GetDevice())
+	, Frame()
 {
 }
 
@@ -99,6 +98,7 @@ void FEditorRenderPipeline::Execute(float DeltaTime, FRenderer& Renderer)
 	}
 }
 
+// 뷰포트별 Context 추출 및 유효성 검증 → 렌더링 준비 → 렌더링 실행 → 렌더 후 처리
 void FEditorRenderPipeline::RenderViewport(FViewportClient* VC, FRenderer& Renderer)
 {
 	if (!VC) return;
@@ -108,91 +108,69 @@ void FEditorRenderPipeline::RenderViewport(FViewportClient* VC, FRenderer& Rende
 	FViewport* VP = nullptr;
 	FGPUOcclusionCulling* Occlusion = nullptr;
 
+	// 뷰포트별 Context 추출 및 유효성 검증
 	if (FLevelEditorViewportClient* LevelVC = dynamic_cast<FLevelEditorViewportClient*>(VC))
-	{
-		World = Editor->GetWorld();
-		Camera = LevelVC->GetCamera();
-		VP = LevelVC->GetViewport();
-		Occlusion = &GetOcclusionForViewport(LevelVC);
+    {
+        World = Editor->GetWorld();
+        Camera = ResolveLevelViewportCamera(LevelVC, World); // 분리된 헬퍼 함수 사용
+        VP = LevelVC->GetViewport();
+        Occlusion = &GetOcclusionForViewport(LevelVC);
+    }
+    else if (FPreviewViewportClient* PreviewVC = dynamic_cast<FPreviewViewportClient*>(VC))
+    {
+        World = PreviewVC->GetWorld();
+        Camera = PreviewVC->GetCamera();
+        VP = PreviewVC->GetViewport();
+    }
 
-		// PIE 고려한 카메라 결정 로직
-		if (Editor && Editor->IsPIEPossessedMode())
-		{
-			if (UGameViewportClient* GameViewportClient = Editor->GetGameViewportClient())
-			{
-				if (UCameraComponent* GameCamera = GameViewportClient->GetDrivingCamera())
-				{
-					if (IsAliveObject(GameCamera) && GameCamera->GetWorld() == World)
-					{
-						Camera = GameCamera;
-					}
-				}
-			}
+    if (!World || !Camera || !IsAliveObject(Camera) || !VP) return;
 
-			if (!Camera || !IsAliveObject(Camera) || Camera->GetWorld() != World)
-			{
-				Camera = (World ? World->GetActiveCamera() : nullptr);
-			}
-		}
-	}
-	else if (FPreviewViewportClient* PreviewVC = dynamic_cast<FPreviewViewportClient*>(VC))
-	{
-		World = PreviewVC->GetWorld();
-		Camera = PreviewVC->GetCamera();
-		VP = PreviewVC->GetViewport();
-	}
+    ID3D11DeviceContext* Ctx = Renderer.GetFD3DDevice().GetDeviceContext();
+    if (!Ctx) return;
 
-	if (!World || !Camera || !IsAliveObject(Camera) || !VP) return;
+	// 렌더링 준비 (Pre-Render)
+    if (Occlusion)
+    {
+        Occlusion->ReadbackResults(Ctx); // 이전 프레임 결과 읽기
+    }
 
-	ID3D11DeviceContext* Ctx = Renderer.GetFD3DDevice().GetDeviceContext();
-	if (!Ctx) return;
+    PrepareViewport(VP, Camera, Ctx);
 
-	// GPU Occlusion — 이전 프레임 결과 읽기 (LevelEditor 전용)
-	if (Occlusion)
-	{
-		Occlusion->ReadbackResults(Ctx);
-	}
-
-	PrepareViewport(VP, Camera, Ctx);
+    if (FEditorViewportClient* EVC = dynamic_cast<FEditorViewportClient*>(VC))
+    {
+        EVC->SetupFrameContext(Frame, Camera, VP, World);
+    }
+    else
+    {
+        Frame.ClearViewportResources();
+        Frame.SetCameraInfo(Camera);
+        Frame.SetViewportInfo(VP);
+    }
+    Frame.OcclusionCulling = Occlusion;
 	
-	if (FEditorViewportClient* EVC = dynamic_cast<FEditorViewportClient*>(VC))
-	{
-		EVC->SetupFrameContext(Frame, Camera, VP, World);
-	}
-	else
-	{
-		Frame.ClearViewportResources();
-		if (Camera)
-		{
-			Frame.SetCameraInfo(Camera);
-		}
-		Frame.SetViewportInfo(VP);
-	}
+	// 렌더링 실행 (Collect Commands & Execute Render)
+    FCollectOutput Output;
+    CollectCommands(World, Renderer, Output);
 
-	// 파이프라인 전용 설정 주입 (Occlusion)
-	Frame.OcclusionCulling = Occlusion;
+    {
+        SCOPE_STAT_CAT("Renderer.Render", "4_ExecutePass");
+        Renderer.Render(Frame, World->GetScene());
+    }
 
-	FCollectOutput Output;
-	CollectCommands(World, Renderer, Output);
-
-	FScene& Scene = World->GetScene();
-
-	{
-		SCOPE_STAT_CAT("Renderer.Render", "4_ExecutePass");
-		Renderer.Render(Frame, Scene);
-	}
-
-	// GPU Occlusion — Render 후 DepthBuffer가 유효할 때 디스패치 (LevelEditor 전용)
-	if (Occlusion)
-	{
-		SCOPE_STAT_CAT("GPUOcclusion", "4_ExecutePass");
-		Occlusion->DispatchOcclusionTest(
-			Ctx,
-			VP->GetDepthCopySRV(),
-			Output.FrustumVisibleProxies,
-			Frame.View, Frame.Proj,
-			VP->GetWidth(), VP->GetHeight());
-	}
+	// 렌더 후 처리 (Post-Render)
+    if (Occlusion)
+    {
+        SCOPE_STAT_CAT("GPUOcclusion", "4_ExecutePass");
+        Occlusion->DispatchOcclusionTest(
+            Ctx,
+            VP->GetDepthCopySRV(),
+            Output.FrustumVisibleProxies,
+            Frame.View, 
+            Frame.Proj,
+            VP->GetWidth(), 
+            VP->GetHeight()
+        );
+    }
 }
 
 // ============================================================
@@ -277,3 +255,31 @@ void FEditorRenderPipeline::CollectCommands(UWorld* World, FRenderer& Renderer, 
 	}
 }
 
+UCameraComponent* FEditorRenderPipeline::ResolveLevelViewportCamera(FLevelEditorViewportClient* LevelVC, UWorld* World)
+{
+	UCameraComponent* Camera = LevelVC->GetCamera();
+
+	// PIE 모드가 아니면 기본 카메라 반환
+	if (!Editor || !Editor->IsPIEPossessedMode())
+	{
+		return Camera;
+	}
+
+	// 1. 게임 뷰포트의 드라이빙 카메라를 최우선으로 탐색
+	if (UGameViewportClient* GameVC = Editor->GetGameViewportClient())
+	{
+		UCameraComponent* GameCamera = GameVC->GetDrivingCamera();
+		if (IsAliveObject(GameCamera) && GameCamera->GetWorld() == World)
+		{
+			return GameCamera;
+		}
+	}
+
+	// 2. 유효한 카메라가 없다면 월드의 Active Camera로 폴백 (Fallback)
+	if (!Camera || !IsAliveObject(Camera) || Camera->GetWorld() != World)
+	{
+		return World ? World->GetActiveCamera() : nullptr;
+	}
+
+	return Camera;
+}
