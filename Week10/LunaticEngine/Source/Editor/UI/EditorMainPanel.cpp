@@ -108,6 +108,29 @@ namespace
 		return bVisible;
 	}
 
+	bool IsMultiViewportEnabled()
+	{
+		return (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0;
+	}
+
+	void SetNextPreviewEditorHostWindowPolicy()
+	{
+		if (!IsMultiViewportEnabled())
+		{
+			return;
+		}
+
+		ImGuiWindowClass WindowClass{};
+		WindowClass.ViewportFlagsOverrideSet = ImGuiViewportFlags_NoAutoMerge;
+		WindowClass.ViewportFlagsOverrideClear = ImGuiViewportFlags_NoDecoration | ImGuiViewportFlags_NoTaskBarIcon;
+		ImGui::SetNextWindowClass(&WindowClass);
+
+		if (const ImGuiViewport* MainViewport = ImGui::GetMainViewport())
+		{
+			ImGui::SetNextWindowPos(ImVec2(MainViewport->Pos.x + 96.0f, MainViewport->Pos.y + 80.0f), ImGuiCond_FirstUseEver);
+		}
+	}
+
 	bool ConfirmNewScene(HWND OwnerWindowHandle)
 	{
 		const int32 Result = MessageBoxW(
@@ -227,6 +250,7 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	ImGuiIO& IO = ImGui::GetIO();
 	IO.IniFilename = "Settings/imgui.ini";
 	IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	IO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_None;
 	ApplyEditorColorTheme();
 	ApplyEditorTabStyle();
@@ -423,6 +447,12 @@ void FEditorMainPanel::Render(float DeltaTime)
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
 }
 
 bool FEditorMainPanel::IsAssetEditorCapturingInput() const
@@ -475,6 +505,7 @@ void FEditorMainPanel::RenderPreviewEditors(float DeltaTime)
 		return;
 	}
 
+	bool bHasOpenPreviewEditor = false;
 	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
 	{
 		if (!PreviewEditorWidget || !PreviewEditorWidget->IsOpen())
@@ -482,6 +513,61 @@ void FEditorMainPanel::RenderPreviewEditors(float DeltaTime)
 			continue;
 		}
 
+		bHasOpenPreviewEditor = true;
+		break;
+	}
+
+	if (!bHasOpenPreviewEditor)
+	{
+		RemoveClosedPreviewEditors();
+		return;
+	}
+
+	bool bPreviewHostOpen = true;
+	SetNextPreviewEditorHostWindowPolicy();
+	ImGui::SetNextWindowSize(ImVec2(1120.0f, 720.0f), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags HostWindowFlags = ImGuiWindowFlags_NoCollapse;
+	if (IsMultiViewportEnabled())
+	{
+		HostWindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking;
+	}
+
+	const bool bHostVisible = ImGui::Begin("Preview Editors###PreviewEditorHost", &bPreviewHostOpen, HostWindowFlags);
+	if (!bPreviewHostOpen)
+	{
+		ImGui::End();
+		for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+		{
+			if (PreviewEditorWidget)
+			{
+				PreviewEditorWidget->Shutdown();
+			}
+		}
+		PreviewEditorWidgets.clear();
+		return;
+	}
+
+	const ImGuiID PreviewDockId = ImGui::GetID("##PreviewEditorDockSpace");
+	if (bHostVisible)
+	{
+		ImGui::DockSpace(PreviewDockId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+	}
+	ImGui::End();
+
+	if (!bHostVisible)
+	{
+		ClearPreviewEditorInputCapture();
+		return;
+	}
+
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (!PreviewEditorWidget || !PreviewEditorWidget->IsOpen())
+		{
+			continue;
+		}
+
+		PreviewEditorWidget->SetDockId(PreviewDockId);
 		SCOPE_STAT_CAT("PreviewEditorWidget.Render", "5_UI");
 		PreviewEditorWidget->Render(DeltaTime);
 	}

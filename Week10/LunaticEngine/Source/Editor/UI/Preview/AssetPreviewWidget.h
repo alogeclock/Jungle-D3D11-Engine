@@ -12,6 +12,7 @@ public:
 	virtual void Shutdown() {}
 	virtual void Render(float DeltaTime) { (void)DeltaTime; }
 	virtual void ClearInputCapture() {}
+	virtual void SetDockId(uint32 InDockId) { (void)InDockId; }
 	virtual bool IsOpen() const { return false; }
 	virtual bool IsCapturingInput() const { return false; }
 

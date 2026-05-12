@@ -20,6 +20,7 @@ public:
 	void OpenSkeletalMesh(USkeletalMesh* InMesh);
 	void Render(float DeltaTime) override;
 	void ClearInputCapture() override;
+	void SetDockId(uint32 InDockId) override { PreviewDockId = InDockId; }
 	void SetEditorInstanceId(int32 InInstanceId) { EditorInstanceId = InInstanceId; }
 
 	bool IsOpen() const override { return bOpen; }
@@ -44,6 +45,7 @@ private:
 	USkeletalMesh* EditingMesh = nullptr;
 	int32 SelectedBoneIndex = -1;
 	int32 EditorInstanceId = 0;
+	uint32 PreviewDockId = 0;
 	bool bOpen = false;
 	bool bInitialized = false;
 	bool bRegistered = false;

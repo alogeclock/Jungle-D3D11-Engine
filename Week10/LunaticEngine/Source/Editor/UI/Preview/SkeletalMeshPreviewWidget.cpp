@@ -65,6 +65,28 @@ namespace
 		}
 	}
 
+	bool IsMultiViewportEnabled()
+	{
+		return (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0;
+	}
+
+	void SetNextPreviewEditorWindowPolicy(int32 EditorInstanceId)
+	{
+		if (!IsMultiViewportEnabled())
+		{
+			return;
+		}
+
+		ImGuiWindowClass WindowClass{};
+		WindowClass.ViewportFlagsOverrideSet = ImGuiViewportFlags_NoAutoMerge;
+		WindowClass.ViewportFlagsOverrideClear = ImGuiViewportFlags_NoDecoration | ImGuiViewportFlags_NoTaskBarIcon;
+		ImGui::SetNextWindowClass(&WindowClass);
+
+		const ImGuiViewport* MainViewport = ImGui::GetMainViewport();
+		const float Offset = static_cast<float>((std::max)(0, EditorInstanceId - 1) % 6) * 28.0f;
+		ImGui::SetNextWindowPos(ImVec2(MainViewport->Pos.x + 96.0f + Offset, MainViewport->Pos.y + 80.0f + Offset), ImGuiCond_FirstUseEver);
+	}
+
 	constexpr float PreviewDetailsPropertyLabelWidth = 124.0f;
 	constexpr float PreviewDetailsPropertyVerticalSpacing = 6.0f;
 
@@ -309,8 +331,21 @@ void FSkeletalMeshPreviewWidget::Render(float DeltaTime)
 
 	bool bWindowOpen = bOpen;
 	ImGui::SetNextWindowSize(ImVec2(720.0f, 560.0f), ImGuiCond_FirstUseEver);
+	if (PreviewDockId != 0)
+	{
+		ImGui::SetNextWindowDockID(PreviewDockId, ImGuiCond_Appearing);
+	}
+	else
+	{
+		SetNextPreviewEditorWindowPolicy(EditorInstanceId);
+	}
 	const FString WindowTitle = "Skeletal Mesh Editor - " + GetMeshDisplayName(EditingMesh) + "###SkeletalMeshEditor" + std::to_string(EditorInstanceId);
-	const bool bVisible = ImGui::Begin(WindowTitle.c_str(), &bWindowOpen, ImGuiWindowFlags_NoCollapse);
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoCollapse;
+	if (PreviewDockId == 0 && IsMultiViewportEnabled())
+	{
+		WindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking;
+	}
+	const bool bVisible = ImGui::Begin(WindowTitle.c_str(), &bWindowOpen, WindowFlags);
 	if (!bWindowOpen)
 	{
 		ImGui::End();
