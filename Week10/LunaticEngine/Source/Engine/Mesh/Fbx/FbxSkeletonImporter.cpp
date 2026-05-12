@@ -161,9 +161,22 @@ bool FFbxSkeletonImporter::BuildSkeletonFromSkinClusters(
 
     FFbxSceneQuery::FindImportedBoneRoot(ImportedBoneNodes, RootBones);
 
-    for (FbxNode* RootBone : RootBones)
+    // 여기서 한 번 더 root 아래 full skeleton hierarchy를 수집한다.
+    // IK/end/helper처럼 weight가 없는 skeleton bone 누락되면 안된다.
+    TArray<FbxNode*> FullBoneNodes;
+    FFbxSceneQuery::CollectFullSkeletonHierarchyFromRoots(RootBones, ImportedBoneNodes, FullBoneNodes);
+
+    if (FullBoneNodes.empty())
     {
-        AddImportedBoneRecursive(RootBone, -1, ImportedBoneNodes, OutSkeleton, OutBoneNodeToIndex);
+        FullBoneNodes = ImportedBoneNodes;
+    }
+
+    TArray<FbxNode*> FullRootBones;
+    FFbxSceneQuery::FindImportedBoneRoot(FullBoneNodes, FullRootBones);
+
+    for (FbxNode* RootBone : FullRootBones)
+    {
+        AddImportedBoneRecursive(RootBone, -1, FullBoneNodes, OutSkeleton, OutBoneNodeToIndex);
     }
 
     OutSkeleton.RebuildChildren();

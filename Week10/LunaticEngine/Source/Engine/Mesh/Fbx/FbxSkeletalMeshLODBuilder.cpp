@@ -42,9 +42,24 @@ bool FFbxSkeletalMeshLODBuilder::Build(
         FbxNode* MeshNode = ImportNode.MeshNode;
         FbxMesh* Mesh     = MeshNode ? MeshNode->GetMesh() : nullptr;
 
-        if (!Mesh || ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose)
+        const bool bMergeStaticChild = ImportNode.Kind == EFbxSkeletalImportMeshKind::StaticChildOfBone && ImportNode.StaticChildAction ==
+        ESkeletalStaticChildImportAction::MergeAsRigidPart;
+
+        if (!Mesh || ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose || ImportNode.Kind == EFbxSkeletalImportMeshKind::Ignored || ImportNode.Kind ==
+            EFbxSkeletalImportMeshKind::CollisionProxy || (ImportNode.Kind == EFbxSkeletalImportMeshKind::StaticChildOfBone && !bMergeStaticChild))
         {
             continue;
+        }
+
+        FbxStringList MeshUVSetNames;
+        Mesh->GetUVSetNames(MeshUVSetNames);
+        for (int32 UVSetIndex = 0; UVSetIndex < MeshUVSetNames.GetCount() && OutLOD.UVSetNames.size() < MAX_SKELETAL_MESH_UV_CHANNELS; ++UVSetIndex)
+        {
+            const FString UVSetName = MeshUVSetNames[UVSetIndex].Buffer() ? FString(MeshUVSetNames[UVSetIndex].Buffer()) : FString();
+            if (std::find(OutLOD.UVSetNames.begin(), OutLOD.UVSetNames.end(), UVSetName) == OutLOD.UVSetNames.end())
+            {
+                OutLOD.UVSetNames.push_back(UVSetName);
+            }
         }
 
         FMatrix MeshToReference;
@@ -58,18 +73,14 @@ bool FFbxSkeletalMeshLODBuilder::Build(
             }
             MeshToReference = MeshBind * ReferenceMeshBindInverse;
         }
-        else if (ImportNode.Kind == EFbxSkeletalImportMeshKind::RigidAttached)
+        else if (bMergeStaticChild)
         {
-            if (!ImportNode.RigidBoneNode || ImportNode.RigidBoneIndex < 0 || ImportNode.RigidBoneIndex >= static_cast<int32>(Skeleton.Bones.size()))
+            if (!ImportNode.ParentBoneNode || ImportNode.ParentBoneIndex < 0 || ImportNode.ParentBoneIndex >= static_cast<int32>(Skeleton.Bones.size()))
             {
                 continue;
             }
 
-            const FMatrix MeshGlobalScene = FFbxTransformUtils::ToEngineMatrix(FFbxTransformUtils::GetNodeGeometryTransform(MeshNode)) *
-            FFbxTransformUtils::ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
-            const FMatrix BoneGlobalScene    = FFbxTransformUtils::ToEngineMatrix(ImportNode.RigidBoneNode->EvaluateGlobalTransform());
-            const FMatrix MeshRelativeToBone = MeshGlobalScene * BoneGlobalScene.GetInverse();
-            MeshToReference                  = MeshRelativeToBone * Skeleton.Bones[ImportNode.RigidBoneIndex].GlobalBindPose;
+            MeshToReference = ImportNode.LocalMatrixToParentBone * Skeleton.Bones[ImportNode.ParentBoneIndex].GlobalBindPose;
         }
 
         const FMatrix NormalToReference = MeshToReference.GetInverse().GetTransposed();
@@ -189,9 +200,9 @@ bool FFbxSkeletalMeshLODBuilder::Build(
                     bGeneratedTangent = true;
                 }
 
-                if (ImportNode.Kind == EFbxSkeletalImportMeshKind::RigidAttached)
+                if (bMergeStaticChild)
                 {
-                    FFbxSkinWeightImporter::SetRigidBoneWeight(ImportNode.RigidBoneIndex, Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
+                    FFbxSkinWeightImporter::SetRigidBoneWeight(ImportNode.ParentBoneIndex, Vertex.BoneIndices, Vertex.BoneWeights, BoneWeightStats);
                 }
                 else if (ControlPointIndex >= 0 && ControlPointIndex < static_cast<int32>(ControlPointWeight.size()))
                 {

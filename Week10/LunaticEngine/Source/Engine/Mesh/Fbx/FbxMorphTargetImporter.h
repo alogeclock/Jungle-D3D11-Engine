@@ -20,9 +20,15 @@ struct FFbxImportedMorphSourceVertex
     FVector4 BaseTangentInReference;
 };
 
+struct FFbxImportContext;
+
 class FFbxMorphTargetImporter
 {
 public:
     // LOD별 morph source vertex와 FBX blend shape을 엔진 morph target으로 변환한다.
-    static void ImportMorphTargets(const TArray<TArray<FFbxImportedMorphSourceVertex>>& MorphSourcesByLOD, TArray<FMorphTarget>& OutMorphTargets);
+    static void ImportMorphTargets(
+        const TArray<TArray<FFbxImportedMorphSourceVertex>>& MorphSourcesByLOD,
+        TArray<FMorphTarget>&                                OutMorphTargets,
+        FFbxImportContext&                                   BuildContext
+        );
 };

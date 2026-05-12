@@ -8,8 +8,7 @@ namespace SkeletalMeshBake
     // 현재 엔진이 기대하는 SkeletalMesh Bake 파일 식별자.
     static constexpr uint32 Magic = 0x534B4D31;
     // 현재 엔진이 지원하는 SkeletalMesh Bake 포맷 버전.
-    // Version 4: multi UV + animation/morph + import summary + FbxPose/material texture import 대응.
-    static constexpr uint32 Version = 4;
+    static constexpr uint32 Version = 5;
 
     bool Save(const FString& BakePath, FSkeletalMesh& Mesh, TArray<FStaticMaterial>& Materials);
     bool Load(const FString& BakePath, FSkeletalMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials);

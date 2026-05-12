@@ -1,4 +1,4 @@
-﻿#include "SkeletalMesh.h"
+#include "SkeletalMesh.h"
 #include "Object/ObjectFactory.h"
 #include "Engine/Profiling/MemoryStats.h"
 
@@ -36,7 +36,12 @@ static uint32 CalculateSkeletalMeshCPUSize(const FSkeletalMesh& Mesh)
 
         for (const FMorphTargetLOD& LOD : Morph.LODModels)
         {
-            CPUSize += static_cast<uint32>(LOD.Deltas.size()) * sizeof(FMorphTargetDelta);
+            CPUSize += static_cast<uint32>(LOD.Shapes.size()) * sizeof(FMorphTargetShape);
+
+            for (const FMorphTargetShape& Shape : LOD.Shapes)
+            {
+                CPUSize += static_cast<uint32>(Shape.Deltas.size()) * sizeof(FMorphTargetDelta);
+            }
         }
     }
 

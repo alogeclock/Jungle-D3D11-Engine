@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Vector.h"
@@ -205,6 +205,10 @@ struct FSkeleton
 // ============================================================================
 struct FSkeletalMeshLOD
 {
+    int32           SourceLODIndex = 0;
+    FString         SourceLODName;
+    TArray<FString> UVSetNames;
+
     TArray<FSkeletalVertex>    Vertices;
     TArray<uint32>             Indices;
     TArray<FStaticMeshSection> Sections;
@@ -248,6 +252,10 @@ struct FSkeletalMeshLOD
 
     void Serialize(FArchive& Ar)
     {
+        Ar << SourceLODIndex;
+        Ar << SourceLODName;
+        Ar << UVSetNames;
+
         Ar << Vertices;
         Ar << Indices;
         Ar << Sections;
@@ -304,6 +312,32 @@ struct FBoneAnimationTrack
     }
 };
 
+struct FFloatCurveKey
+{
+    float TimeSeconds = 0.0f;
+    float Value       = 0.0f;
+
+    friend FArchive& operator<<(FArchive& Ar, FFloatCurveKey& Key)
+    {
+        Ar << Key.TimeSeconds;
+        Ar << Key.Value;
+        return Ar;
+    }
+};
+
+struct FAnimationFloatCurve
+{
+    FString                Name;
+    TArray<FFloatCurveKey> Keys;
+
+    friend FArchive& operator<<(FArchive& Ar, FAnimationFloatCurve& Curve)
+    {
+        Ar << Curve.Name;
+        Ar << Curve.Keys;
+        return Ar;
+    }
+};
+
 struct FSkeletalAnimationClip
 {
     FString Name;
@@ -311,7 +345,8 @@ struct FSkeletalAnimationClip
     float DurationSeconds = 0.0f;
     float SampleRate      = 30.0f;
 
-    TArray<FBoneAnimationTrack> Tracks;
+    TArray<FBoneAnimationTrack>  Tracks;
+    TArray<FAnimationFloatCurve> FloatCurves;
 
     friend FArchive& operator<<(FArchive& Ar, FSkeletalAnimationClip& Clip)
     {
@@ -319,6 +354,7 @@ struct FSkeletalAnimationClip
         Ar << Clip.DurationSeconds;
         Ar << Clip.SampleRate;
         Ar << Clip.Tracks;
+        Ar << Clip.FloatCurves;
         return Ar;
     }
 };
@@ -345,13 +381,30 @@ struct FMorphTargetDelta
     }
 };
 
+struct FMorphTargetShape
+{
+    // FBX BlendShapeChannel::GetTargetShapeFullWeights 값. 보통 100.0f가 최종 shape다.
+    float FullWeight = 100.0f;
+
+    TArray<FMorphTargetDelta> Deltas;
+
+    friend FArchive& operator<<(FArchive& Ar, FMorphTargetShape& Shape)
+    {
+        Ar << Shape.FullWeight;
+        Ar << Shape.Deltas;
+        return Ar;
+    }
+};
+
 struct FMorphTargetLOD
 {
-    TArray<FMorphTargetDelta> Deltas;
+    // FBX in-between shape 전체.
+    // 런타임에서 최종 shape가 필요하면 FullWeight 기준으로 선택/보간해서 사용한다.
+    TArray<FMorphTargetShape> Shapes;
 
     friend FArchive& operator<<(FArchive& Ar, FMorphTargetLOD& LOD)
     {
-        Ar << LOD.Deltas;
+        Ar << LOD.Shapes;
         return Ar;
     }
 };
@@ -366,6 +419,48 @@ struct FMorphTarget
     {
         Ar << Morph.Name;
         Ar << Morph.LODModels;
+        return Ar;
+    }
+};
+
+// ============================================================================
+// Static child meshes under skeleton bones
+// ============================================================================
+
+enum class ESkeletalStaticChildImportAction : uint8
+{
+    MergeAsRigidPart = 0,
+    KeepAsAttachedStaticMesh,
+    Ignore
+};
+
+struct FSkeletalStaticChildMesh
+{
+    FString SourceNodeName;
+
+    int32   ParentBoneIndex = -1;
+    FString ParentBoneName;
+
+    FMatrix LocalMatrixToParentBone;
+
+    ESkeletalStaticChildImportAction ImportAction = ESkeletalStaticChildImportAction::MergeAsRigidPart;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalStaticChildMesh& Mesh)
+    {
+        Ar << Mesh.SourceNodeName;
+        Ar << Mesh.ParentBoneIndex;
+        Ar << Mesh.ParentBoneName;
+
+        SkeletalMeshSerialization::SerializeMatrix(Ar, Mesh.LocalMatrixToParentBone);
+
+        uint8 ActionValue = static_cast<uint8>(Mesh.ImportAction);
+        Ar << ActionValue;
+
+        if (Ar.IsLoading())
+        {
+            Mesh.ImportAction = static_cast<ESkeletalStaticChildImportAction>(ActionValue);
+        }
+
         return Ar;
     }
 };
@@ -397,6 +492,9 @@ enum class ESkeletalImportWarningType : uint8
     UnsupportedMorphInBetween,
     UnsupportedMorphAnimation,
     UnsupportedMaterialProperty,
+
+    StaticChildOfBone,
+    CollisionProxySkippedFromRenderLOD,
 };
 
 struct FSkeletalImportWarning
@@ -437,8 +535,10 @@ struct FSkeletalImportSummary
     float DeduplicationRatio      = 0.0f;
     int32 TriangleCount           = 0;
 
-    int32 AnimationClipCount = 0;
-    int32 MorphTargetCount   = 0;
+    int32 AnimationClipCount      = 0;
+    int32 MorphTargetCount        = 0;
+    int32 StaticChildMeshCount    = 0;
+    int32 CollisionProxyMeshCount = 0;
 
     int32 GeneratedNormalCount     = 0;
     int32 GeneratedTangentCount    = 0;
@@ -472,6 +572,8 @@ struct FSkeletalImportSummary
 
         Ar << Summary.AnimationClipCount;
         Ar << Summary.MorphTargetCount;
+        Ar << Summary.StaticChildMeshCount;
+        Ar << Summary.CollisionProxyMeshCount;
 
         Ar << Summary.GeneratedNormalCount;
         Ar << Summary.GeneratedTangentCount;
@@ -506,6 +608,8 @@ struct FSkeletalMesh
 
     TArray<FSkeletalMeshLOD> LODModels;
 
+    TArray<FSkeletalStaticChildMesh> StaticChildMeshes;
+
     TArray<FSkeletalAnimationClip> Animations;
     TArray<FMorphTarget>           MorphTargets;
 
@@ -538,6 +642,7 @@ struct FSkeletalMesh
         Skeleton.Serialize(Ar);
 
         Ar << LODModels;
+        Ar << StaticChildMeshes;
         Ar << Animations;
         Ar << MorphTargets;
         Ar << ImportSummary;

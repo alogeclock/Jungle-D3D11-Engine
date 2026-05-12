@@ -6,6 +6,53 @@
 #include <cctype>
 #include <cstring>
 
+namespace
+{
+    static bool HasSkeletonDescendant(FbxNode* Node)
+    {
+        if (!Node)
+        {
+            return false;
+        }
+
+        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+        {
+            FbxNode* Child = Node->GetChild(ChildIndex);
+
+            if (FFbxSceneQuery::IsSkeletonNode(Child) || HasSkeletonDescendant(Child))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static void CollectFullSkeletonHierarchyRecursive(FbxNode* Node, const TArray<FbxNode*>& SeedNodes, TArray<FbxNode*>& OutBoneNodes)
+    {
+        if (!Node || FFbxSceneQuery::IsSceneRootNode(Node))
+        {
+            return;
+        }
+
+        const bool bSeedNode      = FFbxSceneQuery::ContainsNode(SeedNodes, Node);
+        const bool bSkeletonNode  = FFbxSceneQuery::IsSkeletonNode(Node);
+        const bool bKeepContainer = bSeedNode || bSkeletonNode || HasSkeletonDescendant(Node);
+
+        if (!bKeepContainer)
+        {
+            return;
+        }
+
+        FFbxSceneQuery::AddUniqueNode(OutBoneNodes, Node);
+
+        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+        {
+            CollectFullSkeletonHierarchyRecursive(Node->GetChild(ChildIndex), SeedNodes, OutBoneNodes);
+        }
+    }
+}
+
 // scene tree에서 mesh attribute를 가진 node를 모두 수집한다.
 void FFbxSceneQuery::CollectMeshNodes(FbxNode* Node, TArray<FbxNode*>& OutMeshNodes)
 {
@@ -143,6 +190,15 @@ void FFbxSceneQuery::FindImportedBoneRoot(const TArray<FbxNode*>& Nodes, TArray<
         {
             AddUniqueNode(OutRoots, Node);
         }
+    }
+}
+
+// skeleton root 아래의 full skeleton hierarchy를 수집한다.
+void FFbxSceneQuery::CollectFullSkeletonHierarchyFromRoots(const TArray<FbxNode*>& RootNodes, const TArray<FbxNode*>& SeedNodes, TArray<FbxNode*>& OutBoneNodes)
+{
+    for (FbxNode* RootNode : RootNodes)
+    {
+        CollectFullSkeletonHierarchyRecursive(RootNode, SeedNodes, OutBoneNodes);
     }
 }
 
