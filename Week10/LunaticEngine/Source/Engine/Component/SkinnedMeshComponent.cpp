@@ -7,7 +7,6 @@
 #include "Object/ObjectFactory.h"
 #include "Core/PropertyTypes.h"
 #include "Mesh/SkeletalMeshAsset.h"
-#include "Mesh/Skeleton.h"
 #include "Engine/Runtime/Engine.h"
 #include "Materials/MaterialManager.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
@@ -368,13 +367,19 @@ void USkinnedMeshComponent::RefreshBoneTransforms()
 	// base는 fallback으로 RefPose만 채운다.
 	// 진짜 애니메이션은 USkeletalMeshComponent가 override해서 채움.
 	if (!SkeletalMesh) return;
-	USkeleton* Sk = SkeletalMesh->GetSkeleton();
-	if (!Sk) return;
+	FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
+	if (!Asset) return;
+	const FSkeleton& Sk = Asset->Skeleton;
 
-	const FReferenceSkeleton& Ref = Sk->GetReferenceSkeleton();
-	if ((int32)BoneSpaceTransforms.size() != Ref.GetNum())
+	const int32 N = static_cast<int32>(Sk.Bones.size());
+	if ((int32)BoneSpaceTransforms.size() != N)
 	{
-		BoneSpaceTransforms = Ref.RefBonePose;
+		BoneSpaceTransforms.clear();
+		for (int32 i = 0; i < N; ++i)
+		{
+			const FMatrix& M = Sk.Bones[i].LocalBindPose;
+			BoneSpaceTransforms.push_back(FTransform(M.GetLocation(), M.ToQuat(), M.GetScale()));
+		}
 	}
 	FillComponentSpaceTransforms();
 }
@@ -382,11 +387,11 @@ void USkinnedMeshComponent::RefreshBoneTransforms()
 void USkinnedMeshComponent::FillComponentSpaceTransforms()
 {
 	if (!SkeletalMesh) return;
-	USkeleton* Sk = SkeletalMesh->GetSkeleton();
-	if (!Sk) return;
-	const FReferenceSkeleton& Ref = Sk->GetReferenceSkeleton();
+	FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
+	if (!Asset) return;
+	const FSkeleton& Sk = Asset->Skeleton;
 
-	const int32 N = Ref.GetNum();
+	const int32 N = static_cast<int32>(Sk.Bones.size());
 	if (N == 0)
 	{
 		ComponentSpaceMatrices.clear();
@@ -395,22 +400,26 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 	}
 	if ((int32)BoneSpaceTransforms.size() != N)
 	{
-		BoneSpaceTransforms = Ref.RefBonePose;
+		BoneSpaceTransforms.clear();
+		for (int32 i = 0; i < N; ++i)
+		{
+			const FMatrix& M = Sk.Bones[i].LocalBindPose;
+			BoneSpaceTransforms.push_back(FTransform(M.GetLocation(), M.ToQuat(), M.GetScale()));
+		}
 	}
 
 	ComponentSpaceMatrices.assign(N, FMatrix::Identity);
 	SkinningMatrices.assign(N, FMatrix::Identity);
 
 	// ParentIndex < ChildIndex 보장 → forward sweep.
-	// 곱 순서는 Skeleton::RebuildRefBasesInvMatrix와 동일해야 한다 (Local * Parent).
 	for (int32 i = 0; i < N; ++i)
 	{
 		const FMatrix Local    = BoneSpaceTransforms[i].ToMatrix();
-		const int32   Parent   = Ref.Bones[i].ParentIndex;
+		const int32   Parent   = Sk.Bones[i].ParentIndex;
 		const FMatrix ParentCS = (Parent >= 0) ? ComponentSpaceMatrices[Parent] : FMatrix::Identity;
 
 		ComponentSpaceMatrices[i] = Local * ParentCS;
-		SkinningMatrices[i]       = Ref.RefBasesInvMatrix[i] * ComponentSpaceMatrices[i];
+		SkinningMatrices[i]       = Sk.Bones[i].InverseBindPose * ComponentSpaceMatrices[i];
 	}
 }
 
@@ -434,31 +443,39 @@ bool USkinnedMeshComponent::SelfTest()
 	};
 
 	// 본 3개: root → spine(+Z 1) → head(+Z 1)
-	FReferenceSkeleton R;
-	R.Allocate(3);
-	R.Bones[0] = { FName("root"),  -1 };
-	R.Bones[1] = { FName("spine"),  0 };
-	R.Bones[2] = { FName("head"),   1 };
-	R.RefBonePose[0] = FTransform();
-	R.RefBonePose[1] = FTransform(FVector(0, 0, 1), FQuat::Identity, FVector(1, 1, 1));
-	R.RefBonePose[2] = FTransform(FVector(0, 0, 1), FQuat::Identity, FVector(1, 1, 1));
-	R.RebuildRefBasesInvMatrix();
+	FSkeleton R;
+	R.Bones.resize(3);
+	R.Bones[0].Name = "root";  R.Bones[0].ParentIndex = -1;
+	R.Bones[1].Name = "spine"; R.Bones[1].ParentIndex = 0;
+	R.Bones[2].Name = "head";  R.Bones[2].ParentIndex = 1;
+	
+	R.Bones[0].LocalBindPose = FMatrix::Identity;
+	R.Bones[1].LocalBindPose = FMatrix::MakeTranslationMatrix(FVector(0, 0, 1));
+	R.Bones[2].LocalBindPose = FMatrix::MakeTranslationMatrix(FVector(0, 0, 1));
+	
+	// Rebuild GlobalBindPose & InverseBindPose
+	for (int32 i = 0; i < 3; ++i)
+	{
+		const int32 Parent = R.Bones[i].ParentIndex;
+		R.Bones[i].GlobalBindPose = R.Bones[i].LocalBindPose * ((Parent >= 0) ? R.Bones[Parent].GlobalBindPose : FMatrix::Identity);
+		R.Bones[i].InverseBindPose = R.Bones[i].GlobalBindPose.GetInverse();
+	}
 
 	// FindBoneIndex sanity
-	check(R.FindBoneIndex(FName("spine")) == 1);
-	check(R.FindBoneIndex(FName("nope"))  == -1);
+	check(R.FindBoneIndexByName("spine") == 1);
+	check(R.FindBoneIndexByName("nope")  == -1);
 
 	// FillComponentSpaceTransforms와 동일 수학을 인라인으로 재현 (UObject 의존 회피).
-	const int32 N = R.GetNum();
+	const int32 N = static_cast<int32>(R.Bones.size());
 	TArray<FMatrix> CS(N, FMatrix::Identity);
 	TArray<FMatrix> Skin(N, FMatrix::Identity);
 	for (int32 i = 0; i < N; ++i)
 	{
-		const FMatrix Local    = R.RefBonePose[i].ToMatrix();
+		const FMatrix Local    = R.Bones[i].LocalBindPose;
 		const int32   Parent   = R.Bones[i].ParentIndex;
 		const FMatrix ParentCS = (Parent >= 0) ? CS[Parent] : FMatrix::Identity;
 		CS[i]   = Local * ParentCS;
-		Skin[i] = R.RefBasesInvMatrix[i] * CS[i];
+		Skin[i] = R.Bones[i].InverseBindPose * CS[i];
 	}
 
 	// invariant 1: RefPose ⇒ 모든 SkinningMatrix가 Identity
@@ -479,12 +496,12 @@ bool USkinnedMeshComponent::SelfTest()
 	// ─── 스키닝 커널 단위 테스트 ────────────────────────────────
 	// FSkeletalMeshObjectCPU::Update() 안의 per-vertex 수식과 동일한 식을 인라인으로 재현.
 	// 커널 자체의 수학 정확성만 검증 (GPU 디바이스 없이 가능).
-	auto SkinVertex = [](const FSkinVertex& V, const TArray<FMatrix>& Skin,
+	auto SkinVertex = [](const FSkeletalVertex& V, const TArray<FMatrix>& Skin,
 	                     FVector& OutPos, FVector& OutNrm)
 	{
 		OutPos = FVector(0, 0, 0);
 		OutNrm = FVector(0, 0, 0);
-		for (int k = 0; k < MAX_BONE_INFLUENCES; ++k)
+		for (int k = 0; k < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++k)
 		{
 			const float W = V.BoneWeights[k];
 			if (W <= 0.0f) continue;
@@ -502,13 +519,13 @@ bool USkinnedMeshComponent::SelfTest()
 	};
 
 	// 테스트 정점: 위치 (1,0,0), 노멀 (0,1,0), 본 0번에 100% 가중치
-	FSkinVertex V{};
+	FSkeletalVertex V{};
 	V.Pos = FVector(1, 0, 0);
 	V.Normal = FVector(0, 1, 0);
 	V.Color = FVector4(1, 1, 1, 1);
-	V.Tex = FVector2(0, 0);
+	V.UV[0] = FVector2(0, 0);
 	V.Tangent = FVector4(1, 0, 0, 1);
-	for (int k = 0; k < MAX_BONE_INFLUENCES; ++k) { V.BoneIndices[k] = 0; V.BoneWeights[k] = 0; }
+	for (int k = 0; k < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++k) { V.BoneIndices[k] = 0; V.BoneWeights[k] = 0; }
 	V.BoneWeights[0] = 1.0f;
 
 	// 커널 테스트 1: Identity skinning → output == input
@@ -550,7 +567,7 @@ bool USkinnedMeshComponent::SelfTest()
 	// 커널 테스트 4: 블렌딩 — 50% Identity + 50% Translation(2,0,0)
 	{
 		// 정점 가중치를 두 본으로 나눔
-		FSkinVertex Vb = V;
+		FSkeletalVertex Vb = V;
 		Vb.BoneIndices[0] = 0; Vb.BoneWeights[0] = 0.5f;
 		Vb.BoneIndices[1] = 1; Vb.BoneWeights[1] = 0.5f;
 

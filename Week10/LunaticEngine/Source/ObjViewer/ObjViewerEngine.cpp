@@ -6,7 +6,7 @@
 #include "GameFramework/World.h"
 #include "Object/ObjectFactory.h"
 #include "Mesh/ObjManager.h"
-#include "Mesh/Importer/FbxImporter.h"
+#include "Mesh/FbxImporter.h"
 #include "Mesh/StaticMeshAsset.h"
 #include "Component/StaticMeshComponent.h"
 #include "GameFramework/AActor.h"
@@ -193,11 +193,7 @@ void UObjViewerEngine::LoadPreviewFbxStaticMesh(const FString& FbxPath)
 	FStaticMesh* MeshAsset = new FStaticMesh();
 	TArray<FStaticMaterial> Materials;
 
-	FFbxImportOptions Options; 
-	Options.Scale = 1.0f;
-
-	if (!FFbxImporter::ImportStaticMesh(ResolvedFbxPath, Options, *MeshAsset, Materials))
-	{
+	if (!FFbxImporter::ImportStaticMesh(ResolvedFbxPath, *MeshAsset, Materials))	{
 		UE_LOG_CATEGORY(FbxImporter, Error, "FBX static mesh import failed: %s", ResolvedFbxPath.c_str());
 		delete MeshAsset;
 		return;
@@ -304,6 +300,5 @@ void UObjViewerEngine::ImportObjWithOptions(const FString& ObjPath, const FImpor
 
 void UObjViewerEngine::LogFbxSceneSummary(const FString& FbxPath)
 {
-	FFbxImportStats Stats;
-	FFbxImporter::LoadSceneSummary(FbxPath, Stats);
+	UE_LOG_CATEGORY(FbxImporter, Warning, "LogFbxSceneSummary is deprecated in the new FbxImporter.");
 }

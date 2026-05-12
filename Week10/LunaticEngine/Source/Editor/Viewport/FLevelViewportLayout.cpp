@@ -37,11 +37,10 @@
 #include "Component/SceneComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "GameFramework/StaticMeshActor.h"
-#include "Mesh/Skeleton.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/StaticMeshAsset.h"             // FStaticMesh / FNormalVertex
-#include "Mesh/Importer/FbxImporter.h"
+#include "Mesh/FbxImporter.h"
 
 #include <algorithm>
 #include <string>
@@ -54,21 +53,15 @@ namespace
 USkeletalMesh* CreateSkeletalMeshFromFBX(const FString& Path)
 {
 	FSkeletalMesh* Asset = new FSkeletalMesh();
-	FReferenceSkeleton RefSkel;
 	TArray<FStaticMaterial> Materials;
-	FFbxImportOptions Opts;
 
-	if (!FFbxImporter::ImportSkeletalMesh(Path, Opts, *Asset, RefSkel, Materials))
+	if (!FFbxImporter::ImportSkeletalMesh(Path, *Asset, Materials))
 	{
 		delete Asset;
 		return nullptr;
 	}
 
-	USkeleton* Sk = UObjectManager::Get().CreateObject<USkeleton>();
-	Sk->SetReferenceSkeleton(std::move(RefSkel));
-
 	USkeletalMesh* Mesh = UObjectManager::Get().CreateObject<USkeletalMesh>();
-	Mesh->SetSkeleton(Sk);
 	Mesh->SetSkeletalMaterials(std::move(Materials));
 	Mesh->SetSkeletalMeshAsset(Asset);
 	return Mesh;
@@ -79,17 +72,18 @@ USkeletalMesh* CreateSkeletalMeshFromFBX(const FString& Path)
 // AnimInstance 미구현 단계에서는 회전 없이 정지 상태
 USkeletalMesh* CreateTestSkeletalMesh()
 {
-	// Skeleton (본 1개)
-	USkeleton* Sk = UObjectManager::Get().CreateObject<USkeleton>();
-	FReferenceSkeleton Ref;
-	Ref.Allocate(1);
-	Ref.Bones[0] = { FName("root"), -1 };
-	Ref.RefBonePose[0] = FTransform();
-	Sk->SetReferenceSkeleton(std::move(Ref));
-
 	// Mesh asset (큐브 8정점, 12 삼각형, 모두 본 0번에 100% 가중치)
 	FSkeletalMesh* Asset = new FSkeletalMesh();
 	Asset->PathFileName = "DummyCube";
+	
+	// Skeleton (본 1개)
+	Asset->Skeleton.Bones.resize(1);
+	Asset->Skeleton.Bones[0].Name = "root";
+	Asset->Skeleton.Bones[0].ParentIndex = -1;
+	Asset->Skeleton.Bones[0].LocalBindPose = FMatrix::Identity;
+	Asset->Skeleton.Bones[0].GlobalBindPose = FMatrix::Identity;
+	Asset->Skeleton.Bones[0].InverseBindPose = FMatrix::Identity;
+
 	Asset->LODModels.resize(1);
 	FSkeletalMeshLOD& LOD = Asset->LODModels[0];
 
@@ -100,13 +94,13 @@ USkeletalMesh* CreateTestSkeletalMesh()
 	LOD.Vertices.resize(8);
 	for (int i = 0; i < 8; ++i)
 	{
-		FSkinVertex& V = LOD.Vertices[i];
+		FSkeletalVertex& V = LOD.Vertices[i];
 		V.Pos = P[i];
 		V.Normal = P[i].Normalized();
 		V.Color = FVector4(1, 1, 1, 1);
-		V.Tex = FVector2(0, 0);
+		V.UV[0] = FVector2(0, 0);
 		V.Tangent = FVector4(1, 0, 0, 1);
-		for (int k = 0; k < MAX_BONE_INFLUENCES; ++k) { V.BoneIndices[k] = 0; V.BoneWeights[k] = 0.0f; }
+		for (int k = 0; k < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++k) { V.BoneIndices[k] = 0; V.BoneWeights[k] = 0.0f; }
 		V.BoneWeights[0] = 1.0f;
 	}
 	LOD.Indices = {
@@ -123,7 +117,6 @@ USkeletalMesh* CreateTestSkeletalMesh()
 
 	// 3) UObject wrapper
 	USkeletalMesh* Mesh = UObjectManager::Get().CreateObject<USkeletalMesh>();
-	Mesh->SetSkeleton(Sk);
 	Mesh->SetSkeletalMeshAsset(Asset);
 	return Mesh;
 }

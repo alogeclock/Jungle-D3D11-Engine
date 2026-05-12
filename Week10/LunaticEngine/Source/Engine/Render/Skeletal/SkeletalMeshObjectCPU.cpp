@@ -33,10 +33,10 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 
 	for (size_t v = 0; v < LOD.Vertices.size(); v++)
 	{
-		const FSkinVertex& In = LOD.Vertices[v];
+		const FSkeletalVertex& In = LOD.Vertices[v];
 
 		FVector Pos(0, 0, 0), Normal(0, 0, 0);
-		for (int i = 0; i < MAX_BONE_INFLUENCES; i++)
+		for (int i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; i++)
 		{
 			const float Weight = In.BoneWeights[i];
 			if (Weight <= 0.0f)
@@ -57,7 +57,7 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 		Out.Position = Pos;
 		Out.Normal = Normal;
 		Out.Color = In.Color;
-		Out.UV = In.Tex;
+		Out.UV = In.UV[0];
 		Out.Tangent = In.Tangent;
 	}
 	MeshBuffer->Create(Device, SkinnedMeshData);

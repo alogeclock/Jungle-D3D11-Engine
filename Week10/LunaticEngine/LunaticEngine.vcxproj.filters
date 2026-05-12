@@ -1170,13 +1170,6 @@
       <Filter>ThirdParty\miniaudio</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\Mesh\Importer\FbxImporter.cpp" />
-    <ClCompile Include="Source\Engine\Mesh\Importer\ObjImporter.cpp" />
-    <ClCompile Include="Source\Engine\Mesh\SkeletalMesh.cpp" />
-    <ClCompile Include="Source\Engine\Mesh\SkeletalMeshAsset.cpp" />
-    <ClCompile Include="Source\Engine\Mesh\Skeleton.cpp" />
-    <ClCompile Include="Source\Engine\Component\SkinnedMeshComponent.cpp" />
-    <ClCompile Include="Source\Engine\Render\Skeletal\SkeletalMeshObjectCPU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
