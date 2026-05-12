@@ -2,6 +2,8 @@
 #include "Render/Scene/FScene.h"
 #include "Serialization/Archive.h"
 
+#include <cmath>
+
 IMPLEMENT_CLASS(USphereComponent, UShapeComponent)
 
 void USphereComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) {
@@ -31,4 +33,37 @@ void USphereComponent::UpdateWorldAABB() const {
 	WorldAABBMaxLocation = WorldCenter + FVector(SphereRadius, SphereRadius, SphereRadius);
 	bWorldAABBDirty = false;
 	bHasValidWorldAABB = true;
+}
+
+bool USphereComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
+{
+	const FVector Center = GetWorldLocation();
+	const FVector ToRay = Ray.Origin - Center;
+	const float A = Ray.Direction.Dot(Ray.Direction);
+	const float B = 2.0f * ToRay.Dot(Ray.Direction);
+	const float C = ToRay.Dot(ToRay) - SphereRadius * SphereRadius;
+	const float Discriminant = B * B - 4.0f * A * C;
+	if (Discriminant < 0.0f || std::abs(A) < 1e-8f)
+	{
+		return false;
+	}
+
+	const float SqrtDiscriminant = std::sqrt(Discriminant);
+	const float InvDenom = 1.0f / (2.0f * A);
+	float T = (-B - SqrtDiscriminant) * InvDenom;
+	if (T < 0.0f)
+	{
+		T = (-B + SqrtDiscriminant) * InvDenom;
+	}
+	if (T < 0.0f)
+	{
+		return false;
+	}
+
+	OutHitResult.HitComponent = this;
+	OutHitResult.Distance = T;
+	OutHitResult.WorldHitLocation = Ray.Origin + Ray.Direction * T;
+	OutHitResult.WorldNormal = (OutHitResult.WorldHitLocation - Center).Normalized();
+	OutHitResult.bHit = true;
+	return true;
 }

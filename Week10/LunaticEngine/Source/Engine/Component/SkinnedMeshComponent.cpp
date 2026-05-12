@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "Object/ObjectFactory.h"
+#include "Collision/RayUtils.h"
 #include "Core/PropertyTypes.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Engine/Runtime/Engine.h"
@@ -14,8 +15,6 @@
 #include "Render/Proxy/DirtyFlag.h"
 #include "Serialization/Archive.h"
 #include "Render/Skeletal/SkeletalMeshObject.h"
-#include <Render/Skeletal/SkeletalMeshObjectCPU.h>
-#include "Render/Device/D3DDevice.h"
 IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
 
 // FSkeletalMeshObject 포함 후에 디스트럭터 정의 — unique_ptr<>가 complete type을 요구.
@@ -106,11 +105,7 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState)
 {
 	SkeletalMesh = InMesh;
-	MeshObject.reset();
-	BoneSpaceTransforms.clear();
-	ComponentSpaceTransforms.clear();
-	ComponentSpaceMatrices.clear();
-	SkinningMatrices.clear();
+	InvalidateSkinnedMeshState(true);
 
 	if (InMesh)
 	{
@@ -121,8 +116,7 @@ void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool 
 
 		if (FSkeletalMesh* Asset = InMesh->GetSkeletalMeshAsset())
 		{
-			ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
-			MeshObject = std::make_unique<FSkeletalMeshObjectCPU>(Asset, Device);
+			MeshObject = GEngine ? GEngine->GetRenderer().CreateSkeletalMeshObjectCPU(Asset) : nullptr;
 
 			if (bBuildInitialSkinning)
 			{
@@ -139,14 +133,29 @@ void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool 
 		OverrideMaterials.clear();
 		MaterialSlots.clear();
 	}
-	bPoseDirty = true;
-	bSkinningDirty = true;
-	bBoundsDirty = true;
 	CacheLocalBounds();
 	if (bUpdateRenderState)
 	{
 		FinalizeSkeletalMeshRenderState();
 	}
+}
+
+void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
+{
+	MeshObject.reset();
+	if (bClearPose)
+	{
+		BoneSpaceTransforms.clear();
+		ComponentSpaceTransforms.clear();
+		ComponentSpaceMatrices.clear();
+		SkinningMatrices.clear();
+	}
+
+	bPoseDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
+	bHasValidBounds = false;
+	MarkWorldBoundsDirty();
 }
 
 void USkinnedMeshComponent::FinalizeSkeletalMeshRenderState()
@@ -166,14 +175,37 @@ void USkinnedMeshComponent::SetDisplayBones(bool bDisplay)
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
+void USkinnedMeshComponent::SetRenderLOD(uint32 LODIndex)
+{
+	if (!MeshObject || MeshObject->GetLOD() == LODIndex)
+	{
+		return;
+	}
+
+	MeshObject->SetLOD(LODIndex);
+	bSkinningDirty = true;
+	UpdateSkinnedMeshObject();
+}
+
 void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 {
-	if (!MeshObject)
+	if (!bCPUSkinning || !MeshObject)
 	{
 		return;
 	}
 
 	MeshObject->Update(SkinningMatrices);
+	FVector SkinnedCenter;
+	FVector SkinnedExtent;
+	if (MeshObject->GetSkinnedLocalBounds(SkinnedCenter, SkinnedExtent))
+	{
+		CachedLocalCenter = SkinnedCenter;
+		CachedLocalExtent = SkinnedExtent * std::max(BoundsScale, 0.1f);
+		bHasValidBounds = true;
+		bBoundsDirty = false;
+		MarkWorldBoundsDirty();
+	}
+
 	bSkinningDirty = false;
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
@@ -268,24 +300,52 @@ void USkinnedMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// 본 행렬 재계산
-	RefreshBoneTransforms();
+	if (!SkeletalMesh || !bCPUSkinning)
+	{
+		return;
+	}
 
-	// 결과를 MeshObject로 전달 -> CPU 스키닝 + VB 재생성
-	UpdateSkinnedMeshObject();
+	const bool bMissingPose =
+		ComponentSpaceMatrices.empty() ||
+		SkinningMatrices.empty();
+
+	if (bPoseDirty || bMissingPose)
+	{
+		RefreshBoneTransforms();
+	}
+
+	const bool bMissingBuffer =
+		!MeshObject ||
+		!MeshObject->GetMeshBuffer() ||
+		!MeshObject->GetMeshBuffer()->IsValid();
+
+	if (bSkinningDirty || bMissingBuffer)
+	{
+		UpdateSkinnedMeshObject();
+	}
 }
 
 // FSkeletalMeshLOD에는 RenderBuffer가 없음 (GPU 업로드 단계 미구현).
 // 일단 nullptr — 렌더 패스에서는 이 컴포넌트가 그려지지 않음.
 FMeshBuffer* USkinnedMeshComponent::GetMeshBuffer() const
 {
+	if (!bCPUSkinning || bHideSkin)
+	{
+		return nullptr;
+	}
+
 	return MeshObject ? MeshObject->GetMeshBuffer() : nullptr;
 }
 
 // FSkeletalVertex 레이아웃이 FNormalVertex와 달라 직접 노출할 수 없음.
 FMeshDataView USkinnedMeshComponent::GetMeshDataView() const
 {
-	return {};
+	if (!bCPUSkinning || bHideSkin)
+	{
+		return {};
+	}
+
+	return MeshObject ? MeshObject->GetMeshDataView() : FMeshDataView{};
 }
 
 void USkinnedMeshComponent::UpdateWorldAABB() const
@@ -314,11 +374,33 @@ void USkinnedMeshComponent::UpdateWorldAABB() const
 	bHasValidWorldAABB = true;
 }
 
-// 스켈레탈 메시는 매 프레임 변형되므로 bind-pose BVH는 정확하지 않음.
-// 현재는 picking 미지원.
-bool USkinnedMeshComponent::LineTraceComponent(const FRay& /*Ray*/, FRayHitResult& /*OutHitResult*/)
+bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
 {
-	return false;
+	const FMeshDataView MeshView = GetMeshDataView();
+	if (!MeshView.IsValid())
+	{
+		return false;
+	}
+
+	const FMatrix& WorldMatrix = GetWorldMatrix();
+	const FMatrix& WorldInverse = GetWorldInverseMatrix();
+	const bool bHit = FRayUtils::RaycastTriangles(
+		Ray,
+		WorldMatrix,
+		WorldInverse,
+		MeshView.VertexData,
+		MeshView.Stride,
+		MeshView.IndexData,
+		MeshView.IndexCount,
+		OutHitResult);
+
+	if (bHit)
+	{
+		OutHitResult.HitComponent = this;
+		OutHitResult.WorldHitLocation = Ray.Origin + Ray.Direction * OutHitResult.Distance;
+	}
+
+	return bHit;
 }
 
 static FArchive& operator<<(FArchive& Ar, FMaterialSlot& Slot)
@@ -436,21 +518,6 @@ void USkinnedMeshComponent::RefreshBoneTransforms()
 			BoneSpaceTransforms.push_back(FTransform(M.GetLocation(), M.ToQuat(), M.GetScale()));
 		}
 	}
-	TArray<bool> bBoneUpdated(N, false);
-
-	for (int32 BoneIndex = 0; BoneIndex < N; BoneIndex++)
-	{
-		const int32 ParentIndex = Sk.Bones[BoneIndex].ParentIndex;
-		FMatrix ParentCS = FMatrix::Identity;
-
-		if (ParentIndex >= 0)
-		{
-			ParentCS = ComponentSpaceMatrices[ParentIndex];
-		}
-		ComponentSpaceMatrices[BoneIndex] = BoneSpaceTransforms[BoneIndex].ToMatrix() * ParentCS;
-		SkinningMatrices[BoneIndex] = Sk.Bones[BoneIndex].InverseBindPose *ComponentSpaceMatrices[BoneIndex];
-	}
-
 	FillComponentSpaceTransforms();
 }
 
@@ -499,7 +566,7 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 	}
 
 	bPoseDirty = false;
-	bSkinningDirty = false;
+	bSkinningDirty = true;
 	bBoundsDirty = true;
 }
 

@@ -46,18 +46,7 @@ namespace
 					FRayHitResult CandidateHit{};
 					if (!Primitive->LineTraceComponent(Ray, CandidateHit))
 					{
-						float AABBTMin = 0.0f;
-						float AABBTMax = 0.0f;
-						const FBoundingBox Bounds = Primitive->GetWorldBoundingBox();
-						if (!FRayUtils::IntersectRayAABB(Ray, Bounds.Min, Bounds.Max, AABBTMin, AABBTMax))
-						{
-							continue;
-						}
-
-						CandidateHit.HitComponent = Primitive;
-						CandidateHit.Distance = AABBTMin >= 0.0f ? AABBTMin : AABBTMax;
-						CandidateHit.WorldHitLocation = Ray.Origin + Ray.Direction * CandidateHit.Distance;
-						CandidateHit.bHit = true;
+						continue;
 					}
 
 					if (CandidateHit.Distance < BestHit.Distance)

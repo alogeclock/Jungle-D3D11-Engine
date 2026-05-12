@@ -2,6 +2,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Matrix.h"
+#include "Render/Types/VertexTypes.h"
 
 class FMeshBuffer;
 struct FSkeletalMesh;
@@ -19,6 +20,22 @@ public:
 	// Skinning matrix 팔레트를 받아 정점 변형 + GPU 업로드
 	virtual void Update(const TArray<FMatrix>& InSkinningMatrices) = 0;
 
+	virtual void SetLOD(uint32 LODIndex) { (void)LODIndex; }
+	virtual uint32 GetLOD() const { return 0; }
+
 	// 프록시가 매 프레임 가져갈 결과
 	virtual FMeshBuffer* GetMeshBuffer() const = 0;
+
+	virtual bool GetSkinnedLocalBounds(FVector& OutCenter, FVector& OutExtent) const
+	{
+		OutCenter = FVector(0.0f, 0.0f, 0.0f);
+		OutExtent = FVector(0.0f, 0.0f, 0.0f);
+		return false;
+	}
+
+	// Component hit-test/editing paths need the current deformed geometry, not bind-pose vertices.
+	virtual FMeshDataView GetMeshDataView() const
+	{
+		return {}; 
+	}
 };

@@ -12,7 +12,11 @@
 #include "Render/Device/D3DDevice.h"
 #include "Render/Resource/RenderResources.h"
 
+#include <memory>
+
 class FScene;
+class FSkeletalMeshObject;
+struct FSkeletalMesh;
 
 class FRenderer
 {
@@ -35,6 +39,8 @@ public:
 
 	// 시스템 리소스 접근 (패스에서 Culling 등 직접 접근)
 	FSystemResources& GetResources() { return Resources; }
+
+	std::unique_ptr<FSkeletalMeshObject> CreateSkeletalMeshObjectCPU(const FSkeletalMesh* SourceMesh);
 
 	// 이전 프레임 컬링 시각화 디버그 라인 제출
 	void SubmitCullingDebugLines(class UWorld* World);

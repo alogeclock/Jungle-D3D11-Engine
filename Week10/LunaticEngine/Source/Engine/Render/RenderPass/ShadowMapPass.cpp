@@ -595,7 +595,7 @@ void FShadowMapPass::UpdateShadowCB(const FPassContext& Ctx)
 // DrawShadowCasters — 공용 프록시 순회 + depth-only 렌더링
 // ============================================================
 
-void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, FSystemResources& Resources, const FConvexVolume& LightFrustum, FSpatialPartition* Partition)
+void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, FSystemResources& Resources, const FConvexVolume& LightFrustum, FSpatialPartition* Partition, bool bRenderSkeletalMeshes)
 {
 	FShader* ShadowShader = FShaderManager::Get().GetOrCreate(EShaderPath::ShadowDepth);
 	if (!ShadowShader || !ShadowShader->IsValid()) return;
@@ -626,6 +626,7 @@ void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, F
 		if (!Proxy->CastsShadow()) continue;
 		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::NeverCull)) continue;
 		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::EditorOnly)) continue;
+		if (!bRenderSkeletalMeshes && Proxy->HasProxyFlag(EPrimitiveProxyFlags::SkeletalMesh)) continue;
 
 		if (!Partition && !LightFrustum.IntersectAABB(Proxy->GetCachedBounds())) continue;
 
@@ -675,7 +676,7 @@ void FShadowMapPass::DrawShadowCasters(const FPassContext& Ctx, const FConvexVol
 		if (UWorld* World = GEngine->GetWorld())
 			Partition = &World->GetPartition();
 	}
-	DrawShadowCasters(Ctx.Device.GetDeviceContext(), *Ctx.Scene, Ctx.Resources, LightFrustum, Partition);
+	DrawShadowCasters(Ctx.Device.GetDeviceContext(), *Ctx.Scene, Ctx.Resources, LightFrustum, Partition, Ctx.Frame.RenderOptions.ShowFlags.bSkeletalMesh);
 }
 
 // ============================================================

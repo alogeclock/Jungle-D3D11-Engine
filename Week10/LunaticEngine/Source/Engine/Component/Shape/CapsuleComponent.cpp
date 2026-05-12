@@ -2,6 +2,9 @@
 #include "Render/Scene/FScene.h"
 #include "Serialization/Archive.h"
 
+#include <cfloat>
+#include <cmath>
+
 IMPLEMENT_CLASS(UCapsuleComponent, UShapeComponent)
 
 void UCapsuleComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) {
@@ -75,4 +78,81 @@ void UCapsuleComponent::UpdateWorldAABB() const {
 	WorldAABBMaxLocation = WorldCenter + Extent;
 	bWorldAABBDirty = false;
 	bHasValidWorldAABB = true;
+}
+
+bool UCapsuleComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
+{
+	const FMatrix& WorldMatrix = GetWorldMatrix();
+	const FMatrix& WorldInverse = GetWorldInverseMatrix();
+
+	FRay LocalRay;
+	LocalRay.Origin = WorldInverse.TransformPositionWithW(Ray.Origin);
+	LocalRay.Direction = WorldInverse.TransformVector(Ray.Direction).Normalized();
+
+	float ClosestT = FLT_MAX;
+	const float BodyHalfHeight = CapsuleHalfHeight > CapsuleRadius ? CapsuleHalfHeight - CapsuleRadius : 0.0f;
+
+	auto AcceptT = [&](float T)
+	{
+		if (T >= 0.0f && T < ClosestT)
+		{
+			ClosestT = T;
+		}
+	};
+
+	const float A = LocalRay.Direction.X * LocalRay.Direction.X + LocalRay.Direction.Y * LocalRay.Direction.Y;
+	const float B = 2.0f * (LocalRay.Origin.X * LocalRay.Direction.X + LocalRay.Origin.Y * LocalRay.Direction.Y);
+	const float C = LocalRay.Origin.X * LocalRay.Origin.X + LocalRay.Origin.Y * LocalRay.Origin.Y - CapsuleRadius * CapsuleRadius;
+	const float Discriminant = B * B - 4.0f * A * C;
+	if (std::abs(A) >= 1e-8f && Discriminant >= 0.0f)
+	{
+		const float SqrtDiscriminant = std::sqrt(Discriminant);
+		const float InvDenom = 1.0f / (2.0f * A);
+		const float T0 = (-B - SqrtDiscriminant) * InvDenom;
+		const float T1 = (-B + SqrtDiscriminant) * InvDenom;
+		const float Z0 = LocalRay.Origin.Z + LocalRay.Direction.Z * T0;
+		const float Z1 = LocalRay.Origin.Z + LocalRay.Direction.Z * T1;
+		if (Z0 >= -BodyHalfHeight && Z0 <= BodyHalfHeight)
+		{
+			AcceptT(T0);
+		}
+		if (Z1 >= -BodyHalfHeight && Z1 <= BodyHalfHeight)
+		{
+			AcceptT(T1);
+		}
+	}
+
+	auto IntersectSphere = [&](const FVector& Center)
+	{
+		const FVector ToRay = LocalRay.Origin - Center;
+		const float SphereA = LocalRay.Direction.Dot(LocalRay.Direction);
+		const float SphereB = 2.0f * ToRay.Dot(LocalRay.Direction);
+		const float SphereC = ToRay.Dot(ToRay) - CapsuleRadius * CapsuleRadius;
+		const float SphereDiscriminant = SphereB * SphereB - 4.0f * SphereA * SphereC;
+		if (SphereDiscriminant < 0.0f || std::abs(SphereA) < 1e-8f)
+		{
+			return;
+		}
+
+		const float SqrtDiscriminant = std::sqrt(SphereDiscriminant);
+		const float InvDenom = 1.0f / (2.0f * SphereA);
+		AcceptT((-SphereB - SqrtDiscriminant) * InvDenom);
+		AcceptT((-SphereB + SqrtDiscriminant) * InvDenom);
+	};
+
+	IntersectSphere(FVector(0.0f, 0.0f, BodyHalfHeight));
+	IntersectSphere(FVector(0.0f, 0.0f, -BodyHalfHeight));
+
+	if (ClosestT == FLT_MAX)
+	{
+		return false;
+	}
+
+	const FVector LocalHit = LocalRay.Origin + LocalRay.Direction * ClosestT;
+	const FVector WorldHit = WorldMatrix.TransformPositionWithW(LocalHit);
+	OutHitResult.HitComponent = this;
+	OutHitResult.Distance = FVector::Distance(Ray.Origin, WorldHit);
+	OutHitResult.WorldHitLocation = WorldHit;
+	OutHitResult.bHit = true;
+	return true;
 }

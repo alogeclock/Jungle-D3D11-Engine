@@ -16,7 +16,8 @@ public:
         const TArray<FbxNode*>& SkinnedMeshNodes,
         const TArray<FbxNode*>& AllMeshNodes,
         FSkeleton&              OutSkeleton,
-        TMap<FbxNode*, int32>&  OutBoneNodeToIndex
+        TMap<FbxNode*, int32>&  OutBoneNodeToIndex,
+        FFbxImportContext*      BuildContext = nullptr
         );
 
     // FBX bind pose 또는 cluster transform matrix에서 첫 mesh bind matrix를 찾는다.
