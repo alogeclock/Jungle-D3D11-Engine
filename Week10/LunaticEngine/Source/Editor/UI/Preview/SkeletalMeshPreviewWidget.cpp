@@ -528,6 +528,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneHierarchyPanel()
 	ImGui::TextDisabled("%d bones", BoneCount);
 
 	ImGui::BeginChild("##BoneHierarchyTree", ImVec2(0.0f, 0.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 12.0f);
 	for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
 	{
 		const FBoneInfo& Bone = Skeleton->Bones[BoneIndex];
@@ -537,6 +538,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneHierarchyPanel()
 			DrawBoneTreeNode(*Skeleton, BoneIndex);
 		}
 	}
+	ImGui::PopStyleVar();
 	ImGui::EndChild();
 }
 
@@ -649,7 +651,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
 	const FString Label = Bone.Name.empty() ? FString("<Unnamed Bone>") : Bone.Name;
 	const bool bOpenNode = ImGui::TreeNodeEx("##BoneNode", Flags);
 	const bool bNodeClicked = ImGui::IsItemClicked();
-	ImGui::SameLine(0.0f, 4.0f);
+	ImGui::SameLine(0.0f, 0.0f);
 	if (BoneIcon && BoneIcon->IsLoaded())
 	{
 		ImGui::Image(BoneIcon->GetSRV(), ImVec2(16.0f, 16.0f));
@@ -658,7 +660,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
 		{
 			SelectBone(ViewportClient, SelectedBoneIndex, BoneIndex);
 		}
-		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SameLine(0.0f, 2.0f);
 	}
 	ImGui::TextUnformatted(Label.c_str());
 	const bool bLabelClicked = ImGui::IsItemClicked();
