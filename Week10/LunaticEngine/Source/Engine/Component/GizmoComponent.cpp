@@ -12,6 +12,7 @@
 #include "Render/Scene/FScene.h"
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 
 namespace
 {
@@ -58,7 +59,6 @@ void UGizmoComponent::DestroyRenderState()
 	}
 }
 
-#include <cmath>
 UGizmoComponent::UGizmoComponent()
 {
 	MeshData = &FMeshBufferManager::Get().GetMeshData(EMeshShape::TransGizmo);
@@ -578,39 +578,52 @@ void UGizmoComponent::UpdateLinearDrag(const FRay& Ray)
 		return;
 	}
 
-	FVector AxisVector = GetVectorForAxis(SelectedAxis);
-
-	FVector ViewDir = (GetWorldLocation() - Ray.Origin);
-	ViewDir.Normalize();
-
-	FVector PlaneNormal = AxisVector.Cross(ViewDir);
-	if (PlaneNormal.IsNearlyZero())
-	{
-		PlaneNormal = AxisVector.Cross(FVector::UpVector);
-	}
-	PlaneNormal.Normalize();
-
-	FVector ProjectDir = PlaneNormal.Cross(AxisVector);
-
-	float Denom = Ray.Direction.Dot(ProjectDir);
-	if (std::abs(Denom) < 1e-6f) return;
-
-	float DistanceToPlane = (GetWorldLocation() - Ray.Origin).Dot(ProjectDir) / Denom;
-	FVector CurrentIntersectionLocation = Ray.Origin + (Ray.Direction * DistanceToPlane);
-
+	const FVector AxisVector = GetVectorForAxis(SelectedAxis).Normalized();
+	
 	if (bIsFirstFrameOfDrag)
 	{
-		LastIntersectionLocation = CurrentIntersectionLocation;
-		bIsFirstFrameOfDrag = false;
+		FVector ViewDir = (Ray.Direction * -1.0f).Normalized();
+
+		FVector PlaneNormal = AxisVector.Cross(ViewDir);
+		if (PlaneNormal.IsNearlyZero())
+		{
+			PlaneNormal = AxisVector.Cross(FVector::UpVector);
+			if (PlaneNormal.IsNearlyZero())
+			{
+				PlaneNormal = AxisVector.Cross(FVector::RightVector);
+			}
+		}
+		PlaneNormal.Normalize();
+
+		DragPlaneNormal = PlaneNormal.Cross(AxisVector);
+		DragPlaneNormal.Normalize();
+
+		const float InitialDenom = Ray.Direction.Dot(DragPlaneNormal);
+		if (std::abs(InitialDenom) < 1e-6f)
+		{
+			return;
+		}
+
+		const float InitialDistance = (GetWorldLocation() - Ray.Origin).Dot(DragPlaneNormal) / InitialDenom;
+
+		LastIntersectionLocation = Ray.Origin + (Ray.Direction * InitialDistance);
+		bIsFirstFrameOfDrag      = false;
 		return;
 	}
 
-	FVector FullDelta = CurrentIntersectionLocation - LastIntersectionLocation;
+	const float Denom = Ray.Direction.Dot(DragPlaneNormal);
+	if (std::abs(Denom) < 1e-6f)
+	{
+		return;
+	}
 
-	float DragAmount = FullDelta.Dot(AxisVector);
-
+	const float   DistanceToPlane             = (GetWorldLocation() - Ray.Origin).Dot(DragPlaneNormal) / Denom;
+	const FVector CurrentIntersectionLocation = Ray.Origin + (Ray.Direction * DistanceToPlane);
+	const FVector FullDelta                   = CurrentIntersectionLocation - LastIntersectionLocation;
+	const float   DragAmount                  = FullDelta.Dot(AxisVector);
+	
 	HandleDrag(DragAmount);
-
+	
 	LastIntersectionLocation = CurrentIntersectionLocation;
 }
 
@@ -931,6 +944,57 @@ uint32 UGizmoComponent::ComputeAxisMask(ELevelViewportType ViewportType, EGizmoM
 		return ViewAxis;            // Rotate: 시선 축만
 
 	return AllAxes & ~ViewAxis;     // Translate/Scale: 시선 축 제외
+}
+
+uint32 UGizmoComponent::ComputeAxisMaskForView(ELevelViewportType ViewportType, const FVector& CameraForward, EGizmoMode Mode) const
+{
+	constexpr uint32 AllAxes = 0x7;
+
+	// Perspective and free-ortho can use all handles. The fixed orthographic views
+	// are the only views that need to hide the axis most parallel to the camera.
+	if (ViewportType == ELevelViewportType::Perspective || ViewportType == ELevelViewportType::FreeOrthographic)
+	{
+		return AllAxes;
+	}
+
+	FVector ViewDir = CameraForward;
+	if (ViewDir.IsNearlyZero())
+	{
+		return ComputeAxisMask(ViewportType, Mode);
+	}
+	ViewDir.Normalize();
+
+	int32 ViewAxisIndex = -1;
+	float BestAlignment = -1.0f;
+	for (int32 Axis = 0; Axis < 3; ++Axis)
+	{
+		FVector AxisDir = GetVectorForAxis(Axis);
+		if (AxisDir.IsNearlyZero())
+		{
+			continue;
+		}
+		AxisDir.Normalize();
+
+		const float Alignment = std::abs(AxisDir.Dot(ViewDir));
+		if (Alignment > BestAlignment)
+		{
+			BestAlignment = Alignment;
+			ViewAxisIndex = Axis;
+		}
+	}
+
+	if (ViewAxisIndex < 0)
+	{
+		return ComputeAxisMask(ViewportType, Mode);
+	}
+
+	const uint32 ViewAxis = 1u << ViewAxisIndex;
+	if (Mode == EGizmoMode::Rotate)
+	{
+		return ViewAxis;
+	}
+
+	return AllAxes & ~ViewAxis;
 }
 
 void UGizmoComponent::Deactivate()

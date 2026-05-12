@@ -45,6 +45,7 @@ private:
 	void ApplyPreviewGizmoToSelectedBone();
 	void ResetPreviewGizmoRotationDragState();
 	bool HandlePreviewGizmoInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
+	void UpdateOrbitTargetForAltNavigation();
 
 private:
 	USkeletalMesh* PreviewSkeletalMesh = nullptr;

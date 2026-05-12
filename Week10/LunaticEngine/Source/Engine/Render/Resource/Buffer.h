@@ -15,7 +15,8 @@ public:
 	FVertexBuffer(FVertexBuffer&&) noexcept;
 	FVertexBuffer& operator=(FVertexBuffer&&) noexcept;
 
-	void Create(ID3D11Device* InDevice, const void* InData, uint32 InVertexCount, uint32 InByteWidth, uint32 InStride);
+	void Create(ID3D11Device* InDevice, const void* InData, uint32 InVertexCount, uint32 InByteWidth, uint32 InStride, bool bIsDynamic = false);
+	void Update(ID3D11DeviceContext* InContext, const void* InData, uint32 InByteWidth);
 	void Release();
 
 	uint32 GetVertexCount() const { return VertexCount; }

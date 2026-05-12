@@ -43,8 +43,9 @@ public:
 	void SetAxisMask(uint32 InMask) { AxisMask = InMask; }
 	uint32 GetAxisMask() const { return AxisMask; }
 
-	// ViewportType + GizmoMode → AxisMask 계산 (Proxy에서도 사용)
+	// Legacy world-axis mask. Prefer ComputeAxisMaskForView() when a camera direction is available.
 	static uint32 ComputeAxisMask(ELevelViewportType ViewportType, EGizmoMode Mode);
+	uint32 ComputeAxisMaskForView(ELevelViewportType ViewportType, const FVector& CameraForward, EGizmoMode Mode) const;
 	void UpdateHoveredAxis(int Index);	
 	void UpdateDrag(const FRay& Ray);
 	void DragEnd();

@@ -91,6 +91,8 @@ protected:
 	bool bHideSkin = false;
 	bool bDisplayBones = false;
 
+	float BoundsScale = 1.0f;
+
 	FVector CachedLocalCenter = { 0, 0, 0 };
 	FVector CachedLocalExtent = { 0.5f, 0.5f, 0.5f };
 	bool bHasValidBounds = false;
