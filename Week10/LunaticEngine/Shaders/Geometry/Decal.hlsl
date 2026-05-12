@@ -18,16 +18,16 @@ PS_Input_Decal VS(VS_Input_PNCT input)
 {
     PS_Input_Decal output;
 
-    float4 worldPos = mul(float4(input.position, 1.0f), Model);
-    output.position = mul(mul(worldPos, View), Projection);
+    float4 worldPos = mul(Model, float4(input.position, 1.0f));
+    output.position = mul(Projection, mul(View, worldPos));
     output.worldPos = worldPos.xyz;
-    output.normal = normalize(mul(input.normal, (float3x3) NormalMatrix));
+    output.normal = normalize(mul((float3x3) NormalMatrix, input.normal));
     return output;
 }
 
 float4 PS(PS_Input_Decal input) : SV_TARGET
 {
-    float3 decalLocalPos = mul(float4(input.worldPos, 1.0f), DecalWorldToLocal).xyz;
+    float3 decalLocalPos = mul(DecalWorldToLocal, float4(input.worldPos, 1.0f)).xyz;
 
     if (abs(decalLocalPos.x) > 0.5f || abs(decalLocalPos.y) > 0.5f || abs(decalLocalPos.z) > 0.5f)
     {

@@ -1,6 +1,8 @@
 #ifndef FORWARD_LIGHT_DATA_HLSLI
 #define FORWARD_LIGHT_DATA_HLSLI
 
+#pragma pack_matrix(column_major)
+
 // =============================================================================
 // Forward Shading 라이팅 구조체 & 리소스 바인딩
 // C++ ForwardLightData.h 와 바이트 단위로 1:1 대응

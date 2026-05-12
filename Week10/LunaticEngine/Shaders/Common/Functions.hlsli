@@ -7,15 +7,15 @@
 // Model -> View -> Projection 변환
 float4 ApplyMVP(float3 pos)
 {
-    float4 world = mul(float4(pos, 1.0f), Model);
-    float4 view = mul(world, View);
-    return mul(view, Projection);
+    float4 world = mul(Model, float4(pos, 1.0f));
+    float4 view = mul(View, world);
+    return mul(Projection, view);
 }
 
 // View -> Projection 변환 (CPU 빌보드용 — 이미 월드 좌표인 정점)
 float4 ApplyVP(float3 worldPos)
 {
-    return mul(mul(float4(worldPos, 1.0f), View), Projection);
+    return mul(Projection, mul(View, float4(worldPos, 1.0f)));
 }
 
 // 와이어프레임 모드 적용 — baseColor를 WireframeRGB로 대체

@@ -4,6 +4,7 @@
 #include "Profiling/StartupProfiler.h"
 #include "Engine/Serialization/SceneSaveManager.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/Component/SkinnedMeshComponent.h"
 #include <iostream>
 #include <objbase.h>
 #include <wincodec.h>
@@ -30,6 +31,9 @@ void FEngineLoop::CreateEngine()
 bool FEngineLoop::Init(HINSTANCE hInstance, int nShowCmd)
 {
 	FLogManager::Get().Initialize();
+
+	// 본 포즈 파이프라인 invariant 검증 (Debug에서만 check() 트립).
+	USkinnedMeshComponent::SelfTest();
 
 	// WIC inproc factory는 MTA에서 가장 안정적으로 동작한다.
 	HRESULT ComInitHr = CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);

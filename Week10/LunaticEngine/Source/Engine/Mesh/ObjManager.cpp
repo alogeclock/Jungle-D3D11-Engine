@@ -1,6 +1,5 @@
 ﻿#include "Mesh/ObjManager.h"
 #include "Mesh/StaticMesh.h"
-#include "Mesh/ObjImporter.h"
 #include "Mesh/StaticMeshBake.h"
 #include "Materials/Material.h"
 #include "Core/Log.h"
@@ -131,7 +130,7 @@ UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName, const F
 	FStaticMesh* NewMeshAsset = new FStaticMesh();
 	TArray<FStaticMaterial> ParsedMaterials;
 
-	if (FObjImporter::Import(PathFileName, Options, *NewMeshAsset, ParsedMaterials))
+	if (FFbxImporter::ImportStaticMesh(PathFileName, *NewMeshAsset, ParsedMaterials))
 	{
 		NewMeshAsset->PathFileName = PathFileName;
 		// MaterialIndex 캐싱을 위해 Materials를 먼저 설정
@@ -289,7 +288,7 @@ UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName, ID3D11D
 		FStaticMesh* NewMeshAsset = new FStaticMesh();
 		TArray<FStaticMaterial> ParsedMaterials;
 
-		if (FObjImporter::Import(ObjPath, *NewMeshAsset, ParsedMaterials))
+		if (FFbxImporter::ImportStaticMesh(ObjPath, *NewMeshAsset, ParsedMaterials))
 		{
 			// MaterialIndex 캐싱을 위해 Materials를 먼저 설정
 			StaticMesh->SetStaticMaterials(std::move(ParsedMaterials));

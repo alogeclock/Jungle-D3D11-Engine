@@ -45,8 +45,8 @@ namespace
 
 	uint64 MakePostProcessSortKey(uint16 UserBits)
 	{
-		return (static_cast<uint64>(ERenderPass::PostProcess) & 0xF) << 60
-			| (static_cast<uint64>(UserBits) & 0xFFF);
+		return (static_cast<uint64>(ERenderPass::PostProcess) & 0xFF) << 56
+			| (static_cast<uint64>(UserBits) & 0xFF);
 	}
 }
 
@@ -327,6 +327,7 @@ void FDrawCommandBuilder::BuildCommands(const FFrameContext& Frame, FScene* Scen
 void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene& Scene, const FCollectOutput& Output)
 {
 	const bool bShowBoundingVolume = Frame.RenderOptions.ShowFlags.bBoundingVolume;
+	const bool bSelectionVisuals = Frame.RenderOptions.ShowFlags.bSelectionOutline;
 
 	for (FPrimitiveSceneProxy* Proxy : Output.RenderableProxies)
 	{
@@ -343,7 +344,7 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 		else
 			BuildMeshCommands(Proxy);
 
-		if (Proxy->IsSelected())
+		if (bSelectionVisuals && Proxy->IsSelected())
 			BuildSelectionCommands(Proxy, bShowBoundingVolume, Scene);
 	}
 }
@@ -548,7 +549,7 @@ void FDrawCommandBuilder::BuildPostProcessCommands(const FFrameContext& Frame, c
 	}
 
 	// Outline (UserBits=1 → HeightFog 뒤)
-	if (bHasSelectionMaskCommands)
+	if (bHasSelectionMaskCommands && Frame.RenderOptions.ShowFlags.bSelectionOutline)
 	{
 		FShader* PPShader = FShaderManager::Get().GetOrCreate(EShaderPath::Outline);
 		if (PPShader)

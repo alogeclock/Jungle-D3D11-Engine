@@ -37,6 +37,18 @@ bool FPostProcessPass::BeginPass(const FPassContext& Ctx)
 
 	DC->OMSetRenderTargets(1, &Cache.RTV, Cache.DSV);
 
+	if (Frame.DepthCopySRV)
+	{
+		ID3D11ShaderResourceView* depthSRV = Frame.DepthCopySRV;
+		DC->PSSetShaderResources(ESystemTexSlot::SceneDepth, 1, &depthSRV);
+	}
+
+	if (Frame.NormalSRV)
+	{
+		ID3D11ShaderResourceView* normalSRV = Frame.NormalSRV;
+		DC->PSSetShaderResources(ESystemTexSlot::GBufferNormal, 1, &normalSRV);
+	}
+
 	ID3D11ShaderResourceView* stencilSRV = Frame.StencilCopySRV;
 	DC->PSSetShaderResources(ESystemTexSlot::Stencil, 1, &stencilSRV);
 
