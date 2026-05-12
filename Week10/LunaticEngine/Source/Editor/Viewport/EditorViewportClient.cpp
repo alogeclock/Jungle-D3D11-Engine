@@ -365,10 +365,35 @@ void FEditorViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, floa
 			Camera->Rotate(Yaw, Pitch);
 		}
 	}
-	else if (!EditorRotateAccumulator.IsNearlyZero() && bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
+	else
 	{
-		const float PanScale = CameraState.OrthoWidth * 0.002f * MoveSensitivity;
-		Camera->MoveLocal(FVector(0, -EditorRotateAccumulator.Y * PanScale, EditorRotateAccumulator.Z * PanScale));
+		const float VPWidth  = Viewport ? static_cast<float>(Viewport->GetWidth()) : WindowWidth;
+		const float VPHeight = Viewport ? static_cast<float>(Viewport->GetHeight()) : WindowHeight;
+
+		const float SafeVPWidth  = (std::max)(VPWidth, 1.0f);
+		const float SafeVPHeight = (std::max)(VPHeight, 1.0f);
+		const float SafeAspect   = (std::max)(CameraState.AspectRatio, 1e-6f);
+
+		const float OrthoHeight    = CameraState.OrthoWidth / SafeAspect;
+		const float WorldPerPixelX = CameraState.OrthoWidth / SafeVPWidth;
+		const float WorldPerPixelY = OrthoHeight / SafeVPHeight;
+
+		auto ApplyOrthoPan = [&](const FVector& MouseDelta)
+		{
+			const FVector PanDelta = Camera->GetRightVector() * (-MouseDelta.X * WorldPerPixelX * MoveSensitivity) + Camera->GetUpVector() * (MouseDelta.Y *
+				WorldPerPixelY * MoveSensitivity);
+			TargetLocation += PanDelta;
+		};
+
+		if (!EditorPanAccumulator.IsNearlyZero())
+		{
+			ApplyOrthoPan(EditorMoveAccumulator);
+		}
+
+		if (!EditorRotateAccumulator.IsNearlyZero() && bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
+		{
+			ApplyOrthoPan(EditorRotateAccumulator);
+		}
 	}
 
 	const float ZoomSpeed = Settings ? Settings->CameraZoomSpeed : 300.f;
