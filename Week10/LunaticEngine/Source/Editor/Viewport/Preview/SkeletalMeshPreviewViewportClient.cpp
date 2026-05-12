@@ -24,8 +24,6 @@ namespace
 {
 	// Picking
 	bool GetSkeletalMeshBounds(USkeletalMesh* SkeletalMesh, FVector& OutCenter, FVector& OutExtent);
-	float DistancePointToSegment2D(const FVector2& Point, const FVector2& SegmentStart, const FVector2& SegmentEnd);
-	bool ProjectWorldToViewport(const FMatrix& ViewProjection, const FVector& WorldPosition, float ViewportWidth, float ViewportHeight, FVector2& OutScreenPosition, float& OutDepth);
 	bool TryConvertMouseToViewportPixel(const ImVec2& MousePos, const FRect& ViewportRect, const FViewport* Viewport, float FallbackWidth, float FallbackHeight, float& OutX, float& OutY);
 	
 	// Update Transform
@@ -153,61 +151,8 @@ int32 FSkeletalMeshPreviewViewportClient::PickBoneAtViewportPosition(float Local
 		return -1;
 	}
 
-	const FSkeletalMesh* MeshAsset = PreviewSkeletalMesh->GetSkeletalMeshAsset();
-	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
-	if (!Skeleton || Skeleton->Bones.empty())
-	{
-		return -1;
-	}
-
-	const FMatrix ViewProjection = Camera->GetViewProjectionMatrix();
-	const FMatrix& ComponentWorld = PreviewComponent->GetWorldMatrix();
-	const FVector2 PickPosition(LocalX, LocalY);
-	float BestDistance = FLT_MAX;
-	int32 BestBoneIndex = -1;
-
-	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(Skeleton->Bones.size()); ++BoneIndex)
-	{
-		const FTransform* BoneTransform = PreviewComponent->GetBoneComponentSpaceTransform(BoneIndex);
-		if (!BoneTransform)
-		{
-			continue;
-		}
-
-		FVector SegmentStart = ComponentWorld.TransformPositionWithW(BoneTransform->ToMatrix().GetLocation());
-		FVector SegmentEnd = SegmentStart;
-		const int32 ParentIndex = Skeleton->Bones[BoneIndex].ParentIndex;
-		const FTransform* ParentTransform = PreviewComponent->GetBoneComponentSpaceTransform(ParentIndex);
-		if (ParentTransform)
-		{
-			SegmentStart = ComponentWorld.TransformPositionWithW(ParentTransform->ToMatrix().GetLocation());
-		}
-		else
-		{
-			const FVector AxisNudge = BoneTransform->Rotation.GetForwardVector() * 2.5f;
-			SegmentStart = SegmentStart - AxisNudge;
-		}
-
-		FVector2 ScreenStart;
-		FVector2 ScreenEnd;
-		float StartDepth = 0.0f;
-		float EndDepth = 0.0f;
-		if (!ProjectWorldToViewport(ViewProjection, SegmentStart, ViewportWidth, ViewportHeight, ScreenStart, StartDepth) ||
-			!ProjectWorldToViewport(ViewProjection, SegmentEnd, ViewportWidth, ViewportHeight, ScreenEnd, EndDepth))
-		{
-			continue;
-		}
-
-		const float Distance = DistancePointToSegment2D(PickPosition, ScreenStart, ScreenEnd);
-		if (Distance < BestDistance)
-		{
-			BestDistance = Distance;
-			BestBoneIndex = BoneIndex;
-		}
-	}
-
-	const float PickThreshold = 8.0f;
-	return BestDistance <= PickThreshold ? BestBoneIndex : -1;
+	const FRay Ray = Camera->DeprojectScreenToWorld(LocalX, LocalY, ViewportWidth, ViewportHeight);
+	return PreviewComponent->PickBoneArmature(Ray);
 }
 
 bool FSkeletalMeshPreviewViewportClient::IsPreviewGizmoHitAtViewportPosition(float LocalX, float LocalY, float ViewportWidth, float ViewportHeight) const
@@ -547,30 +492,6 @@ namespace
 		OutCenter = LOD->BoundsCenter;
 		OutExtent = LOD->BoundsExtent;
 		return true;
-	}
-
-	float DistancePointToSegment2D(const FVector2& Point, const FVector2& SegmentStart, const FVector2& SegmentEnd)
-	{
-		const FVector2 Segment = SegmentEnd - SegmentStart;
-		const float SegmentLengthSq = Segment.Dot(Segment);
-		if (SegmentLengthSq <= 1.e-6f)
-		{
-			return (Point - SegmentStart).Length();
-		}
-
-		const float T = Clamp((Point - SegmentStart).Dot(Segment) / SegmentLengthSq, 0.0f, 1.0f);
-		const FVector2 Closest = SegmentStart + Segment * T;
-		return (Point - Closest).Length();
-	}
-
-	bool ProjectWorldToViewport(const FMatrix& ViewProjection, const FVector& WorldPosition, float ViewportWidth, float ViewportHeight, FVector2& OutScreenPosition, float& OutDepth)
-	{
-		const FVector ClipSpace = ViewProjection.TransformPositionWithW(WorldPosition);
-		OutScreenPosition.X = (ClipSpace.X * 0.5f + 0.5f) * ViewportWidth;
-		OutScreenPosition.Y = (1.0f - (ClipSpace.Y * 0.5f + 0.5f)) * ViewportHeight;
-		OutDepth = ClipSpace.Z;
-		return OutDepth >= 0.0f && OutDepth <= 1.0f &&
-			std::isfinite(OutScreenPosition.X) && std::isfinite(OutScreenPosition.Y) && std::isfinite(OutDepth);
 	}
 
 	// 마우스 위치와 뷰포트의 위치 정보를 계산해서 마우스 위치가 뷰포트의 어느 위치에 존재하는지 계산합니다.
