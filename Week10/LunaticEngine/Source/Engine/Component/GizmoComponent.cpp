@@ -578,39 +578,52 @@ void UGizmoComponent::UpdateLinearDrag(const FRay& Ray)
 		return;
 	}
 
-	FVector AxisVector = GetVectorForAxis(SelectedAxis);
-
-	FVector ViewDir = (GetWorldLocation() - Ray.Origin);
-	ViewDir.Normalize();
-
-	FVector PlaneNormal = AxisVector.Cross(ViewDir);
-	if (PlaneNormal.IsNearlyZero())
-	{
-		PlaneNormal = AxisVector.Cross(FVector::UpVector);
-	}
-	PlaneNormal.Normalize();
-
-	FVector ProjectDir = PlaneNormal.Cross(AxisVector);
-
-	float Denom = Ray.Direction.Dot(ProjectDir);
-	if (std::abs(Denom) < 1e-6f) return;
-
-	float DistanceToPlane = (GetWorldLocation() - Ray.Origin).Dot(ProjectDir) / Denom;
-	FVector CurrentIntersectionLocation = Ray.Origin + (Ray.Direction * DistanceToPlane);
-
+	const FVector AxisVector = GetVectorForAxis(SelectedAxis);
+	
 	if (bIsFirstFrameOfDrag)
 	{
-		LastIntersectionLocation = CurrentIntersectionLocation;
-		bIsFirstFrameOfDrag = false;
+		FVector ViewDir = (Ray.Direction * -1.0f).Normalized();
+
+		FVector PlaneNormal = AxisVector.Cross(ViewDir);
+		if (PlaneNormal.IsNearlyZero())
+		{
+			PlaneNormal = AxisVector.Cross(FVector::UpVector);
+			if (PlaneNormal.IsNearlyZero())
+			{
+				PlaneNormal = AxisVector.Cross(FVector::RightVector);
+			}
+		}
+		PlaneNormal.Normalize();
+
+		DragPlaneNormal = PlaneNormal.Cross(AxisVector);
+		DragPlaneNormal.Normalize();
+
+		const float InitialDenom = Ray.Direction.Dot(DragPlaneNormal);
+		if (std::abs(InitialDenom) < 1e-6f)
+		{
+			return;
+		}
+
+		const float InitialDistance = (GetWorldLocation() - Ray.Origin).Dot(DragPlaneNormal) / InitialDenom;
+
+		LastIntersectionLocation = Ray.Origin + (Ray.Direction * InitialDistance);
+		bIsFirstFrameOfDrag      = false;
 		return;
 	}
 
-	FVector FullDelta = CurrentIntersectionLocation - LastIntersectionLocation;
+	const float Denom = Ray.Direction.Dot(DragPlaneNormal);
+	if (std::abs(Denom) < 1e-6f)
+	{
+		return;
+	}
 
-	float DragAmount = FullDelta.Dot(AxisVector);
-
+	const float   DistanceToPlane             = (GetWorldLocation() - Ray.Origin).Dot(DragPlaneNormal) / Denom;
+	const FVector CurrentIntersectionLocation = Ray.Origin + (Ray.Direction * DistanceToPlane);
+	const FVector FullDelta                   = CurrentIntersectionLocation - LastIntersectionLocation;
+	const float   DragAmount                  = FullDelta.Dot(DragPlaneNormal);
+	
 	HandleDrag(DragAmount);
-
+	
 	LastIntersectionLocation = CurrentIntersectionLocation;
 }
 

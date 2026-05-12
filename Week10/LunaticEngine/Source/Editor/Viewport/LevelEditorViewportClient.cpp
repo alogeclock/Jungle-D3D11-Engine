@@ -550,8 +550,13 @@ void FLevelEditorViewportClient::SetViewportType(ELevelViewportType NewType)
 	case ELevelViewportType::Right: Position = FVector(0, OrthoDistance, 0); Rotation = FVector(0, 0, -90.0f); break;
 	default: break;
 	}
-	Camera->SetRelativeLocation(Position);
-	Camera->SetRelativeRotation(Rotation);
+	FVector Pivot = Camera->GetWorldLocation() + Camera->GetForwardVector() * OrthoDistance;
+	if (SelectionManager && SelectionManager->GetPrimarySelection())
+	{
+		Pivot = SelectionManager->GetPrimarySelection()->GetActorLocation();
+	}
+	Camera->SetWorldLocation(Pivot + Position);
+	Camera->SetRelativeRotation(FRotator(Rotation));
 	SyncCameraSmoothingTarget();
 }
 
