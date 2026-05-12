@@ -284,11 +284,55 @@ bool FFbxSkeletalMeshImporter::Import(
         BuildContext.AddWarning(ESkeletalImportWarningType::MissingBindPose, "Bind pose validation error is larger than tolerance.");
     }
 
-    BuildContext.Summary.BoneCount          = static_cast<int32>(OutMesh.Skeleton.Bones.size());
-    BuildContext.Summary.LODCount           = static_cast<int32>(OutMesh.LODModels.size());
-    BuildContext.Summary.MaterialSlotCount  = static_cast<int32>(OutMaterials.size());
-    BuildContext.Summary.AnimationClipCount = static_cast<int32>(OutMesh.Animations.size());
-    BuildContext.Summary.MorphTargetCount   = static_cast<int32>(OutMesh.MorphTargets.size());
+    BuildContext.Summary.BoneCount         = static_cast<int32>(OutMesh.Skeleton.Bones.size());
+    BuildContext.Summary.LODCount          = static_cast<int32>(OutMesh.LODModels.size());
+    BuildContext.Summary.MaterialSlotCount = static_cast<int32>(OutMaterials.size());
+
+    BuildContext.Summary.AnimationClipCount          = static_cast<int32>(OutMesh.Animations.size());
+    BuildContext.Summary.AnimationTrackCount         = 0;
+    BuildContext.Summary.AnimationKeyCount           = 0;
+    BuildContext.Summary.AnimationFloatCurveCount    = 0;
+    BuildContext.Summary.AnimationFloatCurveKeyCount = 0;
+
+    for (const FSkeletalAnimationClip& Clip : OutMesh.Animations)
+    {
+        BuildContext.Summary.AnimationTrackCount += static_cast<int32>(Clip.Tracks.size());
+
+        for (const FBoneAnimationTrack& Track : Clip.Tracks)
+        {
+            BuildContext.Summary.AnimationKeyCount        += static_cast<int32>(Track.Keys.size());
+            BuildContext.Summary.AnimationFloatCurveCount += static_cast<int32>(Track.RawCurves.size());
+
+            for (const FBoneRawFloatCurve& RawCurve : Track.RawCurves)
+            {
+                BuildContext.Summary.AnimationFloatCurveKeyCount += static_cast<int32>(RawCurve.Curve.Keys.size());
+            }
+        }
+
+        BuildContext.Summary.AnimationFloatCurveCount += static_cast<int32>(Clip.FloatCurves.size());
+
+        for (const FAnimationFloatCurve& Curve : Clip.FloatCurves)
+        {
+            BuildContext.Summary.AnimationFloatCurveKeyCount += static_cast<int32>(Curve.Keys.size());
+        }
+    }
+
+    BuildContext.Summary.MorphTargetCount      = static_cast<int32>(OutMesh.MorphTargets.size());
+    BuildContext.Summary.MorphTargetShapeCount = 0;
+    BuildContext.Summary.MorphTargetDeltaCount = 0;
+
+    for (const FMorphTarget& Morph : OutMesh.MorphTargets)
+    {
+        for (const FMorphTargetLOD& LOD : Morph.LODModels)
+        {
+            BuildContext.Summary.MorphTargetShapeCount += static_cast<int32>(LOD.Shapes.size());
+
+            for (const FMorphTargetShape& Shape : LOD.Shapes)
+            {
+                BuildContext.Summary.MorphTargetDeltaCount += static_cast<int32>(Shape.Deltas.size());
+            }
+        }
+    }
 
     if (BuildContext.Summary.CandidateVertexCount > 0)
     {
