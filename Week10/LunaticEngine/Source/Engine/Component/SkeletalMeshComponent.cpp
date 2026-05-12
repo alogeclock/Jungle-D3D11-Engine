@@ -101,6 +101,8 @@ void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTrans
 	BoneSpaceTransforms[BoneIndex] = NormalizedTransform;
 	
 	MarkSkeletalPoseDirty();
+	RefreshBoneTransforms();
+	UpdateSkinnedMeshObject();
 }
 
 bool USkeletalMeshComponent::SetBoneComponentSpaceTransform(int32 BoneIndex, const FTransform& NewTransform)
