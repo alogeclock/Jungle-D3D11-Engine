@@ -1,4 +1,4 @@
-#include "Component/SkeletalMeshComponent.h"
+﻿#include "Component/SkeletalMeshComponent.h"
 
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
@@ -231,8 +231,11 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 		const int32 ParentIndex = Skeleton->Bones[BoneIndex].ParentIndex;
 		const FTransform& LocalTransform = BoneSpaceTransforms[BoneIndex];
 
-		if (ParentIndex >= 0 && ParentIndex < BoneIndex)
+		if (ParentIndex >= 0)
 		{
+			// 부모 본 인덱스가 유효하면 부모의 컴포넌트 공간 트랜스폼을 상속받습니다.
+
+
 			const FTransform& ParentTransform = ComponentSpaceTransforms[ParentIndex];
 
 			// Component = Parent * Local (FTransform Composition)

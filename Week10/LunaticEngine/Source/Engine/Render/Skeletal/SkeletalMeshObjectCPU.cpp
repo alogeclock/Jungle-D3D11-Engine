@@ -50,7 +50,6 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 			Pos = Pos + Matrix.TransformPositionWithW(In.Pos) * Weight;
 			Normal = Normal + Matrix.TransformVector(In.Normal) * Weight;
 			TotalWeight += Weight;
-
 		}
 
 
@@ -74,19 +73,29 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 		Out.Color = In.Color;
 		Out.UV = In.UV[0];
 		Out.Tangent = In.Tangent;
-		ID3D11DeviceContext* Context = nullptr;
-		Device->GetImmediateContext(&Context);
+	}
+
+
+	ID3D11DeviceContext* Context = nullptr;
+	Device->GetImmediateContext(&Context);
+	if (Context)
+	{
 		FVertexBuffer& VB = MeshBuffer->GetVertexBuffer();
 		uint32 TotalSize = static_cast<uint32>(SkinnedMeshData.Vertices.size() * sizeof(FVertexPNCTT));
+		
 		if (!VB.GetBuffer())
 		{
+
 			VB.Create(Device, SkinnedMeshData.Vertices.data(), (uint32)SkinnedMeshData.Vertices.size(), TotalSize, sizeof(FVertexPNCTT), true);
+			
+	
+			MeshBuffer->GetIndexBuffer().Create(Device, SkinnedMeshData.Indices.data(), (uint32)SkinnedMeshData.Indices.size(), (uint32)SkinnedMeshData.Indices.size() * sizeof(uint32));
 		}
 		else
 		{
+
 			VB.Update(Context, SkinnedMeshData.Vertices.data(), TotalSize);
 		}
 		Context->Release();
 	}
-	MeshBuffer->Create(Device, SkinnedMeshData);
 }
