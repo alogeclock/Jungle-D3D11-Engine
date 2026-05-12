@@ -15,13 +15,14 @@ class FSkeletalMeshPreviewWidget : public FAssetPreviewWidget
 {
 public:
 	void Initialize(UEditorEngine* InEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow);
-	void Shutdown();
+	void Shutdown() override;
 	void OpenSkeletalMesh(USkeletalMesh* InMesh);
-	void Render(float DeltaTime);
-	void ClearInputCapture();
+	void Render(float DeltaTime) override;
+	void ClearInputCapture() override;
+	void SetEditorInstanceId(int32 InInstanceId) { EditorInstanceId = InInstanceId; }
 
-	bool IsOpen() const { return bOpen; }
-	bool IsCapturingInput() const { return bCapturingInput; }
+	bool IsOpen() const override { return bOpen; }
+	bool IsCapturingInput() const override { return bCapturingInput; }
 
 private:
 	void Close();
@@ -39,6 +40,7 @@ private:
 	UEditorEngine* Engine = nullptr;
 	USkeletalMesh* EditingMesh = nullptr;
 	int32 SelectedBoneIndex = -1;
+	int32 EditorInstanceId = 0;
 	bool bOpen = false;
 	bool bInitialized = false;
 	bool bRegistered = false;

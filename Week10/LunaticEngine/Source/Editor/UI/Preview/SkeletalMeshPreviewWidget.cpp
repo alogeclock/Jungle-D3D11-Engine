@@ -178,7 +178,7 @@ void FSkeletalMeshPreviewWidget::Render(float DeltaTime)
 
 	bool bWindowOpen = bOpen;
 	ImGui::SetNextWindowSize(ImVec2(720.0f, 560.0f), ImGuiCond_FirstUseEver);
-	const FString WindowTitle = "Skeletal Mesh Editor - " + GetMeshDisplayName(EditingMesh);
+	const FString WindowTitle = "Skeletal Mesh Editor - " + GetMeshDisplayName(EditingMesh) + "###SkeletalMeshEditor" + std::to_string(EditorInstanceId);
 	const bool bVisible = ImGui::Begin(WindowTitle.c_str(), &bWindowOpen, ImGuiWindowFlags_NoCollapse);
 	if (!bWindowOpen)
 	{

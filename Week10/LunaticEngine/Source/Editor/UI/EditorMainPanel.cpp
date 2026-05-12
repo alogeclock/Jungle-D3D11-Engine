@@ -267,13 +267,21 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	StatWidget.Initialize(InEditorEngine);
 	AssetEditorWidget.Initialize(InEditorEngine);
 	ContentBrowserWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice());
-	SkeletalMeshEditorWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice(), InWindow);
+	PreviewDevice = InRenderer.GetFD3DDevice().GetDevice();
 	ShadowMapDebugWidget.Initialize(InEditorEngine);
 }
 
 void FEditorMainPanel::Release()
 {
-	SkeletalMeshEditorWidget.Shutdown();
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (PreviewEditorWidget)
+		{
+			PreviewEditorWidget->Shutdown();
+		}
+	}
+	PreviewEditorWidgets.clear();
+	PreviewDevice = nullptr;
 	AssetEditorWidget.Shutdown();
 	ConsoleWidget.Shutdown();
 	ImGui_ImplDX11_Shutdown();
@@ -393,15 +401,7 @@ void FEditorMainPanel::Render(float DeltaTime)
 		AssetEditorWidget.Render(DeltaTime);
 	}
 
-	if (!bHideEditorWindows && SkeletalMeshEditorWidget.IsOpen())
-	{
-		SCOPE_STAT_CAT("SkeletalMeshEditorWidget.Render", "5_UI");
-		SkeletalMeshEditorWidget.Render(DeltaTime);
-	}
-	else
-	{
-		SkeletalMeshEditorWidget.ClearInputCapture();
-	}
+	RenderPreviewEditors(DeltaTime);
 
 	if (!bHideEditorWindows && Settings.UI.bShadowMapDebug)
 	{
@@ -423,6 +423,101 @@ void FEditorMainPanel::Render(float DeltaTime)
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+bool FEditorMainPanel::IsAssetEditorCapturingInput() const
+{
+	if (bHideEditorWindows)
+	{
+		return false;
+	}
+
+	if (AssetEditorWidget.IsCapturingInput())
+	{
+		return true;
+	}
+
+	return IsPreviewEditorCapturingInput();
+}
+
+bool FEditorMainPanel::IsPreviewEditorCapturingInput() const
+{
+	for (const std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (PreviewEditorWidget && PreviewEditorWidget->IsCapturingInput())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void FEditorMainPanel::OpenSkeletalMeshEditor(USkeletalMesh* Mesh)
+{
+	if (!Mesh || !PreviewDevice || !Window)
+	{
+		return;
+	}
+
+	std::unique_ptr<FSkeletalMeshPreviewWidget> NewEditor = std::make_unique<FSkeletalMeshPreviewWidget>();
+	NewEditor->SetEditorInstanceId(NextPreviewEditorInstanceId++);
+	NewEditor->Initialize(EditorEngine, PreviewDevice, Window);
+	NewEditor->OpenSkeletalMesh(Mesh);
+	PreviewEditorWidgets.push_back(std::move(NewEditor));
+}
+
+void FEditorMainPanel::RenderPreviewEditors(float DeltaTime)
+{
+	if (bHideEditorWindows)
+	{
+		ClearPreviewEditorInputCapture();
+		return;
+	}
+
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (!PreviewEditorWidget || !PreviewEditorWidget->IsOpen())
+		{
+			continue;
+		}
+
+		SCOPE_STAT_CAT("PreviewEditorWidget.Render", "5_UI");
+		PreviewEditorWidget->Render(DeltaTime);
+	}
+
+	RemoveClosedPreviewEditors();
+}
+
+void FEditorMainPanel::ClearPreviewEditorInputCapture()
+{
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (PreviewEditorWidget)
+		{
+			PreviewEditorWidget->ClearInputCapture();
+		}
+	}
+}
+
+void FEditorMainPanel::RemoveClosedPreviewEditors()
+{
+	for (auto It = PreviewEditorWidgets.begin(); It != PreviewEditorWidgets.end();)
+	{
+		FAssetPreviewWidget* PreviewEditorWidget = It->get();
+		if (!PreviewEditorWidget || PreviewEditorWidget->IsOpen())
+		{
+			++It;
+			continue;
+		}
+
+		if (PreviewEditorWidget)
+		{
+			PreviewEditorWidget->Shutdown();
+		}
+
+		It = PreviewEditorWidgets.erase(It);
+	}
 }
 
 void FEditorMainPanel::RenderMainMenuBar()
@@ -1107,7 +1202,7 @@ void FEditorMainPanel::Update()
 	bool bWantMouse = IO.WantCaptureMouse;
 	bool bWantKeyboard = IO.WantCaptureKeyboard || bShowShortcutOverlay || bShowCreditsOverlay;
 	const bool bAssetEditorCapturingInput = AssetEditorWidget.IsCapturingInput();
-	const bool bPreviewViewportCapturingInput = !bHideEditorWindows && SkeletalMeshEditorWidget.IsCapturingInput();
+	const bool bPreviewViewportCapturingInput = !bHideEditorWindows && IsPreviewEditorCapturingInput();
 	const bool bPIEPopupOpen = EditorEngine && EditorEngine->IsScoreSavePopupOpen();
 	if (bPIEPopupOpen)
 	{
