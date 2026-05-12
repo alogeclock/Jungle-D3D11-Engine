@@ -13,6 +13,7 @@
 #include "Viewport/Viewport.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace
 {
@@ -321,50 +322,100 @@ void FPreviewViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, flo
 	const float MoveSensitivity = RenderOptions.CameraMoveSensitivity;
 	const float RotateSensitivity = RenderOptions.CameraRotateSensitivity;
 	const float CameraSpeed = PreviewCameraSpeed * MoveSensitivity;
-	const float PanMouseScale = CameraSpeed * 0.01f;
 
-	if (!MoveDelta.IsNearlyZero())
+	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
+	const bool              bIsOrtho    = CameraState.bIsOrthogonal;
+
+	if (!bIsOrtho)
 	{
-		FVector DeltaMove = (Camera->GetForwardVector() * MoveDelta.X + Camera->GetRightVector() * MoveDelta.Y) * (CameraSpeed * DeltaTime);
-		DeltaMove.Z += MoveDelta.Z * (CameraSpeed * DeltaTime);
-		TargetLocation = TargetLocation + DeltaMove;
-		OrbitTarget = OrbitTarget + DeltaMove;
-	}
+		const float PanMouseScale = CameraSpeed * 0.01f;
 
-	if (!PanDelta.IsNearlyZero())
-	{
-		FVector DeltaPan = (Camera->GetRightVector() * (-PanDelta.X * PanMouseScale * 0.15f)) + (Camera->GetUpVector() * (PanDelta.Y * PanMouseScale * 0.15f));
-		TargetLocation = TargetLocation + DeltaPan;
-		OrbitTarget = OrbitTarget + DeltaPan;
-	}
-
-	if (!RotateDelta.IsNearlyZero())
-	{
-		const float MouseRotationSpeed = 0.15f * RotateSensitivity;
-		const float AngleVelocity = FEditorSettings::Get().CameraRotationSpeed * RotateSensitivity;
-		float Yaw;
-		float Pitch;
-
-		if (!bCameraInputCaptured || !Snapshot.IsMouseButtonDown(VK_RBUTTON))
+		if (!MoveDelta.IsNearlyZero())
 		{
-			Yaw = RotateDelta.X * AngleVelocity * DeltaTime;
-			Pitch = RotateDelta.Y * AngleVelocity * DeltaTime;
-		}
-		else
-		{
-			Yaw = RotateDelta.X * MouseRotationSpeed;
-			Pitch = RotateDelta.Y * MouseRotationSpeed;
+			FVector DeltaMove = (Camera->GetForwardVector() * MoveDelta.X + Camera->GetRightVector() * MoveDelta.Y) * (CameraSpeed * DeltaTime);
+			DeltaMove.Z       += MoveDelta.Z * (CameraSpeed * DeltaTime);
+
+			TargetLocation = TargetLocation + DeltaMove;
+			OrbitTarget    = OrbitTarget + DeltaMove;
 		}
 
-		Camera->Rotate(Yaw, Pitch);
+		if (!PanDelta.IsNearlyZero())
+		{
+			FVector DeltaPan = Camera->GetRightVector() * (-PanDelta.X * PanMouseScale * 0.15f) + Camera->GetUpVector() * (-PanDelta.Y * PanMouseScale * 0.15f);
+			TargetLocation   = TargetLocation + DeltaPan;
+			OrbitTarget      = OrbitTarget + DeltaPan;
+		}
+
+		if (!RotateDelta.IsNearlyZero())
+		{
+			const float MouseRotationSpeed = 0.15f * RotateSensitivity;
+			const float AngleVelocity      = FEditorSettings::Get().CameraRotationSpeed * RotateSensitivity;
+
+			float Yaw   = 0.0f;
+			float Pitch = 0.0f;
+
+			if (!bCameraInputCaptured || !Snapshot.IsMouseButtonDown(VK_RBUTTON))
+			{
+				Yaw   = RotateDelta.X * AngleVelocity * DeltaTime;
+				Pitch = RotateDelta.Y * AngleVelocity * DeltaTime;
+			}
+			else
+			{
+				Yaw   = RotateDelta.X * MouseRotationSpeed;
+				Pitch = RotateDelta.Y * MouseRotationSpeed;
+			}
+			Camera->Rotate(Yaw, Pitch);
+		}
+
+		ApplyOrbitInput();
+
+		const float ZoomSpeed = FEditorSettings::Get().CameraZoomSpeed;
+		if (std::abs(ZoomDelta) > 1e-6f)
+		{
+			TargetLocation = TargetLocation + Camera->GetForwardVector() * (ZoomSpeed * ZoomDelta * 0.015f);
+		}
+
+		return;
 	}
 
-	ApplyOrbitInput();
-
-	const float ZoomSpeed = FEditorSettings::Get().CameraZoomSpeed;
-	if (std::abs(ZoomDelta) > 1e-6f)
 	{
-		TargetLocation = TargetLocation + Camera->GetForwardVector() * (ZoomDelta * ZoomSpeed * 0.015f);
+		const float VPWidth  = Viewport ? static_cast<float>(Viewport->GetWidth()) : WindowWidth;
+		const float VPHeight = Viewport ? static_cast<float>(Viewport->GetHeight()) : WindowHeight;
+
+		const float SafeVPWidth  = (std::max)(VPWidth, 1.0f);
+		const float SafeVPHeight = (std::max)(VPHeight, 1.0f);
+		const float SafeAspect   = (std::max)(CameraState.AspectRatio, 1.0e-6f);
+
+		const float OrthoWidth  = (std::max)(CameraState.OrthoWidth, 0.1f);
+		const float OrthoHeight = OrthoWidth / SafeAspect;
+
+		const float WorldPerPixelX = OrthoWidth / SafeVPWidth;
+		const float WorldPerPixelY = OrthoHeight / SafeVPHeight;
+
+		auto ApplyOrthoPan = [&](const FVector& MouseDelta)
+		{
+			const FVector DeltaPan = Camera->GetRightVector() * (-MouseDelta.X * WorldPerPixelX * MoveSensitivity) + Camera->GetUpVector() * (MouseDelta.Y *
+				WorldPerPixelY * MoveSensitivity);
+			TargetLocation = TargetLocation + DeltaPan;
+			OrbitTarget    = OrbitTarget + DeltaPan;
+		};
+
+		if (!MoveDelta.IsNearlyZero())
+		{
+			ApplyOrthoPan(MoveDelta);
+		}
+
+		if (!RotateDelta.IsNearlyZero() && bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
+		{
+			ApplyOrthoPan(RotateDelta);
+		}
+
+		if (std::abs(ZoomDelta) > 1e-6f)
+		{
+			const float ZoomFactor    = std::pow(0.9f, ZoomDelta);
+			const float NewOrthoWidth = std::clamp(OrthoWidth * ZoomFactor, 0.1f, 100000.0f);
+			Camera->SetOrthoWidth(NewOrthoWidth);
+		}
 	}
 }
 
