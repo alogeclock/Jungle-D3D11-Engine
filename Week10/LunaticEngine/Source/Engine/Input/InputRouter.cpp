@@ -9,12 +9,20 @@ FInputRouter& FInputRouter::Get()
 	return Instance;
 }
 
-// Main Snapshot Router: 캡쳐된 뷰포트 - UI - 호버링 중인 뷰포트 순으로 입력을 라우팅한다. 
+// Main Snapshot Router: 캡쳐된 뷰포트 - 호버 & 마우스 입력 중인 뷰포트 -  UI - 호버링 중인 뷰포트 순으로 입력을 라우팅한다. 
 bool FInputRouter::RouteSnapshot(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
 	if (MouseCapturedViewport)
 	{
 		return MouseCapturedViewport->HandleInputSnapshot(Snapshot, DeltaTime);
+	}
+
+	if (HoveredViewport && Snapshot.HasMouseInput())
+	{
+		if (HoveredViewport->HandleInputSnapshot(Snapshot, DeltaTime))
+		{
+			return true;
+		}
 	}
 
 	if (DoesUILayerConsumeInput(Snapshot))

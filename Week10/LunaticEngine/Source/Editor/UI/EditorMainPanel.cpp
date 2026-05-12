@@ -36,6 +36,9 @@
 
 #include <filesystem>
 #include <windows.h>
+#include <dwmapi.h>
+
+#pragma comment(lib, "dwmapi.lib")
 
 namespace
 {
@@ -106,6 +109,52 @@ namespace
 		ImGui::PopStyleColor(4);
 		ImGui::PopStyleVar(2);
 		return bVisible;
+	}
+
+	bool IsMultiViewportEnabled()
+	{
+		return (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0;
+	}
+
+	void SetNextPreviewEditorHostWindowPolicy()
+	{
+		if (!IsMultiViewportEnabled())
+		{
+			return;
+		}
+
+		ImGuiWindowClass WindowClass{};
+		WindowClass.ViewportFlagsOverrideSet = ImGuiViewportFlags_NoAutoMerge;
+		WindowClass.ViewportFlagsOverrideClear = ImGuiViewportFlags_NoDecoration | ImGuiViewportFlags_NoTaskBarIcon;
+		ImGui::SetNextWindowClass(&WindowClass);
+
+		if (const ImGuiViewport* MainViewport = ImGui::GetMainViewport())
+		{
+			ImGui::SetNextWindowPos(ImVec2(MainViewport->Pos.x + 96.0f, MainViewport->Pos.y + 80.0f), ImGuiCond_FirstUseEver);
+		}
+	}
+
+	void ApplyDarkTitleBarToSecondaryViewports()
+	{
+		const ImGuiPlatformIO& PlatformIO = ImGui::GetPlatformIO();
+		const ImGuiViewport* MainViewport = ImGui::GetMainViewport();
+		for (ImGuiViewport* Viewport : PlatformIO.Viewports)
+		{
+			if (!Viewport || Viewport == MainViewport || !Viewport->PlatformHandle)
+			{
+				continue;
+			}
+
+			HWND Hwnd = static_cast<HWND>(Viewport->PlatformHandle);
+			const BOOL DarkModeEnabled = TRUE;
+			DwmSetWindowAttribute(Hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &DarkModeEnabled, sizeof(DarkModeEnabled));
+
+			const COLORREF CaptionColor = RGB(0, 0, 0);
+			DwmSetWindowAttribute(Hwnd, DWMWA_CAPTION_COLOR, &CaptionColor, sizeof(CaptionColor));
+
+			const COLORREF BorderColor = RGB(0, 0, 0);
+			DwmSetWindowAttribute(Hwnd, DWMWA_BORDER_COLOR, &BorderColor, sizeof(BorderColor));
+		}
 	}
 
 	bool ConfirmNewScene(HWND OwnerWindowHandle)
@@ -227,6 +276,7 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	ImGuiIO& IO = ImGui::GetIO();
 	IO.IniFilename = "Settings/imgui.ini";
 	IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	IO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_None;
 	ApplyEditorColorTheme();
 	ApplyEditorTabStyle();
@@ -267,13 +317,21 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	StatWidget.Initialize(InEditorEngine);
 	AssetEditorWidget.Initialize(InEditorEngine);
 	ContentBrowserWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice());
-	SkeletalMeshEditorWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice(), InWindow);
+	PreviewDevice = InRenderer.GetFD3DDevice().GetDevice();
 	ShadowMapDebugWidget.Initialize(InEditorEngine);
 }
 
 void FEditorMainPanel::Release()
 {
-	SkeletalMeshEditorWidget.Shutdown();
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (PreviewEditorWidget)
+		{
+			PreviewEditorWidget->Shutdown();
+		}
+	}
+	PreviewEditorWidgets.clear();
+	PreviewDevice = nullptr;
 	AssetEditorWidget.Shutdown();
 	ConsoleWidget.Shutdown();
 	ImGui_ImplDX11_Shutdown();
@@ -393,15 +451,7 @@ void FEditorMainPanel::Render(float DeltaTime)
 		AssetEditorWidget.Render(DeltaTime);
 	}
 
-	if (!bHideEditorWindows && SkeletalMeshEditorWidget.IsOpen())
-	{
-		SCOPE_STAT_CAT("SkeletalMeshEditorWidget.Render", "5_UI");
-		SkeletalMeshEditorWidget.Render(DeltaTime);
-	}
-	else
-	{
-		SkeletalMeshEditorWidget.ClearInputCapture();
-	}
+	RenderPreviewEditors(DeltaTime);
 
 	if (!bHideEditorWindows && Settings.UI.bShadowMapDebug)
 	{
@@ -423,6 +473,164 @@ void FEditorMainPanel::Render(float DeltaTime)
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ApplyDarkTitleBarToSecondaryViewports();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+}
+
+bool FEditorMainPanel::IsAssetEditorCapturingInput() const
+{
+	if (bHideEditorWindows)
+	{
+		return false;
+	}
+
+	if (AssetEditorWidget.IsCapturingInput())
+	{
+		return true;
+	}
+
+	return IsPreviewEditorCapturingInput();
+}
+
+bool FEditorMainPanel::IsPreviewEditorCapturingInput() const
+{
+	for (const std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (PreviewEditorWidget && PreviewEditorWidget->IsCapturingInput())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void FEditorMainPanel::OpenSkeletalMeshEditor(USkeletalMesh* Mesh)
+{
+	if (!Mesh || !PreviewDevice || !Window)
+	{
+		return;
+	}
+
+	std::unique_ptr<FSkeletalMeshPreviewWidget> NewEditor = std::make_unique<FSkeletalMeshPreviewWidget>();
+	NewEditor->SetEditorInstanceId(NextPreviewEditorInstanceId++);
+	NewEditor->Initialize(EditorEngine, PreviewDevice, Window);
+	NewEditor->OpenSkeletalMesh(Mesh);
+	PreviewEditorWidgets.push_back(std::move(NewEditor));
+}
+
+void FEditorMainPanel::RenderPreviewEditors(float DeltaTime)
+{
+	if (bHideEditorWindows)
+	{
+		ClearPreviewEditorInputCapture();
+		return;
+	}
+
+	bool bHasOpenPreviewEditor = false;
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (!PreviewEditorWidget || !PreviewEditorWidget->IsOpen())
+		{
+			continue;
+		}
+
+		bHasOpenPreviewEditor = true;
+		break;
+	}
+
+	if (!bHasOpenPreviewEditor)
+	{
+		RemoveClosedPreviewEditors();
+		return;
+	}
+
+	bool bPreviewHostOpen = true;
+	SetNextPreviewEditorHostWindowPolicy();
+	ImGui::SetNextWindowSize(ImVec2(1120.0f, 720.0f), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags HostWindowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
+	if (IsMultiViewportEnabled())
+	{
+		HostWindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking;
+	}
+
+	const bool bHostVisible = ImGui::Begin("Preview Editors###PreviewEditorHost", &bPreviewHostOpen, HostWindowFlags);
+	if (!bPreviewHostOpen)
+	{
+		ImGui::End();
+		for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+		{
+			if (PreviewEditorWidget)
+			{
+				PreviewEditorWidget->Shutdown();
+			}
+		}
+		PreviewEditorWidgets.clear();
+		return;
+	}
+
+	const ImGuiID PreviewDockId = ImGui::GetID("##PreviewEditorDockSpace");
+	if (bHostVisible)
+	{
+		ImGui::DockSpace(PreviewDockId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+	}
+	ImGui::End();
+
+	if (!bHostVisible)
+	{
+		ClearPreviewEditorInputCapture();
+		return;
+	}
+
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (!PreviewEditorWidget || !PreviewEditorWidget->IsOpen())
+		{
+			continue;
+		}
+
+		PreviewEditorWidget->SetDockId(PreviewDockId);
+		SCOPE_STAT_CAT("PreviewEditorWidget.Render", "5_UI");
+		PreviewEditorWidget->Render(DeltaTime);
+	}
+
+	RemoveClosedPreviewEditors();
+}
+
+void FEditorMainPanel::ClearPreviewEditorInputCapture()
+{
+	for (std::unique_ptr<FAssetPreviewWidget>& PreviewEditorWidget : PreviewEditorWidgets)
+	{
+		if (PreviewEditorWidget)
+		{
+			PreviewEditorWidget->ClearInputCapture();
+		}
+	}
+}
+
+void FEditorMainPanel::RemoveClosedPreviewEditors()
+{
+	for (auto It = PreviewEditorWidgets.begin(); It != PreviewEditorWidgets.end();)
+	{
+		FAssetPreviewWidget* PreviewEditorWidget = It->get();
+		if (!PreviewEditorWidget || PreviewEditorWidget->IsOpen())
+		{
+			++It;
+			continue;
+		}
+
+		if (PreviewEditorWidget)
+		{
+			PreviewEditorWidget->Shutdown();
+		}
+
+		It = PreviewEditorWidgets.erase(It);
+	}
 }
 
 void FEditorMainPanel::RenderMainMenuBar()
@@ -1107,7 +1315,7 @@ void FEditorMainPanel::Update()
 	bool bWantMouse = IO.WantCaptureMouse;
 	bool bWantKeyboard = IO.WantCaptureKeyboard || bShowShortcutOverlay || bShowCreditsOverlay;
 	const bool bAssetEditorCapturingInput = AssetEditorWidget.IsCapturingInput();
-	const bool bPreviewViewportCapturingInput = !bHideEditorWindows && SkeletalMeshEditorWidget.IsCapturingInput();
+	const bool bPreviewViewportCapturingInput = !bHideEditorWindows && IsPreviewEditorCapturingInput();
 	const bool bPIEPopupOpen = EditorEngine && EditorEngine->IsScoreSavePopupOpen();
 	if (bPIEPopupOpen)
 	{

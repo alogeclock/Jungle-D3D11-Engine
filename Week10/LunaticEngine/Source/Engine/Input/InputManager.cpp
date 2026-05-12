@@ -4,6 +4,32 @@
 #include <cmath>
 #include <algorithm>
 
+namespace
+{
+	bool IsInputForegroundWindow(HWND OwnerHWnd)
+	{
+		if (!OwnerHWnd)
+		{
+			return true;
+		}
+
+		HWND ForegroundHWnd = GetForegroundWindow();
+		if (!ForegroundHWnd)
+		{
+			return false;
+		}
+
+		if (ForegroundHWnd == OwnerHWnd || IsChild(OwnerHWnd, ForegroundHWnd))
+		{
+			return true;
+		}
+
+		DWORD ProcessId = 0;
+		GetWindowThreadProcessId(ForegroundHWnd, &ProcessId);
+		return ProcessId == GetCurrentProcessId();
+	}
+}
+
 FInputManager* FInputManager::Instance = nullptr;
 // Function : ProcessMessage handle raw input from windows 
 //and store input event to event queue
@@ -92,7 +118,7 @@ void FInputManager::ProcessMessage(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LP
 
 	case WM_INPUT:
 	{
-		if (OwnerHWnd && GetForegroundWindow() != OwnerHWnd)
+		if (!IsInputForegroundWindow(OwnerHWnd))
 		{
 			break;
 		}
@@ -120,7 +146,7 @@ void FInputManager::ProcessMessage(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LP
 void FInputManager::Tick()
 {
 	// Focus check
-	bool bFocused = !OwnerHWnd || GetForegroundWindow() == OwnerHWnd;
+	bool bFocused = IsInputForegroundWindow(OwnerHWnd);
 	if (bFocused != bWindowFocused)
 	{
 		bWindowFocused = bFocused;

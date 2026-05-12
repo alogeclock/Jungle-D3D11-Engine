@@ -36,6 +36,7 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 		const FSkeletalVertex& In = LOD.Vertices[v];
 
 		FVector Pos(0, 0, 0), Normal(0, 0, 0);
+		float TotalWeight = 0.0f;
 		for (int i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; i++)
 		{
 			const float Weight = In.BoneWeights[i];
@@ -48,7 +49,20 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 			const FMatrix& Matrix = InSkinningMatrices[BoneIdx];
 			Pos = Pos + Matrix.TransformPositionWithW(In.Pos) * Weight;
 			Normal = Normal + Matrix.TransformVector(In.Normal) * Weight;
+			TotalWeight += Weight;
 
+		}
+
+		if (TotalWeight <= 0.0f)
+		{
+			Pos = In.Pos;
+			Normal = In.Normal;
+		}
+		else if (std::abs(TotalWeight - 1.0f) > 1.e-4f)
+		{
+			const float InvWeight = 1.0f / TotalWeight;
+			Pos = Pos * InvWeight;
+			Normal = Normal * InvWeight;
 		}
 
 		Normal = Normal.Normalized();

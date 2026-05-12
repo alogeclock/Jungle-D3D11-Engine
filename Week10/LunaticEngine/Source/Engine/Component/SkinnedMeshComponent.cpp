@@ -11,6 +11,7 @@
 #include "Materials/MaterialManager.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
+#include "Render/Proxy/DirtyFlag.h"
 #include "Serialization/Archive.h"
 #include "Render/Skeletal/SkeletalMeshObject.h"
 #include <Render/Skeletal/SkeletalMeshObjectCPU.h>
@@ -121,7 +122,7 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 			// 첫 프레임 가시화: TickComponent가 처음 굴러가기 전에 MeshBuffer를 만들어둠.
 			// 안 하면 첫 한두 프레임 동안 GetMeshBuffer()->IsValid() == false → DrawCommandBuilder가 스킵.
 			RefreshBoneTransforms();
-			MeshObject->Update(SkinningMatrices);
+			UpdateSkinnedMeshObject();
 		}
 	}
 	else
@@ -136,6 +137,29 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 	CacheLocalBounds();
 	MarkRenderStateDirty();
 	MarkWorldBoundsDirty();
+}
+
+void USkinnedMeshComponent::SetDisplayBones(bool bDisplay)
+{
+	if (bDisplayBones == bDisplay)
+	{
+		return;
+	}
+
+	bDisplayBones = bDisplay;
+	MarkProxyDirty(EDirtyFlag::Mesh);
+}
+
+void USkinnedMeshComponent::UpdateSkinnedMeshObject()
+{
+	if (!MeshObject)
+	{
+		return;
+	}
+
+	MeshObject->Update(SkinningMatrices);
+	bSkinningDirty = false;
+	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
 void USkinnedMeshComponent::CacheLocalBounds()
@@ -232,11 +256,7 @@ void USkinnedMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	RefreshBoneTransforms();
 
 	// 결과를 MeshObject로 전달 -> CPU 스키닝 + VB 재생성
-	if (MeshObject)
-	{
-		MeshObject->Update(SkinningMatrices);
-		MarkProxyDirty(EDirtyFlag::Mesh);
-	}
+	UpdateSkinnedMeshObject();
 }
 
 // FSkeletalMeshLOD에는 RenderBuffer가 없음 (GPU 업로드 단계 미구현).
@@ -297,8 +317,8 @@ void USkinnedMeshComponent::Serialize(FArchive& Ar)
 	Ar << SkeletalMeshPath;
 	Ar << MaterialSlots;
 	Ar << bCPUSkinning;
-	Ar << bDisplayBones;
 	Ar << bHideSkin;
+	Ar << bDisplayBones;
 }
 
 void USkinnedMeshComponent::PostDuplicate()
@@ -319,6 +339,7 @@ void USkinnedMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& O
 
 	UPrimitiveComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshPath });
+	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
 
 	for (int32 i = 0; i < (int32)MaterialSlots.size(); ++i)
 	{
@@ -343,6 +364,11 @@ void USkinnedMeshComponent::PostEditProperty(const char* PropertyName)
 		// USkeletalMesh 로더 연결은 후속 단계.
 		CacheLocalBounds();
 		MarkWorldBoundsDirty();
+	}
+
+	if (strcmp(PropertyName, "Display Bones") == 0)
+	{
+		MarkProxyDirty(EDirtyFlag::Mesh);
 	}
 
 	if (strncmp(PropertyName, "Element ", 8) == 0)

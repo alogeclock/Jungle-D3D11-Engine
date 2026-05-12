@@ -14,10 +14,81 @@
 #include "Engine/Runtime/Engine.h"
 
 #include <algorithm>
+#include <cwctype>
+#include <filesystem>
 #include <vector>
 
 namespace
 {
+	std::wstring ToLowerWide(std::wstring Text)
+	{
+		std::transform(Text.begin(), Text.end(), Text.begin(), ::towlower);
+		return Text;
+	}
+
+	bool IsMatchingSkeletalMeshCache(const std::filesystem::path& CandidatePath, const std::wstring& ExpectedStemLower)
+	{
+		if (ToLowerWide(CandidatePath.extension().wstring()) != L".skm")
+		{
+			return false;
+		}
+
+		return ToLowerWide(CandidatePath.stem().wstring()) == ExpectedStemLower;
+	}
+
+	std::filesystem::path FindNearbySkeletalMeshCache(const std::filesystem::path& FbxPath)
+	{
+		const std::filesystem::path SearchRoot = FbxPath.parent_path();
+		if (SearchRoot.empty())
+		{
+			return {};
+		}
+
+		const std::wstring ExpectedStemLower = ToLowerWide(FbxPath.stem().wstring());
+		const std::filesystem::path DirectCachePath = SearchRoot / L"Cache" / (FbxPath.stem().wstring() + L".skm");
+		const std::filesystem::path DirectPath = SearchRoot / (FbxPath.stem().wstring() + L".skm");
+
+		std::error_code ErrorCode;
+		if (std::filesystem::is_regular_file(DirectCachePath, ErrorCode))
+		{
+			return DirectCachePath;
+		}
+
+		ErrorCode.clear();
+		if (std::filesystem::is_regular_file(DirectPath, ErrorCode))
+		{
+			return DirectPath;
+		}
+
+		std::filesystem::recursive_directory_iterator It(SearchRoot, std::filesystem::directory_options::skip_permission_denied, ErrorCode);
+		const std::filesystem::recursive_directory_iterator End;
+		while (!ErrorCode && It != End)
+		{
+			const std::filesystem::path CandidatePath = It->path();
+			if (std::filesystem::is_regular_file(CandidatePath, ErrorCode) && IsMatchingSkeletalMeshCache(CandidatePath, ExpectedStemLower))
+			{
+				return CandidatePath;
+			}
+
+			ErrorCode.clear();
+			It.increment(ErrorCode);
+		}
+
+		return {};
+	}
+
+	USkeletalMesh* TryLoadNearbySkeletalMeshCache(const std::filesystem::path& FbxPath, FString& OutRelativeSkmPath)
+	{
+		const std::filesystem::path CachePath = FindNearbySkeletalMeshCache(FbxPath);
+		if (CachePath.empty())
+		{
+			return nullptr;
+		}
+
+		OutRelativeSkmPath = FPaths::ToUtf8(CachePath.lexically_relative(FPaths::RootDir()).generic_wstring());
+		return FSkeletalMeshManager::LoadSkeletalMesh(OutRelativeSkmPath);
+	}
+
 	std::vector<FString> WrapTextLines(const FString& Text, float MaxWidth, int MaxLines)
 	{
 		std::vector<FString> Lines;
@@ -318,6 +389,20 @@ void UAssetElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 void FbxElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 {
 	const FString RelativeFbxPath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
+
+	FString RelativeSkmPath;
+	if (USkeletalMesh* CachedSkeletalMesh = TryLoadNearbySkeletalMeshCache(ContentItem.Path, RelativeSkmPath))
+	{
+		Context.bIsNeedRefresh = true;
+
+		if (Context.EditorEngine)
+		{
+			Context.EditorEngine->OpenSkeletalMeshEditor(CachedSkeletalMesh);
+		}
+
+		FNotificationManager::Get().AddNotification("Loaded SkeletalMesh cache: " + RelativeSkmPath, ENotificationType::Success, 4.0f);
+		return;
+	}
 
 	if (FFbxImporter::HasSkinDeformer(RelativeFbxPath))
 	{

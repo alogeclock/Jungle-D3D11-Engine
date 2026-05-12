@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PreviewViewportClient.h"
+#include "Math/Quat.h"
 
 class USkeletalMesh;
 class USkeletalMeshComponent;
@@ -40,6 +41,7 @@ private:
 	void DestroyPreviewGizmo();
 	void SyncPreviewGizmoToSelectedBone();
 	void ApplyPreviewGizmoToSelectedBone();
+	void ResetPreviewGizmoRotationDragState();
 	bool HandlePreviewGizmoInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
 
 private:
@@ -49,4 +51,9 @@ private:
 	USceneComponent* PreviewGizmoTarget = nullptr;
 	UGizmoComponent* PreviewGizmo = nullptr;
 	int32 PreviewGizmoBoneIndex = -1;
+	int32 PreviewGizmoRotationDragBoneIndex = -1;
+	FQuat PreviewGizmoDragStartRotation = FQuat::Identity;
+	FQuat PreviewBoneDragStartComponentRotation = FQuat::Identity;
+	FVector PreviewBoneDragStartLocalScale = FVector(1.0f, 1.0f, 1.0f);
+	bool bPreviewGizmoRotationDragInitialized = false;
 };

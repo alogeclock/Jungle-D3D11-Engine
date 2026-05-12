@@ -11,10 +11,15 @@
 #include "Editor/UI/AssetEditor/AssetEditorWidget.h"
 #include "Editor/UI/Preview/SkeletalMeshPreviewWidget.h"
 
+#include <memory>
+#include <vector>
+
 class FRenderer;
 class UEditorEngine;
+class FAssetPreviewWidget;
 class FWindowsWindow;
 class USkeletalMesh;
+struct ID3D11Device;
 struct ImFont;
 
 class FEditorMainPanel
@@ -34,20 +39,25 @@ public:
 	void RefreshContentBrowser() { ContentBrowserWidget.Refresh(); }
 	void SetContentBrowserIconSize(float Size) { ContentBrowserWidget.SetIconSize(Size); }
 	float GetContentBrowserIconSize() const { return ContentBrowserWidget.GetIconSize(); }
-	bool IsAssetEditorCapturingInput() const { return !bHideEditorWindows && (AssetEditorWidget.IsCapturingInput() || SkeletalMeshEditorWidget.IsCapturingInput()); }
-	void OpenSkeletalMeshEditor(USkeletalMesh* Mesh) { SkeletalMeshEditorWidget.OpenSkeletalMesh(Mesh); }
+	bool IsAssetEditorCapturingInput() const;
+	void OpenSkeletalMeshEditor(USkeletalMesh* Mesh);
 
 private:
 	void RenderMainMenuBar();
 	void RenderProjectSettingsWindow();
 	void RenderShortcutOverlay();
 	void RenderCreditsOverlay();
+	void RenderPreviewEditors(float DeltaTime);
+	void ClearPreviewEditorInputCapture();
+	void RemoveClosedPreviewEditors();
+	bool IsPreviewEditorCapturingInput() const;
 	void HandleGlobalShortcuts();
 	void PackageGameBuild(const char* BatFileName);
 	void CookCurrentScene();
 
 	FWindowsWindow* Window = nullptr;
 	UEditorEngine* EditorEngine = nullptr;
+	ID3D11Device* PreviewDevice = nullptr;
 	ImFont* TitleBarFont = nullptr;
 	ImFont* WindowControlIconFont = nullptr;
 	FEditorConsoleWidget ConsoleWidget;
@@ -57,8 +67,9 @@ private:
 	FEditorStatWidget StatWidget;
 	FEditorContentBrowserWidget ContentBrowserWidget;
 	FAssetEditorWidget AssetEditorWidget;
-	FSkeletalMeshPreviewWidget SkeletalMeshEditorWidget;
+	std::vector<std::unique_ptr<FAssetPreviewWidget>> PreviewEditorWidgets;
 	EditorShadowMapDebugWidget ShadowMapDebugWidget;
+	int32 NextPreviewEditorInstanceId = 1;
 	bool bShowWidgetList = false;
 	bool bShowShortcutOverlay = false;
 	bool bShowCreditsOverlay = false;

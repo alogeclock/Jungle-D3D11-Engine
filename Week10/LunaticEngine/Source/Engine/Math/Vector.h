@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <cmath>
 #include <DirectXMath.h>
 
@@ -70,6 +70,7 @@ struct FVector {
 
 	FVector operator+(const FVector& Other) const;
 	FVector operator-(const FVector& Other) const;
+	FVector operator*(const FVector& Other) const;
 	FVector operator+(float Scalar) const;
 	FVector operator-(float Scalar) const;
 	FVector operator*(float Scalar) const;
@@ -77,6 +78,7 @@ struct FVector {
 
 	FVector& operator+=(const FVector& Other);
 	FVector& operator-=(const FVector& Other);
+	FVector& operator*=(const FVector& Other);
 	FVector& operator+=(float Scalar);
 	FVector& operator-=(float Scalar);
 	FVector& operator*=(float Scalar);
@@ -174,6 +176,7 @@ struct FVector4 {
 
 	FVector4 operator+(const FVector4& Other) const;
 	FVector4 operator-(const FVector4& other) const;
+	FVector4 operator*(const FVector4& Other) const;
 	FVector4 operator+(float Scalar) const;
 	FVector4 operator-(float Scalar) const;
 	FVector4 operator*(float Scalar) const;
@@ -181,6 +184,7 @@ struct FVector4 {
 
 	FVector4& operator+=(const FVector4& Other);
 	FVector4& operator-=(const FVector4& Other);
+	FVector4& operator*=(const FVector4& Other);
 	FVector4& operator+=(float Scalar);
 	FVector4& operator-=(float Scalar);
 	FVector4& operator*=(float Scalar);
@@ -247,12 +251,14 @@ struct FVector2
 	float Dot(const FVector2& Other) const;
 	FVector2 operator+(const FVector2& Other) const;
 	FVector2 operator-(const FVector2& Other) const;
+	FVector2 operator*(const FVector2& Other) const;
 	FVector2 operator+(float Scalar) const;
 	FVector2 operator-(float Scalar) const;
 	FVector2 operator*(float Scalar) const;
 	FVector2 operator/(float Scalar) const;
 	FVector2& operator+=(const FVector2& Other);
 	FVector2& operator-=(const FVector2& Other);
+	FVector2& operator*=(const FVector2& Other);
 	FVector2& operator+=(float Scalar);
 	FVector2& operator-=(float Scalar);
 	FVector2& operator*=(float Scalar);

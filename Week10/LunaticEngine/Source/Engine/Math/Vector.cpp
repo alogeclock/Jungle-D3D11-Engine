@@ -1,4 +1,4 @@
-﻿#include "Vector.h"
+#include "Vector.h"
 #include <DirectXMath.h>
 
 #pragma region __FVECTOR__
@@ -104,6 +104,14 @@ FVector FVector::operator-(const FVector& Other) const {
 	return ret;
 }
 
+FVector FVector::operator*(const FVector& Other) const {
+	FVector ret;
+	ret.X = X * Other.X;
+	ret.Y = Y * Other.Y;
+	ret.Z = Z * Other.Z;
+	return ret;
+}
+
 FVector FVector::operator+(float Scalar) const {
 	FVector ret;
 	ret.X = X + Scalar;
@@ -137,32 +145,51 @@ FVector FVector::operator/(float Scalar) const {
 }
 
 FVector& FVector::operator+=(const FVector& Other) {
-	*this = *this + Other;
+	X += Other.X;
+	Y += Other.Y;
+	Z += Other.Z;
 	return *this;
 }
 
 FVector& FVector::operator-=(const FVector& Other) {
-	*this = *this - Other;
+	X -= Other.X;
+	Y -= Other.Y;
+	Z -= Other.Z;
+	return *this;
+}
+
+FVector& FVector::operator*=(const FVector& Other) {
+	X *= Other.X;
+	Y *= Other.Y;
+	Z *= Other.Z;
 	return *this;
 }
 
 FVector& FVector::operator+=(float Scalar) {
-	*this = *this + Scalar;
+	X += Scalar;
+	Y += Scalar;
+	Z += Scalar;
 	return *this;
 }
 
 FVector& FVector::operator-=(float Scalar) {
-	*this = *this - Scalar;
+	X -= Scalar;
+	Y -= Scalar;
+	Z -= Scalar;
 	return *this;
 }
 
 FVector& FVector::operator*=(float Scalar) {
-	*this = *this * Scalar;
+	X *= Scalar;
+	Y *= Scalar;
+	Z *= Scalar;
 	return *this;
 }
 
 FVector& FVector::operator/=(float Scalar) {
-	*this = *this / Scalar;
+	X /= Scalar;
+	Y /= Scalar;
+	Z /= Scalar;
 	return *this;
 }
 
@@ -265,6 +292,15 @@ FVector4 FVector4::operator-(const FVector4& Other) const {
 	return ret;
 }
 
+FVector4 FVector4::operator*(const FVector4& Other) const {
+	FVector4 ret;
+	ret.X = X * Other.X;
+	ret.Y = Y * Other.Y;
+	ret.Z = Z * Other.Z;
+	ret.W = W * Other.W;
+	return ret;
+}
+
 FVector4 FVector4::operator+(float Scalar) const {
 	FVector4 ret;
 	ret.X = X + Scalar;
@@ -302,32 +338,58 @@ FVector4 FVector4::operator/(float Scalar) const {
 }
 
 FVector4& FVector4::operator+=(const FVector4& Other) {
-	*this = *this + Other;
+	X += Other.X;
+	Y += Other.Y;
+	Z += Other.Z;
+	W += Other.W;
 	return *this;
 }
 
 FVector4& FVector4::operator-=(const FVector4& Other) {
-	*this = *this - Other;
+	X -= Other.X;
+	Y -= Other.Y;
+	Z -= Other.Z;
+	W -= Other.W;
+	return *this;
+}
+
+FVector4& FVector4::operator*=(const FVector4& Other) {
+	X *= Other.X;
+	Y *= Other.Y;
+	Z *= Other.Z;
+	W *= Other.W;
 	return *this;
 }
 
 FVector4& FVector4::operator+=(float Scalar) {
-	*this = *this + Scalar;
+	X += Scalar;
+	Y += Scalar;
+	Z += Scalar;
+	W += Scalar;
 	return *this;
 }
 
 FVector4& FVector4::operator-=(float Scalar) {
-	*this = *this - Scalar;
+	X -= Scalar;
+	Y -= Scalar;
+	Z -= Scalar;
+	W -= Scalar;
 	return *this;
 }
 
 FVector4& FVector4::operator*=(float Scalar) {
-	*this = *this * Scalar;
+	X *= Scalar;
+	Y *= Scalar;
+	Z *= Scalar;
+	W *= Scalar;
 	return *this;
 }
 
 FVector4& FVector4::operator/=(float Scalar) {
-	*this = *this / Scalar;
+	X /= Scalar;
+	Y /= Scalar;
+	Z /= Scalar;
+	W /= Scalar;
 	return *this;
 }
 
@@ -369,6 +431,13 @@ FVector2 FVector2::operator-(const FVector2& Other) const {
 	return ret;
 }
 
+FVector2 FVector2::operator*(const FVector2& Other) const {
+	FVector2 ret;
+	ret.X = X * Other.X;
+	ret.Y = Y * Other.Y;
+	return ret;
+}
+
 FVector2 FVector2::operator+(float Scalar) const {
 	FVector2 ret;
 	ret.X = X + Scalar;
@@ -398,32 +467,44 @@ FVector2 FVector2::operator/(float Scalar) const {
 }
 
 FVector2& FVector2::operator+=(const FVector2& Other) {
-	*this = *this + Other;
+	X += Other.X;
+	Y += Other.Y;
 	return *this;
 }
 
 FVector2& FVector2::operator-=(const FVector2& Other) {
-	*this = *this - Other;
+	X -= Other.X;
+	Y -= Other.Y;
+	return *this;
+}
+
+FVector2& FVector2::operator*=(const FVector2& Other) {
+	X *= Other.X;
+	Y *= Other.Y;
 	return *this;
 }
 
 FVector2& FVector2::operator+=(float Scalar) {
-	*this = *this + Scalar;
+	X += Scalar;
+	Y += Scalar;
 	return *this;
 }
 
 FVector2& FVector2::operator-=(float Scalar) {
-	*this = *this - Scalar;
+	X -= Scalar;
+	Y -= Scalar;
 	return *this;
 }
 
 FVector2& FVector2::operator*=(float Scalar) {
-	*this = *this * Scalar;
+	X *= Scalar;
+	Y *= Scalar;
 	return *this;
 }
 
 FVector2& FVector2::operator/=(float Scalar) {
-	*this = *this / Scalar;
+	X /= Scalar;
+	Y /= Scalar;
 	return *this;
 }
 

@@ -1710,6 +1710,52 @@ FString FEditorPropertyWidget::OpenFbxFileDialog()
     return FString();
 }
 
+void FEditorPropertyWidget::RenderComponentDetails(UActorComponent* Component, bool bTrackSceneChanges)
+{
+    UActorComponent* PreviousSelectedComponent = SelectedComponent;
+    const bool PreviousActorSelected = bActorSelected;
+    const bool PreviousTrackPropertyChanges = bTrackPropertyChanges;
+
+    SelectedComponent = Component;
+    bActorSelected = false;
+    bTrackPropertyChanges = bTrackSceneChanges;
+
+    if (!SelectedComponent)
+    {
+        ImGui::TextDisabled("No component.");
+        SelectedComponent = PreviousSelectedComponent;
+        bActorSelected = PreviousActorSelected;
+        bTrackPropertyChanges = PreviousTrackPropertyChanges;
+        return;
+    }
+
+    ImGui::PushID(SelectedComponent);
+    FString ComponentName = SelectedComponent->GetFName().ToString();
+    if (ComponentName.empty())
+    {
+        ComponentName = GetDisplayClassLabel(SelectedComponent->GetClass());
+    }
+
+    ImGui::TextUnformatted(ComponentName.c_str());
+    ImGui::SameLine();
+    ImGui::TextDisabled("(%s)", GetDisplayClassLabel(SelectedComponent->GetClass()).c_str());
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0.0f, 4.0f));
+
+    TArray<AActor*> SelectedActors;
+    if (AActor* OwnerActor = SelectedComponent->GetOwner())
+    {
+        SelectedActors.push_back(OwnerActor);
+    }
+    RenderComponentProperties(SelectedComponent->GetOwner(), SelectedActors);
+
+    ImGui::PopID();
+
+    SelectedComponent = PreviousSelectedComponent;
+    bActorSelected = PreviousActorSelected;
+    bTrackPropertyChanges = PreviousTrackPropertyChanges;
+}
+
 void FEditorPropertyWidget::Render(float DeltaTime)
 {
     (void)DeltaTime;
@@ -2932,15 +2978,23 @@ void FEditorDetailsWidget::RenderPropertySection(const char *SectionName, TArray
         }
 
         int32 MutableIndex = PropIndex;
-        EditorEngine->BeginTrackedSceneChange();
+        const bool bShouldTrackChanges = bTrackPropertyChanges && EditorEngine;
+        if (bShouldTrackChanges)
+        {
+            EditorEngine->BeginTrackedSceneChange();
+        }
+
         const bool bChanged = RenderPropertyWidget(Props, MutableIndex);
         if (bChanged)
         {
             bAnyChanged = true;
             PropagatePropertyChange(Props[PropIndex].Name, SelectedActors);
-            EditorEngine->CommitTrackedSceneChange();
+            if (bShouldTrackChanges)
+            {
+                EditorEngine->CommitTrackedSceneChange();
+            }
         }
-        else
+        else if (bShouldTrackChanges)
         {
             EditorEngine->CancelTrackedSceneChange();
         }

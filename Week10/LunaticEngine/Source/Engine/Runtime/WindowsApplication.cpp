@@ -19,6 +19,7 @@ namespace
 	void GetInitialWindowBounds(int& OutX, int& OutY, int& OutWidth, int& OutHeight);
 	int GetResizeBorderForWindow(HWND hWnd);
 	void ApplyMaximizedWindowBounds(HWND hWnd, LPARAM lParam);
+	bool ShouldForwardThreadMessageToInputManager(HWND MessageHwnd, HWND MainHwnd);
 	
 	// 입력 처리 및 Hit Test
 	LRESULT HitTestEditorFrame(HWND hWnd, const FWindowsWindow& Window, LPARAM lParam);
@@ -204,6 +205,11 @@ void FWindowsApplication::PumpMessages()
     MSG Msg;
     while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
     {
+        if (ShouldForwardThreadMessageToInputManager(Msg.hwnd, Window.GetHWND()))
+        {
+            FInputManager::Get().ProcessMessage(Msg.hwnd, Msg.message, Msg.wParam, Msg.lParam);
+        }
+
         TranslateMessage(&Msg);
         DispatchMessage(&Msg);
 
@@ -292,6 +298,18 @@ namespace
 	    MinMaxInfo->ptMaxPosition.y = WorkArea.top - MonitorArea.top;
 	    MinMaxInfo->ptMaxSize.x = WorkArea.right - WorkArea.left;
 	    MinMaxInfo->ptMaxSize.y = WorkArea.bottom - WorkArea.top;
+	}
+
+	bool ShouldForwardThreadMessageToInputManager(HWND MessageHwnd, HWND MainHwnd)
+	{
+		if (!MessageHwnd || MessageHwnd == MainHwnd)
+		{
+			return false;
+		}
+
+		DWORD ProcessId = 0;
+		GetWindowThreadProcessId(MessageHwnd, &ProcessId);
+		return ProcessId == GetCurrentProcessId();
 	}
 
 	// 에디터 창에서 마우스 위치에 맞는 히트 결과를 반환한다.
