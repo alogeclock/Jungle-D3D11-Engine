@@ -163,22 +163,33 @@ bool FFbxSkeletonImporter::BuildSkeletonFromSkinClusters(
 
     // 여기서 한 번 더 root 아래 full skeleton hierarchy를 수집한다.
     // IK/end/helper처럼 weight가 없는 skeleton bone 누락되면 안된다.
-    TArray<FbxNode*> FullBoneNodes;
-    FFbxSceneQuery::CollectFullSkeletonHierarchyFromRoots(RootBones, ImportedBoneNodes, FullBoneNodes);
-
-    if (FullBoneNodes.empty())
+    // TArray<FbxNode*> FullBoneNodes;
+    // FFbxSceneQuery::CollectFullSkeletonHierarchyFromRoots(RootBones, ImportedBoneNodes, FullBoneNodes);
+    //
+    // if (FullBoneNodes.empty())
+    // {
+    //     FullBoneNodes = ImportedBoneNodes;
+    // }
+    //
+    // TArray<FbxNode*> FullRootBones;
+    // FFbxSceneQuery::FindImportedBoneRoot(FullBoneNodes, FullRootBones);
+    //
+    // for (FbxNode* RootBone : FullRootBones)
+    // {
+    //     AddImportedBoneRecursive(RootBone, -1, FullBoneNodes, OutSkeleton, OutBoneNodeToIndex);
+    // }
+    // Hotfix : End point가 예상치 못한 곳에 연결되고 있다.
+    for (FbxNode* RootBone : RootBones)
     {
-        FullBoneNodes = ImportedBoneNodes;
+        AddImportedBoneRecursive(
+            RootBone,
+            -1,
+            ImportedBoneNodes,
+            OutSkeleton,
+            OutBoneNodeToIndex
+        );
     }
-
-    TArray<FbxNode*> FullRootBones;
-    FFbxSceneQuery::FindImportedBoneRoot(FullBoneNodes, FullRootBones);
-
-    for (FbxNode* RootBone : FullRootBones)
-    {
-        AddImportedBoneRecursive(RootBone, -1, FullBoneNodes, OutSkeleton, OutBoneNodeToIndex);
-    }
-
+    
     OutSkeleton.RebuildChildren();
 
     return !OutSkeleton.Bones.empty();
