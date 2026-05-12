@@ -4,9 +4,67 @@
 #include "Render/Resource/Buffer.h"
 #include "Render/Types/VertexTypes.h"
 
+#include <cmath>
+
 static const FString EmptyPath;
 
 IMPLEMENT_CLASS(USkeletalMesh, UObject)
+
+namespace
+{
+    void SanitizeLODInfluences(FSkeletalMeshLOD& LOD, int32 BoneCount)
+    {
+        for (FSkeletalVertex& Vertex : LOD.Vertices)
+        {
+            float TotalWeight = 0.0f;
+            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+            {
+                const bool bValidBone = BoneCount > 0 && Vertex.BoneIndices[InfluenceIndex] < static_cast<uint32>(BoneCount);
+                const bool bValidWeight = std::isfinite(Vertex.BoneWeights[InfluenceIndex]) && Vertex.BoneWeights[InfluenceIndex] > 0.0f;
+                if (!bValidBone || !bValidWeight)
+                {
+                    Vertex.BoneIndices[InfluenceIndex] = 0;
+                    Vertex.BoneWeights[InfluenceIndex] = 0.0f;
+                    continue;
+                }
+
+                TotalWeight += Vertex.BoneWeights[InfluenceIndex];
+            }
+
+            if (TotalWeight <= 1e-6f)
+            {
+                for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+                {
+                    Vertex.BoneIndices[InfluenceIndex] = 0;
+                    Vertex.BoneWeights[InfluenceIndex] = 0.0f;
+                }
+                if (BoneCount > 0)
+                {
+                    Vertex.BoneWeights[0] = 1.0f;
+                }
+                continue;
+            }
+
+            const float InvTotalWeight = 1.0f / TotalWeight;
+            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+            {
+                Vertex.BoneWeights[InfluenceIndex] *= InvTotalWeight;
+            }
+        }
+    }
+
+    void SanitizeSkeletalMeshAsset(FSkeletalMesh& Mesh)
+    {
+        Mesh.Skeleton.SanitizeHierarchyAndBindPose();
+
+        const int32 BoneCount = static_cast<int32>(Mesh.Skeleton.Bones.size());
+        for (FSkeletalMeshLOD& LOD : Mesh.LODModels)
+        {
+            SanitizeLODInfluences(LOD, BoneCount);
+            LOD.CacheBounds();
+        }
+    }
+}
 
 static uint32 CalculateSkeletalMeshCPUSize(const FSkeletalMesh& Mesh)
 {
@@ -103,12 +161,7 @@ void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
     {
         if (SkeletalMeshAsset)
         {
-            SkeletalMeshAsset->Skeleton.SanitizeHierarchyAndBindPose();
-
-            for (FSkeletalMeshLOD& LOD : SkeletalMeshAsset->LODModels)
-            {
-                LOD.CacheBounds();
-            }
+            SanitizeSkeletalMeshAsset(*SkeletalMeshAsset);
         }
 
         RebuildSectionMaterialIndices();
@@ -129,12 +182,7 @@ void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
 
     if (SkeletalMeshAsset)
     {
-        SkeletalMeshAsset->Skeleton.SanitizeHierarchyAndBindPose();
-
-        for (FSkeletalMeshLOD& LOD : SkeletalMeshAsset->LODModels)
-        {
-            LOD.CacheBounds();
-        }
+        SanitizeSkeletalMeshAsset(*SkeletalMeshAsset);
 
         const uint32 NewSize = CalculateSkeletalMeshCPUSize(*SkeletalMeshAsset);
         MemoryStats::AddSkeletalMeshCPUMemory(NewSize);

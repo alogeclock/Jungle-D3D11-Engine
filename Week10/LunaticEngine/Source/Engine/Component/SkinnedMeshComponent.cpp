@@ -175,14 +175,37 @@ void USkinnedMeshComponent::SetDisplayBones(bool bDisplay)
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
+void USkinnedMeshComponent::SetRenderLOD(uint32 LODIndex)
+{
+	if (!MeshObject || MeshObject->GetLOD() == LODIndex)
+	{
+		return;
+	}
+
+	MeshObject->SetLOD(LODIndex);
+	bSkinningDirty = true;
+	UpdateSkinnedMeshObject();
+}
+
 void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 {
-	if (!MeshObject)
+	if (!bCPUSkinning || !MeshObject)
 	{
 		return;
 	}
 
 	MeshObject->Update(SkinningMatrices);
+	FVector SkinnedCenter;
+	FVector SkinnedExtent;
+	if (MeshObject->GetSkinnedLocalBounds(SkinnedCenter, SkinnedExtent))
+	{
+		CachedLocalCenter = SkinnedCenter;
+		CachedLocalExtent = SkinnedExtent * std::max(BoundsScale, 0.1f);
+		bHasValidBounds = true;
+		bBoundsDirty = false;
+		MarkWorldBoundsDirty();
+	}
+
 	bSkinningDirty = false;
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
@@ -277,23 +300,51 @@ void USkinnedMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// 본 행렬 재계산
-	RefreshBoneTransforms();
+	if (!SkeletalMesh || !bCPUSkinning)
+	{
+		return;
+	}
 
-	// 결과를 MeshObject로 전달 -> CPU 스키닝 + VB 재생성
-	UpdateSkinnedMeshObject();
+	const bool bMissingPose =
+		ComponentSpaceMatrices.empty() ||
+		SkinningMatrices.empty();
+
+	if (bPoseDirty || bMissingPose)
+	{
+		RefreshBoneTransforms();
+	}
+
+	const bool bMissingBuffer =
+		!MeshObject ||
+		!MeshObject->GetMeshBuffer() ||
+		!MeshObject->GetMeshBuffer()->IsValid();
+
+	if (bSkinningDirty || bMissingBuffer)
+	{
+		UpdateSkinnedMeshObject();
+	}
 }
 
 // FSkeletalMeshLOD에는 RenderBuffer가 없음 (GPU 업로드 단계 미구현).
 // 일단 nullptr — 렌더 패스에서는 이 컴포넌트가 그려지지 않음.
 FMeshBuffer* USkinnedMeshComponent::GetMeshBuffer() const
 {
+	if (!bCPUSkinning || bHideSkin)
+	{
+		return nullptr;
+	}
+
 	return MeshObject ? MeshObject->GetMeshBuffer() : nullptr;
 }
 
 // FSkeletalVertex 레이아웃이 FNormalVertex와 달라 직접 노출할 수 없음.
 FMeshDataView USkinnedMeshComponent::GetMeshDataView() const
 {
+	if (!bCPUSkinning || bHideSkin)
+	{
+		return {};
+	}
+
 	return MeshObject ? MeshObject->GetMeshDataView() : FMeshDataView{};
 }
 
@@ -515,7 +566,7 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 	}
 
 	bPoseDirty = false;
-	bSkinningDirty = false;
+	bSkinningDirty = true;
 	bBoundsDirty = true;
 }
 

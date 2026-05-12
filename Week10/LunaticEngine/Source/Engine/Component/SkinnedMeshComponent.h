@@ -71,6 +71,7 @@ public:
 	bool ShouldHideSkin() const { return bHideSkin; }
 	bool ShouldDisplayBones() const { return bDisplayBones; }
 	void SetDisplayBones(bool bDisplay);
+	void SetRenderLOD(uint32 LODIndex);
 
 	// 본 포즈 파이프라인 invariant 검증.
 	// 1) RefPose 입력 시 모든 SkinningMatrix가 Identity 인지

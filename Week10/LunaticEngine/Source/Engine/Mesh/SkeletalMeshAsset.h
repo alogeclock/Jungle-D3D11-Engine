@@ -9,6 +9,7 @@
 #include "Mesh/MeshCollisionAsset.h"
 
 #include <algorithm>
+#include <cmath>
 
 static constexpr int32 MAX_SKELETAL_MESH_UV_CHANNELS     = 4;
 static constexpr int32 MAX_SKELETAL_MESH_BONE_INFLUENCES = 4;
@@ -139,6 +140,31 @@ struct FSkeleton
 
     void SanitizeHierarchyAndBindPose()
     {
+        auto IsUsableBindMatrix = [](const FMatrix& Matrix)
+        {
+            float BasisAbsSum = 0.0f;
+            for (int32 Row = 0; Row < 4; ++Row)
+            {
+                for (int32 Col = 0; Col < 4; ++Col)
+                {
+                    if (!std::isfinite(Matrix.M[Row][Col]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            for (int32 Row = 0; Row < 3; ++Row)
+            {
+                for (int32 Col = 0; Col < 3; ++Col)
+                {
+                    BasisAbsSum += std::fabs(Matrix.M[Row][Col]);
+                }
+            }
+
+            return BasisAbsSum > 1e-6f;
+        };
+
         const int32 BoneCount = static_cast<int32>(Bones.size());
 
         for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
@@ -153,6 +179,23 @@ struct FSkeleton
         for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
         {
             FBoneInfo& Bone = Bones[BoneIndex];
+
+            if (!IsUsableBindMatrix(Bone.GlobalBindPose))
+            {
+                if (IsUsableBindMatrix(Bone.LocalBindPose))
+                {
+                    Bone.GlobalBindPose = Bone.ParentIndex >= 0
+                        ? Bone.LocalBindPose * Bones[Bone.ParentIndex].GlobalBindPose
+                        : Bone.LocalBindPose;
+                }
+                else
+                {
+                    Bone.GlobalBindPose = Bone.ParentIndex >= 0
+                        ? Bones[Bone.ParentIndex].GlobalBindPose
+                        : FMatrix::Identity;
+                }
+            }
+
             if (Bone.ParentIndex >= 0)
             {
                 Bone.LocalBindPose = Bone.GlobalBindPose * Bones[Bone.ParentIndex].GlobalBindPose.GetInverse();

@@ -211,7 +211,7 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 
 	bRequiredBonesUpdated = true;
 	bPoseDirty = false;
-	bSkinningDirty = false;
+	bSkinningDirty = true;
 	bBoundsDirty = true;
 	MarkWorldBoundsDirty();
 }
@@ -279,6 +279,20 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	}
 	else if (std::strcmp(PropertyName, "Bounds Scale") == 0 || std::strcmp(PropertyName, "Force Ref Pose") == 0)
 		MarkSkeletalPoseDirty();
+	else if (std::strcmp(PropertyName, "CPU Skinning") == 0)
+	{
+		if (bCPUSkinning)
+		{
+			MarkSkeletalPoseDirty();
+			RefreshBoneTransforms();
+			UpdateSkinnedMeshObject();
+		}
+		else
+		{
+			MarkProxyDirty(EDirtyFlag::Mesh);
+			MarkWorldBoundsDirty();
+		}
+	}
 	else if (std::strcmp(PropertyName, "Selected Bone Index") == 0 || std::strcmp(PropertyName, "Display Bones") == 0)
 		MarkProxyDirty(EDirtyFlag::Mesh);
 }
