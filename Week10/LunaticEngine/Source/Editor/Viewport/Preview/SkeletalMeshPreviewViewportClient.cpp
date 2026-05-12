@@ -19,23 +19,22 @@
 #include "ImGui/imgui.h"
 
 #include <cfloat>
-#include <cmath>
 
 namespace
 {
+	// Picking
 	bool GetSkeletalMeshBounds(USkeletalMesh* SkeletalMesh, FVector& OutCenter, FVector& OutExtent);
 	float DistancePointToSegment2D(const FVector2& Point, const FVector2& SegmentStart, const FVector2& SegmentEnd);
 	bool ProjectWorldToViewport(const FMatrix& ViewProjection, const FVector& WorldPosition, float ViewportWidth, float ViewportHeight, FVector2& OutScreenPosition, float& OutDepth);
 	bool TryConvertMouseToViewportPixel(const ImVec2& MousePos, const FRect& ViewportRect, const FViewport* Viewport, float FallbackWidth, float FallbackHeight, float& OutX, float& OutY);
+	
+	// Update Transform
 	FQuat GetStableWorldRotation(const USceneComponent* Component);
 	FQuat GetComponentSpaceRotation(const USceneComponent* WorldComponent, const USceneComponent* ComponentSpaceOwner);
-	FTransform TransformFromMatrix(const FMatrix& Matrix);
+	
+	// Gizmo
 	EGizmoMode GizmoModeFromPreviewMode(int32 PreviewMode);
 	int32 PreviewModeFromGizmoMode(EGizmoMode Mode);
-}
-
-FSkeletalMeshPreviewViewportClient::FSkeletalMeshPreviewViewportClient()
-{
 }
 
 FSkeletalMeshPreviewViewportClient::~FSkeletalMeshPreviewViewportClient()
@@ -564,7 +563,6 @@ namespace
 		return (Point - Closest).Length();
 	}
 
-	// 
 	bool ProjectWorldToViewport(const FMatrix& ViewProjection, const FVector& WorldPosition, float ViewportWidth, float ViewportHeight, FVector2& OutScreenPosition, float& OutDepth)
 	{
 		const FVector ClipSpace = ViewProjection.TransformPositionWithW(WorldPosition);
@@ -642,12 +640,9 @@ namespace
 	{
 		switch (PreviewMode)
 		{
-		case 1:
-			return EGizmoMode::Rotate;
-		case 2:
-			return EGizmoMode::Scale;
-		default:
-			return EGizmoMode::Translate;
+		case 1: return EGizmoMode::Rotate;
+		case 2: return EGizmoMode::Scale;
+		default: return EGizmoMode::Translate;
 		}
 	}
 
@@ -656,12 +651,9 @@ namespace
 	{
 		switch (Mode)
 		{
-		case EGizmoMode::Rotate:
-			return 1;
-		case EGizmoMode::Scale:
-			return 2;
-		default:
-			return 0;
+		case EGizmoMode::Rotate: return 1;
+		case EGizmoMode::Scale: return 2;
+		default: return 0;
 		}
 	}
 }

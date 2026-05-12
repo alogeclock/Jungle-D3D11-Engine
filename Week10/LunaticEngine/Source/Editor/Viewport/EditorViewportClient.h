@@ -4,7 +4,6 @@
 #include "Render/Types/RenderTypes.h"
 #include "Render/Types/ViewTypes.h"
 
-#include "Core/CollisionTypes.h"
 #include "Input/EnhancedInputManager.h"
 #include "Input/InputAction.h"
 #include "Input/InputMappingContext.h"
@@ -19,25 +18,24 @@ class UCameraComponent;
 class UWorld;
 struct FFrameContext;
 
-class	FEditorViewportClient : public FViewportClient
+class FEditorViewportClient : public FViewportClient
 {
 public:
 	explicit FEditorViewportClient(bool bSetupDefaultInput = true);
 	~FEditorViewportClient() override;
 
-	void Initialize(FWindowsWindow* InWindow);
+	virtual void Initialize(FWindowsWindow* InWindow);
+	
+	// Settings & Frame Context & Viewport
 	void SetSettings(const FEditorSettings* InSettings) { Settings = InSettings; }
-
 	virtual void SetupFrameContext(FFrameContext& OutFrame, UCameraComponent* InCamera, FViewport* InVP, UWorld* InWorld) = 0;
-
 	FViewportRenderOptions& GetRenderOptions() { return RenderOptions; }
 	const FViewportRenderOptions& GetRenderOptions() const { return RenderOptions; }
-
 	void SetViewportSize(float InWidth, float InHeight);
 
-	void CreateCamera();
-	void DestroyCamera();
-	void ResetCamera();
+	virtual void CreateCamera();
+	virtual void DestroyCamera();
+	virtual void ResetCamera();
 	UCameraComponent* GetCamera() const { return Camera; }
 
 	virtual void Tick(float DeltaTime);
@@ -58,7 +56,7 @@ public:
 protected:
 	virtual bool CanProcessCameraInput() const { return true; }
 
-	void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
+	virtual void TickInput(const FInputSystemSnapshot& Snapshot, float DeltaTime);
 	void SyncCameraSmoothingTarget();
 	void ApplySmoothedCameraLocation(float DeltaTime);
 
@@ -100,12 +98,12 @@ protected:
 	bool bSuppressInputUntilRButtonUp = false;
 
 private:
-	void SetupInput();
+	virtual void SetupInput();
 
-	void OnMove(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnRotate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
-	void OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	virtual void OnMove(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	virtual void OnRotate(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	virtual void OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	virtual void OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 
 private:
 	FInputMappingContext* EditorMappingContext = nullptr;

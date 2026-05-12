@@ -1,8 +1,10 @@
-#include "SkeletalMeshPreviewWidget.h"
+﻿#include "SkeletalMeshPreviewWidget.h"
 
 #include "Component/SkeletalMeshComponent.h"
 #include "Core/Notification.h"
 #include "Editor/EditorEngine.h"
+#include "Editor/UI/EditorCommonWidgetUtils.h"
+#include "Editor/Viewport/Preview/SkeletalMeshPreviewViewportClient.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Texture/Texture2D.h"
@@ -11,6 +13,7 @@
 #include "ImGui/imgui.h"
 
 #include <filesystem>
+#include <memory>
 #include <string>
 
 namespace
@@ -32,6 +35,16 @@ namespace
 }
 
 // UEditorEngine, DirectX Device, Windows Handle을 받아 초기화합니다.
+std::unique_ptr<FPreviewViewportClient> FSkeletalMeshPreviewWidget::CreatePreviewViewportClient()
+{
+    return std::make_unique<FSkeletalMeshPreviewViewportClient>();
+}
+
+FSkeletalMeshPreviewViewportClient* FSkeletalMeshPreviewWidget::GetSkeletalViewportClient() const
+{
+    return static_cast<FSkeletalMeshPreviewViewportClient*>(GetPreviewViewportClient());
+}
+
 void FSkeletalMeshPreviewWidget::Initialize(UEditorEngine* InEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow)
 {
     if (bInitialized)
@@ -52,20 +65,35 @@ void FSkeletalMeshPreviewWidget::Initialize(UEditorEngine* InEngine, ID3D11Devic
         return;
     }
 
-    Viewport->SetClient(&ViewportClient);
-    ViewportClient.SetViewport(Viewport);
-    ViewportClient.Initialize(InWindow);
-    SetPreviewViewportClient(&ViewportClient);
+    FPreviewViewportClient* PreviewClient = EnsurePreviewViewportClient();
+    Viewport->SetClient(PreviewClient);
+    PreviewClient->SetViewport(Viewport);
+    PreviewClient->Initialize(InWindow);
     bInitialized = true;
 }
 
 // 사용하던 뷰포트를 릴리즈하고 메모리에서 해제한 뒤, 포인터를 nullptr 초기화하여 댕글링 포인터 문제를 방지합니다.
 void FSkeletalMeshPreviewWidget::Shutdown()
 {
-    Close();
+	if (!bOpen && !bRegistered && !EditingMesh)
+	{
+		return;
+	}
 
-    ViewportClient.SetViewport(nullptr);
-    SetPreviewViewportClient(nullptr);
+	UnregisterPreviewClient();
+	ClearInputCapture();
+	if (FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient())
+	{
+		Client->SetSkeletalMesh(nullptr);
+		Client->SetViewport(nullptr);
+	}
+	EditingMesh = nullptr;
+	BoneWeightedFlags.clear();
+	SelectedBoneIndex = -1;
+	bOpen = false;
+	bCapturingInput = false;
+
+    ReleasePreviewViewportClient();
 
     if (Viewport)
     {
@@ -93,10 +121,13 @@ void FSkeletalMeshPreviewWidget::OpenSkeletalMesh(USkeletalMesh* InMesh)
     EditingMesh = InMesh;
     SelectedBoneIndex = -1;
     RebuildBoneWeightedFlags();
-    ViewportClient.SetSkeletalMesh(EditingMesh);
+    if (FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient())
+    {
+        Client->SetSkeletalMesh(EditingMesh);
+    }
     bOpen = true;
     bCapturingInput = false;
-    RegisterPreviewClient(&ViewportClient);
+    RegisterPreviewClient();
 }
 
 // ImGui::BeginTable을 사용하여 Skeleton Tree, Viewport, Details 칸으로 화면을 3분할해 출력합니다.
@@ -129,15 +160,35 @@ void FSkeletalMeshPreviewWidget::Render(float DeltaTime)
     if (!bWindowOpen)
     {
         ImGui::End();
-        Close();
+
+        if (!bOpen && !bRegistered && !EditingMesh)
+        {
+            return;
+        }
+
+        UnregisterPreviewClient();
+        ClearInputCapture();
+        if (FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient())
+        {
+            Client->SetSkeletalMesh(nullptr);
+        }
+        EditingMesh = nullptr;
+        BoneWeightedFlags.clear();
+        SelectedBoneIndex = -1;
+        bOpen = false;
+        bCapturingInput = false;
+
         return;
     }
 
     if (!bVisible)
     {
         ImGui::End();
-        ViewportClient.SetHovered(false);
-        ViewportClient.SetActive(false);
+        if (FPreviewViewportClient* Client = GetPreviewViewportClient())
+        {
+            Client->SetHovered(false);
+            Client->SetActive(false);
+        }
         bCapturingInput = false;
         return;
     }
@@ -169,35 +220,17 @@ void FSkeletalMeshPreviewWidget::Render(float DeltaTime)
         ViewportWidget.Render(DeltaTime);
     }
 
-    bCapturingInput = ViewportClient.IsHovered() || ViewportClient.IsActive();
+    if (FPreviewViewportClient* Client = GetPreviewViewportClient())
+    {
+        bCapturingInput = Client->IsHovered() || Client->IsActive();
+    }
+    else
+    {
+        bCapturingInput = false;
+    }
 
     ImGui::End();
 }
-
-// 입력 정보를 초기화합니다.
-// 편집 중인 데이터를 초기화하고, 메시 연결을 끊고, 본 인덱스를 리셋하며 등록된 프리뷰 클라이언트를 해제합니다.
-void FSkeletalMeshPreviewWidget::Close()
-{
-    if (!bOpen && !bRegistered && !EditingMesh)
-    {
-        return;
-    }
-
-    UnregisterPreviewClient(&ViewportClient);
-    ClearInputCapture();
-    ViewportClient.SetSkeletalMesh(nullptr);
-    EditingMesh = nullptr;
-    BoneWeightedFlags.clear();
-    SelectedBoneIndex = -1;
-    bOpen = false;
-    bCapturingInput = false;
-}
-
-// EditorEngine에 Preview Viewport Client를 등록합니다.
- 
-
-// EditorEngine에 Preview Viewport Client를 해제합니다.
- 
 
 // UI Rendering 및 Layout 로직: Bone Hierarchy Panel을 그립니다.
 void FSkeletalMeshPreviewWidget::DrawBoneHierarchyPanel()
@@ -221,7 +254,10 @@ void FSkeletalMeshPreviewWidget::DrawBoneHierarchyPanel()
 
     if (ImGui::Button("Clear Selection"))
     {
-        SelectBone(ViewportClient, SelectedBoneIndex, -1);
+        if (FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient())
+        {
+            SelectBone(*Client, SelectedBoneIndex, -1);
+        }
     }
     ImGui::SameLine();
     ImGui::TextDisabled("%d bones", BoneCount);
@@ -262,8 +298,10 @@ void FSkeletalMeshPreviewWidget::DrawBoneDetailsPanel()
     }
 
     const FBoneInfo& Bone = Skeleton->Bones[SelectedBoneIndex];
-    USkeletalMeshComponent* PreviewComponent = ViewportClient.GetPreviewComponent();
-    if (BeginPreviewDetailsSection("Bone"))
+    FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient();
+    USkeletalMeshComponent* PreviewComponent = Client ? Client->GetPreviewComponent() : nullptr;
+    const bool bBoneSectionOpen = BeginPreviewDetailsSection("Bone");
+    if (bBoneSectionOpen)
     {
         DrawPreviewReadOnlyField("Name", Bone.Name.empty() ? FString("<Unnamed Bone>") : Bone.Name);
         DrawPreviewReadOnlyField("Index", std::to_string(SelectedBoneIndex));
@@ -277,46 +315,48 @@ void FSkeletalMeshPreviewWidget::DrawBoneDetailsPanel()
             DrawPreviewReadOnlyField("Parent", "None");
         }
         DrawPreviewReadOnlyField("Children", std::to_string(static_cast<int32>(Bone.Children.size())));
-    }
 
-    if (PreviewComponent)
-    {
-        if (const FTransform* LocalTransform = PreviewComponent->GetBoneLocalTransform(SelectedBoneIndex))
+        if (PreviewComponent)
         {
-            FTransform EditableLocal = *LocalTransform;
-            ImGui::PushID("LocalTransform");
-            if (DrawEditableTransform("Local Transform", EditableLocal, SelectedBoneIndex, LocalRotationEditState, EBoneRotationEditSpace::Local))
+            if (const FTransform* LocalTransform = PreviewComponent->GetBoneLocalTransform(SelectedBoneIndex))
             {
-                PreviewComponent->SetBoneLocalTransform(SelectedBoneIndex, EditableLocal);
+                FTransform EditableLocal = *LocalTransform;
+                ImGui::PushID("LocalTransform");
+                if (DrawEditableTransform("Local Transform", EditableLocal, SelectedBoneIndex, LocalRotationEditState, EBoneRotationEditSpace::Local))
+                {
+                    PreviewComponent->SetBoneLocalTransform(SelectedBoneIndex, EditableLocal);
+                }
+                ImGui::PopID();
             }
-            ImGui::PopID();
+
+            if (const FTransform* ComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(SelectedBoneIndex))
+            {
+                FTransform EditableComponent = *ComponentTransform;
+                ImGui::PushID("ComponentTransform");
+                if (DrawEditableTransform("Component Transform", EditableComponent, SelectedBoneIndex, ComponentRotationEditState, EBoneRotationEditSpace::Component))
+                {
+                    PreviewComponent->SetBoneComponentSpaceTransform(SelectedBoneIndex, EditableComponent);
+                }
+                ImGui::PopID();
+            }
         }
 
-        if (const FTransform* ComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(SelectedBoneIndex))
-        {
-            FTransform EditableComponent = *ComponentTransform;
-            ImGui::PushID("ComponentTransform");
-            if (DrawEditableTransform("Component Transform", EditableComponent, SelectedBoneIndex, ComponentRotationEditState, EBoneRotationEditSpace::Component))
-            {
-                PreviewComponent->SetBoneComponentSpaceTransform(SelectedBoneIndex, EditableComponent);
-            }
-            ImGui::PopID();
-        }
+        DrawTransformMatrixRows("Local Bind Pose", Bone.LocalBindPose);
+        DrawTransformMatrixRows("Global Bind Pose", Bone.GlobalBindPose);
     }
 
-    DrawTransformMatrixRows("Local Bind Pose", Bone.LocalBindPose);
-    DrawTransformMatrixRows("Global Bind Pose", Bone.GlobalBindPose);
     DrawPreviewComponentDetailsPanel();
 
     ImGui::EndChild();
 }
 
-// UI Rendering 및 Layout 로직: FEditorPropertyWidget과 동일한 방식으로 Details Panel을 채웁니다. 
+// UI Rendering 및 Layout 로직: FEditorPropertyWidget과 동일한 방식으로 Details Panel을 채웁니다.
 void FSkeletalMeshPreviewWidget::DrawPreviewComponentDetailsPanel()
 {
-    USkeletalMeshComponent* PreviewComponent = ViewportClient.GetPreviewComponent();
+    FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient();
+    USkeletalMeshComponent* PreviewComponent = Client ? Client->GetPreviewComponent() : nullptr;
     ImGui::Dummy(ImVec2(0.0f, PreviewDetailsPropertyVerticalSpacing));
-    if (!BeginPreviewDetailsSection("SkeletalMeshComponent"))
+    if (!BeginPreviewDetailsSection("Skeletal Mesh Component"))
     {
         return;
     }
@@ -360,9 +400,12 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
         const bool bIconClicked = ImGui::IsItemClicked();
         if (bIconClicked)
         {
-            SelectBone(ViewportClient, SelectedBoneIndex, BoneIndex);
+            if (FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient())
+            {
+                SelectBone(*Client, SelectedBoneIndex, BoneIndex);
+            }
         }
-        ImGui::SameLine(0.0f, 2.0f);
+        ImGui::SameLine(0.0f, 6.0f);
     }
     ImGui::TextUnformatted(Label.c_str());
     const bool bLabelClicked = ImGui::IsItemClicked();
@@ -373,7 +416,10 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
 
     if (bNodeClicked || bLabelClicked)
     {
-        SelectBone(ViewportClient, SelectedBoneIndex, BoneIndex);
+        if (FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient())
+        {
+            SelectBone(*Client, SelectedBoneIndex, BoneIndex);
+        }
     }
 
     if (bOpenNode && !bLeaf)
@@ -387,6 +433,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
     ImGui::PopID();
 }
 
+// Transform 정보를 Editor Common Widget Utils를 활용해서 출력합니다.
 bool FSkeletalMeshPreviewWidget::DrawEditableTransform(const char* SectionName, FTransform& Transform, int32 BoneIndex, FBoneRotationEditState& State, EBoneRotationEditSpace Space)
 {
     if (!BeginPreviewDetailsSection(SectionName))
@@ -398,14 +445,13 @@ bool FSkeletalMeshPreviewWidget::DrawEditableTransform(const char* SectionName, 
 
     // 1. Location
     float LocValues[3] = { Transform.Location.X, Transform.Location.Y, Transform.Location.Z };
-    if (DrawPreviewColoredFloat3("Location", LocValues, 0.1f))
+    if (FEditorCommonWidgetUtils::DrawColoredFloat3("Location", LocValues, 0.1f))
     {
         Transform.Location = FVector(LocValues[0], LocValues[1], LocValues[2]);
         bChanged = true;
     }
 
-    // 2. Rotation
-    // 상태 동기화: 본이 바뀌었거나 외부(Gizmo 등)에서 회전값이 바뀐 경우 EulerHint를 갱신합니다.
+    // 2. Rotation (상태 동기화 - 본이 바뀌었거나 외부(Gizmo 등)에서 회전값이 바뀐 경우 EulerHint를 갱신)
     const FQuat CurrentQuat = Transform.Rotation;
     if (State.BoneIndex != BoneIndex || !IsSameRotation(State.Quat, CurrentQuat))
     {
@@ -414,11 +460,10 @@ bool FSkeletalMeshPreviewWidget::DrawEditableTransform(const char* SectionName, 
         State.EulerHint = CurrentQuat.ToRotator();
     }
 
-    // Roll(X), Pitch(Y), Yaw(Z) 순서로 표시 (UE 컨벤션)
+	// Pitch, Yaw, Roll 순서로 FRotator 생성자 호출
     float RotValues[3] = { State.EulerHint.Roll, State.EulerHint.Pitch, State.EulerHint.Yaw };
-    if (DrawPreviewColoredFloat3("Rotation", RotValues, 0.1f))
+    if (FEditorCommonWidgetUtils::DrawColoredFloat3("Rotation", RotValues, 0.1f))
     {
-        // Pitch, Yaw, Roll 순서로 FRotator 생성자 호출
         State.EulerHint = FRotator(RotValues[1], RotValues[2], RotValues[0]);
         State.Quat = State.EulerHint.ToQuaternion();
         Transform.Rotation = State.Quat;
@@ -428,7 +473,7 @@ bool FSkeletalMeshPreviewWidget::DrawEditableTransform(const char* SectionName, 
     // 3. Scale
     float ScaleValues[3] = { Transform.Scale.X, Transform.Scale.Y, Transform.Scale.Z };
     static float DefaultScale[3] = { 1.0f, 1.0f, 1.0f };
-    if (DrawPreviewColoredFloat3("Scale", ScaleValues, 0.01f, DefaultScale))
+    if (FEditorCommonWidgetUtils::DrawColoredFloat3("Scale", ScaleValues, 0.01f, true, DefaultScale))
     {
         Transform.Scale = FVector(ScaleValues[0], ScaleValues[1], ScaleValues[2]);
         bChanged = true;
@@ -486,7 +531,8 @@ void FSkeletalMeshPreviewWidget::EnsureBoneTreeIcons()
 // 3D Viewport에서 마우스 클릭이 발생했을 때, 기즈모를 클릭했는지 본을 클릭했는지 판별해 선택 상태를 갱신합니다.
 void FSkeletalMeshPreviewWidget::HandleViewportBoneSelection()
 {
-    if (!ImGui::IsItemClicked(ImGuiMouseButton_Left))
+    FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient();
+    if (!Client || !ImGui::IsItemClicked(ImGuiMouseButton_Left))
     {
         return;
     }
@@ -504,20 +550,21 @@ void FSkeletalMeshPreviewWidget::HandleViewportBoneSelection()
     const float LocalX = MousePos.x - ItemMin.x;
     const float LocalY = MousePos.y - ItemMin.y;
 
-    if (ViewportClient.IsPreviewGizmoHitAtViewportPosition(LocalX, LocalY, Width, Height))
+    if (Client->IsPreviewGizmoHitAtViewportPosition(LocalX, LocalY, Width, Height))
     {
         return;
     }
 
-    const int32 PickedBoneIndex = ViewportClient.PickBoneAtViewportPosition(LocalX, LocalY, Width, Height);
-    SelectBone(ViewportClient, SelectedBoneIndex, PickedBoneIndex);
+    const int32 PickedBoneIndex = Client->PickBoneAtViewportPosition(LocalX, LocalY, Width, Height);
+    SelectBone(*Client, SelectedBoneIndex, PickedBoneIndex);
 }
 
 // 현재 선택된 본이 유효한지 확인하여, 잘못된 인덱스를 참조하는 것을 방지합니다.
 void FSkeletalMeshPreviewWidget::ValidateSelectedBone()
 {
     const FSkeleton* Skeleton = GetSkeleton(EditingMesh);
-    if (USkeletalMeshComponent* PreviewComponent = ViewportClient.GetPreviewComponent())
+    FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient();
+    if (USkeletalMeshComponent* PreviewComponent = Client ? Client->GetPreviewComponent() : nullptr)
     {
         const int32 ComponentSelectedBoneIndex = PreviewComponent->GetSelectedBoneIndex();
         if (ComponentSelectedBoneIndex != SelectedBoneIndex)
@@ -529,7 +576,7 @@ void FSkeletalMeshPreviewWidget::ValidateSelectedBone()
     if (!IsValidBoneIndex(Skeleton, SelectedBoneIndex))
     {
         SelectedBoneIndex = -1;
-        if (USkeletalMeshComponent* PreviewComponent = ViewportClient.GetPreviewComponent())
+        if (USkeletalMeshComponent* PreviewComponent = Client ? Client->GetPreviewComponent() : nullptr)
         {
             PreviewComponent->SetSelectedBoneIndex(-1);
         }
@@ -554,7 +601,7 @@ namespace
         FSkeletalMesh* MeshAsset = GetSkeletalMeshAsset(Mesh);
         return MeshAsset ? &MeshAsset->Skeleton : nullptr;
     }
-	
+
 	// 입력된 Bone Index가 스켈레톤의 유효 범위 안에 있는지 확인합니다.
     bool IsValidBoneIndex(const FSkeleton* Skeleton, int32 BoneIndex)
     {
@@ -596,7 +643,7 @@ namespace
             SelectedBoneIndex = PreviewComponent->GetSelectedBoneIndex();
         }
     }
-	
+
 	// 파일 경로에서 파일명을 추출해 에디터 창의 제목을 결정하는 유틸리티 함수
 	FString GetMeshDisplayName(USkeletalMesh* Mesh)
     {
