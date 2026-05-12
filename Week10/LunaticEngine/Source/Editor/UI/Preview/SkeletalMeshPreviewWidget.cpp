@@ -6,6 +6,7 @@
 #include "Math/Rotator.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Texture/Texture2D.h"
 #include "Viewport/Viewport.h"
 
 #include "ImGui/imgui.h"
@@ -325,6 +326,7 @@ void FSkeletalMeshPreviewWidget::Initialize(UEditorEngine* InEngine, ID3D11Devic
 	}
 
 	Engine = InEngine;
+	Device = InDevice;
 	ComponentDetailsWidget.Initialize(InEngine);
 
 	Viewport = new FViewport();
@@ -358,6 +360,9 @@ void FSkeletalMeshPreviewWidget::Shutdown()
 	}
 
 	Engine = nullptr;
+	Device = nullptr;
+	WeightedBoneIcon = nullptr;
+	NonWeightedBoneIcon = nullptr;
 	bInitialized = false;
 	bCapturingInput = false;
 }
@@ -371,6 +376,7 @@ void FSkeletalMeshPreviewWidget::OpenSkeletalMesh(USkeletalMesh* InMesh)
 
 	EditingMesh = InMesh;
 	SelectedBoneIndex = -1;
+	RebuildBoneWeightedFlags();
 	ViewportClient.SetSkeletalMesh(EditingMesh);
 	bOpen = true;
 	bCapturingInput = false;
@@ -423,7 +429,7 @@ void FSkeletalMeshPreviewWidget::Render(float DeltaTime)
 	const ImVec2 ContentRegion = ImGui::GetContentRegionAvail();
 	if (ImGui::BeginTable("SkeletalMeshEditorLayout", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV, ImVec2(0.0f, ContentRegion.y)))
 	{
-		ImGui::TableSetupColumn("Skeleton", ImGuiTableColumnFlags_WidthFixed, 220.0f);
+		ImGui::TableSetupColumn("Skeleton", ImGuiTableColumnFlags_WidthFixed, 264.0f);
 		ImGui::TableSetupColumn("Viewport", ImGuiTableColumnFlags_WidthStretch, 1.0f);
 		ImGui::TableSetupColumn("Details", ImGuiTableColumnFlags_WidthFixed, 360.0f);
 
@@ -467,6 +473,7 @@ void FSkeletalMeshPreviewWidget::Close()
 	ClearInputCapture();
 	ViewportClient.SetSkeletalMesh(nullptr);
 	EditingMesh = nullptr;
+	BoneWeightedFlags.clear();
 	SelectedBoneIndex = -1;
 	bOpen = false;
 	bCapturingInput = false;
@@ -621,10 +628,14 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
 		return;
 	}
 
+	EnsureBoneTreeIcons();
+
 	const FBoneInfo& Bone = Skeleton.Bones[BoneIndex];
 	const bool bSelected = BoneIndex == SelectedBoneIndex;
 	const bool bLeaf = Bone.Children.empty();
-	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+	const bool bWeighted = BoneIndex < static_cast<int32>(BoneWeightedFlags.size()) && BoneWeightedFlags[BoneIndex];
+	UTexture2D* BoneIcon = bWeighted ? WeightedBoneIcon : NonWeightedBoneIcon;
+	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
 	if (bLeaf)
 	{
 		Flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -636,8 +647,27 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
 
 	ImGui::PushID(BoneIndex);
 	const FString Label = Bone.Name.empty() ? FString("<Unnamed Bone>") : Bone.Name;
-	const bool bOpenNode = ImGui::TreeNodeEx(Label.c_str(), Flags);
-	if (ImGui::IsItemClicked())
+	const bool bOpenNode = ImGui::TreeNodeEx("##BoneNode", Flags);
+	const bool bNodeClicked = ImGui::IsItemClicked();
+	ImGui::SameLine(0.0f, 4.0f);
+	if (BoneIcon && BoneIcon->IsLoaded())
+	{
+		ImGui::Image(BoneIcon->GetSRV(), ImVec2(16.0f, 16.0f));
+		const bool bIconClicked = ImGui::IsItemClicked();
+		if (bIconClicked)
+		{
+			SelectBone(ViewportClient, SelectedBoneIndex, BoneIndex);
+		}
+		ImGui::SameLine(0.0f, 4.0f);
+	}
+	ImGui::TextUnformatted(Label.c_str());
+	const bool bLabelClicked = ImGui::IsItemClicked();
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("%s", bWeighted ? "Weighted Bone" : "Non-weighted Bone");
+	}
+
+	if (bNodeClicked || bLabelClicked)
 	{
 		SelectBone(ViewportClient, SelectedBoneIndex, BoneIndex);
 	}
@@ -651,6 +681,50 @@ void FSkeletalMeshPreviewWidget::DrawBoneTreeNode(const FSkeleton& Skeleton, int
 		ImGui::TreePop();
 	}
 	ImGui::PopID();
+}
+
+void FSkeletalMeshPreviewWidget::RebuildBoneWeightedFlags()
+{
+	BoneWeightedFlags.clear();
+
+	const FSkeletalMesh* MeshAsset = GetSkeletalMeshAsset(EditingMesh);
+	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
+	const FSkeletalMeshLOD* LOD = MeshAsset ? MeshAsset->GetLOD(0) : nullptr;
+	const int32 BoneCount = Skeleton ? static_cast<int32>(Skeleton->Bones.size()) : 0;
+	if (!LOD || BoneCount <= 0)
+	{
+		return;
+	}
+
+	BoneWeightedFlags.assign(BoneCount, false);
+	for (const FSkeletalVertex& Vertex : LOD->Vertices)
+	{
+		for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+		{
+			const int32 WeightedBoneIndex = static_cast<int32>(Vertex.BoneIndices[InfluenceIndex]);
+			if (Vertex.BoneWeights[InfluenceIndex] > 0.0f && WeightedBoneIndex >= 0 && WeightedBoneIndex < BoneCount)
+			{
+				BoneWeightedFlags[WeightedBoneIndex] = true;
+			}
+		}
+	}
+}
+
+void FSkeletalMeshPreviewWidget::EnsureBoneTreeIcons()
+{
+	if (!Device)
+	{
+		return;
+	}
+
+	if (!WeightedBoneIcon)
+	{
+		WeightedBoneIcon = UTexture2D::LoadFromFile("Asset/Editor/Icons/Common/Bone.png", Device);
+	}
+	if (!NonWeightedBoneIcon)
+	{
+		NonWeightedBoneIcon = UTexture2D::LoadFromFile("Asset/Editor/Icons/Common/BoneNonWeighted.png", Device);
+	}
 }
 
 void FSkeletalMeshPreviewWidget::HandleViewportBoneSelection()

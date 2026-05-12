@@ -11,6 +11,7 @@ class FViewport;
 class FWindowsWindow;
 class UEditorEngine;
 class USkeletalMesh;
+class UTexture2D;
 struct FSkeleton;
 struct ID3D11Device;
 
@@ -43,6 +44,8 @@ private:
 	void DrawBoneDetailsPanel();
 	void DrawPreviewComponentDetailsPanel();
 	void DrawBoneTreeNode(const FSkeleton& Skeleton, int32 BoneIndex);
+	void RebuildBoneWeightedFlags();
+	void EnsureBoneTreeIcons();
 	void HandleViewportBoneSelection();
 	void ValidateSelectedBone();
 
@@ -51,7 +54,11 @@ private:
 	FEditorDetailsWidget ComponentDetailsWidget;
 	FViewport* Viewport = nullptr;
 	UEditorEngine* Engine = nullptr;
+	ID3D11Device* Device = nullptr;
 	USkeletalMesh* EditingMesh = nullptr;
+	UTexture2D* WeightedBoneIcon = nullptr;
+	UTexture2D* NonWeightedBoneIcon = nullptr;
+	TArray<bool> BoneWeightedFlags;
 	int32 SelectedBoneIndex = -1;
 	int32 EditorInstanceId = 0;
 	uint32 PreviewDockId = 0;
