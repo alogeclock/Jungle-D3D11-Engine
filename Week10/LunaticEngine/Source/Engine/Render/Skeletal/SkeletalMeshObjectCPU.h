@@ -21,6 +21,7 @@ public:
 
     void Update(const TArray<FMatrix>& InSkinningMatrices) override;
     FMeshBuffer* GetMeshBuffer() const override { return MeshBuffer.get(); }
+    FMeshDataView GetMeshDataView() const override { return FMeshDataView::FromMeshData(SkinnedMeshData); }
 
 private:
     const FSkeletalMesh* Source = nullptr;

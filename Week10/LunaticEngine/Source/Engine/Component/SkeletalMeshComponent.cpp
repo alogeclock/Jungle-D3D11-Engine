@@ -32,6 +32,12 @@ USkeletalMeshComponent::~USkeletalMeshComponent() = default;
 
 FMeshDataView USkeletalMeshComponent::GetMeshDataView() const
 {
+	FMeshDataView SkinnedView = Super::GetMeshDataView();
+	if (SkinnedView.IsValid())
+	{
+		return SkinnedView;
+	}
+
 	const USkeletalMesh* Mesh = GetSkeletalMesh();
 	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
 	const FSkeletalMeshLOD* LOD = MeshAsset ? MeshAsset->GetLOD(0) : nullptr;

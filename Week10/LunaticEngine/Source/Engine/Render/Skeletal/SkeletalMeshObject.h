@@ -2,6 +2,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Matrix.h"
+#include "Render/Types/VertexTypes.h"
 
 class FMeshBuffer;
 struct FSkeletalMesh;
@@ -21,4 +22,10 @@ public:
 
 	// 프록시가 매 프레임 가져갈 결과
 	virtual FMeshBuffer* GetMeshBuffer() const = 0;
+
+	// Component hit-test/editing paths need the current deformed geometry, not bind-pose vertices.
+	virtual FMeshDataView GetMeshDataView() const
+	{
+		return {}; 
+	}
 };

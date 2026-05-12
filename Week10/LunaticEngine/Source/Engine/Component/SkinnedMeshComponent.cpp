@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "Object/ObjectFactory.h"
+#include "Collision/RayUtils.h"
 #include "Core/PropertyTypes.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Engine/Runtime/Engine.h"
@@ -285,7 +286,7 @@ FMeshBuffer* USkinnedMeshComponent::GetMeshBuffer() const
 // FSkeletalVertex 레이아웃이 FNormalVertex와 달라 직접 노출할 수 없음.
 FMeshDataView USkinnedMeshComponent::GetMeshDataView() const
 {
-	return {};
+	return MeshObject ? MeshObject->GetMeshDataView() : FMeshDataView{};
 }
 
 void USkinnedMeshComponent::UpdateWorldAABB() const
@@ -314,11 +315,33 @@ void USkinnedMeshComponent::UpdateWorldAABB() const
 	bHasValidWorldAABB = true;
 }
 
-// 스켈레탈 메시는 매 프레임 변형되므로 bind-pose BVH는 정확하지 않음.
-// 현재는 picking 미지원.
-bool USkinnedMeshComponent::LineTraceComponent(const FRay& /*Ray*/, FRayHitResult& /*OutHitResult*/)
+bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
 {
-	return false;
+	const FMeshDataView MeshView = GetMeshDataView();
+	if (!MeshView.IsValid())
+	{
+		return false;
+	}
+
+	const FMatrix& WorldMatrix = GetWorldMatrix();
+	const FMatrix& WorldInverse = GetWorldInverseMatrix();
+	const bool bHit = FRayUtils::RaycastTriangles(
+		Ray,
+		WorldMatrix,
+		WorldInverse,
+		MeshView.VertexData,
+		MeshView.Stride,
+		MeshView.IndexData,
+		MeshView.IndexCount,
+		OutHitResult);
+
+	if (bHit)
+	{
+		OutHitResult.HitComponent = this;
+		OutHitResult.WorldHitLocation = Ray.Origin + Ray.Direction * OutHitResult.Distance;
+	}
+
+	return bHit;
 }
 
 static FArchive& operator<<(FArchive& Ar, FMaterialSlot& Slot)
