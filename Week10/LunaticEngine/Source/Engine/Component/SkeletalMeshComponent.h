@@ -43,7 +43,7 @@ public:
 	int32 GetSelectedBoneIndex() const { return SelectedBoneIndex; }
 	bool ShouldShowBoneNames() const { return bShowBoneNames; }
 
-	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh);
+	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh) override;
 	void SetSelectedBoneIndex(int32 BoneIndex);
 
 private:

@@ -33,7 +33,7 @@ public:
 	void UpdateWorldAABB() const override;
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
 
-	void SetSkeletalMesh(USkeletalMesh* InMesh);
+	virtual void SetSkeletalMesh(USkeletalMesh* InMesh);
 	USkeletalMesh* GetSkeletalMesh() const { return SkeletalMesh; }
 	USkeletalMesh* GetSkinnedAsset() const { return SkeletalMesh; }
 
@@ -105,6 +105,8 @@ protected:
 	TArray<FMatrix> SkinningMatrices;           // CS * RefBasesInvMatrix [BoneCount]
 	std::unique_ptr<FSkeletalMeshObject> MeshObject;
 
+	void SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState);
+	void FinalizeSkeletalMeshRenderState();
 	void CacheLocalBounds();
 	void UpdateSkinnedMeshObject();
 };
