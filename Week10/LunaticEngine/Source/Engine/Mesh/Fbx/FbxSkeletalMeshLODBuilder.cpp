@@ -234,7 +234,9 @@ bool FFbxSkeletalMeshLODBuilder::Build(
                 if (OutMorphSources && bAddedNewVertex)
                 {
                     FFbxImportedMorphSourceVertex Source;
+                    Source.MeshNode               = MeshNode;
                     Source.Mesh                   = Mesh;
+                    Source.SourceMeshNodeName     = MeshNode ? FString(MeshNode->GetName()) : FString();
                     Source.ControlPointIndex      = ControlPointIndex;
                     Source.PolygonIndex           = PolygonIndex;
                     Source.CornerIndex            = CornerIndex;

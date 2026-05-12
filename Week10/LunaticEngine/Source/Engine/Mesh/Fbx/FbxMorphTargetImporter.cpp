@@ -187,6 +187,62 @@ namespace
 
         return !(IsNearlyZeroVector(OutDelta.PositionDelta) && IsNearlyZeroVector(OutDelta.NormalDelta) && IsNearlyZeroVector4(OutDelta.TangentDelta));
     }
+
+    static bool HasSourceInfo(const FMorphTarget& Morph, const FMorphTargetSourceInfo& Info)
+    {
+        for (const FMorphTargetSourceInfo& Existing : Morph.SourceInfos)
+        {
+            if (Existing.SourceMeshNodeName == Info.SourceMeshNodeName && Existing.SourceBlendShapeName == Info.SourceBlendShapeName && Existing.
+                SourceChannelName == Info.SourceChannelName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static void AddUniqueSourceInfo(FMorphTarget& Morph, const FMorphTargetSourceInfo& Info)
+    {
+        if (!HasSourceInfo(Morph, Info))
+        {
+            Morph.SourceInfos.push_back(Info);
+        }
+    }
+
+    struct FMorphSourceMeshGroup
+    {
+        FbxNode* MeshNode = nullptr;
+        FbxMesh* Mesh     = nullptr;
+
+        FString SourceMeshNodeName;
+
+        TArray<const FFbxImportedMorphSourceVertex*> Sources;
+    };
+
+    static FMorphSourceMeshGroup* FindOrAddSourceMeshGroup(
+        TArray<FMorphSourceMeshGroup>& Groups,
+        FbxNode*                       MeshNode,
+        FbxMesh*                       Mesh,
+        const FString&                 SourceMeshNodeName
+        )
+    {
+        for (FMorphSourceMeshGroup& Group : Groups)
+        {
+            if (Group.MeshNode == MeshNode && Group.Mesh == Mesh)
+            {
+                return &Group;
+            }
+        }
+
+        FMorphSourceMeshGroup NewGroup;
+        NewGroup.MeshNode           = MeshNode;
+        NewGroup.Mesh               = Mesh;
+        NewGroup.SourceMeshNodeName = SourceMeshNodeName;
+
+        Groups.push_back(std::move(NewGroup));
+        return &Groups.back();
+    }
 }
 
 void FFbxMorphTargetImporter::ImportMorphTargets(
@@ -203,21 +259,26 @@ void FFbxMorphTargetImporter::ImportMorphTargets(
     {
         const TArray<FFbxImportedMorphSourceVertex>& Sources = MorphSourcesByLOD[LODIndex];
 
-        TMap<FbxMesh*, TArray<const FFbxImportedMorphSourceVertex*>> SourcesByMesh;
-
+        TArray<FMorphSourceMeshGroup> SourceMeshGroups;
+        
         for (const FFbxImportedMorphSourceVertex& Source : Sources)
         {
             if (Source.Mesh)
             {
-                SourcesByMesh[Source.Mesh].push_back(&Source);
+                FMorphSourceMeshGroup* Group = FindOrAddSourceMeshGroup(SourceMeshGroups, Source.MeshNode, Source.Mesh, Source.SourceMeshNodeName);
+
+                if (Group)
+                {
+                    Group->Sources.push_back(&Source);
+                }
             }
         }
 
-        for (const auto& MeshPair : SourcesByMesh)
+        for (const FMorphSourceMeshGroup& Group : SourceMeshGroups)
         {
-            FbxMesh*                                            Mesh        = MeshPair.first;
-            const TArray<const FFbxImportedMorphSourceVertex*>& MeshSources = MeshPair.second;
-
+            FbxMesh*                                            Mesh        = Group.Mesh;
+            const TArray<const FFbxImportedMorphSourceVertex*>& MeshSources = Group.Sources;
+            
             if (!Mesh)
             {
                 continue;
@@ -290,7 +351,15 @@ void FFbxMorphTargetImporter::ImportMorphTargets(
                         MorphNameToIndex[MorphName] = MorphIndex;
                     }
 
-                    FMorphTargetLOD& MorphLOD = OutMorphTargets[MorphIndex].LODModels[LODIndex];
+                    FMorphTarget&    Morph    = OutMorphTargets[MorphIndex];
+                    FMorphTargetLOD& MorphLOD = Morph.LODModels[LODIndex];
+
+                    FMorphTargetSourceInfo SourceInfo;
+                    SourceInfo.SourceMeshNodeName   = Group.SourceMeshNodeName;
+                    SourceInfo.SourceBlendShapeName = BlendShape && BlendShape->GetName() ? FString(BlendShape->GetName()) : MorphName;
+                    SourceInfo.SourceChannelName    = Channel && Channel->GetName() ? FString(Channel->GetName()) : MorphName;
+
+                    AddUniqueSourceInfo(Morph, SourceInfo);
 
                     double* FullWeights = Channel->GetTargetShapeFullWeights();
 
@@ -325,6 +394,48 @@ void FFbxMorphTargetImporter::ImportMorphTargets(
         }
     }
 
+    for (FMorphTarget& Morph : OutMorphTargets)
+    {
+        std::sort(
+            Morph.SourceInfos.begin(),
+            Morph.SourceInfos.end(),
+            [](const FMorphTargetSourceInfo& A, const FMorphTargetSourceInfo& B)
+            {
+                if (A.SourceMeshNodeName != B.SourceMeshNodeName)
+                {
+                    return A.SourceMeshNodeName < B.SourceMeshNodeName;
+                }
+                if (A.SourceBlendShapeName != B.SourceBlendShapeName)
+                {
+                    return A.SourceBlendShapeName < B.SourceBlendShapeName;
+                }
+                return A.SourceChannelName < B.SourceChannelName;
+            }
+        );
+
+        for (FMorphTargetLOD& LOD : Morph.LODModels)
+        {
+            std::sort(
+                LOD.Shapes.begin(),
+                LOD.Shapes.end(),
+                [](const FMorphTargetShape& A, const FMorphTargetShape& B)
+                {
+                    return A.FullWeight < B.FullWeight;
+                }
+            );
+            for (FMorphTargetShape& Shape : LOD.Shapes)
+            {
+                std::sort(
+                    Shape.Deltas.begin(),
+                    Shape.Deltas.end(),
+                    [](const FMorphTargetDelta& A, const FMorphTargetDelta& B)
+                    {
+                        return A.VertexIndex < B.VertexIndex;
+                    }
+                );
+            }
+        }
+    }
 
     OutMorphTargets.erase(
         std::remove_if(

@@ -8,14 +8,21 @@
 
 struct FFbxImportedMorphSourceVertex
 {
-    FbxMesh* Mesh               = nullptr;
+    FbxNode* MeshNode = nullptr;
+    FbxMesh* Mesh     = nullptr;
+
+    FString SourceMeshNodeName;
+    
     int32    ControlPointIndex  = -1;
     int32    PolygonIndex       = -1;
     int32    CornerIndex        = -1;
     int32    PolygonVertexIndex = -1;
+    
     uint32   VertexIndex        = 0;
+    
     FMatrix  MeshToReference;
     FMatrix  NormalToReference;
+    
     FVector  BaseNormalInReference;
     FVector4 BaseTangentInReference;
 };
