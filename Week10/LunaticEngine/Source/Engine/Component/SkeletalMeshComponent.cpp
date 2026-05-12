@@ -404,6 +404,7 @@ void USkeletalMeshComponent::InitializeBoneTransformsFromSkeleton()
 	}
 
 	RefreshBoneTransforms();
+	UpdateSkinnedMeshObject();
 }
 
 // 현재 메시의 스켈레톤 범위 안에 있는 본 인덱스인지 확인한다.
