@@ -56,12 +56,13 @@ void FSkeletalMeshSceneProxy::UpdateLOD(uint32 LODLevel)
 	if (LODLevel >= LODCount) LODLevel = LODCount - 1;
 	if (LODLevel == CurrentLOD) return;
 
-	std::swap(MeshBuffer, LODData[CurrentLOD].MeshBuffer);
-	std::swap(SectionDraws, LODData[CurrentLOD].SectionDraws);
-
+	if (USkinnedMeshComponent* SMC = GetSkinnedMeshComponent())
+	{
+		SMC->SetRenderLOD(LODLevel);
+		MeshBuffer = SMC->GetMeshBuffer();
+	}
 	CurrentLOD = LODLevel;
-	std::swap(MeshBuffer, LODData[LODLevel].MeshBuffer);
-	std::swap(SectionDraws, LODData[LODLevel].SectionDraws);
+	RebuildSectionDraws();
 }
 
 void FSkeletalMeshSceneProxy::RebuildSectionDraws()
@@ -121,13 +122,17 @@ void FSkeletalMeshSceneProxy::RebuildSectionDraws()
 		return FallbackMaterial;
 	};
 
-	// CPU 스키닝 단계: LOD별 GPU 버퍼 개념 없음. MeshObject가 단일 동적 버퍼를 들고 다님.
-	// MeshBuffer는 UpdateMesh에서 이미 세팅된 상태이므로 여기선 건드리지 않는다.
-	// SectionDraws만 LOD0 기반으로 다시 빌드.
-	CurrentLOD = 0;
-	LODCount = 1;
+	LODCount = std::min<uint32>(static_cast<uint32>(Asset->LODModels.size()), MAX_LOD);
+	if (LODCount == 0)
+	{
+		LODCount = 1;
+	}
+	if (CurrentLOD >= LODCount)
+	{
+		CurrentLOD = LODCount - 1;
+	}
 
-	const FSkeletalMeshLOD& LOD0 = Asset->LODModels[0];
+	const FSkeletalMeshLOD& LOD0 = Asset->LODModels[CurrentLOD];
 	SectionDraws.clear();
 	SectionDraws.reserve(LOD0.Sections.size());
 

@@ -20,15 +20,24 @@ public:
     ~FSkeletalMeshObjectCPU() override = default;
 
     void Update(const TArray<FMatrix>& InSkinningMatrices) override;
+    void SetLOD(uint32 LODIndex) override;
+    uint32 GetLOD() const override { return CurrentLOD; }
     FMeshBuffer* GetMeshBuffer() const override { return MeshBuffer.get(); }
+    FMeshDataView GetMeshDataView() const override { return FMeshDataView::FromMeshData(SkinnedMeshData); }
+    bool GetSkinnedLocalBounds(FVector& OutCenter, FVector& OutExtent) const override;
 
 private:
     const FSkeletalMesh* Source = nullptr;
     ID3D11Device* Device = nullptr;
+    uint32 CurrentLOD = 0;
 
     // 매 프레임 채워지는 CPU 캐시 FVertexPNCTT 포맷 (StaticMesh와 동일 InputLayout 재활용)
     TMeshData<FVertexPNCTT> SkinnedMeshData;
 
     // 매 프레임 재생성되는 GPU 버퍼
     std::unique_ptr<FMeshBuffer> MeshBuffer;
+
+    FVector SkinnedLocalCenter = FVector(0.0f, 0.0f, 0.0f);
+    FVector SkinnedLocalExtent = FVector(0.0f, 0.0f, 0.0f);
+    bool bHasSkinnedLocalBounds = false;
 };

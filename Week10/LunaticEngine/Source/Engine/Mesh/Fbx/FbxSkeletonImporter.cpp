@@ -6,6 +6,8 @@
 
 #include <fbxsdk.h>
 
+#include <algorithm>
+
 namespace
 {
     // FBX bone node를 Skeleton에 추가하고 import 대상 child bone을 재귀 등록한다.
@@ -213,6 +215,60 @@ namespace
         bUsedSceneFallback = true;
         return GetSceneLocalMatrixFromGlobals(ChildNode, ParentNode);
     }
+
+    static bool IsBlenderArmatureRootToStrip(FbxNode* Node, const TArray<FbxNode*>& ClusterLinkNodes)
+    {
+        if (!Node || FFbxSceneQuery::IsSceneRootNode(Node) || !FFbxSceneQuery::IsSkeletonNode(Node))
+        {
+            return false;
+        }
+
+        if (FFbxSceneQuery::ContainsNode(ClusterLinkNodes, Node))
+        {
+            return false;
+        }
+
+        FbxNode* Parent = Node->GetParent();
+        if (!Parent || !FFbxSceneQuery::IsSceneRootNode(Parent))
+        {
+            return false;
+        }
+
+        const FString NodeName = Node->GetName() ? FString(Node->GetName()) : FString();
+        if (NodeName != "Armature")
+        {
+            return false;
+        }
+
+        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+        {
+            if (FFbxSceneQuery::IsSkeletonNode(Node->GetChild(ChildIndex)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static int32 StripBlenderArmatureRoots(TArray<FbxNode*>& InOutBoneNodes, const TArray<FbxNode*>& ClusterLinkNodes)
+    {
+        const size_t OriginalCount = InOutBoneNodes.size();
+
+        InOutBoneNodes.erase(
+            std::remove_if(
+                InOutBoneNodes.begin(),
+                InOutBoneNodes.end(),
+                [&](FbxNode* Node)
+                {
+                    return IsBlenderArmatureRootToStrip(Node, ClusterLinkNodes);
+                }
+            ),
+            InOutBoneNodes.end()
+        );
+
+        return static_cast<int32>(OriginalCount - InOutBoneNodes.size());
+    }
 }
 
 // skin cluster link node와 parent chain을 기반으로 skeleton hierarchy를 구성한다.
@@ -220,7 +276,8 @@ bool FFbxSkeletonImporter::BuildSkeletonFromSkinClusters(
     const TArray<FbxNode*>& SkinnedMeshNodes,
     const TArray<FbxNode*>& AllMeshNodes,
     FSkeleton&              OutSkeleton,
-    TMap<FbxNode*, int32>&  OutBoneNodeToIndex
+    TMap<FbxNode*, int32>&  OutBoneNodeToIndex,
+    FFbxImportContext*      BuildContext
     )
 {
     OutSkeleton.Bones.clear();
@@ -268,6 +325,15 @@ bool FFbxSkeletonImporter::BuildSkeletonFromSkinClusters(
         }
     }
 
+    const int32 StrippedRootCount = StripBlenderArmatureRoots(ImportedBoneNodes, LinkNodes);
+    if (StrippedRootCount > 0 && BuildContext)
+    {
+        BuildContext->AddWarningOnce(
+            ESkeletalImportWarningType::UsedClusterBindPoseFallback,
+            "Blender Armature root was treated as an import container and stripped from the runtime skeleton."
+        );
+    }
+
     TArray<FbxNode*> RootBones;
 
     FFbxSceneQuery::FindImportedBoneRoot(ImportedBoneNodes, RootBones);
@@ -311,15 +377,11 @@ bool FFbxSkeletonImporter::TryGetFirstMeshBindMatrix(FbxScene* Scene, FbxNode* M
 
     const FMatrix GeometryTransform = FFbxTransformUtils::ToEngineMatrix(FFbxTransformUtils::GetNodeGeometryTransform(MeshNode));
 
-    FMatrix PoseMatrix;
-    if (TryGetBindPoseMatrixForNode(Scene, MeshNode, PoseMatrix))
-    {
-        OutMeshBindMatrix = GeometryTransform * PoseMatrix;
-        return true;
-    }
-
     const int32 SkinCount = Mesh->GetDeformerCount(FbxDeformer::eSkin);
 
+    // For skinned meshes, cluster Transform and TransformLink are the binding pair.
+    // Some Blender/FBX 6.x files contain a mesh BindPose matrix that does not match
+    // the skin clusters; using that pose as reference rotates the skeleton away from the mesh.
     for (int32 SkinIndex = 0; SkinIndex < SkinCount; ++SkinIndex)
     {
         FbxSkin* Skin = static_cast<FbxSkin*>(Mesh->GetDeformer(SkinIndex, FbxDeformer::eSkin));
@@ -346,6 +408,13 @@ bool FFbxSkeletonImporter::TryGetFirstMeshBindMatrix(FbxScene* Scene, FbxNode* M
             OutMeshBindMatrix = GeometryTransform * MeshNodeBind;
             return true;
         }
+    }
+
+    FMatrix PoseMatrix;
+    if (TryGetBindPoseMatrixForNode(Scene, MeshNode, PoseMatrix))
+    {
+        OutMeshBindMatrix = GeometryTransform * PoseMatrix;
+        return true;
     }
 
     return false;

@@ -177,6 +177,12 @@ USkeletalMeshComponent::~USkeletalMeshComponent() = default;
 
 FMeshDataView USkeletalMeshComponent::GetMeshDataView() const
 {
+	FMeshDataView SkinnedView = Super::GetMeshDataView();
+	if (SkinnedView.IsValid())
+	{
+		return SkinnedView;
+	}
+
 	const USkeletalMesh* Mesh = GetSkeletalMesh();
 	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
 	const FSkeletalMeshLOD* LOD = MeshAsset ? MeshAsset->GetLOD(0) : nullptr;
@@ -479,7 +485,7 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 
 	bRequiredBonesUpdated = true;
 	bPoseDirty = false;
-	bSkinningDirty = false;
+	bSkinningDirty = true;
 	bBoundsDirty = true;
 	MarkWorldBoundsDirty();
 }
@@ -487,6 +493,10 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
 	SetSkeletalMeshInternal(InSkeletalMesh, false, false);
+	RequiredBones.clear();
+	SelectedBoneIndex = -1;
+	RootBoneTranslation = FVector::ZeroVector;
+	bRequiredBonesUpdated = false;
 	InitializeBoneTransformsFromSkeleton();
 	FinalizeSkeletalMeshRenderState();
 }
@@ -543,6 +553,20 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	}
 	else if (std::strcmp(PropertyName, "Bounds Scale") == 0 || std::strcmp(PropertyName, "Force Ref Pose") == 0)
 		MarkSkeletalPoseDirty();
+	else if (std::strcmp(PropertyName, "CPU Skinning") == 0)
+	{
+		if (bCPUSkinning)
+		{
+			MarkSkeletalPoseDirty();
+			RefreshBoneTransforms();
+			UpdateSkinnedMeshObject();
+		}
+		else
+		{
+			MarkProxyDirty(EDirtyFlag::Mesh);
+			MarkWorldBoundsDirty();
+		}
+	}
 	else if (std::strcmp(PropertyName, "Selected Bone Index") == 0 || std::strcmp(PropertyName, "Display Bones") == 0)
 		MarkProxyDirty(EDirtyFlag::Mesh);
 }

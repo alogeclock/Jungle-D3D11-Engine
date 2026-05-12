@@ -3,11 +3,31 @@
 #include <cmath>
 
 #include "Mesh/SkeletalMeshAsset.h"
+
+namespace
+{
+	FVector NormalizeOrFallback(const FVector& Value, const FVector& Fallback)
+	{
+		return Value.IsNearlyZero(1.0e-6f) ? Fallback : Value.Normalized();
+	}
+
+	FVector OrthogonalizeTangent(const FVector& Tangent, const FVector& Normal)
+	{
+		const FVector N = NormalizeOrFallback(Normal, FVector(0.0f, 0.0f, 1.0f));
+		FVector T = Tangent - N * Tangent.Dot(N);
+		if (T.IsNearlyZero(1.0e-6f))
+		{
+			const FVector Candidate = std::fabs(N.Z) < 0.999f ? FVector(0.0f, 0.0f, 1.0f) : FVector(1.0f, 0.0f, 0.0f);
+			T = Candidate - N * Candidate.Dot(N);
+		}
+		return T.Normalized();
+	}
+}
 FSkeletalMeshObjectCPU::FSkeletalMeshObjectCPU(const FSkeletalMesh* InSource, ID3D11Device* InDevice)
 	: Source(InSource), Device(InDevice)
 {
 	if (!Source || Source->LODModels.empty()) return;
-	const FSkeletalMeshLOD& LOD = Source->LODModels[0];
+	const FSkeletalMeshLOD& LOD = Source->LODModels[CurrentLOD];
 
 	// 정적 인덱스 복사
 	SkinnedMeshData.Indices = LOD.Indices;
@@ -18,24 +38,55 @@ FSkeletalMeshObjectCPU::FSkeletalMeshObjectCPU(const FSkeletalMesh* InSource, ID
 	MeshBuffer = std::make_unique<FMeshBuffer>();
 }
 
+void FSkeletalMeshObjectCPU::SetLOD(uint32 LODIndex)
+{
+	if (!Source || Source->LODModels.empty())
+	{
+		return;
+	}
+
+	const uint32 ClampedLOD = std::min<uint32>(LODIndex, static_cast<uint32>(Source->LODModels.size() - 1));
+	if (CurrentLOD == ClampedLOD)
+	{
+		return;
+	}
+
+	CurrentLOD = ClampedLOD;
+	const FSkeletalMeshLOD& LOD = Source->LODModels[CurrentLOD];
+	SkinnedMeshData.Indices = LOD.Indices;
+	SkinnedMeshData.Vertices.resize(LOD.Vertices.size());
+	bHasSkinnedLocalBounds = false;
+
+	if (MeshBuffer)
+	{
+		MeshBuffer->Release();
+	}
+}
+
 void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 {
 	if (!Source || Source->LODModels.empty() || !Device) return;
-	const FSkeletalMeshLOD& LOD = Source->LODModels[0];
+	const uint32 LODIndex = std::min<uint32>(CurrentLOD, static_cast<uint32>(Source->LODModels.size() - 1));
+	const FSkeletalMeshLOD& LOD = Source->LODModels[LODIndex];
 
 	if (SkinnedMeshData.Vertices.size() != LOD.Vertices.size())
 		SkinnedMeshData.Vertices.resize(LOD.Vertices.size());
 
-	//Cpu skinning kenel
-	//every vertex: SkinningPos = Σ (Wk *(skinMatrix[BoneIdx]*V.Pos)
-	//			    SkinnedNrm = Σ Wk * (SkinMatrix[BoneIdxk].Rot * V.Normal) 
-// Skining Cpu
+	TArray<FMatrix> NormalMatrices;
+	NormalMatrices.reserve(InSkinningMatrices.size());
+	for (const FMatrix& SkinningMatrix : InSkinningMatrices)
+	{
+		NormalMatrices.push_back(SkinningMatrix.GetInverse().GetTransposed());
+	}
 
+	bHasSkinnedLocalBounds = false;
+	FVector LocalMin(0.0f, 0.0f, 0.0f);
+	FVector LocalMax(0.0f, 0.0f, 0.0f);
 	for (size_t v = 0; v < LOD.Vertices.size(); v++)
 	{
 		const FSkeletalVertex& In = LOD.Vertices[v];
 
-		FVector Pos(0, 0, 0), Normal(0, 0, 0);
+		FVector Pos(0, 0, 0), Normal(0, 0, 0), Tangent(0, 0, 0);
 		float TotalWeight = 0.0f;
 		for (int i = 0; i < MAX_SKELETAL_MESH_BONE_INFLUENCES; i++)
 		{
@@ -48,7 +99,8 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 
 			const FMatrix& Matrix = InSkinningMatrices[BoneIdx];
 			Pos = Pos + Matrix.TransformPositionWithW(In.Pos) * Weight;
-			Normal = Normal + Matrix.TransformVector(In.Normal) * Weight;
+			Normal = Normal + NormalMatrices[BoneIdx].TransformVector(In.Normal) * Weight;
+			Tangent = Tangent + Matrix.TransformVector(FVector(In.Tangent.X, In.Tangent.Y, In.Tangent.Z)) * Weight;
 			TotalWeight += Weight;
 		}
 
@@ -57,24 +109,47 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 		{
 			Pos = In.Pos;
 			Normal = In.Normal;
+			Tangent = FVector(In.Tangent.X, In.Tangent.Y, In.Tangent.Z);
 		}
 		else if (std::abs(TotalWeight - 1.0f) > 1.e-4f)
 		{
 			const float InvWeight = 1.0f / TotalWeight;
 			Pos = Pos * InvWeight;
 			Normal = Normal * InvWeight;
+			Tangent = Tangent * InvWeight;
 		}
 
-		Normal = Normal.Normalized();
+		Normal = NormalizeOrFallback(Normal, In.Normal);
+		Tangent = OrthogonalizeTangent(Tangent, Normal);
 
 		FVertexPNCTT& Out = SkinnedMeshData.Vertices[v];
 		Out.Position = Pos;
 		Out.Normal = Normal;
 		Out.Color = In.Color;
 		Out.UV = In.UV[0];
-		Out.Tangent = In.Tangent;
+		Out.Tangent = FVector4(Tangent.X, Tangent.Y, Tangent.Z, In.Tangent.W);
+
+		if (!bHasSkinnedLocalBounds)
+		{
+			LocalMin = LocalMax = Pos;
+			bHasSkinnedLocalBounds = true;
+		}
+		else
+		{
+			LocalMin.X = std::min(LocalMin.X, Pos.X);
+			LocalMin.Y = std::min(LocalMin.Y, Pos.Y);
+			LocalMin.Z = std::min(LocalMin.Z, Pos.Z);
+			LocalMax.X = std::max(LocalMax.X, Pos.X);
+			LocalMax.Y = std::max(LocalMax.Y, Pos.Y);
+			LocalMax.Z = std::max(LocalMax.Z, Pos.Z);
+		}
 	}
 
+	if (bHasSkinnedLocalBounds)
+	{
+		SkinnedLocalCenter = (LocalMin + LocalMax) * 0.5f;
+		SkinnedLocalExtent = (LocalMax - LocalMin) * 0.5f;
+	}
 
 	ID3D11DeviceContext* Context = nullptr;
 	Device->GetImmediateContext(&Context);
@@ -98,4 +173,16 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 		}
 		Context->Release();
 	}
+}
+
+bool FSkeletalMeshObjectCPU::GetSkinnedLocalBounds(FVector& OutCenter, FVector& OutExtent) const
+{
+	if (!bHasSkinnedLocalBounds)
+	{
+		return false;
+	}
+
+	OutCenter = SkinnedLocalCenter;
+	OutExtent = SkinnedLocalExtent;
+	return true;
 }

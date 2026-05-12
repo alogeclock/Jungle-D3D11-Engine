@@ -62,7 +62,7 @@ bool FFbxSkeletalMeshImporter::Import(
     }
 
     TMap<FbxNode*, int32> BoneNodeToIndex;
-    if (!FFbxSkeletonImporter::BuildSkeletonFromSkinClusters(SkinnedMeshNodes, MeshNodes, OutMesh.Skeleton, BoneNodeToIndex))
+    if (!FFbxSkeletonImporter::BuildSkeletonFromSkinClusters(SkinnedMeshNodes, MeshNodes, OutMesh.Skeleton, BoneNodeToIndex, &BuildContext))
     {
         return false;
     }

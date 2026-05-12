@@ -1,4 +1,5 @@
 #include "BoxComponent.h"
+#include "Collision/RayUtils.h"
 #include "Render/Scene/FScene.h"
 #include "Serialization/Archive.h"
 
@@ -30,6 +31,37 @@ FVector UBoxComponent::GetScaledBoxExtent() const {
 		BoxExtent.X * WorldScale.X,
 		BoxExtent.Y * WorldScale.Y,
 		BoxExtent.Z * WorldScale.Z);
+}
+
+bool UBoxComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
+{
+	const FMatrix& WorldMatrix = GetWorldMatrix();
+	const FMatrix& WorldInverse = GetWorldInverseMatrix();
+
+	FRay LocalRay;
+	LocalRay.Origin = WorldInverse.TransformPositionWithW(Ray.Origin);
+	LocalRay.Direction = WorldInverse.TransformVector(Ray.Direction).Normalized();
+
+	float TMin = 0.0f;
+	float TMax = 0.0f;
+	if (!FRayUtils::IntersectRayAABB(LocalRay, BoxExtent * -1.0f, BoxExtent, TMin, TMax))
+	{
+		return false;
+	}
+
+	const float LocalT = TMin >= 0.0f ? TMin : TMax;
+	if (LocalT < 0.0f)
+	{
+		return false;
+	}
+
+	const FVector LocalHit = LocalRay.Origin + LocalRay.Direction * LocalT;
+	const FVector WorldHit = WorldMatrix.TransformPositionWithW(LocalHit);
+	OutHitResult.HitComponent = this;
+	OutHitResult.Distance = FVector::Distance(Ray.Origin, WorldHit);
+	OutHitResult.WorldHitLocation = WorldHit;
+	OutHitResult.bHit = true;
+	return true;
 }
 
 void UBoxComponent::DrawDebugShape(FScene& Scene) const {

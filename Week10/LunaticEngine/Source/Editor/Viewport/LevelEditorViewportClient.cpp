@@ -898,23 +898,6 @@ void FLevelEditorViewportClient::HandleDragStart(const FInputSystemSnapshot& Sna
 				{
 					EditorRaycastAllVisiblePrimitives(W, Ray, HitResult, BestActor);
 				}
-				if (!BestActor && Camera)
-				{
-					const ImVec2 MousePos = ImGui::GetIO().MousePos;
-					float LocalMouseX = 0.0f;
-					float LocalMouseY = 0.0f;
-					if (TryConvertMouseToViewportPixel(MousePos, ViewportScreenRect, Viewport, WindowWidth, WindowHeight, LocalMouseX, LocalMouseY))
-					{
-						UPrimitiveComponent* ScreenHitPrimitive = nullptr;
-						const float VPWidth = Viewport ? static_cast<float>(Viewport->GetWidth()) : WindowWidth;
-						const float VPHeight = Viewport ? static_cast<float>(Viewport->GetHeight()) : WindowHeight;
-						BestActor = FindScreenSpacePrimitiveAt(W, Camera, LocalMouseX, LocalMouseY, VPWidth, VPHeight, ScreenHitPrimitive);
-						if (ScreenHitPrimitive)
-						{
-							HitResult.HitComponent = ScreenHitPrimitive;
-						}
-					}
-				}
 			}
 
 			const bool bCtrlHeld = Snapshot.IsKeyDown(VK_CONTROL);
@@ -1641,18 +1624,7 @@ namespace
 				FRayHitResult CandidateHit{};
 				if (!Primitive->LineTraceComponent(Ray, CandidateHit))
 				{
-					float AABBTMin = 0.0f;
-					float AABBTMax = 0.0f;
-					const FBoundingBox Bounds = Primitive->GetWorldBoundingBox();
-					if (!Bounds.IsValid() || !FRayUtils::IntersectRayAABB(Ray, Bounds.Min, Bounds.Max, AABBTMin, AABBTMax))
-					{
-						continue;
-					}
-
-					CandidateHit.HitComponent = Primitive;
-					CandidateHit.Distance = AABBTMin >= 0.0f ? AABBTMin : AABBTMax;
-					CandidateHit.WorldHitLocation = Ray.Origin + Ray.Direction * CandidateHit.Distance;
-					CandidateHit.bHit = true;
+					continue;
 				}
 
 				if (CandidateHit.Distance < BestHit.Distance)

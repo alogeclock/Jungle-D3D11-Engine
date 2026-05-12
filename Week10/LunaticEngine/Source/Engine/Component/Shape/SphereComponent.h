@@ -13,6 +13,7 @@ public:
 	float GetSphereRadius() const { return SphereRadius; }
 	void  SetSphereRadius(float InRadius) { SphereRadius = InRadius; }
 	void  UpdateWorldAABB() const override;
+	bool  LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult) override;
 
 	void DrawDebugShape(FScene& Scene) const override;
 
