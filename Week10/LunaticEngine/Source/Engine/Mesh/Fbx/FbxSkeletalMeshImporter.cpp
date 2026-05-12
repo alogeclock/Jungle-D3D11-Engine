@@ -11,11 +11,13 @@
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/StaticMeshAsset.h"
 #include "Mesh/Fbx/FbxCollisionImporter.h"
+#include "Mesh/Fbx/FbxSocketImporter.h"
 
 #include <fbxsdk.h>
 
 #include <algorithm>
 #include <utility>
+
 
 // FBX scene에서 skeletal mesh, skeleton, LOD, morph target, animation을 import한다.
 bool FFbxSkeletalMeshImporter::Import(
@@ -74,6 +76,7 @@ bool FFbxSkeletalMeshImporter::Import(
     TMap<int32, TArray<FFbxSkeletalImportMeshNode>> MeshNodesByLOD;
     OutMesh.LODModels.clear();
     OutMesh.StaticChildMeshes.clear();
+    OutMesh.Sockets.clear();
     OutMesh.CollisionShapes.clear();
     OutMesh.Animations.clear();
     OutMesh.MorphTargets.clear();
@@ -231,6 +234,15 @@ bool FFbxSkeletalMeshImporter::Import(
     );
 
     FFbxSkeletonImporter::RecomputeLocalBindPose(OutMesh.Skeleton);
+
+    FFbxSocketImporter::ImportSockets(
+        Scene,
+        BoneNodeToIndex,
+        ReferenceMeshBindInverse,
+        OutMesh.Skeleton,
+        OutMesh.Sockets,
+        BuildContext
+    );
 
     TArray<TArray<FFbxImportedMorphSourceVertex>> MorphSourcesByLOD;
 

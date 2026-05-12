@@ -46,6 +46,11 @@ public:
 	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh) override;
 	void SetSelectedBoneIndex(int32 BoneIndex);
 
+	const FSkeletalSocket* FindSocketByName(const FString& SocketName) const;
+
+	bool GetSocketComponentSpaceMatrix(const FString& SocketName, FMatrix& OutMatrix) const;
+	bool GetSocketWorldMatrix(const FString& SocketName, FMatrix& OutMatrix) const;
+
 private:
 	void MarkSkeletalPoseDirty();
 	void InitializeBoneTransformsFromSkeleton();

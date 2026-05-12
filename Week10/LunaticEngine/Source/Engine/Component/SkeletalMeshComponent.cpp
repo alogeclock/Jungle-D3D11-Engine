@@ -89,6 +89,73 @@ void USkeletalMeshComponent::SetSelectedBoneIndex(int32 BoneIndex)
 	SelectedBoneIndex = IsValidBoneIndex(BoneIndex) ? BoneIndex : -1;
 }
 
+const FSkeletalSocket* USkeletalMeshComponent::FindSocketByName(const FString& SocketName) const
+{
+	const USkeletalMesh* Mesh      = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+
+	if (!MeshAsset)
+	{
+		return nullptr;
+	}
+
+	for (const FSkeletalSocket& Socket : MeshAsset->Sockets)
+	{
+		if (Socket.Name == SocketName)
+		{
+			return &Socket;
+		}
+	}
+
+	return nullptr;
+}
+
+bool USkeletalMeshComponent::GetSocketComponentSpaceMatrix(const FString& SocketName, FMatrix& OutMatrix) const
+{
+	const USkeletalMesh* Mesh      = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+
+	if (!MeshAsset)
+	{
+		return false;
+	}
+
+	const FSkeletalSocket* Socket = FindSocketByName(SocketName);
+	if (!Socket)
+	{
+		return false;
+	}
+
+	const int32 ParentBoneIndex = Socket->ParentBoneIndex;
+
+	if (ParentBoneIndex < 0 || ParentBoneIndex >= static_cast<int32>(MeshAsset->Skeleton.Bones.size()))
+	{
+		return false;
+	}
+
+	FMatrix ParentBoneComponentMatrix = MeshAsset->Skeleton.Bones[ParentBoneIndex].GlobalBindPose;
+	if (ParentBoneIndex < static_cast<int32>(ComponentSpaceMatrices.size()))
+	{
+		ParentBoneComponentMatrix = ComponentSpaceMatrices[ParentBoneIndex];
+	}
+
+	OutMatrix = Socket->LocalMatrixToParentBone * ParentBoneComponentMatrix;
+	return true;
+}
+
+bool USkeletalMeshComponent::GetSocketWorldMatrix(const FString& SocketName, FMatrix& OutMatrix) const
+{
+	FMatrix SocketComponentMatrix;
+
+	if (!GetSocketComponentSpaceMatrix(SocketName, SocketComponentMatrix))
+	{
+		return false;
+	}
+
+	OutMatrix = SocketComponentMatrix * GetWorldMatrix();
+	return true;
+}
+
 void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform)
 {
 	if (!IsValidBoneIndex(BoneIndex)) return;

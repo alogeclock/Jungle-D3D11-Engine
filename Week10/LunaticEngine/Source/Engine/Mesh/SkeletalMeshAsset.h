@@ -602,6 +602,31 @@ struct FSkeletalStaticChildMesh
 };
 
 // ============================================================================
+// Sockets attached to skeleton bones
+// ============================================================================
+
+struct FSkeletalSocket
+{
+    FString Name;
+    FString SourceNodeName;
+
+    int32   ParentBoneIndex = -1;
+    FString ParentBoneName;
+
+    FMatrix LocalMatrixToParentBone = FMatrix::Identity;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalSocket& Socket)
+    {
+        Ar << Socket.Name;
+        Ar << Socket.SourceNodeName;
+        Ar << Socket.ParentBoneIndex;
+        Ar << Socket.ParentBoneName;
+        SkeletalMeshSerialization::SerializeMatrix(Ar, Socket.LocalMatrixToParentBone);
+        return Ar;
+    }
+};
+
+// ============================================================================
 // Import Summary
 // ============================================================================
 
@@ -631,6 +656,9 @@ enum class ESkeletalImportWarningType : uint8
 
     StaticChildOfBone,
     CollisionProxySkippedFromRenderLOD,
+
+    SocketWithoutParentBone,
+    DuplicateSocketName,
 };
 
 struct FSkeletalImportWarning
@@ -682,6 +710,7 @@ struct FSkeletalImportSummary
     int32 MorphTargetDeltaCount = 0;
     
     int32 StaticChildMeshCount    = 0;
+    int32 SocketCount             = 0;
     int32 CollisionProxyMeshCount = 0;
 
     int32 GeneratedNormalCount     = 0;
@@ -725,6 +754,7 @@ struct FSkeletalImportSummary
         Ar << Summary.MorphTargetDeltaCount;
         
         Ar << Summary.StaticChildMeshCount;
+        Ar << Summary.SocketCount;
         Ar << Summary.CollisionProxyMeshCount;
 
         Ar << Summary.GeneratedNormalCount;
@@ -762,6 +792,7 @@ struct FSkeletalMesh
 
     TArray<FSkeletalStaticChildMesh> StaticChildMeshes;
     TArray<FImportedCollisionShape>  CollisionShapes;
+    TArray<FSkeletalSocket>          Sockets;
 
     TArray<FSkeletalAnimationClip> Animations;
     TArray<FMorphTarget>           MorphTargets;
@@ -797,6 +828,7 @@ struct FSkeletalMesh
         Ar << LODModels;
         Ar << StaticChildMeshes;
         Ar << CollisionShapes;
+        Ar << Sockets;
         Ar << Animations;
         Ar << MorphTargets;
         Ar << ImportSummary;
