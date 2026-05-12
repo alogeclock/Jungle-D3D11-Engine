@@ -113,49 +113,49 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>Shaders;Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>Shaders;Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>Shaders;Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>Shaders;Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ObjViewDebug|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>Shaders;Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>Shaders;Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>Shaders;Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\sol2;Source\Editor;Source\ObjViewer;ThirdParty\FBXSDK\include;.;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
@@ -338,8 +338,19 @@
     <ClCompile Include="Source\Editor\UI\ContentBrowser\ContentBrowser.cpp" />
     <ClCompile Include="Source\Editor\UI\ContentBrowser\ContentBrowserElement.cpp" />
     <ClCompile Include="Source\Editor\UI\ContentBrowser\EditorPrefabWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Preview\AnimationPreviewWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Preview\AssetPreviewWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Preview\PhysicsPreviewWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Preview\PreviewViewportWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Preview\SkeletalMeshPreviewWidget.cpp" />
     <ClCompile Include="Source\Editor\Viewport\EditorViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Viewport\FLevelViewportLayout.cpp" />
+    <ClCompile Include="Source\Editor\Viewport\LevelEditorViewportClient.cpp" />
+    <ClCompile Include="Source\Editor\Viewport\Preview\AnimationPreviewViewportClient.cpp" />
+    <ClCompile Include="Source\Editor\Viewport\Preview\PhysicsPreviewViewportClient.cpp" />
+    <ClCompile Include="Source\Editor\Viewport\Preview\PreviewScene.cpp" />
+    <ClCompile Include="Source\Editor\Viewport\Preview\PreviewViewportClient.cpp" />
+    <ClCompile Include="Source\Editor\Viewport\Preview\SkeletalMeshPreviewViewportClient.cpp" />
     <ClCompile Include="Source\Engine\Asset\AssetCurveUtils.cpp" />
     <ClCompile Include="Source\Engine\Asset\AssetData.cpp" />
     <ClCompile Include="Source\Engine\Asset\AssetFileSerializer.cpp" />
@@ -417,6 +428,7 @@
     <ClCompile Include="Source\Engine\GameFramework\PawnActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\PlayerController.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\ScreenTextActor.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\SkeletalMeshActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\StaticMeshActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\UIRootActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\World.cpp" />
@@ -428,6 +440,8 @@
     <ClCompile Include="Source\Engine\Input\EnhancedInputManager.cpp" />
     <ClCompile Include="Source\Engine\Input\InputManager.cpp" />
     <ClCompile Include="Source\Engine\Input\InputMappingContext.cpp" />
+    <ClCompile Include="Source\Engine\Input\InputRouter.cpp" />
+    <ClCompile Include="Source\Engine\Input\InputSystem.cpp" />
     <ClCompile Include="Source\Engine\Materials\Material.cpp" />
     <ClCompile Include="Source\Engine\Materials\MaterialManager.cpp" />
     <ClCompile Include="Source\Engine\Math\CurveFloat.cpp" />
@@ -497,6 +511,7 @@
     <ClCompile Include="Source\Engine\Render\RenderPass\AdditiveDecalPass.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderPass\AlphaBlendPass.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderPass\DecalPass.cpp" />
+    <ClCompile Include="Source\Engine\Render\RenderPass\EditorGridPass.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderPass\EditorLinesPass.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderPass\FXAAPass.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderPass\GammaCorrectionPass.cpp" />
@@ -624,9 +639,19 @@
     <ClInclude Include="Source\Editor\UI\ContentBrowser\ContentBrowserElement.h" />
     <ClInclude Include="Source\Editor\UI\ContentBrowser\ContentItem.h" />
     <ClInclude Include="Source\Editor\UI\ContentBrowser\EditorPrefabWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Preview\AnimationPreviewWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Preview\AssetPreviewWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Preview\PhysicsPreviewWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Preview\PreviewViewportWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Preview\SkeletalMeshPreviewWidget.h" />
     <ClInclude Include="Source\Editor\Viewport\EditorViewportClient.h" />
     <ClInclude Include="Source\Editor\Viewport\FLevelViewportLayout.h" />
     <ClInclude Include="Source\Editor\Viewport\LevelEditorViewportClient.h" />
+    <ClInclude Include="Source\Editor\Viewport\Preview\AnimationPreviewViewportClient.h" />
+    <ClInclude Include="Source\Editor\Viewport\Preview\PhysicsPreviewViewportClient.h" />
+    <ClInclude Include="Source\Editor\Viewport\Preview\PreviewScene.h" />
+    <ClInclude Include="Source\Editor\Viewport\Preview\PreviewViewportClient.h" />
+    <ClInclude Include="Source\Editor\Viewport\Preview\SkeletalMeshPreviewViewportClient.h" />
     <ClInclude Include="Source\Engine\Asset\AssetCurveUtils.h" />
     <ClInclude Include="Source\Engine\Asset\AssetData.h" />
     <ClInclude Include="Source\Engine\Asset\AssetFileSerializer.h" />
@@ -719,6 +744,7 @@
     <ClInclude Include="Source\Engine\GameFramework\PawnActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\PlayerController.h" />
     <ClInclude Include="Source\Engine\GameFramework\ScreenTextActor.h" />
+    <ClInclude Include="Source\Engine\GameFramework\SkeletalMeshActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\StaticMeshActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\UIRootActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\World.h" />
@@ -733,6 +759,8 @@
     <ClInclude Include="Source\Engine\Input\InputManager.h" />
     <ClInclude Include="Source\Engine\Input\InputMappingContext.h" />
     <ClInclude Include="Source\Engine\Input\InputModifier.h" />
+    <ClInclude Include="Source\Engine\Input\InputRouter.h" />
+    <ClInclude Include="Source\Engine\Input\InputSystem.h" />
     <ClInclude Include="Source\Engine\Input\inputTrigger.h" />
     <ClInclude Include="Source\Engine\Materials\Material.h" />
     <ClInclude Include="Source\Engine\Materials\MaterialManager.h" />
@@ -817,6 +845,7 @@
     <ClInclude Include="Source\Engine\Render\RenderPass\AdditiveDecalPass.h" />
     <ClInclude Include="Source\Engine\Render\RenderPass\AlphaBlendPass.h" />
     <ClInclude Include="Source\Engine\Render\RenderPass\DecalPass.h" />
+    <ClInclude Include="Source\Engine\Render\RenderPass\EditorGridPass.h" />
     <ClInclude Include="Source\Engine\Render\RenderPass\EditorLinesPass.h" />
     <ClInclude Include="Source\Engine\Render\RenderPass\FXAAPass.h" />
     <ClInclude Include="Source\Engine\Render\RenderPass\GammaCorrectionPass.h" />
@@ -1111,6 +1140,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\Editor\Gizmo.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ObjViewDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\Editor\Grid.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ObjViewDebug|x64'">true</ExcludedFromBuild>

@@ -4,6 +4,11 @@
 #include "Serialization/Archive.h"
 #include "SkeletalMeshAsset.h"
 
+#include <memory>
+
+class FMeshBuffer;
+struct ID3D11Device;
+
 // ============================================================================
 // USkeletalMesh
 //
@@ -39,10 +44,14 @@ public:
     void                           SetSkeletalMaterials(TArray<FStaticMaterial>&& InMaterials);
     const TArray<FStaticMaterial>& GetSkeletalMaterials() const;
 
+    void InitResources(ID3D11Device* InDevice);
+    FMeshBuffer* GetMeshBuffer() const;
+
 private:
     void RebuildSectionMaterialIndices();
 
 private:
     FSkeletalMesh*          SkeletalMeshAsset = nullptr;
     TArray<FStaticMaterial> SkeletalMaterials;
+    std::unique_ptr<FMeshBuffer> RenderBuffer;
 };

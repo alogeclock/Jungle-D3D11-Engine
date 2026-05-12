@@ -973,9 +973,11 @@ void FSystemResources::UnbindSystemTextures(FD3DDevice& Device)
 	ID3D11ShaderResourceView* nullSRVs[5] = {};
 
 	// t16~t20: Scene Depth/Color/Normal/Stencil/Heatmap
+	Ctx->VSSetShaderResources(ESystemTexSlot::SceneDepth, 5, nullSRVs);
 	Ctx->PSSetShaderResources(ESystemTexSlot::SceneDepth, 5, nullSRVs);
 
 	// t21~t25: Shadow (CSM/SpotAtlas/PointCube/SpotData/PointData)
+	Ctx->VSSetShaderResources(ESystemTexSlot::ShadowMapCSM, 5, nullSRVs);
 	Ctx->PSSetShaderResources(ESystemTexSlot::ShadowMapCSM, 5, nullSRVs);
 }
 

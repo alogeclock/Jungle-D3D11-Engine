@@ -6,7 +6,7 @@
 class UPrimitiveComponent;
 
 // "Captures" Actor (Obstacles). 
-// Obstacles could be captured and move, rotate, and scale arbitraily (in a way that does not coerce game over)
+// Obstacles could be captured and move, rotate, and scale arbitrarily (in a way that does not coerce game over)
 class AImposterGizmoActorBase : public AGimmickActorBase {
 public:
 	DECLARE_CLASS(AImposterGizmoActorBase, AGimmickActorBase)

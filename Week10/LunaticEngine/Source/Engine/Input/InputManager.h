@@ -1,25 +1,7 @@
 ﻿#pragma once
 #include "Core/CoreTypes.h"
+#include "Input/InputSystem.h"
 #include "Windows.h"
-#include <vector>
-//enum : Key or Moust Btn
-enum class EInputEventType : unsigned char
-{
-	KeyDown,
-	KeyUp,
-	MouseButtonDown,
-	MouseButtonUp,
-	MouseWheel,
-};
-// Struct : Input Event
-// Fuction : Store Input Event information of Type and Key/Button
-struct FInputEvent
-{
-	EInputEventType Type;
-	int32 KeyOrButton;
-	float Value = 0.0f;
-};
-
 // InputManager : Handle raw input from windows 
 // and provide interface to query key and mouse state
 class FInputManager
@@ -49,6 +31,7 @@ public:
 	void Tick();
 
 	bool IsKeyDown(int32 Key) const;
+	bool WasKeyDown(int32 Key) const;
 	bool IsKeyPressed(int32 Key) const;
 	bool IsKeyReleased(int32 Key) const;
 
@@ -84,8 +67,10 @@ public:
 	// GUI state helpers (wrappers for ImGui check)
 	bool IsGuiUsingMouse() const;
 	bool IsGuiUsingKeyboard() const;
+	bool IsGuiUsingTextInput() const;
 	void SetGuiCaptureOverride(bool bInUsingMouse, bool bInUsingKeyboard, bool bInUsingTextInput);
 	void ClearGuiCaptureOverride();
+	const TArray<FInputEvent>& GetFrameEventQueue() const { return FrameEventQueue; }
 
 	// Resets
 	void ResetMouseDelta();
@@ -109,7 +94,8 @@ private:
 	static constexpr int32 DRAG_THRESHOLD = 5;
 
 	// Event queue (filled by WndProc, flushed in Tick)
-	std::vector<FInputEvent> EventQueue;
+	TArray<FInputEvent> EventQueue;
+	TArray<FInputEvent> FrameEventQueue;
 
 	bool KeyState[MAX_KEYS] = {};
 	bool PrevKeyState[MAX_KEYS] = {};
@@ -121,6 +107,7 @@ private:
 
 	float RawMouseDeltaAccumX = 0.0f;
 	float RawMouseDeltaAccumY = 0.0f;
+	bool bSuppressNextMouseDelta = false;
 
 	POINT LastMousePos = {};
 	bool bTrackingMouse = false;

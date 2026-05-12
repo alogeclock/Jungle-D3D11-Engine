@@ -4,6 +4,7 @@
 #include "Component/ActorComponent.h"
 #include "Component/BillboardComponent.h"
 #include "Component/Movement/MovementComponent.h"
+#include "Component/SkeletalMeshComponent.h"
 #include "Component/StaticMeshComponent.h"
 #include "Component/TextRenderComponent.h"
 #include "Math/Rotator.h"
@@ -64,6 +65,10 @@ const char* GetDefaultEditorBillboardIconKey(const AActor* Actor)
 	{
 		return "Editor.Icon.StaticMeshActor";
 	}
+	if (ClassName.find("SkeletalMeshActor") != FString::npos)
+	{
+		return "Editor.Icon.SkeletalMeshActor";
+	}
 	if (ClassName.find("ScreenText") != FString::npos)
 	{
 		return "Editor.Icon.ScreenText";
@@ -78,6 +83,10 @@ const char* GetDefaultEditorBillboardIconKey(const AActor* Actor)
 		if (RootComponent->IsA<UStaticMeshComponent>())
 		{
 			return "Editor.Icon.StaticMeshActor";
+		}
+		if (RootComponent->IsA<USkeletalMeshComponent>())
+		{
+			return "Editor.Icon.SkeletalMeshActor";
 		}
 	}
 
@@ -131,6 +140,15 @@ bool AActor::HasNonEditorOnlyPrimitiveComponent() const
 		if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(PrimitiveComponent))
 		{
 			if (StaticMeshComponent->GetStaticMesh())
+			{
+				return true;
+			}
+			continue;
+		}
+
+		if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(PrimitiveComponent))
+		{
+			if (SkeletalMeshComponent->GetSkeletalMeshAsset())
 			{
 				return true;
 			}

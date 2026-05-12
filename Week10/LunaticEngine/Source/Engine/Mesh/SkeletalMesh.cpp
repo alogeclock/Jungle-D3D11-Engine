@@ -1,6 +1,8 @@
 #include "SkeletalMesh.h"
 #include "Object/ObjectFactory.h"
 #include "Engine/Profiling/MemoryStats.h"
+#include "Render/Resource/Buffer.h"
+#include "Render/Types/VertexTypes.h"
 
 static const FString EmptyPath;
 
@@ -110,6 +112,7 @@ void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
         }
 
         RebuildSectionMaterialIndices();
+        RenderBuffer.reset();
         return;
     }
 
@@ -138,6 +141,7 @@ void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
     }
 
     RebuildSectionMaterialIndices();
+    RenderBuffer.reset();
 }
 
 FSkeletalMesh* USkeletalMesh::GetSkeletalMeshAsset() const
@@ -154,6 +158,45 @@ void USkeletalMesh::SetSkeletalMaterials(TArray<FStaticMaterial>&& InMaterials)
 const TArray<FStaticMaterial>& USkeletalMesh::GetSkeletalMaterials() const
 {
     return SkeletalMaterials;
+}
+
+void USkeletalMesh::InitResources(ID3D11Device* InDevice)
+{
+    RenderBuffer.reset();
+
+    if (!InDevice || !SkeletalMeshAsset)
+    {
+        return;
+    }
+
+    const FSkeletalMeshLOD* LOD = SkeletalMeshAsset->GetLOD(0);
+    if (!LOD || LOD->Vertices.empty())
+    {
+        return;
+    }
+
+    TMeshData<FVertexPNCTT> RenderMeshData;
+    RenderMeshData.Vertices.reserve(LOD->Vertices.size());
+
+    for (const FSkeletalVertex& RawVertex : LOD->Vertices)
+    {
+        FVertexPNCTT RenderVertex;
+        RenderVertex.Position = RawVertex.Pos;
+        RenderVertex.Normal = RawVertex.Normal;
+        RenderVertex.Color = RawVertex.Color;
+        RenderVertex.UV = RawVertex.UV[0];
+        RenderVertex.Tangent = RawVertex.Tangent;
+        RenderMeshData.Vertices.push_back(RenderVertex);
+    }
+    RenderMeshData.Indices = LOD->Indices;
+
+    RenderBuffer = std::make_unique<FMeshBuffer>();
+    RenderBuffer->Create(InDevice, RenderMeshData);
+}
+
+FMeshBuffer* USkeletalMesh::GetMeshBuffer() const
+{
+    return RenderBuffer.get();
 }
 
 void USkeletalMesh::RebuildSectionMaterialIndices()

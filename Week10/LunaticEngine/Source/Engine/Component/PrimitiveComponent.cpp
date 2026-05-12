@@ -73,7 +73,7 @@ void UPrimitiveComponent::Serialize(FArchive& Ar)
 	Ar << bCastShadowAsTwoSided;
 	Ar << bCollisionEnabled;
 	Ar << bGenerateOverlapEvents;
-	// LocalExtents는 메시 등에서 재계산되므로 직렬화 제외.
+	// LocalCenter/LocalExtent는 메시 등에서 재계산되므로 직렬화 제외.
 }
 
 void UPrimitiveComponent::SetVisibility(bool bNewVisible)
@@ -210,15 +210,13 @@ void UPrimitiveComponent::MarkWorldBoundsDirty()
 
 void UPrimitiveComponent::UpdateWorldAABB() const
 {
-	FVector LExt = LocalExtents;
-
 	FMatrix worldMatrix = GetWorldMatrix();
 
-	float NewEx = std::abs(worldMatrix.M[0][0]) * LExt.X + std::abs(worldMatrix.M[1][0]) * LExt.Y + std::abs(worldMatrix.M[2][0]) * LExt.Z;
-	float NewEy = std::abs(worldMatrix.M[0][1]) * LExt.X + std::abs(worldMatrix.M[1][1]) * LExt.Y + std::abs(worldMatrix.M[2][1]) * LExt.Z;
-	float NewEz = std::abs(worldMatrix.M[0][2]) * LExt.X + std::abs(worldMatrix.M[1][2]) * LExt.Y + std::abs(worldMatrix.M[2][2]) * LExt.Z;
+	float NewEx = std::abs(worldMatrix.M[0][0]) * LocalExtent.X + std::abs(worldMatrix.M[1][0]) * LocalExtent.Y + std::abs(worldMatrix.M[2][0]) * LocalExtent.Z;
+	float NewEy = std::abs(worldMatrix.M[0][1]) * LocalExtent.X + std::abs(worldMatrix.M[1][1]) * LocalExtent.Y + std::abs(worldMatrix.M[2][1]) * LocalExtent.Z;
+	float NewEz = std::abs(worldMatrix.M[0][2]) * LocalExtent.X + std::abs(worldMatrix.M[1][2]) * LocalExtent.Y + std::abs(worldMatrix.M[2][2]) * LocalExtent.Z;
 
-	FVector WorldCenter = GetWorldLocation();
+	FVector WorldCenter = worldMatrix.TransformPositionWithW(LocalCenter);
 	WorldAABBMinLocation = WorldCenter - FVector(NewEx, NewEy, NewEz);
 	WorldAABBMaxLocation = WorldCenter + FVector(NewEx, NewEy, NewEz);
 	bWorldAABBDirty = false;

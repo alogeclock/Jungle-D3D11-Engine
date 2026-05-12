@@ -1,4 +1,4 @@
-﻿#include "MaterialManager.h"
+#include "MaterialManager.h"
 #include <filesystem>
 #include <fstream>
 #include "Materials/Material.h"
@@ -91,6 +91,17 @@ UTexture2D* FMaterialManager::GetMaterialPreviewTexture(UMaterial* Material) con
 UTexture2D* FMaterialManager::GetMaterialPreviewTexture(const FString& MaterialPath)
 {
 	return GetMaterialPreviewTexture(GetOrCreateMaterial(MaterialPath));
+}
+
+void FMaterialManager::RebuildCachedSRVs()
+{
+	for (auto& Pair : MaterialCache)
+	{
+		if (Pair.second)
+		{
+			Pair.second->RebuildCachedSRVs();
+		}
+	}
 }
 
 UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
@@ -269,6 +280,7 @@ EBlendState FMaterialManager::StringToBlendState(const FString& Str, ERenderPass
 	case ERenderPass::AlphaBlend:
 	case ERenderPass::WorldText:
 	case ERenderPass::Decal:
+	case ERenderPass::EditorGrid:
 	case ERenderPass::EditorLines:
 	case ERenderPass::PostProcess:
 	case ERenderPass::GizmoInner:
@@ -296,6 +308,7 @@ EDepthStencilState FMaterialManager::StringToDepthStencilState(const FString& St
 		return EDepthStencilState::Default;
 	case ERenderPass::Decal:
 	case ERenderPass::AdditiveDecal:
+	case ERenderPass::EditorGrid:
 		return EDepthStencilState::DepthReadOnly;
 	case ERenderPass::SelectionMask:
 		return EDepthStencilState::StencilWrite;
@@ -322,6 +335,7 @@ ERasterizerState FMaterialManager::StringToRasterizerState(const FString& Str, E
 	{
 	case ERenderPass::Decal:
 	case ERenderPass::AdditiveDecal:
+	case ERenderPass::EditorGrid:
 	case ERenderPass::SelectionMask:
 	case ERenderPass::PostProcess:
 		return ERasterizerState::SolidNoCull;

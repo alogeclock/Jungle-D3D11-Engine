@@ -4,9 +4,450 @@
 #include "Materials/Material.h"
 #include "Core/Log.h"
 #include "Core/Notification.h"
+#include "Platform/Paths.h"
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <iostream>
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+
+namespace
+{
+	constexpr uint64 ShaderCacheFnvOffset = 14695981039346656037ull;
+	constexpr uint64 ShaderCacheFnvPrime = 1099511628211ull;
+	constexpr const char* ShaderCacheMetaVersion = "LunaticShaderCSOMetaV1";
+
+	struct FShaderCacheMeta
+	{
+		FString SourcePath;
+		FString EntryPoint;
+		FString Profile;
+		uint64 DefinesHash = 0;
+		TArray<FString> Includes;
+	};
+
+	struct FShaderBlobCompileRequest
+	{
+		std::wstring SourcePath;
+		FString SourceKey;
+		FString EntryPoint;
+		FString Profile;
+		const D3D_SHADER_MACRO* Defines = nullptr;
+		uint64 DefinesHash = 0;
+		const char* StageLabel = "Shader";
+	};
+
+	uint64 HashBytes(const void* Data, size_t Size, uint64 Seed = ShaderCacheFnvOffset)
+	{
+		const uint8* Bytes = static_cast<const uint8*>(Data);
+		uint64 Hash = Seed;
+		for (size_t Index = 0; Index < Size; ++Index)
+		{
+			Hash ^= Bytes[Index];
+			Hash *= ShaderCacheFnvPrime;
+		}
+		return Hash;
+	}
+
+	uint64 HashString(const FString& Value, uint64 Seed)
+	{
+		return HashBytes(Value.data(), Value.size(), Seed);
+	}
+
+	uint64 HashDefinesForCache(const D3D_SHADER_MACRO* Defines)
+	{
+		if (!Defines)
+		{
+			return 0;
+		}
+
+		uint64 Hash = ShaderCacheFnvOffset;
+		for (const D3D_SHADER_MACRO* Define = Defines; Define->Name != nullptr; ++Define)
+		{
+			const FString Name = Define->Name;
+			const FString Value = Define->Definition ? Define->Definition : "";
+			Hash = HashString(Name, Hash);
+			Hash = HashBytes("=", 1, Hash);
+			Hash = HashString(Value, Hash);
+			Hash = HashBytes(";", 1, Hash);
+		}
+		return Hash;
+	}
+
+	FString NormalizeMetadataPath(FString Path)
+	{
+		for (char& Ch : Path)
+		{
+			if (Ch == '\\')
+			{
+				Ch = '/';
+			}
+		}
+		return Path;
+	}
+
+	std::filesystem::path ToAbsoluteProjectPath(const std::wstring& Path)
+	{
+		std::filesystem::path FsPath(Path);
+		if (FsPath.is_absolute())
+		{
+			return FsPath.lexically_normal();
+		}
+		return (std::filesystem::path(FPaths::RootDir()) / FsPath).lexically_normal();
+	}
+
+	std::filesystem::path ToAbsoluteProjectPath(const FString& Path)
+	{
+		return ToAbsoluteProjectPath(FPaths::ToWide(Path));
+	}
+
+	FString MakeProjectRelativePath(const std::filesystem::path& AbsolutePath)
+	{
+		const std::filesystem::path Root = std::filesystem::path(FPaths::RootDir()).lexically_normal();
+		std::filesystem::path RelativePath = AbsolutePath.lexically_relative(Root);
+		if (RelativePath.empty())
+		{
+			RelativePath = AbsolutePath.filename();
+		}
+		return NormalizeMetadataPath(FPaths::ToUtf8(RelativePath.wstring()));
+	}
+
+	std::wstring GetShaderCacheDir()
+	{
+		return FPaths::SaveDir() + L"ShaderCache\\";
+	}
+
+	FString ToHex(uint64 Value)
+	{
+		static constexpr char HexDigits[] = "0123456789abcdef";
+		FString Result(16, '0');
+		for (int32 Index = 15; Index >= 0; --Index)
+		{
+			Result[Index] = HexDigits[Value & 0xF];
+			Value >>= 4;
+		}
+		return Result;
+	}
+
+	FString SanitizeFileNamePart(FString Value)
+	{
+		for (char& Ch : Value)
+		{
+			const unsigned char UCh = static_cast<unsigned char>(Ch);
+			if (!std::isalnum(UCh) && Ch != '_' && Ch != '-')
+			{
+				Ch = '_';
+			}
+		}
+		return Value;
+	}
+
+	FString BuildShaderCacheKey(const FShaderBlobCompileRequest& Request)
+	{
+		uint64 Hash = ShaderCacheFnvOffset;
+		Hash = HashString(Request.SourceKey, Hash);
+		Hash = HashBytes("|", 1, Hash);
+		Hash = HashString(Request.EntryPoint, Hash);
+		Hash = HashBytes("|", 1, Hash);
+		Hash = HashString(Request.Profile, Hash);
+		Hash = HashBytes("|", 1, Hash);
+		Hash = HashBytes(&Request.DefinesHash, sizeof(Request.DefinesHash), Hash);
+		return ToHex(Hash);
+	}
+
+	std::filesystem::path BuildShaderCachePath(const FShaderBlobCompileRequest& Request)
+	{
+		const FString CacheKey = BuildShaderCacheKey(Request);
+		const FString SourceStem = SanitizeFileNamePart(
+			NormalizeMetadataPath(FPaths::ToUtf8(std::filesystem::path(FPaths::ToWide(Request.SourceKey)).stem().wstring())));
+		const FString Entry = SanitizeFileNamePart(Request.EntryPoint);
+		const FString Profile = SanitizeFileNamePart(Request.Profile);
+		const FString FileName = SourceStem + "_" + Entry + "_" + Profile + "_" + CacheKey + ".cso";
+		return std::filesystem::path(GetShaderCacheDir()) / FPaths::ToWide(FileName);
+	}
+
+	std::filesystem::path BuildShaderMetaPath(const std::filesystem::path& CachePath)
+	{
+		std::filesystem::path MetaPath = CachePath;
+		MetaPath += L".meta";
+		return MetaPath;
+	}
+
+	void AppendUniqueInclude(TArray<FString>& Includes, const FString& IncludePath)
+	{
+		const FString NormalizedPath = NormalizeMetadataPath(IncludePath);
+		if (std::find(Includes.begin(), Includes.end(), NormalizedPath) == Includes.end())
+		{
+			Includes.push_back(NormalizedPath);
+		}
+	}
+
+	void AppendIncludes(TArray<FString>* OutIncludes, const TArray<FString>& Includes)
+	{
+		if (!OutIncludes)
+		{
+			return;
+		}
+
+		for (const FString& IncludePath : Includes)
+		{
+			AppendUniqueInclude(*OutIncludes, IncludePath);
+		}
+	}
+
+	bool LoadShaderCacheMeta(const std::filesystem::path& MetaPath, FShaderCacheMeta& OutMeta)
+	{
+		std::ifstream File(MetaPath, std::ios::binary);
+		if (!File)
+		{
+			return false;
+		}
+
+		FString Line;
+		if (!std::getline(File, Line) || Line != ShaderCacheMetaVersion)
+		{
+			return false;
+		}
+
+		FShaderCacheMeta Meta;
+		while (std::getline(File, Line))
+		{
+			constexpr const char* SourcePrefix = "source=";
+			constexpr const char* EntryPrefix = "entry=";
+			constexpr const char* ProfilePrefix = "profile=";
+			constexpr const char* DefinesPrefix = "defines=";
+			constexpr const char* IncludePrefix = "include=";
+
+			if (Line.rfind(SourcePrefix, 0) == 0)
+			{
+				Meta.SourcePath = NormalizeMetadataPath(Line.substr(std::strlen(SourcePrefix)));
+			}
+			else if (Line.rfind(EntryPrefix, 0) == 0)
+			{
+				Meta.EntryPoint = Line.substr(std::strlen(EntryPrefix));
+			}
+			else if (Line.rfind(ProfilePrefix, 0) == 0)
+			{
+				Meta.Profile = Line.substr(std::strlen(ProfilePrefix));
+			}
+			else if (Line.rfind(DefinesPrefix, 0) == 0)
+			{
+				Meta.DefinesHash = static_cast<uint64>(_strtoui64(Line.substr(std::strlen(DefinesPrefix)).c_str(), nullptr, 10));
+			}
+			else if (Line.rfind(IncludePrefix, 0) == 0)
+			{
+				AppendUniqueInclude(Meta.Includes, Line.substr(std::strlen(IncludePrefix)));
+			}
+		}
+
+		OutMeta = std::move(Meta);
+		return true;
+	}
+
+	void SaveShaderCacheMeta(const std::filesystem::path& MetaPath, const FShaderBlobCompileRequest& Request, const TArray<FString>& Includes)
+	{
+		std::error_code ErrorCode;
+		std::filesystem::create_directories(MetaPath.parent_path(), ErrorCode);
+
+		std::ofstream File(MetaPath, std::ios::binary | std::ios::trunc);
+		if (!File)
+		{
+			return;
+		}
+
+		TArray<FString> UniqueIncludes;
+		for (const FString& IncludePath : Includes)
+		{
+			AppendUniqueInclude(UniqueIncludes, IncludePath);
+		}
+
+		File << ShaderCacheMetaVersion << "\n";
+		File << "source=" << NormalizeMetadataPath(Request.SourceKey) << "\n";
+		File << "entry=" << Request.EntryPoint << "\n";
+		File << "profile=" << Request.Profile << "\n";
+		File << "defines=" << Request.DefinesHash << "\n";
+		for (const FString& IncludePath : UniqueIncludes)
+		{
+			File << "include=" << IncludePath << "\n";
+		}
+	}
+
+	bool TryGetLastWriteTime(const std::filesystem::path& Path, std::filesystem::file_time_type& OutTime)
+	{
+		std::error_code ErrorCode;
+		if (!std::filesystem::exists(Path, ErrorCode))
+		{
+			return false;
+		}
+
+		OutTime = std::filesystem::last_write_time(Path, ErrorCode);
+		return !ErrorCode;
+	}
+
+	bool IsShaderCacheFresh(const FShaderBlobCompileRequest& Request, const std::filesystem::path& CachePath,
+		const std::filesystem::path& MetaPath, FShaderCacheMeta& OutMeta)
+	{
+		FShaderCacheMeta Meta;
+		if (!LoadShaderCacheMeta(MetaPath, Meta))
+		{
+			return false;
+		}
+
+		if (NormalizeMetadataPath(Meta.SourcePath) != NormalizeMetadataPath(Request.SourceKey)
+			|| Meta.EntryPoint != Request.EntryPoint
+			|| Meta.Profile != Request.Profile
+			|| Meta.DefinesHash != Request.DefinesHash)
+		{
+			return false;
+		}
+
+		std::filesystem::file_time_type CacheWriteTime;
+		if (!TryGetLastWriteTime(CachePath, CacheWriteTime))
+		{
+			return false;
+		}
+
+		std::filesystem::file_time_type LatestDependencyTime;
+		if (!TryGetLastWriteTime(ToAbsoluteProjectPath(Request.SourcePath), LatestDependencyTime))
+		{
+			return false;
+		}
+
+		for (const FString& IncludePath : Meta.Includes)
+		{
+			std::filesystem::file_time_type IncludeWriteTime;
+			const std::filesystem::path IncludeFsPath = std::filesystem::path(FPaths::ShaderDir()) / FPaths::ToWide(IncludePath);
+			if (!TryGetLastWriteTime(IncludeFsPath.lexically_normal(), IncludeWriteTime))
+			{
+				return false;
+			}
+
+			if (IncludeWriteTime > LatestDependencyTime)
+			{
+				LatestDependencyTime = IncludeWriteTime;
+			}
+		}
+
+		if (LatestDependencyTime > CacheWriteTime)
+		{
+			return false;
+		}
+
+		OutMeta = std::move(Meta);
+		return true;
+	}
+
+	bool TryLoadCachedShaderBlob(const FShaderBlobCompileRequest& Request, ID3DBlob** OutBlob, TArray<FString>* OutIncludes)
+	{
+		const std::filesystem::path CachePath = BuildShaderCachePath(Request);
+		const std::filesystem::path MetaPath = BuildShaderMetaPath(CachePath);
+
+		FShaderCacheMeta Meta;
+		if (!IsShaderCacheFresh(Request, CachePath, MetaPath, Meta))
+		{
+			return false;
+		}
+
+		ID3DBlob* CachedBlob = nullptr;
+		if (FAILED(D3DReadFileToBlob(CachePath.c_str(), &CachedBlob)) || !CachedBlob)
+		{
+			return false;
+		}
+
+		AppendIncludes(OutIncludes, Meta.Includes);
+		*OutBlob = CachedBlob;
+		UE_LOG_CATEGORY(Shader, Debug, "%s CSO cache hit: %s entry=%s profile=%s",
+			Request.StageLabel, Request.SourceKey.c_str(), Request.EntryPoint.c_str(), Request.Profile.c_str());
+		return true;
+	}
+
+	void SaveCachedShaderBlob(const FShaderBlobCompileRequest& Request, ID3DBlob* Blob, const TArray<FString>& Includes)
+	{
+		if (!Blob)
+		{
+			return;
+		}
+
+		const std::filesystem::path CachePath = BuildShaderCachePath(Request);
+		const std::filesystem::path MetaPath = BuildShaderMetaPath(CachePath);
+
+		std::error_code ErrorCode;
+		std::filesystem::create_directories(CachePath.parent_path(), ErrorCode);
+		if (FAILED(D3DWriteBlobToFile(Blob, CachePath.c_str(), TRUE)))
+		{
+			return;
+		}
+
+		SaveShaderCacheMeta(MetaPath, Request, Includes);
+		UE_LOG_CATEGORY(Shader, Debug, "%s CSO cache saved: %s entry=%s profile=%s",
+			Request.StageLabel, Request.SourceKey.c_str(), Request.EntryPoint.c_str(), Request.Profile.c_str());
+	}
+
+	HRESULT LoadOrCompileShaderBlob(const FShaderBlobCompileRequest& Request, ID3DBlob** OutBlob, ID3DBlob** OutErrorBlob,
+		TArray<FString>* OutIncludes)
+	{
+		*OutBlob = nullptr;
+		if (OutErrorBlob)
+		{
+			*OutErrorBlob = nullptr;
+		}
+
+		if (TryLoadCachedShaderBlob(Request, OutBlob, OutIncludes))
+		{
+			return S_OK;
+		}
+
+		TArray<FString> CompileIncludes;
+		FShaderInclude IncludeHandler;
+		IncludeHandler.OutIncludes = &CompileIncludes;
+
+		ID3DBlob* ErrorBlob = nullptr;
+		HRESULT Hr = D3DCompileFromFile(Request.SourcePath.c_str(), Request.Defines, &IncludeHandler,
+			Request.EntryPoint.c_str(), Request.Profile.c_str(), 0, 0, OutBlob, &ErrorBlob);
+
+		if (SUCCEEDED(Hr))
+		{
+			AppendIncludes(OutIncludes, CompileIncludes);
+			SaveCachedShaderBlob(Request, *OutBlob, CompileIncludes);
+			if (ErrorBlob)
+			{
+				ErrorBlob->Release();
+			}
+			return Hr;
+		}
+
+		if (OutErrorBlob)
+		{
+			*OutErrorBlob = ErrorBlob;
+		}
+		else if (ErrorBlob)
+		{
+			ErrorBlob->Release();
+		}
+
+		return Hr;
+	}
+
+	FShaderBlobCompileRequest MakeShaderCompileRequest(const wchar_t* SourcePath, const char* EntryPoint,
+		const char* Profile, const D3D_SHADER_MACRO* Defines, const char* StageLabel)
+	{
+		const std::filesystem::path AbsoluteSourcePath = ToAbsoluteProjectPath(SourcePath);
+		FShaderBlobCompileRequest Request;
+		Request.SourcePath = AbsoluteSourcePath.wstring();
+		Request.SourceKey = MakeProjectRelativePath(AbsoluteSourcePath);
+		Request.EntryPoint = EntryPoint ? EntryPoint : "";
+		Request.Profile = Profile ? Profile : "";
+		Request.Defines = Defines;
+		Request.DefinesHash = HashDefinesForCache(Defines);
+		Request.StageLabel = StageLabel;
+		return Request;
+	}
+}
 
 // ============================================================
 // FComputeShader
@@ -17,16 +458,15 @@ bool FComputeShader::Create(ID3D11Device* InDevice, const wchar_t* Path, const c
 {
 	Release();
 
-	ID3DBlob* CSBlob = nullptr;
-	ID3DBlob* ErrBlob = nullptr;
-	FShaderInclude IncludeHandler;
 	if (OutIncludes)
 	{
-		IncludeHandler.OutIncludes = OutIncludes;
+		OutIncludes->clear();
 	}
 
-	HRESULT hr = D3DCompileFromFile(Path, nullptr, &IncludeHandler,
-		EntryPoint, "cs_5_0", 0, 0, &CSBlob, &ErrBlob);
+	ID3DBlob* CSBlob = nullptr;
+	ID3DBlob* ErrBlob = nullptr;
+	const FShaderBlobCompileRequest CompileRequest = MakeShaderCompileRequest(Path, EntryPoint, "cs_5_0", nullptr, "CS");
+	HRESULT hr = LoadOrCompileShaderBlob(CompileRequest, &CSBlob, &ErrBlob, OutIncludes);
 
 	if (FAILED(hr))
 	{
@@ -93,15 +533,18 @@ void FShader::Create(ID3D11Device* InDevice, const wchar_t* InFilePath, const ch
 	const D3D_SHADER_MACRO* InDefines, TArray<FString>* OutIncludes, EShaderErrorMode ErrorMode)
 {
 	Release();
+	if (OutIncludes)
+	{
+		OutIncludes->clear();
+	}
 
 	ID3DBlob* vertexShaderCSO = nullptr;
 	ID3DBlob* pixelShaderCSO = nullptr;
 	ID3DBlob* errorBlob = nullptr;
-	FShaderInclude IncludeHandler;
-	IncludeHandler.OutIncludes = OutIncludes;
 
 	// Vertex Shader 컴파일
-	HRESULT hr = D3DCompileFromFile(InFilePath, InDefines, &IncludeHandler, InVSEntryPoint, "vs_5_0", 0, 0, &vertexShaderCSO, &errorBlob);
+	const FShaderBlobCompileRequest VSCompileRequest = MakeShaderCompileRequest(InFilePath, InVSEntryPoint, "vs_5_0", InDefines, "VS");
+	HRESULT hr = LoadOrCompileShaderBlob(VSCompileRequest, &vertexShaderCSO, &errorBlob, OutIncludes);
 	if (FAILED(hr))
 	{
 		if (errorBlob)
@@ -116,9 +559,15 @@ void FShader::Create(ID3D11Device* InDevice, const wchar_t* InFilePath, const ch
 		}
 		return;
 	}
+	if (errorBlob)
+	{
+		errorBlob->Release();
+		errorBlob = nullptr;
+	}
 
 	// Pixel Shader 컴파일
-	hr = D3DCompileFromFile(InFilePath, InDefines, &IncludeHandler, InPSEntryPoint, "ps_5_0", 0, 0, &pixelShaderCSO, &errorBlob);
+	const FShaderBlobCompileRequest PSCompileRequest = MakeShaderCompileRequest(InFilePath, InPSEntryPoint, "ps_5_0", InDefines, "PS");
+	hr = LoadOrCompileShaderBlob(PSCompileRequest, &pixelShaderCSO, &errorBlob, OutIncludes);
 	if (FAILED(hr))
 	{
 		if (errorBlob)

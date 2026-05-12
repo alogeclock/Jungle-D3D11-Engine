@@ -45,7 +45,7 @@ public:
 
 	// ViewportType + GizmoMode → AxisMask 계산 (Proxy에서도 사용)
 	static uint32 ComputeAxisMask(ELevelViewportType ViewportType, EGizmoMode Mode);
-	void UpdateHoveredAxis(int Index);
+	void UpdateHoveredAxis(int Index);	
 	void UpdateDrag(const FRay& Ray);
 	void DragEnd();
 
@@ -68,7 +68,7 @@ public:
 	void SetSnapSettings(bool bTranslationEnabled, float InTranslationSnapSize,
 		bool bRotationEnabled, float InRotationSnapSizeDegrees,
 		bool bScaleEnabled, float InScaleSnapSize);
-
+	bool ParticipatesInRenderSpatialStructure() const override { return false; }
 
 	//UActorComponent Override
 	void Deactivate() override;

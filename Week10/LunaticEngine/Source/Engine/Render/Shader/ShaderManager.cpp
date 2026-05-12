@@ -1,4 +1,4 @@
-﻿#include "ShaderManager.h"
+#include "ShaderManager.h"
 #include "Platform/Paths.h"
 #include "Core/Log.h"
 #include "Core/Notification.h"
@@ -34,6 +34,7 @@ void FShaderManager::Initialize(ID3D11Device* InDevice)
 	GetOrCreate(EShaderPath::Primitive, StartupError);
 	GetOrCreate(EShaderPath::Gizmo, StartupError);
 	GetOrCreate(EShaderPath::Editor, StartupError);
+	GetOrCreate(EShaderPath::Grid, StartupError);
 	GetOrCreate(EShaderPath::Decal, StartupError);
 	GetOrCreate(EShaderPath::Outline, StartupError);
 	GetOrCreate(EShaderPath::SceneDepth, StartupError);

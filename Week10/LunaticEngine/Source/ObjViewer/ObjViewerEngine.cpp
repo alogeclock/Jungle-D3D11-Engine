@@ -11,6 +11,8 @@
 #include "Component/StaticMeshComponent.h"
 #include "GameFramework/AActor.h"
 #include "Viewport/Viewport.h"
+#include "Engine/Input/InputRouter.h"
+#include "Engine/Input/InputSystem.h"
 #include "Platform/Paths.h"
 
 #include <filesystem>
@@ -95,6 +97,8 @@ void UObjViewerEngine::Init(FWindowsWindow* InWindow)
 		static_cast<uint32>(InWindow->GetHeight()));
 	VP->SetClient(&ViewportClient);
 	ViewportClient.SetViewport(VP);
+	FInputRouter::Get().SetKeyboardFocusedViewport(&ViewportClient);
+	FInputRouter::Get().SetHoveredViewport(&ViewportClient);
 
 	// ObjViewer 전용 렌더 파이프라인
 	SetRenderPipeline(std::make_unique<FObjViewerRenderPipeline>(this, Renderer));
@@ -102,6 +106,7 @@ void UObjViewerEngine::Init(FWindowsWindow* InWindow)
 
 void UObjViewerEngine::Shutdown()
 {
+	FInputRouter::Get().ClearViewport(&ViewportClient);
 	ViewportClient.Release();
 	Panel.Release();
 
@@ -120,6 +125,7 @@ void UObjViewerEngine::Tick(float DeltaTime)
 {
 	ViewportClient.Tick(DeltaTime);
 	Panel.Update();
+	FInputRouter::Get().RouteSnapshot(FInputSystem::MakeSnapshot(), DeltaTime);
 	UEngine::Tick(DeltaTime);
 }
 

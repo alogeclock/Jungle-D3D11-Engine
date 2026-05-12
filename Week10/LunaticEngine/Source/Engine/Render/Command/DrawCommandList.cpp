@@ -34,6 +34,7 @@ void FStateCache::Cleanup(ID3D11DeviceContext* Ctx)
 		if (Bindings.SRVs[i])
 		{
 			ID3D11ShaderResourceView* nullSRV = nullptr;
+			Ctx->VSSetShaderResources(i, 1, &nullSRV);
 			Ctx->PSSetShaderResources(i, 1, &nullSRV);
 			Bindings.SRVs[i] = nullptr;
 		}
@@ -226,7 +227,6 @@ void FDrawCommandList::SubmitCommand(const FDrawCommand& Cmd,
 		if (bForce || Cmd.Bindings.SRVs[i] != Cache.Bindings.SRVs[i])
 		{
 			ID3D11ShaderResourceView* SRV = Cmd.Bindings.SRVs[i];
-			Ctx->VSSetShaderResources(i, 1, &SRV);
 			Ctx->PSSetShaderResources(i, 1, &SRV);
 			Cache.Bindings.SRVs[i] = Cmd.Bindings.SRVs[i];
 		}

@@ -101,6 +101,11 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {
 	SkeletalMesh = InMesh;
 	MeshObject.reset();
+	BoneSpaceTransforms.clear();
+	ComponentSpaceTransforms.clear();
+	ComponentSpaceMatrices.clear();
+	SkinningMatrices.clear();
+
 	if (InMesh)
 	{
 		SkeletalMeshPath = InMesh->GetAssetPathFileName();
@@ -125,6 +130,9 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 		OverrideMaterials.clear();
 		MaterialSlots.clear();
 	}
+	bPoseDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
 	CacheLocalBounds();
 	MarkRenderStateDirty();
 	MarkWorldBoundsDirty();
@@ -288,6 +296,9 @@ void USkinnedMeshComponent::Serialize(FArchive& Ar)
 	UMeshComponent::Serialize(Ar);
 	Ar << SkeletalMeshPath;
 	Ar << MaterialSlots;
+	Ar << bCPUSkinning;
+	Ar << bDisplayBones;
+	Ar << bHideSkin;
 }
 
 void USkinnedMeshComponent::PostDuplicate()
@@ -307,7 +318,7 @@ void USkinnedMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& O
 	EnsureMaterialSlotsForEditing();
 
 	UPrimitiveComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Skeletal Mesh", EPropertyType::StaticMeshRef, &SkeletalMeshPath });
+	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshPath });
 
 	for (int32 i = 0; i < (int32)MaterialSlots.size(); ++i)
 	{
@@ -394,6 +405,7 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 	const int32 N = static_cast<int32>(Sk.Bones.size());
 	if (N == 0)
 	{
+		ComponentSpaceTransforms.clear();
 		ComponentSpaceMatrices.clear();
 		SkinningMatrices.clear();
 		return;
@@ -408,6 +420,7 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 		}
 	}
 
+	ComponentSpaceTransforms.resize(N);
 	ComponentSpaceMatrices.assign(N, FMatrix::Identity);
 	SkinningMatrices.assign(N, FMatrix::Identity);
 
@@ -419,8 +432,16 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 		const FMatrix ParentCS = (Parent >= 0) ? ComponentSpaceMatrices[Parent] : FMatrix::Identity;
 
 		ComponentSpaceMatrices[i] = Local * ParentCS;
+		ComponentSpaceTransforms[i] = FTransform(
+			ComponentSpaceMatrices[i].GetLocation(),
+			ComponentSpaceMatrices[i].ToQuat(),
+			ComponentSpaceMatrices[i].GetScale());
 		SkinningMatrices[i]       = Sk.Bones[i].InverseBindPose * ComponentSpaceMatrices[i];
 	}
+
+	bPoseDirty = false;
+	bSkinningDirty = false;
+	bBoundsDirty = true;
 }
 
 // ============================================================
@@ -448,11 +469,11 @@ bool USkinnedMeshComponent::SelfTest()
 	R.Bones[0].Name = "root";  R.Bones[0].ParentIndex = -1;
 	R.Bones[1].Name = "spine"; R.Bones[1].ParentIndex = 0;
 	R.Bones[2].Name = "head";  R.Bones[2].ParentIndex = 1;
-	
+
 	R.Bones[0].LocalBindPose = FMatrix::Identity;
 	R.Bones[1].LocalBindPose = FMatrix::MakeTranslationMatrix(FVector(0, 0, 1));
 	R.Bones[2].LocalBindPose = FMatrix::MakeTranslationMatrix(FVector(0, 0, 1));
-	
+
 	// Rebuild GlobalBindPose & InverseBindPose
 	for (int32 i = 0; i < 3; ++i)
 	{

@@ -35,6 +35,7 @@ public:
 
 	void SetSkeletalMesh(USkeletalMesh* InMesh);
 	USkeletalMesh* GetSkeletalMesh() const { return SkeletalMesh; }
+	USkeletalMesh* GetSkinnedAsset() const { return SkeletalMesh; }
 
 	void SetMaterial(int32 ElementIndex, UMaterial* InMaterial);
 	UMaterial* GetMaterial(int32 ElementIndex) const;
@@ -45,6 +46,7 @@ public:
 	const FMaterialSlot* GetMaterialSlot(int32 ElementIndex) const;
 
 	const FString& GetSkeletalMeshPath() const { return SkeletalMeshPath; }
+	const FString& GetSkinnedMeshAssetPath() const { return SkeletalMeshPath; }
 
 	void Serialize(FArchive& Ar) override;
 	void PostDuplicate() override;
@@ -58,8 +60,16 @@ public:
 	void FillComponentSpaceTransforms();
 
 	const TArray<FTransform>& GetBoneSpaceTransforms() const { return BoneSpaceTransforms; }
+	const TArray<FTransform>& GetComponentSpaceTransforms() const { return ComponentSpaceTransforms; }
 	const TArray<FMatrix>& GetComponentSpaceMatrices() const { return ComponentSpaceMatrices; }
 	const TArray<FMatrix>& GetSkinningMatrices() const { return SkinningMatrices; }
+
+	bool IsCPUSkinningEnabled() const { return bCPUSkinning; }
+	bool IsSkinningDirty() const { return bSkinningDirty; }
+	bool IsPoseDirty() const { return bPoseDirty; }
+	bool IsSkinnedBoundsDirty() const { return bBoundsDirty; }
+	bool ShouldDisplayBones() const { return bDisplayBones; }
+	bool ShouldHideSkin() const { return bHideSkin; }
 
 	// 본 포즈 파이프라인 invariant 검증.
 	// 1) RefPose 입력 시 모든 SkinningMatrix가 Identity 인지
@@ -73,6 +83,13 @@ protected:
 	TArray<UMaterial*> OverrideMaterials;
 	TArray<FMaterialSlot> MaterialSlots;
 
+	bool bCPUSkinning = true;
+	bool bSkinningDirty = true;
+	bool bPoseDirty = true;
+	bool bBoundsDirty = true;
+	bool bDisplayBones = false;
+	bool bHideSkin = false;
+
 	FVector CachedLocalCenter = { 0, 0, 0 };
 	FVector CachedLocalExtent = { 0.5f, 0.5f, 0.5f };
 	bool bHasValidBounds = false;
@@ -80,6 +97,7 @@ protected:
 	// UE는 ComponentSpaceTransforms를 [2] 더블 버퍼로 갖지만, 단일 스레드라 단일 배열.
 	// 추후 RT/GT 분리 시 [2] + read/write index 변수로 확장.
 	TArray<FTransform> BoneSpaceTransforms;        // 부모 로컬 [BoneCount]
+	TArray<FTransform> ComponentSpaceTransforms;   // 컴포넌트 공간 [BoneCount]
 	TArray<FMatrix> ComponentSpaceMatrices;     // 컴포넌트 공간 [BoneCount]
 	TArray<FMatrix> SkinningMatrices;           // CS * RefBasesInvMatrix [BoneCount]
 	std::unique_ptr<FSkeletalMeshObject> MeshObject;

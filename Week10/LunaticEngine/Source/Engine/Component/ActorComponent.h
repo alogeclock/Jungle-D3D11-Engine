@@ -42,9 +42,7 @@ public:
 
 	void SetActive(bool bNewActive);
 	inline void SetAutoActivate(bool bNewAutoActivate) { bAutoActivate = bNewAutoActivate; }
-	inline void SetComponentTickEnabled(bool bEnabled) {
-		PrimaryComponentTick.SetTickEnabled(bEnabled);
-	}
+	inline void SetComponentTickEnabled(bool bEnabled) { PrimaryComponentTick.SetTickEnabled(bEnabled); }
 	virtual void Serialize(FArchive& Ar) override;
 
 	inline bool IsActive() { return bIsActive; }

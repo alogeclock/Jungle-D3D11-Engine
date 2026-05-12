@@ -44,7 +44,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
     uint tileX = clusterCoord.x;
     uint tileY = clusterCoord.y;
     uint sliceZ = clusterCoord.z;
-    //Get Clusters NDCs X,Y Size
+    // Get Clusters NDCs X,Y Size
     float2 tileSize = float2(2.0f / CullState.ClusterX, 2.0f / CullState.ClusterY);
 
     // SV_Position.y starts at the top of the viewport, where NDC.y is +1.

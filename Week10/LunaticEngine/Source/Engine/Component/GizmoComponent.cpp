@@ -10,7 +10,14 @@
 #include "Collision/RayUtils.h"
 #include "Render/Proxy/GizmoSceneProxy.h"
 #include "Render/Scene/FScene.h"
+#include <algorithm>
 #include <cfloat>
+
+namespace
+{
+	FQuat GetStableWorldRotationQuat(const USceneComponent* Component);
+	bool IsActorInTargetWorld(const AActor* Actor, const USceneComponent* TargetComponent);
+}
 
 IMPLEMENT_CLASS(UGizmoComponent, UPrimitiveComponent)
 HIDE_FROM_COMPONENT_LIST(UGizmoComponent)
@@ -54,7 +61,7 @@ void UGizmoComponent::DestroyRenderState()
 UGizmoComponent::UGizmoComponent()
 {
 	MeshData = &FMeshBufferManager::Get().GetMeshData(EMeshShape::TransGizmo);
-	LocalExtents = FVector(1.5f, 1.5f, 1.5f);
+	LocalExtent = FVector(1.5f, 1.5f, 1.5f);
 }
 
 void UGizmoComponent::SetHolding(bool bHold)
@@ -304,7 +311,10 @@ void UGizmoComponent::TranslateTarget(float DragAmount)
 	{
 		for (AActor* Actor : *AllSelectedActors)
 		{
-			if (Actor) Actor->AddActorWorldOffset(ConstrainedDelta);
+			if (IsActorInTargetWorld(Actor, TargetComponent))
+			{
+				Actor->AddActorWorldOffset(ConstrainedDelta);
+			}
 		}
 	}
 	else
@@ -366,7 +376,7 @@ void UGizmoComponent::RotateTarget(float DragAmount)
 	{
 		for (AActor* Actor : *AllSelectedActors)
 		{
-			if (Actor && Actor->GetRootComponent())
+			if (IsActorInTargetWorld(Actor, TargetComponent) && Actor->GetRootComponent())
 			{
 				ApplyRotation(Actor->GetRootComponent());
 			}
@@ -405,7 +415,7 @@ void UGizmoComponent::ScaleTarget(float DragAmount)
 	{
 		for (AActor* Actor : *AllSelectedActors)
 		{
-			if (Actor && Actor->GetRootComponent())
+			if (IsActorInTargetWorld(Actor, TargetComponent) && Actor->GetRootComponent())
 			{
 				ApplyScale(Actor->GetRootComponent());
 			}
@@ -438,19 +448,18 @@ void UGizmoComponent::SetTargetScale(FVector NewScale)
 {
 	if (!TargetComponent) return;
 
-	FVector SafeScale = NewScale;
-	if (SafeScale.X < 0.001f) SafeScale.X = 0.001f;
-	if (SafeScale.Y < 0.001f) SafeScale.Y = 0.001f;
-	if (SafeScale.Z < 0.001f) SafeScale.Z = 0.001f;
-
-	TargetComponent->SetRelativeScale(SafeScale);
+	TargetComponent->SetRelativeScale(NewScale);
 }
 
 bool UGizmoComponent::LineTraceComponent(const FRay& Ray, FRayHitResult& OutHitResult)
 {
 	OutHitResult = {};
-	if (!MeshData || MeshData->Indices.empty())
+	if (!IsVisible() || CurMode == EGizmoMode::Select || !TargetComponent || !MeshData || MeshData->Indices.empty())
 	{
+		if (!IsHolding())
+		{
+			SelectedAxis = -1;
+		}
 		return false;
 	}
 
@@ -535,6 +544,9 @@ void UGizmoComponent::SetTarget(USceneComponent* NewTarget)
 {
 	if (!NewTarget)
 	{
+		TargetComponent = nullptr;
+		AllSelectedActors = nullptr;
+		SetVisibility(false);
 		return;
 	}
 
@@ -542,7 +554,6 @@ void UGizmoComponent::SetTarget(USceneComponent* NewTarget)
 
 	SetWorldLocation(TargetComponent->GetWorldLocation());
 	UpdateGizmoTransform();
-	SetVisibility(true);
 }
 
 void UGizmoComponent::SetTarget(AActor* NewTargetActor)
@@ -568,7 +579,16 @@ void UGizmoComponent::UpdateLinearDrag(const FRay& Ray)
 
 	FVector AxisVector = GetVectorForAxis(SelectedAxis);
 
-	FVector PlaneNormal = AxisVector.Cross(Ray.Direction);
+	FVector ViewDir = (GetWorldLocation() - Ray.Origin);
+	ViewDir.Normalize();
+
+	FVector PlaneNormal = AxisVector.Cross(ViewDir);
+	if (PlaneNormal.IsNearlyZero())
+	{
+		PlaneNormal = AxisVector.Cross(FVector::UpVector);
+	}
+	PlaneNormal.Normalize();
+
 	FVector ProjectDir = PlaneNormal.Cross(AxisVector);
 
 	float Denom = Ray.Direction.Dot(ProjectDir);
@@ -663,32 +683,42 @@ void UGizmoComponent::UpdateAngularDrag(const FRay& Ray)
 
 	float DeltaAngle = Sign * AngleRadians;
 
-	HandleDrag(DeltaAngle);
-
-	LastIntersectionLocation = CurrentIntersectionLocation;
+	constexpr float AngularThreshold = 0.001f;
+	if (std::abs(DeltaAngle) > AngularThreshold)
+	{
+		HandleDrag(DeltaAngle);
+		LastIntersectionLocation = CurrentIntersectionLocation;
+	}
 }
 
 void UGizmoComponent::UpdateHoveredAxis(int Index)
 {
+	if (IsHolding() || IsPressedOnHandle())
+	{
+		return;
+	}
+
 	if (Index < 0)
 	{
-		if (IsHolding() == false) SelectedAxis = -1;
+		SelectedAxis = -1;
 	}
 	else
 	{
-		if (IsHolding() == false)
+		if (!MeshData)
 		{
-			uint32 VertexIndex = MeshData->Indices[Index];
-			uint32 HitAxis = MeshData->Vertices[VertexIndex].SubID;
+			SelectedAxis = -1;
+			return;
+		}
 
-			if (HitAxis == 3 || (AxisMask & (1u << HitAxis)))
-			{
-				SelectedAxis = HitAxis;
-			}
-			else
-			{
-				SelectedAxis = -1;
-			}
+		uint32 VertexIndex = MeshData->Indices[Index];
+		uint32 HitAxis = MeshData->Vertices[VertexIndex].SubID;
+		if (HitAxis == 3 || (AxisMask & (1u << HitAxis)))
+		{
+			SelectedAxis = HitAxis;
+		}
+		else
+		{
+			SelectedAxis = -1;
 		}
 	}
 }
@@ -724,6 +754,7 @@ void UGizmoComponent::DragEnd()
 	ResetSnapAccumulation();
 	SetHolding(false);
 	SetPressedOnHandle(false);
+	SelectedAxis = -1;
 }
 
 void UGizmoComponent::SetNextMode()
@@ -737,13 +768,41 @@ void UGizmoComponent::SetNextMode()
 void UGizmoComponent::UpdateGizmoMode(EGizmoMode NewMode)
 {
 	CurMode = NewMode;
-	SetVisibility(NewMode != EGizmoMode::Select);
 	UpdateGizmoTransform();
+}
+
+namespace
+{
+	FQuat GetStableWorldRotationQuat(const USceneComponent* Component)
+	{
+		if (!Component)
+		{
+			return FQuat::Identity;
+		}
+
+		FQuat WorldQuat = Component->GetRelativeQuat();
+		if (const USceneComponent* Parent = Component->GetParent())
+		{
+			WorldQuat = WorldQuat * GetStableWorldRotationQuat(Parent);
+		}
+		return WorldQuat.GetNormalized();
+	}
+
+	bool IsActorInTargetWorld(const AActor* Actor, const USceneComponent* TargetComponent)
+	{
+		return Actor && TargetComponent && Actor->GetWorld() == TargetComponent->GetWorld();
+	}
 }
 
 void UGizmoComponent::UpdateGizmoTransform()
 {
-	if (!TargetComponent) return;
+	if (!TargetComponent)
+	{
+		SetVisibility(false);
+		SelectedAxis = -1;
+		SetPressedOnHandle(false);
+		return;
+	}
 
 	if (CurMode == EGizmoMode::Select)
 	{
@@ -760,7 +819,7 @@ void UGizmoComponent::UpdateGizmoTransform()
 	FRotator DesiredRotation = FRotator();
 	if (CurMode == EGizmoMode::Scale || !bIsWorldSpace)
 	{
-		DesiredRotation = TargetComponent->GetWorldMatrix().ToRotator();
+		DesiredRotation = GetStableWorldRotationQuat(TargetComponent).ToRotator();
 	}
 
 	const FMeshData* DesiredMeshData = nullptr;

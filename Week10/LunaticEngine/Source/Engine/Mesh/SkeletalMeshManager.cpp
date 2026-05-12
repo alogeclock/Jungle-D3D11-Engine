@@ -8,6 +8,7 @@
 #include "Mesh/SkeletalMeshBake.h"
 #include "Mesh/FbxImporter.h"
 #include "Engine/Platform/Paths.h"
+#include "Engine/Runtime/Engine.h"
 #include "Object/Object.h"
 #include "Materials/MaterialManager.h"
 
@@ -53,6 +54,10 @@ USkeletalMesh* FSkeletalMeshManager::LoadSkeletalMesh(const FString& PathFileNam
     auto It = SkeletalMeshCache.find(CacheKey);
     if (It != SkeletalMeshCache.end())
     {
+        if (GEngine && !It->second->GetMeshBuffer())
+        {
+            It->second->InitResources(GEngine->GetRenderer().GetFD3DDevice().GetDevice());
+        }
         return It->second;
     }
 
@@ -117,6 +122,10 @@ USkeletalMesh* FSkeletalMeshManager::LoadSkeletalMesh(const FString& PathFileNam
 
     SkeletalMesh->SetSkeletalMaterials(std::move(Materials));
     SkeletalMesh->SetSkeletalMeshAsset(NewMeshAsset);
+    if (GEngine)
+    {
+        SkeletalMesh->InitResources(GEngine->GetRenderer().GetFD3DDevice().GetDevice());
+    }
     
     SkeletalMeshCache[CacheKey] = SkeletalMesh;
     

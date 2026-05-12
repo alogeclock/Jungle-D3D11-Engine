@@ -117,7 +117,10 @@ protected:
 	void EnsureWorldAABBUpdated() const;
 
 protected:
-	FVector LocalExtents = { 0.5f, 0.5f, 0.5f };
+	FVector LocalCenter = { 0.0f, 0.0f, 0.0f };
+	FVector LocalExtent = { 0.5f, 0.5f, 0.5f };
+	bool bHasValidBounds = false;
+
 	mutable FVector WorldAABBMinLocation;
 	mutable FVector WorldAABBMaxLocation;
 	mutable bool bWorldAABBDirty = true;
