@@ -77,7 +77,6 @@ namespace
 	    ImGui::SameLine(DetailsVectorLabelWidth);
 
 	    const float ResetButtonWidth = bShowReset ? ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f : 0.0f;
-	    
 	    const float TotalAvailWidth = ImGui::GetContentRegionAvail().x - (bShowReset ? (ResetButtonWidth + DetailsVectorResetSpacing) : 0.0f);
 	    const float Spacing = ImGui::GetStyle().ItemSpacing.x;
 	    const float FieldWidth = (TotalAvailWidth - (Spacing * (AxisCount - 1))) / (float)AxisCount;
