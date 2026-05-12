@@ -16,6 +16,7 @@
 namespace
 {
 	FQuat GetStableWorldRotationQuat(const USceneComponent* Component);
+	bool IsSameRotation(const FQuat& A, const FQuat& B);
 	bool IsActorInTargetWorld(const AActor* Actor, const USceneComponent* TargetComponent);
 }
 
@@ -788,6 +789,14 @@ namespace
 		return WorldQuat.GetNormalized();
 	}
 
+	bool IsSameRotation(const FQuat& A, const FQuat& B)
+	{
+		const FQuat NormalizedA = A.GetNormalized();
+		const FQuat NormalizedB = B.GetNormalized();
+		const FQuat NegatedB(-NormalizedB.X, -NormalizedB.Y, -NormalizedB.Z, -NormalizedB.W);
+		return NormalizedA.Equals(NormalizedB, 1.0e-4f) || NormalizedA.Equals(NegatedB, 1.0e-4f);
+	}
+
 	bool IsActorInTargetWorld(const AActor* Actor, const USceneComponent* TargetComponent)
 	{
 		return Actor && TargetComponent && Actor->GetWorld() == TargetComponent->GetWorld();
@@ -816,10 +825,10 @@ void UGizmoComponent::UpdateGizmoTransform()
 
 	const FVector DesiredLocation = TargetComponent->GetWorldLocation();
 	
-	FRotator DesiredRotation = FRotator();
+	FQuat DesiredRotation = FQuat::Identity;
 	if (CurMode == EGizmoMode::Scale || !bIsWorldSpace)
 	{
-		DesiredRotation = GetStableWorldRotationQuat(TargetComponent).ToRotator();
+		DesiredRotation = GetStableWorldRotationQuat(TargetComponent);
 	}
 
 	const FMeshData* DesiredMeshData = nullptr;
@@ -847,7 +856,7 @@ void UGizmoComponent::UpdateGizmoTransform()
 		SetWorldLocation(DesiredLocation);
 	}
 
-	if (GetRelativeRotation() != DesiredRotation)
+	if (!IsSameRotation(GetRelativeQuat(), DesiredRotation))
 	{
 		SetRelativeRotation(DesiredRotation);
 	}

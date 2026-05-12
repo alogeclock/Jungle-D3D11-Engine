@@ -4,6 +4,8 @@
 #include "Core/CoreTypes.h"
 #include "Editor/UI/EditorDetailsWidget.h"
 #include "Editor/Viewport/Preview/SkeletalMeshPreviewViewportClient.h"
+#include "Math/Quat.h"
+#include "Math/Rotator.h"
 
 class FViewport;
 class FWindowsWindow;
@@ -11,6 +13,13 @@ class UEditorEngine;
 class USkeletalMesh;
 struct FSkeleton;
 struct ID3D11Device;
+
+struct FBoneRotationEditState
+{
+	int32 BoneIndex = -1;
+	FQuat Quat = FQuat::Identity;
+	FRotator EulerHint = FRotator();
+};
 
 class FSkeletalMeshPreviewWidget : public FAssetPreviewWidget
 {
@@ -46,6 +55,8 @@ private:
 	int32 SelectedBoneIndex = -1;
 	int32 EditorInstanceId = 0;
 	uint32 PreviewDockId = 0;
+	FBoneRotationEditState LocalRotationEditState;
+	FBoneRotationEditState ComponentRotationEditState;
 	bool bOpen = false;
 	bool bInitialized = false;
 	bool bRegistered = false;

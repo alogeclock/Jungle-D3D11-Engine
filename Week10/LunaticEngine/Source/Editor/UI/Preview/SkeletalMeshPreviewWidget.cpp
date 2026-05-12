@@ -18,6 +18,12 @@
 
 namespace
 {
+	enum class EBoneRotationEditSpace : uint8
+	{
+		Local,
+		Component
+	};
+
 	FSkeletalMesh* GetSkeletalMeshAsset(USkeletalMesh* Mesh)
 	{
 		return Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
@@ -53,6 +59,43 @@ namespace
 	USkeletalMeshComponent* GetPreviewComponent(FSkeletalMeshPreviewViewportClient& ViewportClient)
 	{
 		return ViewportClient.GetPreviewComponent();
+	}
+
+	FQuat NormalizeQuat(const FQuat& Quat)
+	{
+		FQuat Result = Quat;
+		Result.Normalize();
+		return Result;
+	}
+
+	bool IsSameRotation(const FQuat& A, const FQuat& B)
+	{
+		const FQuat NormalizedA = NormalizeQuat(A);
+		const FQuat NormalizedB = NormalizeQuat(B);
+		const FQuat NegatedB(-NormalizedB.X, -NormalizedB.Y, -NormalizedB.Z, -NormalizedB.W);
+		return NormalizedA.Equals(NormalizedB, 1.0e-4f) || NormalizedA.Equals(NegatedB, 1.0e-4f);
+	}
+
+	void SyncBoneRotationEditState(int32 BoneIndex, const FQuat& CurrentQuat, FBoneRotationEditState& EditState)
+	{
+		const FQuat NormalizedQuat = NormalizeQuat(CurrentQuat);
+		if (EditState.BoneIndex == BoneIndex && IsSameRotation(EditState.Quat, NormalizedQuat))
+		{
+			return;
+		}
+
+		EditState.BoneIndex = BoneIndex;
+		EditState.Quat = NormalizedQuat;
+		EditState.EulerHint = NormalizedQuat.ToRotator();
+	}
+
+	FQuat ComposeEditedBoneRotation(const FQuat& CurrentQuat, const FRotator& DeltaRotator, EBoneRotationEditSpace EditSpace)
+	{
+		const FQuat NormalizedCurrent = NormalizeQuat(CurrentQuat);
+		const FQuat DeltaQuat = NormalizeQuat(DeltaRotator.ToQuaternion());
+		return EditSpace == EBoneRotationEditSpace::Component
+			? NormalizeQuat(DeltaQuat * NormalizedCurrent)
+			: NormalizeQuat(NormalizedCurrent * DeltaQuat);
 	}
 
 	void SelectBone(FSkeletalMeshPreviewViewportClient& ViewportClient, int32& SelectedBoneIndex, int32 BoneIndex)
@@ -212,7 +255,12 @@ namespace
 		});
 	}
 
-	bool DrawEditableTransform(const char* SectionName, FTransform& Transform)
+	bool DrawEditableTransform(
+		const char* SectionName,
+		FTransform& Transform,
+		int32 BoneIndex,
+		FBoneRotationEditState& RotationEditState,
+		EBoneRotationEditSpace RotationEditSpace)
 	{
 		if (!BeginPreviewDetailsSection(SectionName))
 		{
@@ -230,11 +278,19 @@ namespace
 			bChanged = true;
 		}
 
-		FRotator Rotator = Transform.GetRotator();
-		float Rotation[3] = { Rotator.Roll, Rotator.Pitch, Rotator.Yaw };
+		SyncBoneRotationEditState(BoneIndex, Transform.Rotation, RotationEditState);
+		float Rotation[3] = { RotationEditState.EulerHint.Roll, RotationEditState.EulerHint.Pitch, RotationEditState.EulerHint.Yaw };
 		if (DrawPreviewColoredFloat3("Rotation", Rotation, 0.1f, ZeroVectorReset))
 		{
-			Transform.SetRotation(FRotator(Rotation[1], Rotation[2], Rotation[0]));
+			const FRotator NewEulerHint(Rotation[1], Rotation[2], Rotation[0]);
+			const FRotator DeltaRotator(
+				NewEulerHint.Pitch - RotationEditState.EulerHint.Pitch,
+				NewEulerHint.Yaw - RotationEditState.EulerHint.Yaw,
+				NewEulerHint.Roll - RotationEditState.EulerHint.Roll);
+
+			RotationEditState.Quat = ComposeEditedBoneRotation(RotationEditState.Quat, DeltaRotator, RotationEditSpace);
+			RotationEditState.EulerHint = NewEulerHint;
+			Transform.SetRotation(RotationEditState.Quat);
 			bChanged = true;
 		}
 
@@ -520,7 +576,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneDetailsPanel()
 		{
 			FTransform EditableLocal = *LocalTransform;
 			ImGui::PushID("LocalTransform");
-			if (DrawEditableTransform("Local Transform", EditableLocal))
+			if (DrawEditableTransform("Local Transform", EditableLocal, SelectedBoneIndex, LocalRotationEditState, EBoneRotationEditSpace::Local))
 			{
 				PreviewComponent->SetBoneLocalTransform(SelectedBoneIndex, EditableLocal);
 			}
@@ -531,7 +587,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneDetailsPanel()
 		{
 			FTransform EditableComponent = *ComponentTransform;
 			ImGui::PushID("ComponentTransform");
-			if (DrawEditableTransform("Component Transform", EditableComponent))
+			if (DrawEditableTransform("Component Transform", EditableComponent, SelectedBoneIndex, ComponentRotationEditState, EBoneRotationEditSpace::Component))
 			{
 				PreviewComponent->SetBoneComponentSpaceTransform(SelectedBoneIndex, EditableComponent);
 			}

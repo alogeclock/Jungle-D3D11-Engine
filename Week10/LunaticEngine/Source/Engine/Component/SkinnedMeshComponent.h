@@ -69,6 +69,8 @@ public:
 	bool IsPoseDirty() const { return bPoseDirty; }
 	bool IsSkinnedBoundsDirty() const { return bBoundsDirty; }
 	bool ShouldHideSkin() const { return bHideSkin; }
+	bool ShouldDisplayBones() const { return bDisplayBones; }
+	void SetDisplayBones(bool bDisplay);
 
 	// 본 포즈 파이프라인 invariant 검증.
 	// 1) RefPose 입력 시 모든 SkinningMatrix가 Identity 인지
@@ -87,6 +89,7 @@ protected:
 	bool bPoseDirty = true;
 	bool bBoundsDirty = true;
 	bool bHideSkin = false;
+	bool bDisplayBones = false;
 
 	FVector CachedLocalCenter = { 0, 0, 0 };
 	FVector CachedLocalExtent = { 0.5f, 0.5f, 0.5f };

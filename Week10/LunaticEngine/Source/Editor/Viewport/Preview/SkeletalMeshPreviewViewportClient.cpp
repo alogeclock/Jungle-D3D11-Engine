@@ -12,6 +12,7 @@
 #include "GameFramework/AActor.h"
 #include "GameFramework/World.h"
 #include "Math/MathUtils.h"
+#include "Math/Quat.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Viewport/Viewport.h"
 
@@ -26,6 +27,8 @@ namespace
 	float DistancePointToSegment2D(const FVector2& Point, const FVector2& SegmentStart, const FVector2& SegmentEnd);
 	bool ProjectWorldToViewport(const FMatrix& ViewProjection, const FVector& WorldPosition, float ViewportWidth, float ViewportHeight, FVector2& OutScreenPosition, float& OutDepth);
 	bool TryConvertMouseToViewportPixel(const ImVec2& MousePos, const FRect& ViewportRect, const FViewport* Viewport, float FallbackWidth, float FallbackHeight, float& OutX, float& OutY);
+	FQuat GetStableWorldRotation(const USceneComponent* Component);
+	FQuat GetComponentSpaceRotation(const USceneComponent* WorldComponent, const USceneComponent* ComponentSpaceOwner);
 	FTransform TransformFromMatrix(const FMatrix& Matrix);
 	EGizmoMode GizmoModeFromPreviewMode(int32 PreviewMode);
 	int32 PreviewModeFromGizmoMode(EGizmoMode Mode);
@@ -202,7 +205,7 @@ void FSkeletalMeshPreviewViewportClient::CreatePreviewComponent()
 	}
 
 	PreviewComponent = PreviewActor->AddComponent<USkeletalMeshComponent>();
-	PreviewComponent->SetShowSkeleton(true);
+	PreviewComponent->SetDisplayBones(true);
 	PreviewActor->SetRootComponent(PreviewComponent);
 	CreatePreviewGizmo();
 }
@@ -266,6 +269,7 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 	{
 		PreviewGizmo->Deactivate();
 		PreviewGizmoBoneIndex = -1;
+		ResetPreviewGizmoRotationDragState();
 		return;
 	}
 
@@ -311,10 +315,55 @@ void FSkeletalMeshPreviewViewportClient::ApplyPreviewGizmoToSelectedBone()
 		return;
 	}
 
+	if (PreviewGizmo && PreviewGizmo->GetMode() == EGizmoMode::Rotate)
+	{
+		const FTransform* BoneComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(PreviewGizmoBoneIndex);
+		if (!BoneComponentTransform)
+		{
+			ResetPreviewGizmoRotationDragState();
+			return;
+		}
+
+		const FQuat CurrentGizmoRotation = GetComponentSpaceRotation(PreviewGizmoTarget, PreviewComponent);
+		if (!bPreviewGizmoRotationDragInitialized || PreviewGizmoRotationDragBoneIndex != PreviewGizmoBoneIndex)
+		{
+			PreviewGizmoRotationDragBoneIndex = PreviewGizmoBoneIndex;
+			PreviewGizmoDragStartRotation = CurrentGizmoRotation;
+			PreviewBoneDragStartComponentRotation = BoneComponentTransform->Rotation.GetNormalized();
+			bPreviewGizmoRotationDragInitialized = true;
+		}
+
+		FQuat DeltaRotation = FQuat::Identity;
+		FQuat BoneComponentRotation = FQuat::Identity;
+		if (PreviewGizmo->IsWorldSpace())
+		{
+			DeltaRotation = (CurrentGizmoRotation * PreviewGizmoDragStartRotation.Inverse()).GetNormalized();
+			BoneComponentRotation = (DeltaRotation * PreviewBoneDragStartComponentRotation).GetNormalized();
+		}
+		else
+		{
+			DeltaRotation = (PreviewGizmoDragStartRotation.Inverse() * CurrentGizmoRotation).GetNormalized();
+			BoneComponentRotation = (PreviewBoneDragStartComponentRotation * DeltaRotation).GetNormalized();
+		}
+
+		PreviewComponent->SetBoneComponentSpaceRotation(PreviewGizmoBoneIndex, BoneComponentRotation);
+		return;
+	}
+
+	ResetPreviewGizmoRotationDragState();
 	const FMatrix BoneComponentMatrix = PreviewGizmoTarget->GetWorldMatrix() * PreviewComponent->GetWorldInverseMatrix();
 	PreviewComponent->SetBoneComponentSpaceTransform(PreviewGizmoBoneIndex, TransformFromMatrix(BoneComponentMatrix));
 }
 
+void FSkeletalMeshPreviewViewportClient::ResetPreviewGizmoRotationDragState()
+{
+	PreviewGizmoRotationDragBoneIndex = -1;
+	PreviewGizmoDragStartRotation = FQuat::Identity;
+	PreviewBoneDragStartComponentRotation = FQuat::Identity;
+	bPreviewGizmoRotationDragInitialized = false;
+}
+
+// 마우스 좌표를 뷰포트 좌표로 변환한 뒤, Raycasting을 수행하고 마우스 조작에 따라 기즈모 조작을 적절하게 처리합니다.
 bool FSkeletalMeshPreviewViewportClient::HandlePreviewGizmoInput(const FInputSystemSnapshot& Snapshot, float DeltaTime)
 {
 	(void)DeltaTime;
@@ -366,6 +415,7 @@ bool FSkeletalMeshPreviewViewportClient::HandlePreviewGizmoInput(const FInputSys
 		{
 			PreviewGizmo->DragEnd();
 			ApplyPreviewGizmoToSelectedBone();
+			ResetPreviewGizmoRotationDragState();
 			if (!Snapshot.IsMouseButtonDown(VK_RBUTTON))
 			{
 				FInputRouter::Get().ReleaseMouseCapture(this);
@@ -417,6 +467,7 @@ namespace
 		return (Point - Closest).Length();
 	}
 
+	// 
 	bool ProjectWorldToViewport(const FMatrix& ViewProjection, const FVector& WorldPosition, float ViewportWidth, float ViewportHeight, FVector2& OutScreenPosition, float& OutDepth)
 	{
 		const FVector ClipSpace = ViewProjection.TransformPositionWithW(WorldPosition);
@@ -427,6 +478,7 @@ namespace
 			std::isfinite(OutScreenPosition.X) && std::isfinite(OutScreenPosition.Y) && std::isfinite(OutDepth);
 	}
 
+	// 마우스 위치와 뷰포트의 위치 정보를 계산해서 마우스 위치가 뷰포트의 어느 위치에 존재하는지 계산합니다.
 	bool TryConvertMouseToViewportPixel(const ImVec2& MousePos, const FRect& ViewportRect, const FViewport* Viewport, float FallbackWidth, float FallbackHeight, float& OutX, float& OutY)
 	{
 		if (ViewportRect.Width <= 0.0f || ViewportRect.Height <= 0.0f)
@@ -449,6 +501,38 @@ namespace
 		return true;
 	}
 
+	// 부모-자식 계층 구조를 가진 컴포넌트의 최종 월드 공간 기준 회전값을 재귀적으로 구합니다.
+	FQuat GetStableWorldRotation(const USceneComponent* Component)
+	{
+		if (!Component)
+		{
+			return FQuat::Identity;
+		}
+
+		FQuat RelativeRotation = Component->GetRelativeQuat();
+		if (const USceneComponent* Parent = Component->GetParent())
+		{
+			// World = ParentWorld * RelativeRotation
+			return (GetStableWorldRotation(Parent) * RelativeRotation).GetNormalized();
+		}
+		return RelativeRotation.GetNormalized();
+	}
+
+	// 메쉬의 발 밑 또는 골반(Root)을 기준으로 한 회전값을 측정합니다.
+	FQuat GetComponentSpaceRotation(const USceneComponent* WorldComponent, const USceneComponent* ComponentSpaceOwner)
+	{
+		const FQuat WorldRotation = GetStableWorldRotation(WorldComponent);
+		if (!ComponentSpaceOwner)
+		{
+			return WorldRotation;
+		}
+
+		const FQuat ComponentWorldRotation = GetStableWorldRotation(ComponentSpaceOwner);
+		// Relative = ComponentWorldInverse * World. Since A * B means B first, ComponentWorldInverse must be on the left.
+		return (ComponentWorldRotation.Inverse() * WorldRotation).GetNormalized();
+	}
+
+	// Matrix에서 FTransform 정보를 추출하되, 회전값은 Quaternion으로 변환한 뒤 추출합니다.
 	FTransform TransformFromMatrix(const FMatrix& Matrix)
 	{
 		FQuat Rotation = Matrix.ToQuat();
@@ -456,6 +540,7 @@ namespace
 		return FTransform(Matrix.GetLocation(), Rotation, Matrix.GetScale());
 	}
 
+	// int32 PreviewMode 값을 EGizmoMode Enum 값으로 변환합니다. 
 	EGizmoMode GizmoModeFromPreviewMode(int32 PreviewMode)
 	{
 		switch (PreviewMode)
@@ -469,6 +554,7 @@ namespace
 		}
 	}
 
+	// EGizmoMode Enum 값을 int32 PreviewMode 값으로 변환합니다.
 	int32 PreviewModeFromGizmoMode(EGizmoMode Mode)
 	{
 		switch (Mode)

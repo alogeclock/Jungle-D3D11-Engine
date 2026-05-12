@@ -11,6 +11,7 @@
 #include "Materials/MaterialManager.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
+#include "Render/Proxy/DirtyFlag.h"
 #include "Serialization/Archive.h"
 #include "Render/Skeletal/SkeletalMeshObject.h"
 #include <Render/Skeletal/SkeletalMeshObjectCPU.h>
@@ -136,6 +137,17 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 	CacheLocalBounds();
 	MarkRenderStateDirty();
 	MarkWorldBoundsDirty();
+}
+
+void USkinnedMeshComponent::SetDisplayBones(bool bDisplay)
+{
+	if (bDisplayBones == bDisplay)
+	{
+		return;
+	}
+
+	bDisplayBones = bDisplay;
+	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
 void USkinnedMeshComponent::UpdateSkinnedMeshObject()
@@ -306,6 +318,7 @@ void USkinnedMeshComponent::Serialize(FArchive& Ar)
 	Ar << MaterialSlots;
 	Ar << bCPUSkinning;
 	Ar << bHideSkin;
+	Ar << bDisplayBones;
 }
 
 void USkinnedMeshComponent::PostDuplicate()
@@ -326,6 +339,7 @@ void USkinnedMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& O
 
 	UPrimitiveComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshPath });
+	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
 
 	for (int32 i = 0; i < (int32)MaterialSlots.size(); ++i)
 	{
@@ -350,6 +364,11 @@ void USkinnedMeshComponent::PostEditProperty(const char* PropertyName)
 		// USkeletalMesh 로더 연결은 후속 단계.
 		CacheLocalBounds();
 		MarkWorldBoundsDirty();
+	}
+
+	if (strcmp(PropertyName, "Display Bones") == 0)
+	{
+		MarkProxyDirty(EDirtyFlag::Mesh);
 	}
 
 	if (strncmp(PropertyName, "Element ", 8) == 0)

@@ -59,7 +59,7 @@ void USkeletalMeshComponent::ContributeVisuals(FScene& Scene) const
 {
 	const USkeletalMesh* Mesh = GetSkeletalMesh();
 	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
-	if (!bShowSkeleton || !MeshAsset || MeshAsset->Skeleton.Bones.empty())
+	if (!ShouldDisplayBones() || !MeshAsset || MeshAsset->Skeleton.Bones.empty())
 	{
 		return;
 	}
@@ -110,17 +110,6 @@ void USkeletalMeshComponent::SetSelectedBoneIndex(int32 BoneIndex)
 }
 
 // 본 로컬 트랜스폼을 갱신하고 스키닝/렌더 프록시를 다시 계산하도록 표시한다.
-void USkeletalMeshComponent::SetShowSkeleton(bool bShow)
-{
-	if (bShowSkeleton == bShow)
-	{
-		return;
-	}
-
-	bShowSkeleton = bShow;
-	MarkProxyDirty(EDirtyFlag::Mesh);
-}
-
 void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform)
 {
 	if (!IsValidBoneIndex(BoneIndex))
@@ -133,7 +122,9 @@ void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTrans
 		InitializeBoneTransformsFromSkeleton();
 	}
 
-	BoneSpaceTransforms[BoneIndex] = NewTransform;
+	FTransform NormalizedTransform = NewTransform;
+	NormalizedTransform.Rotation.Normalize();
+	BoneSpaceTransforms[BoneIndex] = NormalizedTransform;
 	RefreshBoneTransforms();
 	UpdateSkinnedMeshObject();
 	MarkWorldBoundsDirty();
@@ -163,6 +154,45 @@ bool USkeletalMeshComponent::SetBoneComponentSpaceTransform(int32 BoneIndex, con
 }
 
 // 로컬 본 배열에서 컴포넌트 공간 행렬과 스키닝 팔레트를 갱신한다.
+// Convert component-space rotation to local-space without an Euler roundtrip.
+bool USkeletalMeshComponent::SetBoneComponentSpaceRotation(int32 BoneIndex, const FQuat& NewComponentRotation)
+{
+	if (!IsValidBoneIndex(BoneIndex))
+	{
+		return false;
+	}
+
+	if (BoneSpaceTransforms.size() != ComponentSpaceTransforms.size())
+	{
+		InitializeBoneTransformsFromSkeleton();
+	}
+
+	if (BoneIndex >= static_cast<int32>(BoneSpaceTransforms.size()))
+	{
+		return false;
+	}
+
+	const FSkeleton& Skeleton = GetSkeletalMesh()->GetSkeletalMeshAsset()->Skeleton;
+	FQuat NewRotation = NewComponentRotation.GetNormalized();
+	const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
+	if (IsValidBoneIndex(ParentIndex))
+	{
+		FQuat ParentComponentRotation = ParentIndex < static_cast<int32>(ComponentSpaceTransforms.size())
+			? ComponentSpaceTransforms[ParentIndex].Rotation
+			: Skeleton.Bones[ParentIndex].GlobalBindPose.ToQuat();
+		ParentComponentRotation.Normalize();
+
+		// Relative = ParentInverse * Total. Since A * B means B first, ParentInverse must be on the left.
+		NewRotation = (ParentComponentRotation.Inverse() * NewRotation).GetNormalized();
+	}
+
+	FTransform LocalTransform = BoneSpaceTransforms[BoneIndex];
+	LocalTransform.Rotation = NewRotation;
+	SetBoneLocalTransform(BoneIndex, LocalTransform);
+	return true;
+}
+
+// Refresh component-space transforms and skinning palette from local bone transforms.
 void USkeletalMeshComponent::RefreshBoneTransforms()
 {
 	const USkeletalMesh* Mesh = GetSkeletalMesh();
@@ -232,7 +262,6 @@ void USkeletalMeshComponent::Serialize(FArchive& Ar)
 	Ar << bForceRefPose;
 	Ar << bEnableSkeletonUpdate;
 	Ar << RootBoneTranslation;
-	Ar << bShowSkeleton;
 	Ar << bShowBoneNames;
 
 	if (Ar.IsLoading())
@@ -267,7 +296,7 @@ void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& 
 	OutProps.push_back({ "Enable Skeleton Update", EPropertyType::Bool, &bEnableSkeletonUpdate });
 	OutProps.push_back({ "Root Bone", EPropertyType::Vec3, &RootBoneTranslation });
 	OutProps.push_back({ "Selected Bone Index", EPropertyType::Int, &SelectedBoneIndex, -1.0f, 100000.0f, 1.0f });
-	OutProps.push_back({ "Show Skeleton", EPropertyType::Bool, &bShowSkeleton });
+	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
 	OutProps.push_back({ "Show Bone Names", EPropertyType::Bool, &bShowBoneNames });
 
 	for (int32 SlotIndex = 0; SlotIndex < static_cast<int32>(MaterialSlots.size()); ++SlotIndex)
@@ -307,7 +336,7 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	}
 
 	if (std::strcmp(PropertyName, "Selected Bone Index") == 0
-		|| std::strcmp(PropertyName, "Show Skeleton") == 0
+		|| std::strcmp(PropertyName, "Display Bones") == 0
 		|| std::strcmp(PropertyName, "Show Bone Names") == 0)
 	{
 		SetSelectedBoneIndex(SelectedBoneIndex);

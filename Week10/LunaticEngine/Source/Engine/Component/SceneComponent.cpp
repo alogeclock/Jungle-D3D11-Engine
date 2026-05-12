@@ -402,10 +402,10 @@ void USceneComponent::SetWorldRotation(const FRotator& NewWorldRotation)
 {
 	if (ParentComponent != nullptr)
 	{
-		// Relative = World * ParentInverse
+		// Relative = ParentInverse * World. Since A * B means B first, ParentInverse must be on the left.
 		FQuat ParentWorldQuat = ParentComponent->GetWorldMatrix().ToQuat();
 		FQuat NewWorldQuat = NewWorldRotation.ToQuaternion();
-		FQuat NewRelativeQuat = NewWorldQuat * ParentWorldQuat.Inverse();
+		FQuat NewRelativeQuat = (ParentWorldQuat.Inverse() * NewWorldQuat).GetNormalized();
 
 		SetRelativeRotation(NewRelativeQuat);
 	}

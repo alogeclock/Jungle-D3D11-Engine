@@ -27,6 +27,7 @@ public:
 	// Bone Transform
 	void SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform);
 	bool SetBoneComponentSpaceTransform(int32 BoneIndex, const FTransform& NewTransform);
+	bool SetBoneComponentSpaceRotation(int32 BoneIndex, const FQuat& NewComponentRotation);
 	void RefreshBoneTransforms() override;
 
 	// Getter & Setter
@@ -40,12 +41,10 @@ public:
 
 	const FVector& GetRootBoneTranslation() const { return RootBoneTranslation; }
 	int32 GetSelectedBoneIndex() const { return SelectedBoneIndex; }
-	bool ShouldShowSkeleton() const { return bShowSkeleton; }
 	bool ShouldShowBoneNames() const { return bShowBoneNames; }
 
 	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh);
 	void SetSelectedBoneIndex(int32 BoneIndex);
-	void SetShowSkeleton(bool bShow);
 
 private:
 	void MarkSkeletalPoseDirty();
@@ -62,6 +61,5 @@ private:
 	FVector RootBoneTranslation = FVector::ZeroVector;
 
 	int32 SelectedBoneIndex = -1;
-	bool bShowSkeleton = false;
 	bool bShowBoneNames = false;
 };
