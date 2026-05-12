@@ -45,8 +45,8 @@ namespace
 
 	uint64 MakePostProcessSortKey(uint16 UserBits)
 	{
-		return (static_cast<uint64>(ERenderPass::PostProcess) & 0xF) << 60
-			| (static_cast<uint64>(UserBits) & 0xFFF);
+		return (static_cast<uint64>(ERenderPass::PostProcess) & 0xFF) << 56
+			| (static_cast<uint64>(UserBits) & 0xFF);
 	}
 }
 
