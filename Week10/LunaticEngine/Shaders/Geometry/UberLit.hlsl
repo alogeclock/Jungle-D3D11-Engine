@@ -69,14 +69,14 @@ UberVS_Output VS(VS_Input_PNCTT input)
     
     float3x3 M = (float3x3) Model;
 
-    float4 worldPos4 = mul(float4(input.position, 1.0f), Model);
+    float4 worldPos4 = mul(Model, float4(input.position, 1.0f));
     output.worldPos = worldPos4.xyz;
-    output.position = mul(mul(worldPos4, View), Projection);
-    output.normal = normalize(mul(input.normal, (float3x3) NormalMatrix));
+    output.position = mul(Projection, mul(View, worldPos4));
+    output.normal = normalize(mul((float3x3) NormalMatrix, input.normal));
     output.color = input.color * SectionColor;
     output.texcoord = input.texcoord;
 
-    float3 T = normalize(mul(input.tangent.xyz, M));
+    float3 T = normalize(mul(M, input.tangent.xyz));
     T = normalize(T - output.normal * dot(output.normal, T));
     output.tangent = float4(T, input.tangent.w);
 
@@ -86,11 +86,9 @@ UberVS_Output VS(VS_Input_PNCTT input)
     if (HasNormalMap > 0.5f)
     {
         float3 B = normalize(cross(N, T) * input.tangent.w);
-        float3x3 TBN = float3x3(T, B, N);
-
         float3 tangentNormal = NormalTexture.SampleLevel(LinearWrapSampler, input.texcoord, 0).xyz * 2.0f - 1.0f;
 
-        N = normalize(mul(tangentNormal, TBN));
+        N = normalize(tangentNormal.x * T + tangentNormal.y * B + tangentNormal.z * N);
     }
 
     float3 V = normalize(CameraWorldPos - output.worldPos);
@@ -134,10 +132,8 @@ UberPS_Output PS(UberVS_Output input)
         T = normalize(T - N * dot(N, T));
 
         float3 B = normalize(cross(N, T) * input.tangent.w);
-        float3x3 TBN = float3x3(T, B, N);
-
         float3 tangentNormal = NormalTexture.Sample(LinearWrapSampler, input.texcoord).xyz * 2.0f - 1.0f;
-        N = normalize(mul(tangentNormal, TBN));
+        N = normalize(tangentNormal.x * T + tangentNormal.y * B + tangentNormal.z * N);
     }
 #endif
 

@@ -18,7 +18,7 @@ cbuffer ShadowLightBuffer : register(b2)
 };
 
 // =============================================================================
-// Vertex Shader — position-only transform (Model * LightViewProj)
+// Vertex Shader — position-only transform (LightViewProj * Model)
 // =============================================================================
 // InputLayout은 VS_Input_PNCTT(StaticMesh)와 호환.
 // Normal/Color/TexCoord/Tangent는 무시하고 Position만 사용.
@@ -26,8 +26,8 @@ PS_Input_Shadow VS(VS_Input_PNCTT input)
 {
     PS_Input_Shadow output;
 
-    float4 worldPos = mul(float4(input.position, 1.0f), Model);
-    float4 clipPos  = mul(worldPos, LightViewProj);
+    float4 worldPos = mul(Model, float4(input.position, 1.0f));
+    float4 clipPos  = mul(LightViewProj, worldPos);
 
     output.position = clipPos;
     output.depth    = clipPos.z / clipPos.w; // Reversed-Z: near=1, far=0

@@ -24,6 +24,7 @@ public:
 	void CreateCamera();
 	void DestroyCamera();
 	void ResetCamera();
+	void ResetCameraToBounds(const FVector& Center, const FVector& Extent);
 	UCameraComponent* GetCamera() const { return Camera; }
 
 	// Viewport

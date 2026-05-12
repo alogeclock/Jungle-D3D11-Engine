@@ -14,7 +14,7 @@ float3 NDCToViewSpace(float2 ndc, float viewDepth)
     else
     {
         float4 clipPos = float4(ndc.x, ndc.y, 1.0f, 1.0f);
-        float4 viewPos = mul(clipPos, InvProj);
+        float4 viewPos = mul(InvProj, clipPos);
         viewPos /= viewPos.w;
         return viewPos.xyz / viewPos.z * viewDepth;
     }

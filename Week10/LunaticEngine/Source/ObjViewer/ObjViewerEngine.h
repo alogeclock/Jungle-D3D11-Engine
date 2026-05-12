@@ -1,9 +1,10 @@
 ﻿#pragma once
 
 #include "Engine/Runtime/Engine.h"
-#include "Mesh/ObjImporter.h"
+#include "Mesh/Importer/ObjImporter.h"
 #include "ObjViewer/ObjViewerPanel.h"
 #include "ObjViewer/ObjViewerViewportClient.h"
+#include "Materials/MaterialManager.h"
 
 class UObjViewerEngine : public UEngine
 {
@@ -21,8 +22,22 @@ public:
 	// 프리뷰 메시 로드 — 패널에서 선택 시 호출
 	void LoadPreviewMesh(const FString& MeshPath);
 
+	void LoadPreviewFbxStaticMesh(const FString& FbxPath);
+
+
 	// OBJ 파일을 옵션 기반으로 Import 후 프리뷰 로드
 	void ImportObjWithOptions(const FString& ObjPath, const FImportOptions& Options);
+
+	// FBX 파일 요약 정보 로그 출력
+	void LogFbxSceneSummary(const FString& FbxPath);
+
+	void RequestPreviewFrameLog() { bLogNextPreviewFrame = true; }
+	bool ConsumePreviewFrameLog()
+	{
+		const bool bShouldLog = bLogNextPreviewFrame;
+		bLogNextPreviewFrame = false;
+		return bShouldLog;
+	}
 
 	// 접근자
 	FObjViewerViewportClient* GetViewportClient() { return &ViewportClient; }
@@ -31,4 +46,5 @@ public:
 private:
 	FObjViewerPanel Panel;
 	FObjViewerViewportClient ViewportClient;
+	bool bLogNextPreviewFrame = false;
 };

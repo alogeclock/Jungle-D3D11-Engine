@@ -1,17 +1,15 @@
 #include "Component/SkeletalMeshComponent.h"
 
-#include "Materials/Material.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/SkeletalMeshManager.h"
 #include "Object/ObjectFactory.h"
 #include "Render/Proxy/DirtyFlag.h"
-#include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Scene/FScene.h"
 #include "Serialization/Archive.h"
 
-#include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 
@@ -19,380 +17,340 @@ IMPLEMENT_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
 namespace
 {
-	// 스켈레탈 메시에 필요한 최소 머티리얼 슬롯(Sub Mesh) 개수를 반환한다.
-    int32 GetRequiredMaterialSlotCount(const USkeletalMesh* SkeletalMesh)
-    {
-        if (!SkeletalMesh) return 0;
-        const auto& Mats = SkeletalMesh->GetSkeletalMaterials();
-        if (!Mats.empty()) return static_cast<int32>(Mats.size());
+	// 에디터에서 비어 있는 에셋/머티리얼 경로를 None으로 취급한다.
+	bool IsNonePath(const FString& Path)
+	{
+		return Path.empty() || Path == "None";
+	}
 
-        const FSkeletalMesh* MeshAsset = SkeletalMesh->GetSkeletalMeshAsset();
-        const FSkeletalMeshLOD* LOD = MeshAsset ? MeshAsset->GetLOD(0) : nullptr;
-        return (LOD && (!LOD->Sections.empty() || !LOD->Indices.empty())) ? 1 : 0;
-    }
-
-	// FMatrix에서 회전값을 정규화하여 FTransform 구조체로 추출한다.
-    FTransform TransformFromMatrix(const FMatrix& Matrix)
-    {
-        FQuat Rotation = Matrix.ToQuat();
-        Rotation.Normalize();
-        return { Matrix.GetLocation(), Rotation, Matrix.GetScale() };
-    }
+	// FMatrix에서 위치, 회전, 스케일을 FTransform 형태로 복원한다.
+	FTransform TransformFromMatrix(const FMatrix& Matrix)
+	{
+		FQuat Rotation = Matrix.ToQuat();
+		Rotation.Normalize();
+		return FTransform(Matrix.GetLocation(), Rotation, Matrix.GetScale());
+	}
 }
 
-// 렌더링에 사용할 Mesh Buffer를 반환한다.
-FMeshBuffer* USkeletalMeshComponent::GetMeshBuffer() const
-{
-    return SkeletalMeshAsset ? SkeletalMeshAsset->GetMeshBuffer() : nullptr;
-}
+USkeletalMeshComponent::~USkeletalMeshComponent() = default;
 
-// CPU Skinning에 사용될 LOD 0의 원본 Vertex/Index 데이터 뷰를 반환한다.
+// CPU 스키닝과 선택 보조 기능에서 사용할 LOD0 원본 버텍스/인덱스 뷰를 반환한다.
 FMeshDataView USkeletalMeshComponent::GetMeshDataView() const
 {
-    if (SkeletalMeshAsset && SkeletalMeshAsset->GetSkeletalMeshAsset())
-    {
-        if (const FSkeletalMeshLOD* LOD = SkeletalMeshAsset->GetSkeletalMeshAsset()->GetLOD(0))
-        {
-            if (!LOD->Vertices.empty())
-            {
-                FMeshDataView View;
-                View.VertexData = LOD->Vertices.data();
-                View.VertexCount = static_cast<uint32>(LOD->Vertices.size());
-                View.Stride = sizeof(FSkeletalVertex);
-                View.IndexData = LOD->Indices.data();
-                View.IndexCount = static_cast<uint32>(LOD->Indices.size());
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	const FSkeletalMeshLOD* LOD = MeshAsset ? MeshAsset->GetLOD(0) : nullptr;
+	if (!LOD || LOD->Vertices.empty())
+	{
+		return {};
+	}
 
-                return View;
-            }
-        }
-    }
-    return {};
+	FMeshDataView View;
+	View.VertexData = LOD->Vertices.data();
+	View.VertexCount = static_cast<uint32>(LOD->Vertices.size());
+	View.Stride = sizeof(FSkeletalVertex);
+	View.IndexData = LOD->Indices.data();
+	View.IndexCount = static_cast<uint32>(LOD->Indices.size());
+	return View;
 }
 
-FPrimitiveSceneProxy* USkeletalMeshComponent::CreateSceneProxy()
-{
-    return new FSkeletalMeshSceneProxy(this);
-}
-
-// 디버그 렌더링용으로 씬에 뼈대 계층 구조를 선으로 그린다.
+// 에디터 디버그 렌더링용으로 현재 본 계층을 선으로 표시한다.
 void USkeletalMeshComponent::ContributeVisuals(FScene& Scene) const
 {
-    if (!bShowSkeleton || !SkeletalMeshAsset || !SkeletalMeshAsset->GetSkeletalMeshAsset()) return;
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	if (!bShowSkeleton || !MeshAsset || MeshAsset->Skeleton.Bones.empty())
+	{
+		return;
+	}
 
-    const FSkeleton& Skeleton = SkeletalMeshAsset->GetSkeletalMeshAsset()->Skeleton;
-    if (Skeleton.Bones.empty()) return;
+	const FSkeleton& Skeleton = MeshAsset->Skeleton;
+	const FMatrix& ComponentWorld = GetWorldMatrix();
 
-    const FMatrix& ComponentWorld = GetWorldMatrix();
+	// 계산된 현재 포즈가 있으면 그것을 쓰고, 없으면 bind pose로 fallback한다.
+	auto GetBoneMatrix = [&](int32 BoneIndex) -> FMatrix
+	{
+		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(ComponentSpaceTransforms.size()))
+		{
+			return ComponentSpaceTransforms[BoneIndex].ToMatrix();
+		}
+		return Skeleton.Bones[BoneIndex].GlobalBindPose;
+	};
 
-	// 현재 계산된 컴포넌트 트랜스폼 혹은 Global Bind-Pose Transform 행렬을 반환한다.
-    auto GetBoneMatrix = [&](int32 Idx) {
-        return (Idx >= 0 && Idx < ComponentSpaceTransforms.size()) ? ComponentSpaceTransforms[Idx].ToMatrix() : Skeleton.Bones[Idx].GlobalBindPose;
-    };
+	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(Skeleton.Bones.size()); ++BoneIndex)
+	{
+		const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
+		if (!IsValidBoneIndex(ParentIndex))
+		{
+			continue;
+		}
 
-    for (int32 i = 0; i < Skeleton.Bones.size(); ++i)
-    {
-        int32 ParentIdx = Skeleton.Bones[i].ParentIndex;
-        if (!IsValidBoneIndex(ParentIdx)) continue;
-
-        FVector ParentWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(ParentIdx).GetLocation());
-        FVector BoneWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(i).GetLocation());
-
-        bool bSelected = (i == SelectedBoneIndex || ParentIdx == SelectedBoneIndex);
-        Scene.AddForegroundDebugLine(ParentWorld, BoneWorld, bSelected ? FColor::Yellow() : FColor(190, 205, 215, 255));
-    }
+		const FVector ParentWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(ParentIndex).GetLocation());
+		const FVector BoneWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(BoneIndex).GetLocation());
+		const bool bSelected = BoneIndex == SelectedBoneIndex || ParentIndex == SelectedBoneIndex;
+		Scene.AddForegroundDebugLine(ParentWorld, BoneWorld, bSelected ? FColor::Yellow() : FColor(190, 205, 215, 255));
+	}
 }
 
-// 특정 본의 로컬 공간 트랜스폼 포인터를 반환한다.
+// 특정 본의 로컬 공간 트랜스폼을 반환한다.
 const FTransform* USkeletalMeshComponent::GetBoneLocalTransform(int32 BoneIndex) const
 {
-    return IsValidBoneIndex(BoneIndex) ? &BoneSpaceTransforms[BoneIndex] : nullptr;
+	return IsValidBoneIndex(BoneIndex) ? &BoneSpaceTransforms[BoneIndex] : nullptr;
 }
 
-// 특정 본의 컴포넌트 공간 트랜스폼 포인터를 반환한다.
+// 특정 본의 컴포넌트 공간 트랜스폼을 반환한다.
 const FTransform* USkeletalMeshComponent::GetBoneComponentSpaceTransform(int32 BoneIndex) const
 {
-    return IsValidBoneIndex(BoneIndex) ? &ComponentSpaceTransforms[BoneIndex] : nullptr;
+	return IsValidBoneIndex(BoneIndex) ? &ComponentSpaceTransforms[BoneIndex] : nullptr;
 }
 
 void USkeletalMeshComponent::SetSelectedBoneIndex(int32 BoneIndex)
 {
-    SelectedBoneIndex = IsValidBoneIndex(BoneIndex) ? BoneIndex : -1;
+	SelectedBoneIndex = IsValidBoneIndex(BoneIndex) ? BoneIndex : -1;
 }
 
-// 특정 본의 로컬 공간 트랜스폼을 수정하고 하위 트랜스폼을 갱신한다.
+// 본 로컬 트랜스폼을 갱신하고 스키닝/렌더 프록시를 다시 계산하도록 표시한다.
 void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform)
 {
-    if (!IsValidBoneIndex(BoneIndex)) return;
-    if (BoneSpaceTransforms.size() != ComponentSpaceTransforms.size()) InitializeBoneTransformsFromSkeleton();
+	if (!IsValidBoneIndex(BoneIndex))
+	{
+		return;
+	}
 
-    BoneSpaceTransforms[BoneIndex] = NewTransform;
-    RefreshBoneTransforms();
-    MarkProxyDirty(EDirtyFlag::Mesh);
-    MarkWorldBoundsDirty();
+	if (BoneSpaceTransforms.size() != ComponentSpaceTransforms.size())
+	{
+		InitializeBoneTransformsFromSkeleton();
+	}
+
+	BoneSpaceTransforms[BoneIndex] = NewTransform;
+	RefreshBoneTransforms();
+	MarkProxyDirty(EDirtyFlag::Mesh);
+	MarkWorldBoundsDirty();
 }
 
-// 특정 본의 트랜스폼을 컴포넌트 공간 기준으로 설정한다. (부모 본의 역행렬을 곱해 Local Space로 변환)
+// 컴포넌트 공간 트랜스폼을 부모 본 기준 로컬 트랜스폼으로 변환해 적용한다.
 bool USkeletalMeshComponent::SetBoneComponentSpaceTransform(int32 BoneIndex, const FTransform& NewTransform)
 {
-    if (!IsValidBoneIndex(BoneIndex)) return false;
+	if (!IsValidBoneIndex(BoneIndex))
+	{
+		return false;
+	}
 
-    const FSkeleton& Skeleton = SkeletalMeshAsset->GetSkeletalMeshAsset()->Skeleton;
-    FMatrix LocalMatrix = NewTransform.ToMatrix();
-    int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
+	const FSkeleton& Skeleton = GetSkeletalMesh()->GetSkeletalMeshAsset()->Skeleton;
+	FMatrix LocalMatrix = NewTransform.ToMatrix();
+	const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
+	if (IsValidBoneIndex(ParentIndex))
+	{
+		const FMatrix ParentMatrix = ParentIndex < static_cast<int32>(ComponentSpaceTransforms.size())
+			? ComponentSpaceTransforms[ParentIndex].ToMatrix()
+			: Skeleton.Bones[ParentIndex].GlobalBindPose;
+		LocalMatrix = LocalMatrix * ParentMatrix.GetInverse();
+	}
 
-    if (IsValidBoneIndex(ParentIndex))
-    {
-        FMatrix ParentMat = ParentIndex < ComponentSpaceTransforms.size() ? ComponentSpaceTransforms[ParentIndex].ToMatrix() : Skeleton.Bones[ParentIndex].GlobalBindPose;
-        LocalMatrix = LocalMatrix * ParentMat.GetInverse();
-    }
-
-    SetBoneLocalTransform(BoneIndex, TransformFromMatrix(LocalMatrix));
-    return true;
+	SetBoneLocalTransform(BoneIndex, TransformFromMatrix(LocalMatrix));
+	return true;
 }
 
-// 로컬 트랜스폼 배열을 기반으로 컴포넌트 공간 트랜스폼 및 스키닝 행렬을 계산한다.
+// 로컬 본 배열에서 컴포넌트 공간 행렬과 스키닝 팔레트를 갱신한다.
 void USkeletalMeshComponent::RefreshBoneTransforms()
 {
-    const FSkeleton* Skeleton = (SkeletalMeshAsset && SkeletalMeshAsset->GetSkeletalMeshAsset()) ? &SkeletalMeshAsset->GetSkeletalMeshAsset()->Skeleton : nullptr;
-    int32 BoneCount = Skeleton ? static_cast<int32>(Skeleton->Bones.size()) : 0;
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
+	const int32 BoneCount = Skeleton ? static_cast<int32>(Skeleton->Bones.size()) : 0;
+	if (BoneCount == 0)
+	{
+		BoneSpaceTransforms.clear();
+		ComponentSpaceTransforms.clear();
+		ComponentSpaceMatrices.clear();
+		SkinningMatrices.clear();
+		RequiredBones.clear();
+		SelectedBoneIndex = -1;
+		bRequiredBonesUpdated = true;
+		bPoseDirty = false;
+		bSkinningDirty = false;
+		return;
+	}
 
-    if (BoneCount == 0)
-    {
-        ComponentSpaceTransforms.clear();
-        SkinningMatrices.clear();
-        RequiredBones.clear();
-        SelectedBoneIndex = -1;
-        bRequiredBonesUpdated = true;
-        bPoseDirty = bSkinningDirty = false;
-        return;
-    }
+	if (BoneSpaceTransforms.size() != BoneCount)
+	{
+		InitializeBoneTransformsFromSkeleton();
+		return;
+	}
 
-    if (BoneSpaceTransforms.size() != BoneCount)
-    {
-        InitializeBoneTransformsFromSkeleton();
-        return;
-    }
+	ComponentSpaceTransforms.resize(BoneCount);
+	ComponentSpaceMatrices.assign(BoneCount, FMatrix::Identity);
+	SkinningMatrices.assign(BoneCount, FMatrix::Identity);
+	RequiredBones.resize(BoneCount);
 
-    ComponentSpaceTransforms.resize(BoneCount);
-    SkinningMatrices.resize(BoneCount);
-    RequiredBones.resize(BoneCount);
+	for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+	{
+		RequiredBones[BoneIndex] = BoneIndex;
+		FMatrix ComponentMatrix = BoneSpaceTransforms[BoneIndex].ToMatrix();
+		const int32 ParentIndex = Skeleton->Bones[BoneIndex].ParentIndex;
+		if (ParentIndex >= 0 && ParentIndex < BoneIndex)
+		{
+			ComponentMatrix = ComponentMatrix * ComponentSpaceMatrices[ParentIndex];
+		}
 
-    for (int32 i = 0; i < BoneCount; ++i)
-    {
-        RequiredBones[i] = i;
-        FMatrix CompMat = BoneSpaceTransforms[i].ToMatrix();
-        int32 ParentIdx = Skeleton->Bones[i].ParentIndex;
+		ComponentSpaceMatrices[BoneIndex] = ComponentMatrix;
+		ComponentSpaceTransforms[BoneIndex] = TransformFromMatrix(ComponentMatrix);
+		SkinningMatrices[BoneIndex] = Skeleton->Bones[BoneIndex].InverseBindPose * ComponentMatrix;
+	}
 
-        if (ParentIdx >= 0 && ParentIdx < i)
-            CompMat = CompMat * ComponentSpaceTransforms[ParentIdx].ToMatrix();
-
-        ComponentSpaceTransforms[i] = TransformFromMatrix(CompMat);
-        SkinningMatrices[i] = Skeleton->Bones[i].InverseBindPose * CompMat;
-    }
-
-    SelectedBoneIndex = IsValidBoneIndex(SelectedBoneIndex) ? SelectedBoneIndex : -1;
-    bRequiredBonesUpdated = true;
-    bPoseDirty = bSkinningDirty = false;
-    bBoundsDirty = true;
+	SelectedBoneIndex = IsValidBoneIndex(SelectedBoneIndex) ? SelectedBoneIndex : -1;
+	bRequiredBonesUpdated = true;
+	bPoseDirty = false;
+	bSkinningDirty = false;
+	bBoundsDirty = true;
 }
 
-// 부모 클래스의 스킨드 에셋 경로와 현재 컴포넌트의 에셋 경로를 동기화한다.
-void USkeletalMeshComponent::SyncSkinnedAssetPath()
-{
-    if (SkeletalMeshAssetPath.empty()) SkeletalMeshAssetPath = "None";
-    SkinnedMeshAssetPath = SkeletalMeshAssetPath;
-    SkinnedAsset = SkeletalMeshAsset;
-}
-
-// 애니메이션 포즈, 설정 변경 시 스키닝 행렬, AABB, 프록시 갱신을 위해 더티 플래그를 갱신한다.
-void USkeletalMeshComponent::MarkSkeletalPoseDirty()
-{
-    bRequiredBonesUpdated = false;
-    bPoseDirty = bSkinningDirty = bBoundsDirty = true;
-    MarkProxyDirty(EDirtyFlag::Mesh);
-    MarkWorldBoundsDirty();
-}
-
-// 새로운 스켈레탈 메시 에셋을 할당하고 관련된 데이터를 초기화한다.
+// 새 스켈레탈 메시를 설정하고 bind pose 기반 본 배열을 초기화한다.
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
-    SkeletalMeshAsset = InSkeletalMesh;
-    SkeletalMeshAssetPath = SkeletalMeshAsset ? SkeletalMeshAsset->GetAssetPathFileName() : "None";
-
-    SyncSkinnedAssetPath();
-    EnsureMaterialSlotsForEditing();
-    CacheLocalBounds();
-    InitializeBoneTransformsFromSkeleton();
-    MarkRenderStateDirty();
-    MarkWorldBoundsDirty();
+	USkinnedMeshComponent::SetSkeletalMesh(InSkeletalMesh);
+	InitializeBoneTransformsFromSkeleton();
 }
 
-// 메시에 필요한 머티리얼 슬롯 개수를 파악한 뒤, 부족한 경우 Default Material로 동적 할당한다.
-void USkeletalMeshComponent::EnsureMaterialSlotsForEditing()
-{
-    if (SkeletalMeshAssetPath.empty()) SkeletalMeshAssetPath = "None";
-    int32 ReqCount = GetRequiredMaterialSlotCount(SkeletalMeshAsset);
-
-    if (ReqCount <= 0)
-    {
-        OverrideMaterials.clear();
-        MaterialSlots.clear();
-        return;
-    }
-
-    OverrideMaterials.resize(ReqCount, nullptr);
-    MaterialSlots.resize(ReqCount);
-
-    const auto& DefaultMats = SkeletalMeshAsset ? SkeletalMeshAsset->GetSkeletalMaterials() : TArray<FStaticMaterial>{};
-    for (int32 i = 0; i < ReqCount; ++i)
-    {
-        if (!OverrideMaterials[i])
-        {
-            OverrideMaterials[i] = (i < DefaultMats.size()) ? DefaultMats[i].MaterialInterface : FMaterialManager::Get().GetOrCreateMaterial("None");
-        }
-        if (MaterialSlots[i].Path.empty())
-        {
-            MaterialSlots[i].Path = OverrideMaterials[i] ? OverrideMaterials[i]->GetAssetPathFileName() : "None";
-        }
-    }
-}
-
-// 보일러플레이트 직렬화 함수
+// 스켈레탈 메시 컴포넌트 전용 본 포즈와 표시 옵션을 직렬화한다.
 void USkeletalMeshComponent::Serialize(FArchive& Ar)
 {
-    if (Ar.IsSaving()) SyncSkinnedAssetPath();
+	USkinnedMeshComponent::Serialize(Ar);
+	Ar << BoneSpaceTransforms;
+	Ar << bForceRefPose;
+	Ar << bEnableSkeletonUpdate;
+	Ar << RootBoneTranslation;
+	Ar << bShowSkeleton;
+	Ar << bShowBoneNames;
 
-    USkinnedMeshComponent::Serialize(Ar);
-
-    Ar << SkeletalMeshAssetPath;
-    Ar << BoneSpaceTransforms; // 1차 배열 직렬화 구조 그대로 반영
-    Ar << bForceRefPose << bEnableSkeletonUpdate << RootBoneTranslation << bShowSkeleton << bShowBoneNames;
-
-    if (Ar.IsLoading())
-    {
-        if (SkeletalMeshAssetPath.empty()) SkeletalMeshAssetPath = "None";
-        if (SkeletalMeshAssetPath == "None" && !SkinnedMeshAssetPath.empty() && SkinnedMeshAssetPath != "None")
-            SkeletalMeshAssetPath = SkinnedMeshAssetPath;
-
-        SyncSkinnedAssetPath();
-        CacheLocalBounds();
-        BoneSpaceTransforms.empty() ? InitializeBoneTransformsFromSkeleton() : RefreshBoneTransforms();
-    }
+	if (Ar.IsLoading())
+	{
+		if (BoneSpaceTransforms.empty())
+		{
+			InitializeBoneTransformsFromSkeleton();
+		}
+		else
+		{
+			RefreshBoneTransforms();
+		}
+	}
 }
 
-// 보일러플레이트 Duplicate() 이후 처리 함수
 void USkeletalMeshComponent::PostDuplicate()
 {
-    USkinnedMeshComponent::PostDuplicate();
-
-    if (SkeletalMeshAssetPath.empty()) SkeletalMeshAssetPath = "None";
-    if (SkeletalMeshAssetPath == "None" && !SkinnedMeshAssetPath.empty() && SkinnedMeshAssetPath != "None")
-        SkeletalMeshAssetPath = SkinnedMeshAssetPath;
-
-    SyncSkinnedAssetPath();
-    CacheLocalBounds();
-    RefreshBoneTransforms();
+	USkinnedMeshComponent::PostDuplicate();
+	RefreshBoneTransforms();
 }
 
-// 프로퍼티에 노출할 멤버 변수를 결정하는 보일러플레이트 함수
+// 에디터 프로퍼티 패널에 노출할 스켈레탈 메시/본 표시 옵션을 구성한다.
 void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
 {
-    EnsureMaterialSlotsForEditing();
-    UMeshComponent::GetEditableProperties(OutProps);
+	EnsureMaterialSlotsForEditing();
+	UMeshComponent::GetEditableProperties(OutProps);
 
-    OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshAssetPath });
-    OutProps.push_back({ "CPU Skinning", EPropertyType::Bool, &bCPUSkinning });
-    OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
-    OutProps.push_back({ "Hide Skin", EPropertyType::Bool, &bHideSkin });
-    OutProps.push_back({ "Force Ref Pose", EPropertyType::Bool, &bForceRefPose });
-    OutProps.push_back({ "Enable Skeleton Update", EPropertyType::Bool, &bEnableSkeletonUpdate });
-    OutProps.push_back({ "Root Bone", EPropertyType::Vec3, &RootBoneTranslation });
-    OutProps.push_back({ "Selected Bone Index", EPropertyType::Int, &SelectedBoneIndex, -1.0f, 100000.0f, 1.0f });
-    OutProps.push_back({ "Show Skeleton", EPropertyType::Bool, &bShowSkeleton });
-    OutProps.push_back({ "Show Bone Names", EPropertyType::Bool, &bShowBoneNames });
+	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshPath });
+	OutProps.push_back({ "CPU Skinning", EPropertyType::Bool, &bCPUSkinning });
+	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
+	OutProps.push_back({ "Hide Skin", EPropertyType::Bool, &bHideSkin });
+	OutProps.push_back({ "Force Ref Pose", EPropertyType::Bool, &bForceRefPose });
+	OutProps.push_back({ "Enable Skeleton Update", EPropertyType::Bool, &bEnableSkeletonUpdate });
+	OutProps.push_back({ "Root Bone", EPropertyType::Vec3, &RootBoneTranslation });
+	OutProps.push_back({ "Selected Bone Index", EPropertyType::Int, &SelectedBoneIndex, -1.0f, 100000.0f, 1.0f });
+	OutProps.push_back({ "Show Skeleton", EPropertyType::Bool, &bShowSkeleton });
+	OutProps.push_back({ "Show Bone Names", EPropertyType::Bool, &bShowBoneNames });
 
-    for (int32 i = 0; i < MaterialSlots.size(); ++i)
-    {
-	    OutProps.push_back({ "Element " + std::to_string(i), EPropertyType::MaterialSlot, &MaterialSlots[i] });
-    }
+	for (int32 SlotIndex = 0; SlotIndex < static_cast<int32>(MaterialSlots.size()); ++SlotIndex)
+	{
+		OutProps.push_back({ "Element " + std::to_string(SlotIndex), EPropertyType::MaterialSlot, &MaterialSlots[SlotIndex] });
+	}
 }
 
-// 프로퍼티 갱신 후 처리를 결정하는 보일러플레이트 함수
+// 에디터에서 변경된 프로퍼티에 따라 메시, 머티리얼, 본 포즈 상태를 갱신한다.
 void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 {
-    USkinnedMeshComponent::PostEditProperty(PropertyName);
+	UMeshComponent::PostEditProperty(PropertyName);
 
-    if (std::strcmp(PropertyName, "Skeletal Mesh") == 0)
-    {
-        if (SkeletalMeshAssetPath.empty() || SkeletalMeshAssetPath == "None")
-        {
-            SkeletalMeshAsset = SkinnedAsset = nullptr;
-            SkeletalMeshAssetPath = "None";
-            SyncSkinnedAssetPath();
-            EnsureMaterialSlotsForEditing();
-            InitializeBoneTransformsFromSkeleton();
-            MarkRenderStateDirty();
-        }
-        else SetSkeletalMesh(FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshAssetPath));
-    }
-    else if (std::strcmp(PropertyName, "Force Ref Pose") == 0 || std::strcmp(PropertyName, "Enable Skeleton Update") == 0 || std::strcmp(PropertyName, "Root Bone Translation") == 0)
-    {
-        MarkSkeletalPoseDirty();
-    }
-    else if (std::strcmp(PropertyName, "Selected Bone Index") == 0 || std::strcmp(PropertyName, "Show Skeleton") == 0 || std::strcmp(PropertyName, "Show Bone Names") == 0)
-    {
-        SetSelectedBoneIndex(SelectedBoneIndex);
-        MarkProxyDirty(EDirtyFlag::Mesh);
-    }
+	if (std::strcmp(PropertyName, "Skeletal Mesh") == 0)
+	{
+		SetSkeletalMesh(IsNonePath(SkeletalMeshPath) ? nullptr : FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshPath));
+		return;
+	}
+
+	if (std::strncmp(PropertyName, "Element ", 8) == 0)
+	{
+		const int32 SlotIndex = std::atoi(&PropertyName[8]);
+		if (SlotIndex >= 0 && SlotIndex < static_cast<int32>(MaterialSlots.size()))
+		{
+			const FString& MaterialPath = MaterialSlots[SlotIndex].Path;
+			SetMaterial(SlotIndex, IsNonePath(MaterialPath) ? nullptr : FMaterialManager::Get().GetOrCreateMaterial(MaterialPath));
+		}
+		return;
+	}
+
+	if (std::strcmp(PropertyName, "Force Ref Pose") == 0
+		|| std::strcmp(PropertyName, "Enable Skeleton Update") == 0
+		|| std::strcmp(PropertyName, "Root Bone") == 0)
+	{
+		MarkSkeletalPoseDirty();
+		return;
+	}
+
+	if (std::strcmp(PropertyName, "Selected Bone Index") == 0
+		|| std::strcmp(PropertyName, "Show Skeleton") == 0
+		|| std::strcmp(PropertyName, "Show Bone Names") == 0)
+	{
+		SetSelectedBoneIndex(SelectedBoneIndex);
+		MarkProxyDirty(EDirtyFlag::Mesh);
+	}
 }
 
-// LOD 0 스켈레탈 메시에서 Local AABB를 가져와서 컴포넌트에 캐싱한다.
-void USkeletalMeshComponent::CacheLocalBounds()
+// 본 포즈 변경으로 스키닝, 바운드, 렌더 프록시가 다시 계산되어야 함을 표시한다.
+void USkeletalMeshComponent::MarkSkeletalPoseDirty()
 {
-    bHasValidBounds = false;
-    LocalCenter = FVector(0.0f, 0.0f, 0.0f);
-    LocalExtent = FVector(0.5f, 0.5f, 0.5f);
-
-    if (SkeletalMeshAsset && SkeletalMeshAsset->GetSkeletalMeshAsset() && SkeletalMeshAsset->GetSkeletalMeshAsset()->GetLOD(0))
-    {
-        FSkeletalMeshLOD* LOD = SkeletalMeshAsset->GetSkeletalMeshAsset()->GetLOD(0);
-        if (!LOD->bBoundsValid) LOD->CacheBounds();
-
-        LocalCenter = LOD->BoundsCenter;
-        LocalExtent = LOD->BoundsExtent;
-        bHasValidBounds = LOD->bBoundsValid;
-    }
+	bRequiredBonesUpdated = false;
+	bPoseDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
+	MarkProxyDirty(EDirtyFlag::Mesh);
+	MarkWorldBoundsDirty();
 }
 
-// Mesh Asset의 원본 정보(Local Bind Pose)를 기반으로 로컬 본 트랜스폼 배열을 초기화한다.
+// 메시의 bind pose를 기반으로 로컬 본 트랜스폼 배열을 초기화한다.
 void USkeletalMeshComponent::InitializeBoneTransformsFromSkeleton()
 {
-    BoneSpaceTransforms.clear();
-    ComponentSpaceTransforms.clear();
-    SkinningMatrices.clear();
-    RequiredBones.clear();
+	BoneSpaceTransforms.clear();
+	ComponentSpaceTransforms.clear();
+	ComponentSpaceMatrices.clear();
+	SkinningMatrices.clear();
+	RequiredBones.clear();
 
-    const FSkeleton* Skeleton = (SkeletalMeshAsset && SkeletalMeshAsset->GetSkeletalMeshAsset()) ? &SkeletalMeshAsset->GetSkeletalMeshAsset()->Skeleton : nullptr;
-    if (!Skeleton || Skeleton->Bones.empty())
-    {
-        SelectedBoneIndex = -1;
-        bRequiredBonesUpdated = true;
-        bPoseDirty = bSkinningDirty = false;
-        return;
-    }
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
+	if (!Skeleton || Skeleton->Bones.empty())
+	{
+		SelectedBoneIndex = -1;
+		bRequiredBonesUpdated = true;
+		bPoseDirty = false;
+		bSkinningDirty = false;
+		return;
+	}
 
-    BoneSpaceTransforms.resize(Skeleton->Bones.size());
-    for (int32 i = 0; i < Skeleton->Bones.size(); ++i)
-    {
-	    BoneSpaceTransforms[i] = TransformFromMatrix(Skeleton->Bones[i].LocalBindPose);
-    }
+	BoneSpaceTransforms.reserve(Skeleton->Bones.size());
+	for (const FBoneInfo& Bone : Skeleton->Bones)
+	{
+		BoneSpaceTransforms.push_back(TransformFromMatrix(Bone.LocalBindPose));
+	}
 
-    RefreshBoneTransforms();
+	RefreshBoneTransforms();
 }
 
-// 본 인덱스가 할당된 뼈대 배열의 유효 범위 내에 있는지 검사한다.
+// 현재 메시의 스켈레톤 범위 안에 있는 본 인덱스인지 확인한다.
 bool USkeletalMeshComponent::IsValidBoneIndex(int32 BoneIndex) const
 {
-    if (!SkeletalMeshAsset || !SkeletalMeshAsset->GetSkeletalMeshAsset()) return false;
-    return BoneIndex >= 0 && BoneIndex < SkeletalMeshAsset->GetSkeletalMeshAsset()->Skeleton.Bones.size();
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	return MeshAsset
+		&& BoneIndex >= 0
+		&& BoneIndex < static_cast<int32>(MeshAsset->Skeleton.Bones.size());
 }

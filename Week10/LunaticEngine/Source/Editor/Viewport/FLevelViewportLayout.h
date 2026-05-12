@@ -92,6 +92,7 @@ public:
 		PointLight,
 		SpotLight,
 		MapManager,
+		SkeletalMeshTest,   // 더미 SkeletalMesh로 CPU 스키닝 파이프라인 시각 확인용
 	};
 
 	AActor* SpawnPlaceActor(EViewportPlaceActorType Type, const FVector& Location);

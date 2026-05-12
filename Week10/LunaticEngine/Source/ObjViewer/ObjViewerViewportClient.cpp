@@ -7,6 +7,8 @@
 #include "Viewport/Viewport.h"
 #include "Math/MathUtils.h"
 #include "imgui.h"
+#include <algorithm>
+#include <cmath>
 
 FObjViewerViewportClient::FObjViewerViewportClient()
 {
@@ -64,6 +66,24 @@ void FObjViewerViewportClient::ResetCamera()
 	OrbitDistance = 5.0f;
 	OrbitYaw = 0.0f;
 	OrbitPitch = 30.0f;
+}
+
+void FObjViewerViewportClient::ResetCameraToBounds(const FVector& Center, const FVector& Extent)
+{
+	OrbitTarget = Center;
+
+	const float MaxExtent = (std::max)({ Extent.X, Extent.Y, Extent.Z });
+	const float SafeExtent = std::isfinite(MaxExtent) && MaxExtent > 0.01f ? MaxExtent : 1.0f;
+	OrbitDistance = Clamp(SafeExtent * 3.0f, 1.0f, 100000.0f);
+	OrbitYaw = 0.0f;
+	OrbitPitch = 30.0f;
+
+	if (Camera)
+	{
+		FMinimalViewInfo State = Camera->GetCameraState();
+		State.FarZ = (std::max)(1000.0f, OrbitDistance + SafeExtent * 4.0f);
+		Camera->SetCameraState(State);
+	}
 }
 
 void FObjViewerViewportClient::Tick(float DeltaTime)
@@ -169,11 +189,11 @@ void FObjViewerViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, f
 		OrbitPitch = Clamp(OrbitPitch + OrbitAccumulator.Y * 0.25f, -89.0f, 89.0f);
 	}
 
-	// Zoom
+	// Zoom — Unreal 에디터처럼 거리에 비례한 스텝
 	if (std::abs(ZoomAccumulator) > 1e-6f)
 	{
-		OrbitDistance -= ZoomAccumulator * 0.5f;
-		OrbitDistance = Clamp(OrbitDistance, 0.1f, 100.0f);
+		OrbitDistance -= ZoomAccumulator * OrbitDistance * 0.1f;
+		OrbitDistance = Clamp(OrbitDistance, 0.01f, 1.0e6f);
 	}
 
 	// Pan
@@ -187,7 +207,7 @@ void FObjViewerViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, f
 
 	// Update Camera Transform
 	FRotator Rotation(OrbitPitch, OrbitYaw, 0.0f);
-	FVector Forward = Rotation.ToVector();
+	FVector Forward = Rotation.GetForwardVector();
 	FVector NewPos = OrbitTarget - Forward * OrbitDistance;
 
 	Camera->SetWorldLocation(NewPos);

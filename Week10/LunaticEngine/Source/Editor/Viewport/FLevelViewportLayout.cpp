@@ -36,13 +36,93 @@
 #include "WICTextureLoader.h"
 #include "Component/CameraComponent.h"
 #include "Component/GizmoComponent.h"
+#include "Component/SceneComponent.h"
+#include "Component/SkeletalMeshComponent.h"
 #include "GameFramework/StaticMeshActor.h"
+#include "Mesh/SkeletalMesh.h"
+#include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/StaticMeshAsset.h"             // FStaticMesh / FNormalVertex
+#include "Mesh/FbxImporter.h"
 
 #include <algorithm>
 #include <string>
 
 namespace
 {
+// FBX → SkeletalMesh: 정적 임포트 결과를 1-bone 스켈레톤으로 감싸기
+// 실제 본 가중치는 없으니 T-Pose 그대로 정지 상태. 캐릭터 메시 형상 시각 확인용
+// 실패 시 nullptr 반환 (caller가 더미 큐브로 fallback)
+USkeletalMesh* CreateSkeletalMeshFromFBX(const FString& Path)
+{
+	FSkeletalMesh* Asset = new FSkeletalMesh();
+	TArray<FStaticMaterial> Materials;
+
+	if (!FFbxImporter::ImportSkeletalMesh(Path, *Asset, Materials))
+	{
+		delete Asset;
+		return nullptr;
+	}
+
+	USkeletalMesh* Mesh = UObjectManager::Get().CreateObject<USkeletalMesh>();
+	Mesh->SetSkeletalMaterials(std::move(Materials));
+	Mesh->SetSkeletalMeshAsset(Asset);
+	return Mesh;
+}
+
+// 더미 SkeletalMesh: CPU 스키닝 파이프라인 시각 확인용
+// 큐브 8정점 + 본 1개 + 가중치 100%. T-Pose에서 흰 큐브로 보dla
+// AnimInstance 미구현 단계에서는 회전 없이 정지 상태
+USkeletalMesh* CreateTestSkeletalMesh()
+{
+	// Mesh asset (큐브 8정점, 12 삼각형, 모두 본 0번에 100% 가중치)
+	FSkeletalMesh* Asset = new FSkeletalMesh();
+	Asset->PathFileName = "DummyCube";
+	
+	// Skeleton (본 1개)
+	Asset->Skeleton.Bones.resize(1);
+	Asset->Skeleton.Bones[0].Name = "root";
+	Asset->Skeleton.Bones[0].ParentIndex = -1;
+	Asset->Skeleton.Bones[0].LocalBindPose = FMatrix::Identity;
+	Asset->Skeleton.Bones[0].GlobalBindPose = FMatrix::Identity;
+	Asset->Skeleton.Bones[0].InverseBindPose = FMatrix::Identity;
+
+	Asset->LODModels.resize(1);
+	FSkeletalMeshLOD& LOD = Asset->LODModels[0];
+
+	const FVector P[8] = {
+		{-0.5f,-0.5f,-0.5f}, { 0.5f,-0.5f,-0.5f}, { 0.5f, 0.5f,-0.5f}, {-0.5f, 0.5f,-0.5f},
+		{-0.5f,-0.5f, 0.5f}, { 0.5f,-0.5f, 0.5f}, { 0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f},
+	};
+	LOD.Vertices.resize(8);
+	for (int i = 0; i < 8; ++i)
+	{
+		FSkeletalVertex& V = LOD.Vertices[i];
+		V.Pos = P[i];
+		V.Normal = P[i].Normalized();
+		V.Color = FVector4(1, 1, 1, 1);
+		V.UV[0] = FVector2(0, 0);
+		V.Tangent = FVector4(1, 0, 0, 1);
+		for (int k = 0; k < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++k) { V.BoneIndices[k] = 0; V.BoneWeights[k] = 0.0f; }
+		V.BoneWeights[0] = 1.0f;
+	}
+	LOD.Indices = {
+		0,1,2, 0,2,3,   4,6,5, 4,7,6,
+		0,3,7, 0,7,4,   1,5,6, 1,6,2,
+		3,2,6, 3,6,7,   0,4,5, 0,5,1,
+	};
+	LOD.Sections.resize(1);
+	LOD.Sections[0].MaterialIndex = 0;
+	LOD.Sections[0].FirstIndex = 0;
+	LOD.Sections[0].NumTriangles = 12;
+	LOD.Sections[0].MaterialSlotName = "None";
+	LOD.CacheBounds();
+
+	// 3) UObject wrapper
+	USkeletalMesh* Mesh = UObjectManager::Get().CreateObject<USkeletalMesh>();
+	Mesh->SetSkeletalMeshAsset(Asset);
+	return Mesh;
+}
+
 namespace PopupPalette
 {
 	constexpr ImVec4 PopupBg = ImVec4(0.12f, 0.13f, 0.15f, 0.98f);
@@ -280,6 +360,7 @@ void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 	{
 		DrawCompactPopupSectionLabel("COMMON SHOW FLAGS");
 		ImGui::Checkbox("Primitives", &Opts.ShowFlags.bPrimitives);
+		ImGui::Checkbox("Skeletal Mesh", &Opts.ShowFlags.bSkeletalMesh);
 		ImGui::Checkbox("Billboard Text", &Opts.ShowFlags.bBillboardText);
 
 		DrawCompactPopupSectionLabel("ACTOR HELPERS");
@@ -3073,6 +3154,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 		PlaceActorMenuItem("Point Light", EViewportPlaceActorType::PointLight);
 		PlaceActorMenuItem("Spot Light", EViewportPlaceActorType::SpotLight);
 		PlaceActorMenuItem("Map", EViewportPlaceActorType::MapManager);
+		PlaceActorMenuItem("Skeletal Mesh (Test)", EViewportPlaceActorType::SkeletalMeshTest);
 
 		ImGui::EndMenu();
 	}
@@ -3414,9 +3496,42 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 	case EViewportPlaceActorType::MapManager:
 	{
 		AMapManager* Actor = World->SpawnActor<AMapManager>();
-		if (Actor) 
+		if (Actor)
 		{
 			SpawnedActor = Actor;
+		}
+		break;
+	}
+	case EViewportPlaceActorType::SkeletalMeshTest:
+	{
+		AActor* Actor = World->SpawnActor<AActor>();
+		if (Actor)
+		{
+	
+			// SkeletalMeshComponent를 자식으로 attach + RelativeLocation으로 발밑 보정
+			USceneComponent* Root = Actor->AddComponent<USceneComponent>();
+			Actor->SetRootComponent(Root);
+
+			USkeletalMeshComponent* SMC = Actor->AddComponent<USkeletalMeshComponent>();
+			SMC->AttachToComponent(Root);
+
+			USkeletalMesh* Mesh = CreateSkeletalMeshFromFBX("Asset/Content/Model/Fbx/test.fbx");
+			if (!Mesh)
+			{
+				Mesh = CreateTestSkeletalMesh();
+			}
+			SMC->SetSkeletalMesh(Mesh);
+
+			// 메시 BoundsMin.Z를 보정해서 발밑이 Root와 일치하도록.
+			if (Mesh && Mesh->GetSkeletalMeshAsset() && !Mesh->GetSkeletalMeshAsset()->LODModels.empty())
+			{
+				const FSkeletalMeshLOD& LOD = Mesh->GetSkeletalMeshAsset()->LODModels[0];
+				const float FootZ = LOD.BoundsCenter.Z - LOD.BoundsExtent.Z;   // = BoundsMin.Z
+				SMC->SetRelativeLocation(FVector(0.0f, 0.0f, -FootZ));
+			}
+
+			SpawnedActor = Actor;
+			SpawnLocation.Z += 1.0f;
 		}
 		break;
 	}

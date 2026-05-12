@@ -452,12 +452,26 @@
     <ClCompile Include="Source\Engine\Math\Vector.cpp" />
     <ClCompile Include="Source\Engine\Mesh\FbxImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\MeshSimplifier.cpp" />
-    <ClCompile Include="Source\Engine\Mesh\ObjImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\ObjManager.cpp" />
     <ClCompile Include="Source\Engine\Mesh\SkeletalMesh.cpp" />
     <ClCompile Include="Source\Engine\Mesh\SkeletalMeshBake.cpp" />
     <ClCompile Include="Source\Engine\Mesh\SkeletalMeshManager.cpp" />
     <ClCompile Include="Source\Engine\Mesh\StaticMesh.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxAnimationImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxGeometryReader.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxImportValidation.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMaterialImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMorphTargetImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSceneLoader.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSceneQuery.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSectionBuilder.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshClassifier.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshLODBuilder.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkeletonImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkinWeightImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxStaticMeshImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxTransformUtils.cpp" />
     <ClCompile Include="Source\Engine\Object\FName.cpp" />
     <ClCompile Include="Source\Engine\Object\Object.cpp" />
     <ClCompile Include="Source\Engine\Object\UUIDGenerator.cpp" />
@@ -528,6 +542,7 @@
     <ClCompile Include="Source\Engine\Render\Shadow\AtlasQuadTreeBase.cpp" />
     <ClCompile Include="Source\Engine\Render\Shadow\AtlasQuadTreePoint.cpp" />
     <ClCompile Include="Source\Engine\Render\Shadow\ShadowAtlasQuadTree.cpp" />
+    <ClCompile Include="Source\Engine\Render\Skeletal\SkeletalMeshObjectCPU.cpp" />
     <ClCompile Include="Source\Engine\Render\Types\FrameContext.cpp" />
     <ClCompile Include="Source\Engine\Resource\ResourceManager.cpp" />
     <ClCompile Include="Source\Engine\Runtime\Engine.cpp" />
@@ -756,7 +771,6 @@
     <ClInclude Include="Source\Engine\Math\Vector.h" />
     <ClInclude Include="Source\Engine\Mesh\FbxImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h" />
-    <ClInclude Include="Source\Engine\Mesh\ObjImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\ObjManager.h" />
     <ClInclude Include="Source\Engine\Mesh\SkeletalMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\SkeletalMeshAsset.h" />
@@ -764,6 +778,23 @@
     <ClInclude Include="Source\Engine\Mesh\SkeletalMeshManager.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshAsset.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxAnimationImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxGeometryReader.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxImportContext.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxImportValidation.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMaterialImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMorphTargetImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSceneLoader.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSceneQuery.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSectionBuilder.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshClassifier.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkeletalMeshLODBuilder.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkeletonImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkinWeightImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxStaticMeshImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxTransformUtils.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxVertexDeduplicator.h" />
     <ClInclude Include="Source\Engine\Object\FName.h" />
     <ClInclude Include="Source\Engine\Object\Object.h" />
     <ClInclude Include="Source\Engine\Object\ObjectFactory.h" />
@@ -843,6 +874,8 @@
     <ClInclude Include="Source\Engine\Render\Shadow\AtlasQuadTreeBase.h" />
     <ClInclude Include="Source\Engine\Render\Shadow\AtlasQuadTreePoint.h" />
     <ClInclude Include="Source\Engine\Render\Shadow\ShadowAtlasQuadTree.h" />
+    <ClInclude Include="Source\Engine\Render\Skeletal\SkeletalMeshObject.h" />
+    <ClInclude Include="Source\Engine\Render\Skeletal\SkeletalMeshObjectCPU.h" />
     <ClInclude Include="Source\Engine\Render\Types\FogParams.h" />
     <ClInclude Include="Source\Engine\Render\Types\ForwardLightData.h" />
     <ClInclude Include="Source\Engine\Render\Types\FrameContext.h" />
@@ -1326,5 +1359,15 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets'))" />
     <Error Condition="!Exists('packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets'))" />
+  </Target>
+  <Target Name="CopyFbxRuntime" AfterTargets="Build" Condition="'$(Platform)'=='x64'">
+    <PropertyGroup>
+      <_FbxBinFlavor Condition="'$(Configuration)'=='Debug'">debug</_FbxBinFlavor>
+      <_FbxBinFlavor Condition="'$(Configuration)'!='Debug'">release</_FbxBinFlavor>
+    </PropertyGroup>
+    <ItemGroup>
+      <_FbxRuntime Include="$(ProjectDir)ThirdParty\FBXSDK\bin\$(_FbxBinFlavor)\libfbxsdk.dll" Condition="Exists('$(ProjectDir)ThirdParty\FBXSDK\bin\$(_FbxBinFlavor)\libfbxsdk.dll')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_FbxRuntime)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" Condition="'@(_FbxRuntime)'!=''" />
   </Target>
 </Project>

@@ -25,6 +25,7 @@ enum class ELightCullingMode : uint32
 struct FShowFlags
 {
 	bool bPrimitives = true;
+	bool bSkeletalMesh = true;
 	bool bGrid = true;
 	bool bWorldAxis = true;
 	bool bGizmo = true;
@@ -42,6 +43,28 @@ struct FShowFlags
 	bool bVisualize25DCulling = false;
 	bool bShowShadowFrustum = false;
 	bool bGammaCorrection = true;
+	bool bSelectionOutline = true;
+
+
+	static void ApplyViewMode(EViewMode ViewMode, FShowFlags& Flags)
+	{
+		const bool bIsBufferVisualization =
+			ViewMode == EViewMode::SceneDepth ||
+			ViewMode == EViewMode::WorldNormal;
+
+		if (bIsBufferVisualization)
+		{
+			Flags.bSelectionOutline = false;
+			Flags.bFog              = false;
+			Flags.bGizmo            = false;
+			Flags.bDebugDraw        = false;
+			Flags.bGrid             = false;
+			Flags.bWorldAxis        = false;
+			Flags.bBillboardText    = false;
+			Flags.bLightVisualization = false;
+			Flags.bBoundingVolume   = false;
+		}
+	}
 };
 
 struct FGridRenderSettings

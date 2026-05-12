@@ -234,6 +234,10 @@ void FRenderCollector::FilterVisibleProxies(const FFrameContext& Frame, FScene& 
 				continue;
 		}
 
+		// SkeletalMesh ShowFlag 토글
+		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::SkeletalMesh) && !Frame.RenderOptions.ShowFlags.bSkeletalMesh)
+			continue;
+
 		UpdateProxyLOD(Proxy, Frame.LODContext);
 		LOD_STATS_RECORD(Proxy->GetCurrentLOD());
 

@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
-#include "Mesh/ObjImporter.h"
+#include "Mesh/Importer/ObjImporter.h"
+
+struct ImFont;
 
 class FRenderer;
 class FWindowsWindow;
@@ -17,6 +19,8 @@ public:
 	void Update();
 
 private:
+	void RenderTitleBar();
+	void RenderDockSpace();
 	void RenderMeshList();
 	void RenderPreviewViewport(float DeltaTime);
 	void RenderImportPopup();
@@ -25,8 +29,12 @@ private:
 	FWindowsWindow* Window = nullptr;
 	UObjViewerEngine* Engine = nullptr;
 
+	ImFont* TitleBarFont = nullptr;
+	ImFont* WindowControlIconFont = nullptr;
+
 	int32 SelectedMeshIndex = -1;
 	int32 SelectedObjIndex = -1;
 	bool bShowImportPopup = false;
 	FImportOptions PendingImportOptions;
+	char FbxPathInput[512] = "";
 };
