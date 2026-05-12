@@ -22,6 +22,7 @@ namespace
     FSkeletalMesh* GetSkeletalMeshAsset(USkeletalMesh* Mesh);
     const FSkeleton* GetSkeleton(USkeletalMesh* Mesh);
     bool IsValidBoneIndex(const FSkeleton* Skeleton, int32 BoneIndex);
+    int32 FindRootBoneIndex(const FSkeleton* Skeleton);
 
     // Math & Transform
     FQuat NormalizeQuat(const FQuat& Quat);
@@ -124,6 +125,9 @@ void FSkeletalMeshPreviewWidget::OpenSkeletalMesh(USkeletalMesh* InMesh)
     if (FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient())
     {
         Client->SetSkeletalMesh(EditingMesh);
+
+    	const int32 RootBoneIndex = FindRootBoneIndex(GetSkeleton(EditingMesh));
+    	SelectBone(*Client, SelectedBoneIndex, RootBoneIndex);
     }
     bOpen = true;
     bCapturingInput = false;
@@ -606,6 +610,26 @@ namespace
     bool IsValidBoneIndex(const FSkeleton* Skeleton, int32 BoneIndex)
     {
         return Skeleton && BoneIndex >= 0 && BoneIndex < static_cast<int32>(Skeleton->Bones.size());
+    }
+
+    int32 FindRootBoneIndex(const FSkeleton* Skeleton)
+    {
+        if (!Skeleton)
+        {
+            return -1;
+        }
+
+        const int32 BoneCount = static_cast<int32>(Skeleton->Bones.size());
+        for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+        {
+            const int32 ParentIndex = Skeleton->Bones[BoneIndex].ParentIndex;
+            if (!IsValidBoneIndex(Skeleton, ParentIndex))
+            {
+                return BoneIndex;
+            }
+        }
+
+        return -1;
     }
 
     // ────────────────────────────────────────────────────────────

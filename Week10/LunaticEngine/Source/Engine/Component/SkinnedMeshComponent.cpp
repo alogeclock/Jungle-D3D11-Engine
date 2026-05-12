@@ -100,6 +100,11 @@ FPrimitiveSceneProxy* USkinnedMeshComponent::CreateSceneProxy()
 
 void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {
+	SetSkeletalMeshInternal(InMesh, true, true);
+}
+
+void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState)
+{
 	SkeletalMesh = InMesh;
 	MeshObject.reset();
 	BoneSpaceTransforms.clear();
@@ -119,10 +124,13 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 			ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
 			MeshObject = std::make_unique<FSkeletalMeshObjectCPU>(Asset, Device);
 
-			// 첫 프레임 가시화: TickComponent가 처음 굴러가기 전에 MeshBuffer를 만들어둠.
-			// 안 하면 첫 한두 프레임 동안 GetMeshBuffer()->IsValid() == false → DrawCommandBuilder가 스킵.
-			RefreshBoneTransforms();
-			UpdateSkinnedMeshObject();
+			if (bBuildInitialSkinning)
+			{
+				// 첫 프레임 가시화: TickComponent가 처음 굴러가기 전에 MeshBuffer를 만들어둠.
+				// 안 하면 첫 한두 프레임 동안 GetMeshBuffer()->IsValid() == false → DrawCommandBuilder가 스킵.
+				RefreshBoneTransforms();
+				UpdateSkinnedMeshObject();
+			}
 		}
 	}
 	else
@@ -135,6 +143,14 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 	bSkinningDirty = true;
 	bBoundsDirty = true;
 	CacheLocalBounds();
+	if (bUpdateRenderState)
+	{
+		FinalizeSkeletalMeshRenderState();
+	}
+}
+
+void USkinnedMeshComponent::FinalizeSkeletalMeshRenderState()
+{
 	MarkRenderStateDirty();
 	MarkWorldBoundsDirty();
 }
