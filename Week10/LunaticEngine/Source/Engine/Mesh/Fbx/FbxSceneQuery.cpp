@@ -56,6 +56,34 @@ namespace
     {
         return Prefix && Value.rfind(Prefix, 0) == 0;
     }
+
+    static FString StripPrefix(const FString& Value, const char* Prefix)
+    {
+        if (Prefix && Value.rfind(Prefix, 0) == 0)
+        {
+            return Value.substr(std::strlen(Prefix));
+        }
+
+        return FString();
+    }
+
+    static bool IsTransformOnlyNode(FbxNode* Node)
+    {
+        if (!Node)
+        {
+            return false;
+        }
+
+        FbxNodeAttribute* Attribute = Node->GetNodeAttribute();
+
+        if (!Attribute)
+        {
+            return true;
+        }
+
+        const FbxNodeAttribute::EType Type = Attribute->GetAttributeType();
+        return Type == FbxNodeAttribute::eNull || Type == FbxNodeAttribute::eMarker;
+    }
 }
 
 // scene tree에서 mesh attribute를 가진 node를 모두 수집한다.
@@ -341,4 +369,122 @@ bool FFbxSceneQuery::IsCollisionProxyNode(FbxNode* Node)
 int32 FFbxSceneQuery::GetMeshLODIndex(FbxNode* MeshNode)
 {
     return GetSkeletalMeshLODIndex(MeshNode);
+}
+
+bool FFbxSceneQuery::IsSocketName(const FString& Name)
+{
+    return StartsWith(Name, "SOCKET_") || StartsWith(Name, "Socket_") || StartsWith(Name, "socket_");
+}
+
+bool FFbxSceneQuery::IsSocketNode(FbxNode* Node)
+{
+    if (!Node)
+    {
+        return false;
+    }
+
+    if (IsSkeletonNode(Node))
+    {
+        return false;
+    }
+
+    if (FbxNodeAttribute* Attribute = Node->GetNodeAttribute())
+    {
+        if (Attribute->GetAttributeType() == FbxNodeAttribute::eMesh)
+        {
+            return false;
+        }
+    }
+
+    if (!IsTransformOnlyNode(Node))
+    {
+        return false;
+    }
+
+    const FString ImportKind = ReadStringProperty(Node, "ImportKind");
+
+    if (ImportKind == "Socket")
+    {
+        return true;
+    }
+
+    return IsSocketName(Node->GetName());
+}
+
+FString FFbxSceneQuery::GetSocketName(FbxNode* Node)
+{
+    if (!Node)
+    {
+        return FString();
+    }
+
+    const FString ExplicitName = ReadStringProperty(Node, "SocketName");
+
+    if (!ExplicitName.empty())
+    {
+        return ExplicitName;
+    }
+
+    const FString NodeName = Node->GetName();
+
+    FString Stripped = StripPrefix(NodeName, "SOCKET_");
+    if (!Stripped.empty())
+    {
+        return Stripped;
+    }
+
+    Stripped = StripPrefix(NodeName, "Socket_");
+    if (!Stripped.empty())
+    {
+        return Stripped;
+    }
+
+    Stripped = StripPrefix(NodeName, "socket_");
+    if (!Stripped.empty())
+    {
+        return Stripped;
+    }
+
+    return NodeName;
+}
+
+void FFbxSceneQuery::CollectSocketNodes(FbxNode* Node, TArray<FbxNode*>& OutSocketNodes)
+{
+    if (!Node)
+    {
+        return;
+    }
+
+    if (IsSocketNode(Node))
+    {
+        OutSocketNodes.push_back(Node);
+    }
+
+    for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+    {
+        CollectSocketNodes(Node->GetChild(ChildIndex), OutSocketNodes);
+    }
+}
+
+bool FFbxSceneQuery::FindNearestParentBoneIndex(FbxNode* Node, const TMap<FbxNode*, int32>& BoneNodeToIndex, FbxNode*& OutBoneNode, int32& OutBoneIndex)
+{
+    FbxNode* Current = Node ? Node->GetParent() : nullptr;
+
+    while (Current && !IsSceneRootNode(Current))
+    {
+        auto BoneIt = BoneNodeToIndex.find(Current);
+
+        if (BoneIt != BoneNodeToIndex.end())
+        {
+            OutBoneNode  = Current;
+            OutBoneIndex = BoneIt->second;
+            return true;
+        }
+
+        Current = Current->GetParent();
+    }
+
+    OutBoneNode  = nullptr;
+    OutBoneIndex = -1;
+    return false;
 }

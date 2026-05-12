@@ -1,5 +1,6 @@
 #include "Component/SkeletalMeshComponent.h"
 
+#include "Collision/RayUtils.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
@@ -13,6 +14,8 @@
 #include <cstring>
 #include <string>
 #include <algorithm>
+#include <cfloat>
+#include <cmath>
 
 IMPLEMENT_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
@@ -20,11 +23,153 @@ namespace
 {
 	bool IsNonePath(const FString& Path) { return Path.empty() || Path == "None"; }
 
+	constexpr int32 BoneArmatureRingSegments = 12;
+	constexpr float BoneArmatureMinLength = 0.001f;
+	constexpr float BoneArmatureRadiusRatio = 0.08f;
+	constexpr float BoneArmatureMinRadius = 0.001f;
+	constexpr float BoneArmatureMaxRadius = 5.0f;
+	constexpr float BoneArmatureTipBias = 0.05f;
+
+	struct FBoneArmatureFrame
+	{
+		FVector Start = FVector::ZeroVector;
+		FVector End = FVector::ZeroVector;
+		FVector Axis = FVector(1.0f, 0.0f, 0.0f);
+		FVector Right = FVector(0.0f, 1.0f, 0.0f);
+		FVector Up = FVector(0.0f, 0.0f, 1.0f);
+		float Length = 0.0f;
+		float Radius = 1.0f;
+	};
+
 	FTransform TransformFromMatrix(const FMatrix& Matrix)
 	{
 		FQuat Rotation = Matrix.ToQuat();
 		Rotation.Normalize();
 		return FTransform(Matrix.GetLocation(), Rotation, Matrix.GetScale());
+	}
+
+	float ClampFloat(float Value, float MinValue, float MaxValue)
+	{
+		return (std::max)(MinValue, (std::min)(Value, MaxValue));
+	}
+
+	bool MakeBoneArmatureFrame(const FVector& Start, const FVector& End, FBoneArmatureFrame& OutFrame)
+	{
+		const FVector Delta = End - Start;
+		const float Length = Delta.Length();
+		if (Length <= BoneArmatureMinLength)
+		{
+			return false;
+		}
+
+		OutFrame.Start = Start;
+		OutFrame.End = End;
+		OutFrame.Axis = Delta / Length;
+		OutFrame.Length = Length;
+		OutFrame.Radius = ClampFloat(Length * BoneArmatureRadiusRatio, BoneArmatureMinRadius, BoneArmatureMaxRadius);
+
+		const FVector UpHint = std::abs(OutFrame.Axis.Z) < 0.92f ? FVector(0.0f, 0.0f, 1.0f) : FVector(0.0f, 1.0f, 0.0f);
+		OutFrame.Right = UpHint.Cross(OutFrame.Axis).Normalized();
+		OutFrame.Up = OutFrame.Axis.Cross(OutFrame.Right).Normalized();
+		return true;
+	}
+
+	FVector GetArmatureWidePoint(const FBoneArmatureFrame& Frame)
+	{
+		return Frame.Start + Frame.Axis * (Frame.Length * BoneArmatureTipBias);
+	}
+
+	void AddArmatureLine(FScene& Scene, const FVector& Start, const FVector& End, const FColor& Color)
+	{
+		Scene.AddForegroundDebugLine(Start, End, Color);
+	}
+
+	void AddArmatureTipRings(FScene& Scene, const FBoneArmatureFrame& Frame, const FColor& Color)
+	{
+		const float TipRadius = Frame.Radius * 0.2f;
+		for (int32 Segment = 0; Segment < BoneArmatureRingSegments; ++Segment)
+		{
+			const float A0 = (static_cast<float>(Segment) / static_cast<float>(BoneArmatureRingSegments)) * 6.28318530718f;
+			const float A1 = (static_cast<float>(Segment + 1) / static_cast<float>(BoneArmatureRingSegments)) * 6.28318530718f;
+			const float C0 = std::cos(A0);
+			const float S0 = std::sin(A0);
+			const float C1 = std::cos(A1);
+			const float S1 = std::sin(A1);
+
+			AddArmatureLine(Scene, Frame.End + Frame.Right * (C0 * TipRadius) + Frame.Up * (S0 * TipRadius),
+				Frame.End + Frame.Right * (C1 * TipRadius) + Frame.Up * (S1 * TipRadius), Color);
+			AddArmatureLine(Scene, Frame.End + Frame.Axis * (C0 * TipRadius) + Frame.Up * (S0 * TipRadius),
+				Frame.End + Frame.Axis * (C1 * TipRadius) + Frame.Up * (S1 * TipRadius), Color);
+			AddArmatureLine(Scene, Frame.End + Frame.Axis * (C0 * TipRadius) + Frame.Right * (S0 * TipRadius),
+				Frame.End + Frame.Axis * (C1 * TipRadius) + Frame.Right * (S1 * TipRadius), Color);
+		}
+	}
+
+	void AddArmatureBody(FScene& Scene, const FBoneArmatureFrame& Frame, const FColor& Color)
+	{
+		const FVector WidePoint = GetArmatureWidePoint(Frame);
+		const FVector Equator[4] =
+		{
+			WidePoint + Frame.Right * Frame.Radius,
+			WidePoint + Frame.Up * Frame.Radius,
+			WidePoint - Frame.Right * Frame.Radius,
+			WidePoint - Frame.Up * Frame.Radius
+		};
+
+		for (int32 Index = 0; Index < 4; ++Index)
+		{
+			const FVector& Current = Equator[Index];
+			const FVector& Next = Equator[(Index + 1) % 4];
+			AddArmatureLine(Scene, Frame.Start, Current, Color);
+			AddArmatureLine(Scene, Frame.End, Current, Color);
+			AddArmatureLine(Scene, Current, Next, Color);
+		}
+	}
+
+	void AddArmatureBodyTriangles(const FBoneArmatureFrame& Frame, TArray<FVector>& OutVertices)
+	{
+		const FVector WidePoint = GetArmatureWidePoint(Frame);
+		const FVector Equator[4] =
+		{
+			WidePoint + Frame.Right * Frame.Radius,
+			WidePoint + Frame.Up * Frame.Radius,
+			WidePoint - Frame.Right * Frame.Radius,
+			WidePoint - Frame.Up * Frame.Radius
+		};
+
+		for (int32 Index = 0; Index < 4; ++Index)
+		{
+			const FVector& Current = Equator[Index];
+			const FVector& Next = Equator[(Index + 1) % 4];
+			OutVertices.push_back(Frame.Start);
+			OutVertices.push_back(Current);
+			OutVertices.push_back(Next);
+			OutVertices.push_back(Frame.End);
+			OutVertices.push_back(Next);
+			OutVertices.push_back(Current);
+		}
+	}
+
+	bool RaycastArmatureFrame(const FRay& Ray, const FBoneArmatureFrame& Frame, float& OutDistance)
+	{
+		TArray<FVector> Triangles;
+		Triangles.reserve(24);
+		AddArmatureBodyTriangles(Frame, Triangles);
+
+		bool bHit = false;
+		float Closest = FLT_MAX;
+		for (int32 Index = 0; Index + 2 < static_cast<int32>(Triangles.size()); Index += 3)
+		{
+			float T = 0.0f;
+			if (FRayUtils::IntersectTriangle(Ray.Origin, Ray.Direction, Triangles[Index], Triangles[Index + 1], Triangles[Index + 2], T) && T < Closest)
+			{
+				Closest = T;
+				bHit = true;
+			}
+		}
+
+		OutDistance = Closest;
+		return bHit;
 	}
 }
 
@@ -76,7 +221,15 @@ void USkeletalMeshComponent::ContributeVisuals(FScene& Scene) const
 		const FVector ParentWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(ParentIndex).GetLocation());
 		const FVector BoneWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(BoneIndex).GetLocation());
 		const bool bSelected = BoneIndex == SelectedBoneIndex || ParentIndex == SelectedBoneIndex;
-		Scene.AddForegroundDebugLine(ParentWorld, BoneWorld, bSelected ? FColor::Yellow() : FColor(190, 205, 215, 255));
+		FBoneArmatureFrame Frame;
+		if (!MakeBoneArmatureFrame(ParentWorld, BoneWorld, Frame))
+		{
+			continue;
+		}
+
+		const FColor Color = bSelected ? FColor::Orange() : FColor(255, 255, 255, 96);
+		AddArmatureBody(Scene, Frame, Color);
+		AddArmatureTipRings(Scene, Frame, Color);
 	}
 }
 
@@ -93,6 +246,127 @@ const FTransform* USkeletalMeshComponent::GetBoneComponentSpaceTransform(int32 B
 void USkeletalMeshComponent::SetSelectedBoneIndex(int32 BoneIndex)
 {
 	SelectedBoneIndex = IsValidBoneIndex(BoneIndex) ? BoneIndex : -1;
+}
+
+const FSkeletalSocket* USkeletalMeshComponent::FindSocketByName(const FString& SocketName) const
+{
+	const USkeletalMesh* Mesh      = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+
+	if (!MeshAsset)
+	{
+		return nullptr;
+	}
+
+	for (const FSkeletalSocket& Socket : MeshAsset->Sockets)
+	{
+		if (Socket.Name == SocketName)
+		{
+			return &Socket;
+		}
+	}
+
+	return nullptr;
+}
+
+bool USkeletalMeshComponent::GetSocketComponentSpaceMatrix(const FString& SocketName, FMatrix& OutMatrix) const
+{
+	const USkeletalMesh* Mesh      = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+
+	if (!MeshAsset)
+	{
+		return false;
+	}
+
+	const FSkeletalSocket* Socket = FindSocketByName(SocketName);
+	if (!Socket)
+	{
+		return false;
+	}
+
+	const int32 ParentBoneIndex = Socket->ParentBoneIndex;
+
+	if (ParentBoneIndex < 0 || ParentBoneIndex >= static_cast<int32>(MeshAsset->Skeleton.Bones.size()))
+	{
+		return false;
+	}
+
+	FMatrix ParentBoneComponentMatrix = MeshAsset->Skeleton.Bones[ParentBoneIndex].GlobalBindPose;
+	if (ParentBoneIndex < static_cast<int32>(ComponentSpaceMatrices.size()))
+	{
+		ParentBoneComponentMatrix = ComponentSpaceMatrices[ParentBoneIndex];
+	}
+
+	OutMatrix = Socket->LocalMatrixToParentBone * ParentBoneComponentMatrix;
+	return true;
+}
+
+bool USkeletalMeshComponent::GetSocketWorldMatrix(const FString& SocketName, FMatrix& OutMatrix) const
+{
+	FMatrix SocketComponentMatrix;
+
+	if (!GetSocketComponentSpaceMatrix(SocketName, SocketComponentMatrix))
+	{
+		return false;
+	}
+
+	OutMatrix = SocketComponentMatrix * GetWorldMatrix();
+	return true;
+}
+
+int32 USkeletalMeshComponent::PickBoneArmature(const FRay& Ray, float* OutDistance) const
+{
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	if (!MeshAsset || MeshAsset->Skeleton.Bones.empty())
+	{
+		if (OutDistance) *OutDistance = FLT_MAX;
+		return -1;
+	}
+
+	const FSkeleton& Skeleton = MeshAsset->Skeleton;
+	const FMatrix& ComponentWorld = GetWorldMatrix();
+
+	float BestDistance = FLT_MAX;
+	int32 BestBoneIndex = -1;
+
+	auto GetBoneMatrix = [&](int32 BoneIndex) -> FMatrix
+	{
+		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(ComponentSpaceTransforms.size()))
+		{
+			return ComponentSpaceTransforms[BoneIndex].ToMatrix();
+		}
+		return Skeleton.Bones[BoneIndex].GlobalBindPose;
+	};
+
+	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(Skeleton.Bones.size()); ++BoneIndex)
+	{
+		const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
+		if (!IsValidBoneIndex(ParentIndex))
+		{
+			continue;
+		}
+
+		const FVector ParentWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(ParentIndex).GetLocation());
+		const FVector BoneWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(BoneIndex).GetLocation());
+
+		FBoneArmatureFrame Frame;
+		float HitDistance = FLT_MAX;
+		if (MakeBoneArmatureFrame(ParentWorld, BoneWorld, Frame) &&
+			RaycastArmatureFrame(Ray, Frame, HitDistance) &&
+			HitDistance < BestDistance)
+		{
+			BestDistance = HitDistance;
+			BestBoneIndex = BoneIndex;
+		}
+	}
+
+	if (OutDistance)
+	{
+		*OutDistance = BestDistance;
+	}
+	return BestBoneIndex;
 }
 
 void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform)

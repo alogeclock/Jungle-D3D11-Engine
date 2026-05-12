@@ -438,63 +438,65 @@ void FEditorOutlinerWidget::Render(float DeltaTime)
 	const float FooterHeight = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y + 14.0f;
 	ImGui::BeginChild("##OutlinerTableRegion", ImVec2(0.0f, -FooterHeight), false);
 	RenderActorOutliner();
+	
 	ImGui::EndChild();
-
+	
 	ImGui::Separator();
-	FSelectionManager& Selection = EditorEngine->GetSelectionManager();
-	ImGui::Text("%d Actors (%d selected)",
-		EditorEngine->GetWorld() ? static_cast<int32>(EditorEngine->GetWorld()->GetActors().ToArray().size()) : 0,
-		static_cast<int32>(Selection.GetSelectedActors().size()));
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3.0f);
+	
+    FSelectionManager& Selection = EditorEngine->GetSelectionManager();
+    ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "%d Actors (%d selected)", 
+       EditorEngine->GetWorld() ? static_cast<int32>(EditorEngine->GetWorld()->GetActors().ToArray().size()) : 0,
+       static_cast<int32>(Selection.GetSelectedActors().size()));
 
-	const bool bOutlinerFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-	if (bOutlinerFocused && !ImGui::GetIO().WantTextInput && ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A, false))
-	{
-		SelectAllVisibleActors();
-	}
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
 
-	const bool bCanSelectAll = !ValidActorIndices.empty();
-	const float SelectAllWidth = 92.0f;
-	const bool bCanRemove = !Selection.GetSelectedActors().empty();
-	const float RemoveWidth = 136.0f;
-	ImGui::SameLine((std::max)(0.0f, ImGui::GetContentRegionAvail().x - SelectAllWidth - RemoveWidth - ImGui::GetStyle().ItemSpacing.x));
-	if (!bCanSelectAll)
-	{
-		ImGui::BeginDisabled();
-	}
-	PushOutlinerButtonStyle();
-	if (ImGui::Button("Select All", ImVec2(SelectAllWidth, OutlinerFooterButtonHeight)))
-	{
-		SelectAllVisibleActors();
-	}
-	PopOutlinerButtonStyle();
-	if (!bCanSelectAll)
-	{
-		ImGui::EndDisabled();
-	}
+    const bool bOutlinerFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    if (bOutlinerFocused && !ImGui::GetIO().WantTextInput && ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A, false))
+    {
+       SelectAllVisibleActors();
+    }
 
-	ImGui::SameLine();
-	if (!bCanRemove)
-	{
-		ImGui::BeginDisabled();
-	}
-	PushOutlinerButtonStyle();
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.42f, 0.16f, 0.16f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.50f, 0.20f, 0.20f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.34f, 0.12f, 0.12f, 1.0f));
-	if (DrawIconLabelButton("##DeleteSelectedActors", "Editor.Icon.Delete", "Delete Selected", ImVec2(RemoveWidth, OutlinerFooterButtonHeight), IM_COL32(255, 225, 225, 255)))
-	{
-		EditorEngine->BeginTrackedSceneChange();
-		Selection.DeleteSelectedActors();
-		EditorEngine->InvalidateOcclusionResults();
-		EditorEngine->CommitTrackedSceneChange();
-	}
-	ImGui::PopStyleColor(3);
-	PopOutlinerButtonStyle();
-	if (!bCanRemove)
-	{
-		ImGui::EndDisabled();
-	}
-	ImGui::End();
+    const bool bCanSelectAll = !ValidActorIndices.empty();
+    const float SelectAllWidth = 92.0f;
+    const bool bCanRemove = !Selection.GetSelectedActors().empty();
+    const float RemoveWidth = 145.0f; // 아이콘과 글자를 위해 폭을 약간 넓힘
+	
+    // 오른쪽 끝으로 밀어내기 위한 계산
+    float AvailableWidth = ImGui::GetContentRegionAvail().x;
+    float TotalButtonsWidth = SelectAllWidth + RemoveWidth + ImGui::GetStyle().ItemSpacing.x;
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (AvailableWidth - TotalButtonsWidth));
+
+    if (!bCanSelectAll) ImGui::BeginDisabled();
+    PushOutlinerButtonStyle();
+    if (ImGui::Button("Select All", ImVec2(SelectAllWidth, OutlinerFooterButtonHeight)))
+    {
+       SelectAllVisibleActors();
+    }
+    PopOutlinerButtonStyle();
+    if (!bCanSelectAll) ImGui::EndDisabled();
+
+    ImGui::SameLine();
+
+    if (!bCanRemove) ImGui::BeginDisabled();
+    PushOutlinerButtonStyle();
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.42f, 0.16f, 0.16f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.50f, 0.20f, 0.20f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.34f, 0.12f, 0.12f, 1.0f));
+    
+    if (DrawIconLabelButton("##DeleteSelectedActors", "Editor.Icon.Delete", "Delete Selected", ImVec2(RemoveWidth, OutlinerFooterButtonHeight), IM_COL32(255, 225, 225, 255)))
+    {
+       EditorEngine->BeginTrackedSceneChange();
+       Selection.DeleteSelectedActors();
+       EditorEngine->InvalidateOcclusionResults();
+       EditorEngine->CommitTrackedSceneChange();
+    }
+    
+    ImGui::PopStyleColor(3);
+    PopOutlinerButtonStyle();
+    if (!bCanRemove) ImGui::EndDisabled();
+
+    ImGui::End();
 }
 
 void FEditorOutlinerWidget::SelectAllVisibleActors()

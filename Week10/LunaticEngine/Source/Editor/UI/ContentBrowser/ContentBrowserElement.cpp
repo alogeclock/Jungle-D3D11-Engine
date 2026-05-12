@@ -4,8 +4,6 @@
 #include "Editor/UI/AssetEditor/AssetEditorWidget.h"
 #include "Platform/Paths.h"
 #include "Core/Notification.h"
-#include "Materials/MaterialManager.h"
-#include "Mesh/Importer/ObjImporter.h"
 #include "Mesh/FbxImporter.h"
 #include "Mesh/ObjManager.h"
 #include "Mesh/StaticMesh.h"

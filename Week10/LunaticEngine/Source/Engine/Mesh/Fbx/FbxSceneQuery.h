@@ -56,4 +56,14 @@ public:
     static bool IsCollisionProxyNode(FbxNode* Node);
 
     static int32 GetMeshLODIndex(FbxNode* MeshNode);
+
+    static bool IsSocketName(const FString& Name);
+
+    static bool IsSocketNode(FbxNode* Node);
+
+    static FString GetSocketName(FbxNode* Node);
+
+    static void CollectSocketNodes(FbxNode* Node, TArray<FbxNode*>& OutSocketNodes);
+
+    static bool FindNearestParentBoneIndex(FbxNode* Node, const TMap<FbxNode*, int32>& BoneNodeToIndex, FbxNode*& OutBoneNode, int32& OutBoneIndex);
 };

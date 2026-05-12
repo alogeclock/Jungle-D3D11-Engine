@@ -370,20 +370,34 @@ struct FBoneTransformKey
     }
 };
 
-struct FBoneAnimationTrack
+enum class EAnimationCurveInterpolation : uint8
 {
-    int32   BoneIndex = -1;
-    FString BoneName;
+    Constant = 0,
+    Linear,
+    Cubic,
+    Unknown
+};
 
-    TArray<FBoneTransformKey> Keys;
+enum class EAnimationFloatCurveType : uint8
+{
+    Generic = 0,
+    MorphTarget,
+    BoneRaw,
+};
 
-    friend FArchive& operator<<(FArchive& Ar, FBoneAnimationTrack& Track)
-    {
-        Ar << Track.BoneIndex;
-        Ar << Track.BoneName;
-        Ar << Track.Keys;
-        return Ar;
-    }
+enum class EBoneRawCurveTarget : uint8
+{
+    TranslationX = 0,
+    TranslationY,
+    TranslationZ,
+
+    RotationX,
+    RotationY,
+    RotationZ,
+
+    ScaleX,
+    ScaleY,
+    ScaleZ,
 };
 
 struct FFloatCurveKey
@@ -391,23 +405,122 @@ struct FFloatCurveKey
     float TimeSeconds = 0.0f;
     float Value       = 0.0f;
 
+    EAnimationCurveInterpolation Interpolation = EAnimationCurveInterpolation::Unknown;
+
+    float LeftDerivative  = 0.0f;
+    float RightDerivative = 0.0f;
+
+    bool  bLeftTangentWeighted  = false;
+    bool  bRightTangentWeighted = false;
+    float LeftTangentWeight     = 0.0f;
+    float RightTangentWeight    = 0.0f;
+    
     friend FArchive& operator<<(FArchive& Ar, FFloatCurveKey& Key)
     {
         Ar << Key.TimeSeconds;
         Ar << Key.Value;
+
+        uint8 InterpolationValue = static_cast<uint8>(Key.Interpolation);
+        Ar << InterpolationValue;
+
+        if (Ar.IsLoading())
+        {
+            Key.Interpolation = static_cast<EAnimationCurveInterpolation>(InterpolationValue);
+        }
+
+        Ar << Key.LeftDerivative;
+        Ar << Key.RightDerivative;
+
+        Ar << Key.bLeftTangentWeighted;
+        Ar << Key.bRightTangentWeighted;
+        Ar << Key.LeftTangentWeight;
+        Ar << Key.RightTangentWeight;
+        
         return Ar;
     }
 };
 
 struct FAnimationFloatCurve
 {
-    FString                Name;
-    TArray<FFloatCurveKey> Keys;
+    FString Name;
 
+    EAnimationFloatCurveType Type = EAnimationFloatCurveType::Generic;
+
+    FString TargetName;
+
+    FString SourceMeshNodeName;
+    FString SourceBlendShapeName;
+    FString SourceChannelName;
+
+    int32   LayerIndex = 0;
+    FString LayerName;
+    
+    TArray<FFloatCurveKey> Keys;
+    
     friend FArchive& operator<<(FArchive& Ar, FAnimationFloatCurve& Curve)
     {
         Ar << Curve.Name;
+
+        uint8 TypeValue = static_cast<uint8>(Curve.Type);
+        Ar << TypeValue;
+
+        if (Ar.IsLoading())
+        {
+            Curve.Type = static_cast<EAnimationFloatCurveType>(TypeValue);
+        }
+
+        Ar << Curve.TargetName;
+
+        Ar << Curve.SourceMeshNodeName;
+        Ar << Curve.SourceBlendShapeName;
+        Ar << Curve.SourceChannelName;
+
+        Ar << Curve.LayerIndex;
+        Ar << Curve.LayerName;
+        
         Ar << Curve.Keys;
+        
+        return Ar;
+    }
+};
+
+struct FBoneRawFloatCurve
+{
+    EBoneRawCurveTarget  Target = EBoneRawCurveTarget::TranslationX;
+    FAnimationFloatCurve Curve;
+
+    friend FArchive& operator<<(FArchive& Ar, FBoneRawFloatCurve& RawCurve)
+    {
+        uint8 TargetValue = static_cast<uint8>(RawCurve.Target);
+        Ar << TargetValue;
+
+        if (Ar.IsLoading())
+        {
+            RawCurve.Target = static_cast<EBoneRawCurveTarget>(TargetValue);
+        }
+
+        Ar << RawCurve.Curve;
+
+        return Ar;
+    }
+};
+
+struct FBoneAnimationTrack
+{
+    int32   BoneIndex = -1;
+    FString BoneName;
+
+    TArray<FBoneTransformKey> Keys;
+
+    TArray<FBoneRawFloatCurve> RawCurves;
+
+    friend FArchive& operator<<(FArchive& Ar, FBoneAnimationTrack& Track)
+    {
+        Ar << Track.BoneIndex;
+        Ar << Track.BoneName;
+        Ar << Track.Keys;
+        Ar << Track.RawCurves;
+
         return Ar;
     }
 };
@@ -417,7 +530,7 @@ struct FSkeletalAnimationClip
     FString Name;
 
     float DurationSeconds = 0.0f;
-    float SampleRate      = 30.0f;
+    float SampleRate      = 0.0f;
 
     TArray<FBoneAnimationTrack>  Tracks;
     TArray<FAnimationFloatCurve> FloatCurves;
@@ -429,6 +542,7 @@ struct FSkeletalAnimationClip
         Ar << Clip.SampleRate;
         Ar << Clip.Tracks;
         Ar << Clip.FloatCurves;
+
         return Ar;
     }
 };
@@ -483,15 +597,32 @@ struct FMorphTargetLOD
     }
 };
 
+struct FMorphTargetSourceInfo
+{
+    FString SourceMeshNodeName;
+    FString SourceBlendShapeName;
+    FString SourceChannelName;
+
+    friend FArchive& operator<<(FArchive& Ar, FMorphTargetSourceInfo& SourceInfo)
+    {
+        Ar << SourceInfo.SourceMeshNodeName;
+        Ar << SourceInfo.SourceBlendShapeName;
+        Ar << SourceInfo.SourceChannelName;
+        return Ar;
+    }
+};
+
 struct FMorphTarget
 {
     FString Name;
 
-    TArray<FMorphTargetLOD> LODModels;
+    TArray<FMorphTargetSourceInfo> SourceInfos;
+    TArray<FMorphTargetLOD>        LODModels;
 
     friend FArchive& operator<<(FArchive& Ar, FMorphTarget& Morph)
     {
         Ar << Morph.Name;
+        Ar << Morph.SourceInfos;
         Ar << Morph.LODModels;
         return Ar;
     }
@@ -544,6 +675,31 @@ struct FSkeletalStaticChildMesh
 };
 
 // ============================================================================
+// Sockets attached to skeleton bones
+// ============================================================================
+
+struct FSkeletalSocket
+{
+    FString Name;
+    FString SourceNodeName;
+
+    int32   ParentBoneIndex = -1;
+    FString ParentBoneName;
+
+    FMatrix LocalMatrixToParentBone = FMatrix::Identity;
+
+    friend FArchive& operator<<(FArchive& Ar, FSkeletalSocket& Socket)
+    {
+        Ar << Socket.Name;
+        Ar << Socket.SourceNodeName;
+        Ar << Socket.ParentBoneIndex;
+        Ar << Socket.ParentBoneName;
+        SkeletalMeshSerialization::SerializeMatrix(Ar, Socket.LocalMatrixToParentBone);
+        return Ar;
+    }
+};
+
+// ============================================================================
 // Import Summary
 // ============================================================================
 
@@ -573,6 +729,9 @@ enum class ESkeletalImportWarningType : uint8
 
     StaticChildOfBone,
     CollisionProxySkippedFromRenderLOD,
+
+    SocketWithoutParentBone,
+    DuplicateSocketName,
 };
 
 struct FSkeletalImportWarning
@@ -613,9 +772,18 @@ struct FSkeletalImportSummary
     float DeduplicationRatio      = 0.0f;
     int32 TriangleCount           = 0;
 
-    int32 AnimationClipCount      = 0;
-    int32 MorphTargetCount        = 0;
+    int32 AnimationClipCount          = 0;
+    int32 AnimationTrackCount         = 0;
+    int32 AnimationKeyCount           = 0;
+    int32 AnimationFloatCurveCount    = 0;
+    int32 AnimationFloatCurveKeyCount = 0;
+
+    int32 MorphTargetCount      = 0;
+    int32 MorphTargetShapeCount = 0;
+    int32 MorphTargetDeltaCount = 0;
+    
     int32 StaticChildMeshCount    = 0;
+    int32 SocketCount             = 0;
     int32 CollisionProxyMeshCount = 0;
 
     int32 GeneratedNormalCount     = 0;
@@ -649,8 +817,17 @@ struct FSkeletalImportSummary
         Ar << Summary.TriangleCount;
 
         Ar << Summary.AnimationClipCount;
+        Ar << Summary.AnimationTrackCount;
+        Ar << Summary.AnimationKeyCount;
+        Ar << Summary.AnimationFloatCurveCount;
+        Ar << Summary.AnimationFloatCurveKeyCount;
+
         Ar << Summary.MorphTargetCount;
+        Ar << Summary.MorphTargetShapeCount;
+        Ar << Summary.MorphTargetDeltaCount;
+        
         Ar << Summary.StaticChildMeshCount;
+        Ar << Summary.SocketCount;
         Ar << Summary.CollisionProxyMeshCount;
 
         Ar << Summary.GeneratedNormalCount;
@@ -688,6 +865,7 @@ struct FSkeletalMesh
 
     TArray<FSkeletalStaticChildMesh> StaticChildMeshes;
     TArray<FImportedCollisionShape>  CollisionShapes;
+    TArray<FSkeletalSocket>          Sockets;
 
     TArray<FSkeletalAnimationClip> Animations;
     TArray<FMorphTarget>           MorphTargets;
@@ -723,6 +901,7 @@ struct FSkeletalMesh
         Ar << LODModels;
         Ar << StaticChildMeshes;
         Ar << CollisionShapes;
+        Ar << Sockets;
         Ar << Animations;
         Ar << MorphTargets;
         Ar << ImportSummary;
