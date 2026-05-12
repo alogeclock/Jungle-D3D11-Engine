@@ -237,6 +237,12 @@ void FSkeletalMeshPreviewViewportClient::CreatePreviewGizmo()
 
 	PreviewGizmoTarget = PreviewActor->AddComponent<USceneComponent>();
 	PreviewGizmo = PreviewActor->AddComponent<UGizmoComponent>();
+
+	// 기즈모 컴포넌트들이 스켈레탈 메시(Root)의 자식이 되지 않도록 부모 관계를 해제합니다.
+	// 메시의 비균등 축척이 기즈모의 회전 행렬 분해에 영향을 주어 드리프트가 발생하는 것을 방지합니다.
+	PreviewGizmoTarget->SetParent(nullptr);
+	PreviewGizmo->SetParent(nullptr);
+
 	PreviewGizmo->SetTarget(PreviewGizmoTarget);
 	PreviewGizmo->Deactivate();
 	PreviewGizmoBoneIndex = -1;
@@ -288,11 +294,17 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 		return;
 	}
 
-	const FMatrix BoneWorldMatrix = BoneComponentTransform->ToMatrix() * PreviewComponent->GetWorldMatrix();
-	const FTransform BoneWorldTransform = TransformFromMatrix(BoneWorldMatrix);
-	PreviewGizmoTarget->SetWorldLocation(BoneWorldTransform.Location);
-	PreviewGizmoTarget->SetRelativeRotation(BoneWorldTransform.Rotation);
-	PreviewGizmoTarget->SetRelativeScale(BoneWorldTransform.Scale);
+	const FMatrix MeshWorldMatrix = PreviewComponent->GetWorldMatrix();
+	const FQuat MeshWorldRotation = GetStableWorldRotation(PreviewComponent);
+
+	// WorldLocation = MeshWorldMatrix * BoneLocalLocation
+	const FVector BoneWorldLocation = MeshWorldMatrix.TransformPositionWithW(BoneComponentTransform->Location);
+	// WorldRotation = MeshWorldRotation * BoneLocalRotation (Parent * Relative)
+	const FQuat BoneWorldRotation = (MeshWorldRotation * BoneComponentTransform->Rotation).GetNormalized();
+
+	PreviewGizmoTarget->SetWorldLocation(BoneWorldLocation);
+	PreviewGizmoTarget->SetWorldRotation(BoneWorldRotation);
+	PreviewGizmoTarget->SetRelativeScale(BoneComponentTransform->Scale);
 	PreviewGizmo->SetTarget(PreviewGizmoTarget);
 
 	const FEditorSettings& Settings = FEditorSettings::Get();
@@ -350,9 +362,46 @@ void FSkeletalMeshPreviewViewportClient::ApplyPreviewGizmoToSelectedBone()
 		return;
 	}
 
+	if (PreviewGizmo && PreviewGizmo->GetMode() == EGizmoMode::Scale)
+	{
+		const FTransform* BoneLocalTransform = PreviewComponent->GetBoneLocalTransform(PreviewGizmoBoneIndex);
+		if (!BoneLocalTransform)
+		{
+			ResetPreviewGizmoRotationDragState();
+			return;
+		}
+
+		if (!bPreviewGizmoRotationDragInitialized || PreviewGizmoRotationDragBoneIndex != PreviewGizmoBoneIndex)
+		{
+			PreviewGizmoRotationDragBoneIndex = PreviewGizmoBoneIndex;
+			PreviewBoneDragStartLocalScale = BoneLocalTransform->Scale;
+			PreviewGizmoTarget->SetRelativeScale(FVector(1, 1, 1));
+			bPreviewGizmoRotationDragInitialized = true;
+		}
+
+		// 기즈모의 로컬 스케일을 본의 로컬 스케일에 직접 곱하여 적용합니다.
+		// 행렬 분해 과정을 건너뛰어 비균등 부모 스케일 환경에서도 회전값 뒤틀림을 방지합니다.
+		FTransform UpdatedLocalTransform = *BoneLocalTransform;
+		UpdatedLocalTransform.Scale = PreviewBoneDragStartLocalScale * PreviewGizmoTarget->GetRelativeScale();
+		PreviewComponent->SetBoneLocalTransform(PreviewGizmoBoneIndex, UpdatedLocalTransform);
+		return;
+	}
+
 	ResetPreviewGizmoRotationDragState();
+	
 	const FMatrix BoneComponentMatrix = PreviewGizmoTarget->GetWorldMatrix() * PreviewComponent->GetWorldInverseMatrix();
-	PreviewComponent->SetBoneComponentSpaceTransform(PreviewGizmoBoneIndex, TransformFromMatrix(BoneComponentMatrix));
+	const FVector NewLocation = BoneComponentMatrix.GetLocation();
+	const FVector NewScale = BoneComponentMatrix.GetScale();
+
+	// 회전값은 보존하고 위치와 스케일만 업데이트하여 행렬 분해로 인한 회전값 드리프트를 방지합니다.
+	const FTransform* CurrentTransform = PreviewComponent->GetBoneComponentSpaceTransform(PreviewGizmoBoneIndex);
+	if (CurrentTransform)
+	{
+		FTransform UpdatedTransform = *CurrentTransform;
+		UpdatedTransform.Location = NewLocation;
+		UpdatedTransform.Scale = NewScale;
+		PreviewComponent->SetBoneComponentSpaceTransform(PreviewGizmoBoneIndex, UpdatedTransform);
+	}
 }
 
 void FSkeletalMeshPreviewViewportClient::ResetPreviewGizmoRotationDragState()

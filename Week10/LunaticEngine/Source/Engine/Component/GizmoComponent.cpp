@@ -781,12 +781,13 @@ namespace
 			return FQuat::Identity;
 		}
 
-		FQuat WorldQuat = Component->GetRelativeQuat();
+		FQuat RelativeQuat = Component->GetRelativeQuat();
 		if (const USceneComponent* Parent = Component->GetParent())
 		{
-			WorldQuat = WorldQuat * GetStableWorldRotationQuat(Parent);
+			// World = ParentWorld * Relative. Since A * B means B first, ParentWorld must be on the left.
+			return (GetStableWorldRotationQuat(Parent) * RelativeQuat).GetNormalized();
 		}
-		return WorldQuat.GetNormalized();
+		return RelativeQuat.GetNormalized();
 	}
 
 	bool IsSameRotation(const FQuat& A, const FQuat& B)
@@ -856,10 +857,7 @@ void UGizmoComponent::UpdateGizmoTransform()
 		SetWorldLocation(DesiredLocation);
 	}
 
-	if (!IsSameRotation(GetRelativeQuat(), DesiredRotation))
-	{
-		SetRelativeRotation(DesiredRotation);
-	}
+	SetWorldRotation(DesiredRotation);
 
 	if (MeshData != DesiredMeshData && DesiredMeshData)
 	{

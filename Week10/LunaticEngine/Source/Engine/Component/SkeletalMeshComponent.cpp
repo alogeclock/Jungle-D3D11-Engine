@@ -227,16 +227,37 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 	for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
 	{
 		RequiredBones[BoneIndex] = BoneIndex;
-		FMatrix ComponentMatrix = BoneSpaceTransforms[BoneIndex].ToMatrix();
+		
 		const int32 ParentIndex = Skeleton->Bones[BoneIndex].ParentIndex;
+		const FTransform& LocalTransform = BoneSpaceTransforms[BoneIndex];
+
 		if (ParentIndex >= 0 && ParentIndex < BoneIndex)
 		{
-			ComponentMatrix = ComponentMatrix * ComponentSpaceMatrices[ParentIndex];
+			const FTransform& ParentTransform = ComponentSpaceTransforms[ParentIndex];
+
+			// Component = Parent * Local (FTransform Composition)
+			FTransform& OutTransform = ComponentSpaceTransforms[BoneIndex];
+			
+			// Rotation: ParentWorld * Local
+			OutTransform.Rotation = (ParentTransform.Rotation * LocalTransform.Rotation).GetNormalized();
+			
+			// Location: ParentWorldLoc + ParentWorldRot * (ParentWorldScale * LocalLoc)
+			FVector ScaledLocalLoc = ParentTransform.Scale * LocalTransform.Location;
+			OutTransform.Location = ParentTransform.Location + ParentTransform.Rotation.RotateVector(ScaledLocalLoc);
+			
+			// Scale: ParentWorldScale * LocalScale
+			OutTransform.Scale = ParentTransform.Scale * LocalTransform.Scale;
+
+			// Skinning Matrix (Can be skewed)
+			ComponentSpaceMatrices[BoneIndex] = LocalTransform.ToMatrix() * ComponentSpaceMatrices[ParentIndex];
+		}
+		else
+		{
+			ComponentSpaceTransforms[BoneIndex] = LocalTransform;
+			ComponentSpaceMatrices[BoneIndex] = LocalTransform.ToMatrix();
 		}
 
-		ComponentSpaceMatrices[BoneIndex] = ComponentMatrix;
-		ComponentSpaceTransforms[BoneIndex] = TransformFromMatrix(ComponentMatrix);
-		SkinningMatrices[BoneIndex] = Skeleton->Bones[BoneIndex].InverseBindPose * ComponentMatrix;
+		SkinningMatrices[BoneIndex] = Skeleton->Bones[BoneIndex].InverseBindPose * ComponentSpaceMatrices[BoneIndex];
 	}
 
 	SelectedBoneIndex = IsValidBoneIndex(SelectedBoneIndex) ? SelectedBoneIndex : -1;

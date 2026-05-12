@@ -54,5 +54,6 @@ private:
 	int32 PreviewGizmoRotationDragBoneIndex = -1;
 	FQuat PreviewGizmoDragStartRotation = FQuat::Identity;
 	FQuat PreviewBoneDragStartComponentRotation = FQuat::Identity;
+	FVector PreviewBoneDragStartLocalScale = FVector(1.0f, 1.0f, 1.0f);
 	bool bPreviewGizmoRotationDragInitialized = false;
 };

@@ -400,18 +400,22 @@ FVector USceneComponent::GetWorldLocation() const
 
 void USceneComponent::SetWorldRotation(const FRotator& NewWorldRotation)
 {
+	SetWorldRotation(NewWorldRotation.ToQuaternion());
+}
+
+void USceneComponent::SetWorldRotation(const FQuat& NewWorldQuat)
+{
 	if (ParentComponent != nullptr)
 	{
 		// Relative = ParentInverse * World. Since A * B means B first, ParentInverse must be on the left.
 		FQuat ParentWorldQuat = ParentComponent->GetWorldMatrix().ToQuat();
-		FQuat NewWorldQuat = NewWorldRotation.ToQuaternion();
 		FQuat NewRelativeQuat = (ParentWorldQuat.Inverse() * NewWorldQuat).GetNormalized();
 
 		SetRelativeRotation(NewRelativeQuat);
 	}
 	else
 	{
-		SetRelativeRotation(NewWorldRotation);
+		SetRelativeRotation(NewWorldQuat);
 	}
 }
 
