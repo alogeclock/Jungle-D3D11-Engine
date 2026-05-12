@@ -15,6 +15,11 @@ public:
 	FMeshDataView GetMeshDataView() const override;
 	void ContributeVisuals(FScene& Scene) const override;
 
+	void Serialize(FArchive& Ar) override;
+	void PostDuplicate() override;
+	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void PostEditProperty(const char* PropertyName) override;
+
 	// Asset
 	USkeletalMesh* GetSkeletalMeshAsset() const { return GetSkeletalMesh(); }
 	const FString& GetSkeletalMeshAssetPath() const { return GetSkeletalMeshPath(); }
@@ -40,11 +45,7 @@ public:
 
 	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh);
 	void SetSelectedBoneIndex(int32 BoneIndex);
-
-	void Serialize(FArchive& Ar) override;
-	void PostDuplicate() override;
-	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
-	void PostEditProperty(const char* PropertyName) override;
+	void SetShowSkeleton(bool bShow);
 
 private:
 	void MarkSkeletalPoseDirty();
@@ -61,6 +62,6 @@ private:
 	FVector RootBoneTranslation = FVector::ZeroVector;
 
 	int32 SelectedBoneIndex = -1;
-	bool bShowSkeleton = true;
+	bool bShowSkeleton = false;
 	bool bShowBoneNames = false;
 };

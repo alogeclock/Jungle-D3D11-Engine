@@ -110,6 +110,17 @@ void USkeletalMeshComponent::SetSelectedBoneIndex(int32 BoneIndex)
 }
 
 // 본 로컬 트랜스폼을 갱신하고 스키닝/렌더 프록시를 다시 계산하도록 표시한다.
+void USkeletalMeshComponent::SetShowSkeleton(bool bShow)
+{
+	if (bShowSkeleton == bShow)
+	{
+		return;
+	}
+
+	bShowSkeleton = bShow;
+	MarkProxyDirty(EDirtyFlag::Mesh);
+}
+
 void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform)
 {
 	if (!IsValidBoneIndex(BoneIndex))

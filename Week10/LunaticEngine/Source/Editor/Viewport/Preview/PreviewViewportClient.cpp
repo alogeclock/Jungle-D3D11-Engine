@@ -5,6 +5,7 @@
 #include "Engine/Input/InputModifier.h"
 #include "Engine/Input/InputRouter.h"
 #include "Engine/Input/InputSystem.h"
+#include "Input/inputTrigger.h"
 #include "Component/CameraComponent.h"
 #include "Math/MathUtils.h"
 #include "Object/Object.h"
@@ -47,6 +48,7 @@ FPreviewViewportClient::~FPreviewViewportClient()
 	delete ActionPreviewPan;
 	delete ActionPreviewZoom;
 	delete ActionPreviewOrbit;
+	delete ActionPreviewToggleGizmo;
 }
 
 // 기존의 EditorRenderPipeline 중앙 제어식 BuildFrame 방식에서 개별 ViewportClient가 FrameContext를 다형성으로 채우도록 개선
@@ -214,6 +216,11 @@ void FPreviewViewportClient::SetPreviewCameraSpeed(float InSpeed)
 	PreviewCameraSpeed = Clamp(InSpeed, 0.1f, 1000.0f);
 }
 
+void FPreviewViewportClient::TogglePreviewGizmoMode()
+{
+	SetPreviewGizmoMode((GetPreviewGizmoMode() + 1) % 3);
+}
+
 // 프리뷰 카메라용 입력 액션, 매핑 컨텍스트, 콜백 바인딩을 설정한다.
 void FPreviewViewportClient::SetupInput()
 {
@@ -222,6 +229,7 @@ void FPreviewViewportClient::SetupInput()
 	ActionPreviewPan = new FInputAction("IA_PreviewPan", EInputActionValueType::Axis2D);
 	ActionPreviewZoom = new FInputAction("IA_PreviewZoom", EInputActionValueType::Float);
 	ActionPreviewOrbit = new FInputAction("IA_PreviewOrbit", EInputActionValueType::Axis2D);
+	ActionPreviewToggleGizmo = new FInputAction("IA_PreviewToggleGizmo", EInputActionValueType::Bool);
 
 	PreviewMappingContext = new FInputMappingContext();
 	PreviewMappingContext->ContextName = "IMC_EditorPreview";
@@ -250,6 +258,7 @@ void FPreviewViewportClient::SetupInput()
 
 	PreviewMappingContext->AddMapping(ActionPreviewOrbit, static_cast<int32>(EInputKey::MouseX));
 	PreviewMappingContext->AddMapping(ActionPreviewOrbit, static_cast<int32>(EInputKey::MouseY)).Modifiers.push_back(new FModifierSwizzleAxis(FModifierSwizzleAxis::ESwizzleOrder::YXZ));
+	PreviewMappingContext->AddMapping(ActionPreviewToggleGizmo, VK_SPACE).Triggers.push_back(new FTriggerPressed());
 
 	EnhancedInputManager.AddMappingContext(PreviewMappingContext, 0);
 	EnhancedInputManager.BindAction(ActionPreviewMove, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnMove(V, Snapshot); });
@@ -257,6 +266,7 @@ void FPreviewViewportClient::SetupInput()
 	EnhancedInputManager.BindAction(ActionPreviewPan, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnPan(V, Snapshot); });
 	EnhancedInputManager.BindAction(ActionPreviewZoom, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnZoom(V, Snapshot); });
 	EnhancedInputManager.BindAction(ActionPreviewOrbit, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnOrbit(V, Snapshot); });
+	EnhancedInputManager.BindAction(ActionPreviewToggleGizmo, ETriggerEvent::Triggered, [this](const FInputActionValue& V, const FInputSystemSnapshot& Snapshot) { OnToggleGizmoMode(V, Snapshot); });
 }
 
 // 라우팅된 입력 스냅샷을 기반으로 카메라 변화량을 누적하고, 이번 프레임의 이동을 적용합니다.
@@ -445,6 +455,17 @@ void FPreviewViewportClient::OnOrbit(const FInputActionValue& Value, const FInpu
 }
 
 // 외부에서 카메라가 강제로 이동된 경우, 보간 목표 지점을 동기화합니다.
+void FPreviewViewportClient::OnToggleGizmoMode(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot)
+{
+	(void)Value;
+	if (Snapshot.IsGuiUsingKeyboard())
+	{
+		return;
+	}
+
+	TogglePreviewGizmoMode();
+}
+
 void FPreviewViewportClient::SyncCamera()
 {
 	if (!Camera)

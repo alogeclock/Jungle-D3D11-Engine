@@ -202,6 +202,7 @@ void FSkeletalMeshPreviewViewportClient::CreatePreviewComponent()
 	}
 
 	PreviewComponent = PreviewActor->AddComponent<USkeletalMeshComponent>();
+	PreviewComponent->SetShowSkeleton(true);
 	PreviewActor->SetRootComponent(PreviewComponent);
 	CreatePreviewGizmo();
 }

@@ -44,6 +44,7 @@ public:
 	void SetPreviewCameraSpeed(float InSpeed);
 	virtual void SetPreviewGizmoMode(int32 InMode) { (void)InMode; }
 	virtual int32 GetPreviewGizmoMode() const { return 0; }
+	virtual void TogglePreviewGizmoMode();
 
 protected:
 	virtual void OnCameraReset() {}
@@ -57,6 +58,7 @@ private:
 	void OnPan(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 	void OnZoom(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 	void OnOrbit(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
+	void OnToggleGizmoMode(const FInputActionValue& Value, const FInputSystemSnapshot& Snapshot);
 
 	void SyncCamera();
 	void UpdateCameraPosition(float DeltaTime);
@@ -77,6 +79,7 @@ private:
 	FInputAction* ActionPreviewPan = nullptr;
 	FInputAction* ActionPreviewZoom = nullptr;
 	FInputAction* ActionPreviewOrbit = nullptr;
+	FInputAction* ActionPreviewToggleGizmo = nullptr;
 
 	FVector MoveDelta = FVector::ZeroVector;
 	FVector RotateDelta = FVector::ZeroVector;

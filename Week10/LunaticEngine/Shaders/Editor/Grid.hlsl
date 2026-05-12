@@ -70,7 +70,7 @@ VSOutput VS(uint VertexID : SV_VertexID)
 		output.WorldPos = worldPos;
 		output.LocalPos = localPos;
 		output.DrawKind = 0.0f;
-		output.Position = mul(mul(float4(worldPos, 1.0f), View), Projection);
+		output.Position = mul(Projection, mul(View, float4(worldPos, 1.0f)));
 		return output;
 	}
 	
@@ -99,7 +99,7 @@ VSOutput VS(uint VertexID : SV_VertexID)
 	output.WorldPos = worldPos;
 	output.LocalPos = float2(axisCoord, axisT);
 	output.DrawKind = 1.0f;
-	output.Position = mul(mul(float4(worldPos, 1.0f), View), Projection);
+	output.Position = mul(Projection, mul(View, float4(worldPos, 1.0f)));
 	return output;
 }
 

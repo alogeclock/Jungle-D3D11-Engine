@@ -93,6 +93,17 @@ UTexture2D* FMaterialManager::GetMaterialPreviewTexture(const FString& MaterialP
 	return GetMaterialPreviewTexture(GetOrCreateMaterial(MaterialPath));
 }
 
+void FMaterialManager::RebuildCachedSRVs()
+{
+	for (auto& Pair : MaterialCache)
+	{
+		if (Pair.second)
+		{
+			Pair.second->RebuildCachedSRVs();
+		}
+	}
+}
+
 UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
 {
 	std::filesystem::path Path(FPaths::ToWide(MatFilePath));

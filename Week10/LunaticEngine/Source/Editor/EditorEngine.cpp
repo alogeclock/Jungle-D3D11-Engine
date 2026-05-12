@@ -287,6 +287,7 @@ void UEditorEngine::Tick(float DeltaTime)
 	if (UTexture2D::HasPendingTextureRefresh())
 	{
 		UTexture2D::RefreshChangedTextures(Renderer.GetFD3DDevice().GetDevice());
+		FMaterialManager::Get().RebuildCachedSRVs();
 	}
 	FNotificationManager::Get().Tick(DeltaTime);
 	FAudioManager::Get().Update();
