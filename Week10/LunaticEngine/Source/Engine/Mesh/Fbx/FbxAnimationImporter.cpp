@@ -1,11 +1,138 @@
 #include "Mesh/Fbx/FbxAnimationImporter.h"
 
+#include "Mesh/Fbx/FbxSceneQuery.h"
 #include "Mesh/Fbx/FbxTransformUtils.h"
 
 #include <fbxsdk.h>
 
 #include <cmath>
 #include <utility>
+
+namespace
+{
+    static float GetSceneSampleRate(FbxScene* Scene)
+    {
+        if (!Scene)
+        {
+            return 30.0f;
+        }
+
+        const FbxTime::EMode TimeMode  = Scene->GetGlobalSettings().GetTimeMode();
+        const double         FrameRate = FbxTime::GetFrameRate(TimeMode);
+
+        if (FrameRate > 1.0)
+        {
+            return static_cast<float>(FrameRate);
+        }
+
+        return 30.0f;
+    }
+
+    static int32 FindOrAddFloatCurve(FSkeletalAnimationClip& Clip, const FString& CurveName)
+    {
+        for (int32 CurveIndex = 0; CurveIndex < static_cast<int32>(Clip.FloatCurves.size()); ++CurveIndex)
+        {
+            if (Clip.FloatCurves[CurveIndex].Name == CurveName)
+            {
+                return CurveIndex;
+            }
+        }
+
+        FAnimationFloatCurve NewCurve;
+        NewCurve.Name = CurveName;
+        Clip.FloatCurves.push_back(std::move(NewCurve));
+        return static_cast<int32>(Clip.FloatCurves.size()) - 1;
+    }
+
+    static void ImportBlendShapeCurvesForLayer(FbxScene* Scene, FbxAnimLayer* AnimLayer, double StartSeconds, double EndSeconds, FSkeletalAnimationClip& Clip)
+    {
+        if (!Scene || !AnimLayer || !Scene->GetRootNode())
+        {
+            return;
+        }
+
+        TArray<FbxNode*> MeshNodes;
+        FFbxSceneQuery::CollectMeshNodes(Scene->GetRootNode(), MeshNodes);
+
+        for (FbxNode* MeshNode : MeshNodes)
+        {
+            FbxMesh* Mesh = MeshNode ? MeshNode->GetMesh() : nullptr;
+            if (!Mesh)
+            {
+                continue;
+            }
+
+            const int32 BlendShapeCount = Mesh->GetDeformerCount(FbxDeformer::eBlendShape);
+
+            for (int32 BlendShapeIndex = 0; BlendShapeIndex < BlendShapeCount; ++BlendShapeIndex)
+            {
+                FbxBlendShape* BlendShape = static_cast<FbxBlendShape*>(Mesh->GetDeformer(BlendShapeIndex, FbxDeformer::eBlendShape));
+                if (!BlendShape)
+                {
+                    continue;
+                }
+
+                const int32 ChannelCount = BlendShape->GetBlendShapeChannelCount();
+
+                for (int32 ChannelIndex = 0; ChannelIndex < ChannelCount; ++ChannelIndex)
+                {
+                    FbxBlendShapeChannel* Channel = BlendShape->GetBlendShapeChannel(ChannelIndex);
+                    if (!Channel)
+                    {
+                        continue;
+                    }
+
+                    FbxAnimCurve* Curve = Channel->DeformPercent.GetCurve(AnimLayer);
+                    if (!Curve || Curve->KeyGetCount() <= 0)
+                    {
+                        continue;
+                    }
+
+                    FString CurveName = Channel->GetName();
+                    if (CurveName.empty())
+                    {
+                        CurveName = MeshNode->GetName();
+                    }
+
+                    const int32           CurveIndex = FindOrAddFloatCurve(Clip, CurveName);
+                    FAnimationFloatCurve& OutCurve   = Clip.FloatCurves[CurveIndex];
+
+                    const int32 KeyCount = Curve->KeyGetCount();
+                    for (int32 KeyIndex = 0; KeyIndex < KeyCount; ++KeyIndex)
+                    {
+                        const double AbsoluteSeconds = Curve->KeyGetTime(KeyIndex).GetSecondDouble();
+
+                        if (AbsoluteSeconds < StartSeconds - 1.0e-6 || AbsoluteSeconds > EndSeconds + 1.0e-6)
+                        {
+                            continue;
+                        }
+
+                        FFloatCurveKey Key;
+                        Key.TimeSeconds = static_cast<float>(AbsoluteSeconds - StartSeconds);
+                        Key.Value       = static_cast<float>(Curve->KeyGetValue(KeyIndex));
+
+                        OutCurve.Keys.push_back(Key);
+                    }
+                }
+            }
+        }
+    }
+
+    static void ImportBlendShapeCurves(FbxScene* Scene, FbxAnimStack* AnimStack, double StartSeconds, double EndSeconds, FSkeletalAnimationClip& Clip)
+    {
+        if (!Scene || !AnimStack)
+        {
+            return;
+        }
+
+        const int32 LayerCount = AnimStack->GetMemberCount<FbxAnimLayer>();
+        for (int32 LayerIndex = 0; LayerIndex < LayerCount; ++LayerIndex)
+        {
+            FbxAnimLayer* AnimLayer = AnimStack->GetMember<FbxAnimLayer>(LayerIndex);
+            ImportBlendShapeCurvesForLayer(Scene, AnimLayer, StartSeconds, EndSeconds, Clip);
+        }
+    }
+}
 
 void FFbxAnimationImporter::ImportAnimations(
     FbxScene*                       Scene,
@@ -28,7 +155,7 @@ void FFbxAnimationImporter::ImportAnimations(
         return;
     }
 
-    const float SampleRate = 30.0f;
+    const float SampleRate = GetSceneSampleRate(Scene);
 
     for (int32 StackIndex = 0; StackIndex < AnimStackCount; ++StackIndex)
     {
@@ -74,7 +201,6 @@ void FFbxAnimationImporter::ImportAnimations(
         const double DurationSeconds = static_cast<double>(Clip.DurationSeconds);
         const int32  WholeFrameCount = static_cast<int32>(std::floor(DurationSeconds * static_cast<double>(SampleRate) + 1.0e-6));
 
-        // 지정 시간의 bone global transform을 reference space local key로 샘플링한다.
         auto AddAnimationKeysAtTime = [&](double LocalSeconds)
         {
             if (LocalSeconds < 0.0)
@@ -138,6 +264,8 @@ void FFbxAnimationImporter::ImportAnimations(
         {
             AddAnimationKeysAtTime(DurationSeconds);
         }
+
+        ImportBlendShapeCurves(Scene, AnimStack, StartSeconds, EndSeconds, Clip);
 
         OutAnimations.push_back(std::move(Clip));
     }

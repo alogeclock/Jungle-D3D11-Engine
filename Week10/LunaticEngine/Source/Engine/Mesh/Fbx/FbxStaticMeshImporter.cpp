@@ -1,5 +1,6 @@
 #include "Mesh/Fbx/FbxStaticMeshImporter.h"
 
+#include "Mesh/Fbx/FbxCollisionImporter.h"
 #include "Mesh/Fbx/FbxGeometryReader.h"
 #include "Mesh/Fbx/FbxImportContext.h"
 #include "Mesh/Fbx/FbxMaterialImporter.h"
@@ -9,7 +10,34 @@
 #include "Mesh/Fbx/FbxVertexDeduplicator.h"
 #include "Mesh/StaticMeshAsset.h"
 
+#include <algorithm>
 #include <fbxsdk.h>
+
+namespace
+{
+    static FStaticMeshLOD MakeLODFromMesh(const FStaticMesh& Mesh, int32 SourceLODIndex)
+    {
+        FStaticMeshLOD LOD;
+        LOD.SourceLODIndex = SourceLODIndex;
+        LOD.SourceLODName  = "LOD" + std::to_string(SourceLODIndex);
+        LOD.Vertices       = Mesh.Vertices;
+        LOD.Indices        = Mesh.Indices;
+        LOD.Sections       = Mesh.Sections;
+        LOD.CacheBounds();
+        return LOD;
+    }
+
+    static void AppendStaticCollisionNode(FStaticMesh& MeshAsset, FbxNode* MeshNode)
+    {
+        const FFbxMeshImportSpace ImportSpace = FFbxMeshImportSpace::FromStaticMeshNode(MeshNode);
+
+        FImportedCollisionShape Shape;
+        if (FFbxCollisionImporter::ImportCollisionShape(MeshNode, ImportSpace.VertexTransform, -1, FString(), Shape))
+        {
+            MeshAsset.CollisionShapes.push_back(Shape);
+        }
+    }
+}
 
 class FFbxStaticMeshBuilder
 {
@@ -25,6 +53,11 @@ public:
 
         for (FbxNode* MeshNode : MeshNodes)
         {
+            if (FFbxSceneQuery::IsCollisionProxyNode(MeshNode))
+            {
+                AppendCollisionNode(MeshNode);
+                continue;
+            }
             AppendMeshNode(MeshNode);
         }
 
@@ -46,6 +79,8 @@ private:
         MeshAsset.Vertices.clear();
         MeshAsset.Indices.clear();
         MeshAsset.Sections.clear();
+        MeshAsset.LODModels.clear();
+        MeshAsset.CollisionShapes.clear();
         SectionBuilder     = FFbxSectionBuilder();
         VertexDeduplicator = FFbxStaticVertexDeduplicator();
     }
@@ -125,6 +160,15 @@ private:
         Vertex.color   = FFbxGeometryReader::ReadVertexColor(Mesh, ControlPointIndex, PolygonVertexIndex);
         Vertex.tangent = ReadCornerTangent(Mesh, ControlPointIndex, PolygonVertexIndex, Triangle, ImportSpace, Vertex.normal);
 
+        const int32 RawUVSetCount = FFbxGeometryReader::GetUVSetCount(Mesh);
+        const int32 UVCount       = (std::min)(RawUVSetCount, static_cast<int32>(MAX_STATIC_MESH_UV_CHANNELS));
+        Vertex.NumUVs             = static_cast<uint8>(UVCount > 0 ? UVCount : 1);
+
+        for (int32 UVIndex = 1; UVIndex < static_cast<int32>(Vertex.NumUVs); ++UVIndex)
+        {
+            Vertex.ExtraUV[UVIndex - 1] = FFbxGeometryReader::ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, UVIndex);
+        }
+
         bool bAddedNewVertex = false;
         return VertexDeduplicator.FindOrAdd(Vertex, Mesh, ControlPointIndex, MeshAsset.Vertices, bAddedNewVertex);
     }
@@ -185,6 +229,11 @@ private:
         MeshAsset.CacheBounds();
         return true;
     }
+
+    void AppendCollisionNode(FbxNode* MeshNode)
+    {
+        AppendStaticCollisionNode(MeshAsset, MeshNode);
+    }
 };
 
 // FBX scene의 mesh node들을 하나의 static mesh asset으로 import한다.
@@ -203,7 +252,76 @@ bool FFbxStaticMeshImporter::Import(
 
     TArray<FbxNode*> MeshNodes;
     FFbxSceneQuery::CollectMeshNodes(Scene->GetRootNode(), MeshNodes);
+    if (MeshNodes.empty())
+    {
+        return false;
+    }
 
+    TMap<int32, TArray<FbxNode*>> MeshNodesByLOD;
+    TArray<FbxNode*>              CollisionNodes;
+
+    for (FbxNode* MeshNode : MeshNodes)
+    {
+        if (FFbxSceneQuery::IsCollisionProxyNode(MeshNode))
+        {
+            CollisionNodes.push_back(MeshNode);
+            continue;
+        }
+
+        const int32 LODIndex = FFbxSceneQuery::GetMeshLODIndex(MeshNode);
+        MeshNodesByLOD[LODIndex].push_back(MeshNode);
+    }
+
+    if (MeshNodesByLOD.empty())
+    {
+        return false;
+    }
+
+    TArray<int32> SortedLODIndices;
+    SortedLODIndices.reserve(MeshNodesByLOD.size());
+    for (const auto& Pair : MeshNodesByLOD)
+    {
+        SortedLODIndices.push_back(Pair.first);
+    }
+    std::sort(SortedLODIndices.begin(), SortedLODIndices.end());
+
+    const int32 BaseLODIndex = SortedLODIndices[0];
+    if (!ImportMeshNodes(MeshNodesByLOD[BaseLODIndex], SourcePath, OutMesh, OutMaterials, BuildContext))
+    {
+        return false;
+    }
+
+    OutMesh.LODModels.clear();
+    OutMesh.LODModels.push_back(MakeLODFromMesh(OutMesh, BaseLODIndex));
+
+    for (size_t SortedIndex = 1; SortedIndex < SortedLODIndices.size(); ++SortedIndex)
+    {
+        const int32 LODIndex = SortedLODIndices[SortedIndex];
+
+        FStaticMesh LODMesh;
+        if (ImportMeshNodes(MeshNodesByLOD[LODIndex], SourcePath, LODMesh, OutMaterials, BuildContext))
+        {
+            OutMesh.LODModels.push_back(MakeLODFromMesh(LODMesh, LODIndex));
+        }
+    }
+
+    OutMesh.CollisionShapes.clear();
+    for (FbxNode* CollisionNode : CollisionNodes)
+    {
+        AppendStaticCollisionNode(OutMesh, CollisionNode);
+    }
+
+    return true;
+}
+
+bool FFbxStaticMeshImporter::ImportMeshNodes(
+    const TArray<FbxNode*>&  MeshNodes,
+    const FString&           SourcePath,
+    FStaticMesh&             OutMesh,
+    TArray<FStaticMaterial>& OutMaterials,
+    FFbxImportContext&       BuildContext
+    )
+{
     if (MeshNodes.empty())
     {
         return false;

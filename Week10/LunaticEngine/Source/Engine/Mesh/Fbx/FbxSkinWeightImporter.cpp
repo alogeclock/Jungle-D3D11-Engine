@@ -244,21 +244,25 @@ void FFbxSkinWeightImporter::CommitUniqueVertexImportStats(
     if (bGeneratedNormal)
     {
         BuildContext.Summary.GeneratedNormalCount++;
+        BuildContext.AddWarningOnce(ESkeletalImportWarningType::GeneratedNormal, "One or more normals were missing and generated during FBX import.");
     }
 
     if (bGeneratedTangent)
     {
         BuildContext.Summary.GeneratedTangentCount++;
+        BuildContext.AddWarningOnce(ESkeletalImportWarningType::GeneratedTangent, "One or more tangents were missing and generated during FBX import.");
     }
 
     if (bMissingUV)
     {
         BuildContext.Summary.MissingUVCount++;
+        BuildContext.AddWarningOnce(ESkeletalImportWarningType::MissingUV, "One or more vertices had no UV set. UV0 was filled with zero.");
     }
 
     if (BoneWeightStats.bMissingWeight)
     {
         BuildContext.Summary.MissingWeightVertexCount++;
+        BuildContext.AddWarningOnce(ESkeletalImportWarningType::MissingSkinWeight, "One or more vertices had no skin weight. Root bone fallback was used.");
     }
 
     BuildContext.Summary.MaxInfluenceCount = (std::max)(BuildContext.Summary.MaxInfluenceCount, BoneWeightStats.SourceInfluenceCount);
@@ -267,10 +271,14 @@ void FFbxSkinWeightImporter::CommitUniqueVertexImportStats(
     {
         BuildContext.Summary.VertexCountOverMaxInfluences++;
         BuildContext.Summary.TotalDiscardedWeight += BoneWeightStats.DiscardedWeight;
+        BuildContext.AddWarningOnce(
+            ESkeletalImportWarningType::MoreThanFourInfluences,
+            "One or more vertices had more than four influences. Top four weights were kept."
+        );
     }
 
     if (BoneWeightStats.bBoneIndexOverflow)
     {
-        BuildContext.AddWarning(ESkeletalImportWarningType::BoneIndexOverflow, "Bone index is outside uint16 range.");
+        BuildContext.AddWarningOnce(ESkeletalImportWarningType::BoneIndexOverflow, "Bone index is outside uint16 range.");
     }
 }

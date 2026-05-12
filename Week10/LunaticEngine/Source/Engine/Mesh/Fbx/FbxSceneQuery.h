@@ -18,7 +18,7 @@ public:
 
     // node 배열에 대상 node 포인터가 이미 들어 있는지 확인한다.
     static bool ContainsNode(const TArray<FbxNode*>& Nodes, const FbxNode* Node);
-
+    
     // node 배열에 중복 없이 node 포인터를 추가한다.
     static void AddUniqueNode(TArray<FbxNode*>& Nodes, FbxNode* Node);
 
@@ -37,6 +37,9 @@ public:
     // import 대상 bone node 집합에서 root bone 후보를 찾는다.
     static void FindImportedBoneRoot(const TArray<FbxNode*>& Nodes, TArray<FbxNode*>& OutRoots);
 
+    // skeleton root 아래의 full skeleton hierarchy를 수집한다.
+    static void CollectFullSkeletonHierarchyFromRoots(const TArray<FbxNode*>& RootNodes, const TArray<FbxNode*>& SeedNodes, TArray<FbxNode*>& OutBoneNodes);
+
     // 이름의 LOD 접미사에서 LOD index를 파싱한다.
     static int32 ParseLODIndexFromName(const FString& Name);
 
@@ -45,4 +48,12 @@ public:
 
     // scene 안에 skin deformer를 가진 mesh가 하나라도 있는지 확인한다.
     static bool SceneHasSkinDeformer(FbxScene* Scene);
+
+    static FString ReadStringProperty(FbxNode* Node, const char* PropertyName);
+
+    static bool IsCollisionProxyName(const FString& Name);
+
+    static bool IsCollisionProxyNode(FbxNode* Node);
+
+    static int32 GetMeshLODIndex(FbxNode* MeshNode);
 };

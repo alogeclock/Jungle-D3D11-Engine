@@ -1,27 +1,26 @@
 #include "Mesh/Fbx/FbxMorphTargetImporter.h"
 
+#include "Mesh/Fbx/FbxImportContext.h"
 #include "Mesh/Fbx/FbxTransformUtils.h"
 
 #include <fbxsdk.h>
 
 #include <cmath>
 #include <utility>
+#include <algorithm>
 
 namespace
 {
-    // FVector의 각 성분이 지정 허용오차 이하인지 검사한다.
     bool IsNearlyZeroVector(const FVector& V, float Tolerance = 1.0e-6f)
     {
         return std::fabs(V.X) <= Tolerance && std::fabs(V.Y) <= Tolerance && std::fabs(V.Z) <= Tolerance;
     }
 
-    // FVector4의 각 성분이 지정 허용오차 이하인지 검사한다.
     bool IsNearlyZeroVector4(const FVector4& V, float Tolerance = 1.0e-6f)
     {
         return std::fabs(V.X) <= Tolerance && std::fabs(V.Y) <= Tolerance && std::fabs(V.Z) <= Tolerance && std::fabs(V.W) <= Tolerance;
     }
 
-    // FBX layer element에서 control point 또는 polygon vertex 기준 Vector4 값을 읽는다.
     template <typename LayerElementType>
     bool TryGetLayerElementVector4(LayerElementType* Element, int32 ControlPointIndex, int32 PolygonVertexIndex, FbxVector4& OutValue)
     {
@@ -111,9 +110,90 @@ namespace
         OutTangent    = FVector4(Tangent.X, Tangent.Y, Tangent.Z, W);
         return true;
     }
+
+    static FMorphTargetShape& FindOrAddShapeByFullWeight(FMorphTargetLOD& MorphLOD, float FullWeight)
+    {
+        for (FMorphTargetShape& ExistingShape : MorphLOD.Shapes)
+        {
+            if (std::fabs(ExistingShape.FullWeight - FullWeight) <= 1.0e-4f)
+            {
+                return ExistingShape;
+            }
+        }
+
+        FMorphTargetShape NewShape;
+        NewShape.FullWeight = FullWeight;
+        MorphLOD.Shapes.push_back(std::move(NewShape));
+        return MorphLOD.Shapes.back();
+    }
+
+    static bool BuildShapeDelta(FbxMesh* Mesh, FbxShape* Shape, const FFbxImportedMorphSourceVertex& Source, FMorphTargetDelta& OutDelta)
+    {
+        FbxVector4* BaseControlPoints   = Mesh ? Mesh->GetControlPoints() : nullptr;
+        FbxVector4* TargetControlPoints = Shape ? Shape->GetControlPoints() : nullptr;
+
+        if (!BaseControlPoints || !TargetControlPoints)
+        {
+            return false;
+        }
+
+        const int32 CPIndex           = Source.ControlPointIndex;
+        const int32 ControlPointCount = Mesh->GetControlPointsCount();
+
+        if (CPIndex < 0 || CPIndex >= ControlPointCount)
+        {
+            return false;
+        }
+
+        const FbxVector4 BaseP   = BaseControlPoints[CPIndex];
+        const FbxVector4 TargetP = TargetControlPoints[CPIndex];
+
+        const FVector LocalDelta(
+            static_cast<float>(TargetP[0] - BaseP[0]),
+            static_cast<float>(TargetP[1] - BaseP[1]),
+            static_cast<float>(TargetP[2] - BaseP[2])
+        );
+
+        OutDelta.VertexIndex   = Source.VertexIndex;
+        OutDelta.PositionDelta = FFbxTransformUtils::TransformVectorNoNormalizeByMatrix(LocalDelta, Source.MeshToReference);
+        OutDelta.NormalDelta   = FVector(0.0f, 0.0f, 0.0f);
+        OutDelta.TangentDelta  = FVector4(0.0f, 0.0f, 0.0f, 0.0f);
+
+        FVector TargetNormalInReference = Source.BaseNormalInReference;
+
+        FVector TargetLocalNormal;
+        if (TryReadShapeNormal(Shape, CPIndex, Source.PolygonVertexIndex, TargetLocalNormal))
+        {
+            TargetNormalInReference = FFbxTransformUtils::TransformNormalByMatrix(TargetLocalNormal, Source.NormalToReference);
+            OutDelta.NormalDelta    = TargetNormalInReference - Source.BaseNormalInReference;
+        }
+
+        FVector4 TargetLocalTangent;
+        if (TryReadShapeTangent(Shape, CPIndex, Source.PolygonVertexIndex, TargetLocalTangent))
+        {
+            const FVector TargetTangentInReference = FFbxTransformUtils::TransformTangentByMatrix(
+                FVector(TargetLocalTangent.X, TargetLocalTangent.Y, TargetLocalTangent.Z),
+                Source.MeshToReference,
+                TargetNormalInReference
+            );
+
+            OutDelta.TangentDelta = FVector4(
+                TargetTangentInReference.X - Source.BaseTangentInReference.X,
+                TargetTangentInReference.Y - Source.BaseTangentInReference.Y,
+                TargetTangentInReference.Z - Source.BaseTangentInReference.Z,
+                TargetLocalTangent.W - Source.BaseTangentInReference.W
+            );
+        }
+
+        return !(IsNearlyZeroVector(OutDelta.PositionDelta) && IsNearlyZeroVector(OutDelta.NormalDelta) && IsNearlyZeroVector4(OutDelta.TangentDelta));
+    }
 }
 
-void FFbxMorphTargetImporter::ImportMorphTargets(const TArray<TArray<FFbxImportedMorphSourceVertex>>& MorphSourcesByLOD, TArray<FMorphTarget>& OutMorphTargets)
+void FFbxMorphTargetImporter::ImportMorphTargets(
+    const TArray<TArray<FFbxImportedMorphSourceVertex>>& MorphSourcesByLOD,
+    TArray<FMorphTarget>&                                OutMorphTargets,
+    FFbxImportContext&                                   BuildContext
+    )
 {
     OutMorphTargets.clear();
 
@@ -172,18 +252,23 @@ void FFbxMorphTargetImporter::ImportMorphTargets(const TArray<TArray<FFbxImporte
                         continue;
                     }
 
-                    FbxShape* Shape = Channel->GetTargetShape(TargetShapeCount - 1);
-
-                    if (!Shape)
+                    if (TargetShapeCount > 1)
                     {
-                        continue;
+                        BuildContext.AddWarningOnce(
+                            ESkeletalImportWarningType::UnsupportedMorphInBetween,
+                            "Morph target has in-between shapes. FullWeight data is imported; runtime interpolation must use it."
+                        );
                     }
 
                     FString MorphName = Channel->GetName();
+                    if (MorphName.empty() && Channel->GetTargetShape(0))
+                    {
+                        MorphName = Channel->GetTargetShape(0)->GetName();
+                    }
 
                     if (MorphName.empty())
                     {
-                        MorphName = Shape->GetName();
+                        continue;
                     }
 
                     int32 MorphIndex = -1;
@@ -207,79 +292,60 @@ void FFbxMorphTargetImporter::ImportMorphTargets(const TArray<TArray<FFbxImporte
 
                     FMorphTargetLOD& MorphLOD = OutMorphTargets[MorphIndex].LODModels[LODIndex];
 
-                    FbxVector4* BaseControlPoints   = Mesh->GetControlPoints();
-                    FbxVector4* TargetControlPoints = Shape->GetControlPoints();
+                    double* FullWeights = Channel->GetTargetShapeFullWeights();
 
-                    if (!BaseControlPoints || !TargetControlPoints)
+                    for (int32 TargetShapeIndex = 0; TargetShapeIndex < TargetShapeCount; ++TargetShapeIndex)
                     {
-                        continue;
-                    }
+                        FbxShape* Shape = Channel->GetTargetShape(TargetShapeIndex);
 
-                    const int32 ControlPointCount = Mesh->GetControlPointsCount();
-
-                    for (const FFbxImportedMorphSourceVertex* Source : MeshSources)
-                    {
-                        if (!Source)
+                        if (!Shape)
                         {
                             continue;
                         }
 
-                        const int32 CPIndex = Source->ControlPointIndex;
+                        const float        FullWeight = FullWeights ? static_cast<float>(FullWeights[TargetShapeIndex]) : 100.0f;
+                        FMorphTargetShape& MorphShape = FindOrAddShapeByFullWeight(MorphLOD, FullWeight);
 
-                        if (CPIndex < 0 || CPIndex >= ControlPointCount)
+                        for (const FFbxImportedMorphSourceVertex* Source : MeshSources)
                         {
-                            continue;
+                            if (!Source)
+                            {
+                                continue;
+                            }
+
+                            FMorphTargetDelta Delta;
+                            if (BuildShapeDelta(Mesh, Shape, *Source, Delta))
+                            {
+                                MorphShape.Deltas.push_back(Delta);
+                            }
                         }
-
-                        const FbxVector4 BaseP   = BaseControlPoints[CPIndex];
-                        const FbxVector4 TargetP = TargetControlPoints[CPIndex];
-
-                        FVector LocalDelta(
-                            static_cast<float>(TargetP[0] - BaseP[0]),
-                            static_cast<float>(TargetP[1] - BaseP[1]),
-                            static_cast<float>(TargetP[2] - BaseP[2])
-                        );
-
-                        FMorphTargetDelta Delta;
-                        Delta.VertexIndex   = Source->VertexIndex;
-                        Delta.PositionDelta = FFbxTransformUtils::TransformVectorNoNormalizeByMatrix(LocalDelta, Source->MeshToReference);
-                        Delta.NormalDelta   = FVector(0.0f, 0.0f, 0.0f);
-                        Delta.TangentDelta  = FVector4(0.0f, 0.0f, 0.0f, 0.0f);
-
-                        FVector TargetNormalInReference = Source->BaseNormalInReference;
-
-                        FVector TargetLocalNormal;
-                        if (TryReadShapeNormal(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalNormal))
-                        {
-                            TargetNormalInReference = FFbxTransformUtils::TransformNormalByMatrix(TargetLocalNormal, Source->NormalToReference);
-                            Delta.NormalDelta       = TargetNormalInReference - Source->BaseNormalInReference;
-                        }
-
-                        FVector4 TargetLocalTangent;
-                        if (TryReadShapeTangent(Shape, CPIndex, Source->PolygonVertexIndex, TargetLocalTangent))
-                        {
-                            const FVector TargetTangentInReference = FFbxTransformUtils::TransformTangentByMatrix(
-                                FVector(TargetLocalTangent.X, TargetLocalTangent.Y, TargetLocalTangent.Z),
-                                Source->MeshToReference,
-                                TargetNormalInReference
-                            );
-                            Delta.TangentDelta = FVector4(
-                                TargetTangentInReference.X - Source->BaseTangentInReference.X,
-                                TargetTangentInReference.Y - Source->BaseTangentInReference.Y,
-                                TargetTangentInReference.Z - Source->BaseTangentInReference.Z,
-                                TargetLocalTangent.W - Source->BaseTangentInReference.W
-                            );
-                        }
-
-                        if (IsNearlyZeroVector(Delta.PositionDelta) && IsNearlyZeroVector(Delta.NormalDelta) && IsNearlyZeroVector4(Delta.TangentDelta))
-                        {
-                            continue;
-                        }
-
-                        MorphLOD.Deltas.push_back(Delta);
                     }
                 }
             }
         }
     }
+
+
+    OutMorphTargets.erase(
+        std::remove_if(
+            OutMorphTargets.begin(),
+            OutMorphTargets.end(),
+            [](const FMorphTarget& Morph)
+            {
+                for (const FMorphTargetLOD& LOD : Morph.LODModels)
+                {
+                    for (const FMorphTargetShape& Shape : LOD.Shapes)
+                    {
+                        if (!Shape.Deltas.empty())
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        ),
+        OutMorphTargets.end()
+    );
 }
+

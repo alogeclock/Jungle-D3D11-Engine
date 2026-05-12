@@ -19,4 +19,24 @@ struct FFbxImportContext
         Warning.Message = Message;
         Summary.Warnings.push_back(Warning);
     }
+
+    bool HasWarningType(ESkeletalImportWarningType Type) const
+    {
+        for (const FSkeletalImportWarning& Warning : Summary.Warnings)
+        {
+            if (Warning.Type == Type)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void AddWarningOnce(ESkeletalImportWarningType Type, const FString& Message)
+    {
+        if (!HasWarningType(Type))
+        {
+            AddWarning(Type, Message);
+        }
+    }
 };

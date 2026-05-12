@@ -10,13 +10,24 @@
 #include "Materials/MaterialManager.h"
 #include <memory>
 #include <algorithm>
+#include "Mesh/MeshCollisionAsset.h"
+
+static constexpr int32 MAX_STATIC_MESH_UV_CHANNELS = 4;
+
 // Cooked Data 내부용 정점
 struct FNormalVertex
 {
 	FVector pos;
 	FVector normal;
 	FVector4 color;
+
+	// 기존 렌더링 경로 호환용 UV0
 	FVector2 tex;
+
+	// UV1~UV3. 현재 기본 renderer는 UV0만 사용하지만 importer/cache에는 보존한다.
+	FVector2 ExtraUV[MAX_STATIC_MESH_UV_CHANNELS - 1] = {};
+	uint8 NumUVs = 1;
+
 	FVector4 tangent;
 };
 
@@ -71,6 +82,62 @@ struct FStaticMaterial
 	}
 };
 
+
+struct FStaticMeshLOD
+{
+    int32 SourceLODIndex = 0;
+    FString SourceLODName;
+
+    TArray<FNormalVertex> Vertices;
+    TArray<uint32> Indices;
+    TArray<FStaticMeshSection> Sections;
+
+    FVector BoundsCenter = FVector(0.0f, 0.0f, 0.0f);
+    FVector BoundsExtent = FVector(0.0f, 0.0f, 0.0f);
+    bool    bBoundsValid = false;
+
+    void CacheBounds()
+    {
+        bBoundsValid = false;
+        if (Vertices.empty())
+        {
+            return;
+        }
+
+        FVector LocalMin = Vertices[0].pos;
+        FVector LocalMax = Vertices[0].pos;
+        for (const FNormalVertex& V : Vertices)
+        {
+            LocalMin.X = (std::min)(LocalMin.X, V.pos.X);
+            LocalMin.Y = (std::min)(LocalMin.Y, V.pos.Y);
+            LocalMin.Z = (std::min)(LocalMin.Z, V.pos.Z);
+            LocalMax.X = (std::max)(LocalMax.X, V.pos.X);
+            LocalMax.Y = (std::max)(LocalMax.Y, V.pos.Y);
+            LocalMax.Z = (std::max)(LocalMax.Z, V.pos.Z);
+        }
+
+        BoundsCenter = (LocalMin + LocalMax) * 0.5f;
+        BoundsExtent = (LocalMax - LocalMin) * 0.5f;
+        bBoundsValid = true;
+    }
+
+    friend FArchive& operator<<(FArchive& Ar, FStaticMeshLOD& LOD)
+    {
+        Ar << LOD.SourceLODIndex;
+        Ar << LOD.SourceLODName;
+        Ar << LOD.Vertices;
+        Ar << LOD.Indices;
+        Ar << LOD.Sections;
+
+        if (Ar.IsLoading())
+        {
+            LOD.CacheBounds();
+        }
+
+        return Ar;
+    }
+};
+
 // Cooked Data — GPU용 정점/인덱스
 // FStaticMeshLODResources in UE5
 struct FStaticMesh
@@ -80,6 +147,9 @@ struct FStaticMesh
 	TArray<uint32> Indices;
 
 	TArray<FStaticMeshSection> Sections;
+
+	TArray<FStaticMeshLOD> LODModels;
+	TArray<FImportedCollisionShape> CollisionShapes;
 
 	std::unique_ptr<FMeshBuffer> RenderBuffer;
 
@@ -116,5 +186,12 @@ struct FStaticMesh
 		Ar << Vertices;
 		Ar << Indices;
 		Ar << Sections;
+		Ar << LODModels;
+		Ar << CollisionShapes;
+
+		if (Ar.IsLoading())
+		{
+			CacheBounds();
+		}
 	}
 };

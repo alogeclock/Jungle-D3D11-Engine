@@ -19,4 +19,12 @@ public:
         TArray<FStaticMaterial>& OutMaterials,
         FFbxImportContext&       BuildContext
         );
+
+    static bool ImportMeshNodes(
+        const TArray<FbxNode*>&  MeshNodes,
+        const FString&           SourcePath,
+        FStaticMesh&             OutMesh,
+        TArray<FStaticMaterial>& OutMaterials,
+        FFbxImportContext&       BuildContext
+        );
 };

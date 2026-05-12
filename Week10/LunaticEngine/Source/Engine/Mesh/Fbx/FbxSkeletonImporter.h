@@ -48,7 +48,18 @@ public:
         const TMap<FbxNode*, int32>& BoneNodeToIndex,
         const FMatrix&               ReferenceMeshBindInverse,
         FSkeleton&                   Skeleton,
-        TArray<bool>*                AppliedClusterBindPose
+        TArray<bool>*                AppliedClusterBindPose,
+        bool                         bOverrideExisting
+        );
+
+    // cluster bind matrix가 없는 bone을 parent bind pose 기준으로 최종 정렬한다.
+    static void FinalizeNonClusterBoneBindPose(
+        FbxScene*                    Scene,
+        const TMap<FbxNode*, int32>& BoneNodeToIndex,
+        const FMatrix&               ReferenceMeshBindInverse,
+        const TArray<bool>&          ClusterAppliedBoneMask,
+        FSkeleton&                   Skeleton,
+        FFbxImportContext&           BuildContext
         );
 
     // global bind pose를 기준으로 local bind pose와 inverse bind pose를 재계산한다.

@@ -6,6 +6,58 @@
 #include <cctype>
 #include <cstring>
 
+namespace
+{
+    static bool HasSkeletonDescendant(FbxNode* Node)
+    {
+        if (!Node)
+        {
+            return false;
+        }
+
+        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+        {
+            FbxNode* Child = Node->GetChild(ChildIndex);
+
+            if (FFbxSceneQuery::IsSkeletonNode(Child) || HasSkeletonDescendant(Child))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static void CollectFullSkeletonHierarchyRecursive(FbxNode* Node, const TArray<FbxNode*>& SeedNodes, TArray<FbxNode*>& OutBoneNodes)
+    {
+        if (!Node || FFbxSceneQuery::IsSceneRootNode(Node))
+        {
+            return;
+        }
+
+        const bool bSeedNode      = FFbxSceneQuery::ContainsNode(SeedNodes, Node);
+        const bool bSkeletonNode  = FFbxSceneQuery::IsSkeletonNode(Node);
+        const bool bKeepContainer = bSeedNode || bSkeletonNode || HasSkeletonDescendant(Node);
+
+        if (!bKeepContainer)
+        {
+            return;
+        }
+
+        FFbxSceneQuery::AddUniqueNode(OutBoneNodes, Node);
+
+        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+        {
+            CollectFullSkeletonHierarchyRecursive(Node->GetChild(ChildIndex), SeedNodes, OutBoneNodes);
+        }
+    }
+
+    static bool StartsWith(const FString& Value, const char* Prefix)
+    {
+        return Prefix && Value.rfind(Prefix, 0) == 0;
+    }
+}
+
 // scene tree에서 mesh attribute를 가진 node를 모두 수집한다.
 void FFbxSceneQuery::CollectMeshNodes(FbxNode* Node, TArray<FbxNode*>& OutMeshNodes)
 {
@@ -146,6 +198,15 @@ void FFbxSceneQuery::FindImportedBoneRoot(const TArray<FbxNode*>& Nodes, TArray<
     }
 }
 
+// skeleton root 아래의 full skeleton hierarchy를 수집한다.
+void FFbxSceneQuery::CollectFullSkeletonHierarchyFromRoots(const TArray<FbxNode*>& RootNodes, const TArray<FbxNode*>& SeedNodes, TArray<FbxNode*>& OutBoneNodes)
+{
+    for (FbxNode* RootNode : RootNodes)
+    {
+        CollectFullSkeletonHierarchyRecursive(RootNode, SeedNodes, OutBoneNodes);
+    }
+}
+
 // 이름의 LOD 접미사에서 LOD index를 파싱한다.
 int32 FFbxSceneQuery::ParseLODIndexFromName(const FString& Name)
 {
@@ -229,4 +290,55 @@ bool FFbxSceneQuery::SceneHasSkinDeformer(FbxScene* Scene)
     }
 
     return false;
+}
+
+FString FFbxSceneQuery::ReadStringProperty(FbxNode* Node, const char* PropertyName)
+{
+    if (!Node || !PropertyName)
+    {
+        return FString();
+    }
+
+    FbxProperty Property = Node->FindProperty(PropertyName);
+    if (!Property.IsValid())
+    {
+        return FString();
+    }
+
+    const FbxDataType DataType = Property.GetPropertyDataType();
+    const EFbxType    Type     = DataType.GetType();
+
+    if (Type == eFbxString)
+    {
+        const FbxString Value = Property.Get<FbxString>();
+        return Value.Buffer() ? FString(Value.Buffer()) : FString();
+    }
+
+    return FString();
+}
+
+bool FFbxSceneQuery::IsCollisionProxyName(const FString& Name)
+{
+    return StartsWith(Name, "UCX_") || StartsWith(Name, "UBX_") || StartsWith(Name, "USP_") || StartsWith(Name, "UCP_") || StartsWith(Name, "MCDCX_");
+}
+
+bool FFbxSceneQuery::IsCollisionProxyNode(FbxNode* Node)
+{
+    if (!Node)
+    {
+        return false;
+    }
+
+    const FString Name = Node->GetName();
+    if (IsCollisionProxyName(Name))
+    {
+        return true;
+    }
+
+    return ReadStringProperty(Node, "ImportKind") == "Collision";
+}
+
+int32 FFbxSceneQuery::GetMeshLODIndex(FbxNode* MeshNode)
+{
+    return GetSkeletalMeshLODIndex(MeshNode);
 }

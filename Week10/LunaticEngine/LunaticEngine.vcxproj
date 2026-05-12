@@ -457,7 +457,9 @@
     <ClCompile Include="Source\Engine\Mesh\SkeletalMeshBake.cpp" />
     <ClCompile Include="Source\Engine\Mesh\SkeletalMeshManager.cpp" />
     <ClCompile Include="Source\Engine\Mesh\StaticMesh.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\StaticMeshBake.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxAnimationImporter.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxCollisionImporter.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxGeometryReader.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxImportValidation.cpp" />
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMaterialImporter.cpp" />
@@ -770,6 +772,7 @@
     <ClInclude Include="Source\Engine\Math\Transform.h" />
     <ClInclude Include="Source\Engine\Math\Vector.h" />
     <ClInclude Include="Source\Engine\Mesh\FbxImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\MeshCollisionAsset.h" />
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h" />
     <ClInclude Include="Source\Engine\Mesh\ObjManager.h" />
     <ClInclude Include="Source\Engine\Mesh\SkeletalMesh.h" />
@@ -778,7 +781,9 @@
     <ClInclude Include="Source\Engine\Mesh\SkeletalMeshManager.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshAsset.h" />
+    <ClInclude Include="Source\Engine\Mesh\StaticMeshBake.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxAnimationImporter.h" />
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxCollisionImporter.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxGeometryReader.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxImportContext.h" />
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxImportValidation.h" />

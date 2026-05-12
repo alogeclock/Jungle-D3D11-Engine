@@ -1,4 +1,4 @@
-﻿#include "Mesh/StaticMesh.h"
+#include "Mesh/StaticMesh.h"
 #include "Object/ObjectFactory.h"
 #include "Mesh/ObjManager.h"
 #include "Serialization/WindowsArchive.h"
@@ -10,6 +10,39 @@
 IMPLEMENT_CLASS(UStaticMesh, UObject)
 
 static const FString EmptyPath;
+
+namespace
+{
+	static void ResolveSectionMaterialIndices(TArray<FStaticMeshSection>& Sections, const TArray<FStaticMaterial>& Materials)
+	{
+		for (FStaticMeshSection& Section : Sections)
+		{
+			Section.MaterialIndex = -1;
+			for (int32 i = 0; i < static_cast<int32>(Materials.size()); ++i)
+			{
+				if (Materials[i].MaterialSlotName == Section.MaterialSlotName)
+				{
+					Section.MaterialIndex = i;
+					break;
+				}
+			}
+		}
+	}
+
+	static void ResolveMeshMaterialIndices(FStaticMesh* Mesh, const TArray<FStaticMaterial>& Materials)
+	{
+		if (!Mesh)
+		{
+			return;
+		}
+
+		ResolveSectionMaterialIndices(Mesh->Sections, Materials);
+		for (FStaticMeshLOD& LOD : Mesh->LODModels)
+		{
+			ResolveSectionMaterialIndices(LOD.Sections, Materials);
+		}
+	}
+}
 
 UStaticMesh::~UStaticMesh()
 {
@@ -40,18 +73,7 @@ void UStaticMesh::Serialize(FArchive& Ar)
 	// 3. 로딩 시 Section → MaterialIndex 매핑 캐싱 (매 프레임 문자열 비교 방지)
 	if (Ar.IsLoading())
 	{
-		for (FStaticMeshSection& Section : StaticMeshAsset->Sections)
-		{
-			Section.MaterialIndex = -1;
-			for (int32 i = 0; i < static_cast<int32>(StaticMaterials.size()); ++i)
-			{
-				if (StaticMaterials[i].MaterialSlotName == Section.MaterialSlotName)
-				{
-					Section.MaterialIndex = i;
-					break;
-				}
-			}
-		}
+		ResolveMeshMaterialIndices(StaticMeshAsset, StaticMaterials);
 		MeshTrianglePickingBVH.BuildNow(*StaticMeshAsset);
 	}
 }
@@ -138,18 +160,7 @@ void UStaticMesh::SetStaticMeshAsset(FStaticMesh* InMesh)
 	}
 
 	// Section → MaterialIndex 캐싱 갱신
-	for (FStaticMeshSection& Section : StaticMeshAsset->Sections)
-	{
-		Section.MaterialIndex = -1;
-		for (int32 i = 0; i < static_cast<int32>(StaticMaterials.size()); ++i)
-		{
-			if (StaticMaterials[i].MaterialSlotName == Section.MaterialSlotName)
-			{
-				Section.MaterialIndex = i;
-				break;
-			}
-		}
-	}
+	ResolveMeshMaterialIndices(StaticMeshAsset, StaticMaterials);
 	MeshTrianglePickingBVH.BuildNow(*StaticMeshAsset);
 }
 

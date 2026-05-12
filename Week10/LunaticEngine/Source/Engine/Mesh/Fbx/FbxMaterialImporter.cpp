@@ -86,6 +86,10 @@ namespace
         HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.Y));
         HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.Z));
         HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.W));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.Roughness));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.Metallic));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.Opacity));
+        HashCombineUInt32(Seed, Info.bHasOpacity ? 1u : 0u);
 
         return Seed;
     }
@@ -130,7 +134,7 @@ namespace
     }
 
     // FBX texture property에서 첫 번째 유효 file texture 경로를 추출한다.
-    bool TryGetFbxTexturePathFromProperty(const FbxProperty& Property, const FString& SourceFbxPath, FString& OutTexturePath)
+    bool TryGetFbxTexturePathFromProperty(const FbxProperty& Property, const FString& SourceFbxPath, FString& OutTexturePath, FFbxImportContext* Context = nullptr)
     {
         if (!Property.IsValid())
         {
@@ -150,6 +154,14 @@ namespace
         }
 
         const int32 LayeredTextureCount = Property.GetSrcObjectCount<FbxLayeredTexture>();
+        if (LayeredTextureCount > 0 && Context)
+        {
+            Context->AddWarningOnce(
+                ESkeletalImportWarningType::UnsupportedMaterialProperty,
+                "Layered texture is partially imported. Only the first resolvable file texture is used."
+            );
+        }
+
         for (int32 LayeredTextureIndex = 0; LayeredTextureIndex < LayeredTextureCount; ++LayeredTextureIndex)
         {
             FbxLayeredTexture* LayeredTexture = Property.GetSrcObject<FbxLayeredTexture>(LayeredTextureIndex);
@@ -193,8 +205,26 @@ namespace
         return true;
     }
 
+
+    bool TryGetFbxDoubleProperty(FbxSurfaceMaterial* Material, const char* PropertyName, float& OutValue)
+    {
+        if (!Material || !PropertyName)
+        {
+            return false;
+        }
+
+        FbxProperty Property = Material->FindProperty(PropertyName);
+        if (!Property.IsValid())
+        {
+            return false;
+        }
+
+        OutValue = static_cast<float>(Property.Get<FbxDouble>());
+        return true;
+    }
+
     // FBX material에서 엔진 material 생성에 필요한 texture path와 base color를 추출한다.
-    FFbxImportedMaterialInfo ExtractFbxMaterialInfo(FbxSurfaceMaterial* FbxMaterial, const FString& SourceFbxPath)
+    FFbxImportedMaterialInfo ExtractFbxMaterialInfo(FbxSurfaceMaterial* FbxMaterial, const FString& SourceFbxPath, FFbxImportContext& Context)
     {
         FFbxImportedMaterialInfo Info;
         Info.SlotName = FbxMaterial ? FbxMaterial->GetName() : "None";
@@ -206,23 +236,40 @@ namespace
 
         TryGetFbxColorProperty(FbxMaterial, FbxSurfaceMaterial::sDiffuse, Info.BaseColor);
 
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse), SourceFbxPath, Info.DiffuseTexture);
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sNormalMap), SourceFbxPath, Info.NormalTexture);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse), SourceFbxPath, Info.DiffuseTexture, &Context);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sNormalMap), SourceFbxPath, Info.NormalTexture, &Context);
 
         if (Info.NormalTexture.empty())
         {
-            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sBump), SourceFbxPath, Info.NormalTexture);
+            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sBump), SourceFbxPath, Info.NormalTexture, &Context);
         }
 
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sEmissive), SourceFbxPath, Info.EmissiveTexture);
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Roughness"), SourceFbxPath, Info.RoughnessTexture);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sEmissive), SourceFbxPath, Info.EmissiveTexture, &Context);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Roughness"), SourceFbxPath, Info.RoughnessTexture, &Context);
 
-        if (!TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metalness"), SourceFbxPath, Info.MetallicTexture))
+        if (!TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metalness"), SourceFbxPath, Info.MetallicTexture, &Context))
         {
-            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metallic"), SourceFbxPath, Info.MetallicTexture);
+            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metallic"), SourceFbxPath, Info.MetallicTexture, &Context);
         }
 
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sTransparentColor), SourceFbxPath, Info.OpacityTexture);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sTransparentColor), SourceFbxPath, Info.OpacityTexture, &Context);
+
+        TryGetFbxDoubleProperty(FbxMaterial, "Roughness", Info.Roughness);
+        if (!TryGetFbxDoubleProperty(FbxMaterial, "Metalness", Info.Metallic))
+        {
+            TryGetFbxDoubleProperty(FbxMaterial, "Metallic", Info.Metallic);
+        }
+
+        float TransparencyFactor = 0.0f;
+        if (TryGetFbxDoubleProperty(FbxMaterial, FbxSurfaceMaterial::sTransparencyFactor, TransparencyFactor))
+        {
+            Info.Opacity = 1.0f - TransparencyFactor;
+        }
+
+        if (!Info.OpacityTexture.empty() || Info.Opacity < 0.999f || Info.BaseColor.W < 0.999f)
+        {
+            Info.bHasOpacity = true;
+        }
 
         return Info;
     }
@@ -262,7 +309,12 @@ namespace
         JsonData["PathFileName"] = MatPath;
         JsonData["Origin"]       = "FbxImport";
         JsonData["ShaderPath"]   = "Shaders/Geometry/UberLit.hlsl";
-        JsonData["RenderPass"]   = "Opaque";
+        JsonData["RenderPass"]   = Info.bHasOpacity ? "AlphaBlend" : "Opaque";
+        if (Info.bHasOpacity)
+        {
+            JsonData["BlendState"] = "AlphaBlend";
+            JsonData["DepthStencilState"] = "DepthReadOnly";
+        }
 
         if (!Info.DiffuseTexture.empty())
         {
@@ -292,12 +344,16 @@ namespace
         if (!Info.OpacityTexture.empty())
         {
             JsonData["Textures"]["Custom0Texture"] = Info.OpacityTexture;
+            JsonData["Textures"]["OpacityTexture"] = Info.OpacityTexture;
         }
 
         JsonData["Parameters"]["SectionColor"][0] = Info.BaseColor.X;
         JsonData["Parameters"]["SectionColor"][1] = Info.BaseColor.Y;
         JsonData["Parameters"]["SectionColor"][2] = Info.BaseColor.Z;
         JsonData["Parameters"]["SectionColor"][3] = Info.BaseColor.W;
+        JsonData["Parameters"]["Roughness"] = Info.Roughness;
+        JsonData["Parameters"]["Metallic"] = Info.Metallic;
+        JsonData["Parameters"]["Opacity"] = Info.Opacity;
 
         std::ofstream File(DiskPath, std::ios::binary);
         if (!File.is_open())
@@ -344,7 +400,7 @@ int32 FFbxMaterialImporter::FindOrAddMaterial(
     }
 
     const FString                  SlotName     = FbxMaterial ? FbxMaterial->GetName() : "None";
-    const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath);
+    const FFbxImportedMaterialInfo MaterialInfo = ExtractFbxMaterialInfo(FbxMaterial, SourceFbxPath, Context);
     const FString                  MaterialPath = ConvertFbxMaterialInfoToMat(MaterialInfo, SourceFbxPath, Context);
 
     FStaticMaterial NewMaterial;

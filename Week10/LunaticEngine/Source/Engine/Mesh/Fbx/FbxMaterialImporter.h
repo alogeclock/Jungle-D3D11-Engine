@@ -20,6 +20,13 @@ struct FFbxImportedMaterialInfo
     FString OpacityTexture;
 
     FVector4 BaseColor = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    float Roughness = 0.5f;
+    float Metallic  = 0.0f;
+    float Opacity   = 1.0f;
+
+    bool bHasOpacity        = false;
+    bool bHasLayeredTexture = false;
 };
 
 class FFbxMaterialImporter

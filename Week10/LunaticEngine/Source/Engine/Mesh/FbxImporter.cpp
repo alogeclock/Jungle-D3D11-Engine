@@ -9,13 +9,13 @@
 #include "Mesh/StaticMeshAsset.h"
 
 // FBX 파일에서 static mesh geometry, transform, vertex attributes, material section 정보를 import한다.
-bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
+bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials, FString* OutMessage)
 {
     OutMesh = FStaticMesh();
     OutMaterials.clear();
 
     FFbxSceneHandle SceneHandle;
-    if (!FFbxSceneLoader::Load(SourcePath, SceneHandle))
+    if (!FFbxSceneLoader::Load(SourcePath, SceneHandle, OutMessage))
     {
         return false;
     }
@@ -28,6 +28,10 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
 
     if (!FFbxStaticMeshImporter::Import(SceneHandle.Scene, SourcePath, OutMesh, OutMaterials, BuildContext))
     {
+        if (OutMessage)
+        {
+            *OutMessage = "Failed to import FBX as static mesh: " + SourcePath;
+        }
         OutMesh = FStaticMesh();
         OutMaterials.clear();
         return false;
@@ -38,13 +42,13 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
 }
 
 // FBX 파일에서 skeletal mesh, skeleton, LOD, animation, morph target을 import한다.
-bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
+bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials, FString* OutMessage)
 {
     OutMesh = FSkeletalMesh();
     OutMaterials.clear();
 
     FFbxSceneHandle SceneHandle;
-    if (!FFbxSceneLoader::Load(SourcePath, SceneHandle))
+    if (!FFbxSceneLoader::Load(SourcePath, SceneHandle, OutMessage))
     {
         return false;
     }
@@ -57,6 +61,10 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
 
     if (!FFbxSkeletalMeshImporter::Import(SceneHandle.Scene, SourcePath, OutMesh, OutMaterials, BuildContext))
     {
+        if (OutMessage)
+        {
+            *OutMessage = "Failed to import FBX as skeletal mesh: " + SourcePath;
+        }
         OutMesh = FSkeletalMesh();
         OutMaterials.clear();
         return false;
@@ -67,10 +75,10 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
 }
 
 // FBX 파일에 skin deformer가 포함된 mesh가 있는지 검사한다.
-bool FFbxImporter::HasSkinDeformer(const FString& SourcePath)
+bool FFbxImporter::HasSkinDeformer(const FString& SourcePath, FString* OutMessage)
 {
     FFbxSceneHandle SceneHandle;
-    if (!FFbxSceneLoader::Load(SourcePath, SceneHandle))
+    if (!FFbxSceneLoader::Load(SourcePath, SceneHandle, OutMessage))
     {
         return false;
     }

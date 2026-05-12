@@ -102,6 +102,117 @@ namespace
 
         return GeometryTransform * FFbxTransformUtils::ToEngineMatrix(MeshNode->EvaluateGlobalTransform());
     }
+
+    static bool IsValidBoneIndex(const FSkeleton& Skeleton, int32 BoneIndex)
+    {
+        return BoneIndex >= 0 && BoneIndex < static_cast<int32>(Skeleton.Bones.size());
+    }
+
+    static TArray<FbxNode*> BuildBoneNodesByIndex(
+        const TMap<FbxNode*, int32>& BoneNodeToIndex,
+        const FSkeleton&             Skeleton
+        )
+    {
+        TArray<FbxNode*> BoneNodesByIndex;
+        BoneNodesByIndex.resize(Skeleton.Bones.size(), nullptr);
+
+        for (const auto& Pair : BoneNodeToIndex)
+        {
+            FbxNode*    BoneNode  = Pair.first;
+            const int32 BoneIndex = Pair.second;
+
+            if (BoneNode && IsValidBoneIndex(Skeleton, BoneIndex))
+            {
+                BoneNodesByIndex[BoneIndex] = BoneNode;
+            }
+        }
+
+        return BoneNodesByIndex;
+    }
+
+    static FMatrix GetSceneGlobalMatrix(FbxNode* Node)
+    {
+        if (!Node)
+        {
+            return FMatrix::Identity;
+        }
+
+        return FFbxTransformUtils::ToEngineMatrix(Node->EvaluateGlobalTransform());
+    }
+
+    static bool TryGetBindPoseGlobalMatrix(FbxScene* Scene, FbxNode* Node, FMatrix& OutGlobalMatrix)
+    {
+        return TryGetBindPoseMatrixForNode(Scene, Node, OutGlobalMatrix);
+    }
+
+    static FMatrix GetSceneLocalMatrixFromGlobals(FbxNode* ChildNode, FbxNode* ParentNode)
+    {
+        if (!ChildNode)
+        {
+            return FMatrix::Identity;
+        }
+
+        const FMatrix ChildGlobal = GetSceneGlobalMatrix(ChildNode);
+
+        if (!ParentNode || FFbxSceneQuery::IsSceneRootNode(ParentNode))
+        {
+            return ChildGlobal;
+        }
+
+        const FMatrix ParentGlobal = GetSceneGlobalMatrix(ParentNode);
+        return ChildGlobal * ParentGlobal.GetInverse();
+    }
+
+    static bool TryGetSourceLocalBindMatrix(
+        FbxScene* Scene,
+        FbxNode* ChildNode,
+        FbxNode* ParentNode,
+        FMatrix& OutLocalMatrix
+        )
+    {
+        if (!ChildNode)
+        {
+            return false;
+        }
+
+        FMatrix ChildPoseGlobal;
+        if (!TryGetBindPoseGlobalMatrix(Scene, ChildNode, ChildPoseGlobal))
+        {
+            return false;
+        }
+
+        if (!ParentNode || FFbxSceneQuery::IsSceneRootNode(ParentNode))
+        {
+            OutLocalMatrix = ChildPoseGlobal;
+            return true;
+        }
+
+        FMatrix ParentPoseGlobal;
+        if (!TryGetBindPoseGlobalMatrix(Scene, ParentNode, ParentPoseGlobal))
+        {
+            return false;
+        }
+
+        OutLocalMatrix = ChildPoseGlobal * ParentPoseGlobal.GetInverse();
+        return true;
+    }
+
+    static FMatrix GetBestSourceLocalBindMatrix(
+        FbxScene* Scene,
+        FbxNode* ChildNode,
+        FbxNode* ParentNode,
+        bool&     bUsedSceneFallback
+        )
+    {
+        FMatrix LocalMatrix;
+        if (TryGetSourceLocalBindMatrix(Scene, ChildNode, ParentNode, LocalMatrix))
+        {
+            return LocalMatrix;
+        }
+
+        bUsedSceneFallback = true;
+        return GetSceneLocalMatrixFromGlobals(ChildNode, ParentNode);
+    }
 }
 
 // skin cluster link node와 parent chain을 기반으로 skeleton hierarchy를 구성한다.
@@ -161,11 +272,29 @@ bool FFbxSkeletonImporter::BuildSkeletonFromSkinClusters(
 
     FFbxSceneQuery::FindImportedBoneRoot(ImportedBoneNodes, RootBones);
 
-    for (FbxNode* RootBone : RootBones)
+    // cluster link와 parent chain을 seed로 삼되, skeleton root 아래의 full hierarchy를 포함한다.
+    TArray<FbxNode*> FullBoneNodes;
+    FFbxSceneQuery::CollectFullSkeletonHierarchyFromRoots(RootBones, ImportedBoneNodes, FullBoneNodes);
+
+    if (FullBoneNodes.empty())
     {
-        AddImportedBoneRecursive(RootBone, -1, ImportedBoneNodes, OutSkeleton, OutBoneNodeToIndex);
+        FullBoneNodes = ImportedBoneNodes;
     }
 
+    TArray<FbxNode*> FullRootBones;
+    FFbxSceneQuery::FindImportedBoneRoot(FullBoneNodes, FullRootBones);
+
+    for (FbxNode* RootBone : FullRootBones)
+    {
+        AddImportedBoneRecursive(
+            RootBone,
+            -1,
+            FullBoneNodes,
+            OutSkeleton,
+            OutBoneNodeToIndex
+        );
+    }
+    
     OutSkeleton.RebuildChildren();
 
     return !OutSkeleton.Bones.empty();
@@ -323,7 +452,8 @@ void FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(
     const TMap<FbxNode*, int32>& BoneNodeToIndex,
     const FMatrix&               ReferenceMeshBindInverse,
     FSkeleton&                   Skeleton,
-    TArray<bool>*                InOutAppliedBoneMask = nullptr
+    TArray<bool>*                InOutAppliedBoneMask,
+    bool                         bOverrideExisting
     )
 {
     for (FbxNode* MeshNode : SkinnedMeshNodes)
@@ -367,7 +497,10 @@ void FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(
                     continue;
                 }
 
-                if (InOutAppliedBoneMask && BoneIndex < static_cast<int32>(InOutAppliedBoneMask->size()) && (*InOutAppliedBoneMask)[BoneIndex])
+                if (!bOverrideExisting &&
+                    InOutAppliedBoneMask &&
+                    BoneIndex < static_cast<int32>(InOutAppliedBoneMask->size()) &&
+                    (*InOutAppliedBoneMask)[BoneIndex])
                 {
                     continue;
                 }
@@ -391,6 +524,103 @@ void FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(
     }
 }
 
+// cluster bind matrix가 없는 bone을 parent bind pose 기준으로 최종 정렬한다.
+void FFbxSkeletonImporter::FinalizeNonClusterBoneBindPose(
+    FbxScene*                    Scene,
+    const TMap<FbxNode*, int32>& BoneNodeToIndex,
+    const FMatrix&               ReferenceMeshBindInverse,
+    const TArray<bool>&          ClusterAppliedBoneMask,
+    FSkeleton&                   Skeleton,
+    FFbxImportContext&           BuildContext
+    )
+{
+    const TArray<FbxNode*> BoneNodesByIndex = BuildBoneNodesByIndex(BoneNodeToIndex, Skeleton);
+
+    int32 FinalizedBoneCount = 0;
+    int32 SceneFallbackBoneCount = 0;
+
+    // AddImportedBoneRecursive는 parent를 child보다 먼저 넣는다.
+    // 정방향으로 돌면 parent의 최종 GlobalBindPose를 기준으로 child를 안정적으로 재구성할 수 있다.
+    for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(Skeleton.Bones.size()); ++BoneIndex)
+    {
+        const bool bClusterApplied =
+            BoneIndex < static_cast<int32>(ClusterAppliedBoneMask.size()) &&
+            ClusterAppliedBoneMask[BoneIndex];
+
+        if (bClusterApplied)
+        {
+            // weighted bone은 skin cluster bind matrix가 최종 source of truth다.
+            Skeleton.Bones[BoneIndex].InverseBindPose =
+                Skeleton.Bones[BoneIndex].GlobalBindPose.GetInverse();
+            continue;
+        }
+
+        FbxNode* BoneNode = BoneNodesByIndex[BoneIndex];
+        if (!BoneNode)
+        {
+            continue;
+        }
+
+        FBoneInfo& Bone = Skeleton.Bones[BoneIndex];
+        bool bUsedSceneFallback = false;
+
+        if (IsValidBoneIndex(Skeleton, Bone.ParentIndex))
+        {
+            FbxNode* ParentNode = BoneNodesByIndex[Bone.ParentIndex];
+
+            Bone.LocalBindPose = GetBestSourceLocalBindMatrix(
+                Scene,
+                BoneNode,
+                ParentNode,
+                bUsedSceneFallback
+            );
+
+            Bone.GlobalBindPose =
+                Bone.LocalBindPose *
+                Skeleton.Bones[Bone.ParentIndex].GlobalBindPose;
+        }
+        else
+        {
+            FMatrix RootPoseGlobal;
+            if (TryGetBindPoseGlobalMatrix(Scene, BoneNode, RootPoseGlobal))
+            {
+                Bone.GlobalBindPose = RootPoseGlobal * ReferenceMeshBindInverse;
+            }
+            else
+            {
+                bUsedSceneFallback = true;
+                Bone.GlobalBindPose = GetSceneGlobalMatrix(BoneNode) * ReferenceMeshBindInverse;
+            }
+
+            Bone.LocalBindPose = Bone.GlobalBindPose;
+        }
+
+        Bone.InverseBindPose = Bone.GlobalBindPose.GetInverse();
+        ++FinalizedBoneCount;
+
+        if (bUsedSceneFallback)
+        {
+            ++SceneFallbackBoneCount;
+        }
+    }
+
+    if (FinalizedBoneCount > 0)
+    {
+        BuildContext.AddWarningOnce(
+            ESkeletalImportWarningType::UsedClusterBindPoseFallback,
+            "One or more non-weighted bones were aligned to their parent bind pose hierarchy."
+        );
+    }
+
+    if (SceneFallbackBoneCount > 0)
+    {
+        BuildContext.AddWarningOnce(
+            ESkeletalImportWarningType::UsedSceneTransformFallback,
+            "One or more bones had no FBX bind pose. Scene transforms were used only as local hierarchy fallback."
+        );
+    }
+}
+
 // global bind pose를 기준으로 local bind pose와 inverse bind pose를 재계산한다.
 void FFbxSkeletonImporter::RecomputeLocalBindPose(FSkeleton& Skeleton)
 {
@@ -407,6 +637,9 @@ void FFbxSkeletonImporter::RecomputeLocalBindPose(FSkeleton& Skeleton)
         {
             Bone.LocalBindPose = Bone.GlobalBindPose;
         }
+
+        Bone.InverseBindPose = Bone.GlobalBindPose.GetInverse();
     }
+
     Skeleton.RebuildChildren();
 }

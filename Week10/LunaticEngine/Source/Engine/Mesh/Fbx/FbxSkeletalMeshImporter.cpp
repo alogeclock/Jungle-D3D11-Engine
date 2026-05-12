@@ -10,6 +10,7 @@
 #include "Mesh/Fbx/FbxSkeletonImporter.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/StaticMeshAsset.h"
+#include "Mesh/Fbx/FbxCollisionImporter.h"
 
 #include <fbxsdk.h>
 
@@ -71,9 +72,72 @@ bool FFbxSkeletalMeshImporter::Import(
     }
 
     TMap<int32, TArray<FFbxSkeletalImportMeshNode>> MeshNodesByLOD;
+    OutMesh.LODModels.clear();
+    OutMesh.StaticChildMeshes.clear();
+    OutMesh.CollisionShapes.clear();
+    OutMesh.Animations.clear();
+    OutMesh.MorphTargets.clear();
+
     for (const FFbxSkeletalImportMeshNode& ImportNode : ImportMeshNodes)
     {
-        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose || !ImportNode.MeshNode)
+        if (!ImportNode.MeshNode)
+        {
+            continue;
+        }
+
+        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::CollisionProxy)
+        {
+            FString ParentBoneName;
+
+            if (ImportNode.ParentBoneIndex >= 0 && ImportNode.ParentBoneIndex < static_cast<int32>(OutMesh.Skeleton.Bones.size()))
+            {
+                ParentBoneName = OutMesh.Skeleton.Bones[ImportNode.ParentBoneIndex].Name;
+            }
+
+            FImportedCollisionShape Shape;
+
+            if (FFbxCollisionImporter::ImportCollisionShape(
+                ImportNode.MeshNode,
+                ImportNode.LocalMatrixToParentBone,
+                ImportNode.ParentBoneIndex,
+                ParentBoneName,
+                Shape
+            ))
+            {
+                OutMesh.CollisionShapes.push_back(Shape);
+            }
+            
+            BuildContext.Summary.CollisionProxyMeshCount++;
+
+            BuildContext.AddWarningOnce(
+                ESkeletalImportWarningType::CollisionProxySkippedFromRenderLOD,
+                "Collision proxy imported and skipped from render LOD: " + ImportNode.SourceNodeName
+            );
+
+            continue;
+        }
+
+        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::StaticChildOfBone)
+        {
+            FSkeletalStaticChildMesh StaticChild;
+            StaticChild.SourceNodeName  = ImportNode.SourceNodeName;
+            StaticChild.ParentBoneIndex = ImportNode.ParentBoneIndex;
+            StaticChild.ParentBoneName  = (ImportNode.ParentBoneIndex >= 0 && ImportNode.ParentBoneIndex < static_cast<int32>(OutMesh.Skeleton.Bones.size()))
+            ? OutMesh.Skeleton.Bones[ImportNode.ParentBoneIndex].Name : FString();
+            StaticChild.LocalMatrixToParentBone = ImportNode.LocalMatrixToParentBone;
+            StaticChild.ImportAction            = ImportNode.StaticChildAction;
+
+            OutMesh.StaticChildMeshes.push_back(StaticChild);
+            BuildContext.Summary.StaticChildMeshCount++;
+
+            if (ImportNode.StaticChildAction != ESkeletalStaticChildImportAction::MergeAsRigidPart)
+            {
+                continue;
+            }
+        }
+
+        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose || ImportNode.Kind == EFbxSkeletalImportMeshKind::Ignored || ImportNode.Kind ==
+            EFbxSkeletalImportMeshKind::CollisionProxy)
         {
             continue;
         }
@@ -81,7 +145,7 @@ bool FFbxSkeletalMeshImporter::Import(
         const int32 LODIndex = FFbxSceneQuery::GetSkeletalMeshLODIndex(ImportNode.MeshNode);
         MeshNodesByLOD[LODIndex].push_back(ImportNode);
     }
-
+    
     TArray<int32> SortedLODIndices;
     for (const auto& Pair : MeshNodesByLOD)
     {
@@ -121,19 +185,50 @@ bool FFbxSkeletalMeshImporter::Import(
 
     FFbxSkeletonImporter::InitializeBoneBindPoseFromSceneNodes(BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton);
 
-    TArray<bool> AppliedClusterBindPose;
-    AppliedClusterBindPose.resize(OutMesh.Skeleton.Bones.size());
+    TArray<bool> AppliedPoseBindMask;
+    AppliedPoseBindMask.resize(OutMesh.Skeleton.Bones.size(), false);
 
-    FFbxSkeletonImporter::ApplyBindPoseFromFbxPose(Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, AppliedClusterBindPose, BuildContext);
+    TArray<bool> AppliedClusterBindMask;
+    AppliedClusterBindMask.resize(OutMesh.Skeleton.Bones.size(), false);
 
+    FFbxSkeletonImporter::ApplyBindPoseFromFbxPose(
+        Scene,
+        BoneNodeToIndex,
+        ReferenceMeshBindInverse,
+        OutMesh.Skeleton,
+        AppliedPoseBindMask,
+        BuildContext
+    );
+
+    // Reference LOD의 cluster link matrix를 weighted bone의 최우선 bind source로 사용한다.
     FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(
         ReferenceLODNodes,
         BoneNodeToIndex,
         ReferenceMeshBindInverse,
         OutMesh.Skeleton,
-        &AppliedClusterBindPose
+        &AppliedClusterBindMask,
+        true
     );
-    FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(SkinnedMeshNodes, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, &AppliedClusterBindPose);
+
+    // 다른 LOD의 cluster는 reference LOD에 없던 bone만 보완한다.
+    FFbxSkeletonImporter::ApplyBindPoseFromSkinClusters(
+        SkinnedMeshNodes,
+        BoneNodeToIndex,
+        ReferenceMeshBindInverse,
+        OutMesh.Skeleton,
+        &AppliedClusterBindMask,
+        false
+    );
+
+    // cluster가 없는 helper/end/IK/attachment bone은 pose global을 그대로 믿지 않는다.
+    FFbxSkeletonImporter::FinalizeNonClusterBoneBindPose(
+        Scene,
+        BoneNodeToIndex,
+        ReferenceMeshBindInverse,
+        AppliedClusterBindMask,
+        OutMesh.Skeleton,
+        BuildContext
+    );
 
     FFbxSkeletonImporter::RecomputeLocalBindPose(OutMesh.Skeleton);
 
@@ -160,6 +255,9 @@ bool FFbxSkeletalMeshImporter::Import(
             continue;
         }
 
+        NewLOD.SourceLODIndex = LODIndex;
+        NewLOD.SourceLODName  = FString("LOD") + std::to_string(LODIndex);
+
         OutMesh.LODModels.push_back(NewLOD);
         MorphSourcesByLOD.push_back(std::move(MorphSources));
     }
@@ -169,7 +267,7 @@ bool FFbxSkeletalMeshImporter::Import(
         return false;
     }
 
-    FFbxMorphTargetImporter::ImportMorphTargets(MorphSourcesByLOD, OutMesh.MorphTargets);
+    FFbxMorphTargetImporter::ImportMorphTargets(MorphSourcesByLOD, OutMesh.MorphTargets, BuildContext);
 
     FFbxAnimationImporter::ImportAnimations(Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, OutMesh.Animations);
 
