@@ -219,6 +219,10 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
 	SetSkeletalMeshInternal(InSkeletalMesh, false, false);
+	RequiredBones.clear();
+	SelectedBoneIndex = -1;
+	RootBoneTranslation = FVector::ZeroVector;
+	bRequiredBonesUpdated = false;
 	InitializeBoneTransformsFromSkeleton();
 	FinalizeSkeletalMeshRenderState();
 }

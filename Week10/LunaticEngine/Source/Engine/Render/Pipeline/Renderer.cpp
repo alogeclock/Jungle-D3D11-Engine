@@ -9,6 +9,7 @@
 #include "Profiling/GPUProfiler.h"
 #include "Profiling/StartupProfiler.h"
 #include "Materials/MaterialManager.h"
+#include "Render/Skeletal/SkeletalMeshObjectCPU.h"
 
 
 void FRenderer::Create(HWND hWindow)
@@ -69,6 +70,11 @@ void FRenderer::Release()
 	FShaderManager::Get().Release();
 	FMaterialManager::Get().Release();
 	Device.Release();
+}
+
+std::unique_ptr<FSkeletalMeshObject> FRenderer::CreateSkeletalMeshObjectCPU(const FSkeletalMesh* SourceMesh)
+{
+	return std::make_unique<FSkeletalMeshObjectCPU>(SourceMesh, Device.GetDevice());
 }
 
 //	스왑체인 백버퍼 복귀 — ImGui 합성 직전에 호출

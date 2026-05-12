@@ -103,7 +103,7 @@ void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
     {
         if (SkeletalMeshAsset)
         {
-            SkeletalMeshAsset->Skeleton.RebuildChildren();
+            SkeletalMeshAsset->Skeleton.SanitizeHierarchyAndBindPose();
 
             for (FSkeletalMeshLOD& LOD : SkeletalMeshAsset->LODModels)
             {
@@ -129,7 +129,7 @@ void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
 
     if (SkeletalMeshAsset)
     {
-        SkeletalMeshAsset->Skeleton.RebuildChildren();
+        SkeletalMeshAsset->Skeleton.SanitizeHierarchyAndBindPose();
 
         for (FSkeletalMeshLOD& LOD : SkeletalMeshAsset->LODModels)
         {

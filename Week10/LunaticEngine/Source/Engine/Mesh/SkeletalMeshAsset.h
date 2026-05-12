@@ -137,6 +137,36 @@ struct FSkeleton
 {
     TArray<FBoneInfo> Bones;
 
+    void SanitizeHierarchyAndBindPose()
+    {
+        const int32 BoneCount = static_cast<int32>(Bones.size());
+
+        for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+        {
+            int32& ParentIndex = Bones[BoneIndex].ParentIndex;
+            if (ParentIndex < 0 || ParentIndex >= BoneCount || ParentIndex >= BoneIndex)
+            {
+                ParentIndex = -1;
+            }
+        }
+
+        for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+        {
+            FBoneInfo& Bone = Bones[BoneIndex];
+            if (Bone.ParentIndex >= 0)
+            {
+                Bone.LocalBindPose = Bone.GlobalBindPose * Bones[Bone.ParentIndex].GlobalBindPose.GetInverse();
+            }
+            else
+            {
+                Bone.LocalBindPose = Bone.GlobalBindPose;
+            }
+            Bone.InverseBindPose = Bone.GlobalBindPose.GetInverse();
+        }
+
+        RebuildChildren();
+    }
+
     void RebuildChildren()
     {
         for (FBoneInfo& Bone : Bones)

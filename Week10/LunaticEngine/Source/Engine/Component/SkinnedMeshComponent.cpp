@@ -15,8 +15,6 @@
 #include "Render/Proxy/DirtyFlag.h"
 #include "Serialization/Archive.h"
 #include "Render/Skeletal/SkeletalMeshObject.h"
-#include <Render/Skeletal/SkeletalMeshObjectCPU.h>
-#include "Render/Device/D3DDevice.h"
 IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
 
 // FSkeletalMeshObject 포함 후에 디스트럭터 정의 — unique_ptr<>가 complete type을 요구.
@@ -107,11 +105,7 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState)
 {
 	SkeletalMesh = InMesh;
-	MeshObject.reset();
-	BoneSpaceTransforms.clear();
-	ComponentSpaceTransforms.clear();
-	ComponentSpaceMatrices.clear();
-	SkinningMatrices.clear();
+	InvalidateSkinnedMeshState(true);
 
 	if (InMesh)
 	{
@@ -122,8 +116,7 @@ void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool 
 
 		if (FSkeletalMesh* Asset = InMesh->GetSkeletalMeshAsset())
 		{
-			ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
-			MeshObject = std::make_unique<FSkeletalMeshObjectCPU>(Asset, Device);
+			MeshObject = GEngine ? GEngine->GetRenderer().CreateSkeletalMeshObjectCPU(Asset) : nullptr;
 
 			if (bBuildInitialSkinning)
 			{
@@ -140,14 +133,29 @@ void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool 
 		OverrideMaterials.clear();
 		MaterialSlots.clear();
 	}
-	bPoseDirty = true;
-	bSkinningDirty = true;
-	bBoundsDirty = true;
 	CacheLocalBounds();
 	if (bUpdateRenderState)
 	{
 		FinalizeSkeletalMeshRenderState();
 	}
+}
+
+void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
+{
+	MeshObject.reset();
+	if (bClearPose)
+	{
+		BoneSpaceTransforms.clear();
+		ComponentSpaceTransforms.clear();
+		ComponentSpaceMatrices.clear();
+		SkinningMatrices.clear();
+	}
+
+	bPoseDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
+	bHasValidBounds = false;
+	MarkWorldBoundsDirty();
 }
 
 void USkinnedMeshComponent::FinalizeSkeletalMeshRenderState()
@@ -459,21 +467,6 @@ void USkinnedMeshComponent::RefreshBoneTransforms()
 			BoneSpaceTransforms.push_back(FTransform(M.GetLocation(), M.ToQuat(), M.GetScale()));
 		}
 	}
-	TArray<bool> bBoneUpdated(N, false);
-
-	for (int32 BoneIndex = 0; BoneIndex < N; BoneIndex++)
-	{
-		const int32 ParentIndex = Sk.Bones[BoneIndex].ParentIndex;
-		FMatrix ParentCS = FMatrix::Identity;
-
-		if (ParentIndex >= 0)
-		{
-			ParentCS = ComponentSpaceMatrices[ParentIndex];
-		}
-		ComponentSpaceMatrices[BoneIndex] = BoneSpaceTransforms[BoneIndex].ToMatrix() * ParentCS;
-		SkinningMatrices[BoneIndex] = Sk.Bones[BoneIndex].InverseBindPose *ComponentSpaceMatrices[BoneIndex];
-	}
-
 	FillComponentSpaceTransforms();
 }
 

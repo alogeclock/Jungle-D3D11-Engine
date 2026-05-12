@@ -108,5 +108,6 @@ protected:
 	void SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState);
 	void FinalizeSkeletalMeshRenderState();
 	void CacheLocalBounds();
+	void InvalidateSkinnedMeshState(bool bClearPose);
 	void UpdateSkinnedMeshObject();
 };
