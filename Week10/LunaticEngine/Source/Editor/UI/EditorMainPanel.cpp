@@ -36,6 +36,9 @@
 
 #include <filesystem>
 #include <windows.h>
+#include <dwmapi.h>
+
+#pragma comment(lib, "dwmapi.lib")
 
 namespace
 {
@@ -128,6 +131,29 @@ namespace
 		if (const ImGuiViewport* MainViewport = ImGui::GetMainViewport())
 		{
 			ImGui::SetNextWindowPos(ImVec2(MainViewport->Pos.x + 96.0f, MainViewport->Pos.y + 80.0f), ImGuiCond_FirstUseEver);
+		}
+	}
+
+	void ApplyDarkTitleBarToSecondaryViewports()
+	{
+		const ImGuiPlatformIO& PlatformIO = ImGui::GetPlatformIO();
+		const ImGuiViewport* MainViewport = ImGui::GetMainViewport();
+		for (ImGuiViewport* Viewport : PlatformIO.Viewports)
+		{
+			if (!Viewport || Viewport == MainViewport || !Viewport->PlatformHandle)
+			{
+				continue;
+			}
+
+			HWND Hwnd = static_cast<HWND>(Viewport->PlatformHandle);
+			const BOOL DarkModeEnabled = TRUE;
+			DwmSetWindowAttribute(Hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &DarkModeEnabled, sizeof(DarkModeEnabled));
+
+			const COLORREF CaptionColor = RGB(0, 0, 0);
+			DwmSetWindowAttribute(Hwnd, DWMWA_CAPTION_COLOR, &CaptionColor, sizeof(CaptionColor));
+
+			const COLORREF BorderColor = RGB(0, 0, 0);
+			DwmSetWindowAttribute(Hwnd, DWMWA_BORDER_COLOR, &BorderColor, sizeof(BorderColor));
 		}
 	}
 
@@ -451,6 +477,7 @@ void FEditorMainPanel::Render(float DeltaTime)
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		ImGui::UpdatePlatformWindows();
+		ApplyDarkTitleBarToSecondaryViewports();
 		ImGui::RenderPlatformWindowsDefault();
 	}
 }
@@ -526,7 +553,7 @@ void FEditorMainPanel::RenderPreviewEditors(float DeltaTime)
 	bool bPreviewHostOpen = true;
 	SetNextPreviewEditorHostWindowPolicy();
 	ImGui::SetNextWindowSize(ImVec2(1120.0f, 720.0f), ImGuiCond_FirstUseEver);
-	ImGuiWindowFlags HostWindowFlags = ImGuiWindowFlags_NoCollapse;
+	ImGuiWindowFlags HostWindowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
 	if (IsMultiViewportEnabled())
 	{
 		HostWindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking;
