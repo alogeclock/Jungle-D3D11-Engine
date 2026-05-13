@@ -5,12 +5,12 @@
 #include <cmath>
 
 #include "Object/ObjectFactory.h"
+#include "Asset/AssetManager.h"
 #include "Collision/RayUtils.h"
 #include "Core/PropertyTypes.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Engine/Runtime/Engine.h"
 #include "Materials/MaterialManager.h"
-#include "Mesh/SkeletalMeshManager.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 #include "Render/Proxy/DirtyFlag.h"
@@ -91,8 +91,7 @@ namespace
 			}
 		}
 	}
-	//helper for duplicate
-	void RestoreSkeletalMaterialOverrides(TArray<FMaterialSlot>& MaterialSlots,	TArray<UMaterial*>& OverrideMaterials,	const TArray<FMaterialSlot>& SavedSlots)
+	void RestoreSkeletalMaterialOverrides(TArray<FMaterialSlot>& MaterialSlots, TArray<UMaterial*>& OverrideMaterials, const TArray<FMaterialSlot>& SavedSlots)
 	{
 		for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()) && i < static_cast<int32>(SavedSlots.size()); ++i)
 		{
@@ -447,25 +446,12 @@ void USkinnedMeshComponent::PostDuplicate()
 		TArray<FMaterialSlot> SavedSlots = MaterialSlots;
 		TArray<FTransform> SavedBoneSpaceTransforms = BoneSpaceTransforms;
 
-		USkeletalMesh* Loaded = FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshPath);
+		USkeletalMesh* Loaded = FAssetManager::Get().LoadSkeletalMesh({ SkeletalMeshPath });
 		if (Loaded)
 		{
 			SetSkeletalMeshInternal(Loaded, false, false);
 
-			for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()) && i < static_cast<int32>(SavedSlots.size()); ++i)
-			{
-				MaterialSlots[i] = SavedSlots[i];
-
-				const FString& MatPath = MaterialSlots[i].Path;
-				if (MatPath.empty() || MatPath == "None")
-				{
-					OverrideMaterials[i] = nullptr;
-				}
-				else
-				{
-					OverrideMaterials[i] = FMaterialManager::Get().GetOrCreateMaterial(MatPath);
-				}
-			}
+			RestoreSkeletalMaterialOverrides(MaterialSlots, OverrideMaterials, SavedSlots);
 
 			const FSkeletalMesh* MeshAsset = Loaded->GetSkeletalMeshAsset();
 			const int32 BoneCount = MeshAsset ? static_cast<int32>(MeshAsset->Skeleton.Bones.size()) : 0;

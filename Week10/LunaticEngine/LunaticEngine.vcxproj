@@ -354,6 +354,7 @@
     <ClCompile Include="Source\Editor\Viewport\Preview\PreviewViewportClient.cpp" />
     <ClCompile Include="Source\Editor\Viewport\Preview\SkeletalMeshPreviewViewportClient.cpp" />
     <ClCompile Include="Source\Engine\Asset\AssetCurveUtils.cpp" />
+    <ClCompile Include="Source\Engine\Asset\AssetManager.cpp" />
     <ClCompile Include="Source\Engine\Asset\AssetData.cpp" />
     <ClCompile Include="Source\Engine\Asset\AssetFileSerializer.cpp" />
     <ClCompile Include="Source\Engine\Audio\AudioManager.cpp" />
@@ -662,6 +663,7 @@
     <ClInclude Include="Source\Editor\Viewport\Preview\PreviewViewportClient.h" />
     <ClInclude Include="Source\Editor\Viewport\Preview\SkeletalMeshPreviewViewportClient.h" />
     <ClInclude Include="Source\Engine\Asset\AssetCurveUtils.h" />
+    <ClInclude Include="Source\Engine\Asset\AssetManager.h" />
     <ClInclude Include="Source\Engine\Asset\AssetData.h" />
     <ClInclude Include="Source\Engine\Asset\AssetFileSerializer.h" />
     <ClInclude Include="Source\Engine\Audio\AudioManager.h" />

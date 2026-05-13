@@ -1,11 +1,11 @@
 ﻿#include "Component/SkeletalMeshComponent.h"
 
+#include "Asset/AssetManager.h"
 #include "Asset/AssetData.h"
 #include "Collision/RayUtils.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
-#include "Mesh/SkeletalMeshManager.h"
 #include "Object/ObjectFactory.h"
 #include "Render/Proxy/DirtyFlag.h"
 #include "Render/Scene/FScene.h"
@@ -642,7 +642,7 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	UMeshComponent::PostEditProperty(PropertyName);
 
 	if (std::strcmp(PropertyName, "Skeletal Mesh") == 0)
-		SetSkeletalMesh(IsNonePath(SkeletalMeshPath) ? nullptr : FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshPath));
+		SetSkeletalMesh(FAssetManager::Get().LoadSkeletalMesh({ SkeletalMeshPath }));
 	else if (std::strncmp(PropertyName, "Element ", 8) == 0)
 	{
 		const int32 idx = std::atoi(&PropertyName[8]);
