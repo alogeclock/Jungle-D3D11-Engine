@@ -84,7 +84,6 @@ bool FFbxSkeletalMeshLODBuilder::Build(
         }
 
         const FMatrix NormalToReference = MeshToReference.GetInverse().GetTransposed();
-        const bool    bReverseWinding   = FFbxTransformUtils::Determinant3x3(MeshToReference) < 0.0f;
 
         TArray<TArray<FFbxImportedBoneWeight>> ControlPointWeight;
         if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Skinned)
@@ -134,15 +133,8 @@ bool FFbxSkeletalMeshLODBuilder::Build(
                     : FFbxGeometryReader::ReadUVByName(Mesh, PolygonIndex, CornerIndex, MeshUVSetNames[0].c_str());
             }
 
-            FVector       FallbackNormal  = FFbxGeometryReader::ComputeTriangleNormal(Positions[0], Positions[1], Positions[2]);
+            const FVector FallbackNormal  = FFbxGeometryReader::ComputeTriangleNormal(Positions[0], Positions[1], Positions[2]);
             const FVector FallbackTangent = FFbxGeometryReader::ComputeTriangleTangent(Positions[0], Positions[1], Positions[2], UV0[0], UV0[1], UV0[2]);
-
-            if (bReverseWinding)
-            {
-                FallbackNormal *= -1.0f;
-            }
-
-            uint32 TriangleVertexIndices[3] = {};
 
             for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
             {
@@ -205,13 +197,13 @@ bool FFbxSkeletalMeshLODBuilder::Build(
                         Vertex.Normal
                     );
 
-                    Vertex.Tangent = FVector4(T.X, T.Y, T.Z, bReverseWinding ? -ImportedTangent.W : ImportedTangent.W);
+                    Vertex.Tangent = FVector4(T.X, T.Y, T.Z, ImportedTangent.W);
                 }
                 else
                 {
                     const FVector T = FFbxTransformUtils::OrthogonalizeTangentToNormal(FallbackTangent, Vertex.Normal);
 
-                    Vertex.Tangent    = FVector4(T.X, T.Y, T.Z, bReverseWinding ? -1.0f : 1.0f);
+                    Vertex.Tangent    = FVector4(T.X, T.Y, T.Z, 1.0f);
                     bGeneratedTangent = true;
                 }
 
@@ -244,7 +236,7 @@ bool FFbxSkeletalMeshLODBuilder::Build(
                     BuildContext.Summary.DeduplicatedVertexCount++;
                 }
 
-                TriangleVertexIndices[CornerIndex] = VertexIndex;
+                SectionBuild->Indices.push_back(VertexIndex);
 
                 if (OutMorphSources && bAddedNewVertex)
                 {
@@ -264,19 +256,6 @@ bool FFbxSkeletalMeshLODBuilder::Build(
 
                     OutMorphSources->push_back(Source);
                 }
-            }
-
-            if (bReverseWinding)
-            {
-                SectionBuild->Indices.push_back(TriangleVertexIndices[0]);
-                SectionBuild->Indices.push_back(TriangleVertexIndices[2]);
-                SectionBuild->Indices.push_back(TriangleVertexIndices[1]);
-            }
-            else
-            {
-                SectionBuild->Indices.push_back(TriangleVertexIndices[0]);
-                SectionBuild->Indices.push_back(TriangleVertexIndices[1]);
-                SectionBuild->Indices.push_back(TriangleVertexIndices[2]);
             }
 
             BuildContext.Summary.TriangleCount++;

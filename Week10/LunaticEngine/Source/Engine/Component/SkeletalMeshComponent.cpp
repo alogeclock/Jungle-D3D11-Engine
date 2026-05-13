@@ -55,61 +55,11 @@ namespace
 		float Radius = 1.0f;
 	};
 
-	float Determinant3x3(const FMatrix& Matrix)
-	{
-		return Matrix.M[0][0] * (Matrix.M[1][1] * Matrix.M[2][2] - Matrix.M[1][2] * Matrix.M[2][1]) - Matrix.M[0][1] * (Matrix.M[1][0] * Matrix.M[2][2] - Matrix
-			.M[1][2] * Matrix.M[2][0]) + Matrix.M[0][2] * (Matrix.M[1][0] * Matrix.M[2][1] - Matrix.M[1][1] * Matrix.M[2][0]);
-	}
-
 	FTransform TransformFromMatrix(const FMatrix& Matrix)
 	{
-		constexpr float Epsilon = 1.0e-6f;
-		FVector         Scale   = Matrix.GetScale();
-
-		if (Determinant3x3(Matrix) < 0.0f)
-		{
-			int32 MirrorAxis   = 0;
-			float LargestScale = std::fabs(Scale.X);
-			if (std::fabs(Scale.Y) > LargestScale)
-			{
-				MirrorAxis   = 1;
-				LargestScale = std::fabs(Scale.Y);
-			}
-			if (std::fabs(Scale.Z) > LargestScale)
-			{
-				MirrorAxis = 2;
-			}
-
-			if (MirrorAxis == 0)
-			{
-				Scale.X = -Scale.X;
-			}
-			else if (MirrorAxis == 1)
-			{
-				Scale.Y = -Scale.Y;
-			}
-			else
-			{
-				Scale.Z = -Scale.Z;
-			}
-		}
-
-		FMatrix     RotationMatrix = FMatrix::Identity;
-		const float ScaleValues[3] = { Scale.X, Scale.Y, Scale.Z };
-		for (int32 Row = 0; Row < 3; ++Row)
-		{
-			const float RowScale = ScaleValues[Row];
-			if (std::fabs(RowScale) > Epsilon)
-			{
-				RotationMatrix.M[Row][0] = Matrix.M[Row][0] / RowScale;
-				RotationMatrix.M[Row][1] = Matrix.M[Row][1] / RowScale;
-				RotationMatrix.M[Row][2] = Matrix.M[Row][2] / RowScale;
-			}
-		}
-
-		FQuat Rotation = RotationMatrix.ToQuat();
+		FQuat Rotation = Matrix.ToQuat();
 		Rotation.Normalize();
-		return FTransform(Matrix.GetLocation(), Rotation, Scale);
+		return FTransform(Matrix.GetLocation(), Rotation, Matrix.GetScale());
 	}
 
 	float ClampFloat(float Value, float MinValue, float MaxValue)

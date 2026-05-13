@@ -9,10 +9,6 @@ struct FFbxImportContext
 {
     FSkeletalImportSummary Summary;
 
-    // Normalize() 이전 FBX scene axis.
-    bool                        bHasSourceCoordSystem = false;
-    FbxAxisSystem::ECoordSystem SourceCoordSystem     = FbxAxisSystem::eRightHanded;
-
     TMap<FbxSurfaceMaterial*, int32> FbxMaterialToIndex;
 
     // skeletal import summary에 warning 항목을 하나 추가한다.
