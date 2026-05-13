@@ -16,6 +16,7 @@
 #include "Mesh/Fbx/FbxMetadataImporter.h"
 #include "Mesh/Fbx/FbxSceneHierarchyImporter.h"
 #include "Mesh/Fbx/FbxTransformUtils.h"
+#include "Math/Transform.h"
 
 #include <fbxsdk.h>
 
@@ -25,6 +26,139 @@
 
 namespace
 {
+    FMatrix TransformDirectionMatrix(const FMatrix& Matrix)
+    {
+        return FFbxTransformUtils::RemoveTranslationFromMatrix(Matrix);
+    }
+
+    void FlipLODIndexWinding(FSkeletalMeshLOD& LOD)
+    {
+        for (size_t Index = 0; Index + 2 < LOD.Indices.size(); Index += 3)
+        {
+            std::swap(LOD.Indices[Index + 1], LOD.Indices[Index + 2]);
+        }
+    }
+
+    void TransformLODToEngineAssetSpace(FSkeletalMeshLOD& LOD, const FMatrix& AssetCorrection)
+    {
+        const FMatrix DirectionCorrection = TransformDirectionMatrix(AssetCorrection);
+        const FMatrix NormalCorrection    = DirectionCorrection.GetInverse().GetTransposed();
+        const bool    bReverseWinding     = FFbxTransformUtils::Determinant3x3(DirectionCorrection) < 0.0f;
+
+        for (FSkeletalVertex& Vertex : LOD.Vertices)
+        {
+            Vertex.Pos    = FFbxTransformUtils::TransformPositionByMatrix(Vertex.Pos, AssetCorrection);
+            Vertex.Normal = FFbxTransformUtils::TransformNormalByMatrix(Vertex.Normal, NormalCorrection);
+
+            const FVector Tangent = FFbxTransformUtils::TransformTangentByMatrix(
+                FVector(Vertex.Tangent.X, Vertex.Tangent.Y, Vertex.Tangent.Z),
+                DirectionCorrection,
+                Vertex.Normal
+            );
+            Vertex.Tangent = FVector4(Tangent.X, Tangent.Y, Tangent.Z, bReverseWinding ? -Vertex.Tangent.W : Vertex.Tangent.W);
+        }
+
+        if (bReverseWinding)
+        {
+            FlipLODIndexWinding(LOD);
+        }
+
+        LOD.CacheBounds();
+    }
+
+    void TransformMorphTargetsToEngineAssetSpace(TArray<FMorphTarget>& MorphTargets, const FMatrix& AssetCorrection)
+    {
+        const FMatrix DirectionCorrection = TransformDirectionMatrix(AssetCorrection);
+        const FMatrix NormalCorrection    = DirectionCorrection.GetInverse().GetTransposed();
+
+        for (FMorphTarget& MorphTarget : MorphTargets)
+        {
+            for (FMorphTargetLOD& MorphLOD : MorphTarget.LODModels)
+            {
+                for (FMorphTargetShape& Shape : MorphLOD.Shapes)
+                {
+                    for (FMorphTargetDelta& Delta : Shape.Deltas)
+                    {
+                        Delta.PositionDelta = FFbxTransformUtils::TransformVectorNoNormalizeByMatrix(Delta.PositionDelta, DirectionCorrection);
+                        Delta.NormalDelta   = FFbxTransformUtils::TransformNormalByMatrix(Delta.NormalDelta, NormalCorrection);
+
+                        const FVector TangentDelta = FFbxTransformUtils::TransformVectorNoNormalizeByMatrix(
+                            FVector(Delta.TangentDelta.X, Delta.TangentDelta.Y, Delta.TangentDelta.Z),
+                            DirectionCorrection
+                        );
+                        Delta.TangentDelta = FVector4(TangentDelta.X, TangentDelta.Y, TangentDelta.Z, Delta.TangentDelta.W);
+                    }
+                }
+            }
+        }
+    }
+
+    void TransformSkeletonToEngineAssetSpace(FSkeleton& Skeleton, const FMatrix& AssetCorrection)
+    {
+        for (FBoneInfo& Bone : Skeleton.Bones)
+        {
+            Bone.GlobalBindPose  = Bone.GlobalBindPose * AssetCorrection;
+            Bone.InverseBindPose = Bone.GlobalBindPose.GetInverse();
+        }
+
+        FFbxSkeletonImporter::RecomputeLocalBindPose(Skeleton);
+    }
+
+    void TransformAnimationRootKeysToEngineAssetSpace(TArray<FSkeletalAnimationClip>& Animations, const FSkeleton& Skeleton, const FMatrix& AssetCorrection)
+    {
+        for (FSkeletalAnimationClip& Clip : Animations)
+        {
+            for (FBoneAnimationTrack& Track : Clip.Tracks)
+            {
+                if (Track.BoneIndex < 0 || Track.BoneIndex >= static_cast<int32>(Skeleton.Bones.size()))
+                {
+                    continue;
+                }
+
+                if (Skeleton.Bones[Track.BoneIndex].ParentIndex >= 0)
+                {
+                    continue;
+                }
+
+                for (FBoneTransformKey& Key : Track.Keys)
+                {
+                    const FMatrix LocalMatrix = FTransform(Key.Translation, Key.Rotation, Key.Scale).ToMatrix();
+                    Key                       = FFbxTransformUtils::MakeBoneTransformKeyFromEngineMatrix(Key.TimeSeconds, LocalMatrix * AssetCorrection);
+                }
+            }
+        }
+    }
+
+    void TransformSceneNodesToEngineAssetSpace(TArray<FFbxImportedSceneNode>& SceneNodes, const FMatrix& AssetCorrection)
+    {
+        for (FFbxImportedSceneNode& SceneNode : SceneNodes)
+        {
+            SceneNode.GlobalMatrix         = SceneNode.GlobalMatrix * AssetCorrection;
+            SceneNode.GlobalGeometryMatrix = SceneNode.GlobalGeometryMatrix * AssetCorrection;
+        }
+    }
+
+    void TransformSplitStaticMeshesToEngineAssetSpace(TArray<FFbxSplitStaticMeshReference>& SplitStaticMeshes, const FMatrix& AssetCorrection)
+    {
+        for (FFbxSplitStaticMeshReference& SplitRef : SplitStaticMeshes)
+        {
+            SplitRef.GlobalMatrix = SplitRef.GlobalMatrix * AssetCorrection;
+        }
+    }
+
+    void BakeNormalizedSkeletalSpaceToEngineAssetSpace(FSkeletalMesh& Mesh, const FMatrix& AssetCorrection)
+    {
+        for (FSkeletalMeshLOD& LOD : Mesh.LODModels)
+        {
+            TransformLODToEngineAssetSpace(LOD, AssetCorrection);
+        }
+
+        TransformMorphTargetsToEngineAssetSpace(Mesh.MorphTargets, AssetCorrection);
+        TransformSkeletonToEngineAssetSpace(Mesh.Skeleton, AssetCorrection);
+        TransformAnimationRootKeysToEngineAssetSpace(Mesh.Animations, Mesh.Skeleton, AssetCorrection);
+        TransformSplitStaticMeshesToEngineAssetSpace(Mesh.SplitStaticMeshes, AssetCorrection);
+    }
+
     void SanitizeLODInfluencesForValidation(FSkeletalMeshLOD& LOD, int32 BoneCount)
     {
         for (FSkeletalVertex& Vertex : LOD.Vertices)
@@ -364,6 +498,17 @@ bool FFbxSkeletalMeshImporter::Import(
 
     FFbxAnimationImporter::ImportAnimations(Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, OutMesh.Animations);
 
+    // 여기까지의 skeletal asset-space는 Normalize()가 만든 FBX scene axis 기준이다.
+    // Force Front XAxis는 원본 메시 얼굴 방향을 추론하지 않고, scene axis metadata의 front/right/up을
+    // 엔진 asset convention(+X Forward / +Y Right / +Z Up)에 맞춰 vertex/bind/animation에 동일하게 bake한다.
+    // 단, skeletal path는 ReferenceMeshBindInverse를 통해 FBX SDK ConvertScene()의 global handedness flip을
+    // reference mesh 기준공간에서 상쇄할 수 있다. 원본 FBX coord system과 Normalize() 이후 coord system이 다르면
+    // side axis mirror를 추가로 bake해서 좌우반전을 제거한다.
+    const FbxAxisSystem NormalizedAxisSystem  = Scene->GetGlobalSettings().GetAxisSystem();
+    const bool          bMirrorHandedness     = BuildContext.bHasSourceCoordSystem && BuildContext.SourceCoordSystem != NormalizedAxisSystem.GetCoorSystem();
+    const FMatrix       EngineAssetCorrection = FFbxTransformUtils::MakeAxisSystemToEngineAssetMatrix(NormalizedAxisSystem, bMirrorHandedness);
+    BakeNormalizedSkeletalSpaceToEngineAssetSpace(OutMesh, EngineAssetCorrection);
+
     OutMesh.Skeleton.SanitizeHierarchyAndBindPose();
     const int32 ValidationBoneCount = static_cast<int32>(OutMesh.Skeleton.Bones.size());
     for (FSkeletalMeshLOD& LOD : OutMesh.LODModels)
@@ -436,6 +581,7 @@ bool FFbxSkeletalMeshImporter::Import(
 
     FFbxMetadataImporter::CollectSceneNodeMetadata(Scene, OutMesh.NodeMetadata);
     FFbxSceneHierarchyImporter::CollectSceneNodes(Scene, OutMesh.SceneNodes);
+    TransformSceneNodesToEngineAssetSpace(OutMesh.SceneNodes, EngineAssetCorrection);
     BuildContext.Summary.MetadataNodeCount = static_cast<int32>(OutMesh.NodeMetadata.size());
     BuildContext.Summary.SceneNodeCount    = static_cast<int32>(OutMesh.SceneNodes.size());
 

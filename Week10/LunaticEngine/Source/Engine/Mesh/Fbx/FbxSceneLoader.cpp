@@ -130,6 +130,8 @@ void FFbxSceneLoader::Normalize(FbxScene* Scene)
         return;
     }
 
+    // Skeletal importer는 이 canonical space로 scene/pose를 정규화한 뒤,
+    // FbxSkeletalMeshImporter에서 엔진 asset-space(+X Forward, +Y Right, +Z Up)로 한 번 더 bake한다.
     FbxAxisSystem EngineAxisSystem(FbxAxisSystem::eZAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eLeftHanded);
 
     const FbxAxisSystem SceneAxisSystem = Scene->GetGlobalSettings().GetAxisSystem();

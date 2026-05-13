@@ -22,11 +22,15 @@ bool FFbxImporter::ImportStaticMesh(const FString& SourcePath, FStaticMesh& OutM
         return false;
     }
 
+    const FbxAxisSystem SourceAxisSystem = SceneHandle.Scene->GetGlobalSettings().GetAxisSystem();
+
     FFbxSceneLoader::Normalize(SceneHandle.Scene);
     FFbxSceneLoader::Triangulate(SceneHandle.Manager, SceneHandle.Scene);
 
     FFbxImportContext BuildContext;
-    BuildContext.Summary.SourcePath = SourcePath;
+    BuildContext.Summary.SourcePath    = SourcePath;
+    BuildContext.bHasSourceCoordSystem = true;
+    BuildContext.SourceCoordSystem     = SourceAxisSystem.GetCoorSystem();
 
     if (!FFbxStaticMeshImporter::Import(SceneHandle.Scene, SourcePath, OutMesh, OutMaterials, BuildContext))
     {
@@ -55,11 +59,15 @@ bool FFbxImporter::ImportSkeletalMesh(const FString& SourcePath, FSkeletalMesh& 
         return false;
     }
 
+    const FbxAxisSystem SourceAxisSystem = SceneHandle.Scene->GetGlobalSettings().GetAxisSystem();
+
     FFbxSceneLoader::Normalize(SceneHandle.Scene);
     FFbxSceneLoader::Triangulate(SceneHandle.Manager, SceneHandle.Scene);
 
     FFbxImportContext BuildContext;
-    BuildContext.Summary.SourcePath = SourcePath;
+    BuildContext.Summary.SourcePath    = SourcePath;
+    BuildContext.bHasSourceCoordSystem = true;
+    BuildContext.SourceCoordSystem     = SourceAxisSystem.GetCoorSystem();
 
     if (!FFbxSkeletalMeshImporter::Import(SceneHandle.Scene, SourcePath, OutMesh, OutMaterials, BuildContext))
     {
@@ -86,6 +94,8 @@ bool FFbxImporter::ImportScene(const FString& SourcePath, const FFbxImportOption
         return false;
     }
 
+    const FbxAxisSystem SourceAxisSystem = SceneHandle.Scene->GetGlobalSettings().GetAxisSystem();
+
     FFbxSceneLoader::Normalize(SceneHandle.Scene);
     FFbxSceneLoader::Triangulate(SceneHandle.Manager, SceneHandle.Scene);
 
@@ -95,7 +105,9 @@ bool FFbxImporter::ImportScene(const FString& SourcePath, const FFbxImportOption
     if (bHasSkin && Options.bImportSkeletalMesh)
     {
         FFbxImportContext BuildContext;
-        BuildContext.Summary.SourcePath = SourcePath;
+        BuildContext.Summary.SourcePath    = SourcePath;
+        BuildContext.bHasSourceCoordSystem = true;
+        BuildContext.SourceCoordSystem     = SourceAxisSystem.GetCoorSystem();
         if (FFbxSkeletalMeshImporter::Import(SceneHandle.Scene, SourcePath, OutResult.SkeletalMesh, OutResult.SkeletalMaterials, BuildContext))
         {
             OutResult.SkeletalMesh.PathFileName = SourcePath;
