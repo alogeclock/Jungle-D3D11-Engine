@@ -90,6 +90,49 @@ namespace
 			}
 		}
 	}
+
+	float EvaluateFloatCurve(const FAnimationFloatCurve& Curve, float TimeSeconds)
+	{
+		if (Curve.Keys.empty())
+		{
+			return 0.0f;
+		}
+
+		if (TimeSeconds <= Curve.Keys.front().TimeSeconds)
+		{
+			return Curve.Keys.front().Value;
+		}
+
+		if (TimeSeconds >= Curve.Keys.back().TimeSeconds)
+		{
+			return Curve.Keys.back().Value;
+		}
+
+		for (int32 KeyIndex = 0; KeyIndex + 1 < static_cast<int32>(Curve.Keys.size()); ++KeyIndex)
+		{
+			const FFloatCurveKey& A = Curve.Keys[KeyIndex];
+			const FFloatCurveKey& B = Curve.Keys[KeyIndex + 1];
+			if (TimeSeconds < A.TimeSeconds || TimeSeconds > B.TimeSeconds)
+			{
+				continue;
+			}
+
+			if (A.Interpolation == EAnimationCurveInterpolation::Constant || B.TimeSeconds <= A.TimeSeconds)
+			{
+				return A.Value;
+			}
+
+			const float Alpha = std::clamp((TimeSeconds - A.TimeSeconds) / (B.TimeSeconds - A.TimeSeconds), 0.0f, 1.0f);
+			return A.Value + (B.Value - A.Value) * Alpha;
+		}
+
+		return Curve.Keys.back().Value;
+	}
+
+	float NormalizeMorphCurveWeight(float Value)
+	{
+		return std::abs(Value) > 1.0f ? Value * 0.01f : Value;
+	}
 }
 
 FPrimitiveSceneProxy* USkinnedMeshComponent::CreateSceneProxy()
@@ -205,6 +248,12 @@ void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
 void USkinnedMeshComponent::FinalizeSkeletalMeshRenderState()
 {
 	MarkRenderStateDirty();
+	if (SceneProxy)
+	{
+		SceneProxy->UpdateMesh();
+		SceneProxy->UpdateTransform();
+		SceneProxy->UpdateVisibility();
+	}
 	MarkWorldBoundsDirty();
 }
 
@@ -247,6 +296,7 @@ void USkinnedMeshComponent::SetMorphTarget(const FString& MorphName, float Value
 	bMorphTargetsDirty = true;
 	bSkinningDirty = true;
 	bBoundsDirty = true;
+	UpdateSkinnedMeshObject();
 	MarkProxyDirty(EDirtyFlag::Mesh);
 	MarkWorldBoundsDirty();
 }
@@ -283,8 +333,28 @@ void USkinnedMeshComponent::ClearMorphTargets()
 	bMorphTargetsDirty = true;
 	bSkinningDirty = true;
 	bBoundsDirty = true;
+	UpdateSkinnedMeshObject();
 	MarkProxyDirty(EDirtyFlag::Mesh);
 	MarkWorldBoundsDirty();
+}
+
+void USkinnedMeshComponent::ApplyAnimationFloatCurves(const FSkeletalAnimationClip& Clip, float TimeSeconds)
+{
+	for (const FAnimationFloatCurve& Curve : Clip.FloatCurves)
+	{
+		if (Curve.Type != EAnimationFloatCurveType::MorphTarget)
+		{
+			continue;
+		}
+
+		const FString& TargetName = Curve.TargetName.empty() ? Curve.Name : Curve.TargetName;
+		if (TargetName.empty())
+		{
+			continue;
+		}
+
+		SetMorphTarget(TargetName, NormalizeMorphCurveWeight(EvaluateFloatCurve(Curve, TimeSeconds)));
+	}
 }
 
 void USkinnedMeshComponent::UpdateSkinnedMeshObject()

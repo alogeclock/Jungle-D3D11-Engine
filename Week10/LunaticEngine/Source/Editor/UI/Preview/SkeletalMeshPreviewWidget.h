@@ -49,6 +49,7 @@ private:
 	void RebuildBoneWeightedFlags();
     void DrawBoneHierarchyPanel();
     void DrawBoneDetailsPanel();
+    void DrawMorphTargetPanel();
     void DrawPreviewComponentDetailsPanel();
     void DrawBoneTreeNode(const FSkeleton& Skeleton, int32 BoneIndex);
     bool DrawEditableTransform(const char* SectionName, FTransform& Transform, int32 BoneIndex, FBoneRotationEditState& State, EBoneRotationEditSpace Space);

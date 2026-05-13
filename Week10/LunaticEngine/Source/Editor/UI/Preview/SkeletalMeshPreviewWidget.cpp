@@ -296,6 +296,7 @@ void FSkeletalMeshPreviewWidget::DrawBoneDetailsPanel()
         {
             ImGui::TextDisabled("Select a bone from the hierarchy.");
         }
+        DrawMorphTargetPanel();
         DrawPreviewComponentDetailsPanel();
         ImGui::EndChild();
         return;
@@ -350,8 +351,50 @@ void FSkeletalMeshPreviewWidget::DrawBoneDetailsPanel()
     }
 
     DrawPreviewComponentDetailsPanel();
+    DrawMorphTargetPanel();
 
     ImGui::EndChild();
+}
+
+void FSkeletalMeshPreviewWidget::DrawMorphTargetPanel()
+{
+    FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient();
+    USkeletalMeshComponent* PreviewComponent = Client ? Client->GetPreviewComponent() : nullptr;
+    FSkeletalMesh* MeshAsset = GetSkeletalMeshAsset(EditingMesh);
+
+    ImGui::Dummy(ImVec2(0.0f, PreviewDetailsPropertyVerticalSpacing));
+    if (!BeginPreviewDetailsSection("Morph Targets"))
+    {
+        return;
+    }
+
+    if (!PreviewComponent || !MeshAsset || MeshAsset->MorphTargets.empty())
+    {
+        ImGui::TextDisabled("No morph targets.");
+        return;
+    }
+
+    if (ImGui::Button("Reset Morph Targets"))
+    {
+        PreviewComponent->ClearMorphTargets();
+    }
+
+    ImGui::Separator();
+    for (const FMorphTarget& Morph : MeshAsset->MorphTargets)
+    {
+        if (Morph.Name.empty())
+        {
+            continue;
+        }
+
+        float Weight = PreviewComponent->GetMorphTarget(Morph.Name);
+        ImGui::PushID(Morph.Name.c_str());
+        if (ImGui::SliderFloat(Morph.Name.c_str(), &Weight, 0.0f, 1.0f, "%.3f"))
+        {
+            PreviewComponent->SetMorphTarget(Morph.Name, Weight);
+        }
+        ImGui::PopID();
+    }
 }
 
 // UI Rendering 및 Layout 로직: FEditorPropertyWidget과 동일한 방식으로 Details Panel을 채웁니다.
@@ -620,16 +663,38 @@ namespace
         }
 
         const int32 BoneCount = static_cast<int32>(Skeleton->Bones.size());
+        auto CountDescendants = [&](auto&& Self, int32 BoneIndex) -> int32
+        {
+            if (!IsValidBoneIndex(Skeleton, BoneIndex))
+            {
+                return 0;
+            }
+
+            int32 Count = 0;
+            for (const int32 ChildIndex : Skeleton->Bones[BoneIndex].Children)
+            {
+                Count += 1 + Self(Self, ChildIndex);
+            }
+            return Count;
+        };
+
+        int32 BestRootIndex = -1;
+        int32 BestDescendantCount = -1;
         for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
         {
             const int32 ParentIndex = Skeleton->Bones[BoneIndex].ParentIndex;
             if (!IsValidBoneIndex(Skeleton, ParentIndex))
             {
-                return BoneIndex;
+                const int32 DescendantCount = CountDescendants(CountDescendants, BoneIndex);
+                if (DescendantCount > BestDescendantCount)
+                {
+                    BestDescendantCount = DescendantCount;
+                    BestRootIndex = BoneIndex;
+                }
             }
         }
 
-        return -1;
+        return BestRootIndex;
     }
 
     // ────────────────────────────────────────────────────────────

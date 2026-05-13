@@ -22,6 +22,112 @@ namespace
 		}
 		return T.Normalized();
 	}
+
+	void ApplyMorphDelta(FSkeletalVertex& Vertex, const FMorphTargetDelta& Delta, float Scale)
+	{
+		Vertex.Pos += Delta.PositionDelta * Scale;
+		Vertex.Normal += Delta.NormalDelta * Scale;
+		Vertex.Tangent += Delta.TangentDelta * Scale;
+	}
+
+	void ApplyShapeDeltasScaled(const FMorphTargetShape& Shape, float Scale, TArray<FSkeletalVertex>& InOutVertices)
+	{
+		if (std::abs(Scale) <= 1.0e-4f)
+		{
+			return;
+		}
+
+		for (const FMorphTargetDelta& Delta : Shape.Deltas)
+		{
+			if (Delta.VertexIndex < InOutVertices.size())
+			{
+				ApplyMorphDelta(InOutVertices[Delta.VertexIndex], Delta, Scale);
+			}
+		}
+	}
+
+	void ApplyInterpolatedShapeDeltas(const FMorphTargetShape& A, const FMorphTargetShape& B, float Alpha, TArray<FSkeletalVertex>& InOutVertices)
+	{
+		size_t AIndex = 0;
+		size_t BIndex = 0;
+
+		while (AIndex < A.Deltas.size() || BIndex < B.Deltas.size())
+		{
+			const bool bUseA =
+				BIndex >= B.Deltas.size() ||
+				(AIndex < A.Deltas.size() && A.Deltas[AIndex].VertexIndex < B.Deltas[BIndex].VertexIndex);
+			const bool bUseB =
+				AIndex >= A.Deltas.size() ||
+				(BIndex < B.Deltas.size() && B.Deltas[BIndex].VertexIndex < A.Deltas[AIndex].VertexIndex);
+
+			if (bUseA)
+			{
+				const FMorphTargetDelta& Delta = A.Deltas[AIndex++];
+				if (Delta.VertexIndex < InOutVertices.size())
+				{
+					ApplyMorphDelta(InOutVertices[Delta.VertexIndex], Delta, 1.0f - Alpha);
+				}
+				continue;
+			}
+
+			if (bUseB)
+			{
+				const FMorphTargetDelta& Delta = B.Deltas[BIndex++];
+				if (Delta.VertexIndex < InOutVertices.size())
+				{
+					ApplyMorphDelta(InOutVertices[Delta.VertexIndex], Delta, Alpha);
+				}
+				continue;
+			}
+
+			const FMorphTargetDelta& DeltaA = A.Deltas[AIndex++];
+			const FMorphTargetDelta& DeltaB = B.Deltas[BIndex++];
+			const uint32 VertexIndex = DeltaA.VertexIndex;
+			if (VertexIndex >= InOutVertices.size())
+			{
+				continue;
+			}
+
+			FSkeletalVertex& Vertex = InOutVertices[VertexIndex];
+			Vertex.Pos += DeltaA.PositionDelta + (DeltaB.PositionDelta - DeltaA.PositionDelta) * Alpha;
+			Vertex.Normal += DeltaA.NormalDelta + (DeltaB.NormalDelta - DeltaA.NormalDelta) * Alpha;
+			Vertex.Tangent += DeltaA.TangentDelta + (DeltaB.TangentDelta - DeltaA.TangentDelta) * Alpha;
+		}
+	}
+
+	void ApplyMorphLODByWeight(const FMorphTargetLOD& MorphLOD, float RuntimeWeight, TArray<FSkeletalVertex>& InOutVertices)
+	{
+		if (MorphLOD.Shapes.empty())
+		{
+			return;
+		}
+
+		const float FbxWeight = std::clamp(RuntimeWeight, 0.0f, 1.0f) * 100.0f;
+		const FMorphTargetShape& FirstShape = MorphLOD.Shapes.front();
+		if (MorphLOD.Shapes.size() == 1 || FbxWeight <= FirstShape.FullWeight)
+		{
+			const float Denom = std::max(std::abs(FirstShape.FullWeight), 1.0e-4f);
+			ApplyShapeDeltasScaled(FirstShape, std::clamp(FbxWeight / Denom, 0.0f, 1.0f), InOutVertices);
+			return;
+		}
+
+		for (int32 ShapeIndex = 1; ShapeIndex < static_cast<int32>(MorphLOD.Shapes.size()); ++ShapeIndex)
+		{
+			const FMorphTargetShape& PrevShape = MorphLOD.Shapes[ShapeIndex - 1];
+			const FMorphTargetShape& NextShape = MorphLOD.Shapes[ShapeIndex];
+			if (FbxWeight > NextShape.FullWeight)
+			{
+				continue;
+			}
+
+			const float Denom = std::max(NextShape.FullWeight - PrevShape.FullWeight, 1.0e-4f);
+			const float Alpha = std::clamp((FbxWeight - PrevShape.FullWeight) / Denom, 0.0f, 1.0f);
+			ApplyInterpolatedShapeDeltas(PrevShape, NextShape, Alpha, InOutVertices);
+			return;
+		}
+
+		ApplyShapeDeltasScaled(MorphLOD.Shapes.back(), 1.0f, InOutVertices);
+	}
 }
 FSkeletalMeshObjectCPU::FSkeletalMeshObjectCPU(const FSkeletalMesh* InSource, ID3D11Device* InDevice)
 	: Source(InSource), Device(InDevice)
@@ -217,18 +323,7 @@ void FSkeletalMeshObjectCPU::ApplyMorphTargets(uint32 LODIndex, const TArray<flo
 		if (MorphLOD.Shapes.empty())
 			continue;
 
-		const FMorphTargetShape& Shape = MorphLOD.Shapes.back();
-
-		for (const FMorphTargetDelta& Delta : Shape.Deltas)
-		{
-			if (Delta.VertexIndex >= InOutVertices.size())
-				continue;
-
-			FSkeletalVertex& V = InOutVertices[Delta.VertexIndex];
-			V.Pos += Delta.PositionDelta * Weight;
-			V.Normal += Delta.NormalDelta * Weight;
-			V.Tangent += Delta.TangentDelta * Weight;
-		}
+		ApplyMorphLODByWeight(MorphLOD, Weight, InOutVertices);
 	}
 
 	for (FSkeletalVertex& V : InOutVertices)

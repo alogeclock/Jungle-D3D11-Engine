@@ -11,6 +11,7 @@
 
 class UMaterial;
 class FPrimitiveSceneProxy;
+struct FSkeletalAnimationClip;
 
 // SkeletalMesh 자산을 들고, "외부에서 주어진 BoneSpaceTransforms"를
 // component-space matrix + skinning matrix로 가공하는 책임까지만 진다.
@@ -77,6 +78,7 @@ public:
 	void SetMorphTarget(const FString& MorphName, float Value);
 	float GetMorphTarget(const FString& MorphName) const;
 	void ClearMorphTargets();
+	void ApplyAnimationFloatCurves(const FSkeletalAnimationClip& Clip, float TimeSeconds);
 	// 본 포즈 파이프라인 invariant 검증.
 	// 1) RefPose 입력 시 모든 SkinningMatrix가 Identity 인지
 	// 2) RTTI 체인이 USkeletalMeshComponent → USkinnedMeshComponent → UMeshComponent 인지
