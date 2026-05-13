@@ -37,8 +37,21 @@ public:
     // 벡터를 matrix로 변환하되 정규화하지 않는다.
     static FVector TransformVectorNoNormalizeByMatrix(const FVector& V, const FMatrix& M);
 
+    // matrix의 3x3 basis determinant를 계산한다.
+    static float Determinant3x3(const FMatrix& Matrix);
+
+    // matrix의 translation 성분을 제거한다.
+    static FMatrix RemoveTranslationFromMatrix(const FMatrix& Matrix);
+
     // matrix의 회전축을 정규화해 scale 성분을 제거한다.
     static FMatrix RemoveScaleFromMatrix(const FMatrix& Matrix);
+
+    // determinant가 음수인 basis를 negative scale 하나로 보존하면서 TRS로 분해한다.
+    static void DecomposeMatrixPreserveMirror(const FMatrix& Matrix, FVector& OutTranslation, FQuat& OutRotation, FVector& OutScale);
+
+    // FBX AxisSystem 메타데이터가 정의한 front/right/up을
+    // 엔진 asset convention(+X Forward, +Y Right, +Z Up)에 맞추는 행렬을 만든다.
+    static FMatrix MakeAxisSystemToEngineAssetMatrix(const FbxAxisSystem& AxisSystem, bool bMirrorHandedness);
 
     // 엔진 local matrix를 animation key의 TRS 값으로 분해한다.
     static FBoneTransformKey MakeBoneTransformKeyFromEngineMatrix(float TimeSeconds, const FMatrix& LocalMatrix);
