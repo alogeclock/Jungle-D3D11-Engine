@@ -171,7 +171,7 @@ struct FStaticMaterial
 		{
 			if (!JsonPath.empty())
 			{
-				Mat.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial(JsonPath);
+				Mat.MaterialInterface = FMaterialManager::Get().LoadMaterial(JsonPath);
 			}
 			else
 			{

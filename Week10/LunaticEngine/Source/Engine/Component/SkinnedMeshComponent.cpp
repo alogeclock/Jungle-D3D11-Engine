@@ -79,7 +79,7 @@ namespace
 				}
 				else
 				{
-					OverrideMaterials[i] = FMaterialManager::Get().GetOrCreateMaterial("None");
+					OverrideMaterials[i] = FMaterialManager::Get().LoadMaterial("None");
 				}
 			}
 
@@ -91,7 +91,31 @@ namespace
 			}
 		}
 	}
-}
+
+	void RestoreSkeletalMaterialOverrides(TArray<FMaterialSlot>& MaterialSlots, TArray<UMaterial*>& OverrideMaterials, const TArray<FMaterialSlot>& SavedSlots)
+	{
+		for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()) && i < static_cast<int32>(SavedSlots.size()); ++i)
+		{
+			MaterialSlots[i] = SavedSlots[i];
+
+			const FString& MatPath = MaterialSlots[i].Path;
+			if (MatPath.empty() || MatPath == "None")
+			{
+				OverrideMaterials[i] = nullptr;
+			}
+			else
+			{
+				OverrideMaterials[i] = FMaterialManager::Get().LoadMaterial(MatPath);
+			}
+		}
+	}
+
+	float EvaluateFloatCurve(const FAnimationFloatCurve& Curve, float TimeSeconds)
+	{
+		if (Curve.Keys.empty())
+		{
+			return 0.0f;
+		}
 
 		if (TimeSeconds <= Curve.Keys.front().TimeSeconds)
 		{
@@ -674,7 +698,7 @@ void USkinnedMeshComponent::PostEditProperty(const char* PropertyName)
 			}
 			else
 			{
-				UMaterial* LoadedMat = FMaterialManager::Get().GetOrCreateMaterial(NewMatPath);
+				UMaterial* LoadedMat = FMaterialManager::Get().LoadMaterial(NewMatPath);
 				if (LoadedMat)
 				{
 					SetMaterial(Index, LoadedMat);

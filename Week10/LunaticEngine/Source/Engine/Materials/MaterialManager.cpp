@@ -10,6 +10,35 @@
 
 #include <algorithm>
 
+namespace
+{
+	bool HasMissingJsonTextures(UMaterial* Material, json::JSON& JsonData)
+	{
+		if (!Material || !JsonData.hasKey(MatKeys::Textures))
+		{
+			return false;
+		}
+
+		for (auto& Pair : JsonData[MatKeys::Textures].ObjectRange())
+		{
+			const FString SlotName = Pair.first.c_str();
+			const FString TexturePath = Pair.second.ToString().c_str();
+			if (TexturePath.empty())
+			{
+				continue;
+			}
+
+			UTexture2D* Texture = nullptr;
+			if (!Material->GetTextureParameter(SlotName, Texture) || !Texture || !Texture->GetSRV())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+}
+
 void FMaterialManager::ScanMaterialAssets()
 {
 	AvailableMaterialFiles.clear();
@@ -90,7 +119,7 @@ UTexture2D* FMaterialManager::GetMaterialPreviewTexture(UMaterial* Material) con
 
 UTexture2D* FMaterialManager::GetMaterialPreviewTexture(const FString& MaterialPath)
 {
-	return GetMaterialPreviewTexture(GetOrCreateMaterial(MaterialPath));
+	return GetMaterialPreviewTexture(LoadMaterial(MaterialPath));
 }
 
 void FMaterialManager::RebuildCachedSRVs()
@@ -99,23 +128,35 @@ void FMaterialManager::RebuildCachedSRVs()
 	{
 		if (Pair.second)
 		{
+			SyncMaterialTexturesFromAsset(Pair.first, Pair.second);
 			Pair.second->RebuildCachedSRVs();
 		}
 	}
 }
 
-UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
+UMaterial* FMaterialManager::FindLoadedMaterial(const FString& MatFilePath) const
 {
-	std::filesystem::path Path(FPaths::ToWide(MatFilePath));
-	FString GenericPath = FPaths::ToUtf8(Path.generic_wstring());
-	// 1. 캐시 반환
+	const FString GenericPath = NormalizeMaterialPath(MatFilePath);
 	auto It = MaterialCache.find(GenericPath);
 	if (It != MaterialCache.end())
 	{
 		return It->second;
 	}
 
-	// 2. 캐시에 없다면 JSON에서 읽기 
+	return nullptr;
+}
+
+UMaterial* FMaterialManager::LoadMaterial(const FString& MatFilePath)
+{
+	const FString GenericPath = NormalizeMaterialPath(MatFilePath);
+
+	if (UMaterial* LoadedMaterial = FindLoadedMaterial(GenericPath))
+	{
+		SyncMaterialTexturesFromAsset(GenericPath, LoadedMaterial);
+		LoadedMaterial->RebuildCachedSRVs();
+		return LoadedMaterial;
+	}
+
 	json::JSON JsonData = ReadJsonFile(GenericPath);
 	if (JsonData.IsNull())
 	{
@@ -182,6 +223,17 @@ UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
 	return Material;
 }
 
+UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
+{
+	return LoadMaterial(MatFilePath);
+}
+
+FString FMaterialManager::NormalizeMaterialPath(const FString& MatFilePath) const
+{
+	std::filesystem::path Path(FPaths::ToWide(MatFilePath));
+	return FPaths::ToUtf8(Path.generic_wstring());
+}
+
 json::JSON FMaterialManager::ReadJsonFile(const FString& FilePath) const
 {
 	std::ifstream File(FPaths::ToWide(FilePath).c_str());
@@ -190,6 +242,15 @@ json::JSON FMaterialManager::ReadJsonFile(const FString& FilePath) const
 	std::stringstream Buffer;
 	Buffer << File.rdbuf();
 	return json::JSON::Load(Buffer.str());
+}
+
+void FMaterialManager::SyncMaterialTexturesFromAsset(const FString& MaterialPath, UMaterial* Material)
+{
+	json::JSON JsonData = ReadJsonFile(MaterialPath);
+	if (!JsonData.IsNull() && HasMissingJsonTextures(Material, JsonData))
+	{
+		ApplyTextures(Material, JsonData);
+	}
 }
 
 TMap<FString, std::unique_ptr<FMaterialConstantBuffer>> FMaterialManager::CreateConstantBuffers(FMaterialTemplate* Template)

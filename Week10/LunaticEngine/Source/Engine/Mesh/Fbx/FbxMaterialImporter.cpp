@@ -509,7 +509,7 @@ int32 FFbxMaterialImporter::FindOrAddMaterial(
 
         FStaticMaterial NewMaterial;
         NewMaterial.MaterialSlotName  = "None";
-        NewMaterial.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial("None");
+        NewMaterial.MaterialInterface = FMaterialManager::Get().LoadMaterial("None");
 
         OutMaterials.push_back(NewMaterial);
         return static_cast<int32>(OutMaterials.size()) - 1;
@@ -527,7 +527,7 @@ int32 FFbxMaterialImporter::FindOrAddMaterial(
 
     FStaticMaterial NewMaterial;
     NewMaterial.MaterialSlotName  = SlotName;
-    NewMaterial.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath);
+    NewMaterial.MaterialInterface = FMaterialManager::Get().LoadMaterial(MaterialPath);
     OutMaterials.push_back(NewMaterial);
 
     const int32 NewIndex                    = static_cast<int32>(OutMaterials.size()) - 1;
@@ -548,6 +548,6 @@ void FFbxMaterialImporter::GetOrCreateDefaultMaterial(TArray<FStaticMaterial>& O
 
     FStaticMaterial NewMaterial;
     NewMaterial.MaterialSlotName  = "None";
-    NewMaterial.MaterialInterface = FMaterialManager::Get().GetOrCreateMaterial("None");
+    NewMaterial.MaterialInterface = FMaterialManager::Get().LoadMaterial("None");
     OutMaterials.push_back(NewMaterial);
 }

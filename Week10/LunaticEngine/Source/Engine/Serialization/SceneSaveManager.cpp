@@ -120,7 +120,7 @@ static void ApplySingleMaterialOverride(UStaticMeshComponent* StaticMeshComponen
 		return;
 	}
 
-	if (UMaterial* LoadedMat = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath))
+	if (UMaterial* LoadedMat = FMaterialManager::Get().LoadMaterial(MaterialPath))
 	{
 		StaticMeshComponent->SetMaterial(0, LoadedMat);
 	}

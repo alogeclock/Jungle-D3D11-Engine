@@ -49,6 +49,9 @@ public:
 	// 지정된 디렉토리 내의 모든 머티리얼을 미리 로드
 	void LoadAllMaterials(ID3D11Device* Device);
 
+	UMaterial* FindLoadedMaterial(const FString& MatFilePath) const;
+	UMaterial* LoadMaterial(const FString& MatFilePath);
+
     // UMaterial 생성
 	UMaterial* GetOrCreateMaterial(const FString& MatFilePath);
 
@@ -64,7 +67,9 @@ private:
 	// 셰이더로 Template 생성 또는 캐시에서 반환
 	FMaterialTemplate* GetOrCreateTemplate(const FString& ShaderPath);
 
+	FString NormalizeMaterialPath(const FString& MatFilePath) const;
 	json::JSON ReadJsonFile(const FString& FilePath) const;
+	void SyncMaterialTexturesFromAsset(const FString& MaterialPath, UMaterial* Material);
 
 	TMap<FString, std::unique_ptr<FMaterialConstantBuffer>> CreateConstantBuffers(FMaterialTemplate* Template);
 

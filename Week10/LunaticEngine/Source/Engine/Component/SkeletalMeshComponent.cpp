@@ -788,7 +788,7 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	{
 		const int32 idx = std::atoi(&PropertyName[8]);
 		if (idx >= 0 && idx < (int32)MaterialSlots.size())
-			SetMaterial(idx, IsNonePath(MaterialSlots[idx].Path) ? nullptr : FMaterialManager::Get().GetOrCreateMaterial(MaterialSlots[idx].Path));
+			SetMaterial(idx, IsNonePath(MaterialSlots[idx].Path) ? nullptr : FMaterialManager::Get().LoadMaterial(MaterialSlots[idx].Path));
 	}
 	else if (std::strcmp(PropertyName, "Bounds Scale") == 0 || std::strcmp(PropertyName, "Force Ref Pose") == 0)
 		MarkSkeletalPoseDirty();
