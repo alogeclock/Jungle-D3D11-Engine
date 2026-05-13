@@ -5,6 +5,7 @@
 #include <fbxsdk.h>
 #include "Math/Vector.h"
 #include "Mesh/StaticMeshAsset.h"
+#include "Mesh/Fbx/FbxMetadataImporter.h"
 
 struct FFbxImportContext;
 
@@ -18,6 +19,14 @@ struct FFbxImportedMaterialInfo
     FString MetallicTexture;
     FString EmissiveTexture;
     FString OpacityTexture;
+    FString AmbientOcclusionTexture;
+    FString HeightTexture;
+    FString SpecularTexture;
+
+    FString  DiffuseUVSetName;
+    FVector2 DiffuseUVTranslation = FVector2(0.0f, 0.0f);
+    FVector2 DiffuseUVScale       = FVector2(1.0f, 1.0f);
+    float    DiffuseUVRotation    = 0.0f;
 
     FVector4 BaseColor = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -25,8 +34,11 @@ struct FFbxImportedMaterialInfo
     float Metallic  = 0.0f;
     float Opacity   = 1.0f;
 
-    bool bHasOpacity        = false;
-    bool bHasLayeredTexture = false;
+    bool bHasOpacity         = false;
+    bool bHasLayeredTexture  = false;
+    bool bHasEmbeddedTexture = false;
+
+    TArray<FFbxImportedMetadataValue> Metadata;
 };
 
 class FFbxMaterialImporter

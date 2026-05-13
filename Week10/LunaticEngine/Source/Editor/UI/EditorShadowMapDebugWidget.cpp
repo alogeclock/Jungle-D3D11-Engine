@@ -211,6 +211,13 @@ void EditorShadowMapDebugWidget::RenderVizPass(
 	VP.Height = static_cast<float>(VizSize);
 	VP.MaxDepth = 1.0f;
 	DC->RSSetViewports(1, &VP);
+	
+	D3D11_RECT FullScissor = {};
+	FullScissor.left   = 0;
+	FullScissor.top    = 0;
+	FullScissor.right  = static_cast<LONG>(VizSize);
+	FullScissor.bottom = static_cast<LONG>(VizSize);
+	DC->RSSetScissorRects(1, &FullScissor);
 
 	// Update CB
 	FShadowVisCBData CBData = {};
@@ -244,6 +251,8 @@ void EditorShadowMapDebugWidget::RenderVizPass(
 
 	// Bind shader + draw fullscreen triangle (no vertex input — SV_VertexID only)
 	Shader->Bind(DC);
+	float ClearColor[4] = { 0, 0, 0, 1 };
+	DC->ClearRenderTargetView(VizRTV, ClearColor);
 	DC->IASetInputLayout(nullptr);  // override: no vertex input
 	DC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	DC->Draw(3, 0);

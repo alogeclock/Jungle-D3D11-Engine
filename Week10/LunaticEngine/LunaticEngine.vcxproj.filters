@@ -554,6 +554,9 @@
     <ClCompile Include="Source\Engine\Asset\AssetCurveUtils.cpp">
       <Filter>Source\Engine\Asset</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Asset\AssetManager.cpp">
+      <Filter>Source\Engine\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Asset\AssetData.cpp">
       <Filter>Source\Engine\Asset</Filter>
     </ClCompile>
@@ -863,9 +866,6 @@
     <ClCompile Include="Source\Engine\Mesh\SkeletalMesh.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Mesh\SkeletalMeshAsset.cpp">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\SkeletalMeshBake.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
@@ -893,7 +893,13 @@
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMaterialImporter.cpp">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMetadataImporter.cpp">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxMorphTargetImporter.cpp">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSceneHierarchyImporter.cpp">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSceneLoader.cpp">
@@ -918,6 +924,12 @@
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSkinWeightImporter.cpp">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxSocketImporter.cpp">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\Fbx\FbxStaticChildMeshImporter.cpp">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\Fbx\FbxStaticMeshImporter.cpp">
@@ -1460,6 +1472,9 @@
     <ClInclude Include="Source\Engine\Asset\AssetCurveUtils.h">
       <Filter>Source\Engine\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Asset\AssetManager.h">
+      <Filter>Source\Engine\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Asset\AssetData.h">
       <Filter>Source\Engine\Asset</Filter>
     </ClInclude>
@@ -1868,7 +1883,13 @@
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMaterialImporter.h">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMetadataImporter.h">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxMorphTargetImporter.h">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSceneHierarchyImporter.h">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSceneLoader.h">
@@ -1893,6 +1914,12 @@
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSkinWeightImporter.h">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxSocketImporter.h">
+      <Filter>Source\Engine\Mesh\Fbx</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\Fbx\FbxStaticChildMeshImporter.h">
       <Filter>Source\Engine\Mesh\Fbx</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\Fbx\FbxStaticMeshImporter.h">

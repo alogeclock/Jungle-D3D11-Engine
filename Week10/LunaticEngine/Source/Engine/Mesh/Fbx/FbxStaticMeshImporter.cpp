@@ -4,6 +4,8 @@
 #include "Mesh/Fbx/FbxGeometryReader.h"
 #include "Mesh/Fbx/FbxImportContext.h"
 #include "Mesh/Fbx/FbxMaterialImporter.h"
+#include "Mesh/Fbx/FbxMetadataImporter.h"
+#include "Mesh/Fbx/FbxSceneHierarchyImporter.h"
 #include "Mesh/Fbx/FbxSceneQuery.h"
 #include "Mesh/Fbx/FbxSectionBuilder.h"
 #include "Mesh/Fbx/FbxTransformUtils.h"
@@ -15,14 +17,16 @@
 
 namespace
 {
-    static FStaticMeshLOD MakeLODFromMesh(const FStaticMesh& Mesh, int32 SourceLODIndex)
+    static FStaticMeshLOD MakeLODFromMesh(const FStaticMesh& Mesh, int32 SourceLODIndex, float ScreenSize, float DistanceThreshold)
     {
         FStaticMeshLOD LOD;
-        LOD.SourceLODIndex = SourceLODIndex;
-        LOD.SourceLODName  = "LOD" + std::to_string(SourceLODIndex);
-        LOD.Vertices       = Mesh.Vertices;
-        LOD.Indices        = Mesh.Indices;
-        LOD.Sections       = Mesh.Sections;
+        LOD.SourceLODIndex    = SourceLODIndex;
+        LOD.SourceLODName     = "LOD" + std::to_string(SourceLODIndex);
+        LOD.ScreenSize        = ScreenSize;
+        LOD.DistanceThreshold = DistanceThreshold;
+        LOD.Vertices          = Mesh.Vertices;
+        LOD.Indices           = Mesh.Indices;
+        LOD.Sections          = Mesh.Sections;
         LOD.CacheBounds();
         return LOD;
     }
@@ -37,13 +41,33 @@ namespace
             MeshAsset.CollisionShapes.push_back(Shape);
         }
     }
+
+    static FFbxMeshImportSpace MakeLocalMeshImportSpace(FbxNode* MeshNode)
+    {
+        FFbxMeshImportSpace Result;
+        if (!MeshNode)
+        {
+            return Result;
+        }
+
+        Result.VertexTransform = FFbxTransformUtils::ToEngineMatrix(FFbxTransformUtils::GetNodeGeometryTransform(MeshNode));
+        Result.NormalTransform = Result.VertexTransform.GetInverse().GetTransposed();
+        return Result;
+    }
 }
 
 class FFbxStaticMeshBuilder
 {
 public:
-    FFbxStaticMeshBuilder(const FString& InSourcePath, TArray<FStaticMaterial>& InOutMaterials, FStaticMesh& InOutMesh, FFbxImportContext& InBuildContext)
-        : SourcePath(InSourcePath), Materials(InOutMaterials), MeshAsset(InOutMesh), BuildContext(InBuildContext)
+    FFbxStaticMeshBuilder(
+        const FString&           InSourcePath,
+        TArray<FStaticMaterial>& InOutMaterials,
+        FStaticMesh&             InOutMesh,
+        FFbxImportContext&       InBuildContext,
+        bool                     bInBakeNodeGlobalTransform = true
+        )
+        : SourcePath(InSourcePath), Materials(InOutMaterials), MeshAsset(InOutMesh), BuildContext(InBuildContext),
+          bBakeNodeGlobalTransform(bInBakeNodeGlobalTransform)
     {}
 
     // Build 함수의 FBX import 내부 처리 단계를 수행한다.
@@ -69,6 +93,7 @@ private:
     TArray<FStaticMaterial>& Materials;
     FStaticMesh&             MeshAsset;
     FFbxImportContext&       BuildContext;
+    bool                     bBakeNodeGlobalTransform = true;
 
     FFbxSectionBuilder           SectionBuilder;
     FFbxStaticVertexDeduplicator VertexDeduplicator;
@@ -94,7 +119,8 @@ private:
             return;
         }
 
-        const FFbxMeshImportSpace ImportSpace = FFbxMeshImportSpace::FromStaticMeshNode(MeshNode);
+        const FFbxMeshImportSpace ImportSpace = bBakeNodeGlobalTransform ? FFbxMeshImportSpace::FromStaticMeshNode(MeshNode)
+        : MakeLocalMeshImportSpace(MeshNode);
 
         TArray<FString> UVSetNames;
         FFbxGeometryReader::GetUVSetNames(Mesh, UVSetNames);
@@ -304,7 +330,13 @@ bool FFbxStaticMeshImporter::Import(
     }
 
     OutMesh.LODModels.clear();
-    OutMesh.LODModels.push_back(MakeLODFromMesh(OutMesh, BaseLODIndex));
+    float BaseScreenSize        = 1.0f;
+    float BaseDistanceThreshold = 0.0f;
+    if (!MeshNodesByLOD[BaseLODIndex].empty())
+    {
+        FFbxSceneQuery::TryGetLODSettings(MeshNodesByLOD[BaseLODIndex][0], BaseScreenSize, BaseDistanceThreshold);
+    }
+    OutMesh.LODModels.push_back(MakeLODFromMesh(OutMesh, BaseLODIndex, BaseScreenSize, BaseDistanceThreshold));
 
     for (size_t SortedIndex = 1; SortedIndex < SortedLODIndices.size(); ++SortedIndex)
     {
@@ -313,7 +345,13 @@ bool FFbxStaticMeshImporter::Import(
         FStaticMesh LODMesh;
         if (ImportMeshNodes(MeshNodesByLOD[LODIndex], SourcePath, LODMesh, OutMaterials, BuildContext))
         {
-            OutMesh.LODModels.push_back(MakeLODFromMesh(LODMesh, LODIndex));
+            float ScreenSize        = 1.0f;
+            float DistanceThreshold = 0.0f;
+            if (!MeshNodesByLOD[LODIndex].empty())
+            {
+                FFbxSceneQuery::TryGetLODSettings(MeshNodesByLOD[LODIndex][0], ScreenSize, DistanceThreshold);
+            }
+            OutMesh.LODModels.push_back(MakeLODFromMesh(LODMesh, LODIndex, ScreenSize, DistanceThreshold));
         }
     }
 
@@ -322,6 +360,9 @@ bool FFbxStaticMeshImporter::Import(
     {
         AppendStaticCollisionNode(OutMesh, CollisionNode);
     }
+
+    FFbxMetadataImporter::CollectSceneNodeMetadata(Scene, OutMesh.NodeMetadata);
+    FFbxSceneHierarchyImporter::CollectSceneNodes(Scene, OutMesh.SceneNodes);
 
     return true;
 }
@@ -339,6 +380,23 @@ bool FFbxStaticMeshImporter::ImportMeshNodes(
         return false;
     }
 
-    FFbxStaticMeshBuilder Builder(SourcePath, OutMaterials, OutMesh, BuildContext);
+    FFbxStaticMeshBuilder Builder(SourcePath, OutMaterials, OutMesh, BuildContext, true);
+    return Builder.Build(MeshNodes);
+}
+
+bool FFbxStaticMeshImporter::ImportMeshNodesLocal(
+    const TArray<FbxNode*>&  MeshNodes,
+    const FString&           SourcePath,
+    FStaticMesh&             OutMesh,
+    TArray<FStaticMaterial>& OutMaterials,
+    FFbxImportContext&       BuildContext
+    )
+{
+    if (MeshNodes.empty())
+    {
+        return false;
+    }
+
+    FFbxStaticMeshBuilder Builder(SourcePath, OutMaterials, OutMesh, BuildContext, false);
     return Builder.Build(MeshNodes);
 }

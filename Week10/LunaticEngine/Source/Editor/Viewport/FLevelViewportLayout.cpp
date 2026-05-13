@@ -5,6 +5,7 @@
 #include "Editor/Settings/EditorSettings.h"
 #include "Editor/UI/EditorAccentColor.h"
 #include "Editor/UI/EditorPanelTitleUtils.h"
+#include "Core/Notification.h"
 #include "Core/ProjectSettings.h"
 #include "Editor/Selection/SelectionManager.h"
 #include "Engine/Runtime/WindowsWindow.h"
@@ -21,7 +22,6 @@
 #include "GameFramework/Light/DirectionalLightActor.h"
 #include "GameFramework/Light/PointLightActor.h"
 #include "GameFramework/Light/SpotLightActor.h"
-#include "Game/GameActors/Obstacle/SimpleObstacleActor.h"
 #include "Game/Map/AMapManager.h"
 #include "Game/Player/Runner.h"
 #include "GameFramework/World.h"
@@ -41,14 +41,28 @@
 #include "GameFramework/StaticMeshActor.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/SkeletalMeshManager.h"
 #include "Mesh/StaticMeshAsset.h"             // FStaticMesh / FNormalVertex
 #include "Mesh/FbxImporter.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <string>
 
 namespace
 {
+FString MakeProjectRelativePath(const std::filesystem::path& Path)
+{
+	const std::filesystem::path RootPath = std::filesystem::path(FPaths::RootDir()).lexically_normal();
+	const std::filesystem::path NormalizedPath = Path.lexically_normal();
+	const std::filesystem::path RelativePath = NormalizedPath.lexically_relative(RootPath);
+	if (!RelativePath.empty() && RelativePath.native().find(L"..") != 0)
+	{
+		return FPaths::ToUtf8(RelativePath.generic_wstring());
+	}
+	return FPaths::ToUtf8(NormalizedPath.generic_wstring());
+}
+
 // FBX → SkeletalMesh: 정적 임포트 결과를 1-bone 스켈레톤으로 감싸기
 // 실제 본 가중치는 없으니 T-Pose 그대로 정지 상태. 캐릭터 메시 형상 시각 확인용
 // 실패 시 nullptr 반환 (caller가 더미 큐브로 fallback)
@@ -175,6 +189,7 @@ enum class ESnapPopupType : uint8
 
 ESnapPopupType GSnapPopupTab[FLevelViewportLayout::MaxViewportSlots] = {};
 
+// ProjectSettings의 라이트 컬링/씬 뎁스 설정을 뷰포트 렌더 옵션에 동기화한다.
 void ApplyProjectViewportSettings(FViewportRenderOptions& Opts)
 {
 	const FProjectSettings& ProjectSettings = FProjectSettings::Get();
@@ -185,6 +200,7 @@ void ApplyProjectViewportSettings(FViewportRenderOptions& Opts)
 	Opts.Exponent = ProjectSettings.SceneDepth.Exponent;
 }
 
+// 카메라 팝업의 입력 필드 스타일(색상)을 ImGui 스택에 푸시한다.
 void PushCameraPopupFieldStyle()
 {
 	ImGui::PushStyleColor(ImGuiCol_FrameBg, PopupPalette::FieldBg);
@@ -193,11 +209,13 @@ void PushCameraPopupFieldStyle()
 	ImGui::PushStyleColor(ImGuiCol_Border, PopupPalette::FieldBorder);
 }
 
+// 팝업 배경 색상 스타일을 ImGui 스택에 푸시한다.
 void PushCommonPopupBgColor()
 {
 	ImGui::PushStyleColor(ImGuiCol_PopupBg, PopupPalette::PopupBg);
 }
 
+// 팝업 메뉴 항목의 헤더 색상 스타일을 ImGui 스택에 푸시한다.
 void PushCommonPopupMenuItemStyle()
 {
 	ImGui::PushStyleColor(ImGuiCol_Header, PopupMenuItemColor);
@@ -205,6 +223,7 @@ void PushCommonPopupMenuItemStyle()
 	ImGui::PushStyleColor(ImGuiCol_HeaderActive, PopupMenuItemActiveColor);
 }
 
+// 카메라 팝업에서 라벨+스칼라 드래그 입력 한 행을 렌더링하고 변경 여부를 반환한다.
 bool DrawCameraPopupScalarRow(const char* Id, const char* Label, float& Value, float Speed, float Min, float Max, const char* Format)
 {
 	ImGui::PushID(Id);
@@ -228,6 +247,7 @@ bool DrawCameraPopupScalarRow(const char* Id, const char* Label, float& Value, f
 	return bChanged;
 }
 
+// 카메라 팝업에서 라벨+X/Y/Z 축 입력 한 행을 렌더링하고 변경 여부를 반환한다.
 bool DrawCameraPopupVectorRow(const char* Id, const char* Label, float Values[3], float Speed)
 {
 	static const char* AxisLabels[3] = { "X", "Y", "Z" };
@@ -264,6 +284,7 @@ bool DrawCameraPopupVectorRow(const char* Id, const char* Label, float Values[3]
 	return bChanged;
 }
 
+// 카메라 팝업 전체 내용(이동 속도, FOV, 위치/회전 등)을 렌더링한다.
 void DrawCameraPopupContent(UCameraComponent* Camera, FEditorSettings& Settings)
 {
 	DrawPopupSectionHeader("CAMERA");
@@ -324,6 +345,7 @@ void DrawCameraPopupContent(UCameraComponent* Camera, FEditorSettings& Settings)
 	ImGui::PopStyleColor();
 }
 
+// 팝업 섹션 구분 헤더 텍스트를 강조 색상으로 렌더링한다.
 void DrawPopupSectionHeader(const char* Label)
 {
 	ImGui::PushStyleColor(ImGuiCol_Text, PopupSectionHeaderTextColor);
@@ -339,12 +361,14 @@ bool BeginPopupSection(const char* Label, ImGuiTreeNodeFlags Flags = ImGuiTreeNo
 	return bOpen;
 }
 
+// 팝업 내에 간격을 두고 섹션 헤더 라벨을 간결하게 렌더링한다.
 void DrawCompactPopupSectionLabel(const char* Label)
 {
 	ImGui::Dummy(ImVec2(0.0f, 3.0f));
 	DrawPopupSectionHeader(Label);
 }
 
+// Show Flags 팝업 전체 내용(렌더 옵션 체크박스/슬라이더)을 렌더링한다.
 void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 {
 	const ImVec2 CompactFramePadding(6.0f, 3.0f);
@@ -680,6 +704,7 @@ bool DrawSelectedToolbarIconDropdownButton(const char* Id, EToolbarIcon Icon, bo
 	return DrawToolbarIconDropdownButton(Id, Icon, Width, Height, FallbackSize, MaxIconSize, Tint);
 }
 
+// 아이콘+라벨 버튼에 필요한 최소 너비를 계산해 반환한다.
 float GetToolbarIconLabelButtonWidth(EToolbarIcon Icon, const char* Label, float FallbackSize, float MaxIconSize)
 {
 	constexpr float LabelLeftPadding = 6.0f;
@@ -693,6 +718,7 @@ float GetToolbarIconLabelButtonWidth(EToolbarIcon Icon, const char* Label, float
 	return LabelLeftPadding + IconSize.x + EffectiveLabelSpacing + TextWidth + DropdownArrowReserve + LabelRightPadding;
 }
 
+// 아이콘 드롭다.운 버튼에 필요한 최소 너비를 계산해 반환한다.
 float GetToolbarIconDropdownButtonWidth(EToolbarIcon Icon, float FallbackSize, float MaxIconSize)
 {
 	constexpr float LeftPadding = 8.0f;
@@ -703,6 +729,7 @@ float GetToolbarIconDropdownButtonWidth(EToolbarIcon Icon, float FallbackSize, f
 	return LeftPadding + IconSize.x + DropdownArrowReserve + RightPadding;
 }
 
+// 방금 렌더링한 버튼 오른쪽 하단에 드롭다.운 화살표 삼각형을 그린다.
 void DrawToolbarDropdownArrowForLastItem()
 {
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
@@ -724,6 +751,7 @@ void DrawToolbarDropdownArrowForLastItem()
 		ArrowColor);
 }
 
+// 뷰 모드에 대응하는 툴바 아이콘 열거값을 반환한다.
 EToolbarIcon GetViewModeToolbarIcon(EViewMode ViewMode)
 {
 	switch (ViewMode)
@@ -740,6 +768,7 @@ EToolbarIcon GetViewModeToolbarIcon(EViewMode ViewMode)
 	}
 }
 
+// 뷰포트 타입에 대응하는 툴바 아이콘 열거값을 반환한다.
 EToolbarIcon GetViewportTypeToolbarIcon(ELevelViewportType ViewportType)
 {
 	switch (ViewportType)
@@ -756,6 +785,7 @@ EToolbarIcon GetViewportTypeToolbarIcon(ELevelViewportType ViewportType)
 	}
 }
 
+// 툴바 버튼 공통 스타일(라운딩, 패딩, 색상)을 ImGui 스택에 푸시한다.
 void PushToolbarButtonStyle()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 7.0f);
@@ -766,12 +796,14 @@ void PushToolbarButtonStyle()
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.35f, 0.35f, 0.39f, 0.9f));
 }
 
+// PushToolbarButtonStyle로 푸시한 스타일을 ImGui 스택에서 팝한다.
 void PopToolbarButtonStyle()
 {
 	ImGui::PopStyleColor(4);
 	ImGui::PopStyleVar(2);
 }
 
+// 이전 ImGui 아이템에 호버 시 표시되는 툴팁을 렌더링한다.
 void ShowItemTooltip(const char* Tooltip)
 {
 	if (Tooltip && Tooltip[0] != '\0' && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
@@ -784,6 +816,7 @@ void ShowItemTooltip(const char* Tooltip)
 	}
 }
 
+// 스냅 팝업에서 활성화 체크박스와 수치 선택 라디오 버튼 목록을 렌더링한다.
 void DrawSnapPopupOptions(const char* Label, bool& bEnabled, float& Value, const float* Options, int32 OptionCount, const char* Format)
 {
 	ImGui::PushID(Label);
@@ -834,6 +867,7 @@ void DrawSnapPopupOptions(const char* Label, bool& bEnabled, float& Value, const
 	ImGui::PopID();
 }
 
+// 슬롯별 스냅 팝업(위치/회전/스케일 탭 + 옵션)을 렌더링한다.
 void RenderSnapPopupContent(int32 SlotIndex, FEditorSettings& Settings, float FallbackSize, float MaxIconSize)
 {
 	static const float TranslationSnapSizes[] = { 1.0f, 5.0f, 10.0f, 50.0f, 100.0f, 500.0f, 1000.0f, 5000.0f, 10000.0f };
@@ -900,6 +934,7 @@ void RenderSnapPopupContent(int32 SlotIndex, FEditorSettings& Settings, float Fa
 	}
 }
 
+// 스냅 설정 드롭다.운 버튼과 팝업을 렌더링한다.
 void RenderSnapToolbarButton(int32 SlotIndex, FEditorSettings& Settings, float Width, float FallbackSize, float MaxIconSize)
 {
 	char ButtonId[64];
@@ -936,42 +971,13 @@ void RenderSnapToolbarButton(int32 SlotIndex, FEditorSettings& Settings, float W
 	ImGui::PopStyleVar(3);
 }
 
-bool DrawSearchInputWithIcon(const char* Id, const char* Hint, char* Buffer, size_t BufferSize, float Width)
-{
-	ImGuiStyle& Style = ImGui::GetStyle();
-	ImGui::SetNextItemWidth(Width);
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 11.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(Style.FramePadding.x + 20.0f, Style.FramePadding.y));
-	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.42f, 0.42f, 0.45f, 0.90f));
-	const std::string PaddedHint = std::string("   ") + Hint;
-	const bool bChanged = ImGui::InputTextWithHint(Id, PaddedHint.c_str(), Buffer, BufferSize);
-	ImGui::PopStyleColor();
-	ImGui::PopStyleVar(3);
-
-	if (ID3D11ShaderResourceView* SearchIcon = FResourceManager::Get().FindLoadedTexture(
-		FResourceManager::Get().ResolvePath(FName("Editor.Icon.Search"))).Get())
-	{
-		const ImVec2 Min = ImGui::GetItemRectMin();
-		const float IconSize = ImGui::GetFrameHeight() - 12.0f;
-		const float IconY = Min.y + (ImGui::GetFrameHeight() - IconSize) * 0.5f;
-		ImGui::GetWindowDrawList()->AddImage(
-			reinterpret_cast<ImTextureID>(SearchIcon),
-			ImVec2(Min.x + 7.0f, IconY),
-			ImVec2(Min.x + 7.0f + IconSize, IconY + IconSize),
-			ImVec2(1.0f, 0.0f),
-			ImVec2(0.0f, 1.0f),
-			IM_COL32(210, 210, 210, 255));
-	}
-
-	return bChanged;
-}
-
+// 뷰포트 패인 툴바의 고정 높이를 반환한다.
 float GetViewportPaneToolbarHeight(float PaneWidth)
 {
 	return 38.0f;
 }
 
+// ResourceManager에 등록된 메시 키로 경로 문자열을 조회해 반환한다.
 FString GetRegisteredMeshPath(const char* MeshKey)
 {
 	if (const FMeshResource* MeshResource = FResourceManager::Get().FindMesh(FName(MeshKey)))
@@ -983,8 +989,9 @@ FString GetRegisteredMeshPath(const char* MeshKey)
 }
 }
 
-// ??? ?덉씠?꾩썐蹂??щ’ ???????????????????????????????????????
+// ─── 레이아웃별 슬롯 수 ─────────────────────────────────────
 
+// 레이아웃 열거값에 해당하는 뷰포트 슬롯 수를 반환한다.
 int32 FLevelViewportLayout::GetSlotCount(EViewportLayout Layout)
 {
 	switch (Layout)
@@ -1000,8 +1007,9 @@ int32 FLevelViewportLayout::GetSlotCount(EViewportLayout Layout)
 	}
 }
 
-// ??? ?꾩씠肄??뚯씪紐?留ㅽ븨 ??????????????????????????????????????
+// ─── 아이콘 파일명 매핑 ──────────────────────────────────────
 
+// 레이아웃에 대응하는 ResourceManager 아이콘 키 문자열을 반환한다.
 const char* GetLayoutIconResourceKey(EViewportLayout Layout)
 {
 	switch (Layout)
@@ -1022,6 +1030,7 @@ const char* GetLayoutIconResourceKey(EViewportLayout Layout)
 	}
 }
 
+// 레이아웃 열거값에 대응하는 사람이 읽기 쉬운 표시 이름을 반환한다.
 const char* GetLayoutDisplayName(EViewportLayout Layout)
 {
 	switch (Layout)
@@ -1042,8 +1051,9 @@ const char* GetLayoutDisplayName(EViewportLayout Layout)
 	}
 }
 
-// ??? ?꾩씠肄?濡쒕뱶/?댁젣 ????????????????????????????????????????
+// ─── 아이콘 로드/해제 ────────────────────────────────────────
 
+// ResourceManager를 통해 레이아웃 아이콘 텍스처를 로드한다.
 void FLevelViewportLayout::LoadLayoutIcons(ID3D11Device* Device)
 {
 	if (!Device) return;
@@ -1058,6 +1068,7 @@ void FLevelViewportLayout::LoadLayoutIcons(ID3D11Device* Device)
 	}
 }
 
+// 로드된 레이아웃 아이콘 SRV를 모두 해제하고 null로 초기화한다.
 void FLevelViewportLayout::ReleaseLayoutIcons()
 {
 	for (int32 i = 0; i < static_cast<int32>(EViewportLayout::MAX); ++i)
@@ -1070,8 +1081,9 @@ void FLevelViewportLayout::ReleaseLayoutIcons()
 	}
 }
 
-// ??? Initialize / Release ????????????????????????????????????
+// ─── Initialize / Release ────────────────────────────────────
 
+// 에디터 엔진/윈도우/렌더러/선택 매니저를 바인딩하고 초기 뷰포트 클라이언트를 생성한다.
 void FLevelViewportLayout::Initialize(UEditorEngine* InEditor, FWindowsWindow* InWindow, FRenderer& InRenderer,
 	FSelectionManager* InSelectionManager)
 {
@@ -1080,13 +1092,13 @@ void FLevelViewportLayout::Initialize(UEditorEngine* InEditor, FWindowsWindow* I
 	RendererPtr = &InRenderer;
 	SelectionManager = InSelectionManager;
 
-	// ?꾩씠肄?濡쒕뱶
+	// 아이콘 로드
 	LoadLayoutIcons(InRenderer.GetFD3DDevice().GetDevice());
 	PlayToolbar.Initialize(InEditor, InRenderer.GetFD3DDevice().GetDevice());
 
-	// Play/Stop ?대컮 珥덇린??
+	// Play/Stop 툴바 초기화
 
-	// LevelViewportClient ?앹꽦 (?⑥씪 酉고룷??
+	// LevelViewportClient 생성 (단일 뷰포트)
 	auto* LevelVC = new FLevelEditorViewportClient();
 	LevelVC->SetOverlayStatSystem(&Editor->GetOverlayStatSystem());
 	LevelVC->SetSettings(&FEditorSettings::Get());
@@ -1115,6 +1127,7 @@ void FLevelViewportLayout::Initialize(UEditorEngine* InEditor, FWindowsWindow* I
 	CurrentLayout = EViewportLayout::OnePane;
 }
 
+// 스플리터 트리, 뷰포트 클라이언트, 아이콘 리소스를 모두 해제한다.
 void FLevelViewportLayout::Release()
 {
 	SSplitter::DestroyTree(RootSplitter);
@@ -1144,8 +1157,9 @@ void FLevelViewportLayout::Release()
 	PlayToolbar.Release();
 }
 
-// ??? ?쒖꽦 酉고룷??????????????????????????????????????????????
+// ─── 활성 뷰포트 ────────────────────────────────────────────
 
+// 지정한 뷰포트 클라이언트를 활성 뷰포트로 설정하고 입력 라우터에 등록한다.
 void FLevelViewportLayout::SetActiveViewport(FLevelEditorViewportClient* InClient)
 {
 	if (ActiveViewportClient)
@@ -1169,6 +1183,7 @@ void FLevelViewportLayout::SetActiveViewport(FLevelEditorViewportClient* InClien
 	}
 }
 
+// 모든 뷰포트 클라이언트의 카메라를 재생성하고 뷰포트 타입을 재적용한다.
 void FLevelViewportLayout::ResetViewport(UWorld* InWorld)
 {
 	for (FLevelEditorViewportClient* VC : LevelViewportClients)
@@ -1176,7 +1191,7 @@ void FLevelViewportLayout::ResetViewport(UWorld* InWorld)
 		VC->CreateCamera();
 		VC->ResetCamera();
 
-		// 移대찓???ъ깮?????꾩옱 酉고룷???ш린濡?AspectRatio ?숆린??
+		// 카메라 재생성 후 현재 뷰포트 크기로 AspectRatio 동기화
 		if (FViewport* VP = VC->GetViewport())
 		{
 			UCameraComponent* Cam = VC->GetCamera();
@@ -1186,13 +1201,14 @@ void FLevelViewportLayout::ResetViewport(UWorld* InWorld)
 			}
 		}
 
-		// 湲곗〈 酉고룷?????Ortho 諛⑺뼢 ??????移대찓?쇱뿉 ?ъ쟻??
+		// 기존 뷰포트 타입(Ortho 방향 등)을 새 카메라에 재적용
 		VC->SetViewportType(VC->GetRenderOptions().ViewportType);
 	}
 	if (ActiveViewportClient && InWorld)
 		InWorld->SetActiveCamera(ActiveViewportClient->GetCamera());
 }
 
+// 모든 뷰포트 클라이언트의 카메라 컴포넌트를 파괴한다.
 void FLevelViewportLayout::DestroyAllCameras()
 {
 	for (FLevelEditorViewportClient* VC : LevelViewportClients)
@@ -1201,6 +1217,7 @@ void FLevelViewportLayout::DestroyAllCameras()
 	}
 }
 
+// PIE 진입 시 그리드/월드 축 표시를 끄고 이전 상태를 저장해 둔다.
 void FLevelViewportLayout::DisableWorldAxisForPIE()
 {
 	if (bHasSavedWorldAxisVisibility)
@@ -1231,6 +1248,7 @@ void FLevelViewportLayout::DisableWorldAxisForPIE()
 	bHasSavedWorldAxisVisibility = true;
 }
 
+// PIE 종료 후 저장된 그리드/월드 축 표시 상태를 복원한다.
 void FLevelViewportLayout::RestoreWorldAxisAfterPIE()
 {
 	if (!bHasSavedWorldAxisVisibility)
@@ -1247,11 +1265,12 @@ void FLevelViewportLayout::RestoreWorldAxisAfterPIE()
 	bHasSavedWorldAxisVisibility = false;
 }
 
-// ??? 酉고룷???щ’ 愿由????????????????????????????????????????
+// ─── 뷰포트 슬롯 관리 ───────────────────────────────────────
 
+// 필요한 수만큼 뷰포트 클라이언트와 SWindow 슬롯을 추가 생성한다.
 void FLevelViewportLayout::EnsureViewportSlots(int32 RequiredCount)
 {
-	// ?꾩옱 ?щ’蹂대떎 ???꾩슂?섎㈃ 異붽? ?앹꽦
+	// 현재 슬롯보다. 더 필요하면 추가 생성
 	while (static_cast<int32>(LevelViewportClients.size()) < RequiredCount)
 	{
 		int32 Idx = static_cast<int32>(LevelViewportClients.size());
@@ -1282,6 +1301,7 @@ void FLevelViewportLayout::EnsureViewportSlots(int32 RequiredCount)
 	}
 }
 
+// 필요한 수보다. 많은 뷰포트 클라이언트와 SWindow 슬롯을 제거한다.
 void FLevelViewportLayout::ShrinkViewportSlots(int32 RequiredCount)
 {
 	while (static_cast<int32>(LevelViewportClients.size()) > RequiredCount)
@@ -1306,8 +1326,9 @@ void FLevelViewportLayout::ShrinkViewportSlots(int32 RequiredCount)
 	}
 }
 
-// ??? SSplitter ?몃━ 鍮뚮뱶 ?????????????????????????????????????
+// ─── SSplitter 트리 빌드 ─────────────────────────────────────
 
+// 레이아웃 열거값에 따라 SSplitter 계층 트리를 생성하고 루트 노드를 반환한다.
 SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 {
 	SWindow** W = ViewportWindows;
@@ -1315,11 +1336,11 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	switch (Layout)
 	{
 	case EViewportLayout::OnePane:
-		return nullptr; // ?몃━ 遺덊븘??
+		return nullptr; // 트리 불필요
 
 	case EViewportLayout::TwoPanesHoriz:
 	{
-		// H ??[0] | [1]
+		// H → [0] | [1]
 		auto* Root = new SSplitterH();
 		Root->SetSideLT(W[0]);
 		Root->SetSideRB(W[1]);
@@ -1327,7 +1348,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::TwoPanesVert:
 	{
-		// V ??[0] / [1]
+		// V → [0] / [1]
 		auto* Root = new SSplitterV();
 		Root->SetSideLT(W[0]);
 		Root->SetSideRB(W[1]);
@@ -1335,7 +1356,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::ThreePanesLeft:
 	{
-		// H ??[0] | V([1]/[2])
+		// H → [0] | V([1]/[2])
 		auto* RightV = new SSplitterV();
 		RightV->SetSideLT(W[1]);
 		RightV->SetSideRB(W[2]);
@@ -1346,7 +1367,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::ThreePanesRight:
 	{
-		// H ??V([0]/[1]) | [2]
+		// H → V([0]/[1]) | [2]
 		auto* LeftV = new SSplitterV();
 		LeftV->SetSideLT(W[0]);
 		LeftV->SetSideRB(W[1]);
@@ -1357,7 +1378,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::ThreePanesTop:
 	{
-		// V ??[0] / H([1]|[2])
+		// V → [0] / H([1]|[2])
 		auto* BottomH = new SSplitterH();
 		BottomH->SetSideLT(W[1]);
 		BottomH->SetSideRB(W[2]);
@@ -1368,7 +1389,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::ThreePanesBottom:
 	{
-		// V ??H([0]|[1]) / [2]
+		// V → H([0]|[1]) / [2]
 		auto* TopH = new SSplitterH();
 		TopH->SetSideLT(W[0]);
 		TopH->SetSideRB(W[1]);
@@ -1379,7 +1400,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::FourPanes2x2:
 	{
-		// H ??V([0]/[2]) | V([1]/[3])
+		// H → V([0]/[2]) | V([1]/[3])
 		auto* LeftV = new SSplitterV();
 		LeftV->SetSideLT(W[0]);
 		LeftV->SetSideRB(W[2]);
@@ -1393,7 +1414,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::FourPanesLeft:
 	{
-		// H ??[0] | V([1] / V([2]/[3]))
+		// H → [0] | V([1] / V([2]/[3]))
 		auto* InnerV = new SSplitterV();
 		InnerV->SetSideLT(W[2]);
 		InnerV->SetSideRB(W[3]);
@@ -1408,7 +1429,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::FourPanesRight:
 	{
-		// H ??V([0] / V([1]/[2])) | [3]
+		// H → V([0] / V([1]/[2])) | [3]
 		auto* InnerV = new SSplitterV();
 		InnerV->SetSideLT(W[1]);
 		InnerV->SetSideRB(W[2]);
@@ -1423,7 +1444,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::FourPanesTop:
 	{
-		// V ??[0] / H([1] | H([2]|[3]))
+		// V → [0] / H([1] | H([2]|[3]))
 		auto* InnerH = new SSplitterH();
 		InnerH->SetSideLT(W[2]);
 		InnerH->SetSideRB(W[3]);
@@ -1438,7 +1459,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 	case EViewportLayout::FourPanesBottom:
 	{
-		// V ??H([0] | H([1]|[2])) / [3]
+		// V → H([0] | H([1]|[2])) / [3]
 		auto* InnerH = new SSplitterH();
 		InnerH->SetSideLT(W[1]);
 		InnerH->SetSideRB(W[2]);
@@ -1456,6 +1477,7 @@ SSplitter* FLevelViewportLayout::BuildSplitterTree(EViewportLayout Layout)
 	}
 }
 
+// 현재 활성 뷰포트 클라이언트의 슬롯 인덱스를 반환한다.
 int32 FLevelViewportLayout::GetActiveViewportSlotIndex() const
 {
 	for (int32 i = 0; i < static_cast<int32>(LevelViewportClients.size()); ++i)
@@ -1468,6 +1490,7 @@ int32 FLevelViewportLayout::GetActiveViewportSlotIndex() const
 	return 0;
 }
 
+// 해당 뷰포트 클라이언트가 현재 활성 슬롯에 포함되어 렌더링되어야 하는지 반환한다.
 bool FLevelViewportLayout::ShouldRenderViewportClient(const FLevelEditorViewportClient* ViewportClient) const
 {
 	if (!ViewportClient)
@@ -1486,6 +1509,7 @@ bool FLevelViewportLayout::ShouldRenderViewportClient(const FLevelEditorViewport
 	return false;
 }
 
+// 두 슬롯 인덱스의 뷰포트 클라이언트와 SWindow를 서로 교환한다.
 void FLevelViewportLayout::SwapViewportSlots(int32 SlotA, int32 SlotB)
 {
 	if (SlotA == SlotB)
@@ -1514,6 +1538,7 @@ void FLevelViewportLayout::SwapViewportSlots(int32 SlotA, int32 SlotB)
 	}
 }
 
+// 최대화된 뷰포트를 원래 슬롯으로 되돌리기 위해 슬롯 0과 교환한다.
 void FLevelViewportLayout::RestoreMaximizedViewportToOriginalSlot()
 {
 	if (MaximizedOriginalSlotIndex <= 0)
@@ -1525,6 +1550,7 @@ void FLevelViewportLayout::RestoreMaximizedViewportToOriginalSlot()
 	MaximizedOriginalSlotIndex = 0;
 }
 
+// 스플리터 서브트리가 대상 SWindow를 포함하는지 재귀적으로 확인한다.
 bool FLevelViewportLayout::SubtreeContainsWindow(SWindow* Node, SWindow* TargetWindow) const
 {
 	if (!Node || !TargetWindow)
@@ -1543,6 +1569,7 @@ bool FLevelViewportLayout::SubtreeContainsWindow(SWindow* Node, SWindow* TargetW
 			SubtreeContainsWindow(Splitter->GetSideRB(), TargetWindow));
 }
 
+// 대상 창이 있는 쪽으로 스플리터 비율 목표를 설정해 슬롯 축소 애니메이션을 구성한다.
 bool FLevelViewportLayout::ConfigureCollapseToSlot(SSplitter* Node, SWindow* TargetWindow, bool bAnimate)
 {
 	if (!Node || !TargetWindow)
@@ -1566,6 +1593,7 @@ bool FLevelViewportLayout::ConfigureCollapseToSlot(SSplitter* Node, SWindow* Tar
 	return true;
 }
 
+// 선택 슬롯을 남기고 나머지를 접는 OnePane 전환 애니메이션을 시작한다.
 void FLevelViewportLayout::BeginSplitToOnePaneTransition(int32 SlotIndex)
 {
 	FinishLayoutTransition(true);
@@ -1602,6 +1630,7 @@ void FLevelViewportLayout::BeginSplitToOnePaneTransition(int32 SlotIndex)
 	}
 }
 
+// OnePane에서 분할 레이아웃으로 펼쳐지는 전환 애니메이션을 시작한다.
 void FLevelViewportLayout::BeginOnePaneToSplitTransition(EViewportLayout TargetLayout)
 {
 	FinishLayoutTransition(true);
@@ -1646,6 +1675,7 @@ void FLevelViewportLayout::BeginOnePaneToSplitTransition(EViewportLayout TargetL
 	DraggingSplitter = nullptr;
 }
 
+// 진행 중인 레이아웃 전환 애니메이션을 즉시 완료하거나 취소한다.
 void FLevelViewportLayout::FinishLayoutTransition(bool bSnapToEnd)
 {
 	if (LayoutTransition == EViewportLayoutTransition::None)
@@ -1678,6 +1708,7 @@ void FLevelViewportLayout::FinishLayoutTransition(bool bSnapToEnd)
 	}
 }
 
+// 레이아웃 전환 애니메이션을 DeltaTime만큼 진행하고 완료 여부를 반환한다.
 bool FLevelViewportLayout::UpdateLayoutTransition(float DeltaTime)
 {
 	if (LayoutTransition == EViewportLayoutTransition::None || !RootSplitter)
@@ -1705,8 +1736,9 @@ bool FLevelViewportLayout::UpdateLayoutTransition(float DeltaTime)
 	return true;
 }
 
-// ??? ?덉씠?꾩썐 ?꾪솚 ??????????????????????????????????????????
+// ─── 레이아웃 전환 ──────────────────────────────────────────
 
+// 새 레이아웃으로 전환하며 필요시 슬롯 추가/제거 및 스플리터 트리를 재구성한다.
 void FLevelViewportLayout::SetLayout(EViewportLayout NewLayout)
 {
 	if (NewLayout == CurrentLayout) return;
@@ -1738,7 +1770,7 @@ void FLevelViewportLayout::SetLayout(EViewportLayout NewLayout)
 	const bool bLeavingOnePane = (CurrentLayout == EViewportLayout::OnePane && NewLayout != EViewportLayout::OnePane);
 	const bool bEnteringOnePane = (CurrentLayout != EViewportLayout::OnePane && NewLayout == EViewportLayout::OnePane);
 
-	// 湲곗〈 ?몃━ ?댁젣
+	// 기존 트리 해제
 	SSplitter::DestroyTree(RootSplitter);
 	RootSplitter = nullptr;
 	DraggingSplitter = nullptr;
@@ -1746,7 +1778,7 @@ void FLevelViewportLayout::SetLayout(EViewportLayout NewLayout)
 	int32 RequiredSlots = GetSlotCount(NewLayout);
 	int32 OldSlotCount = static_cast<int32>(LevelViewportClients.size());
 
-	// ?щ’ ??議곗젙
+	// 슬롯 수 조정
 	if (RequiredSlots > OldSlotCount)
 		EnsureViewportSlots(RequiredSlots);
 	else if (RequiredSlots < OldSlotCount && NewLayout != EViewportLayout::OnePane)
@@ -1767,7 +1799,7 @@ void FLevelViewportLayout::SetLayout(EViewportLayout NewLayout)
 		RestoreMaximizedViewportToOriginalSlot();
 	}
 
-	// 遺꾪븷 ?꾪솚 ???덈줈 異붽????щ’??Top, Front, Right ?쒖쑝濡?湲곕낯 ?ㅼ젙
+	// 분할 전환 시 새로 추가된 슬롯에 Top, Front, Right 순으로 기본 설정
 	if (NewLayout != EViewportLayout::OnePane)
 	{
 		constexpr ELevelViewportType DefaultTypes[] = {
@@ -1775,7 +1807,7 @@ void FLevelViewportLayout::SetLayout(EViewportLayout NewLayout)
 			ELevelViewportType::Front,
 			ELevelViewportType::Right
 		};
-		// 湲곗〈 ?щ’(?먮뒗 ?щ’ 0)? ?좎?, ?덈줈 ?앷릿 ?щ’?먮쭔 ?곸슜
+		// 기존 슬롯(또는 슬롯 0)은 유지, 새로 생긴 슬롯에만 적용
 		int32 StartIdx = OldSlotCount;
 		for (int32 i = StartIdx; i < RequiredSlots && (i - 1) < 3; ++i)
 		{
@@ -1783,7 +1815,7 @@ void FLevelViewportLayout::SetLayout(EViewportLayout NewLayout)
 		}
 	}
 
-	// ???몃━ 鍮뚮뱶
+	// 새 트리 빌드
 	RootSplitter = BuildSplitterTree(NewLayout);
 	ActiveSlotCount = RequiredSlots;
 	CurrentLayout = NewLayout;
@@ -1793,6 +1825,7 @@ void FLevelViewportLayout::SetLayout(EViewportLayout NewLayout)
 	}
 }
 
+// OnePane ↔ 분할 레이아웃을 토글한다.
 void FLevelViewportLayout::ToggleViewportSplit(int32 SourceSlotIndex)
 {
 	if (LayoutTransition != EViewportLayoutTransition::None)
@@ -1819,8 +1852,9 @@ void FLevelViewportLayout::ToggleViewportSplit(int32 SourceSlotIndex)
 	}
 }
 
-// ??? Viewport UI ?뚮뜑留??????????????????????????????????????
+// ─── Viewport UI 렌더링 ─────────────────────────────────────
 
+// 뷰포트 전체 UI(툴바, 렌더 이미지, 스플리터, 입력 처리)를 매 프레임 렌더링한다.
 void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 {
 	bMouseOverViewport = false;
@@ -1861,13 +1895,46 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 				Editor->GetWorld()->AddActor(NewActor);
 				Editor->CommitTrackedSceneChange();
 			}
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FbxContentItem"))
+			{
+				FContentItem ContentItem = *reinterpret_cast<const FContentItem*>(payload->Data);
+				const FString RelativeFbxPath = MakeProjectRelativePath(ContentItem.Path);
+
+				if (!FFbxImporter::HasSkinDeformer(RelativeFbxPath))
+				{
+					FNotificationManager::Get().AddNotification("FBX drop failed: file is not a skeletal mesh.", ENotificationType::Error, 4.0f);
+				}
+				else if (USkeletalMesh* SkeletalMesh = FSkeletalMeshManager::LoadSkeletalMesh(RelativeFbxPath))
+				{
+					Editor->BeginTrackedSceneChange();
+					ASkeletalMeshActor* NewActor = Cast<ASkeletalMeshActor>(FObjectFactory::Get().Create(ASkeletalMeshActor::StaticClass()->GetName(), Editor->GetWorld()));
+					if (NewActor)
+					{
+						NewActor->InitDefaultComponents();
+						if (USkeletalMeshComponent* SkeletalMeshComponent = NewActor->GetSkeletalMeshComponent())
+						{
+							SkeletalMeshComponent->SetSkeletalMesh(SkeletalMesh);
+						}
+						Editor->GetWorld()->AddActor(NewActor);
+						Editor->CommitTrackedSceneChange();
+					}
+					else
+					{
+						Editor->CancelTrackedSceneChange();
+					}
+				}
+				else
+				{
+					FNotificationManager::Get().AddNotification("FBX drop failed: could not load skeletal mesh.", ENotificationType::Error, 4.0f);
+				}
+			}
 			ImGui::EndDragDropTarget();
 		}
 	}
 
 	if (ContentSize.x > 0 && ContentSize.y > 0)
 	{
-		// ?곷떒??Play/Stop ?대컮 ?곸뿭 ?뺣낫 ???섎㉧吏瑜?酉고룷?몄뿉 ?좊떦
+		// 상단에 Play/Stop 툴바 영역 확보 후 나머지를 뷰포트에 할당
 		for (FLevelEditorViewportClient* VC : LevelViewportClients)
 		{
 			if (VC)
@@ -1896,7 +1963,7 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 			return R.Width > 1.0f && R.Height > 1.0f;
 		};
 
-		// SSplitter ?덉씠?꾩썐 怨꾩궛
+		// SSplitter 레이아웃 계산
 		if (RootSplitter)
 		{
 			RootSplitter->ComputeLayout(ContentRect);
@@ -1906,7 +1973,7 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 			ViewportWindows[0]->SetRect(ContentRect);
 		}
 
-		// 媛?ViewportClient??Rect 諛섏쁺 + ?대?吏 ?뚮뜑
+		// 각 ViewportClient에 Rect 반영 + 이미지 렌더
 		for (int32 i = 0; i < ActiveSlotCount; ++i)
 		{
 			if (i < static_cast<int32>(LevelViewportClients.size()) && IsSlotVisibleEnough(i))
@@ -1923,7 +1990,7 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 			}
 		}
 
-		// 媛?酉고룷???⑥씤 ?곷떒???대컮 ?ㅻ쾭?덉씠 ?뚮뜑
+		// 각 뷰포트 패인 상단에 툴바 오버레이 렌더
 		for (int32 i = 0; i < ActiveSlotCount; ++i)
 		{
 			const bool bShowPaneToolbar =
@@ -1935,7 +2002,7 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 			}
 		}
 
-		// 遺꾪븷 諛??뚮뜑 (?ш? ?섏쭛)
+		// 분할 바 렌더 (재귀 수집)
 		if (RootSplitter)
 		{
 			TArray<SSplitter*> AllSplitters;
@@ -1981,7 +2048,7 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 
 			const bool bLockViewportResolution = FProjectSettings::Get().Game.bLockWindowResolution;
 
-			// 遺꾪븷 諛??쒕옒洹?
+			// 분할 바 드래그
 			if (RootSplitter && LayoutTransition == EViewportLayoutTransition::None && !bLockViewportResolution)
 			{
 				if (ImGui::IsMouseClicked(0))
@@ -2012,7 +2079,7 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 				}
 				else
 				{
-					// ?몃쾭 而ㅼ꽌 蹂寃?
+					// 호버 커서 변경
 					SSplitter* Hovered = SSplitter::FindSplitterAtBar(RootSplitter, MP);
 					if (Hovered)
 					{
@@ -2028,7 +2095,7 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 				DraggingSplitter = nullptr;
 			}
 
-			// ?쒖꽦 酉고룷???꾪솚 (遺꾪븷 諛??쒕옒洹?以묒씠 ?꾨땺 ??
+			// 활성 뷰포트 전환 (분할 바 드래그 중이 아닐 때)
 			if (!DraggingSplitter && (ImGui::IsMouseClicked(0) || ImGui::IsMouseClicked(1)))
 			{
 				for (int32 i = 0; i < ActiveSlotCount; ++i)
@@ -2053,8 +2120,9 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 	ImGui::PopStyleVar();
 }
 
-// ??? 媛?酉고룷???⑥씤 ?대컮 ?ㅻ쾭?덉씠 ??????????????????????????
+// ─── 각 뷰포트 패인 툴바 오버레이 ──────────────────────────
 
+// 에디터 상단 공유 툴바(기즈모/스냅/좌표계 버튼)를 렌더링한다. (현재 미사용)
 void FLevelViewportLayout::RenderMainToolbar(float ToolbarLeft, float ToolbarTop)
 {
 	(void)ToolbarLeft;
@@ -2110,7 +2178,7 @@ void FLevelViewportLayout::RenderMainToolbar(float ToolbarLeft, float ToolbarTop
 		return bClicked;
 	};
 
-	// ?곷떒 ?대컮?먯꽌??Place Actor 而⑦뀓?ㅽ듃 硫붾돱瑜?諛붾줈 ?????덇쾶 ?쒕떎.
+	// 상단 툴바에서도 Place Actor 컨텍스트 메뉴를 바로 열 수 있게 한다.
 	if (DrawToolbarIconButton("##SharedAddActorIcon", EToolbarIcon::AddActor, "Add", ToolbarFallbackIconSize, ToolbarMaxIconSize))
 	{
 		const FPoint MousePos = { ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y };
@@ -2181,7 +2249,7 @@ void FLevelViewportLayout::RenderMainToolbar(float ToolbarLeft, float ToolbarTop
 		ImGui::PopStyleColor(3);
 	}
 
-	// ?ㅻ깄 ?좉?怨??섏튂瑜?媛숈? ?먮━?먯꽌 諛붽씀怨?利됱떆 Gizmo ?ㅼ젙??諛섏쁺?쒕떎.
+	// 스냅 토글과 수치를 같은 자리에서 바꾸고 즉시 Gizmo 설정에 반영한다.
 	auto DrawSnapControl = [&](const char* Id, EToolbarIcon Icon, const char* FallbackLabel, bool& bEnabled, float& Value, float MinValue)
 	{
 		ImGui::SameLine(0.0f, 6.0f);
@@ -2222,6 +2290,7 @@ void FLevelViewportLayout::RenderMainToolbar(float ToolbarLeft, float ToolbarTop
 	ImGui::PopStyleVar();
 }
 
+// 지정 슬롯 뷰포트 상단에 오버레이 툴바(뷰 모드/타입/스냅/레이아웃 등)를 렌더링한다.
 void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 {
 	if (SlotIndex >= MaxViewportSlots || !ViewportWindows[SlotIndex]) return;
@@ -2241,7 +2310,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 	constexpr float PaneToolbarPaddingY = 6.0f;
 	constexpr float PaneToolbarButtonSpacing = 6.0f;
 
-	// ?⑥씤 ?곷떒???ㅻ쾭?덉씠 ?덈룄??
+	// 패인 상단에 오버레이 윈도우
 	char OverlayID[64];
 	snprintf(OverlayID, sizeof(OverlayID), "##PaneToolbar_%d", SlotIndex);
 
@@ -2652,7 +2721,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 
 		const bool bIsTransitioning = (LayoutTransition != EViewportLayoutTransition::None);
 
-		// Layout ?쒕∼?ㅼ슫
+		// Layout 드롭다.운
 		char PopupID[64];
 		snprintf(PopupID, sizeof(PopupID), "LayoutPopup_%d", SlotIndex);
 
@@ -2714,7 +2783,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 		}
 		ImGui::PopStyleColor();
 
-		// ?좉? 踰꾪듉 (媛숈? ??
+		// 토글 버튼 (같은 행)
 		ImGui::SameLine();
 
 		constexpr float ToggleIconSize = 16.0f;
@@ -2742,7 +2811,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 		}
 		//if (bIsTransitioning) ImGui::EndDisabled();
 
-		// Camera + View Mode + Settings ?앹뾽
+		// Camera + View Mode + Settings 팝업
 		if (SlotIndex < static_cast<int32>(LevelViewportClients.size()))
 		{
 			FLevelEditorViewportClient* VC = LevelViewportClients[SlotIndex];
@@ -2818,7 +2887,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			const float RightX = ImGui::GetWindowWidth() - PaneToolbarPaddingX - RightGroupWidth;
 			ImGui::SameLine((std::max)(RightX, 0.0f), 0.0f);
 
-			// ?? View Mode ?앹뾽 ??
+			// ── View Mode 팝업 ──
 			static const char* ViewModeNames[] = { "Lit", "Unlit", "Lit", "Lit", "Wireframe", "Scene Depth", "World Normal", "Light Culling" };
 			static const char* ViewportTypeNames[] = { "Perspective", "Top", "Bottom", "Left", "Right", "Front", "Back", "Free Ortho" };
 			const char* CurrentViewModeName = ViewModeNames[static_cast<int32>(Opts.ViewMode)];
@@ -2904,7 +2973,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			}
 			ImGui::PopStyleColor();
 
-			// ?? Camera ?앹뾽 ??
+			// ── Camera 팝업 ──
 			ImGui::SameLine(0.0f, PaneToolbarButtonSpacing);
 
 			char ViewportPopupID[64];
@@ -2970,7 +3039,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 			}
 			ImGui::PopStyleColor();
 
-			// ?? Settings ?앹뾽 ??
+			// ── Settings 팝업 ──
 			ImGui::SameLine(0.0f, PaneToolbarButtonSpacing);
 
 			char SettingsPopupID[64];
@@ -3007,6 +3076,7 @@ void FLevelViewportLayout::RenderViewportToolbar(int32 SlotIndex)
 	ImGui::PopStyleVar(2);
 }
 
+// 우클릭 이동량을 추적해 실제 우클릭 팝업 열기 여부를 판단한다.
 void FLevelViewportLayout::HandleViewportContextMenuInput(const FPoint& MousePos)
 {
 	if (LayoutTransition != EViewportLayoutTransition::None)
@@ -3074,7 +3144,7 @@ void FLevelViewportLayout::HandleViewportContextMenuInput(const FPoint& MousePos
 		const ImGuiIO& IO = ImGui::GetIO();
 		const bool bNoModifiers = !IO.KeyCtrl && !IO.KeyShift && !IO.KeyAlt && !IO.KeySuper;
 
-		// 移대찓???고겢由??쒕옒洹몄? 援щ텇?섍린 ?꾪빐 嫄곗쓽 ?대룞?섏? ?딆? ?고겢由?쭔 popup?쇰줈 蹂몃떎.
+		// 카메라 우클릭 드래그와 구분하기 위해 거의 이동하지 않은 우클릭만 popup으로 본다.
 		if (bClickCandidate && bNoModifiers)
 		{
 			ContextMenuState.PendingPopupSlot = i;
@@ -3088,6 +3158,7 @@ void FLevelViewportLayout::HandleViewportContextMenuInput(const FPoint& MousePos
 	}
 }
 
+// 우클릭 컨텍스트 메뉴(액터 배치 / Focus / 이동 잠금)를 렌더링한다.
 void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 {
 	constexpr const char* PopupId = "##ViewportPlaceActorPopup";
@@ -3115,7 +3186,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 
 	if (ImGui::BeginMenu("Place Actor"))
 	{
-		// 湲곗〈 Control Panel??spawn 湲곕뒫??酉고룷??湲곗? 諛곗튂 硫붾돱濡???릿??
+		// 기존 Control Panel의 spawn 기능을 뷰포트 기준 배치 메뉴로 옮긴다.
 		const FPoint SpawnPos = ContextMenuState.PendingSpawnPos;
 		const int32 SpawnSlot = ContextMenuState.PendingSpawnSlot;
 
@@ -3203,7 +3274,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 	{
 		ImGui::BeginDisabled();
 	}
-	//?ㅽ겕由??고겢由????쒓굅, ??湲곕뒫 瑗??덉뼱???좉퉴? 洹몃윴 ?섎Ц????땲??
+	//스크린 우클릭 후 제거, 이 기능 꼭 있어야 할까? 그런 의문이 듭니다.
 	//if (ImGui::MenuItem("Delete"))
 	//{
 	//	SelectionManager->DeleteSelectedActors();
@@ -3218,6 +3289,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 	ImGui::PopStyleVar();
 }
 
+// 화면 좌표를 월드 레이캐스트해 액터 배치 위치를 계산하고 성공 여부를 반환한다.
 bool FLevelViewportLayout::TryComputePlacementLocation(int32 SlotIndex, const FPoint& ClientPos, FVector& OutLocation) const
 {
 	if (SlotIndex < 0 ||
@@ -3248,7 +3320,7 @@ bool FLevelViewportLayout::TryComputePlacementLocation(int32 SlotIndex, const FP
 
 	const float LocalX = Clamp(ClientPos.X - ViewRect.X, 0.0f, VPWidth - 1.0f);
 	const float LocalY = Clamp(ClientPos.Y - ViewRect.Y, 0.0f, VPHeight - 1.0f);
-	// ?대┃???붾㈃ 醫뚰몴瑜??붾뱶 ?덉씠濡?諛붽퓭 移대찓???꾨갑??湲곕낯 諛곗튂 ?꾩튂瑜?怨꾩궛?쒕떎.
+	// 클릭한 화면 좌표를 월드 레이로 바꿔 카메라 전방의 기본 배치 위치를 계산한다.
 	const FRay Ray = ViewportClient->GetCamera()->DeprojectScreenToWorld(LocalX, LocalY, VPWidth, VPHeight);
 	const FVector RayDirection = Ray.Direction.Normalized();
 
@@ -3271,6 +3343,7 @@ bool FLevelViewportLayout::TryComputePlacementLocation(int32 SlotIndex, const FP
 	return true;
 }
 
+// 타입에 맞는 액터를 월드에 스폰하고 위치/옥트리/선택 상태를 즉시 갱신한다.
 AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType Type, const FVector& Location)
 {
 	if (!Editor)
@@ -3546,7 +3619,7 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 
 	SpawnedActor->EnsureEditorBillboardForActor();
 
-	// 諛곗튂 吏곹썑 ?붾뱶/?ν듃由??좏깮 ?곹깭瑜??④퍡 媛깆떊???먮뵒???쇰뱶諛깆쓣 利됱떆 留욎텣??
+	// 배치 직후 월드/옥트리/선택 상태를 함께 갱신해 에디터 피드백을 즉시 맞춘다.
 	SpawnedActor->SetActorLocation(SpawnLocation);
 	World->InsertActorToOctree(SpawnedActor);
 	if (SelectionManager)
@@ -3557,6 +3630,7 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 	return SpawnedActor;
 }
 
+// Undo 트래킹을 포함해 SpawnActorFromViewportMenu를 호출하는 외부 진입점이다.
 AActor* FLevelViewportLayout::SpawnPlaceActor(EViewportPlaceActorType Type, const FVector& Location)
 {
 	if (!Editor)
@@ -3577,21 +3651,22 @@ AActor* FLevelViewportLayout::SpawnPlaceActor(EViewportPlaceActorType Type, cons
 	return SpawnedActor;
 }
 
-// ??? FEditorSettings ??酉고룷???곹깭 ?숆린????????????????????
+// ─── FEditorSettings ↔ 뷰포트 상태 동기화 ──────────────────
 
+// 현재 레이아웃/렌더 옵션/스플리터 비율/카메라 상태를 FEditorSettings에 저장한다.
 void FLevelViewportLayout::SaveToSettings()
 {
 	FEditorSettings& S = FEditorSettings::Get();
 
 	S.LayoutType = static_cast<int32>(CurrentLayout);
 
-	// 酉고룷?몃퀎 ?뚮뜑 ?듭뀡 ???
+	// 뷰포트별 렌더 옵션 저장
 	for (int32 i = 0; i < ActiveSlotCount && i < static_cast<int32>(LevelViewportClients.size()); ++i)
 	{
 		S.SlotOptions[i] = LevelViewportClients[i]->GetRenderOptions();
 	}
 
-	// Splitter 鍮꾩쑉 ???
+	// Splitter 비율 저장
 	if (LayoutTransition != EViewportLayoutTransition::None && TransitionRestoreRatioCount > 0)
 	{
 		S.SplitterCount = TransitionRestoreRatioCount;
@@ -3617,7 +3692,7 @@ void FLevelViewportLayout::SaveToSettings()
 		S.SplitterCount = 0;
 	}
 
-	// Perspective 移대찓??(slot 0) ???
+	// Perspective 카메라 (slot 0) 저장
 	if (!LevelViewportClients.empty())
 	{
 		UCameraComponent* Cam = LevelViewportClients[0]->GetCamera();
@@ -3626,13 +3701,14 @@ void FLevelViewportLayout::SaveToSettings()
 			S.PerspCamLocation = Cam->GetWorldLocation();
 			S.PerspCamRotation = Cam->GetRelativeRotation();
 			const FMinimalViewInfo& CS = Cam->GetCameraState();
-			S.PerspCamFOV = CS.FOV * (180.0f / 3.14159265358979f); // rad ??deg
+			S.PerspCamFOV = CS.FOV * (180.0f / 3.14159265358979f); // rad → deg
 			S.PerspCamNearClip = CS.NearZ;
 			S.PerspCamFarClip = CS.FarZ;
 		}
 	}
 }
 
+// FEditorSettings에서 레이아웃/렌더 옵션/스플리터 비율/카메라 상태를 복원한다.
 void FLevelViewportLayout::LoadFromSettings()
 {
 	const FEditorSettings& S = FEditorSettings::Get();
@@ -3642,10 +3718,10 @@ void FLevelViewportLayout::LoadFromSettings()
 	if (NewLayout >= EViewportLayout::MAX)
 		NewLayout = EViewportLayout::OnePane;
 
-	// OnePane???꾨땲硫??덉씠?꾩썐 ?곸슜 (Initialize?먯꽌 ?대? OnePane?쇰줈 ?앹꽦??
+	// OnePane이 아니면 레이아웃 적용 (Initialize에서 이미 OnePane으로 생성됨)
 	if (NewLayout != EViewportLayout::OnePane)
 	{
-		// SetLayout ?대? bWasOnePane 遺꾧린瑜??쇳븯湲??꾪빐 吏곸젒 ?꾪솚
+		// SetLayout 내부 bWasOnePane 분기를 피하기 위해 직접 전환
 		SSplitter::DestroyTree(RootSplitter);
 		RootSplitter = nullptr;
 		DraggingSplitter = nullptr;
@@ -3658,18 +3734,18 @@ void FLevelViewportLayout::LoadFromSettings()
 		CurrentLayout = NewLayout;
 	}
 
-	// 酉고룷?몃퀎 ?뚮뜑 ?듭뀡 ?곸슜
+	// 뷰포트별 렌더 옵션 적용
 	for (int32 i = 0; i < ActiveSlotCount && i < static_cast<int32>(LevelViewportClients.size()); ++i)
 	{
 		FLevelEditorViewportClient* VC = LevelViewportClients[i];
 		VC->GetRenderOptions() = S.SlotOptions[i];
 		ApplyProjectViewportSettings(VC->GetRenderOptions());
 
-		// ViewportType???곕씪 移대찓??ortho/諛⑺뼢 ?ㅼ젙
+		// ViewportType에 따라 카메라 ortho/방향 설정
 		VC->SetViewportType(S.SlotOptions[i].ViewportType);
 	}
 
-	// Splitter 鍮꾩쑉 蹂듭썝
+	// Splitter 비율 복원
 	if (RootSplitter)
 	{
 		TArray<SSplitter*> AllSplitters;
@@ -3680,7 +3756,7 @@ void FLevelViewportLayout::LoadFromSettings()
 		}
 	}
 
-	// Perspective 移대찓??(slot 0) 蹂듭썝
+	// Perspective 카메라 (slot 0) 복원
 	if (!LevelViewportClients.empty())
 	{
 		UCameraComponent* Cam = LevelViewportClients[0]->GetCamera();
@@ -3690,7 +3766,7 @@ void FLevelViewportLayout::LoadFromSettings()
 			Cam->SetRelativeRotation(S.PerspCamRotation);
 
 			FMinimalViewInfo CS = Cam->GetCameraState();
-			CS.FOV = S.PerspCamFOV * (3.14159265358979f / 180.0f); // deg ??rad
+			CS.FOV = S.PerspCamFOV * (3.14159265358979f / 180.0f); // deg → rad
 			CS.NearZ = S.PerspCamNearClip;
 			CS.FarZ = S.PerspCamFarClip;
 			Cam->SetCameraState(CS);

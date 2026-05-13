@@ -7,6 +7,7 @@ class UDirectionalLightComponent : public ULightComponent
 public:
 	DECLARE_CLASS(UDirectionalLightComponent, ULightComponent)
 
+	UDirectionalLightComponent();
 	virtual ELightComponentType GetLightType() const override { return ELightComponentType::Directional; }
 	void ContributeSelectedVisuals(FScene& Scene) const;
 	virtual void PushToScene() override;

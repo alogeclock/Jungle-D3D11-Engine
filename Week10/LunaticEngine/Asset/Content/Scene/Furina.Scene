@@ -1,0 +1,937 @@
+{
+  "Actors" : [{
+      "ClassName" : "AStaticMeshActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "AStaticMeshActor_0",
+      "PrimitiveKey" : "552",
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "ObjectName" : "UStaticMeshComponent_0",
+        "Properties" : {
+          "Cast Shadow" : true,
+          "Element 0" : {
+            "Path" : "Asset/Content/Materials/Auto/Material.mat"
+          },
+          "Generates Overlap Event" : 2,
+          "Is Collidable" : true,
+          "Location" : [1.251739, 7.267057, -0.997411],
+          "Mobility" : 2,
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Scale" : [100.000000, 100.000000, 1.000000],
+          "Static Mesh" : "Asset/Content/Model/BasicShape/cube.obj",
+          "Two Sided Shadow" : false,
+          "Visible" : true
+        }
+      },
+      "UUID" : 552,
+      "bVisible" : true
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "AStaticMeshActor_0",
+      "PrimitiveKey" : "567",
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "ObjectName" : "UStaticMeshComponent_0",
+        "Properties" : {
+          "Cast Shadow" : true,
+          "Element 0" : {
+            "Path" : "Asset/Content/Materials/Auto/Material.mat"
+          },
+          "Generates Overlap Event" : 2,
+          "Is Collidable" : true,
+          "Location" : [0.217786, -0.565813, 0.012540],
+          "Mobility" : 2,
+          "Rotation" : [-0.000000, 22.122913, 0.000000],
+          "Scale" : [0.250000, 0.250000, 0.250000],
+          "Static Mesh" : "Asset/Content/Model/BasicShape/cube.obj",
+          "Two Sided Shadow" : false,
+          "Visible" : true
+        }
+      },
+      "UUID" : 567,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASkeletalMeshActor_0",
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "ObjectName" : "USkeletalMeshComponent_0",
+        "Properties" : {
+          "Bounds Scale" : 1.000000,
+          "CPU Skinning" : true,
+          "Cast Shadow" : true,
+          "Display Bones" : false,
+          "Element 0" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-7908452021760119546.mat"
+          },
+          "Element 1" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-11339097660723525740.mat"
+          },
+          "Element 10" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-656869027606591973.mat"
+          },
+          "Element 11" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-14418879240919938750.mat"
+          },
+          "Element 12" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-9391636505369748388.mat"
+          },
+          "Element 13" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_______001-9989846295969898667.mat"
+          },
+          "Element 14" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-8820398554807210249.mat"
+          },
+          "Element 15" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_________1-405116837076464412.mat"
+          },
+          "Element 16" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______2-3760825838876803203.mat"
+          },
+          "Element 17" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-11363071330972301509.mat"
+          },
+          "Element 18" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_________-14696384244973886107.mat"
+          },
+          "Element 19" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-15319757393447193272.mat"
+          },
+          "Element 2" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-16581128103324282665.mat"
+          },
+          "Element 20" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-6422520207925089254.mat"
+          },
+          "Element 21" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-6796239046049279875.mat"
+          },
+          "Element 22" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-14431250849674296311.mat"
+          },
+          "Element 23" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-5136050241992427752.mat"
+          },
+          "Element 24" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___1-16209583140061388885.mat"
+          },
+          "Element 25" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-16531295721366456422.mat"
+          },
+          "Element 26" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___3-8689390904254673584.mat"
+          },
+          "Element 27" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-4639617360883360073.mat"
+          },
+          "Element 28" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_______-5904173658770155146.mat"
+          },
+          "Element 29" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___1_-17930311712317236007.mat"
+          },
+          "Element 3" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-16848674176304923840.mat"
+          },
+          "Element 30" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2_-6360920059908210123.mat"
+          },
+          "Element 31" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/____-6664016426337684056.mat"
+          },
+          "Element 4" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-37963019782058741.mat"
+          },
+          "Element 5" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-14427644974594267884.mat"
+          },
+          "Element 6" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-12389909703652127374.mat"
+          },
+          "Element 7" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-3048282229312930889.mat"
+          },
+          "Element 8" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-14766883323639779174.mat"
+          },
+          "Element 9" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-13176885625412987621.mat"
+          },
+          "Generates Overlap Event" : 2,
+          "Is Collidable" : true,
+          "Location" : [-0.769863, -1.737929, 0.078027],
+          "Mobility" : 2,
+          "Rotation" : [4.568020, 28.453810, 0.506256],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Selected Bone Index" : -1,
+          "Show Bone Names" : false,
+          "Skeletal Mesh" : "Asset/Content/Model/FurinaFBX/FurinaFBX/Furina.fbx",
+          "Skeletal Pose" : "Asset/Content/Model/FurinaFBX/FurinaFBX/Furina_Pose_20260513_162217.uasset",
+          "Two Sided Shadow" : false,
+          "Visible" : true
+        }
+      },
+      "UUID" : 307,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASkeletalMeshActor_1",
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "ObjectName" : "USkeletalMeshComponent_2",
+        "Properties" : {
+          "Bounds Scale" : 1.000000,
+          "CPU Skinning" : true,
+          "Cast Shadow" : true,
+          "Display Bones" : false,
+          "Element 0" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-7908452021760119546.mat"
+          },
+          "Element 1" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-11339097660723525740.mat"
+          },
+          "Element 10" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-656869027606591973.mat"
+          },
+          "Element 11" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-14418879240919938750.mat"
+          },
+          "Element 12" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-9391636505369748388.mat"
+          },
+          "Element 13" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_______001-9989846295969898667.mat"
+          },
+          "Element 14" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-8820398554807210249.mat"
+          },
+          "Element 15" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_________1-405116837076464412.mat"
+          },
+          "Element 16" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______2-3760825838876803203.mat"
+          },
+          "Element 17" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-11363071330972301509.mat"
+          },
+          "Element 18" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_________-14696384244973886107.mat"
+          },
+          "Element 19" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-15319757393447193272.mat"
+          },
+          "Element 2" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-16581128103324282665.mat"
+          },
+          "Element 20" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-6422520207925089254.mat"
+          },
+          "Element 21" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-6796239046049279875.mat"
+          },
+          "Element 22" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-14431250849674296311.mat"
+          },
+          "Element 23" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-5136050241992427752.mat"
+          },
+          "Element 24" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___1-16209583140061388885.mat"
+          },
+          "Element 25" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-16531295721366456422.mat"
+          },
+          "Element 26" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___3-8689390904254673584.mat"
+          },
+          "Element 27" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-4639617360883360073.mat"
+          },
+          "Element 28" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_______-5904173658770155146.mat"
+          },
+          "Element 29" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___1_-17930311712317236007.mat"
+          },
+          "Element 3" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-16848674176304923840.mat"
+          },
+          "Element 30" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2_-6360920059908210123.mat"
+          },
+          "Element 31" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/____-6664016426337684056.mat"
+          },
+          "Element 4" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-37963019782058741.mat"
+          },
+          "Element 5" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-14427644974594267884.mat"
+          },
+          "Element 6" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-12389909703652127374.mat"
+          },
+          "Element 7" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-3048282229312930889.mat"
+          },
+          "Element 8" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-14766883323639779174.mat"
+          },
+          "Element 9" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-13176885625412987621.mat"
+          },
+          "Generates Overlap Event" : 2,
+          "Is Collidable" : true,
+          "Location" : [1.604801, -0.804011, 0.063264],
+          "Mobility" : 2,
+          "Rotation" : [-0.883637, 22.122915, -0.000000],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Selected Bone Index" : -1,
+          "Show Bone Names" : false,
+          "Skeletal Mesh" : "Asset/Content/Model/FurinaFBX/FurinaFBX/Furina.fbx",
+          "Skeletal Pose" : "Asset/Content/Model/FurinaFBX/FurinaFBX/Furina_Pose_20260513_145848.uasset",
+          "Two Sided Shadow" : false,
+          "Visible" : true
+        }
+      },
+      "UUID" : 325,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASkeletalMeshActor_10",
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "ObjectName" : "USkeletalMeshComponent_12",
+        "Properties" : {
+          "Bounds Scale" : 1.000000,
+          "CPU Skinning" : true,
+          "Cast Shadow" : true,
+          "Display Bones" : false,
+          "Element 0" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-7908452021760119546.mat"
+          },
+          "Element 1" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-11339097660723525740.mat"
+          },
+          "Element 10" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-656869027606591973.mat"
+          },
+          "Element 11" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-14418879240919938750.mat"
+          },
+          "Element 12" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-9391636505369748388.mat"
+          },
+          "Element 13" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_______001-9989846295969898667.mat"
+          },
+          "Element 14" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-8820398554807210249.mat"
+          },
+          "Element 15" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_________1-405116837076464412.mat"
+          },
+          "Element 16" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______2-3760825838876803203.mat"
+          },
+          "Element 17" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-11363071330972301509.mat"
+          },
+          "Element 18" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_________-14696384244973886107.mat"
+          },
+          "Element 19" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-15319757393447193272.mat"
+          },
+          "Element 2" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-16581128103324282665.mat"
+          },
+          "Element 20" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-6422520207925089254.mat"
+          },
+          "Element 21" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-6796239046049279875.mat"
+          },
+          "Element 22" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-14431250849674296311.mat"
+          },
+          "Element 23" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-5136050241992427752.mat"
+          },
+          "Element 24" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___1-16209583140061388885.mat"
+          },
+          "Element 25" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2-16531295721366456422.mat"
+          },
+          "Element 26" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___3-8689390904254673584.mat"
+          },
+          "Element 27" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-4639617360883360073.mat"
+          },
+          "Element 28" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/_______-5904173658770155146.mat"
+          },
+          "Element 29" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___1_-17930311712317236007.mat"
+          },
+          "Element 3" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-16848674176304923840.mat"
+          },
+          "Element 30" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___2_-6360920059908210123.mat"
+          },
+          "Element 31" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/____-6664016426337684056.mat"
+          },
+          "Element 4" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-37963019782058741.mat"
+          },
+          "Element 5" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-14427644974594267884.mat"
+          },
+          "Element 6" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-12389909703652127374.mat"
+          },
+          "Element 7" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-3048282229312930889.mat"
+          },
+          "Element 8" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/___-14766883323639779174.mat"
+          },
+          "Element 9" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Furina/______-13176885625412987621.mat"
+          },
+          "Generates Overlap Event" : 2,
+          "Is Collidable" : true,
+          "Location" : [0.230874, -0.570481, 0.278133],
+          "Mobility" : 2,
+          "Rotation" : [-0.000000, 22.122913, 0.000000],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Selected Bone Index" : -1,
+          "Show Bone Names" : false,
+          "Skeletal Mesh" : "Asset/Content/Model/FurinaFBX/FurinaFBX/Furina.fbx",
+          "Skeletal Pose" : "Asset/Content/Model/FurinaFBX/FurinaFBX/Furina_Pose_20260513_161447.uasset",
+          "Two Sided Shadow" : false,
+          "Visible" : true
+        }
+      },
+      "UUID" : 494,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASpotLightActor_0",
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_2",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : true,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }, {
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_3",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : false,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "ObjectName" : "USpotLightComponent_0",
+        "Properties" : {
+          "AttenuationRadius" : 9.730000,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 0.575646, 0.000000, 1.000000],
+          "InnerConeAngle" : 20.000000,
+          "Intensity" : 1.000000,
+          "LightFalloffExponent" : 1.000000,
+          "Location" : [-0.213562, -4.484149, 1.543490],
+          "OuterConeAngle" : 40.000000,
+          "Rotation" : [24.589783, 86.867828, -77.862305],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Shadow Bias" : 0.000100,
+          "Shadow Normal Bias" : 0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true
+        }
+      },
+      "UUID" : 356,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASpotLightActor_0",
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_2",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : true,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }, {
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_5",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : false,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "ObjectName" : "USpotLightComponent_0",
+        "Properties" : {
+          "AttenuationRadius" : 9.730000,
+          "Cast Shadows" : true,
+          "Color" : [0.003690, 0.415449, 1.000000, 1.000000],
+          "InnerConeAngle" : 36.200001,
+          "Intensity" : 1.000000,
+          "LightFalloffExponent" : 1.000000,
+          "Location" : [-0.260975, 1.434753, 1.700076],
+          "OuterConeAngle" : 53.900002,
+          "Rotation" : [42.559906, -78.172249, 114.207184],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Shadow Bias" : 0.000100,
+          "Shadow Normal Bias" : 0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true
+        }
+      },
+      "UUID" : 405,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASkeletalMeshActor_4",
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "ObjectName" : "USkeletalMeshComponent_6",
+        "Properties" : {
+          "Bounds Scale" : 1.000000,
+          "CPU Skinning" : true,
+          "Cast Shadow" : true,
+          "Display Bones" : false,
+          "Element 0" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Dragon_Baked_Actions_fbx_6_1_ASCII/EYES_001__Untitled_001-12129013977542725148.mat"
+          },
+          "Element 1" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Dragon_Baked_Actions_fbx_6_1_ASCII/Game_dragon_003__Untitled_001-17791199859693156582.mat"
+          },
+          "Element 2" : {
+            "Path" : "Asset/Materials/Auto/Fbx/Dragon_Baked_Actions_fbx_6_1_ASCII/Game_dragon_002__Untitled_001-3444112890430321975.mat"
+          },
+          "Generates Overlap Event" : 2,
+          "Is Collidable" : true,
+          "Location" : [-10.177179, 11.294236, -0.202610],
+          "Mobility" : 2,
+          "Rotation" : [0.000001, -4.195946, 15.348600],
+          "Scale" : [0.300000, 0.300000, 0.300000],
+          "Selected Bone Index" : -1,
+          "Show Bone Names" : false,
+          "Skeletal Mesh" : "Asset/Content/Model/Dragon/Dragon_Baked_Actions_fbx_6.1_ASCII.fbx",
+          "Skeletal Pose" : "Asset/Content/Model/Dragon/Dragon_Baked_Actions_fbx_6.1_ASCII_Pose_20260513_164910.uasset",
+          "Two Sided Shadow" : false,
+          "Visible" : true
+        }
+      },
+      "UUID" : 409,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASpotLightActor_0",
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_2",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : true,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }, {
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_3",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : false,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "ObjectName" : "USpotLightComponent_0",
+        "Properties" : {
+          "AttenuationRadius" : 9.730000,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 0.575646, 0.000000, 1.000000],
+          "InnerConeAngle" : 20.000000,
+          "Intensity" : 1.000000,
+          "LightFalloffExponent" : 1.000000,
+          "Location" : [-10.147526, -0.519001, 8.695598],
+          "OuterConeAngle" : 40.000000,
+          "Rotation" : [24.589787, 86.867828, -77.862305],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Shadow Bias" : 0.000100,
+          "Shadow Normal Bias" : 0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true
+        }
+      },
+      "UUID" : 515,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASpotLightActor_0",
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_2",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : true,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }, {
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_3",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : false,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "ObjectName" : "USpotLightComponent_0",
+        "Properties" : {
+          "AttenuationRadius" : 23.850000,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 0.575646, 0.000000, 1.000000],
+          "InnerConeAngle" : 34.200001,
+          "Intensity" : 1.000000,
+          "LightFalloffExponent" : 1.000000,
+          "Location" : [-1.664491, 1.585431, 8.795598],
+          "OuterConeAngle" : 52.200001,
+          "Rotation" : [24.768721, 132.363144, -68.875519],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Shadow Bias" : 0.000100,
+          "Shadow Normal Bias" : 0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true
+        }
+      },
+      "UUID" : 526,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASpotLightActor_0",
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_2",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : true,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }, {
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_3",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : false,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "ObjectName" : "USpotLightComponent_0",
+        "Properties" : {
+          "AttenuationRadius" : 9.730000,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 0.575646, 0.000000, 1.000000],
+          "InnerConeAngle" : 20.000000,
+          "Intensity" : 1.000000,
+          "LightFalloffExponent" : 1.000000,
+          "Location" : [-4.444911, 5.433388, 2.302070],
+          "OuterConeAngle" : 40.000000,
+          "Rotation" : [3.880303, 132.683731, -52.472496],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Shadow Bias" : 0.000100,
+          "Shadow Normal Bias" : 0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true
+        }
+      },
+      "UUID" : 551,
+      "bVisible" : true
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "NonSceneComponents" : [],
+      "ObjectName" : "ASpotLightActor_0",
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_2",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : true,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }, {
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "ObjectName" : "UBillboardComponent_3",
+            "Properties" : {
+              "Billboard" : true,
+              "Cast Shadow" : true,
+              "Generates Overlap Event" : 2,
+              "Height" : 1.000000,
+              "Is Collidable" : true,
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Mobility" : 2,
+              "Rotation" : [-0.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000],
+              "Texture" : {
+                "Path" : "Asset/Editor/Icons/Actors/S_SpotLight_256x.PNG"
+              },
+              "Two Sided Shadow" : false,
+              "Visible" : false,
+              "Width" : 1.000000
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "ObjectName" : "USpotLightComponent_0",
+        "Properties" : {
+          "AttenuationRadius" : 9.730000,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 0.575646, 0.000000, 1.000000],
+          "InnerConeAngle" : 20.000000,
+          "Intensity" : 1.000000,
+          "LightFalloffExponent" : 1.000000,
+          "Location" : [-10.670473, 5.533388, 2.402070],
+          "OuterConeAngle" : 40.000000,
+          "Rotation" : [3.880303, 132.683731, -52.472496],
+          "Scale" : [1.000000, 1.000000, 1.000000],
+          "Shadow Bias" : 0.000100,
+          "Shadow Normal Bias" : 0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true
+        }
+      },
+      "UUID" : 566,
+      "bVisible" : true
+    }],
+  "ClassName" : "UWorld",
+  "ContextHandle" : "NewScene",
+  "ContextName" : "New Scene",
+  "Name" : "Furina",
+  "PerspectiveCamera" : {
+    "FOV" : 1.047198,
+    "FarClip" : 1000.000000,
+    "Location" : [1.783112, -2.685053, 0.875447],
+    "NearClip" : 0.100000,
+    "Rotation" : [0.000000, -13.187412, 134.558289]
+  },
+  "Primitives" : {
+    "552" : {
+      "Location" : [1.251739, 7.267057, -0.997411],
+      "ObjStaticMeshAsset" : "Asset/Content/Model/BasicShape/cube.obj",
+      "Rotation" : [0.000000, -0.000000, 0.000000],
+      "Scale" : [100.000000, 100.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "567" : {
+      "Location" : [0.217786, -0.565813, 0.012540],
+      "ObjStaticMeshAsset" : "Asset/Content/Model/BasicShape/cube.obj",
+      "Rotation" : [0.000000, -0.000000, 22.122913],
+      "Scale" : [0.250000, 0.250000, 0.250000],
+      "Type" : "StaticMeshComp"
+    }
+  },
+  "Version" : 2,
+  "WorldType" : "Editor"
+}

@@ -281,6 +281,8 @@ struct FSkeletalMeshLOD
 {
     int32           SourceLODIndex = 0;
     FString         SourceLODName;
+    float           ScreenSize        = 1.0f;
+    float           DistanceThreshold = 0.0f;
     TArray<FString> UVSetNames;
 
     TArray<FSkeletalVertex>    Vertices;
@@ -674,6 +676,21 @@ struct FSkeletalStaticChildMesh
     }
 };
 
+struct FFbxSplitStaticMeshReference
+{
+    FString SourceNodeName;
+    FString StaticMeshAssetPath;
+    FMatrix GlobalMatrix = FMatrix::Identity;
+
+    friend FArchive& operator<<(FArchive& Ar, FFbxSplitStaticMeshReference& Ref)
+    {
+        Ar << Ref.SourceNodeName;
+        Ar << Ref.StaticMeshAssetPath;
+        SkeletalMeshSerialization::SerializeMatrix(Ar, Ref.GlobalMatrix);
+        return Ar;
+    }
+};
+
 // ============================================================================
 // Sockets attached to skeleton bones
 // ============================================================================
@@ -783,8 +800,11 @@ struct FSkeletalImportSummary
     int32 MorphTargetDeltaCount = 0;
     
     int32 StaticChildMeshCount    = 0;
+    int32 SplitStaticMeshCount    = 0;
     int32 SocketCount             = 0;
     int32 CollisionProxyMeshCount = 0;
+    int32 MetadataNodeCount       = 0;
+    int32 SceneNodeCount          = 0;
 
     int32 GeneratedNormalCount     = 0;
     int32 GeneratedTangentCount    = 0;
@@ -827,8 +847,11 @@ struct FSkeletalImportSummary
         Ar << Summary.MorphTargetDeltaCount;
         
         Ar << Summary.StaticChildMeshCount;
+        Ar << Summary.SplitStaticMeshCount;
         Ar << Summary.SocketCount;
         Ar << Summary.CollisionProxyMeshCount;
+        Ar << Summary.MetadataNodeCount;
+        Ar << Summary.SceneNodeCount;
 
         Ar << Summary.GeneratedNormalCount;
         Ar << Summary.GeneratedTangentCount;
@@ -863,9 +886,12 @@ struct FSkeletalMesh
 
     TArray<FSkeletalMeshLOD> LODModels;
 
-    TArray<FSkeletalStaticChildMesh> StaticChildMeshes;
-    TArray<FImportedCollisionShape>  CollisionShapes;
-    TArray<FSkeletalSocket>          Sockets;
+    TArray<FSkeletalStaticChildMesh>     StaticChildMeshes;
+    TArray<FFbxSplitStaticMeshReference> SplitStaticMeshes;
+    TArray<FImportedCollisionShape>      CollisionShapes;
+    TArray<FSkeletalSocket>              Sockets;
+    TArray<FFbxImportedNodeMetadata>     NodeMetadata;
+    TArray<FFbxImportedSceneNode>        SceneNodes;
 
     TArray<FSkeletalAnimationClip> Animations;
     TArray<FMorphTarget>           MorphTargets;
@@ -900,8 +926,11 @@ struct FSkeletalMesh
 
         Ar << LODModels;
         Ar << StaticChildMeshes;
+        Ar << SplitStaticMeshes;
         Ar << CollisionShapes;
         Ar << Sockets;
+        Ar << NodeMetadata;
+        Ar << SceneNodes;
         Ar << Animations;
         Ar << MorphTargets;
         Ar << ImportSummary;

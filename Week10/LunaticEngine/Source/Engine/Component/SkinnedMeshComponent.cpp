@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "Object/ObjectFactory.h"
+#include "Asset/AssetManager.h"
 #include "Collision/RayUtils.h"
 #include "Core/PropertyTypes.h"
 #include "Mesh/SkeletalMeshAsset.h"
@@ -90,13 +91,7 @@ namespace
 			}
 		}
 	}
-
-	float EvaluateFloatCurve(const FAnimationFloatCurve& Curve, float TimeSeconds)
-	{
-		if (Curve.Keys.empty())
-		{
-			return 0.0f;
-		}
+}
 
 		if (TimeSeconds <= Curve.Keys.front().TimeSeconds)
 		{
@@ -594,9 +589,33 @@ void USkinnedMeshComponent::Serialize(FArchive& Ar)
 void USkinnedMeshComponent::PostDuplicate()
 {
 	UMeshComponent::PostDuplicate();
+	if (!SkeletalMeshPath.empty() && SkeletalMeshPath != "None")
+	{
+		TArray<FMaterialSlot> SavedSlots = MaterialSlots;
+		TArray<FTransform> SavedBoneSpaceTransforms = BoneSpaceTransforms;
 
-	// USkeletalMesh 전용 로더는 후속 단계에서 연결.
-	// SkeletalMeshManager 등을 통해 SkeletalMeshPath로 다시 로드하는 흐름이 들어갈 자리.
+		USkeletalMesh* Loaded = FAssetManager::Get().LoadSkeletalMesh({ SkeletalMeshPath });
+		if (Loaded)
+		{
+			SetSkeletalMeshInternal(Loaded, false, false);
+
+			RestoreSkeletalMaterialOverrides(MaterialSlots, OverrideMaterials, SavedSlots);
+
+			const FSkeletalMesh* MeshAsset = Loaded->GetSkeletalMeshAsset();
+			const int32 BoneCount = MeshAsset ? static_cast<int32>(MeshAsset->Skeleton.Bones.size()) : 0;
+			if (BoneCount > 0 && static_cast<int32>(SavedBoneSpaceTransforms.size()) == BoneCount)
+			{
+				BoneSpaceTransforms = SavedBoneSpaceTransforms;
+				RefreshBoneTransforms();
+				UpdateSkinnedMeshObject();
+			}
+			else
+			{
+				RefreshBoneTransforms();
+				UpdateSkinnedMeshObject();
+			}
+		}
+	}
 
 	CacheLocalBounds();
 	MarkRenderStateDirty();

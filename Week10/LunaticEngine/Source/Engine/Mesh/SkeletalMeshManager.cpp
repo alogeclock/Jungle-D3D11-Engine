@@ -1,4 +1,4 @@
-﻿#include "Mesh/SkeletalMeshManager.h"
+#include "Mesh/SkeletalMeshManager.h"
 
 #include <filesystem>
 #include <algorithm>
@@ -11,6 +11,7 @@
 #include "Engine/Runtime/Engine.h"
 #include "Object/Object.h"
 #include "Materials/MaterialManager.h"
+#include "Mesh/ObjManager.h"
 
 TMap<FString, USkeletalMesh*> FSkeletalMeshManager::SkeletalMeshCache;
 
@@ -128,7 +129,8 @@ USkeletalMesh* FSkeletalMeshManager::LoadSkeletalMesh(const FString& PathFileNam
     }
     
     SkeletalMeshCache[CacheKey] = SkeletalMesh;
-    
+
+    FObjManager::ScanMeshAssets();
     FMaterialManager::Get().ScanMaterialAssets();
     
     return SkeletalMesh;

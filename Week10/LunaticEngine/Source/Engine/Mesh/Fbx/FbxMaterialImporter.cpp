@@ -81,6 +81,15 @@ namespace
         HashCombineString(Seed, Info.MetallicTexture);
         HashCombineString(Seed, Info.EmissiveTexture);
         HashCombineString(Seed, Info.OpacityTexture);
+        HashCombineString(Seed, Info.AmbientOcclusionTexture);
+        HashCombineString(Seed, Info.HeightTexture);
+        HashCombineString(Seed, Info.SpecularTexture);
+        HashCombineString(Seed, Info.DiffuseUVSetName);
+        HashCombineUInt32(Seed, FloatToStableBits(Info.DiffuseUVTranslation.X));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.DiffuseUVTranslation.Y));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.DiffuseUVScale.X));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.DiffuseUVScale.Y));
+        HashCombineUInt32(Seed, FloatToStableBits(Info.DiffuseUVRotation));
 
         HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.X));
         HashCombineUInt32(Seed, FloatToStableBits(Info.BaseColor.Y));
@@ -90,6 +99,14 @@ namespace
         HashCombineUInt32(Seed, FloatToStableBits(Info.Metallic));
         HashCombineUInt32(Seed, FloatToStableBits(Info.Opacity));
         HashCombineUInt32(Seed, Info.bHasOpacity ? 1u : 0u);
+        HashCombineUInt32(Seed, Info.bHasLayeredTexture ? 1u : 0u);
+        HashCombineUInt32(Seed, Info.bHasEmbeddedTexture ? 1u : 0u);
+        for (const FFbxImportedMetadataValue& Metadata : Info.Metadata)
+        {
+            HashCombineString(Seed, Metadata.Key);
+            HashCombineString(Seed, Metadata.StringValue);
+            HashCombineUInt32(Seed, static_cast<uint32>(Metadata.Type));
+        }
 
         return Seed;
     }
@@ -133,8 +150,47 @@ namespace
         return true;
     }
 
+    void CaptureDiffuseTextureTransform(FbxFileTexture* FileTexture, FFbxImportedMaterialInfo& Info)
+    {
+        if (!FileTexture)
+        {
+            return;
+        }
+
+        Info.DiffuseUVTranslation = FVector2(static_cast<float>(FileTexture->GetTranslationU()), static_cast<float>(FileTexture->GetTranslationV()));
+        Info.DiffuseUVScale       = FVector2(static_cast<float>(FileTexture->GetScaleU()), static_cast<float>(FileTexture->GetScaleV()));
+        Info.DiffuseUVRotation    = static_cast<float>(FileTexture->GetRotationW());
+
+        const FbxString UVSet     = FileTexture->UVSet.Get();
+        const char*     UVSetName = UVSet.Buffer();
+        if (UVSetName && UVSetName[0] != '\0')
+        {
+            Info.DiffuseUVSetName = UVSetName;
+        }
+    }
+
+    bool IsLikelyEmbeddedTexture(FbxFileTexture* FileTexture)
+    {
+        if (!FileTexture)
+        {
+            return false;
+        }
+
+        const char* RelativeName = FileTexture->GetRelativeFileName();
+        const char* FileName     = FileTexture->GetFileName();
+        const bool  bHasDiskPath = (RelativeName && RelativeName[0] != '\0') || (FileName && FileName[0] != '\0');
+        return !bHasDiskPath;
+    }
+
     // FBX texture property에서 첫 번째 유효 file texture 경로를 추출한다.
-    bool TryGetFbxTexturePathFromProperty(const FbxProperty& Property, const FString& SourceFbxPath, FString& OutTexturePath, FFbxImportContext* Context = nullptr)
+    bool TryGetFbxTexturePathFromProperty(
+        const FbxProperty&        Property,
+        const FString&            SourceFbxPath,
+        FString&                  OutTexturePath,
+        FFbxImportContext*        Context                  = nullptr,
+        FFbxImportedMaterialInfo* Info                     = nullptr,
+        bool                      bCaptureDiffuseTransform = false
+        )
     {
         if (!Property.IsValid())
         {
@@ -147,13 +203,27 @@ namespace
         {
             FbxFileTexture* FileTexture = Property.GetSrcObject<FbxFileTexture>(TextureIndex);
 
+            if (Info && IsLikelyEmbeddedTexture(FileTexture))
+            {
+                Info->bHasEmbeddedTexture = true;
+            }
+
             if (TryResolveFbxFileTexturePath(FileTexture, SourceFbxPath, OutTexturePath))
             {
+                if (Info && bCaptureDiffuseTransform)
+                {
+                    CaptureDiffuseTextureTransform(FileTexture, *Info);
+                }
                 return true;
             }
         }
 
         const int32 LayeredTextureCount = Property.GetSrcObjectCount<FbxLayeredTexture>();
+        if (LayeredTextureCount > 0 && Info)
+        {
+            Info->bHasLayeredTexture = true;
+        }
+
         if (LayeredTextureCount > 0 && Context)
         {
             Context->AddWarningOnce(
@@ -176,8 +246,17 @@ namespace
             {
                 FbxFileTexture* FileTexture = LayeredTexture->GetSrcObject<FbxFileTexture>(LayerTextureIndex);
 
+                if (Info && IsLikelyEmbeddedTexture(FileTexture))
+                {
+                    Info->bHasEmbeddedTexture = true;
+                }
+
                 if (TryResolveFbxFileTexturePath(FileTexture, SourceFbxPath, OutTexturePath))
                 {
+                    if (Info && bCaptureDiffuseTransform)
+                    {
+                        CaptureDiffuseTextureTransform(FileTexture, *Info);
+                    }
                     return true;
                 }
             }
@@ -236,23 +315,23 @@ namespace
 
         TryGetFbxColorProperty(FbxMaterial, FbxSurfaceMaterial::sDiffuse, Info.BaseColor);
 
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse), SourceFbxPath, Info.DiffuseTexture, &Context);
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sNormalMap), SourceFbxPath, Info.NormalTexture, &Context);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse), SourceFbxPath, Info.DiffuseTexture, &Context, &Info, true);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sNormalMap), SourceFbxPath, Info.NormalTexture, &Context, &Info);
 
         if (Info.NormalTexture.empty())
         {
-            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sBump), SourceFbxPath, Info.NormalTexture, &Context);
+            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sBump), SourceFbxPath, Info.NormalTexture, &Context, &Info);
         }
 
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sEmissive), SourceFbxPath, Info.EmissiveTexture, &Context);
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Roughness"), SourceFbxPath, Info.RoughnessTexture, &Context);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sEmissive), SourceFbxPath, Info.EmissiveTexture, &Context, &Info);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Roughness"), SourceFbxPath, Info.RoughnessTexture, &Context, &Info);
 
-        if (!TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metalness"), SourceFbxPath, Info.MetallicTexture, &Context))
+        if (!TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metalness"), SourceFbxPath, Info.MetallicTexture, &Context, &Info))
         {
-            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metallic"), SourceFbxPath, Info.MetallicTexture, &Context);
+            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Metallic"), SourceFbxPath, Info.MetallicTexture, &Context, &Info);
         }
 
-        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sTransparentColor), SourceFbxPath, Info.OpacityTexture, &Context);
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sTransparentColor), SourceFbxPath, Info.OpacityTexture, &Context, &Info);
 
         TryGetFbxDoubleProperty(FbxMaterial, "Roughness", Info.Roughness);
         if (!TryGetFbxDoubleProperty(FbxMaterial, "Metalness", Info.Metallic))
@@ -266,10 +345,24 @@ namespace
             Info.Opacity = 1.0f - TransparencyFactor;
         }
 
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("AmbientOcclusion"), SourceFbxPath, Info.AmbientOcclusionTexture, &Context, &Info);
+        if (Info.AmbientOcclusionTexture.empty())
+        {
+            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Occlusion"), SourceFbxPath, Info.AmbientOcclusionTexture, &Context, &Info);
+        }
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Height"), SourceFbxPath, Info.HeightTexture, &Context, &Info);
+        if (Info.HeightTexture.empty())
+        {
+            TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty("Displacement"), SourceFbxPath, Info.HeightTexture, &Context, &Info);
+        }
+        TryGetFbxTexturePathFromProperty(FbxMaterial->FindProperty(FbxSurfaceMaterial::sSpecular), SourceFbxPath, Info.SpecularTexture, &Context, &Info);
+
         if (!Info.OpacityTexture.empty() || Info.Opacity < 0.999f || Info.BaseColor.W < 0.999f)
         {
             Info.bHasOpacity = true;
         }
+
+        Info.Metadata = FFbxMetadataImporter::ExtractMetadataValues(FbxMaterial);
 
         return Info;
     }
@@ -345,6 +438,35 @@ namespace
         {
             JsonData["Textures"]["Custom0Texture"] = Info.OpacityTexture;
             JsonData["Textures"]["OpacityTexture"] = Info.OpacityTexture;
+        }
+
+        if (!Info.AmbientOcclusionTexture.empty())
+        {
+            JsonData["Textures"]["AmbientOcclusionTexture"] = Info.AmbientOcclusionTexture;
+        }
+        if (!Info.HeightTexture.empty())
+        {
+            JsonData["Textures"]["HeightTexture"] = Info.HeightTexture;
+        }
+        if (!Info.SpecularTexture.empty())
+        {
+            JsonData["Textures"]["SpecularTexture"] = Info.SpecularTexture;
+        }
+
+        JsonData["TextureTransforms"]["DiffuseTexture"]["UVSet"]          = Info.DiffuseUVSetName;
+        JsonData["TextureTransforms"]["DiffuseTexture"]["Translation"][0] = Info.DiffuseUVTranslation.X;
+        JsonData["TextureTransforms"]["DiffuseTexture"]["Translation"][1] = Info.DiffuseUVTranslation.Y;
+        JsonData["TextureTransforms"]["DiffuseTexture"]["Scale"][0]       = Info.DiffuseUVScale.X;
+        JsonData["TextureTransforms"]["DiffuseTexture"]["Scale"][1]       = Info.DiffuseUVScale.Y;
+        JsonData["TextureTransforms"]["DiffuseTexture"]["Rotation"]       = Info.DiffuseUVRotation;
+        JsonData["FbxFlags"]["HasLayeredTexture"]                         = Info.bHasLayeredTexture;
+        JsonData["FbxFlags"]["HasEmbeddedTexture"]                        = Info.bHasEmbeddedTexture;
+
+        for (int32 MetadataIndex = 0; MetadataIndex < static_cast<int32>(Info.Metadata.size()); ++MetadataIndex)
+        {
+            const FFbxImportedMetadataValue& Metadata      = Info.Metadata[MetadataIndex];
+            JsonData["FbxMetadata"][Metadata.Key]["Value"] = Metadata.StringValue;
+            JsonData["FbxMetadata"][Metadata.Key]["Type"]  = static_cast<int32>(Metadata.Type);
         }
 
         JsonData["Parameters"]["SectionColor"][0] = Info.BaseColor.X;

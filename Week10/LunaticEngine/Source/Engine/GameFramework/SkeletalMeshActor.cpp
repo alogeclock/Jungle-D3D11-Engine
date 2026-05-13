@@ -1,7 +1,7 @@
 #include "GameFramework/SkeletalMeshActor.h"
 
+#include "Asset/AssetManager.h"
 #include "Component/SkeletalMeshComponent.h"
-#include "Mesh/SkeletalMeshManager.h"
 #include "Object/ObjectFactory.h"
 
 IMPLEMENT_CLASS(ASkeletalMeshActor, AActor)
@@ -14,7 +14,7 @@ void ASkeletalMeshActor::InitDefaultComponents(const FString& SkeletalMeshFileNa
 
 	if (!SkeletalMeshFileName.empty() && SkeletalMeshFileName != "None")
 	{
-		SkeletalMeshComponent->SetSkeletalMesh(FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshFileName));
+		SkeletalMeshComponent->SetSkeletalMesh(FAssetManager::Get().LoadSkeletalMesh({ SkeletalMeshFileName }));
 	}
 	else
 	{

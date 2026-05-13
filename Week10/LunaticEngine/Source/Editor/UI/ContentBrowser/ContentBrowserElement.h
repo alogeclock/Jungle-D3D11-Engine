@@ -93,6 +93,7 @@ class FbxElement final : public ContentBrowserElement
 {
 public:
 	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
+	const char* GetDragItemType() override { return "FbxContentItem"; }
 };
 
 class SkeletalMeshElement final : public ContentBrowserElement

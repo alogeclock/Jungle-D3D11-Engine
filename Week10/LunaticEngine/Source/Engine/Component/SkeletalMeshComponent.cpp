@@ -1,11 +1,14 @@
-#include "Component/SkeletalMeshComponent.h"
+﻿#include "Component/SkeletalMeshComponent.h"
 
+#include "Asset/AssetManager.h"
+#include "Asset/AssetData.h"
+#include "Asset/AssetFileSerializer.h"
 #include "Collision/RayUtils.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
-#include "Mesh/SkeletalMeshManager.h"
 #include "Object/ObjectFactory.h"
+#include "Platform/Paths.h"
 #include "Render/Proxy/DirtyFlag.h"
 #include "Render/Scene/FScene.h"
 #include "Serialization/Archive.h"
@@ -16,6 +19,7 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <filesystem>
 
 IMPLEMENT_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
@@ -23,6 +27,17 @@ namespace
 {
 	bool IsNonePath(const FString& Path) { return Path.empty() || Path == "None"; }
 
+	std::filesystem::path ResolveProjectPath(const FString& Path)
+	{
+		std::filesystem::path ResolvedPath(FPaths::ToWide(Path));
+		if (!ResolvedPath.is_absolute())
+		{
+			ResolvedPath = std::filesystem::path(FPaths::RootDir()) / ResolvedPath;
+		}
+		return ResolvedPath.lexically_normal();
+	}
+
+	constexpr int32 BoneArmatureRingSegments = 12;
 	constexpr float BoneArmatureMinLength = 0.001f;
 	constexpr float BoneArmatureRadiusRatio = 0.030f;
 	constexpr float BoneArmatureMinRadius = 0.001f;
@@ -599,6 +614,100 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 	MarkWorldBoundsDirty();
 }
 
+bool USkeletalMeshComponent::CaptureLocalPose(TArray<FSkeletalPoseDesc> &OutBones) const
+{
+	OutBones.clear();
+
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
+	if (!Skeleton || Skeleton->Bones.empty())
+	{
+		return false;
+	}
+
+	const int32 BoneCount = static_cast<int32>(Skeleton->Bones.size());
+	if (BoneSpaceTransforms.size() != BoneCount)
+	{
+		return false;
+	}
+
+	OutBones.reserve(BoneCount);
+	for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+	{
+		const FBoneInfo& Bone = Skeleton->Bones[BoneIndex];
+		FSkeletalPoseDesc Desc;
+		Desc.BoneName = Bone.Name;
+		Desc.ParentIndex = Bone.ParentIndex;
+		Desc.LocalTransform = BoneSpaceTransforms[BoneIndex];
+		OutBones.push_back(Desc);
+	}
+
+	return true;
+}
+
+bool USkeletalMeshComponent::ApplyLocalPose(const TArray<FSkeletalPoseDesc>& Bones)
+{
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
+	if (!Skeleton || Skeleton->Bones.empty() || Bones.empty())
+	{
+		return false;
+	}
+
+	const int32 BoneCount = static_cast<int32>(Skeleton->Bones.size());
+	if (BoneSpaceTransforms.size() != BoneCount)
+	{
+		InitializeBoneTransformsFromSkeleton();
+	}
+	if (BoneSpaceTransforms.size() != BoneCount)
+	{
+		return false;
+	}
+
+	bool bAppliedAny = false;
+	for (int32 PoseIndex = 0; PoseIndex < static_cast<int32>(Bones.size()); ++PoseIndex)
+	{
+		const FSkeletalPoseDesc& Desc = Bones[PoseIndex];
+		int32 TargetBoneIndex = -1;
+
+		for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+		{
+			if (Skeleton->Bones[BoneIndex].Name == Desc.BoneName)
+			{
+				TargetBoneIndex = BoneIndex;
+				break;
+			}
+		}
+
+		if (TargetBoneIndex < 0 && PoseIndex < BoneCount && Skeleton->Bones[PoseIndex].ParentIndex == Desc.ParentIndex)
+		{
+			TargetBoneIndex = PoseIndex;
+		}
+
+		if (!IsValidBoneIndex(TargetBoneIndex))
+		{
+			continue;
+		}
+
+		FTransform NormalizedTransform = Desc.LocalTransform;
+		NormalizedTransform.Rotation.Normalize();
+		BoneSpaceTransforms[TargetBoneIndex] = NormalizedTransform;
+		bAppliedAny = true;
+	}
+
+	if (!bAppliedAny)
+	{
+		return false;
+	}
+
+	MarkSkeletalPoseDirty();
+	RefreshBoneTransforms();
+	UpdateSkinnedMeshObject();
+	return true;
+}
+
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
 	SetSkeletalMeshInternal(InSkeletalMesh, false, false);
@@ -617,6 +726,7 @@ void USkeletalMeshComponent::Serialize(FArchive& Ar)
 	Ar << bForceRefPose;
 	Ar << bEnableSkeletonUpdate;
 	Ar << RootBoneTranslation;
+	Ar << SkeletalPosePath;
 	Ar << bShowBoneNames;
 
 	if (Ar.IsLoading())
@@ -630,6 +740,7 @@ void USkeletalMeshComponent::PostDuplicate()
 {
 	USkinnedMeshComponent::PostDuplicate();
 	RefreshBoneTransforms();
+	UpdateSkinnedMeshObject();
 }
 
 void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
@@ -638,6 +749,7 @@ void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& 
 	UMeshComponent::GetEditableProperties(OutProps);
 
 	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshPath });
+	OutProps.push_back({ "Skeletal Pose", EPropertyType::SkeletalPoseRef, &SkeletalPosePath });
 	OutProps.push_back({ "CPU Skinning", EPropertyType::Bool, &bCPUSkinning });
 	OutProps.push_back({ "Bounds Scale", EPropertyType::Float, &BoundsScale, 0.1f, 10.0f, 0.1f });
 	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
@@ -653,7 +765,25 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	UMeshComponent::PostEditProperty(PropertyName);
 
 	if (std::strcmp(PropertyName, "Skeletal Mesh") == 0)
-		SetSkeletalMesh(IsNonePath(SkeletalMeshPath) ? nullptr : FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshPath));
+	{
+		SetSkeletalMesh(FAssetManager::Get().LoadSkeletalMesh({ SkeletalMeshPath }));
+	}
+	else if (std::strcmp(PropertyName, "Skeletal Pose") == 0)
+	{
+		if (!IsNonePath(SkeletalPosePath))
+		{
+			FString Error;
+			UAssetData* LoadedAsset = FAssetFileSerializer::LoadAssetFromFile(ResolveProjectPath(SkeletalPosePath), &Error);
+			if (USkeletalPoseAssetData* PoseAsset = Cast<USkeletalPoseAssetData>(LoadedAsset))
+			{
+				ApplyLocalPose(PoseAsset->Bones);
+			}
+			if (LoadedAsset)
+			{
+				UObjectManager::Get().DestroyObject(LoadedAsset);
+			}
+		}
+	}
 	else if (std::strncmp(PropertyName, "Element ", 8) == 0)
 	{
 		const int32 idx = std::atoi(&PropertyName[8]);

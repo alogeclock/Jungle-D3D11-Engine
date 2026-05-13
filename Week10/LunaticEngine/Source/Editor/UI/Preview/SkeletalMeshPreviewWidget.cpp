@@ -1,17 +1,21 @@
 ﻿#include "SkeletalMeshPreviewWidget.h"
 
+#include "Asset/AssetData.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "Core/Notification.h"
 #include "Editor/EditorEngine.h"
+#include "Editor/UI/AssetEditor/AssetEditorWidget.h"
 #include "Editor/UI/EditorCommonWidgetUtils.h"
 #include "Editor/Viewport/Preview/SkeletalMeshPreviewViewportClient.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Platform/Paths.h"
 #include "Texture/Texture2D.h"
 #include "Viewport/Viewport.h"
 
 #include "ImGui/imgui.h"
 
+#include <ctime>
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -30,6 +34,10 @@ namespace
 
     // Editor Window 기반 Rendering
     void SelectBone(FSkeletalMeshPreviewViewportClient& ViewportClient, int32& SelectedBoneIndex, int32 BoneIndex);
+	bool DrawPoseButton(const char* Label, const ImVec4& Color);
+	std::filesystem::path GetPoseDir(USkeletalMesh* Mesh);
+	std::wstring GetPoseFileName(USkeletalMesh* Mesh);
+	std::wstring GetTimeStamp();
 
     // Text Formatting & UI Constants
     FString GetMeshDisplayName(USkeletalMesh* Mesh);
@@ -41,9 +49,65 @@ std::unique_ptr<FPreviewViewportClient> FSkeletalMeshPreviewWidget::CreatePrevie
     return std::make_unique<FSkeletalMeshPreviewViewportClient>();
 }
 
-FSkeletalMeshPreviewViewportClient* FSkeletalMeshPreviewWidget::GetSkeletalViewportClient() const
+bool FSkeletalMeshPreviewWidget::SavePose()
 {
-    return static_cast<FSkeletalMeshPreviewViewportClient*>(GetPreviewViewportClient());
+	FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient();
+	USkeletalMeshComponent* PreviewComponent = Client ? Client->GetPreviewComponent() : nullptr;
+	if (!PreviewComponent)
+	{
+		return false;
+	}
+
+	USkeletalPoseAssetData* PoseAsset = UObjectManager::Get().CreateObject<USkeletalPoseAssetData>();
+	if (!PoseAsset)
+	{
+		return false;
+	}
+
+	USkeletalMesh* SourceMesh = Client->GetPreviewSkeletalMesh();
+	PoseAsset->SourcePath = SourceMesh ? SourceMesh->GetAssetPathFileName() : FString();
+	const bool bCaptured = PreviewComponent->CaptureLocalPose(PoseAsset->Bones);
+	if (!bCaptured)
+	{
+		UObjectManager::Get().DestroyObject(PoseAsset);
+		return false;
+	}
+
+	const std::filesystem::path PoseDir = GetPoseDir(SourceMesh);
+	const std::wstring PoseFileName = GetPoseFileName(SourceMesh);
+	const bool bSaved = FAssetEditorWidget::SaveAssetWithDialog(PoseAsset, PoseFileName.c_str(), PoseDir.c_str());
+	UObjectManager::Get().DestroyObject(PoseAsset);
+	return bSaved;
+}
+
+bool FSkeletalMeshPreviewWidget::LoadPose()
+{
+	FSkeletalMeshPreviewViewportClient* Client = GetSkeletalViewportClient();
+	USkeletalMeshComponent* PreviewComponent = Client ? Client->GetPreviewComponent() : nullptr;
+	if (!PreviewComponent)
+	{
+		return false;
+	}
+
+	USkeletalMesh* SourceMesh = Client->GetPreviewSkeletalMesh();
+	const std::filesystem::path PoseDir = GetPoseDir(SourceMesh);
+	UAssetData* LoadedAsset = FAssetEditorWidget::LoadAssetWithDialog(PoseDir.c_str());
+	if (!LoadedAsset)
+	{
+		return false;
+	}
+
+	USkeletalPoseAssetData* PoseAsset = Cast<USkeletalPoseAssetData>(LoadedAsset);
+	if (!PoseAsset)
+	{
+		UObjectManager::Get().DestroyObject(LoadedAsset);
+		FNotificationManager::Get().AddNotification("Load failed: File is not a skeletal pose asset.", ENotificationType::Error, 3.0f);
+		return false;
+	}
+
+	const bool bApplied = PreviewComponent->ApplyLocalPose(PoseAsset->Bones);
+	UObjectManager::Get().DestroyObject(LoadedAsset);
+	return bApplied;
 }
 
 void FSkeletalMeshPreviewWidget::Initialize(UEditorEngine* InEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow)
@@ -255,6 +319,16 @@ void FSkeletalMeshPreviewWidget::DrawBoneHierarchyPanel()
         ImGui::TextDisabled("No bones.");
         return;
     }
+
+	if (DrawPoseButton("Save Pose", ImVec4(0.10f, 0.54f, 0.96f, 1.0f)))
+	{
+		SavePose();
+	}
+	ImGui::SameLine();
+	if (DrawPoseButton("Load Pose", ImVec4(0.10f, 0.54f, 0.96f, 1.0f)))
+	{
+		LoadPose();
+	}
 
     if (ImGui::Button("Clear Selection"))
     {
@@ -732,6 +806,58 @@ namespace
             SelectedBoneIndex = PreviewComponent->GetSelectedBoneIndex();
         }
     }
+
+	bool DrawPoseButton(const char* Label, const ImVec4& Color)
+	{
+		ImVec4 Normal = Color;
+		ImVec4 Hovered = Color;
+		Normal.w = 0.72f;
+		Hovered.w = 0.92f;
+		ImGui::PushStyleColor(ImGuiCol_Button, Normal);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Hovered);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, Color);
+		const bool bPressed = ImGui::Button(Label);
+		ImGui::PopStyleColor(3);
+		return bPressed;
+	}
+
+	std::filesystem::path GetPoseDir(USkeletalMesh* Mesh)
+	{
+		if (!Mesh || Mesh->GetAssetPathFileName().empty())
+		{
+			return std::filesystem::path(FPaths::AssetDir());
+		}
+
+		std::filesystem::path SourcePath(FPaths::ToWide(Mesh->GetAssetPathFileName()));
+		if (!SourcePath.is_absolute())
+		{
+			SourcePath = std::filesystem::path(FPaths::RootDir()) / SourcePath;
+		}
+		return SourcePath.lexically_normal().parent_path();
+	}
+
+	std::wstring GetPoseFileName(USkeletalMesh* Mesh)
+	{
+		if (!Mesh || Mesh->GetAssetPathFileName().empty())
+		{
+			return L"SkeletalPose_" + GetTimeStamp() + L".uasset";
+		}
+
+		const std::filesystem::path SourcePath(FPaths::ToWide(Mesh->GetAssetPathFileName()));
+		const std::wstring Stem = SourcePath.stem().wstring();
+		return Stem.empty() ? L"SkeletalPose_" + GetTimeStamp() + L".uasset" : Stem + L"_Pose_" + GetTimeStamp() + L".uasset";
+	}
+
+	std::wstring GetTimeStamp()
+	{
+		std::time_t Time = std::time(nullptr);
+		std::tm LocalTime{};
+		localtime_s(&LocalTime, &Time);
+
+		wchar_t Buffer[32] = {};
+		std::wcsftime(Buffer, sizeof(Buffer) / sizeof(Buffer[0]), L"%Y%m%d_%H%M%S", &LocalTime);
+		return Buffer;
+	}
 
 	// 파일 경로에서 파일명을 추출해 에디터 창의 제목을 결정하는 유틸리티 함수
 	FString GetMeshDisplayName(USkeletalMesh* Mesh)

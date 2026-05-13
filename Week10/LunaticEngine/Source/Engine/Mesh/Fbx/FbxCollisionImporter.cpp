@@ -3,12 +3,67 @@
 #include "FbxGeometryReader.h"
 
 #include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
 
 namespace
 {
     static bool StartsWith(const FString& Value, const char* Prefix)
     {
         return Prefix && Value.rfind(Prefix, 0) == 0;
+    }
+
+    static FString ToUpperAscii(FString Value)
+    {
+        for (char& C : Value)
+        {
+            C = static_cast<char>(std::toupper(static_cast<unsigned char>(C)));
+        }
+        return Value;
+    }
+
+    static FString StripCollisionPrefix(const FString& Name, FString& OutPrefix)
+    {
+        const FString UpperName  = ToUpperAscii(Name);
+        const char*   Prefixes[] = { "MCDCX_", "UCX_", "UBX_", "USP_", "UCP_" };
+        for (const char* Prefix : Prefixes)
+        {
+            if (StartsWith(UpperName, Prefix))
+            {
+                OutPrefix = Prefix;
+                return Name.substr(std::strlen(Prefix));
+            }
+        }
+
+        OutPrefix.clear();
+        return Name;
+    }
+
+    static void ParseCollisionTargetName(const FString& NodeName, FString& OutTargetMeshName, int32& OutCollisionIndex)
+    {
+        FString Prefix;
+        FString Remainder = StripCollisionPrefix(NodeName, Prefix);
+        OutTargetMeshName = Remainder;
+        OutCollisionIndex = 0;
+
+        const size_t LastUnderscore = Remainder.rfind('_');
+        if (LastUnderscore == FString::npos || LastUnderscore + 1 >= Remainder.size())
+        {
+            return;
+        }
+
+        const FString Suffix = Remainder.substr(LastUnderscore + 1);
+        for (char C : Suffix)
+        {
+            if (!std::isdigit(static_cast<unsigned char>(C)))
+            {
+                return;
+            }
+        }
+
+        OutTargetMeshName = Remainder.substr(0, LastUnderscore);
+        OutCollisionIndex = std::atoi(Suffix.c_str());
     }
 
     static void ComputeBounds(const TArray<FVector>& Vertices, FVector& OutMin, FVector& OutMax)
@@ -51,6 +106,7 @@ bool FFbxCollisionImporter::ImportCollisionShape(
 
     OutShape                 = FImportedCollisionShape();
     OutShape.SourceNodeName  = MeshNode->GetName();
+    ParseCollisionTargetName(OutShape.SourceNodeName, OutShape.TargetMeshName, OutShape.CollisionIndex);
     OutShape.Type            = DetectCollisionType(OutShape.SourceNodeName);
     OutShape.LocalMatrix     = LocalMatrix;
     OutShape.ParentBoneIndex = ParentBoneIndex;
@@ -117,22 +173,24 @@ bool FFbxCollisionImporter::ImportCollisionShape(
 
 EImportedCollisionType FFbxCollisionImporter::DetectCollisionType(const FString& NodeName)
 {
-    if (StartsWith(NodeName, "UBX_"))
+    const FString UpperName = ToUpperAscii(NodeName);
+
+    if (StartsWith(UpperName, "UBX_"))
     {
         return EImportedCollisionType::Box;
     }
 
-    if (StartsWith(NodeName, "USP_"))
+    if (StartsWith(UpperName, "USP_"))
     {
         return EImportedCollisionType::Sphere;
     }
 
-    if (StartsWith(NodeName, "UCP_"))
+    if (StartsWith(UpperName, "UCP_"))
     {
         return EImportedCollisionType::Capsule;
     }
 
-    if (StartsWith(NodeName, "UCX_") || StartsWith(NodeName, "MCDCX_"))
+    if (StartsWith(UpperName, "UCX_") || StartsWith(UpperName, "MCDCX_"))
     {
         return EImportedCollisionType::Convex;
     }

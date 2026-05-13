@@ -540,6 +540,7 @@ json::JSON FSceneSaveManager::SerializePropertyValue(const FPropertyDescriptor& 
 	case EPropertyType::SceneComponentRef:
 	case EPropertyType::StaticMeshRef:
 	case EPropertyType::SkeletalMeshRef:
+	case EPropertyType::SkeletalPoseRef:
 		return JSON(*static_cast<FString*>(Prop.ValuePtr));
 
 	case EPropertyType::MaterialSlot: {
@@ -1317,6 +1318,10 @@ void FSceneSaveManager::DeserializePropertyValue(FPropertyDescriptor& Prop, json
 	case EPropertyType::StaticMeshRef:
 	case EPropertyType::SkeletalMeshRef:
 		*static_cast<FString*>(Prop.ValuePtr) = Value.ToString();
+		break;
+
+	case EPropertyType::SkeletalPoseRef:
+		*static_cast<FString*>(Prop.ValuePtr) = ReadAssetPathValue(Value);
 		break;
 
 	case EPropertyType::MaterialSlot: {

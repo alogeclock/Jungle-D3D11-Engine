@@ -470,3 +470,6 @@ _font_preview/
 # Generated/local build artifacts
 Saved/
 ShippingBuild/
+
+# FBX
+*.skm

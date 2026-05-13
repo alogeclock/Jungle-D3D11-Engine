@@ -1,6 +1,5 @@
 #include "PreviewViewportClient.h"
 
-#include "Editor/Settings/EditorSettings.h"
 #include "Engine/Input/InputModifier.h"
 #include "Engine/Input/InputRouter.h"
 #include "Engine/Input/InputSystem.h"
@@ -26,12 +25,15 @@ namespace
 FPreviewViewportClient::FPreviewViewportClient()
 	: FEditorViewportClient(false)
 {
+	PreviewSettings.LoadFromFile(FPreviewSettings::GetDefaultSettingsPath());
+	RenderOptions = PreviewSettings.RenderOptions;
 	SetupInput();
 }
 
 // 카메라 소유권을 해제하고, 입력 리소스를 정리합니다.
 FPreviewViewportClient::~FPreviewViewportClient()
 {
+	SavePreviewSettings();
 	FInputRouter::Get().ClearViewport(this);
 	bCameraInputCaptured = false;
 	DestroyCamera();
@@ -102,11 +104,9 @@ void FPreviewViewportClient::ResetCamera()
 		return;
 	}
 
-	FEditorSettings& Settings = FEditorSettings::Get();
-	OrbitTarget = Settings.InitLookAt;
-	Camera->SetWorldLocation(Settings.InitViewPos);
-	Camera->LookAt(Settings.InitLookAt);
-	PreviewCameraSpeed = Settings.CameraSpeed;
+	OrbitTarget = PreviewSettings.InitLookAt;
+	Camera->SetWorldLocation(PreviewSettings.InitViewPos);
+	Camera->LookAt(PreviewSettings.InitLookAt);
 	SyncCamera();
 	OnCameraReset();
 }
@@ -173,6 +173,7 @@ void FPreviewViewportClient::SetViewportType(ELevelViewportType NewType)
 	}
 
 	RenderOptions.ViewportType = NewType;
+	MarkPreviewSettingsDirty();
 	if (NewType == ELevelViewportType::Perspective)
 	{
 		Camera->SetOrthographic(false);
@@ -212,12 +213,25 @@ void FPreviewViewportClient::SetViewportType(ELevelViewportType NewType)
 
 void FPreviewViewportClient::SetPreviewCameraSpeed(float InSpeed)
 {
-	PreviewCameraSpeed = Clamp(InSpeed, 0.1f, 1000.0f);
+	PreviewSettings.CameraSpeed = Clamp(InSpeed, 0.1f, 1000.0f);
+	MarkPreviewSettingsDirty();
 }
 
 void FPreviewViewportClient::TogglePreviewGizmoMode()
 {
 	SetPreviewGizmoMode((GetPreviewGizmoMode() + 1) % 3);
+}
+
+void FPreviewViewportClient::SavePreviewSettings()
+{
+	if (!bPreviewSettingsDirty)
+	{
+		return;
+	}
+
+	PreviewSettings.RenderOptions = RenderOptions;
+	PreviewSettings.SaveToFile(FPreviewSettings::GetDefaultSettingsPath());
+	bPreviewSettingsDirty = false;
 }
 
 // 프리뷰 카메라용 입력 액션, 매핑 컨텍스트, 콜백 바인딩을 설정한다.
@@ -319,7 +333,7 @@ void FPreviewViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, flo
 
 	const float MoveSensitivity = RenderOptions.CameraMoveSensitivity;
 	const float RotateSensitivity = RenderOptions.CameraRotateSensitivity;
-	const float CameraSpeed = PreviewCameraSpeed * MoveSensitivity;
+	const float CameraSpeed = PreviewSettings.CameraSpeed * MoveSensitivity;
 
 	const FMinimalViewInfo& CameraState = Camera->GetCameraState();
 	const bool              bIsOrtho    = CameraState.bIsOrthogonal;
@@ -347,7 +361,7 @@ void FPreviewViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, flo
 		if (!RotateDelta.IsNearlyZero())
 		{
 			const float MouseRotationSpeed = 0.15f * RotateSensitivity;
-			const float AngleVelocity      = FEditorSettings::Get().CameraRotationSpeed * RotateSensitivity;
+			const float AngleVelocity      = PreviewSettings.CameraRotationSpeed * RotateSensitivity;
 
 			float Yaw   = 0.0f;
 			float Pitch = 0.0f;
@@ -367,7 +381,7 @@ void FPreviewViewportClient::TickInput(const FInputSystemSnapshot& Snapshot, flo
 
 		ApplyOrbitInput();
 
-		const float ZoomSpeed = FEditorSettings::Get().CameraZoomSpeed;
+		const float ZoomSpeed = PreviewSettings.CameraZoomSpeed;
 		if (std::abs(ZoomDelta) > 1e-6f)
 		{
 			TargetLocation = TargetLocation + Camera->GetForwardVector() * (ZoomSpeed * ZoomDelta * 0.015f);
@@ -499,7 +513,7 @@ void FPreviewViewportClient::OnZoom(const FInputActionValue& Value, const FInput
 
 	if (bCameraInputCaptured && Snapshot.IsMouseButtonDown(VK_RBUTTON))
 	{
-		PreviewCameraSpeed = Clamp(PreviewCameraSpeed + Value.Get() * 2.0f, 1.0f, 100.0f);
+		SetPreviewCameraSpeed(Clamp(PreviewSettings.CameraSpeed + Value.Get() * 2.0f, 1.0f, 100.0f));
 		return;
 	}
 

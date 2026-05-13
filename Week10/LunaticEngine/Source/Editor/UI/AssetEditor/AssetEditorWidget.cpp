@@ -193,6 +193,83 @@ bool FAssetEditorWidget::OpenAssetFile(const std::filesystem::path& FilePath)
 	return GActiveAssetEditorWidget->OpenAssetFromPath(FilePath);
 }
 
+bool FAssetEditorWidget::SaveAssetWithDialog(UAssetData* Asset, const wchar_t* DefaultFileName, const wchar_t* InitialDirectory, void* OwnerWindowHandle, std::filesystem::path* OutPath)
+{
+	if (!Asset)
+	{
+		FNotificationManager::Get().AddNotification("No asset to save.", ENotificationType::Error, 3.0f);
+		return false;
+	}
+
+	const FString SelectedPath = FEditorFileUtils::SaveFileDialog({
+		.Filter = L"Asset Files (*.uasset)\0*.uasset\0All Files (*.*)\0*.*\0",
+		.Title = L"Save Asset",
+		.DefaultExtension = L"uasset",
+		.InitialDirectory = InitialDirectory ? InitialDirectory : FPaths::AssetDir().c_str(),
+		.DefaultFileName = DefaultFileName ? DefaultFileName : L"Asset.uasset",
+		.OwnerWindowHandle = OwnerWindowHandle,
+		.bFileMustExist = false,
+		.bPathMustExist = true,
+		.bPromptOverwrite = true,
+		.bReturnRelativeToProjectRoot = false,
+	});
+	if (SelectedPath.empty())
+	{
+		return false;
+	}
+
+	const std::filesystem::path AssetPath = std::filesystem::path(FPaths::ToWide(SelectedPath)).lexically_normal();
+	FString Error;
+	if (!FAssetFileSerializer::SaveAssetToFile(AssetPath, Asset, &Error))
+	{
+		FNotificationManager::Get().AddNotification(Error.empty() ? "Failed to save asset." : Error, ENotificationType::Error, 5.0f);
+		return false;
+	}
+
+	if (OutPath)
+	{
+		*OutPath = AssetPath;
+	}
+
+	FNotificationManager::Get().AddNotification("Saved asset: " + GetFileNameUtf8(AssetPath), ENotificationType::Success, 3.0f);
+	return true;
+}
+
+UAssetData* FAssetEditorWidget::LoadAssetWithDialog(const wchar_t* InitialDirectory, void* OwnerWindowHandle, std::filesystem::path* OutPath)
+{
+	const FString SelectedPath = FEditorFileUtils::OpenFileDialog({
+		.Filter = L"Asset Files (*.uasset)\0*.uasset\0All Files (*.*)\0*.*\0",
+		.Title = L"Open Asset",
+		.InitialDirectory = InitialDirectory ? InitialDirectory : FPaths::AssetDir().c_str(),
+		.OwnerWindowHandle = OwnerWindowHandle,
+		.bFileMustExist = true,
+		.bPathMustExist = true,
+		.bPromptOverwrite = false,
+		.bReturnRelativeToProjectRoot = false,
+	});
+	if (SelectedPath.empty())
+	{
+		return nullptr;
+	}
+
+	const std::filesystem::path AssetPath = std::filesystem::path(FPaths::ToWide(SelectedPath)).lexically_normal();
+	FString Error;
+	UAssetData* LoadedAsset = FAssetFileSerializer::LoadAssetFromFile(AssetPath, &Error);
+	if (!LoadedAsset)
+	{
+		FNotificationManager::Get().AddNotification(Error.empty() ? "Failed to load asset." : Error, ENotificationType::Error, 5.0f);
+		return nullptr;
+	}
+
+	if (OutPath)
+	{
+		*OutPath = AssetPath;
+	}
+
+	FNotificationManager::Get().AddNotification("Opened asset: " + GetFileNameUtf8(AssetPath), ENotificationType::Success, 3.0f);
+	return LoadedAsset;
+}
+
 bool FAssetEditorWidget::OpenAssetWithDialog(void* OwnerWindowHandle)
 {
 	const FString SelectedPath = FEditorFileUtils::OpenFileDialog({
@@ -366,11 +443,23 @@ void FAssetEditorWidget::Render(float DeltaTime)
 		ImGui::PopStyleColor(14);
 		ImGui::PopStyleVar(2);
 		bOpen = bWindowOpen;
-		bCapturingInput = bOpen;
+		bCapturingInput = false;
+		if (!bOpen)
+		{
+			CloseCurrentAsset();
+		}
 		return;
 	}
 	bOpen = bWindowOpen;
-	bCapturingInput = IsCurrentAssetEditorCapturingInput();
+	bCapturingInput = bOpen && IsCurrentAssetEditorCapturingInput();
+	if (!bOpen)
+	{
+		ImGui::End();
+		ImGui::PopStyleColor(14);
+		ImGui::PopStyleVar(2);
+		CloseCurrentAsset();
+		return;
+	}
 
 	DrawToolbar();
 	ImGui::Separator();

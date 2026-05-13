@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <cstring>
 
-// バイト数を適切な単位 (B / KB / MB / GB) に変換して文字列化
+// 바이트 수를 적절한 단위(B / KB / MB / GB)로 변환하여 문자열화
 static int FormatBytes(char* Buffer, int32 BufferSize, const char* Label, uint64 Bytes)
 {
 	const double B = static_cast<double>(Bytes);

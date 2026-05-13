@@ -34,7 +34,7 @@ protected:
 	bool bRegistered = false;
 	bool bCapturingInput = false;
 	
-private:
+	// 공통 접근, 구체 ViewportClient 접근이 필요할 때는 하위 클래스에서 Typed Getter 사용
 	std::unique_ptr<FPreviewViewportClient> PreviewViewportClient = nullptr;
 	
 	// ─────────────────────── AssetPreviewWidget 자식 클래스 공통 함수 ───────────────────────

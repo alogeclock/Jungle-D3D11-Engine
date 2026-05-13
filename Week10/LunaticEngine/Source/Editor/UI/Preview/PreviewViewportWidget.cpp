@@ -1,7 +1,6 @@
 #include "PreviewViewportWidget.h"
 
 #include "Component/CameraComponent.h"
-#include "Editor/Settings/EditorSettings.h"
 #include "Editor/UI/EditorAccentColor.h"
 #include "Editor/Viewport/Preview/PreviewViewportClient.h"
 #include "Math/MathUtils.h"
@@ -52,11 +51,11 @@ namespace
 	bool DrawIconButton(const char* Id, EPreviewToolbarIcon Icon, const char* Tooltip, bool bSelected = false);
 	bool DrawIconTextButton(const char* Id, EPreviewToolbarIcon Icon, const char* Label, const char* Tooltip, float Width);
 	void DrawPopupSectionHeader(const char* Label);
-	void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts);
-	void DrawSnapPopupContent(FEditorSettings& Settings);
+	bool DrawShowFlagsPopupContent(FViewportRenderOptions& Opts);
+	bool DrawSnapPopupContent(FPreviewSettings& Settings);
 	void DrawCameraPopupContent(FPreviewViewportClient& Client);
 	void DrawViewportTypePopupContent(FPreviewViewportClient& Client);
-	void DrawViewModePopupContent(FViewportRenderOptions& Opts);
+	bool DrawViewModePopupContent(FViewportRenderOptions& Opts);
 }
 
 void FPreviewViewportWidget::SetViewportClient(FPreviewViewportClient* InClient)
@@ -91,7 +90,7 @@ void FPreviewViewportWidget::Render(float DeltaTime)
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.25f, 0.25f, 0.28f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.32f, 0.32f, 0.36f, 1.0f));
 
-		FEditorSettings& Settings = FEditorSettings::Get();
+		FPreviewSettings& Settings = ViewportClient->GetPreviewSettings();
 		FViewportRenderOptions& Opts = ViewportClient->GetRenderOptions();
 		PreviewGizmoMode = ViewportClient->GetPreviewGizmoMode();
 		const float Width = ImGui::GetContentRegionAvail().x;
@@ -120,6 +119,7 @@ void FPreviewViewportWidget::Render(float DeltaTime)
 		if (DrawIconButton("##PreviewCoordSystem", bWorldCoord ? EPreviewToolbarIcon::WorldSpace : EPreviewToolbarIcon::LocalSpace, bWorldCoord ? "World Space" : "Local Space", bWorldCoord))
 		{
 			Settings.CoordSystem = bWorldCoord ? EEditorCoordSystem::Local : EEditorCoordSystem::World;
+			ViewportClient->MarkPreviewSettingsDirty();
 		}
 		ImGui::SameLine(0.0f, ButtonSpacing);
 		const bool bAnySnapEnabled = Settings.bEnableTranslationSnap || Settings.bEnableRotationSnap || Settings.bEnableScaleSnap;
@@ -165,7 +165,10 @@ void FPreviewViewportWidget::Render(float DeltaTime)
 		ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.12f, 0.13f, 0.15f, 0.98f));
 		if (ImGui::BeginPopup("PreviewSnapPopup"))
 		{
-			DrawSnapPopupContent(Settings);
+			if (DrawSnapPopupContent(Settings))
+			{
+				ViewportClient->MarkPreviewSettingsDirty();
+			}
 			ImGui::EndPopup();
 		}
 		if (ImGui::BeginPopup("PreviewCameraPopup"))
@@ -180,13 +183,19 @@ void FPreviewViewportWidget::Render(float DeltaTime)
 		}
 		if (ImGui::BeginPopup("PreviewViewModePopup"))
 		{
-			DrawViewModePopupContent(Opts);
+			if (DrawViewModePopupContent(Opts))
+			{
+				ViewportClient->MarkPreviewSettingsDirty();
+			}
 			ImGui::EndPopup();
 		}
 		ImGui::SetNextWindowSize(ImVec2(286.0f, 0.0f), ImGuiCond_Appearing);
 		if (ImGui::BeginPopup("PreviewShowPopup"))
 		{
-			DrawShowFlagsPopupContent(Opts);
+			if (DrawShowFlagsPopupContent(Opts))
+			{
+				ViewportClient->MarkPreviewSettingsDirty();
+			}
 			ImGui::EndPopup();
 		}
 		ImGui::PopStyleColor();
@@ -379,54 +388,58 @@ namespace
 		ImGui::PopStyleColor();
 	}
 
-	void DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
+	bool DrawShowFlagsPopupContent(FViewportRenderOptions& Opts)
 	{
+		bool bChanged = false;
 		constexpr float SliderWidth = 150.0f;
 		DrawPopupSectionHeader("COMMON SHOW FLAGS");
-		ImGui::Checkbox("Primitives", &Opts.ShowFlags.bPrimitives);
-		ImGui::Checkbox("Billboard Text", &Opts.ShowFlags.bBillboardText);
+		bChanged |= ImGui::Checkbox("Primitives", &Opts.ShowFlags.bPrimitives);
+		bChanged |= ImGui::Checkbox("Billboard Text", &Opts.ShowFlags.bBillboardText);
 
 		DrawPopupSectionHeader("ACTOR HELPERS");
-		ImGui::Checkbox("Grid", &Opts.ShowFlags.bGrid);
+		bChanged |= ImGui::Checkbox("Grid", &Opts.ShowFlags.bGrid);
 		if (Opts.ShowFlags.bGrid)
 		{
 			ImGui::SetNextItemWidth(SliderWidth);
-			ImGui::SliderFloat("Spacing", &Opts.GridSpacing, 0.1f, 10.0f, "%.1f");
+			bChanged |= ImGui::SliderFloat("Spacing", &Opts.GridSpacing, 0.1f, 10.0f, "%.1f");
 			ImGui::SetNextItemWidth(SliderWidth);
-			ImGui::SliderInt("Half Line Count", &Opts.GridHalfLineCount, 10, 500);
+			bChanged |= ImGui::SliderInt("Half Line Count", &Opts.GridHalfLineCount, 10, 500);
 		}
-		ImGui::Checkbox("World Axis", &Opts.ShowFlags.bWorldAxis);
-		ImGui::Checkbox("Gizmo", &Opts.ShowFlags.bGizmo);
+		bChanged |= ImGui::Checkbox("World Axis", &Opts.ShowFlags.bWorldAxis);
+		bChanged |= ImGui::Checkbox("Gizmo", &Opts.ShowFlags.bGizmo);
 
 		DrawPopupSectionHeader("DEBUG");
-		ImGui::Checkbox("Debug Draw", &Opts.ShowFlags.bDebugDraw);
-		ImGui::Checkbox("Bounding Volume", &Opts.ShowFlags.bBoundingVolume);
-		ImGui::Checkbox("Light Visualization", &Opts.ShowFlags.bLightVisualization);
-		ImGui::Checkbox("Light Hit Map", &Opts.ShowFlags.bLightHitMap);
-		ImGui::Checkbox("Shadow Frustum", &Opts.ShowFlags.bShowShadowFrustum);
+		bChanged |= ImGui::Checkbox("Debug Draw", &Opts.ShowFlags.bDebugDraw);
+		bChanged |= ImGui::Checkbox("Bounding Volume", &Opts.ShowFlags.bBoundingVolume);
+		bChanged |= ImGui::Checkbox("Light Visualization", &Opts.ShowFlags.bLightVisualization);
+		bChanged |= ImGui::Checkbox("Light Hit Map", &Opts.ShowFlags.bLightHitMap);
+		bChanged |= ImGui::Checkbox("Shadow Frustum", &Opts.ShowFlags.bShowShadowFrustum);
 
 		DrawPopupSectionHeader("POST-PROCESSING");
-		ImGui::Checkbox("Height Distance Fog", &Opts.ShowFlags.bFog);
-		ImGui::Checkbox("Anti-Aliasing (FXAA)", &Opts.ShowFlags.bFXAA);
-		ImGui::Checkbox("Gamma Correction", &Opts.ShowFlags.bGammaCorrection);
+		bChanged |= ImGui::Checkbox("Height Distance Fog", &Opts.ShowFlags.bFog);
+		bChanged |= ImGui::Checkbox("Anti-Aliasing (FXAA)", &Opts.ShowFlags.bFXAA);
+		bChanged |= ImGui::Checkbox("Gamma Correction", &Opts.ShowFlags.bGammaCorrection);
 		if (Opts.ShowFlags.bGammaCorrection)
 		{
 			ImGui::SetNextItemWidth(SliderWidth);
-			ImGui::SliderFloat("Display Gamma", &Opts.DisplayGamma, 1.0f, 3.0f, "%.2f");
+			bChanged |= ImGui::SliderFloat("Display Gamma", &Opts.DisplayGamma, 1.0f, 3.0f, "%.2f");
 			ImGui::SetNextItemWidth(SliderWidth);
-			ImGui::SliderFloat("Gamma Blend", &Opts.GammaCorrectionBlend, 0.0f, 1.0f, "%.2f");
+			bChanged |= ImGui::SliderFloat("Gamma Blend", &Opts.GammaCorrectionBlend, 0.0f, 1.0f, "%.2f");
 		}
+		return bChanged;
 	}
 
-	void DrawSnapOptionGroup(const char* Label, bool& bEnabled, float& Value, const float* Options, int32 Count, const char* Format)
+	bool DrawSnapOptionGroup(const char* Label, bool& bEnabled, float& Value, const float* Options, int32 Count, const char* Format)
 	{
+		bool bChanged = false;
 		ImGui::PushID(Label);
-		ImGui::Checkbox(Label, &bEnabled);
+		bChanged |= ImGui::Checkbox(Label, &bEnabled);
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(86.0f);
 		if (ImGui::InputFloat("##Value", &Value, 0.0f, 0.0f, "%.5g"))
 		{
 			Value = (std::max)(Value, 0.00001f);
+			bChanged = true;
 		}
 		for (int32 Index = 0; Index < Count; ++Index)
 		{
@@ -439,20 +452,24 @@ namespace
 			if (ImGui::SmallButton(ChoiceLabel))
 			{
 				Value = Options[Index];
+				bChanged = true;
 			}
 		}
 		ImGui::PopID();
+		return bChanged;
 	}
 
-	void DrawSnapPopupContent(FEditorSettings& Settings)
+	bool DrawSnapPopupContent(FPreviewSettings& Settings)
 	{
+		bool bChanged = false;
 		static const float TranslationSnapSizes[] = { 1.0f, 5.0f, 10.0f, 50.0f, 100.0f };
 		static const float RotationSnapSizes[] = { 5.0f, 10.0f, 15.0f, 30.0f, 45.0f, 90.0f };
 		static const float ScaleSnapSizes[] = { 0.03125f, 0.0625f, 0.1f, 0.25f, 0.5f, 1.0f };
 		DrawPopupSectionHeader("SNAPPING");
-		DrawSnapOptionGroup("Location", Settings.bEnableTranslationSnap, Settings.TranslationSnapSize, TranslationSnapSizes, 5, "%.0f");
-		DrawSnapOptionGroup("Rotation", Settings.bEnableRotationSnap, Settings.RotationSnapSize, RotationSnapSizes, 6, "%.0f");
-		DrawSnapOptionGroup("Scale", Settings.bEnableScaleSnap, Settings.ScaleSnapSize, ScaleSnapSizes, 6, "%.5g");
+		bChanged |= DrawSnapOptionGroup("Location", Settings.bEnableTranslationSnap, Settings.TranslationSnapSize, TranslationSnapSizes, 5, "%.0f");
+		bChanged |= DrawSnapOptionGroup("Rotation", Settings.bEnableRotationSnap, Settings.RotationSnapSize, RotationSnapSizes, 6, "%.0f");
+		bChanged |= DrawSnapOptionGroup("Scale", Settings.bEnableScaleSnap, Settings.ScaleSnapSize, ScaleSnapSizes, 6, "%.5g");
+		return bChanged;
 	}
 
 	void DrawCameraPopupContent(FPreviewViewportClient& Client)
@@ -515,8 +532,9 @@ namespace
 		}
 	}
 
-	void DrawViewModePopupContent(FViewportRenderOptions& Opts)
+	bool DrawViewModePopupContent(FViewportRenderOptions& Opts)
 	{
+		bool bChanged = false;
 		DrawPopupSectionHeader("VIEW MODE");
 		for (int32 ModeIndex = 0; ModeIndex < static_cast<int32>(EViewMode::Count); ++ModeIndex)
 		{
@@ -524,7 +542,9 @@ namespace
 			if (ImGui::Selectable(GetViewModeName(Mode), Opts.ViewMode == Mode))
 			{
 				Opts.ViewMode = Mode;
+				bChanged = true;
 			}
 		}
+		return bChanged;
 	}
 }

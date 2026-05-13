@@ -12,11 +12,61 @@
 #include "Mesh/StaticMeshAsset.h"
 #include "Mesh/Fbx/FbxCollisionImporter.h"
 #include "Mesh/Fbx/FbxSocketImporter.h"
+#include "Mesh/Fbx/FbxStaticChildMeshImporter.h"
+#include "Mesh/Fbx/FbxMetadataImporter.h"
+#include "Mesh/Fbx/FbxSceneHierarchyImporter.h"
+#include "Mesh/Fbx/FbxTransformUtils.h"
 
 #include <fbxsdk.h>
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
+
+namespace
+{
+    void SanitizeLODInfluencesForValidation(FSkeletalMeshLOD& LOD, int32 BoneCount)
+    {
+        for (FSkeletalVertex& Vertex : LOD.Vertices)
+        {
+            float TotalWeight = 0.0f;
+            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+            {
+                const bool bValidBone = BoneCount > 0 && Vertex.BoneIndices[InfluenceIndex] < static_cast<uint16>(BoneCount);
+                const bool bValidWeight = std::isfinite(Vertex.BoneWeights[InfluenceIndex]) && Vertex.BoneWeights[InfluenceIndex] > 0.0f;
+                if (!bValidBone || !bValidWeight)
+                {
+                    Vertex.BoneIndices[InfluenceIndex] = 0;
+                    Vertex.BoneWeights[InfluenceIndex] = 0.0f;
+                    continue;
+                }
+
+                TotalWeight += Vertex.BoneWeights[InfluenceIndex];
+            }
+
+            if (TotalWeight <= 1e-6f)
+            {
+                for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+                {
+                    Vertex.BoneIndices[InfluenceIndex] = 0;
+                    Vertex.BoneWeights[InfluenceIndex] = 0.0f;
+                }
+
+                if (BoneCount > 0)
+                {
+                    Vertex.BoneWeights[0] = 1.0f;
+                }
+                continue;
+            }
+
+            const float InvTotalWeight = 1.0f / TotalWeight;
+            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+            {
+                Vertex.BoneWeights[InfluenceIndex] *= InvTotalWeight;
+            }
+        }
+    }
+}
 
 
 // FBX scene에서 skeletal mesh, skeleton, LOD, morph target, animation을 import한다.
@@ -76,8 +126,11 @@ bool FFbxSkeletalMeshImporter::Import(
     TMap<int32, TArray<FFbxSkeletalImportMeshNode>> MeshNodesByLOD;
     OutMesh.LODModels.clear();
     OutMesh.StaticChildMeshes.clear();
+    OutMesh.SplitStaticMeshes.clear();
     OutMesh.Sockets.clear();
     OutMesh.CollisionShapes.clear();
+    OutMesh.NodeMetadata.clear();
+    OutMesh.SceneNodes.clear();
     OutMesh.Animations.clear();
     OutMesh.MorphTargets.clear();
 
@@ -130,6 +183,15 @@ bool FFbxSkeletalMeshImporter::Import(
             StaticChild.LocalMatrixToParentBone = ImportNode.LocalMatrixToParentBone;
             StaticChild.ImportAction            = ImportNode.StaticChildAction;
 
+            if (ImportNode.StaticChildAction == ESkeletalStaticChildImportAction::KeepAsAttachedStaticMesh)
+            {
+                FString GeneratedStaticMeshPath;
+                if (FFbxStaticChildMeshImporter::ImportAttachedStaticMesh(ImportNode.MeshNode, SourcePath, GeneratedStaticMeshPath, BuildContext))
+                {
+                    StaticChild.StaticMeshAssetPath = GeneratedStaticMeshPath;
+                }
+            }
+
             OutMesh.StaticChildMeshes.push_back(StaticChild);
             BuildContext.Summary.StaticChildMeshCount++;
 
@@ -139,7 +201,22 @@ bool FFbxSkeletalMeshImporter::Import(
             }
         }
 
-        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose || ImportNode.Kind == EFbxSkeletalImportMeshKind::Ignored || ImportNode.Kind ==
+        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Loose)
+        {
+            FString GeneratedStaticMeshPath;
+            if (FFbxStaticChildMeshImporter::ImportLooseStaticMesh(ImportNode.MeshNode, SourcePath, GeneratedStaticMeshPath, BuildContext))
+            {
+                FFbxSplitStaticMeshReference SplitRef;
+                SplitRef.SourceNodeName      = ImportNode.SourceNodeName;
+                SplitRef.StaticMeshAssetPath = GeneratedStaticMeshPath;
+                SplitRef.GlobalMatrix        = FFbxTransformUtils::ToEngineMatrix(ImportNode.MeshNode->EvaluateGlobalTransform());
+                OutMesh.SplitStaticMeshes.push_back(SplitRef);
+                BuildContext.Summary.SplitStaticMeshCount++;
+            }
+            continue;
+        }
+
+        if (ImportNode.Kind == EFbxSkeletalImportMeshKind::Ignored || ImportNode.Kind ==
             EFbxSkeletalImportMeshKind::CollisionProxy)
         {
             continue;
@@ -269,6 +346,10 @@ bool FFbxSkeletalMeshImporter::Import(
 
         NewLOD.SourceLODIndex = LODIndex;
         NewLOD.SourceLODName  = FString("LOD") + std::to_string(LODIndex);
+        if (!MeshNodesByLOD[LODIndex].empty())
+        {
+            FFbxSceneQuery::TryGetLODSettings(MeshNodesByLOD[LODIndex][0].MeshNode, NewLOD.ScreenSize, NewLOD.DistanceThreshold);
+        }
 
         OutMesh.LODModels.push_back(NewLOD);
         MorphSourcesByLOD.push_back(std::move(MorphSources));
@@ -282,6 +363,13 @@ bool FFbxSkeletalMeshImporter::Import(
     FFbxMorphTargetImporter::ImportMorphTargets(MorphSourcesByLOD, OutMesh.MorphTargets, BuildContext);
 
     FFbxAnimationImporter::ImportAnimations(Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, OutMesh.Animations);
+
+    OutMesh.Skeleton.SanitizeHierarchyAndBindPose();
+    const int32 ValidationBoneCount = static_cast<int32>(OutMesh.Skeleton.Bones.size());
+    for (FSkeletalMeshLOD& LOD : OutMesh.LODModels)
+    {
+        SanitizeLODInfluencesForValidation(LOD, ValidationBoneCount);
+    }
 
     float MaxBindPoseError = 0.0f;
     for (const FSkeletalMeshLOD& LOD : OutMesh.LODModels)
@@ -345,6 +433,11 @@ bool FFbxSkeletalMeshImporter::Import(
             }
         }
     }
+
+    FFbxMetadataImporter::CollectSceneNodeMetadata(Scene, OutMesh.NodeMetadata);
+    FFbxSceneHierarchyImporter::CollectSceneNodes(Scene, OutMesh.SceneNodes);
+    BuildContext.Summary.MetadataNodeCount = static_cast<int32>(OutMesh.NodeMetadata.size());
+    BuildContext.Summary.SceneNodeCount    = static_cast<int32>(OutMesh.SceneNodes.size());
 
     if (BuildContext.Summary.CandidateVertexCount > 0)
     {

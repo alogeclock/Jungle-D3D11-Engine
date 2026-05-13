@@ -9,6 +9,7 @@
 #include <cmath>
 #include <limits>
 #include <utility>
+#include <cstring>
 
 namespace
 {
@@ -280,6 +281,83 @@ namespace
         }
     }
 
+    static bool ShouldImportGenericPropertyCurve(const FString& PropertyName)
+    {
+        return PropertyName.rfind("AnimCurve_", 0) == 0 || PropertyName.rfind("Curve_", 0) == 0 || PropertyName.rfind("GameplayCurve_", 0) == 0;
+    }
+
+    static FString StripGenericCurvePrefix(const FString& PropertyName)
+    {
+        const char* Prefixes[] = { "AnimCurve_", "GameplayCurve_", "Curve_" };
+        for (const char* Prefix : Prefixes)
+        {
+            const size_t PrefixLen = std::strlen(Prefix);
+            if (PropertyName.rfind(Prefix, 0) == 0)
+            {
+                return PropertyName.substr(PrefixLen);
+            }
+        }
+        return PropertyName;
+    }
+
+    static bool IsFloatPropertyType(const FbxProperty& Property)
+    {
+        if (!Property.IsValid())
+        {
+            return false;
+        }
+
+        const EFbxType Type = Property.GetPropertyDataType().GetType();
+        return Type == eFbxFloat || Type == eFbxDouble || Type == eFbxInt || Type == eFbxUInt || Type == eFbxBool;
+    }
+
+    static void UpdateTimeRangeFromGenericPropertyCurvesRecursive(
+        FbxNode*      Node,
+        FbxAnimLayer* AnimLayer,
+        double&       InOutStartSeconds,
+        double&       InOutEndSeconds,
+        bool&         bHasAnyKey
+        )
+    {
+        if (!Node || !AnimLayer)
+        {
+            return;
+        }
+
+        for (FbxProperty Property = Node->GetFirstProperty(); Property.IsValid(); Property = Node->GetNextProperty(Property))
+        {
+            const char*   RawName      = Property.GetNameAsCStr();
+            const FString PropertyName = RawName ? FString(RawName) : FString();
+            if (!ShouldImportGenericPropertyCurve(PropertyName) || !IsFloatPropertyType(Property))
+            {
+                continue;
+            }
+
+            UpdateTimeRangeFromCurve(Property.GetCurve(AnimLayer), InOutStartSeconds, InOutEndSeconds, bHasAnyKey);
+        }
+
+        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+        {
+            UpdateTimeRangeFromGenericPropertyCurvesRecursive(Node->GetChild(ChildIndex), AnimLayer, InOutStartSeconds, InOutEndSeconds, bHasAnyKey);
+        }
+    }
+
+    static void UpdateTimeRangeFromGenericPropertyCurves(
+        FbxScene*     Scene,
+        FbxAnimLayer* AnimLayer,
+        double&       InOutStartSeconds,
+        double&       InOutEndSeconds,
+        bool&         bHasAnyKey
+        )
+    {
+        if (!Scene || !Scene->GetRootNode() || !AnimLayer)
+        {
+            return;
+        }
+
+        UpdateTimeRangeFromGenericPropertyCurvesRecursive(Scene->GetRootNode(), AnimLayer, InOutStartSeconds, InOutEndSeconds, bHasAnyKey);
+    }
+
     static bool TryFindAnimationCurveTimeRange(
         FbxScene*                    Scene,
         FbxAnimStack*                AnimStack,
@@ -305,6 +383,7 @@ namespace
 
             UpdateTimeRangeFromBoneCurves(AnimLayer, BoneNodeToIndex, StartSeconds, EndSeconds, bHasAnyKey);
             UpdateTimeRangeFromBlendShapeCurves(Scene, AnimLayer, StartSeconds, EndSeconds, bHasAnyKey);
+            UpdateTimeRangeFromGenericPropertyCurves(Scene, AnimLayer, StartSeconds, EndSeconds, bHasAnyKey);
         }
 
         if (!bHasAnyKey || EndSeconds <= StartSeconds)
@@ -454,6 +533,77 @@ namespace
         {
             FbxAnimLayer* AnimLayer = AnimStack->GetMember<FbxAnimLayer>(LayerIndex);
             ImportBlendShapeCurvesForLayer(Scene, AnimLayer, LayerIndex, StartSeconds, EndSeconds, Clip);
+        }
+    }
+
+    static void ImportGenericPropertyCurvesForNode(
+        FbxNode*                Node,
+        FbxAnimLayer*           AnimLayer,
+        int32                   LayerIndex,
+        const FString&          LayerName,
+        double                  StartSeconds,
+        double                  EndSeconds,
+        FSkeletalAnimationClip& Clip
+        )
+    {
+        if (!Node || !AnimLayer)
+        {
+            return;
+        }
+
+        const FString NodeName = Node->GetName() ? FString(Node->GetName()) : FString();
+
+        for (FbxProperty Property = Node->GetFirstProperty(); Property.IsValid(); Property = Node->GetNextProperty(Property))
+        {
+            const char*   RawName      = Property.GetNameAsCStr();
+            const FString PropertyName = RawName ? FString(RawName) : FString();
+            if (!ShouldImportGenericPropertyCurve(PropertyName) || !IsFloatPropertyType(Property))
+            {
+                continue;
+            }
+
+            FbxAnimCurve* Curve = Property.GetCurve(AnimLayer);
+            if (!Curve || Curve->KeyGetCount() <= 0)
+            {
+                continue;
+            }
+
+            const FString CurveName  = StripGenericCurvePrefix(PropertyName);
+            const int32   CurveIndex = FindOrAddFloatCurve(
+                Clip,
+                CurveName,
+                EAnimationFloatCurveType::Generic,
+                NodeName,
+                NodeName,
+                FString(),
+                PropertyName,
+                LayerIndex,
+                LayerName
+            );
+
+            FAnimationFloatCurve& OutCurve = Clip.FloatCurves[CurveIndex];
+            AppendCurveKeysInRange(Curve, StartSeconds, EndSeconds, OutCurve.Keys);
+        }
+
+        for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+        {
+            ImportGenericPropertyCurvesForNode(Node->GetChild(ChildIndex), AnimLayer, LayerIndex, LayerName, StartSeconds, EndSeconds, Clip);
+        }
+    }
+
+    static void ImportGenericPropertyCurves(FbxScene* Scene, FbxAnimStack* AnimStack, double StartSeconds, double EndSeconds, FSkeletalAnimationClip& Clip)
+    {
+        if (!Scene || !Scene->GetRootNode() || !AnimStack)
+        {
+            return;
+        }
+
+        const int32 LayerCount = AnimStack->GetMemberCount<FbxAnimLayer>();
+        for (int32 LayerIndex = 0; LayerIndex < LayerCount; ++LayerIndex)
+        {
+            FbxAnimLayer* AnimLayer = AnimStack->GetMember<FbxAnimLayer>(LayerIndex);
+            const FString LayerName = AnimLayer && AnimLayer->GetName() ? FString(AnimLayer->GetName()) : FString();
+            ImportGenericPropertyCurvesForNode(Scene->GetRootNode(), AnimLayer, LayerIndex, LayerName, StartSeconds, EndSeconds, Clip);
         }
     }
 
@@ -898,6 +1048,7 @@ void FFbxAnimationImporter::ImportAnimations(
 
         ImportBoneRawCurves(AnimStack, BoneNodeToIndex, Skeleton, StartSeconds, EndSeconds, Clip);
         ImportBlendShapeCurves(Scene, AnimStack, StartSeconds, EndSeconds, Clip);
+        ImportGenericPropertyCurves(Scene, AnimStack, StartSeconds, EndSeconds, Clip);
         SortAnimationClipKeys(Clip);
 
         OutAnimations.push_back(std::move(Clip));

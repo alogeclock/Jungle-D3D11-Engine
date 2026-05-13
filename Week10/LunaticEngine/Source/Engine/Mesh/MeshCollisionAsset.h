@@ -28,6 +28,8 @@ namespace MeshSerializationUtils
 struct FImportedCollisionShape
 {
     FString SourceNodeName;
+    FString TargetMeshName;
+    int32   CollisionIndex = 0;
 
     EImportedCollisionType Type        = EImportedCollisionType::Unknown;
     FMatrix                LocalMatrix = FMatrix::Identity;
@@ -49,6 +51,8 @@ struct FImportedCollisionShape
     friend FArchive& operator<<(FArchive& Ar, FImportedCollisionShape& Shape)
     {
         Ar << Shape.SourceNodeName;
+        Ar << Shape.TargetMeshName;
+        Ar << Shape.CollisionIndex;
 
         uint8 TypeValue = static_cast<uint8>(Shape.Type);
         Ar << TypeValue;
