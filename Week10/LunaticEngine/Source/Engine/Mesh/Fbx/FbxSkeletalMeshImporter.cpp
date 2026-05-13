@@ -20,7 +20,53 @@
 #include <fbxsdk.h>
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
+
+namespace
+{
+    void SanitizeLODInfluencesForValidation(FSkeletalMeshLOD& LOD, int32 BoneCount)
+    {
+        for (FSkeletalVertex& Vertex : LOD.Vertices)
+        {
+            float TotalWeight = 0.0f;
+            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+            {
+                const bool bValidBone = BoneCount > 0 && Vertex.BoneIndices[InfluenceIndex] < static_cast<uint16>(BoneCount);
+                const bool bValidWeight = std::isfinite(Vertex.BoneWeights[InfluenceIndex]) && Vertex.BoneWeights[InfluenceIndex] > 0.0f;
+                if (!bValidBone || !bValidWeight)
+                {
+                    Vertex.BoneIndices[InfluenceIndex] = 0;
+                    Vertex.BoneWeights[InfluenceIndex] = 0.0f;
+                    continue;
+                }
+
+                TotalWeight += Vertex.BoneWeights[InfluenceIndex];
+            }
+
+            if (TotalWeight <= 1e-6f)
+            {
+                for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+                {
+                    Vertex.BoneIndices[InfluenceIndex] = 0;
+                    Vertex.BoneWeights[InfluenceIndex] = 0.0f;
+                }
+
+                if (BoneCount > 0)
+                {
+                    Vertex.BoneWeights[0] = 1.0f;
+                }
+                continue;
+            }
+
+            const float InvTotalWeight = 1.0f / TotalWeight;
+            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_SKELETAL_MESH_BONE_INFLUENCES; ++InfluenceIndex)
+            {
+                Vertex.BoneWeights[InfluenceIndex] *= InvTotalWeight;
+            }
+        }
+    }
+}
 
 
 // FBX scene에서 skeletal mesh, skeleton, LOD, morph target, animation을 import한다.
@@ -317,6 +363,13 @@ bool FFbxSkeletalMeshImporter::Import(
     FFbxMorphTargetImporter::ImportMorphTargets(MorphSourcesByLOD, OutMesh.MorphTargets, BuildContext);
 
     FFbxAnimationImporter::ImportAnimations(Scene, BoneNodeToIndex, ReferenceMeshBindInverse, OutMesh.Skeleton, OutMesh.Animations);
+
+    OutMesh.Skeleton.SanitizeHierarchyAndBindPose();
+    const int32 ValidationBoneCount = static_cast<int32>(OutMesh.Skeleton.Bones.size());
+    for (FSkeletalMeshLOD& LOD : OutMesh.LODModels)
+    {
+        SanitizeLODInfluencesForValidation(LOD, ValidationBoneCount);
+    }
 
     float MaxBindPoseError = 0.0f;
     for (const FSkeletalMeshLOD& LOD : OutMesh.LODModels)
