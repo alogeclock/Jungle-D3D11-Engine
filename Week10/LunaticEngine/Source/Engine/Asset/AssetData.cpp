@@ -8,6 +8,7 @@
 
 IMPLEMENT_CLASS(UAssetData, UObject)
 IMPLEMENT_CLASS(UCameraModifierStackAssetData, UAssetData)
+IMPLEMENT_CLASS(USkeletalPoseAssetData, UAssetData)
 
 namespace
 {
@@ -174,4 +175,31 @@ void UCameraModifierStackAssetData::EnsureValidEditorIds()
             Desc.Name = "CameraShake";
         }
     }
+}
+
+void SerializeSkeletalPoseDesc(FArchive& Ar, FSkeletalPoseDesc& Desc)
+{
+	Ar << Desc.BoneName;
+	Ar << Desc.ParentIndex;
+	Ar << Desc.LocalTransform;
+}
+
+void USkeletalPoseAssetData::Serialize(FArchive &Ar)
+{
+	UAssetData::Serialize(Ar);
+
+	Ar << SourcePath;
+	
+	uint32 BoneCount = static_cast<uint32>(Bones.size());
+	Ar << BoneCount;
+	
+	if (Ar.IsLoading())
+	{
+		Bones.resize(BoneCount);
+	}
+	
+	for (uint32 Index = 0; Index < BoneCount; ++Index)
+	{
+		SerializeSkeletalPoseDesc(Ar, Bones[Index]);
+	}
 }

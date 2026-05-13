@@ -20,6 +20,8 @@ public:
 	
 	// Getter & Setter
 	void SetSkeletalMesh(USkeletalMesh* InSkeletalMesh);
+	USkeletalMesh* GetPreviewSkeletalMesh() const { return PreviewSkeletalMesh; }
+	AActor* GetPreviewActor() const { return PreviewActor; }
 	USkeletalMeshComponent* GetPreviewComponent() const { return PreviewComponent; }
 	
 	// Picking & Gizmo 

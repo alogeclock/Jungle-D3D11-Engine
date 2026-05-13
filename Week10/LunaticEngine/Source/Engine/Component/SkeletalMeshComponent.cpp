@@ -1,5 +1,6 @@
 #include "Component/SkeletalMeshComponent.h"
 
+#include "Asset/AssetData.h"
 #include "Collision/RayUtils.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
@@ -490,6 +491,100 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 	MarkWorldBoundsDirty();
 }
 
+bool USkeletalMeshComponent::CaptureLocalPose(TArray<FSkeletalPoseDesc> &OutBones) const
+{
+	OutBones.clear();
+
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
+	if (!Skeleton || Skeleton->Bones.empty())
+	{
+		return false;
+	}
+
+	const int32 BoneCount = static_cast<int32>(Skeleton->Bones.size());
+	if (BoneSpaceTransforms.size() != BoneCount)
+	{
+		return false;
+	}
+
+	OutBones.reserve(BoneCount);
+	for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+	{
+		const FBoneInfo& Bone = Skeleton->Bones[BoneIndex];
+		FSkeletalPoseDesc Desc;
+		Desc.BoneName = Bone.Name;
+		Desc.ParentIndex = Bone.ParentIndex;
+		Desc.LocalTransform = BoneSpaceTransforms[BoneIndex];
+		OutBones.push_back(Desc);
+	}
+
+	return true;
+}
+
+bool USkeletalMeshComponent::ApplyLocalPose(const TArray<FSkeletalPoseDesc>& Bones)
+{
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
+	if (!Skeleton || Skeleton->Bones.empty() || Bones.empty())
+	{
+		return false;
+	}
+
+	const int32 BoneCount = static_cast<int32>(Skeleton->Bones.size());
+	if (BoneSpaceTransforms.size() != BoneCount)
+	{
+		InitializeBoneTransformsFromSkeleton();
+	}
+	if (BoneSpaceTransforms.size() != BoneCount)
+	{
+		return false;
+	}
+
+	bool bAppliedAny = false;
+	for (int32 PoseIndex = 0; PoseIndex < static_cast<int32>(Bones.size()); ++PoseIndex)
+	{
+		const FSkeletalPoseDesc& Desc = Bones[PoseIndex];
+		int32 TargetBoneIndex = -1;
+
+		for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+		{
+			if (Skeleton->Bones[BoneIndex].Name == Desc.BoneName)
+			{
+				TargetBoneIndex = BoneIndex;
+				break;
+			}
+		}
+
+		if (TargetBoneIndex < 0 && PoseIndex < BoneCount && Skeleton->Bones[PoseIndex].ParentIndex == Desc.ParentIndex)
+		{
+			TargetBoneIndex = PoseIndex;
+		}
+
+		if (!IsValidBoneIndex(TargetBoneIndex))
+		{
+			continue;
+		}
+
+		FTransform NormalizedTransform = Desc.LocalTransform;
+		NormalizedTransform.Rotation.Normalize();
+		BoneSpaceTransforms[TargetBoneIndex] = NormalizedTransform;
+		bAppliedAny = true;
+	}
+
+	if (!bAppliedAny)
+	{
+		return false;
+	}
+
+	MarkSkeletalPoseDirty();
+	RefreshBoneTransforms();
+	UpdateSkinnedMeshObject();
+	return true;
+}
+
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InSkeletalMesh)
 {
 	SetSkeletalMeshInternal(InSkeletalMesh, false, false);
@@ -529,6 +624,7 @@ void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& 
 	UMeshComponent::GetEditableProperties(OutProps);
 
 	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, &SkeletalMeshPath });
+	OutProps.push_back({ "Skeletal Pose", EPropertyType::SkeletalPoseRef, &SkeletalPosePath });
 	OutProps.push_back({ "CPU Skinning", EPropertyType::Bool, &bCPUSkinning });
 	OutProps.push_back({ "Bounds Scale", EPropertyType::Float, &BoundsScale, 0.1f, 10.0f, 0.1f });
 	OutProps.push_back({ "Display Bones", EPropertyType::Bool, &bDisplayBones });
