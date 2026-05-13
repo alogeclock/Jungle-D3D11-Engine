@@ -443,11 +443,23 @@ void FAssetEditorWidget::Render(float DeltaTime)
 		ImGui::PopStyleColor(14);
 		ImGui::PopStyleVar(2);
 		bOpen = bWindowOpen;
-		bCapturingInput = bOpen;
+		bCapturingInput = false;
+		if (!bOpen)
+		{
+			CloseCurrentAsset();
+		}
 		return;
 	}
 	bOpen = bWindowOpen;
-	bCapturingInput = IsCurrentAssetEditorCapturingInput();
+	bCapturingInput = bOpen && IsCurrentAssetEditorCapturingInput();
+	if (!bOpen)
+	{
+		ImGui::End();
+		ImGui::PopStyleColor(14);
+		ImGui::PopStyleVar(2);
+		CloseCurrentAsset();
+		return;
+	}
 
 	DrawToolbar();
 	ImGui::Separator();

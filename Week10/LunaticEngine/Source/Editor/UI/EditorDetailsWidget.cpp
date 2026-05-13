@@ -80,8 +80,14 @@ namespace
     constexpr ImVec4 DetailsHeaderButtonHoveredColor = ImVec4(0.24f, 0.24f, 0.24f, 1.0f);
     constexpr ImVec4 DetailsHeaderButtonActiveColor = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
     constexpr ImVec4 DetailsHeaderButtonBorderColor = ImVec4(0.42f, 0.42f, 0.45f, 0.90f);
-    constexpr ImVec4 ImportButtonColor = ImVec4(0.16f, 0.58f, 0.25f, 1.0f);
-    constexpr ImVec4 ResetButtonColor = ImVec4(0.82f, 0.12f, 0.11f, 1.0f);
+    constexpr ImVec4 ImportButtonColor = ImVec4(0.22f, 0.22f, 0.23f, 1.0f);
+    constexpr ImVec4 ImportButtonHoveredColor = ImVec4(0.30f, 0.30f, 0.32f, 1.0f);
+    constexpr ImVec4 ImportButtonActiveColor = ImVec4(0.36f, 0.36f, 0.38f, 1.0f);
+    constexpr ImVec4 ImportButtonBorderColor = ImVec4(0.52f, 0.52f, 0.55f, 0.95f);
+    constexpr ImVec4 ResetButtonColor = ImVec4(0.22f, 0.22f, 0.23f, 1.0f);
+    constexpr ImVec4 ResetButtonHoveredColor = ImVec4(0.30f, 0.30f, 0.32f, 1.0f);
+    constexpr ImVec4 ResetButtonActiveColor = ImVec4(0.36f, 0.36f, 0.38f, 1.0f);
+    constexpr ImVec4 ResetButtonBorderColor = ImVec4(0.52f, 0.52f, 0.55f, 0.95f);
 
     namespace PopupPalette
     {
@@ -229,15 +235,16 @@ namespace
         ImGui::PopStyleVar(2);
     }
 
-    bool DrawColoredButton(const char* Label, const ImVec4& Color)
+    bool DrawActionButton(const char* Label, const ImVec4& ButtonColor, const ImVec4& HoveredColor, const ImVec4& ActiveColor, const ImVec4& BorderColor)
     {
-        ImVec4 Hovered = Color;
-        Hovered.w = 0.85f;
-        ImGui::PushStyleColor(ImGuiCol_Button, Color);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Hovered);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, Color);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+        ImGui::PushStyleColor(ImGuiCol_Button, ButtonColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HoveredColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ActiveColor);
+        ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
         const bool bPressed = ImGui::Button(Label);
-        ImGui::PopStyleColor(3);
+        ImGui::PopStyleColor(4);
+        ImGui::PopStyleVar();
         return bPressed;
     }
 
@@ -3330,7 +3337,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         ImGui::Text("%s", Label);
         ImGui::SameLine(120);
 
-        float ButtonWidth = ImGui::CalcTextSize("Import OBJ").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        float ButtonWidth = ImGui::CalcTextSize("IMPORT").x + ImGui::GetStyle().FramePadding.x * 2.0f;
         float Spacing = ImGui::GetStyle().ItemSpacing.x;
         ImGui::SetNextItemWidth(-(ButtonWidth + Spacing));
 
@@ -3364,7 +3371,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         ImGui::SameLine();
 
         ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ButtonWidth);
-        if (ImGui::Button("Import OBJ"))
+        if (DrawActionButton("IMPORT##StaticMesh", ImportButtonColor, ImportButtonHoveredColor, ImportButtonActiveColor, ImportButtonBorderColor))
         {
             FString ObjPath = OpenObjFileDialog();
             if (!ObjPath.empty())
@@ -3387,8 +3394,8 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         ImGui::Text("%s", Label);
         ImGui::SameLine(120);
 
-        const float ResetWidth = ImGui::CalcTextSize("Reset").x + ImGui::GetStyle().FramePadding.x * 2.0f;
-        const float ImportWidth = ImGui::CalcTextSize("Import").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float ResetWidth = ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float ImportWidth = ImGui::CalcTextSize("IMPORT").x + ImGui::GetStyle().FramePadding.x * 2.0f;
         const float Spacing = ImGui::GetStyle().ItemSpacing.x;
         const float ButtonWidth = ResetWidth + ImportWidth + Spacing;
         ImGui::SetNextItemWidth(-(ButtonWidth + Spacing));
@@ -3409,7 +3416,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
     	ImGui::SameLine();
     		
         ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ButtonWidth);
-    	if (DrawColoredButton("Import##SkeletalMesh", ImportButtonColor))
+    	if (DrawActionButton("IMPORT##SkeletalMesh", ImportButtonColor, ImportButtonHoveredColor, ImportButtonActiveColor, ImportButtonBorderColor))
     	{
     		FString FbxPath = OpenFbxFileDialog();
     		if (!FbxPath.empty())
@@ -3439,7 +3446,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
     		
         ImGui::SameLine();
     		
-        if (DrawColoredButton("Reset##SkeletalMesh", ResetButtonColor))
+        if (DrawActionButton("RESET##SkeletalMesh", ResetButtonColor, ResetButtonHoveredColor, ResetButtonActiveColor, ResetButtonBorderColor))
         {
             if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent))
             {
@@ -3463,8 +3470,8 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         ImGui::Text("%s", Label);
         ImGui::SameLine(120);
 
-        const float ResetWidth = ImGui::CalcTextSize("Reset").x + ImGui::GetStyle().FramePadding.x * 2.0f;
-        const float ImportWidth = ImGui::CalcTextSize("Import").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float ResetWidth = ImGui::CalcTextSize("RESET").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float ImportWidth = ImGui::CalcTextSize("IMPORT").x + ImGui::GetStyle().FramePadding.x * 2.0f;
         const float Spacing = ImGui::GetStyle().ItemSpacing.x;
         const float ButtonWidth = ResetWidth + ImportWidth + Spacing;
         ImGui::SetNextItemWidth(-(ButtonWidth + Spacing));
@@ -3485,7 +3492,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         ImGui::SameLine();
     	
     	ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ButtonWidth);
-    	if (DrawColoredButton("Import##SkeletalPose", ImportButtonColor))
+    	if (DrawActionButton("IMPORT##SkeletalPose", ImportButtonColor, ImportButtonHoveredColor, ImportButtonActiveColor, ImportButtonBorderColor))
     	{
     		USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent);
     		const std::filesystem::path PoseDir = GetSkeletalAssetDir(SkeletalMeshComponent);
@@ -3510,7 +3517,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
     		
         ImGui::SameLine();
     	
-    	if (DrawColoredButton("Reset##SkeletalPose", ResetButtonColor))
+    	if (DrawActionButton("RESET##SkeletalPose", ResetButtonColor, ResetButtonHoveredColor, ResetButtonActiveColor, ResetButtonBorderColor))
     	{
     		if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent))
     		{
