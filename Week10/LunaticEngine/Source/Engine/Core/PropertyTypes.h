@@ -20,6 +20,7 @@ enum class EPropertyType : uint8_t
 	Color4,	   // FVector4 RGBA — ImGui::ColorEdit4 위젯
 	StaticMeshRef, // UStaticMesh* 에셋 레퍼런스 (드롭다운 선택)
 	SkeletalMeshRef, // USkeletalMesh* 에셋 레퍼런스
+	SkeletalPoseRef, // USkeletalPoseAssetData 에셋 레퍼런스
 	MaterialSlot,  // FMaterialSlot — 머티리얼 경로
 	TextureSlot,   // FTextureSlot — 텍스처 경로
 	Enum,

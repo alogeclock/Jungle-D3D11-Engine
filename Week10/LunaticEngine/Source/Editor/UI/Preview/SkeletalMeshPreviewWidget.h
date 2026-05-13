@@ -3,12 +3,12 @@
 #include "AssetPreviewWidget.h"
 #include "Core/CoreTypes.h"
 #include "Editor/UI/EditorDetailsWidget.h"
+#include "Editor/Viewport/Preview/SkeletalMeshPreviewViewportClient.h"
 #include "Math/Quat.h"
 #include "Math/Rotator.h"
 #include "Math/Transform.h"
 
 class FWindowsWindow;
-class FSkeletalMeshPreviewViewportClient;
 class UEditorEngine;
 class USkeletalMesh;
 class UTexture2D;
@@ -41,10 +41,13 @@ public:
 
 protected:
 	std::unique_ptr<FPreviewViewportClient> CreatePreviewViewportClient() override;
+	FSkeletalMeshPreviewViewportClient* GetSkeletalViewportClient() const { return static_cast<FSkeletalMeshPreviewViewportClient*>(GetPreviewViewportClient()); }
 
 private:
-	FSkeletalMeshPreviewViewportClient* GetSkeletalViewportClient() const;
-
+	// Pose Serialize & Deserialize
+	bool SavePose();
+	bool LoadPose();
+	
     // UI Rendering
 	void RebuildBoneWeightedFlags();
     void DrawBoneHierarchyPanel();

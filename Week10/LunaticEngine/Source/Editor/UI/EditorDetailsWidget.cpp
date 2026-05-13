@@ -29,9 +29,12 @@
 #include "Component/TextRenderComponent.h"
 #include "Core/ClassTypes.h"
 #include "Core/AsciiUtils.h"
+#include "Core/Notification.h"
 #include "Core/PropertyTypes.h"
+#include "Engine/Asset/AssetData.h"
 #include "Engine/Runtime/Engine.h"
 #include "Engine/Runtime/WindowsWindow.h"
+#include "Editor/UI/AssetEditor/AssetEditorWidget.h"
 #include "GameFramework/World.h"
 #include "ImGui/imgui.h"
 #include "Materials/Material.h"
@@ -77,6 +80,8 @@ namespace
     constexpr ImVec4 DetailsHeaderButtonHoveredColor = ImVec4(0.24f, 0.24f, 0.24f, 1.0f);
     constexpr ImVec4 DetailsHeaderButtonActiveColor = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
     constexpr ImVec4 DetailsHeaderButtonBorderColor = ImVec4(0.42f, 0.42f, 0.45f, 0.90f);
+    constexpr ImVec4 ImportButtonColor = ImVec4(0.16f, 0.58f, 0.25f, 1.0f);
+    constexpr ImVec4 ResetButtonColor = ImVec4(0.82f, 0.12f, 0.11f, 1.0f);
 
     namespace PopupPalette
     {
@@ -222,6 +227,18 @@ namespace
     {
         ImGui::PopStyleColor(4);
         ImGui::PopStyleVar(2);
+    }
+
+    bool DrawColoredButton(const char* Label, const ImVec4& Color)
+    {
+        ImVec4 Hovered = Color;
+        Hovered.w = 0.85f;
+        ImGui::PushStyleColor(ImGuiCol_Button, Color);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Hovered);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, Color);
+        const bool bPressed = ImGui::Button(Label);
+        ImGui::PopStyleColor(3);
+        return bPressed;
     }
 
     void PushPopupMenuStyle()
@@ -1166,6 +1183,34 @@ namespace
         return Name == "Visible" || Name == "Cast Shadow" || Name == "Two Sided Shadow" || Name == "Is Collidable" ||
                Name == "Generates Overlap Event";
     }
+
+    std::filesystem::path ToProjectRelativePath(const std::filesystem::path& InPath)
+    {
+        const std::filesystem::path AbsPath = InPath.lexically_normal();
+        const std::filesystem::path RootPath = std::filesystem::path(FPaths::RootDir());
+        const std::filesystem::path RelPath = AbsPath.lexically_relative(RootPath);
+        if (RelPath.empty() || RelPath.wstring().starts_with(L".."))
+        {
+            return AbsPath;
+        }
+        return RelPath;
+    }
+
+    std::filesystem::path GetSkeletalAssetDir(const USkeletalMeshComponent* Component)
+    {
+        const FString& MeshPath = Component ? Component->GetSkeletalMeshAssetPath() : FString();
+        if (MeshPath.empty() || MeshPath == "None")
+        {
+            return std::filesystem::path(FPaths::AssetDir());
+        }
+
+        std::filesystem::path SourcePath(FPaths::ToWide(MeshPath));
+        if (!SourcePath.is_absolute())
+        {
+            SourcePath = std::filesystem::path(FPaths::RootDir()) / SourcePath;
+        }
+        return SourcePath.lexically_normal().parent_path();
+    }
 } // namespace
 
 static FString RemoveExtension(const FString &Path)
@@ -1400,7 +1445,7 @@ FString FEditorDetailsWidget::GetPropertySectionName(const FPropertyDescriptor &
     {
         return "Static Mesh";
     }
-    if (Prop.Type == EPropertyType::SkeletalMeshRef)
+    if (Prop.Type == EPropertyType::SkeletalMeshRef || Prop.Type == EPropertyType::SkeletalPoseRef)
     {
         return "Skeletal Mesh";
     }
@@ -3342,8 +3387,10 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
         ImGui::Text("%s", Label);
         ImGui::SameLine(120);
 
-        const float ButtonWidth = ImGui::CalcTextSize("Import FBX").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float ResetWidth = ImGui::CalcTextSize("Reset").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float ImportWidth = ImGui::CalcTextSize("Import").x + ImGui::GetStyle().FramePadding.x * 2.0f;
         const float Spacing = ImGui::GetStyle().ItemSpacing.x;
+        const float ButtonWidth = ResetWidth + ImportWidth + Spacing;
         ImGui::SetNextItemWidth(-(ButtonWidth + Spacing));
 
         char Buffer[512] = {};
@@ -3359,35 +3406,123 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor> &Pr
             ImGui::SetTooltip("%s", Val->c_str());
         }
 
-        ImGui::SameLine();
+    	ImGui::SameLine();
+    		
         ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ButtonWidth);
-        if (ImGui::Button("Import FBX"))
+    	if (DrawColoredButton("Import##SkeletalMesh", ImportButtonColor))
+    	{
+    		FString FbxPath = OpenFbxFileDialog();
+    		if (!FbxPath.empty())
+    		{
+    			USkeletalMesh* Loaded = FSkeletalMeshManager::LoadSkeletalMesh(FbxPath);
+    			if (Loaded)
+    			{
+    				if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent))
+    				{
+    					SkeletalMeshComponent->SetSkeletalMesh(Loaded);
+    					*Val = SkeletalMeshComponent->GetSkeletalMeshAssetPath();
+    					if (AActor* OwnerActor = SkeletalMeshComponent->GetOwner())
+    					{
+    						OwnerActor->SyncEditorBillboardVisibility();
+    					}
+    					bPostEditHandled = true;
+    				}
+    				else
+    				{
+    					const FString& LoadedPath = Loaded->GetAssetPathFileName();
+    					*Val = LoadedPath.empty() ? FbxPath : LoadedPath;
+    				}
+    				bChanged = true;
+    			}
+    		}
+    	}
+    		
+        ImGui::SameLine();
+    		
+        if (DrawColoredButton("Reset##SkeletalMesh", ResetButtonColor))
         {
-            FString FbxPath = OpenFbxFileDialog();
-            if (!FbxPath.empty())
+            if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent))
             {
-                USkeletalMesh* Loaded = FSkeletalMeshManager::LoadSkeletalMesh(FbxPath);
-                if (Loaded)
+                SkeletalMeshComponent->SetSkeletalMesh(nullptr);
+                if (AActor* OwnerActor = SkeletalMeshComponent->GetOwner())
                 {
-                    if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent))
-                    {
-                        SkeletalMeshComponent->SetSkeletalMesh(Loaded);
-                        *Val = SkeletalMeshComponent->GetSkeletalMeshAssetPath();
-                        if (AActor* OwnerActor = SkeletalMeshComponent->GetOwner())
-                        {
-                            OwnerActor->SyncEditorBillboardVisibility();
-                        }
-                        bPostEditHandled = true;
-                    }
-                    else
-                    {
-                        const FString& LoadedPath = Loaded->GetAssetPathFileName();
-                        *Val = LoadedPath.empty() ? FbxPath : LoadedPath;
-                    }
-                    bChanged = true;
+                    OwnerActor->SyncEditorBillboardVisibility();
                 }
+                bPostEditHandled = true;
             }
+            *Val = "None";
+            bChanged = true;
         }
+    		
+        break;
+    }
+    case EPropertyType::SkeletalPoseRef:
+    {
+        FString* Val = static_cast<FString*>(Prop.ValuePtr);
+
+        ImGui::Text("%s", Label);
+        ImGui::SameLine(120);
+
+        const float ResetWidth = ImGui::CalcTextSize("Reset").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float ImportWidth = ImGui::CalcTextSize("Import").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        const float Spacing = ImGui::GetStyle().ItemSpacing.x;
+        const float ButtonWidth = ResetWidth + ImportWidth + Spacing;
+        ImGui::SetNextItemWidth(-(ButtonWidth + Spacing));
+
+        char Buffer[512] = {};
+        strncpy_s(Buffer, sizeof(Buffer), Val->c_str(), _TRUNCATE);
+        if (ImGui::InputText("##SkeletalPose", Buffer, sizeof(Buffer)))
+        {
+            *Val = Buffer;
+            bChanged = true;
+        }
+
+        if (ImGui::IsItemHovered() && !Val->empty())
+        {
+            ImGui::SetTooltip("%s", Val->c_str());
+        }
+
+        ImGui::SameLine();
+    	
+    	ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ButtonWidth);
+    	if (DrawColoredButton("Import##SkeletalPose", ImportButtonColor))
+    	{
+    		USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent);
+    		const std::filesystem::path PoseDir = GetSkeletalAssetDir(SkeletalMeshComponent);
+    		std::filesystem::path LoadedPath;
+    		UAssetData* LoadedAsset = FAssetEditorWidget::LoadAssetWithDialog(PoseDir.c_str(), nullptr, &LoadedPath);
+    		if (LoadedAsset)
+    		{
+    			USkeletalPoseAssetData* PoseAsset = Cast<USkeletalPoseAssetData>(LoadedAsset);
+    			if (!PoseAsset)
+    			{
+    				FNotificationManager::Get().AddNotification("Load failed: File is not a skeletal pose asset.", ENotificationType::Error, 3.0f);
+    			}
+    			else if (SkeletalMeshComponent && SkeletalMeshComponent->ApplyLocalPose(PoseAsset->Bones))
+    			{
+    				*Val = FPaths::ToUtf8(ToProjectRelativePath(LoadedPath).generic_wstring());
+    				bChanged = true;
+    				bPostEditHandled = true;
+    			}
+    			UObjectManager::Get().DestroyObject(LoadedAsset);
+    		}
+    	}
+    		
+        ImGui::SameLine();
+    	
+    	if (DrawColoredButton("Reset##SkeletalPose", ResetButtonColor))
+    	{
+    		if (USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent))
+    		{
+    			if (USkeletalMesh* CurrentMesh = SkeletalMeshComponent->GetSkeletalMeshAsset())
+    			{
+    				SkeletalMeshComponent->SetSkeletalMesh(CurrentMesh);
+    			}
+    			bPostEditHandled = true;
+    		}
+    		*Val = "None";
+    		bChanged = true;
+    	}
         break;
     }
     case EPropertyType::MaterialSlot:

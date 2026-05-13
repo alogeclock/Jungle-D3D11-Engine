@@ -2,6 +2,8 @@
 
 #include "Component/SkinnedMeshComponent.h"
 
+struct FSkeletalPoseDesc;
+
 class FScene;
 
 class USkeletalMeshComponent : public USkinnedMeshComponent
@@ -15,6 +17,7 @@ public:
 	FMeshDataView GetMeshDataView() const override;
 	void ContributeVisuals(FScene& Scene) const override;
 
+	// Main Functions
 	void Serialize(FArchive& Ar) override;
 	void PostDuplicate() override;
 	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
@@ -30,6 +33,10 @@ public:
 	bool SetBoneComponentSpaceRotation(int32 BoneIndex, const FQuat& NewComponentRotation);
 	void RefreshBoneTransforms() override;
 
+	// Serialize Pose
+	bool CaptureLocalPose(TArray<FSkeletalPoseDesc> &OutBones) const;
+	bool ApplyLocalPose(const TArray<FSkeletalPoseDesc>& Bones);
+	
 	// Getter & Setter
 	const TArray<int32>& GetRequiredBones() const { return RequiredBones; }
 	const FTransform* GetBoneLocalTransform(int32 BoneIndex) const;
@@ -40,6 +47,7 @@ public:
 	bool IsSkeletonUpdateEnabled() const { return bEnableSkeletonUpdate; }
 
 	const FVector& GetRootBoneTranslation() const { return RootBoneTranslation; }
+	const FString& GetSkeletalPosePath() const { return SkeletalPosePath; }
 	int32 GetSelectedBoneIndex() const { return SelectedBoneIndex; }
 	bool ShouldShowBoneNames() const { return bShowBoneNames; }
 
@@ -65,6 +73,7 @@ private:
 	bool bEnableSkeletonUpdate = true;
 
 	FVector RootBoneTranslation = FVector::ZeroVector;
+	FString SkeletalPosePath = "None";
 
 	int32 SelectedBoneIndex = -1;
 	bool bShowBoneNames = false;

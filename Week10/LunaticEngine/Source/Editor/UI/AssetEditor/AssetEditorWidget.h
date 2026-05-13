@@ -25,6 +25,8 @@ public:
 	bool IsCapturingInput() const { return bCapturingInput; }
 
 	static bool OpenAssetFile(const std::filesystem::path& FilePath);
+	static bool SaveAssetWithDialog(UAssetData* Asset, const wchar_t* DefaultFileName = L"Asset.uasset", const wchar_t* InitialDirectory = nullptr, void* OwnerWindowHandle = nullptr, std::filesystem::path* OutPath = nullptr);
+	static UAssetData* LoadAssetWithDialog(const wchar_t* InitialDirectory = nullptr, void* OwnerWindowHandle = nullptr, std::filesystem::path* OutPath = nullptr);
 
 private:
 	void DrawToolbar();

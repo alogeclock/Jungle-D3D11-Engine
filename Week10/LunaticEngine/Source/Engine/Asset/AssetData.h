@@ -2,6 +2,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Rotator.h"
+#include "Math/Transform.h"
 #include "Math/Vector.h"
 #include "Object/Object.h"
 
@@ -71,6 +72,25 @@ class UCameraModifierStackAssetData : public UAssetData
     void EnsureValidEditorIds();
 };
 
-void   SerializeCameraModifierCommonAssetDesc(FArchive &Ar, FCameraModifierCommonAssetDesc &Desc);
-void   SerializeCameraShakeModifierAssetDesc(FArchive &Ar, FCameraShakeModifierAssetDesc &Desc);
+void SerializeCameraModifierCommonAssetDesc(FArchive &Ar, FCameraModifierCommonAssetDesc &Desc);
+void SerializeCameraShakeModifierAssetDesc(FArchive &Ar, FCameraShakeModifierAssetDesc &Desc);
+
+struct FSkeletalPoseDesc
+{
+	FString BoneName;
+	int32 ParentIndex = -1;
+	FTransform LocalTransform;
+};
+
+class USkeletalPoseAssetData : public UAssetData
+{
+public:
+	DECLARE_CLASS(USkeletalPoseAssetData, UAssetData)
+	
+	FString SourcePath;
+	TArray<FSkeletalPoseDesc> Bones;
+	
+	void Serialize(FArchive &Ar) override;
+};
+
 uint64 GenerateAssetEditorId();
