@@ -601,14 +601,14 @@ void UWorld::BeginPlay()
 	if (bHasBegunPlay) return;
 	bHasBegunPlay = true;
 
-	SpawnGameMode();
+	// SpawnGameMode();
 
 	for (ULevel* Level : Levels)
 	{
 		if (Level) Level->BeginPlay();
 	}
-	if (AuthorGameMode)
-		AuthorGameMode->StartPlay();
+	// if (AuthorGameMode)
+	// 	AuthorGameMode->StartPlay();
 }
 
 void UWorld::Tick(float InRawDeltaTime, ELevelTick TickType)
