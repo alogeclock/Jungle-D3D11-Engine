@@ -7,6 +7,8 @@
 
 #include <fbxsdk.h>
 
+#include <algorithm>
+#include <cctype>
 #include <cstddef>
 #include <cstring>
 #include <filesystem>
@@ -112,6 +114,81 @@ namespace
     }
 
     // FBX file texture 경로를 엔진 asset 경로 기준으로 해석한다.
+    bool StartsWithAssetPath(const FString& Path)
+    {
+        return Path.rfind("Asset/", 0) == 0 || Path.rfind("Asset\\", 0) == 0;
+    }
+
+    bool TryMakeProjectRelativePath(const std::filesystem::path& Path, FString& OutPath)
+    {
+        const std::filesystem::path ProjectRoot = std::filesystem::path(FPaths::RootDir()).lexically_normal();
+        const std::filesystem::path NormalizedPath = Path.lexically_normal();
+        const std::filesystem::path RelativePath = NormalizedPath.lexically_relative(ProjectRoot);
+
+        if (RelativePath.empty() || RelativePath.native() == L".")
+        {
+            return false;
+        }
+
+        const auto First = RelativePath.begin();
+        if (First == RelativePath.end() || *First == L"..")
+        {
+            return false;
+        }
+
+        OutPath = FPaths::ToUtf8(RelativePath.generic_wstring());
+        return true;
+    }
+
+    bool LooksLikeStaleTempTexturePath(const std::filesystem::path& Path)
+    {
+        FString GenericPath = FPaths::ToUtf8(Path.generic_wstring());
+        std::replace(GenericPath.begin(), GenericPath.end(), '\\', '/');
+        std::transform(GenericPath.begin(), GenericPath.end(), GenericPath.begin(),
+            [](unsigned char C) { return static_cast<char>(std::tolower(C)); });
+
+        return GenericPath.find("appdata/local/temp/") != FString::npos
+            || GenericPath.find("rard$") != FString::npos;
+    }
+
+    bool TryUseTextureCandidate(const std::filesystem::path& CandidatePath, FString& OutTexturePath)
+    {
+        std::error_code ErrorCode;
+        if (!std::filesystem::exists(CandidatePath, ErrorCode) || ErrorCode)
+        {
+            return false;
+        }
+
+        if (TryMakeProjectRelativePath(CandidatePath, OutTexturePath))
+        {
+            return true;
+        }
+
+        OutTexturePath = FPaths::ToUtf8(CandidatePath.lexically_normal().generic_wstring());
+        return true;
+    }
+
+    bool TryResolveTextureNearSource(const std::filesystem::path& SourceDir, const std::filesystem::path& TexturePath, FString& OutTexturePath)
+    {
+        if (TexturePath.filename().empty())
+        {
+            return false;
+        }
+
+        if (TryUseTextureCandidate(SourceDir / TexturePath.filename(), OutTexturePath))
+        {
+            return true;
+        }
+
+        const std::filesystem::path ParentFolderName = TexturePath.parent_path().filename();
+        if (!ParentFolderName.empty() && TryUseTextureCandidate(SourceDir / ParentFolderName / TexturePath.filename(), OutTexturePath))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     bool TryResolveFbxFileTexturePath(FbxFileTexture* FileTexture, const FString& SourceFbxPath, FString& OutTexturePath)
     {
         if (!FileTexture)
@@ -138,9 +215,46 @@ namespace
             return false;
         }
 
-        if (TexturePath.rfind("Asset/", 0) == 0)
+        if (StartsWithAssetPath(TexturePath))
         {
-            OutTexturePath = TexturePath;
+            std::filesystem::path AssetPath(FPaths::ToWide(TexturePath));
+            OutTexturePath = FPaths::ToUtf8(AssetPath.generic_wstring());
+            return true;
+        }
+
+        std::filesystem::path SourceDiskPath(FPaths::ToWide(SourceFbxPath));
+        if (!SourceDiskPath.is_absolute())
+        {
+            SourceDiskPath = std::filesystem::path(FPaths::RootDir()) / SourceDiskPath;
+        }
+
+        const std::filesystem::path SourceDir = SourceDiskPath.parent_path();
+        const std::filesystem::path RequestedPath(FPaths::ToWide(TexturePath));
+
+        if (RequestedPath.is_absolute())
+        {
+            if (TryMakeProjectRelativePath(RequestedPath, OutTexturePath))
+            {
+                return true;
+            }
+
+            if (TryResolveTextureNearSource(SourceDir, RequestedPath, OutTexturePath))
+            {
+                return true;
+            }
+
+            OutTexturePath = FPaths::ToUtf8(RequestedPath.lexically_normal().generic_wstring());
+            return true;
+        }
+
+        if (LooksLikeStaleTempTexturePath(RequestedPath))
+        {
+            if (TryResolveTextureNearSource(SourceDir, RequestedPath, OutTexturePath))
+            {
+                return true;
+            }
+
+            OutTexturePath = FPaths::ToUtf8(RequestedPath.filename().generic_wstring());
         }
         else
         {

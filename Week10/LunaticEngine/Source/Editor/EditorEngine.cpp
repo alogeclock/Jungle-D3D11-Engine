@@ -1123,6 +1123,7 @@ void UEditorEngine::BeginTrackedSceneChange()
 	else
 	{
 		Snapshot = FSceneHistoryBuilder::CaptureSnapshot(*this);
+		CachedTrackedSceneSnapshot = Snapshot;
 	}
 
 	PendingTrackedSceneBefore = Snapshot;

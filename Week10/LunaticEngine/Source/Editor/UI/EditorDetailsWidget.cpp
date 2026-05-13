@@ -2823,7 +2823,7 @@ void FEditorDetailsWidget::RenderPropertySection(const char *SectionName, TArray
         }
 
         int32 MutableIndex = PropIndex;
-        const bool bShouldTrackChanges = bTrackPropertyChanges && EditorEngine;
+        const bool bShouldTrackChanges = bTrackPropertyChanges && EditorEngine && ShouldTrackPropertyEditNow();
         if (bShouldTrackChanges)
         {
             EditorEngine->BeginTrackedSceneChange();
@@ -2848,6 +2848,30 @@ void FEditorDetailsWidget::RenderPropertySection(const char *SectionName, TArray
     }
 
     ImGui::PopStyleColor(7);
+}
+
+bool FEditorDetailsWidget::ShouldTrackPropertyEditNow() const
+{
+    constexpr ImGuiHoveredFlags HoverFlags =
+        ImGuiHoveredFlags_RootAndChildWindows |
+        ImGuiHoveredFlags_AllowWhenBlockedByActiveItem;
+    constexpr ImGuiFocusedFlags FocusFlags = ImGuiFocusedFlags_RootAndChildWindows;
+
+    const bool bDetailsHovered = ImGui::IsWindowHovered(HoverFlags);
+    const bool bDetailsFocused = ImGui::IsWindowFocused(FocusFlags);
+    if (ImGui::IsAnyItemActive())
+    {
+        return bDetailsHovered || bDetailsFocused;
+    }
+
+    if (!bDetailsHovered)
+    {
+        return false;
+    }
+
+    return ImGui::IsMouseDown(ImGuiMouseButton_Left)
+        || ImGui::IsMouseDown(ImGuiMouseButton_Right)
+        || ImGui::IsMouseDown(ImGuiMouseButton_Middle);
 }
 
 void FEditorPropertyWidget::PropagatePropertyChange(const FString &PropName, const TArray<AActor *> &SelectedActors)

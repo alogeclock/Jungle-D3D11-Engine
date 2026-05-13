@@ -78,6 +78,7 @@ protected:
 	void SetRenderPipeline(std::unique_ptr<IRenderPipeline> InPipeline);
 	IRenderPipeline* GetRenderPipeline() const { return RenderPipeline.get(); }
 	void WorldTick(float DeltaTime);
+	virtual bool ShouldCreateDefaultRenderPipeline() const { return true; }
 
 protected:
 	FWindowsWindow* Window = nullptr;

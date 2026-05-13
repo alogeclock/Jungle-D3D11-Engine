@@ -88,6 +88,11 @@ public:
 	void BeginTrackedTransformChange();
 	void CommitTrackedTransformChange();
 	bool CanUndoTransformChange() const;
+
+protected:
+	bool ShouldCreateDefaultRenderPipeline() const override { return false; }
+
+public:
 	bool CanRedoTransformChange() const;
 	void UndoTrackedTransformChange();
 	void RedoTrackedTransformChange();

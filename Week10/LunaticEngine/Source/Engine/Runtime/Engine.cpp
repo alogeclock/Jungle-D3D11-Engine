@@ -122,6 +122,7 @@ void UEngine::Init(FWindowsWindow* InWindow)
 		FResourceManager::Get().LoadFromDirectory(FPaths::ToUtf8(FPaths::RootDir()), Device);
 	}
 
+	if (ShouldCreateDefaultRenderPipeline())
 	{
 		SCOPE_STARTUP_STAT("RenderPipeline::Create");
 		UE_LOG_CATEGORY(Engine, Info, "[INIT] RenderPipeline::Create begin");

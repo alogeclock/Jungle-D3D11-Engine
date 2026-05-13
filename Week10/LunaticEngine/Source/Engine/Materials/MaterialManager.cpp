@@ -152,8 +152,6 @@ UMaterial* FMaterialManager::LoadMaterial(const FString& MatFilePath)
 
 	if (UMaterial* LoadedMaterial = FindLoadedMaterial(GenericPath))
 	{
-		SyncMaterialTexturesFromAsset(GenericPath, LoadedMaterial);
-		LoadedMaterial->RebuildCachedSRVs();
 		return LoadedMaterial;
 	}
 

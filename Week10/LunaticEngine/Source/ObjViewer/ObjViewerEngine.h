@@ -43,6 +43,9 @@ public:
 	FObjViewerViewportClient* GetViewportClient() { return &ViewportClient; }
 	void RenderUI(float DeltaTime);
 
+protected:
+	bool ShouldCreateDefaultRenderPipeline() const override { return false; }
+
 private:
 	FObjViewerPanel Panel;
 	FObjViewerViewportClient ViewportClient;
