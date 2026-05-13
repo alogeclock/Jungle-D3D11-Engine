@@ -91,22 +91,42 @@ namespace
 			}
 		}
 	}
-	void RestoreSkeletalMaterialOverrides(TArray<FMaterialSlot>& MaterialSlots, TArray<UMaterial*>& OverrideMaterials, const TArray<FMaterialSlot>& SavedSlots)
-	{
-		for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()) && i < static_cast<int32>(SavedSlots.size()); ++i)
-		{
-			MaterialSlots[i] = SavedSlots[i];
+}
 
-			const FString& MatPath = MaterialSlots[i].Path;
-			if (MatPath.empty() || MatPath == "None")
-			{
-				OverrideMaterials[i] = nullptr;
-			}
-			else
-			{
-				OverrideMaterials[i] = FMaterialManager::Get().GetOrCreateMaterial(MatPath);
-			}
+		if (TimeSeconds <= Curve.Keys.front().TimeSeconds)
+		{
+			return Curve.Keys.front().Value;
 		}
+
+		if (TimeSeconds >= Curve.Keys.back().TimeSeconds)
+		{
+			return Curve.Keys.back().Value;
+		}
+
+		for (int32 KeyIndex = 0; KeyIndex + 1 < static_cast<int32>(Curve.Keys.size()); ++KeyIndex)
+		{
+			const FFloatCurveKey& A = Curve.Keys[KeyIndex];
+			const FFloatCurveKey& B = Curve.Keys[KeyIndex + 1];
+			if (TimeSeconds < A.TimeSeconds || TimeSeconds > B.TimeSeconds)
+			{
+				continue;
+			}
+
+			if (A.Interpolation == EAnimationCurveInterpolation::Constant || B.TimeSeconds <= A.TimeSeconds)
+			{
+				return A.Value;
+			}
+
+			const float Alpha = std::clamp((TimeSeconds - A.TimeSeconds) / (B.TimeSeconds - A.TimeSeconds), 0.0f, 1.0f);
+			return A.Value + (B.Value - A.Value) * Alpha;
+		}
+
+		return Curve.Keys.back().Value;
+	}
+
+	float NormalizeMorphCurveWeight(float Value)
+	{
+		return std::abs(Value) > 1.0f ? Value * 0.01f : Value;
 	}
 }
 
@@ -118,6 +138,47 @@ FPrimitiveSceneProxy* USkinnedMeshComponent::CreateSceneProxy()
 void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {
 	SetSkeletalMeshInternal(InMesh, true, true);
+}
+
+int32 USkinnedMeshComponent::FindMorphTargetIndex(const FString& MorphName) const
+{
+	if (!SkeletalMesh || MorphName.empty())
+	{
+		return -1;
+	}
+
+	const FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
+	if (!Asset)
+	{
+		return -1;
+	}
+
+	for (int32 MorphIndex = 0; MorphIndex < static_cast<int32>(Asset->MorphTargets.size()); ++MorphIndex)
+	{
+		if (Asset->MorphTargets[MorphIndex].Name == MorphName)
+		{
+			return MorphIndex;
+		}
+	}
+
+	return -1;
+}
+
+void USkinnedMeshComponent::EnsureMorphTargetWeights()
+{
+	const FSkeletalMesh* Asset = SkeletalMesh ? SkeletalMesh->GetSkeletalMeshAsset() : nullptr;
+	const int32 MorphCount = Asset ? static_cast<int32>(Asset->MorphTargets.size()) : 0;
+
+	if (MorphCount <= 0)
+	{
+		MorphTargetWeights.clear();
+		return;
+	}
+
+	if (static_cast<int32>(MorphTargetWeights.size()) != MorphCount)
+	{
+		MorphTargetWeights.resize(MorphCount, 0.0f);
+	}
 }
 
 void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState)
@@ -156,6 +217,8 @@ void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool 
 	{
 		FinalizeSkeletalMeshRenderState();
 	}
+	MorphTargetWeights.clear();
+	bMorphTargetsDirty = true;
 }
 
 void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
@@ -168,7 +231,8 @@ void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
 		ComponentSpaceMatrices.clear();
 		SkinningMatrices.clear();
 	}
-
+	MorphTargetWeights.clear();
+	bMorphTargetsDirty = true;
 	bPoseDirty = true;
 	bSkinningDirty = true;
 	bBoundsDirty = true;
@@ -179,6 +243,12 @@ void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
 void USkinnedMeshComponent::FinalizeSkeletalMeshRenderState()
 {
 	MarkRenderStateDirty();
+	if (SceneProxy)
+	{
+		SceneProxy->UpdateMesh();
+		SceneProxy->UpdateTransform();
+		SceneProxy->UpdateVisibility();
+	}
 	MarkWorldBoundsDirty();
 }
 
@@ -205,6 +275,83 @@ void USkinnedMeshComponent::SetRenderLOD(uint32 LODIndex)
 	UpdateSkinnedMeshObject();
 }
 
+void USkinnedMeshComponent::SetMorphTarget(const FString& MorphName, float Value)
+{
+	const int32 MorphIndex = FindMorphTargetIndex(MorphName);
+	if (MorphIndex < 0)
+		return;
+
+	EnsureMorphTargetWeights();
+
+	const float Clamped = std::clamp(Value, 0.0f, 1.0f);
+	if (std::abs(MorphTargetWeights[MorphIndex] - Clamped) <= 1.0e-4f)
+		return;
+
+	MorphTargetWeights[MorphIndex] = Clamped;
+	bMorphTargetsDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
+	UpdateSkinnedMeshObject();
+	MarkProxyDirty(EDirtyFlag::Mesh);
+	MarkWorldBoundsDirty();
+}
+
+float USkinnedMeshComponent::GetMorphTarget(const FString& MorphName) const
+{
+	const int32 MorphIndex = FindMorphTargetIndex(MorphName);
+	if (MorphIndex < 0 || MorphIndex >= static_cast<int32>(MorphTargetWeights.size()))
+	{
+		return 0.0f;
+	}
+
+	return MorphTargetWeights[MorphIndex];
+}
+
+void USkinnedMeshComponent::ClearMorphTargets()
+{
+	bool bHadActiveMorph = false;
+	for (const float Weight : MorphTargetWeights)
+	{
+		if (std::abs(Weight) > 1.0e-4f)
+		{
+			bHadActiveMorph = true;
+			break;
+		}
+	}
+
+	if (!bHadActiveMorph)
+	{
+		return;
+	}
+
+	std::fill(MorphTargetWeights.begin(), MorphTargetWeights.end(), 0.0f);
+	bMorphTargetsDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
+	UpdateSkinnedMeshObject();
+	MarkProxyDirty(EDirtyFlag::Mesh);
+	MarkWorldBoundsDirty();
+}
+
+void USkinnedMeshComponent::ApplyAnimationFloatCurves(const FSkeletalAnimationClip& Clip, float TimeSeconds)
+{
+	for (const FAnimationFloatCurve& Curve : Clip.FloatCurves)
+	{
+		if (Curve.Type != EAnimationFloatCurveType::MorphTarget)
+		{
+			continue;
+		}
+
+		const FString& TargetName = Curve.TargetName.empty() ? Curve.Name : Curve.TargetName;
+		if (TargetName.empty())
+		{
+			continue;
+		}
+
+		SetMorphTarget(TargetName, NormalizeMorphCurveWeight(EvaluateFloatCurve(Curve, TimeSeconds)));
+	}
+}
+
 void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 {
 	if (!bCPUSkinning || !MeshObject)
@@ -212,7 +359,7 @@ void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 		return;
 	}
 
-	MeshObject->Update(SkinningMatrices);
+	MeshObject->Update(SkinningMatrices, &MorphTargetWeights);
 	FVector SkinnedCenter;
 	FVector SkinnedExtent;
 	if (MeshObject->GetSkinnedLocalBounds(SkinnedCenter, SkinnedExtent))
@@ -224,6 +371,7 @@ void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 		MarkWorldBoundsDirty();
 	}
 
+	bMorphTargetsDirty = false;
 	bSkinningDirty = false;
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }

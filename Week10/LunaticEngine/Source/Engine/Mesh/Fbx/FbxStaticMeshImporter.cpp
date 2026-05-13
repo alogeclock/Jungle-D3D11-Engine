@@ -122,6 +122,9 @@ private:
         const FFbxMeshImportSpace ImportSpace = bBakeNodeGlobalTransform ? FFbxMeshImportSpace::FromStaticMeshNode(MeshNode)
         : MakeLocalMeshImportSpace(MeshNode);
 
+        TArray<FString> UVSetNames;
+        FFbxGeometryReader::GetUVSetNames(Mesh, UVSetNames);
+
         int32 PolygonVertexIndex = 0;
 
         for (int32 PolygonIndex = 0; PolygonIndex < Mesh->GetPolygonCount(); ++PolygonIndex)
@@ -130,7 +133,7 @@ private:
 
             if (PolygonSize == 3)
             {
-                AppendTriangle(MeshNode, Mesh, PolygonIndex, PolygonVertexIndex, ImportSpace);
+                AppendTriangle(MeshNode, Mesh, PolygonIndex, PolygonVertexIndex, ImportSpace, UVSetNames);
             }
 
             PolygonVertexIndex += PolygonSize;
@@ -138,10 +141,18 @@ private:
     }
 
     // AppendTriangle 함수의 FBX import 내부 처리 단계를 수행한다.
-    void AppendTriangle(FbxNode* MeshNode, FbxMesh* Mesh, int32 PolygonIndex, int32 PolygonVertexStartIndex, const FFbxMeshImportSpace& ImportSpace)
+    void AppendTriangle(
+        FbxNode*                   MeshNode,
+        FbxMesh*                   Mesh,
+        int32                      PolygonIndex,
+        int32                      PolygonVertexStartIndex,
+        const FFbxMeshImportSpace& ImportSpace,
+        const TArray<FString>&     UVSetNames
+        )
     {
         FFbxTriangleSample Triangle;
-        if (!FFbxGeometryReader::ReadTriangleSample(Mesh, PolygonIndex, ImportSpace, Triangle))
+        const char* UV0SetName = UVSetNames.empty() ? nullptr : UVSetNames[0].c_str();
+        if (!FFbxGeometryReader::ReadTriangleSample(Mesh, PolygonIndex, ImportSpace, UV0SetName, Triangle))
         {
             return;
         }
@@ -155,7 +166,7 @@ private:
 
         for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
         {
-            const uint32 VertexIndex = AddCornerVertex(Mesh, PolygonIndex, CornerIndex, PolygonVertexStartIndex + CornerIndex, Triangle, ImportSpace);
+            const uint32 VertexIndex = AddCornerVertex(Mesh, PolygonIndex, CornerIndex, PolygonVertexStartIndex + CornerIndex, Triangle, ImportSpace, UVSetNames);
 
             SectionBuild->Indices.push_back(VertexIndex);
         }
@@ -174,7 +185,8 @@ private:
         int32                      CornerIndex,
         int32                      PolygonVertexIndex,
         const FFbxTriangleSample&  Triangle,
-        const FFbxMeshImportSpace& ImportSpace
+        const FFbxMeshImportSpace& ImportSpace,
+        const TArray<FString>&     UVSetNames
         )
     {
         const int32 ControlPointIndex = Triangle.ControlPointIndices[CornerIndex];
@@ -186,13 +198,13 @@ private:
         Vertex.color   = FFbxGeometryReader::ReadVertexColor(Mesh, ControlPointIndex, PolygonVertexIndex);
         Vertex.tangent = ReadCornerTangent(Mesh, ControlPointIndex, PolygonVertexIndex, Triangle, ImportSpace, Vertex.normal);
 
-        const int32 RawUVSetCount = FFbxGeometryReader::GetUVSetCount(Mesh);
+        const int32 RawUVSetCount = static_cast<int32>(UVSetNames.size());
         const int32 UVCount       = (std::min)(RawUVSetCount, static_cast<int32>(MAX_STATIC_MESH_UV_CHANNELS));
         Vertex.NumUVs             = static_cast<uint8>(UVCount > 0 ? UVCount : 1);
 
         for (int32 UVIndex = 1; UVIndex < static_cast<int32>(Vertex.NumUVs); ++UVIndex)
         {
-            Vertex.ExtraUV[UVIndex - 1] = FFbxGeometryReader::ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, UVIndex);
+            Vertex.ExtraUV[UVIndex - 1] = FFbxGeometryReader::ReadUVByName(Mesh, PolygonIndex, CornerIndex, UVSetNames[UVIndex].c_str());
         }
 
         bool bAddedNewVertex = false;

@@ -3,6 +3,7 @@
 #include "Render/Skeletal/SkeletalMeshObject.h"
 #include "Render/Resource/Buffer.h"
 #include "Render/Types/VertexTypes.h"
+#include "Mesh/SkeletalMeshAsset.h"
 
 #include <memory>
 
@@ -19,18 +20,18 @@ public:
     FSkeletalMeshObjectCPU(const FSkeletalMesh* InSource, ID3D11Device* InDevice);
     ~FSkeletalMeshObjectCPU() override = default;
 
-    void Update(const TArray<FMatrix>& InSkinningMatrices) override;
+	virtual void Update(const TArray<FMatrix>& InSkinningMatrices, const TArray<float>* MorphTargetWeights = nullptr) override;
     void SetLOD(uint32 LODIndex) override;
     uint32 GetLOD() const override { return CurrentLOD; }
     FMeshBuffer* GetMeshBuffer() const override { return MeshBuffer.get(); }
     FMeshDataView GetMeshDataView() const override { return FMeshDataView::FromMeshData(SkinnedMeshData); }
     bool GetSkinnedLocalBounds(FVector& OutCenter, FVector& OutExtent) const override;
-
+	void ApplyMorphTargets(uint32 LODIndex,	const TArray<float>* Weights,TArray<FSkeletalVertex>& InOutVertices);
 private:
     const FSkeletalMesh* Source = nullptr;
     ID3D11Device* Device = nullptr;
     uint32 CurrentLOD = 0;
-
+	TArray<FSkeletalVertex> MorphedVertices;
     // 매 프레임 채워지는 CPU 캐시 FVertexPNCTT 포맷 (StaticMesh와 동일 InputLayout 재활용)
     TMeshData<FVertexPNCTT> SkinnedMeshData;
 

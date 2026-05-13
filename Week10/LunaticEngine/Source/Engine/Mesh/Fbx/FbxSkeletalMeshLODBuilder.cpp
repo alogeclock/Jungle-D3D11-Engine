@@ -51,11 +51,11 @@ bool FFbxSkeletalMeshLODBuilder::Build(
             continue;
         }
 
-        FbxStringList MeshUVSetNames;
-        Mesh->GetUVSetNames(MeshUVSetNames);
-        for (int32 UVSetIndex = 0; UVSetIndex < MeshUVSetNames.GetCount() && OutLOD.UVSetNames.size() < MAX_SKELETAL_MESH_UV_CHANNELS; ++UVSetIndex)
+        TArray<FString> MeshUVSetNames;
+        FFbxGeometryReader::GetUVSetNames(Mesh, MeshUVSetNames);
+        for (int32 UVSetIndex = 0; UVSetIndex < static_cast<int32>(MeshUVSetNames.size()) && OutLOD.UVSetNames.size() < MAX_SKELETAL_MESH_UV_CHANNELS; ++UVSetIndex)
         {
-            const FString UVSetName = MeshUVSetNames[UVSetIndex].Buffer() ? FString(MeshUVSetNames[UVSetIndex].Buffer()) : FString();
+            const FString& UVSetName = MeshUVSetNames[UVSetIndex];
             if (std::find(OutLOD.UVSetNames.begin(), OutLOD.UVSetNames.end(), UVSetName) == OutLOD.UVSetNames.end())
             {
                 OutLOD.UVSetNames.push_back(UVSetName);
@@ -128,7 +128,9 @@ bool FFbxSkeletalMeshLODBuilder::Build(
 
                 Positions[CornerIndex] = FFbxTransformUtils::TransformPositionByMatrix(LocalPosition, MeshToReference);
 
-                UV0[CornerIndex] = FFbxGeometryReader::ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, 0);
+                UV0[CornerIndex] = MeshUVSetNames.empty()
+                    ? FVector2(0.0f, 0.0f)
+                    : FFbxGeometryReader::ReadUVByName(Mesh, PolygonIndex, CornerIndex, MeshUVSetNames[0].c_str());
             }
 
             const FVector FallbackNormal  = FFbxGeometryReader::ComputeTriangleNormal(Positions[0], Positions[1], Positions[2]);
@@ -160,7 +162,7 @@ bool FFbxSkeletalMeshLODBuilder::Build(
                     bGeneratedNormal = true;
                 }
 
-                const int32 RawUVSetCount = FFbxGeometryReader::GetUVSetCount(Mesh);
+                const int32 RawUVSetCount = static_cast<int32>(MeshUVSetNames.size());
 
                 if (RawUVSetCount <= 0)
                 {
@@ -174,9 +176,14 @@ bool FFbxSkeletalMeshLODBuilder::Build(
 
                 Vertex.NumUVs = static_cast<uint8>(UVCount > 0 ? UVCount : 1);
 
-                for (int32 UVIndex = 0; UVIndex < static_cast<int32>(Vertex.NumUVs); ++UVIndex)
+                if (RawUVSetCount <= 0)
                 {
-                    Vertex.UV[UVIndex] = FFbxGeometryReader::ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, UVIndex);
+                    Vertex.UV[0] = FVector2(0.0f, 0.0f);
+                }
+
+                for (int32 UVIndex = 0; UVIndex < UVCount; ++UVIndex)
+                {
+                    Vertex.UV[UVIndex] = FFbxGeometryReader::ReadUVByName(Mesh, PolygonIndex, CornerIndex, MeshUVSetNames[UVIndex].c_str());
                 }
 
                 Vertex.Color = FFbxGeometryReader::ReadVertexColor(Mesh, ControlPointIndex, CurrentPolygonVertexIndex);

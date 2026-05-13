@@ -39,6 +39,10 @@ public:
     // mesh의 UV set 개수를 반환한다.
     static int32 GetUVSetCount(FbxMesh* Mesh);
 
+    static void GetUVSetNames(FbxMesh* Mesh, TArray<FString>& OutUVSetNames);
+
+    static FVector2 ReadUVByName(FbxMesh* Mesh, int32 PolygonIndex, int32 CornerIndex, const char* UVSetName);
+
     // 지정 UV channel에서 polygon corner UV를 읽는다.
     static FVector2 ReadUVByChannel(FbxMesh* Mesh, int32 PolygonIndex, int32 CornerIndex, int32 ChannelIndex);
 
@@ -60,4 +64,5 @@ public:
 
     // triangulated polygon 하나의 control point, position, UV, fallback normal/tangent를 샘플링한다.
     static bool ReadTriangleSample(FbxMesh* Mesh, int32 PolygonIndex, const FFbxMeshImportSpace& ImportSpace, FFbxTriangleSample& OutTriangle);
+    static bool ReadTriangleSample(FbxMesh* Mesh, int32 PolygonIndex, const FFbxMeshImportSpace& ImportSpace, const char* UV0SetName, FFbxTriangleSample& OutTriangle);
 };

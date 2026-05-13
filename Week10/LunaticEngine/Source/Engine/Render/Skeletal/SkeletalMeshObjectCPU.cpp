@@ -22,6 +22,112 @@ namespace
 		}
 		return T.Normalized();
 	}
+
+	void ApplyMorphDelta(FSkeletalVertex& Vertex, const FMorphTargetDelta& Delta, float Scale)
+	{
+		Vertex.Pos += Delta.PositionDelta * Scale;
+		Vertex.Normal += Delta.NormalDelta * Scale;
+		Vertex.Tangent += Delta.TangentDelta * Scale;
+	}
+
+	void ApplyShapeDeltasScaled(const FMorphTargetShape& Shape, float Scale, TArray<FSkeletalVertex>& InOutVertices)
+	{
+		if (std::abs(Scale) <= 1.0e-4f)
+		{
+			return;
+		}
+
+		for (const FMorphTargetDelta& Delta : Shape.Deltas)
+		{
+			if (Delta.VertexIndex < InOutVertices.size())
+			{
+				ApplyMorphDelta(InOutVertices[Delta.VertexIndex], Delta, Scale);
+			}
+		}
+	}
+
+	void ApplyInterpolatedShapeDeltas(const FMorphTargetShape& A, const FMorphTargetShape& B, float Alpha, TArray<FSkeletalVertex>& InOutVertices)
+	{
+		size_t AIndex = 0;
+		size_t BIndex = 0;
+
+		while (AIndex < A.Deltas.size() || BIndex < B.Deltas.size())
+		{
+			const bool bUseA =
+				BIndex >= B.Deltas.size() ||
+				(AIndex < A.Deltas.size() && A.Deltas[AIndex].VertexIndex < B.Deltas[BIndex].VertexIndex);
+			const bool bUseB =
+				AIndex >= A.Deltas.size() ||
+				(BIndex < B.Deltas.size() && B.Deltas[BIndex].VertexIndex < A.Deltas[AIndex].VertexIndex);
+
+			if (bUseA)
+			{
+				const FMorphTargetDelta& Delta = A.Deltas[AIndex++];
+				if (Delta.VertexIndex < InOutVertices.size())
+				{
+					ApplyMorphDelta(InOutVertices[Delta.VertexIndex], Delta, 1.0f - Alpha);
+				}
+				continue;
+			}
+
+			if (bUseB)
+			{
+				const FMorphTargetDelta& Delta = B.Deltas[BIndex++];
+				if (Delta.VertexIndex < InOutVertices.size())
+				{
+					ApplyMorphDelta(InOutVertices[Delta.VertexIndex], Delta, Alpha);
+				}
+				continue;
+			}
+
+			const FMorphTargetDelta& DeltaA = A.Deltas[AIndex++];
+			const FMorphTargetDelta& DeltaB = B.Deltas[BIndex++];
+			const uint32 VertexIndex = DeltaA.VertexIndex;
+			if (VertexIndex >= InOutVertices.size())
+			{
+				continue;
+			}
+
+			FSkeletalVertex& Vertex = InOutVertices[VertexIndex];
+			Vertex.Pos += DeltaA.PositionDelta + (DeltaB.PositionDelta - DeltaA.PositionDelta) * Alpha;
+			Vertex.Normal += DeltaA.NormalDelta + (DeltaB.NormalDelta - DeltaA.NormalDelta) * Alpha;
+			Vertex.Tangent += DeltaA.TangentDelta + (DeltaB.TangentDelta - DeltaA.TangentDelta) * Alpha;
+		}
+	}
+
+	void ApplyMorphLODByWeight(const FMorphTargetLOD& MorphLOD, float RuntimeWeight, TArray<FSkeletalVertex>& InOutVertices)
+	{
+		if (MorphLOD.Shapes.empty())
+		{
+			return;
+		}
+
+		const float FbxWeight = std::clamp(RuntimeWeight, 0.0f, 1.0f) * 100.0f;
+		const FMorphTargetShape& FirstShape = MorphLOD.Shapes.front();
+		if (MorphLOD.Shapes.size() == 1 || FbxWeight <= FirstShape.FullWeight)
+		{
+			const float Denom = std::max(std::abs(FirstShape.FullWeight), 1.0e-4f);
+			ApplyShapeDeltasScaled(FirstShape, std::clamp(FbxWeight / Denom, 0.0f, 1.0f), InOutVertices);
+			return;
+		}
+
+		for (int32 ShapeIndex = 1; ShapeIndex < static_cast<int32>(MorphLOD.Shapes.size()); ++ShapeIndex)
+		{
+			const FMorphTargetShape& PrevShape = MorphLOD.Shapes[ShapeIndex - 1];
+			const FMorphTargetShape& NextShape = MorphLOD.Shapes[ShapeIndex];
+			if (FbxWeight > NextShape.FullWeight)
+			{
+				continue;
+			}
+
+			const float Denom = std::max(NextShape.FullWeight - PrevShape.FullWeight, 1.0e-4f);
+			const float Alpha = std::clamp((FbxWeight - PrevShape.FullWeight) / Denom, 0.0f, 1.0f);
+			ApplyInterpolatedShapeDeltas(PrevShape, NextShape, Alpha, InOutVertices);
+			return;
+		}
+
+		ApplyShapeDeltasScaled(MorphLOD.Shapes.back(), 1.0f, InOutVertices);
+	}
 }
 FSkeletalMeshObjectCPU::FSkeletalMeshObjectCPU(const FSkeletalMesh* InSource, ID3D11Device* InDevice)
 	: Source(InSource), Device(InDevice)
@@ -37,6 +143,9 @@ FSkeletalMeshObjectCPU::FSkeletalMeshObjectCPU(const FSkeletalMesh* InSource, ID
 
 	MeshBuffer = std::make_unique<FMeshBuffer>();
 }
+
+
+
 
 void FSkeletalMeshObjectCPU::SetLOD(uint32 LODIndex)
 {
@@ -63,15 +172,21 @@ void FSkeletalMeshObjectCPU::SetLOD(uint32 LODIndex)
 	}
 }
 
-void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
+void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices, const TArray<float>* MorphTargetWeights)
 {
+
 	if (!Source || Source->LODModels.empty() || !Device) return;
 	const uint32 LODIndex = std::min<uint32>(CurrentLOD, static_cast<uint32>(Source->LODModels.size() - 1));
 	const FSkeletalMeshLOD& LOD = Source->LODModels[LODIndex];
 
 	if (SkinnedMeshData.Vertices.size() != LOD.Vertices.size())
 		SkinnedMeshData.Vertices.resize(LOD.Vertices.size());
+	if (MorphedVertices.size() != LOD.Vertices.size())
+		MorphedVertices.resize(LOD.Vertices.size());
 
+	std::copy(LOD.Vertices.begin(), LOD.Vertices.end(), MorphedVertices.begin());
+
+	ApplyMorphTargets(LODIndex, MorphTargetWeights, MorphedVertices);
 	TArray<FMatrix> NormalMatrices;
 	NormalMatrices.reserve(InSkinningMatrices.size());
 	for (const FMatrix& SkinningMatrix : InSkinningMatrices)
@@ -84,7 +199,7 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 	FVector LocalMax(0.0f, 0.0f, 0.0f);
 	for (size_t v = 0; v < LOD.Vertices.size(); v++)
 	{
-		const FSkeletalVertex& In = LOD.Vertices[v];
+		const FSkeletalVertex& In = MorphedVertices[v];
 
 		FVector Pos(0, 0, 0), Normal(0, 0, 0), Tangent(0, 0, 0);
 		float TotalWeight = 0.0f;
@@ -185,4 +300,38 @@ bool FSkeletalMeshObjectCPU::GetSkinnedLocalBounds(FVector& OutCenter, FVector& 
 	OutCenter = SkinnedLocalCenter;
 	OutExtent = SkinnedLocalExtent;
 	return true;
+}
+
+void FSkeletalMeshObjectCPU::ApplyMorphTargets(uint32 LODIndex, const TArray<float>* Weights, TArray<FSkeletalVertex>& InOutVertices)
+{
+	if (!Source || !Weights)
+		return;
+
+	const int32 MorphCount = std::min<int32>(static_cast<int32>(Source->MorphTargets.size()),static_cast<int32>(Weights->size()));
+
+	for (int32 MorphIndex = 0; MorphIndex < MorphCount; ++MorphIndex)
+	{
+		const float Weight = (*Weights)[MorphIndex];
+		if (std::abs(Weight) <= 1.0e-4f)
+			continue;
+
+		const FMorphTarget& Morph = Source->MorphTargets[MorphIndex];
+		if (LODIndex >= Morph.LODModels.size())
+			continue;
+
+		const FMorphTargetLOD& MorphLOD = Morph.LODModels[LODIndex];
+		if (MorphLOD.Shapes.empty())
+			continue;
+
+		ApplyMorphLODByWeight(MorphLOD, Weight, InOutVertices);
+	}
+
+	for (FSkeletalVertex& V : InOutVertices)
+	{
+		V.Normal = NormalizeOrFallback(V.Normal, FVector(0.0f, 0.0f, 1.0f));
+
+		FVector T(V.Tangent.X, V.Tangent.Y, V.Tangent.Z);
+		T = OrthogonalizeTangent(T, V.Normal);
+		V.Tangent = FVector4(T.X, T.Y, T.Z, V.Tangent.W);
+	}
 }

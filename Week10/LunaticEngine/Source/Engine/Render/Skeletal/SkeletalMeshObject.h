@@ -18,7 +18,8 @@ public:
 	virtual ~FSkeletalMeshObject() = default;
 
 	// Skinning matrix 팔레트를 받아 정점 변형 + GPU 업로드
-	virtual void Update(const TArray<FMatrix>& InSkinningMatrices) = 0;
+	virtual void Update(const TArray<FMatrix>& InSkinningMatrices,const TArray<float>* MorphTargetWeights = nullptr	) = 0;
+
 
 	virtual void SetLOD(uint32 LODIndex) { (void)LODIndex; }
 	virtual uint32 GetLOD() const { return 0; }

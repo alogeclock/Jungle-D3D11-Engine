@@ -289,6 +289,7 @@ void FScene::ClearFrameData()
 	DebugAABBs.clear();
 	DebugLines.clear();
 	ForegroundDebugLines.clear();
+	ForegroundDebugSolidTriangles.clear();
 	Grid = {};
 	LightVisualizationSettings = {};
 }
@@ -331,6 +332,11 @@ void FScene::AddDebugLine(const FVector& Start, const FVector& End, const FColor
 void FScene::AddForegroundDebugLine(const FVector& Start, const FVector& End, const FColor& Color)
 {
 	ForegroundDebugLines.push_back({ Start, End, Color });
+}
+
+void FScene::AddForegroundDebugSolidTriangle(const FVector& V0, const FVector& V1, const FVector& V2, const FVector4& Color)
+{
+	ForegroundDebugSolidTriangles.push_back({ V0, V1, V2, Color });
 }
 
 void FScene::SetGrid(float Spacing, int32 HalfLineCount)
