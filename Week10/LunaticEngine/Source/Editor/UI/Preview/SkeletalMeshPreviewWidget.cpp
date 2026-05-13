@@ -320,12 +320,12 @@ void FSkeletalMeshPreviewWidget::DrawBoneHierarchyPanel()
         return;
     }
 
-	if (DrawPoseButton("Save Pose", ImVec4(0.82f, 0.12f, 0.11f, 1.0f)))
+	if (DrawPoseButton("Save Pose", ImVec4(0.10f, 0.54f, 0.96f, 1.0f)))
 	{
 		SavePose();
 	}
 	ImGui::SameLine();
-	if (DrawPoseButton("Load Pose", ImVec4(0.16f, 0.58f, 0.25f, 1.0f)))
+	if (DrawPoseButton("Load Pose", ImVec4(0.10f, 0.54f, 0.96f, 1.0f)))
 	{
 		LoadPose();
 	}

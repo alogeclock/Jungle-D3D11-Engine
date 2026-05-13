@@ -1,12 +1,14 @@
 #include "Component/SkeletalMeshComponent.h"
 
 #include "Asset/AssetData.h"
+#include "Asset/AssetFileSerializer.h"
 #include "Collision/RayUtils.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/SkeletalMeshManager.h"
 #include "Object/ObjectFactory.h"
+#include "Platform/Paths.h"
 #include "Render/Proxy/DirtyFlag.h"
 #include "Render/Scene/FScene.h"
 #include "Serialization/Archive.h"
@@ -17,12 +19,23 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <filesystem>
 
 IMPLEMENT_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
 namespace
 {
 	bool IsNonePath(const FString& Path) { return Path.empty() || Path == "None"; }
+
+	std::filesystem::path ResolveProjectPath(const FString& Path)
+	{
+		std::filesystem::path ResolvedPath(FPaths::ToWide(Path));
+		if (!ResolvedPath.is_absolute())
+		{
+			ResolvedPath = std::filesystem::path(FPaths::RootDir()) / ResolvedPath;
+		}
+		return ResolvedPath.lexically_normal();
+	}
 
 	constexpr int32 BoneArmatureRingSegments = 12;
 	constexpr float BoneArmatureMinLength = 0.001f;
@@ -641,6 +654,22 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 
 	if (std::strcmp(PropertyName, "Skeletal Mesh") == 0)
 		SetSkeletalMesh(IsNonePath(SkeletalMeshPath) ? nullptr : FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshPath));
+	else if (std::strcmp(PropertyName, "Skeletal Pose") == 0)
+	{
+		if (!IsNonePath(SkeletalPosePath))
+		{
+			FString Error;
+			UAssetData* LoadedAsset = FAssetFileSerializer::LoadAssetFromFile(ResolveProjectPath(SkeletalPosePath), &Error);
+			if (USkeletalPoseAssetData* PoseAsset = Cast<USkeletalPoseAssetData>(LoadedAsset))
+			{
+				ApplyLocalPose(PoseAsset->Bones);
+			}
+			if (LoadedAsset)
+			{
+				UObjectManager::Get().DestroyObject(LoadedAsset);
+			}
+		}
+	}
 	else if (std::strncmp(PropertyName, "Element ", 8) == 0)
 	{
 		const int32 idx = std::atoi(&PropertyName[8]);
