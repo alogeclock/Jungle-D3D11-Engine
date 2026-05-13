@@ -24,10 +24,10 @@ namespace
 	bool IsNonePath(const FString& Path) { return Path.empty() || Path == "None"; }
 
 	constexpr float BoneArmatureMinLength = 0.001f;
-	constexpr float BoneArmatureRadiusRatio = 0.10f;
+	constexpr float BoneArmatureRadiusRatio = 0.030f;
 	constexpr float BoneArmatureMinRadius = 0.001f;
-	constexpr float BoneArmatureMaxRadius = 5.0f;
-	constexpr float BoneArmatureBaseBias = 0.18f;
+	constexpr float BoneArmatureMaxRadius = 0.75f;
+	constexpr float BoneArmatureBaseBias = 0.22f;
 	constexpr float BoneJointRadiusRatio = 0.035f;
 
 	struct FBoneArmatureFrame
@@ -140,39 +140,35 @@ namespace
 
 	void AddUnrealStyleArmatureBody(FScene& Scene, const FBoneArmatureFrame& Frame, const FColor& BodyColor)
 	{
-		constexpr int32 Segments = 8;
-		const FVector BaseCenter = GetArmatureBaseCenter(Frame);
-		const FVector EndCenter = Frame.End - Frame.Axis * (Frame.Length * 0.08f);
-		const float EndRadius = Frame.Radius * 0.18f;
-
-		FVector Base[Segments];
-		FVector End[Segments];
-		for (int32 Segment = 0; Segment < Segments; ++Segment)
+		const FVector WidePoint = GetArmatureBaseCenter(Frame);
+		const float Pull = Frame.Length * 0.045f;
+		const FVector Equator[4] =
 		{
-			const float A = (static_cast<float>(Segment) / static_cast<float>(Segments)) * 6.28318530718f;
-			const FVector RingDir = Frame.Right * std::cos(A) + Frame.Up * std::sin(A);
-			Base[Segment] = BaseCenter + RingDir * Frame.Radius;
-			End[Segment] = EndCenter + RingDir * EndRadius;
-		}
+			WidePoint + Frame.Axis * Pull + Frame.Right * Frame.Radius,
+			WidePoint - Frame.Axis * Pull + Frame.Up * Frame.Radius,
+			WidePoint + Frame.Axis * Pull - Frame.Right * Frame.Radius,
+			WidePoint - Frame.Axis * Pull - Frame.Up * Frame.Radius
+		};
 
-		for (int32 Segment = 0; Segment < Segments; ++Segment)
+		for (int32 Index = 0; Index < 4; ++Index)
 		{
-			const int32 Next = (Segment + 1) % Segments;
-			AddSolidArmatureQuad(Scene, Base[Segment], Base[Next], End[Next], End[Segment], BodyColor);
-			AddSolidArmatureTriangle(Scene, Frame.Start, Base[Segment], Base[Next], BodyColor);
-			AddSolidArmatureTriangle(Scene, Frame.End, End[Next], End[Segment], BodyColor);
+			const FVector& Current = Equator[Index];
+			const FVector& Next = Equator[(Index + 1) % 4];
+			AddSolidArmatureTriangle(Scene, Frame.Start, Current, Next, BodyColor);
+			AddSolidArmatureTriangle(Scene, Frame.End, Next, Current, BodyColor);
 		}
 	}
 
 	void AddArmatureBodyTriangles(const FBoneArmatureFrame& Frame, TArray<FVector>& OutVertices)
 	{
 		const FVector WidePoint = GetArmatureBaseCenter(Frame);
+		const float Pull = Frame.Length * 0.045f;
 		const FVector Equator[4] =
 		{
-			WidePoint + Frame.Right * Frame.Radius,
-			WidePoint + Frame.Up * Frame.Radius,
-			WidePoint - Frame.Right * Frame.Radius,
-			WidePoint - Frame.Up * Frame.Radius
+			WidePoint + Frame.Axis * Pull + Frame.Right * Frame.Radius,
+			WidePoint - Frame.Axis * Pull + Frame.Up * Frame.Radius,
+			WidePoint + Frame.Axis * Pull - Frame.Right * Frame.Radius,
+			WidePoint - Frame.Axis * Pull - Frame.Up * Frame.Radius
 		};
 
 		for (int32 Index = 0; Index < 4; ++Index)
@@ -208,6 +204,68 @@ namespace
 
 		OutDistance = Closest;
 		return bHit;
+	}
+
+	void AddSimpleSolidBoneVisual(FScene& Scene, const FVector& Start, const FVector& End, bool bSelected)
+	{
+		FBoneArmatureFrame Frame;
+		if (!MakeBoneArmatureFrame(Start, End, Frame))
+		{
+			return;
+		}
+
+		const FColor BodyColor = bSelected ? FColor(255, 205, 64, 235) : FColor(90, 165, 235, 195);
+		const FColor JointColor = bSelected ? FColor(255, 238, 130, 245) : FColor(178, 220, 255, 210);
+
+		AddUnrealStyleArmatureBody(Scene, Frame, BodyColor);
+		AddArmatureJoint(Scene, Frame, Start, JointColor, bSelected);
+		AddArmatureJoint(Scene, Frame, End, JointColor, bSelected);
+	}
+
+	float DistanceSquaredPointToRay(const FVector& Point, const FRay& Ray, float* OutRayT = nullptr)
+	{
+		const FVector ToPoint = Point - Ray.Origin;
+		const float RayT = std::max(0.0f, ToPoint.Dot(Ray.Direction));
+		if (OutRayT)
+		{
+			*OutRayT = RayT;
+		}
+
+		const FVector Closest = Ray.Origin + Ray.Direction * RayT;
+		return (Point - Closest).Dot(Point - Closest);
+	}
+
+	float DistanceSquaredRayToSegment(const FRay& Ray, const FVector& SegmentStart, const FVector& SegmentEnd, float* OutRayT = nullptr)
+	{
+		const FVector U = Ray.Direction;
+		const FVector V = SegmentEnd - SegmentStart;
+		const FVector W = Ray.Origin - SegmentStart;
+		const float A = U.Dot(U);
+		const float B = U.Dot(V);
+		const float C = V.Dot(V);
+		const float D = U.Dot(W);
+		const float E = V.Dot(W);
+		const float Denom = A * C - B * B;
+
+		float RayT = 0.0f;
+		float SegmentT = 0.0f;
+		if (Denom > 1.0e-6f)
+		{
+			RayT = (B * E - C * D) / Denom;
+			SegmentT = (A * E - B * D) / Denom;
+		}
+
+		RayT = std::max(0.0f, RayT);
+		SegmentT = std::clamp(SegmentT, 0.0f, 1.0f);
+
+		const FVector ClosestRay = Ray.Origin + U * RayT;
+		const FVector ClosestSegment = SegmentStart + V * SegmentT;
+		const FVector Diff = ClosestRay - ClosestSegment;
+		if (OutRayT)
+		{
+			*OutRayT = RayT;
+		}
+		return Diff.Dot(Diff);
 	}
 }
 
@@ -262,28 +320,9 @@ void USkeletalMeshComponent::ContributeVisuals(FScene& Scene) const
 		const FVector ParentWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(ParentIndex).GetLocation());
 		const FVector BoneWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(BoneIndex).GetLocation());
 		const bool bSelected = BoneIndex == SelectedBoneIndex || ParentIndex == SelectedBoneIndex;
-		FBoneArmatureFrame Frame;
-		if (!MakeBoneArmatureFrame(ParentWorld, BoneWorld, Frame))
-		{
-			continue;
-		}
-
-		const FColor BodyColor = bSelected ? FColor(255, 170, 35, 255) : FColor(120, 190, 255, 210);
-		AddUnrealStyleArmatureBody(Scene, Frame, BodyColor);
-
-		if (!DrawnJoints[ParentIndex])
-		{
-			const bool bParentSelected = ParentIndex == SelectedBoneIndex;
-			AddArmatureJoint(Scene, Frame, ParentWorld, bParentSelected ? FColor(255, 235, 120, 255) : FColor(210, 230, 255, 230), bParentSelected);
-			DrawnJoints[ParentIndex] = true;
-		}
-
-		if (!DrawnJoints[BoneIndex])
-		{
-			const bool bBoneSelected = BoneIndex == SelectedBoneIndex;
-			AddArmatureJoint(Scene, Frame, BoneWorld, bBoneSelected ? FColor(255, 235, 120, 255) : FColor(210, 230, 255, 230), bBoneSelected);
-			DrawnJoints[BoneIndex] = true;
-		}
+		AddSimpleSolidBoneVisual(Scene, ParentWorld, BoneWorld, bSelected);
+		DrawnJoints[ParentIndex] = true;
+		DrawnJoints[BoneIndex] = true;
 	}
 }
 
@@ -406,10 +445,26 @@ int32 USkeletalMeshComponent::PickBoneArmature(const FRay& Ray, float* OutDistan
 		const FVector BoneWorld = ComponentWorld.TransformPositionWithW(GetBoneMatrix(BoneIndex).GetLocation());
 
 		FBoneArmatureFrame Frame;
+		if (!MakeBoneArmatureFrame(ParentWorld, BoneWorld, Frame))
+		{
+			continue;
+		}
+
 		float HitDistance = FLT_MAX;
-		if (MakeBoneArmatureFrame(ParentWorld, BoneWorld, Frame) &&
-			RaycastArmatureFrame(Ray, Frame, HitDistance) &&
-			HitDistance < BestDistance)
+		const bool bHitSolidBody = RaycastArmatureFrame(Ray, Frame, HitDistance);
+		if (!bHitSolidBody)
+		{
+			const float BoneDistanceSq = DistanceSquaredRayToSegment(Ray, ParentWorld, BoneWorld, &HitDistance);
+			const float JointDistanceSq = std::min(DistanceSquaredPointToRay(ParentWorld, Ray), DistanceSquaredPointToRay(BoneWorld, Ray));
+			const float PickRadius = ClampFloat(Frame.Radius * 0.75f, 0.04f, 0.55f);
+			const float PickRadiusSq = PickRadius * PickRadius;
+			if (BoneDistanceSq > PickRadiusSq && JointDistanceSq > PickRadiusSq)
+			{
+				continue;
+			}
+		}
+
+		if (HitDistance < BestDistance)
 		{
 			BestDistance = HitDistance;
 			BestBoneIndex = BoneIndex;
