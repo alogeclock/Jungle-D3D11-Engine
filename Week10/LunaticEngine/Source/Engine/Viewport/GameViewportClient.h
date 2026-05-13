@@ -73,7 +73,7 @@ private:
 	void OnSprintCompleted(const FInputActionValue& Value);
 
 	void SetCursorCaptured(bool bCaptured);
-	void ApplyCursorClip();`
+	void ApplyCursorClip();
 
 	FViewport* Viewport = nullptr;
 	HWND OwnerHWnd = nullptr;
