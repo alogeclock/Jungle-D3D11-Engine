@@ -415,7 +415,11 @@ void FLevelEditorViewportClient::SetupFrameContext(FFrameContext& OutFrame, UCam
 {
 	OutFrame.ClearViewportResources();
 	const FMinimalViewInfo* ActivePOV = nullptr;
-	if (InWorld)
+	const UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine);
+	const bool bUseSpectatorCamera =
+		EditorEngine && EditorEngine->IsPIEPossessedMode() && EditorEngine->GetGameViewportClient() &&
+		EditorEngine->GetGameViewportClient()->IsSpectatorCameraMovementEnabled();
+	if (InWorld && !bUseSpectatorCamera)
 	{
 		if (AGameModeBase* GameMode = InWorld->GetAuthGameMode())
 		{

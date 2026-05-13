@@ -16,7 +16,7 @@ class FProjectSettings : public TSingleton<FProjectSettings>
 	struct FShadowOption
 	{
 		bool bEnabled = true;
-		uint32 CSMResolution       = 2048;	// Directional Light CSM cascade 해상도
+		uint32 CSMResolution       = 4096;	// Directional Light CSM cascade 해상도
 		uint32 SpotAtlasResolution = 4096;	// Spot Light Atlas page 해상도
 		uint32 PointAtlasResolution = 4096;	// Point Light Atlas page 해상도
 		uint32 MaxSpotAtlasPages   = 4;		// Spot Light Atlas 최대 page 수

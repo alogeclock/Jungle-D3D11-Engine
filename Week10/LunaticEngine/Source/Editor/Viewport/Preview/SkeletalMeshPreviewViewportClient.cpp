@@ -5,20 +5,16 @@
 #include "Component/SceneComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "Core/RayTypes.h"
-#include "Editor/Settings/EditorSettings.h"
 #include "Engine/Input/InputManager.h"
 #include "Engine/Input/InputRouter.h"
 #include "Engine/Input/InputSystem.h"
 #include "GameFramework/AActor.h"
 #include "GameFramework/World.h"
-#include "Math/MathUtils.h"
 #include "Math/Quat.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Viewport/Viewport.h"
 
 #include "ImGui/imgui.h"
-
-#include <cfloat>
 
 namespace
 {
@@ -268,7 +264,7 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 
 	if (PreviewGizmo->IsHolding())
 	{
-		const FEditorSettings& Settings = FEditorSettings::Get();
+		const FPreviewSettings& Settings = GetPreviewSettings();
 		const bool bForceLocalForScale = PreviewGizmo->GetMode() == EGizmoMode::Scale;
 		PreviewGizmo->SetWorldSpace(bForceLocalForScale ? false : (Settings.CoordSystem == EEditorCoordSystem::World));
 		PreviewGizmo->SetSnapSettings(
@@ -294,7 +290,7 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 	PreviewGizmoTarget->SetRelativeScale(BoneComponentTransform->Scale);
 	PreviewGizmo->SetTarget(PreviewGizmoTarget);
 
-	const FEditorSettings& Settings = FEditorSettings::Get();
+	const FPreviewSettings& Settings = GetPreviewSettings();
 	const bool bForceLocalForScale = PreviewGizmo->GetMode() == EGizmoMode::Scale;
 	PreviewGizmo->SetWorldSpace(bForceLocalForScale ? false : (Settings.CoordSystem == EEditorCoordSystem::World));
 	PreviewGizmo->SetSnapSettings(

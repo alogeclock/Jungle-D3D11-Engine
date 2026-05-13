@@ -316,6 +316,7 @@
     <ClCompile Include="Source\Editor\History\SceneHistoryBuilder.cpp" />
     <ClCompile Include="Source\Editor\Selection\SelectionManager.cpp" />
     <ClCompile Include="Source\Editor\Settings\EditorSettings.cpp" />
+    <ClCompile Include="Source\Editor\Settings\PreviewSettings.cpp" />
     <ClCompile Include="Source\Editor\Subsystem\OverlayStatSystem.cpp" />
     <ClCompile Include="Source\Editor\UI\EditorCommonWidgetUtils.cpp" />
     <ClCompile Include="Source\Editor\UI\EditorConsoleWidget.cpp" />
@@ -616,6 +617,7 @@
     <ClInclude Include="Source\Editor\PIE\PIETypes.h" />
     <ClInclude Include="Source\Editor\Selection\SelectionManager.h" />
     <ClInclude Include="Source\Editor\Settings\EditorSettings.h" />
+    <ClInclude Include="Source\Editor\Settings\PreviewSettings.h" />
     <ClInclude Include="Source\Editor\Subsystem\OverlayStatSystem.h" />
     <ClInclude Include="Source\Editor\UI\CurveEditor.h" />
     <ClInclude Include="Source\Editor\UI\EditorAccentColor.h" />

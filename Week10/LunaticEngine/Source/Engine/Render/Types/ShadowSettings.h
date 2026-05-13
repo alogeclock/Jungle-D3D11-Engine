@@ -86,7 +86,7 @@ public:
 
 	// 기본값 상수(CSM 전용)
 	static constexpr uint32 kDefaultCSMResolution = 2048;
-	static constexpr float  kDefaultCSMSplitLambda = 0.85f;
+	static constexpr float  kDefaultCSMSplitLambda = 0.70f;
 	static constexpr float  kDefaultDirectionalShadowDistance = 300.0f;
 	static constexpr float  kDefaultDirectionalShadowCasterDistance = 500.0f;
 	static constexpr bool   kDefaultCSMBlendEnabled = false;

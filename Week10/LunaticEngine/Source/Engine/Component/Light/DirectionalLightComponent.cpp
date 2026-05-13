@@ -63,6 +63,15 @@ namespace
 	}
 }
 
+UDirectionalLightComponent::UDirectionalLightComponent()
+{
+	ShadowResolutionScale = 1.0f;
+	ShadowBias = 0.0001f;
+	ShadowSlopeBias = 0.0001f;
+	ShadowNormalBias = 0.0060f;
+	ShadowSharpen = 0.67f;
+}
+
 void UDirectionalLightComponent::ContributeSelectedVisuals(FScene& Scene) const
 {
 	FVector WorldPos = GetWorldLocation();

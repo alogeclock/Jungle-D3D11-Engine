@@ -38,12 +38,12 @@ void ARunnerGameMode::StartPlay()
 		return;
 	}
 
-	//CameraManager = GetPlayerCameraManager();
-	//if (!CameraManager) 
-	//{
-	//	UE_LOG("[RunnerGameMode] PlayerCameraManager spawn failed");
-	//	return;
-	//}
+	CameraManager = GetPlayerCameraManager();
+	if (!CameraManager) 
+	{
+		UE_LOG("[RunnerGameMode] PlayerCameraManager spawn failed");
+		return;
+	}
 
 	MapManager->Initialize(PlayerPawn);
 }
