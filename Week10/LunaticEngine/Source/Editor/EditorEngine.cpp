@@ -22,6 +22,8 @@
 #include "Engine/Input/InputRouter.h"
 #include "Engine/Input/InputSystem.h"
 #include "GameFramework/AActor.h"
+#include "GameFramework/GameModeBase.h"
+#include "GameFramework/PawnActor.h"
 #include "Materials/MaterialManager.h"
 #include "Engine/Platform/Paths.h"
 #include "Core/AsciiUtils.h"
@@ -132,6 +134,31 @@ UCameraComponent* EnsurePIEActiveCamera(UWorld* World, const FPerspectiveCameraD
 
 	World->SetActiveCamera(Cam);
 	return Cam;
+}
+
+bool HasGameplayCamera(UWorld* World)
+{
+	if (!World)
+	{
+		return false;
+	}
+
+	AGameModeBase* GameMode = World->GetAuthGameMode();
+	APawnActor* SpawnedPawn = GameMode ? GameMode->GetSpawnedPawn() : nullptr;
+	if (!SpawnedPawn)
+	{
+		return false;
+	}
+
+	for (UActorComponent* Comp : SpawnedPawn->GetComponents())
+	{
+		if (Cast<UCameraComponent>(Comp))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool ImportAssetFile(
@@ -470,6 +497,7 @@ bool UEditorEngine::LoadScene(const FString& InSceneReference)
 		{
 			PIEViewportClient->Possess(GameCamera);
 		}
+		PIEViewportClient->SetSpectatorCameraMovementEnabled(!HasGameplayCamera(Context->World));
 	}
 
 	FNotificationManager::Get().AddNotification("Loaded scene: " + InSceneReference, ENotificationType::Success, 2.0f);
@@ -761,19 +789,14 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 		Pipeline->OnSceneCleared();
 	}
 
-	// 활성 뷰포트 카메라를 PIE 월드의 ActiveCamera로  설정 —
-	//    LOD 갱신 등에서 ActiveCamera를 참조하므로 BeginPlay 전 placeholder가 필요.
-	//    BeginPlay 이후에는 GameMode/PlayerController가 possess한 카메라가 있으면
-	//    그 쪽으로 교체되고, 없으면 씬 안의 첫 CameraComponent로 교체된다 
-	UCameraComponent* PlaceholderCamera = nullptr;
-	if (FLevelEditorViewportClient* ActiveVC = ViewportLayout.GetActiveViewport())
-	{
-		if (UCameraComponent* VCCamera = ActiveVC->GetCamera())
-		{
-			PlaceholderCamera = VCCamera;
-			PIEWorld->SetActiveCamera(VCCamera);
-		}
-	}
+	FPerspectiveCameraData FallbackCameraData;
+	FallbackCameraData.Location = Info.SavedViewportCamera.Location;
+	FallbackCameraData.Rotation = Info.SavedViewportCamera.Rotation.ToVector();
+	FallbackCameraData.FOV = Info.SavedViewportCamera.CameraState.FOV;
+	FallbackCameraData.NearClip = Info.SavedViewportCamera.CameraState.NearZ;
+	FallbackCameraData.FarClip = Info.SavedViewportCamera.CameraState.FarZ;
+	FallbackCameraData.bValid = Info.SavedViewportCamera.bValid;
+	UCameraComponent* PIEFallbackCamera = EnsurePIEActiveCamera(PIEWorld, FallbackCameraData);
 
 	// 6) Selection을 PIE 월드 기준으로 재바인딩 — 에디터 액터를 가리킨 채로 두면
 	//    픽킹(=PIE 월드) / outliner / outline 렌더가 모두 어긋난다.
@@ -796,7 +819,6 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 		FViewport* InitialViewport = nullptr;
 		if (FLevelEditorViewportClient* ActiveVC = ViewportLayout.GetActiveViewport())
 		{
-			InitialTargetCamera = ActiveVC->GetCamera() ? ActiveVC->GetCamera() : InitialTargetCamera;
 			InitialViewport = ActiveVC->GetViewport();
 			PIEViewportClient->SetCursorClipRect(ActiveVC->GetViewportScreenRect());
 		}
@@ -818,25 +840,14 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 	//    (레벨에 GameMode가 지정되지 않은 Playground) 씬 안에 미리 배치된
 	//    첫 CameraComponent를 찾아 ActiveCamera로 사용한다. GameEngine::LoadLevel과
 	//    동일한 폴백 — Editor VC 카메라가 PIE에서 그대로 보이는 버그를 막기 위한 것
-	if (PIEWorld->GetActiveCamera() == PlaceholderCamera)
+	if (PIEWorld->GetActiveCamera() == PIEFallbackCamera)
 	{
-		UCameraComponent* SceneCamera = nullptr;
-		for (AActor* Actor : PIEWorld->GetActors())
+		if (UCameraComponent* SceneCamera = FindFirstCameraComponent(PIEWorld))
 		{
-			if (!Actor) continue;
-			for (UActorComponent* Comp : Actor->GetComponents())
+			if (SceneCamera != PIEFallbackCamera)
 			{
-				if (UCameraComponent* Cam = Cast<UCameraComponent>(Comp))
-				{
-					SceneCamera = Cam;
-					break;
-				}
+				PIEWorld->SetActiveCamera(SceneCamera);
 			}
-			if (SceneCamera) break;
-		}
-		if (SceneCamera)
-		{
-			PIEWorld->SetActiveCamera(SceneCamera);
 		}
 	}
 
@@ -846,6 +857,7 @@ void UEditorEngine::StartPlayInEditorSession(const FRequestPlaySessionParams& Pa
 		{
 			PIEViewportClient->Possess(GameCamera);
 		}
+		PIEViewportClient->SetSpectatorCameraMovementEnabled(!HasGameplayCamera(PIEWorld));
 	}
 }
 
@@ -975,9 +987,15 @@ void UEditorEngine::SyncGameViewportPIEControlState(bool bPossessedMode)
 	}
 
 	PIEViewportClient->SetPIEPossessedInputEnabled(bPossessedMode);
+	PIEViewportClient->SetSpectatorCameraMovementEnabled(false);
 	if (!bPossessedMode)
 	{
 		return;
+	}
+
+	if (!IsScoreSavePopupOpen())
+	{
+		FInputManager::Get().SetGuiCaptureOverride(false, false, false);
 	}
 
 	if (Window)
@@ -995,6 +1013,7 @@ void UEditorEngine::SyncGameViewportPIEControlState(bool bPossessedMode)
 	// CameraComponent 우선 Possess 시도
 	if (UWorld* World = GetWorld())
 	{
+		PIEViewportClient->SetSpectatorCameraMovementEnabled(!HasGameplayCamera(World));
 		if (UCameraComponent* GameCamera = World->GetActiveCamera())
 		{
 			PIEViewportClient->Possess(GameCamera);
