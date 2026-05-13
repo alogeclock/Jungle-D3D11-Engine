@@ -23,6 +23,7 @@ namespace
 	bool TryConvertMouseToViewportPixel(const ImVec2& MousePos, const FRect& ViewportRect, const FViewport* Viewport, float FallbackWidth, float FallbackHeight, float& OutX, float& OutY);
 	
 	// Update Transform
+	FQuat ExtractRotationQuatNoScale(const FMatrix& Matrix);
 	FQuat GetStableWorldRotation(const USceneComponent* Component);
 	FQuat GetComponentSpaceRotation(const USceneComponent* WorldComponent, const USceneComponent* ComponentSpaceOwner);
 	
@@ -278,12 +279,11 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 	}
 
 	const FMatrix MeshWorldMatrix = PreviewComponent->GetWorldMatrix();
-	const FQuat MeshWorldRotation = GetStableWorldRotation(PreviewComponent);
 
 	// WorldLocation = MeshWorldMatrix * BoneLocalLocation
 	const FVector BoneWorldLocation = MeshWorldMatrix.TransformPositionWithW(BoneComponentTransform->Location);
-	// WorldRotation = MeshWorldRotation * BoneLocalRotation (Parent * Relative)
-	const FQuat BoneWorldRotation = (MeshWorldRotation * BoneComponentTransform->Rotation).GetNormalized();
+	// Row-vector convention: BoneWorld = BoneComponent * MeshWorld.
+	const FQuat BoneWorldRotation = ExtractRotationQuatNoScale(BoneComponentTransform->ToMatrix() * MeshWorldMatrix);
 
 	PreviewGizmoTarget->SetWorldLocation(BoneWorldLocation);
 	PreviewGizmoTarget->SetWorldRotation(BoneWorldRotation);
@@ -513,7 +513,29 @@ namespace
 		return true;
 	}
 
-	// 부모-자식 계층 구조를 가진 컴포넌트의 최종 월드 공간 기준 회전값을 재귀적으로 구합니다.
+	FQuat ExtractRotationQuatNoScale(const FMatrix& Matrix)
+	{
+		auto NormalizeAxis = [](const FVector& Axis, const FVector& Fallback) -> FVector
+		{
+			const float Length = Axis.Length();
+			return Length > 1.0e-6f ? Axis / Length : Fallback;
+		};
+
+		FMatrix RotationMatrix = FMatrix::Identity;
+		const FVector XAxis = NormalizeAxis(FVector(Matrix.M[0][0], Matrix.M[0][1], Matrix.M[0][2]), FVector(1.0f, 0.0f, 0.0f));
+		const FVector YAxis = NormalizeAxis(FVector(Matrix.M[1][0], Matrix.M[1][1], Matrix.M[1][2]), FVector(0.0f, 1.0f, 0.0f));
+		const FVector ZAxis = NormalizeAxis(FVector(Matrix.M[2][0], Matrix.M[2][1], Matrix.M[2][2]), FVector(0.0f, 0.0f, 1.0f));
+
+		RotationMatrix.M[0][0] = XAxis.X; RotationMatrix.M[0][1] = XAxis.Y; RotationMatrix.M[0][2] = XAxis.Z;
+		RotationMatrix.M[1][0] = YAxis.X; RotationMatrix.M[1][1] = YAxis.Y; RotationMatrix.M[1][2] = YAxis.Z;
+		RotationMatrix.M[2][0] = ZAxis.X; RotationMatrix.M[2][1] = ZAxis.Y; RotationMatrix.M[2][2] = ZAxis.Z;
+
+		FQuat Rotation = RotationMatrix.ToQuat();
+		Rotation.Normalize();
+		return Rotation;
+	}
+
+	// 부모-자식 계층 구조를 가진 컴포넌트의 최종 월드 공간 기준 회전값을 구합니다.
 	FQuat GetStableWorldRotation(const USceneComponent* Component)
 	{
 		if (!Component)
@@ -521,27 +543,23 @@ namespace
 			return FQuat::Identity;
 		}
 
-		FQuat RelativeRotation = Component->GetRelativeQuat();
-		if (const USceneComponent* Parent = Component->GetParent())
-		{
-			// World = ParentWorld * RelativeRotation
-			return (GetStableWorldRotation(Parent) * RelativeRotation).GetNormalized();
-		}
-		return RelativeRotation.GetNormalized();
+		return ExtractRotationQuatNoScale(Component->GetWorldMatrix());
 	}
 
 	// 메쉬의 발 밑 또는 골반(Root)을 기준으로 한 회전값을 측정합니다.
 	FQuat GetComponentSpaceRotation(const USceneComponent* WorldComponent, const USceneComponent* ComponentSpaceOwner)
 	{
-		const FQuat WorldRotation = GetStableWorldRotation(WorldComponent);
-		if (!ComponentSpaceOwner)
+		if (!WorldComponent)
 		{
-			return WorldRotation;
+			return FQuat::Identity;
 		}
 
-		const FQuat ComponentWorldRotation = GetStableWorldRotation(ComponentSpaceOwner);
-		// Relative = ComponentWorldInverse * World. Since A * B means B first, ComponentWorldInverse must be on the left.
-		return (ComponentWorldRotation.Inverse() * WorldRotation).GetNormalized();
+		if (!ComponentSpaceOwner)
+		{
+			return GetStableWorldRotation(WorldComponent);
+		}
+
+		return ExtractRotationQuatNoScale(WorldComponent->GetWorldMatrix() * ComponentSpaceOwner->GetWorldInverseMatrix());
 	}
 
 	// Matrix에서 FTransform 정보를 추출하되, 회전값은 Quaternion으로 변환한 뒤 추출합니다.
