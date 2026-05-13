@@ -229,13 +229,14 @@ void FSkeletalMeshObjectCPU::ApplyMorphTargets(uint32 LODIndex, const TArray<flo
 			V.Normal += Delta.NormalDelta * Weight;
 			V.Tangent += Delta.TangentDelta * Weight;
 		}
-		for (FSkeletalVertex& V : InOutVertices)
-		{
-			V.Normal = NormalizeOrFallback(V.Normal, FVector(0.0f, 0.0f, 1.0f));
+	}
 
-			FVector T(V.Tangent.X, V.Tangent.Y, V.Tangent.Z);
-			T = OrthogonalizeTangent(T, V.Normal);
-			V.Tangent = FVector4(T.X, T.Y, T.Z, V.Tangent.W);
-		}
+	for (FSkeletalVertex& V : InOutVertices)
+	{
+		V.Normal = NormalizeOrFallback(V.Normal, FVector(0.0f, 0.0f, 1.0f));
+
+		FVector T(V.Tangent.X, V.Tangent.Y, V.Tangent.Z);
+		T = OrthogonalizeTangent(T, V.Normal);
+		V.Tangent = FVector4(T.X, T.Y, T.Z, V.Tangent.W);
 	}
 }

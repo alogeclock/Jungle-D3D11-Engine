@@ -104,11 +104,43 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 
 int32 USkinnedMeshComponent::FindMorphTargetIndex(const FString& MorphName) const
 {
-	return int32();
+	if (!SkeletalMesh || MorphName.empty())
+	{
+		return -1;
+	}
+
+	const FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
+	if (!Asset)
+	{
+		return -1;
+	}
+
+	for (int32 MorphIndex = 0; MorphIndex < static_cast<int32>(Asset->MorphTargets.size()); ++MorphIndex)
+	{
+		if (Asset->MorphTargets[MorphIndex].Name == MorphName)
+		{
+			return MorphIndex;
+		}
+	}
+
+	return -1;
 }
 
 void USkinnedMeshComponent::EnsureMorphTargetWeights()
 {
+	const FSkeletalMesh* Asset = SkeletalMesh ? SkeletalMesh->GetSkeletalMeshAsset() : nullptr;
+	const int32 MorphCount = Asset ? static_cast<int32>(Asset->MorphTargets.size()) : 0;
+
+	if (MorphCount <= 0)
+	{
+		MorphTargetWeights.clear();
+		return;
+	}
+
+	if (static_cast<int32>(MorphTargetWeights.size()) != MorphCount)
+	{
+		MorphTargetWeights.resize(MorphCount, 0.0f);
+	}
 }
 
 void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState)
@@ -221,11 +253,38 @@ void USkinnedMeshComponent::SetMorphTarget(const FString& MorphName, float Value
 
 float USkinnedMeshComponent::GetMorphTarget(const FString& MorphName) const
 {
-	return 0.0f;
+	const int32 MorphIndex = FindMorphTargetIndex(MorphName);
+	if (MorphIndex < 0 || MorphIndex >= static_cast<int32>(MorphTargetWeights.size()))
+	{
+		return 0.0f;
+	}
+
+	return MorphTargetWeights[MorphIndex];
 }
 
 void USkinnedMeshComponent::ClearMorphTargets()
 {
+	bool bHadActiveMorph = false;
+	for (const float Weight : MorphTargetWeights)
+	{
+		if (std::abs(Weight) > 1.0e-4f)
+		{
+			bHadActiveMorph = true;
+			break;
+		}
+	}
+
+	if (!bHadActiveMorph)
+	{
+		return;
+	}
+
+	std::fill(MorphTargetWeights.begin(), MorphTargetWeights.end(), 0.0f);
+	bMorphTargetsDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
+	MarkProxyDirty(EDirtyFlag::Mesh);
+	MarkWorldBoundsDirty();
 }
 
 void USkinnedMeshComponent::UpdateSkinnedMeshObject()
@@ -247,6 +306,7 @@ void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 		MarkWorldBoundsDirty();
 	}
 
+	bMorphTargetsDirty = false;
 	bSkinningDirty = false;
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }

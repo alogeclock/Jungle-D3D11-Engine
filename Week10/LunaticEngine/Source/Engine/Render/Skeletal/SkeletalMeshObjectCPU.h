@@ -3,6 +3,7 @@
 #include "Render/Skeletal/SkeletalMeshObject.h"
 #include "Render/Resource/Buffer.h"
 #include "Render/Types/VertexTypes.h"
+#include "Mesh/SkeletalMeshAsset.h"
 
 #include <memory>
 
