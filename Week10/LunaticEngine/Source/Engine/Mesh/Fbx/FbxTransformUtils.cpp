@@ -155,30 +155,7 @@ void FFbxTransformUtils::DecomposeMatrixPreserveMirror(const FMatrix& Matrix, FV
 
     if (Determinant3x3(Matrix) < 0.0f)
     {
-        int32 MirrorAxis   = 0;
-        float LargestScale = std::fabs(OutScale.X);
-        if (std::fabs(OutScale.Y) > LargestScale)
-        {
-            MirrorAxis   = 1;
-            LargestScale = std::fabs(OutScale.Y);
-        }
-        if (std::fabs(OutScale.Z) > LargestScale)
-        {
-            MirrorAxis = 2;
-        }
-
-        if (MirrorAxis == 0)
-        {
-            OutScale.X = -OutScale.X;
-        }
-        else if (MirrorAxis == 1)
-        {
-            OutScale.Y = -OutScale.Y;
-        }
-        else
-        {
-            OutScale.Z = -OutScale.Z;
-        }
+        OutScale.X = -OutScale.X;
     }
 
     FMatrix     RotationMatrix = FMatrix::Identity;

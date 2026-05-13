@@ -1,4 +1,4 @@
-﻿#include "SkinnedMeshComponent.h"
+#include "SkinnedMeshComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 
 #include <algorithm>
@@ -159,41 +159,35 @@ namespace
 			.M[1][2] * Matrix.M[2][0]) + Matrix.M[0][2] * (Matrix.M[1][0] * Matrix.M[2][1] - Matrix.M[1][1] * Matrix.M[2][0]);
 	}
 
-	FTransform TransformFromMatrixPreserveMirror(const FMatrix& Matrix)
+
+	FVector AbsVector(const FVector& Value)
+	{
+		return FVector(std::fabs(Value.X), std::fabs(Value.Y), std::fabs(Value.Z));
+	}
+
+	FVector MirrorSignFromMatrix(const FMatrix& Matrix)
+	{
+		return Determinant3x3(Matrix) < 0.0f ? FVector(-1.0f, 1.0f, 1.0f) : FVector::OneVector;
+	}
+
+	struct FDecomposedMatrix
+	{
+		FTransform Transform;
+		FVector MirrorSign = FVector::OneVector;
+	};
+
+	FDecomposedMatrix DecomposeMatrixForEditableTransform(const FMatrix& Matrix)
 	{
 		constexpr float Epsilon = 1.0e-6f;
-		FVector         Scale   = Matrix.GetScale();
 
-		if (Determinant3x3(Matrix) < 0.0f)
-		{
-			int32 MirrorAxis   = 0;
-			float LargestScale = std::fabs(Scale.X);
-			if (std::fabs(Scale.Y) > LargestScale)
-			{
-				MirrorAxis   = 1;
-				LargestScale = std::fabs(Scale.Y);
-			}
-			if (std::fabs(Scale.Z) > LargestScale)
-			{
-				MirrorAxis = 2;
-			}
+		FDecomposedMatrix Result;
+		Result.MirrorSign = MirrorSignFromMatrix(Matrix);
 
-			if (MirrorAxis == 0)
-			{
-				Scale.X = -Scale.X;
-			}
-			else if (MirrorAxis == 1)
-			{
-				Scale.Y = -Scale.Y;
-			}
-			else
-			{
-				Scale.Z = -Scale.Z;
-			}
-		}
+		const FVector PositiveScale = Matrix.GetScale();
+		const FVector SignedScale = PositiveScale * Result.MirrorSign;
 
-		FMatrix     RotationMatrix = FMatrix::Identity;
-		const float ScaleValues[3] = { Scale.X, Scale.Y, Scale.Z };
+		FMatrix RotationMatrix = FMatrix::Identity;
+		const float ScaleValues[3] = { SignedScale.X, SignedScale.Y, SignedScale.Z };
 		for (int32 Row = 0; Row < 3; ++Row)
 		{
 			const float RowScale = ScaleValues[Row];
@@ -207,8 +201,28 @@ namespace
 
 		FQuat Rotation = RotationMatrix.ToQuat();
 		Rotation.Normalize();
-		return FTransform(Matrix.GetLocation(), Rotation, Scale);
+		Result.Transform = FTransform(Matrix.GetLocation(), Rotation, PositiveScale);
+		return Result;
 	}
+
+	FTransform TransformFromMatrixPreserveMirror(const FMatrix& Matrix)
+	{
+		return DecomposeMatrixForEditableTransform(Matrix).Transform;
+	}
+
+	FMatrix MakeLocalMatrixWithHiddenMirror(const FTransform& Transform, const FVector& MirrorSign)
+	{
+		return FTransform(Transform.Location, Transform.Rotation.GetNormalized(), AbsVector(Transform.Scale) * MirrorSign).ToMatrix();
+	}
+
+	void FoldNegativeScaleIntoMirror(FTransform& Transform, FVector& MirrorSign)
+	{
+		if (Transform.Scale.X < 0.0f) MirrorSign.X = -1.0f;
+		if (Transform.Scale.Y < 0.0f) MirrorSign.Y = -1.0f;
+		if (Transform.Scale.Z < 0.0f) MirrorSign.Z = -1.0f;
+		Transform.Scale = AbsVector(Transform.Scale);
+	}
+
 }
 
 FPrimitiveSceneProxy* USkinnedMeshComponent::CreateSceneProxy()
@@ -308,6 +322,7 @@ void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
 	if (bClearPose)
 	{
 		BoneSpaceTransforms.clear();
+		BoneSpaceMirrorSigns.clear();
 		ComponentSpaceTransforms.clear();
 		ComponentSpaceMatrices.clear();
 		SkinningMatrices.clear();
@@ -674,6 +689,7 @@ void USkinnedMeshComponent::PostDuplicate()
 	{
 		TArray<FMaterialSlot> SavedSlots = MaterialSlots;
 		TArray<FTransform> SavedBoneSpaceTransforms = BoneSpaceTransforms;
+		TArray<FVector> SavedBoneSpaceMirrorSigns = BoneSpaceMirrorSigns;
 
 		USkeletalMesh* Loaded = FAssetManager::Get().LoadSkeletalMesh({ SkeletalMeshPath });
 		if (Loaded)
@@ -687,6 +703,10 @@ void USkinnedMeshComponent::PostDuplicate()
 			if (BoneCount > 0 && static_cast<int32>(SavedBoneSpaceTransforms.size()) == BoneCount)
 			{
 				BoneSpaceTransforms = SavedBoneSpaceTransforms;
+				if (static_cast<int32>(SavedBoneSpaceMirrorSigns.size()) == BoneCount)
+				{
+					BoneSpaceMirrorSigns = SavedBoneSpaceMirrorSigns;
+				}
 				RefreshBoneTransforms();
 				UpdateSkinnedMeshObject();
 			}
@@ -783,10 +803,13 @@ void USkinnedMeshComponent::RefreshBoneTransforms()
 	if ((int32)BoneSpaceTransforms.size() != N)
 	{
 		BoneSpaceTransforms.clear();
+		BoneSpaceMirrorSigns.clear();
 		for (int32 i = 0; i < N; ++i)
 		{
 			const FMatrix& M = Sk.Bones[i].LocalBindPose;
-			BoneSpaceTransforms.push_back(TransformFromMatrixPreserveMirror(M));
+			const FDecomposedMatrix Decomposed = DecomposeMatrixForEditableTransform(M);
+			BoneSpaceTransforms.push_back(Decomposed.Transform);
+			BoneSpaceMirrorSigns.push_back(Decomposed.MirrorSign);
 		}
 	}
 	FillComponentSpaceTransforms();
@@ -810,30 +833,49 @@ void USkinnedMeshComponent::FillComponentSpaceTransforms()
 	if ((int32)BoneSpaceTransforms.size() != N)
 	{
 		BoneSpaceTransforms.clear();
+		BoneSpaceMirrorSigns.clear();
 		for (int32 i = 0; i < N; ++i)
 		{
 			const FMatrix& M = Sk.Bones[i].LocalBindPose;
-			BoneSpaceTransforms.push_back(TransformFromMatrixPreserveMirror(M));
+			const FDecomposedMatrix Decomposed = DecomposeMatrixForEditableTransform(M);
+			BoneSpaceTransforms.push_back(Decomposed.Transform);
+			BoneSpaceMirrorSigns.push_back(Decomposed.MirrorSign);
 		}
 	}
 
 	ComponentSpaceTransforms.resize(N);
 	ComponentSpaceMatrices.assign(N, FMatrix::Identity);
 	SkinningMatrices.assign(N, FMatrix::Identity);
+	if ((int32)BoneSpaceMirrorSigns.size() != N)
+	{
+		BoneSpaceMirrorSigns.clear();
+		BoneSpaceMirrorSigns.reserve(N);
+		for (int32 i = 0; i < N; ++i)
+		{
+			BoneSpaceMirrorSigns.push_back(DecomposeMatrixForEditableTransform(Sk.Bones[i].LocalBindPose).MirrorSign);
+		}
+	}
 
 	// ParentIndex < ChildIndex 보장 → forward sweep.
 	for (int32 i = 0; i < N; ++i)
 	{
-		const FMatrix Local    = BoneSpaceTransforms[i].ToMatrix();
-		const int32   Parent   = Sk.Bones[i].ParentIndex;
-		const FMatrix ParentCS = (Parent >= 0) ? ComponentSpaceMatrices[Parent] : FMatrix::Identity;
+		FTransform& LocalTransform = BoneSpaceTransforms[i];
+		LocalTransform.Rotation.Normalize();
+		FoldNegativeScaleIntoMirror(LocalTransform, BoneSpaceMirrorSigns[i]);
+		const FMatrix LocalMatrix = MakeLocalMatrixWithHiddenMirror(LocalTransform, BoneSpaceMirrorSigns[i]);
+		const int32 Parent = Sk.Bones[i].ParentIndex;
 
-		ComponentSpaceMatrices[i] = Local * ParentCS;
-		ComponentSpaceTransforms[i] = FTransform(
-			ComponentSpaceMatrices[i].GetLocation(),
-			ComponentSpaceMatrices[i].ToQuat(),
-			ComponentSpaceMatrices[i].GetScale());
-		SkinningMatrices[i]       = Sk.Bones[i].InverseBindPose * ComponentSpaceMatrices[i];
+		if (Parent >= 0 && Parent < i)
+		{
+			ComponentSpaceMatrices[i] = LocalMatrix * ComponentSpaceMatrices[Parent];
+		}
+		else
+		{
+			ComponentSpaceMatrices[i] = LocalMatrix;
+		}
+
+		ComponentSpaceTransforms[i] = TransformFromMatrixPreserveMirror(ComponentSpaceMatrices[i]);
+		SkinningMatrices[i] = Sk.Bones[i].InverseBindPose * ComponentSpaceMatrices[i];
 	}
 
 	bPoseDirty = false;

@@ -1,4 +1,4 @@
-﻿#include "Component/SkeletalMeshComponent.h"
+#include "Component/SkeletalMeshComponent.h"
 
 #include "Asset/AssetManager.h"
 #include "Asset/AssetData.h"
@@ -61,41 +61,35 @@ namespace
 			.M[1][2] * Matrix.M[2][0]) + Matrix.M[0][2] * (Matrix.M[1][0] * Matrix.M[2][1] - Matrix.M[1][1] * Matrix.M[2][0]);
 	}
 
-	FTransform TransformFromMatrix(const FMatrix& Matrix)
+
+	FVector AbsVector(const FVector& Value)
+	{
+		return FVector(std::fabs(Value.X), std::fabs(Value.Y), std::fabs(Value.Z));
+	}
+
+	FVector MirrorSignFromMatrix(const FMatrix& Matrix)
+	{
+		return Determinant3x3(Matrix) < 0.0f ? FVector(-1.0f, 1.0f, 1.0f) : FVector::OneVector;
+	}
+
+	struct FDecomposedMatrix
+	{
+		FTransform Transform;
+		FVector MirrorSign = FVector::OneVector;
+	};
+
+	FDecomposedMatrix DecomposeMatrixForEditableTransform(const FMatrix& Matrix)
 	{
 		constexpr float Epsilon = 1.0e-6f;
-		FVector         Scale   = Matrix.GetScale();
 
-		if (Determinant3x3(Matrix) < 0.0f)
-		{
-			int32 MirrorAxis   = 0;
-			float LargestScale = std::fabs(Scale.X);
-			if (std::fabs(Scale.Y) > LargestScale)
-			{
-				MirrorAxis   = 1;
-				LargestScale = std::fabs(Scale.Y);
-			}
-			if (std::fabs(Scale.Z) > LargestScale)
-			{
-				MirrorAxis = 2;
-			}
+		FDecomposedMatrix Result;
+		Result.MirrorSign = MirrorSignFromMatrix(Matrix);
 
-			if (MirrorAxis == 0)
-			{
-				Scale.X = -Scale.X;
-			}
-			else if (MirrorAxis == 1)
-			{
-				Scale.Y = -Scale.Y;
-			}
-			else
-			{
-				Scale.Z = -Scale.Z;
-			}
-		}
+		const FVector PositiveScale = Matrix.GetScale();
+		const FVector SignedScale = PositiveScale * Result.MirrorSign;
 
-		FMatrix     RotationMatrix = FMatrix::Identity;
-		const float ScaleValues[3] = { Scale.X, Scale.Y, Scale.Z };
+		FMatrix RotationMatrix = FMatrix::Identity;
+		const float ScaleValues[3] = { SignedScale.X, SignedScale.Y, SignedScale.Z };
 		for (int32 Row = 0; Row < 3; ++Row)
 		{
 			const float RowScale = ScaleValues[Row];
@@ -109,7 +103,47 @@ namespace
 
 		FQuat Rotation = RotationMatrix.ToQuat();
 		Rotation.Normalize();
-		return FTransform(Matrix.GetLocation(), Rotation, Scale);
+		Result.Transform = FTransform(Matrix.GetLocation(), Rotation, PositiveScale);
+		return Result;
+	}
+
+	FTransform TransformFromMatrix(const FMatrix& Matrix)
+	{
+		return DecomposeMatrixForEditableTransform(Matrix).Transform;
+	}
+
+	FMatrix MakeTransformMatrixWithHiddenMirror(const FTransform& Transform, const FVector& MirrorSign)
+	{
+		return FTransform(Transform.Location, Transform.Rotation.GetNormalized(), AbsVector(Transform.Scale) * MirrorSign).ToMatrix();
+	}
+
+	void FoldNegativeScaleIntoMirror(FTransform& Transform, FVector& MirrorSign)
+	{
+		if (Transform.Scale.X < 0.0f) MirrorSign.X = -1.0f;
+		if (Transform.Scale.Y < 0.0f) MirrorSign.Y = -1.0f;
+		if (Transform.Scale.Z < 0.0f) MirrorSign.Z = -1.0f;
+		Transform.Scale = AbsVector(Transform.Scale);
+	}
+
+	FVector SafeGetMirrorSign(const TArray<FVector>& MirrorSigns, int32 BoneIndex)
+	{
+		return BoneIndex >= 0 && BoneIndex < static_cast<int32>(MirrorSigns.size()) ? MirrorSigns[BoneIndex] : FVector::OneVector;
+	}
+
+	void EnsureMirrorSignsFromSkeleton(const FSkeleton& Skeleton, TArray<FVector>& MirrorSigns)
+	{
+		const int32 BoneCount = static_cast<int32>(Skeleton.Bones.size());
+		if (static_cast<int32>(MirrorSigns.size()) == BoneCount)
+		{
+			return;
+		}
+
+		MirrorSigns.clear();
+		MirrorSigns.reserve(BoneCount);
+		for (const FBoneInfo& Bone : Skeleton.Bones)
+		{
+			MirrorSigns.push_back(DecomposeMatrixForEditableTransform(Bone.LocalBindPose).MirrorSign);
+		}
 	}
 
 	float ClampFloat(float Value, float MinValue, float MaxValue)
@@ -357,8 +391,8 @@ void USkeletalMeshComponent::ContributeVisuals(FScene& Scene) const
 
 	auto GetBoneMatrix = [&](int32 BoneIndex) -> FMatrix
 	{
-		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(ComponentSpaceTransforms.size()))
-			return ComponentSpaceTransforms[BoneIndex].ToMatrix();
+		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(ComponentSpaceMatrices.size()))
+			return ComponentSpaceMatrices[BoneIndex];
 		return Skeleton.Bones[BoneIndex].GlobalBindPose;
 	};
 
@@ -382,6 +416,30 @@ const FTransform* USkeletalMeshComponent::GetBoneLocalTransform(int32 BoneIndex)
 const FTransform* USkeletalMeshComponent::GetBoneComponentSpaceTransform(int32 BoneIndex) const
 {
 	return IsValidBoneIndex(BoneIndex) ? &ComponentSpaceTransforms[BoneIndex] : nullptr;
+}
+
+bool USkeletalMeshComponent::GetBoneComponentSpaceMatrix(int32 BoneIndex, FMatrix& OutMatrix) const
+{
+	if (!IsValidBoneIndex(BoneIndex))
+	{
+		return false;
+	}
+
+	if (BoneIndex < static_cast<int32>(ComponentSpaceMatrices.size()))
+	{
+		OutMatrix = ComponentSpaceMatrices[BoneIndex];
+		return true;
+	}
+
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	if (!MeshAsset || BoneIndex >= static_cast<int32>(MeshAsset->Skeleton.Bones.size()))
+	{
+		return false;
+	}
+
+	OutMatrix = MeshAsset->Skeleton.Bones[BoneIndex].GlobalBindPose;
+	return true;
 }
 
 void USkeletalMeshComponent::SetSelectedBoneIndex(int32 BoneIndex)
@@ -474,9 +532,9 @@ int32 USkeletalMeshComponent::PickBoneArmature(const FRay& Ray, float* OutDistan
 
 	auto GetBoneMatrix = [&](int32 BoneIndex) -> FMatrix
 	{
-		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(ComponentSpaceTransforms.size()))
+		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(ComponentSpaceMatrices.size()))
 		{
-			return ComponentSpaceTransforms[BoneIndex].ToMatrix();
+			return ComponentSpaceMatrices[BoneIndex];
 		}
 		return Skeleton.Bones[BoneIndex].GlobalBindPose;
 	};
@@ -531,9 +589,22 @@ void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTrans
 	if (BoneSpaceTransforms.size() != ComponentSpaceTransforms.size())
 		InitializeBoneTransformsFromSkeleton();
 
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	if (MeshAsset)
+	{
+		EnsureMirrorSignsFromSkeleton(MeshAsset->Skeleton, BoneSpaceMirrorSigns);
+	}
+
 	FTransform NormalizedTransform = NewTransform;
 	NormalizedTransform.Rotation.Normalize();
+	FVector MirrorSign = SafeGetMirrorSign(BoneSpaceMirrorSigns, BoneIndex);
+	FoldNegativeScaleIntoMirror(NormalizedTransform, MirrorSign);
 	BoneSpaceTransforms[BoneIndex] = NormalizedTransform;
+	if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(BoneSpaceMirrorSigns.size()))
+	{
+		BoneSpaceMirrorSigns[BoneIndex] = MirrorSign;
+	}
 	
 	MarkSkeletalPoseDirty();
 	RefreshBoneTransforms();
@@ -543,19 +614,77 @@ void USkeletalMeshComponent::SetBoneLocalTransform(int32 BoneIndex, const FTrans
 bool USkeletalMeshComponent::SetBoneComponentSpaceTransform(int32 BoneIndex, const FTransform& NewTransform)
 {
 	if (!IsValidBoneIndex(BoneIndex)) return false;
+	if (BoneSpaceTransforms.size() != ComponentSpaceTransforms.size()) InitializeBoneTransformsFromSkeleton();
 
-	const FSkeleton& Skeleton = GetSkeletalMesh()->GetSkeletalMeshAsset()->Skeleton;
-	FMatrix LocalMatrix = NewTransform.ToMatrix();
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	if (!MeshAsset) return false;
+
+	const FSkeleton& Skeleton = MeshAsset->Skeleton;
+	EnsureMirrorSignsFromSkeleton(Skeleton, BoneSpaceMirrorSigns);
+
+	FTransform EditableComponent = NewTransform;
+	EditableComponent.Rotation.Normalize();
+	EditableComponent.Scale = AbsVector(EditableComponent.Scale);
+
+	FMatrix CurrentComponentMatrix = FMatrix::Identity;
+	GetBoneComponentSpaceMatrix(BoneIndex, CurrentComponentMatrix);
+	const FVector ComponentMirrorSign = MirrorSignFromMatrix(CurrentComponentMatrix);
+	const FMatrix RequestedComponentMatrix = MakeTransformMatrixWithHiddenMirror(EditableComponent, ComponentMirrorSign);
+
+	FTransform LocalTransform = BoneSpaceTransforms[BoneIndex];
 	const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
 	if (IsValidBoneIndex(ParentIndex))
 	{
-		const FMatrix ParentMatrix = ParentIndex < static_cast<int32>(ComponentSpaceTransforms.size())
-			? ComponentSpaceTransforms[ParentIndex].ToMatrix()
+		const FMatrix ParentComponentMatrix = ParentIndex < static_cast<int32>(ComponentSpaceMatrices.size())
+			? ComponentSpaceMatrices[ParentIndex]
 			: Skeleton.Bones[ParentIndex].GlobalBindPose;
-		LocalMatrix = LocalMatrix * ParentMatrix.GetInverse();
+
+		const FMatrix RequestedLocalMatrix = RequestedComponentMatrix * ParentComponentMatrix.GetInverse();
+		const FDecomposedMatrix RequestedLocal = DecomposeMatrixForEditableTransform(RequestedLocalMatrix);
+
+		LocalTransform.Location = RequestedLocal.Transform.Location;
+		LocalTransform.Rotation = RequestedLocal.Transform.Rotation.GetNormalized();
+		LocalTransform.Scale = RequestedLocal.Transform.Scale;
+		BoneSpaceMirrorSigns[BoneIndex] = RequestedLocal.MirrorSign;
+	}
+	else
+	{
+		const FDecomposedMatrix RequestedLocal = DecomposeMatrixForEditableTransform(RequestedComponentMatrix);
+		LocalTransform = RequestedLocal.Transform;
+		BoneSpaceMirrorSigns[BoneIndex] = RequestedLocal.MirrorSign;
 	}
 
-	SetBoneLocalTransform(BoneIndex, TransformFromMatrix(LocalMatrix));
+	SetBoneLocalTransform(BoneIndex, LocalTransform);
+	return true;
+}
+
+bool USkeletalMeshComponent::SetBoneComponentSpaceLocation(int32 BoneIndex, const FVector& NewComponentLocation)
+{
+	if (!IsValidBoneIndex(BoneIndex)) return false;
+	if (BoneSpaceTransforms.size() != ComponentSpaceTransforms.size()) InitializeBoneTransformsFromSkeleton();
+
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	if (!MeshAsset) return false;
+
+	const FSkeleton& Skeleton = MeshAsset->Skeleton;
+	FTransform LocalTransform = BoneSpaceTransforms[BoneIndex];
+	const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
+	if (IsValidBoneIndex(ParentIndex))
+	{
+		const FMatrix ParentComponentMatrix = ParentIndex < static_cast<int32>(ComponentSpaceMatrices.size())
+			? ComponentSpaceMatrices[ParentIndex]
+			: Skeleton.Bones[ParentIndex].GlobalBindPose;
+
+		LocalTransform.Location = ParentComponentMatrix.GetInverse().TransformPositionWithW(NewComponentLocation);
+	}
+	else
+	{
+		LocalTransform.Location = NewComponentLocation;
+	}
+
+	SetBoneLocalTransform(BoneIndex, LocalTransform);
 	return true;
 }
 
@@ -564,16 +693,37 @@ bool USkeletalMeshComponent::SetBoneComponentSpaceRotation(int32 BoneIndex, cons
 	if (!IsValidBoneIndex(BoneIndex)) return false;
 	if (BoneSpaceTransforms.size() != ComponentSpaceTransforms.size()) InitializeBoneTransformsFromSkeleton();
 
-	const FSkeleton& Skeleton = GetSkeletalMesh()->GetSkeletalMeshAsset()->Skeleton;
+	const USkeletalMesh* Mesh = GetSkeletalMesh();
+	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+	if (!MeshAsset) return false;
+
+	const FSkeleton& Skeleton = MeshAsset->Skeleton;
+	EnsureMirrorSignsFromSkeleton(Skeleton, BoneSpaceMirrorSigns);
+
 	FQuat NewRotation = NewComponentRotation.GetNormalized();
 	const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
 	if (IsValidBoneIndex(ParentIndex))
 	{
-		FQuat ParentRot = ParentIndex < static_cast<int32>(ComponentSpaceTransforms.size())
-			? ComponentSpaceTransforms[ParentIndex].Rotation
-			: Skeleton.Bones[ParentIndex].GlobalBindPose.ToQuat();
-		ParentRot.Normalize();
-		NewRotation = (ParentRot.Inverse() * NewRotation).GetNormalized();
+		const FMatrix ParentComponentMatrix = ParentIndex < static_cast<int32>(ComponentSpaceMatrices.size())
+			? ComponentSpaceMatrices[ParentIndex]
+			: Skeleton.Bones[ParentIndex].GlobalBindPose;
+
+		FMatrix CurrentComponentMatrix = FMatrix::Identity;
+		if (!GetBoneComponentSpaceMatrix(BoneIndex, CurrentComponentMatrix))
+		{
+			return false;
+		}
+		const FTransform CurrentComponentTransform = BoneIndex < static_cast<int32>(ComponentSpaceTransforms.size())
+			? ComponentSpaceTransforms[BoneIndex]
+			: TransformFromMatrix(CurrentComponentMatrix);
+		const FVector ComponentMirrorSign = MirrorSignFromMatrix(CurrentComponentMatrix);
+
+		const FMatrix RequestedComponentMatrix = MakeTransformMatrixWithHiddenMirror(
+			FTransform(CurrentComponentTransform.Location, NewRotation, CurrentComponentTransform.Scale),
+			ComponentMirrorSign);
+		const FMatrix RequestedLocalMatrix = RequestedComponentMatrix * ParentComponentMatrix.GetInverse();
+
+		NewRotation = DecomposeMatrixForEditableTransform(RequestedLocalMatrix).Transform.Rotation.GetNormalized();
 	}
 
 	FTransform LocalTransform = BoneSpaceTransforms[BoneIndex];
@@ -596,6 +746,7 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 	ComponentSpaceMatrices.assign(BoneCount, FMatrix::Identity);
 	SkinningMatrices.assign(BoneCount, FMatrix::Identity);
 	RequiredBones.resize(BoneCount);
+	EnsureMirrorSignsFromSkeleton(*Skeleton, BoneSpaceMirrorSigns);
 
 	FVector MinBound(1e10f, 1e10f, 1e10f), MaxBound(-1e10f, -1e10f, -1e10f);
 
@@ -603,29 +754,25 @@ void USkeletalMeshComponent::RefreshBoneTransforms()
 	{
 		RequiredBones[i] = i;
 		const int32 Parent = Skeleton->Bones[i].ParentIndex;
-		const FTransform& Local = BoneSpaceTransforms[i];
+		FTransform& Local = BoneSpaceTransforms[i];
+		Local.Rotation.Normalize();
+		FoldNegativeScaleIntoMirror(Local, BoneSpaceMirrorSigns[i]);
+		const FMatrix LocalMatrix = MakeTransformMatrixWithHiddenMirror(Local, BoneSpaceMirrorSigns[i]);
 
 		if (Parent >= 0 && Parent < i)
 		{
-			const FTransform& PTransform = ComponentSpaceTransforms[Parent];
-			FTransform& OutT = ComponentSpaceTransforms[i];
-			
-			OutT.Rotation = (PTransform.Rotation * Local.Rotation).GetNormalized();
-			OutT.Location = PTransform.Location + PTransform.Rotation.RotateVector(PTransform.Scale * Local.Location);
-			OutT.Scale = PTransform.Scale * Local.Scale;
-
-			ComponentSpaceMatrices[i] = Local.ToMatrix() * ComponentSpaceMatrices[Parent];
+			ComponentSpaceMatrices[i] = LocalMatrix * ComponentSpaceMatrices[Parent];
 		}
 		else
 		{
-			ComponentSpaceTransforms[i] = Local;
-			ComponentSpaceMatrices[i] = Local.ToMatrix();
+			ComponentSpaceMatrices[i] = LocalMatrix;
 		}
 
+		ComponentSpaceTransforms[i] = TransformFromMatrix(ComponentSpaceMatrices[i]);
 		SkinningMatrices[i] = Skeleton->Bones[i].InverseBindPose * ComponentSpaceMatrices[i];
 
 		// Dynamic Bounds Calculation
-		FVector Loc = ComponentSpaceTransforms[i].Location;
+		const FVector Loc = ComponentSpaceMatrices[i].GetLocation();
 		MinBound.X = std::min(MinBound.X, Loc.X); MinBound.Y = std::min(MinBound.Y, Loc.Y); MinBound.Z = std::min(MinBound.Z, Loc.Z);
 		MaxBound.X = std::max(MaxBound.X, Loc.X); MaxBound.Y = std::max(MaxBound.Y, Loc.Y); MaxBound.Z = std::max(MaxBound.Z, Loc.Z);
 	}
@@ -722,9 +869,13 @@ bool USkeletalMeshComponent::ApplyLocalPose(const TArray<FSkeletalPoseDesc>& Bon
 			continue;
 		}
 
+		EnsureMirrorSignsFromSkeleton(*Skeleton, BoneSpaceMirrorSigns);
 		FTransform NormalizedTransform = Desc.LocalTransform;
 		NormalizedTransform.Rotation.Normalize();
+		FVector MirrorSign = SafeGetMirrorSign(BoneSpaceMirrorSigns, TargetBoneIndex);
+		FoldNegativeScaleIntoMirror(NormalizedTransform, MirrorSign);
 		BoneSpaceTransforms[TargetBoneIndex] = NormalizedTransform;
+		BoneSpaceMirrorSigns[TargetBoneIndex] = MirrorSign;
 		bAppliedAny = true;
 	}
 
@@ -854,6 +1005,7 @@ void USkeletalMeshComponent::MarkSkeletalPoseDirty()
 void USkeletalMeshComponent::InitializeBoneTransformsFromSkeleton()
 {
 	BoneSpaceTransforms.clear();
+	BoneSpaceMirrorSigns.clear();
 	const USkeletalMesh* Mesh = GetSkeletalMesh();
 	const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
 	const FSkeleton* Skeleton = MeshAsset ? &MeshAsset->Skeleton : nullptr;
@@ -867,7 +1019,11 @@ void USkeletalMeshComponent::InitializeBoneTransformsFromSkeleton()
 	}
 
 	for (const FBoneInfo& Bone : Skeleton->Bones)
-		BoneSpaceTransforms.push_back(TransformFromMatrix(Bone.LocalBindPose));
+	{
+		const FDecomposedMatrix Decomposed = DecomposeMatrixForEditableTransform(Bone.LocalBindPose);
+		BoneSpaceTransforms.push_back(Decomposed.Transform);
+		BoneSpaceMirrorSigns.push_back(Decomposed.MirrorSign);
+	}
 
 	RefreshBoneTransforms();
 	UpdateSkinnedMeshObject();

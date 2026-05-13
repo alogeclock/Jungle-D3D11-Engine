@@ -16,6 +16,8 @@
 
 #include "ImGui/imgui.h"
 
+#include <cmath>
+
 namespace
 {
 	// Picking
@@ -23,9 +25,12 @@ namespace
 	bool TryConvertMouseToViewportPixel(const ImVec2& MousePos, const FRect& ViewportRect, const FViewport* Viewport, float FallbackWidth, float FallbackHeight, float& OutX, float& OutY);
 	
 	// Update Transform
-	FQuat ExtractRotationQuatNoScale(const FMatrix& Matrix);
+	FQuat ExtractRotationQuatNoScale(const FMatrix& Matrix, const FVector* PreferredScaleForMirrorAxis = nullptr);
+	FQuat MakeQuatContinuous(const FQuat& Quat, const FQuat& ReferenceQuat);
 	FQuat GetStableWorldRotation(const USceneComponent* Component);
 	FQuat GetComponentSpaceRotation(const USceneComponent* WorldComponent, const USceneComponent* ComponentSpaceOwner);
+	FQuat GetBoneComponentSpaceRotation(const USkeletalMeshComponent* Component, int32 BoneIndex, const FQuat* ReferenceQuat = nullptr);
+	FQuat GetBoneWorldRotation(const USkeletalMeshComponent* Component, int32 BoneIndex, const FQuat* ReferenceQuat = nullptr);
 	
 	// Gizmo
 	EGizmoMode GizmoModeFromPreviewMode(int32 PreviewMode);
@@ -121,10 +126,12 @@ void FSkeletalMeshPreviewViewportClient::UpdateOrbitTargetForAltNavigation()
 	}
 
 	// 본이 선택되어 있으면 Alt orbit의 기준점을 선택 본 위치로 맞춥니다.
+	// 화면의 본/메시 스키닝과 동일한 ComponentSpaceMatrix 기준을 사용해야 미러 본에서 좌우가 맞습니다.
 	const int32 SelectedBoneIndex = PreviewComponent->GetSelectedBoneIndex();
-	if (const FTransform* BoneComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(SelectedBoneIndex))
+	FMatrix BoneComponentMatrix = FMatrix::Identity;
+	if (PreviewComponent->GetBoneComponentSpaceMatrix(SelectedBoneIndex, BoneComponentMatrix))
 	{
-		const FVector BoneWorldLocation = PreviewComponent->GetWorldMatrix().TransformPositionWithW(BoneComponentTransform->Location);
+		const FVector BoneWorldLocation = PreviewComponent->GetWorldMatrix().TransformPositionWithW(BoneComponentMatrix.GetLocation());
 		SetOrbitTarget(BoneWorldLocation);
 		return;
 	}
@@ -253,8 +260,9 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 	}
 
 	const int32 SelectedBoneIndex = PreviewComponent->GetSelectedBoneIndex();
-	const FTransform* BoneComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(SelectedBoneIndex);
-	const bool bShowGizmo = GetRenderOptions().ShowFlags.bGizmo && BoneComponentTransform != nullptr;
+	FMatrix BoneComponentMatrix = FMatrix::Identity;
+	const bool bHasBoneComponentMatrix = PreviewComponent->GetBoneComponentSpaceMatrix(SelectedBoneIndex, BoneComponentMatrix);
+	const bool bShowGizmo = GetRenderOptions().ShowFlags.bGizmo && bHasBoneComponentMatrix;
 	if (!bShowGizmo)
 	{
 		PreviewGizmo->Deactivate();
@@ -274,20 +282,22 @@ void FSkeletalMeshPreviewViewportClient::SyncPreviewGizmoToSelectedBone()
 			Settings.bEnableScaleSnap, Settings.ScaleSnapSize);
 		PreviewGizmo->SetAxisMask(PreviewGizmo->ComputeAxisMaskForView(GetRenderOptions().ViewportType, Camera->GetForwardVector(), PreviewGizmo->GetMode()));
 		PreviewGizmo->ApplyScreenSpaceScaling(Camera->GetWorldLocation(), Camera->IsOrthogonal(), Camera->GetOrthoWidth());
-		ApplyPreviewGizmoToSelectedBone();
 		return;
 	}
 
 	const FMatrix MeshWorldMatrix = PreviewComponent->GetWorldMatrix();
 
-	// WorldLocation = MeshWorldMatrix * BoneLocalLocation
-	const FVector BoneWorldLocation = MeshWorldMatrix.TransformPositionWithW(BoneComponentTransform->Location);
+	// WorldLocation = MeshWorldMatrix * BoneComponentMatrix.Location
+	const FVector BoneWorldLocation = MeshWorldMatrix.TransformPositionWithW(BoneComponentMatrix.GetLocation());
 	// Row-vector convention: BoneWorld = BoneComponent * MeshWorld.
-	const FQuat BoneWorldRotation = ExtractRotationQuatNoScale(BoneComponentTransform->ToMatrix() * MeshWorldMatrix);
+	// 미러 행렬은 FQuat으로 직접 표현할 수 없으므로 회전 추출 시 내부적으로만 고정 mirror 축을 사용합니다.
+	// Transform.Scale에는 음수를 노출하지 않습니다.
+	const FQuat BoneWorldRotation = GetBoneWorldRotation(PreviewComponent, SelectedBoneIndex, &PreviewLastGizmoTargetRotation);
 
 	PreviewGizmoTarget->SetWorldLocation(BoneWorldLocation);
 	PreviewGizmoTarget->SetWorldRotation(BoneWorldRotation);
-	PreviewGizmoTarget->SetRelativeScale(BoneComponentTransform->Scale);
+	PreviewLastGizmoTargetRotation = BoneWorldRotation;
+	PreviewGizmoTarget->SetRelativeScale(BoneComponentMatrix.GetScale());
 	PreviewGizmo->SetTarget(PreviewGizmoTarget);
 
 	const FPreviewSettings& Settings = GetPreviewSettings();
@@ -312,20 +322,24 @@ void FSkeletalMeshPreviewViewportClient::ApplyPreviewGizmoToSelectedBone()
 
 	if (PreviewGizmo && PreviewGizmo->GetMode() == EGizmoMode::Rotate)
 	{
-		const FTransform* BoneComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(PreviewGizmoBoneIndex);
-		if (!BoneComponentTransform)
+		FMatrix BoneComponentMatrix = FMatrix::Identity;
+		if (!PreviewComponent->GetBoneComponentSpaceMatrix(PreviewGizmoBoneIndex, BoneComponentMatrix))
 		{
 			ResetPreviewGizmoRotationDragState();
 			return;
 		}
 
-		const FQuat CurrentGizmoRotation = GetComponentSpaceRotation(PreviewGizmoTarget, PreviewComponent);
+		FQuat CurrentGizmoRotation = GetComponentSpaceRotation(PreviewGizmoTarget, PreviewComponent);
 		if (!bPreviewGizmoRotationDragInitialized || PreviewGizmoRotationDragBoneIndex != PreviewGizmoBoneIndex)
 		{
 			PreviewGizmoRotationDragBoneIndex = PreviewGizmoBoneIndex;
 			PreviewGizmoDragStartRotation = CurrentGizmoRotation;
-			PreviewBoneDragStartComponentRotation = BoneComponentTransform->Rotation.GetNormalized();
+			PreviewBoneDragStartComponentRotation = GetBoneComponentSpaceRotation(PreviewComponent, PreviewGizmoBoneIndex);
 			bPreviewGizmoRotationDragInitialized = true;
+		}
+		else
+		{
+			CurrentGizmoRotation = MakeQuatContinuous(CurrentGizmoRotation, PreviewGizmoDragStartRotation);
 		}
 
 		FQuat DeltaRotation = FQuat::Identity;
@@ -374,17 +388,10 @@ void FSkeletalMeshPreviewViewportClient::ApplyPreviewGizmoToSelectedBone()
 	
 	const FMatrix BoneComponentMatrix = PreviewGizmoTarget->GetWorldMatrix() * PreviewComponent->GetWorldInverseMatrix();
 	const FVector NewLocation = BoneComponentMatrix.GetLocation();
-	const FVector NewScale = BoneComponentMatrix.GetScale();
 
-	// 회전값은 보존하고 위치와 스케일만 업데이트하여 행렬 분해로 인한 회전값 드리프트를 방지합니다.
-	const FTransform* CurrentTransform = PreviewComponent->GetBoneComponentSpaceTransform(PreviewGizmoBoneIndex);
-	if (CurrentTransform)
-	{
-		FTransform UpdatedTransform = *CurrentTransform;
-		UpdatedTransform.Location = NewLocation;
-		UpdatedTransform.Scale = NewScale;
-		PreviewComponent->SetBoneComponentSpaceTransform(PreviewGizmoBoneIndex, UpdatedTransform);
-	}
+	// 이동 기즈모는 본의 ComponentSpace 위치만 갱신합니다.
+	// 전체 행렬을 다시 로컬 TRS로 분해하면 부모 비균등 스케일/회전 조합에서 회전·스케일이 오염될 수 있습니다.
+	PreviewComponent->SetBoneComponentSpaceLocation(PreviewGizmoBoneIndex, NewLocation);
 }
 
 void FSkeletalMeshPreviewViewportClient::ResetPreviewGizmoRotationDragState()
@@ -392,6 +399,7 @@ void FSkeletalMeshPreviewViewportClient::ResetPreviewGizmoRotationDragState()
 	PreviewGizmoRotationDragBoneIndex = -1;
 	PreviewGizmoDragStartRotation = FQuat::Identity;
 	PreviewBoneDragStartComponentRotation = FQuat::Identity;
+	PreviewLastGizmoTargetRotation = FQuat::Identity;
 	bPreviewGizmoRotationDragInitialized = false;
 }
 
@@ -513,22 +521,72 @@ namespace
 		return true;
 	}
 
-	FQuat ExtractRotationQuatNoScale(const FMatrix& Matrix)
+	float Determinant3x3(const FMatrix& Matrix)
 	{
-		auto NormalizeAxis = [](const FVector& Axis, const FVector& Fallback) -> FVector
+		return Matrix.M[0][0] * (Matrix.M[1][1] * Matrix.M[2][2] - Matrix.M[1][2] * Matrix.M[2][1])
+			- Matrix.M[0][1] * (Matrix.M[1][0] * Matrix.M[2][2] - Matrix.M[1][2] * Matrix.M[2][0])
+			+ Matrix.M[0][2] * (Matrix.M[1][0] * Matrix.M[2][1] - Matrix.M[1][1] * Matrix.M[2][0]);
+	}
+
+	float QuatDot(const FQuat& A, const FQuat& B)
+	{
+		return A.X * B.X + A.Y * B.Y + A.Z * B.Z + A.W * B.W;
+	}
+
+	FQuat MakeQuatContinuous(const FQuat& Quat, const FQuat& ReferenceQuat)
+	{
+		FQuat NormalizedQuat = Quat.GetNormalized();
+		const FQuat NormalizedReference = ReferenceQuat.GetNormalized();
+		if (QuatDot(NormalizedQuat, NormalizedReference) < 0.0f)
 		{
-			const float Length = Axis.Length();
-			return Length > 1.0e-6f ? Axis / Length : Fallback;
-		};
+			NormalizedQuat.X *= -1.0f;
+			NormalizedQuat.Y *= -1.0f;
+			NormalizedQuat.Z *= -1.0f;
+			NormalizedQuat.W *= -1.0f;
+		}
+		return NormalizedQuat;
+	}
+
+	float SignForScale(float Value)
+	{
+		return Value < 0.0f ? -1.0f : 1.0f;
+	}
+
+	FQuat ExtractRotationQuatNoScale(const FMatrix& Matrix, const FVector* PreferredScaleForMirrorAxis)
+	{
+		constexpr float Epsilon = 1.0e-6f;
+
+		FVector Scale = Matrix.GetScale();
+		if (PreferredScaleForMirrorAxis)
+		{
+			Scale.X *= SignForScale(PreferredScaleForMirrorAxis->X);
+			Scale.Y *= SignForScale(PreferredScaleForMirrorAxis->Y);
+			Scale.Z *= SignForScale(PreferredScaleForMirrorAxis->Z);
+
+			const float MatrixDetSign = Determinant3x3(Matrix) < 0.0f ? -1.0f : 1.0f;
+			const float ScaleDetSign = SignForScale(Scale.X) * SignForScale(Scale.Y) * SignForScale(Scale.Z);
+			if (MatrixDetSign != ScaleDetSign)
+			{
+				Scale.X *= -1.0f;
+			}
+		}
+		else if (Determinant3x3(Matrix) < 0.0f)
+		{
+			Scale.X *= -1.0f;
+		}
 
 		FMatrix RotationMatrix = FMatrix::Identity;
-		const FVector XAxis = NormalizeAxis(FVector(Matrix.M[0][0], Matrix.M[0][1], Matrix.M[0][2]), FVector(1.0f, 0.0f, 0.0f));
-		const FVector YAxis = NormalizeAxis(FVector(Matrix.M[1][0], Matrix.M[1][1], Matrix.M[1][2]), FVector(0.0f, 1.0f, 0.0f));
-		const FVector ZAxis = NormalizeAxis(FVector(Matrix.M[2][0], Matrix.M[2][1], Matrix.M[2][2]), FVector(0.0f, 0.0f, 1.0f));
-
-		RotationMatrix.M[0][0] = XAxis.X; RotationMatrix.M[0][1] = XAxis.Y; RotationMatrix.M[0][2] = XAxis.Z;
-		RotationMatrix.M[1][0] = YAxis.X; RotationMatrix.M[1][1] = YAxis.Y; RotationMatrix.M[1][2] = YAxis.Z;
-		RotationMatrix.M[2][0] = ZAxis.X; RotationMatrix.M[2][1] = ZAxis.Y; RotationMatrix.M[2][2] = ZAxis.Z;
+		const float ScaleValues[3] = { Scale.X, Scale.Y, Scale.Z };
+		for (int32 Row = 0; Row < 3; ++Row)
+		{
+			const float RowScale = ScaleValues[Row];
+			if (std::fabs(RowScale) > Epsilon)
+			{
+				RotationMatrix.M[Row][0] = Matrix.M[Row][0] / RowScale;
+				RotationMatrix.M[Row][1] = Matrix.M[Row][1] / RowScale;
+				RotationMatrix.M[Row][2] = Matrix.M[Row][2] / RowScale;
+			}
+		}
 
 		FQuat Rotation = RotationMatrix.ToQuat();
 		Rotation.Normalize();
@@ -562,12 +620,46 @@ namespace
 		return ExtractRotationQuatNoScale(WorldComponent->GetWorldMatrix() * ComponentSpaceOwner->GetWorldInverseMatrix());
 	}
 
-	// Matrix에서 FTransform 정보를 추출하되, 회전값은 Quaternion으로 변환한 뒤 추출합니다.
+	FQuat GetBoneComponentSpaceRotation(const USkeletalMeshComponent* Component, int32 BoneIndex, const FQuat* ReferenceQuat)
+	{
+		if (!Component)
+		{
+			return FQuat::Identity;
+		}
+
+		FMatrix BoneComponentMatrix = FMatrix::Identity;
+		if (!Component->GetBoneComponentSpaceMatrix(BoneIndex, BoneComponentMatrix))
+		{
+			return FQuat::Identity;
+		}
+
+		const FTransform* ComponentTransform = Component->GetBoneComponentSpaceTransform(BoneIndex);
+		FQuat Rotation = ExtractRotationQuatNoScale(BoneComponentMatrix, ComponentTransform ? &ComponentTransform->Scale : nullptr);
+		return ReferenceQuat ? MakeQuatContinuous(Rotation, *ReferenceQuat) : Rotation;
+	}
+
+	FQuat GetBoneWorldRotation(const USkeletalMeshComponent* Component, int32 BoneIndex, const FQuat* ReferenceQuat)
+	{
+		if (!Component)
+		{
+			return FQuat::Identity;
+		}
+
+		FMatrix BoneComponentMatrix = FMatrix::Identity;
+		if (!Component->GetBoneComponentSpaceMatrix(BoneIndex, BoneComponentMatrix))
+		{
+			return FQuat::Identity;
+		}
+
+		const FTransform* ComponentTransform = Component->GetBoneComponentSpaceTransform(BoneIndex);
+		FQuat Rotation = ExtractRotationQuatNoScale(BoneComponentMatrix * Component->GetWorldMatrix(), ComponentTransform ? &ComponentTransform->Scale : nullptr);
+		return ReferenceQuat ? MakeQuatContinuous(Rotation, *ReferenceQuat) : Rotation;
+	}
+
+	// Matrix에서 FTransform 정보를 추출할 때도 미러/음수 determinant 회전 추출 규칙을 동일하게 사용합니다.
 	FTransform TransformFromMatrix(const FMatrix& Matrix)
 	{
-		FQuat Rotation = Matrix.ToQuat();
-		Rotation.Normalize();
-		return FTransform(Matrix.GetLocation(), Rotation, Matrix.GetScale());
+		return FTransform(Matrix.GetLocation(), ExtractRotationQuatNoScale(Matrix), Matrix.GetScale());
 	}
 
 	// int32 PreviewMode 값을 EGizmoMode Enum 값으로 변환합니다. 

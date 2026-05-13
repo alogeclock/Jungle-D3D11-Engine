@@ -1,4 +1,4 @@
-﻿#include "SkeletalMeshPreviewWidget.h"
+#include "SkeletalMeshPreviewWidget.h"
 
 #include "Asset/AssetData.h"
 #include "Component/SkeletalMeshComponent.h"
@@ -15,6 +15,7 @@
 
 #include "ImGui/imgui.h"
 
+#include <cmath>
 #include <ctime>
 #include <filesystem>
 #include <memory>
@@ -31,6 +32,7 @@ namespace
     // Math & Transform
     FQuat NormalizeQuat(const FQuat& Quat);
     bool IsSameRotation(const FQuat& A, const FQuat& B);
+    FTransform TransformFromMatrix(const FMatrix& Matrix);
 
     // Editor Window 기반 Rendering
     void SelectBone(FSkeletalMeshPreviewViewportClient& ViewportClient, int32& SelectedBoneIndex, int32 BoneIndex);
@@ -408,9 +410,17 @@ void FSkeletalMeshPreviewWidget::DrawBoneDetailsPanel()
                 ImGui::PopID();
             }
 
-            if (const FTransform* ComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(SelectedBoneIndex))
+            FMatrix ComponentMatrix = FMatrix::Identity;
+            if (PreviewComponent->GetBoneComponentSpaceMatrix(SelectedBoneIndex, ComponentMatrix))
             {
-                FTransform EditableComponent = *ComponentTransform;
+                // ComponentSpaceTransforms는 ComponentSpaceMatrix에서 만든 에디터용 캐시입니다.
+                // Scale은 양수 magnitude만 보여주고, mirror parity는 내부 행렬/hidden sign에만 남깁니다.
+                FTransform EditableComponent = TransformFromMatrix(ComponentMatrix);
+                if (const FTransform* CachedComponentTransform = PreviewComponent->GetBoneComponentSpaceTransform(SelectedBoneIndex))
+                {
+                    EditableComponent = *CachedComponentTransform;
+                }
+
                 ImGui::PushID("ComponentTransform");
                 if (DrawEditableTransform("Component Transform", EditableComponent, SelectedBoneIndex, ComponentRotationEditState, EBoneRotationEditSpace::Component))
                 {
@@ -791,6 +801,43 @@ namespace
         const FQuat NegatedB(-NormalizedB.X, -NormalizedB.Y, -NormalizedB.Z, -NormalizedB.W);
         return NormalizedA.Equals(NormalizedB, 1.0e-4f) || NormalizedA.Equals(NegatedB, 1.0e-4f);
     }
+
+    float Determinant3x3(const FMatrix& Matrix)
+    {
+        return Matrix.M[0][0] * (Matrix.M[1][1] * Matrix.M[2][2] - Matrix.M[1][2] * Matrix.M[2][1])
+            - Matrix.M[0][1] * (Matrix.M[1][0] * Matrix.M[2][2] - Matrix.M[1][2] * Matrix.M[2][0])
+            + Matrix.M[0][2] * (Matrix.M[1][0] * Matrix.M[2][1] - Matrix.M[1][1] * Matrix.M[2][0]);
+    }
+
+    FVector MirrorSignFromMatrix(const FMatrix& Matrix)
+    {
+        return Determinant3x3(Matrix) < 0.0f ? FVector(-1.0f, 1.0f, 1.0f) : FVector::OneVector;
+    }
+
+    FTransform TransformFromMatrix(const FMatrix& Matrix)
+    {
+        constexpr float Epsilon = 1.0e-6f;
+        const FVector PositiveScale = Matrix.GetScale();
+        const FVector SignedScale = PositiveScale * MirrorSignFromMatrix(Matrix);
+
+        FMatrix RotationMatrix = FMatrix::Identity;
+        const float ScaleValues[3] = { SignedScale.X, SignedScale.Y, SignedScale.Z };
+        for (int32 Row = 0; Row < 3; ++Row)
+        {
+            const float RowScale = ScaleValues[Row];
+            if (std::fabs(RowScale) > Epsilon)
+            {
+                RotationMatrix.M[Row][0] = Matrix.M[Row][0] / RowScale;
+                RotationMatrix.M[Row][1] = Matrix.M[Row][1] / RowScale;
+                RotationMatrix.M[Row][2] = Matrix.M[Row][2] / RowScale;
+            }
+        }
+
+        FQuat Rotation = RotationMatrix.ToQuat();
+        Rotation.Normalize();
+        return FTransform(Matrix.GetLocation(), Rotation, PositiveScale);
+    }
+
 
     // ────────────────────────────────────────────────────────────
     // Editor Window 기반 Rendering

@@ -30,6 +30,7 @@ public:
 	// Bone Transform
 	void SetBoneLocalTransform(int32 BoneIndex, const FTransform& NewTransform);
 	bool SetBoneComponentSpaceTransform(int32 BoneIndex, const FTransform& NewTransform);
+	bool SetBoneComponentSpaceLocation(int32 BoneIndex, const FVector& NewComponentLocation);
 	bool SetBoneComponentSpaceRotation(int32 BoneIndex, const FQuat& NewComponentRotation);
 	void RefreshBoneTransforms() override;
 
@@ -41,6 +42,7 @@ public:
 	const TArray<int32>& GetRequiredBones() const { return RequiredBones; }
 	const FTransform* GetBoneLocalTransform(int32 BoneIndex) const;
 	const FTransform* GetBoneComponentSpaceTransform(int32 BoneIndex) const;
+	bool GetBoneComponentSpaceMatrix(int32 BoneIndex, FMatrix& OutMatrix) const;
 
 	bool AreRequiredBonesUpdated() const { return bRequiredBonesUpdated; }
 	bool IsForceRefPoseEnabled() const { return bForceRefPose; }

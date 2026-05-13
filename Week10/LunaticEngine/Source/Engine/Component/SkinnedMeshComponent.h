@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Component/MeshComponent.h"
 #include "Core/PropertyTypes.h"
@@ -64,6 +64,7 @@ public:
 	const TArray<FTransform>& GetComponentSpaceTransforms() const { return ComponentSpaceTransforms; }
 	const TArray<FMatrix>& GetComponentSpaceMatrices() const { return ComponentSpaceMatrices; }
 	const TArray<FMatrix>& GetSkinningMatrices() const { return SkinningMatrices; }
+	const TArray<FVector>& GetBoneSpaceMirrorSigns() const { return BoneSpaceMirrorSigns; }
 
 	bool IsCPUSkinningEnabled() const { return bCPUSkinning; }
 	bool IsSkinningDirty() const { return bSkinningDirty; }
@@ -106,8 +107,9 @@ protected:
 
 	// UE는 ComponentSpaceTransforms를 [2] 더블 버퍼로 갖지만, 단일 스레드라 단일 배열.
 	// 추후 RT/GT 분리 시 [2] + read/write index 변수로 확장.
-	TArray<FTransform> BoneSpaceTransforms;        // 부모 로컬 [BoneCount]
-	TArray<FTransform> ComponentSpaceTransforms;   // 컴포넌트 공간 [BoneCount]
+	TArray<FTransform> BoneSpaceTransforms;        // 부모 로컬 [BoneCount] - scale magnitude only, mirror signs are stored separately
+	TArray<FVector> BoneSpaceMirrorSigns;          // 부모 로컬 mirror/sign [BoneCount], hidden from editor scale UI
+	TArray<FTransform> ComponentSpaceTransforms;   // 컴포넌트 공간 [BoneCount] - positive scale for editor/UI
 	TArray<FMatrix> ComponentSpaceMatrices;     // 컴포넌트 공간 [BoneCount]
 	TArray<FMatrix> SkinningMatrices;           // CS * RefBasesInvMatrix [BoneCount]
 	std::unique_ptr<FSkeletalMeshObject> MeshObject;
