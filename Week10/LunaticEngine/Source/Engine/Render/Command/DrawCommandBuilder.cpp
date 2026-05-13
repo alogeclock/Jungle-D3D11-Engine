@@ -392,6 +392,42 @@ namespace
 // Create / Release
 // ============================================================
 
+void FSolidColorGeometry::Create(ID3D11Device* InDevice)
+{
+	Device = InDevice;
+	VB.Create(InDevice, 1024, sizeof(FLineVertex));
+}
+
+void FSolidColorGeometry::Release()
+{
+	VB.Release();
+	Vertices.clear();
+	Device = nullptr;
+}
+
+void FSolidColorGeometry::Clear()
+{
+	Vertices.clear();
+}
+
+void FSolidColorGeometry::AddTriangle(const FVector& V0, const FVector& V1, const FVector& V2, const FVector4& Color)
+{
+	Vertices.emplace_back(V0, Color);
+	Vertices.emplace_back(V1, Color);
+	Vertices.emplace_back(V2, Color);
+}
+
+bool FSolidColorGeometry::UploadBuffers(ID3D11DeviceContext* Context)
+{
+	if (!Device || !Context || Vertices.empty())
+	{
+		return false;
+	}
+
+	VB.EnsureCapacity(Device, static_cast<uint32>(Vertices.size()));
+	return VB.Update(Context, Vertices.data(), static_cast<uint32>(Vertices.size()));
+}
+
 void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* InContext, const FPassRenderStateTable* InPassRenderStateTable)
 {
 	CachedDevice = InDevice;
@@ -401,6 +437,7 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 	EditorLines.Create(InDevice);
 	ForegroundEditorLines.Create(InDevice);
 	GridLines.Create(InDevice);
+	ForegroundEditorSolids.Create(InDevice);
 	FontGeometry.Create(InDevice);
 	ScreenQuads.Create(InDevice);
 
@@ -418,6 +455,7 @@ void FDrawCommandBuilder::Release()
 	EditorLines.Release();
 	ForegroundEditorLines.Release();
 	GridLines.Release();
+	ForegroundEditorSolids.Release();
 	FontGeometry.Release();
 	ScreenQuads.Release();
 
@@ -448,10 +486,12 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame, uint32 MaxPro
 	bHasSelectionMaskCommands = false;
 	EditorLines.Clear();
 	ForegroundEditorLines.Clear();
+	ForegroundEditorSolids.Clear();
 
 	// 동적 지오메트리 초기화
 	EditorLines.Clear();
 	GridLines.Clear();
+	ForegroundEditorSolids.Clear();
 	FontGeometry.Clear();
 	FontGeometry.ClearScreen();
 	ScreenQuads.Clear();
@@ -752,6 +792,10 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 	{
 		ForegroundEditorLines.AddBillboardLine(Line.Start, Line.End, Line.Color.ToVector4(), Frame, Frame.RenderOptions.DebugLineThickness);
 	}
+	for (const auto& Triangle : Scene->GetForegroundDebugSolidTriangles())
+	{
+		ForegroundEditorSolids.AddTriangle(Triangle.V0, Triangle.V1, Triangle.V2, Triangle.Color);
+	}
 
 	// --- Grid 패스: 월드 그리드 + 축 ---
 	// Pixel shader 기반 EditorGrid 패스가 평면 축과 법선 축을 모두 처리합니다.
@@ -827,6 +871,21 @@ void FDrawCommandBuilder::EmitLineCommand(FLineGeometry& Lines, FShader* Shader,
 	}
 }
 
+void FDrawCommandBuilder::EmitSolidCommand(FSolidColorGeometry& Mesh, FShader* Shader, const FDrawCommandRenderState& RS)
+{
+	if (Mesh.GetVertexCount() > 0 && Mesh.UploadBuffers(CachedContext))
+	{
+		FDrawCommand& Cmd = DrawCommandList.AddCommand();
+		Cmd.Pass = ERenderPass::EditorLines;
+		Cmd.Shader = Shader;
+		Cmd.RenderState = RS;
+		Cmd.RenderState.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		Cmd.Buffer = { Mesh.GetVBBuffer(), Mesh.GetVBStride(), nullptr };
+		Cmd.Buffer.VertexCount = Mesh.GetVertexCount();
+		Cmd.BuildSortKey(1);
+	}
+}
+
 // ============================================================
 // BuildEditorGridCommand — pixel shader 기반 에디터 그리드
 // ============================================================
@@ -877,8 +936,12 @@ void FDrawCommandBuilder::BuildEditorLineCommands(EViewMode ViewMode)
 	const FDrawCommandRenderState EditorLinesRS = PassRenderStateTable->ToDrawCommandState(ERenderPass::EditorLines, ViewMode);
 	FDrawCommandRenderState ForegroundLinesRS = EditorLinesRS;
 	ForegroundLinesRS.DepthStencil = EDepthStencilState::NoDepth;
+	FDrawCommandRenderState ForegroundSolidRS = ForegroundLinesRS;
+	ForegroundSolidRS.Rasterizer = ERasterizerState::SolidNoCull;
+	ForegroundSolidRS.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	EmitLineCommand(EditorLines, EditorShader, EditorLinesRS);
+	EmitSolidCommand(ForegroundEditorSolids, EditorShader, ForegroundSolidRS);
 	EmitLineCommand(ForegroundEditorLines, EditorShader, ForegroundLinesRS);
 	EmitLineCommand(GridLines, EditorShader, EditorLinesRS);
 }

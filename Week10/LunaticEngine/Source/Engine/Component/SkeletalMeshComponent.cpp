@@ -23,12 +23,12 @@ namespace
 {
 	bool IsNonePath(const FString& Path) { return Path.empty() || Path == "None"; }
 
-	constexpr int32 BoneArmatureRingSegments = 12;
 	constexpr float BoneArmatureMinLength = 0.001f;
-	constexpr float BoneArmatureRadiusRatio = 0.08f;
+	constexpr float BoneArmatureRadiusRatio = 0.10f;
 	constexpr float BoneArmatureMinRadius = 0.001f;
 	constexpr float BoneArmatureMaxRadius = 5.0f;
-	constexpr float BoneArmatureTipBias = 0.05f;
+	constexpr float BoneArmatureBaseBias = 0.18f;
+	constexpr float BoneJointRadiusRatio = 0.035f;
 
 	struct FBoneArmatureFrame
 	{
@@ -74,61 +74,99 @@ namespace
 		return true;
 	}
 
-	FVector GetArmatureWidePoint(const FBoneArmatureFrame& Frame)
+	FVector GetArmatureBaseCenter(const FBoneArmatureFrame& Frame)
 	{
-		return Frame.Start + Frame.Axis * (Frame.Length * BoneArmatureTipBias);
+		return Frame.Start + Frame.Axis * (Frame.Length * BoneArmatureBaseBias);
 	}
 
-	void AddArmatureLine(FScene& Scene, const FVector& Start, const FVector& End, const FColor& Color)
+	FVector4 ShadeArmatureColor(const FColor& BaseColor, const FVector& FaceNormal)
 	{
-		Scene.AddForegroundDebugLine(Start, End, Color);
+		const FVector LightDir = FVector(-0.35f, 0.45f, 0.82f).Normalized();
+		const FVector Normal = FaceNormal.Normalized();
+		const float NdotL = std::abs(Normal.Dot(LightDir));
+		const float Shade = 0.50f + NdotL * 0.50f;
+		return FVector4(
+			(BaseColor.R / 255.0f) * Shade,
+			(BaseColor.G / 255.0f) * Shade,
+			(BaseColor.B / 255.0f) * Shade,
+			BaseColor.A / 255.0f
+		);
 	}
 
-	void AddArmatureTipRings(FScene& Scene, const FBoneArmatureFrame& Frame, const FColor& Color)
+	void AddSolidArmatureTriangle(FScene& Scene, const FVector& V0, const FVector& V1, const FVector& V2, const FColor& BaseColor)
 	{
-		const float TipRadius = Frame.Radius * 0.2f;
-		for (int32 Segment = 0; Segment < BoneArmatureRingSegments; ++Segment)
+		const FVector Normal = (V1 - V0).Cross(V2 - V0);
+		Scene.AddForegroundDebugSolidTriangle(V0, V1, V2, ShadeArmatureColor(BaseColor, Normal));
+	}
+
+	void AddSolidArmatureQuad(FScene& Scene, const FVector& V0, const FVector& V1, const FVector& V2, const FVector& V3, const FColor& BaseColor)
+	{
+		AddSolidArmatureTriangle(Scene, V0, V1, V2, BaseColor);
+		AddSolidArmatureTriangle(Scene, V0, V2, V3, BaseColor);
+	}
+
+	void AddArmatureJoint(FScene& Scene, const FBoneArmatureFrame& Frame, const FVector& Center, const FColor& Color, bool bSelected)
+	{
+		const float Radius = ClampFloat(Frame.Length * BoneJointRadiusRatio, BoneArmatureMinRadius, Frame.Radius * 0.65f) * (bSelected ? 1.6f : 1.0f);
+		constexpr int32 LatSegments = 4;
+		constexpr int32 LonSegments = 8;
+		FVector Points[LatSegments + 1][LonSegments];
+
+		for (int32 Lat = 0; Lat <= LatSegments; ++Lat)
 		{
-			const float A0 = (static_cast<float>(Segment) / static_cast<float>(BoneArmatureRingSegments)) * 6.28318530718f;
-			const float A1 = (static_cast<float>(Segment + 1) / static_cast<float>(BoneArmatureRingSegments)) * 6.28318530718f;
-			const float C0 = std::cos(A0);
-			const float S0 = std::sin(A0);
-			const float C1 = std::cos(A1);
-			const float S1 = std::sin(A1);
+			const float V = static_cast<float>(Lat) / static_cast<float>(LatSegments);
+			const float Phi = -1.57079632679f + V * 3.14159265359f;
+			const float AxisOffset = std::sin(Phi);
+			const float RingScale = std::cos(Phi);
 
-			AddArmatureLine(Scene, Frame.End + Frame.Right * (C0 * TipRadius) + Frame.Up * (S0 * TipRadius),
-				Frame.End + Frame.Right * (C1 * TipRadius) + Frame.Up * (S1 * TipRadius), Color);
-			AddArmatureLine(Scene, Frame.End + Frame.Axis * (C0 * TipRadius) + Frame.Up * (S0 * TipRadius),
-				Frame.End + Frame.Axis * (C1 * TipRadius) + Frame.Up * (S1 * TipRadius), Color);
-			AddArmatureLine(Scene, Frame.End + Frame.Axis * (C0 * TipRadius) + Frame.Right * (S0 * TipRadius),
-				Frame.End + Frame.Axis * (C1 * TipRadius) + Frame.Right * (S1 * TipRadius), Color);
+			for (int32 Lon = 0; Lon < LonSegments; ++Lon)
+			{
+				const float U = static_cast<float>(Lon) / static_cast<float>(LonSegments);
+				const float Theta = U * 6.28318530718f;
+				const FVector RingDir = Frame.Right * std::cos(Theta) + Frame.Up * std::sin(Theta);
+				Points[Lat][Lon] = Center + (Frame.Axis * AxisOffset + RingDir * RingScale) * Radius;
+			}
+		}
+
+		for (int32 Lat = 0; Lat < LatSegments; ++Lat)
+		{
+			for (int32 Lon = 0; Lon < LonSegments; ++Lon)
+			{
+				const int32 NextLon = (Lon + 1) % LonSegments;
+				AddSolidArmatureQuad(Scene, Points[Lat][Lon], Points[Lat][NextLon], Points[Lat + 1][NextLon], Points[Lat + 1][Lon], Color);
+			}
 		}
 	}
 
-	void AddArmatureBody(FScene& Scene, const FBoneArmatureFrame& Frame, const FColor& Color)
+	void AddUnrealStyleArmatureBody(FScene& Scene, const FBoneArmatureFrame& Frame, const FColor& BodyColor)
 	{
-		const FVector WidePoint = GetArmatureWidePoint(Frame);
-		const FVector Equator[4] =
-		{
-			WidePoint + Frame.Right * Frame.Radius,
-			WidePoint + Frame.Up * Frame.Radius,
-			WidePoint - Frame.Right * Frame.Radius,
-			WidePoint - Frame.Up * Frame.Radius
-		};
+		constexpr int32 Segments = 8;
+		const FVector BaseCenter = GetArmatureBaseCenter(Frame);
+		const FVector EndCenter = Frame.End - Frame.Axis * (Frame.Length * 0.08f);
+		const float EndRadius = Frame.Radius * 0.18f;
 
-		for (int32 Index = 0; Index < 4; ++Index)
+		FVector Base[Segments];
+		FVector End[Segments];
+		for (int32 Segment = 0; Segment < Segments; ++Segment)
 		{
-			const FVector& Current = Equator[Index];
-			const FVector& Next = Equator[(Index + 1) % 4];
-			AddArmatureLine(Scene, Frame.Start, Current, Color);
-			AddArmatureLine(Scene, Frame.End, Current, Color);
-			AddArmatureLine(Scene, Current, Next, Color);
+			const float A = (static_cast<float>(Segment) / static_cast<float>(Segments)) * 6.28318530718f;
+			const FVector RingDir = Frame.Right * std::cos(A) + Frame.Up * std::sin(A);
+			Base[Segment] = BaseCenter + RingDir * Frame.Radius;
+			End[Segment] = EndCenter + RingDir * EndRadius;
+		}
+
+		for (int32 Segment = 0; Segment < Segments; ++Segment)
+		{
+			const int32 Next = (Segment + 1) % Segments;
+			AddSolidArmatureQuad(Scene, Base[Segment], Base[Next], End[Next], End[Segment], BodyColor);
+			AddSolidArmatureTriangle(Scene, Frame.Start, Base[Segment], Base[Next], BodyColor);
+			AddSolidArmatureTriangle(Scene, Frame.End, End[Next], End[Segment], BodyColor);
 		}
 	}
 
 	void AddArmatureBodyTriangles(const FBoneArmatureFrame& Frame, TArray<FVector>& OutVertices)
 	{
-		const FVector WidePoint = GetArmatureWidePoint(Frame);
+		const FVector WidePoint = GetArmatureBaseCenter(Frame);
 		const FVector Equator[4] =
 		{
 			WidePoint + Frame.Right * Frame.Radius,
@@ -213,6 +251,9 @@ void USkeletalMeshComponent::ContributeVisuals(FScene& Scene) const
 		return Skeleton.Bones[BoneIndex].GlobalBindPose;
 	};
 
+	TArray<bool> DrawnJoints;
+	DrawnJoints.resize(Skeleton.Bones.size(), false);
+
 	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(Skeleton.Bones.size()); ++BoneIndex)
 	{
 		const int32 ParentIndex = Skeleton.Bones[BoneIndex].ParentIndex;
@@ -227,9 +268,22 @@ void USkeletalMeshComponent::ContributeVisuals(FScene& Scene) const
 			continue;
 		}
 
-		const FColor Color = bSelected ? FColor::Orange() : FColor(255, 255, 255, 96);
-		AddArmatureBody(Scene, Frame, Color);
-		AddArmatureTipRings(Scene, Frame, Color);
+		const FColor BodyColor = bSelected ? FColor(255, 170, 35, 255) : FColor(120, 190, 255, 210);
+		AddUnrealStyleArmatureBody(Scene, Frame, BodyColor);
+
+		if (!DrawnJoints[ParentIndex])
+		{
+			const bool bParentSelected = ParentIndex == SelectedBoneIndex;
+			AddArmatureJoint(Scene, Frame, ParentWorld, bParentSelected ? FColor(255, 235, 120, 255) : FColor(210, 230, 255, 230), bParentSelected);
+			DrawnJoints[ParentIndex] = true;
+		}
+
+		if (!DrawnJoints[BoneIndex])
+		{
+			const bool bBoneSelected = BoneIndex == SelectedBoneIndex;
+			AddArmatureJoint(Scene, Frame, BoneWorld, bBoneSelected ? FColor(255, 235, 120, 255) : FColor(210, 230, 255, 230), bBoneSelected);
+			DrawnJoints[BoneIndex] = true;
+		}
 	}
 }
 

@@ -94,6 +94,11 @@ public:
 	const TArray<FDebugLine>& GetDebugLines() const { return DebugLines; }
 	const TArray<FDebugLine>& GetForegroundDebugLines() const { return ForegroundDebugLines; }
 
+	// --- Debug solid triangles ---
+	struct FDebugSolidTriangle { FVector V0; FVector V1; FVector V2; FVector4 Color; };
+	void AddForegroundDebugSolidTriangle(const FVector& V0, const FVector& V1, const FVector& V2, const FVector4& Color);
+	const TArray<FDebugSolidTriangle>& GetForegroundDebugSolidTriangles() const { return ForegroundDebugSolidTriangles; }
+
 	// --- Grid ---
 	struct FGridParams { float Spacing = 0.0f; int32 HalfLineCount = 0; bool bEnabled = false; };
 	void SetGrid(float Spacing, int32 HalfLineCount);
@@ -153,6 +158,7 @@ private:
 	TArray<FDebugAABB>   DebugAABBs;
 	TArray<FDebugLine>   DebugLines;
 	TArray<FDebugLine>   ForegroundDebugLines;
+	TArray<FDebugSolidTriangle> ForegroundDebugSolidTriangles;
 
 	FGridParams Grid;
 	FLightVisualizationSettings LightVisualizationSettings;

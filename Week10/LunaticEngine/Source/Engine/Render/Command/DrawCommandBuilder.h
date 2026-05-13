@@ -15,6 +15,25 @@ class FTextRenderSceneProxy;
 class FScene;
 struct FCollectOutput;
 
+class FSolidColorGeometry
+{
+public:
+	void Create(ID3D11Device* InDevice);
+	void Release();
+	void Clear();
+	void AddTriangle(const FVector& V0, const FVector& V1, const FVector& V2, const FVector4& Color);
+	bool UploadBuffers(ID3D11DeviceContext* Context);
+
+	ID3D11Buffer* GetVBBuffer() const { return VB.GetBuffer(); }
+	uint32 GetVBStride() const { return VB.GetStride(); }
+	uint32 GetVertexCount() const { return static_cast<uint32>(Vertices.size()); }
+
+private:
+	TArray<FLineVertex> Vertices;
+	FDynamicVertexBuffer VB;
+	ID3D11Device* Device = nullptr;
+};
+
 /*
 	FDrawCommandBuilder — Collect 페이즈에서 Proxy/Scene 데이터를 FDrawCommand로 변환합니다.
 	FRenderer에서 커맨드 빌드 책임을 분리하여, Renderer는 GPU 제출에만 집중합니다.
@@ -82,6 +101,7 @@ private:
 
 	// 공통 헬퍼
 	void EmitLineCommand(FLineGeometry& Lines, FShader* Shader, const FDrawCommandRenderState& RS);
+	void EmitSolidCommand(FSolidColorGeometry& Mesh, FShader* Shader, const FDrawCommandRenderState& RS);
 	void ApplyMaterialRenderState(FDrawCommandRenderState& OutState, const UMaterial* Mat, const FDrawCommandRenderState& BaseState);
 	FShader* SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode);
 
@@ -102,6 +122,7 @@ private:
 	FLineGeometry  EditorLines;
 	FLineGeometry  ForegroundEditorLines;
 	FLineGeometry  GridLines;
+	FSolidColorGeometry ForegroundEditorSolids;
 	FFontGeometry  FontGeometry;
 	FScreenQuadGeometry ScreenQuads;
 
