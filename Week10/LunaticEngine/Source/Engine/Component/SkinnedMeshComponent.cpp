@@ -10,6 +10,7 @@
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Engine/Runtime/Engine.h"
 #include "Materials/MaterialManager.h"
+#include "Mesh/SkeletalMeshManager.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 #include "Render/Proxy/DirtyFlag.h"
@@ -87,6 +88,24 @@ namespace
 				MaterialSlots[i].Path = OverrideMaterials[i]
 					? OverrideMaterials[i]->GetAssetPathFileName()
 					: "None";
+			}
+		}
+	}
+	//helper for duplicate
+	void RestoreSkeletalMaterialOverrides(TArray<FMaterialSlot>& MaterialSlots,	TArray<UMaterial*>& OverrideMaterials,	const TArray<FMaterialSlot>& SavedSlots)
+	{
+		for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()) && i < static_cast<int32>(SavedSlots.size()); ++i)
+		{
+			MaterialSlots[i] = SavedSlots[i];
+
+			const FString& MatPath = MaterialSlots[i].Path;
+			if (MatPath.empty() || MatPath == "None")
+			{
+				OverrideMaterials[i] = nullptr;
+			}
+			else
+			{
+				OverrideMaterials[i] = FMaterialManager::Get().GetOrCreateMaterial(MatPath);
 			}
 		}
 	}
@@ -423,9 +442,46 @@ void USkinnedMeshComponent::Serialize(FArchive& Ar)
 void USkinnedMeshComponent::PostDuplicate()
 {
 	UMeshComponent::PostDuplicate();
+	if (!SkeletalMeshPath.empty() && SkeletalMeshPath != "None")
+	{
+		TArray<FMaterialSlot> SavedSlots = MaterialSlots;
+		TArray<FTransform> SavedBoneSpaceTransforms = BoneSpaceTransforms;
 
-	// USkeletalMesh 전용 로더는 후속 단계에서 연결.
-	// SkeletalMeshManager 등을 통해 SkeletalMeshPath로 다시 로드하는 흐름이 들어갈 자리.
+		USkeletalMesh* Loaded = FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshPath);
+		if (Loaded)
+		{
+			SetSkeletalMeshInternal(Loaded, false, false);
+
+			for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()) && i < static_cast<int32>(SavedSlots.size()); ++i)
+			{
+				MaterialSlots[i] = SavedSlots[i];
+
+				const FString& MatPath = MaterialSlots[i].Path;
+				if (MatPath.empty() || MatPath == "None")
+				{
+					OverrideMaterials[i] = nullptr;
+				}
+				else
+				{
+					OverrideMaterials[i] = FMaterialManager::Get().GetOrCreateMaterial(MatPath);
+				}
+			}
+
+			const FSkeletalMesh* MeshAsset = Loaded->GetSkeletalMeshAsset();
+			const int32 BoneCount = MeshAsset ? static_cast<int32>(MeshAsset->Skeleton.Bones.size()) : 0;
+			if (BoneCount > 0 && static_cast<int32>(SavedBoneSpaceTransforms.size()) == BoneCount)
+			{
+				BoneSpaceTransforms = SavedBoneSpaceTransforms;
+				RefreshBoneTransforms();
+				UpdateSkinnedMeshObject();
+			}
+			else
+			{
+				RefreshBoneTransforms();
+				UpdateSkinnedMeshObject();
+			}
+		}
+	}
 
 	CacheLocalBounds();
 	MarkRenderStateDirty();

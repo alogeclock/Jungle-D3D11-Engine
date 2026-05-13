@@ -1,4 +1,4 @@
-#include "Component/SkeletalMeshComponent.h"
+﻿#include "Component/SkeletalMeshComponent.h"
 
 #include "Asset/AssetData.h"
 #include "Collision/RayUtils.h"
@@ -603,6 +603,7 @@ void USkeletalMeshComponent::Serialize(FArchive& Ar)
 	Ar << bForceRefPose;
 	Ar << bEnableSkeletonUpdate;
 	Ar << RootBoneTranslation;
+	Ar << SkeletalPosePath;
 	Ar << bShowBoneNames;
 
 	if (Ar.IsLoading())
@@ -616,6 +617,7 @@ void USkeletalMeshComponent::PostDuplicate()
 {
 	USkinnedMeshComponent::PostDuplicate();
 	RefreshBoneTransforms();
+	UpdateSkinnedMeshObject();
 }
 
 void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
