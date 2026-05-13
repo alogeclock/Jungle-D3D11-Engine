@@ -38,6 +38,9 @@ FSkeletalMeshObjectCPU::FSkeletalMeshObjectCPU(const FSkeletalMesh* InSource, ID
 	MeshBuffer = std::make_unique<FMeshBuffer>();
 }
 
+
+
+
 void FSkeletalMeshObjectCPU::SetLOD(uint32 LODIndex)
 {
 	if (!Source || Source->LODModels.empty())
@@ -63,15 +66,21 @@ void FSkeletalMeshObjectCPU::SetLOD(uint32 LODIndex)
 	}
 }
 
-void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
+void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices, const TArray<float>* MorphTargetWeights)
 {
+
 	if (!Source || Source->LODModels.empty() || !Device) return;
 	const uint32 LODIndex = std::min<uint32>(CurrentLOD, static_cast<uint32>(Source->LODModels.size() - 1));
 	const FSkeletalMeshLOD& LOD = Source->LODModels[LODIndex];
 
 	if (SkinnedMeshData.Vertices.size() != LOD.Vertices.size())
 		SkinnedMeshData.Vertices.resize(LOD.Vertices.size());
+	if (MorphedVertices.size() != LOD.Vertices.size())
+		MorphedVertices.resize(LOD.Vertices.size());
 
+	std::copy(LOD.Vertices.begin(), LOD.Vertices.end(), MorphedVertices.begin());
+
+	ApplyMorphTargets(LODIndex, MorphTargetWeights, MorphedVertices);
 	TArray<FMatrix> NormalMatrices;
 	NormalMatrices.reserve(InSkinningMatrices.size());
 	for (const FMatrix& SkinningMatrix : InSkinningMatrices)
@@ -84,7 +93,7 @@ void FSkeletalMeshObjectCPU::Update(const TArray<FMatrix>& InSkinningMatrices)
 	FVector LocalMax(0.0f, 0.0f, 0.0f);
 	for (size_t v = 0; v < LOD.Vertices.size(); v++)
 	{
-		const FSkeletalVertex& In = LOD.Vertices[v];
+		const FSkeletalVertex& In = MorphedVertices[v];
 
 		FVector Pos(0, 0, 0), Normal(0, 0, 0), Tangent(0, 0, 0);
 		float TotalWeight = 0.0f;
@@ -185,4 +194,48 @@ bool FSkeletalMeshObjectCPU::GetSkinnedLocalBounds(FVector& OutCenter, FVector& 
 	OutCenter = SkinnedLocalCenter;
 	OutExtent = SkinnedLocalExtent;
 	return true;
+}
+
+void FSkeletalMeshObjectCPU::ApplyMorphTargets(uint32 LODIndex, const TArray<float>* Weights, TArray<FSkeletalVertex>& InOutVertices)
+{
+	if (!Source || !Weights)
+		return;
+
+	const int32 MorphCount = std::min<int32>(static_cast<int32>(Source->MorphTargets.size()),static_cast<int32>(Weights->size()));
+
+	for (int32 MorphIndex = 0; MorphIndex < MorphCount; ++MorphIndex)
+	{
+		const float Weight = (*Weights)[MorphIndex];
+		if (std::abs(Weight) <= 1.0e-4f)
+			continue;
+
+		const FMorphTarget& Morph = Source->MorphTargets[MorphIndex];
+		if (LODIndex >= Morph.LODModels.size())
+			continue;
+
+		const FMorphTargetLOD& MorphLOD = Morph.LODModels[LODIndex];
+		if (MorphLOD.Shapes.empty())
+			continue;
+
+		const FMorphTargetShape& Shape = MorphLOD.Shapes.back();
+
+		for (const FMorphTargetDelta& Delta : Shape.Deltas)
+		{
+			if (Delta.VertexIndex >= InOutVertices.size())
+				continue;
+
+			FSkeletalVertex& V = InOutVertices[Delta.VertexIndex];
+			V.Pos += Delta.PositionDelta * Weight;
+			V.Normal += Delta.NormalDelta * Weight;
+			V.Tangent += Delta.TangentDelta * Weight;
+		}
+		for (FSkeletalVertex& V : InOutVertices)
+		{
+			V.Normal = NormalizeOrFallback(V.Normal, FVector(0.0f, 0.0f, 1.0f));
+
+			FVector T(V.Tangent.X, V.Tangent.Y, V.Tangent.Z);
+			T = OrthogonalizeTangent(T, V.Normal);
+			V.Tangent = FVector4(T.X, T.Y, T.Z, V.Tangent.W);
+		}
+	}
 }

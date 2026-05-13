@@ -4,6 +4,7 @@
 
 #include <fbxsdk.h>
 
+#include <cstddef>
 #include <cmath>
 
 namespace
@@ -181,6 +182,44 @@ int32 FFbxGeometryReader::GetUVSetCount(FbxMesh* Mesh)
     return static_cast<int32>(UVSetNames.GetCount());
 }
 
+void FFbxGeometryReader::GetUVSetNames(FbxMesh* Mesh, TArray<FString>& OutUVSetNames)
+{
+    OutUVSetNames.clear();
+
+    if (!Mesh)
+    {
+        return;
+    }
+
+    FbxStringList UVSetNames;
+    Mesh->GetUVSetNames(UVSetNames);
+
+    OutUVSetNames.reserve(static_cast<size_t>(UVSetNames.GetCount()));
+    for (int32 UVSetIndex = 0; UVSetIndex < UVSetNames.GetCount(); ++UVSetIndex)
+    {
+        const char* Name = UVSetNames[UVSetIndex];
+        OutUVSetNames.push_back(Name ? FString(Name) : FString());
+    }
+}
+
+FVector2 FFbxGeometryReader::ReadUVByName(FbxMesh* Mesh, int32 PolygonIndex, int32 CornerIndex, const char* UVSetName)
+{
+    if (!Mesh || !UVSetName || UVSetName[0] == '\0')
+    {
+        return FVector2(0.0f, 0.0f);
+    }
+
+    FbxVector2 UV;
+    bool       bUnmapped = false;
+
+    if (Mesh->GetPolygonVertexUV(PolygonIndex, CornerIndex, UVSetName, UV, bUnmapped) && !bUnmapped)
+    {
+        return FVector2(static_cast<float>(UV[0]), 1.0f - static_cast<float>(UV[1]));
+    }
+
+    return FVector2(0.0f, 0.0f);
+}
+
 FVector2 FFbxGeometryReader::ReadUVByChannel(FbxMesh* Mesh, int32 PolygonIndex, int32 CornerIndex, int32 ChannelIndex)
 {
     if (!Mesh)
@@ -196,15 +235,7 @@ FVector2 FFbxGeometryReader::ReadUVByChannel(FbxMesh* Mesh, int32 PolygonIndex, 
         return FVector2(0.0f, 0.0f);
     }
 
-    FbxVector2 UV;
-    bool       bUnmapped = false;
-
-    if (Mesh->GetPolygonVertexUV(PolygonIndex, CornerIndex, UVSetNames[ChannelIndex], UV, bUnmapped) && !bUnmapped)
-    {
-        return FVector2(static_cast<float>(UV[0]), 1.0f - static_cast<float>(UV[1]));
-    }
-
-    return FVector2(0.0f, 0.0f);
+    return ReadUVByName(Mesh, PolygonIndex, CornerIndex, UVSetNames[ChannelIndex]);
 }
 
 FVector4 FFbxGeometryReader::ReadVertexColor(FbxMesh* Mesh, int32 ControlPointIndex, int32 PolygonVertexIndex)
@@ -362,6 +393,11 @@ FVector FFbxGeometryReader::ComputeTriangleTangent(
 
 bool FFbxGeometryReader::ReadTriangleSample(FbxMesh* Mesh, int32 PolygonIndex, const FFbxMeshImportSpace& ImportSpace, FFbxTriangleSample& OutTriangle)
 {
+    return ReadTriangleSample(Mesh, PolygonIndex, ImportSpace, nullptr, OutTriangle);
+}
+
+bool FFbxGeometryReader::ReadTriangleSample(FbxMesh* Mesh, int32 PolygonIndex, const FFbxMeshImportSpace& ImportSpace, const char* UV0SetName, FFbxTriangleSample& OutTriangle)
+{
     if (!Mesh || Mesh->GetPolygonSize(PolygonIndex) != 3)
     {
         return false;
@@ -374,7 +410,7 @@ bool FFbxGeometryReader::ReadTriangleSample(FbxMesh* Mesh, int32 PolygonIndex, c
 
         const FVector LocalPosition        = ReadPosition(Mesh, ControlPointIndex);
         OutTriangle.Positions[CornerIndex] = FFbxTransformUtils::TransformPositionByMatrix(LocalPosition, ImportSpace.VertexTransform);
-        OutTriangle.UV0[CornerIndex]       = ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, 0);
+        OutTriangle.UV0[CornerIndex]       = UV0SetName ? ReadUVByName(Mesh, PolygonIndex, CornerIndex, UV0SetName) : ReadUVByChannel(Mesh, PolygonIndex, CornerIndex, 0);
     }
 
     OutTriangle.FallbackNormal = ComputeTriangleNormal(OutTriangle.Positions[0], OutTriangle.Positions[1], OutTriangle.Positions[2]);

@@ -58,8 +58,9 @@ namespace
 			return DirectPath;
 		}
 
-		std::filesystem::recursive_directory_iterator It(SearchRoot, std::filesystem::directory_options::skip_permission_denied, ErrorCode);
-		const std::filesystem::recursive_directory_iterator End;
+		const std::filesystem::path CacheRoot = SearchRoot / L"Cache";
+		std::filesystem::directory_iterator It(CacheRoot, std::filesystem::directory_options::skip_permission_denied, ErrorCode);
+		const std::filesystem::directory_iterator End;
 		while (!ErrorCode && It != End)
 		{
 			const std::filesystem::path CandidatePath = It->path();
@@ -75,6 +76,32 @@ namespace
 		return {};
 	}
 
+	bool IsFreshCacheFile(const std::filesystem::path& CachePath, const std::filesystem::path& SourcePath)
+	{
+		std::error_code ErrorCode;
+		if (!std::filesystem::is_regular_file(CachePath, ErrorCode))
+		{
+			return false;
+		}
+
+		ErrorCode.clear();
+		if (!std::filesystem::is_regular_file(SourcePath, ErrorCode))
+		{
+			return true;
+		}
+
+		ErrorCode.clear();
+		const auto CacheWriteTime = std::filesystem::last_write_time(CachePath, ErrorCode);
+		if (ErrorCode)
+		{
+			return false;
+		}
+
+		ErrorCode.clear();
+		const auto SourceWriteTime = std::filesystem::last_write_time(SourcePath, ErrorCode);
+		return !ErrorCode && CacheWriteTime >= SourceWriteTime;
+	}
+
 	USkeletalMesh* TryLoadNearbySkeletalMeshCache(const std::filesystem::path& FbxPath, FString& OutRelativeSkmPath)
 	{
 		const std::filesystem::path CachePath = FindNearbySkeletalMeshCache(FbxPath);
@@ -85,6 +112,24 @@ namespace
 
 		OutRelativeSkmPath = FPaths::ToUtf8(CachePath.lexically_relative(FPaths::RootDir()).generic_wstring());
 		return FSkeletalMeshManager::LoadSkeletalMesh(OutRelativeSkmPath);
+	}
+
+	UStaticMesh* TryLoadFreshStaticMeshCache(const FString& RelativeFbxPath, const std::filesystem::path& FbxPath, ID3D11Device* Device, FString& OutRelativeBinPath)
+	{
+		if (!Device)
+		{
+			return nullptr;
+		}
+
+		const FString BinPath = FObjManager::GetBinaryFilePath(RelativeFbxPath);
+		const std::filesystem::path BinPathW(FPaths::ToWide(FPaths::ConvertRelativePathToFull(BinPath)));
+		if (!IsFreshCacheFile(BinPathW, FbxPath))
+		{
+			return nullptr;
+		}
+
+		OutRelativeBinPath = BinPath;
+		return FObjManager::LoadFbxStaticMesh(RelativeFbxPath, Device);
 	}
 
 	std::vector<FString> WrapTextLines(const FString& Text, float MaxWidth, int MaxLines)
@@ -402,6 +447,17 @@ void FbxElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 		return;
 	}
 
+	ID3D11Device* Device = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
+
+	FString RelativeBinPath;
+	if (UStaticMesh* CachedStaticMesh = TryLoadFreshStaticMeshCache(RelativeFbxPath, ContentItem.Path, Device, RelativeBinPath))
+	{
+		(void)CachedStaticMesh;
+		Context.bIsNeedRefresh = true;
+		FNotificationManager::Get().AddNotification("Loaded StaticMesh cache: " + RelativeBinPath, ENotificationType::Success, 4.0f);
+		return;
+	}
+
 	if (FFbxImporter::HasSkinDeformer(RelativeFbxPath))
 	{
 		USkeletalMesh* SkeletalMesh = FSkeletalMeshManager::LoadSkeletalMesh(RelativeFbxPath);
@@ -423,8 +479,6 @@ void FbxElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 
 		return;
 	}
-
-	ID3D11Device* Device = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
 
 	if (!Device)
 	{

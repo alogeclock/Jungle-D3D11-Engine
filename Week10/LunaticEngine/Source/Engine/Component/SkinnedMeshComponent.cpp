@@ -102,6 +102,15 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 	SetSkeletalMeshInternal(InMesh, true, true);
 }
 
+int32 USkinnedMeshComponent::FindMorphTargetIndex(const FString& MorphName) const
+{
+	return int32();
+}
+
+void USkinnedMeshComponent::EnsureMorphTargetWeights()
+{
+}
+
 void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool bBuildInitialSkinning, bool bUpdateRenderState)
 {
 	SkeletalMesh = InMesh;
@@ -138,6 +147,8 @@ void USkinnedMeshComponent::SetSkeletalMeshInternal(USkeletalMesh* InMesh, bool 
 	{
 		FinalizeSkeletalMeshRenderState();
 	}
+	MorphTargetWeights.clear();
+	bMorphTargetsDirty = true;
 }
 
 void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
@@ -150,7 +161,8 @@ void USkinnedMeshComponent::InvalidateSkinnedMeshState(bool bClearPose)
 		ComponentSpaceMatrices.clear();
 		SkinningMatrices.clear();
 	}
-
+	MorphTargetWeights.clear();
+	bMorphTargetsDirty = true;
 	bPoseDirty = true;
 	bSkinningDirty = true;
 	bBoundsDirty = true;
@@ -187,6 +199,35 @@ void USkinnedMeshComponent::SetRenderLOD(uint32 LODIndex)
 	UpdateSkinnedMeshObject();
 }
 
+void USkinnedMeshComponent::SetMorphTarget(const FString& MorphName, float Value)
+{
+	const int32 MorphIndex = FindMorphTargetIndex(MorphName);
+	if (MorphIndex < 0)
+		return;
+
+	EnsureMorphTargetWeights();
+
+	const float Clamped = std::clamp(Value, 0.0f, 1.0f);
+	if (std::abs(MorphTargetWeights[MorphIndex] - Clamped) <= 1.0e-4f)
+		return;
+
+	MorphTargetWeights[MorphIndex] = Clamped;
+	bMorphTargetsDirty = true;
+	bSkinningDirty = true;
+	bBoundsDirty = true;
+	MarkProxyDirty(EDirtyFlag::Mesh);
+	MarkWorldBoundsDirty();
+}
+
+float USkinnedMeshComponent::GetMorphTarget(const FString& MorphName) const
+{
+	return 0.0f;
+}
+
+void USkinnedMeshComponent::ClearMorphTargets()
+{
+}
+
 void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 {
 	if (!bCPUSkinning || !MeshObject)
@@ -194,7 +235,7 @@ void USkinnedMeshComponent::UpdateSkinnedMeshObject()
 		return;
 	}
 
-	MeshObject->Update(SkinningMatrices);
+	MeshObject->Update(SkinningMatrices, &MorphTargetWeights);
 	FVector SkinnedCenter;
 	FVector SkinnedExtent;
 	if (MeshObject->GetSkinnedLocalBounds(SkinnedCenter, SkinnedExtent))
