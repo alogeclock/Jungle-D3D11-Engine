@@ -1,0 +1,29 @@
+{
+  "BlendState" : "",
+  "DepthStencilState" : "",
+  "FbxFlags" : {
+    "HasEmbeddedTexture" : false,
+    "HasLayeredTexture" : false
+  },
+  "Origin" : "FbxImport",
+  "Parameters" : {
+    "HasNormalMap" : 0.000000,
+    "SectionColor" : [0.800000, 0.800000, 0.800000, 1.000000],
+    "_pad" : [0.000000, 0.000000, 0.000000]
+  },
+  "PathFileName" : "Asset/Materials/Auto/Fbx/Furina/___-16848674176304923840.mat",
+  "RasterizerState" : "",
+  "RenderPass" : "Opaque",
+  "ShaderPath" : "Shaders/Geometry/UberLit.hlsl",
+  "TextureTransforms" : {
+    "DiffuseTexture" : {
+      "Rotation" : 0.000000,
+      "Scale" : [1.000000, 1.000000],
+      "Translation" : [0.000000, 0.000000],
+      "UVSet" : "default"
+    }
+  },
+  "Textures" : {
+    "DiffuseTexture" : "Asset/Content/Model/FurinaFBX/FurinaFBX/Furina.fbm/颜.png"
+  }
+}

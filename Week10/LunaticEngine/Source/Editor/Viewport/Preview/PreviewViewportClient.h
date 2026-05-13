@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Editor/Settings/PreviewSettings.h"
 #include "Editor/Viewport/EditorViewportClient.h"
 #include "Editor/Viewport/Preview/PreviewScene.h"
 #include "Input/InputAction.h"
@@ -38,8 +39,11 @@ public:
 	const FVector& GetOrbitTarget() const { return OrbitTarget; }
 	bool FocusBounds(const FVector& Center, const FVector& Extent);
 	void SetViewportType(ELevelViewportType NewType);
-	float GetPreviewCameraSpeed() const { return PreviewCameraSpeed; }
+	float GetPreviewCameraSpeed() const { return PreviewSettings.CameraSpeed; }
 	void SetPreviewCameraSpeed(float InSpeed);
+	FPreviewSettings& GetPreviewSettings() { return PreviewSettings; }
+	const FPreviewSettings& GetPreviewSettings() const { return PreviewSettings; }
+	void MarkPreviewSettingsDirty() { bPreviewSettingsDirty = true; }
 	virtual void SetPreviewGizmoMode(int32 InMode) { (void)InMode; }
 	virtual int32 GetPreviewGizmoMode() const { return 0; }
 	virtual void TogglePreviewGizmoMode();
@@ -61,14 +65,16 @@ private:
 	void SyncCamera();
 	void UpdateCameraPosition(float DeltaTime);
 	void ApplyOrbitInput();
+	void SavePreviewSettings();
 
 private:
 	FPreviewScene PreviewScene;
+	FPreviewSettings PreviewSettings;
 
 	bool bSuppressInputUntilMouseUp = false;
+	bool bPreviewSettingsDirty = false;
 
 	FVector OrbitTarget = FVector::ZeroVector;
-	float PreviewCameraSpeed = 10.0f;
 
 	FInputMappingContext* PreviewMappingContext = nullptr;
 
