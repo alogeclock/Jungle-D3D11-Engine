@@ -5,6 +5,7 @@
 #include "Editor/Settings/EditorSettings.h"
 #include "Editor/UI/EditorAccentColor.h"
 #include "Editor/UI/EditorPanelTitleUtils.h"
+#include "Core/Notification.h"
 #include "Core/ProjectSettings.h"
 #include "Editor/Selection/SelectionManager.h"
 #include "Engine/Runtime/WindowsWindow.h"
@@ -40,14 +41,28 @@
 #include "GameFramework/StaticMeshActor.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/SkeletalMeshManager.h"
 #include "Mesh/StaticMeshAsset.h"             // FStaticMesh / FNormalVertex
 #include "Mesh/FbxImporter.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <string>
 
 namespace
 {
+FString MakeProjectRelativePath(const std::filesystem::path& Path)
+{
+	const std::filesystem::path RootPath = std::filesystem::path(FPaths::RootDir()).lexically_normal();
+	const std::filesystem::path NormalizedPath = Path.lexically_normal();
+	const std::filesystem::path RelativePath = NormalizedPath.lexically_relative(RootPath);
+	if (!RelativePath.empty() && RelativePath.native().find(L"..") != 0)
+	{
+		return FPaths::ToUtf8(RelativePath.generic_wstring());
+	}
+	return FPaths::ToUtf8(NormalizedPath.generic_wstring());
+}
+
 // FBX → SkeletalMesh: 정적 임포트 결과를 1-bone 스켈레톤으로 감싸기
 // 실제 본 가중치는 없으니 T-Pose 그대로 정지 상태. 캐릭터 메시 형상 시각 확인용
 // 실패 시 nullptr 반환 (caller가 더미 큐브로 fallback)
@@ -1879,6 +1894,39 @@ void FLevelViewportLayout::RenderViewportUI(float DeltaTime)
 				NewActor->InitDefaultComponents(FPaths::ToUtf8(ContentItem.Path));
 				Editor->GetWorld()->AddActor(NewActor);
 				Editor->CommitTrackedSceneChange();
+			}
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FbxContentItem"))
+			{
+				FContentItem ContentItem = *reinterpret_cast<const FContentItem*>(payload->Data);
+				const FString RelativeFbxPath = MakeProjectRelativePath(ContentItem.Path);
+
+				if (!FFbxImporter::HasSkinDeformer(RelativeFbxPath))
+				{
+					FNotificationManager::Get().AddNotification("FBX drop failed: file is not a skeletal mesh.", ENotificationType::Error, 4.0f);
+				}
+				else if (USkeletalMesh* SkeletalMesh = FSkeletalMeshManager::LoadSkeletalMesh(RelativeFbxPath))
+				{
+					Editor->BeginTrackedSceneChange();
+					ASkeletalMeshActor* NewActor = Cast<ASkeletalMeshActor>(FObjectFactory::Get().Create(ASkeletalMeshActor::StaticClass()->GetName(), Editor->GetWorld()));
+					if (NewActor)
+					{
+						NewActor->InitDefaultComponents();
+						if (USkeletalMeshComponent* SkeletalMeshComponent = NewActor->GetSkeletalMeshComponent())
+						{
+							SkeletalMeshComponent->SetSkeletalMesh(SkeletalMesh);
+						}
+						Editor->GetWorld()->AddActor(NewActor);
+						Editor->CommitTrackedSceneChange();
+					}
+					else
+					{
+						Editor->CancelTrackedSceneChange();
+					}
+				}
+				else
+				{
+					FNotificationManager::Get().AddNotification("FBX drop failed: could not load skeletal mesh.", ENotificationType::Error, 4.0f);
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}

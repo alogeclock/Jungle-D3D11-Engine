@@ -3,6 +3,9 @@
 #include "Core/ProjectSettings.h"
 #include "Engine/Input/InputManager.h"
 
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_internal.h"
+
 #include <algorithm>
 #include <optional>
 #include <windowsx.h>
@@ -23,6 +26,7 @@ namespace
 	
 	// 입력 처리 및 Hit Test
 	LRESULT HitTestEditorFrame(HWND hWnd, const FWindowsWindow& Window, LPARAM lParam);
+	bool IsImGuiWindowBlockingTitleBarDrag(HWND hWnd, POINT ScreenPoint);
 	void RegisterRawMouseInput(HWND hWnd);	
 }
 
@@ -346,9 +350,52 @@ namespace
 	    }
 
 	    if (Window.IsInTitleBarDragRegion(ClientPoint))
+	    {
+	        if (IsImGuiWindowBlockingTitleBarDrag(hWnd, Cursor))
+	        {
+	            return HTCLIENT;
+	        }
 	        return HTCAPTION;
+	    }
 
 	    return HTCLIENT;
+	}
+
+	bool IsImGuiWindowBlockingTitleBarDrag(HWND hWnd, POINT ScreenPoint)
+	{
+	    if (!GImGui)
+	    {
+	        return false;
+	    }
+
+	    ImGuiContext& Context = *GImGui;
+	    const ImVec2 Point(static_cast<float>(ScreenPoint.x), static_cast<float>(ScreenPoint.y));
+	    for (int32 Index = Context.Windows.Size - 1; Index >= 0; --Index)
+	    {
+	        ImGuiWindow* Window = Context.Windows[Index];
+	        if (!Window || !Window->WasActive || Window->Hidden)
+	        {
+	            continue;
+	        }
+
+	        if ((Window->Flags & ImGuiWindowFlags_NoInputs) != 0)
+	        {
+	            continue;
+	        }
+
+	        if (Window->Viewport && Window->Viewport->PlatformHandle && Window->Viewport->PlatformHandle != hWnd)
+	        {
+	            continue;
+	        }
+
+	        const ImRect Rect = Window->OuterRectClipped;
+	        if (Point.x >= Rect.Min.x && Point.x < Rect.Max.x && Point.y >= Rect.Min.y && Point.y < Rect.Max.y)
+	        {
+	            return true;
+	        }
+	    }
+
+	    return false;
 	}
 
 	// 윈도우 포커스와 관계없이 마우스 RawInput을 받을 수 있도록 등록한다.
