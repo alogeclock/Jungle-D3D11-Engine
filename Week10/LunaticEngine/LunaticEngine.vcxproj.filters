@@ -554,6 +554,9 @@
     <ClCompile Include="Source\Engine\Asset\AssetCurveUtils.cpp">
       <Filter>Source\Engine\Asset</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Asset\AssetManager.cpp">
+      <Filter>Source\Engine\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Asset\AssetData.cpp">
       <Filter>Source\Engine\Asset</Filter>
     </ClCompile>
@@ -1467,6 +1470,9 @@
       <Filter>Source\Editor\Viewport\Preview</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Asset\AssetCurveUtils.h">
+      <Filter>Source\Engine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Asset\AssetManager.h">
       <Filter>Source\Engine\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Asset\AssetData.h">

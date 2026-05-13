@@ -1,12 +1,12 @@
-#include "Component/SkeletalMeshComponent.h"
+﻿#include "Component/SkeletalMeshComponent.h"
 
+#include "Asset/AssetManager.h"
 #include "Asset/AssetData.h"
 #include "Asset/AssetFileSerializer.h"
 #include "Collision/RayUtils.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
-#include "Mesh/SkeletalMeshManager.h"
 #include "Object/ObjectFactory.h"
 #include "Platform/Paths.h"
 #include "Render/Proxy/DirtyFlag.h"
@@ -616,6 +616,7 @@ void USkeletalMeshComponent::Serialize(FArchive& Ar)
 	Ar << bForceRefPose;
 	Ar << bEnableSkeletonUpdate;
 	Ar << RootBoneTranslation;
+	Ar << SkeletalPosePath;
 	Ar << bShowBoneNames;
 
 	if (Ar.IsLoading())
@@ -629,6 +630,7 @@ void USkeletalMeshComponent::PostDuplicate()
 {
 	USkinnedMeshComponent::PostDuplicate();
 	RefreshBoneTransforms();
+	UpdateSkinnedMeshObject();
 }
 
 void USkeletalMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
@@ -653,7 +655,9 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	UMeshComponent::PostEditProperty(PropertyName);
 
 	if (std::strcmp(PropertyName, "Skeletal Mesh") == 0)
-		SetSkeletalMesh(IsNonePath(SkeletalMeshPath) ? nullptr : FSkeletalMeshManager::LoadSkeletalMesh(SkeletalMeshPath));
+	{
+		SetSkeletalMesh(FAssetManager::Get().LoadSkeletalMesh({ SkeletalMeshPath }));
+	}
 	else if (std::strcmp(PropertyName, "Skeletal Pose") == 0)
 	{
 		if (!IsNonePath(SkeletalPosePath))
