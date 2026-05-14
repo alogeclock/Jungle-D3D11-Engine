@@ -239,7 +239,7 @@ json::JSON FSceneSaveManager::SerializeProperties(UObject* Obj)
 	JSON props = json::Object();
 	if (!Obj) return props;
 
-	TArray<FPropertyDescriptor> Descriptors;
+	TArray<FProperty> Descriptors;
 	Obj->GetEditableProperties(Descriptors);
 
 	for (const auto& Prop : Descriptors) {
@@ -455,7 +455,7 @@ void FSceneSaveManager::DeserializeProperties(UObject* Obj, json::JSON& PropsJSO
 {
 	if (!Obj) return;
 
-	TArray<FPropertyDescriptor> Descriptors;
+	TArray<FProperty> Descriptors;
 	Obj->GetEditableProperties(Descriptors);
 
 	for (auto& Prop : Descriptors) {
@@ -467,7 +467,7 @@ void FSceneSaveManager::DeserializeProperties(UObject* Obj, json::JSON& PropsJSO
 
 	// 2nd pass: PostEditProperty가 새 프로퍼티를 추가할 수 있음
 	// (예: SetStaticMesh → MaterialSlots 생성 → "Element N" 디스크립터 추가)
-	TArray<FPropertyDescriptor> Descriptors2;
+	TArray<FProperty> Descriptors2;
 	Obj->GetEditableProperties(Descriptors2);
 
 	for (size_t i = Descriptors.size(); i < Descriptors2.size(); ++i) {

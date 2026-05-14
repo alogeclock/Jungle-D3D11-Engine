@@ -41,7 +41,7 @@ public:
 	void PostDuplicate() override;
 	void Tick(float DeltaTime) override;
 	void Serialize(FArchive& Ar) override;
-	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 
 	bool IsQuestTarget() const { return bQuestTarget; }
 	void SetQuestTarget(bool bIn) { bQuestTarget = bIn; }

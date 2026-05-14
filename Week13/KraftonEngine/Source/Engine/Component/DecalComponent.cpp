@@ -31,7 +31,7 @@ FPrimitiveSceneProxy* UDecalComponent::CreateSceneProxy()
 	return new FDecalSceneProxy(this);
 }
 
-void UDecalComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UDecalComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UPrimitiveComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Material", EPropertyType::MaterialSlot, "Rendering", &MaterialSlot });

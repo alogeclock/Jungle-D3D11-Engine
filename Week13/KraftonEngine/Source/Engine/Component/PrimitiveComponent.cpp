@@ -190,7 +190,7 @@ void UPrimitiveComponent::MarkRenderVisibilityDirty()
 	World->MarkWorldPrimitivePickingBVHDirty();
 }
 
-void UPrimitiveComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UPrimitiveComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	USceneComponent::GetEditableProperties(OutProps);
 
@@ -202,7 +202,7 @@ void UPrimitiveComponent::GetEditableProperties(TArray<FPropertyDescriptor>& Out
 	OutProps.push_back({ "Generate Overlap Events", EPropertyType::Bool, "Collision", &bGenerateOverlapEvents });
 
 	{
-		FPropertyDescriptor Desc;
+		FProperty Desc;
 		Desc.Name = "Collision Enabled";
 		Desc.Type = EPropertyType::Enum;
 		Desc.Category = "Collision";
@@ -214,7 +214,7 @@ void UPrimitiveComponent::GetEditableProperties(TArray<FPropertyDescriptor>& Out
 	}
 
 	{
-		FPropertyDescriptor Desc;
+		FProperty Desc;
 		Desc.Name = "Object Type";
 		Desc.Type = EPropertyType::Enum;
 		Desc.Category = "Collision";
@@ -226,7 +226,7 @@ void UPrimitiveComponent::GetEditableProperties(TArray<FPropertyDescriptor>& Out
 	}
 
 	{
-		FPropertyDescriptor Desc;
+		FProperty Desc;
 		Desc.Name = "Collision Responses";
 		Desc.Type = EPropertyType::Struct;
 		Desc.Category = "Collision";

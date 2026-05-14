@@ -48,7 +48,7 @@ void UCarMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	}
 }
 
-void UCarMovementComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UCarMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UMovementComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "MaxSpeed", EPropertyType::Float, "Movement", &MaxSpeed, 0.0f, 200.0f, 0.5f });

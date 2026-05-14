@@ -92,7 +92,7 @@ bool UPointLightComponent::GetLightViewProj(FLightViewProjResult& OutResult, con
 	return true;
 }
 
-void UPointLightComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UPointLightComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	ULightComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "AttenuationRadius",EPropertyType::Float,"Lighting",&AttenuationRadius,0.05f,1000.f,0.01f });

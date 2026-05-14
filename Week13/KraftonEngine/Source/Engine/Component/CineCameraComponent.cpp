@@ -14,7 +14,7 @@ void UCineCameraComponent::Serialize(FArchive& Ar)
 	Ar << Letterbox.Color;
 }
 
-void UCineCameraComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UCineCameraComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UCameraComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Enable Letterbox", EPropertyType::Bool, "Cinematic", &Letterbox.bEnabled });

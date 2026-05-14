@@ -52,7 +52,7 @@ void UPendulumMovementComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	Target->SetRelativeRotation(FinalQuat);
 }
 
-void UPendulumMovementComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UPendulumMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UMovementComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Swing Axis",      EPropertyType::Vec3,    "Movement", &Axis });

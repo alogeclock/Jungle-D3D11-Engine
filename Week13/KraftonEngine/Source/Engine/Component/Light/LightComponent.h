@@ -7,7 +7,7 @@ public:
 	DECLARE_CLASS(ULightComponent, ULightComponentBase)
 
 	virtual void Serialize(FArchive& Ar) override;
-	virtual void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	virtual void GetEditableProperties(TArray<FProperty>& OutProps) override;
 
 	float GetShadowResolutionScale() const { return ShadowResolutionScale; }
 	float GetShadowBias() const { return ShadowBias; }

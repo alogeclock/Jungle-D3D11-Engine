@@ -76,7 +76,7 @@ void UProjectileMovementComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	UpdatedSceneComponent->SetWorldLocation(UpdatedSceneComponent->GetWorldLocation() + MoveDelta);
 }
 
-void UProjectileMovementComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UProjectileMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UMovementComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Velocity", EPropertyType::Vec3, "Movement", &Velocity, 0.0f, 0.0f, 1.0f });

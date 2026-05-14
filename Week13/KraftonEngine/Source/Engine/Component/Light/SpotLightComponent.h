@@ -10,7 +10,7 @@ public:
 	virtual void PushToScene() override;
 	virtual void DestroyFromScene() override;
 	virtual void Serialize(FArchive& Ar) override;
-	virtual void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	virtual void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	virtual bool GetLightViewProj(FLightViewProjResult& OutResult, const FMinimalViewInfo* POV = nullptr, int32 FaceIndex = 0) const override;
 
 	float GetOuterConeAngle() const { return OuterConeAngle; }

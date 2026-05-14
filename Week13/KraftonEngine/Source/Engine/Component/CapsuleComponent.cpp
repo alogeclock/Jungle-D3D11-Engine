@@ -121,7 +121,7 @@ void UCapsuleComponent::UpdateWorldAABB() const
 	bHasValidWorldAABB = true;
 }
 
-void UCapsuleComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UCapsuleComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UShapeComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Capsule Radius", EPropertyType::Float, "Shape", &CapsuleRadius, 0.01f, 10000.0f, 1.0f });

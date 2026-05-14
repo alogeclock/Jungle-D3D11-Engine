@@ -35,7 +35,7 @@ public:
 	void InitDefaultComponents(const FVector& Extent = FVector(1.0f, 1.0f, 1.0f));
 	void PostDuplicate() override;
 
-	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 
 	// 서브클래스 override hook — 베이스의 GameMode 통지 외 추가 동작이 필요할 때.
 	virtual void OnPossessedPawnEntered(APawn* Pawn) {}

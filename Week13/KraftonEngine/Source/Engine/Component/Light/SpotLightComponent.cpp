@@ -110,7 +110,7 @@ bool USpotLightComponent::GetLightViewProj(FLightViewProjResult& OutResult, cons
 	return true;
 }
 
-void USpotLightComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void USpotLightComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UPointLightComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "InnerConeAngle", EPropertyType::Float, "Lighting", &InnerConeAngle, 0.0f, 89.0f, 0.1f });

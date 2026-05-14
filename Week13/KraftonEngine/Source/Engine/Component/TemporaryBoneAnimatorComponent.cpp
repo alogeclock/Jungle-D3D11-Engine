@@ -33,7 +33,7 @@ void UTemporaryBoneAnimatorComponent::Serialize(FArchive& Ar)
 	Ar << bEnabled;
 }
 
-void UTemporaryBoneAnimatorComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UTemporaryBoneAnimatorComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	OutProps.push_back({ "Target Bone Name", EPropertyType::String, "Temp Bone Animator", &TargetBoneName });
 	OutProps.push_back({ "Enabled", EPropertyType::Bool, "Temp Bone Animator", &bEnabled });

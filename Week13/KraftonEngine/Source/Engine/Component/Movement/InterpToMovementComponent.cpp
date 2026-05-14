@@ -48,7 +48,7 @@ void UInterpToMovementComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	UpdateLerp(DeltaTime);
 }
 
-void UInterpToMovementComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) {
+void UInterpToMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps) {
 	UMovementComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Auto Activate",		  EPropertyType::Bool,		 "Movement", &bAutoActivate });
 	OutProps.push_back({ "Orient To Movement",	  EPropertyType::Bool,		 "Movement", &bFaceTargetDir });

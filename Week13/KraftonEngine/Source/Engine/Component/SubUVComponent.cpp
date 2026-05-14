@@ -73,7 +73,7 @@ void USubUVComponent::RebuildSubUVMaterial()
 		SubUVMaterial->SetCachedSRV(EMaterialTextureSlot::Diffuse, nullptr);
 }
 
-void USubUVComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void USubUVComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	// Billboard의 Texture 프로퍼티는 SubUV에서 의미가 없으므로 의도적으로 스킵.
 	// UPrimitiveComponent로 직접 올라가 공통 트랜스폼 등만 가져온 뒤,

@@ -60,7 +60,7 @@ void UObject::Serialize(FArchive& Ar)
 	Ar << ObjectName;
 }
 
-void UObject::GetEditableProperties(TArray<FPropertyDescriptor>& /*OutProps*/)
+void UObject::GetEditableProperties(TArray<FProperty>& /*OutProps*/)
 {
 	// 기본 UObject는 에디터에 노출할 프로퍼티 없음.
 }

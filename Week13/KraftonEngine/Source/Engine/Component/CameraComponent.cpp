@@ -82,7 +82,7 @@ void UCameraComponent::GetCameraView(float /*DeltaTime*/, FMinimalViewInfo& OutP
 	OutPOV.bIsOrtho    = CameraState.bIsOrthogonal;
 }
 
-void UCameraComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UCameraComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	USceneComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "FOV",         EPropertyType::Float, "Camera", &CameraState.FOV, 0.1f,   3.14f,    0.01f });

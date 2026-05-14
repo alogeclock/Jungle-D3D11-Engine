@@ -39,7 +39,7 @@ public:
 	void PostDuplicate() override;
 
 	// Property Editor 지원
-	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	void PostEditProperty(const char* PropertyName) override;
 
 	const FString& GetStaticMeshPath() const { return StaticMeshPath; }
