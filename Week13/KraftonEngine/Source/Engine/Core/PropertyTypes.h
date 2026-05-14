@@ -53,11 +53,8 @@ struct FPropertyDescriptor
 {
 	std::string   Name;
 	EPropertyType Type			= EPropertyType::Bool;
-	uint32		  PropertyFlag	= EPropertyFlags::CPF_None;
 	std::string   Category;      // 에디터 카테고리 (같은 문자열끼리 그룹화)
 	void*         ValuePtr		= nullptr;
-	uint32		  ElementSize;
-	uint32		  Offset_Internal;
 
 	// float 범위 힌트 (DragFloat 등에서 사용)
 	float Min   = 0.0f;
@@ -71,6 +68,10 @@ struct FPropertyDescriptor
 
 	// Struct Metadata
 	FStructPropertyFunc StructFunc = nullptr;
+
+	uint32		  PropertyFlag = EPropertyFlags::CPF_None;
+	uint32		  ElementSize = 0;
+	uint32		  Offset_Interna = 0;
 
 	// JSON 직렬화 — FSceneSaveManager 등 외부 직렬자가 호출.
 	// 헤더에 SimpleJSON 의존을 들이지 않기 위해 본문은 PropertyTypes.cpp 에 둔다.
