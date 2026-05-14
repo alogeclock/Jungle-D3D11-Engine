@@ -1,4 +1,4 @@
-#include "ContentBrowser.h"
+﻿#include "ContentBrowser.h"
 
 #include "ContentBrowserElement.h"
 #include "Editor/Settings/EditorSettings.h"
@@ -303,6 +303,13 @@ void FEditorContentBrowserWidget::Initialize(UEditorEngine* InEditor, ID3D11Devi
 	LoadFromSettings();
 
 	Refresh();
+}
+
+void FEditorContentBrowserWidget::Shutdown()
+{
+	BrowserContext.SelectedElement.reset();
+	CachedBrowserElements.clear();
+	ICons.clear();
 }
 
 void FEditorContentBrowserWidget::Render(float DeltaTime)

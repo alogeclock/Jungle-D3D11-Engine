@@ -277,6 +277,8 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	IO.IniFilename = "Settings/imgui.ini";
 	IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	IO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	IO.ConfigDpiScaleFonts = true;
+	IO.ConfigDpiScaleViewports = true;
 	ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_None;
 	ApplyEditorColorTheme();
 	ApplyEditorTabStyle();
@@ -332,6 +334,7 @@ void FEditorMainPanel::Release()
 	}
 	PreviewEditorWidgets.clear();
 	PreviewDevice = nullptr;
+	ContentBrowserWidget.Shutdown();
 	AssetEditorWidget.Shutdown();
 	ConsoleWidget.Shutdown();
 	ImGui_ImplDX11_Shutdown();
@@ -519,7 +522,10 @@ void FEditorMainPanel::OpenSkeletalMeshEditor(USkeletalMesh* Mesh)
 
 	std::unique_ptr<FSkeletalMeshPreviewWidget> NewEditor = std::make_unique<FSkeletalMeshPreviewWidget>();
 	NewEditor->SetEditorInstanceId(NextPreviewEditorInstanceId++);
-	NewEditor->Initialize(EditorEngine, PreviewDevice, Window);
+	if (!NewEditor->Initialize(EditorEngine, PreviewDevice, Window))
+	{
+		return;
+	}
 	NewEditor->OpenSkeletalMesh(Mesh);
 	PreviewEditorWidgets.push_back(std::move(NewEditor));
 }

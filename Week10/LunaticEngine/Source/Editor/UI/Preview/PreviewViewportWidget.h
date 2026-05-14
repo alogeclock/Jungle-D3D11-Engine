@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/CoreTypes.h"
 
@@ -17,4 +17,7 @@ protected:
 private:
 	FPreviewViewportClient* ViewportClient = nullptr;
 	int32 PreviewGizmoMode = 0;
+	uint32 LastRequestedRenderWidth = 0;
+	uint32 LastRequestedRenderHeight = 0;
+	double LastResizeRequestTimeSeconds = -1.0;
 };
