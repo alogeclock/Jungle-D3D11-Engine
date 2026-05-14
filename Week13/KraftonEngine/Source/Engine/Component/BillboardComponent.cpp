@@ -54,7 +54,7 @@ void UBillboardComponent::SetMaterial(UMaterial* InMaterial)
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
-void UBillboardComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UBillboardComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UPrimitiveComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Material", EPropertyType::MaterialSlot, "Rendering", &MaterialSlot });

@@ -91,7 +91,7 @@ void UFloatingPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick T
 	LookInputY = 0.0f;
 }
 
-void UFloatingPawnMovementComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UFloatingPawnMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UMovementComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Speed", EPropertyType::Float, "Movement", &Speed, 0.0f, 100.0f, 0.1f });

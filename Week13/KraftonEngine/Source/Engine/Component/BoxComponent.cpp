@@ -69,7 +69,7 @@ void UBoxComponent::ContributeSelectedVisuals(FScene& Scene) const
 	Scene.AddDebugLine(Corners[3], Corners[7], Color);
 }
 
-void UBoxComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UBoxComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UShapeComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Box Extent", EPropertyType::Vec3, "Shape", &BoxExtent, 0.01f, 0.0f, 0.1f });

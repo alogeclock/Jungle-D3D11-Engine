@@ -441,7 +441,7 @@ UObject* AActor::Duplicate(UObject* NewOuter) const
 	return Dup;
 }
 
-void AActor::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void AActor::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UObject::GetEditableProperties(OutProps);
 

@@ -144,7 +144,7 @@ void USpringArmComponent::Serialize(FArchive& Ar)
 	}
 }
 
-void USpringArmComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void USpringArmComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	USceneComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Target Arm Length",        EPropertyType::Float, "SpringArm", &TargetArmLength,           0.0f, 100000.0f, 1.0f });

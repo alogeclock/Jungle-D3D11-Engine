@@ -422,7 +422,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor* PrimaryActor, const TA
 		ImGui::Text("Transform");
 		ImGui::Spacing();
 
-		TArray<FPropertyDescriptor> Props;
+		TArray<FProperty> Props;
 		PrimaryActor->GetEditableProperties(Props);
 
 		if (ImGui::BeginTable("##ActorPropertyTable", 2,
@@ -772,7 +772,7 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 	ImGui::Separator();
 
 	// PropertyDescriptor 기반 자동 위젯 렌더링
-	TArray<FPropertyDescriptor> Props;
+	TArray<FProperty> Props;
 	SelectedComponent->GetEditableProperties(Props);
 
 	bool bIsRoot = false;
@@ -892,10 +892,10 @@ void FEditorPropertyWidget::PropagatePropertyChange(const FString& PropName, con
 	AActor* PrimaryActor = SelectedActors[0];
 
 	// Primary 컴포넌트에서 변경된 프로퍼티의 값 포인터 찾기
-	TArray<FPropertyDescriptor> SrcProps;
+	TArray<FProperty> SrcProps;
 	SelectedComponent->GetEditableProperties(SrcProps);
 
-	const FPropertyDescriptor* SrcProp = nullptr;
+	const FProperty* SrcProp = nullptr;
 	for (const auto& P : SrcProps)
 	{
 		if (P.Name == PropName) { SrcProp = &P; break; }
@@ -910,7 +910,7 @@ void FEditorPropertyWidget::PropagatePropertyChange(const FString& PropName, con
 		{
 			if (!Comp || Comp->GetClass() != CompClass) continue;
 
-			TArray<FPropertyDescriptor> DstProps;
+			TArray<FProperty> DstProps;
 			Comp->GetEditableProperties(DstProps);
 
 			for (const auto& DstProp : DstProps)
@@ -941,7 +941,7 @@ void FEditorPropertyWidget::PropagatePropertyChange(const FString& PropName, con
 					// Struct 자식 프로퍼티를 개별적으로 복사
 					if (SrcProp->StructFunc && DstProp.StructFunc)
 					{
-						TArray<FPropertyDescriptor> SrcChildren, DstChildren;
+						TArray<FProperty> SrcChildren, DstChildren;
 						SrcProp->StructFunc(SrcProp->ValuePtr, SrcChildren);
 						DstProp.StructFunc(DstProp.ValuePtr, DstChildren);
 						for (size_t si = 0; si < SrcChildren.size() && si < DstChildren.size(); ++si)
@@ -1009,10 +1009,10 @@ void FEditorPropertyWidget::AddComponentToActor(AActor* Actor, UClass* Component
 	bActorSelected = false;
 }
 
-bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor>& Props, int32& Index)
+bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32& Index)
 {
 	ImGui::PushID(Index);
-	FPropertyDescriptor& Prop = Props[Index];
+	FProperty& Prop = Props[Index];
 	bool bChanged = false;
 
 	switch (Prop.Type)
@@ -1528,7 +1528,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor>& Pr
 
 		if (bOpen)
 		{
-			TArray<FPropertyDescriptor> ChildProps;
+			TArray<FProperty> ChildProps;
 			Prop.StructFunc(Prop.ValuePtr, ChildProps);
 
 			ImGui::Indent(8.0f);
@@ -1537,7 +1537,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FPropertyDescriptor>& Pr
 			{
 				ImGui::PushID(ci);
 
-				FPropertyDescriptor& ChildProp = ChildProps[ci];
+				FProperty& ChildProp = ChildProps[ci];
 				// Struct 자식 프로퍼티는 재귀적으로 같은 위젯 렌더링 함수를 사용
 				// 단, SelectedComponent의 PostEditProperty는 부모 Struct 이름으로 호출
 				int32 ChildIdx = ci;

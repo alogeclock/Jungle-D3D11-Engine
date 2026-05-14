@@ -24,7 +24,7 @@ public:
 	~UTemporaryBoneAnimatorComponent() override = default;
 
 	void Serialize(FArchive& Ar) override;
-	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	void PostEditProperty(const char* PropertyName) override;
 
 protected:

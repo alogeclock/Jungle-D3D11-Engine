@@ -15,7 +15,7 @@ void ULightComponent::Serialize(FArchive& Ar)
 	Ar << ShadowSharpen;
 }
 
-void ULightComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void ULightComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	ULightComponentBase::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Shadow Resolution Scale", EPropertyType::Float, "Shadow", &ShadowResolutionScale, 0.1f, 4.0f, 0.1f });

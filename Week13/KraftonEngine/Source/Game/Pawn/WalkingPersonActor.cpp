@@ -223,7 +223,7 @@ void AWalkingPersonActor::Serialize(FArchive& Ar)
 	Ar << bQuestTarget;
 }
 
-void AWalkingPersonActor::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void AWalkingPersonActor::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	Super::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Quest Target", EPropertyType::Bool, "Walking Person", &bQuestTarget });

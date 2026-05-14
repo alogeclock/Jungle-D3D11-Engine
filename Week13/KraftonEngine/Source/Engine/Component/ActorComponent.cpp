@@ -84,7 +84,7 @@ void UActorComponent::SetOwner(AActor* Actor)
 	PrimaryComponentTick.bStartWithTickEnabled = true;
 }
 
-void UActorComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UActorComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	//OutProps.push_back({ "Active", EPropertyType::Bool, "Component", &bIsActive });
 	//OutProps.push_back({ "Auto Activate", EPropertyType::Bool, "Component", &bAutoActivate });

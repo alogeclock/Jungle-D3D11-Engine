@@ -72,7 +72,7 @@ void USphereComponent::UpdateWorldAABB() const
 	bHasValidWorldAABB = true;
 }
 
-void USphereComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void USphereComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UShapeComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Sphere Radius", EPropertyType::Float, "Shape", &SphereRadius, 0.01f, 10000.0f, 1.0f });

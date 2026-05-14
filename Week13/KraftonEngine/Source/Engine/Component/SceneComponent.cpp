@@ -52,7 +52,7 @@ void USceneComponent::AttachToComponent(USceneComponent* InParent)
 	SetParent(InParent);
 }
 
-void USceneComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void USceneComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UActorComponent::GetEditableProperties(OutProps);
 	if (bCachedEulerDirty)

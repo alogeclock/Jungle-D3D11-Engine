@@ -20,7 +20,7 @@ void UCylindricalBillboardComponent::Serialize(FArchive& Ar)
 	Ar << BillboardAxis;
 }
 
-void UCylindricalBillboardComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UCylindricalBillboardComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UBillboardComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "BillboardAxis", EPropertyType::Vec3, "Rendering", &BillboardAxis });

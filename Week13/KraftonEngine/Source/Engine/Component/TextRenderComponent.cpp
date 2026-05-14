@@ -126,7 +126,7 @@ UTextRenderComponent::UTextRenderComponent()
 	SetFont(FontName);
 }
 
-void UTextRenderComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UTextRenderComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	USceneComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Text", EPropertyType::String, "Text", &Text });

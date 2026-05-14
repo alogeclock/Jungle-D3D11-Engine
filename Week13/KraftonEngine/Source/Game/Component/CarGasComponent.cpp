@@ -8,7 +8,7 @@
 
 IMPLEMENT_CLASS(UCarGasComponent, UActorComponent)
 
-void UCarGasComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UCarGasComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UActorComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Gas", EPropertyType::Float, "Car Gas", &Gas, 0.0f, MaxGas, 0.5f });

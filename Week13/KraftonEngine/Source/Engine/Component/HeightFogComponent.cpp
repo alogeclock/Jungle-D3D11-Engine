@@ -52,7 +52,7 @@ void UHeightFogComponent::PushToScene()
 	World->GetScene().GetEnvironment().AddFog(this, Params);
 }
 
-void UHeightFogComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UHeightFogComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	USceneComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Fog Density",       EPropertyType::Float,  "Fog", &FogDensity,        0.0f, 0.05f,     0.001f });

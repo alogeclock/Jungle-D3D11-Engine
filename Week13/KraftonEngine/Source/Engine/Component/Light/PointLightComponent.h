@@ -10,7 +10,7 @@ public:
 	virtual void PushToScene() override;
 	virtual void DestroyFromScene() override;
 	virtual void Serialize(FArchive& Ar) override;
-	virtual void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	virtual void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	virtual bool GetLightViewProj(FLightViewProjResult& OutResult, const FMinimalViewInfo* POV, int32 FaceIndex) const override;
 
 	float GetAttenuationRadius() const { return AttenuationRadius; }

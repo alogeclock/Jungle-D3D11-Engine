@@ -19,7 +19,7 @@ FPrimitiveSceneProxy* UShapeComponent::CreateSceneProxy()
 	return new FShapeSceneProxy(this);
 }
 
-void UShapeComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void UShapeComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UPrimitiveComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Shape Color", EPropertyType::Color4, "Shape", &ShapeColor });

@@ -8,7 +8,7 @@
 IMPLEMENT_CLASS(ULightComponentBase, USceneComponent)
 HIDE_FROM_COMPONENT_LIST(ULightComponentBase)
 
-void ULightComponentBase::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void ULightComponentBase::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	USceneComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Intensity",EPropertyType::Float,"Lighting",&Intensity,0.0f,50.f,0.05f });

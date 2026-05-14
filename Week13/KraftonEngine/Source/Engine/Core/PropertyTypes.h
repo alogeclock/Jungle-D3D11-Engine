@@ -43,13 +43,13 @@ struct FMaterialSlot
 	std::string Path;
 };
 
-struct FPropertyDescriptor;
+struct FProperty;
 
 // 구조체 자기기술 함수: 구조체 포인터로부터 하위 프로퍼티를 생성
-using FStructPropertyFunc = void(*)(void* StructPtr, std::vector<FPropertyDescriptor>& OutProps);
+using FStructPropertyFunc = void(*)(void* StructPtr, std::vector<FProperty>& OutProps);
 
 // 컴포넌트가 노출하는 편집 가능한 프로퍼티 디스크립터
-struct FPropertyDescriptor
+struct FProperty
 {
 	std::string   Name;
 	EPropertyType Type			= EPropertyType::Bool;

@@ -6,7 +6,7 @@
 #include "Math/Vector.h"
 #include "Object/FName.h"
 
-json::JSON FPropertyDescriptor::Serialize() const
+json::JSON FProperty::Serialize() const
 {
 	using namespace json;
 
@@ -88,7 +88,7 @@ json::JSON FPropertyDescriptor::Serialize() const
 	case EPropertyType::Struct:
 	{
 		if (!StructFunc || !ValuePtr) return JSON();
-		TArray<FPropertyDescriptor> Children;
+		TArray<FProperty> Children;
 		StructFunc(ValuePtr, Children);
 		JSON obj = json::Object();
 		for (const auto& Child : Children)
@@ -103,7 +103,7 @@ json::JSON FPropertyDescriptor::Serialize() const
 	}
 }
 
-void FPropertyDescriptor::Deserialize(json::JSON& Value)
+void FProperty::Deserialize(json::JSON& Value)
 {
 	switch (Type)
 	{
@@ -198,7 +198,7 @@ void FPropertyDescriptor::Deserialize(json::JSON& Value)
 	case EPropertyType::Struct:
 	{
 		if (!StructFunc || !ValuePtr) break;
-		TArray<FPropertyDescriptor> Children;
+		TArray<FProperty> Children;
 		StructFunc(ValuePtr, Children);
 		for (auto& Child : Children)
 		{

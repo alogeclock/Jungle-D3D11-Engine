@@ -75,7 +75,7 @@ public:
 	virtual void Serialize(FArchive& Ar);
 	virtual void PostDuplicate() {}
 
-	virtual void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps);
+	virtual void GetEditableProperties(TArray<FProperty>& OutProps);
 	virtual void PostEditProperty(const char* PropertyName);
 
 	static void* operator new(size_t Size)

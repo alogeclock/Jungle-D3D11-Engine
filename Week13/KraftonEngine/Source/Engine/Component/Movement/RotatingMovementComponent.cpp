@@ -81,7 +81,7 @@ void URotatingMovementComponent::Serialize(FArchive& Ar)
 	Ar << PivotTranslation;
 }
 
-void URotatingMovementComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void URotatingMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UMovementComponent::GetEditableProperties(OutProps);
 	OutProps.push_back({ "Rotation Rate", EPropertyType::Rotator, "Movement", &RotationRate, 0.0f, 0.0f, 0.1f });

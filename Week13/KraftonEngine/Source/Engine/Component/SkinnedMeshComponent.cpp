@@ -716,14 +716,14 @@ void USkinnedMeshComponent::PostDuplicate()
 	}
 }
 
-void USkinnedMeshComponent::GetEditableProperties(TArray<FPropertyDescriptor>& OutProps)
+void USkinnedMeshComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	UMeshComponent::GetEditableProperties(OutProps);
 	// editor는 pointer 대신 path 문자열을 편집하고, PostEditProperty에서 load 흐름으로 진입한다.
 	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, "Mesh", &SkeletalMeshPath });
 	for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()); ++i)
 	{
-		FPropertyDescriptor Desc;
+		FProperty Desc;
 		Desc.Name = "Element " + std::to_string(i);
 		Desc.Type = EPropertyType::MaterialSlot;
 		Desc.Category = "Materials";

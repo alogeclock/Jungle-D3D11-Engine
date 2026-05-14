@@ -26,7 +26,7 @@ public:
 	void BeginPlay() override;
 	void EndPlay() override;
 
-	void GetEditableProperties(TArray<FPropertyDescriptor>& OutProps) override;
+	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 
 	void LookAt(const FVector& Target);
 	void SetCameraState(const FCameraState& NewState);
