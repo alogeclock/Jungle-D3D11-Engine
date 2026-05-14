@@ -6,6 +6,12 @@
 //	Safe Release Macro
 #define SAFE_RELEASE(Obj) if (Obj) { Obj->Release(); Obj = nullptr; }
 
+namespace
+{
+	void SetD3DDeviceChildDebugName(ID3D11DeviceChild* Resource, const char* Name);
+	void SetDXGIObjectDebugName(IDXGIObject* Resource, const char* Name);
+}
+
 void FD3DDevice::Create(HWND InHWindow)
 {
 	CreateDeviceAndSwapChain(InHWindow);
@@ -82,6 +88,7 @@ void FD3DDevice::CopyToBackbuffer(ID3D11Texture2D* Source, ID3D11ShaderResourceV
 		if (!SourceSRV)
 		{
 			Device->CreateShaderResourceView(Source, nullptr, &TempSRV);
+			SetD3DDeviceChildDebugName(TempSRV, "FD3DDevice.CopyToBackbuffer.TempSRV");
 			SourceSRV = TempSRV;
 		}
 
@@ -225,6 +232,8 @@ float4 PSMain(VSOut Input) : SV_TARGET
 
 	Device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, &BackbufferBlitVS);
 	Device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, &BackbufferBlitPS);
+	SetD3DDeviceChildDebugName(BackbufferBlitVS, "FD3DDevice.BackbufferBlitVS");
+	SetD3DDeviceChildDebugName(BackbufferBlitPS, "FD3DDevice.BackbufferBlitPS");
 
 	SAFE_RELEASE(VSBlob);
 	SAFE_RELEASE(PSBlob);
@@ -238,12 +247,14 @@ float4 PSMain(VSOut Input) : SV_TARGET
 	SamplerDesc.MinLOD = 0.0f;
 	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	Device->CreateSamplerState(&SamplerDesc, &BackbufferBlitSampler);
+	SetD3DDeviceChildDebugName(BackbufferBlitSampler, "FD3DDevice.BackbufferBlitSampler");
 
 	D3D11_RASTERIZER_DESC RasterizerDesc = {};
 	RasterizerDesc.FillMode = D3D11_FILL_SOLID;
 	RasterizerDesc.CullMode = D3D11_CULL_NONE;
 	RasterizerDesc.DepthClipEnable = TRUE;
 	Device->CreateRasterizerState(&RasterizerDesc, &BackbufferBlitRasterizerState);
+	SetD3DDeviceChildDebugName(BackbufferBlitRasterizerState, "FD3DDevice.BackbufferBlitRasterizerState");
 }
 
 void FD3DDevice::ReleaseBackbufferBlitResources()
@@ -327,6 +338,8 @@ void FD3DDevice::CreateDeviceAndSwapChain(HWND InHWindow)
 	D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
 		CreateDeviceFlags, featureLevels, ARRAYSIZE(featureLevels), D3D11_SDK_VERSION,
 		&swapChainDesc, &SwapChain, &Device, nullptr, &DeviceContext);
+	SetDXGIObjectDebugName(SwapChain, "FD3DDevice.SwapChain");
+	SetD3DDeviceChildDebugName(DeviceContext, "FD3DDevice.ImmediateContext");
 
 	// CPU가 GPU보다 1프레임 이상 앞서지 못하게 제한
 	// (기본값 3 → Present 큐 깊이로 인한 FPS 톱니파 현상 방지)
@@ -383,12 +396,14 @@ void FD3DDevice::ReleaseDeviceAndSwapChain()
 void FD3DDevice::CreateFrameBuffer()
 {
 	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&FrameBuffer);
+	SetD3DDeviceChildDebugName(FrameBuffer, "FD3DDevice.FrameBuffer");
 
 	CD3D11_RENDER_TARGET_VIEW_DESC frameBufferRTVDesc = {};
 	frameBufferRTVDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	frameBufferRTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
 	Device->CreateRenderTargetView(FrameBuffer, &frameBufferRTVDesc, &FrameBufferRTV);
+	SetD3DDeviceChildDebugName(FrameBufferRTV, "FD3DDevice.FrameBufferRTV");
 }
 
 void FD3DDevice::ReleaseFrameBuffer()
@@ -410,11 +425,46 @@ void FD3DDevice::CreateDepthStencilBuffer()
 	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 	Device->CreateTexture2D(&depthStencilDesc, nullptr, &DepthStencilBuffer);
+	SetD3DDeviceChildDebugName(DepthStencilBuffer, "FD3DDevice.DepthStencilBuffer");
 	Device->CreateDepthStencilView(DepthStencilBuffer, nullptr, &DepthStencilView);
+	SetD3DDeviceChildDebugName(DepthStencilView, "FD3DDevice.DepthStencilView");
 }
 
 void FD3DDevice::ReleaseDepthStencilBuffer()
 {
 	SAFE_RELEASE(DepthStencilView);
 	SAFE_RELEASE(DepthStencilBuffer);
+}
+
+namespace
+{
+	void SetD3DDeviceChildDebugName(ID3D11DeviceChild* Resource, const char* Name)
+	{
+#ifdef _DEBUG
+		if (!Resource || !Name)
+		{
+			return;
+		}
+
+		Resource->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(std::strlen(Name)), Name);
+#else
+		(void)Resource;
+		(void)Name;
+#endif
+	}
+
+	void SetDXGIObjectDebugName(IDXGIObject* Resource, const char* Name)
+	{
+#ifdef _DEBUG
+		if (!Resource || !Name)
+		{
+			return;
+		}
+
+		Resource->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(std::strlen(Name)), Name);
+#else
+		(void)Resource;
+		(void)Name;
+#endif
+	}
 }

@@ -1,4 +1,11 @@
 ﻿#include "Viewport/Viewport.h"
+#include <cstdio>
+#include <cstring>
+
+namespace
+{
+	void SetViewportResourceDebugName(ID3D11DeviceChild* Resource, const char* ResourceName, uint32 Width, uint32 Height);
+}
 
 FViewport::~FViewport()
 {
@@ -99,18 +106,22 @@ bool FViewport::CreateResources()
 
 	HRESULT hr = Device->CreateTexture2D(&TexDesc, nullptr, &RTTexture);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(RTTexture, "RTTexture", Width, Height);
 
 	hr = Device->CreateRenderTargetView(RTTexture, nullptr, &RTV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(RTV, "RTV", Width, Height);
 
 	hr = Device->CreateShaderResourceView(RTTexture, nullptr, &SRV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(SRV, "SRV", Width, Height);
 
 	// ── SceneColor 복사 텍스처 (FXAA 등 PostProcess용 CopyResource 대상) ──
 	D3D11_TEXTURE2D_DESC SceneColorCopyDesc = TexDesc;
 	SceneColorCopyDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;  // SRV 읽기 전용
 	hr = Device->CreateTexture2D(&SceneColorCopyDesc, nullptr, &SceneColorCopyTexture);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(SceneColorCopyTexture, "SceneColorCopyTexture", Width, Height);
 
 	// ── 뎁스/스텐실 (TYPELESS → DSV + StencilSRV) ──
 	D3D11_TEXTURE2D_DESC DepthDesc = {};
@@ -125,6 +136,7 @@ bool FViewport::CreateResources()
 
 	hr = Device->CreateTexture2D(&DepthDesc, nullptr, &DepthTexture);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(DepthTexture, "DepthTexture", Width, Height);
 
 	// DSV: D24_UNORM_S8_UINT 로 해석 (기존과 동일한 뎁스/스텐실 동작)
 	D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc = {};
@@ -134,6 +146,7 @@ bool FViewport::CreateResources()
 
 	hr = Device->CreateDepthStencilView(DepthTexture, &DSVDesc, &DSV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(DSV, "DSV", Width, Height);
 
 	// SRV 포맷 (DepthCopy/StencilCopy 생성에 재사용)
 	D3D11_SHADER_RESOURCE_VIEW_DESC DepthSRVDesc = {};
@@ -161,12 +174,15 @@ bool FViewport::CreateResources()
 
 	hr = Device->CreateTexture2D(&CopyDesc, nullptr, &DepthCopyTexture);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(DepthCopyTexture, "DepthCopyTexture", Width, Height);
 
 	hr = Device->CreateShaderResourceView(DepthCopyTexture, &DepthSRVDesc, &DepthCopySRV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(DepthCopySRV, "DepthCopySRV", Width, Height);
 
 	hr = Device->CreateShaderResourceView(DepthCopyTexture, &StencilSRVDesc, &StencilCopySRV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(StencilCopySRV, "StencilCopySRV", Width, Height);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SceneColorCopySRVDesc = {};
 	SceneColorCopySRVDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -176,6 +192,7 @@ bool FViewport::CreateResources()
 
 	hr = Device->CreateShaderResourceView(SceneColorCopyTexture, &SceneColorCopySRVDesc, &SceneColorCopySRV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(SceneColorCopySRV, "SceneColorCopySRV", Width, Height);
 
 	// ── GBuffer Normal RT (R16G16B16A16_FLOAT — 음수 지원) ──
 	D3D11_TEXTURE2D_DESC NormalDesc = {};
@@ -190,12 +207,15 @@ bool FViewport::CreateResources()
 
 	hr = Device->CreateTexture2D(&NormalDesc, nullptr, &NormalTexture);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(NormalTexture, "NormalTexture", Width, Height);
 
 	hr = Device->CreateRenderTargetView(NormalTexture, nullptr, &NormalRTV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(NormalRTV, "NormalRTV", Width, Height);
 
 	hr = Device->CreateShaderResourceView(NormalTexture, nullptr, &NormalSRV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(NormalSRV, "NormalSRV", Width, Height);
 
 	// ── Culling Heatmap RT (R8G8B8A8_UNORM — 히트맵 색상) ──
 	D3D11_TEXTURE2D_DESC HeatmapDesc = {};
@@ -210,12 +230,15 @@ bool FViewport::CreateResources()
 
 	hr = Device->CreateTexture2D(&HeatmapDesc, nullptr, &CullingHeatmapTexture);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(CullingHeatmapTexture, "CullingHeatmapTexture", Width, Height);
 
 	hr = Device->CreateRenderTargetView(CullingHeatmapTexture, nullptr, &CullingHeatmapRTV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(CullingHeatmapRTV, "CullingHeatmapRTV", Width, Height);
 
 	hr = Device->CreateShaderResourceView(CullingHeatmapTexture, nullptr, &CullingHeatmapSRV);
 	if (FAILED(hr)) return false;
+	SetViewportResourceDebugName(CullingHeatmapSRV, "CullingHeatmapSRV", Width, Height);
 
 	// ── 뷰포트 렉트 ──
 	ViewportRect.TopLeftX = 0.0f;
@@ -246,4 +269,26 @@ void FViewport::ReleaseResources()
 	if (RTTexture) { RTTexture->Release(); RTTexture = nullptr; }
 	if (SceneColorCopySRV) { SceneColorCopySRV->Release(); SceneColorCopySRV = nullptr; }
 	if (SceneColorCopyTexture) { SceneColorCopyTexture->Release(); SceneColorCopyTexture = nullptr; }
+}
+
+namespace
+{
+	void SetViewportResourceDebugName(ID3D11DeviceChild* Resource, const char* ResourceName, uint32 Width, uint32 Height)
+	{
+#ifdef _DEBUG
+		if (!Resource || !ResourceName)
+		{
+			return;
+		}
+
+		char DebugName[128] = {};
+		std::snprintf(DebugName, sizeof(DebugName), "FViewport.%s.%ux%u", ResourceName, Width, Height);
+		Resource->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(std::strlen(DebugName)), DebugName);
+#else
+		(void)Resource;
+		(void)ResourceName;
+		(void)Width;
+		(void)Height;
+#endif
+	}
 }

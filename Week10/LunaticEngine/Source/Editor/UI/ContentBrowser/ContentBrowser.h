@@ -17,6 +17,7 @@ class FEditorContentBrowserWidget final : public FEditorWidget
 
 public:
 	void Initialize(UEditorEngine* InEditor, ID3D11Device* InDevice);
+	void Shutdown();
 	void Render(float DeltaTime) override;
 	void Refresh();
 	void SaveToSettings() const;

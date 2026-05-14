@@ -334,6 +334,7 @@ void FEditorMainPanel::Release()
 	}
 	PreviewEditorWidgets.clear();
 	PreviewDevice = nullptr;
+	ContentBrowserWidget.Shutdown();
 	AssetEditorWidget.Shutdown();
 	ConsoleWidget.Shutdown();
 	ImGui_ImplDX11_Shutdown();
