@@ -38,11 +38,11 @@ namespace
 	}
 
 	constexpr float BoneArmatureMinLength = 0.001f;
-	constexpr float BoneArmatureRadiusRatio = 0.025f;
+	constexpr float BoneArmatureRadiusRatio = 0.05f;
 	constexpr float BoneArmatureMinRadius = 0.004f;
 	constexpr float BoneArmatureMaxRadius = 0.35f;
-	constexpr float BoneArmatureBaseBias = 0.22f;
-	constexpr float BoneJointRadiusRatio = 0.030f;
+	constexpr float BoneArmatureBaseBias = 0.08f;
+	constexpr float BoneJointRadiusRatio = 0.015f;
 
 	struct FBoneArmatureFrame
 	{
@@ -261,7 +261,7 @@ namespace
 	void AddUnrealStyleArmatureBody(FScene& Scene, const FBoneArmatureFrame& Frame, const FColor& BodyColor)
 	{
 		const FVector WidePoint = GetArmatureBaseCenter(Frame);
-		const float Pull = Frame.Length * 0.045f;
+		const float Pull = Frame.Length * 0.015f;
 		const FVector Equator[4] =
 		{
 			WidePoint + Frame.Axis * Pull + Frame.Right * Frame.Radius,
@@ -282,7 +282,7 @@ namespace
 	void AddArmatureBodyTriangles(const FBoneArmatureFrame& Frame, TArray<FVector>& OutVertices)
 	{
 		const FVector WidePoint = GetArmatureBaseCenter(Frame);
-		const float Pull = Frame.Length * 0.045f;
+		const float Pull = Frame.Length * 0.015f;
 		const FVector Equator[4] =
 		{
 			WidePoint + Frame.Axis * Pull + Frame.Right * Frame.Radius,
