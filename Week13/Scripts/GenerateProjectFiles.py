@@ -101,6 +101,16 @@ FMOD_RELEASE_LIB = "fmod_vc.lib"
 FMOD_DEBUG_DLL = "fmodL.dll"
 FMOD_RELEASE_DLL = "fmod.dll"
 
+# FBX SDK — x64 전용. ObjViewDebug/Demo 는 FBX 의존이 없어 제외한다.
+# Debug 구성은 lib\\x64\\debug, Release-like 구성은 lib\\x64\\release.
+FBX_INC_DIR        = "ThirdParty\\fbx\\include"
+FBX_LIB_DIR_DEBUG  = "ThirdParty\\fbx\\lib\\x64\\debug"
+FBX_LIB_DIR_RELEASE = "ThirdParty\\fbx\\lib\\x64\\release"
+FBX_LIB            = "libfbxsdk.lib"
+FBX_DLL            = "libfbxsdk.dll"
+FBX_DEFINE         = "FBXSDK_SHARED"
+FBX_CONFIGS        = {"Debug", "Release", "Game"}  # x64 와 결합되는 구성만 FBX 포함
+
 # PhysX (NuGet, 4.1.2) — vcpkg auto applocal-deps가 일부 환경에서 동작하지 않아
 # PostBuildEvent 에서 명시적으로 *.dll 을 OutDir 로 복사한다.
 # Debug 구성은 debug\\bin, 그 외(Release/Game/ObjViewDebug/Demo)는 release bin 사용.
@@ -292,14 +302,22 @@ def generate_vcxproj(files: dict[str, list[str]]):
     ET.SubElement(proj, "PropertyGroup", Label="UserMacros")
 
     # OutDir, IntDir, IncludePath, LibraryPath, WorkingDirectory for all configurations
-    include_path_value = ";".join(INCLUDE_PATHS) + ";$(IncludePath)"
     for cfg, plat in CONFIGURATIONS:
         cond = f"'$(Configuration)|$(Platform)'=='{cfg}|{plat}'"
         is_x64 = plat == "x64"
+        has_fbx = is_x64 and cfg in FBX_CONFIGS
+
+        include_paths = list(INCLUDE_PATHS)
+        if has_fbx:
+            include_paths.append(FBX_INC_DIR)
+        include_path_value = ";".join(include_paths) + ";$(IncludePath)"
+
         rmlui_dir = RMLUI_DEBUG_DIR if cfg == "Debug" else RMLUI_RELEASE_DIR
         library_paths = [rmlui_dir] if is_x64 else []
         if is_x64:
             library_paths.append(FMOD_LIB_DIR)
+        if has_fbx:
+            library_paths.append(FBX_LIB_DIR_DEBUG if cfg == "Debug" else FBX_LIB_DIR_RELEASE)
         library_path_value = ";".join(library_paths) + ";$(LibraryPath)" if library_paths else "$(LibraryPath)"
         pg = ET.SubElement(proj, "PropertyGroup", Condition=cond)
         ET.SubElement(pg, "OutDir").text = f"$(ProjectDir)Bin\\$(Configuration)\\"
@@ -319,6 +337,7 @@ def generate_vcxproj(files: dict[str, list[str]]):
         is_release = props.get("release_like", cfg == "Release")
         is_win32 = plat == "Win32"
         is_x64 = plat == "x64"
+        has_fbx = is_x64 and cfg in FBX_CONFIGS
 
         if is_release:
             ET.SubElement(cl, "FunctionLevelLinking").text = "true"
@@ -336,6 +355,8 @@ def generate_vcxproj(files: dict[str, list[str]]):
         if not any(d.startswith("WITH_EDITOR=") for d in extra_defs):
             base_defs.append("WITH_EDITOR=1")
         base_defs.extend(extra_defs)
+        if has_fbx:
+            base_defs.append(FBX_DEFINE)
         base_defs.append("%(PreprocessorDefinitions)")
         ET.SubElement(cl, "PreprocessorDefinitions").text = ";".join(base_defs)
 
@@ -362,6 +383,8 @@ def generate_vcxproj(files: dict[str, list[str]]):
             all_deps.extend(RMLUI_DEPENDENCIES)
             # fmod: Debug면 logging 버전(fmodL_vc.lib), 그 외 release 버전(fmod_vc.lib)
             all_deps.append(FMOD_DEBUG_LIB if cfg == "Debug" else FMOD_RELEASE_LIB)
+        if has_fbx:
+            all_deps.append(FBX_LIB)
         if all_deps:
             ET.SubElement(link, "AdditionalDependencies").text = (
                 ";".join(all_deps) + ";%(AdditionalDependencies)"
@@ -371,13 +394,19 @@ def generate_vcxproj(files: dict[str, list[str]]):
             rmlui_dir = RMLUI_DEBUG_DIR if cfg == "Debug" else RMLUI_RELEASE_DIR
             fmod_dll = FMOD_DEBUG_DLL if cfg == "Debug" else FMOD_RELEASE_DLL
             physx_bin = PHYSX_DEBUG_BIN if cfg == "Debug" else PHYSX_RELEASE_BIN
+            post_build_lines = [
+                f'xcopy /Y "$(ProjectDir){rmlui_dir}\\*.dll" "$(OutDir)"',
+                f'xcopy /Y "$(ProjectDir){FMOD_LIB_DIR}\\{fmod_dll}" "$(OutDir)"',
+                f'xcopy /Y "$(ProjectDir){physx_bin}\\*.dll" "$(OutDir)"',
+                f'xcopy /Y "$(ProjectDir){LUA_BIN_DIR}\\{LUA_DLL}" "$(OutDir)"',
+            ]
+            if has_fbx:
+                fbx_lib_dir = FBX_LIB_DIR_DEBUG if cfg == "Debug" else FBX_LIB_DIR_RELEASE
+                post_build_lines.append(
+                    f'xcopy /Y "$(ProjectDir){fbx_lib_dir}\\{FBX_DLL}" "$(OutDir)"'
+                )
             post_build = ET.SubElement(idg, "PostBuildEvent")
-            ET.SubElement(post_build, "Command").text = (
-                f'xcopy /Y "$(ProjectDir){rmlui_dir}\\*.dll" "$(OutDir)"\n'
-                f'xcopy /Y "$(ProjectDir){FMOD_LIB_DIR}\\{fmod_dll}" "$(OutDir)"\n'
-                f'xcopy /Y "$(ProjectDir){physx_bin}\\*.dll" "$(OutDir)"\n'
-                f'xcopy /Y "$(ProjectDir){LUA_BIN_DIR}\\{LUA_DLL}" "$(OutDir)"'
-            )
+            ET.SubElement(post_build, "Command").text = "\n".join(post_build_lines)
 
     # ClCompile items
     ig = ET.SubElement(proj, "ItemGroup")
