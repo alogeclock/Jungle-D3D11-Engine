@@ -31,13 +31,13 @@ class FSkeletalMeshPreviewWidget : public FAssetPreviewWidget
 {
 public:
 	// Main Functions
-    void Initialize(UEditorEngine* InEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow);
-    void Shutdown() override;
+	bool Initialize(UEditorEngine* InEngine, ID3D11Device* InDevice, FWindowsWindow* InWindow);
+	void Shutdown() override;
 
 	void Render(float DeltaTime) override;
 
 	void OpenSkeletalMesh(USkeletalMesh* InMesh);
-    void SetEditorInstanceId(int32 InInstanceId) { EditorInstanceId = InInstanceId; }
+	void SetEditorInstanceId(int32 InInstanceId) { EditorInstanceId = InInstanceId; }
 
 protected:
 	std::unique_ptr<FPreviewViewportClient> CreatePreviewViewportClient() override;
@@ -48,36 +48,36 @@ private:
 	bool SavePose();
 	bool LoadPose();
 	
-    // UI Rendering
+	// UI Rendering
 	void RebuildBoneWeightedFlags();
-    void DrawBoneHierarchyPanel();
-    void DrawBoneDetailsPanel();
-    void DrawMorphTargetPanel();
-    void DrawPreviewComponentDetailsPanel();
-    void DrawBoneTreeNode(const FSkeleton& Skeleton, int32 BoneIndex);
-    bool DrawEditableTransform(const char* SectionName, FTransform& Transform, int32 BoneIndex, FBoneRotationEditState& State, EBoneRotationEditSpace Space);
+	void DrawBoneHierarchyPanel();
+	void DrawBoneDetailsPanel();
+	void DrawMorphTargetPanel();
+	void DrawPreviewComponentDetailsPanel();
+	void DrawBoneTreeNode(const FSkeleton& Skeleton, int32 BoneIndex);
+	bool DrawEditableTransform(const char* SectionName, FTransform& Transform, int32 BoneIndex, FBoneRotationEditState& State, EBoneRotationEditSpace Space);
 	void EnsureBoneTreeIcons();
 
-    // Interaction & Validation
-    void HandleViewportBoneSelection();
-    void ValidateSelectedBone();
+	// Interaction & Validation
+	void HandleViewportBoneSelection();
+	void ValidateSelectedBone();
 
 private:
 	// Widget-Specific Clients & Widget
-    FEditorDetailsWidget ComponentDetailsWidget;
+	FEditorDetailsWidget ComponentDetailsWidget;
 
 	// Skeletal Mesh Data
 	USkeletalMesh* EditingMesh = nullptr;
 	int32 SelectedBoneIndex = -1;
 	TArray<bool> BoneWeightedFlags;
 
-    // UI Icons
-    UTexture2D* WeightedBoneIcon = nullptr;
-    UTexture2D* NonWeightedBoneIcon = nullptr;
+	// UI Icons
+	UTexture2D* WeightedBoneIcon = nullptr;
+	UTexture2D* NonWeightedBoneIcon = nullptr;
 
-    // Bone Rotation State
-    FBoneRotationEditState LocalRotationEditState;
-    FBoneRotationEditState ComponentRotationEditState;
+	// Bone Rotation State
+	FBoneRotationEditState LocalRotationEditState;
+	FBoneRotationEditState ComponentRotationEditState;
 
-    bool bInitialized = false;
+	bool bInitialized = false;
 };

@@ -4,6 +4,7 @@
 #include "Engine/Input/InputManager.h"
 
 #include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_internal.h"
 
 #include <algorithm>
@@ -161,6 +162,7 @@ void FWindowsApplication::RedrawDuringResize(HWND hWnd)
 bool FWindowsApplication::Init(HINSTANCE InHInstance)
 {
     HInstance = InHInstance;
+	ImGui_ImplWin32_EnableDpiAwareness();
 
     WNDCLASSEXW WndClass{};
     WndClass.cbSize = sizeof(WNDCLASSEXW);

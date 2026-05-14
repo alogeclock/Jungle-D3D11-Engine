@@ -1,4 +1,4 @@
-#include "PreviewViewportWidget.h"
+﻿#include "PreviewViewportWidget.h"
 
 #include "Component/CameraComponent.h"
 #include "Editor/UI/EditorAccentColor.h"
@@ -11,6 +11,7 @@
 
 #include <d3d11.h>
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 
 namespace
@@ -56,11 +57,24 @@ namespace
 	void DrawCameraPopupContent(FPreviewViewportClient& Client);
 	void DrawViewportTypePopupContent(FPreviewViewportClient& Client);
 	bool DrawViewModePopupContent(FViewportRenderOptions& Opts);
+	float GetPreviewViewportDpiScale();
+	uint32 GetDpiScaledViewportDimension(float LogicalSize, float DpiScale);
+	bool ShouldRequestPreviewViewportResize(
+		const FViewport& Viewport,
+		uint32 DesiredWidth,
+		uint32 DesiredHeight,
+		uint32 LastRequestedWidth,
+		uint32 LastRequestedHeight,
+		double LastRequestTimeSeconds,
+		double NowSeconds);
 }
 
 void FPreviewViewportWidget::SetViewportClient(FPreviewViewportClient* InClient)
 {
 	ViewportClient = InClient;
+	LastRequestedRenderWidth = 0;
+	LastRequestedRenderHeight = 0;
+	LastResizeRequestTimeSeconds = -1.0;
 }
 
 void FPreviewViewportWidget::Render(float DeltaTime)
@@ -213,11 +227,23 @@ void FPreviewViewportWidget::Render(float DeltaTime)
 		return;
 	}
 
-	const uint32 NewWidth = static_cast<uint32>(Size.x);
-	const uint32 NewHeight = static_cast<uint32>(Size.y);
-	if (NewWidth != Viewport->GetWidth() || NewHeight != Viewport->GetHeight())
+	const float DpiScale = GetPreviewViewportDpiScale();
+	const uint32 NewWidth = GetDpiScaledViewportDimension(Size.x, DpiScale);
+	const uint32 NewHeight = GetDpiScaledViewportDimension(Size.y, DpiScale);
+	const double NowSeconds = ImGui::GetTime();
+	if (ShouldRequestPreviewViewportResize(
+		*Viewport,
+		NewWidth,
+		NewHeight,
+		LastRequestedRenderWidth,
+		LastRequestedRenderHeight,
+		LastResizeRequestTimeSeconds,
+		NowSeconds))
 	{
 		Viewport->RequestResize(NewWidth, NewHeight);
+		LastRequestedRenderWidth = NewWidth;
+		LastRequestedRenderHeight = NewHeight;
+		LastResizeRequestTimeSeconds = NowSeconds;
 	}
 
 	ImGui::Image((ImTextureID)Viewport->GetSRV(), Size);
@@ -234,6 +260,51 @@ void FPreviewViewportWidget::Render(float DeltaTime)
 
 namespace
 {
+	float GetPreviewViewportDpiScale()
+	{
+		float DpiScale = ImGui::GetWindowDpiScale();
+		if (DpiScale <= 0.0f)
+		{
+			DpiScale = ImGui::GetIO().DisplayFramebufferScale.x;
+		}
+		return (std::max)(DpiScale, 1.0f);
+	}
+
+	uint32 GetDpiScaledViewportDimension(float LogicalSize, float DpiScale)
+	{
+		constexpr uint32 ResizeGranularity = 8;
+		constexpr uint32 MaxPreviewViewportDimension = 8192;
+		const uint32 RawSize = static_cast<uint32>(std::ceil((std::max)(LogicalSize, 1.0f) * DpiScale));
+		const uint32 QuantizedSize = ((RawSize + ResizeGranularity - 1) / ResizeGranularity) * ResizeGranularity;
+		return (std::min)(QuantizedSize, MaxPreviewViewportDimension);
+	}
+
+	bool ShouldRequestPreviewViewportResize(
+		const FViewport& Viewport,
+		uint32 DesiredWidth,
+		uint32 DesiredHeight,
+		uint32 LastRequestedWidth,
+		uint32 LastRequestedHeight,
+		double LastRequestTimeSeconds,
+		double NowSeconds)
+	{
+		if (DesiredWidth == Viewport.GetWidth() && DesiredHeight == Viewport.GetHeight())
+		{
+			return false;
+		}
+		if (DesiredWidth == LastRequestedWidth && DesiredHeight == LastRequestedHeight)
+		{
+			return false;
+		}
+
+		constexpr double ResizeRequestMinIntervalSeconds = 0.05;
+		constexpr uint32 ImmediateResizeDelta = 256;
+		const uint32 WidthDelta = Viewport.GetWidth() > DesiredWidth ? Viewport.GetWidth() - DesiredWidth : DesiredWidth - Viewport.GetWidth();
+		const uint32 HeightDelta = Viewport.GetHeight() > DesiredHeight ? Viewport.GetHeight() - DesiredHeight : DesiredHeight - Viewport.GetHeight();
+		const bool bLargeJump = WidthDelta >= ImmediateResizeDelta || HeightDelta >= ImmediateResizeDelta;
+		return bLargeJump || LastRequestTimeSeconds < 0.0 || (NowSeconds - LastRequestTimeSeconds) >= ResizeRequestMinIntervalSeconds;
+	}
+
 	const char* GetPreviewToolbarIconResourceKey(EPreviewToolbarIcon Icon)
 	{
 		switch (Icon)
