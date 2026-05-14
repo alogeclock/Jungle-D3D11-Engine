@@ -9,6 +9,7 @@
 #include "Render/Types/MinimalViewInfo.h"
 #include "GameFramework/World.h"
 #include "Render/Scene/FScene.h"
+#include "Engine/Platform/CrashDump.h"
 
 #include <algorithm>
 #include <cctype>
@@ -18,6 +19,8 @@
 
 namespace
 {
+	constexpr DWORD ENGINE_FORCED_CRASH_EXCEPTION = 0xE0424242;
+
 	FString ToLower(FString Value)
 	{
 		std::transform(Value.begin(), Value.end(), Value.begin(),
@@ -190,6 +193,10 @@ void FEditorConsoleWidget::Initialize(UEditorEngine* InEditorEngine)
 
 	// 에디터 콘솔을 로그 출력 디바이스로 등록
 	FLogManager::Get().AddOutputDevice(&ConsoleDevice);
+
+	// 처리되지 않은 예외 발생 시 Minidump 발생시킬 handler 등록
+	SetUnhandledExceptionFilter(WriteCrashDump);
+
 	RegisterDefaultCommands();
 }
 
@@ -231,6 +238,8 @@ void FEditorConsoleWidget::RegisterDiagnosticsCommands()
 {
 	RegisterCommand("obj list", [this](const TArray<FString>& Args) { HandleObjList(Args); },
 		"Diagnostics", "obj list [<ClassName>]", "Lists live UObject counts and memory by class.");
+	RegisterCommand("CauseCrash", [this](const TArray<FString>& Args) { HandleCauseCrash(Args); },
+		"System", "CauseCrash", "Forces an immediate test crash and writes a minidump.");
 	RegisterCommand("stat fps", [this](const TArray<FString>& Args) { HandleStatFPS(Args); },
 		"Diagnostics", "stat fps", "Shows the FPS overlay stat.");
 	RegisterCommand("stat memory", [this](const TArray<FString>& Args) { HandleStatMemory(Args); },
@@ -1196,6 +1205,21 @@ void FEditorConsoleWidget::HandleShadowFilter(const TArray<FString>& Args)
 		AddLog("[ERROR] Unknown filter mode: '%s'\n", Args[0].c_str());
 		AddLog("Usage: shadow filter hard|pcf|vsm|reset\n");
 	}
+}
+
+void FEditorConsoleWidget::HandleCauseCrash(const TArray<FString>& Args)
+{
+	// 현재 위치(Call Stack)에 Crash를 발생시킨다
+	AddLog("[WARN] Immediate forced crash requested.\n");
+
+	RaiseException(
+		ENGINE_FORCED_CRASH_EXCEPTION,
+		EXCEPTION_NONCONTINUABLE,
+		0,
+		nullptr
+	);
+
+	std::terminate();
 }
 
 // History & Tab-Completion Callback____________________________________________________________

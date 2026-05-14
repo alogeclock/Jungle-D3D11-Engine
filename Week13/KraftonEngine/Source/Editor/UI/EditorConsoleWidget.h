@@ -10,6 +10,7 @@
 #include "ImGui/imgui_impl_win32.h"
 
 #include "Editor/UI/EditorWidget.h"
+#include <Windows.h>
 
 // ============================================================
 // FConsoleLogOutputDevice — ImGui 콘솔에 로그를 출력하는 디바이스
@@ -114,6 +115,7 @@ private:
 	void HandleCSMBlendRange(const TArray<FString>& Args);
 	void HandleShadowBias(const TArray<FString>& Args);
 	void HandleShadowFilter(const TArray<FString>& Args);
+	void HandleCauseCrash(const TArray<FString>& Args);
 	void PrintCSMCascadeRanges();
 
 	static int32 TextEditCallback(ImGuiInputTextCallbackData* Data);
