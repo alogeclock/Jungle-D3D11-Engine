@@ -115,3 +115,9 @@ public:
 private:
 	FEditorMaterialInspector MaterialInspector;
 };
+
+class AnimationElement final : public ContentBrowserElement
+{
+public:
+	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
+};

@@ -411,3 +411,19 @@ void MaterialElement::RenderDetail()
 {
 	MaterialInspector.Render();
 }
+
+void AnimationElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
+{
+	if (!Context.EditorEngine)
+	{
+		return;
+	}
+	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
+
+	/*TODO: 여기에 Animation Asset으로 Casting하는 코드가 들어감*/
+	if (/*UAnimSequence* Seqeunce = FMeshManager::LoadAnimationSequence(FilePath, Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice()*/true)
+	{
+		
+		// Context.EditorEngine->OpenAssetEditorForObject(/*Sequence*/);
+	}
+}
