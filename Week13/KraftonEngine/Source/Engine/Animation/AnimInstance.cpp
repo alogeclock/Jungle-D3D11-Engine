@@ -32,7 +32,7 @@ void UAnimInstance::CheckAnimNotifyQueue(float PrevTime, float CurrTime,
 			{
 				// 루프 발생: [PrevTime, SeqLength] ∪ [0, CurrTime]
 				bShouldTrigger = (Notify.TriggerTime > PrevTime && Notify.TriggerTime <= SeqLength)
-				              || (Notify.TriggerTime >= 0.f     && Notify.TriggerTime <= CurrTime);
+				              || (Notify.TriggerTime <= CurrTime);
 			}
 			else
 			{

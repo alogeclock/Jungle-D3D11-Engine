@@ -8,11 +8,14 @@ class UAnimSequence;
 class UAnimSingleNodeInstance : public UAnimInstance
 {
 public:
+	DECLARE_CLASS(UAnimSingleNodeInstance, UAnimInstance)
+
 	void SetAnimation(UAnimationAsset* Asset);
 	void Play(bool bLooping);
 	void Stop();
 	void SetPlayRate(float Rate);
 
+	void Initialize(USkeletalMeshComponent* InOwner) override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 	void GetCurrentPose(FPoseContext& OutPose) const override;
 

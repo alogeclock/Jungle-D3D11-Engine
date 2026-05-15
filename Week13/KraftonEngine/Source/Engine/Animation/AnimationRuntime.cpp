@@ -8,8 +8,8 @@ FTransform FAnimationRuntime::GetTrackTransformAtTime(const FBoneAnimationTrack&
 		return FTransform();
 
 	// Frame 기반 인덱스 계산
-	float FrameTime = Time * FrameRate.AsDecimal();
-	uint32 PrevIndex = FMath::Clamp((uint32)FrameTime, 0, NumberOfKeys - 1);
+	float FrameTime = std::max(0.0f, Time * FrameRate.AsDecimal());
+	uint32 PrevIndex = FMath::Clamp((uint32)FrameTime, 0u, NumberOfKeys - 1);
 	uint32 NextIndex = std::min(PrevIndex + 1, NumberOfKeys - 1);
 
 	float Alpha = FrameTime - PrevIndex;
@@ -37,22 +37,27 @@ void FAnimationRuntime::GetPoseAtTime(const UAnimDataModel* DataModel, float Tim
 	if (!DataModel)
 		return;
 
-	for (const FBoneAnimationTrack& Track : DataModel->GetBoneAnimationTracks())
-	{
-		int32 NumKeys = Track.InternalTrack.PosKeys.Num();
-		FTransform T = GetTrackTransformAtTime(Track, Time, DataModel->GetFrameRate(), NumKeys);
+	const auto& Tracks = DataModel->GetBoneAnimationTracks();
 
-		// Bone 이름 기준으로 Pose에 저장
-		OutPose.SetBoneTransform(Track.Name, T);
+	OutPose.BoneLocalTransforms.resize(Tracks.size());
+
+	for (uint32 Idx = 0; Idx < static_cast<uint32>(Tracks.size()); ++Idx)
+	{
+		const FBoneAnimationTrack& Track = Tracks[Idx];
+		const uint32 NumKeys = static_cast<uint32>(Track.InternalTrack.PosKeys.size());
+		OutPose.BoneLocalTransforms[Idx] = GetTrackTransformAtTime(Track, Time, DataModel->GetFrameRate(), NumKeys);
 	}
 }
 
 void FAnimationRuntime::BlendTwoPoses(const FPoseContext& A, const FPoseContext& B, float Alpha, FPoseContext& OutPose)
 {
-	uint32 NumBones = A.BoneLocalTransforms.size();
+	const uint32 NumBones = static_cast<uint32>(A.BoneLocalTransforms.size());
+	if (NumBones != static_cast<uint32>(B.BoneLocalTransforms.size()))
+		return;
+
 	OutPose.BoneLocalTransforms.resize(NumBones);
 
-	for (int32 i = 0; i < NumBones; ++i)
+	for (uint32 i = 0; i < NumBones; ++i)
 	{
 		const FTransform& TA = A.BoneLocalTransforms[i];
 		const FTransform& TB = B.BoneLocalTransforms[i];

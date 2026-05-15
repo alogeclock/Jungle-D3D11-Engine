@@ -40,9 +40,9 @@ void USkeletalMeshComponent::ApplyPoseToComponent(const FPoseContext& Pose)
 
 	EnsureBoneEditPose();
 
-	for (const auto& [BoneName, BoneIdx] : Pose.BoneNameToIndex)
+	for (uint32 BoneIdx = 0; BoneIdx < static_cast<uint32>(Pose.BoneLocalTransforms.size()); ++BoneIdx)
 	{
-		if (BoneIdx < (uint32)BoneEditLocalMatrices.size())
+		if (BoneIdx < static_cast<uint32>(BoneEditLocalMatrices.size()))
 			BoneEditLocalMatrices[BoneIdx] = Pose.BoneLocalTransforms[BoneIdx].ToMatrix();
 	}
 

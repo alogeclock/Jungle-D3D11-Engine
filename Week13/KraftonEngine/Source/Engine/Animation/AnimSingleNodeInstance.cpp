@@ -1,8 +1,18 @@
 ﻿#include "AnimSingleNodeInstance.h"
+#include "Object/ObjectFactory.h"
+
+IMPLEMENT_CLASS(UAnimSingleNodeInstance, UAnimInstance)
+
+void UAnimSingleNodeInstance::Initialize(USkeletalMeshComponent* InOwner)
+{
+	Super::Initialize(InOwner);
+	CurrentTime = 0.0f;
+	bPlaying = false;
+}
 
 void UAnimSingleNodeInstance::SetAnimation(UAnimationAsset* Asset)
 {
-	Sequence = static_cast<UAnimSequence*>(Asset);
+	Sequence = Cast<UAnimSequence>(Asset);
 	CurrentTime = 0.0f;
 	bPlaying = false;
 }
