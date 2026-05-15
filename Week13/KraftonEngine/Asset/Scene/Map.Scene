@@ -189,34 +189,34 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/ROAD_GENERIC.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_ROAD_GENERIC.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/GENERIC_SIDEWALKS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GENERIC_SIDEWALKS.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/ROAD_MARKINGS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_ROAD_MARKINGS.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/BIKE_LANES.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_BIKE_LANES.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/CROSSINGS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_CROSSINGS.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/ASPHALT_BARE.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_ASPHALT_BARE.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/ROAD_WORNED.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_ROAD_WORNED.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/OLD_SIDEWALK_TRIMSHEET.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_OLD_SIDEWALK_TRIMSHEET.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/ROAD_NEW.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_ROAD_NEW.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [0.000000, 0.000000, 1.725000],
@@ -225,7 +225,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [1.000000, 1.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Road/Road.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Road/Road_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -258,7 +258,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [180.478745, -220.369781, 1.100000],
@@ -267,7 +267,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -300,7 +300,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [180.578751, -66.697098, 1.100000],
@@ -309,7 +309,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -342,7 +342,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [180.678757, 89.016449, 1.100000],
@@ -351,7 +351,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -384,7 +384,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [180.778763, 244.979401, 1.200000],
@@ -393,7 +393,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -426,7 +426,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [22.951492, 245.079407, 1.100000],
@@ -435,7 +435,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -468,7 +468,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [22.951477, 89.216446, 1.100000],
@@ -477,7 +477,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -510,7 +510,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [22.951477, -66.397095, 1.100000],
@@ -519,7 +519,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -552,7 +552,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [22.951462, -219.969788, 1.100000],
@@ -561,7 +561,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -594,7 +594,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-136.509766, 245.179413, 1.100000],
@@ -603,7 +603,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -636,7 +636,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-136.409790, 89.416443, 1.100000],
@@ -645,7 +645,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -678,7 +678,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-136.309784, -66.097092, 1.100000],
@@ -687,7 +687,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -720,7 +720,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/GRASS.mat"
+            "Path" : "Asset/Mesh/Map/Road/Road_GRASS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-136.209808, -219.569794, 1.100000],
@@ -729,7 +729,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [80.000000, 80.000000, 0.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -762,64 +762,64 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Side_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Side_Wall.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/house_blinn1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_blinn1.mat"
           },
           "Element 10" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper.mat"
           },
           "Element 11" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Design.mat"
           },
           "Element 12" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Extraa.mat"
           },
           "Element 13" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Design.mat"
           },
           "Element 14" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Wall.mat"
           },
           "Element 15" : {
-            "Path" : "Asset/Materials/Auto/house_Wall_Right.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Wall_Right.mat"
           },
           "Element 16" : {
-            "Path" : "Asset/Materials/Auto/house_RIght_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_RIght_Wall.mat"
           },
           "Element 17" : {
-            "Path" : "Asset/Materials/Auto/lambert2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_lambert2.mat"
           },
           "Element 18" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Floor.mat"
           },
           "Element 19" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Extraa.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/house_lambert21.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_lambert21.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/house_Floor_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor_2.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Floor.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper_2.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/house_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/house_Inner_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Inner_Wall.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1_Chokhat.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1_Chokhat.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [50.079662, 20.135460, 0.598732],
@@ -828,7 +828,7 @@
           "Rotation" : [0.000000, -9.244751, 0.000000],
           "Scale" : [20.000000, 20.000000, 20.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building1.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building1_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -861,64 +861,64 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Side_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Side_Wall.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/house_blinn1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_blinn1.mat"
           },
           "Element 10" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper.mat"
           },
           "Element 11" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Design.mat"
           },
           "Element 12" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Extraa.mat"
           },
           "Element 13" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Design.mat"
           },
           "Element 14" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Wall.mat"
           },
           "Element 15" : {
-            "Path" : "Asset/Materials/Auto/house_Wall_Right.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Wall_Right.mat"
           },
           "Element 16" : {
-            "Path" : "Asset/Materials/Auto/house_RIght_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_RIght_Wall.mat"
           },
           "Element 17" : {
-            "Path" : "Asset/Materials/Auto/lambert2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_lambert2.mat"
           },
           "Element 18" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Floor.mat"
           },
           "Element 19" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Extraa.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/house_lambert21.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_lambert21.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/house_Floor_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor_2.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Floor.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper_2.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/house_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/house_Inner_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Inner_Wall.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1_Chokhat.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1_Chokhat.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-76.257545, -60.742134, 0.698732],
@@ -927,7 +927,7 @@
           "Rotation" : [0.000000, 81.377319, 0.000000],
           "Scale" : [20.000000, 20.000000, 20.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building1.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building1_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -960,7 +960,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert3.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building2_lambert3.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [152.556854, 185.489990, 0.000000],
@@ -969,7 +969,7 @@
           "Rotation" : [0.000000, -10.137451, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building2.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building2_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1002,7 +1002,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [100.965355, 123.725266, 2.042000],
@@ -1011,7 +1011,7 @@
           "Rotation" : [0.000000, -8.135162, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1044,7 +1044,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-189.786255, 2.971306, 0.290382],
@@ -1053,7 +1053,7 @@
           "Rotation" : [0.000000, 81.365967, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1086,64 +1086,64 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Side_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Side_Wall.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/house_blinn1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_blinn1.mat"
           },
           "Element 10" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper.mat"
           },
           "Element 11" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Design.mat"
           },
           "Element 12" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Extraa.mat"
           },
           "Element 13" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Design.mat"
           },
           "Element 14" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Wall.mat"
           },
           "Element 15" : {
-            "Path" : "Asset/Materials/Auto/house_Wall_Right.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Wall_Right.mat"
           },
           "Element 16" : {
-            "Path" : "Asset/Materials/Auto/house_RIght_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_RIght_Wall.mat"
           },
           "Element 17" : {
-            "Path" : "Asset/Materials/Auto/lambert2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_lambert2.mat"
           },
           "Element 18" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Floor.mat"
           },
           "Element 19" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Extraa.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/house_lambert21.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_lambert21.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/house_Floor_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor_2.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Floor.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper_2.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/house_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/house_Inner_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Inner_Wall.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1_Chokhat.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1_Chokhat.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-29.629822, 5.449127, 0.698732],
@@ -1152,7 +1152,7 @@
           "Rotation" : [0.000000, 81.709381, 0.000000],
           "Scale" : [20.000000, 20.000000, 20.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building1.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building1_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1248,64 +1248,64 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Side_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Side_Wall.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/house_blinn1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_blinn1.mat"
           },
           "Element 10" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper.mat"
           },
           "Element 11" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Design.mat"
           },
           "Element 12" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Extraa.mat"
           },
           "Element 13" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Design.mat"
           },
           "Element 14" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Wall.mat"
           },
           "Element 15" : {
-            "Path" : "Asset/Materials/Auto/house_Wall_Right.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Wall_Right.mat"
           },
           "Element 16" : {
-            "Path" : "Asset/Materials/Auto/house_RIght_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_RIght_Wall.mat"
           },
           "Element 17" : {
-            "Path" : "Asset/Materials/Auto/lambert2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_lambert2.mat"
           },
           "Element 18" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Floor.mat"
           },
           "Element 19" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Extraa.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/house_lambert21.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_lambert21.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/house_Floor_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor_2.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Floor.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper_2.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/house_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/house_Inner_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Inner_Wall.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1_Chokhat.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1_Chokhat.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-54.609207, 15.458500, 0.798732],
@@ -1314,7 +1314,7 @@
           "Rotation" : [0.000000, -9.308701, 0.000000],
           "Scale" : [20.000000, 20.000000, 20.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building1.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building1_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1347,7 +1347,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-110.514145, 182.956833, 0.590382],
@@ -1356,7 +1356,7 @@
           "Rotation" : [0.000000, 3.963837, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1389,64 +1389,64 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Side_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Side_Wall.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/house_blinn1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_blinn1.mat"
           },
           "Element 10" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper.mat"
           },
           "Element 11" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Design.mat"
           },
           "Element 12" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Extraa.mat"
           },
           "Element 13" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Design.mat"
           },
           "Element 14" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Wall.mat"
           },
           "Element 15" : {
-            "Path" : "Asset/Materials/Auto/house_Wall_Right.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Wall_Right.mat"
           },
           "Element 16" : {
-            "Path" : "Asset/Materials/Auto/house_RIght_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_RIght_Wall.mat"
           },
           "Element 17" : {
-            "Path" : "Asset/Materials/Auto/lambert2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_lambert2.mat"
           },
           "Element 18" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Floor.mat"
           },
           "Element 19" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Extraa.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/house_lambert21.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_lambert21.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/house_Floor_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor_2.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Floor.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper_2.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/house_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/house_Inner_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Inner_Wall.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1_Chokhat.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1_Chokhat.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-148.768600, 24.322607, 1.098732],
@@ -1455,7 +1455,7 @@
           "Rotation" : [0.000000, 81.645538, 0.000000],
           "Scale" : [20.000000, 20.000000, 20.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building1.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building1_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1488,7 +1488,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-32.435738, 142.698746, 1.942000],
@@ -1497,7 +1497,7 @@
           "Rotation" : [0.000000, -8.199036, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1530,7 +1530,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert3.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building2_lambert3.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [29.952431, 204.563477, 0.600000],
@@ -1539,7 +1539,7 @@
           "Rotation" : [0.000000, -10.201355, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building2.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building2_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1572,7 +1572,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [98.288528, -180.002777, 2.042000],
@@ -1581,7 +1581,7 @@
           "Rotation" : [0.000000, -101.054420, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1614,7 +1614,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-78.705887, -375.854645, 1.942000],
@@ -1623,7 +1623,7 @@
           "Rotation" : [0.000000, 178.366180, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1656,7 +1656,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [204.890274, -206.460129, 2.042000],
@@ -1665,7 +1665,7 @@
           "Rotation" : [0.000000, -101.054420, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1698,7 +1698,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert3.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building2_lambert3.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [141.501801, 127.649612, 0.700000],
@@ -1707,7 +1707,7 @@
           "Rotation" : [0.000000, -10.201355, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building2.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building2_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1740,64 +1740,64 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Side_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Side_Wall.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/house_blinn1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_blinn1.mat"
           },
           "Element 10" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper.mat"
           },
           "Element 11" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Design.mat"
           },
           "Element 12" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Extraa.mat"
           },
           "Element 13" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Design.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Design.mat"
           },
           "Element 14" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Wall.mat"
           },
           "Element 15" : {
-            "Path" : "Asset/Materials/Auto/house_Wall_Right.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Wall_Right.mat"
           },
           "Element 16" : {
-            "Path" : "Asset/Materials/Auto/house_RIght_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_RIght_Wall.mat"
           },
           "Element 17" : {
-            "Path" : "Asset/Materials/Auto/lambert2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_lambert2.mat"
           },
           "Element 18" : {
-            "Path" : "Asset/Materials/Auto/house_Middle_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Middle_Floor.mat"
           },
           "Element 19" : {
-            "Path" : "Asset/Materials/Auto/house_Back_Extraa.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Back_Extraa.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/house_lambert21.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_lambert21.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/house_Floor_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor_2.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/house_Top_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Top_Floor.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/house_Front_Gate_Upper_2.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Front_Gate_Upper_2.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/house_Floor.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Floor.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/house_Inner_Wall.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Inner_Wall.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1_Chokhat.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1_Chokhat.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/house_Gate_1.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building1_house_Gate_1.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-60.380363, 68.380981, 0.798732],
@@ -1806,7 +1806,7 @@
           "Rotation" : [0.000000, 81.709381, 0.000000],
           "Scale" : [20.000000, 20.000000, 20.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building1.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building1_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1839,7 +1839,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-132.665436, 48.727226, 0.490382],
@@ -1848,7 +1848,7 @@
           "Rotation" : [0.000000, 81.365967, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1881,7 +1881,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert4.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building3_lambert4.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [148.285507, -1.575706, 2.142000],
@@ -1890,7 +1890,7 @@
           "Rotation" : [0.000000, -101.054420, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building3.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building3_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -1923,7 +1923,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/lambert3.mat"
+            "Path" : "Asset/Mesh/Map/Buildings/Building2_lambert3.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-169.083557, 383.617706, 0.700000],
@@ -1932,7 +1932,7 @@
           "Rotation" : [0.000000, 22.295364, 0.000000],
           "Scale" : [30.000000, 30.000000, 30.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Buildings/Building2.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Buildings/Building2_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -2744,7 +2744,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/M_Sky_Panning_Clouds2.mat"
+            "Path" : "Asset/Mesh/Map/Sky/Sky_M_Sky_Panning_Clouds2.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [0.000000, 0.000000, -43.466202],
@@ -2753,7 +2753,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [15.000000, 15.000000, 15.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/Sky/Sky.obj",
+          "Static Mesh" : "Asset/Mesh/Map/Sky/Sky_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -2786,58 +2786,58 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/Object001_mtl.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Object001_mtl.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/Object002_mtl.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Object002_mtl.mat"
           },
           "Element 10" : {
-            "Path" : "Asset/Materials/Auto/ALUCOBON_BLEU.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _ALUCOBON_BLEU.mat"
           },
           "Element 11" : {
-            "Path" : "Asset/Materials/Auto/ALU.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _ALU.mat"
           },
           "Element 12" : {
-            "Path" : "Asset/Materials/Auto/ALU_ROUGE.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _ALU_ROUGE.mat"
           },
           "Element 13" : {
-            "Path" : "Asset/Materials/Auto/BLACK_SCREEN.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _BLACK_SCREEN.mat"
           },
           "Element 14" : {
-            "Path" : "Asset/Materials/Auto/Material.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Material.mat"
           },
           "Element 15" : {
-            "Path" : "Asset/Materials/Auto/Material.001.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Material.001.mat"
           },
           "Element 16" : {
-            "Path" : "Asset/Materials/Auto/total-3-logo-png-transparent.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _total-3-logo-png-transparent.mat"
           },
           "Element 17" : {
-            "Path" : "Asset/Materials/Auto/asphalt_cracked.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _asphalt_cracked.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/ROF.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _ROF.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/ALUCOBON_BLEU.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _ALUCOBON_BLEU.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/Office_Ceiling.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Office_Ceiling.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/Material_8.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Material_8.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/Dirty_Tiles.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Dirty_Tiles.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/Dirty_Old_Walls_Texture.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Dirty_Old_Walls_Texture.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/Cracked_Concrete_Sidewalk.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _Cracked_Concrete_Sidewalk.mat"
           },
           "Element 9" : {
-            "Path" : "Asset/Materials/Auto/ALUCOBON_GRIS.mat"
+            "Path" : "Asset/Mesh/Map/GasStation/GASSTATION _ALUCOBON_GRIS.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-122.421745, -255.138290, 0.734741],
@@ -2846,7 +2846,7 @@
           "Rotation" : [0.000000, 179.290344, 0.000000],
           "Scale" : [1.500000, 1.500000, 1.500000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/GasStation/GASSTATION .obj",
+          "Static Mesh" : "Asset/Mesh/Map/GasStation/GASSTATION _StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -3275,31 +3275,31 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/.001.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.001.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/.006.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.006.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/.004.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.004.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/.005.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.005.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/.007.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.007.mat"
           },
           "Element 5" : {
-            "Path" : "Asset/Materials/Auto/.008.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.008.mat"
           },
           "Element 6" : {
-            "Path" : "Asset/Materials/Auto/.009.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.009.mat"
           },
           "Element 7" : {
-            "Path" : "Asset/Materials/Auto/.010.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.010.mat"
           },
           "Element 8" : {
-            "Path" : "Asset/Materials/Auto/.011.mat"
+            "Path" : "Asset/Mesh/Map/CarWashCenter/CarWash_.011.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [141.023926, -16.603485, 12.499868],
@@ -3308,7 +3308,7 @@
           "Rotation" : [0.000000, 81.994934, 0.000000],
           "Scale" : [2.000000, 2.000000, 2.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/Map/CarWashCenter/CarWash.obj",
+          "Static Mesh" : "Asset/Mesh/Map/CarWashCenter/CarWash_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -3391,7 +3391,7 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/GaspumpNozzle_MTL.001.mat"
+                "Path" : "Asset/Mesh/FuelNozzle/fuel_nozzle_GaspumpNozzle_MTL.001.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.000000, 0.000000, 0.000000],
@@ -3400,7 +3400,7 @@
               "Rotation" : [-9.000000, 1.000000, -180.000000],
               "Scale" : [5.000000, 5.000000, 5.000000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/FuelNozzle/fuel_nozzle.obj",
+              "Static Mesh" : "Asset/Mesh/FuelNozzle/fuel_nozzle_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -3588,7 +3588,7 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/top.mat"
+                "Path" : "Asset/Mesh/WaterSteam/Water Tr Cube 09e Str_top.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [-0.421491, 0.000000, 0.133785],
@@ -3597,7 +3597,7 @@
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Scale" : [0.200000, 0.020000, 0.020000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+              "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -3617,19 +3617,19 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/yellow.mat"
+            "Path" : "Asset/Mesh/WaterGun/WaterGun_yellow.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/green.mat"
+            "Path" : "Asset/Mesh/WaterGun/WaterGun_green.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/lambert1.mat"
+            "Path" : "Asset/Mesh/WaterGun/WaterGun_lambert1.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/orange.mat"
+            "Path" : "Asset/Mesh/WaterGun/WaterGun_orange.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/white.mat"
+            "Path" : "Asset/Mesh/WaterGun/WaterGun_white.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [144.304993, -62.317932, 5.239977],
@@ -3638,7 +3638,7 @@
           "Rotation" : [0.000000, 89.999969, 0.000000],
           "Scale" : [5.000000, 5.000000, 5.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/WaterGun/WaterGun.obj",
+          "Static Mesh" : "Asset/Mesh/WaterGun/WaterGun_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -4036,10 +4036,10 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/post.mat"
+                "Path" : "Asset/Mesh/FootballGoal/FootballGoal_post.mat"
               },
               "Element 1" : {
-                "Path" : "Asset/Materials/Auto/rope.mat"
+                "Path" : "Asset/Mesh/FootballGoal/FootballGoal_rope.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.000000, -2.044197, -4.618125],
@@ -4048,7 +4048,7 @@
               "Rotation" : [89.899994, -90.000000, 0.000000],
               "Scale" : [2.000000, 2.000000, 2.000000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/FootballGoal/FootballGoal.obj",
+              "Static Mesh" : "Asset/Mesh/FootballGoal/FootballGoal_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -4124,43 +4124,43 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/Eyes.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Eyes.mat"
               },
               "Element 1" : {
-                "Path" : "Asset/Materials/Auto/EyeWhites.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_EyeWhites.mat"
               },
               "Element 10" : {
-                "Path" : "Asset/Materials/Auto/Skirt.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Skirt.mat"
               },
               "Element 11" : {
-                "Path" : "Asset/Materials/Auto/Shoes.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Shoes.mat"
               },
               "Element 12" : {
-                "Path" : "Asset/Materials/Auto/Gloves.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Gloves.mat"
               },
               "Element 2" : {
-                "Path" : "Asset/Materials/Auto/Neck.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Neck.mat"
               },
               "Element 3" : {
-                "Path" : "Asset/Materials/Auto/Face.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Face.mat"
               },
               "Element 4" : {
-                "Path" : "Asset/Materials/Auto/Hair.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Hair.mat"
               },
               "Element 5" : {
-                "Path" : "Asset/Materials/Auto/Expression.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Expression.mat"
               },
               "Element 6" : {
-                "Path" : "Asset/Materials/Auto/Skin.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Skin.mat"
               },
               "Element 7" : {
-                "Path" : "Asset/Materials/Auto/Clothes.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Clothes.mat"
               },
               "Element 8" : {
-                "Path" : "Asset/Materials/Auto/Pants.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Pants.mat"
               },
               "Element 9" : {
-                "Path" : "Asset/Materials/Auto/BackAccessory.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_BackAccessory.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.000000, 0.000000, -0.921229],
@@ -4169,7 +4169,7 @@
               "Rotation" : [0.000000, -90.000000, 0.000000],
               "Scale" : [1.500000, 1.500000, 1.500000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/Lumine/LumineModel.obj",
+              "Static Mesh" : "Asset/Mesh/Lumine/LumineModel_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -4245,7 +4245,7 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/material_0.mat"
+                "Path" : "Asset/Mesh/Map/Person/model_mesh_material_0.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.000000, 0.000000, 0.677000],
@@ -4254,7 +4254,7 @@
               "Rotation" : [89.899994, 0.000000, 0.000000],
               "Scale" : [1.500000, 1.500000, 1.500000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/Map/Person/model_mesh.obj",
+              "Static Mesh" : "Asset/Mesh/Map/Person/model_mesh_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -4330,7 +4330,7 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/material_0.mat"
+                "Path" : "Asset/Mesh/Map/Person/model_mesh_material_0.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.000000, 0.000000, 0.677000],
@@ -4339,7 +4339,7 @@
               "Rotation" : [89.899994, 0.000000, 0.000000],
               "Scale" : [1.500000, 1.500000, 1.500000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/Map/Person/model_mesh.obj",
+              "Static Mesh" : "Asset/Mesh/Map/Person/model_mesh_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -4415,7 +4415,7 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/material_0.mat"
+                "Path" : "Asset/Mesh/Map/Person/model_mesh_material_0.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.000000, 0.000000, 0.677000],
@@ -4424,7 +4424,7 @@
               "Rotation" : [89.899994, 0.000000, 0.000000],
               "Scale" : [1.500000, 1.500000, 1.500000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/Map/Person/model_mesh.obj",
+              "Static Mesh" : "Asset/Mesh/Map/Person/model_mesh_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -4500,7 +4500,7 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/material_0.mat"
+                "Path" : "Asset/Mesh/Map/Person/model_mesh_material_0.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.000000, 0.000000, 0.677000],
@@ -4509,7 +4509,7 @@
               "Rotation" : [89.899994, 0.000000, 0.000000],
               "Scale" : [1.500000, 1.500000, 1.500000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/Map/Person/model_mesh.obj",
+              "Static Mesh" : "Asset/Mesh/Map/Person/model_mesh_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -4585,43 +4585,43 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/Eyes.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Eyes.mat"
               },
               "Element 1" : {
-                "Path" : "Asset/Materials/Auto/EyeWhites.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_EyeWhites.mat"
               },
               "Element 10" : {
-                "Path" : "Asset/Materials/Auto/Skirt.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Skirt.mat"
               },
               "Element 11" : {
-                "Path" : "Asset/Materials/Auto/Shoes.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Shoes.mat"
               },
               "Element 12" : {
-                "Path" : "Asset/Materials/Auto/Gloves.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Gloves.mat"
               },
               "Element 2" : {
-                "Path" : "Asset/Materials/Auto/Neck.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Neck.mat"
               },
               "Element 3" : {
-                "Path" : "Asset/Materials/Auto/Face.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Face.mat"
               },
               "Element 4" : {
-                "Path" : "Asset/Materials/Auto/Hair.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Hair.mat"
               },
               "Element 5" : {
-                "Path" : "Asset/Materials/Auto/Expression.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Expression.mat"
               },
               "Element 6" : {
-                "Path" : "Asset/Materials/Auto/Skin.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Skin.mat"
               },
               "Element 7" : {
-                "Path" : "Asset/Materials/Auto/Clothes.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Clothes.mat"
               },
               "Element 8" : {
-                "Path" : "Asset/Materials/Auto/Pants.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_Pants.mat"
               },
               "Element 9" : {
-                "Path" : "Asset/Materials/Auto/BackAccessory.mat"
+                "Path" : "Asset/Mesh/Lumine/LumineModel_BackAccessory.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [-0.054633, 0.007998, -0.966194],
@@ -4630,7 +4630,7 @@
               "Rotation" : [1.807388, -70.951393, 0.000000],
               "Scale" : [1.500000, 1.500000, 1.500000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/Lumine/LumineModel.obj",
+              "Static Mesh" : "Asset/Mesh/Lumine/LumineModel_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -4691,7 +4691,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/meteor.mat"
+            "Path" : "Asset/Mesh/meteor/meteor_meteor.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [168.014313, -183.554764, 1.599999],
@@ -4700,7 +4700,7 @@
           "Rotation" : [36.947723, 0.000000, 0.000000],
           "Scale" : [20.000000, 20.000000, 20.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/meteor/meteor.obj",
+          "Static Mesh" : "Asset/Mesh/meteor/meteor_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -4733,7 +4733,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/meteor.mat"
+            "Path" : "Asset/Mesh/meteor/meteor_meteor.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [140.295105, -177.302322, 2.189528],
@@ -4742,7 +4742,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [5.000000, 5.000000, 5.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/meteor/meteor.obj",
+          "Static Mesh" : "Asset/Mesh/meteor/meteor_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -4775,7 +4775,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/meteor.mat"
+            "Path" : "Asset/Mesh/meteor/meteor_meteor.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [161.855591, -153.581970, 2.289528],
@@ -4784,7 +4784,7 @@
           "Rotation" : [0.000000, 0.000000, -33.258530],
           "Scale" : [5.000000, 5.000000, 5.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/meteor/meteor.obj",
+          "Static Mesh" : "Asset/Mesh/meteor/meteor_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -5122,7 +5122,7 @@
                     "WorldStatic" : 2
                   },
                   "Element 0" : {
-                    "Path" : "Asset/Materials/Auto/Interior.002.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckHandle_Interior.002.mat"
                   },
                   "Generate Overlap Events" : false,
                   "Location" : [-0.320000, -0.520000, 0.820000],
@@ -5131,7 +5131,7 @@
                   "Rotation" : [0.000000, -90.000000, 0.000000],
                   "Scale" : [1.000000, 1.000000, 1.000000],
                   "Simulate Physics" : false,
-                  "Static Mesh" : "Data/Truck/TruckHandle.obj",
+                  "Static Mesh" : "Asset/Mesh/Truck/TruckHandle_StaticMesh.uasset",
                   "Two Sided Shadow" : false,
                   "Visible" : true,
                   "bEditorOnly" : false,
@@ -5152,10 +5152,10 @@
                     "WorldStatic" : 2
                   },
                   "Element 0" : {
-                    "Path" : "Asset/Materials/Auto/MI_Wheel_GreenClaw01.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_MI_Wheel_GreenClaw01.001.mat"
                   },
                   "Element 1" : {
-                    "Path" : "Asset/Materials/Auto/Material.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_Material.001.mat"
                   },
                   "Generate Overlap Events" : false,
                   "Location" : [0.950000, -1.400000, 0.100000],
@@ -5164,7 +5164,7 @@
                   "Rotation" : [0.000000, -90.000000, 0.000000],
                   "Scale" : [1.000000, 1.000000, 1.000000],
                   "Simulate Physics" : false,
-                  "Static Mesh" : "Data/Truck/TruckTire.obj",
+                  "Static Mesh" : "Asset/Mesh/Truck/TruckTire_StaticMesh.uasset",
                   "Two Sided Shadow" : false,
                   "Visible" : true,
                   "bEditorOnly" : false,
@@ -5185,10 +5185,10 @@
                     "WorldStatic" : 2
                   },
                   "Element 0" : {
-                    "Path" : "Asset/Materials/Auto/MI_Wheel_GreenClaw01.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_MI_Wheel_GreenClaw01.001.mat"
                   },
                   "Element 1" : {
-                    "Path" : "Asset/Materials/Auto/Material.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_Material.001.mat"
                   },
                   "Generate Overlap Events" : false,
                   "Location" : [0.950000, 1.250000, 0.100000],
@@ -5197,7 +5197,7 @@
                   "Rotation" : [0.000000, -90.000000, 0.000000],
                   "Scale" : [1.000000, 1.000000, 1.000000],
                   "Simulate Physics" : false,
-                  "Static Mesh" : "Data/Truck/TruckTire.obj",
+                  "Static Mesh" : "Asset/Mesh/Truck/TruckTire_StaticMesh.uasset",
                   "Two Sided Shadow" : false,
                   "Visible" : true,
                   "bEditorOnly" : false,
@@ -5218,10 +5218,10 @@
                     "WorldStatic" : 2
                   },
                   "Element 0" : {
-                    "Path" : "Asset/Materials/Auto/MI_Wheel_GreenClaw01.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_MI_Wheel_GreenClaw01.001.mat"
                   },
                   "Element 1" : {
-                    "Path" : "Asset/Materials/Auto/Material.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_Material.001.mat"
                   },
                   "Generate Overlap Events" : false,
                   "Location" : [-0.850000, -1.400000, 0.100000],
@@ -5230,7 +5230,7 @@
                   "Rotation" : [0.000000, -90.000000, 0.000000],
                   "Scale" : [1.000000, 1.000000, 1.000000],
                   "Simulate Physics" : false,
-                  "Static Mesh" : "Data/Truck/TruckTire.obj",
+                  "Static Mesh" : "Asset/Mesh/Truck/TruckTire_StaticMesh.uasset",
                   "Two Sided Shadow" : false,
                   "Visible" : true,
                   "bEditorOnly" : false,
@@ -5251,10 +5251,10 @@
                     "WorldStatic" : 2
                   },
                   "Element 0" : {
-                    "Path" : "Asset/Materials/Auto/MI_Wheel_GreenClaw01.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_MI_Wheel_GreenClaw01.001.mat"
                   },
                   "Element 1" : {
-                    "Path" : "Asset/Materials/Auto/Material.001.mat"
+                    "Path" : "Asset/Mesh/Truck/TruckTire_Material.001.mat"
                   },
                   "Generate Overlap Events" : false,
                   "Location" : [-0.850000, 1.250000, 0.100000],
@@ -5263,7 +5263,7 @@
                   "Rotation" : [0.000000, -90.000000, 0.000000],
                   "Scale" : [1.000000, 1.000000, 1.000000],
                   "Simulate Physics" : false,
-                  "Static Mesh" : "Data/Truck/TruckTire.obj",
+                  "Static Mesh" : "Asset/Mesh/Truck/TruckTire_StaticMesh.uasset",
                   "Two Sided Shadow" : false,
                   "Visible" : true,
                   "bEditorOnly" : false,
@@ -5325,7 +5325,7 @@
                       "Location" : [2.413429, -0.020000, 0.223033],
                       "Mass (kg)" : 1.000000,
                       "Material" : {
-                        "Path" : "Asset/Materials/Auto/DirtDecal.mat"
+                        "Path" : "Asset/Mesh/WaterSteam/DirtDecal.mat"
                       },
                       "Object Type" : 0,
                       "Rotation" : [0.000000, -89.999992, 0.000000],
@@ -5391,7 +5391,7 @@
                       "Location" : [1.120000, 0.000000, 0.291564],
                       "Mass (kg)" : 1.000000,
                       "Material" : {
-                        "Path" : "Asset/Materials/Auto/DirtDecal.mat"
+                        "Path" : "Asset/Mesh/WaterSteam/DirtDecal.mat"
                       },
                       "Object Type" : 0,
                       "Rotation" : [0.000000, -89.999992, 0.000000],
@@ -5457,7 +5457,7 @@
                       "Location" : [-1.084345, -0.020000, 0.392839],
                       "Mass (kg)" : 1.000000,
                       "Material" : {
-                        "Path" : "Asset/Materials/Auto/DirtDecal.mat"
+                        "Path" : "Asset/Mesh/WaterSteam/DirtDecal.mat"
                       },
                       "Object Type" : 0,
                       "Rotation" : [0.000000, -89.999992, 0.000000],
@@ -5523,7 +5523,7 @@
                       "Location" : [0.010352, 0.000000, 0.352103],
                       "Mass (kg)" : 1.000000,
                       "Material" : {
-                        "Path" : "Asset/Materials/Auto/DirtDecal.mat"
+                        "Path" : "Asset/Mesh/WaterSteam/DirtDecal.mat"
                       },
                       "Object Type" : 0,
                       "Rotation" : [0.000000, -89.999992, 0.000000],
@@ -5557,31 +5557,31 @@
                 "WorldStatic" : 2
               },
               "Element 0" : {
-                "Path" : "Asset/Materials/Auto/MI_Body.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_MI_Body.mat"
               },
               "Element 1" : {
-                "Path" : "Asset/Materials/Auto/Decals.001.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_Decals.001.mat"
               },
               "Element 2" : {
-                "Path" : "Asset/Materials/Auto/Interior.001.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_Interior.001.mat"
               },
               "Element 3" : {
-                "Path" : "Asset/Materials/Auto/Trim.001.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_Trim.001.mat"
               },
               "Element 4" : {
-                "Path" : "Asset/Materials/Auto/M_Glass_DarkTint.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_M_Glass_DarkTint.mat"
               },
               "Element 5" : {
-                "Path" : "Asset/Materials/Auto/M_Glass_White.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_M_Glass_White.mat"
               },
               "Element 6" : {
-                "Path" : "Asset/Materials/Auto/M_Glass_Orange.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_M_Glass_Orange.mat"
               },
               "Element 7" : {
-                "Path" : "Asset/Materials/Auto/M_Glass_Red.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_M_Glass_Red.mat"
               },
               "Element 8" : {
-                "Path" : "Asset/Materials/Auto/Chassis.mat"
+                "Path" : "Asset/Mesh/Truck/TruckBody_Chassis.mat"
               },
               "Generate Overlap Events" : false,
               "Location" : [0.150000, 0.000000, -0.600000],
@@ -5590,7 +5590,7 @@
               "Rotation" : [0.000000, 90.000000, 0.000000],
               "Scale" : [1.000000, 1.000000, 1.000000],
               "Simulate Physics" : false,
-              "Static Mesh" : "Data/Truck/TruckBody.obj",
+              "Static Mesh" : "Asset/Mesh/Truck/TruckBody_StaticMesh.uasset",
               "Two Sided Shadow" : false,
               "Visible" : true,
               "bEditorOnly" : false,
@@ -5727,7 +5727,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-2.883239, 104.924057, 3.721026],
@@ -5736,7 +5736,7 @@
           "Rotation" : [0.000000, 84.632080, 0.000000],
           "Scale" : [1.000000, 1.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : false,
           "bEditorOnly" : false,
