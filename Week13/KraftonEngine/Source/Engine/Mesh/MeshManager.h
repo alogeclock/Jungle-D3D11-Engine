@@ -22,7 +22,8 @@ struct FMeshAssetListItem
 	FString FullPath;
 };
 
-
+/** 기존 : .obj, .fbx, .uasset 전부 Load/import 지원, <SourceData Load 시 Import 수행 후 .uasset Cooked 후> 구운 에셋을 로딩 후 런타임 데이터를 캐싱*/
+/** .uasset 기반 Mesh asset들을 Load하고 런타임 캐싱하는 Manager 객체 */
 class FMeshManager
 {
 public:

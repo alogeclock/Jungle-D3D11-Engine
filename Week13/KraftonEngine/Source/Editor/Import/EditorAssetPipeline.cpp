@@ -92,11 +92,31 @@ namespace
 		return IsPackageCurrent(SourcePath, PackagePath, EAssetPackageType::StaticMesh);
 	}
 
-	bool IsSkeletalMeshPackageCurrentForFbx(const FString& FbxPath)
+	bool IsSkeletonPackageCurrentForFbx(const FString& FbxPath)
 	{
 		const FString SourcePath = NormalizeProjectPath(FbxPath);
-		const FString PackagePath = FEditorFbxImportService::GetSkeletalMeshPackagePathForFbx(SourcePath);
-		return IsPackageCurrent(SourcePath, PackagePath, EAssetPackageType::SkeletalMesh);
+		const FString PackagePath = FEditorFbxImportService::GetSkeletonPackagePathForFbx(SourcePath);
+		return IsPackageCurrent(SourcePath, PackagePath, EAssetPackageType::Skeleton);
+	}
+
+	bool AreSkeletalMeshPackagesCurrentForFbx(const FString& FbxPath)
+	{
+		const FString SourcePath = NormalizeProjectPath(FbxPath);
+		TArray<FString> PackagePaths;
+		if (!FEditorFbxImportService::DiscoverSkeletalMeshSourcesFromFbx(SourcePath, PackagePaths))
+		{
+			return false;
+		}
+
+		for (const FString& PackagePath : PackagePaths)
+		{
+			if (!IsPackageCurrent(SourcePath, PackagePath, EAssetPackageType::SkeletalMesh))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
 
@@ -157,10 +177,10 @@ FEditorAssetPipelineReport FEditorAssetPipeline::SyncAssetRoot(ID3D11Device* Dev
 		}
 
 		const bool bStaticCurrent = IsStaticMeshPackageCurrentForFbx(SourcePath);
-		const bool bSkeletalCurrent = IsSkeletalMeshPackageCurrentForFbx(SourcePath);
+		const bool bSkeletonCurrent = IsSkeletonPackageCurrentForFbx(SourcePath);
+		const bool bSkeletalCurrent = bSkeletonCurrent && AreSkeletalMeshPackagesCurrentForFbx(SourcePath);
 		const bool bStaticMissingOrStale = !bStaticCurrent;
-		const bool bSkeletalPackageExists = std::filesystem::exists(ResolveProjectPath(FEditorFbxImportService::GetSkeletalMeshPackagePathForFbx(SourcePath)));
-		const bool bSkeletalMissingOrStale = !bSkeletalCurrent && (bStaticMissingOrStale || bSkeletalPackageExists);
+		const bool bSkeletalMissingOrStale = !bSkeletalCurrent;
 
 		if (!bStaticMissingOrStale && !bSkeletalMissingOrStale)
 		{
@@ -183,10 +203,10 @@ FEditorAssetPipelineReport FEditorAssetPipeline::SyncAssetRoot(ID3D11Device* Dev
 
 		if (bSkeletalMissingOrStale)
 		{
-			USkeletalMesh* ImportedMesh = nullptr;
-			if (FEditorFbxImportService::ImportSkeletalMeshFromFbx(SourcePath, Device, ImportedMesh, false))
+			TArray<USkeletalMesh*> ImportedMeshes;
+			if (FEditorFbxImportService::ImportSkeletalMeshesFromFbx(SourcePath, Device, ImportedMeshes, false))
 			{
-				++Report.Imported;
+				Report.Imported += static_cast<uint32>(ImportedMeshes.size());
 			}
 			else
 			{

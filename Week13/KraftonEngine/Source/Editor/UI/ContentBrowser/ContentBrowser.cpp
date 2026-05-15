@@ -290,6 +290,9 @@ void FEditorContentBrowserWidget::RefreshContent()
 				case EAssetPackageType::SkeletalMesh:
 					Element = std::make_shared<MeshElement>();
 					break;
+				case EAssetPackageType::Skeleton:
+					Element = std::make_shared<SkeletonElement>();
+					break;
 				case EAssetPackageType::FloatCurve:
 					Element = std::make_shared<FloatCurveElement>();
 					break;

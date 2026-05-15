@@ -399,18 +399,17 @@ void MeshElement::RenderContextMenu(ContentBrowserContext& Context)
 	{
 		if (ImGui::MenuItem("Reimport"))
 		{
-			USkeletalMesh* Reimported = nullptr;
-
 			if (Context.EditorEngine)
 			{
 				FAssetImportMetadata Metadata;
 				if (FAssetPackage::ReadMetadata(PackagePath, EAssetPackageType::SkeletalMesh, Metadata)
 					&& GetLowerExtensionFromPath(Metadata.SourcePath) == ".fbx")
 				{
-					FEditorFbxImportService::ImportSkeletalMeshFromFbx(
+					TArray<USkeletalMesh*> ReimportedMeshes;
+					FEditorFbxImportService::ImportSkeletalMeshesFromFbx(
 						Metadata.SourcePath,
 						Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
-						Reimported);
+						ReimportedMeshes);
 				}
 			}
 		}

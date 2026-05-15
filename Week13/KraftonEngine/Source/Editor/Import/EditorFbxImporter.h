@@ -1,8 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Matrix.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/SkeletonAsset.h"
 #include "Mesh/StaticMeshAsset.h"
 #include "Render/Types/VertexTypes.h"
 
@@ -12,6 +13,18 @@ struct FImportOptions;
 
 class FEditorFbxImporter
 {
+public:
+	struct FImportedSkeletalMesh
+	{
+		FString MeshName;
+		FMatrix MeshBindGlobal = FMatrix::Identity;
+		TArray<FVertexPNCTBW> Vertices;
+		TArray<uint32> Indices;
+		TArray<FSkeletalMeshSection> Sections;
+		TArray<FSkeletalMaterial> Materials;
+	};
+
+private:
 	struct FMaterialInfo
 	{
 		FString Name;
@@ -23,6 +36,7 @@ class FEditorFbxImporter
 public:
 	static bool Import(const FString& FilePath);
 	static bool ImportStatic(const FString& FilePath, const FImportOptions* Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials);
+	static bool DiscoverMeshNames(const FString& FilePath, TArray<FString>& OutMeshNames);
 
 private:
 	static bool Parse(FbxScene* Scene);
@@ -50,10 +64,9 @@ public:
 	static TArray<uint32> Indices;
 	static TArray<FBone> Bones;
 	static TArray<FSkeletalMeshSection> Sections;
-	static TArray<FSkeletalMeshRange> MeshRanges;
+	static TArray<FImportedSkeletalMesh> ImportedSkeletalMeshes;
 	static TArray<FMaterialInfo> MtlInfos;
 	static TMap<FbxSurfaceMaterial*, int32> MaterialToSlotIndex;
-	static TArray<FSkeletalMaterial> SkeletalMaterials;
 	static TArray<FVector> TangentSums;
 	static TArray<FVector> BitangentSums;
 	static FString CurrentSourcePath;

@@ -7,34 +7,10 @@
 #include "Serialization/Archive.h"
 #include "Materials/Material.h"
 #include "Materials/MaterialManager.h"
+#include "Mesh/SkeletonAsset.h"
 
 #include <algorithm>
 #include <memory>
-
-inline void SerializeSkeletalMatrix(FArchive& Ar, FMatrix& Matrix)
-{
-	Ar.Serialize(Matrix.Data, sizeof(float) * 16);
-}
-
-struct FBone
-{
-	FString Name;
-	int32 ParentIndex = -1;
-
-	FMatrix LocalMatrix = FMatrix::Identity;
-	FMatrix GlobalMatrix = FMatrix::Identity;
-	FMatrix InverseBindPoseMatrix = FMatrix::Identity;
-
-	friend FArchive& operator<<(FArchive& Ar, FBone& Bone)
-	{
-		Ar << Bone.Name;
-		Ar << Bone.ParentIndex;
-		SerializeSkeletalMatrix(Ar, Bone.LocalMatrix);
-		SerializeSkeletalMatrix(Ar, Bone.GlobalMatrix);
-		SerializeSkeletalMatrix(Ar, Bone.InverseBindPoseMatrix);
-		return Ar;
-	}
-};
 
 struct FSkeletalMeshSection
 {
@@ -86,36 +62,16 @@ struct FSkeletalMaterial
 	}
 };
 
-struct FSkeletalMeshRange
-{
-	uint32 VertexStart = 0;
-	uint32 VertexEnd = 0;
-	uint32 FirstIndex = 0;
-	uint32 IndexCount = 0;
-	FMatrix MeshBindGlobal = FMatrix::Identity;
-
-	friend FArchive& operator<<(FArchive& Ar, FSkeletalMeshRange& Range)
-	{
-		Ar << Range.VertexStart;
-		Ar << Range.VertexEnd;
-		Ar << Range.FirstIndex;
-		Ar << Range.IndexCount;
-		SerializeSkeletalMatrix(Ar, Range.MeshBindGlobal);
-		return Ar;
-	}
-};
-
 struct FSkeletalMesh
 {
 	FString PathFileName;
+	FString SkeletonPath;
+	FMatrix MeshBindGlobal = FMatrix::Identity;
 
 	TArray<FVertexPNCTBW> Vertices;
 	TArray<uint32> Indices;
 
 	TArray<FSkeletalMeshSection> Sections;
-	TArray<FSkeletalMeshRange> MeshRanges;
-
-	TArray<FBone> Bones;
 
 	std::unique_ptr<FMeshBuffer> RenderBuffer;
 

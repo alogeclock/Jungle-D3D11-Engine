@@ -3,6 +3,9 @@
 #include "Object/Object.h"
 #include "SkeletalMeshAsset.h"
 
+class USkeleton;
+struct FSkeletonAsset;
+
 class USkeletalMesh : public UObject
 {
 public:
@@ -18,6 +21,10 @@ public:
 
 	void SetSkeletalMeshAsset(FSkeletalMesh* InMesh);
 	FSkeletalMesh* GetSkeletalMeshAsset() const;
+	void SetSkeleton(USkeleton* InSkeleton);
+	USkeleton* GetSkeleton() const;
+	FSkeletonAsset* GetSkeletonAsset() const;
+	bool ResolveSkeleton();
 	void SetSkeletalMaterials(TArray<FSkeletalMaterial>&& InMaterials);
 	const TArray<FSkeletalMaterial>& GetSkeletalMaterials() const;
 
@@ -30,5 +37,6 @@ private:
 	FString AssetPathFileName = "None";
 
 	FSkeletalMesh* SkeletalMeshAsset = nullptr;
+	USkeleton* Skeleton = nullptr;
 	TArray<FSkeletalMaterial> SkeletalMaterials;
 };

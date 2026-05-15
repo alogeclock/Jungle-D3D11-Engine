@@ -462,6 +462,12 @@ USkeletalMesh* FMeshManager::LoadSkeletalMesh(const FString& PathFileName, ID3D1
 		return nullptr;
 	}
 
+	if (!SkeletalMesh->ResolveSkeleton())
+	{
+		UE_LOG("SkeletalMesh load failed: referenced Skeleton package could not be loaded. Path=%s", CacheKey.c_str());
+		return nullptr;
+	}
+
 	bool bMissingSource = false;
 	if (IsPackageSourceStale(CacheKey, EAssetPackageType::SkeletalMesh, bMissingSource))
 	{

@@ -10,14 +10,14 @@
 #include <cwctype>
 #include <filesystem>
 #include <fstream>
+#include <utility>
 
 TArray<FBone> FEditorFbxImporter::Bones;
 TArray<FVertexPNCTBW> FEditorFbxImporter::Vertices;
 TArray<uint32> FEditorFbxImporter::Indices;
 TArray<FSkeletalMeshSection> FEditorFbxImporter::Sections;
-TArray<FSkeletalMeshRange> FEditorFbxImporter::MeshRanges;
+TArray<FEditorFbxImporter::FImportedSkeletalMesh> FEditorFbxImporter::ImportedSkeletalMeshes;
 TArray<FEditorFbxImporter::FMaterialInfo> FEditorFbxImporter::MtlInfos;
-TArray<FSkeletalMaterial> FEditorFbxImporter::SkeletalMaterials;
 TArray<FVector> FEditorFbxImporter::TangentSums;
 TArray<FVector> FEditorFbxImporter::BitangentSums;
 TMap<FbxSurfaceMaterial*, int32> FEditorFbxImporter::MaterialToSlotIndex;
@@ -168,11 +168,10 @@ bool FEditorFbxImporter::Import(const FString& FilePath)
 	Indices.clear();
 	Bones.clear();
 	Sections.clear();
-	MeshRanges.clear();
+	ImportedSkeletalMeshes.clear();
 
 	MtlInfos.clear();
 	MaterialToSlotIndex.clear();
-	SkeletalMaterials.clear();
 	CurrentSourcePath = NormalizeProjectPath(FilePath);
 
 	TangentSums.clear();
@@ -243,8 +242,70 @@ bool FEditorFbxImporter::Import(const FString& FilePath)
 		return false;
 	}
 
+	if (ImportedSkeletalMeshes.empty())
+	{
+		SdkManager->Destroy();
+		return false;
+	}
+
 	SdkManager->Destroy();
 	return true;
+}
+
+bool FEditorFbxImporter::DiscoverMeshNames(const FString& FilePath, TArray<FString>& OutMeshNames)
+{
+	OutMeshNames.clear();
+
+	FbxManager* SdkManager = FbxManager::Create();
+	if (!SdkManager)
+	{
+		return false;
+	}
+
+	FbxIOSettings* ios = FbxIOSettings::Create(SdkManager, IOSROOT);
+	if (!ios)
+	{
+		SdkManager->Destroy();
+		return false;
+	}
+	SdkManager->SetIOSettings(ios);
+
+	FbxScene* Scene = FbxScene::Create(SdkManager, "FBX Mesh Discovery Scene");
+	FbxImporter* Importer = FbxImporter::Create(SdkManager, "");
+	if (!Scene || !Importer)
+	{
+		if (Importer) Importer->Destroy();
+		SdkManager->Destroy();
+		return false;
+	}
+
+	if (!Importer->Initialize(FilePath.c_str(), -1, SdkManager->GetIOSettings()))
+	{
+		Importer->Destroy();
+		SdkManager->Destroy();
+		return false;
+	}
+
+	const bool bImported = Importer->Import(Scene);
+	Importer->Destroy();
+	if (!bImported || !Scene->GetRootNode())
+	{
+		SdkManager->Destroy();
+		return false;
+	}
+
+	TArray<FbxNode*> Nodes;
+	CollectNodes(Scene->GetRootNode(), 0, Nodes);
+	for (FbxNode* Node : Nodes)
+	{
+		if (Node && Node->GetMesh())
+		{
+			OutMeshNames.push_back(Node->GetName());
+		}
+	}
+
+	SdkManager->Destroy();
+	return !OutMeshNames.empty();
 }
 
 bool FEditorFbxImporter::ImportStatic(const FString& FilePath, const FImportOptions* Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
@@ -576,7 +637,7 @@ bool FEditorFbxImporter::Parse(FbxScene* Scene)
 
 bool FEditorFbxImporter::Convert()
 {
-	SkeletalMaterials.clear();
+	TArray<FSkeletalMaterial> BaseMaterials;
 
 	for (const FMaterialInfo& MatInfo : MtlInfos)
 	{
@@ -587,13 +648,16 @@ bool FEditorFbxImporter::Convert()
 		NewMaterial.MaterialInterface = MaterialObject;
 		NewMaterial.MaterialSlotName = MatInfo.Name;
 		NewMaterial.MaterialPath = MaterialPath;		// *.mat 파일 Path
-		SkeletalMaterials.push_back(NewMaterial);
+		BaseMaterials.push_back(NewMaterial);
 	}
 
 	// Default Material 경우 추가
-	bool bNeedsNoneSlot = SkeletalMaterials.empty();
+	for (FImportedSkeletalMesh& ImportedMesh : ImportedSkeletalMeshes)
+	{
+		ImportedMesh.Materials = BaseMaterials;
+		bool bNeedsNoneSlot = ImportedMesh.Materials.empty();
 
-	for (const FSkeletalMeshSection& Section : Sections)
+	for (const FSkeletalMeshSection& Section : ImportedMesh.Sections)
 	{
 		if (Section.MaterialSlotName == "None")
 		{
@@ -610,16 +674,18 @@ bool FEditorFbxImporter::Convert()
 		DefaultMaterial.MaterialPath = DefaultMaterial.MaterialInterface
 			? DefaultMaterial.MaterialInterface->GetAssetPathFileName()
 			: FString(); // GetOrCreateMaterial("None");이 성공하면 해당 Default Material의 PathFileName을 MaterialPath로 사용.
-		SkeletalMaterials.push_back(DefaultMaterial);
+		ImportedMesh.Materials.push_back(DefaultMaterial);
 
-		const int32 NoneMaterialIndex = static_cast<int32>(SkeletalMaterials.size()) - 1;
-		for (FSkeletalMeshSection& Section : Sections)
+		const int32 NoneMaterialIndex = static_cast<int32>(ImportedMesh.Materials.size()) - 1;
+		for (FSkeletalMeshSection& Section : ImportedMesh.Sections)
 		{
 			if (Section.MaterialSlotName == "None")
 			{
 				Section.MaterialIndex = NoneMaterialIndex;
 			}
 		}
+	}
+
 	}
 
 	return true;
@@ -832,8 +898,12 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 	Vertices.clear();
 	Indices.clear();
 	Sections.clear();
-	MeshRanges.clear();
+	ImportedSkeletalMeshes.clear();
 	TangentSums.clear();
+	BitangentSums.clear();
+
+	TMap<int32, TArray<uint32>> MergedSectionIndicesMap;
+	const FMatrix MergedMeshBindGlobal = FMatrix::Identity;
 
 	for (FbxNode* Node : Nodes)
 	{
@@ -903,6 +973,8 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 			}
 		}
 
+		const FMatrix NodeToMergedBind = MeshBindGlobal * MergedMeshBindGlobal.GetInverse();
+
 		FbxStringList UVSetNames;
 		Mesh->GetUVSetNames(UVSetNames);
 		const char* UVName = (UVSetNames.GetCount() > 0) ? UVSetNames.GetStringAt(0) : nullptr;
@@ -918,10 +990,8 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 			LocalToGlobalMaterialIndex[LocalIndex] = (It != MaterialToSlotIndex.end()) ? It->second : -1;
 		}
 
-		TMap<int32, TArray<uint32>> SectionIndicesMap;
 		TMap<FFbxSkeletalVertexKey, uint32> VertexMap;
 		const uint32 VertexStart = (uint32)Vertices.size();
-		const uint32 FirstIndex = (uint32)Indices.size();
 
 		for (int32 i = 0; i < Mesh->GetPolygonCount(); ++i)
 		{
@@ -952,7 +1022,7 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 				}
 
 				FbxVector4 CP = Mesh->GetControlPointAt(CPIndex);
-				Vertex.Position = FVector((float)CP[0], (float)CP[1], (float)CP[2]);
+				Vertex.Position = NodeToMergedBind.TransformPositionWithW(FVector((float)CP[0], (float)CP[1], (float)CP[2]));
 
 				auto& Weights = TempWeights[CPIndex];
 				std::sort(Weights.begin(), Weights.end(), [](const WeightData& A, const WeightData& B)
@@ -977,6 +1047,7 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 				Mesh->GetPolygonVertexNormal(i, j, Normal);
 				Normal.Normalize();
 				FVector N = FVector((float)Normal[0], (float)Normal[1], (float)Normal[2]);
+				N = NodeToMergedBind.TransformVector(N);
 				N.Normalize();
 
 				Vertex.Normal = N;
@@ -1028,7 +1099,7 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 
 			for (uint32 VertexIndex : PendingSectionIndices)
 			{
-				SectionIndicesMap[GlobalMaterialIndex].push_back(VertexIndex);
+				MergedSectionIndicesMap[GlobalMaterialIndex].push_back(VertexIndex);
 			}
 
 			//Tangent 연산
@@ -1036,45 +1107,44 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 		}
 
 		BuildTangentsForVertexRange(VertexStart);
+	}
 
-		uint32 CurrentBaseIndex = (uint32)Indices.size();
+	uint32 CurrentBaseIndex = (uint32)Indices.size();
 
-		for (auto& Pair : SectionIndicesMap)
+	for (auto& Pair : MergedSectionIndicesMap)
+	{
+		FSkeletalMeshSection Section;
+
+		int32 MatIndex = Pair.first;
+		if (MatIndex >= 0 && MatIndex < static_cast<int32>(MtlInfos.size()))
 		{
-			FSkeletalMeshSection Section;
-
-			int32 MatIndex = Pair.first;
-			// 정확하게 MatIdx가 0 ~ MtlInfos.size() - 1사이에 있는지 검사
-			if (MatIndex >= 0 && MatIndex < static_cast<int32>(MtlInfos.size()))
-			{
-				Section.MaterialSlotName = MtlInfos[MatIndex].Name;
-				Section.MaterialIndex = Pair.first;
-			}
-			else
-			{
-				UE_LOG("Warning: Material index %d out of range. Assigning to Default slot.", Pair.first);
-				Section.MaterialSlotName = "None";
-				Section.MaterialIndex = -1; // Material Index 추가 무효화
-			}
-			Section.FirstIndex = CurrentBaseIndex;
-			Section.IndexCount = (uint32)Pair.second.size();
-
-			CurrentBaseIndex += Section.IndexCount;
-			
-			Indices.insert(Indices.end(), Pair.second.begin(), Pair.second.end());
-			Sections.push_back(Section);
+			Section.MaterialSlotName = MtlInfos[MatIndex].Name;
+			Section.MaterialIndex = Pair.first;
 		}
-
-		FSkeletalMeshRange MeshRange;
-		MeshRange.VertexStart = VertexStart;
-		MeshRange.VertexEnd = (uint32)Vertices.size();
-		MeshRange.FirstIndex = FirstIndex;
-		MeshRange.IndexCount = (uint32)Indices.size() - FirstIndex;
-		MeshRange.MeshBindGlobal = MeshBindGlobal;
-		if (MeshRange.VertexStart < MeshRange.VertexEnd && MeshRange.IndexCount > 0)
+		else
 		{
-			MeshRanges.push_back(MeshRange);
+			UE_LOG("Warning: Material index %d out of range. Assigning to Default slot.", Pair.first);
+			Section.MaterialSlotName = "None";
+			Section.MaterialIndex = -1; // Material Index 추가 무효화
 		}
+		Section.FirstIndex = CurrentBaseIndex;
+		Section.IndexCount = (uint32)Pair.second.size();
+
+		CurrentBaseIndex += Section.IndexCount;
+
+		Indices.insert(Indices.end(), Pair.second.begin(), Pair.second.end());
+		Sections.push_back(Section);
+	}
+
+	if (!Vertices.empty() && !Indices.empty())
+	{
+		FImportedSkeletalMesh ImportedMesh;
+		ImportedMesh.MeshName = FPaths::ToUtf8(std::filesystem::path(FPaths::ToWide(CurrentSourcePath)).stem().wstring());
+		ImportedMesh.MeshBindGlobal = MergedMeshBindGlobal;
+		ImportedMesh.Vertices = std::move(Vertices);
+		ImportedMesh.Indices = std::move(Indices);
+		ImportedMesh.Sections = std::move(Sections);
+		ImportedSkeletalMeshes.push_back(std::move(ImportedMesh));
 	}
 }
 

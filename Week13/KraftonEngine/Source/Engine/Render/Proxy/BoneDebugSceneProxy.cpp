@@ -110,10 +110,10 @@ void FBoneDebugSceneProxy::RebuildLines()
 	if (!MeshComp) return;
 
 	USkeletalMesh* Mesh = MeshComp->GetSkeletalMesh();
-	FSkeletalMesh* Asset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
-	if (!Asset) return;
+	FSkeletonAsset* SkeletonAsset = Mesh ? Mesh->GetSkeletonAsset() : nullptr;
+	if (!SkeletonAsset) return;
 
-	const int32 BoneCount = static_cast<int32>(Asset->Bones.size());
+	const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
 	if (BoneCount <= 0) return;
 
 	const FBoundingBox Bounds = MeshComp->GetWorldBoundingBox();
@@ -130,7 +130,7 @@ void FBoneDebugSceneProxy::RebuildLines()
 			const FVector BonePos = MeshComp->GetBoneLocationByIndex(i);
 			BuildLowSphereLines(CachedLines, BonePos, JointRadius);
 
-			const int32 ParentIndex = Asset->Bones[i].ParentIndex;
+			const int32 ParentIndex = SkeletonAsset->Bones[i].ParentIndex;
 			if (ParentIndex >= 0 && ParentIndex < BoneCount)
 			{
 				const FVector ParentPos = MeshComp->GetBoneLocationByIndex(ParentIndex);
@@ -149,16 +149,16 @@ void FBoneDebugSceneProxy::RebuildLines()
 
 	for (int32 i = 0; i < BoneCount; ++i)
 	{
-		if (Asset->Bones[i].ParentIndex == BoneIndex)
+		if (SkeletonAsset->Bones[i].ParentIndex == BoneIndex)
 		{
 			const FVector ChildPos = MeshComp->GetBoneLocationByIndex(i);
 			BuildBonePyramidLines(CachedLines, ChildPos, BonePos, PyramidWidthScale);
 		}
 	}
 
-	if (Asset->Bones[BoneIndex].ParentIndex != -1)
+	if (SkeletonAsset->Bones[BoneIndex].ParentIndex != -1)
 	{
-		const int32 ParentIndex = Asset->Bones[BoneIndex].ParentIndex;
+		const int32 ParentIndex = SkeletonAsset->Bones[BoneIndex].ParentIndex;
 		const FVector ParentPos = MeshComp->GetBoneLocationByIndex(ParentIndex);
 		BuildBonePyramidLines(CachedParentBoneLines, BonePos, ParentPos, PyramidWidthScale);
 	}

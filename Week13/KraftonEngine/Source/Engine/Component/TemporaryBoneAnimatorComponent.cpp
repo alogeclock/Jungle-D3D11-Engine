@@ -124,15 +124,15 @@ int32 UTemporaryBoneAnimatorComponent::FindBoneIndexByName(const USkeletalMesh* 
 		return -1;
 	}
 
-	const FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
-	if (!Asset)
+	const FSkeletonAsset* SkeletonAsset = SkeletalMesh->GetSkeletonAsset();
+	if (!SkeletonAsset)
 	{
 		return -1;
 	}
 
-	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(Asset->Bones.size()); ++BoneIndex)
+	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(SkeletonAsset->Bones.size()); ++BoneIndex)
 	{
-		if (Asset->Bones[BoneIndex].Name == TargetBoneName)
+		if (SkeletonAsset->Bones[BoneIndex].Name == TargetBoneName)
 		{
 			return BoneIndex;
 		}
