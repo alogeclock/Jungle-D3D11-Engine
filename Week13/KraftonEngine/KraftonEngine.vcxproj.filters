@@ -355,6 +355,9 @@
     <Filter Include="ThirdParty\sol2\include\sol\utility">
       <UniqueIdentifier>{9665cc4b-2b87-76ba-7eb3-a148e4c5a694}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Animation">
+      <UniqueIdentifier>{a760de9c-cb15-4d32-b13d-665fac75f089}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Common\ConstantBuffers.hlsli">
@@ -1266,10 +1269,18 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\Animation\AnimInstance.cpp" />
-    <ClCompile Include="Source\Engine\Animation\AnimSingleNodeInstance.cpp" />
-    <ClCompile Include="Source\Engine\Animation\AnimationRuntime.cpp" />
-    <ClCompile Include="Source\Engine\Animation\AnimationStateMachine.cpp" />
+    <ClCompile Include="Source\Engine\Animation\AnimationRuntime.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimationStateMachine.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimInstance.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSingleNodeInstance.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -3867,11 +3878,21 @@
     <ClInclude Include="ThirdParty\sol2\include\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\include\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\AnimType.h" />
-    <ClInclude Include="Source\Engine\Animation\AnimInstance.h" />
-    <ClInclude Include="Source\Engine\Animation\AnimSingleNodeInstance.h" />
-    <ClInclude Include="Source\Engine\Animation\AnimationRuntime.h" />
-    <ClInclude Include="Source\Engine\Animation\AnimationStateMachine.h" />
+    <ClInclude Include="Source\Engine\Animation\AnimationRuntime.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimationStateMachine.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimInstance.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimSingleNodeInstance.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimType.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

@@ -16,7 +16,26 @@ public:
 	// Render access 섹션: SceneProxy
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
 
+	// AnimationInstance 관리
+	void SetAnimInstance(UAnimInstance* InInstance);
+	UAnimInstance* GetAnimInstance() const { return AnimInstance; }
+
+	// SingleNodeInstance 생성 
+	void PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping);
+
+	void SetAnimation(UAnimationAsset* Asset);
+	void Play(bool bLooping);
+	void Stop();
+
+	// Notify 실행을 위해서 AnimInstance에서 여기로 전달하고 GetOwner로 전달
+	void HandleAnimNotify(const FAnimNotifyEvent& Notify);
+
+protected:
+	void TickComponent(float DeltaTime, ELevelTick TickType,
+		FActorComponentTickFunction& ThisTickFunction) override;
+
 private:
+	// AnimationInstance의 포즈 BoneEditLocalMatrices에 복사
 	void ApplyPoseToComponent(const FPoseContext& Pose);
 
 	UAnimInstance* AnimInstance = nullptr;
