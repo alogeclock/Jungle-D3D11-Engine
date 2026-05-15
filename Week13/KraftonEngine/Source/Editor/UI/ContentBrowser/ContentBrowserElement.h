@@ -120,4 +120,8 @@ class AnimationElement final : public ContentBrowserElement
 {
 public:
 	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
+
+protected:
+	const char* GetTypeLabel() const override { return "Animation"; }
+	uint32 GetAccentColor() const override { return IM_COL32(220, 110, 160, 255); }
 };

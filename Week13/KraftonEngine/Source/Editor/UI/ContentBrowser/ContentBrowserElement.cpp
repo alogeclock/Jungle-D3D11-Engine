@@ -11,6 +11,7 @@
 #include "Mesh/StaticMesh.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/MeshManager.h"
+#include "Object/Object.h"
 
 #include <algorithm>
 
@@ -419,11 +420,8 @@ void AnimationElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 		return;
 	}
 	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
+	const FString PackagePath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
 
-	/*TODO: 여기에 Animation Asset으로 Casting하는 코드가 들어감*/
-	if (/*UAnimSequence* Seqeunce = FMeshManager::LoadAnimationSequence(FilePath, Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice()*/true)
-	{
-		
-		// Context.EditorEngine->OpenAssetEditorForObject(/*Sequence*/);
-	}
+
+	Context.EditorEngine->OpenAssetEditorForObject(/*Sequence*/nullptr);
 }

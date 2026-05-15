@@ -11,6 +11,7 @@ enum class EAssetPackageType : uint32
 	FloatCurve,
 	CameraShake,
 	Material,
+	Animation,
 };
 
 struct FAssetPackageHeader
