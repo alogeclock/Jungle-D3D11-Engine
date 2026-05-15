@@ -13,10 +13,14 @@ public:
 	virtual void ProcessState(float DeltaSeconds) = 0; 
 
 	UAnimSequence* GetCurrentSequence() const;
-	float          GetCurrentStateTime() const;
+	float GetCurrentStateTime() const;
 
 protected:
 	USkeletalMeshComponent* OwnerComponent = nullptr;
+	UAnimSequence* CurrentSequence = nullptr;
+	UAnimSequence* PrevSequence = nullptr;
+	float PrevStateTime = 0.0f;
+
 	int32 CurrentState = 0;
 	int32 PrevState = -1;
 	float StateLocalTime = 0.0f;

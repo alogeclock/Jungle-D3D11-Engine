@@ -2,7 +2,6 @@
 
 #include "SkinnedMeshComponent.h"
 #include "Animation/AnimInstance.h"
-#include "Animation/AnimSingleNodeInstance.h"
 
 // SkeletalMesh 전용 render proxy만 제공하는 얇은 wrapper.
 // Skinning/bone/material/bounds 상태는 모두 USkinnedMeshComponent가 소유한다.
@@ -20,13 +19,6 @@ public:
 	void SetAnimInstance(UAnimInstance* InInstance);
 	UAnimInstance* GetAnimInstance() const { return AnimInstance; }
 
-	// SingleNodeInstance 생성 
-	void PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping);
-
-	void SetAnimation(UAnimationAsset* Asset);
-	void Play(bool bLooping);
-	void Stop();
-
 	// Notify 실행을 위해서 AnimInstance에서 여기로 전달하고 GetOwner로 전달
 	void HandleAnimNotify(const FAnimNotifyEvent& Notify);
 
@@ -39,5 +31,4 @@ private:
 	void ApplyPoseToComponent(const FPoseContext& Pose);
 
 	UAnimInstance* AnimInstance = nullptr;
-	UAnimSingleNodeInstance* SingleNodeInstance = nullptr;
 };

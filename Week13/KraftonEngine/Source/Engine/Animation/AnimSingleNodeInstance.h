@@ -14,7 +14,7 @@ public:
 	void SetPlayRate(float Rate);
 
 	void NativeUpdateAnimation(float DeltaSeconds) override;
-	void GetCurrentPose(FPoseContext& OutPose) const;
+	void GetCurrentPose(FPoseContext& OutPose) const override;
 
 private:
 	UAnimSequence* Sequence = nullptr;
