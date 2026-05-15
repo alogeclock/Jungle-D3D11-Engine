@@ -15,6 +15,11 @@
 
 IMPLEMENT_CLASS(UStaticMeshComponent, UMeshComponent)
 
+BEGIN_CLASS_PROPERTIES(UStaticMeshComponent)
+	REGISTER_PROPERTY(StaticMeshPath, "Static Mesh", EPropertyType::StaticMeshRef, "Mesh", CPF_Edit)
+	PROPERTY_ARRAY(MaterialSlots, "Materials", "Materials", CPF_Edit | CPF_FixedSize, FMaterialSlot, EPropertyType::MaterialSlot, (void)0)
+END_CLASS_PROPERTIES(UStaticMeshComponent)
+
 FPrimitiveSceneProxy* UStaticMeshComponent::CreateSceneProxy()
 {
 	return new FStaticMeshSceneProxy(this);
@@ -261,22 +266,6 @@ void UStaticMeshComponent::PostDuplicate()
 	MarkWorldBoundsDirty();
 }
 
-void UStaticMeshComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UPrimitiveComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Static Mesh", EPropertyType::StaticMeshRef, "Mesh", &StaticMeshPath });
-
-	for (int32 i = 0; i < (int32)MaterialSlots.size(); ++i)
-	{
-		FProperty Desc;
-		Desc.Name = "Element " + std::to_string(i);
-		Desc.Type = EPropertyType::MaterialSlot;
-		Desc.Category = "Materials";
-		Desc.ValuePtr = &MaterialSlots[i];
-		OutProps.push_back(Desc);
-	}
-}
-
 void UStaticMeshComponent::PostEditProperty(const char* PropertyName)
 {
 	UPrimitiveComponent::PostEditProperty(PropertyName);
@@ -297,7 +286,26 @@ void UStaticMeshComponent::PostEditProperty(const char* PropertyName)
 		MarkWorldBoundsDirty();
 	}
 
-	if (strncmp(PropertyName, "Element ", 8) == 0)
+	if (strcmp(PropertyName, "Materials") == 0)
+	{
+		for (int32 Index = 0; Index < (int32)MaterialSlots.size(); ++Index)
+		{
+			const FString& NewMatPath = MaterialSlots[Index].Path;
+			if (NewMatPath == "None" || NewMatPath.empty())
+			{
+				SetMaterial(Index, nullptr);
+			}
+			else
+			{
+				UMaterial* LoadedMat = FMaterialManager::Get().GetOrCreateMaterial(NewMatPath);
+				if (LoadedMat)
+				{
+					SetMaterial(Index, LoadedMat);
+				}
+			}
+		}
+	}
+	else if (strncmp(PropertyName, "Element ", 8) == 0)
 	{
 		// "Element 0"에서 8번째 인덱스부터 시작하는 숫자를 정수로 변환
 		int32 Index = atoi(&PropertyName[8]);

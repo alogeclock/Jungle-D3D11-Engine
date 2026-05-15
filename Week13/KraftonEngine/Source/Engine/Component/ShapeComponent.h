@@ -11,7 +11,6 @@ public:
 
 	UShapeComponent();
 
-	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	void PostEditProperty(const char* PropertyName) override;
 	void Serialize(FArchive& Ar) override;
 

@@ -13,6 +13,11 @@
 IMPLEMENT_CLASS(UMovementComponent, UActorComponent)
 HIDE_FROM_COMPONENT_LIST(UMovementComponent)
 
+BEGIN_CLASS_PROPERTIES(UMovementComponent)
+	PROPERTY_BOOL(bAutoRegisterUpdatedComponent, "Auto Register Updated", "Movement", CPF_Edit)
+	REGISTER_PROPERTY(UpdatedComponentPath, "Updated Component", EPropertyType::SceneComponentRef, "Movement", CPF_Edit)
+END_CLASS_PROPERTIES(UMovementComponent)
+
 namespace
 {
 	constexpr const char* RootComponentPathToken = "Root";
@@ -42,13 +47,6 @@ void UMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	// 기본 이동 컴포넌트는 별도 로직 없이 틱 파이프라인만 유지합니다.
 	UActorComponent::TickComponent(DeltaTime,TickType, ThisTickFunction);
-}
-
-void UMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UActorComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Auto Register Updated", EPropertyType::Bool, "Movement", &bAutoRegisterUpdatedComponent });
-	OutProps.push_back({ "Updated Component", EPropertyType::SceneComponentRef, "Movement", &UpdatedComponentPath });
 }
 
 void UMovementComponent::Serialize(FArchive& Ar)

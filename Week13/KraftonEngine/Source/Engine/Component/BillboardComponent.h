@@ -16,8 +16,6 @@ public:
 
 	void Serialize(FArchive& Ar) override;
 	void PostDuplicate() override;
-
-	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	void PostEditProperty(const char* PropertyName) override;
 
 	bool LineTraceComponent(const FRay& Ray, FHitResult& OutHitResult) override;

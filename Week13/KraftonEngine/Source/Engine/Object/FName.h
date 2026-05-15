@@ -29,6 +29,9 @@ public:
 	// None 이름
 	static const FName None;
 
+	// String normalization logic, e.g. "bCastShadows" -> "Cast Shadows"
+	static FString NameToDisplayString(const FString& InName, bool bIsBool);
+
 private:
 	uint32 ComparisonIndex;	// 소문자 변환된 문자열의 풀 인덱스 (비교용)
 	uint32 DisplayIndex;	// 원본 문자열의 풀 인덱스 (표시용)

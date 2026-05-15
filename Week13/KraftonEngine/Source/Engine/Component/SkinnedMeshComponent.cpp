@@ -9,6 +9,11 @@
 IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
 HIDE_FROM_COMPONENT_LIST(USkinnedMeshComponent)
 
+BEGIN_CLASS_PROPERTIES(USkinnedMeshComponent)
+	REGISTER_PROPERTY(SkeletalMeshPath, "Skeletal Mesh", EPropertyType::SkeletalMeshRef, "Mesh", CPF_Edit)
+	PROPERTY_ARRAY(MaterialSlots, "Materials", "Materials", CPF_Edit | CPF_FixedSize, FMaterialSlot, EPropertyType::MaterialSlot, (void)0)
+END_CLASS_PROPERTIES(USkinnedMeshComponent)
+
 namespace
 {
 	constexpr float MatrixDecomposeTolerance = 1.0e-6f;
@@ -705,22 +710,6 @@ void USkinnedMeshComponent::PostDuplicate()
 	}
 }
 
-void USkinnedMeshComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UMeshComponent::GetEditableProperties(OutProps);
-	// editor는 pointer 대신 path 문자열을 편집하고, PostEditProperty에서 load 흐름으로 진입한다.
-	OutProps.push_back({ "Skeletal Mesh", EPropertyType::SkeletalMeshRef, "Mesh", &SkeletalMeshPath });
-	for (int32 i = 0; i < static_cast<int32>(MaterialSlots.size()); ++i)
-	{
-		FProperty Desc;
-		Desc.Name = "Element " + std::to_string(i);
-		Desc.Type = EPropertyType::MaterialSlot;
-		Desc.Category = "Materials";
-		Desc.ValuePtr = &MaterialSlots[i];
-		OutProps.push_back(Desc);
-	}
-}
-
 void USkinnedMeshComponent::PostEditProperty(const char* PropertyName)
 {
 	UMeshComponent::PostEditProperty(PropertyName);
@@ -742,7 +731,26 @@ void USkinnedMeshComponent::PostEditProperty(const char* PropertyName)
 
 	}
 
-	if (strncmp(PropertyName, "Element ", 8) == 0)
+	if (strcmp(PropertyName, "Materials") == 0)
+	{
+		for (int32 Index = 0; Index < (int32)MaterialSlots.size(); ++Index)
+		{
+			const FString& NewMatPath = MaterialSlots[Index].Path;
+			if (NewMatPath == "None" || NewMatPath.empty())
+			{
+				SetMaterial(Index, nullptr);
+			}
+			else
+			{
+				UMaterial* LoadedMat = FMaterialManager::Get().GetOrCreateMaterial(NewMatPath);
+				if (LoadedMat)
+				{
+					SetMaterial(Index, LoadedMat);
+				}
+			}
+		}
+	}
+	else if (strncmp(PropertyName, "Element ", 8) == 0)
 	{
 		// "Element 0"에서 8번째 인덱스부터 시작하는 숫자를 정수로 변환한다.
 		int32 Index = atoi(&PropertyName[8]);

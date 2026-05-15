@@ -66,10 +66,10 @@ protected:
 	
 	AActor* Owner = nullptr;
 	bool bTickEnable = true;
+	bool bAutoActivate = true;
 
 private:
 	bool bEditorOnly = false;
 	bool bIsActive = true;
-	bool bAutoActivate = true;
 	bool bHiddenInComponentTree = false;
 };

@@ -7,6 +7,8 @@
 IMPLEMENT_CLASS(UInterpToMovementComponent, UMovementComponent)
 
 namespace {
+	static const char* GInterpBehaviourNames[] = { "One Shot", "One Shot Reverse", "Loop", "Ping-Pong" };
+
 	// Returns normalized direction from A to B
 	FVector GetNormalizedDir(const FVector& A, const FVector& B) {
 		FVector Dir = B - A;
@@ -21,6 +23,13 @@ namespace {
 		return atan2f(NormDir.Y, NormDir.X);
 	}
 }
+
+BEGIN_CLASS_PROPERTIES(UInterpToMovementComponent)
+	PROPERTY_BOOL(bFaceTargetDir, "Orient To Movement", "Movement", CPF_Edit)
+	PROPERTY_FLOAT(Duration, "Interp Duration", "Movement", 0.1f, 2048.0f, 0.1f, CPF_Edit)
+	PROPERTY_ENUM(InterpBehaviour, "Interp Mode", "Movement", GInterpBehaviourNames, 4, sizeof(EInterpBehaviour), CPF_Edit)
+	PROPERTY_ARRAY(ControlPoints, "Control Points", "Movement", CPF_Edit, FVector, EPropertyType::Vec3, (void)0)
+END_CLASS_PROPERTIES(UInterpToMovementComponent)
 
 // --- Overrides ---------------------------------------------------------
 void UInterpToMovementComponent::BeginPlay() {
@@ -46,16 +55,6 @@ void UInterpToMovementComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	// FaceTargetDir must run before UpdateLerp — UpdateLerp can advance PointIDs via DestinationReached
 	FaceTargetDir(DeltaTime);
 	UpdateLerp(DeltaTime);
-}
-
-void UInterpToMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps) {
-	UMovementComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Auto Activate",		  EPropertyType::Bool,		 "Movement", &bAutoActivate });
-	OutProps.push_back({ "Orient To Movement",	  EPropertyType::Bool,		 "Movement", &bFaceTargetDir });
-	OutProps.push_back({ "Interp Duration",		  EPropertyType::Float,      "Movement", &Duration,       0.1f, 2048.0f, 0.1f });
-	static const char* InterpBehaviourNames[] = { "One Shot", "One Shot Reverse", "Loop", "Ping-Pong" };
-	OutProps.push_back({ "Interp Mode",			  EPropertyType::Enum,		 "Movement", &InterpBehaviour, 0,0,0, InterpBehaviourNames, 4 });
-	OutProps.push_back({ "Control Points",		  EPropertyType::Vec3Array,  "Movement", &ControlPoints });
 }
 
 void UInterpToMovementComponent::Serialize(FArchive& Ar)
