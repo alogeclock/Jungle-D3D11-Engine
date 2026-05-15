@@ -46,6 +46,13 @@ public:
 	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
 };
 
+class SourceFileElement final : public ContentBrowserElement
+{
+protected:
+	const char* GetTypeLabel() const override { return "Source File"; }
+	uint32 GetAccentColor() const override { return IM_COL32(120, 128, 138, 255); }
+};
+
 class SceneElement final : public ContentBrowserElement
 {
 public:

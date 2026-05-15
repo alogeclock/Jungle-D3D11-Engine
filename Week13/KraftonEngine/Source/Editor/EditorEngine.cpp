@@ -16,6 +16,7 @@
 #include "UI/UIManager.h"
 #include "Editor/Slate/SlateApplication.h"
 #include "Editor/EditorRenderPipeline.h"
+#include "Editor/Import/EditorAssetPipeline.h"
 #include "Editor/UI/EditorFileUtils.h"
 #include "Editor/UI/EditorTextureManager.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
@@ -60,13 +61,13 @@ void UEditorEngine::Init(FWindowsWindow* InWindow)
 	FEngineInitHooks::RunAll();
 
 	{
-		SCOPE_STARTUP_STAT("MeshManager::ScanMeshAssets");
-		FMeshManager::ScanMeshAssets();
+		SCOPE_STARTUP_STAT("EditorAssetPipeline::SyncAssetRoot");
+		FEditorAssetPipeline::SyncAssetRoot(Renderer.GetFD3DDevice().GetDevice());
 	}
 
 	{
-		SCOPE_STARTUP_STAT("MeshManager::ScanFbxSourceFiles");
-		FMeshManager::ScanFbxSourceFiles();
+		SCOPE_STARTUP_STAT("MeshManager::ScanMeshAssets");
+		FMeshManager::ScanMeshAssets();
 	}
 
 	{

@@ -1,19 +1,115 @@
-﻿#include "Mesh/ObjImporter.h"
+﻿#include "Editor/Import/EditorObjImportService.h"
+#include "Asset/AssetPackage.h"
 #include "Mesh/StaticMeshAsset.h"
+#include "Mesh/StaticMesh.h"
 #include "Materials/Material.h"
 #include "Core/Log.h"
 #include "Engine/Platform/Paths.h"
 #include "Mesh/MeshManager.h"
 #include "SimpleJSON/json.hpp"
 #include "Materials/MaterialManager.h"
+#include "Serialization/WindowsArchive.h"
 #include <algorithm>
 #include <fstream>
 #include <filesystem>
 #include <charconv>
 #include <chrono>
+#include <cwctype>
+#include <memory>
 
 const FVector FallbackColor3 = FVector(1.0f, 0.0f, 1.0f);
 const FVector4 FallbackColor4 = FVector4(1.0f, 0.0f, 1.0f, 1.0f);
+
+TArray<FMeshAssetListItem> FEditorObjImportService::AvailableObjFiles;
+
+namespace
+{
+	std::wstring GetLowerExtension(const FString& Path)
+	{
+		std::filesystem::path SrcPath(FPaths::ToWide(Path));
+		std::wstring Ext = SrcPath.extension().wstring();
+		std::transform(Ext.begin(), Ext.end(), Ext.begin(), ::towlower);
+		return Ext;
+	}
+
+	FString NormalizeProjectPath(const FString& Path)
+	{
+		return FPaths::MakeProjectRelative(Path);
+	}
+
+	std::filesystem::path ResolveProjectPath(const FString& Path)
+	{
+		std::filesystem::path FullPath(FPaths::ToWide(Path));
+		if (!FullPath.is_absolute())
+		{
+			FullPath = std::filesystem::path(FPaths::RootDir()) / FullPath;
+		}
+		return FullPath.lexically_normal();
+	}
+
+	bool TryGetSourceFileState(const FString& SourcePath, uint64& OutTimestamp, uint64& OutFileSize)
+	{
+		std::filesystem::path FullPath = ResolveProjectPath(SourcePath);
+		if (!std::filesystem::exists(FullPath) || !std::filesystem::is_regular_file(FullPath)) return false;
+
+		OutFileSize = static_cast<uint64>(std::filesystem::file_size(FullPath));
+		const auto WriteTime = std::filesystem::last_write_time(FullPath);
+		OutTimestamp = static_cast<uint64>(WriteTime.time_since_epoch().count());
+		return true;
+	}
+
+	FAssetImportMetadata MakeImportMetadata(const FString& SourcePath)
+	{
+		FAssetImportMetadata Metadata;
+		Metadata.SourcePath = NormalizeProjectPath(SourcePath);
+		TryGetSourceFileState(SourcePath, Metadata.SourceTimestamp, Metadata.SourceFileSize);
+		return Metadata;
+	}
+
+	FString SanitizeFileStem(const FString& Name)
+	{
+		FString Result = Name.empty() ? "None" : Name;
+		for (char& Ch : Result)
+		{
+			const unsigned char U = static_cast<unsigned char>(Ch);
+			if (U < 32 || Ch == '<' || Ch == '>' || Ch == ':' || Ch == '"' ||
+				Ch == '/' || Ch == '\\' || Ch == '|' || Ch == '?' || Ch == '*')
+			{
+				Ch = '_';
+			}
+		}
+		return Result.empty() ? FString("None") : Result;
+	}
+
+	bool SaveStaticMeshPackage(UStaticMesh* StaticMesh, const FString& PackagePath, const FString& SourcePath)
+	{
+		FWindowsBinWriter Writer(PackagePath);
+		if (!Writer.IsValid())
+		{
+			UE_LOG("OBJ import package save failed: could not open file. Path=%s", PackagePath.c_str());
+			return false;
+		}
+
+		FAssetPackageHeader Header;
+		Header.Type = static_cast<uint32>(EAssetPackageType::StaticMesh);
+		Writer << Header;
+
+		FAssetImportMetadata Metadata = MakeImportMetadata(SourcePath);
+		Writer << Metadata;
+
+		StaticMesh->Serialize(Writer);
+		return Writer.IsValid();
+	}
+
+	FString BuildAdjacentMaterialPath(const FString& ObjFilePath, const FString& MaterialSlotName)
+	{
+		std::filesystem::path ObjPath = ResolveProjectPath(ObjFilePath);
+		const FString MeshStem = FPaths::ToUtf8(ObjPath.stem().wstring());
+		const FString SlotStem = SanitizeFileStem(MaterialSlotName);
+		std::filesystem::path MatPath = ObjPath.parent_path() / FPaths::ToWide(MeshStem + "_" + SlotStem + ".mat");
+		return NormalizeProjectPath(FPaths::ToUtf8(MatPath.generic_wstring()));
+	}
+}
 
 struct FVertexKey {
     uint32 p, t, n;
@@ -140,7 +236,7 @@ FRawFaceVertex ParseSingleFaceVertex(std::string_view FaceToken)
     return Result;
 }
 
-bool FObjImporter::ParseObj(const FString& ObjFilePath, FObjInfo& OutObjInfo)
+bool FEditorObjImportService::ParseObj(const FString& ObjFilePath, FObjInfo& OutObjInfo)
 {
 	OutObjInfo = FObjInfo();
 
@@ -305,7 +401,7 @@ bool FObjImporter::ParseObj(const FString& ObjFilePath, FObjInfo& OutObjInfo)
 	return true;
 }
 
-bool FObjImporter::ParseMtl(const FString& MtlFilePath, TArray<FObjMaterialInfo>& OutMtlInfos)
+bool FEditorObjImportService::ParseMtl(const FString& MtlFilePath, TArray<FObjMaterialInfo>& OutMtlInfos)
 {
 	OutMtlInfos.clear();
 	std::ifstream File(FPaths::ToWide(MtlFilePath), std::ios::binary | std::ios::ate);
@@ -453,22 +549,19 @@ bool FObjImporter::ParseMtl(const FString& MtlFilePath, TArray<FObjMaterialInfo>
 }
 
 // MTL 정보에서 머티리얼 파일로 변환하는 레거시 래퍼
-FString FObjImporter::ConvertMtlInfoToJson(const FObjMaterialInfo* MtlInfo)
+FString FEditorObjImportService::ConvertMtlInfoToJson(const FString& ObjFilePath, const FObjMaterialInfo* MtlInfo)
 {
-	return ConvertMtlInfoToMat(MtlInfo);
+	return ConvertMtlInfoToMat(ObjFilePath, MtlInfo);
 }
 
 // MTL 정보에서 머티리얼 mat 파일로 변환하는 함수
-FString FObjImporter::ConvertMtlInfoToMat(const FObjMaterialInfo* MtlInfo)
+FString FEditorObjImportService::ConvertMtlInfoToMat(const FString& ObjFilePath, const FObjMaterialInfo* MtlInfo)
 {
-	FString MatPath = "Asset/Materials/Auto/" + MtlInfo->MaterialSlotName + ".mat";
+	FString MatPath = BuildAdjacentMaterialPath(ObjFilePath, MtlInfo->MaterialSlotName);
 
 	// 이미 존재하면 덮어쓰지 않음 (에디터에서 수정했을 수 있으므로)
 	if (std::filesystem::exists(FPaths::ToWide(MatPath)))
 		return MatPath;
-
-	// Auto/ 디렉토리 보장
-	std::filesystem::create_directories(FPaths::ToWide("Asset/Materials/Auto"));
 
 	json::JSON JsonData;
 	JsonData["PathFileName"] = MatPath;
@@ -510,7 +603,7 @@ FString FObjImporter::ConvertMtlInfoToMat(const FObjMaterialInfo* MtlInfo)
 	return MatPath;
 }
 
-FVector FObjImporter::RemapPosition(const FVector& ObjPos, EForwardAxis Axis)
+FVector FEditorObjImportService::RemapPosition(const FVector& ObjPos, EForwardAxis Axis)
 {
 	// OBJ 원본 좌표 (Ox, Oy, Oz) → 엔진 (Ex, Ey, Ez)
 	// 엔진: X=Forward, Y=Right, Z=Up
@@ -534,7 +627,7 @@ FVector FObjImporter::RemapPosition(const FVector& ObjPos, EForwardAxis Axis)
 	}
 }
 
-bool FObjImporter::Convert(const FObjInfo& ObjInfo, const TArray<FObjMaterialInfo>& MtlInfos, const FImportOptions& Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
+bool FEditorObjImportService::Convert(const FString& ObjFilePath, const FObjInfo& ObjInfo, const TArray<FObjMaterialInfo>& MtlInfos, const FImportOptions& Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
 {
 	OutMesh = FStaticMesh();
 	OutMaterials.clear();
@@ -578,7 +671,7 @@ bool FObjImporter::Convert(const FObjInfo& ObjInfo, const TArray<FObjMaterialInf
 			UE_LOG("Importer TargetSlotName: %s;", TargetSlotName.c_str());
 
 			// Convert() 안에서 기존 직접 세팅 대신
-			FString MaterialPath = ConvertMtlInfoToMat(MatchedMaterial); // .mat 파일 생성
+			FString MaterialPath = ConvertMtlInfoToMat(ObjFilePath, MatchedMaterial); // .mat 파일 생성
 
 			UMaterial* MaterialObject = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath);
 
@@ -590,7 +683,11 @@ bool FObjImporter::Convert(const FObjInfo& ObjInfo, const TArray<FObjMaterialInf
 		}
 		else // Material Slot이 MTL 파일에 정의되어 있지 않은 경우
 		{
-			UMaterial* DefaultMaterial = FMaterialManager::Get().GetOrCreateMaterial("None");
+			FObjMaterialInfo DefaultInfo;
+			DefaultInfo.MaterialSlotName = TargetSlotName;
+			DefaultInfo.Kd = FallbackColor3;
+			FString MaterialPath = ConvertMtlInfoToMat(ObjFilePath, &DefaultInfo);
+			UMaterial* DefaultMaterial = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath);
 
 			// FStaticMaterial 슬롯 생성 및 OutMaterials에 추가
 			FStaticMaterial NewEmptyStaticMaterial;
@@ -603,7 +700,11 @@ bool FObjImporter::Convert(const FObjInfo& ObjInfo, const TArray<FObjMaterialInf
 	// "None" 슬롯이 존재했다면 맨 마지막에 배치
 	if (bHasNoneSlot)
 	{
-		UMaterial* DefaultMaterial = FMaterialManager::Get().GetOrCreateMaterial("None");
+		FObjMaterialInfo DefaultInfo;
+		DefaultInfo.MaterialSlotName = "None";
+		DefaultInfo.Kd = FallbackColor3;
+		FString MaterialPath = ConvertMtlInfoToMat(ObjFilePath, &DefaultInfo);
+		UMaterial* DefaultMaterial = FMaterialManager::Get().GetOrCreateMaterial(MaterialPath);
 
 		FStaticMaterial NewDefaultStaticMaterial;
 		NewDefaultStaticMaterial.MaterialInterface = DefaultMaterial;
@@ -814,27 +915,79 @@ bool FObjImporter::Convert(const FObjInfo& ObjInfo, const TArray<FObjMaterialInf
     return true;
 }
 
-bool FObjImporter::Import(const FString& ObjFilePath, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
+FString FEditorObjImportService::GetStaticMeshPackagePathForObj(const FString& ObjFilePath)
 {
-	return Import(ObjFilePath, FImportOptions::Default(), OutMesh, OutMaterials);
+	std::filesystem::path ObjPath = ResolveProjectPath(ObjFilePath);
+	std::filesystem::path PackagePath = ObjPath;
+	PackagePath.replace_filename(ObjPath.stem().wstring() + L"_StaticMesh.uasset");
+	return NormalizeProjectPath(FPaths::ToUtf8(PackagePath.generic_wstring()));
 }
 
-bool FObjImporter::Import(const FString& ObjFilePath, const FImportOptions& Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
+void FEditorObjImportService::ScanObjSourceFiles()
 {
+	AvailableObjFiles.clear();
+
+	const std::filesystem::path ProjectRoot(FPaths::RootDir());
+	const std::filesystem::path Roots[] = {
+		std::filesystem::path(FPaths::RootDir()) / L"Asset",
+		std::filesystem::path(FPaths::RootDir()) / L"Data",
+	};
+
+	for (const std::filesystem::path& Root : Roots)
+	{
+		if (!std::filesystem::exists(Root))
+		{
+			continue;
+		}
+
+		for (const auto& Entry : std::filesystem::recursive_directory_iterator(Root))
+		{
+			if (!Entry.is_regular_file()) continue;
+
+			const std::filesystem::path& Path = Entry.path();
+			std::wstring Ext = Path.extension().wstring();
+			std::transform(Ext.begin(), Ext.end(), Ext.begin(), ::towlower);
+			if (Ext != L".obj") continue;
+
+			FMeshAssetListItem Item;
+			Item.DisplayName = FPaths::ToUtf8(Path.filename().wstring());
+			Item.FullPath = FPaths::ToUtf8(Path.lexically_relative(ProjectRoot).generic_wstring());
+			AvailableObjFiles.push_back(std::move(Item));
+		}
+	}
+}
+
+bool FEditorObjImportService::ImportStaticMeshFromObj(const FString& ObjFilePath, ID3D11Device* Device, UStaticMesh*& OutStaticMesh, bool bRefreshAssetLists)
+{
+	return ImportStaticMeshFromObj(ObjFilePath, FImportOptions::Default(), Device, OutStaticMesh, bRefreshAssetLists);
+}
+
+bool FEditorObjImportService::ImportStaticMeshFromObj(const FString& ObjFilePath, const FImportOptions& Options, ID3D11Device* Device, UStaticMesh*& OutStaticMesh, bool bRefreshAssetLists)
+{
+	OutStaticMesh = nullptr;
+
+	if (GetLowerExtension(ObjFilePath) != L".obj")
+	{
+		UE_LOG("OBJ import failed: unsupported source extension. Path=%s", ObjFilePath.c_str());
+		return false;
+	}
+
 	auto StartTime = std::chrono::high_resolution_clock::now();
 
-	OutMaterials.clear();
+	std::unique_ptr<FStaticMesh> NewMeshAsset = std::make_unique<FStaticMesh>();
+	TArray<FStaticMaterial> ParsedMaterials;
 
 	FObjInfo ObjInfo;
-	if (!FObjImporter::ParseObj(ObjFilePath, ObjInfo))
+	if (!ParseObj(ObjFilePath, ObjInfo))
 	{
 		UE_LOG("ParseObj failed for: %s", ObjFilePath.c_str());
 		return false;
 	}
 
 	TArray<FObjMaterialInfo> ParsedMtlInfos;
-	if (!ObjInfo.MaterialLibraryFilePath.empty()) {
-		if (!FObjImporter::ParseMtl(ObjInfo.MaterialLibraryFilePath, ParsedMtlInfos))
+	if (!ObjInfo.MaterialLibraryFilePath.empty())
+	{
+		if (!ParseMtl(ObjInfo.MaterialLibraryFilePath, ParsedMtlInfos))
 		{
 			UE_LOG("ParseMtl failed for: %s", ObjInfo.MaterialLibraryFilePath.c_str());
 			ObjInfo.MaterialLibraryFilePath.clear();
@@ -842,15 +995,41 @@ bool FObjImporter::Import(const FString& ObjFilePath, const FImportOptions& Opti
 		}
 	}
 
-	if (!FObjImporter::Convert(ObjInfo, ParsedMtlInfos, Options, OutMesh, OutMaterials)){
+	if (!Convert(ObjFilePath, ObjInfo, ParsedMtlInfos, Options, *NewMeshAsset, ParsedMaterials))
+	{
 		UE_LOG("Convert failed for: %s", ObjFilePath.c_str());
 		return false;
 	}
-	OutMesh.PathFileName = ObjFilePath;
+
+	const FString SourcePath = NormalizeProjectPath(ObjFilePath);
+	const FString PackagePath = GetStaticMeshPackagePathForObj(ObjFilePath);
+
+	UStaticMesh* StaticMesh = UObjectManager::Get().CreateObject<UStaticMesh>();
+	NewMeshAsset->PathFileName = SourcePath;
+	StaticMesh->SetStaticMaterials(std::move(ParsedMaterials));
+	StaticMesh->SetStaticMeshAsset(NewMeshAsset.release());
+
+	FMeshManager::StaticMeshCache.erase(PackagePath);
+	if (!SaveStaticMeshPackage(StaticMesh, PackagePath, ObjFilePath))
+	{
+		return false;
+	}
+
+	StaticMesh->InitResources(Device);
+	StaticMesh->SetAssetPathFileName(PackagePath);
+	FMeshManager::StaticMeshCache[PackagePath] = StaticMesh;
+	OutStaticMesh = StaticMesh;
+
+	if (bRefreshAssetLists)
+	{
+		FMeshManager::ScanMeshAssets();
+		FMaterialManager::Get().ScanMaterialAssets();
+		ScanObjSourceFiles();
+	}
 
 	auto EndTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> Duration = EndTime - StartTime;
-	UE_LOG("OBJ Imported successfully. File: %s. Time taken: %.4f seconds", ObjFilePath.c_str(), Duration.count());
+	UE_LOG("OBJ imported successfully. Source=%s Package=%s Time=%.4f seconds", ObjFilePath.c_str(), PackagePath.c_str(), Duration.count());
 
 	return true;
 }

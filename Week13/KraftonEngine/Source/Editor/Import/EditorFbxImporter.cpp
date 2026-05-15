@@ -1,22 +1,69 @@
-﻿#include "FbxImporter.h"
+#include "Editor/Import/EditorFbxImporter.h"
 #include "Platform/Paths.h"
 #include "Core/Log.h"
-#include "MeshImportOptions.h"
+#include "Mesh/MeshImportOptions.h"
 #include "Math/MathUtils.h"
+#include "Materials/MaterialManager.h"
+#include "SimpleJSON/json.hpp"
 
+#include <algorithm>
+#include <cwctype>
 #include <filesystem>
 #include <fstream>
 
-TArray<FBone> FFbxImporter::Bones;
-TArray<FVertexPNCTBW> FFbxImporter::Vertices;
-TArray<uint32> FFbxImporter::Indices;
-TArray<FSkeletalMeshSection> FFbxImporter::Sections;
-TArray<FSkeletalMeshRange> FFbxImporter::MeshRanges;
-TArray<FFbxImporter::FMaterialInfo> FFbxImporter::MtlInfos;
-TArray<FSkeletalMaterial> FFbxImporter::SkeletalMaterials;
-TArray<FVector> FFbxImporter::TangentSums;
-TArray<FVector> FFbxImporter::BitangentSums;
-TMap<FbxSurfaceMaterial*, int32> FFbxImporter::MaterialToSlotIndex;
+TArray<FBone> FEditorFbxImporter::Bones;
+TArray<FVertexPNCTBW> FEditorFbxImporter::Vertices;
+TArray<uint32> FEditorFbxImporter::Indices;
+TArray<FSkeletalMeshSection> FEditorFbxImporter::Sections;
+TArray<FSkeletalMeshRange> FEditorFbxImporter::MeshRanges;
+TArray<FEditorFbxImporter::FMaterialInfo> FEditorFbxImporter::MtlInfos;
+TArray<FSkeletalMaterial> FEditorFbxImporter::SkeletalMaterials;
+TArray<FVector> FEditorFbxImporter::TangentSums;
+TArray<FVector> FEditorFbxImporter::BitangentSums;
+TMap<FbxSurfaceMaterial*, int32> FEditorFbxImporter::MaterialToSlotIndex;
+FString FEditorFbxImporter::CurrentSourcePath;
+
+namespace
+{
+	FString NormalizeProjectPath(const FString& Path)
+	{
+		return FPaths::MakeProjectRelative(Path);
+	}
+
+	std::filesystem::path ResolveProjectPath(const FString& Path)
+	{
+		std::filesystem::path FullPath(FPaths::ToWide(Path));
+		if (!FullPath.is_absolute())
+		{
+			FullPath = std::filesystem::path(FPaths::RootDir()) / FullPath;
+		}
+		return FullPath.lexically_normal();
+	}
+
+	FString SanitizeFileStem(const FString& Name)
+	{
+		FString Result = Name.empty() ? "None" : Name;
+		for (char& Ch : Result)
+		{
+			const unsigned char U = static_cast<unsigned char>(Ch);
+			if (U < 32 || Ch == '<' || Ch == '>' || Ch == ':' || Ch == '"' ||
+				Ch == '/' || Ch == '\\' || Ch == '|' || Ch == '?' || Ch == '*')
+			{
+				Ch = '_';
+			}
+		}
+		return Result.empty() ? FString("None") : Result;
+	}
+
+	FString BuildAdjacentMaterialPath(const FString& FbxFilePath, const FString& MaterialSlotName)
+	{
+		const std::filesystem::path FbxPath = ResolveProjectPath(FbxFilePath);
+		const FString MeshStem = FPaths::ToUtf8(FbxPath.stem().wstring());
+		const FString SlotStem = SanitizeFileStem(MaterialSlotName);
+		const std::filesystem::path MatPath = FbxPath.parent_path() / FPaths::ToWide(MeshStem + "_" + SlotStem + ".mat");
+		return NormalizeProjectPath(FPaths::ToUtf8(MatPath.generic_wstring()));
+	}
+}
 
 
 struct FFbxSkeletalVertexKey
@@ -113,7 +160,7 @@ static bool IsValidControlPointIndex(const FbxMesh* Mesh, int32 ControlPointInde
 	return Mesh && ControlPointIndex >= 0 && ControlPointIndex < Mesh->GetControlPointsCount();
 }
 
-bool FFbxImporter::Import(const FString& FilePath)
+bool FEditorFbxImporter::Import(const FString& FilePath)
 {
 	// FBX import 결과가 바로 엔진 전용 cooked binary cache에 저장되므로,
 	// 이전 import의 static 임시 데이터가 섞이지 않게 시작 지점에서 모두 정리
@@ -126,6 +173,7 @@ bool FFbxImporter::Import(const FString& FilePath)
 	MtlInfos.clear();
 	MaterialToSlotIndex.clear();
 	SkeletalMaterials.clear();
+	CurrentSourcePath = NormalizeProjectPath(FilePath);
 
 	TangentSums.clear();
 	BitangentSums.clear();
@@ -199,13 +247,14 @@ bool FFbxImporter::Import(const FString& FilePath)
 	return true;
 }
 
-bool FFbxImporter::ImportStatic(const FString& FilePath, const FImportOptions* Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
+bool FEditorFbxImporter::ImportStatic(const FString& FilePath, const FImportOptions* Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
 {
 	OutMesh = FStaticMesh();
 	OutMaterials.clear();
 
 	MtlInfos.clear();
 	MaterialToSlotIndex.clear();
+	CurrentSourcePath = NormalizeProjectPath(FilePath);
 
 	FbxManager* SdkManager = FbxManager::Create();
 	if (!SdkManager) return false;
@@ -504,7 +553,7 @@ bool FFbxImporter::ImportStatic(const FString& FilePath, const FImportOptions* O
 	return !OutMesh.Vertices.empty() && !OutMesh.Indices.empty();
 }
 
-bool FFbxImporter::Parse(FbxScene* Scene)
+bool FEditorFbxImporter::Parse(FbxScene* Scene)
 {
 	FbxNode* RootNode = Scene->GetRootNode();
 
@@ -525,7 +574,7 @@ bool FFbxImporter::Parse(FbxScene* Scene)
 	return true;
 }
 
-bool FFbxImporter::Convert()
+bool FEditorFbxImporter::Convert()
 {
 	SkeletalMaterials.clear();
 
@@ -576,7 +625,7 @@ bool FFbxImporter::Convert()
 	return true;
 }
 
-void FFbxImporter::CollectNodes(FbxNode* Node, int32 depth, TArray<FbxNode*>& OutNodes)
+void FEditorFbxImporter::CollectNodes(FbxNode* Node, int32 depth, TArray<FbxNode*>& OutNodes)
 {
 	OutNodes.push_back(Node);
 
@@ -586,7 +635,7 @@ void FFbxImporter::CollectNodes(FbxNode* Node, int32 depth, TArray<FbxNode*>& Ou
 	}
 }
 
-void FFbxImporter::CollectMaterials(FbxScene* Scene)
+void FEditorFbxImporter::CollectMaterials(FbxScene* Scene)
 {
 	MtlInfos.clear();
 	MaterialToSlotIndex.clear();
@@ -728,7 +777,7 @@ static int32 AddSyntheticRootBoneIfNeeded(FbxNode* Node, TArray<FBone>& Bones, T
 	return NewBoneIndex;
 }
 
-void FFbxImporter::ParseBone(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& OutNodeToIndex)
+void FEditorFbxImporter::ParseBone(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& OutNodeToIndex)
 {
 	Bones.clear();
 	OutNodeToIndex.clear();
@@ -778,7 +827,7 @@ static void NormalizeWeights(float* Weights, int32 Count)
 	}
 }
 
-void FFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& NodeToIndex)
+void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& NodeToIndex)
 {
 	Vertices.clear();
 	Indices.clear();
@@ -1029,7 +1078,7 @@ void FFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& Nod
 	}
 }
 
-void FFbxImporter::GenerateTangents(uint32 TriIndices[])
+void FEditorFbxImporter::GenerateTangents(uint32 TriIndices[])
 {
 	const FVertexPNCTBW& V0 = Vertices[TriIndices[0]];
 	const FVertexPNCTBW& V1 = Vertices[TriIndices[1]];
@@ -1059,7 +1108,7 @@ void FFbxImporter::GenerateTangents(uint32 TriIndices[])
 	}
 }
 
-void FFbxImporter::BuildTangentsForVertexRange(const uint32 VertexStart)
+void FEditorFbxImporter::BuildTangentsForVertexRange(const uint32 VertexStart)
 {
 	for (uint32 i = VertexStart; i < (uint32)Vertices.size(); ++i)
 	{
@@ -1085,7 +1134,7 @@ void FFbxImporter::BuildTangentsForVertexRange(const uint32 VertexStart)
 	}
 }
 
-int32 FFbxImporter::GetMaterialIndex(FbxMesh* Mesh, int32 PolygonIndex)
+int32 FEditorFbxImporter::GetMaterialIndex(FbxMesh* Mesh, int32 PolygonIndex)
 {
 	FbxLayerElementMaterial* LayerElementMaterial = Mesh->GetElementMaterial();
 	if (!LayerElementMaterial) return -1;
@@ -1101,7 +1150,7 @@ int32 FFbxImporter::GetMaterialIndex(FbxMesh* Mesh, int32 PolygonIndex)
 	return 0;
 }
 
-int32 FFbxImporter::FindNearestParentBoneIndex(FbxNode* Node, const TMap<FbxNode*, int32>& NodeToIndex)
+int32 FEditorFbxImporter::FindNearestParentBoneIndex(FbxNode* Node, const TMap<FbxNode*, int32>& NodeToIndex)
 {
 	FbxNode* Parent = Node ? Node->GetParent() : nullptr;
 
@@ -1119,23 +1168,24 @@ int32 FFbxImporter::FindNearestParentBoneIndex(FbxNode* Node, const TMap<FbxNode
 	return -1;
 }
 
-void FFbxImporter::TriangulateScene(FbxScene* Scene)
+void FEditorFbxImporter::TriangulateScene(FbxScene* Scene)
 {
 	FbxGeometryConverter Converter(Scene->GetFbxManager());
 
 	Converter.Triangulate(Scene, true);
 }
 
-FString FFbxImporter::ConvertToMat(const FMaterialInfo* MaterialInfo)
+FString FEditorFbxImporter::ConvertToMat(const FMaterialInfo* MaterialInfo)
 {
-	FString MatPath = "Asset/Materials/Auto/" + MaterialInfo->Name + ".mat";
+	const FString SourcePath = CurrentSourcePath.empty() ? FString("Asset") : CurrentSourcePath;
+	FString MatPath = BuildAdjacentMaterialPath(SourcePath, MaterialInfo->Name);
 
-	if (std::filesystem::exists(FPaths::ToWide(MatPath)))
+	if (std::filesystem::exists(ResolveProjectPath(MatPath)))
 	{
 		return MatPath;
 	}
 
-	std::filesystem::create_directories(FPaths::ToWide("Asset/Materials/Auto"));
+	std::filesystem::create_directories(ResolveProjectPath(MatPath).parent_path());
 
 	json::JSON JsonData;
 	JsonData["PathFileName"] = MatPath;
@@ -1172,10 +1222,8 @@ FString FFbxImporter::ConvertToMat(const FMaterialInfo* MaterialInfo)
 		JsonData["Parameters"]["HasNormalMap"] = 0.0f;
 	}
 
-	std::ofstream File(FPaths::ToWide(MatPath));
+	std::ofstream File(ResolveProjectPath(MatPath));
 	File << JsonData.dump();
 
 	return MatPath;
 }
-
-

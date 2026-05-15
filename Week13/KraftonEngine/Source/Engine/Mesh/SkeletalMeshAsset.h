@@ -63,7 +63,7 @@ struct FSkeletalMaterial
 		Ar << Mat.MaterialSlotName;
 
 		// Material 포인터는 실행마다 달라질 수 있다.
-		// .sketbin에는 다시 찾을 수 있는 .mat 경로만 저장한다.
+		// .uasset에는 다시 찾을 수 있는 .mat 경로만 저장한다.
 		if (Ar.IsSaving() && Mat.MaterialInterface)
 		{
 			Mat.MaterialPath = Mat.MaterialInterface->GetAssetPathFileName();

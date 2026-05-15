@@ -2,6 +2,8 @@
 
 #include "Asset/AssetPackage.h"
 #include "Editor/EditorEngine.h"
+#include "Editor/Import/EditorFbxImportService.h"
+#include "Editor/Import/EditorObjImportService.h"
 #include "FloatCurve/FloatCurveAsset.h"
 #include "FloatCurve/FloatCurveManager.h"
 #include "CameraShake/CameraShakeAsset.h"
@@ -13,6 +15,8 @@
 #include "Mesh/MeshManager.h"
 
 #include <algorithm>
+#include <cctype>
+#include <filesystem>
 
 static FString FormatBytes(uint64 Bytes)
 {
@@ -62,6 +66,14 @@ static void DrawDetailRow(const char* Label, const FString& Value)
 	{
 		ImGui::SetTooltip("%s", Value.c_str());
 	}
+}
+
+static FString GetLowerExtensionFromPath(const FString& Path)
+{
+	FString Extension = FPaths::ToUtf8(std::filesystem::path(FPaths::ToWide(Path)).extension());
+	std::transform(Extension.begin(), Extension.end(), Extension.begin(),
+		[](unsigned char Ch) { return static_cast<char>(std::tolower(Ch)); });
+	return Extension;
 }
 
 bool ContentBrowserElement::RenderSelectSpace(ContentBrowserContext& Context)
@@ -303,10 +315,21 @@ void ObjectElement::RenderContextMenu(ContentBrowserContext& Context)
 
 			if (Context.EditorEngine)
 			{
-				FMeshManager::ReimportStaticMesh(
-					PackagePath,
-					Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
-					Reimported);
+				ID3D11Device* Device = Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice();
+
+				FAssetImportMetadata Metadata;
+				if (FAssetPackage::ReadMetadata(PackagePath, EAssetPackageType::StaticMesh, Metadata))
+				{
+					const FString SourceExtension = GetLowerExtensionFromPath(Metadata.SourcePath);
+					if (SourceExtension == ".obj")
+					{
+						FEditorObjImportService::ImportStaticMeshFromObj(Metadata.SourcePath, Device, Reimported);
+					}
+					else if (SourceExtension == ".fbx")
+					{
+						FEditorFbxImportService::ImportStaticMeshFromFbx(Metadata.SourcePath, Device, Reimported);
+					}
+				}
 			}
 		}
 	}
@@ -380,10 +403,15 @@ void MeshElement::RenderContextMenu(ContentBrowserContext& Context)
 
 			if (Context.EditorEngine)
 			{
-				FMeshManager::ReimportSkeletalMesh(
-					PackagePath,
-					Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
-					Reimported);
+				FAssetImportMetadata Metadata;
+				if (FAssetPackage::ReadMetadata(PackagePath, EAssetPackageType::SkeletalMesh, Metadata)
+					&& GetLowerExtensionFromPath(Metadata.SourcePath) == ".fbx")
+				{
+					FEditorFbxImportService::ImportSkeletalMeshFromFbx(
+						Metadata.SourcePath,
+						Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
+						Reimported);
+				}
 			}
 		}
 	}

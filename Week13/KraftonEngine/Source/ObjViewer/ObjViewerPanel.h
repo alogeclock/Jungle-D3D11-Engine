@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
-#include "Mesh/ObjImporter.h"
+#include "Editor/Import/EditorFbxImportService.h"
+#include "Editor/Import/EditorObjImportService.h"
 
 class FRenderer;
 class FWindowsWindow;

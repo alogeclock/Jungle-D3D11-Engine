@@ -1,16 +1,16 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Matrix.h"
+#include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/StaticMeshAsset.h"
 #include "Render/Types/VertexTypes.h"
-#include "SkeletalMeshAsset.h"
-#include "StaticMeshAsset.h"
 
 #include <fbxsdk.h>
 
 struct FImportOptions;
 
-class FFbxImporter
+class FEditorFbxImporter
 {
 	struct FMaterialInfo
 	{
@@ -56,5 +56,6 @@ public:
 	static TArray<FSkeletalMaterial> SkeletalMaterials;
 	static TArray<FVector> TangentSums;
 	static TArray<FVector> BitangentSums;
+	static FString CurrentSourcePath;
 
 };
