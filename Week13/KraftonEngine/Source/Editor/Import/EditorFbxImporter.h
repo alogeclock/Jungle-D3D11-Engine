@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
+#include "Animation/AnimSequenceAsset.h"
 #include "Math/Matrix.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/SkeletonAsset.h"
@@ -24,6 +25,20 @@ public:
 		TArray<FSkeletalMaterial> Materials;
 	};
 
+	/**
+	 * FBX SDK로 읽은 AnimStack 하나를 .uasset으로 저장하기 전까지 들고 있는
+	 * editor-only 중간 결과입니다.
+	 * Runtime package 타입이 아닌 import 작업용 임시 구조체입니다.
+	 */
+	struct FImportedAnimSequence
+	{
+		FString StackName;
+		float SequenceLength = 0.0f;
+		float SampleRate = 30.0f;
+		int32 NumFrames = 0;
+		TArray<FBoneAnimationTrack> Tracks;
+	};
+
 private:
 	struct FMaterialInfo
 	{
@@ -37,6 +52,8 @@ public:
 	static bool Import(const FString& FilePath);
 	static bool ImportStatic(const FString& FilePath, const FImportOptions* Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials);
 	static bool DiscoverMeshNames(const FString& FilePath, TArray<FString>& OutMeshNames);
+	static bool DiscoverAnimStackNames(const FString& FilePath, TArray<FString>& OutStackNames);
+	static bool ImportAnimations(const FString& FilePath, const FSkeletonAsset* TargetSkeleton, FSkeletonAsset& OutParsedSkeleton, TArray<FImportedAnimSequence>& OutSequences);
 
 private:
 	static bool Parse(FbxScene* Scene);
@@ -47,10 +64,12 @@ private:
 
 	static void ParseBone(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& OutNodeToIndex);
 	static void ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& NodeToIndex);
+	static void ParseAnimations(FbxScene* Scene, const FSkeletonAsset& TargetSkeleton, TArray<FImportedAnimSequence>& OutSequences);
 
 	// Helper
 	static int32 GetMaterialIndex(FbxMesh* Mesh, int32 PolygonIndex);
 	static int32 FindNearestParentBoneIndex(FbxNode* Node, const TMap<FbxNode*, int32>& NodeToIndex);
+	static int32 FindBoneIndexByName(const FSkeletonAsset& SkeletonAsset, const FString& BoneName);
 
 	static void TriangulateScene(FbxScene* Scene);
 	static FString ConvertToMat(const FMaterialInfo* MaterialInfo);

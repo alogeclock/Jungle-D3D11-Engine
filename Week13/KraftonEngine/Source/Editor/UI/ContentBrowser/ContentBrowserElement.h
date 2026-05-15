@@ -112,6 +112,20 @@ protected:
 	uint32 GetAccentColor() const override { return IM_COL32(180, 150, 230, 255); }
 };
 
+/**
+ * Content Browser에서 AnimSequence .uasset을 별도 asset type으로 보여주기 위한 UI element 입니다.
+ * 지금은 표시와 Reimport context menu만 담당하고, 별도 AnimSequence editor는 없습니다.
+ */
+class AnimSequenceElement final : public ContentBrowserElement
+{
+public:
+	void RenderContextMenu(ContentBrowserContext& Context) override;
+
+protected:
+	const char* GetTypeLabel() const override { return "Anim Sequence"; }
+	uint32 GetAccentColor() const override { return IM_COL32(235, 180, 80, 255); }
+};
+
 class PNGElement final : public ContentBrowserElement
 {
 public:

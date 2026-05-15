@@ -3,6 +3,10 @@
 #include "Core/CoreTypes.h"
 #include "Serialization/Archive.h"
 
+/**
+ * .uasset header에서 이 파일이 어떤 타입인지 구분하기 위한 package type입니다.
+ * 런타임 로더, stale 검사, Content Browser 식별이 이 값을 기준으로 동작합니다.
+ */
 enum class EAssetPackageType : uint32
 {
 	Unknown = 0,
@@ -12,6 +16,7 @@ enum class EAssetPackageType : uint32
 	FloatCurve,
 	CameraShake,
 	Material,
+	AnimSequence,
 };
 
 struct FAssetPackageHeader
