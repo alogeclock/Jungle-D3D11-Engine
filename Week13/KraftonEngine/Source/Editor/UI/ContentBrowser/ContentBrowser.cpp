@@ -4,6 +4,7 @@
 #include "CameraShake/CameraShakeAsset.h"
 #include "CameraShake/CameraShakeManager.h"
 #include "ContentBrowserElement.h"
+#include "Editor/Import/EditorAssetPipeline.h"
 #include "Editor/Settings/EditorSettings.h"
 #include "Editor/Subsystem/AssetFactory.h"
 #include "Editor/UI/EditorTextureManager.h"
@@ -13,6 +14,7 @@
 #include "EditorEngine.h"
 
 #include <algorithm>
+#include <cctype>
 
 namespace
 {
@@ -83,6 +85,20 @@ namespace
 
 		return PIt == P.end();
 	}
+
+	FString GetLowerExtension(const std::filesystem::path& Path)
+	{
+		FString Extension = FPaths::ToUtf8(Path.extension().wstring());
+		std::transform(Extension.begin(), Extension.end(), Extension.begin(),
+			[](unsigned char Ch) { return static_cast<char>(std::tolower(Ch)); });
+		return Extension;
+	}
+
+	bool IsEditorSourceFile(const std::filesystem::path& Path)
+	{
+		const FString Extension = GetLowerExtension(Path);
+		return Extension == ".obj" || Extension == ".mtl" || Extension == ".fbx";
+	}
 }
 
 void FEditorContentBrowserWidget::Initialize(UEditorEngine* InEditor, ID3D11Device* InDevice)
@@ -130,6 +146,13 @@ void FEditorContentBrowserWidget::Render(float DeltaTime)
 	ImGui::SameLine();
 	int Size = static_cast<int>(BrowserContext.ContentSize.x);
 	BrowserContext.ContentSize = ImVec2(static_cast<float>(Size), static_cast<float>(Size));
+
+	bool bShowSourceFiles = BrowserContext.bShowSourceFiles;
+	if (ImGui::Checkbox("Source Files", &bShowSourceFiles))
+	{
+		BrowserContext.bShowSourceFiles = bShowSourceFiles;
+		RefreshContent();
+	}
 
 	if (!ImGui::BeginTable("ContentBrowserLayout", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV))
 	{
@@ -179,6 +202,11 @@ void FEditorContentBrowserWidget::Render(float DeltaTime)
 
 void FEditorContentBrowserWidget::Refresh()
 {
+	if (BrowserContext.EditorEngine)
+	{
+		FEditorAssetPipeline::SyncAssetRoot(BrowserContext.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice());
+	}
+
 	RootNode = BuildDirectoryTree(FPaths::RootDir());
 	RefreshContent();
 
@@ -210,11 +238,7 @@ void FEditorContentBrowserWidget::RefreshContent()
 	for (const auto& Content : CurrentContents)
 	{
 		std::shared_ptr<ContentBrowserElement> Element;
-		FString Extension = FPaths::ToUtf8(Content.Path.extension());
-		for (char& Character : Extension)
-		{
-			Character = static_cast<char>(std::tolower(static_cast<unsigned char>(Character)));
-		}
+		FString Extension = GetLowerExtension(Content.Path);
 		ID3D11ShaderResourceView* Icon = nullptr;
 
 		if (Content.bIsDirectory)
@@ -222,13 +246,13 @@ void FEditorContentBrowserWidget::RefreshContent()
 			Element = std::make_shared<DirectoryElement>();
 			Icon = FEditorTextureManager::Get().GetOrLoadIcon(FPaths::ToUtf8(FPaths::Combine(FPaths::AssetDir(), L"Editor/Icons/", L"Folder_Base_256x.png")));
 		}
+		else if (IsEditorSourceFile(Content.Path))
+		{
+			Element = std::make_shared<SourceFileElement>();
+		}
 		else if (Extension == ".scene")
 		{
 			Element = std::make_shared<SceneElement>();
-		}
-		else if (Extension == ".obj")
-		{
-			Element = std::make_shared<ObjectElement>();
 		}
 		else if (Extension == ".mat")
 		{
@@ -265,6 +289,9 @@ void FEditorContentBrowserWidget::RefreshContent()
 					break;
 				case EAssetPackageType::SkeletalMesh:
 					Element = std::make_shared<MeshElement>();
+					break;
+				case EAssetPackageType::Skeleton:
+					Element = std::make_shared<SkeletonElement>();
 					break;
 				case EAssetPackageType::FloatCurve:
 					Element = std::make_shared<FloatCurveElement>();
@@ -437,6 +464,10 @@ TArray<FContentItem> FEditorContentBrowserWidget::ReadDirectory(std::wstring Pat
 		{
 			if (Name == L"Bin" || Name == L"Build" || Name == L".git" || Name == L".vs")
 				continue;
+		}
+		else if (!BrowserContext.bShowSourceFiles && IsEditorSourceFile(Entry.path()))
+		{
+			continue;
 		}
 
 		FContentItem Item;

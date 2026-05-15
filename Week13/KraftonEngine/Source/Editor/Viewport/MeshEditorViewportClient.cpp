@@ -192,12 +192,12 @@ const FBone* FMeshEditorViewportClient::GetSelectedBone() const
 {
 	if (!SelectedMesh) return nullptr;
 
-	FSkeletalMesh* Asset = SelectedMesh->GetSkeletalMeshAsset();
-	if (!Asset) return nullptr;
+	FSkeletonAsset* SkeletonAsset = SelectedMesh->GetSkeletonAsset();
+	if (!SkeletonAsset) return nullptr;
 
-	if (SelectedBoneIndex < 0 || SelectedBoneIndex >= static_cast<int32>(Asset->Bones.size())) return nullptr;
+	if (SelectedBoneIndex < 0 || SelectedBoneIndex >= static_cast<int32>(SkeletonAsset->Bones.size())) return nullptr;
 
-	return &Asset->Bones[SelectedBoneIndex];
+	return &SkeletonAsset->Bones[SelectedBoneIndex];
 }
 
 EBoneDebugDrawMode FMeshEditorViewportClient::GetBoneDebugDrawMode() const

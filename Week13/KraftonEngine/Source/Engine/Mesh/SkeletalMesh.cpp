@@ -1,4 +1,6 @@
 ﻿#include "SkeletalMesh.h"
+#include "Mesh/Skeleton.h"
+#include "Mesh/SkeletonManager.h"
 #include "Object/ObjectFactory.h"
 #include "Serialization/Archive.h"
 
@@ -14,15 +16,16 @@ void USkeletalMesh::Serialize(FArchive& Ar)
 	}
 
 	Ar << SkeletalMeshAsset->PathFileName;
+	Ar << SkeletalMeshAsset->SkeletonPath;
+	SerializeSkeletonMatrix(Ar, SkeletalMeshAsset->MeshBindGlobal);
 	Ar << SkeletalMeshAsset->Vertices;
 	Ar << SkeletalMeshAsset->Indices;
 	Ar << SkeletalMeshAsset->Sections;
-	Ar << SkeletalMeshAsset->MeshRanges;
-	Ar << SkeletalMeshAsset->Bones;
 	Ar << SkeletalMaterials;
 
 	if (Ar.IsLoading())
 	{
+		ResolveSkeleton();
 		CacheSectionMaterialIndices();
 		SkeletalMeshAsset->bBoundsValid = false;
 	}
@@ -31,12 +34,55 @@ void USkeletalMesh::Serialize(FArchive& Ar)
 void USkeletalMesh::SetSkeletalMeshAsset(FSkeletalMesh* InMesh)
 {
 	SkeletalMeshAsset = InMesh;
+	ResolveSkeleton();
 	CacheSectionMaterialIndices();
 }
 
 FSkeletalMesh* USkeletalMesh::GetSkeletalMeshAsset() const
 {
 	return SkeletalMeshAsset;
+}
+
+void USkeletalMesh::SetSkeleton(USkeleton* InSkeleton)
+{
+	Skeleton = InSkeleton;
+	if (SkeletalMeshAsset && Skeleton)
+	{
+		SkeletalMeshAsset->SkeletonPath = Skeleton->GetAssetPathFileName();
+	}
+}
+
+USkeleton* USkeletalMesh::GetSkeleton() const
+{
+	return Skeleton;
+}
+
+FSkeletonAsset* USkeletalMesh::GetSkeletonAsset() const
+{
+	return Skeleton ? Skeleton->GetSkeletonAsset() : nullptr;
+}
+
+bool USkeletalMesh::ResolveSkeleton()
+{
+	if (!SkeletalMeshAsset)
+	{
+		Skeleton = nullptr;
+		return false;
+	}
+
+	if (Skeleton && Skeleton->GetAssetPathFileName() == SkeletalMeshAsset->SkeletonPath)
+	{
+		return true;
+	}
+
+	Skeleton = nullptr;
+	if (SkeletalMeshAsset->SkeletonPath.empty())
+	{
+		return false;
+	}
+
+	Skeleton = FSkeletonManager::Get().Load(SkeletalMeshAsset->SkeletonPath);
+	return Skeleton != nullptr;
 }
 
 void USkeletalMesh::SetSkeletalMaterials(TArray<FSkeletalMaterial>&& InMaterials)

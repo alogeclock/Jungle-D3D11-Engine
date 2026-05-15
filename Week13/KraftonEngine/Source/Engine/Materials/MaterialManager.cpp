@@ -8,11 +8,14 @@
 #include "Texture/Texture2D.h"
 #include "Render/Pipeline/Renderer.h"
 
+#include <algorithm>
+#include <cwctype>
+
 void FMaterialManager::ScanMaterialAssets()
 {
 	AvailableMaterialFiles.clear();
 
-	const std::filesystem::path MaterialRoot = FPaths::RootDir() + L"Asset/Materials/";
+	const std::filesystem::path MaterialRoot = FPaths::RootDir() + L"Asset/";
 
 	if (!std::filesystem::exists(MaterialRoot))
 	{
@@ -27,7 +30,9 @@ void FMaterialManager::ScanMaterialAssets()
 
 		const std::filesystem::path& Path = Entry.path();
 
-		if (Path.extension() != L".mat") continue;
+		std::wstring Ext = Path.extension().wstring();
+		std::transform(Ext.begin(), Ext.end(), Ext.begin(), ::towlower);
+		if (Ext != L".mat") continue;
 		if (Path.stem() == L"None") continue; // Fallback 머티리얼은 목록에서 제외
 
 		FMaterialAssetListItem Item;

@@ -212,15 +212,15 @@ void FMeshEditorWidget::Render(float DeltaTime)
 
 	if (SkeletalMesh)
 	{
-		const FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
+		const FSkeletonAsset* SkeletonAsset = SkeletalMesh->GetSkeletonAsset();
 
-		if (Asset)
+		if (SkeletonAsset)
 		{
-			for (int32 i = 0; i < static_cast<int32>(Asset->Bones.size()); ++i)
+			for (int32 i = 0; i < static_cast<int32>(SkeletonAsset->Bones.size()); ++i)
 			{
-				if (Asset->Bones[i].ParentIndex == -1)
+				if (SkeletonAsset->Bones[i].ParentIndex == -1)
 				{
-					RenderBoneTree(Asset, i);
+					RenderBoneTree(SkeletonAsset, i);
 				}
 			}
 		}
@@ -325,8 +325,20 @@ void FMeshEditorWidget::Render(float DeltaTime)
 
 	if (SkeletalMesh && SelectedBoneIndex != -1)
 	{
-		FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
-		FBone& Bone = Asset->Bones[SelectedBoneIndex];
+		FSkeletonAsset* SkeletonAsset = SkeletalMesh->GetSkeletonAsset();
+		if (!SkeletonAsset || SelectedBoneIndex < 0 || SelectedBoneIndex >= static_cast<int32>(SkeletonAsset->Bones.size()))
+		{
+			ImGui::TextDisabled("Select a bone to edit.");
+			ImGui::EndChild();
+			ImGui::End();
+			if (!bWindowOpen)
+			{
+				bPendingClose = true;
+			}
+			return;
+		}
+
+		FBone& Bone = SkeletonAsset->Bones[SelectedBoneIndex];
 
 		ImGui::Text("Name: %s", Bone.Name.c_str());
 		ImGui::Text("Index: %d", SelectedBoneIndex);
@@ -422,9 +434,9 @@ void FMeshEditorWidget::RenderMeshStatsOverlay(ImDrawList* DrawList, const ImVec
 	DrawList->AddText(TextPos, IM_COL32(235, 238, 242, 255), Text.c_str());
 }
 
-void FMeshEditorWidget::RenderBoneTree(const FSkeletalMesh* Asset, int32 Index)
+void FMeshEditorWidget::RenderBoneTree(const FSkeletonAsset* SkeletonAsset, int32 Index)
 {
-	const FBone& Bone = Asset->Bones[Index];
+	const FBone& Bone = SkeletonAsset->Bones[Index];
 
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_SpanAvailWidth |
@@ -436,9 +448,9 @@ void FMeshEditorWidget::RenderBoneTree(const FSkeletalMesh* Asset, int32 Index)
 	}
 
 	bool bHasChildren = false;
-	for (int32 i = Index + 1; i < static_cast<int32>(Asset->Bones.size()); ++i)
+	for (int32 i = Index + 1; i < static_cast<int32>(SkeletonAsset->Bones.size()); ++i)
 	{
-		if (Asset->Bones[i].ParentIndex == Index)
+		if (SkeletonAsset->Bones[i].ParentIndex == Index)
 		{
 			bHasChildren = true;
 			break;
@@ -460,11 +472,11 @@ void FMeshEditorWidget::RenderBoneTree(const FSkeletalMesh* Asset, int32 Index)
 
 	if (bOpen && bHasChildren)
 	{
-		for (int32 i = Index + 1; i < static_cast<int32>(Asset->Bones.size()); ++i)
+		for (int32 i = Index + 1; i < static_cast<int32>(SkeletonAsset->Bones.size()); ++i)
 		{
-			if (Asset->Bones[i].ParentIndex == Index)
+			if (SkeletonAsset->Bones[i].ParentIndex == Index)
 			{
-				RenderBoneTree(Asset, i);
+				RenderBoneTree(SkeletonAsset, i);
 			}
 		}
 		ImGui::TreePop();

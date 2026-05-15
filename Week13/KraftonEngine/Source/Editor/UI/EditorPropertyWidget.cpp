@@ -1,6 +1,8 @@
 ﻿#include "Editor/UI/EditorPropertyWidget.h"
 
 #include "Editor/EditorEngine.h"
+#include "Editor/Import/EditorFbxImportService.h"
+#include "Editor/Import/EditorObjImportService.h"
 
 #include "ImGui/imgui.h"
 #include "Component/ActorComponent.h"
@@ -1229,12 +1231,13 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 				else
 				{
 					ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
-					UStaticMesh* Loaded = FMeshManager::LoadStaticMesh(MeshPath, Device);
+					UStaticMesh* Loaded = nullptr;
+					FEditorObjImportService::ImportStaticMeshFromObj(MeshPath, Device, Loaded);
 					if (Loaded)
 					{
-						// Component에는 바로 로드할 .statbin 경로를 저장한다.
+						// Component에는 바로 로드할 .uasset 경로를 저장한다.
 						// Scene을 다시 열 때 원본 import를 반복하지 않기 위해서다.
-						*Val = FMeshManager::GetStaticMeshBinaryFilePath(MeshPath);
+						*Val = Loaded->GetAssetPathFileName();
 						bChanged = true;
 					}
 				}
@@ -1255,11 +1258,12 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 					: EStaticFbxSkinnedMeshPolicy::Skip;
 
 				ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
-				UStaticMesh* Loaded = FMeshManager::LoadStaticMesh(PendingStaticMeshImportPath, Options, Device);
+				UStaticMesh* Loaded = nullptr;
+				FEditorFbxImportService::ImportStaticMeshFromFbx(PendingStaticMeshImportPath, Options, Device, Loaded);
 				if (Loaded && PendingStaticMeshImportTarget)
 				{
-					// 옵션을 적용해 만든 결과도 .statbin 경로로 남긴다.
-					*PendingStaticMeshImportTarget = FMeshManager::GetStaticMeshBinaryFilePath(PendingStaticMeshImportPath);
+					// 옵션을 적용해 만든 결과도 .uasset 경로로 남긴다.
+					*PendingStaticMeshImportTarget = Loaded->GetAssetPathFileName();
 					bChanged = true;
 				}
 
@@ -1325,12 +1329,13 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 			if (!FbxPath.empty())
 			{
 				ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
-				USkeletalMesh* Loaded = FMeshManager::LoadSkeletalMesh(FbxPath, Device);
+				USkeletalMesh* Loaded = nullptr;
+				FEditorFbxImportService::ImportSkeletalMeshFromFbx(FbxPath, Device, Loaded);
 				if (Loaded)
 				{
-					// Component에는 바로 로드할 .sketbin 경로를 저장한다.
+					// Component에는 바로 로드할 .uasset 경로를 저장한다.
 					// 원본 FBX 경로는 Binary 안의 PathFileName에만 남긴다.
-					*Val = FMeshManager::GetSkeletalMeshBinaryFilePath(FbxPath);
+					*Val = Loaded->GetAssetPathFileName();
 					bChanged = true;
 				}
 			}

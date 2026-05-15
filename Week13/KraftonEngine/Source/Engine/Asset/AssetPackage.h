@@ -8,6 +8,7 @@ enum class EAssetPackageType : uint32
 	Unknown = 0,
 	StaticMesh,
 	SkeletalMesh,
+	Skeleton,
 	FloatCurve,
 	CameraShake,
 	Material,
@@ -16,7 +17,7 @@ enum class EAssetPackageType : uint32
 struct FAssetPackageHeader
 {
 	static constexpr uint32 MagicValue = 0x54455341; // ASET
-	static constexpr uint32 CurrentVersion = 3;
+	static constexpr uint32 CurrentVersion = 4;
 
 	uint32 Magic = MagicValue;
 	uint32 Version = CurrentVersion;

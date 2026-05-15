@@ -77,19 +77,32 @@ void FObjViewerPanel::RenderMeshList()
 	// OBJ/FBX source files 섹션
 	if (ImGui::CollapsingHeader("OBJ/FBX Files", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		const TArray<FMeshAssetListItem>& ObjFiles = FMeshManager::GetAvailableObjFiles();
+		const TArray<FMeshAssetListItem>& ObjFiles = FEditorObjImportService::GetAvailableObjFiles();
+		const TArray<FMeshAssetListItem>& FbxFiles = FEditorFbxImportService::GetAvailableFbxFiles();
 
+		int32 SourceIndex = 0;
 		for (int32 i = 0; i < static_cast<int32>(ObjFiles.size()); ++i)
 		{
-			bool bSelected = (i == SelectedObjIndex);
+			bool bSelected = (SourceIndex == SelectedObjIndex);
 			if (ImGui::Selectable(ObjFiles[i].DisplayName.c_str(), bSelected))
 			{
-				SelectedObjIndex = i;
+				SelectedObjIndex = SourceIndex;
 			}
+			++SourceIndex;
+		}
+
+		for (int32 i = 0; i < static_cast<int32>(FbxFiles.size()); ++i)
+		{
+			bool bSelected = (SourceIndex == SelectedObjIndex);
+			if (ImGui::Selectable(FbxFiles[i].DisplayName.c_str(), bSelected))
+			{
+				SelectedObjIndex = SourceIndex;
+			}
+			++SourceIndex;
 		}
 
 		// Import 버튼 — 선택된 OBJ가 있을 때만 활성
-		bool bHasSelection = SelectedObjIndex >= 0 && SelectedObjIndex < static_cast<int32>(ObjFiles.size());
+		bool bHasSelection = SelectedObjIndex >= 0 && SelectedObjIndex < SourceIndex;
 		if (!bHasSelection) ImGui::BeginDisabled();
 		if (ImGui::Button("Import..."))
 		{
@@ -102,8 +115,8 @@ void FObjViewerPanel::RenderMeshList()
 
 	ImGui::Separator();
 
-	// Cached Static Meshes(.statbin) 섹션
-	if (ImGui::CollapsingHeader("Cached Static Meshes (.statbin)", ImGuiTreeNodeFlags_DefaultOpen))
+	// Static Mesh package(.uasset) 섹션
+	if (ImGui::CollapsingHeader("Static Mesh Assets (.uasset)", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		const TArray<FMeshAssetListItem>& MeshFiles = FMeshManager::GetAvailableStaticMeshFiles();
 
@@ -172,10 +185,22 @@ void FObjViewerPanel::RenderImportPopup()
 		// Import / Cancel 버튼
 		if (ImGui::Button("Import", ImVec2(120, 0)))
 		{
-			const TArray<FMeshAssetListItem>& ObjFiles = FMeshManager::GetAvailableObjFiles();
-			if (Engine && SelectedObjIndex >= 0 && SelectedObjIndex < static_cast<int32>(ObjFiles.size()))
+			const TArray<FMeshAssetListItem>& ObjFiles = FEditorObjImportService::GetAvailableObjFiles();
+			const TArray<FMeshAssetListItem>& FbxFiles = FEditorFbxImportService::GetAvailableFbxFiles();
+			if (Engine && SelectedObjIndex >= 0)
 			{
-				Engine->ImportObjWithOptions(ObjFiles[SelectedObjIndex].FullPath, PendingImportOptions);
+				if (SelectedObjIndex < static_cast<int32>(ObjFiles.size()))
+				{
+					Engine->ImportObjWithOptions(ObjFiles[SelectedObjIndex].FullPath, PendingImportOptions);
+				}
+				else
+				{
+					const int32 FbxIndex = SelectedObjIndex - static_cast<int32>(ObjFiles.size());
+					if (FbxIndex >= 0 && FbxIndex < static_cast<int32>(FbxFiles.size()))
+					{
+						Engine->ImportFbxWithOptions(FbxFiles[FbxIndex].FullPath, PendingImportOptions);
+					}
+				}
 			}
 			bShowImportPopup = false;
 			ImGui::CloseCurrentPopup();

@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "Engine/Runtime/Engine.h"
-#include "Mesh/ObjImporter.h"
+#include "Editor/Import/EditorFbxImportService.h"
+#include "Editor/Import/EditorObjImportService.h"
 #include "ObjViewer/ObjViewerPanel.h"
 #include "ObjViewer/ObjViewerViewportClient.h"
 
@@ -23,6 +24,7 @@ public:
 
 	// OBJ 파일을 옵션 기반으로 Import 후 프리뷰 로드
 	void ImportObjWithOptions(const FString& ObjPath, const FImportOptions& Options);
+	void ImportFbxWithOptions(const FString& FbxPath, const FImportOptions& Options);
 
 	// 접근자
 	FObjViewerViewportClient* GetViewportClient() { return &ViewportClient; }

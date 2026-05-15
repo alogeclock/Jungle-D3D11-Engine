@@ -122,7 +122,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [0.962713, -0.067704, 0.490818],
@@ -131,7 +131,7 @@
           "Rotation" : [-0.000000, 0.000000, 0.000000],
           "Scale" : [1.000000, 1.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Data/BasicShape/Cube.OBJ",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,

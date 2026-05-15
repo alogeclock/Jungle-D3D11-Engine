@@ -25,7 +25,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/M_CubeGrid.mat"
+            "Path" : "Asset/Mesh/CubeGrid/SM_CubeGrid_M_CubeGrid.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [0.000000, 0.000000, 0.000000],
@@ -34,7 +34,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [30.000000, 30.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Content/Data/CubeGrid/SM_CubeGrid_StaticMesh.uasset",
+          "Static Mesh" : "Asset/Mesh/CubeGrid/SM_CubeGrid_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -128,7 +128,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-3.205277, -2.917898, 1.707360],
@@ -137,7 +137,7 @@
           "Rotation" : [12.015320, -30.556564, 13.652405],
           "Scale" : [1.000000, 1.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Content/Data/BasicShape/Cube_StaticMesh.uasset",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -294,7 +294,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            "Path" : "Asset/Mesh/BasicShape/Sphere_BasicShapeMaterial.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [-2.347035, -7.132638, 1.610602],
@@ -303,7 +303,7 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Scale" : [1.000000, 1.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Content/Data/BasicShape/Sphere_StaticMesh.uasset",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Sphere_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -461,13 +461,13 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/KON001_Hirasawa_Yui.003.mat"
+            "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/KON001_Hirasawa_Yui_eye.003.mat"
+            "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/KON001_Hirasawa_Yui_face.003.mat"
+            "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [5.480577, -2.606570, 0.947476],
@@ -476,7 +476,7 @@
           "Rotation" : [0.000000, -24.313147, 0.000000],
           "Scale" : [3.000000, 3.000000, 3.000000],
           "Simulate Physics" : false,
-          "Skeletal Mesh" : "Content/Data/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -693,7 +693,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [1.519097, 5.845717, 1.831645],
@@ -702,7 +702,7 @@
           "Rotation" : [-8.286392, 0.132538, -31.072220],
           "Scale" : [1.000000, 1.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Content/Data/BasicShape/Cube_StaticMesh.uasset",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -745,19 +745,19 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/acc.002.mat"
+            "Path" : "Asset/Mesh/Samba Dancing/Samba Dancing (10)_acc.002.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/cloth.002.mat"
+            "Path" : "Asset/Mesh/Samba Dancing/Samba Dancing (10)_cloth.002.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/b0.002.mat"
+            "Path" : "Asset/Mesh/Samba Dancing/Samba Dancing (10)_b0.002.mat"
           },
           "Element 3" : {
-            "Path" : "Asset/Materials/Auto/m.002.mat"
+            "Path" : "Asset/Mesh/Samba Dancing/Samba Dancing (10)_m.002.mat"
           },
           "Element 4" : {
-            "Path" : "Asset/Materials/Auto/e.002.mat"
+            "Path" : "Asset/Mesh/Samba Dancing/Samba Dancing (10)_e.002.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [10.694828, -8.653132, 0.994482],
@@ -766,7 +766,7 @@
           "Rotation" : [0.000000, -80.009232, 0.000000],
           "Scale" : [2.000000, 2.000000, 2.000000],
           "Simulate Physics" : false,
-          "Skeletal Mesh" : "Content/Data/Samba Dancing/Samba Dancing (10)_SkeletalMesh.uasset",
+          "Skeletal Mesh" : "Asset/Mesh/Samba Dancing/Samba Dancing (10)_SkeletalMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -799,7 +799,7 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [10.757595, -1.601472, 1.722572],
@@ -808,7 +808,7 @@
           "Rotation" : [-27.286530, 31.608643, -10.822815],
           "Scale" : [1.000000, 1.000000, 1.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Content/Data/BasicShape/Cube_StaticMesh.uasset",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,
@@ -841,13 +841,13 @@
             "WorldStatic" : 2
           },
           "Element 0" : {
-            "Path" : "Asset/Materials/Auto/KON001_Hirasawa_Yui.003.mat"
+            "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
           },
           "Element 1" : {
-            "Path" : "Asset/Materials/Auto/KON001_Hirasawa_Yui_eye.003.mat"
+            "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
           },
           "Element 2" : {
-            "Path" : "Asset/Materials/Auto/KON001_Hirasawa_Yui_face.003.mat"
+            "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
           },
           "Generate Overlap Events" : false,
           "Location" : [8.349896, -3.344031, 1.000000],
@@ -856,7 +856,7 @@
           "Rotation" : [0.000000, -64.088791, 0.000000],
           "Scale" : [2.000000, 2.000000, 2.000000],
           "Simulate Physics" : false,
-          "Skeletal Mesh" : "Content/Data/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
           "Two Sided Shadow" : false,
           "Visible" : true,
           "bEditorOnly" : false,

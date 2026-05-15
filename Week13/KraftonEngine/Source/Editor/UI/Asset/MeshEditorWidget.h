@@ -3,7 +3,7 @@
 #include "Editor/Viewport/MeshEditorViewportClient.h"
 #include "Slate/SWindow.h"
 
-struct FSkeletalMesh;
+struct FSkeletonAsset;
 struct ImDrawList;
 struct ImVec2;
 
@@ -30,7 +30,7 @@ public:
 	FMeshEditorViewportClient* GetViewportClient() { return &ViewportClient; }
 
 private:
-	void RenderBoneTree(const FSkeletalMesh* Asset, int32 Index);
+	void RenderBoneTree(const FSkeletonAsset* SkeletonAsset, int32 Index);
 	void RenderMeshStatsOverlay(ImDrawList* DrawList, const ImVec2& ViewportPos) const;
 
 private:
