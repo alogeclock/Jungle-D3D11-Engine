@@ -29,7 +29,7 @@
       <UniqueIdentifier>{879fdc11-4e44-c448-2bbf-5fd281dc244f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Editor\Import">
-      <UniqueIdentifier>{77025e87-9cf5-d898-f9dd-d234edcb1756}</UniqueIdentifier>
+      <UniqueIdentifier>{bfae4fc6-6c33-4a93-b4b4-4384d58d84ef}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Editor\PIE">
       <UniqueIdentifier>{1485fbd8-4084-14c8-cd14-33798c9651d4}</UniqueIdentifier>
@@ -617,16 +617,6 @@
     <ClCompile Include="Source\Editor\Viewport\ViewportCameraTransform.cpp">
       <Filter>Source\Editor\Viewport</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Animation\AnimInstance.cpp">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Animation\AnimSingleNodeInstance.cpp">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Animation\AnimationRuntime.cpp">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Animation\AnimationStateMachine.cpp">
     <ClCompile Include="Source\Engine\Animation\AnimDataModel.cpp">
       <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
@@ -958,9 +948,6 @@
       <Filter>Source\Engine\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Object\Object.cpp">
-      <Filter>Source\Engine\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Object\UClass.cpp">
       <Filter>Source\Engine\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Object\UUIDGenerator.cpp">
@@ -1309,9 +1296,7 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\Animation\LuaAnimStateMachine.cpp">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Asset\AnimSequenceEditorWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -1478,21 +1463,6 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\Viewport\ViewportCameraTransform.h">
       <Filter>Source\Editor\Viewport</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\AnimInstance.h">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\AnimSingleNodeInstance.h">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\AnimType.h">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\AnimationRuntime.h">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\AnimationStateMachine.h">
-      <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Animation\AnimDataModel.h">
       <Filter>Source\Engine\Animation</Filter>
@@ -3954,9 +3924,7 @@
     <ClInclude Include="ThirdParty\sol2\include\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\include\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\LuaAnimStateMachine.h">
-      <Filter>Source\Engine\Animation</Filter>
-    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Asset\AnimSequenceEditorWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />
