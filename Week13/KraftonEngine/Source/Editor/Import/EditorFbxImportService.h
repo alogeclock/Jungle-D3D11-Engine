@@ -10,7 +10,7 @@ class USkeleton;
 class UAnimSequence;
 struct ID3D11Device;
 
-// Editor/ObjViewer-only FBX import path. Runtime code should load cooked .uasset files through FMeshManager.
+// Editor-only FBX import path. Runtime code should load cooked .uasset files through FMeshManager.
 struct FEditorFbxImportService
 {
 	static FString GetStaticMeshPackagePathForFbx(const FString& FbxFilePath);

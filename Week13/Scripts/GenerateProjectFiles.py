@@ -31,7 +31,6 @@ CONFIGURATIONS = [
     ("Release", "x64"),
     ("Game", "Win32"),
     ("Game", "x64"),
-    ("ObjViewDebug", "x64"),
     ("Demo", "x64"),
 ]
 
@@ -43,10 +42,6 @@ CONFIG_PROPS = {
     "Game": {
         "release_like": True,
         "extra_defines": ["WITH_EDITOR=0", "WITH_STANDALONE=1", "STATS=0"],
-    },
-    "ObjViewDebug": {
-        "release_like": True,
-        "extra_defines": ["IS_OBJ_VIEWER=1"],
     },
     "Demo": {
         "release_like": True,
@@ -80,7 +75,6 @@ INCLUDE_PATHS = [
     "ThirdParty\\ImGui",
     "ThirdParty\\RmlUi\\Include",
     "Source\\Editor",
-    "Source\\ObjViewer",
     "Source\\Game",
     "ThirdParty\\lua\\include",
     "ThirdParty\\sol2\\include",
@@ -101,7 +95,7 @@ FMOD_RELEASE_LIB = "fmod_vc.lib"
 FMOD_DEBUG_DLL = "fmodL.dll"
 FMOD_RELEASE_DLL = "fmod.dll"
 
-# FBX SDK — x64 전용. ObjViewDebug/Demo 는 FBX 의존이 없어 제외한다.
+# FBX SDK — x64 전용. Demo 는 FBX 의존이 없어 제외한다.
 # Debug 구성은 lib\\x64\\debug, Release-like 구성은 lib\\x64\\release.
 FBX_INC_DIR        = "ThirdParty\\fbx\\include"
 FBX_LIB_DIR_DEBUG  = "ThirdParty\\fbx\\lib\\x64\\debug"
@@ -113,7 +107,7 @@ FBX_CONFIGS        = {"Debug", "Release", "Game"}  # x64 와 결합되는 구성
 
 # PhysX (NuGet, 4.1.2) — vcpkg auto applocal-deps가 일부 환경에서 동작하지 않아
 # PostBuildEvent 에서 명시적으로 *.dll 을 OutDir 로 복사한다.
-# Debug 구성은 debug\\bin, 그 외(Release/Game/ObjViewDebug/Demo)는 release bin 사용.
+# Debug 구성은 debug\\bin, 그 외(Release/Game/Demo)는 release bin 사용.
 PHYSX_DEBUG_BIN   = "packages\\NVIDIA.PhysX.4.1.2\\installed\\x64-windows\\debug\\bin"
 PHYSX_RELEASE_BIN = "packages\\NVIDIA.PhysX.4.1.2\\installed\\x64-windows\\bin"
 

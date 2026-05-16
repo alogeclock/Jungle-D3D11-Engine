@@ -220,9 +220,6 @@
     <Filter Include="Source\Game\PlayerController">
       <UniqueIdentifier>{98f08a21-3450-b417-9a82-c35be6aaeec5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\ObjViewer">
-      <UniqueIdentifier>{3e63d691-bd37-40d8-2cea-c874f8e3a95b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{b6ce33ca-bd0b-67d0-3b00-df63693ce519}</UniqueIdentifier>
     </Filter>
@@ -1262,18 +1259,6 @@
     <ClCompile Include="Source\Game\PlayerController\PlayerControllerCarGame.cpp">
       <Filter>Source\Game\PlayerController</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ObjViewer\ObjViewerEngine.cpp">
-      <Filter>Source\ObjViewer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ObjViewer\ObjViewerPanel.cpp">
-      <Filter>Source\ObjViewer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ObjViewer\ObjViewerRenderPipeline.cpp">
-      <Filter>Source\ObjViewer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ObjViewer\ObjViewerViewportClient.cpp">
-      <Filter>Source\ObjViewer</Filter>
-    </ClCompile>
     <ClCompile Include="ThirdParty\ImGui\imgui.cpp">
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
@@ -2249,18 +2234,6 @@
     </ClInclude>
     <ClInclude Include="Source\Game\PlayerController\PlayerControllerCarGame.h">
       <Filter>Source\Game\PlayerController</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ObjViewer\ObjViewerEngine.h">
-      <Filter>Source\ObjViewer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ObjViewer\ObjViewerPanel.h">
-      <Filter>Source\ObjViewer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ObjViewer\ObjViewerRenderPipeline.h">
-      <Filter>Source\ObjViewer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ObjViewer\ObjViewerViewportClient.h">
-      <Filter>Source\ObjViewer</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\fbx\include\fbxsdk.h">
       <Filter>ThirdParty\fbx\include</Filter>
