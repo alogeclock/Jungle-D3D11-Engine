@@ -3,6 +3,7 @@
 #include "Platform/Paths.h"
 
 #if WITH_EDITOR
+#include "Animation/AnimDataModel.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSequenceManager.h"
 #include "Asset/AssetPackage.h"
@@ -751,24 +752,26 @@ bool FEditorFbxImportService::ImportAnimSequencesFromFbx(const FString& FbxFileP
 		const FString StackName = SequenceIndex < static_cast<int32>(UniqueNames.size()) ? UniqueNames[SequenceIndex] : ImportedSequence.StackName;
 		const FString PackagePath = GetAnimSequencePackagePathForFbx(SourcePath, StackName, bSingleStack);
 
-		std::unique_ptr<FAnimSequenceAsset> NewAnimAsset = std::make_unique<FAnimSequenceAsset>();
-		NewAnimAsset->PathFileName = SourcePath;
-		NewAnimAsset->SkeletonPath = SkeletonPackagePath;
-		NewAnimAsset->SequenceLength = ImportedSequence.SequenceLength;
-		NewAnimAsset->SampleRate = ImportedSequence.SampleRate;
-		NewAnimAsset->NumFrames = ImportedSequence.NumFrames;
-		NewAnimAsset->Tracks = std::move(ImportedSequence.Tracks);
-
 		UAnimSequence* AnimSequence = UObjectManager::Get().CreateObject<UAnimSequence>();
-		AnimSequence->SetAnimSequenceAsset(NewAnimAsset.release());
+		UAnimDataModel* DataModel = UObjectManager::Get().CreateObject<UAnimDataModel>(AnimSequence);
+		DataModel->SetPlayLength(ImportedSequence.PlayLength);
+		DataModel->SetFrameRate(ImportedSequence.FrameRate);
+		DataModel->SetNumberOfFrames(ImportedSequence.NumberOfFrames);
+		DataModel->SetNumberOfKeys(ImportedSequence.NumberOfKeys);
+		DataModel->SetBoneAnimationTracks(std::move(ImportedSequence.Tracks));
+
+		AnimSequence->SetAssetPathFileName(PackagePath);
 		AnimSequence->SetSkeleton(Skeleton);
+		AnimSequence->SetSequenceLength(ImportedSequence.PlayLength);
+		AnimSequence->SetRateScale(1.0f);
+		AnimSequence->SetLooping(true);
+		AnimSequence->SetDataModel(DataModel);
 
 		if (!SaveAnimSequencePackage(AnimSequence, PackagePath, SourcePath))
 		{
 			return false;
 		}
 
-		AnimSequence->SetAssetPathFileName(PackagePath);
 		FAnimSequenceManager::Get().RegisterAnimSequence(PackagePath, AnimSequence);
 		OutAnimSequences.push_back(AnimSequence);
 	}

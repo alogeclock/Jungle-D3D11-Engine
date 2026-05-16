@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
-#include "Animation/AnimSequenceAsset.h"
+#include "Animation/AnimTypes.h"
 #include "Math/Matrix.h"
 #include "Mesh/SkeletalMeshAsset.h"
 #include "Mesh/SkeletonAsset.h"
@@ -33,9 +33,10 @@ public:
 	struct FImportedAnimSequence
 	{
 		FString StackName;
-		float SequenceLength = 0.0f;
-		float SampleRate = 30.0f;
-		int32 NumFrames = 0;
+		float PlayLength = 0.0f;
+		float FrameRate = 30.0f;
+		int32 NumberOfFrames = 0;
+		int32 NumberOfKeys = 0;
 		TArray<FBoneAnimationTrack> Tracks;
 	};
 

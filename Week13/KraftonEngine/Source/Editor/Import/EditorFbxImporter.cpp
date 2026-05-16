@@ -1502,14 +1502,15 @@ void FEditorFbxImporter::ParseAnimations(FbxScene* Scene, const FSkeletonAsset& 
 		const double StopSeconds = TimeSpan.GetStop().GetSecondDouble();
 		const double DurationSeconds = std::max(0.0, StopSeconds - StartSeconds);
 		const int32 SampleRate = CalculateAnimStackSampleRate(Scene, Stack);
-		const int32 NumFrames = std::max(1, static_cast<int32>(std::round(DurationSeconds * static_cast<double>(SampleRate))) + 1);
+		const int32 NumberOfKeys = std::max(1, static_cast<int32>(std::round(DurationSeconds * static_cast<double>(SampleRate))) + 1);
 
 		FImportedAnimSequence ImportedSequence;
 		const char* StackName = Stack->GetName();
 		ImportedSequence.StackName = StackName && StackName[0] ? FString(StackName) : FString("Take_") + std::to_string(StackIndex + 1);
-		ImportedSequence.SequenceLength = static_cast<float>(DurationSeconds);
-		ImportedSequence.SampleRate = static_cast<float>(SampleRate);
-		ImportedSequence.NumFrames = NumFrames;
+		ImportedSequence.PlayLength = static_cast<float>(DurationSeconds);
+		ImportedSequence.FrameRate = static_cast<float>(SampleRate);
+		ImportedSequence.NumberOfFrames = std::max(0, NumberOfKeys - 1);
+		ImportedSequence.NumberOfKeys = NumberOfKeys;
 		ImportedSequence.Tracks.reserve(TargetSkeleton.Bones.size());
 
 		for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(TargetSkeleton.Bones.size()); ++BoneIndex)
@@ -1518,19 +1519,19 @@ void FEditorFbxImporter::ParseAnimations(FbxScene* Scene, const FSkeletonAsset& 
 
 			FBoneAnimationTrack Track;
 			Track.Name = FName(Bone.Name);
-			Track.BoneIndex = BoneIndex;
-			Track.InternalTrack.PosKeys.reserve(NumFrames);
-			Track.InternalTrack.RotKeys.reserve(NumFrames);
-			Track.InternalTrack.ScaleKeys.reserve(NumFrames);
+			Track.BoneTreeIndex = BoneIndex;
+			Track.InternalTrackData.PosKeys.reserve(NumberOfKeys);
+			Track.InternalTrackData.RotKeys.reserve(NumberOfKeys);
+			Track.InternalTrackData.ScaleKeys.reserve(NumberOfKeys);
 
 			FbxNode* BoneNode = BoneIndex < static_cast<int32>(BoneNodes.size()) ? BoneNodes[BoneIndex] : nullptr;
 			FbxNode* ParentBoneNode = (Bone.ParentIndex >= 0 && Bone.ParentIndex < static_cast<int32>(BoneNodes.size()))
 				? BoneNodes[Bone.ParentIndex]
 				: nullptr;
 
-			for (int32 FrameIndex = 0; FrameIndex < NumFrames; ++FrameIndex)
+			for (int32 FrameIndex = 0; FrameIndex < NumberOfKeys; ++FrameIndex)
 			{
-				const double FrameSeconds = (FrameIndex == NumFrames - 1)
+				const double FrameSeconds = (FrameIndex == NumberOfKeys - 1)
 					? StopSeconds
 					: StartSeconds + static_cast<double>(FrameIndex) / static_cast<double>(SampleRate);
 
@@ -1554,19 +1555,19 @@ void FEditorFbxImporter::ParseAnimations(FbxScene* Scene, const FSkeletonAsset& 
 
 				FTransform LocalTransform(LocalMatrix);
 				FQuat Rotation = LocalTransform.Rotation.GetNormalized();
-				if (!Track.InternalTrack.RotKeys.empty() && DotQuat(Track.InternalTrack.RotKeys.back(), Rotation) < 0.0f)
+				if (!Track.InternalTrackData.RotKeys.empty() && DotQuat(Track.InternalTrackData.RotKeys.back(), Rotation) < 0.0f)
 				{
 					Rotation = FQuat(-Rotation.X, -Rotation.Y, -Rotation.Z, -Rotation.W);
 				}
 
-				Track.InternalTrack.PosKeys.push_back(LocalTransform.Location);
-				Track.InternalTrack.RotKeys.push_back(Rotation);
-				Track.InternalTrack.ScaleKeys.push_back(LocalTransform.Scale);
+				Track.InternalTrackData.PosKeys.push_back(LocalTransform.Location);
+				Track.InternalTrackData.RotKeys.push_back(Rotation);
+				Track.InternalTrackData.ScaleKeys.push_back(LocalTransform.Scale);
 			}
 
-			ReduceConstantVectorKeys(Track.InternalTrack.PosKeys);
-			ReduceConstantQuatKeys(Track.InternalTrack.RotKeys);
-			ReduceConstantVectorKeys(Track.InternalTrack.ScaleKeys);
+			ReduceConstantVectorKeys(Track.InternalTrackData.PosKeys);
+			ReduceConstantQuatKeys(Track.InternalTrackData.RotKeys);
+			ReduceConstantVectorKeys(Track.InternalTrackData.ScaleKeys);
 			ImportedSequence.Tracks.push_back(std::move(Track));
 		}
 

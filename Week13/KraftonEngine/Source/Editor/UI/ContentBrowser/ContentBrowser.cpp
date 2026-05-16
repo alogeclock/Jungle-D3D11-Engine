@@ -1,5 +1,6 @@
 ﻿#include "ContentBrowser.h"
 
+#include "Animation/AnimSequenceManager.h"
 #include "Asset/AssetPackage.h"
 #include "CameraShake/CameraShakeAsset.h"
 #include "CameraShake/CameraShakeManager.h"
@@ -339,7 +340,14 @@ void FEditorContentBrowserWidget::RefreshContent()
 					Element = std::make_shared<SkeletonElement>();
 					break;
 				case EAssetPackageType::AnimSequence:
-					Element = std::make_shared<AnimSequenceElement>();
+					if (FAnimSequenceManager::Get().IsAnimSequencePackage(PackagePath))
+					{
+						Element = std::make_shared<AnimSequenceElement>();
+					}
+					else
+					{
+						Element = std::make_shared<ContentBrowserElement>();
+					}
 					break;
 				case EAssetPackageType::FloatCurve:
 					Element = std::make_shared<FloatCurveElement>();

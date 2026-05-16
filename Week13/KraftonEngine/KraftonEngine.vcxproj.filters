@@ -617,7 +617,16 @@
     <ClCompile Include="Source\Editor\Viewport\ViewportCameraTransform.cpp">
       <Filter>Source\Editor\Viewport</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimDataModel.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimationAsset.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Animation\AnimSequence.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSequenceBase.cpp">
       <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Animation\AnimSequenceManager.cpp">
@@ -1454,13 +1463,22 @@
     <ClInclude Include="Source\Editor\Viewport\ViewportCameraTransform.h">
       <Filter>Source\Editor\Viewport</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimDataModel.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimationAsset.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Animation\AnimSequence.h">
       <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Animation\AnimSequenceAsset.h">
+    <ClInclude Include="Source\Engine\Animation\AnimSequenceBase.h">
       <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Animation\AnimSequenceManager.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimTypes.h">
       <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Asset\AssetPackage.h">
