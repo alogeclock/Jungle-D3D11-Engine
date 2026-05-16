@@ -1,6 +1,7 @@
 #include "AnimSingleNodeInstance.h"
 #include "Animation/AnimSequence.h"
 #include "Object/ObjectFactory.h"
+#include <algorithm>
 
 IMPLEMENT_CLASS(UAnimSingleNodeInstance, UAnimInstance)
 
@@ -42,6 +43,7 @@ void UAnimSingleNodeInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!bPlaying || !Sequence)
 		return;
 
+	++TickCount;
 	float PrevTime = CurrentTime;
 	CurrentTime += DeltaSeconds * PlayRate;
 
@@ -58,6 +60,12 @@ void UAnimSingleNodeInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	CheckAnimNotifyQueue(PrevTime, CurrentTime, Length, bLooping, PlayRate < 0.f,
 		Sequence->GetNotifyEvents());
+}
+
+void UAnimSingleNodeInstance::SetCurrentTime(float InTime)
+{
+	float Length = Sequence ? Sequence->GetPlayLength() : 0.0f;
+	CurrentTime = (Length > 0.0f) ? std::clamp(InTime, 0.0f, Length) : 0.0f;
 }
 
 void UAnimSingleNodeInstance::GetCurrentPose(FPoseContext& OutPose)

@@ -19,10 +19,16 @@ public:
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 	void GetCurrentPose(FPoseContext& OutPose) override;
 
+	float    GetCurrentTickTime() const { return CurrentTime; }
+	void     SetCurrentTime(float InTime);
+	bool     IsPlaying() const { return bPlaying; }
+	void     SetLooping(bool bInLooping) { bLooping = bInLooping; }
+
 private:
 	UAnimSequence* Sequence = nullptr;
-	float CurrentTime = 0.0f;
-	float PlayRate = 1.0f;
-	bool  bLooping = false;
-	bool  bPlaying = false;
+	float    CurrentTime = 0.0f;
+	float    PlayRate = 1.0f;
+	bool     bLooping = false;
+	bool     bPlaying = false;
+	uint32 TickCount = 0;
 };

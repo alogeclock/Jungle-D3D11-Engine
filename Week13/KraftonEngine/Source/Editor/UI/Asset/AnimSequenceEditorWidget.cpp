@@ -107,6 +107,7 @@ void FAnimSequenceEditorWidget::InitializeFromAnimSequence()
 {
 	PreviewSkeletalMesh = nullptr;
 	PreviewMeshComponent = nullptr;
+	SingleNodeInstance = nullptr;
 	PreviewStatusMessage.clear();
 	EvaluatedLocalPose.clear();
 	bLastPoseEvaluationSucceeded = false;
@@ -236,6 +237,10 @@ void FAnimSequenceEditorWidget::InitializePreviewWorld()
 	{
 		PreviewMeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
 		Actor->SetRootComponent(PreviewMeshComponent);
+
+		SingleNodeInstance = UObjectManager::Get().CreateObject<UAnimSingleNodeInstance>();
+		PreviewMeshComponent->SetAnimInstance(SingleNodeInstance);
+		SingleNodeInstance->SetAnimation(AnimSequence);
 	}
 
 	if (!Actor || !PreviewMeshComponent)
@@ -295,6 +300,12 @@ void FAnimSequenceEditorWidget::InitializePreviewWorld()
 
 void FAnimSequenceEditorWidget::ReleasePreviewWorld()
 {
+	if (SingleNodeInstance)
+	{
+		UObjectManager::Get().DestroyObject(SingleNodeInstance);
+		SingleNodeInstance = nullptr;
+	}
+
 	if (UWorld* PreviewWorld = ViewportClient.GetPreviewWorld())
 	{
 		FScene& PreviewScene = PreviewWorld->GetScene();
@@ -400,6 +411,7 @@ void FAnimSequenceEditorWidget::Close()
 	AnimSequence = nullptr;
 	PreviewSkeletalMesh = nullptr;
 	PreviewMeshComponent = nullptr;
+	SingleNodeInstance = nullptr;
 	PreviewStatusMessage.clear();
 	EvaluatedLocalPose.clear();
 	bLastPoseEvaluationSucceeded = false;
@@ -415,12 +427,32 @@ void FAnimSequenceEditorWidget::Tick(float DeltaTime)
 		return;
 	}
 
-	TickTimeline(DeltaTime);
+	if (SingleNodeInstance)
+	{
+		SingleNodeInstance->Update(DeltaTime);
+		CurrentTime = SingleNodeInstance->GetCurrentTickTime();
 
-	ApplyAnimationPoseToPreview(CurrentTime);
+		FPoseContext Pose;
+		SingleNodeInstance->GetCurrentPose(Pose);
+		SingleNodeInstance->TriggerAnimNotifies();
 
-	// Editor에서 수정한 Bone Transform은 원본 AnimSequence 데이터를 바꾸지 않고 Preview pose 위에 다시 덮습니다.
-	// 이 순서 덕분에 Detail/Gizmo에서 바꾼 Bone SRT가 재생 중에도 유지됩니다
+		if (!Pose.BoneLocalTransforms.empty() && PreviewMeshComponent)
+		{
+			TArray<FMatrix> Matrices;
+			Matrices.resize(Pose.BoneLocalTransforms.size());
+			for (size_t i = 0; i < Pose.BoneLocalTransforms.size(); ++i)
+			{
+				Matrices[i] = Pose.BoneLocalTransforms[i].ToMatrix();
+			}
+			PreviewMeshComponent->SetBoneLocalTransformByArray(Matrices);
+		}
+	}
+	else
+	{
+		TickTimeline(DeltaTime);
+		ApplyAnimationPoseToPreview(CurrentTime);
+	}
+
 	ApplyEditorBoneOverrides();
 
 	if (ViewportClient.IsRenderable())
@@ -901,10 +933,22 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 
 	// Timeline은 AnimSequence editor의 핵심 상태 표시 영역이므로 PlayLength가 0이어도 숨기지 않습니다.
 	// 길이가 0인 asset은 컨트롤만 비활성화하고, 아래 ruler를 0초 기준으로 그려 metadata 문제를 바로 확인할 수 있게 합니다.
+	const bool bCurrentlyPlaying = SingleNodeInstance ? SingleNodeInstance->IsPlaying() : bPlaying;
+
 	ImGui::BeginDisabled(!bHasTimelineLength);
-	if (ImGui::Button(bPlaying ? "Pause" : "Play"))
+	if (ImGui::Button(bCurrentlyPlaying ? "Pause" : "Play"))
 	{
-		bPlaying = !bPlaying;
+		if (SingleNodeInstance)
+		{
+			if (bCurrentlyPlaying)
+				SingleNodeInstance->Stop();
+			else
+				SingleNodeInstance->Play(bLooping);
+		}
+		else
+		{
+			bPlaying = !bPlaying;
+		}
 	}
 	ImGui::EndDisabled();
 
@@ -912,9 +956,18 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 
 	if (ImGui::Button("First"))
 	{
-		bPlaying = false;
-		PreviousTime = CurrentTime;
-		CurrentTime = 0.0f;
+		if (SingleNodeInstance)
+		{
+			SingleNodeInstance->Stop();
+			SingleNodeInstance->SetCurrentTime(0.0f);
+			CurrentTime = 0.0f;
+		}
+		else
+		{
+			bPlaying = false;
+			PreviousTime = CurrentTime;
+			CurrentTime = 0.0f;
+		}
 	}
 
 	ImGui::SameLine();
@@ -922,9 +975,18 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	ImGui::BeginDisabled(!bHasTimelineLength);
 	if (ImGui::Button("Last"))
 	{
-		bPlaying = false;
-		PreviousTime = CurrentTime;
-		CurrentTime = PlayLength;
+		if (SingleNodeInstance)
+		{
+			SingleNodeInstance->Stop();
+			SingleNodeInstance->SetCurrentTime(PlayLength);
+			CurrentTime = PlayLength;
+		}
+		else
+		{
+			bPlaying = false;
+			PreviousTime = CurrentTime;
+			CurrentTime = PlayLength;
+		}
 	}
 	ImGui::EndDisabled();
 
@@ -932,13 +994,26 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 
 	if (ImGui::Button("Stop"))
 	{
-		bPlaying = false;
-		PreviousTime = CurrentTime;
-		CurrentTime = 0.0f;
+		if (SingleNodeInstance)
+		{
+			SingleNodeInstance->Stop();
+			SingleNodeInstance->SetCurrentTime(0.0f);
+			CurrentTime = 0.0f;
+		}
+		else
+		{
+			bPlaying = false;
+			PreviousTime = CurrentTime;
+			CurrentTime = 0.0f;
+		}
 	}
 
 	ImGui::SameLine();
-	ImGui::Checkbox("Loop", &bLooping);
+	if (ImGui::Checkbox("Loop", &bLooping))
+	{
+		if (SingleNodeInstance)
+			SingleNodeInstance->SetLooping(bLooping);
+	}
 
 	ImGui::SameLine();
 
@@ -947,11 +1022,18 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	ImGui::BeginDisabled(!bHasTimelineLength);
 	if (ImGui::DragFloat("Time", &TimeInput, 0.01f, 0.0f, PlayLength, "%.3f"))
 	{
-		// 숫자 입력도 Timeline scrub과 같은 의미로 취급합니다.
-		// 사용자가 시간을 직접 바꾸는 동안 재생이 계속되면 pose가 입력 직후 다시 밀려 UI와 Preview가 어긋납니다.
-		bPlaying = false;
-		PreviousTime = CurrentTime;
-		CurrentTime = std::clamp(TimeInput, 0.0f, PlayLength);
+		if (SingleNodeInstance)
+		{
+			SingleNodeInstance->Stop();
+			SingleNodeInstance->SetCurrentTime(TimeInput);
+			CurrentTime = SingleNodeInstance->GetCurrentTickTime();
+		}
+		else
+		{
+			bPlaying = false;
+			PreviousTime = CurrentTime;
+			CurrentTime = std::clamp(TimeInput, 0.0f, PlayLength);
+		}
 	}
 	ImGui::EndDisabled();
 
@@ -1084,13 +1166,19 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 
 	if (bMouseInRuler && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 	{
-		// Timeline을 직접 scrub하는 순간에는 재생을 멈춥니다.
-		// 재생 상태를 유지하면 drag 중 DeltaTime 누적이 끼어들어 사용자가 놓은 위치와 실제 pose 시간이 달라집니다.
-		bPlaying = false;
-		PreviousTime = CurrentTime;
-
-		CurrentTime = XToTime(Mouse.x, TimelineX, TimelineWidth, VisibleRange);
-		CurrentTime = std::clamp(CurrentTime, 0.0f, PlayLength);
+		float NewTime = std::clamp(XToTime(Mouse.x, TimelineX, TimelineWidth, VisibleRange), 0.0f, PlayLength);
+		if (SingleNodeInstance)
+		{
+			SingleNodeInstance->Stop();
+			SingleNodeInstance->SetCurrentTime(NewTime);
+			CurrentTime = SingleNodeInstance->GetCurrentTickTime();
+		}
+		else
+		{
+			bPlaying = false;
+			PreviousTime = CurrentTime;
+			CurrentTime = NewTime;
+		}
 	}
 
 	const ImU32 GridColor = IM_COL32(160, 160, 160, 80);

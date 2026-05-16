@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Animation/AnimSingleNodeInstance.h"
+#include "Animation/AnimTypes.h"
 #include "AssetEditorWidget.h"
 #include "Editor/Viewport/MeshEditorViewportClient.h"
 #include "Math/Transform.h"
@@ -13,16 +15,6 @@ struct FSkeletonAsset;
 struct FSkeletalMesh;
 struct ImDrawList;
 struct ImVec2;
-
-// TODO(AnimNotify): 실제 FAnimNotifyEvent 런타임 구조가 병합되면 이 임시 Editor 구조를 제거하고
-// 기존 구조체를 include해서 사용한다
-// 지금은 저장/런타임 Trigger 없이 UI 마커만 표시한다
-struct FAnimNotifyEvent
-{
-	float TriggerTime = 0.0f;
-	float Duration = 0.0f;
-	FName NotifyName = FName("NewNotify");
-};
 
 // =====================================================================
 // Animation Sequence Viewer
@@ -95,6 +87,7 @@ private:
 	UAnimSequence* AnimSequence = nullptr;
 	USkeletalMesh* PreviewSkeletalMesh = nullptr;
 	USkeletalMeshComponent* PreviewMeshComponent = nullptr;
+	UAnimSingleNodeInstance* SingleNodeInstance = nullptr;
 	FString PreviewStatusMessage;
 	TArray<FMatrix> EvaluatedLocalPose;
 	bool bLastPoseEvaluationSucceeded = false;

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Animation/AnimSequenceBase.h"
+#include "Animation/AnimTypes.h"
 
 class UAnimDataModel;
 
