@@ -1,4 +1,4 @@
-#include "Editor/Import/EditorFbxImporter.h"
+﻿#include "Editor/Import/EditorFbxImporter.h"
 #include "Platform/Paths.h"
 #include "Core/Log.h"
 #include "Mesh/MeshImportOptions.h"
@@ -8,6 +8,7 @@
 #include "SimpleJSON/json.hpp"
 
 #include <algorithm>
+#include <climits>
 #include <cmath>
 #include <cwctype>
 #include <filesystem>
@@ -293,6 +294,8 @@ namespace
 
 struct FFbxSkeletalVertexKey
 {
+	const FbxNode* MeshNode = nullptr;
+	const FbxMesh* Mesh = nullptr;
 	int32 ControlPointIndex = -1;
 	float NormalX = 0.0f;
 	float NormalY = 0.0f;
@@ -302,7 +305,9 @@ struct FFbxSkeletalVertexKey
 
 	bool operator==(const FFbxSkeletalVertexKey& Other) const
 	{
-		return ControlPointIndex == Other.ControlPointIndex
+		return MeshNode == Other.MeshNode
+			&& Mesh == Other.Mesh
+			&& ControlPointIndex == Other.ControlPointIndex
 			&& NormalX == Other.NormalX
 			&& NormalY == Other.NormalY
 			&& NormalZ == Other.NormalZ
@@ -318,12 +323,14 @@ struct hash<FFbxSkeletalVertexKey>
 {
 	size_t operator()(const FFbxSkeletalVertexKey& Key) const noexcept
 	{
-		size_t Result = std::hash<int32>()(Key.ControlPointIndex);
+		size_t Result = std::hash<const FbxNode*>()(Key.MeshNode);
 		auto Combine = [&Result](size_t Value)
 			{
 				Result ^= Value + 0x9e3779b9 + (Result << 6) + (Result >> 2);
 			};
 
+		Combine(std::hash<const FbxMesh*>()(Key.Mesh));
+		Combine(std::hash<int32>()(Key.ControlPointIndex));
 		Combine(std::hash<float>()(Key.NormalX));
 		Combine(std::hash<float>()(Key.NormalY));
 		Combine(std::hash<float>()(Key.NormalZ));
@@ -379,10 +386,321 @@ struct hash<FFbxStaticVertexKey>
 
 static FMatrix ConvertFbxMatrix(const FbxMatrix& FbxMat);
 static FbxAMatrix GetGeometryTransform(FbxNode* Node);
+static bool IsSkeletonNode(FbxNode* Node);
 
 static bool IsValidControlPointIndex(const FbxMesh* Mesh, int32 ControlPointIndex)
 {
 	return Mesh && ControlPointIndex >= 0 && ControlPointIndex < Mesh->GetControlPointsCount();
+}
+
+struct FFbxSkinClusterRef
+{
+	FbxNode* MeshNode = nullptr;
+	FbxMesh* Mesh = nullptr;
+	FbxSkin* Skin = nullptr;
+	FbxCluster* Cluster = nullptr;
+};
+
+struct FFbxBindPoseMatrix
+{
+	FbxMatrix Matrix;
+	bool bLocalMatrix = false;
+};
+
+struct FFbxWeightData
+{
+	int32 BoneIndex = -1;
+	float Weight = 0.0f;
+};
+
+static void CollectMeshSkins(FbxMesh* Mesh, TArray<FbxSkin*>& OutSkins)
+{
+	OutSkins.clear();
+	if (!Mesh)
+	{
+		return;
+	}
+
+	const int32 SkinCount = Mesh->GetDeformerCount(FbxDeformer::eSkin);
+	for (int32 SkinIndex = 0; SkinIndex < SkinCount; ++SkinIndex)
+	{
+		FbxSkin* Skin = static_cast<FbxSkin*>(Mesh->GetDeformer(SkinIndex, FbxDeformer::eSkin));
+		if (Skin && Skin->GetClusterCount() > 0)
+		{
+			OutSkins.push_back(Skin);
+		}
+	}
+}
+
+static void CollectSkinClusters(const TArray<FbxNode*>& Nodes, TArray<FFbxSkinClusterRef>& OutClusters)
+{
+	OutClusters.clear();
+	for (FbxNode* Node : Nodes)
+	{
+		if (!Node)
+		{
+			continue;
+		}
+
+		FbxMesh* Mesh = Node->GetMesh();
+		if (!Mesh)
+		{
+			continue;
+		}
+
+		TArray<FbxSkin*> Skins;
+		CollectMeshSkins(Mesh, Skins);
+		for (FbxSkin* Skin : Skins)
+		{
+			const int32 ClusterCount = Skin ? Skin->GetClusterCount() : 0;
+			for (int32 ClusterIndex = 0; ClusterIndex < ClusterCount; ++ClusterIndex)
+			{
+				FbxCluster* Cluster = Skin->GetCluster(ClusterIndex);
+				if (!Cluster)
+				{
+					continue;
+				}
+
+				FFbxSkinClusterRef Ref;
+				Ref.MeshNode = Node;
+				Ref.Mesh = Mesh;
+				Ref.Skin = Skin;
+				Ref.Cluster = Cluster;
+				OutClusters.push_back(Ref);
+			}
+		}
+	}
+}
+
+static bool TryGetBindPoseMatrix(FbxScene* Scene, FbxNode* Node, FFbxBindPoseMatrix& OutMatrix)
+{
+	if (!Scene || !Node)
+	{
+		return false;
+	}
+
+	const int32 PoseCount = Scene->GetPoseCount();
+	for (int32 PoseIndex = 0; PoseIndex < PoseCount; ++PoseIndex)
+	{
+		FbxPose* Pose = Scene->GetPose(PoseIndex);
+		if (!Pose || !Pose->IsBindPose())
+		{
+			continue;
+		}
+
+		const int32 NodePoseIndex = Pose->Find(Node);
+		if (NodePoseIndex < 0)
+		{
+			continue;
+		}
+
+		OutMatrix.Matrix = Pose->GetMatrix(NodePoseIndex);
+		OutMatrix.bLocalMatrix = Pose->IsLocalMatrix(NodePoseIndex);
+		return true;
+	}
+
+	return false;
+}
+
+static void AddBoneCandidateWithAncestors(FbxNode* Node, FbxNode* SceneRoot, TSet<FbxNode*>& OutCandidates)
+{
+	while (Node && Node != SceneRoot)
+	{
+		OutCandidates.insert(Node);
+		Node = Node->GetParent();
+	}
+}
+
+static bool HasInfluencingLinkDescendant(FbxNode* Node, const TSet<FbxNode*>& LinkNodes)
+{
+	if (!Node)
+	{
+		return false;
+	}
+
+	if (LinkNodes.find(Node) != LinkNodes.end())
+	{
+		return true;
+	}
+
+	for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+	{
+		if (HasInfluencingLinkDescendant(Node->GetChild(ChildIndex), LinkNodes))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static int32 CountInfluencingLinkChildBranches(FbxNode* Node, const TSet<FbxNode*>& LinkNodes)
+{
+	if (!Node)
+	{
+		return 0;
+	}
+
+	int32 BranchCount = 0;
+	for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+	{
+		if (HasInfluencingLinkDescendant(Node->GetChild(ChildIndex), LinkNodes))
+		{
+			++BranchCount;
+		}
+	}
+
+	return BranchCount;
+}
+
+static FbxNode* FindTopmostBoneRoot(FbxNode* BoneNode, const TSet<FbxNode*>& BoneNodes, const TSet<FbxNode*>& LinkNodes, FbxNode* SceneRoot)
+{
+	FbxNode* Result = BoneNode;
+	FbxNode* Parent = BoneNode ? BoneNode->GetParent() : nullptr;
+	while (Parent && Parent != SceneRoot && BoneNodes.find(Parent) != BoneNodes.end())
+	{
+		const bool bParentIsInfluencingLink = LinkNodes.find(Parent) != LinkNodes.end();
+		const bool bParentIsSkeletonNode = IsSkeletonNode(Parent);
+		const int32 InfluencingChildBranches = CountInfluencingLinkChildBranches(Parent, LinkNodes);
+		if (!bParentIsInfluencingLink && !bParentIsSkeletonNode && InfluencingChildBranches > 1)
+		{
+			break;
+		}
+
+		Result = Parent;
+		Parent = Parent->GetParent();
+	}
+
+	return Result;
+}
+
+static FbxNode* FindFirstRootBoneNode(const TArray<FbxNode*>& Nodes, const TMap<FbxNode*, int32>& NodeToIndex, const TArray<FBone>& InBones)
+{
+	for (FbxNode* Node : Nodes)
+	{
+		auto It = NodeToIndex.find(Node);
+		if (It == NodeToIndex.end())
+		{
+			continue;
+		}
+
+		const int32 BoneIndex = It->second;
+		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(InBones.size()) && InBones[BoneIndex].ParentIndex < 0)
+		{
+			return Node;
+		}
+	}
+
+	return nullptr;
+}
+
+static FMatrix ResolveMeshBindGlobal(FbxNode* Node, const TArray<FbxSkin*>& Skins)
+{
+	FbxAMatrix NodeGeometryTransform = GetGeometryTransform(Node);
+	FMatrix MeshBindGlobal = ConvertFbxMatrix(Node->EvaluateGlobalTransform() * NodeGeometryTransform);
+
+	for (FbxSkin* Skin : Skins)
+	{
+		if (!Skin)
+		{
+			continue;
+		}
+
+		const int32 ClusterCount = Skin->GetClusterCount();
+		for (int32 ClusterIndex = 0; ClusterIndex < ClusterCount; ++ClusterIndex)
+		{
+			FbxCluster* Cluster = Skin->GetCluster(ClusterIndex);
+			if (!Cluster)
+			{
+				continue;
+			}
+
+			FbxAMatrix MeshBindMatrix;
+			Cluster->GetTransformMatrix(MeshBindMatrix);
+			return ConvertFbxMatrix(MeshBindMatrix);
+		}
+	}
+
+	return MeshBindGlobal;
+}
+
+static void AccumulateSkeletalTangents(
+	const TArray<FVertexPNCTBW>& InVertices,
+	TArray<FVector>& InOutTangentSums,
+	TArray<FVector>& InOutBitangentSums,
+	const uint32 TriIndices[3])
+{
+	if (TriIndices[0] >= InVertices.size() || TriIndices[1] >= InVertices.size() || TriIndices[2] >= InVertices.size())
+	{
+		return;
+	}
+
+	const FVertexPNCTBW& V0 = InVertices[TriIndices[0]];
+	const FVertexPNCTBW& V1 = InVertices[TriIndices[1]];
+	const FVertexPNCTBW& V2 = InVertices[TriIndices[2]];
+
+	FVector Edge1 = V1.Position - V0.Position;
+	FVector Edge2 = V2.Position - V0.Position;
+
+	FVector2 DeltaUV1 = V1.UV - V0.UV;
+	FVector2 DeltaUV2 = V2.UV - V0.UV;
+
+	const float Det = DeltaUV1.X * DeltaUV2.Y - DeltaUV1.Y * DeltaUV2.X;
+	if (std::abs(Det) < 1e-8f)
+	{
+		return;
+	}
+
+	const float InvDet = 1.0f / Det;
+	const FVector Tangent = (Edge1 * DeltaUV2.Y - Edge2 * DeltaUV1.Y) * InvDet;
+	const FVector Bitangent = (Edge2 * DeltaUV1.X - Edge1 * DeltaUV2.X) * InvDet;
+
+	for (int32 CornerIndex = 0; CornerIndex < 3; ++CornerIndex)
+	{
+		const uint32 VertexIndex = TriIndices[CornerIndex];
+		if (VertexIndex < InOutTangentSums.size())
+		{
+			InOutTangentSums[VertexIndex] += Tangent;
+		}
+		if (VertexIndex < InOutBitangentSums.size())
+		{
+			InOutBitangentSums[VertexIndex] += Bitangent;
+		}
+	}
+}
+
+static void BuildSkeletalTangents(TArray<FVertexPNCTBW>& InOutVertices, const TArray<FVector>& InTangentSums, const TArray<FVector>& InBitangentSums)
+{
+	for (uint32 VertexIndex = 0; VertexIndex < static_cast<uint32>(InOutVertices.size()); ++VertexIndex)
+	{
+		FVector N = InOutVertices[VertexIndex].Normal;
+		FVector T = VertexIndex < InTangentSums.size() ? InTangentSums[VertexIndex] : FVector::ZeroVector;
+
+		T = T - N * N.Dot(T);
+		if (T.Length() < FMath::Epsilon)
+		{
+			FVector Axis = std::abs(N.Z) < 0.999f ? FVector(0.0f, 0.0f, 1.0f) : FVector(0.0f, 1.0f, 0.0f);
+			T = Axis.Cross(N).Normalized();
+		}
+		else
+		{
+			T.Normalize();
+		}
+
+		FVector B = VertexIndex < InBitangentSums.size() ? InBitangentSums[VertexIndex] : FVector::ZeroVector;
+		const float Handedness = N.Cross(T).Dot(B) < 0.0f ? -1.0f : 1.0f;
+		InOutVertices[VertexIndex].Tangent = FVector4(T, Handedness);
+	}
+}
+
+static bool CompareMaterialSectionKey(int32 A, int32 B)
+{
+	if ((A < 0) != (B < 0))
+	{
+		return A >= 0;
+	}
+
+	return A < B;
 }
 
 bool FEditorFbxImporter::Import(const FString& FilePath)
@@ -594,7 +912,7 @@ bool FEditorFbxImporter::ImportAnimations(const FString& FilePath, const FSkelet
 	TArray<FbxNode*> Nodes;
 	TMap<FbxNode*, int32> NodeToIndex;
 	CollectNodes(RootNode, 0, Nodes);
-	ParseBone(Nodes, NodeToIndex);
+	ParseBone(Scene, Nodes, NodeToIndex);
 
 	OutParsedSkeleton.PathFileName = CurrentSourcePath;
 	OutParsedSkeleton.Bones = Bones;
@@ -930,7 +1248,7 @@ bool FEditorFbxImporter::Parse(FbxScene* Scene)
 	CollectNodes(RootNode, 0, Nodes);
 	CollectMaterials(Scene);
 
-	ParseBone(Nodes, NodeToIndex);
+	ParseBone(Scene, Nodes, NodeToIndex);
 	ParseSkin(Nodes, NodeToIndex);
 	
 	return true;
@@ -1144,36 +1462,94 @@ static int32 AddSyntheticRootBoneIfNeeded(FbxNode* Node, TArray<FBone>& Bones, T
 	return NewBoneIndex;
 }
 
-void FEditorFbxImporter::ParseBone(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& OutNodeToIndex)
+void FEditorFbxImporter::ParseBone(FbxScene* Scene, TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& OutNodeToIndex)
 {
 	Bones.clear();
 	OutNodeToIndex.clear();
 
-	for (int32 i = 0; i < Nodes.size(); ++i)
+	FbxNode* SceneRoot = Scene ? Scene->GetRootNode() : nullptr;
+
+	TArray<FFbxSkinClusterRef> ClusterRefs;
+	CollectSkinClusters(Nodes, ClusterRefs);
+
+	TSet<FbxNode*> CandidateNodes;
+	TMap<FbxNode*, FbxAMatrix> ClusterLinkBindMatrices;
+	for (const FFbxSkinClusterRef& Ref : ClusterRefs)
 	{
-		FbxNode* Node = Nodes[i];
-
-		if (IsSkeletonNode(Node))
+		FbxNode* LinkNode = Ref.Cluster ? Ref.Cluster->GetLink() : nullptr;
+		if (!LinkNode)
 		{
-			FBone Bone;
-			Bone.Name = Node->GetName();
-
-			FbxNode* ParentNode = Node->GetParent();
-			Bone.ParentIndex = FindNearestParentBoneIndex(Node, OutNodeToIndex);
-			if (Bone.ParentIndex < 0)
-			{
-				Bone.ParentIndex = AddSyntheticRootBoneIfNeeded(ParentNode, Bones, OutNodeToIndex);
-			}
-
-			FbxMatrix LocalMatrix = Node->EvaluateLocalTransform();
-			FbxMatrix GlobalMatrix = Node->EvaluateGlobalTransform();
-			Bone.LocalMatrix = ConvertFbxMatrix(LocalMatrix);
-			Bone.GlobalMatrix = ConvertFbxMatrix(GlobalMatrix);
-
-			int32 NewBoneIndex = (int32)Bones.size();
-			Bones.push_back(Bone);
-			OutNodeToIndex[Node] = NewBoneIndex;
+			continue;
 		}
+
+		AddBoneCandidateWithAncestors(LinkNode, SceneRoot, CandidateNodes);
+
+		if (ClusterLinkBindMatrices.find(LinkNode) == ClusterLinkBindMatrices.end())
+		{
+			FbxAMatrix LinkBindMatrix;
+			Ref.Cluster->GetTransformLinkMatrix(LinkBindMatrix);
+			ClusterLinkBindMatrices.emplace(LinkNode, LinkBindMatrix);
+		}
+	}
+
+	if (CandidateNodes.empty())
+	{
+		for (FbxNode* Node : Nodes)
+		{
+			if (IsSkeletonNode(Node))
+			{
+				CandidateNodes.insert(Node);
+			}
+		}
+	}
+
+	for (FbxNode* Node : Nodes)
+	{
+		if (!Node || CandidateNodes.find(Node) == CandidateNodes.end())
+		{
+			continue;
+		}
+
+		FBone Bone;
+		Bone.Name = Node->GetName();
+		Bone.ParentIndex = FindNearestParentBoneIndex(Node, OutNodeToIndex);
+
+		FMatrix GlobalBind = FMatrix::Identity;
+		auto ClusterBindIt = ClusterLinkBindMatrices.find(Node);
+		if (ClusterBindIt != ClusterLinkBindMatrices.end())
+		{
+			GlobalBind = ConvertFbxMatrix(ClusterBindIt->second);
+		}
+		else
+		{
+			FFbxBindPoseMatrix BindPoseMatrix;
+			if (TryGetBindPoseMatrix(Scene, Node, BindPoseMatrix))
+			{
+				const FMatrix PoseMatrix = ConvertFbxMatrix(BindPoseMatrix.Matrix);
+				if (BindPoseMatrix.bLocalMatrix && Bone.ParentIndex >= 0 && Bone.ParentIndex < static_cast<int32>(Bones.size()))
+				{
+					GlobalBind = PoseMatrix * Bones[Bone.ParentIndex].GlobalMatrix;
+				}
+				else
+				{
+					GlobalBind = PoseMatrix;
+				}
+			}
+			else
+			{
+				GlobalBind = ConvertFbxMatrix(Node->EvaluateGlobalTransform());
+			}
+		}
+
+		Bone.GlobalMatrix = GlobalBind;
+		Bone.LocalMatrix = (Bone.ParentIndex >= 0 && Bone.ParentIndex < static_cast<int32>(Bones.size()))
+			? GlobalBind * Bones[Bone.ParentIndex].GlobalMatrix.GetInverse()
+			: GlobalBind;
+		Bone.InverseBindPoseMatrix = GlobalBind.GetInverse();
+
+		const int32 NewBoneIndex = static_cast<int32>(Bones.size());
+		Bones.push_back(Bone);
+		OutNodeToIndex[Node] = NewBoneIndex;
 	}
 }
 
@@ -1194,6 +1570,64 @@ static void NormalizeWeights(float* Weights, int32 Count)
 	}
 }
 
+static bool AssignTopNormalizedWeights(const TArray<FFbxWeightData>& SourceWeights, int32 FallbackBoneIndex, FVertexPNCTBW& Vertex)
+{
+	for (int32 WeightIndex = 0; WeightIndex < 4; ++WeightIndex)
+	{
+		Vertex.BoneIndices[WeightIndex] = -1;
+		Vertex.BoneWeights[WeightIndex] = 0.0f;
+	}
+
+	TArray<FFbxWeightData> MergedWeights;
+	for (const FFbxWeightData& SourceWeight : SourceWeights)
+	{
+		if (SourceWeight.BoneIndex < 0 || SourceWeight.Weight <= 0.0f)
+		{
+			continue;
+		}
+
+		bool bMerged = false;
+		for (FFbxWeightData& MergedWeight : MergedWeights)
+		{
+			if (MergedWeight.BoneIndex == SourceWeight.BoneIndex)
+			{
+				MergedWeight.Weight += SourceWeight.Weight;
+				bMerged = true;
+				break;
+			}
+		}
+
+		if (!bMerged)
+		{
+			MergedWeights.push_back(SourceWeight);
+		}
+	}
+
+	const bool bUsedFallback = MergedWeights.empty() && FallbackBoneIndex >= 0;
+	if (bUsedFallback)
+	{
+		MergedWeights.push_back({ FallbackBoneIndex, 1.0f });
+	}
+
+	std::sort(MergedWeights.begin(), MergedWeights.end(), [](const FFbxWeightData& A, const FFbxWeightData& B)
+	{
+		if (A.Weight == B.Weight)
+		{
+			return A.BoneIndex < B.BoneIndex;
+		}
+		return A.Weight > B.Weight;
+	});
+
+	for (int32 WeightIndex = 0; WeightIndex < static_cast<int32>(MergedWeights.size()) && WeightIndex < 4; ++WeightIndex)
+	{
+		Vertex.BoneIndices[WeightIndex] = MergedWeights[WeightIndex].BoneIndex;
+		Vertex.BoneWeights[WeightIndex] = MergedWeights[WeightIndex].Weight;
+	}
+
+	NormalizeWeights(Vertex.BoneWeights, 4);
+	return bUsedFallback;
+}
+
 void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& NodeToIndex)
 {
 	Vertices.clear();
@@ -1203,78 +1637,243 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 	TangentSums.clear();
 	BitangentSums.clear();
 
-	TMap<int32, TArray<uint32>> MergedSectionIndicesMap;
-	const FMatrix MergedMeshBindGlobal = FMatrix::Identity;
+	if (Bones.empty() || NodeToIndex.empty())
+	{
+		return;
+	}
+
+	FbxNode* SceneRoot = Nodes.empty() ? nullptr : Nodes.front();
+
+	TMap<FbxNode*, int32> NodeOrder;
+	for (int32 NodeIndex = 0; NodeIndex < static_cast<int32>(Nodes.size()); ++NodeIndex)
+	{
+		NodeOrder[Nodes[NodeIndex]] = NodeIndex;
+	}
+
+	TSet<FbxNode*> BoneNodeSet;
+	TArray<FbxNode*> BoneIndexToNode;
+	BoneIndexToNode.resize(Bones.size(), nullptr);
+	for (const auto& Pair : NodeToIndex)
+	{
+		FbxNode* BoneNode = Pair.first;
+		const int32 BoneIndex = Pair.second;
+		BoneNodeSet.insert(BoneNode);
+		if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(BoneIndexToNode.size()))
+		{
+			BoneIndexToNode[BoneIndex] = BoneNode;
+		}
+	}
+
+	TArray<FFbxSkinClusterRef> ClusterRefs;
+	CollectSkinClusters(Nodes, ClusterRefs);
+
+	TSet<FbxNode*> LinkNodeSet;
+	for (const FFbxSkinClusterRef& Ref : ClusterRefs)
+	{
+		FbxNode* LinkNode = Ref.Cluster ? Ref.Cluster->GetLink() : nullptr;
+		if (LinkNode && NodeToIndex.find(LinkNode) != NodeToIndex.end())
+		{
+			LinkNodeSet.insert(LinkNode);
+		}
+	}
+
+	FbxNode* FirstRootBoneNode = FindFirstRootBoneNode(Nodes, NodeToIndex, Bones);
+
+	struct FSkeletalMeshBuildGroup
+	{
+		FbxNode* RootNode = nullptr;
+		FString MeshName;
+		TArray<FVertexPNCTBW> Vertices;
+		TArray<uint32> Indices;
+		TArray<FSkeletalMeshSection> Sections;
+		TArray<FVector> TangentSums;
+		TArray<FVector> BitangentSums;
+		TMap<int32, TArray<uint32>> SectionIndicesMap;
+		TMap<FFbxSkeletalVertexKey, uint32> VertexMap;
+	};
+
+	TArray<FSkeletalMeshBuildGroup> Groups;
+
+	auto GetNodeOrder = [&NodeOrder](FbxNode* Node) -> int32
+		{
+			auto It = NodeOrder.find(Node);
+			return It != NodeOrder.end() ? It->second : INT_MAX;
+		};
+
+	auto AddUniqueRoot = [](TArray<FbxNode*>& Roots, FbxNode* Root)
+		{
+			if (!Root)
+			{
+				return;
+			}
+
+			for (FbxNode* ExistingRoot : Roots)
+			{
+				if (ExistingRoot == Root)
+				{
+					return;
+				}
+			}
+
+			Roots.push_back(Root);
+		};
+
+	auto GetOrCreateGroup = [&Groups](FbxNode* RootNode) -> FSkeletalMeshBuildGroup*
+		{
+			if (!RootNode)
+			{
+				return nullptr;
+			}
+
+			for (FSkeletalMeshBuildGroup& Group : Groups)
+			{
+				if (Group.RootNode == RootNode)
+				{
+					return &Group;
+				}
+			}
+
+			FSkeletalMeshBuildGroup NewGroup;
+			NewGroup.RootNode = RootNode;
+			NewGroup.MeshName = RootNode->GetName();
+			Groups.push_back(std::move(NewGroup));
+			return &Groups.back();
+		};
 
 	for (FbxNode* Node : Nodes)
 	{
+		if (!Node)
+		{
+			continue;
+		}
+
 		FbxMesh* Mesh = Node->GetMesh();
 		if (!Mesh) continue;
 
-		int32 DeformerCount = Mesh->GetDeformerCount(FbxDeformer::eSkin);
-		FbxSkin* Skin = DeformerCount > 0 ? (FbxSkin*)Mesh->GetDeformer(0, FbxDeformer::eSkin) : nullptr;
-		int32 ClusterCount = Skin ? Skin->GetClusterCount() : 0;
-		const bool bHasSkin = Skin && ClusterCount > 0;
-		const int32 RigidBoneIndex = bHasSkin ? -1 : FindNearestParentBoneIndex(Node, NodeToIndex);
+		TArray<FbxSkin*> Skins;
+		CollectMeshSkins(Mesh, Skins);
 
-		struct WeightData { int32 BoneIndex; float Weight; };
-		TArray<TArray<WeightData>> TempWeights(Mesh->GetControlPointsCount());
-		FbxAMatrix NodeGeometryTransform = GetGeometryTransform(Node);
-		FMatrix MeshBindGlobal = ConvertFbxMatrix(Node->EvaluateGlobalTransform() * NodeGeometryTransform);
-		bool bHasClusterMeshBindGlobal = false;
-
-		for (int32 i = 0; i < ClusterCount; ++i)
+		TArray<FbxNode*> InfluenceRoots;
+		for (FbxSkin* Skin : Skins)
 		{
-			FbxCluster* Cluster = Skin->GetCluster(i);
-			if (!Cluster) continue;
-
-			FbxNode* LinkNode = Cluster->GetLink();
-			if (!LinkNode) continue;
-
-			auto It = NodeToIndex.find(LinkNode);
-			if (It == NodeToIndex.end()) continue;
-
-			FbxAMatrix LinkBindMatrix;
-			Cluster->GetTransformLinkMatrix(LinkBindMatrix);
-
-			int32 BoneIndex = It->second;
-			Bones[BoneIndex].InverseBindPoseMatrix = ConvertFbxMatrix(LinkBindMatrix).GetInverse();
-
-			if (!bHasClusterMeshBindGlobal)
+			const int32 ClusterCount = Skin ? Skin->GetClusterCount() : 0;
+			for (int32 ClusterIndex = 0; ClusterIndex < ClusterCount; ++ClusterIndex)
 			{
-				FbxAMatrix MeshBindMatrix;
-				Cluster->GetTransformMatrix(MeshBindMatrix);
-				MeshBindGlobal = ConvertFbxMatrix(MeshBindMatrix);
-				bHasClusterMeshBindGlobal = true;
-			}
-
-			int32* ControlPointIndices = Cluster->GetControlPointIndices();
-			double* ControlPointWeights = Cluster->GetControlPointWeights();
-			int32 NumIndices = Cluster->GetControlPointIndicesCount();
-			if (!ControlPointIndices || !ControlPointWeights || NumIndices <= 0)
-			{
-				continue;
-			}
-
-			for (int32 j = 0; j < NumIndices; ++j)
-			{
-				int32 CPIndex = ControlPointIndices[j];
-				if (!IsValidControlPointIndex(Mesh, CPIndex))
+				FbxCluster* Cluster = Skin->GetCluster(ClusterIndex);
+				FbxNode* LinkNode = Cluster ? Cluster->GetLink() : nullptr;
+				if (!LinkNode || NodeToIndex.find(LinkNode) == NodeToIndex.end())
 				{
 					continue;
 				}
 
-				float Weight = (float)ControlPointWeights[j];
-				if (Weight <= 0.0f)
-				{
-					continue;
-				}
-
-				TempWeights[CPIndex].push_back({ BoneIndex, Weight });
+				AddUniqueRoot(InfluenceRoots, FindTopmostBoneRoot(LinkNode, BoneNodeSet, LinkNodeSet, SceneRoot));
 			}
 		}
 
-		const FMatrix NodeToMergedBind = MeshBindGlobal * MergedMeshBindGlobal.GetInverse();
+		if (InfluenceRoots.empty())
+		{
+			const int32 NearestBoneIndex = FindNearestParentBoneIndex(Node, NodeToIndex);
+			FbxNode* NearestBoneNode = (NearestBoneIndex >= 0 && NearestBoneIndex < static_cast<int32>(BoneIndexToNode.size()))
+				? BoneIndexToNode[NearestBoneIndex]
+				: nullptr;
+			AddUniqueRoot(InfluenceRoots, FindTopmostBoneRoot(NearestBoneNode, BoneNodeSet, LinkNodeSet, SceneRoot));
+		}
+
+		if (InfluenceRoots.empty())
+		{
+			UE_LOG("Warning: FBX skeletal import skipped mesh with no skeleton root. Mesh=%s", Node->GetName());
+			continue;
+		}
+
+		std::sort(InfluenceRoots.begin(), InfluenceRoots.end(), [&GetNodeOrder](FbxNode* A, FbxNode* B)
+		{
+			return GetNodeOrder(A) < GetNodeOrder(B);
+		});
+
+		FbxNode* GroupRootNode = InfluenceRoots.front();
+		if (InfluenceRoots.size() > 1)
+		{
+			UE_LOG("Warning: FBX skeletal mesh is influenced by multiple skeleton roots. Mesh=%s Root=%s", Node->GetName(), GroupRootNode ? GroupRootNode->GetName() : "None");
+		}
+
+		FSkeletalMeshBuildGroup* Group = GetOrCreateGroup(GroupRootNode);
+		if (!Group)
+		{
+			continue;
+		}
+
+		const FMatrix MeshBindGlobal = ResolveMeshBindGlobal(Node, Skins);
+		const FMatrix NodeToGroupBind = MeshBindGlobal;
+
+		int32 FallbackBoneIndex = FindNearestParentBoneIndex(Node, NodeToIndex);
+		if (FallbackBoneIndex < 0 && GroupRootNode)
+		{
+			auto RootBoneIt = NodeToIndex.find(GroupRootNode);
+			if (RootBoneIt != NodeToIndex.end())
+			{
+				FallbackBoneIndex = RootBoneIt->second;
+			}
+		}
+		if (FallbackBoneIndex < 0 && FirstRootBoneNode)
+		{
+			auto FirstRootIt = NodeToIndex.find(FirstRootBoneNode);
+			if (FirstRootIt != NodeToIndex.end())
+			{
+				FallbackBoneIndex = FirstRootIt->second;
+			}
+		}
+
+		TArray<TArray<FFbxWeightData>> TempWeights(Mesh->GetControlPointsCount());
+
+		for (FbxSkin* Skin : Skins)
+		{
+			const int32 ClusterCount = Skin ? Skin->GetClusterCount() : 0;
+			for (int32 ClusterIndex = 0; ClusterIndex < ClusterCount; ++ClusterIndex)
+			{
+				FbxCluster* Cluster = Skin->GetCluster(ClusterIndex);
+				if (!Cluster)
+				{
+					continue;
+				}
+
+				FbxNode* LinkNode = Cluster->GetLink();
+				auto BoneIt = NodeToIndex.find(LinkNode);
+				if (BoneIt == NodeToIndex.end())
+				{
+					continue;
+				}
+
+				int32* ControlPointIndices = Cluster->GetControlPointIndices();
+				double* ControlPointWeights = Cluster->GetControlPointWeights();
+				const int32 NumIndices = Cluster->GetControlPointIndicesCount();
+				if (!ControlPointIndices || !ControlPointWeights || NumIndices <= 0)
+				{
+					continue;
+				}
+
+				for (int32 WeightIndex = 0; WeightIndex < NumIndices; ++WeightIndex)
+				{
+					const int32 CPIndex = ControlPointIndices[WeightIndex];
+					if (!IsValidControlPointIndex(Mesh, CPIndex))
+					{
+						continue;
+					}
+
+					const float Weight = static_cast<float>(ControlPointWeights[WeightIndex]);
+					if (Weight <= 0.0f)
+					{
+						continue;
+					}
+
+					TempWeights[CPIndex].push_back({ BoneIt->second, Weight });
+				}
+			}
+		}
+
+		TArray<uint8> FallbackWeightAssigned;
+		FallbackWeightAssigned.resize(Mesh->GetControlPointsCount(), 0);
+		int32 FallbackWeightCount = 0;
+		int32 MissingWeightCount = 0;
 
 		FbxStringList UVSetNames;
 		Mesh->GetUVSetNames(UVSetNames);
@@ -1291,9 +1890,6 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 			LocalToGlobalMaterialIndex[LocalIndex] = (It != MaterialToSlotIndex.end()) ? It->second : -1;
 		}
 
-		TMap<FFbxSkeletalVertexKey, uint32> VertexMap;
-		const uint32 VertexStart = (uint32)Vertices.size();
-
 		for (int32 i = 0; i < Mesh->GetPolygonCount(); ++i)
 		{
 			if (Mesh->GetPolygonSize(i) != 3)
@@ -1304,7 +1900,6 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 			int32 LocalMaterialIndex = GetMaterialIndex(Mesh, i);
 			int32 GlobalMaterialIndex = -1;
 
-			FbxSurfaceMaterial* Material = nullptr;
 			if (LocalMaterialIndex >= 0 && LocalMaterialIndex < (int32)LocalToGlobalMaterialIndex.size())
 			{
 				GlobalMaterialIndex = LocalToGlobalMaterialIndex[LocalMaterialIndex];
@@ -1323,32 +1918,29 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 				}
 
 				FbxVector4 CP = Mesh->GetControlPointAt(CPIndex);
-				Vertex.Position = NodeToMergedBind.TransformPositionWithW(FVector((float)CP[0], (float)CP[1], (float)CP[2]));
+				Vertex.Position = NodeToGroupBind.TransformPositionWithW(FVector((float)CP[0], (float)CP[1], (float)CP[2]));
 
-				auto& Weights = TempWeights[CPIndex];
-				std::sort(Weights.begin(), Weights.end(), [](const WeightData& A, const WeightData& B)
+				const bool bHasAuthoredWeights = !TempWeights[CPIndex].empty();
+				const bool bUsedFallback = AssignTopNormalizedWeights(TempWeights[CPIndex], FallbackBoneIndex, Vertex);
+				if (!bHasAuthoredWeights && CPIndex < static_cast<int32>(FallbackWeightAssigned.size()) && !FallbackWeightAssigned[CPIndex])
 				{
-					return A.Weight > B.Weight;
-				});
+					FallbackWeightAssigned[CPIndex] = 1;
+					if (bUsedFallback)
+					{
+						++FallbackWeightCount;
+					}
+					else
+					{
+						++MissingWeightCount;
+					}
 
-				if (Weights.empty() && RigidBoneIndex >= 0)
-				{
-					Weights.push_back({ RigidBoneIndex, 1.0f });
 				}
-
-				for (int32 k = 0; k < (int32)Weights.size() && k < 4; ++k)
-				{
-					Vertex.BoneIndices[k] = Weights[k].BoneIndex;
-					Vertex.BoneWeights[k] = Weights[k].Weight;
-				}
-
-				NormalizeWeights(Vertex.BoneWeights, 4);
 
 				FbxVector4 Normal;
 				Mesh->GetPolygonVertexNormal(i, j, Normal);
 				Normal.Normalize();
 				FVector N = FVector((float)Normal[0], (float)Normal[1], (float)Normal[2]);
-				N = NodeToMergedBind.TransformVector(N);
+				N = NodeToGroupBind.TransformVector(N);
 				N.Normalize();
 
 				Vertex.Normal = N;
@@ -1368,6 +1960,8 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 				}
 
 				FFbxSkeletalVertexKey Key;
+				Key.MeshNode = Node;
+				Key.Mesh = Mesh;
 				Key.ControlPointIndex = CPIndex;
 				Key.NormalX = Vertex.Normal.X;
 				Key.NormalY = Vertex.Normal.Y;
@@ -1376,18 +1970,18 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 				Key.UVY = Vertex.UV.Y;
 
 				uint32 VertexIndex = 0;
-				auto It = VertexMap.find(Key);
-				if (It != VertexMap.end())
+				auto It = Group->VertexMap.find(Key);
+				if (It != Group->VertexMap.end())
 				{
 					VertexIndex = It->second;
 				}
 				else
 				{
-					VertexIndex = (uint32)Vertices.size();
-					Vertices.push_back(Vertex);
-					TangentSums.push_back(FVector::ZeroVector);
-					BitangentSums.push_back(FVector::ZeroVector);
-					VertexMap[Key] = VertexIndex;
+					VertexIndex = static_cast<uint32>(Group->Vertices.size());
+					Group->Vertices.push_back(Vertex);
+					Group->TangentSums.push_back(FVector::ZeroVector);
+					Group->BitangentSums.push_back(FVector::ZeroVector);
+					Group->VertexMap[Key] = VertexIndex;
 				}
 				TriIndices[j] = VertexIndex;
 				PendingSectionIndices[j] = VertexIndex;
@@ -1400,51 +1994,92 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 
 			for (uint32 VertexIndex : PendingSectionIndices)
 			{
-				MergedSectionIndicesMap[GlobalMaterialIndex].push_back(VertexIndex);
+				Group->SectionIndicesMap[GlobalMaterialIndex].push_back(VertexIndex);
 			}
 
-			//Tangent 연산
-			GenerateTangents(TriIndices);
+			AccumulateSkeletalTangents(Group->Vertices, Group->TangentSums, Group->BitangentSums, TriIndices);
 		}
 
-		BuildTangentsForVertexRange(VertexStart);
+		if (FallbackWeightCount > 0)
+		{
+			const FString FallbackBoneName = (FallbackBoneIndex >= 0 && FallbackBoneIndex < static_cast<int32>(Bones.size()))
+				? Bones[FallbackBoneIndex].Name
+				: FString("None");
+			UE_LOG("Warning: FBX skeletal import assigned rigid fallback weights. Mesh=%s ControlPoints=%d Bone=%s", Node->GetName(), FallbackWeightCount, FallbackBoneName.c_str());
+		}
+		if (MissingWeightCount > 0)
+		{
+			UE_LOG("Warning: FBX skeletal import found unweighted vertices with no fallback bone. Mesh=%s ControlPoints=%d", Node->GetName(), MissingWeightCount);
+		}
 	}
 
-	uint32 CurrentBaseIndex = (uint32)Indices.size();
-
-	for (auto& Pair : MergedSectionIndicesMap)
+	for (FSkeletalMeshBuildGroup& Group : Groups)
 	{
-		FSkeletalMeshSection Section;
-
-		int32 MatIndex = Pair.first;
-		if (MatIndex >= 0 && MatIndex < static_cast<int32>(MtlInfos.size()))
+		if (Group.Vertices.empty() || Group.SectionIndicesMap.empty())
 		{
-			Section.MaterialSlotName = MtlInfos[MatIndex].Name;
-			Section.MaterialIndex = Pair.first;
+			continue;
 		}
-		else
+
+		BuildSkeletalTangents(Group.Vertices, Group.TangentSums, Group.BitangentSums);
+
+		TArray<int32> SectionKeys;
+		SectionKeys.reserve(Group.SectionIndicesMap.size());
+		for (const auto& Pair : Group.SectionIndicesMap)
 		{
-			UE_LOG("Warning: Material index %d out of range. Assigning to Default slot.", Pair.first);
-			Section.MaterialSlotName = "None";
-			Section.MaterialIndex = -1; // Material Index 추가 무효화
+			if (!Pair.second.empty())
+			{
+				SectionKeys.push_back(Pair.first);
+			}
 		}
-		Section.FirstIndex = CurrentBaseIndex;
-		Section.IndexCount = (uint32)Pair.second.size();
 
-		CurrentBaseIndex += Section.IndexCount;
+		std::sort(SectionKeys.begin(), SectionKeys.end(), CompareMaterialSectionKey);
 
-		Indices.insert(Indices.end(), Pair.second.begin(), Pair.second.end());
-		Sections.push_back(Section);
-	}
+		uint32 CurrentBaseIndex = 0;
+		for (int32 MatIndex : SectionKeys)
+		{
+			TArray<uint32>& SectionIndices = Group.SectionIndicesMap[MatIndex];
+			if (SectionIndices.empty())
+			{
+				continue;
+			}
 
-	if (!Vertices.empty() && !Indices.empty())
-	{
+			FSkeletalMeshSection Section;
+			if (MatIndex >= 0 && MatIndex < static_cast<int32>(MtlInfos.size()))
+			{
+				Section.MaterialSlotName = MtlInfos[MatIndex].Name;
+				Section.MaterialIndex = MatIndex;
+			}
+			else
+			{
+				if (MatIndex >= 0)
+				{
+					UE_LOG("Warning: Material index %d out of range. Assigning to Default slot.", MatIndex);
+				}
+				Section.MaterialSlotName = "None";
+				Section.MaterialIndex = -1;
+			}
+
+			Section.FirstIndex = CurrentBaseIndex;
+			Section.IndexCount = static_cast<uint32>(SectionIndices.size());
+			CurrentBaseIndex += Section.IndexCount;
+
+			Group.Indices.insert(Group.Indices.end(), SectionIndices.begin(), SectionIndices.end());
+			Group.Sections.push_back(Section);
+		}
+
+		if (Group.Vertices.empty() || Group.Indices.empty())
+		{
+			continue;
+		}
+
 		FImportedSkeletalMesh ImportedMesh;
-		ImportedMesh.MeshName = FPaths::ToUtf8(std::filesystem::path(FPaths::ToWide(CurrentSourcePath)).stem().wstring());
-		ImportedMesh.MeshBindGlobal = MergedMeshBindGlobal;
-		ImportedMesh.Vertices = std::move(Vertices);
-		ImportedMesh.Indices = std::move(Indices);
-		ImportedMesh.Sections = std::move(Sections);
+		ImportedMesh.MeshName = Group.MeshName.empty()
+			? FPaths::ToUtf8(std::filesystem::path(FPaths::ToWide(CurrentSourcePath)).stem().wstring())
+			: Group.MeshName;
+		ImportedMesh.MeshBindGlobal = FMatrix::Identity;
+		ImportedMesh.Vertices = std::move(Group.Vertices);
+		ImportedMesh.Indices = std::move(Group.Indices);
+		ImportedMesh.Sections = std::move(Group.Sections);
 		ImportedSkeletalMeshes.push_back(std::move(ImportedMesh));
 	}
 }

@@ -63,7 +63,7 @@ private:
 	static void CollectNodes(FbxNode* Node, int32 depth, TArray<FbxNode*>& OutNodes);
 	static void CollectMaterials(FbxScene* Scene);
 
-	static void ParseBone(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& OutNodeToIndex);
+	static void ParseBone(FbxScene* Scene, TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& OutNodeToIndex);
 	static void ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32>& NodeToIndex);
 	static void ParseAnimations(FbxScene* Scene, const FSkeletonAsset& TargetSkeleton, TArray<FImportedAnimSequence>& OutSequences);
 
