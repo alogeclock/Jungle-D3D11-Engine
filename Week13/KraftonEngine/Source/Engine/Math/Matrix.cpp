@@ -235,7 +235,9 @@ FMatrix FMatrix::GetInverse() const {
 		+ M[0][2] * (M[1][0] * A1323 - M[1][1] * A0323 + M[1][3] * A0123)
 		- M[0][3] * (M[1][0] * A1223 - M[1][1] * A0223 + M[1][2] * A0123);
 
-	if (std::fabsf(det) < 1e-6f) {
+	// Imported FBX bind matrices commonly carry a 0.01 scene scale, which makes
+	// otherwise valid affine transforms have a determinant around 1e-6.
+	if (std::fabsf(det) < 1e-12f) {
 		// Matrix is singular, inverse does not exist
 		FMatrix ret;
 		return ret;
