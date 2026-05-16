@@ -1,4 +1,4 @@
-#include "AnimSingleNodeInstance.h"
+﻿#include "AnimSingleNodeInstance.h"
 #include "Animation/AnimSequence.h"
 #include "Object/ObjectFactory.h"
 #include <algorithm>
@@ -14,6 +14,7 @@ void UAnimSingleNodeInstance::Initialize(USkeletalMeshComponent* InOwner)
 
 void UAnimSingleNodeInstance::SetAnimation(UAnimationAsset* Asset)
 {
+	ResetNotifyState();
 	Sequence = Cast<UAnimSequence>(Asset);
 	CurrentTime = 0.0f;
 	bPlaying = false;
@@ -30,6 +31,7 @@ void UAnimSingleNodeInstance::Play(bool bInLooping)
 
 void UAnimSingleNodeInstance::Stop()
 {
+	ResetNotifyState();
 	bPlaying = false;
 }
 
@@ -43,7 +45,6 @@ void UAnimSingleNodeInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!bPlaying || !Sequence)
 		return;
 
-	++TickCount;
 	float PrevTime = CurrentTime;
 	CurrentTime += DeltaSeconds * PlayRate;
 

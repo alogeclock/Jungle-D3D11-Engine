@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Object/Object.h"
 #include "Animation/AnimTypes.h"
 
@@ -26,9 +26,20 @@ public:
 	USkeletalMeshComponent* GetOwnerComponent() const { return OwnerComponent; }
 
 protected:
-	USkeletalMeshComponent* OwnerComponent = nullptr;
-	UAnimationStateMachine* StateMachine   = nullptr;
+	USkeletalMeshComponent* OwnerComponent  = nullptr;
+	UAnimationStateMachine* StateMachine    = nullptr;
+	float                   LastEvaluatedTime = 0.0f;
+
+	void ResetNotifyState();
 
 private:
-	TArray<FAnimNotifyEvent> NotifyQueue;
+	struct FActiveNotifyState
+	{
+		FAnimNotifyEvent Notify;
+	};
+
+	TArray<FAnimNotifyEvent>    NotifyQueue;
+	TArray<FActiveNotifyState>  ActiveStateNotifies;
+
+	void RouteNotify(const FAnimNotifyEvent& Notify);
 };

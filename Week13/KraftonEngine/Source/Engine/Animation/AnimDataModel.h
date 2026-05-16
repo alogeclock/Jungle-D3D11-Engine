@@ -43,6 +43,7 @@ public:
 	bool EvaluateBoneTrackTransform(const FBoneAnimationTrack& Track, float Time, FTransform& OutTransform, const FTransform& DefaultTransform) const;
 
 	const TArray<FAnimNotifyEvent>& GetNotifies() const { return Notifies; }
+	TArray<FAnimNotifyEvent>& GetNotifiesMutable() { return Notifies; }
 	void SetNotifies(TArray<FAnimNotifyEvent>&& InNotifies) { Notifies = std::move(InNotifies); }
 
 private:

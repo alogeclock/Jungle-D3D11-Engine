@@ -1484,10 +1484,11 @@ float FAnimSequenceEditorWidget::SnapTime(float Time) const
 
 TArray<FAnimNotifyEvent>& FAnimSequenceEditorWidget::GetNotifyMarkers()
 {
-	// 현재는 Editor UI 선작업용 임시 배열.
-	// TODO(AnimNotify): UAnimSequenceBase::Notifies가 병합되면
-	// return AnimSequence->GetNotifies(); 로 교체한다.
-	// TODO(AnimNotify): 추후 AnimSequenceBase의 Notifies로 이동 필요.
+	if (AnimSequence)
+	{
+		if (UAnimDataModel* DataModel = AnimSequence->GetDataModel())
+			return DataModel->GetNotifiesMutable();
+	}
 	return PreviewNotifyMarkers;
 }
 

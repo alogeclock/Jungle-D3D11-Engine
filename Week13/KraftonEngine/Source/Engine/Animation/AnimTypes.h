@@ -56,6 +56,8 @@ struct FAnimNotifyEvent
 	float Duration    = 0.0f;
 	FName NotifyName;
 
+	bool IsStateNotify() const { return Duration > 0.0f; }
+
 	friend FArchive& operator<<(FArchive& Ar, FAnimNotifyEvent& Notify)
 	{
 		Ar << Notify.TriggerTime;

@@ -28,14 +28,18 @@ void UAnimInstance::GetCurrentPose(FPoseContext& OutPose)
 	TArray<FAnimNotifyEvent> CollectedNotifies;
 	StateMachine->EvaluatePose(OutPose, CollectedNotifies);
 
-	for (FAnimNotifyEvent& Notify : CollectedNotifies)
-		NotifyQueue.push_back(Notify);
+	LastEvaluatedTime = StateMachine->GetCurrentStateTime();
+
+	for (const FAnimNotifyEvent& Notify : CollectedNotifies)
+		RouteNotify(Notify);
 }
 
 void UAnimInstance::CheckAnimNotifyQueue(float PrevTime, float CurrTime,
 	float SeqLength, bool bLooping, bool bReverse,
 	const TArray<FAnimNotifyEvent>& SeqNotifies)
 {
+	LastEvaluatedTime = CurrTime;
+
 	for (const FAnimNotifyEvent& Notify : SeqNotifies)
 	{
 		bool bShouldTrigger = false;
@@ -66,17 +70,52 @@ void UAnimInstance::CheckAnimNotifyQueue(float PrevTime, float CurrTime,
 		}
 
 		if (bShouldTrigger)
-			NotifyQueue.push_back(Notify);
+			RouteNotify(Notify);
 	}
 }
 
 void UAnimInstance::TriggerAnimNotifies()
 {
-	if (!OwnerComponent || NotifyQueue.empty())
+	if (!OwnerComponent)
 		return;
 
 	for (const FAnimNotifyEvent& Notify : NotifyQueue)
 		OwnerComponent->HandleAnimNotify(Notify);
-
 	NotifyQueue.clear();
+
+	for (auto it = ActiveStateNotifies.begin(); it != ActiveStateNotifies.end(); )
+	{
+		float EndTime = it->Notify.TriggerTime + it->Notify.Duration;
+		if (LastEvaluatedTime >= it->Notify.TriggerTime && LastEvaluatedTime <= EndTime)
+		{
+			OwnerComponent->HandleAnimNotify(it->Notify);
+			++it;
+		}
+		else
+		{
+			it = ActiveStateNotifies.erase(it);
+		}
+	}
+}
+
+void UAnimInstance::RouteNotify(const FAnimNotifyEvent& Notify)
+{
+	if (!Notify.IsStateNotify())
+	{
+		NotifyQueue.push_back(Notify);
+		return;
+	}
+
+	for (const FActiveNotifyState& Active : ActiveStateNotifies)
+	{
+		if (Active.Notify.NotifyName == Notify.NotifyName)
+			return;
+	}
+	ActiveStateNotifies.push_back({ Notify });
+}
+
+void UAnimInstance::ResetNotifyState()
+{
+	NotifyQueue.clear();
+	ActiveStateNotifies.clear();
 }

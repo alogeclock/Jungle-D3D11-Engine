@@ -30,5 +30,4 @@ private:
 	float    PlayRate = 1.0f;
 	bool     bLooping = false;
 	bool     bPlaying = false;
-	uint32 TickCount = 0;
 };
