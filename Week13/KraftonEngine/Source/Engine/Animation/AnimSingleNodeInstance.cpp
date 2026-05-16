@@ -12,7 +12,7 @@ void UAnimSingleNodeInstance::Initialize(USkeletalMeshComponent* InOwner)
 
 void UAnimSingleNodeInstance::SetAnimation(UAnimationAsset* Asset)
 {
-	Sequence = Cast<UAnimSequence>(Asset);
+	//Sequence = static_cast<UAnimSequence>(Asset);
 	CurrentTime = 0.0f;
 	bPlaying = false;
 }

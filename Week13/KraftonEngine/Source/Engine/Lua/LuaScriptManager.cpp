@@ -3,6 +3,7 @@
 #include "Core/Log.h"
 #include "Core/Notification.h"
 #include "Audio/AudioManager.h"
+#include "Animation/LuaAnimStateMachine.h"
 #include "Component/ActionComponent.h"
 #include "Component/LuaScriptComponent.h"
 #include "Component/Movement/FloatingPawnMovementComponent.h"
@@ -353,6 +354,7 @@ void FLuaScriptManager::RegisterBindings(sol::state& Lua)
 	RegisterMathBindings(Lua);
 	RegisterActorBindings(Lua);
 	RegisterUIBindings(Lua);
+	RegisterAnimBindings(Lua);
 }
 
 FInputSystemSnapshot FLuaScriptManager::GetLuaInputSnapshot()
@@ -1112,6 +1114,17 @@ void FLuaScriptManager::RegisterActorBindings(sol::state& Lua)
 	// 게임 특화 usertype/enum/global(GetGameState 등) 은 Game 모듈의
 	// RegisterGameLuaBindings 가 등록한다. 호출 순서는 GameEngine/EditorEngine::Init
 	// 에서 UEngine::Init() 직후.
+}
+
+void FLuaScriptManager::RegisterAnimBindings(sol::state& Lua)
+{
+	Lua.new_usertype<ULuaAnimStateMachine>("AnimStateMachine",
+		"transitionTo",    &ULuaAnimStateMachine::TransitionTo,
+		"setSequence",     &ULuaAnimStateMachine::SetSequenceByName,
+		"getCurrentState", &ULuaAnimStateMachine::GetCurrentStateName,
+		"blendDuration",   sol::property(
+			&ULuaAnimStateMachine::GetBlendDuration,
+			&ULuaAnimStateMachine::SetBlendDuration));
 }
 
 void FLuaScriptManager::RegisterUIBindings(sol::state& Lua)

@@ -2,39 +2,40 @@
 
 FTransform FAnimationRuntime::GetTrackTransformAtTime(const FBoneAnimationTrack& Track, float Time, const FFrameRate& FrameRate, uint32 NumberOfKeys)
 {
-	const FRawAnimSequenceTrack& Raw = Track.InternalTrack;
+	//const FRawAnimSequenceTrack& Raw = Track.InternalTrack;
 
-	if (NumberOfKeys == 0)
-		return FTransform();
+	//if (NumberOfKeys == 0)
+	//	return FTransform();
 
-	// Frame 기반 인덱스 계산
-	float FrameTime = std::max(0.0f, Time * FrameRate.AsDecimal());
-	uint32 PrevIndex = FMath::Clamp((uint32)FrameTime, 0u, NumberOfKeys - 1);
-	uint32 NextIndex = std::min(PrevIndex + 1, NumberOfKeys - 1);
+	//// Frame 기반 인덱스 계산
+	//float FrameTime = std::max(0.0f, Time * FrameRate.AsDecimal());
+	//uint32 PrevIndex = FMath::Clamp((uint32)FrameTime, 0u, NumberOfKeys - 1);
+	//uint32 NextIndex = std::min(PrevIndex + 1, NumberOfKeys - 1);
 
-	float Alpha = FrameTime - PrevIndex;
+	//float Alpha = FrameTime - PrevIndex;
 
-	// 위치 보간
-	FVector Pos = Raw.PosKeys[PrevIndex];
-	if (PrevIndex != NextIndex)
-		Pos = FVector::Lerp(Raw.PosKeys[PrevIndex], Raw.PosKeys[NextIndex], Alpha);
+	//// 위치 보간
+	//FVector Pos = Raw.PosKeys[PrevIndex];
+	//if (PrevIndex != NextIndex)
+	//	Pos = FVector::Lerp(Raw.PosKeys[PrevIndex], Raw.PosKeys[NextIndex], Alpha);
 
-	// 회전 보간
-	FQuat Rot = Raw.RotKeys[PrevIndex];
-	if (PrevIndex != NextIndex)
-		Rot = FQuat::Slerp(Raw.RotKeys[PrevIndex], Raw.RotKeys[NextIndex], Alpha);
+	//// 회전 보간
+	//FQuat Rot = Raw.RotKeys[PrevIndex];
+	//if (PrevIndex != NextIndex)
+	//	Rot = FQuat::Slerp(Raw.RotKeys[PrevIndex], Raw.RotKeys[NextIndex], Alpha);
 
-	// 크기 보간
-	FVector Scale = Raw.ScaleKeys[PrevIndex];
-	if (PrevIndex != NextIndex)
-		Scale = FVector::Lerp(Raw.ScaleKeys[PrevIndex], Raw.ScaleKeys[NextIndex], Alpha);
+	//// 크기 보간
+	//FVector Scale = Raw.ScaleKeys[PrevIndex];
+	//if (PrevIndex != NextIndex)
+	//	Scale = FVector::Lerp(Raw.ScaleKeys[PrevIndex], Raw.ScaleKeys[NextIndex], Alpha);
 
-	return FTransform(Pos, Rot, Scale);
+	//return FTransform(Pos, Rot, Scale);
+	return FTransform();
 }
 
 void FAnimationRuntime::GetPoseAtTime(const UAnimDataModel* DataModel, float Time, FPoseContext& OutPose)
 {
-	if (!DataModel)
+	/*if (!DataModel)
 		return;
 
 	const auto& Tracks = DataModel->GetBoneAnimationTracks();
@@ -46,7 +47,7 @@ void FAnimationRuntime::GetPoseAtTime(const UAnimDataModel* DataModel, float Tim
 		const FBoneAnimationTrack& Track = Tracks[Idx];
 		const uint32 NumKeys = static_cast<uint32>(Track.InternalTrack.PosKeys.size());
 		OutPose.BoneLocalTransforms[Idx] = GetTrackTransformAtTime(Track, Time, DataModel->GetFrameRate(), NumKeys);
-	}
+	}*/
 }
 
 void FAnimationRuntime::BlendTwoPoses(const FPoseContext& A, const FPoseContext& B, float Alpha, FPoseContext& OutPose)
