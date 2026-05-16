@@ -341,15 +341,9 @@ void FAnimSequenceEditorWidget::ApplyAnimationPoseToPreview(float Time)
 		return;
 	}
 
-	// 현재 USkinnedMeshComponent에는 여러 bone local matrix를 한 번에 넣는 API가 없습니다.
-	// 그래서 이 에디터 안에서는 bone별 setter를 호출해 PreviewComponent의 edit pose만 갱신합니다.
-	// TODO(AnimationSequenceEditor): component에 batch pose 적용 API가 생기면 per-bone CPU skinning 반복을 줄여야 합니다.
-	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(EvaluatedLocalPose.size()); ++BoneIndex)
-	{
-		PreviewMeshComponent->SetBoneLocalTransformByIndex(
-			BoneIndex,
-			FTransform(EvaluatedLocalPose[BoneIndex]));
-	}
+	// AnimSequence 평가 결과는 skeleton 전체 local pose이므로 batch API로 한 번에 넣습니다.
+	// bone마다 setter를 호출하면 CPU skinning이 bone 수만큼 반복되어 Timeline 재생 중 큰 병목이 됩니다.
+	PreviewMeshComponent->SetBoneLocalTransformByArray(EvaluatedLocalPose);
 }
 
 void FAnimSequenceEditorWidget::CaptureSelectedBoneOverrideFromPreview()

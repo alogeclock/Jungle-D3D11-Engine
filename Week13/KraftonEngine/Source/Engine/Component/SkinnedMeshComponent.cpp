@@ -444,6 +444,31 @@ void USkinnedMeshComponent::SetBoneLocalTransformByIndex(int32 BoneIndex, const 
 	MarkWorldBoundsDirty();
 }
 
+void USkinnedMeshComponent::SetBoneLocalTransformByArray(const TArray<FMatrix>& NewLocalMatrices)
+{
+	const FSkeletonAsset* SkeletonAsset = GetSkeletonAsset(SkeletalMesh);
+	if (!SkeletonAsset)
+	{
+		return;
+	}
+
+	const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
+	if (BoneCount <= 0 || static_cast<int32>(NewLocalMatrices.size()) != BoneCount)
+	{
+		return;
+	}
+
+	// AnimSequence 평가 결과처럼 skeleton 전체 local pose가 한 번에 들어오는 경우를 위한 batch 경로입니다.
+	// SetBoneLocalTransformByIndex를 bone마다 호출하면 매 호출마다 CPU skinning과 bounds dirty가 반복되어,
+	// 프레임당 bone 수만큼 같은 mesh를 다시 스키닝하는 병목이 생깁니다. 여기서는 edit pose 배열만 먼저 통째로
+	// 교체하고, 모든 bone 값이 준비된 뒤 UpdateCPUSkinning을 딱 한 번 호출합니다.
+	BoneEditLocalMatrices = NewLocalMatrices;
+	bUseBoneEditPose = true;
+
+	UpdateCPUSkinning();
+	MarkWorldBoundsDirty();
+}
+
 void USkinnedMeshComponent::GetCurrentBoneGlobalTransforms(TArray<FTransform>& OutGlobals) const
 {
 	BuildBoneEditGlobalTransforms(OutGlobals);
