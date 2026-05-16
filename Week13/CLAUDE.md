@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DirectX 11 3D scene editor engine built with C++ and ImGui. Actor/Component architecture with WYSIWYG editing, raycasting object selection, multi-scene management, and JSON serialization. Features forward rendering with shadow mapping (CSM for directional lights, cube-map shadows for point lights, atlas-based shadows for spot lights), clustered/tiled light culling, GPU occlusion culling, and FXAA post-processing. Includes a standalone OBJ mesh viewer mode (`ObjViewDebug` build) for previewing static meshes.
+DirectX 11 3D scene editor engine built with C++ and ImGui. Actor/Component architecture with WYSIWYG editing, raycasting object selection, multi-scene management, and JSON serialization. Features forward rendering with shadow mapping (CSM for directional lights, cube-map shadows for point lights, atlas-based shadows for spot lights), clustered/tiled light culling, GPU occlusion culling, and FXAA post-processing.
 
 ## Build Commands
 
@@ -14,9 +14,6 @@ msbuild KraftonEngine.sln /p:Configuration=Debug /p:Platform=x64
 
 # Build (x64 Release)
 msbuild KraftonEngine.sln /p:Configuration=Release /p:Platform=x64
-
-# Build OBJ Viewer (x64) — standalone mesh preview tool
-msbuild KraftonEngine.sln /p:Configuration=ObjViewDebug /p:Platform=x64
 
 # Regenerate project files after adding/removing source files
 python Scripts/GenerateProjectFiles.py
@@ -30,7 +27,7 @@ python Scripts/GenerateProjectFiles.py
 
 Output: `KraftonEngine/Bin/<Configuration>/KraftonEngine.exe`
 
-Build configurations: `Debug`, `Release`, `ObjViewDebug` (x64/x86). ObjViewDebug defines `IS_OBJ_VIEWER=1` and excludes most Editor sources, launching `UObjViewerEngine` instead of `UEditorEngine`.
+Build configurations: `Debug`, `Release`, `Game`, `Demo`.
 
 Requirements: Visual Studio 2022 (v143 toolset), Windows SDK with DirectX 11. All dependencies (ImGui, SimpleJSON, DirectXTK) are included in-tree. No package manager needed.
 
@@ -72,10 +69,6 @@ Adding a new render pass = subclass `RenderPassBase` and register in `RenderPass
 
 `UEditorEngine` extends `UEngine` with `EditorRenderPipeline`. Viewport supports ray-triangle picking, stencil-based selection outline, and gizmo transform manipulation. UI is entirely ImGui-based with docking widgets (Scene hierarchy, Property editor, Content Browser, Material Inspector, Viewport overlay, Play toolbar, Console, Stats). Notification toast system for shader hot-reload errors. PIE (Play-In-Editor) support.
 
-### OBJ Viewer
-
-Standalone mesh preview mode (`Source/ObjViewer/`). `UObjViewerEngine` subclasses `UEngine` and is activated via `IS_OBJ_VIEWER` preprocessor flag in `EngineLoop.cpp`. Components: `ObjViewerPanel` (ImGui mesh list + viewport UI), `ObjViewerRenderPipeline` (offscreen render target), `ObjViewerViewportClient` (orbit/pan/zoom camera).
-
 ### Serialization
 
 `.Scene` files are JSON. `FSceneSaveManager` handles read/write of actor hierarchy, components, transforms, camera state. Editor settings persist to `Settings/editor.ini`. Project-wide settings in `Settings/ProjectSettings.ini`.
@@ -85,7 +78,7 @@ Standalone mesh preview mode (`Source/ObjViewer/`). `UObjViewerEngine` subclasse
 - C++20 (x64), C++17 (Win32/x86)
 - UTF-8 BOM for C++/H files, tab indentation (size 4)
 - UTF-8 (no BOM) for HLSL shaders (`.hlsl` for shader files, `.hlsli` for include headers)
-- Include paths root at: `Source/Engine`, `Source`, `Source/Editor`, `Source/ObjViewer`, `ThirdParty`, `ThirdParty/ImGui`
+- Include paths root at: `Source/Engine`, `Source`, `Source/Editor`, `Source/Game`, `ThirdParty`, `ThirdParty/ImGui`
 - Headers use relative paths from these roots: `#include "Engine/Core/InputSystem.h"`
 - Naming: `F` prefix for structs/data types (FVector, FName), `U` for UObject derivatives, `A` for Actors, `E` for enums
 - HLSL shaders in `KraftonEngine/Shaders/` are compiled at runtime with hot-reload support
@@ -134,7 +127,6 @@ Standalone mesh preview mode (`Source/ObjViewer/`). `UObjViewerEngine` subclasse
   - `Subsystem/` — editor subsystems
   - `UI/` — ImGui widgets (Viewport, Stat, PlayToolbar, MaterialInspector, ContentBrowser, DragSource, NotificationToast, ImGuiSetting)
   - `Viewport/` — LevelEditorViewportClient
-- `KraftonEngine/Source/ObjViewer/` — standalone mesh viewer
 - `KraftonEngine/Shaders/` — HLSL shader files
   - `Common/` — shared includes (`ConstantBuffers.hlsli`, `Functions.hlsli`, `VertexLayouts.hlsli`, `ForwardLighting.hlsli`, `ForwardLightData.hlsli`, `ShadowSampling.hlsli`, `SystemResources.hlsli`, `SystemSamplers.hlsli`)
   - `Editor/` — Editor.hlsl, Gizmo.hlsl

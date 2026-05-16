@@ -43,7 +43,7 @@ struct FObjMaterialInfo
 };
 
 
-// Editor/ObjViewer-only OBJ import path. Runtime code should load cooked .uasset files through FMeshManager.
+// Editor-only OBJ import path. Runtime code should load cooked .uasset files through FMeshManager.
 struct FEditorObjImportService
 {
 	static bool ImportStaticMeshFromObj(const FString& ObjFilePath, ID3D11Device* Device, UStaticMesh*& OutStaticMesh, bool bRefreshAssetLists = true);
