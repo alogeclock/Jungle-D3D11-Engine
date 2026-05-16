@@ -18,7 +18,6 @@ public:
 	// Overrides
 	void				BeginPlay() override;
 	void				TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
-	void				GetEditableProperties(TArray<FProperty>& OutProps) override;
 	void				Serialize(FArchive& Ar) override;
 
 	// Control Point Management
@@ -80,7 +79,6 @@ private:
 	float				TotalDistance = 0;
 	float				NextDistRatio = 0;
 	bool				bisLerping = false;
-	bool				bAutoActivate = true;
 	bool				bPing = true;
 	bool				bFaceTargetDir = true;
 

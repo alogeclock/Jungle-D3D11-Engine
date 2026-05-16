@@ -31,6 +31,7 @@
 #include "Mesh/StaticMesh.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Platform/Paths.h"
+#include "SimpleJSON/json.hpp"
 
 #include <Windows.h>
 #include <commdlg.h>
@@ -46,6 +47,11 @@
 
 namespace
 {
+	inline const char* PropLabel(const FProperty& Prop)
+	{
+		return Prop.Name.c_str();
+	}
+
 	bool IsFbxFilePath(const FString& Path)
 	{
 		std::filesystem::path FilePath(FPaths::ToWide(Path));
@@ -446,7 +452,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor* PrimaryActor, const TA
 				ImGui::SetWindowFontScale(0.92f);
 
 				ImGui::AlignTextToFramePadding();
-				ImGui::TextUnformatted(Props[i].Name.c_str());
+				ImGui::TextUnformatted(PropLabel(Props[i]));
 
 				ImGui::SetWindowFontScale(1.0f);
 
@@ -490,7 +496,7 @@ void FEditorPropertyWidget::RenderComponentTree(AActor* Actor)
 	TArray<FComponentClassGroup> ComponentGroups;
 	AddComponentClassGroup(ComponentGroups, "Light", ULightComponentBase::StaticClass());
 	AddComponentClassGroup(ComponentGroups, "Movement", UMovementComponent::StaticClass());
-	//AddComponentClassGroup(ComponentGroups, "UBillboardComponent", UBillboardComponent::StaticClass());
+	AddComponentClassGroup(ComponentGroups, "UBillboardComponent", UBillboardComponent::StaticClass());
 	//AddComponentClassGroup(ComponentGroups, "UMeshComponent", UMeshComponent::StaticClass());
 	AddComponentClassGroup(ComponentGroups, "Primitive", UPrimitiveComponent::StaticClass());
 	//AddComponentClassGroup(ComponentGroups, "USceneComponent", USceneComponent::StaticClass());
@@ -850,7 +856,7 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 				ImGui::SetWindowFontScale(0.92f);
 
 				ImGui::AlignTextToFramePadding();
-				ImGui::TextUnformatted(Props[i].Name.c_str());
+				ImGui::TextUnformatted(PropLabel(Props[i]));
 
 				ImGui::SetWindowFontScale(1.0f);
 
@@ -937,7 +943,31 @@ void FEditorPropertyWidget::PropagatePropertyChange(const FString& PropName, con
 				case EPropertyType::Name:           *static_cast<FName*>(DstProp.ValuePtr) = *static_cast<FName*>(SrcProp->ValuePtr); break;
 				case EPropertyType::MaterialSlot:   *static_cast<FMaterialSlot*>(DstProp.ValuePtr) = *static_cast<FMaterialSlot*>(SrcProp->ValuePtr); break;
 				case EPropertyType::Enum:           Size = SrcProp->EnumSize; break;
-				case EPropertyType::Vec3Array:      *static_cast<TArray<FVector>*>(DstProp.ValuePtr) = *static_cast<TArray<FVector>*>(SrcProp->ValuePtr); break;
+				case EPropertyType::Array:
+					if (SrcProp->Accessor && SrcProp->Accessor == DstProp.Accessor)
+					{
+						const bool bFixedSize = ((SrcProp->PropertyFlag | DstProp.PropertyFlag) & CPF_FixedSize) != 0;
+						if (!bFixedSize)
+						{
+							SrcProp->Accessor->Assign(DstProp.ValuePtr, SrcProp->ValuePtr);
+						}
+						else if (SrcProp->Inner && DstProp.Inner)
+						{
+							const uint32 Count = std::min(
+								SrcProp->Accessor->Num(SrcProp->ValuePtr),
+								DstProp.Accessor->Num(DstProp.ValuePtr));
+							for (uint32 ai = 0; ai < Count; ++ai)
+							{
+								FProperty SrcChild = *SrcProp->Inner;
+								FProperty DstChild = *DstProp.Inner;
+								SrcChild.ValuePtr = SrcProp->Accessor->GetAt(SrcProp->ValuePtr, ai);
+								DstChild.ValuePtr = DstProp.Accessor->GetAt(DstProp.ValuePtr, ai);
+								json::JSON ChildValue = SrcChild.Serialize();
+								DstChild.Deserialize(ChildValue);
+							}
+						}
+					}
+					break;
 				case EPropertyType::Struct:
 				{
 					// Struct 자식 프로퍼티를 개별적으로 복사
@@ -1439,7 +1469,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 
 		if (!Names.empty())
 		{
-			if (ImGui::BeginCombo(Prop.Name.c_str(), Current.c_str()))
+			if (ImGui::BeginCombo(PropLabel(Prop), Current.c_str()))
 			{
 				for (const auto& Name : Names)
 				{
@@ -1459,7 +1489,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 		{
 			char Buf[256];
 			strncpy_s(Buf, sizeof(Buf), Current.c_str(), _TRUNCATE);
-			if (ImGui::InputText(Prop.Name.c_str(), Buf, sizeof(Buf)))
+			if (ImGui::InputText(PropLabel(Prop), Buf, sizeof(Buf)))
 			{
 				*Val = FName(Buf);
 				bChanged = true;
@@ -1473,7 +1503,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 		int32 Val = 0;
 		memcpy(&Val, Prop.ValuePtr, Prop.EnumSize);
 		const char* Preview = ((uint32)Val < Prop.EnumCount) ? Prop.EnumNames[Val] : "Unknown";
-		if (ImGui::BeginCombo(Prop.Name.c_str(), Preview))
+		if (ImGui::BeginCombo(PropLabel(Prop), Preview))
 		{
 			for (uint32 i = 0; i < Prop.EnumCount; ++i)
 			{
@@ -1490,38 +1520,84 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 		}
 		break;
 	}
-	case EPropertyType::Vec3Array:
+
+	case EPropertyType::Array:
 	{
-		TArray<FVector>* Arr = static_cast<TArray<FVector>*>(Prop.ValuePtr);
+		if (!Prop.Accessor || !Prop.Inner || !Prop.ValuePtr) break;
 
-		ImGui::TextUnformatted(Prop.Name.c_str());
+		FArrayAccessor* Acc = Prop.Accessor;
+		void* ArrPtr = Prop.ValuePtr;
 
-		int32 RemoveIdx = -1;
-		for (int32 i = 0; i < (int32)Arr->size(); ++i)
+		// 라벨은 외곽 테이블의 column 0 에서 이미 그렸음. 여기는 value 칸 전부.
+		ImGui::BeginGroup();
+		const uint32 N = Acc->Num(ArrPtr);
+		const bool bFixedSize = (Prop.PropertyFlag & CPF_FixedSize) != 0;
+		char HeaderBuf[32];
+		snprintf(HeaderBuf, sizeof(HeaderBuf), "%u element%s", N, (N == 1 ? "" : "s"));
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted(HeaderBuf);
+		if (!bFixedSize)
 		{
-			ImGui::PushID(i);
-			char Label[16];
-			snprintf(Label, sizeof(Label), "[%d]", i);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 30.0f);
-			if (ImGui::DragFloat3(Label, &(*Arr)[i].X, 1.0f))
-				bChanged = true;
 			ImGui::SameLine();
-			if (ImGui::SmallButton("x"))
-				RemoveIdx = i;
+			if (ImGui::SmallButton("+"))
+			{
+				Acc->AddDefault(ArrPtr);
+				bChanged = true;
+			}
+		}
+
+		// 각 라이브 요소: [라벨] [재귀 위젯] [x].
+		// 자식 이름을 "Element i" 로 두는 이유: MaterialSlot 위젯이 슬롯 이름을
+		// 표시할 때 strncmp("Element ", 8) 로 인덱스를 뽑고, StaticMeshComponent::
+		// PostEditProperty 도 같은 prefix 를 본다.
+		int32 RemoveIdx = -1;
+		for (uint32 i = 0; i < N; ++i)
+		{
+			ImGui::PushID((int)i);
+
+			TArray<FProperty> Tmp;
+			Tmp.push_back(*Prop.Inner);   // Inner 포인터는 공유 — dtor 가 없으니 안전.
+			FProperty& Elem = Tmp.back();
+			Elem.Name = "Element " + std::to_string(i);
+			Elem.ValuePtr = Acc->GetAt(ArrPtr, i);
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextUnformatted(Elem.Name.c_str());
+			ImGui::SameLine(80.0f);
+
+			const float Avail = ImGui::GetContentRegionAvail().x;
+			ImGui::SetNextItemWidth(Avail - 24.0f);
+
+			int32 ElemIdx = 0;
+			if (RenderPropertyWidget(Tmp, ElemIdx))
+			{
+				// 내부 RenderPropertyWidget tail 이 이미
+				// SelectedComponent->PostEditProperty("Element i") 를 호출한다.
+				bChanged = true;
+			}
+
+			if (!bFixedSize)
+			{
+				ImGui::SameLine();
+				if (ImGui::SmallButton("x"))
+				{
+					RemoveIdx = (int32)i;
+				}
+			}
+
 			ImGui::PopID();
 		}
+
 		if (RemoveIdx >= 0)
 		{
-			Arr->erase(Arr->begin() + RemoveIdx);
+			Acc->RemoveAt(ArrPtr, (uint32)RemoveIdx);
 			bChanged = true;
 		}
-		if (ImGui::Button("+ Add Point"))
-		{
-			Arr->push_back(FVector(0.0f, 0.0f, 0.0f));
-			bChanged = true;
-		}
+
+		ImGui::EndGroup();
 		break;
 	}
+
 	case EPropertyType::Struct:
 	{
 		if (!Prop.StructFunc || !Prop.ValuePtr) break;
@@ -1556,7 +1632,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 					const char* Preview = ((uint32)Val < ChildProp.EnumCount) ? ChildProp.EnumNames[Val] : "Unknown";
 
 					ImGui::AlignTextToFramePadding();
-					ImGui::TextUnformatted(ChildProp.Name.c_str());
+					ImGui::TextUnformatted(PropLabel(ChildProp));
 
 					ImGui::SameLine(120.0f);
 					ImGui::SetNextItemWidth(-1);
@@ -1592,7 +1668,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 		FString* Val = static_cast<FString*>(Prop.ValuePtr);
 		char Buf[256];
 		strncpy_s(Buf, sizeof(Buf), Val->c_str(), _TRUNCATE);
-		if (ImGui::InputText(Prop.Name.c_str(), Buf, sizeof(Buf)))
+		if (ImGui::InputText(PropLabel(Prop), Buf, sizeof(Buf)))
 		{
 			*Val = Buf;
 			bChanged = true;

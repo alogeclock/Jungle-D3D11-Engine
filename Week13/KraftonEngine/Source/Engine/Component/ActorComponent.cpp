@@ -6,6 +6,12 @@
 IMPLEMENT_CLASS(UActorComponent, UObject)
 HIDE_FROM_COMPONENT_LIST(UActorComponent)
 
+BEGIN_CLASS_PROPERTIES(UActorComponent)
+	PROPERTY_BOOL(bAutoActivate, "Auto Activate", "Component", CPF_Edit)
+	PROPERTY_BOOL(bTickEnable, "bTickEnable", "Component", EPropertyFlags::CPF_Edit)
+	PROPERTY_BOOL(bEditorOnly, "bEditorOnly", "Component", EPropertyFlags::CPF_Edit)
+END_CLASS_PROPERTIES(UActorComponent)
+
 void UActorComponent::BeginPlay()
 {
 	if (bAutoActivate)
@@ -86,11 +92,7 @@ void UActorComponent::SetOwner(AActor* Actor)
 
 void UActorComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
-	//OutProps.push_back({ "Active", EPropertyType::Bool, "Component", &bIsActive });
-	//OutProps.push_back({ "Auto Activate", EPropertyType::Bool, "Component", &bAutoActivate });
-	//OutProps.push_back({ "Can Ever Tick", EPropertyType::Bool, "Component", &bCanEverTick });
-	OutProps.push_back({ "bTickEnable", EPropertyType::Bool, "Component", &bTickEnable });
-	OutProps.push_back({ "bEditorOnly", EPropertyType::Bool, "Component", &bEditorOnly });
+	UObject::GetEditableProperties(OutProps);
 }
 
 void UActorComponent::PostEditProperty(const char* PropertyName)

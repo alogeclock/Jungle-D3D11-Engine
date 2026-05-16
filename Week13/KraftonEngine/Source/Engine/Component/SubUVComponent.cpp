@@ -14,6 +14,13 @@
 
 IMPLEMENT_CLASS(USubUVComponent, UBillboardComponent)
 
+BEGIN_CLASS_PROPERTIES(USubUVComponent)
+	REGISTER_PROPERTY(ParticleName, "Particle", EPropertyType::Name, "Particle", CPF_Edit)
+	PROPERTY_FLOAT(PlayRate, "Play Rate", "Particle", 1.0f, 120.0f, 1.0f, CPF_Edit)
+	PROPERTY_BOOL(bLoop, "bLoop", "Particle", CPF_Edit)
+	HIDE_PROPERTY("Material")
+END_CLASS_PROPERTIES(USubUVComponent)
+
 FPrimitiveSceneProxy* USubUVComponent::CreateSceneProxy()
 {
 	return new FSubUVSceneProxy(this);
@@ -38,7 +45,7 @@ void USubUVComponent::PostDuplicate()
 
 USubUVComponent::USubUVComponent()
 {
-	SetVisibility(false);
+	//SetVisibility(false);
 }
 
 USubUVComponent::~USubUVComponent()
@@ -71,17 +78,6 @@ void USubUVComponent::RebuildSubUVMaterial()
 		SubUVMaterial->SetCachedSRV(EMaterialTextureSlot::Diffuse, CachedParticle->SRV);
 	else
 		SubUVMaterial->SetCachedSRV(EMaterialTextureSlot::Diffuse, nullptr);
-}
-
-void USubUVComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	// Billboard의 Texture 프로퍼티는 SubUV에서 의미가 없으므로 의도적으로 스킵.
-	// UPrimitiveComponent로 직접 올라가 공통 트랜스폼 등만 가져온 뒤,
-	// SubUV 고유 프로퍼티만 노출한다.
-	UPrimitiveComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Particle",  EPropertyType::Name,  "Particle", &ParticleName });
-	OutProps.push_back({ "Play Rate", EPropertyType::Float, "Particle", &PlayRate, 1.0f, 120.0f, 1.0f });
-	OutProps.push_back({ "bLoop",     EPropertyType::Bool,  "Particle", &bLoop });
 }
 
 void USubUVComponent::PostEditProperty(const char* PropertyName)

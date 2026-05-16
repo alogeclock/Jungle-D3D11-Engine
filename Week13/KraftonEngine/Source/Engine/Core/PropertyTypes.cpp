@@ -70,19 +70,18 @@ json::JSON FProperty::Serialize() const
 		return JSON(Val);
 	}
 
-	case EPropertyType::Vec3Array:
+	// Vec3Array Squashed to Array
+	case EPropertyType::Array:
 	{
-		const TArray<FVector>* Arr = static_cast<const TArray<FVector>*>(ValuePtr);
-		JSON outer = json::Array();
-		for (const FVector& v : *Arr)
-		{
-			JSON inner = json::Array();
-			inner.append(static_cast<double>(v.X));
-			inner.append(static_cast<double>(v.Y));
-			inner.append(static_cast<double>(v.Z));
-			outer.append(inner);
+		if (!Accessor || !Inner || !ValuePtr) return JSON();
+		JSON arr = json::Array();
+		const uint32 N = Accessor->Num(ValuePtr);
+		for (uint32 i = 0; i < N; ++i) {
+			FProperty Child = *Inner;                          // copy schema
+			Child.ValuePtr = Accessor->GetAt(ValuePtr, i);     // bind to live element
+			arr.append(Child.Serialize());
 		}
-		return outer;
+		return arr;
 	}
 
 	case EPropertyType::Struct:
@@ -175,22 +174,31 @@ void FProperty::Deserialize(json::JSON& Value)
 		break;
 	}
 
-	case EPropertyType::Vec3Array:
+	// Vec3Array Squashed to Array
+	case EPropertyType::Array:
 	{
-		TArray<FVector>* Arr = static_cast<TArray<FVector>*>(ValuePtr);
-		Arr->clear();
-		for (auto& elem : Value.ArrayRange())
+		if (!Accessor || !Inner || !ValuePtr) break;
+		const bool bFixedSize = (PropertyFlag & CPF_FixedSize) != 0;
+		if (!bFixedSize)
 		{
-			FVector v(0, 0, 0);
-			int i = 0;
-			for (auto& c : elem.ArrayRange())
+			Accessor->Clear(ValuePtr);
+		}
+
+		uint32 Index = 0;
+		for (auto& Elem : Value.ArrayRange()) {
+			if (!bFixedSize)
 			{
-				if (i == 0) v.X = static_cast<float>(c.ToFloat());
-				else if (i == 1) v.Y = static_cast<float>(c.ToFloat());
-				else if (i == 2) v.Z = static_cast<float>(c.ToFloat());
-				++i;
+				Accessor->AddDefault(ValuePtr);
 			}
-			Arr->push_back(v);
+			else if (Index >= Accessor->Num(ValuePtr))
+			{
+				break;
+			}
+
+			FProperty Child = *Inner;
+			Child.ValuePtr = Accessor->GetAt(ValuePtr, bFixedSize ? Index : Accessor->Num(ValuePtr) - 1);
+			Child.Deserialize(Elem);
+			++Index;
 		}
 		break;
 	}
@@ -213,3 +221,4 @@ void FProperty::Deserialize(json::JSON& Value)
 		break;
 	}
 }
+

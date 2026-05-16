@@ -45,6 +45,12 @@ namespace
 
 IMPLEMENT_CLASS(UProjectileMovementComponent, UMovementComponent)
 
+BEGIN_CLASS_PROPERTIES(UProjectileMovementComponent)
+	PROPERTY_VEC3(Velocity, "Velocity", "Movement", CPF_Edit)
+	PROPERTY_FLOAT(InitialSpeed, "Initial Speed", "Movement", 0.0f, 0.0f, 10.0f, CPF_Edit)
+	PROPERTY_FLOAT(MaxSpeed, "Max Speed", "Movement", 0.0f, 0.0f, 10.0f, CPF_Edit)
+END_CLASS_PROPERTIES(UProjectileMovementComponent)
+
 void UProjectileMovementComponent::BeginPlay()
 {
 	UMovementComponent::BeginPlay();
@@ -74,14 +80,6 @@ void UProjectileMovementComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	}
 
 	UpdatedSceneComponent->SetWorldLocation(UpdatedSceneComponent->GetWorldLocation() + MoveDelta);
-}
-
-void UProjectileMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UMovementComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Velocity", EPropertyType::Vec3, "Movement", &Velocity, 0.0f, 0.0f, 1.0f });
-	OutProps.push_back({ "Initial Speed", EPropertyType::Float, "Movement", &InitialSpeed, 0.0f, 0.0f, 10.0f });
-	OutProps.push_back({ "Max Speed", EPropertyType::Float, "Movement", &MaxSpeed, 0.0f, 0.0f, 10.0f });
 }
 
 void UProjectileMovementComponent::Serialize(FArchive& Ar)

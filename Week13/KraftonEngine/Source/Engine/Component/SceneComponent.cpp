@@ -6,6 +6,21 @@
 IMPLEMENT_CLASS(USceneComponent, UActorComponent)
 HIDE_FROM_COMPONENT_LIST(USceneComponent)
 
+BEGIN_CLASS_PROPERTIES(USceneComponent)
+	REGISTER_PROPERTY_OFFSET("Location", EPropertyType::Vec3, "Transform",
+		offsetof(ThisClass, RelativeTransform) + offsetof(FTransform, Location),
+		sizeof(FVector), CPF_Edit)
+	// Rotation 은 RelativeTransform.Rotation (Quat) 이 아닌 CachedEditRotator (Euler) 에
+	// 바인딩한다. Quat->Euler 손실로 인한 미세한 회전 변동을 피하기 위해 에디터
+	// 편집 세션 동안 Euler 값을 직접 캐시. PostEditProperty("Rotation") 가 ApplyCachedEditRotator()
+	// 로 RelativeTransform.Rotation 에 다시 반영한다. GetEditableProperties override 가
+	// 매번 ValuePtr 바인딩 전에 CachedEditRotator 를 최신으로 동기화하는 역할.
+	REGISTER_PROPERTY(CachedEditRotator, "Rotation", EPropertyType::Rotator, "Transform", CPF_Edit)
+	REGISTER_PROPERTY_OFFSET("Scale", EPropertyType::Vec3, "Transform",
+		offsetof(ThisClass, RelativeTransform) + offsetof(FTransform, Scale),
+		sizeof(FVector), CPF_Edit)
+END_CLASS_PROPERTIES(USceneComponent)
+
 static void NotifyOctreeTransformChanged(USceneComponent* Comp)
 {
     if (!Comp) return;
@@ -54,15 +69,15 @@ void USceneComponent::AttachToComponent(USceneComponent* InParent)
 
 void USceneComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
-	UActorComponent::GetEditableProperties(OutProps);
+	// Quat 가 외부 setter 로 갱신된 직후엔 CachedEditRotator 가 stale. 매크로 경로가
+	// ValuePtr = Base + Offset(CachedEditRotator) 로 바인딩하기 전에 동기화해줘야
+	// 에디터가 최신 Euler 를 본다.
 	if (bCachedEulerDirty)
 	{
 		CachedEditRotator = RelativeTransform.GetRotator();
 		bCachedEulerDirty = false;
 	}
-	OutProps.push_back({ "Location", EPropertyType::Vec3, "Transform", &RelativeTransform.Location, 0.0f, 0.0f, 0.1f });
-	OutProps.push_back({ "Rotation", EPropertyType::Rotator, "Transform", &CachedEditRotator, 0.0f, 0.0f, 0.1f });
-	OutProps.push_back({ "Scale", EPropertyType::Vec3, "Transform", &RelativeTransform.Scale, 0.0f, 0.0f, 0.1f });
+	UActorComponent::GetEditableProperties(OutProps);
 }
 
 void USceneComponent::PostEditProperty(const char* PropertyName)
