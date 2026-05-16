@@ -16,4 +16,5 @@ struct ContentBrowserContext final
 	UEditorEngine* EditorEngine;
 
 	bool bPendingContentRefresh = false;
+	bool bShowSourceFiles = false;
 };

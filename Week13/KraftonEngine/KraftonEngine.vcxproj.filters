@@ -28,6 +28,9 @@
     <Filter Include="Source\Editor">
       <UniqueIdentifier>{879fdc11-4e44-c448-2bbf-5fd281dc244f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Editor\Import">
+      <UniqueIdentifier>{bfae4fc6-6c33-4a93-b4b4-4384d58d84ef}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Editor\PIE">
       <UniqueIdentifier>{1485fbd8-4084-14c8-cd14-33798c9651d4}</UniqueIdentifier>
     </Filter>
@@ -60,6 +63,9 @@
     </Filter>
     <Filter Include="Source\Engine">
       <UniqueIdentifier>{d0b56061-5521-9f21-3d03-1e11f47e99a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Animation">
+      <UniqueIdentifier>{0d83b9ec-1739-4a2c-a240-82625b92fe91}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Engine\Asset">
       <UniqueIdentifier>{5425e5c6-8625-eb75-03f5-e74a5efa2fc3}</UniqueIdentifier>
@@ -482,6 +488,15 @@
     <ClCompile Include="Source\Editor\EditorRenderPipeline.cpp">
       <Filter>Source\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Editor\Import\EditorFbxImportService.cpp">
+      <Filter>Source\Editor\Import</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Import\EditorFbxImporter.cpp">
+      <Filter>Source\Editor\Import</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Import\EditorObjImportService.cpp">
+      <Filter>Source\Editor\Import</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Editor\Selection\SelectionManager.cpp">
       <Filter>Source\Editor\Selection</Filter>
     </ClCompile>
@@ -601,6 +616,21 @@
     </ClCompile>
     <ClCompile Include="Source\Editor\Viewport\ViewportCameraTransform.cpp">
       <Filter>Source\Editor\Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimDataModel.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimationAsset.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSequence.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSequenceBase.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSequenceManager.cpp">
+      <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Asset\AssetPackage.cpp">
       <Filter>Source\Engine\Asset</Filter>
@@ -896,19 +926,19 @@
     <ClCompile Include="Source\Engine\Math\Vector.cpp">
       <Filter>Source\Engine\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Mesh\FbxImporter.cpp">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\MeshManager.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\MeshSimplifier.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Mesh\ObjImporter.cpp">
+    <ClCompile Include="Source\Engine\Mesh\SkeletalMesh.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Mesh\SkeletalMesh.cpp">
+    <ClCompile Include="Source\Engine\Mesh\Skeleton.cpp">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\SkeletonManager.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\StaticMesh.cpp">
@@ -1275,6 +1305,15 @@
     <ClInclude Include="Source\Editor\EditorRenderPipeline.h">
       <Filter>Source\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Editor\Import\EditorFbxImportService.h">
+      <Filter>Source\Editor\Import</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Import\EditorFbxImporter.h">
+      <Filter>Source\Editor\Import</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Import\EditorObjImportService.h">
+      <Filter>Source\Editor\Import</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Editor\PIE\PIETypes.h">
       <Filter>Source\Editor\PIE</Filter>
     </ClInclude>
@@ -1424,6 +1463,24 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\Viewport\ViewportCameraTransform.h">
       <Filter>Source\Editor\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimDataModel.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimationAsset.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimSequence.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimSequenceBase.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimSequenceManager.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimTypes.h">
+      <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Asset\AssetPackage.h">
       <Filter>Source\Engine\Asset</Filter>
@@ -1761,9 +1818,6 @@
     <ClInclude Include="Source\Engine\Math\Vector.h">
       <Filter>Source\Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Mesh\FbxImporter.h">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\MeshBinary.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
@@ -1776,13 +1830,19 @@
     <ClInclude Include="Source\Engine\Mesh\MeshSimplifier.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Mesh\ObjImporter.h">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\SkeletalMesh.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\SkeletalMeshAsset.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\Skeleton.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\SkeletonAsset.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\SkeletonManager.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\StaticMesh.h">

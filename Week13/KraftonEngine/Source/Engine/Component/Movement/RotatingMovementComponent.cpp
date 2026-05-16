@@ -8,6 +8,12 @@
 
 IMPLEMENT_CLASS(URotatingMovementComponent, UMovementComponent)
 
+BEGIN_CLASS_PROPERTIES(URotatingMovementComponent)
+	REGISTER_PROPERTY(RotationRate, "Rotation Rate", EPropertyType::Rotator, "Movement", CPF_Edit)
+	PROPERTY_BOOL(bRotationInLocalSpace, "Rotation In Local Space", "Movement", CPF_Edit)
+	PROPERTY_VEC3(PivotTranslation, "Pivot Translation", "Movement", CPF_Edit)
+END_CLASS_PROPERTIES(URotatingMovementComponent)
+
 void URotatingMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
 {
 	UMovementComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -81,10 +87,3 @@ void URotatingMovementComponent::Serialize(FArchive& Ar)
 	Ar << PivotTranslation;
 }
 
-void URotatingMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UMovementComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Rotation Rate", EPropertyType::Rotator, "Movement", &RotationRate, 0.0f, 0.0f, 0.1f });
-	OutProps.push_back({ "Rotation In Local Space", EPropertyType::Bool, "Movement", &bRotationInLocalSpace, 0.0f, 0.0f, 0.0f });
-	OutProps.push_back({ "Pivot Translation", EPropertyType::Vec3, "Movement", &PivotTranslation, 0.0f, 0.0f, 0.1f });
-}

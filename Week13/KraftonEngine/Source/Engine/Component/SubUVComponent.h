@@ -33,7 +33,6 @@ public:
 	void Play() { FrameIndex = 0; TimeAccumulator = 0.0f; bIsExecute = false; } // 처음부터 다시 재생
 
 	// --- Property / Serialization ---
-	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	void PostEditProperty(const char* PropertyName) override;
 
 	void Serialize(FArchive& Ar) override;

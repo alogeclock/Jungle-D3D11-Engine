@@ -29,6 +29,11 @@ namespace
 
 IMPLEMENT_CLASS(UPointLightComponent, ULightComponent)
 
+BEGIN_CLASS_PROPERTIES(UPointLightComponent)
+	PROPERTY_FLOAT(AttenuationRadius, "AttenuationRadius", "Lighting", 0.05f, 1000.f, 0.01f, CPF_Edit)
+	PROPERTY_FLOAT(LightFalloffExponent, "LightFalloffExponent", "Lighting", 0.05f, 10.f, 0.01f, CPF_Edit)
+END_CLASS_PROPERTIES(UPointLightComponent)
+
 void UPointLightComponent::ContributeSelectedVisuals(FScene& Scene) const
 {
 	const FVector Center = GetWorldLocation();
@@ -92,9 +97,3 @@ bool UPointLightComponent::GetLightViewProj(FLightViewProjResult& OutResult, con
 	return true;
 }
 
-void UPointLightComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	ULightComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "AttenuationRadius",EPropertyType::Float,"Lighting",&AttenuationRadius,0.05f,1000.f,0.01f });
-	OutProps.push_back({ "LightFalloffExponent",EPropertyType::Float,"Lighting",&LightFalloffExponent,0.05f,10.f,0.01f });
-}

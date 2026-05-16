@@ -10,6 +10,10 @@
 
 IMPLEMENT_CLASS(ULuaScriptComponent, UActorComponent)
 
+BEGIN_CLASS_PROPERTIES(ULuaScriptComponent)
+	REGISTER_PROPERTY(ScriptFile, "ScriptFile", EPropertyType::Script, "Script", CPF_Edit)
+END_CLASS_PROPERTIES(ULuaScriptComponent)
+
 ULuaScriptComponent::ULuaScriptComponent()
 {
 }
@@ -332,7 +336,6 @@ void ULuaScriptComponent::GetEditableProperties(TArray<FProperty>& OutProps)
 {
 	EnsureDefaultScriptFile();
 	UActorComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "ScriptFile", EPropertyType::Script, "Script", &ScriptFile });
 }
 
 void ULuaScriptComponent::Serialize(FArchive& Ar)

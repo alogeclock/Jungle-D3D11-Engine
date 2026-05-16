@@ -2,7 +2,6 @@
 #include "Object/ObjectFactory.h"
 #include "Mesh/MeshManager.h"
 #include "Serialization/WindowsArchive.h"
-#include "Mesh/ObjImporter.h"
 #include "Texture/Texture2D.h"
 #include "Engine/Profiling/MemoryStats.h"
 #include "Mesh/MeshSimplifier.h"

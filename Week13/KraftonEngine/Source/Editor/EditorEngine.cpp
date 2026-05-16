@@ -65,11 +65,6 @@ void UEditorEngine::Init(FWindowsWindow* InWindow)
 	}
 
 	{
-		SCOPE_STARTUP_STAT("MeshManager::ScanFbxSourceFiles");
-		FMeshManager::ScanFbxSourceFiles();
-	}
-
-	{
 		SCOPE_STARTUP_STAT("MaterialManager::ScanAssets");
 		FMaterialManager::Get().ScanMaterialAssets();
 	}

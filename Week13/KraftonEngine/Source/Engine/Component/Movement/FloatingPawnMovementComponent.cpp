@@ -12,6 +12,11 @@
 
 IMPLEMENT_CLASS(UFloatingPawnMovementComponent, UMovementComponent)
 
+BEGIN_CLASS_PROPERTIES(UFloatingPawnMovementComponent)
+	PROPERTY_FLOAT(Speed, "Speed", "Movement", 0.0f, 100.0f, 0.1f, CPF_Edit)
+	PROPERTY_FLOAT(MouseSensitivity, "MouseSensitivity", "Movement", 0.0f, 10.0f, 0.01f, CPF_Edit)
+END_CLASS_PROPERTIES(UFloatingPawnMovementComponent)
+
 namespace
 {
 	void AddWorldRotation(USceneComponent* Component, const FQuat& DeltaWorldQuat)
@@ -89,13 +94,6 @@ void UFloatingPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick T
 
 	LookInputX = 0.0f;
 	LookInputY = 0.0f;
-}
-
-void UFloatingPawnMovementComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UMovementComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Speed", EPropertyType::Float, "Movement", &Speed, 0.0f, 100.0f, 0.1f });
-	OutProps.push_back({ "MouseSensitivity", EPropertyType::Float, "Movement", &MouseSensitivity, 0.0f, 10.0f, 0.01f });
 }
 
 void UFloatingPawnMovementComponent::Serialize(FArchive& Ar)

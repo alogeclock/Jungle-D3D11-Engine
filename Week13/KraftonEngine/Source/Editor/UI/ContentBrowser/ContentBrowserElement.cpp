@@ -1,7 +1,10 @@
 ﻿#include "ContentBrowserElement.h"
 
+#include "Animation/AnimSequenceManager.h"
 #include "Asset/AssetPackage.h"
 #include "Editor/EditorEngine.h"
+#include "Editor/Import/EditorFbxImportService.h"
+#include "Editor/Import/EditorObjImportService.h"
 #include "FloatCurve/FloatCurveAsset.h"
 #include "FloatCurve/FloatCurveManager.h"
 #include "CameraShake/CameraShakeAsset.h"
@@ -14,6 +17,8 @@
 #include "Object/Object.h"
 
 #include <algorithm>
+#include <cctype>
+#include <filesystem>
 
 static FString FormatBytes(uint64 Bytes)
 {
@@ -63,6 +68,14 @@ static void DrawDetailRow(const char* Label, const FString& Value)
 	{
 		ImGui::SetTooltip("%s", Value.c_str());
 	}
+}
+
+static FString GetLowerExtensionFromPath(const FString& Path)
+{
+	FString Extension = FPaths::ToUtf8(std::filesystem::path(FPaths::ToWide(Path)).extension());
+	std::transform(Extension.begin(), Extension.end(), Extension.begin(),
+		[](unsigned char Ch) { return static_cast<char>(std::tolower(Ch)); });
+	return Extension;
 }
 
 bool ContentBrowserElement::RenderSelectSpace(ContentBrowserContext& Context)
@@ -304,10 +317,21 @@ void ObjectElement::RenderContextMenu(ContentBrowserContext& Context)
 
 			if (Context.EditorEngine)
 			{
-				FMeshManager::ReimportStaticMesh(
-					PackagePath,
-					Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
-					Reimported);
+				ID3D11Device* Device = Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice();
+
+				FAssetImportMetadata Metadata;
+				if (FAssetPackage::ReadMetadata(PackagePath, EAssetPackageType::StaticMesh, Metadata))
+				{
+					const FString SourceExtension = GetLowerExtensionFromPath(Metadata.SourcePath);
+					if (SourceExtension == ".obj")
+					{
+						FEditorObjImportService::ImportStaticMeshFromObj(Metadata.SourcePath, Device, Reimported);
+					}
+					else if (SourceExtension == ".fbx")
+					{
+						FEditorFbxImportService::ImportStaticMeshFromFbx(Metadata.SourcePath, Device, Reimported);
+					}
+				}
 			}
 		}
 	}
@@ -377,14 +401,18 @@ void MeshElement::RenderContextMenu(ContentBrowserContext& Context)
 	{
 		if (ImGui::MenuItem("Reimport"))
 		{
-			USkeletalMesh* Reimported = nullptr;
-
 			if (Context.EditorEngine)
 			{
-				FMeshManager::ReimportSkeletalMesh(
-					PackagePath,
-					Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
-					Reimported);
+				FAssetImportMetadata Metadata;
+				if (FAssetPackage::ReadMetadata(PackagePath, EAssetPackageType::SkeletalMesh, Metadata)
+					&& GetLowerExtensionFromPath(Metadata.SourcePath) == ".fbx")
+				{
+					TArray<USkeletalMesh*> ReimportedMeshes;
+					FEditorFbxImportService::ImportSkeletalMeshesFromFbx(
+						Metadata.SourcePath,
+						Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
+						ReimportedMeshes);
+				}
 			}
 		}
 	}
@@ -400,6 +428,29 @@ void MeshElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 	if (USkeletalMesh* MeshAsset = FMeshManager::LoadSkeletalMesh(FilePath, Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice()))
 	{
 		Context.EditorEngine->OpenAssetEditorForObject(MeshAsset);
+	}
+}
+
+void AnimSequenceElement::RenderContextMenu(ContentBrowserContext& Context)
+{
+	(void)Context;
+
+	FString Extension = FPaths::ToUtf8(ContentItem.Path.extension());
+	std::transform(Extension.begin(), Extension.end(), Extension.begin(), ::tolower);
+
+	FString PackagePath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
+	if (Extension == ".uasset" && FAnimSequenceManager::Get().IsAnimSequencePackage(PackagePath))
+	{
+		if (ImGui::MenuItem("Reimport"))
+		{
+			FAssetImportMetadata Metadata;
+			if (FAssetPackage::ReadMetadata(PackagePath, EAssetPackageType::AnimSequence, Metadata)
+				&& GetLowerExtensionFromPath(Metadata.SourcePath) == ".fbx")
+			{
+				TArray<UAnimSequence*> ReimportedSequences;
+				FEditorFbxImportService::ImportAnimSequencesFromFbx(Metadata.SourcePath, ReimportedSequences);
+			}
+		}
 	}
 }
 

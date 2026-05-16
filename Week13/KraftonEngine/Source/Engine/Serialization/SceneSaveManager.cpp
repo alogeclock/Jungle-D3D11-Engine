@@ -12,6 +12,8 @@
 #include "Render/Types/MinimalViewInfo.h"
 #include "Component/DecalComponent.h"
 #include "Component/HeightFogComponent.h"
+#include "Component/StaticMeshComponent.h"
+#include "Component/SkinnedMeshComponent.h"
 #include "Component/Light/LightComponentBase.h"
 #include "Object/Object.h"
 #include "Object/ObjectFactory.h"
@@ -42,6 +44,39 @@ static FVector ReadVec3(json::JSON& Arr)
 	}
 	return out;
 }
+
+// Legacy scene compatibility: material slots used to be saved as "Element N"
+// sibling properties. New saves use the reflected "Materials" array. Keep this
+// helper narrow so removing old-format support later is a small deletion.
+static void UpgradeLegacyMeshMaterialProperties(UObject* Obj, json::JSON& PropsJSON)
+{
+	if (!Obj || PropsJSON.hasKey("Materials"))
+	{
+		return;
+	}
+
+	if (!Obj->IsA<UStaticMeshComponent>() && !Obj->IsA<USkinnedMeshComponent>())
+	{
+		return;
+	}
+
+	json::JSON LegacyMaterials = json::Array();
+	for (uint32 Index = 0;; ++Index)
+	{
+		const FString LegacyKey = "Element " + std::to_string(Index);
+		if (!PropsJSON.hasKey(LegacyKey.c_str()))
+		{
+			break;
+		}
+		LegacyMaterials.append(PropsJSON[LegacyKey.c_str()]);
+	}
+
+	if (LegacyMaterials.size() > 0)
+	{
+		PropsJSON["Materials"] = LegacyMaterials;
+	}
+}
+
 
 // ---------------------------------------------------------------------------
 
@@ -240,7 +275,7 @@ json::JSON FSceneSaveManager::SerializeProperties(UObject* Obj)
 	if (!Obj) return props;
 
 	TArray<FProperty> Descriptors;
-	Obj->GetEditableProperties(Descriptors);
+	Obj->GetNonTransientProperties(Descriptors);
 
 	for (const auto& Prop : Descriptors) {
 		props[Prop.Name] = Prop.Serialize();
@@ -455,8 +490,10 @@ void FSceneSaveManager::DeserializeProperties(UObject* Obj, json::JSON& PropsJSO
 {
 	if (!Obj) return;
 
+	UpgradeLegacyMeshMaterialProperties(Obj, PropsJSON);
+
 	TArray<FProperty> Descriptors;
-	Obj->GetEditableProperties(Descriptors);
+	Obj->GetNonTransientProperties(Descriptors);
 
 	for (auto& Prop : Descriptors) {
 		if (!PropsJSON.hasKey(Prop.Name.c_str())) continue;
@@ -468,7 +505,7 @@ void FSceneSaveManager::DeserializeProperties(UObject* Obj, json::JSON& PropsJSO
 	// 2nd pass: PostEditProperty가 새 프로퍼티를 추가할 수 있음
 	// (예: SetStaticMesh → MaterialSlots 생성 → "Element N" 디스크립터 추가)
 	TArray<FProperty> Descriptors2;
-	Obj->GetEditableProperties(Descriptors2);
+	Obj->GetNonTransientProperties(Descriptors2);
 
 	for (size_t i = Descriptors.size(); i < Descriptors2.size(); ++i) {
 		auto& Prop = Descriptors2[i];

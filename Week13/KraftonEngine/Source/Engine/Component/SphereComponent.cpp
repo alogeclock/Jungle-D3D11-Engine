@@ -11,6 +11,10 @@
 
 IMPLEMENT_CLASS(USphereComponent, UShapeComponent)
 
+BEGIN_CLASS_PROPERTIES(USphereComponent)
+	PROPERTY_FLOAT(SphereRadius, "Sphere Radius", "Shape", 0.01f, 10000.0f, 1.0f, CPF_Edit)
+END_CLASS_PROPERTIES(USphereComponent)
+
 void USphereComponent::SetSphereRadius(float InRadius)
 {
 	SphereRadius = InRadius;
@@ -70,12 +74,6 @@ void USphereComponent::UpdateWorldAABB() const
 	WorldAABBMaxLocation = Center + FVector(R, R, R);
 	bWorldAABBDirty = false;
 	bHasValidWorldAABB = true;
-}
-
-void USphereComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UShapeComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Sphere Radius", EPropertyType::Float, "Shape", &SphereRadius, 0.01f, 10000.0f, 1.0f });
 }
 
 void USphereComponent::PostEditProperty(const char* PropertyName)

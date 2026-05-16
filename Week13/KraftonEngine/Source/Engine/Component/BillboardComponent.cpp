@@ -12,6 +12,10 @@
 
 IMPLEMENT_CLASS(UBillboardComponent, UPrimitiveComponent)
 
+BEGIN_CLASS_PROPERTIES(UBillboardComponent)
+	REGISTER_PROPERTY(MaterialSlot, "Material", EPropertyType::MaterialSlot, "Rendering", EPropertyFlags::CPF_Edit)
+END_CLASS_PROPERTIES(UBillboardComponent)
+
 FPrimitiveSceneProxy* UBillboardComponent::CreateSceneProxy()
 {
 	return new FBillboardSceneProxy(this);
@@ -54,11 +58,11 @@ void UBillboardComponent::SetMaterial(UMaterial* InMaterial)
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
-void UBillboardComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UPrimitiveComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Material", EPropertyType::MaterialSlot, "Rendering", &MaterialSlot });
-}
+//void UBillboardComponent::GetEditableProperties(TArray<FProperty>& OutProps)
+//{
+//	UPrimitiveComponent::GetEditableProperties(OutProps);
+//	OutProps.push_back({ "Material", EPropertyType::MaterialSlot, "Rendering", &MaterialSlot });
+//}
 
 void UBillboardComponent::PostEditProperty(const char* PropertyName)
 {

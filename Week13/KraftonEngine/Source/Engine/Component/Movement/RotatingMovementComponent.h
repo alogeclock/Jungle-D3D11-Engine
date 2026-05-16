@@ -15,7 +15,6 @@ public:
 	~URotatingMovementComponent() override = default;
 
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
-	void GetEditableProperties(TArray<FProperty>& OutProps) override;
 	void Serialize(FArchive& Ar) override;
 
 	void SetRotationRate(const FRotator& InRate) { RotationRate = InRate; }

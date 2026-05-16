@@ -12,6 +12,12 @@
 
 IMPLEMENT_CLASS(UTextRenderComponent, UBillboardComponent)
 
+BEGIN_CLASS_PROPERTIES(UTextRenderComponent)
+	PROPERTY_STRING(Text, "Text", "Text", EPropertyFlags::CPF_Edit)
+	REGISTER_PROPERTY(FontName, "Font", EPropertyType::Name, "Text", EPropertyFlags::CPF_Edit)
+	PROPERTY_FLOAT(FontSize, "Font Size", "Text", 0.1f, 100.f, 0.1f, EPropertyFlags::CPF_Edit)
+END_CLASS_PROPERTIES(UTextRenderComponent)
+
 FPrimitiveSceneProxy* UTextRenderComponent::CreateSceneProxy()
 {
 	return new FTextRenderSceneProxy(this);
@@ -126,16 +132,6 @@ UTextRenderComponent::UTextRenderComponent()
 	SetFont(FontName);
 }
 
-void UTextRenderComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	USceneComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "Text", EPropertyType::String, "Text", &Text });
-	OutProps.push_back({ "Font", EPropertyType::Name, "Text", &FontName });
-	//OutProps.push_back({ "Color", EPropertyType::Vec4, "Text", &Color });
-	OutProps.push_back({ "Font Size", EPropertyType::Float, "Text", &FontSize, 0.1f, 100.0f, 0.1f });
-	OutProps.push_back({ "Visible", EPropertyType::Bool, "Text", &bIsVisible });
-}
-
 void UTextRenderComponent::PostEditProperty(const char* PropertyName)
 {
 	// TextRender의 GetEditableProperties는 USceneComponent 베이스를 직접 사용한다.
@@ -157,10 +153,6 @@ void UTextRenderComponent::PostEditProperty(const char* PropertyName)
 	{
 		MarkProxyDirty(EDirtyFlag::Mesh);
 		MarkProxyDirty(EDirtyFlag::Transform);
-	}
-	else if (strcmp(PropertyName, "Visible") == 0)
-	{
-		MarkRenderVisibilityDirty();
 	}
 }
 

@@ -9,6 +9,10 @@
 
 IMPLEMENT_CLASS(UCylindricalBillboardComponent, UBillboardComponent)
 
+BEGIN_CLASS_PROPERTIES(UCylindricalBillboardComponent)
+	PROPERTY_VEC3(BillboardAxis, "BillboardAxis", "Rendering", CPF_Edit)
+END_CLASS_PROPERTIES(UCylindricalBillboardComponent)
+
 FPrimitiveSceneProxy* UCylindricalBillboardComponent::CreateSceneProxy()
 {
 	return new FCylindricalBillboardSceneProxy(this);
@@ -18,12 +22,6 @@ void UCylindricalBillboardComponent::Serialize(FArchive& Ar)
 {
 	UBillboardComponent::Serialize(Ar);
 	Ar << BillboardAxis;
-}
-
-void UCylindricalBillboardComponent::GetEditableProperties(TArray<FProperty>& OutProps)
-{
-	UBillboardComponent::GetEditableProperties(OutProps);
-	OutProps.push_back({ "BillboardAxis", EPropertyType::Vec3, "Rendering", &BillboardAxis });
 }
 
 void UCylindricalBillboardComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)

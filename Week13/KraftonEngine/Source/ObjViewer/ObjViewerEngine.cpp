@@ -16,7 +16,8 @@ void UObjViewerEngine::Init(FWindowsWindow* InWindow)
 	UEngine::Init(InWindow);
 
 	FMeshManager::ScanMeshAssets();
-	FMeshManager::ScanMeshSourceFiles();
+	FEditorObjImportService::ScanObjSourceFiles();
+	FEditorFbxImportService::ScanFbxSourceFiles();
 
 	// ImGui 패널 초기화
 	Panel.Create(InWindow, Renderer, this);
@@ -114,9 +115,10 @@ void UObjViewerEngine::ImportObjWithOptions(const FString& ObjPath, const FImpor
 		World->DestroyActor(Actor);
 	}
 
-	// 옵션 기반 메시 로드 (캐시 무효화 + .statbin 저장)
+	// 옵션 기반 OBJ import 후 생성된 .uasset을 프리뷰한다.
 	ID3D11Device* Device = Renderer.GetFD3DDevice().GetDevice();
-	UStaticMesh* Mesh = FMeshManager::LoadStaticMesh(ObjPath, Options, Device);
+	UStaticMesh* Mesh = nullptr;
+	FEditorObjImportService::ImportStaticMeshFromObj(ObjPath, Options, Device, Mesh);
 	if (!Mesh) return;
 
 	// 프리뷰 액터 생성
@@ -127,7 +129,31 @@ void UObjViewerEngine::ImportObjWithOptions(const FString& ObjPath, const FImpor
 	MeshComp->SetStaticMesh(Mesh);
 	PreviewActor->SetRootComponent(MeshComp);
 
-	// 리프레시 + 카메라 리셋
-	//FMeshManager::ScanObjSourceFiles();
+	ViewportClient.ResetCamera();
+}
+
+void UObjViewerEngine::ImportFbxWithOptions(const FString& FbxPath, const FImportOptions& Options)
+{
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	TArray<AActor*> Actors = World->GetActors();
+	for (AActor* Actor : Actors)
+	{
+		World->DestroyActor(Actor);
+	}
+
+	ID3D11Device* Device = Renderer.GetFD3DDevice().GetDevice();
+	UStaticMesh* Mesh = nullptr;
+	FEditorFbxImportService::ImportStaticMeshFromFbx(FbxPath, Options, Device, Mesh);
+	if (!Mesh) return;
+
+	AActor* PreviewActor = World->SpawnActor<AActor>();
+	if (!PreviewActor) return;
+
+	UStaticMeshComponent* MeshComp = PreviewActor->AddComponent<UStaticMeshComponent>();
+	MeshComp->SetStaticMesh(Mesh);
+	PreviewActor->SetRootComponent(MeshComp);
+
 	ViewportClient.ResetCamera();
 }
