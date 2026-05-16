@@ -60,6 +60,12 @@ void UAnimSequence::SetDataModel(UAnimDataModel* InDataModel)
 	}
 }
 
+const TArray<FAnimNotifyEvent>& UAnimSequence::GetNotifyEvents() const
+{
+	static const TArray<FAnimNotifyEvent> Empty;
+	return DataModel ? DataModel->GetNotifies() : Empty;
+}
+
 int32 UAnimSequence::GetNumberOfSampledKeys() const
 {
 	return DataModel ? DataModel->GetNumberOfKeys() : 0;

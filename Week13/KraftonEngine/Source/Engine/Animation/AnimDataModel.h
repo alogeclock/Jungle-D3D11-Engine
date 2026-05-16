@@ -42,14 +42,14 @@ public:
 
 	bool EvaluateBoneTrackTransform(const FBoneAnimationTrack& Track, float Time, FTransform& OutTransform, const FTransform& DefaultTransform) const;
 
+	const TArray<FAnimNotifyEvent>& GetNotifies() const { return Notifies; }
+	void SetNotifies(TArray<FAnimNotifyEvent>&& InNotifies) { Notifies = std::move(InNotifies); }
+
 private:
 	TArray<FBoneAnimationTrack> BoneAnimationTracks;
+	TArray<FAnimNotifyEvent>   Notifies;
 	float PlayLength = 0.0f;
 	float FrameRate = 30.0f;
 	int32 NumberOfFrames = 0;
 	int32 NumberOfKeys = 0;
-	// FAnimationCurve CurveData;
-	/**
-	 * TODO: TArray<struct FAnimNotifyEvent> Notifies 추가하고 Notifies 직렬화 or 바이너리화 해서 데이터 저장해야함.
-	 */
 };

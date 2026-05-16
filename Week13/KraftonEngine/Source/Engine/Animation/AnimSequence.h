@@ -22,6 +22,8 @@ public:
 	float GetSamplingFrameRate() const override;
 	bool EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, bool bLoopOverride = true) const override;
 
+	const TArray<FAnimNotifyEvent>& GetNotifyEvents() const;
+
 private:
 	UAnimDataModel* DataModel = nullptr;
 };

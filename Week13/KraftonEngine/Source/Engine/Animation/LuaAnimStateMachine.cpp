@@ -1,4 +1,6 @@
 ﻿#include "LuaAnimStateMachine.h"
+#include "Animation/AnimSequence.h"
+#include "Animation/AnimSequenceManager.h"
 #include "Object/ObjectFactory.h"
 #include "Lua/LuaScriptManager.h"
 #include "Core/Log.h"
@@ -99,7 +101,13 @@ void ULuaAnimStateMachine::TransitionTo(const std::string& StateName)
 
 void ULuaAnimStateMachine::SetSequenceByName(const std::string& SequenceName)
 {
-	// TODO: UAnimSequence 에셋 로딩 시스템 연동 후 구현
-	// ex) CurrentSequence = UAnimSequenceManager::Get().Find(SequenceName);
-	UE_LOG("[LuaAnimSM] SetSequenceByName: %s", SequenceName.c_str());
+	UAnimSequence* Seq = FAnimSequenceManager::Get().Load(SequenceName);
+	if (Seq)
+	{
+		CurrentSequence = Seq;
+	}
+	else
+	{
+		UE_LOG("[LuaAnimSM] SetSequenceByName: not found - %s", SequenceName.c_str());
+	}
 }

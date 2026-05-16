@@ -1,4 +1,5 @@
-﻿#include "AnimInstance.h"
+#include "AnimInstance.h"
+#include "Animation/AnimationStateMachine.h"
 #include "Object/ObjectFactory.h"
 #include "Component/SkeletalMeshComponent.h"
 
@@ -12,25 +13,37 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InOwner)
 void UAnimInstance::Update(float DeltaTime)
 {
 	NativeUpdateAnimation(DeltaTime);
-	TriggerAnimNotifies();
+
+	if (StateMachine)
+	{
+		StateMachine->Tick(DeltaTime);
+	}
+}
+
+void UAnimInstance::GetCurrentPose(FPoseContext& OutPose)
+{
+	if (!StateMachine)
+		return;
+
+	TArray<FAnimNotifyEvent> CollectedNotifies;
+	StateMachine->EvaluatePose(OutPose, CollectedNotifies);
+
+	for (FAnimNotifyEvent& Notify : CollectedNotifies)
+		NotifyQueue.push_back(Notify);
 }
 
 void UAnimInstance::CheckAnimNotifyQueue(float PrevTime, float CurrTime,
 	float SeqLength, bool bLooping, bool bReverse,
 	const TArray<FAnimNotifyEvent>& SeqNotifies)
 {
-	NotifyQueue.clear();
-
 	for (const FAnimNotifyEvent& Notify : SeqNotifies)
 	{
 		bool bShouldTrigger = false;
 
 		if (!bReverse)
 		{
-			// 정방향 재생
 			if (bLooping && CurrTime < PrevTime)
 			{
-				// 루프 발생: [PrevTime, SeqLength] ∪ [0, CurrTime]
 				bShouldTrigger = (Notify.TriggerTime > PrevTime && Notify.TriggerTime <= SeqLength)
 				              || (Notify.TriggerTime <= CurrTime);
 			}
@@ -41,10 +54,8 @@ void UAnimInstance::CheckAnimNotifyQueue(float PrevTime, float CurrTime,
 		}
 		else
 		{
-			// 역방향 재생
 			if (bLooping && CurrTime > PrevTime)
 			{
-				// 역방향 루프 발생: [PrevTime, 0] ∪ [SeqLength, CurrTime]
 				bShouldTrigger = (Notify.TriggerTime < PrevTime  && Notify.TriggerTime >= 0.f)
 				              || (Notify.TriggerTime <= SeqLength && Notify.TriggerTime >= CurrTime);
 			}

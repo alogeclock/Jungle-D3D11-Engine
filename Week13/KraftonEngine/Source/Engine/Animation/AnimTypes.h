@@ -1,8 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Quat.h"
+#include "Math/Transform.h"
 #include "Math/Vector.h"
+#include "Object/FName.h"
 #include "Serialization/Archive.h"
 
 /** 한 Bone의 transform key 데이터만 들고 있는 순수 데이터 구조체 입니다. */
@@ -33,6 +35,32 @@ struct FBoneAnimationTrack
 		Ar << Track.InternalTrackData;
 		Ar << Track.BoneTreeIndex;
 		Ar << Track.Name;
+		return Ar;
+	}
+};
+
+struct FPoseContext
+{
+	// 부모 bone 기준의 Local Transform (Skeleton bone 순서와 동일한 index로 접근)
+	TArray<FTransform> BoneLocalTransforms;
+
+	void Reset()
+	{
+		BoneLocalTransforms.clear();
+	}
+};
+
+struct FAnimNotifyEvent
+{
+	float TriggerTime = 0.0f;
+	float Duration    = 0.0f;
+	FName NotifyName;
+
+	friend FArchive& operator<<(FArchive& Ar, FAnimNotifyEvent& Notify)
+	{
+		Ar << Notify.TriggerTime;
+		Ar << Notify.Duration;
+		Ar << Notify.NotifyName;
 		return Ar;
 	}
 };

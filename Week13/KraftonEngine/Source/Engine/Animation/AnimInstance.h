@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "Object/Object.h"
-#include "Animation/AnimType.h"
+#include "Animation/AnimTypes.h"
 
 class UAnimationStateMachine;
 class USkeletalMeshComponent;
@@ -18,7 +18,8 @@ public:
 		const TArray<FAnimNotifyEvent>& SeqNotifies);
 	void TriggerAnimNotifies();
 
-	virtual void GetCurrentPose(FPoseContext& OutPose) const {}
+	// SkeletalMeshComponent가 호출 — 포즈 생성 및 Notify 수집
+	virtual void GetCurrentPose(FPoseContext& OutPose);
 
 	void SetStateMachine(UAnimationStateMachine* SM) { StateMachine = SM; }
 
@@ -26,7 +27,7 @@ public:
 
 protected:
 	USkeletalMeshComponent* OwnerComponent = nullptr;
-	UAnimationStateMachine* StateMachine = nullptr;
+	UAnimationStateMachine* StateMachine   = nullptr;
 
 private:
 	TArray<FAnimNotifyEvent> NotifyQueue;

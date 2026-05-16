@@ -1,4 +1,5 @@
-﻿#include "AnimSingleNodeInstance.h"
+#include "AnimSingleNodeInstance.h"
+#include "Animation/AnimSequence.h"
 #include "Object/ObjectFactory.h"
 
 IMPLEMENT_CLASS(UAnimSingleNodeInstance, UAnimInstance)
@@ -12,7 +13,7 @@ void UAnimSingleNodeInstance::Initialize(USkeletalMeshComponent* InOwner)
 
 void UAnimSingleNodeInstance::SetAnimation(UAnimationAsset* Asset)
 {
-	//Sequence = static_cast<UAnimSequence>(Asset);
+	Sequence = Cast<UAnimSequence>(Asset);
 	CurrentTime = 0.0f;
 	bPlaying = false;
 }
@@ -44,24 +45,31 @@ void UAnimSingleNodeInstance::NativeUpdateAnimation(float DeltaSeconds)
 	float PrevTime = CurrentTime;
 	CurrentTime += DeltaSeconds * PlayRate;
 
-	// float Length = Sequence->GetLength();
-	// if (bLooping)
-	// {
-	//     while (CurrentTime >= Length) CurrentTime -= Length;
-	// }
-	// else if (CurrentTime >= Length)
-	// {
-	//     CurrentTime = Length;
-	//     bPlaying = false;
-	// }
-	// CheckAnimNotifyQueue(PrevTime, CurrentTime, Length, bLooping, PlayRate < 0.f,
-	//                      Sequence->GetNotifyEvents());
+	float Length = Sequence->GetPlayLength();
+	if (bLooping)
+	{
+		while (CurrentTime >= Length) CurrentTime -= Length;
+	}
+	else if (CurrentTime >= Length)
+	{
+		CurrentTime = Length;
+		bPlaying = false;
+	}
+
+	CheckAnimNotifyQueue(PrevTime, CurrentTime, Length, bLooping, PlayRate < 0.f,
+		Sequence->GetNotifyEvents());
 }
 
-void UAnimSingleNodeInstance::GetCurrentPose(FPoseContext& OutPose) const
+void UAnimSingleNodeInstance::GetCurrentPose(FPoseContext& OutPose)
 {
 	if (!Sequence)
 		return;
 
-	// FAnimationRuntime::GetPoseAtTime(Sequence->GetDataModel(), CurrentTime, OutPose);
+	TArray<FMatrix> LocalMatrices;
+	if (!Sequence->EvaluatePose(CurrentTime, LocalMatrices))
+		return;
+
+	OutPose.BoneLocalTransforms.resize(LocalMatrices.size());
+	for (size_t i = 0; i < LocalMatrices.size(); ++i)
+		OutPose.BoneLocalTransforms[i] = FTransform(LocalMatrices[i]);
 }

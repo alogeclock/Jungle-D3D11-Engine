@@ -29,6 +29,8 @@ void USkeletalMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	FPoseContext Pose;
 	AnimInstance->GetCurrentPose(Pose);
+	AnimInstance->TriggerAnimNotifies();
+
 	if (!Pose.BoneLocalTransforms.empty())
 		ApplyPoseToComponent(Pose);
 }

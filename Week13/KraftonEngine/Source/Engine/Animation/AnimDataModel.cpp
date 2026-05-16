@@ -70,6 +70,7 @@ namespace
 void UAnimDataModel::Serialize(FArchive& Ar)
 {
 	Ar << BoneAnimationTracks;
+	Ar << Notifies;
 	Ar << PlayLength;
 	Ar << FrameRate;
 	Ar << NumberOfFrames;

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Animation/AnimInstance.h"
-#include "Animation/AnimType.h"
+#include "Animation/AnimTypes.h"
 
 class UAnimationAsset;
 class UAnimSequence;
@@ -17,7 +17,7 @@ public:
 
 	void Initialize(USkeletalMeshComponent* InOwner) override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
-	void GetCurrentPose(FPoseContext& OutPose) const override;
+	void GetCurrentPose(FPoseContext& OutPose) override;
 
 private:
 	UAnimSequence* Sequence = nullptr;
