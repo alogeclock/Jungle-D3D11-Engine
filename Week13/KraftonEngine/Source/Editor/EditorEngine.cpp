@@ -16,7 +16,6 @@
 #include "UI/UIManager.h"
 #include "Editor/Slate/SlateApplication.h"
 #include "Editor/EditorRenderPipeline.h"
-#include "Editor/Import/EditorAssetPipeline.h"
 #include "Editor/UI/EditorFileUtils.h"
 #include "Editor/UI/EditorTextureManager.h"
 #include "Editor/Viewport/LevelEditorViewportClient.h"
@@ -59,11 +58,6 @@ void UEditorEngine::Init(FWindowsWindow* InWindow)
 	// 등록해 둔 상태. 여기서 한 번에 실행 — Lua state 등 Engine subsystem 들은 이미
 	// UEngine::Init 에서 준비됨. Editor 는 Game 모듈의 함수명도, 헤더도 모름.
 	FEngineInitHooks::RunAll();
-
-	{
-		SCOPE_STARTUP_STAT("EditorAssetPipeline::SyncAssetRoot");
-		FEditorAssetPipeline::SyncAssetRoot(Renderer.GetFD3DDevice().GetDevice());
-	}
 
 	{
 		SCOPE_STARTUP_STAT("MeshManager::ScanMeshAssets");

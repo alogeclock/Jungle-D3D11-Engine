@@ -3,10 +3,12 @@
 #include "Core/Log.h"
 #include "Mesh/MeshImportOptions.h"
 #include "Math/MathUtils.h"
+#include "Math/Transform.h"
 #include "Materials/MaterialManager.h"
 #include "SimpleJSON/json.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cwctype>
 #include <filesystem>
 #include <fstream>
@@ -62,6 +64,229 @@ namespace
 		const FString SlotStem = SanitizeFileStem(MaterialSlotName);
 		const std::filesystem::path MatPath = FbxPath.parent_path() / FPaths::ToWide(MeshStem + "_" + SlotStem + ".mat");
 		return NormalizeProjectPath(FPaths::ToUtf8(MatPath.generic_wstring()));
+	}
+
+	void CollectFbxNodes(FbxNode* Node, TArray<FbxNode*>& OutNodes)
+	{
+		if (!Node)
+		{
+			return;
+		}
+
+		OutNodes.push_back(Node);
+		for (int32 ChildIndex = 0; ChildIndex < Node->GetChildCount(); ++ChildIndex)
+		{
+			CollectFbxNodes(Node->GetChild(ChildIndex), OutNodes);
+		}
+	}
+
+	bool LoadConvertedFbxScene(const FString& FilePath, const char* SceneName, FbxManager*& OutSdkManager, FbxScene*& OutScene)
+	{
+		OutSdkManager = nullptr;
+		OutScene = nullptr;
+
+		FbxManager* SdkManager = FbxManager::Create();
+		if (!SdkManager)
+		{
+			return false;
+		}
+
+		FbxIOSettings* ios = FbxIOSettings::Create(SdkManager, IOSROOT);
+		if (!ios)
+		{
+			SdkManager->Destroy();
+			return false;
+		}
+		SdkManager->SetIOSettings(ios);
+
+		FbxScene* Scene = FbxScene::Create(SdkManager, SceneName);
+		FbxImporter* Importer = FbxImporter::Create(SdkManager, "");
+		if (!Scene || !Importer)
+		{
+			if (Importer) Importer->Destroy();
+			SdkManager->Destroy();
+			return false;
+		}
+
+		const FString FullPath = FPaths::ToUtf8(FPaths::Combine(FPaths::RootDir(), FPaths::ToWide(FilePath)));
+		if (!Importer->Initialize(FullPath.c_str(), -1, SdkManager->GetIOSettings()))
+		{
+			Importer->Destroy();
+			SdkManager->Destroy();
+			return false;
+		}
+
+		const bool bImported = Importer->Import(Scene);
+		Importer->Destroy();
+		if (!bImported)
+		{
+			SdkManager->Destroy();
+			return false;
+		}
+
+		FbxSystemUnit::m.ConvertScene(Scene);
+
+		FbxAxisSystem UnrealAxisSystem(FbxAxisSystem::eZAxis, FbxAxisSystem::eParityEven, FbxAxisSystem::eLeftHanded);
+		UnrealAxisSystem.DeepConvertScene(Scene);
+
+		OutSdkManager = SdkManager;
+		OutScene = Scene;
+		return true;
+	}
+
+	float DotQuat(const FQuat& A, const FQuat& B)
+	{
+		return A.X * B.X + A.Y * B.Y + A.Z * B.Z + A.W * B.W;
+	}
+
+	bool AreVectorsEqual(const FVector& A, const FVector& B, float Tolerance = 0.0001f)
+	{
+		return std::abs(A.X - B.X) <= Tolerance
+			&& std::abs(A.Y - B.Y) <= Tolerance
+			&& std::abs(A.Z - B.Z) <= Tolerance;
+	}
+
+	bool AreQuatsEqual(const FQuat& A, const FQuat& B, float Tolerance = 0.0001f)
+	{
+		return std::abs(DotQuat(A.GetNormalized(), B.GetNormalized())) >= (1.0f - Tolerance);
+	}
+
+	void ReduceConstantVectorKeys(TArray<FVector>& Keys)
+	{
+		if (Keys.size() <= 1)
+		{
+			return;
+		}
+
+		const FVector First = Keys.front();
+		for (const FVector& Key : Keys)
+		{
+			if (!AreVectorsEqual(First, Key))
+			{
+				return;
+			}
+		}
+
+		Keys.clear();
+		Keys.push_back(First);
+	}
+
+	void ReduceConstantQuatKeys(TArray<FQuat>& Keys)
+	{
+		if (Keys.size() <= 1)
+		{
+			return;
+		}
+
+		const FQuat First = Keys.front().GetNormalized();
+		for (const FQuat& Key : Keys)
+		{
+			if (!AreQuatsEqual(First, Key))
+			{
+				return;
+			}
+		}
+
+		Keys.clear();
+		Keys.push_back(First);
+	}
+
+	int32 GetAnimationCurveRate(FbxAnimCurve* Curve)
+	{
+		if (!Curve || Curve->KeyGetCount() < 2)
+		{
+			return 0;
+		}
+
+		double MinDeltaSeconds = 0.0;
+		for (int32 KeyIndex = 1; KeyIndex < Curve->KeyGetCount(); ++KeyIndex)
+		{
+			const double Prev = Curve->KeyGetTime(KeyIndex - 1).GetSecondDouble();
+			const double Curr = Curve->KeyGetTime(KeyIndex).GetSecondDouble();
+			const double Delta = Curr - Prev;
+			if (Delta <= 0.0)
+			{
+				continue;
+			}
+
+			if (MinDeltaSeconds <= 0.0 || Delta < MinDeltaSeconds)
+			{
+				MinDeltaSeconds = Delta;
+			}
+		}
+
+		if (MinDeltaSeconds <= 0.0)
+		{
+			return 0;
+		}
+
+		return static_cast<int32>(std::round(1.0 / MinDeltaSeconds));
+	}
+
+	void CollectNodeSampleRates(FbxNode* Node, FbxAnimLayer* AnimLayer, TArray<int32>& OutRates)
+	{
+		if (!Node || !AnimLayer)
+		{
+			return;
+		}
+
+		FbxAnimCurve* Curves[9] =
+		{
+			Node->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, false),
+			Node->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, false),
+			Node->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, false),
+			Node->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, false),
+			Node->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, false),
+			Node->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, false),
+			Node->LclScaling.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, false),
+			Node->LclScaling.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, false),
+			Node->LclScaling.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, false),
+		};
+
+		for (FbxAnimCurve* Curve : Curves)
+		{
+			const int32 Rate = GetAnimationCurveRate(Curve);
+			if (Rate > 0)
+			{
+				OutRates.push_back(Rate);
+			}
+		}
+	}
+
+	int32 CalculateAnimStackSampleRate(FbxScene* Scene, FbxAnimStack* Stack)
+	{
+		constexpr int32 DefaultSampleRate = 30;
+		constexpr int32 MaxSampleRate = 120;
+
+		if (!Scene || !Stack)
+		{
+			return DefaultSampleRate;
+		}
+
+		TArray<FbxNode*> Nodes;
+		if (Scene->GetRootNode())
+		{
+			CollectFbxNodes(Scene->GetRootNode(), Nodes);
+		}
+
+		TArray<int32> Rates;
+		const int32 LayerCount = Stack->GetMemberCount();
+		for (int32 LayerIndex = 0; LayerIndex < LayerCount; ++LayerIndex)
+		{
+			FbxAnimLayer* AnimLayer = static_cast<FbxAnimLayer*>(Stack->GetMember(LayerIndex));
+			for (FbxNode* Node : Nodes)
+			{
+				CollectNodeSampleRates(Node, AnimLayer, Rates);
+			}
+		}
+
+		int32 Result = DefaultSampleRate;
+		for (int32 Rate : Rates)
+		{
+			Result = std::max(Result, Rate);
+		}
+
+		return std::max(1, std::min(Result, MaxSampleRate));
 	}
 }
 
@@ -306,6 +531,82 @@ bool FEditorFbxImporter::DiscoverMeshNames(const FString& FilePath, TArray<FStri
 
 	SdkManager->Destroy();
 	return !OutMeshNames.empty();
+}
+
+bool FEditorFbxImporter::DiscoverAnimStackNames(const FString& FilePath, TArray<FString>& OutStackNames)
+{
+	OutStackNames.clear();
+
+	FbxManager* SdkManager = nullptr;
+	FbxScene* Scene = nullptr;
+	if (!LoadConvertedFbxScene(FilePath, "FBX Anim Discovery Scene", SdkManager, Scene))
+	{
+		return false;
+	}
+
+	const int32 StackCount = Scene->GetSrcObjectCount<FbxAnimStack>();
+	for (int32 StackIndex = 0; StackIndex < StackCount; ++StackIndex)
+	{
+		FbxAnimStack* Stack = Scene->GetSrcObject<FbxAnimStack>(StackIndex);
+		if (!Stack)
+		{
+			continue;
+		}
+
+		const char* StackName = Stack->GetName();
+		OutStackNames.push_back(StackName && StackName[0] ? FString(StackName) : FString("Take_") + std::to_string(StackIndex + 1));
+	}
+
+	SdkManager->Destroy();
+	return true;
+}
+
+bool FEditorFbxImporter::ImportAnimations(const FString& FilePath, const FSkeletonAsset* TargetSkeleton, FSkeletonAsset& OutParsedSkeleton, TArray<FImportedAnimSequence>& OutSequences)
+{
+	OutParsedSkeleton = FSkeletonAsset();
+	OutSequences.clear();
+
+	Vertices.clear();
+	Indices.clear();
+	Bones.clear();
+	Sections.clear();
+	ImportedSkeletalMeshes.clear();
+	MtlInfos.clear();
+	MaterialToSlotIndex.clear();
+	TangentSums.clear();
+	BitangentSums.clear();
+	CurrentSourcePath = NormalizeProjectPath(FilePath);
+
+	FbxManager* SdkManager = nullptr;
+	FbxScene* Scene = nullptr;
+	if (!LoadConvertedFbxScene(FilePath, "Animation FBX Scene", SdkManager, Scene))
+	{
+		return false;
+	}
+
+	FbxNode* RootNode = Scene->GetRootNode();
+	if (!RootNode)
+	{
+		SdkManager->Destroy();
+		return false;
+	}
+
+	TArray<FbxNode*> Nodes;
+	TMap<FbxNode*, int32> NodeToIndex;
+	CollectNodes(RootNode, 0, Nodes);
+	ParseBone(Nodes, NodeToIndex);
+
+	OutParsedSkeleton.PathFileName = CurrentSourcePath;
+	OutParsedSkeleton.Bones = Bones;
+
+	const FSkeletonAsset* SkeletonForTracks = TargetSkeleton && !TargetSkeleton->Bones.empty()
+		? TargetSkeleton
+		: &OutParsedSkeleton;
+
+	ParseAnimations(Scene, *SkeletonForTracks, OutSequences);
+
+	SdkManager->Destroy();
+	return true;
 }
 
 bool FEditorFbxImporter::ImportStatic(const FString& FilePath, const FImportOptions* Options, FStaticMesh& OutMesh, TArray<FStaticMaterial>& OutMaterials)
@@ -1148,6 +1449,132 @@ void FEditorFbxImporter::ParseSkin(TArray<FbxNode*>& Nodes, TMap<FbxNode*, int32
 	}
 }
 
+void FEditorFbxImporter::ParseAnimations(FbxScene* Scene, const FSkeletonAsset& TargetSkeleton, TArray<FImportedAnimSequence>& OutSequences)
+{
+	OutSequences.clear();
+	if (!Scene || !Scene->GetRootNode() || TargetSkeleton.Bones.empty())
+	{
+		return;
+	}
+
+	TArray<FbxNode*> Nodes;
+	CollectNodes(Scene->GetRootNode(), 0, Nodes);
+
+	TMap<FString, FbxNode*> NodeNameToNode;
+	for (FbxNode* Node : Nodes)
+	{
+		if (!Node)
+		{
+			continue;
+		}
+
+		const FString NodeName = Node->GetName();
+		if (NodeNameToNode.find(NodeName) == NodeNameToNode.end())
+		{
+			NodeNameToNode.emplace(NodeName, Node);
+		}
+	}
+
+	TArray<FbxNode*> BoneNodes;
+	BoneNodes.resize(TargetSkeleton.Bones.size(), nullptr);
+	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(TargetSkeleton.Bones.size()); ++BoneIndex)
+	{
+		auto It = NodeNameToNode.find(TargetSkeleton.Bones[BoneIndex].Name);
+		if (It != NodeNameToNode.end())
+		{
+			BoneNodes[BoneIndex] = It->second;
+		}
+	}
+
+	const int32 StackCount = Scene->GetSrcObjectCount<FbxAnimStack>();
+	for (int32 StackIndex = 0; StackIndex < StackCount; ++StackIndex)
+	{
+		FbxAnimStack* Stack = Scene->GetSrcObject<FbxAnimStack>(StackIndex);
+		if (!Stack)
+		{
+			continue;
+		}
+
+		Scene->SetCurrentAnimationStack(Stack);
+
+		FbxTimeSpan TimeSpan = Stack->GetLocalTimeSpan();
+		const double StartSeconds = TimeSpan.GetStart().GetSecondDouble();
+		const double StopSeconds = TimeSpan.GetStop().GetSecondDouble();
+		const double DurationSeconds = std::max(0.0, StopSeconds - StartSeconds);
+		const int32 SampleRate = CalculateAnimStackSampleRate(Scene, Stack);
+		const int32 NumberOfKeys = std::max(1, static_cast<int32>(std::round(DurationSeconds * static_cast<double>(SampleRate))) + 1);
+
+		FImportedAnimSequence ImportedSequence;
+		const char* StackName = Stack->GetName();
+		ImportedSequence.StackName = StackName && StackName[0] ? FString(StackName) : FString("Take_") + std::to_string(StackIndex + 1);
+		ImportedSequence.PlayLength = static_cast<float>(DurationSeconds);
+		ImportedSequence.FrameRate = static_cast<float>(SampleRate);
+		ImportedSequence.NumberOfFrames = std::max(0, NumberOfKeys - 1);
+		ImportedSequence.NumberOfKeys = NumberOfKeys;
+		ImportedSequence.Tracks.reserve(TargetSkeleton.Bones.size());
+
+		for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(TargetSkeleton.Bones.size()); ++BoneIndex)
+		{
+			const FBone& Bone = TargetSkeleton.Bones[BoneIndex];
+
+			FBoneAnimationTrack Track;
+			Track.Name = FName(Bone.Name);
+			Track.BoneTreeIndex = BoneIndex;
+			Track.InternalTrackData.PosKeys.reserve(NumberOfKeys);
+			Track.InternalTrackData.RotKeys.reserve(NumberOfKeys);
+			Track.InternalTrackData.ScaleKeys.reserve(NumberOfKeys);
+
+			FbxNode* BoneNode = BoneIndex < static_cast<int32>(BoneNodes.size()) ? BoneNodes[BoneIndex] : nullptr;
+			FbxNode* ParentBoneNode = (Bone.ParentIndex >= 0 && Bone.ParentIndex < static_cast<int32>(BoneNodes.size()))
+				? BoneNodes[Bone.ParentIndex]
+				: nullptr;
+
+			for (int32 FrameIndex = 0; FrameIndex < NumberOfKeys; ++FrameIndex)
+			{
+				const double FrameSeconds = (FrameIndex == NumberOfKeys - 1)
+					? StopSeconds
+					: StartSeconds + static_cast<double>(FrameIndex) / static_cast<double>(SampleRate);
+
+				FbxTime SampleTime;
+				SampleTime.SetSecondDouble(FrameSeconds);
+
+				FMatrix LocalMatrix = Bone.LocalMatrix;
+				if (BoneNode)
+				{
+					if (ParentBoneNode)
+					{
+						const FMatrix GlobalMatrix = ConvertFbxMatrix(BoneNode->EvaluateGlobalTransform(SampleTime));
+						const FMatrix ParentGlobalMatrix = ConvertFbxMatrix(ParentBoneNode->EvaluateGlobalTransform(SampleTime));
+						LocalMatrix = GlobalMatrix * ParentGlobalMatrix.GetInverse();
+					}
+					else
+					{
+						LocalMatrix = ConvertFbxMatrix(BoneNode->EvaluateLocalTransform(SampleTime));
+					}
+				}
+
+				FTransform LocalTransform(LocalMatrix);
+				FQuat Rotation = LocalTransform.Rotation.GetNormalized();
+				if (!Track.InternalTrackData.RotKeys.empty() && DotQuat(Track.InternalTrackData.RotKeys.back(), Rotation) < 0.0f)
+				{
+					Rotation = FQuat(-Rotation.X, -Rotation.Y, -Rotation.Z, -Rotation.W);
+				}
+
+				Track.InternalTrackData.PosKeys.push_back(LocalTransform.Location);
+				Track.InternalTrackData.RotKeys.push_back(Rotation);
+				Track.InternalTrackData.ScaleKeys.push_back(LocalTransform.Scale);
+			}
+
+			ReduceConstantVectorKeys(Track.InternalTrackData.PosKeys);
+			ReduceConstantQuatKeys(Track.InternalTrackData.RotKeys);
+			ReduceConstantVectorKeys(Track.InternalTrackData.ScaleKeys);
+			ImportedSequence.Tracks.push_back(std::move(Track));
+		}
+
+		OutSequences.push_back(std::move(ImportedSequence));
+	}
+}
+
 void FEditorFbxImporter::GenerateTangents(uint32 TriIndices[])
 {
 	const FVertexPNCTBW& V0 = Vertices[TriIndices[0]];
@@ -1233,6 +1660,19 @@ int32 FEditorFbxImporter::FindNearestParentBoneIndex(FbxNode* Node, const TMap<F
 		}
 
 		Parent = Parent->GetParent();
+	}
+
+	return -1;
+}
+
+int32 FEditorFbxImporter::FindBoneIndexByName(const FSkeletonAsset& SkeletonAsset, const FString& BoneName)
+{
+	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(SkeletonAsset.Bones.size()); ++BoneIndex)
+	{
+		if (SkeletonAsset.Bones[BoneIndex].Name == BoneName)
+		{
+			return BoneIndex;
+		}
 	}
 
 	return -1;
