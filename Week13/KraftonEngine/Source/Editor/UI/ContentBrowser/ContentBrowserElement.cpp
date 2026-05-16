@@ -431,6 +431,19 @@ void MeshElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 	}
 }
 
+void AnimSequenceElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
+{
+	if (!Context.EditorEngine)
+	{
+		return;
+	}
+	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
+	if (USkeletalMesh* MeshAsset = FMeshManager::LoadSkeletalMesh(FilePath, Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice()))
+	{
+		Context.EditorEngine->OpenAssetEditorForObject(MeshAsset);
+	}
+}
+
 void AnimSequenceElement::RenderContextMenu(ContentBrowserContext& Context)
 {
 	(void)Context;
@@ -462,17 +475,4 @@ void MaterialElement::OnLeftClicked(ContentBrowserContext& Context)
 void MaterialElement::RenderDetail()
 {
 	MaterialInspector.Render();
-}
-
-void AnimationElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
-{
-	if (!Context.EditorEngine)
-	{
-		return;
-	}
-	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
-	const FString PackagePath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
-
-
-	Context.EditorEngine->OpenAssetEditorForObject(/*Sequence*/nullptr);
 }

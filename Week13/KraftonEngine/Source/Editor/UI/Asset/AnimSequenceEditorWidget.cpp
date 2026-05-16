@@ -280,13 +280,13 @@ void FAnimSequenceEditorWidget::Render(float DeltaTime)
 		const FSkeletalMesh* Asset = PreviewSkeletalMesh->GetSkeletalMeshAsset();
 		if (Asset)
 		{
-			for (int32 i = 0; i < static_cast<int32>(Asset->Bones.size()); ++i)
+			/*for (int32 i = 0; i < static_cast<int32>(Asset->Bones.size()); ++i)
 			{
 				if (Asset->Bones[i].ParentIndex == -1)
 				{
 					RenderSkeletonTree(Asset, i);
 				}
-			}
+			}*/
 		}
 	}
 	else
@@ -346,7 +346,7 @@ void FAnimSequenceEditorWidget::CollectPreviewViewports(TArray<IEditorPreviewVie
 
 void FAnimSequenceEditorWidget::RenderSkeletonTree(const FSkeletalMesh* Asset, int32 BoneIndex)
 {
-	const FBone& Bone = Asset->Bones[BoneIndex];
+	// const FBone& Bone = Asset->Bones[BoneIndex];
 
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_SpanAvailWidth |
@@ -358,28 +358,28 @@ void FAnimSequenceEditorWidget::RenderSkeletonTree(const FSkeletalMesh* Asset, i
 	}
 
 	bool bHasChildren = false;
-	for (int32 i = BoneIndex + 1; i < static_cast<int32>(Asset->Bones.size()); ++i)
+	/*for (int32 i = BoneIndex + 1; i < static_cast<int32>(Asset->Bones.size()); ++i)
 	{
 		if (Asset->Bones[i].ParentIndex == BoneIndex)
 		{
 			bHasChildren = true;
 			break;
 		}
-	}
+	}*/
 
 	if (!bHasChildren)
 	{
 		Flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 	}
 
-	const bool bOpen = ImGui::TreeNodeEx(Bone.Name.c_str(), Flags);
+	// const bool bOpen = ImGui::TreeNodeEx(Bone.Name.c_str(), Flags);
 
 	if (ImGui::IsItemClicked())
 	{
 		SetSelectedBones(BoneIndex);
 	}
 
-	if (bOpen && bHasChildren)
+	/*if (bOpen && bHasChildren)
 	{
 		for (int32 i = BoneIndex + 1; i < static_cast<int32>(Asset->Bones.size()); ++i)
 		{
@@ -389,7 +389,7 @@ void FAnimSequenceEditorWidget::RenderSkeletonTree(const FSkeletalMesh* Asset, i
 			}
 		}
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void FAnimSequenceEditorWidget::RenderViewportPanel(float Deltatime)
@@ -487,14 +487,14 @@ void FAnimSequenceEditorWidget::RenderBoneDetailsPanel()
 		return;
 	}
 
-	FSkeletalMesh* Asset = PreviewSkeletalMesh->GetSkeletalMeshAsset();
+	/*FSkeletalMesh* Asset = PreviewSkeletalMesh->GetSkeletalMeshAsset();
 	if (!Asset || SelectedBoneIndex < 0 || SelectedBoneIndex >= static_cast<int32>(Asset->Bones.size()))
 	{
 		ImGui::TextDisabled("Invalid bone selection.");
 		return;
-	}
+	}*/
 
-	const FBone& Bone = Asset->Bones[SelectedBoneIndex];
+	/*const FBone& Bone = Asset->Bones[SelectedBoneIndex];
 
 	ImGui::Text("Name: %s", Bone.Name.c_str());
 	ImGui::Text("Index: %d", SelectedBoneIndex);
@@ -554,7 +554,7 @@ void FAnimSequenceEditorWidget::RenderBoneDetailsPanel()
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::TextDisabled("TODO(AnimationSequenceEditor):");
-	ImGui::TextDisabled("Bone override 저장은 구현하지 않는다.");
+	ImGui::TextDisabled("Bone override 저장은 구현하지 않는다.");*/
 }
 
 void FAnimSequenceEditorWidget::RenderStatsOverlay(ImDrawList* DrawList, const ImVec2& ViewportPos) const
@@ -574,7 +574,7 @@ void FAnimSequenceEditorWidget::RenderStatsOverlay(ImDrawList* DrawList, const I
 		{
 			VertexCount = Asset->Vertices.size();
 			TriangleCount = Asset->Indices.size() / 3;
-			BoneCount = Asset->Bones.size();
+			// BoneCount = Asset->Bones.size();
 		}
 	}
 
