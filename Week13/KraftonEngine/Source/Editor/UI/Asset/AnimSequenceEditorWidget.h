@@ -8,13 +8,15 @@
 
 class USkeletalMesh;
 class USkeletalMeshComponent;
+class UAnimSequence;
+struct FSkeletonAsset;
 struct FSkeletalMesh;
 struct ImDrawList;
 struct ImVec2;
 
 // TODO(AnimNotify): 실제 FAnimNotifyEvent 런타임 구조가 병합되면 이 임시 Editor 구조를 제거하고
-// 기존 구조체를 include해서 사용한다. 
-// 지금은 저장/런타임 Trigger 없이 UI 마커만 표시한다.
+// 기존 구조체를 include해서 사용한다
+// 지금은 저장/런타임 Trigger 없이 UI 마커만 표시한다
 struct FAnimNotifyEvent
 {
 	float TriggerTime = 0.0f;
@@ -45,13 +47,21 @@ public:
 	bool AllowsMultipleInstances() const override { return true; }
 
 private:
-	void RenderSkeletonTree(const FSkeletalMesh* Asset, int32 BoneIndex);
+	void RenderSkeletonTree(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex);
 	void RenderViewportPanel(float Deltatime);
 	void RenderBoneDetailsPanel();
 	void RenderStatsOverlay(ImDrawList* DrawList, const ImVec2& ViewportPos) const;
 	void RenderTimelinePanel();
 
 	void SetSelectedBones(int32 BoneIndex);
+	void InitializeFromAnimSequence();
+	USkeletalMesh* FindPreviewSkeletalMesh();
+	void InitializePreviewWorld();
+	void ReleasePreviewWorld();
+	const FSkeletonAsset* GetEditableSkeletonAsset() const;
+	void ApplyAnimationPoseToPreview(float Time);
+	void CaptureSelectedBoneOverrideFromPreview();
+	FTransform GetCurrentBoneLocalTransformForDetails(int32 BoneIndex) const;
 
 	// --------------- Time line Section -----------------
 	void TickTimeline(float DeltaTime);
@@ -82,9 +92,12 @@ private:
 	void ApplyEditorBoneOverrides();
 
 private:
-	// UAnimSequence* AnimSequence = nullptr;
+	UAnimSequence* AnimSequence = nullptr;
 	USkeletalMesh* PreviewSkeletalMesh = nullptr;
 	USkeletalMeshComponent* PreviewMeshComponent = nullptr;
+	FString PreviewStatusMessage;
+	TArray<FMatrix> EvaluatedLocalPose;
+	bool bLastPoseEvaluationSucceeded = false;
 
 	SWindow MeshViewportWindow;
 	FMeshEditorViewportClient ViewportClient;

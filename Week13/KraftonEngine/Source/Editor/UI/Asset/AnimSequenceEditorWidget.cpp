@@ -1,13 +1,17 @@
 ﻿#include "AnimSequenceEditorWidget.h"
 
+#include "Animation/AnimDataModel.h"
+#include "Animation/AnimSequence.h"
 #include "Component/Light/DirectionalLightComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "Editor/Settings/EditorSettings.h"
 #include "GameFramework/Light/DirectionalLightActor.h"
 #include "GameFramework/StaticMeshActor.h"
 #include "GameFramework/WorldContext.h"
+#include "Mesh/MeshManager.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletalMeshAsset.h"
+#include "Mesh/SkeletonAsset.h"
 #include "Runtime/Engine.h"
 #include "Slate/SlateApplication.h"
 #include "UI/Toolbar/ViewportToolbar.h"
@@ -32,7 +36,7 @@ namespace
 	}
 }
 
-// 다중 Sequence Instance 처리
+// 다중 Widget Instance 처리
 static uint32 GNextAnimSequenceEditorInstanceId = 0;
 
 FAnimSequenceEditorWidget::FAnimSequenceEditorWidget()
@@ -44,7 +48,7 @@ FAnimSequenceEditorWidget::FAnimSequenceEditorWidget()
 
 bool FAnimSequenceEditorWidget::CanEdit(UObject* Object) const
 {
-	return Object;//&& Object->IsA<UAnimSequence>();
+	return Object && Object->IsA<UAnimSequence>();
 }
 
 bool FAnimSequenceEditorWidget::IsEditingObject(UObject* Object) const
@@ -54,7 +58,7 @@ bool FAnimSequenceEditorWidget::IsEditingObject(UObject* Object) const
 		return true;
 	}
 
-	/*const UAnimSequence* CurrentSequence = Cast<UAnimSequence>(EditedObject);
+	const UAnimSequence* CurrentSequence = Cast<UAnimSequence>(EditedObject);
 	const UAnimSequence* RequestedSequence = Cast<UAnimSequence>(Object);
 
 	if (!IsOpen() || !CurrentSequence || !RequestedSequence)
@@ -63,103 +67,234 @@ bool FAnimSequenceEditorWidget::IsEditingObject(UObject* Object) const
 	}
 
 	const FString& CurrentPath = CurrentSequence->GetAssetPathFileName();
+
 	return !CurrentPath.empty()
 		&& CurrentPath != "None"
-		&& CurrentPath == RequestedSequence->GetAssetPathFileName();*/
-
-	return true;
+		&& CurrentPath == RequestedSequence->GetAssetPathFileName();
 }
 
 void FAnimSequenceEditorWidget::Open(UObject* Object)
 {
+	if (!CanEdit(Object))
+	{
+		return;
+	}
+
 	FAssetEditorWidget::Open(Object);
 
-	//AnimSequence = Cast<UAnimSequence>(EditedObject);
-	//PreviewSkeletalMesh = AnimSequence ? AnimSequence->GetPreviewSkeletalMesh() : nullptr;
-	//PreviewMeshComponent = nullptr;
-	//SelectedBoneIndex = -1;
+	AnimSequence = Cast<UAnimSequence>(EditedObject);
+	if (!AnimSequence)
+	{
+		FAssetEditorWidget::Close();
+		return;
+	}
 
-	//if (AnimSequence)
-	//{
-	//	PlayLength = AnimSequence->GetPlayLength();
+	InitializeFromAnimSequence();
 
-	//	CurrentTime = 0.0f;
-	//	PreviousTime = 0.0f;
-	//	bPlaying = false;
-	//	bLooping = true;
+	// AnimSequence는 Skeleton과 keyframe만 보유하고, 어떤 SkeletalMesh로 미리볼지는 저장X
+	// 그래서 에디터 내부에서 같은 Skeleton을 참조하는 SkeletalMesh를 찾아 PreviewComponent 생성
+	// 찾지 못한 경우에도 Timeline/Notify/Skeleton 정보를 볼 수 있도록 에디터 창은 그대로 유지
 
-	//	const float Padding = std::max(0.25f, PlayLength * 0.08f);
-	//	ViewStartTime = -Padding;
-	//	ViewEndTime = std::max(PlayLength + Padding, 1.0f);
+	// TODO: 나중에 같은 Skeleton을 사용하는 SkeletalMesh를 출력하는 토글 창 만들어보기.
+	PreviewSkeletalMesh = FindPreviewSkeletalMesh();
+	if (PreviewSkeletalMesh)
+	{
+		InitializePreviewWorld();
+	}
+}
 
-	//	SelectedNotifyIndex = -1;
-	//	DraggingNotifyIndex = -1;
-	//	bDraggingNotify = false;
-	//	ContextTimelineTime = 0.0f;
+void FAnimSequenceEditorWidget::InitializeFromAnimSequence()
+{
+	PreviewSkeletalMesh = nullptr;
+	PreviewMeshComponent = nullptr;
+	PreviewStatusMessage.clear();
+	EvaluatedLocalPose.clear();
+	bLastPoseEvaluationSucceeded = false;
+	SelectedBoneIndex = -1;
 
-	//	PreviewNotifyMarkers.clear();
-	//	EditorBoneOverrides.clear();
-	//}
+	// AnimSequence는 SkeletonPath만 저장한 채 로드될 수 있으므로, 에디터 진입 시 Skeleton pointer를 한 번 복원합니다.
+	// 이 작업은 참조 asset을 찾는 과정일 뿐이며 원본 keyframe이나 Skeleton pose 데이터를 변경하지 않습니다.
+	if (AnimSequence && !AnimSequence->GetSkeletonAsset())
+	{
+		AnimSequence->ResolveSkeleton();
+	}
 
-	//if (!AnimSequence || !PreviewSkeletalMesh)
-	//{
-	//	// TODO(AnimationSequenceEditor): AnimSequence가 Preview SkeletalMesh를 직접 제공하도록 연결되면
-	//	// 이 빈 Preview 상태 대신 asset 참조를 로드한다.
-	//	return;
-	//}
-	// World Type을 Preview로 변경
+	const UAnimDataModel* DataModel = AnimSequence ? AnimSequence->GetDataModel() : nullptr;
+	PlayLength = AnimSequence ? std::max(0.0f, AnimSequence->GetPlayLength()) : 0.0f;
+	if (PlayLength <= 0.0f && DataModel)
+	{
+		PlayLength = std::max(0.0f, DataModel->GetPlayLength());
+	}
+
+	if (PlayLength <= 0.0f && DataModel && DataModel->GetFrameRate() > 0.0f)
+	{
+		// 일부 오래된 AnimSequence package는 key/track 정보는 있지만 SequenceLength/DataModel.PlayLength가 0으로 저장되어 있습니다.
+		// 이 경우 Timeline을 숨겨버리면 asset이 비어 있는지, 길이 metadata만 누락됐는지 구분할 수 없습니다.
+		// 원본 asset을 수정하지 않고 에디터 표시용 길이만 프레임 정보에서 복원해 Timeline과 pose scrub이 가능하게 합니다.
+		const int32 FrameCount = std::max(DataModel->GetNumberOfFrames(), DataModel->GetNumberOfKeys());
+		if (FrameCount > 1)
+		{
+			PlayLength = static_cast<float>(FrameCount - 1) / DataModel->GetFrameRate();
+		}
+	}
+
+	const float Padding = PlayLength > 0.0f ? std::max(0.1f, PlayLength * 0.08f) : 0.25f;
+	ViewStartTime = -Padding;
+	ViewEndTime = std::max(PlayLength + Padding, 1.0f);
+
+
+	// Timeline 상태는 항상 AnimSequence의 길이를 기준으로 다시 시작합니다.
+	// 이전 asset에서 쓰던 재생 시간/드래그 상태가 남으면 새 sequence가 열릴 때 out-of-range pose 평가가 발생할 수 있습니다.
+	CurrentTime = 0.0f;
+	PreviousTime = 0.0f;
+	bPlaying = false;
+	bLooping = AnimSequence ? AnimSequence->IsLooping() : true;
+
+	SelectedNotifyIndex = -1;
+	DraggingNotifyIndex = -1;
+	bDraggingNotify = false;
+	ContextTimelineTime = 0.0f;
+
+	// Notify는 아직 AnimSequenceBase에 정식 저장 구조가 없기 때문에 에디터 미리보기 배열만 초기화합니다.
+	// TODO(AnimNotify): 추후 AnimSequenceBase의 Notifies로 이동 필요.
+	PreviewNotifyMarkers.clear();
+
+	// Bone override도 asset 원본에 저장하지 않는 preview-local 상태입니다.
+	// 새 sequence를 열 때 이전 override가 남으면 다른 Skeleton index에 잘못 적용될 수 있어 반드시 비웁니다.
+	EditorBoneOverrides.clear();
+}
+
+USkeletalMesh* FAnimSequenceEditorWidget::FindPreviewSkeletalMesh()
+{
+	if (!AnimSequence)
+	{
+		PreviewStatusMessage = "AnimSequence가 유효하지 않습니다.";
+		return nullptr;
+	}
+
+	const FString& SkeletonPath = AnimSequence->GetSkeletonPath();
+	if (SkeletonPath.empty())
+	{
+		PreviewStatusMessage = "Preview Mesh를 찾을 수 없음: AnimSequence에 Skeleton 경로가 없습니다.";
+		return nullptr;
+	}
+
+	// 1차 탐색: 캐시된 Mesh 중에 같은 SkeletonPath를 사용하는 Mesh가 있는지 탐색
+	// UAnimSequence에는 PreviewSkeletalMesh 참조가 아직 없음.
+	// 이미 로드된 SkeletalMesh 중 같은 Skeleton을 쓰는 것을 먼저 찾습니다.
+	for (const auto& Pair : FMeshManager::SkeletalMeshCache)
+	{
+		USkeletalMesh* Mesh = Pair.second;
+		const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+		if (MeshAsset && MeshAsset->SkeletonPath == SkeletonPath)
+		{
+			return Mesh;
+		}
+	}
+
+	ID3D11Device* Device = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
+	if (!Device)
+	{
+		PreviewStatusMessage = "Preview Mesh를 찾을 수 없음: 렌더 디바이스가 준비되지 않았습니다.";
+		return nullptr;
+	}
+
+	// 2차 탐색: 캐시된 Mesh 중에 같은 SkeletonPath를 사용하는 Mesh가 있는지 탐색
+	// TODO(AnimationSequenceEditor)
+	// - UAnimSequence 또는 import metadata에 Preview Mesh 참조가 생기면 이 휴리스틱은 제거해야 합니다.
+	FMeshManager::ScanMeshAssets();
+	for (const FMeshAssetListItem& Item : FMeshManager::GetAvailableSkeletalMeshFiles())
+	{
+		USkeletalMesh* Mesh = FMeshManager::LoadSkeletalMesh(Item.FullPath, Device);
+		const FSkeletalMesh* MeshAsset = Mesh ? Mesh->GetSkeletalMeshAsset() : nullptr;
+		if (MeshAsset && MeshAsset->SkeletonPath == SkeletonPath)
+		{
+			return Mesh;
+		}
+	}
+
+	PreviewStatusMessage = "Can't found Preview Mesh";
+	return nullptr;
+}
+
+void FAnimSequenceEditorWidget::InitializePreviewWorld()
+{
+	if (!GEngine || !PreviewSkeletalMesh)
+	{
+		return;
+	}
+	// World Context 생성
 	FWorldContext& WorldContext = GEngine->CreateWorldContext(EWorldType::EditorPreview, PreviewWorldHandle);
 	WorldContext.World->SetWorldType(EWorldType::EditorPreview);
 	WorldContext.World->InitWorld();
 
-	// SkeletalMesh를 Component로 가지는 Actor 생성
+	// PreviewComponent는 AnimSequence 평가 결과를 적용받는 임시 대상입니다
+	// 애니메이션은 SkeletalMesh asset에 저장되지 않고, 매 frame CurrentTime에서 평가한 pose만 component-local edit pose로 덮습니다.
 	AActor* Actor = WorldContext.World->SpawnActor<AActor>();
-	PreviewMeshComponent = Actor->AddComponent<USkeletalMeshComponent>();
-	PreviewMeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
-	Actor->SetRootComponent(PreviewMeshComponent);
-	Actor->SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
+	PreviewMeshComponent = Actor ? Actor->AddComponent<USkeletalMeshComponent>() : nullptr;
+	if (PreviewMeshComponent)
+	{
+		PreviewMeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
+		Actor->SetRootComponent(PreviewMeshComponent);
+	}
+
+	if (!Actor || !PreviewMeshComponent)
+	{
+		PreviewStatusMessage = "Preview Mesh를 찾았지만 PreviewComponent 생성에 실패했습니다.";
+		if (PreviewWorldHandle.IsValid())
+		{
+			GEngine->DestroyWorldContext(PreviewWorldHandle);
+		}
+		return;
+	}
+	if (Actor)
+	{
+		Actor->SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
+	}
 
 	// Directional Light
 	ADirectionalLightActor* LightActor = WorldContext.World->SpawnActor<ADirectionalLightActor>();
-	LightActor->InitDefaultComponents();
-	LightActor->SetActorRotation(FVector(0.0f, 45.0f, -45.0f));
-	UDirectionalLightComponent* LightComp = LightActor->GetComponentByClass<UDirectionalLightComponent>();
-	if (LightComp)
+	if (LightActor)
 	{
-		LightComp->SetShadowBias(0.0f);
-		LightComp->PushToScene();
+		LightActor->InitDefaultComponents();
+		LightActor->SetActorRotation(FVector(0.0f, 45.0f, -45.0f));
+		if (UDirectionalLightComponent* LightComp = LightActor->GetComponentByClass<UDirectionalLightComponent>())
+		{
+			LightComp->SetShadowBias(0.0f);
+			LightComp->PushToScene();
+		}
+	}
+	// Floor Static Mesh
+	AStaticMeshActor* FloorActor = WorldContext.World->SpawnActor<AStaticMeshActor>();
+	if (FloorActor)
+	{
+		FloorActor->InitDefaultComponents("Asset/Mesh/BasicShape/Cube_StaticMesh.uasset");
+		FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -0.05f));
+		FloorActor->SetActorScale(FVector(10.0f, 10.0f, 0.02f));
 	}
 
-	// Floor
-	AStaticMeshActor* FloorActor = WorldContext.World->SpawnActor<AStaticMeshActor>();
-	FloorActor->InitDefaultComponents("Data/BasicShape/Cube.OBJ");
-	FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -0.05f));
-	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 0.02f));
-
-	// Viewport Client
-	// TODO: 지금은 Mesh Viewport Client하고 다른점이 없기 때문에 MeshViewportClient를 사용한다.
-	// 추후 문제 생기면 AnimSequenceEditorWidget 전용 ViewportClient 추가
-	const ImVec2 ViewportSize = ImGui::GetContentRegionAvail();
-	ViewportClient.Initialize(GEngine->GetRenderer().GetFD3DDevice().GetDevice(), ViewportSize.x, ViewportSize.y);
+	// 지금은 MeshEditorViewportClient가 bone gizmo/debug draw와 preview world 렌더링을 이미 제공하므로 재사용합니다.
+	// AnimSequence 전용 카메라/조작 정책이 필요해지면 이 파일 안에서 별도 client로 분리할 수 있습니다.
+	const ImVec2 RequestedViewportSize = ImGui::GetContentRegionAvail();
+	const uint32 InitialWidth = static_cast<uint32>(std::max(1.0f, RequestedViewportSize.x));
+	const uint32 InitialHeight = static_cast<uint32>(std::max(1.0f, RequestedViewportSize.y));
+	ViewportClient.Initialize(GEngine->GetRenderer().GetFD3DDevice().GetDevice(), InitialWidth, InitialHeight);
 	ViewportClient.SetPreviewWorld(WorldContext.World);
 	ViewportClient.SetPreviewActor(Actor);
-	ViewportClient.SetPreviewMeshComponent(Actor->GetComponentByClass<USkeletalMeshComponent>());
+	ViewportClient.SetPreviewMeshComponent(PreviewMeshComponent);
 
 	ViewportClient.CreatePreviewGizmo();
 	ViewportClient.CreateBoneDebugComponent();
 	ViewportClient.ResetCameraToPreviousBounds();
 
 	WorldContext.World->SetEditorPOVProvider(&ViewportClient);
-
-	ViewportClient.SetSelectedBone(Cast<USkeletalMesh>(EditedObject), -1);
+	ViewportClient.SetSelectedBone(PreviewSkeletalMesh, -1);
 
 	FSlateApplication::Get().RegisterViewport(&MeshViewportWindow, &ViewportClient);
 }
 
-void FAnimSequenceEditorWidget::Close()
+void FAnimSequenceEditorWidget::ReleasePreviewWorld()
 {
-	FAssetEditorWidget::Close();
-
 	if (UWorld* PreviewWorld = ViewportClient.GetPreviewWorld())
 	{
 		FScene& PreviewScene = PreviewWorld->GetScene();
@@ -171,13 +306,109 @@ void FAnimSequenceEditorWidget::Close()
 		}
 	}
 
-	FSlateApplication::Get().UnregisterViewport(&ViewportClient);
+	if (ViewportClient.IsRenderable())
+	{
+		FSlateApplication::Get().UnregisterViewport(&ViewportClient);
+		ViewportClient.Release();
+	}
+}
 
-	ViewportClient.Release();
+const FSkeletonAsset* FAnimSequenceEditorWidget::GetEditableSkeletonAsset() const
+{
+	return AnimSequence ? AnimSequence->GetSkeletonAsset() : nullptr;
+}
 
-	// AnimSequence = nullptr;
+void FAnimSequenceEditorWidget::ApplyAnimationPoseToPreview(float Time)
+{
+	EvaluatedLocalPose.clear();
+	bLastPoseEvaluationSucceeded = false;
+
+	if (!AnimSequence)
+	{
+		return;
+	}
+
+	// UAnimSequence::EvaluatePose()가 UAnimDataModel의 FBoneAnimationTrack / FRawAnimSequenceTrack을 샘플링합니다.
+	// 여기서는 반환된 local matrix를 임시 pose로만 사용하고, AnimSequence 내부 keyframe 배열은 절대 수정하지 않습니다.
+	bLastPoseEvaluationSucceeded = AnimSequence->EvaluatePose(Time, EvaluatedLocalPose, bLooping);
+	if (!bLastPoseEvaluationSucceeded)
+	{
+		return;
+	}
+
+	if (!PreviewMeshComponent)
+	{
+		return;
+	}
+
+	// 현재 USkinnedMeshComponent에는 여러 bone local matrix를 한 번에 넣는 API가 없습니다.
+	// 그래서 이 에디터 안에서는 bone별 setter를 호출해 PreviewComponent의 edit pose만 갱신합니다.
+	// TODO(AnimationSequenceEditor): component에 batch pose 적용 API가 생기면 per-bone CPU skinning 반복을 줄여야 합니다.
+	for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(EvaluatedLocalPose.size()); ++BoneIndex)
+	{
+		PreviewMeshComponent->SetBoneLocalTransformByIndex(
+			BoneIndex,
+			FTransform(EvaluatedLocalPose[BoneIndex]));
+	}
+}
+
+void FAnimSequenceEditorWidget::CaptureSelectedBoneOverrideFromPreview()
+{
+	if (!PreviewMeshComponent || SelectedBoneIndex < 0)
+	{
+		return;
+	}
+
+	/*Gizmo는 ViewportClient 내부에서 component의 bone setter를 직접 호출합니다.
+	그 값을 editor override 배열에 다시 받아두어야
+	다음 Tick에서 AnimSequence pose를 재평가한 뒤에도
+	사용자가 조작한 Bone SRT가 pose 위에 계속 덮여 재생됩니다.*/
+	SetEditedBoneTransform(
+		SelectedBoneIndex,
+		PreviewMeshComponent->GetBoneLocalTransformByIndex(SelectedBoneIndex));
+}
+
+FTransform FAnimSequenceEditorWidget::GetCurrentBoneLocalTransformForDetails(int32 BoneIndex) const
+{
+	for (const FEditorBoneOverride& Override : EditorBoneOverrides)
+	{
+		if (Override.BoneIndex == BoneIndex)
+		{
+			return Override.LocalTransform;
+		}
+	}
+
+	if (PreviewMeshComponent)
+	{
+		return PreviewMeshComponent->GetBoneLocalTransformByIndex(BoneIndex);
+	}
+
+	if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(EvaluatedLocalPose.size()))
+	{
+		return FTransform(EvaluatedLocalPose[BoneIndex]);
+	}
+
+	const FSkeletonAsset* SkeletonAsset = GetEditableSkeletonAsset();
+	if (SkeletonAsset && BoneIndex >= 0 && BoneIndex < static_cast<int32>(SkeletonAsset->Bones.size()))
+	{
+		return FTransform(SkeletonAsset->Bones[BoneIndex].LocalMatrix);
+	}
+
+	return FTransform();
+}
+
+void FAnimSequenceEditorWidget::Close()
+{
+	FAssetEditorWidget::Close();
+
+	ReleasePreviewWorld();
+
+	AnimSequence = nullptr;
 	PreviewSkeletalMesh = nullptr;
 	PreviewMeshComponent = nullptr;
+	PreviewStatusMessage.clear();
+	EvaluatedLocalPose.clear();
+	bLastPoseEvaluationSucceeded = false;
 	SelectedBoneIndex = -1;
 	EditorBoneOverrides.clear();
 	PreviewNotifyMarkers.clear();
@@ -185,26 +416,30 @@ void FAnimSequenceEditorWidget::Close()
 
 void FAnimSequenceEditorWidget::Tick(float DeltaTime)
 {
-	/*if (!IsOpen() || !AnimSequence)
+	if (!IsOpen() || !AnimSequence)
 	{
 		return;
-	}*/
-	if (!IsOpen()) return;
+	}
 
 	TickTimeline(DeltaTime);
 
-	// TODO(Animation): AnimSequence Pose 평가가 구현되면 여기서 먼저 적용한다.
-	// ApplyAnimationPose(CurrentTime);
+	ApplyAnimationPoseToPreview(CurrentTime);
 
-	// Editor에서 수정한 Bone Transform은 원본 Pose 위에 다시 덮는다.
+	// Editor에서 수정한 Bone Transform은 원본 AnimSequence 데이터를 바꾸지 않고 Preview pose 위에 다시 덮습니다.
+	// 이 순서 덕분에 Detail/Gizmo에서 바꾼 Bone SRT가 재생 중에도 유지됩니다
 	ApplyEditorBoneOverrides();
 
 	if (ViewportClient.IsRenderable())
 	{
 		ViewportClient.Tick(DeltaTime);
+		if (ViewportClient.IsGizmoHolding())
+		{
+			CaptureSelectedBoneOverrideFromPreview();
+		}
 	}
 }
 
+// ----------- Render Section ----------------
 void FAnimSequenceEditorWidget::Render(float DeltaTime)
 {
 	(void)DeltaTime;
@@ -217,7 +452,7 @@ void FAnimSequenceEditorWidget::Render(float DeltaTime)
 		return;
 	}
 
-	if (!IsOpen() || !EditedObject)
+	if (!IsOpen() || !AnimSequence)
 	{
 		return;
 	}
@@ -227,7 +462,7 @@ void FAnimSequenceEditorWidget::Render(float DeltaTime)
 
 	bool bWindowOpen = true;
 	FString VisibleTitle = "Animation Sequence Editor";
-	/*if (AnimSequence)
+	if (AnimSequence)
 	{
 		const FString& AssetPath = AnimSequence->GetAssetPathFileName();
 		if (!AssetPath.empty())
@@ -235,7 +470,7 @@ void FAnimSequenceEditorWidget::Render(float DeltaTime)
 			VisibleTitle += " - ";
 			VisibleTitle += AssetPath;
 		}
-	}*/
+	}
 	if (IsDirty())
 	{
 		VisibleTitle += " *";
@@ -275,23 +510,40 @@ void FAnimSequenceEditorWidget::Render(float DeltaTime)
 	ImGui::Text("Skeleton Tree");
 	ImGui::Separator();
 
-	if (PreviewSkeletalMesh)
+	if (const UAnimDataModel* DataModel = AnimSequence ? AnimSequence->GetDataModel() : nullptr)
 	{
-		const FSkeletalMesh* Asset = PreviewSkeletalMesh->GetSkeletalMeshAsset();
-		if (Asset)
+		if (DataModel->GetNumBoneTracks() == 0)
 		{
-			/*for (int32 i = 0; i < static_cast<int32>(Asset->Bones.size()); ++i)
-			{
-				if (Asset->Bones[i].ParentIndex == -1)
-				{
-					RenderSkeletonTree(Asset, i);
-				}
-			}*/
+			ImGui::TextDisabled("No Animation Tracks");
+			ImGui::Separator();
 		}
 	}
 	else
 	{
-		ImGui::TextDisabled("No preview skeleton.");
+		ImGui::TextDisabled("No AnimDataModel");
+		ImGui::Separator();
+	}
+
+	if (const FSkeletonAsset* SkeletonAsset = GetEditableSkeletonAsset())
+	{
+		if (SkeletonAsset->Bones.empty())
+		{
+			ImGui::TextDisabled("No skeleton bones.");
+		}
+		else
+		{
+			for (int32 i = 0; i < static_cast<int32>(SkeletonAsset->Bones.size()); ++i)
+			{
+				if (SkeletonAsset->Bones[i].ParentIndex == -1)
+				{
+					RenderSkeletonTree(SkeletonAsset, i);
+				}
+			}
+		}
+	}
+	else
+	{
+		ImGui::TextDisabled("No skeleton.");
 	}
 	ImGui::EndChild();
 
@@ -315,7 +567,9 @@ void FAnimSequenceEditorWidget::Render(float DeltaTime)
 	ImGui::PopStyleColor(3);
 	ImGui::SameLine();
 
+	ImGui::BeginGroup();
 	RenderViewportPanel(DeltaTime);
+	ImGui::EndGroup();
 
 	ImGui::SameLine();
 
@@ -344,9 +598,14 @@ void FAnimSequenceEditorWidget::CollectPreviewViewports(TArray<IEditorPreviewVie
 	}
 }
 
-void FAnimSequenceEditorWidget::RenderSkeletonTree(const FSkeletalMesh* Asset, int32 BoneIndex)
+void FAnimSequenceEditorWidget::RenderSkeletonTree(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex)
 {
-	// const FBone& Bone = Asset->Bones[BoneIndex];
+	if (!SkeletonAsset || BoneIndex < 0 || BoneIndex >= static_cast<int32>(SkeletonAsset->Bones.size()))
+	{
+		return;
+	}
+
+	const FBone& Bone = SkeletonAsset->Bones[BoneIndex];
 
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_SpanAvailWidth |
@@ -358,38 +617,40 @@ void FAnimSequenceEditorWidget::RenderSkeletonTree(const FSkeletalMesh* Asset, i
 	}
 
 	bool bHasChildren = false;
-	/*for (int32 i = BoneIndex + 1; i < static_cast<int32>(Asset->Bones.size()); ++i)
+	for (int32 i = BoneIndex + 1; i < static_cast<int32>(SkeletonAsset->Bones.size()); ++i)
 	{
-		if (Asset->Bones[i].ParentIndex == BoneIndex)
+		if (SkeletonAsset->Bones[i].ParentIndex == BoneIndex)
 		{
 			bHasChildren = true;
 			break;
 		}
-	}*/
+	}
 
 	if (!bHasChildren)
 	{
 		Flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 	}
 
-	// const bool bOpen = ImGui::TreeNodeEx(Bone.Name.c_str(), Flags);
+	// Skeleton Tree는 Preview Mesh가 없어도 AnimSequence의 SkeletonAsset만으로 표시할 수 있습니다.
+	// 선택된 Bone index는 이후 Timeline pose 평가와 Detail override가 같은 index를 바라보게 하는 기준점입니다.
+	const bool bOpen = ImGui::TreeNodeEx(Bone.Name.c_str(), Flags);
 
 	if (ImGui::IsItemClicked())
 	{
 		SetSelectedBones(BoneIndex);
 	}
 
-	/*if (bOpen && bHasChildren)
+	if (bOpen && bHasChildren)
 	{
-		for (int32 i = BoneIndex + 1; i < static_cast<int32>(Asset->Bones.size()); ++i)
+		for (int32 i = BoneIndex + 1; i < static_cast<int32>(SkeletonAsset->Bones.size()); ++i)
 		{
-			if (Asset->Bones[i].ParentIndex == BoneIndex)
+			if (SkeletonAsset->Bones[i].ParentIndex == BoneIndex)
 			{
-				RenderSkeletonTree(Asset, i);
+				RenderSkeletonTree(SkeletonAsset, i);
 			}
 		}
 		ImGui::TreePop();
-	}*/
+	}
 }
 
 void FAnimSequenceEditorWidget::RenderViewportPanel(float Deltatime)
@@ -405,9 +666,14 @@ void FAnimSequenceEditorWidget::RenderViewportPanel(float Deltatime)
 	if (!ViewportClient.IsRenderable())
 	{
 		ImGui::BeginChild("AnimSequenceMissingPreviewViewport", Size, true);
-		ImGui::TextDisabled("No Preview Mesh");
+		ImGui::TextDisabled("Preview Mesh를 찾을 수 없음");
 		ImGui::Spacing();
-		ImGui::TextWrapped("TODO(AnimationSequenceEditor): AnimSequence에서 Preview SkeletalMesh를 찾는 연결이 필요합니다.");
+		if (!PreviewStatusMessage.empty())
+		{
+			ImGui::TextWrapped("%s", PreviewStatusMessage.c_str());
+		}
+		ImGui::Spacing();
+		ImGui::TextWrapped("TODO(AnimationSequenceEditor): 추후 UAnimSequence 또는 import metadata에 Preview SkeletalMesh 참조를 저장하면, 같은 Skeleton을 스캔하는 임시 경로를 제거해야 합니다.");
 		ImGui::EndChild();
 		return;
 	}
@@ -481,28 +747,26 @@ void FAnimSequenceEditorWidget::RenderBoneDetailsPanel()
 	ImGui::Text("Bone Details");
 	ImGui::Separator();
 
-	if (!PreviewSkeletalMesh || SelectedBoneIndex == -1)
+	const FSkeletonAsset* SkeletonAsset = GetEditableSkeletonAsset();
+	if (!SkeletonAsset || SelectedBoneIndex == -1)
 	{
 		ImGui::TextDisabled("Select a bone to edit.");
 		return;
 	}
 
-	/*FSkeletalMesh* Asset = PreviewSkeletalMesh->GetSkeletalMeshAsset();
-	if (!Asset || SelectedBoneIndex < 0 || SelectedBoneIndex >= static_cast<int32>(Asset->Bones.size()))
+	if (SelectedBoneIndex < 0 || SelectedBoneIndex >= static_cast<int32>(SkeletonAsset->Bones.size()))
 	{
 		ImGui::TextDisabled("Invalid bone selection.");
 		return;
-	}*/
+	}
 
-	/*const FBone& Bone = Asset->Bones[SelectedBoneIndex];
+	const FBone& Bone = SkeletonAsset->Bones[SelectedBoneIndex];
 
 	ImGui::Text("Name: %s", Bone.Name.c_str());
 	ImGui::Text("Index: %d", SelectedBoneIndex);
 	ImGui::Dummy(ImVec2(0, 10));
 
-	FTransform LocalTransform = PreviewMeshComponent
-		? PreviewMeshComponent->GetBoneLocalTransformByIndex(SelectedBoneIndex)
-		: FTransform(Bone.LocalMatrix);
+	FTransform LocalTransform = GetCurrentBoneLocalTransformForDetails(SelectedBoneIndex);
 
 	if (ImGui::BeginTable("##AnimSequenceBoneTransformTable", 2, ImGuiTableFlags_SizingStretchProp))
 	{
@@ -553,8 +817,10 @@ void FAnimSequenceEditorWidget::RenderBoneDetailsPanel()
 
 	ImGui::Spacing();
 	ImGui::Separator();
-	ImGui::TextDisabled("TODO(AnimationSequenceEditor):");
-	ImGui::TextDisabled("Bone override 저장은 구현하지 않는다.");*/
+	/*ImGui::TextDisabled("Preview override only");
+	ImGui::TextWrapped(
+		"Detail/Gizmo에서 바꾼 Bone SRT는 AnimSequence keyframe을 수정하지 않고 Preview pose 위에만 덮습니다. "
+		"저장 가능한 Additive/Override track 구조가 생기면 이 임시 상태를 별도 데이터로 옮겨야 합니다.");*/
 }
 
 void FAnimSequenceEditorWidget::RenderStatsOverlay(ImDrawList* DrawList, const ImVec2& ViewportPos) const
@@ -574,8 +840,11 @@ void FAnimSequenceEditorWidget::RenderStatsOverlay(ImDrawList* DrawList, const I
 		{
 			VertexCount = Asset->Vertices.size();
 			TriangleCount = Asset->Indices.size() / 3;
-			// BoneCount = Asset->Bones.size();
 		}
+	}
+	if (const FSkeletonAsset* SkeletonAsset = GetEditableSkeletonAsset())
+	{
+		BoneCount = SkeletonAsset->Bones.size();
 	}
 
 	const FString Text =
@@ -588,15 +857,19 @@ void FAnimSequenceEditorWidget::RenderStatsOverlay(ImDrawList* DrawList, const I
 	DrawList->AddText(TextPos, IM_COL32(235, 238, 242, 255), Text.c_str());
 }
 
+// ----- Timeline 관련 계산 기능 ----------
 void FAnimSequenceEditorWidget::TickTimeline(float DeltaTime)
 {
 	PreviousTime = CurrentTime;
+	CurrentTime = std::clamp(CurrentTime, 0.0f, std::max(0.0f, PlayLength));
 
 	if (!bPlaying || PlayLength <= 0.0f)
 	{
 		return;
 	}
 
+	// Tick에서는 Timeline 시간이 먼저 진행되고, 그 다음 단계에서 CurrentTime 기준 pose가 평가됩니다.
+	// 이렇게 순서를 고정해야 UI의 playhead, Notify marker trigger 판단, PreviewComponent pose가 같은 시간을 보게 됩니다.
 	CurrentTime += DeltaTime;
 
 	if (bLooping)
@@ -615,19 +888,16 @@ void FAnimSequenceEditorWidget::TickTimeline(float DeltaTime)
 			bPlaying = false;
 		}
 	}
+
+	CurrentTime = std::clamp(CurrentTime, 0.0f, PlayLength);
 }
 
 void FAnimSequenceEditorWidget::RenderTimelinePanel()
 {
-	if (PlayLength <= 0.0f)
-	{
-		ImGui::TextDisabled("No animation timeline.");
-		return;
-	}
-
-	constexpr float TimelineHeight = 120.0f;
+	constexpr float TimelineHeight = 156.0f;
 	constexpr float LeftPanelWidth = 180.0f;
 	constexpr float RulerHeight = 28.0f;
+	const bool bHasTimelineLength = PlayLength > 0.0f;
 
 	ImGui::BeginChild(
 		"##AnimSequenceTimelinePanel",
@@ -635,10 +905,34 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 		true,
 		ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
+	// Timeline은 AnimSequence editor의 핵심 상태 표시 영역이므로 PlayLength가 0이어도 숨기지 않습니다.
+	// 길이가 0인 asset은 컨트롤만 비활성화하고, 아래 ruler를 0초 기준으로 그려 metadata 문제를 바로 확인할 수 있게 합니다.
+	ImGui::BeginDisabled(!bHasTimelineLength);
 	if (ImGui::Button(bPlaying ? "Pause" : "Play"))
 	{
 		bPlaying = !bPlaying;
 	}
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("First"))
+	{
+		bPlaying = false;
+		PreviousTime = CurrentTime;
+		CurrentTime = 0.0f;
+	}
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled(!bHasTimelineLength);
+	if (ImGui::Button("Last"))
+	{
+		bPlaying = false;
+		PreviousTime = CurrentTime;
+		CurrentTime = PlayLength;
+	}
+	ImGui::EndDisabled();
 
 	ImGui::SameLine();
 
@@ -655,14 +949,82 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	ImGui::SameLine();
 
 	ImGui::SetNextItemWidth(120.0f);
-	if (ImGui::DragFloat("Time", &CurrentTime, 0.01f, 0.0f, PlayLength, "%.3f"))
+	float TimeInput = CurrentTime;
+	ImGui::BeginDisabled(!bHasTimelineLength);
+	if (ImGui::DragFloat("Time", &TimeInput, 0.01f, 0.0f, PlayLength, "%.3f"))
 	{
+		// 숫자 입력도 Timeline scrub과 같은 의미로 취급합니다.
+		// 사용자가 시간을 직접 바꾸는 동안 재생이 계속되면 pose가 입력 직후 다시 밀려 UI와 Preview가 어긋납니다.
+		bPlaying = false;
 		PreviousTime = CurrentTime;
-		CurrentTime = std::clamp(CurrentTime, 0.0f, PlayLength);
+		CurrentTime = std::clamp(TimeInput, 0.0f, PlayLength);
 	}
+	ImGui::EndDisabled();
 
 	ImGui::SameLine();
-	ImGui::Text("Length: %.3f", PlayLength);
+	ImGui::Text("/ %.3f sec", PlayLength);
+	if (!bHasTimelineLength)
+	{
+		ImGui::SameLine();
+		ImGui::TextDisabled("Timeline length is 0. Frame/key metadata may be missing.");
+	}
+
+	TArray<FAnimNotifyEvent>& NotifyMarkers = GetNotifyMarkers();
+	if (SelectedNotifyIndex >= static_cast<int32>(NotifyMarkers.size()))
+	{
+		SelectedNotifyIndex = -1;
+	}
+
+	if (SelectedNotifyIndex >= 0)
+	{
+		FAnimNotifyEvent& SelectedNotify = NotifyMarkers[SelectedNotifyIndex];
+
+		ImGui::Spacing();
+		ImGui::PushID("AnimSequenceSelectedNotifyEditor");
+
+		// Notify 편집은 현재 임시 PreviewNotifyMarkers에만 반영합니다.
+		// TODO(AnimNotify): 추후 AnimSequenceBase의 Notifies로 이동 필요. 정식 Event 구조가 들어오면 이 임시 UI 저장 경로는 삭제해야 합니다.
+		ImGui::TextDisabled("Selected Notify");
+		ImGui::SameLine();
+
+		char NameBuffer[128];
+		const FString CurrentNotifyName = SelectedNotify.NotifyName.ToString();
+		std::snprintf(NameBuffer, sizeof(NameBuffer), "%s", CurrentNotifyName.c_str());
+
+		ImGui::SetNextItemWidth(160.0f);
+		if (ImGui::InputText("Name", NameBuffer, sizeof(NameBuffer)))
+		{
+			SelectedNotify.NotifyName = FName(NameBuffer);
+			MarkDirty();
+		}
+
+		ImGui::SameLine();
+
+		float NotifyTime = SelectedNotify.TriggerTime;
+		ImGui::SetNextItemWidth(110.0f);
+		if (ImGui::DragFloat("Time", &NotifyTime, 0.01f, 0.0f, PlayLength, "%.3f"))
+		{
+			MoveVisualNotify(SelectedNotifyIndex, NotifyTime);
+		}
+
+		ImGui::SameLine();
+
+		float NotifyDuration = SelectedNotify.Duration;
+		ImGui::SetNextItemWidth(110.0f);
+		if (ImGui::DragFloat("Duration", &NotifyDuration, 0.01f, 0.0f, PlayLength, "%.3f"))
+		{
+			SelectedNotify.Duration = std::clamp(NotifyDuration, 0.0f, PlayLength);
+			MarkDirty();
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Delete"))
+		{
+			DeleteSelectedVisualNotify();
+		}
+
+		ImGui::PopID();
+	}
 
 	const ImVec2 PanelPos = ImGui::GetCursorScreenPos();
 	const ImVec2 PanelSize = ImGui::GetContentRegionAvail();
@@ -728,6 +1090,9 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 
 	if (bMouseInRuler && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 	{
+		// Timeline을 직접 scrub하는 순간에는 재생을 멈춥니다.
+		// 재생 상태를 유지하면 drag 중 DeltaTime 누적이 끼어들어 사용자가 놓은 위치와 실제 pose 시간이 달라집니다.
+		bPlaying = false;
 		PreviousTime = CurrentTime;
 
 		CurrentTime = XToTime(Mouse.x, TimelineX, TimelineWidth, VisibleRange);
@@ -878,6 +1243,25 @@ void FAnimSequenceEditorWidget::DrawNotifyTrack(
 			? IM_COL32(255, 230, 90, 255)
 			: IM_COL32(220, 70, 70, 255);
 
+		if (Notify.Duration > 0.0f)
+		{
+			const float EndTime = std::clamp(Notify.TriggerTime + Notify.Duration, 0.0f, PlayLength);
+			const float EndX = TimeToX(EndTime, TimelineX, TimelineWidth, VisibleRange);
+			const float RegionMinX = std::clamp(std::min(X, EndX), TimelineX, PanelEnd.x);
+			const float RegionMaxX = std::clamp(std::max(X, EndX), TimelineX, PanelEnd.x);
+
+			// Duration Notify는 아직 정식 runtime event 구조가 없으므로 구간 편집은 단순 표시 수준으로 둡니다.
+			// 시간/길이 값은 위의 선택 UI에서 바꾸고, Timeline에는 trigger부터 duration 끝까지의 범위만 시각화합니다.
+			if (RegionMaxX > RegionMinX)
+			{
+				DrawList->AddRectFilled(
+					ImVec2(RegionMinX, RowY + 18.0f),
+					ImVec2(RegionMaxX, RowY + 25.0f),
+					bSelected ? IM_COL32(255, 230, 90, 92) : IM_COL32(220, 70, 70, 72),
+					2.0f);
+			}
+		}
+
 		const ImVec2 P0(X, RowY + 5.0f);
 		const ImVec2 P1(X - 6.0f, RowY + 18.0f);
 		const ImVec2 P2(X + 6.0f, RowY + 18.0f);
@@ -1021,6 +1405,7 @@ TArray<FAnimNotifyEvent>& FAnimSequenceEditorWidget::GetNotifyMarkers()
 	// 현재는 Editor UI 선작업용 임시 배열.
 	// TODO(AnimNotify): UAnimSequenceBase::Notifies가 병합되면
 	// return AnimSequence->GetNotifies(); 로 교체한다.
+	// TODO(AnimNotify): 추후 AnimSequenceBase의 Notifies로 이동 필요.
 	return PreviewNotifyMarkers;
 }
 
@@ -1113,14 +1498,17 @@ void FAnimSequenceEditorWidget::SortVisualNotifyMarkers()
 void FAnimSequenceEditorWidget::SetSelectedBones(int32 BoneIndex)
 {
 	SelectedBoneIndex = BoneIndex;
-	ViewportClient.SetSelectedBone(PreviewSkeletalMesh, BoneIndex);
+	if (ViewportClient.IsRenderable())
+	{
+		ViewportClient.SetSelectedBone(PreviewSkeletalMesh, BoneIndex);
+	}
 }
 
 void FAnimSequenceEditorWidget::SetEditedBoneTransform(
 	int32 BoneIndex,
 	const FTransform& LocalTransform)
 {
-	if (BoneIndex < 0 || !PreviewMeshComponent)
+	if (BoneIndex < 0)
 	{
 		return;
 	}
@@ -1145,7 +1533,12 @@ void FAnimSequenceEditorWidget::SetEditedBoneTransform(
 		EditorBoneOverrides.push_back(NewOverride);
 	}
 
-	PreviewMeshComponent->SetBoneLocalTransformByIndex(BoneIndex, LocalTransform);
+	// PreviewComponent가 있을 때만 즉시 시각화합니다.
+	// component가 없는 상태에서도 override를 보관하는 이유는 Preview Mesh 연결이 나중에 생겼을 때 같은 UI 흐름을 유지하기 위해서입니다.
+	if (PreviewMeshComponent)
+	{
+		PreviewMeshComponent->SetBoneLocalTransformByIndex(BoneIndex, LocalTransform);
+	}
 }
 
 void FAnimSequenceEditorWidget::ApplyEditorBoneOverrides()
