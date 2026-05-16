@@ -2176,15 +2176,22 @@ void FEditorFbxImporter::ParseAnimations(FbxScene* Scene, const FSkeletonAsset& 
 				FMatrix LocalMatrix = Bone.LocalMatrix;
 				if (BoneNode)
 				{
-					if (ParentBoneNode)
+					const FMatrix GlobalMatrix = ConvertFbxMatrix(BoneNode->EvaluateGlobalTransform(SampleTime));
+					if (Bone.ParentIndex >= 0 && Bone.ParentIndex < static_cast<int32>(TargetSkeleton.Bones.size()))
 					{
-						const FMatrix GlobalMatrix = ConvertFbxMatrix(BoneNode->EvaluateGlobalTransform(SampleTime));
-						const FMatrix ParentGlobalMatrix = ConvertFbxMatrix(ParentBoneNode->EvaluateGlobalTransform(SampleTime));
+						// Animation-only FBX files can omit synthetic mesh/root ancestors that exist in
+						// the target skeleton. In that case raw local transform keeps the scene scale
+						// on the first real bone, so derive local from the target parent's global bind.
+						FMatrix ParentGlobalMatrix = TargetSkeleton.Bones[Bone.ParentIndex].GlobalMatrix;
+						if (ParentBoneNode)
+						{
+							ParentGlobalMatrix = ConvertFbxMatrix(ParentBoneNode->EvaluateGlobalTransform(SampleTime));
+						}
 						LocalMatrix = GlobalMatrix * ParentGlobalMatrix.GetInverse();
 					}
 					else
 					{
-						LocalMatrix = ConvertFbxMatrix(BoneNode->EvaluateLocalTransform(SampleTime));
+						LocalMatrix = GlobalMatrix;
 					}
 				}
 
