@@ -65,7 +65,7 @@
       <UniqueIdentifier>{d0b56061-5521-9f21-3d03-1e11f47e99a7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Engine\Animation">
-      <UniqueIdentifier>{883a27c1-1a16-4122-ba2c-ce4f747faae7}</UniqueIdentifier>
+      <UniqueIdentifier>{0d83b9ec-1739-4a2c-a240-82625b92fe91}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Engine\Asset">
       <UniqueIdentifier>{5425e5c6-8625-eb75-03f5-e74a5efa2fc3}</UniqueIdentifier>
@@ -488,9 +488,6 @@
     <ClCompile Include="Source\Editor\EditorRenderPipeline.cpp">
       <Filter>Source\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Editor\Import\EditorAssetPipeline.cpp">
-      <Filter>Source\Editor\Import</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Editor\Import\EditorFbxImportService.cpp">
       <Filter>Source\Editor\Import</Filter>
     </ClCompile>
@@ -630,6 +627,19 @@
       <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Animation\AnimationStateMachine.cpp">
+    <ClCompile Include="Source\Engine\Animation\AnimDataModel.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimationAsset.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSequence.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSequenceBase.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\AnimSequenceManager.cpp">
       <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Asset\AssetPackage.cpp">
@@ -1310,9 +1320,6 @@
     <ClInclude Include="Source\Editor\EditorRenderPipeline.h">
       <Filter>Source\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Editor\Import\EditorAssetPipeline.h">
-      <Filter>Source\Editor\Import</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Editor\Import\EditorFbxImportService.h">
       <Filter>Source\Editor\Import</Filter>
     </ClInclude>
@@ -1485,6 +1492,24 @@
       <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Animation\AnimationStateMachine.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimDataModel.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimationAsset.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimSequence.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimSequenceBase.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimSequenceManager.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\AnimTypes.h">
       <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Asset\AssetPackage.h">

@@ -1,18 +1,25 @@
 ﻿#include "ContentBrowser.h"
 
+#include "Animation/AnimSequenceManager.h"
 #include "Asset/AssetPackage.h"
 #include "CameraShake/CameraShakeAsset.h"
 #include "CameraShake/CameraShakeManager.h"
 #include "ContentBrowserElement.h"
-#include "Editor/Import/EditorAssetPipeline.h"
+#include "Core/Log.h"
+#include "Editor/Import/EditorFbxImportService.h"
+#include "Editor/Import/EditorObjImportService.h"
 #include "Editor/Settings/EditorSettings.h"
 #include "Editor/Subsystem/AssetFactory.h"
 #include "Editor/UI/EditorTextureManager.h"
 #include "FloatCurve/FloatCurveAsset.h"
 #include "FloatCurve/FloatCurveManager.h"
+#include "Materials/MaterialManager.h"
+#include "Mesh/MeshImportOptions.h"
 #include "Mesh/MeshManager.h"
 #include "EditorEngine.h"
 
+#include <Windows.h>
+#include <commdlg.h>
 #include <algorithm>
 #include <cctype>
 
@@ -94,6 +101,44 @@ namespace
 		return Extension;
 	}
 
+	std::filesystem::path ResolveProjectPath(const FString& Path)
+	{
+		std::filesystem::path FullPath(FPaths::ToWide(Path));
+		if (!FullPath.is_absolute())
+		{
+			FullPath = std::filesystem::path(FPaths::RootDir()) / FullPath;
+		}
+		return FullPath.lexically_normal();
+	}
+
+	FString ToProjectRelativePath(const std::filesystem::path& Path)
+	{
+		return FPaths::MakeProjectRelative(FPaths::ToUtf8(Path.lexically_normal().generic_wstring()));
+	}
+
+	FString OpenImportSourceFileDialog(const std::wstring& InitialDirectory)
+	{
+		wchar_t FilePath[MAX_PATH] = {};
+		std::wstring InitialDir = InitialDirectory.empty() ? FPaths::AssetDir() : InitialDirectory;
+
+		OPENFILENAMEW Ofn = {};
+		Ofn.lStructSize = sizeof(Ofn);
+		Ofn.hwndOwner = nullptr;
+		Ofn.lpstrFilter = L"Asset Source Files (*.obj;*.fbx)\0*.obj;*.fbx\0OBJ Files (*.obj)\0*.obj\0FBX Files (*.fbx)\0*.fbx\0All Files (*.*)\0*.*\0";
+		Ofn.lpstrFile = FilePath;
+		Ofn.nMaxFile = MAX_PATH;
+		Ofn.lpstrInitialDir = InitialDir.c_str();
+		Ofn.lpstrTitle = L"Import Asset Source";
+		Ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
+
+		if (!GetOpenFileNameW(&Ofn))
+		{
+			return FString();
+		}
+
+		return FPaths::ToUtf8(std::filesystem::path(FilePath).lexically_normal().generic_wstring());
+	}
+
 	bool IsEditorSourceFile(const std::filesystem::path& Path)
 	{
 		const FString Extension = GetLowerExtension(Path);
@@ -132,18 +177,22 @@ void FEditorContentBrowserWidget::Render(float DeltaTime)
 
 	(void)DeltaTime;
 
+	if (ImGui::Button("Import"))
+	{
+		BeginImportSourceFile();
+	}
+
+	ImGui::SameLine();
 	if (BrowserContext.bPendingContentRefresh)
 	{
 		RefreshContent();
 		BrowserContext.bPendingContentRefresh = false;
 	}
 
-	ImGui::SameLine();
 	std::wstring PathText = BrowserContext.CurrentPath;
 	if (BrowserContext.SelectedElement)
 		PathText += L"/" + BrowserContext.SelectedElement->GetFileName();
 
-	ImGui::SameLine();
 	int Size = static_cast<int>(BrowserContext.ContentSize.x);
 	BrowserContext.ContentSize = ImVec2(static_cast<float>(Size), static_cast<float>(Size));
 
@@ -153,6 +202,8 @@ void FEditorContentBrowserWidget::Render(float DeltaTime)
 		BrowserContext.bShowSourceFiles = bShowSourceFiles;
 		RefreshContent();
 	}
+
+	RenderFbxImportPopup();
 
 	if (!ImGui::BeginTable("ContentBrowserLayout", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV))
 	{
@@ -202,11 +253,6 @@ void FEditorContentBrowserWidget::Render(float DeltaTime)
 
 void FEditorContentBrowserWidget::Refresh()
 {
-	if (BrowserContext.EditorEngine)
-	{
-		FEditorAssetPipeline::SyncAssetRoot(BrowserContext.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice());
-	}
-
 	RootNode = BuildDirectoryTree(FPaths::RootDir());
 	RefreshContent();
 
@@ -292,6 +338,16 @@ void FEditorContentBrowserWidget::RefreshContent()
 					break;
 				case EAssetPackageType::Skeleton:
 					Element = std::make_shared<SkeletonElement>();
+					break;
+				case EAssetPackageType::AnimSequence:
+					if (FAnimSequenceManager::Get().IsAnimSequencePackage(PackagePath))
+					{
+						Element = std::make_shared<AnimSequenceElement>();
+					}
+					else
+					{
+						Element = std::make_shared<ContentBrowserElement>();
+					}
 					break;
 				case EAssetPackageType::FloatCurve:
 					Element = std::make_shared<FloatCurveElement>();
@@ -450,6 +506,205 @@ void FEditorContentBrowserWidget::DrawContents()
 	}
 }
 
+void FEditorContentBrowserWidget::BeginImportSourceFile()
+{
+	const FString SelectedPath = OpenImportSourceFileDialog(BrowserContext.CurrentPath);
+	if (SelectedPath.empty())
+	{
+		return;
+	}
+
+	const std::filesystem::path FullPath = ResolveProjectPath(SelectedPath);
+	const std::filesystem::path AssetRoot(FPaths::AssetDir());
+	if (!IsSubPath(AssetRoot, FullPath))
+	{
+		UE_LOG("Content Browser import rejected: source must be inside Asset/. Path=%s", SelectedPath.c_str());
+		return;
+	}
+
+	const FString SourcePath = ToProjectRelativePath(FullPath);
+	const FString Extension = GetLowerExtension(FullPath);
+	if (Extension == ".obj")
+	{
+		if (ExecuteObjImport(SourcePath))
+		{
+			Refresh();
+		}
+		return;
+	}
+
+	if (Extension == ".fbx")
+	{
+		BeginFbxImport(SourcePath);
+		return;
+	}
+
+	UE_LOG("Content Browser import rejected: unsupported source extension. Path=%s", SelectedPath.c_str());
+}
+
+void FEditorContentBrowserWidget::BeginFbxImport(const FString& SourcePath)
+{
+	PendingImportSourcePath = SourcePath;
+	bImportFbxStaticMesh = true;
+	bImportFbxSkeletalMesh = true;
+	bImportFbxAnimations = true;
+	PendingStaticFbxSkinnedMeshPolicy =
+		FImportOptions::Default().StaticFbxSkinnedMeshPolicy == EStaticFbxSkinnedMeshPolicy::ImportBindPoseAsStatic ? 1 : 0;
+	TargetSkeletonOptions = ScanSkeletonAssets();
+	SelectedTargetSkeletonIndex = 0;
+	bOpenFbxImportPopup = true;
+}
+
+void FEditorContentBrowserWidget::RenderFbxImportPopup()
+{
+	if (bOpenFbxImportPopup)
+	{
+		ImGui::OpenPopup("FBX Import Options");
+		bOpenFbxImportPopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal("FBX Import Options", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextUnformatted(PendingImportSourcePath.c_str());
+	ImGui::Separator();
+
+	ImGui::Checkbox("Import Static Mesh", &bImportFbxStaticMesh);
+	if (bImportFbxStaticMesh)
+	{
+		ImGui::RadioButton("Skip skinned mesh for static import", &PendingStaticFbxSkinnedMeshPolicy, 0);
+		ImGui::RadioButton("Import bind pose as static mesh", &PendingStaticFbxSkinnedMeshPolicy, 1);
+	}
+
+	ImGui::Checkbox("Import Skeletal Mesh", &bImportFbxSkeletalMesh);
+	ImGui::Checkbox("Import Animations", &bImportFbxAnimations);
+
+	const char* PreviewSkeleton = "None (Adjacent/Create)";
+	if (SelectedTargetSkeletonIndex > 0 && SelectedTargetSkeletonIndex <= static_cast<int32>(TargetSkeletonOptions.size()))
+	{
+		PreviewSkeleton = TargetSkeletonOptions[SelectedTargetSkeletonIndex - 1].FullPath.c_str();
+	}
+
+	if (ImGui::BeginCombo("Target Skeleton", PreviewSkeleton))
+	{
+		const bool bNoneSelected = SelectedTargetSkeletonIndex == 0;
+		if (ImGui::Selectable("None (Adjacent/Create)", bNoneSelected))
+		{
+			SelectedTargetSkeletonIndex = 0;
+		}
+
+		for (int32 Index = 0; Index < static_cast<int32>(TargetSkeletonOptions.size()); ++Index)
+		{
+			const bool bSelected = SelectedTargetSkeletonIndex == Index + 1;
+			const FMeshAssetListItem& Item = TargetSkeletonOptions[Index];
+			if (ImGui::Selectable(Item.FullPath.c_str(), bSelected))
+			{
+				SelectedTargetSkeletonIndex = Index + 1;
+			}
+		}
+
+		ImGui::EndCombo();
+	}
+
+	const bool bAnyImportTypeSelected = bImportFbxStaticMesh || bImportFbxSkeletalMesh || bImportFbxAnimations;
+	if (!bAnyImportTypeSelected)
+	{
+		ImGui::TextDisabled("Select at least one import type.");
+	}
+
+	if (ImGui::Button("Import") && bAnyImportTypeSelected)
+	{
+		if (ExecuteFbxImport())
+		{
+			PendingImportSourcePath.clear();
+			ImGui::CloseCurrentPopup();
+			Refresh();
+		}
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		PendingImportSourcePath.clear();
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+bool FEditorContentBrowserWidget::ExecuteObjImport(const FString& SourcePath)
+{
+	if (!BrowserContext.EditorEngine)
+	{
+		return false;
+	}
+
+	UStaticMesh* ImportedMesh = nullptr;
+	ID3D11Device* Device = BrowserContext.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice();
+	const bool bImported = FEditorObjImportService::ImportStaticMeshFromObj(SourcePath, Device, ImportedMesh, false);
+	if (bImported)
+	{
+		RefreshImportedAssetLists();
+	}
+	return bImported;
+}
+
+bool FEditorContentBrowserWidget::ExecuteFbxImport()
+{
+	if (!BrowserContext.EditorEngine || PendingImportSourcePath.empty())
+	{
+		return false;
+	}
+
+	bool bAnySucceeded = false;
+	ID3D11Device* Device = BrowserContext.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice();
+
+	if (bImportFbxStaticMesh)
+	{
+		FImportOptions Options = FImportOptions::Default();
+		Options.StaticFbxSkinnedMeshPolicy = PendingStaticFbxSkinnedMeshPolicy == 1
+			? EStaticFbxSkinnedMeshPolicy::ImportBindPoseAsStatic
+			: EStaticFbxSkinnedMeshPolicy::Skip;
+
+		UStaticMesh* ImportedStaticMesh = nullptr;
+		bAnySucceeded |= FEditorFbxImportService::ImportStaticMeshFromFbx(PendingImportSourcePath, Options, Device, ImportedStaticMesh, false);
+	}
+
+	if (bImportFbxSkeletalMesh)
+	{
+		TArray<USkeletalMesh*> ImportedSkeletalMeshes;
+		bAnySucceeded |= FEditorFbxImportService::ImportSkeletalMeshesFromFbx(PendingImportSourcePath, Device, ImportedSkeletalMeshes, false);
+	}
+
+	if (bImportFbxAnimations)
+	{
+		FString TargetSkeletonPath;
+		if (SelectedTargetSkeletonIndex > 0 && SelectedTargetSkeletonIndex <= static_cast<int32>(TargetSkeletonOptions.size()))
+		{
+			TargetSkeletonPath = TargetSkeletonOptions[SelectedTargetSkeletonIndex - 1].FullPath;
+		}
+
+		TArray<UAnimSequence*> ImportedSequences;
+		bAnySucceeded |= FEditorFbxImportService::ImportAnimSequencesFromFbx(PendingImportSourcePath, TargetSkeletonPath, ImportedSequences, false);
+	}
+
+	if (bAnySucceeded)
+	{
+		RefreshImportedAssetLists();
+	}
+	return bAnySucceeded;
+}
+
+void FEditorContentBrowserWidget::RefreshImportedAssetLists()
+{
+	FMeshManager::ScanMeshAssets();
+	FMaterialManager::Get().ScanMaterialAssets();
+	FEditorObjImportService::ScanObjSourceFiles();
+	FEditorFbxImportService::ScanFbxSourceFiles();
+}
+
 TArray<FContentItem> FEditorContentBrowserWidget::ReadDirectory(std::wstring Path)
 {
 	TArray<FContentItem> Items;
@@ -513,4 +768,43 @@ FEditorContentBrowserWidget::FDirNode FEditorContentBrowserWidget::BuildDirector
 		Node.Self.Name = FPaths::ToWide("Project");
 
 	return Node;
+}
+
+TArray<FMeshAssetListItem> FEditorContentBrowserWidget::ScanSkeletonAssets() const
+{
+	TArray<FMeshAssetListItem> Items;
+
+	const std::filesystem::path AssetRoot(FPaths::AssetDir());
+	if (!std::filesystem::exists(AssetRoot))
+	{
+		return Items;
+	}
+
+	for (const auto& Entry : std::filesystem::recursive_directory_iterator(AssetRoot))
+	{
+		if (!Entry.is_regular_file() || GetLowerExtension(Entry.path()) != ".uasset")
+		{
+			continue;
+		}
+
+		const FString PackagePath = ToProjectRelativePath(Entry.path());
+		EAssetPackageType PackageType = EAssetPackageType::Unknown;
+		if (!FAssetPackage::GetPackageType(PackagePath, PackageType) || PackageType != EAssetPackageType::Skeleton)
+		{
+			continue;
+		}
+
+		FMeshAssetListItem Item;
+		Item.DisplayName = FPaths::ToUtf8(Entry.path().stem().wstring());
+		Item.FullPath = PackagePath;
+		Items.push_back(Item);
+	}
+
+	std::sort(Items.begin(), Items.end(),
+		[](const FMeshAssetListItem& A, const FMeshAssetListItem& B)
+		{
+			return A.FullPath < B.FullPath;
+		});
+
+	return Items;
 }

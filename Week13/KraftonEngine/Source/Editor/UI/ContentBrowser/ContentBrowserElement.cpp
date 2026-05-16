@@ -1,5 +1,6 @@
 ﻿#include "ContentBrowserElement.h"
 
+#include "Animation/AnimSequenceManager.h"
 #include "Asset/AssetPackage.h"
 #include "Editor/EditorEngine.h"
 #include "Editor/Import/EditorFbxImportService.h"
@@ -426,6 +427,29 @@ void MeshElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 	if (USkeletalMesh* MeshAsset = FMeshManager::LoadSkeletalMesh(FilePath, Context.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice()))
 	{
 		Context.EditorEngine->OpenAssetEditorForObject(MeshAsset);
+	}
+}
+
+void AnimSequenceElement::RenderContextMenu(ContentBrowserContext& Context)
+{
+	(void)Context;
+
+	FString Extension = FPaths::ToUtf8(ContentItem.Path.extension());
+	std::transform(Extension.begin(), Extension.end(), Extension.begin(), ::tolower);
+
+	FString PackagePath = FPaths::ToUtf8(ContentItem.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
+	if (Extension == ".uasset" && FAnimSequenceManager::Get().IsAnimSequencePackage(PackagePath))
+	{
+		if (ImGui::MenuItem("Reimport"))
+		{
+			FAssetImportMetadata Metadata;
+			if (FAssetPackage::ReadMetadata(PackagePath, EAssetPackageType::AnimSequence, Metadata)
+				&& GetLowerExtensionFromPath(Metadata.SourcePath) == ".fbx")
+			{
+				TArray<UAnimSequence*> ReimportedSequences;
+				FEditorFbxImportService::ImportAnimSequencesFromFbx(Metadata.SourcePath, ReimportedSequences);
+			}
+		}
 	}
 }
 
