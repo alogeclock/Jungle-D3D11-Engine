@@ -56,6 +56,7 @@ public:
 	void SetBoneRotationByIndex(int32 BoneIndex, const FQuat& NewQuat);
 	void SetBoneScaleByIndex(int32 BoneIndex, const FVector& NewScale);
 	void SetBoneLocalTransformByIndex(int32 BoneIndex, const FTransform& NewLocalTransform);
+	// TODO: SetBoneLocalTransformByArray 만들어야 할듯
 
 	void GetCurrentBoneGlobalTransforms(TArray<FTransform>& OutGlobals) const;
 	void GetCurrentBoneGlobalMatrices(TArray<FMatrix>& OutGlobals) const;

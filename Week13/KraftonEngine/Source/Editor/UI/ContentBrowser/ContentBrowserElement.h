@@ -114,13 +114,15 @@ protected:
 
 /**
  * Content Browser에서 AnimSequence .uasset을 별도 asset type으로 보여주기 위한 UI element 입니다.
- * 지금은 표시와 Reimport context menu만 담당하고, 별도 AnimSequence editor는 없습니다.
+ * AnimSequence는 SkeletalMesh가 아니라 UAnimSequence 자체를 편집해야 하므로,
+ * 더블클릭 시 Mesh editor가 아닌 AnimSequence editor로 넘기는 전용 흐름을 둡니다.
  */
 class AnimSequenceElement final : public ContentBrowserElement
 {
 public:
 	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
 	void RenderContextMenu(ContentBrowserContext& Context) override;
+	void RenderDetail() override;
 
 protected:
 	const char* GetTypeLabel() const override { return "Anim Sequence"; }

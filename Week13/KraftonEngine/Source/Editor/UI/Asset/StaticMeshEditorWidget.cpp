@@ -1,4 +1,4 @@
-#include "StaticMeshEditorWidget.h"
+﻿#include "StaticMeshEditorWidget.h"
 
 #include "Component/Light/DirectionalLightComponent.h"
 #include "Component/StaticMeshComponent.h"
@@ -88,7 +88,7 @@ void FStaticMeshEditorWidget::Open(UObject* Object)
 	LightComp->PushToScene();
 
 	AStaticMeshActor* FloorActor = WorldContext.World->SpawnActor<AStaticMeshActor>();
-	FloorActor->InitDefaultComponents("Data/BasicShape/Cube.OBJ");
+	FloorActor->InitDefaultComponents("Asset/Mesh/BasicShape/Cube_StaticMesh.uasset");
 	FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -0.05f));
 	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 0.02f));
 
