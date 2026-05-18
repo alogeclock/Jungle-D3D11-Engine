@@ -5,6 +5,7 @@
 #include "Mesh/MeshManager.h"
 #include "Collision/RayUtils.h"
 #include "Core/Log.h"
+#include "Profiling/Stats.h"
 
 IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
 HIDE_FROM_COMPONENT_LIST(USkinnedMeshComponent)
@@ -121,11 +122,16 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 	if (SkeletalMesh && SkeletalMesh->GetSkeletalMeshAsset())
 	{
 		ResetBoneEditPose();
-		UpdateCPUSkinning();
+		UpdateSkinMatrices();
+		EnsureCPUSkinnedVertices();
 	}
 	else
 	{
 		SkinnedVertices.clear();
+		CurrentSkinMatrices.clear();
+		bSkinMatricesDirty = false;
+		bSkinnedVerticesDirty = false;
+		++SkinMatrixRevision;
 		++SkinnedRevision;
 	}
 
@@ -147,39 +153,45 @@ USkeletalMesh* USkinnedMeshComponent::GetSkeletalMesh() const
 // Bounds 섹션: SkeletalMesh culling은 asset local bounds가 아니라 실제 CPU-skinned vertices를 기준으로 한다.
 void USkinnedMeshComponent::UpdateWorldAABB() const
 {
+	UPrimitiveComponent::UpdateWorldAABB();
+	// 부하가 너무 심해서 잠시 주석 처리
+	// EnsureCPUSkinnedVertices();
+
 	// 아직 skinning 결과가 없으면 primitive 기본 bounds로 fallback해 빈 mesh/로드 실패 경로를 안전하게 둔다.
 	if (SkinnedVertices.empty())
 	{
-		UPrimitiveComponent::UpdateWorldAABB();
 		return;
 	}
 
 	const FMatrix& WorldMatrix = CachedWorldMatrix;
 
 	// 이미 component local로 skinning된 vertex를 world matrix로 변환해 octree/query bounds를 만든다.
-	FVector WorldMin = WorldMatrix.TransformPositionWithW(SkinnedVertices[0].Position);
-	FVector WorldMax = WorldMin;
-
-	for (const FVertexPNCTT& Vertex : SkinnedVertices)
+	if (FRenderFeatureSettings::Get().GetSkinningMode() == ESkinningMode::CPU)
 	{
-		const FVector WorldPos = WorldMatrix.TransformPositionWithW(Vertex.Position);
+		FVector WorldMin = WorldMatrix.TransformPositionWithW(SkinnedVertices[0].Position);
+		FVector WorldMax = WorldMin;
 
-		WorldMin.X = std::min(WorldMin.X, WorldPos.X);
-		WorldMin.Y = std::min(WorldMin.Y, WorldPos.Y);
-		WorldMin.Z = std::min(WorldMin.Z, WorldPos.Z);
+		for (const FVertexPNCTBW& Vertex : SkinnedVertices)
+		{
+			const FVector WorldPos = WorldMatrix.TransformPositionWithW(Vertex.Position);
 
-		WorldMax.X = std::max(WorldMax.X, WorldPos.X);
-		WorldMax.Y = std::max(WorldMax.Y, WorldPos.Y);
-		WorldMax.Z = std::max(WorldMax.Z, WorldPos.Z);
-	}
+			WorldMin.X = std::min(WorldMin.X, WorldPos.X);
+			WorldMin.Y = std::min(WorldMin.Y, WorldPos.Y);
+			WorldMin.Z = std::min(WorldMin.Z, WorldPos.Z);
 
-	FVector Center = (WorldMin + WorldMax) * 0.5f;
-	FVector Extent = (WorldMax - WorldMin) * 0.5f;
+			WorldMax.X = std::max(WorldMax.X, WorldPos.X);
+			WorldMax.Y = std::max(WorldMax.Y, WorldPos.Y);
+			WorldMax.Z = std::max(WorldMax.Z, WorldPos.Z);
+		}
 
-	WorldAABBMinLocation = Center - Extent;
-	WorldAABBMaxLocation = Center + Extent;
-	bWorldAABBDirty = false;
-	bHasValidWorldAABB = true;
+		FVector Center = (WorldMin + WorldMax) * 0.5f;
+		FVector Extent = (WorldMax - WorldMin) * 0.5f;
+
+		WorldAABBMinLocation = Center - Extent;
+		WorldAABBMaxLocation = Center + Extent;
+		bWorldAABBDirty = false;
+		bHasValidWorldAABB = true;
+	}	
 }
 
 // Bone edit 섹션: setter가 호출되기 전까지는 asset pose를 그대로 쓰고, 수정 순간에 component-local 복사본을 만든다.
@@ -318,7 +330,7 @@ void USkinnedMeshComponent::SetBoneLocationByIndex(int32 BoneIndex, const FVecto
 	}
 
 	bUseBoneEditPose = true;
-	UpdateCPUSkinning();
+	UpdateSkinMatrices();
 	MarkWorldBoundsDirty();
 }
 
@@ -355,7 +367,7 @@ void USkinnedMeshComponent::SetBoneRotationByIndex(int32 BoneIndex, const FRotat
 	}
 
 	bUseBoneEditPose = true;
-	UpdateCPUSkinning();
+	UpdateSkinMatrices();
 	MarkWorldBoundsDirty();
 }
 
@@ -392,7 +404,7 @@ void USkinnedMeshComponent::SetBoneRotationByIndex(int32 BoneIndex, const FQuat&
 	}
 
 	bUseBoneEditPose = true;
-	UpdateCPUSkinning();
+	UpdateSkinMatrices();
 	MarkWorldBoundsDirty();
 }
 
@@ -426,7 +438,7 @@ void USkinnedMeshComponent::SetBoneScaleByIndex(int32 BoneIndex, const FVector& 
 	}
 
 	bUseBoneEditPose = true;
-	UpdateCPUSkinning();
+	UpdateSkinMatrices();
 	MarkWorldBoundsDirty();
 }
 
@@ -440,7 +452,7 @@ void USkinnedMeshComponent::SetBoneLocalTransformByIndex(int32 BoneIndex, const 
 	BoneEditLocalMatrices[BoneIndex] = NewLocalTransform.ToMatrix();
 
 	bUseBoneEditPose = true;
-	UpdateCPUSkinning();
+	UpdateSkinMatrices();
 	MarkWorldBoundsDirty();
 }
 
@@ -459,13 +471,13 @@ void USkinnedMeshComponent::SetBoneLocalTransformByArray(const TArray<FMatrix>& 
 	}
 
 	// AnimSequence 평가 결과처럼 skeleton 전체 local pose가 한 번에 들어오는 경우를 위한 batch 경로입니다.
-	// SetBoneLocalTransformByIndex를 bone마다 호출하면 매 호출마다 CPU skinning과 bounds dirty가 반복되어,
+	// SetBoneLocalTransformByIndex를 bone마다 호출하면 매 호출마다 skin matrix와 bounds dirty가 반복되어,
 	// 프레임당 bone 수만큼 같은 mesh를 다시 스키닝하는 병목이 생깁니다. 여기서는 edit pose 배열만 먼저 통째로
-	// 교체하고, 모든 bone 값이 준비된 뒤 UpdateCPUSkinning을 딱 한 번 호출합니다.
+	// 교체하고, 모든 bone 값이 준비된 뒤 UpdateSkinMatrices를 딱 한 번 호출합니다.
 	BoneEditLocalMatrices = NewLocalMatrices;
 	bUseBoneEditPose = true;
 
-	UpdateCPUSkinning();
+	UpdateSkinMatrices();
 	MarkWorldBoundsDirty();
 }
 
@@ -523,28 +535,91 @@ void USkinnedMeshComponent::BuildBoneEditGlobalMatrices(TArray<FMatrix>& OutGlob
 	}
 }
 
-// Cache 초기화는 resize까지만 담당하고, 실제 vertex 내용 갱신은 UpdateCPUSkinning에 모은다.
+// Cache 초기화는 resize까지만 담당하고, 실제 vertex 내용 갱신은 EnsureCPUSkinnedVertices에 모은다.
 void USkinnedMeshComponent::InitSkinningCache()
 {
 	USkeletalMesh* Mesh = GetSkeletalMesh();
 	if (!Mesh || !Mesh->GetSkeletalMeshAsset())
 	{
 		SkinnedVertices.clear();
+		bSkinnedVerticesDirty = false;
 		return;
 	}
 
 	FSkeletalMesh* Asset = Mesh->GetSkeletalMeshAsset();
 	SkinnedVertices.resize(Asset->Vertices.size());
+	bSkinnedVerticesDirty = true;
 }
 
-// CPU skinning은 현재 renderer가 DynamicVertexBuffer에 올릴 FVertexPNCTT 배열을 만드는 단일 경로다.
-void USkinnedMeshComponent::UpdateCPUSkinning()
+const TArray<FMatrix>& USkinnedMeshComponent::GetCurrentSkinMatrices() const
 {
+	if (bSkinMatricesDirty)
+	{
+		UpdateSkinMatrices();
+	}
+
+	return CurrentSkinMatrices;
+}
+
+void USkinnedMeshComponent::UpdateSkinMatrices() const
+{
+	SCOPE_STAT_CAT("UpdateSkinMatrices", "Skinning");
+
 	USkeletalMesh* Mesh = GetSkeletalMesh();
 	if (!Mesh || !Mesh->GetSkeletalMeshAsset())
 	{
-		SkinnedVertices.clear();
-		++SkinnedRevision;
+		CurrentSkinMatrices.clear();
+		bSkinMatricesDirty = false;
+		bSkinnedVerticesDirty = true;
+		++SkinMatrixRevision;
+		return;
+	}
+
+	FSkeletalMesh* Asset = Mesh->GetSkeletalMeshAsset();
+	FSkeletonAsset* SkeletonAsset = Mesh->GetSkeletonAsset();
+	if (!SkeletonAsset)
+	{
+		CurrentSkinMatrices.clear();
+		bSkinMatricesDirty = false;
+		bSkinnedVerticesDirty = true;
+		++SkinMatrixRevision;
+		return;
+	}
+
+	TArray<FMatrix> BoneGlobals;
+	GetCurrentBoneGlobalMatrices(BoneGlobals);
+
+	CurrentSkinMatrices.clear();
+	CurrentSkinMatrices.resize(SkeletonAsset->Bones.size(), FMatrix::Identity);
+
+	for (int32 BoneIndex = 0; BoneIndex < (int32)SkeletonAsset->Bones.size(); ++BoneIndex)
+	{
+		if (BoneIndex < static_cast<int32>(BoneGlobals.size()))
+		{
+			CurrentSkinMatrices[BoneIndex] =
+				Asset->MeshBindGlobal * SkeletonAsset->Bones[BoneIndex].InverseBindPoseMatrix * BoneGlobals[BoneIndex];
+		}
+	}
+
+	bSkinMatricesDirty = false;
+	bSkinnedVerticesDirty = true;
+	++SkinMatrixRevision;
+}
+
+// CPU skinned vertices는 렌더링/쿼리에서 실제로 필요할 때만 lazy 계산한다.
+void USkinnedMeshComponent::EnsureCPUSkinnedVertices() const
+{
+	SCOPE_STAT_CAT("EnsureCPUSkinnedVertices", "Skinning");
+
+	USkeletalMesh* Mesh = GetSkeletalMesh();
+	if (!Mesh || !Mesh->GetSkeletalMeshAsset())
+	{
+		if (!SkinnedVertices.empty())
+		{
+			SkinnedVertices.clear();
+			++SkinnedRevision;
+		}
+		bSkinnedVerticesDirty = false;
 		return;
 	}
 
@@ -552,8 +627,22 @@ void USkinnedMeshComponent::UpdateCPUSkinning()
 	FSkeletonAsset* SkeletonAsset = Mesh->GetSkeletonAsset();
 	if (!SkeletonAsset || Asset->Vertices.empty())
 	{
-		SkinnedVertices.clear();
-		++SkinnedRevision;
+		if (!SkinnedVertices.empty())
+		{
+			SkinnedVertices.clear();
+			++SkinnedRevision;
+		}
+		bSkinnedVerticesDirty = false;
+		return;
+	}
+
+	if (bSkinMatricesDirty || CurrentSkinMatrices.size() != SkeletonAsset->Bones.size())
+	{
+		UpdateSkinMatrices();
+	}
+
+	if (!bSkinnedVerticesDirty && SkinnedVertices.size() == Asset->Vertices.size())
+	{
 		return;
 	}
 
@@ -562,25 +651,11 @@ void USkinnedMeshComponent::UpdateCPUSkinning()
 		SkinnedVertices.resize(Asset->Vertices.size());
 	}
 
-	TArray<FMatrix> BoneGlobals;
-	GetCurrentBoneGlobalMatrices(BoneGlobals);
-
-	TArray<FMatrix> SkinMatrices;
-	SkinMatrices.resize(SkeletonAsset->Bones.size(), FMatrix::Identity);
-
-	for (int32 BoneIndex = 0; BoneIndex < (int32)SkeletonAsset->Bones.size(); ++BoneIndex)
-	{
-		if (BoneIndex < static_cast<int32>(BoneGlobals.size()))
-		{
-			SkinMatrices[BoneIndex] =
-				Asset->MeshBindGlobal * SkeletonAsset->Bones[BoneIndex].InverseBindPoseMatrix * BoneGlobals[BoneIndex];
-		}
-	}
-
 	for (uint32 i = 0; i < (uint32)Asset->Vertices.size(); ++i)
 	{
 		const FVertexPNCTBW& Src = Asset->Vertices[i];
-		FVertexPNCTT& Dst = SkinnedVertices[i];
+		FVertexPNCTBW& Dst = SkinnedVertices[i];
+		Dst = Src;
 
 		FVector SkinnedPos = FVector::ZeroVector;
 		FVector SkinnedNormal = FVector::ZeroVector;
@@ -595,7 +670,7 @@ void USkinnedMeshComponent::UpdateCPUSkinning()
 			if (Weight <= 0.0f) continue;
 			if (BoneIndex < 0 || BoneIndex >= (int32)SkeletonAsset->Bones.size()) continue;
 
-			const FMatrix& M = SkinMatrices[BoneIndex];
+			const FMatrix& M = CurrentSkinMatrices[BoneIndex];
 
 			SkinnedPos += M.TransformPositionWithW(Src.Position) * Weight;
 			SkinnedNormal += M.TransformVector(Src.Normal) * Weight;
@@ -629,13 +704,19 @@ void USkinnedMeshComponent::UpdateCPUSkinning()
 
 		Dst.Position = SkinnedPos;
 		Dst.Normal = SkinnedNormal;
-		Dst.Color = Src.Color;
-		Dst.UV = Src.UV;
 		Dst.Tangent = FVector4(SkinnedTangent, Src.Tangent.W);
 	}
 
 	// SceneProxy는 revision 차이만 보고 dynamic vertex buffer upload 여부를 결정한다.
 	++SkinnedRevision;
+	bSkinnedVerticesDirty = false;
+}
+
+// 기존 호출부 호환용 wrapper. Skin matrix 갱신과 CPU vertex 계산을 순서대로 수행한다.
+void USkinnedMeshComponent::UpdateCPUSkinning()
+{
+	UpdateSkinMatrices();
+	EnsureCPUSkinnedVertices();
 }
 
 void USkinnedMeshComponent::BuildBoneEditGlobalTransforms(TArray<FTransform>& OutGlobals) const
@@ -810,6 +891,8 @@ bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FHitResult& OutH
 	}
 
 	FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
+	EnsureCPUSkinnedVertices();
+
 	if (!Asset || Asset->Indices.empty() || SkinnedVertices.empty())
 	{
 		return false;
@@ -829,7 +912,7 @@ bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FHitResult& OutH
 		WorldMatrix,
 		WorldInverse,
 		SkinnedVertices.data(),
-		sizeof(FVertexPNCTT),
+		sizeof(FVertexPNCTBW),
 		Asset->Indices.data(),
 		static_cast<uint32>(Asset->Indices.size()),
 		OutHitResult);

@@ -151,6 +151,97 @@ ID3D11Buffer* FConstantBuffer::GetBuffer()
 	return Buffer;
 }
 
+// ============================================================
+// FStructuredBuffer
+// ============================================================
+
+void FStructuredBuffer::EnsureCapacity(ID3D11Device* InDevice, uint32 RequiredCount, uint32 InStride)
+{
+	if (!InDevice || RequiredCount == 0 || InStride == 0)
+	{
+		return;
+	}
+
+	if (Buffer && SRV && RequiredCount <= MaxCount && InStride == Stride)
+	{
+		return;
+	}
+
+	uint32 NewMax = MaxCount > 0 ? MaxCount : 256;
+	while (NewMax < RequiredCount)
+	{
+		NewMax *= 2;
+	}
+
+	Release();
+
+	Stride = InStride;
+	MaxCount = NewMax;
+
+	D3D11_BUFFER_DESC BufferDesc = {};
+	BufferDesc.ByteWidth = Stride * MaxCount;
+	BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	BufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	BufferDesc.StructureByteStride = Stride;
+
+	HRESULT hr = InDevice->CreateBuffer(&BufferDesc, nullptr, &Buffer);
+	if (FAILED(hr) || !Buffer)
+	{
+		Release();
+		return;
+	}
+	Buffer->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(strlen("StructuredBuffer")), "StructuredBuffer");
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.Format = DXGI_FORMAT_UNKNOWN;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	SRVDesc.Buffer.FirstElement = 0;
+	SRVDesc.Buffer.NumElements = MaxCount;
+
+	hr = InDevice->CreateShaderResourceView(Buffer, &SRVDesc, &SRV);
+	if (FAILED(hr) || !SRV)
+	{
+		Release();
+	}
+}
+
+bool FStructuredBuffer::Update(ID3D11DeviceContext* Context, const void* Data, uint32 Count)
+{
+	if (!Buffer || !Context || !Data || Count == 0 || Count > MaxCount || Stride == 0)
+	{
+		return false;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE Mapped = {};
+	if (FAILED(Context->Map(Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped)))
+	{
+		return false;
+	}
+
+	memcpy(Mapped.pData, Data, static_cast<size_t>(Stride) * Count);
+	Context->Unmap(Buffer, 0);
+	return true;
+}
+
+void FStructuredBuffer::Release()
+{
+	if (SRV)
+	{
+		SRV->Release();
+		SRV = nullptr;
+	}
+
+	if (Buffer)
+	{
+		Buffer->Release();
+		Buffer = nullptr;
+	}
+
+	MaxCount = 0;
+	Stride = 0;
+}
 
 FIndexBuffer::FIndexBuffer(FIndexBuffer&& Other) noexcept
 	: Buffer(Other.Buffer)

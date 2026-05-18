@@ -25,6 +25,7 @@ namespace ECBSlot
 	constexpr uint32 PerShader1 = 3; // b3: 셰이더별 여분 슬롯 #1 (PerShader2 예약)
 	constexpr uint32 Lighting = 4;   // b4: LightingBuffer (Ambient + Directional + 메타)
 	constexpr uint32 Shadow = 5;     // b5: ShadowBuffer (Shadow 행렬 + 파라미터)
+	constexpr uint32 SkeletalRender = 6; // b6: SkeletalMesh 렌더링 옵션
 }
 
 // HLSL 라이팅 SRV 슬롯 — 프레임에 1회 바인딩 (Forward Shading)
@@ -63,6 +64,7 @@ namespace ESystemTexSlot
 	constexpr uint32 ShadowMapPointLightTextureArray = 23;  // t23: Point Light
 	constexpr uint32 SpotShadowDatas    = 24;  // t24: StructuredBuffer<FSpotShadowDataGPU>
 	constexpr uint32 PointShadowDatas   = 25;  // t25: StructuredBuffer<FPointShadowDataGPU>
+	constexpr uint32 SkinMatrices       = 26;  // t26: StructuredBuffer<float4x4>
 
 	// 하위 호환용 별칭
 	constexpr uint32 ShadowMap = ShadowMapCSM;
@@ -186,6 +188,15 @@ struct FFrameConstants
 	float Time;
 	FVector CameraWorldPos;
 };
+
+struct FSkeletalRenderConstants
+{
+	uint32 SkinningMode = 0;
+	uint32 HeatmapMode = 0;
+	int32 SelectedBoneIndex = -1;
+	float HeatmapIntensity = 0.0f;
+};
+static_assert(sizeof(FSkeletalRenderConstants) == 16, "FSkeletalRenderConstants must match HLSL SkeletalRenderBuffer");
 
 // SubUV UV region — atlas frame offset + size (b2 slot, shared with Gizmo)
 struct FSubUVRegionConstants

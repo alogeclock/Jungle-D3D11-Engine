@@ -52,6 +52,29 @@ private:
 	ID3D11Buffer* Buffer = nullptr;
 };
 
+class FStructuredBuffer
+{
+public:
+	FStructuredBuffer() = default;
+	~FStructuredBuffer() { Release(); }
+
+	FStructuredBuffer(const FStructuredBuffer&) = delete;
+	FStructuredBuffer& operator=(const FStructuredBuffer&) = delete;
+
+	void EnsureCapacity(ID3D11Device* InDevice, uint32 RequiredCount, uint32 InStride);
+	bool Update(ID3D11DeviceContext* Context, const void* Data, uint32 Count);
+	void Release();
+
+	ID3D11ShaderResourceView* GetSRV() const { return SRV; }
+	uint32 GetMaxCount() const { return MaxCount; }
+	uint32 GetStride() const { return Stride; }
+
+private:
+	ID3D11Buffer* Buffer = nullptr;
+	ID3D11ShaderResourceView* SRV = nullptr;
+	uint32 MaxCount = 0;
+	uint32 Stride = 0;
+};
 
 class FIndexBuffer
 {

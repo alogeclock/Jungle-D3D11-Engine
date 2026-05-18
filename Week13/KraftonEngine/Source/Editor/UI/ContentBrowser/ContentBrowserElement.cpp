@@ -492,58 +492,59 @@ void AnimSequenceElement::RenderContextMenu(ContentBrowserContext& Context)
 
 void AnimSequenceElement::RenderDetail()
 {
-	ContentBrowserElement::RenderDetail();
+	// TODO: 성능 부하가 너무 심해서 주석 처리
+	//ContentBrowserElement::RenderDetail();
 
-	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
-	const UAnimSequence* AnimSequence = FAnimSequenceManager::Get().Load(FilePath);
-	if (!AnimSequence)
-	{
-		ImGui::Spacing();
-		ImGui::TextDisabled("AnimSequence data could not be loaded.");
-		return;
-	}
+	//const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
+	//const UAnimSequence* AnimSequence = FAnimSequenceManager::Get().Load(FilePath);
+	//if (!AnimSequence)
+	//{
+	//	ImGui::Spacing();
+	//	ImGui::TextDisabled("AnimSequence data could not be loaded.");
+	//	return;
+	//}
 
-	const UAnimDataModel* DataModel = AnimSequence->GetDataModel();
+	//const UAnimDataModel* DataModel = AnimSequence->GetDataModel();
 
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
+	//ImGui::Spacing();
+	//ImGui::Separator();
+	//ImGui::Spacing();
 
-	if (ImGui::BeginTable("AnimSequenceAssetDetailsTable", 2, ImGuiTableFlags_SizingStretchProp))
-	{
-		ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 96.0f);
-		ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+	//if (ImGui::BeginTable("AnimSequenceAssetDetailsTable", 2, ImGuiTableFlags_SizingStretchProp))
+	//{
+	//	ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 96.0f);
+	//	ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
-		char Buffer[64];
+	//	char Buffer[64];
 
-		// Content Browser 상세 정보는 asset을 열기 전에도 AnimSequence가 실제로 어떤 시간축 데이터를 들고 있는지
-		// 확인하기 위한 읽기 전용 영역입니다. 여기서는 UAnimSequence/UAnimDataModel 값을 표시만 하며,
-		// 원본 keyframe이나 import metadata를 절대 수정하지 않습니다.
-		std::snprintf(Buffer, sizeof(Buffer), "%.3f sec", AnimSequence->GetPlayLength());
-		DrawDetailRow("Play Length", Buffer);
+	//	// Content Browser 상세 정보는 asset을 열기 전에도 AnimSequence가 실제로 어떤 시간축 데이터를 들고 있는지
+	//	// 확인하기 위한 읽기 전용 영역입니다. 여기서는 UAnimSequence/UAnimDataModel 값을 표시만 하며,
+	//	// 원본 keyframe이나 import metadata를 절대 수정하지 않습니다.
+	//	std::snprintf(Buffer, sizeof(Buffer), "%.3f sec", AnimSequence->GetPlayLength());
+	//	DrawDetailRow("Play Length", Buffer);
 
-		std::snprintf(Buffer, sizeof(Buffer), "%.2f fps", AnimSequence->GetSamplingFrameRate());
-		DrawDetailRow("Frame Rate", Buffer);
+	//	std::snprintf(Buffer, sizeof(Buffer), "%.2f fps", AnimSequence->GetSamplingFrameRate());
+	//	DrawDetailRow("Frame Rate", Buffer);
 
-		std::snprintf(Buffer, sizeof(Buffer), "%d", DataModel ? DataModel->GetNumberOfFrames() : 0);
-		DrawDetailRow("Frames", Buffer);
+	//	std::snprintf(Buffer, sizeof(Buffer), "%d", DataModel ? DataModel->GetNumberOfFrames() : 0);
+	//	DrawDetailRow("Frames", Buffer);
 
-		std::snprintf(Buffer, sizeof(Buffer), "%d", AnimSequence->GetNumberOfSampledKeys());
-		DrawDetailRow("Keys", Buffer);
+	//	std::snprintf(Buffer, sizeof(Buffer), "%d", AnimSequence->GetNumberOfSampledKeys());
+	//	DrawDetailRow("Keys", Buffer);
 
-		std::snprintf(Buffer, sizeof(Buffer), "%d", DataModel ? DataModel->GetNumBoneTracks() : 0);
-		DrawDetailRow("Tracks", Buffer);
+	//	std::snprintf(Buffer, sizeof(Buffer), "%d", DataModel ? DataModel->GetNumBoneTracks() : 0);
+	//	DrawDetailRow("Tracks", Buffer);
 
-		const FString& SkeletonPath = AnimSequence->GetSkeletonPath();
-		DrawDetailRow("Skeleton", SkeletonPath.empty() ? FString("None") : SkeletonPath);
+	//	const FString& SkeletonPath = AnimSequence->GetSkeletonPath();
+	//	DrawDetailRow("Skeleton", SkeletonPath.empty() ? FString("None") : SkeletonPath);
 
-		if (DataModel && DataModel->GetPlayLength() <= 0.0f && DataModel->GetNumberOfKeys() <= 1)
-		{
-			DrawDetailRow("Status", "Single-frame or missing duration");
-		}
+	//	if (DataModel && DataModel->GetPlayLength() <= 0.0f && DataModel->GetNumberOfKeys() <= 1)
+	//	{
+	//		DrawDetailRow("Status", "Single-frame or missing duration");
+	//	}
 
-		ImGui::EndTable();
-	}
+	//	ImGui::EndTable();
+	//}
 }
 
 void MaterialElement::OnLeftClicked(ContentBrowserContext& Context)

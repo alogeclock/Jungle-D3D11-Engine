@@ -80,6 +80,8 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame)
 {
 	DrawCommandList.Reset();
 	CollectViewMode = Frame.RenderOptions.ViewMode;
+	CollectPrimitiveDrawOptions = {};
+	CollectPrimitiveDrawOptions.SkinningMode = Frame.SkinningMode;
 	bHasSelectionMaskCommands = false;
 
 	// 동적 지오메트리 초기화
@@ -96,18 +98,20 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame)
 // ============================================================
 // SelectEffectiveShader — ViewMode에 따른 UberLit 셰이더 변형 선택
 // ============================================================
-FShader* FDrawCommandBuilder::SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode)
+FShader* FDrawCommandBuilder::SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode, const FPrimitiveSceneProxy& Proxy)
 {
 	if (ProxyShader != FShaderManager::Get().GetOrCreate(EShaderPath::UberLit))
 		return ProxyShader;
 
+	const FString VSEntryName = Proxy.GetVertexShaderEntryName();
+
 	switch (ViewMode)
 	{
-	case EViewMode::Unlit:        return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, EUberLitDefines::Unlit));
-	case EViewMode::Lit_Gouraud:  return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, EUberLitDefines::Gouraud));
-	case EViewMode::Lit_Lambert:  return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, EUberLitDefines::Lambert));
-	case EViewMode::Lit_Phong:    return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, EUberLitDefines::Phong));
-	case EViewMode::LightCulling: return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, EUberLitDefines::Phong));
+	case EViewMode::Unlit:        return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::Unlit));
+	case EViewMode::Lit_Gouraud:  return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::Gouraud));
+	case EViewMode::Lit_Lambert:  return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::Lambert));
+	case EViewMode::Lit_Phong:    return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::Phong));
+	case EViewMode::LightCulling: return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::Phong));
 	default:                      return ProxyShader;
 	}
 }
@@ -131,8 +135,17 @@ void FDrawCommandBuilder::BuildCommandForProxy(FScene& Scene, const FPrimitiveSc
 	// if (!Proxy.GetMeshBuffer() || !Proxy.GetMeshBuffer()->IsValid()) return;
 	ID3D11DeviceContext* Ctx = CachedContext;
 
+	const bool bUseGpuSkinning = Proxy.WantsGpuSkinning(CollectPrimitiveDrawOptions);
+
 	FDrawCommandBuffer ProxyBuffer;
-	if (!Proxy.PrepareDrawBuffer(CachedDevice, Ctx, ProxyBuffer)) return;
+	if (bUseGpuSkinning)
+	{
+		if (!Proxy.PrepareGpuSkinningDrawBuffer(CachedDevice, Ctx, ProxyBuffer)) return;
+	}
+	else
+	{
+		if (!Proxy.PrepareDrawBuffer(CachedDevice, Ctx, ProxyBuffer)) return;
+	}
 	if (!ProxyBuffer.HasBuffers()) return;
 
 	// PassState → RenderState 변환 (Wireframe 오버라이드 포함)
@@ -162,7 +175,7 @@ void FDrawCommandBuilder::BuildCommandForProxy(FScene& Scene, const FPrimitiveSc
 		FShader* SectionShader = (Section.Material && Section.Material->GetShader())
 			? Section.Material->GetShader()
 			: Proxy.GetShader();
-		FShader* EffectiveShader = SelectEffectiveShader(SectionShader, CollectViewMode);
+		FShader* EffectiveShader = SelectEffectiveShader(SectionShader, CollectViewMode, Proxy);
 
 		FDrawCommand& Cmd = DrawCommandList.AddCommand();
 		Cmd.Pass = Pass;
@@ -191,6 +204,11 @@ void FDrawCommandBuilder::BuildCommandForProxy(FScene& Scene, const FPrimitiveSc
 			// 섹션별 Material의 RenderPass가 현재 Pass와 일치할 때만 렌더 상태 오버라이드
 			if (Pass == Mat->GetRenderPass())
 				ApplyMaterialRenderState(Cmd.RenderState, Mat, BaseRenderState);
+		}
+
+		if (!Proxy.PrepareDrawCommandBindings(CachedDevice, Ctx, CollectPrimitiveDrawOptions, Cmd))
+		{
+			continue;
 		}
 
 		Cmd.BuildSortKey();

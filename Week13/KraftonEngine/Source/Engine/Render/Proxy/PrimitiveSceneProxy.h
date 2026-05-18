@@ -3,6 +3,7 @@
 #include "Core/CoreTypes.h"
 #include "Render/Proxy/DirtyFlag.h"
 #include "Render/Types/RenderConstants.h"
+#include "Render/Types/RenderFeatureSettings.h"
 #include "Render/Types/RenderTypes.h"
 
 class UPrimitiveComponent;
@@ -10,8 +11,17 @@ class FShader;
 class FMeshBuffer;
 class FScene;
 class UMaterial;
+struct FDrawCommand;
 struct FDrawCommandBuffer;
 struct FFrameContext;
+
+struct FPrimitiveDrawOptions
+{
+	ESkinningMode SkinningMode = ESkinningMode::CPU;
+	bool bWeightBoneHeatMap = false;
+	int32 WeightBoneHeatMapBoneIndex = -1;
+	float HeatmapIntensity = 0.0f;
+};
 
 // ============================================================
 // EPrimitiveProxyFlags — Owner 역참조 없이 프록시 타입/특성 식별
@@ -94,9 +104,15 @@ public:
 	virtual void UpdateMesh();
 	virtual void UpdateLOD(uint32 /*LODLevel*/) {}
 	virtual void UpdatePerViewport(const FFrameContext& /*Frame*/) {}
+	virtual const char* GetVertexShaderEntryName() const { return "VS_Static"; }
+	virtual bool WantsGpuSkinning(const FPrimitiveDrawOptions& /*Options*/) const { return false; }
 
 	virtual bool PrepareDrawBuffer(ID3D11Device* Device, ID3D11DeviceContext* Context,
 		FDrawCommandBuffer& OutBuffer) const;
+	virtual bool PrepareGpuSkinningDrawBuffer(ID3D11Device* Device, ID3D11DeviceContext* Context,
+		FDrawCommandBuffer& OutBuffer) const;
+	virtual bool PrepareDrawCommandBindings(ID3D11Device* Device, ID3D11DeviceContext* Context,
+		const FPrimitiveDrawOptions& Options, FDrawCommand& OutCommand) const;
 
 protected:
 	// ================================================================
