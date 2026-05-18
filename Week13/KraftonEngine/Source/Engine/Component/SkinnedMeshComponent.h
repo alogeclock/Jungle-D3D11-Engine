@@ -88,4 +88,7 @@ protected:
 	// SceneProxy는 이 결과와 revision만 보고 dynamic vertex buffer를 갱신한다.
 	TArray<FVertexPNCTT> SkinnedVertices;
 	uint64 SkinnedRevision = 0;
+
+	uint32 TargetRootBoneIndex = 0;
+	bool bIgnoreRootMotion = true;
 };

@@ -1,5 +1,6 @@
 ﻿#include "SkinnedMeshComponent.h"
 #include "Mesh/SkeletalMesh.h"
+#include "Mesh/Skeleton.h"
 #include "Serialization/Archive.h"
 #include "Runtime/Engine.h"
 #include "Mesh/MeshManager.h"
@@ -109,6 +110,24 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 		SkeletalMeshPath = "None";
 		OverrideMaterials.clear();
 		MaterialSlots.clear();
+	}
+
+	if (InMesh && InMesh->GetSkeleton())
+	{
+		auto* Asset = InMesh->GetSkeleton()->GetSkeletonAsset();
+		for (uint32 i = 0; i < (uint32)Asset->Bones.size(); ++i)
+		{
+			FString Name = Asset->Bones[i].Name;
+			// 대소문자 변환 후 "root" 체크
+			FString Lower = Name;
+			for (char& c : Lower) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+
+			if (Lower == "root")
+			{
+				TargetRootBoneIndex = i;
+				break; // 찾았으면 탈출
+			}
+		}
 	}
 
 	// Mesh가 바뀌면 이전 bone edit pose는 새 skeleton과 index 호환을 보장할 수 없다.
@@ -564,6 +583,12 @@ void USkinnedMeshComponent::UpdateCPUSkinning()
 
 	TArray<FMatrix> BoneGlobals;
 	GetCurrentBoneGlobalMatrices(BoneGlobals);
+
+	if (bIgnoreRootMotion && TargetRootBoneIndex >= 0 && TargetRootBoneIndex < (int32)BoneGlobals.size())
+	{
+		// 루트 본의 Global Matrix에서 위치(Location) 정보만 강제로 원점(0,0,0)으로 초기화
+		BoneGlobals[TargetRootBoneIndex].SetLocation(FVector::ZeroVector);
+	}
 
 	TArray<FMatrix> SkinMatrices;
 	SkinMatrices.resize(SkeletonAsset->Bones.size(), FMatrix::Identity);
