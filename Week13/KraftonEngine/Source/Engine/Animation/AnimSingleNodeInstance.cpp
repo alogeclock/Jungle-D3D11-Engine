@@ -45,7 +45,7 @@ void UAnimSingleNodeInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!bPlaying || !Sequence)
 		return;
 
-	float PrevTime = CurrentTime;
+	PrevTime = CurrentTime;
 	CurrentTime += DeltaSeconds * PlayRate;
 
 	float Length = Sequence->GetPlayLength();
@@ -58,9 +58,6 @@ void UAnimSingleNodeInstance::NativeUpdateAnimation(float DeltaSeconds)
 		CurrentTime = Length;
 		bPlaying = false;
 	}
-
-	CheckAnimNotifyQueue(PrevTime, CurrentTime, Length, bLooping, PlayRate < 0.f,
-		Sequence->GetNotifyEvents());
 }
 
 void UAnimSingleNodeInstance::SetCurrentTime(float InTime)
@@ -81,4 +78,9 @@ void UAnimSingleNodeInstance::GetCurrentPose(FPoseContext& OutPose)
 	OutPose.BoneLocalTransforms.resize(LocalMatrices.size());
 	for (size_t i = 0; i < LocalMatrices.size(); ++i)
 		OutPose.BoneLocalTransforms[i] = FTransform(LocalMatrices[i]);
+
+	Sequence->CollectNotifies(PrevTime, CurrentTime, bLooping, PlayRate < 0.0f, NotifyQueue);
+
+	for (const FAnimNotifyEvent& Notify : NotifyQueue)
+		RouteNotify(Notify);
 }

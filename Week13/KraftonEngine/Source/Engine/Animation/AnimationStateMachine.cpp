@@ -1,18 +1,18 @@
-#include "AnimationStateMachine.h"
+﻿#include "AnimationStateMachine.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimationRuntime.h"
 #include "Math/Transform.h"
 
 #include <algorithm>
 
-void UAnimationStateMachine::Tick(float DeltaTime)
+void UAnimationStateMachine::UpdateAnimationState(float DeltaTime)
 {
 	// ProcessState() 호출 전에 저장 — EvaluatePose에서 구간 체크에 사용
 	PrevStateLocalTime = StateLocalTime;
 
 	if (BlendAlpha < 1.0f)
 	{
-		PrevStateTime += DeltaTime;
+		BeldingPrevStateTime += (DeltaTime * PlayRate);
 		BlendAlpha = (BlendDuration > 0.0f)
 			? std::min(BlendAlpha + DeltaTime / BlendDuration, 1.0f)
 			: 1.0f;
@@ -21,7 +21,7 @@ void UAnimationStateMachine::Tick(float DeltaTime)
 	ProcessState(DeltaTime);
 }
 
-void UAnimationStateMachine::EvaluatePose(FPoseContext& OutPose, TArray<FAnimNotifyEvent>& OutNotifies) const
+void UAnimationStateMachine::GenerateFinalPose(FPoseContext& OutPose, TArray<FAnimNotifyEvent>& OutNotifies) const
 {
 	if (!CurrentSequence)
 		return;
@@ -39,7 +39,7 @@ void UAnimationStateMachine::EvaluatePose(FPoseContext& OutPose, TArray<FAnimNot
 	else
 	{
 		TArray<FMatrix> PrevMatrices;
-		if (!PrevSequence->EvaluatePose(PrevStateTime, PrevMatrices) || PrevMatrices.size() != CurrMatrices.size())
+		if (!PrevSequence->EvaluatePose(BeldingPrevStateTime, PrevMatrices) || PrevMatrices.size() != CurrMatrices.size())
 		{
 			OutPose.BoneLocalTransforms.resize(CurrMatrices.size());
 			for (size_t i = 0; i < CurrMatrices.size(); ++i)
@@ -59,18 +59,14 @@ void UAnimationStateMachine::EvaluatePose(FPoseContext& OutPose, TArray<FAnimNot
 		}
 	}
 
-	// PrevStateLocalTime → StateLocalTime 구간에 걸친 Notify 수집
-	const bool bLooped = StateLocalTime < PrevStateLocalTime;
-	for (const FAnimNotifyEvent& Notify : CurrentSequence->GetNotifyEvents())
+	if (CurrentSequence)
 	{
-		bool bFired = false;
-		if (bLooped)
-			bFired = Notify.TriggerTime > PrevStateLocalTime || Notify.TriggerTime <= StateLocalTime;
-		else
-			bFired = Notify.TriggerTime > PrevStateLocalTime && Notify.TriggerTime <= StateLocalTime;
+		CurrentSequence->CollectNotifies(PrevStateLocalTime, StateLocalTime, true, PlayRate < 0.0f, OutNotifies);
+	}
 
-		if (bFired)
-			OutNotifies.push_back(Notify);
+	if (BlendAlpha < 1.0f && PrevSequence)
+	{
+		PrevSequence->CollectNotifies(PrevStateLocalTime, StateLocalTime, true, PlayRate < 0.0f, OutNotifies);
 	}
 }
 

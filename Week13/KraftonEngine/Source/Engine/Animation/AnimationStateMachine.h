@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Object/Object.h"
 #include "Animation/AnimTypes.h"
 
@@ -11,13 +11,13 @@ public:
 	virtual void Initialize(USkeletalMeshComponent* InOwner) { OwnerComponent = InOwner; }
 
 	// PrevStateLocalTime 저장 → BlendAlpha 갱신 → ProcessState() 호출
-	void Tick(float DeltaTime);
+	void UpdateAnimationState(float DeltaTime);
 
 	// 각 구현체가 전이 조건과 StateLocalTime을 관리
 	virtual void ProcessState(float DeltaSeconds) = 0;
 
 	// 포즈 생성 + 해당 프레임 구간의 Notify 수집
-	virtual void EvaluatePose(FPoseContext& OutPose, TArray<FAnimNotifyEvent>& OutNotifies) const;
+	virtual void GenerateFinalPose(FPoseContext& OutPose, TArray<FAnimNotifyEvent>& OutNotifies) const;
 
 	UAnimSequence* GetCurrentSequence() const;
 	float GetCurrentStateTime() const;
@@ -27,12 +27,12 @@ protected:
 	UAnimSequence*          CurrentSequence = nullptr;
 	UAnimSequence*          PrevSequence    = nullptr;
 
-	float PrevStateLocalTime = 0.0f;
-	float PrevStateTime      = 0.0f;
+	float StateLocalTime = 0.0f; // 현재 애니메이션이 얼마나 진행되었는지
+	float PrevStateLocalTime = 0.0f; // 바로 전 프레임에 StateLocal이 몇초였는지
 
-	int32 CurrentState   = 0;
-	int32 PrevState      = -1;
-	float StateLocalTime = 0.0f;
-	float BlendAlpha     = 1.0f;
-	float BlendDuration  = 0.2f;
+	float BlendAlpha     = 1.0f; // 현재 애니메이션에서 다음 애니메이션까지 얼마나 blend 되었는지
+	float BlendDuration  = 0.2f; // Blend 되는 시간
+	float BeldingPrevStateTime = 0.0f;
+
+	float PlayRate = 1.0f;
 };

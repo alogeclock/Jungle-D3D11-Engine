@@ -1,4 +1,4 @@
-#include "Animation/AnimSequence.h"
+﻿#include "Animation/AnimSequence.h"
 
 #include "Animation/AnimDataModel.h"
 #include "Mesh/SkeletonAsset.h"
@@ -57,6 +57,44 @@ void UAnimSequence::SetDataModel(UAnimDataModel* InDataModel)
 	if (DataModel)
 	{
 		SetSequenceLength(DataModel->GetPlayLength());
+	}
+}
+
+void UAnimSequence::CollectNotifies(float PrevTime, float CurrentTime, bool bLooping, bool bReverse, TArray<FAnimNotifyEvent>& OutNotifies)
+{
+	float SeqLength = DataModel->GetPlayLength();
+
+	for (const FAnimNotifyEvent& Notify : DataModel->GetNotifies())
+	{
+		bool bShouldTrigger = false;
+
+		if (!bReverse)
+		{
+			if (bLooping && CurrentTime < PrevTime)
+			{
+				bShouldTrigger = (Notify.TriggerTime > PrevTime && Notify.TriggerTime <= SeqLength)
+					|| (Notify.TriggerTime <= CurrentTime);
+			}
+			else
+			{
+				bShouldTrigger = Notify.TriggerTime > PrevTime && Notify.TriggerTime <= CurrentTime;
+			}
+		}
+		else
+		{
+			if (bLooping && CurrentTime > PrevTime)
+			{
+				bShouldTrigger = (Notify.TriggerTime < PrevTime && Notify.TriggerTime >= 0.f)
+					|| (Notify.TriggerTime <= SeqLength && Notify.TriggerTime >= CurrentTime);
+			}
+			else
+			{
+				bShouldTrigger = Notify.TriggerTime < PrevTime && Notify.TriggerTime >= CurrentTime;
+			}
+		}
+
+		if (bShouldTrigger)
+			OutNotifies.push_back(Notify);
 	}
 }
 

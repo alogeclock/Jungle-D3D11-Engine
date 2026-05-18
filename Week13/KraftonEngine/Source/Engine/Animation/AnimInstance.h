@@ -13,9 +13,6 @@ public:
 	void Update(float DeltaTime);
 	virtual void NativeUpdateAnimation(float DeltaSeconds) {}
 
-	void CheckAnimNotifyQueue(float PrevTime, float CurrTime,
-		float SeqLength, bool bLooping, bool bReverse,
-		const TArray<FAnimNotifyEvent>& SeqNotifies);
 	void TriggerAnimNotifies();
 
 	// SkeletalMeshComponent가 호출 — 포즈 생성 및 Notify 수집
@@ -26,11 +23,13 @@ public:
 	USkeletalMeshComponent* GetOwnerComponent() const { return OwnerComponent; }
 
 protected:
-	USkeletalMeshComponent* OwnerComponent  = nullptr;
-	UAnimationStateMachine* StateMachine    = nullptr;
+	USkeletalMeshComponent* OwnerComponent = nullptr;
+	UAnimationStateMachine* StateMachine = nullptr;
+	TArray<FAnimNotifyEvent> NotifyQueue;
 	float                   LastEvaluatedTime = 0.0f;
 
 	void ResetNotifyState();
+	void RouteNotify(const FAnimNotifyEvent& Notify);
 
 private:
 	struct FActiveNotifyState
@@ -38,8 +37,5 @@ private:
 		FAnimNotifyEvent Notify;
 	};
 
-	TArray<FAnimNotifyEvent>    NotifyQueue;
 	TArray<FActiveNotifyState>  ActiveStateNotifies;
-
-	void RouteNotify(const FAnimNotifyEvent& Notify);
 };

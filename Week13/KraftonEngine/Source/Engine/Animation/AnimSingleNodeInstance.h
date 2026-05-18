@@ -26,6 +26,7 @@ public:
 
 private:
 	UAnimSequence* Sequence = nullptr;
+	float    PrevTime = 0.0f;
 	float    CurrentTime = 0.0f;
 	float    PlayRate = 1.0f;
 	bool     bLooping = false;

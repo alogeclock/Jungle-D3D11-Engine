@@ -23,6 +23,8 @@ public:
 	float GetSamplingFrameRate() const override;
 	bool EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, bool bLoopOverride = true) const override;
 
+	void CollectNotifies(float PrevTime, float CurrentTime, bool bLooping,
+		bool bReverse, TArray<FAnimNotifyEvent>& OutNotifies);
 	const TArray<FAnimNotifyEvent>& GetNotifyEvents() const;
 
 private:

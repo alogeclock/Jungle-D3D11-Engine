@@ -1,4 +1,4 @@
-#include "AnimInstance.h"
+﻿#include "AnimInstance.h"
 #include "Animation/AnimationStateMachine.h"
 #include "Object/ObjectFactory.h"
 #include "Component/SkeletalMeshComponent.h"
@@ -16,7 +16,7 @@ void UAnimInstance::Update(float DeltaTime)
 
 	if (StateMachine)
 	{
-		StateMachine->Tick(DeltaTime);
+		StateMachine->UpdateAnimationState(DeltaTime);
 	}
 }
 
@@ -26,52 +26,12 @@ void UAnimInstance::GetCurrentPose(FPoseContext& OutPose)
 		return;
 
 	TArray<FAnimNotifyEvent> CollectedNotifies;
-	StateMachine->EvaluatePose(OutPose, CollectedNotifies);
+	StateMachine->GenerateFinalPose(OutPose, CollectedNotifies);
 
 	LastEvaluatedTime = StateMachine->GetCurrentStateTime();
 
 	for (const FAnimNotifyEvent& Notify : CollectedNotifies)
 		RouteNotify(Notify);
-}
-
-void UAnimInstance::CheckAnimNotifyQueue(float PrevTime, float CurrTime,
-	float SeqLength, bool bLooping, bool bReverse,
-	const TArray<FAnimNotifyEvent>& SeqNotifies)
-{
-	LastEvaluatedTime = CurrTime;
-
-	for (const FAnimNotifyEvent& Notify : SeqNotifies)
-	{
-		bool bShouldTrigger = false;
-
-		if (!bReverse)
-		{
-			if (bLooping && CurrTime < PrevTime)
-			{
-				bShouldTrigger = (Notify.TriggerTime > PrevTime && Notify.TriggerTime <= SeqLength)
-				              || (Notify.TriggerTime <= CurrTime);
-			}
-			else
-			{
-				bShouldTrigger = Notify.TriggerTime > PrevTime && Notify.TriggerTime <= CurrTime;
-			}
-		}
-		else
-		{
-			if (bLooping && CurrTime > PrevTime)
-			{
-				bShouldTrigger = (Notify.TriggerTime < PrevTime  && Notify.TriggerTime >= 0.f)
-				              || (Notify.TriggerTime <= SeqLength && Notify.TriggerTime >= CurrTime);
-			}
-			else
-			{
-				bShouldTrigger = Notify.TriggerTime < PrevTime && Notify.TriggerTime >= CurrTime;
-			}
-		}
-
-		if (bShouldTrigger)
-			RouteNotify(Notify);
-	}
 }
 
 void UAnimInstance::TriggerAnimNotifies()
