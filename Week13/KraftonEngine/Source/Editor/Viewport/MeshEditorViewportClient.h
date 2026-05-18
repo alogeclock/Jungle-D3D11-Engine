@@ -58,6 +58,11 @@ public:
 	EBoneDebugDrawMode GetBoneDebugDrawMode() const;
 	void SetBoneDebugDrawMode(EBoneDebugDrawMode InDrawMode);
 
+	// --- Bone Weight Heatmap Section ---
+	bool IsBoneWeightHeatmapEnabled() const;
+	void SetBoneWeightHeatmapEnabled(bool bEnabled);
+	FEditorVisualizationOptions GetEditorVisualizationOptions() const override;
+
 	void ApplyTransformSettingsToGizmo();
 
 private:
@@ -78,6 +83,7 @@ private:
 	FViewport* Viewport = nullptr;
 	FWindowsWindow* Window = nullptr;
 	FViewportRenderOptions RenderOptions;
+	bool bBoneWeightHeatmapEnabled = false;
 
 	FBoneTransformGizmoTarget BoneTarget;
 	UGizmoComponent* Gizmo = nullptr;

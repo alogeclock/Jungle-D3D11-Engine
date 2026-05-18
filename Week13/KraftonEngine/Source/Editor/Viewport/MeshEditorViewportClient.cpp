@@ -213,6 +213,24 @@ void FMeshEditorViewportClient::SetBoneDebugDrawMode(EBoneDebugDrawMode InDrawMo
 	}
 }
 
+bool FMeshEditorViewportClient::IsBoneWeightHeatmapEnabled() const
+{
+	return bBoneWeightHeatmapEnabled;
+}
+
+void FMeshEditorViewportClient::SetBoneWeightHeatmapEnabled(bool bEnabled)
+{
+	bBoneWeightHeatmapEnabled = bEnabled;
+}
+
+FEditorVisualizationOptions FMeshEditorViewportClient::GetEditorVisualizationOptions() const
+{
+	FEditorVisualizationOptions Options;
+	Options.bBoneWeightHeatmap = bBoneWeightHeatmapEnabled;
+	Options.BoneWeightHeatmapBoneIndex = bBoneWeightHeatmapEnabled ? SelectedBoneIndex : -1;
+	return Options;
+}
+
 void FMeshEditorViewportClient::TickShortcuts()
 {
 	if (!FSlateApplication::Get().DoesClientOwnKeyboardInput(this)) return;

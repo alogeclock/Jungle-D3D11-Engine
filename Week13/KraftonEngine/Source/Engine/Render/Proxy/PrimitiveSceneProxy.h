@@ -18,9 +18,8 @@ struct FFrameContext;
 struct FPrimitiveDrawOptions
 {
 	ESkinningMode SkinningMode = ESkinningMode::CPU;
-	bool bWeightBoneHeatMap = false;
-	int32 WeightBoneHeatMapBoneIndex = -1;
-	float HeatmapIntensity = 0.0f;
+	bool bBoneWeightHeatmap = false;
+	int32 BoneWeightHeatmapBoneIndex = -1;
 };
 
 // ============================================================

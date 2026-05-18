@@ -86,3 +86,9 @@ struct FViewportRenderOptions
 	float HeatMapMax = 20.0f;
 	bool Enable25DCulling = true;
 };
+
+struct FEditorVisualizationOptions
+{
+	bool bBoneWeightHeatmap = false;
+	int32 BoneWeightHeatmapBoneIndex = -1;
+};

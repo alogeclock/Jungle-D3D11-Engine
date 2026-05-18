@@ -53,17 +53,79 @@ struct UberVS_Output
     float2 texcoord : TEXCOORD0;
     float3 worldPos : TEXCOORD1;
     float4 tangent : TANGENT;
+    float boneWeightHeat : TEXCOORD4;
 #if defined(LIGHTING_MODEL_GOURAUD) && LIGHTING_MODEL_GOURAUD
     float3 litDiffuse  : TEXCOORD2;
     float3 litSpecular : TEXCOORD3;
 #endif
 };
 
+float3 ComputeBoneWeightHeatmapBaseColor(float3 N)
+{
+    float3 normal = normalize(N);
+    float3 lightDir = normalize(float3(-0.35f, 0.70f, -0.45f));
+    float light = 0.76f + 0.24f * saturate(dot(normal, lightDir));
+
+    float3 basePink = float3(1.00f, 0.66f, 0.88f);
+    float3 baseLavender = float3(0.72f, 0.58f, 1.00f);
+    float tint = 0.5f + 0.5f * saturate(normal.z * 0.5f + 0.5f);
+
+    return lerp(baseLavender, basePink, tint) * light;
+}
+
+float3 ComputeRainbowBoneWeightColor(float weight)
+{
+    float t = saturate(weight);
+
+    float3 c0 = float3(0.50f, 0.16f, 0.95f); // 보라
+    float3 c1 = float3(0.12f, 0.08f, 0.70f); // 남색
+    float3 c2 = float3(0.02f, 0.30f, 1.00f); // 파랑
+    float3 c3 = float3(0.00f, 0.88f, 0.30f); // 초록
+    float3 c4 = float3(1.00f, 0.92f, 0.00f); // 노랑
+    float3 c5 = float3(1.00f, 0.42f, 0.00f); // 주황
+    float3 c6 = float3(1.00f, 0.02f, 0.00f); // 빨강
+
+    if (t < (1.0f / 6.0f))
+    {
+        float s = smoothstep(0.0f, 1.0f / 6.0f, t);
+        return lerp(c0, c1, s);
+    }
+    else if (t < (2.0f / 6.0f))
+    {
+        float s = smoothstep(1.0f / 6.0f, 2.0f / 6.0f, t);
+        return lerp(c1, c2, s);
+    }
+    else if (t < (3.0f / 6.0f))
+    {
+        float s = smoothstep(2.0f / 6.0f, 3.0f / 6.0f, t);
+        return lerp(c2, c3, s);
+    }
+    else if (t < (4.0f / 6.0f))
+    {
+        float s = smoothstep(3.0f / 6.0f, 4.0f / 6.0f, t);
+        return lerp(c3, c4, s);
+    }
+    else if (t < (5.0f / 6.0f))
+    {
+        float s = smoothstep(4.0f / 6.0f, 5.0f / 6.0f, t);
+        return lerp(c4, c5, s);
+    }
+
+    float s = smoothstep(5.0f / 6.0f, 1.0f, t);
+    return lerp(c5, c6, s);
+}
+
 
 // =============================================================================
 // Vertex Shader
 // =============================================================================
-UberVS_Output BuildUberVSOutput(float3 position, float3 normal, float4 color, float2 texcoord, float4 tangent)
+UberVS_Output BuildUberVSOutput(
+    float3 position,
+    float3 normal,
+    float4 color,
+    float2 texcoord,
+    float4 tangent,
+    float boneWeightHeat)
 {
     UberVS_Output output;
     
@@ -75,6 +137,7 @@ UberVS_Output BuildUberVSOutput(float3 position, float3 normal, float4 color, fl
     output.normal = normalize(mul(normal, (float3x3) NormalMatrix));
     output.color = color * SectionColor;
     output.texcoord = texcoord;
+    output.boneWeightHeat = boneWeightHeat;
 
     float3 T = normalize(mul(tangent.xyz, M));
     T = normalize(T - output.normal * dot(output.normal, T));
@@ -104,7 +167,13 @@ UberVS_Output BuildUberVSOutput(float3 position, float3 normal, float4 color, fl
 
 UberVS_Output VS_Static(VS_Input_PNCTT input)
 {
-    return BuildUberVSOutput(input.position, input.normal, input.color, input.texcoord, input.tangent);
+    return BuildUberVSOutput(
+        input.position,
+        input.normal,
+        input.color,
+        input.texcoord,
+        input.tangent,
+        0.0f);
 }
 
 UberVS_Output VS_Skeletal(VS_Input_PNCTBW input)
@@ -112,6 +181,15 @@ UberVS_Output VS_Skeletal(VS_Input_PNCTBW input)
     float3 position = input.position;
     float3 normal = input.normal;
     float4 tangent = input.tangent;
+    float boneWeightHeat = 0.0f;
+
+    if (HeatmapMode != 0 && SelectedBoneIndex >= 0)
+    {
+        boneWeightHeat = GetBoneWeightByIndex(
+            input.boneIndices,
+            input.boneWeights,
+            SelectedBoneIndex);
+    }
 
     if (SkinningMode == 1 && GetSkinWeightSum(input.boneIndices, input.boneWeights) > 0.0f)
     {
@@ -124,7 +202,13 @@ UberVS_Output VS_Skeletal(VS_Input_PNCTBW input)
         tangent.xyz = normalize(mul(float4(input.tangent.xyz, 0.0f), skinMatrix).xyz);
     }
 
-    return BuildUberVSOutput(position, normal, input.color, input.texcoord, tangent);
+    return BuildUberVSOutput(
+        position,
+        normal,
+        input.color,
+        input.texcoord,
+        tangent,
+        boneWeightHeat);
 }
 
 UberVS_Output VS(VS_Input_PNCTT input)
@@ -149,13 +233,34 @@ UberPS_Output PS(UberVS_Output input)
 {
     UberPS_Output output;
 
+    float3 N = normalize(input.normal);
+
+    // Bone Weight Heatmap
+    if (HeatmapMode != 0)
+    {
+        float3 finalColor = ComputeBoneWeightHeatmapBaseColor(N);
+
+        if (SelectedBoneIndex >= 0)
+        {
+            float weight = saturate(input.boneWeightHeat);
+            if (weight > 0.0f)
+            {
+                finalColor = ComputeRainbowBoneWeightColor(weight);
+            }
+        }
+
+        output.Color = float4(ApplyWireframe(finalColor), 1.0f);
+        output.Normal = float4(N, 1.0f);
+        output.Culling = float4(0, 0, 0, 0);
+        
+        return output;
+    }
+
     float4 texColor = DiffuseTexture.Sample(LinearWrapSampler, input.texcoord);
     if (texColor.a < 0.001f)
         texColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
     float4 baseColor = texColor * input.color;
-
-    float3 N = normalize(input.normal);
 
 #if !defined(LIGHTING_MODEL_GOURAUD)
     if (HasNormalMap >= 0.5)

@@ -71,6 +71,7 @@ struct FFrameContext
 
 	// Render Settings (Single Source of Truth)
 	FViewportRenderOptions RenderOptions;
+	FEditorVisualizationOptions EditorVisualizationOptions;
 	ESkinningMode SkinningMode = ESkinningMode::CPU;
 
 	FVector    WireframeColor = FVector(0.0f, 0.0f, 0.7f);

@@ -74,7 +74,7 @@ cbuffer SkeletalRenderBuffer : register(b6)
     uint SkinningMode;
     uint HeatmapMode;
     int SelectedBoneIndex;
-    float HeatmapIntensity;
+    float _Pad4;
 };
 // t26: Skin Matrices
 StructuredBuffer<float4x4> SkinMatrices : register(t26);

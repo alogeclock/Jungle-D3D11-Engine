@@ -19,6 +19,7 @@ public:
 
 	virtual FViewportRenderOptions& GetRenderOptions() = 0;
 	virtual const FViewportRenderOptions& GetRenderOptions() const = 0;
+	virtual FEditorVisualizationOptions GetEditorVisualizationOptions() const { return {}; }
 
 	virtual void NotifyViewportResized(int32 NewWidth, int32 NewHeight) = 0;
 };

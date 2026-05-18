@@ -778,8 +778,12 @@ void FShadowMapPass::DrawShadowCasters(const FPassContext& Ctx, const FConvexVol
 	UWorld* World = Ctx.World;
 	FSpatialPartition* Partition = World ? &World->GetPartition() : nullptr;
 
+	// 정보 보존 목적
+	// TODO: 반드시 수정
 	FPrimitiveDrawOptions Options = {};
 	Options.SkinningMode = Ctx.Frame.SkinningMode;
+	Options.bBoneWeightHeatmap = Ctx.Frame.EditorVisualizationOptions.bBoneWeightHeatmap;
+	Options.BoneWeightHeatmapBoneIndex = Ctx.Frame.EditorVisualizationOptions.BoneWeightHeatmapBoneIndex;
 	DrawShadowCasters(Ctx.Device.GetDeviceContext(), *Ctx.Scene, Ctx.Resources, Options, LightFrustum, Partition);
 }
 
