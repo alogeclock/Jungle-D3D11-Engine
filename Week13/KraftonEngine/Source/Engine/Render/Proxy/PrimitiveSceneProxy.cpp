@@ -97,3 +97,14 @@ bool FPrimitiveSceneProxy::PrepareDrawBuffer(ID3D11Device* Device, ID3D11DeviceC
 	OutBuffer.IB = Mesh->GetIndexBuffer().GetBuffer();
 	return OutBuffer.VB != nullptr;
 }
+
+bool FPrimitiveSceneProxy::PrepareGpuSkinningDrawBuffer(ID3D11Device* Device, ID3D11DeviceContext* Context, FDrawCommandBuffer& OutBuffer) const
+{
+	return PrepareDrawBuffer(Device, Context, OutBuffer);
+}
+
+bool FPrimitiveSceneProxy::PrepareDrawCommandBindings(ID3D11Device* Device, ID3D11DeviceContext* Context,
+	const FPrimitiveDrawOptions& Options, FDrawCommand& OutCommand) const
+{
+	return true;
+}
