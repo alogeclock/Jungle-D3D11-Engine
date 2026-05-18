@@ -20,7 +20,6 @@ struct FPrimitiveDrawOptions
 	ESkinningMode SkinningMode = ESkinningMode::CPU;
 	bool bWeightBoneHeatMap = false;
 	int32 WeightBoneHeatMapBoneIndex = -1;
-	float HeatmapIntensity = 0.0f;
 };
 
 // ============================================================

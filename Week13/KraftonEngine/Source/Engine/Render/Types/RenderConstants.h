@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Render/Types/RenderTypes.h"
 #include "Render/Resource/Buffer.h"
 #include "Render/Device/D3DDevice.h"
@@ -194,7 +194,7 @@ struct FSkeletalRenderConstants
 	uint32 SkinningMode = 0;
 	uint32 HeatmapMode = 0;
 	int32 SelectedBoneIndex = -1;
-	float HeatmapIntensity = 0.0f;
+	float _Pad = 0.0f;
 };
 static_assert(sizeof(FSkeletalRenderConstants) == 16, "FSkeletalRenderConstants must match HLSL SkeletalRenderBuffer");
 
