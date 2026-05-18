@@ -291,6 +291,7 @@ void FEditorRenderPipeline::BuildFrame(FLevelEditorViewportClient* VC, const FMi
 	Frame.bIsLightView = VC->IsViewingFromLight();
 	Frame.WorldType = World->GetWorldType();
 	Frame.SetRenderOptions(VC->GetRenderOptions());
+	Frame.EditorVisualizationOptions = {};
 	Frame.SkinningMode = FRenderFeatureSettings::Get().GetSkinningMode();
 	Frame.OcclusionCulling = &GetOcclusionForViewport(VC);
 	Frame.LODContext = World->PrepareLODContext();
@@ -380,6 +381,7 @@ void FEditorRenderPipeline::RenderPreviewViewport(IEditorPreviewViewportClient* 
 	Frame.WorldType = World->GetWorldType();
 
 	Frame.SetRenderOptions(VC->GetRenderOptions());
+	Frame.EditorVisualizationOptions = VC->GetEditorVisualizationOptions();
 	Frame.SkinningMode = FRenderFeatureSettings::Get().GetSkinningMode();
 
 	FScene& Scene = World->GetScene();

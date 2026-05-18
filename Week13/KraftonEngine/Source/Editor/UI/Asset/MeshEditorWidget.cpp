@@ -314,20 +314,9 @@ void FMeshEditorWidget::Render(float DeltaTime)
 				
 				bool bHeatmap = ViewportClient.IsBoneWeightHeatmapEnabled();
 
-				if (SelectedBoneIndex < 0)
-				{
-					ImGui::BeginDisabled();
-				}
-
-				if (ImGui::Checkbox("Bone Weight Heatmap", &bHeatmap));
+				if (ImGui::Checkbox("Bone Weight Heatmap", &bHeatmap))
 				{
 					ViewportClient.SetBoneWeightHeatmapEnabled(bHeatmap);
-				}
-
-				if (SelectedBoneIndex < 0)
-				{
-					ImGui::EndDisabled();
-					ImGui::TextDisabled("Select a bone First");
 				}
 			};
 

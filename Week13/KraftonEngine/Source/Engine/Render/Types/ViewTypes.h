@@ -85,8 +85,10 @@ struct FViewportRenderOptions
 	ELightCullingMode LightCullingMode = ELightCullingMode::Cluster;
 	float HeatMapMax = 20.0f;
 	bool Enable25DCulling = true;
+};
 
-	// Bone Weight Heatmap
-	bool bHeatmap = false;
-	int32 BoneIndex = -1;
+struct FEditorVisualizationOptions
+{
+	bool bBoneWeightHeatmap = false;
+	int32 BoneWeightHeatmapBoneIndex = -1;
 };

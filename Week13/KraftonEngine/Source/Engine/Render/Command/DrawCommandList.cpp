@@ -40,6 +40,7 @@ void FStateCache::Cleanup(ID3D11DeviceContext* Ctx)
 		}
 	}
 
+	// Skinned Resource Unbind
 	if (Skinning.SkeletalRenderCB || Skinning.SkinMatrixSRV || Skinning.bEnabled)
 	{
 		ID3D11Buffer* nullCB = nullptr;
@@ -271,7 +272,10 @@ void FDrawCommandList::SubmitCommand(const FDrawCommand& Cmd,
 		ID3D11Buffer* nullCB = nullptr;
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		Ctx->VSSetConstantBuffers(ECBSlot::SkeletalRender, 1, &nullCB);
+		Ctx->PSSetConstantBuffers(ECBSlot::SkeletalRender, 1, &nullCB);
+
 		Ctx->VSSetShaderResources(ESystemTexSlot::SkinMatrices, 1, &nullSRV);
+
 		Cache.Skinning = {};
 	}
 

@@ -73,4 +73,25 @@ float GetSkinWeightSum(int4 boneIndices, float4 boneWeights)
     return weightSum;
 }
 
+float GetBoneWeightByIndex(int4 boneIndices, float4 boneWeights, int selectedBoneIndex)
+{
+    if (selectedBoneIndex < 0)
+    {
+        return 0.0f;
+    }
+
+    float weight = 0.0f;
+
+    [unroll]
+    for (int i = 0; i < 4; ++i)
+    {
+        if (boneIndices[i] == selectedBoneIndex)
+        {
+            weight += boneWeights[i];
+        }
+    }
+
+    return saturate(weight);
+}
+
 #endif // FUNCTIONS_HLSL

@@ -84,8 +84,8 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame)
 	// FPrimitiveDrawOptions 설정
 	DrawOptions = {};
 	DrawOptions.SkinningMode = Frame.SkinningMode;
-	DrawOptions.bHeatMap = Frame.RenderOptions.bHeatmap && Frame.RenderOptions.BoneIndex >= 0;
-	DrawOptions.BoneIndex= DrawOptions.bHeatMap ? Frame.RenderOptions.BoneIndex : -1;
+	DrawOptions.bBoneWeightHeatmap = Frame.EditorVisualizationOptions.bBoneWeightHeatmap;
+	DrawOptions.BoneWeightHeatmapBoneIndex = Frame.EditorVisualizationOptions.BoneWeightHeatmapBoneIndex;
 
 	bHasSelectionMaskCommands = false;
 
@@ -211,7 +211,14 @@ void FDrawCommandBuilder::BuildCommandForProxy(FScene& Scene, const FPrimitiveSc
 				ApplyMaterialRenderState(Cmd.RenderState, Mat, BaseRenderState);
 		}
 
-		if (!Proxy.PrepareDrawCommandBindings(CachedDevice, Ctx, DrawOptions, Cmd))
+		FPrimitiveDrawOptions CommandDrawOptions = DrawOptions;
+		if (bDepthOnly)
+		{
+			CommandDrawOptions.bBoneWeightHeatmap = false;
+			CommandDrawOptions.BoneWeightHeatmapBoneIndex = -1;
+		}
+
+		if (!Proxy.PrepareDrawCommandBindings(CachedDevice, Ctx, CommandDrawOptions, Cmd))
 		{
 			continue;
 		}
