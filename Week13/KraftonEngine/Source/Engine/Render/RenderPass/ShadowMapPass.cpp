@@ -651,7 +651,7 @@ void FShadowMapPass::UpdateShadowCB(const FPassContext& Ctx)
 // ============================================================
 
 void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, FSystemResources& Resources,
-	const FPrimitiveDrawOptions& Options, const FConvexVolume& LightFrustum, FSpatialPartition* Partition)
+	const FPrimitiveDrawOptions& Options, const FConvexVolume& LightFrustum, const FShowFlags& ShowFlags, FSpatialPartition* Partition)
 {
 	ID3D11Device* Device = nullptr;
 	DC->GetDevice(&Device);
@@ -697,6 +697,7 @@ void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, F
 		if (!Proxy->CastsShadow()) continue;
 		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::NeverCull)) continue;
 		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::EditorOnly)) continue;
+		if (!ShowFlags.bSkeletalMesh) continue;
 
 		if (!Partition && !LightFrustum.IntersectAABB(Proxy->GetCachedBounds())) continue;
 
@@ -784,7 +785,7 @@ void FShadowMapPass::DrawShadowCasters(const FPassContext& Ctx, const FConvexVol
 	Options.SkinningMode = Ctx.Frame.SkinningMode;
 	Options.bBoneWeightHeatmap = Ctx.Frame.EditorVisualizationOptions.bBoneWeightHeatmap;
 	Options.BoneWeightHeatmapBoneIndex = Ctx.Frame.EditorVisualizationOptions.BoneWeightHeatmapBoneIndex;
-	DrawShadowCasters(Ctx.Device.GetDeviceContext(), *Ctx.Scene, Ctx.Resources, Options, LightFrustum, Partition);
+	DrawShadowCasters(Ctx.Device.GetDeviceContext(), *Ctx.Scene, Ctx.Resources, Options, LightFrustum, Ctx.Frame.RenderOptions.ShowFlags, Partition);
 }
 
 // ============================================================
