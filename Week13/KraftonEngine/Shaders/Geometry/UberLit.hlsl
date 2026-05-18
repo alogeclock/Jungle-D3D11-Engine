@@ -115,7 +115,10 @@ UberVS_Output VS_Skeletal(VS_Input_PNCTBW input)
 
     if (SkinningMode == 1 && GetSkinWeightSum(input.boneIndices, input.boneWeights) > 0.0f)
     {
-        float4x4 skinMatrix = BuildSkinMatrix(input.boneIndices, input.boneWeights);
+        float4x4 skinMatrixT = BuildSkinMatrix(input.boneIndices, input.boneWeights);
+        float4x4 skinMatrix = transpose(skinMatrixT);
+        
+        
         position = mul(float4(input.position, 1.0f), skinMatrix).xyz;
         normal = normalize(mul(float4(input.normal, 0.0f), skinMatrix).xyz);
         tangent.xyz = normalize(mul(float4(input.tangent.xyz, 0.0f), skinMatrix).xyz);

@@ -47,7 +47,8 @@ PS_Input_Shadow VS_Skeletal(VS_Input_PNCTBW input)
 
     if (SkinningMode == 1 && GetSkinWeightSum(input.boneIndices, input.boneWeights) > 0.0f)
     {
-        float4x4 skinMatrix = BuildSkinMatrix(input.boneIndices, input.boneWeights);
+        float4x4 skinMatrixT = BuildSkinMatrix(input.boneIndices, input.boneWeights);
+        float4x4 skinMatrix = transpose(skinMatrixT);
         position = mul(float4(input.position, 1.0f), skinMatrix).xyz;
     }
 
