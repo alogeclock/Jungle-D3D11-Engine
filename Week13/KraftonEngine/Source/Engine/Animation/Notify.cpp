@@ -4,6 +4,6 @@
 
 IMPLEMENT_CLASS(UNotify, UObject)
 
-void UNotify::OnNotify(AActor* MeshOwner)
+void UNotify::OnNotify(AActor* MeshOwner, USkeletalMeshComponent* MeshComp)
 {
 }
