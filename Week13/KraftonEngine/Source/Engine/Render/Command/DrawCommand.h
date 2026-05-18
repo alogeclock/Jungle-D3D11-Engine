@@ -43,6 +43,14 @@ struct FDrawCommandBindings
 	ID3D11ShaderResourceView* SRVs[(int)(EMaterialTextureSlot::Max)] = {};   // t0 ~ t7
 };
 
+// SkeletalMesh 스키닝 전용 바인딩 — b6/t26
+struct FSkinningDrawBindings
+{
+	FConstantBuffer* SkeletalRenderCB = nullptr;
+	ID3D11ShaderResourceView* SkinMatrixSRV = nullptr;
+	bool bEnabled = false;
+};
+
 /*
 	FDrawCommand — 드로우콜 1개에 필요한 모든 정보를 캡슐화합니다.
 	UE5의 FMeshDrawCommand 패턴을 차용하여,
@@ -63,6 +71,7 @@ struct FDrawCommand
 	// ===== Bindings =====
 	FConstantBuffer*    PerObjectCB = nullptr;        // b1: Model + Color (per-proxy)
 	FDrawCommandBindings Bindings;                    // PerShaderCB + SRVs (per-material)
+	FSkinningDrawBindings Skinning;                   // b6/t26 SkeletalMesh skinning
 
 	// ===== Sort =====
 	uint64 SortKey = 0;                              // 정렬 키 (Pass → Shader → MeshBuffer → SRV)
