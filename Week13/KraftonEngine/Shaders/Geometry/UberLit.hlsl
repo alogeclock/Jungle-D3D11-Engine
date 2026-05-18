@@ -13,7 +13,6 @@
 #include "Common/Functions.hlsli"
 #include "Common/VertexLayouts.hlsli"
 #include "Common/SystemSamplers.hlsli"
-#include "Common/Skinning.hlsli"
 
 #if !defined(LIGHTING_MODEL_UNLIT)
 #include "Common/ForwardLighting.hlsli"

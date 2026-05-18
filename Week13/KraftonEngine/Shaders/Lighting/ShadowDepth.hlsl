@@ -10,7 +10,7 @@
 
 #include "Common/ConstantBuffers.hlsli"
 #include "Common/VertexLayouts.hlsli"
-#include "Common/Skinning.hlsli"
+#include "Common/Functions.hlsli"
 
 // b2: Light ViewProj — Shadow depth pass 전용
 cbuffer ShadowLightBuffer : register(b2)
