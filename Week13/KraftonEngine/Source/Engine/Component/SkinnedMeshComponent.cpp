@@ -153,41 +153,45 @@ USkeletalMesh* USkinnedMeshComponent::GetSkeletalMesh() const
 // Bounds 섹션: SkeletalMesh culling은 asset local bounds가 아니라 실제 CPU-skinned vertices를 기준으로 한다.
 void USkinnedMeshComponent::UpdateWorldAABB() const
 {
-	EnsureCPUSkinnedVertices();
+	UPrimitiveComponent::UpdateWorldAABB();
+	// 부하가 너무 심해서 잠시 주석 처리
+	// EnsureCPUSkinnedVertices();
 
 	// 아직 skinning 결과가 없으면 primitive 기본 bounds로 fallback해 빈 mesh/로드 실패 경로를 안전하게 둔다.
 	if (SkinnedVertices.empty())
 	{
-		UPrimitiveComponent::UpdateWorldAABB();
 		return;
 	}
 
 	const FMatrix& WorldMatrix = CachedWorldMatrix;
 
 	// 이미 component local로 skinning된 vertex를 world matrix로 변환해 octree/query bounds를 만든다.
-	FVector WorldMin = WorldMatrix.TransformPositionWithW(SkinnedVertices[0].Position);
-	FVector WorldMax = WorldMin;
-
-	for (const FVertexPNCTBW& Vertex : SkinnedVertices)
+	if (FRenderFeatureSettings::Get().GetSkinningMode() == ESkinningMode::CPU)
 	{
-		const FVector WorldPos = WorldMatrix.TransformPositionWithW(Vertex.Position);
+		FVector WorldMin = WorldMatrix.TransformPositionWithW(SkinnedVertices[0].Position);
+		FVector WorldMax = WorldMin;
 
-		WorldMin.X = std::min(WorldMin.X, WorldPos.X);
-		WorldMin.Y = std::min(WorldMin.Y, WorldPos.Y);
-		WorldMin.Z = std::min(WorldMin.Z, WorldPos.Z);
+		for (const FVertexPNCTBW& Vertex : SkinnedVertices)
+		{
+			const FVector WorldPos = WorldMatrix.TransformPositionWithW(Vertex.Position);
 
-		WorldMax.X = std::max(WorldMax.X, WorldPos.X);
-		WorldMax.Y = std::max(WorldMax.Y, WorldPos.Y);
-		WorldMax.Z = std::max(WorldMax.Z, WorldPos.Z);
-	}
+			WorldMin.X = std::min(WorldMin.X, WorldPos.X);
+			WorldMin.Y = std::min(WorldMin.Y, WorldPos.Y);
+			WorldMin.Z = std::min(WorldMin.Z, WorldPos.Z);
 
-	FVector Center = (WorldMin + WorldMax) * 0.5f;
-	FVector Extent = (WorldMax - WorldMin) * 0.5f;
+			WorldMax.X = std::max(WorldMax.X, WorldPos.X);
+			WorldMax.Y = std::max(WorldMax.Y, WorldPos.Y);
+			WorldMax.Z = std::max(WorldMax.Z, WorldPos.Z);
+		}
 
-	WorldAABBMinLocation = Center - Extent;
-	WorldAABBMaxLocation = Center + Extent;
-	bWorldAABBDirty = false;
-	bHasValidWorldAABB = true;
+		FVector Center = (WorldMin + WorldMax) * 0.5f;
+		FVector Extent = (WorldMax - WorldMin) * 0.5f;
+
+		WorldAABBMinLocation = Center - Extent;
+		WorldAABBMaxLocation = Center + Extent;
+		bWorldAABBDirty = false;
+		bHasValidWorldAABB = true;
+	}	
 }
 
 // Bone edit 섹션: setter가 호출되기 전까지는 asset pose를 그대로 쓰고, 수정 순간에 component-local 복사본을 만든다.
