@@ -1,24 +1,62 @@
-#include "Character.h"
+﻿#include "Character.h"
 #include "GameFramework/PlayerController.h"
 #include "Serialization/Archive.h"
+#include <Component/CameraComponent.h>
 
 ACharacter::ACharacter()
+{
+	
+}
+
+void ACharacter::InitDefaultComponents()
 {
 	CapsuleComponent = AddComponent<UCapsuleComponent>();
 	SetRootComponent(CapsuleComponent);
 
 	Mesh = AddComponent<USkeletalMeshComponent>();
+	GetRootComponent()->AddChild(Mesh);
+
+	Camera = AddComponent<UCameraComponent>();
+	GetRootComponent()->AddChild(Camera);
+
+	Camera->SetRelativeLocation(FVector(-10.f, 0.f, 10.f));
+	Camera->SetRelativeRotation(FVector(0.f, 45.f, 0.f));
 
 	CharacterMovement = AddComponent<UCharacterMovementComponent>();
-	CharacterMovement->SetUpdatedComponent(CapsuleComponent);
+	CharacterMovement->SetUpdatedComponent(GetRootComponent());
 
 	LuaScript = AddComponent<ULuaScriptComponent>();
-	LuaScript->SetScriptFile("Asset/Script/PlayerController.lua");
+	LuaScript->SetScriptFile("PlayerController.lua");
 }
 
 void ACharacter::Serialize(FArchive& Ar)
 {
 	APawn::Serialize(Ar);
+}
+
+
+void ACharacter::PostDuplicate()
+{
+	CapsuleComponent = Cast<UCapsuleComponent>(GetRootComponent());
+	if (!CapsuleComponent)
+	{
+		CapsuleComponent = GetComponentByClass<UCapsuleComponent>();
+	}
+
+	Mesh = GetComponentByClass<USkeletalMeshComponent>();
+	Camera = GetComponentByClass<UCameraComponent>();
+	CharacterMovement = GetComponentByClass<UCharacterMovementComponent>();
+	LuaScript = GetComponentByClass<ULuaScriptComponent>();
+
+	if (CharacterMovement && CapsuleComponent)
+	{
+		CharacterMovement->SetUpdatedComponent(CapsuleComponent);
+	}
+
+	if (LuaScript && LuaScript->GetScriptFile().empty())
+	{
+		LuaScript->SetScriptFile("PlayerController.lua");
+	}
 }
 
 void ACharacter::PossessedBy(APlayerController* PC)

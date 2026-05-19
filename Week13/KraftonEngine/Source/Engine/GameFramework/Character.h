@@ -1,10 +1,12 @@
-#pragma once
+﻿#pragma once
 #include "GameFramework/Pawn.h"
 #include "Component/CapsuleComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "Component/Movement/CharacterMovementComponent.h"
 #include "Component/LuaScriptComponent.h"
 #include "Character.generated.h"
+
+class UCameraComponent;
 
 UCLASS(Actor)
 class ACharacter : public APawn
@@ -15,7 +17,12 @@ public:
 	ACharacter();
 	~ACharacter() override = default;
 
+	// TODO: 계속 duplicate 오류나서 임시로 사용
+	void InitDefaultComponents();
+
 	void Serialize(FArchive& Ar) override;
+	void PostDuplicate() override;
+	
 
 	// ── 이동 입력 (PlayerController가 호출) ──────────────────
 	void AddMovementInput(FVector WorldDir, float Scale = 1.0f);
@@ -47,10 +54,14 @@ protected:
 	virtual void OnLanded(const FVector& HitNormal) {}
 
 private:
-	UCapsuleComponent*           CapsuleComponent  = nullptr;
-	USkeletalMeshComponent*      Mesh              = nullptr;
-	UCharacterMovementComponent* CharacterMovement = nullptr;
-	ULuaScriptComponent*         LuaScript         = nullptr;
+	UCapsuleComponent*				CapsuleComponent  = nullptr;
+	USkeletalMeshComponent*			Mesh              = nullptr;
+	UCharacterMovementComponent*	CharacterMovement = nullptr;
+	ULuaScriptComponent*			LuaScript         = nullptr;
+
+	// 시연용 카메라
+	// Character를 상속받은 객체에 CameraComponent를 만들어야함
+	UCameraComponent*				Camera = nullptr;
 
 	bool  bPressedJump    = false;
 	float JumpKeyHoldTime = 0.0f;
