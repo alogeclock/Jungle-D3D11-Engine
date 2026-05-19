@@ -1,4 +1,5 @@
 ﻿#include "LuaAnimStateMachine.h"
+#include "Animation/AnimInstance.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSequenceManager.h"
 #include "Object/ObjectFactory.h"
@@ -112,3 +113,4 @@ void ULuaAnimStateMachine::SetSequenceByName(const FString& SequenceName)
 		UE_LOG("[LuaAnimSM] SetSequenceByName: not found - %s", SequenceName.c_str());
 	}
 }
+
