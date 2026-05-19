@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "GameFramework/AActor.h"
 #include "GameModeBase.generated.h"
@@ -46,6 +46,7 @@ public:
 	UClass* GetGameStateClass() const { return GameStateClass; }
 	APlayerController* GetPlayerController() const { return PlayerController; }
 	UClass* GetPlayerControllerClass() const { return PlayerControllerClass; }
+	UClass* GetDefaultPawnClass() const { return DefaultPawnClass; }
 
 	// ProjectSettings.Game.GameModeClassName을 룩업·검증해서 적합하면 반환,
 	// 비어있거나 잘못된 이름이면 InDefault를 그대로 반환한다.
@@ -53,12 +54,16 @@ public:
 	static UClass* ResolveClassFromProjectSettings(UClass* InDefault);
 
 protected:
-	// StartMatch가 호출 — 씬에서 bAutoPossessPlayer = true인 첫 APawn을 찾아 Possess 한다.
-	void AutoPossessFirstPawn();
+	// StartMatch가 호출
+	// 1차: 씬에서 bAutoPossessPlayer = true인 첫 APawn을 찾아 Possess 한다
+	// 2차: 없으면 default pawn Class로 지정된 Pawn을 생성해서 Possess한다
+	APawn* FindAutoPossessPawn() const;
+	APawn* SpawnDefaultPawn();
 
 	// 서브클래스 생성자에서 지정 — null이면 AGameStateBase가 spawn된다.
 	UClass* GameStateClass = nullptr;
 	UClass* PlayerControllerClass = nullptr;
+	UClass* DefaultPawnClass = nullptr;
 
 	// GameMode가 BeginPlay/StartMatch에서 spawn하여 소유.
 	AGameStateBase* GameState = nullptr;

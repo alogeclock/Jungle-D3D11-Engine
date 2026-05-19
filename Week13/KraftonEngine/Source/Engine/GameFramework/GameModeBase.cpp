@@ -1,4 +1,5 @@
 ﻿#include "GameFramework/GameModeBase.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
@@ -12,6 +13,9 @@ AGameModeBase::AGameModeBase()
 	// 기본값 — 서브클래스 생성자가 더 구체 클래스로 덮어쓸 수 있다.
 	GameStateClass = AGameStateBase::StaticClass();
 	PlayerControllerClass = APlayerController::StaticClass();
+	// TODO: Object Reflection이 된다면 이걸 에디터에서 설정하게 만들면 참 좋은데
+	// 지금은 무리니 상속받은 코드에서 static class를 설정하게 만들어야함
+	DefaultPawnClass = ACharacter::StaticClass();
 }
 
 void AGameModeBase::BeginPlay()
@@ -44,7 +48,26 @@ void AGameModeBase::StartMatch()
 		PlayerController = Cast<APlayerController>(Spawned);
 	}
 
-	AutoPossessFirstPawn();
+	if (!PlayerController)
+	{
+		return;
+	}
+	
+	if (APawn* ExistingPawn = FindAutoPossessPawn())
+	{
+		PlayerController->Possess(ExistingPawn);
+		UE_LOG("[GameMode] Auto-possessed Pawn: %s", ExistingPawn->GetName().c_str());
+		return;
+	}
+
+	if (APawn* SpawnedPawn = SpawnDefaultPawn())
+	{
+		PlayerController->Possess(SpawnedPawn);
+		UE_LOG("[GameMode] Spawned and possessed default Pawn: %s", SpawnedPawn->GetName().c_str());
+		return;
+	}
+
+	UE_LOG("[GameMode] No Pawn to possess. DefaultPawnClass is null or spawn failed.");
 }
 
 void AGameModeBase::EndMatch()
@@ -75,12 +98,10 @@ UClass* AGameModeBase::ResolveClassFromProjectSettings(UClass* InDefault)
 	return Result;
 }
 
-void AGameModeBase::AutoPossessFirstPawn()
+APawn* AGameModeBase::FindAutoPossessPawn() const
 {
-	if (!PlayerController) return;
-
 	UWorld* World = GetWorld();
-	if (!World) return;
+	if (!World) return nullptr;
 
 	for (AActor* Actor : World->GetActors())
 	{
@@ -89,10 +110,39 @@ void AGameModeBase::AutoPossessFirstPawn()
 		if (!Pawn) continue;
 		if (!Pawn->GetAutoPossessPlayer()) continue;
 
-		PlayerController->Possess(Pawn);
-		UE_LOG("[GameMode] Auto-possessed Pawn: %s", Pawn->GetName().c_str());
-		return;
+		return Pawn;
 	}
 
-	// 매칭 Pawn 없음 — PC만 살아있고 PossessedPawn은 nullptr.
+	return nullptr;
+}
+
+APawn* AGameModeBase::SpawnDefaultPawn()
+{
+	if (!DefaultPawnClass)
+	{
+		return nullptr;
+	}
+
+	if (!DefaultPawnClass->IsChildOf(APawn::StaticClass()))
+	{
+		UE_LOG("[GameMode] DefaultPawnClass is not an APawn subclass.");
+		return nullptr;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return nullptr;
+	}
+
+	AActor* Spawned = World->SpawnActorByClass(DefaultPawnClass);
+	APawn* Pawn = Cast<APawn>(Spawned);
+
+	if (!Pawn)
+	{
+		UE_LOG("[GameMode] DefaultPawnClass is not an APawn subclass.");
+		return nullptr;
+	}
+
+	return Pawn;
 }
