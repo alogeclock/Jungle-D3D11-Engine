@@ -1339,7 +1339,7 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	ImGui::BeginDisabled(!bCanPlay);
 	if (DrawTimelineButton("<##ReversePlay", "역재생", ImVec2(ButtonWidth, 0.0f)))
 	{
-		PlayTimeline(-1.0f);
+		PlayTimeline(-std::abs(TimelinePlayRate));
 	}
 	ImGui::EndDisabled();
 
@@ -1355,7 +1355,7 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	ImGui::BeginDisabled(!bCanPlay);
 	if (DrawTimelineButton(">##ForwardPlay", "정재생", ImVec2(ButtonWidth, 0.0f)))
 	{
-		PlayTimeline(1.0f);
+		PlayTimeline(std::abs(TimelinePlayRate));
 	}
 	ImGui::EndDisabled();
 
@@ -1382,6 +1382,21 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	{
 		if (SingleNodeInstance)
 			SingleNodeInstance->SetLooping(bLooping);
+	}
+
+	ImGui::SameLine();
+
+	ImGui::SetNextItemWidth(60.0f);
+	float SpeedInput = std::abs(TimelinePlayRate);
+	if (ImGui::DragFloat("Speed", &SpeedInput, 0.05f, 0.1f, 8.0f, "%.2fx"))
+	{
+		SpeedInput = std::max(0.1f, SpeedInput);
+		const float Sign = (TimelinePlayRate >= 0.0f) ? 1.0f : -1.0f;
+		TimelinePlayRate = Sign * SpeedInput;
+		if (SingleNodeInstance && SingleNodeInstance->IsPlaying())
+		{
+			SingleNodeInstance->SetPlayRate(TimelinePlayRate);
+		}
 	}
 
 	ImGui::SameLine();
