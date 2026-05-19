@@ -12,6 +12,9 @@ public:
 	USkeletalMeshComponent() = default;
 	~USkeletalMeshComponent() override = default;
 
+	void BeginPlay() override;
+	void Serialize(FArchive& Ar) override;
+
 	// Render access 섹션: SceneProxy
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
 
@@ -33,4 +36,7 @@ private:
 	void SolveTwoBoneIK(FPoseContext& Pose, int RootBoneIndex, int MidBoneIndex, int EndBoneIndex, const FVector& TargetPosition, const FVector& PolePosition);
 
 	UAnimInstance* AnimInstance = nullptr;
+
+	FString AnimInstanceClassName;
+	FString LuaScriptPath;
 };

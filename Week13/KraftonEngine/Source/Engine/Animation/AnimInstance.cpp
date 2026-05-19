@@ -5,9 +5,21 @@
 
 IMPLEMENT_CLASS(UAnimInstance, UObject)
 
-void UAnimInstance::Initialize(USkeletalMeshComponent* InOwner)
+void UAnimInstance::Initialize(USkeletalMeshComponent* InOwner, const FString& InScriptPath)
 {
 	OwnerComponent = InOwner;
+
+	if (!InScriptPath.empty())
+	{
+		UObject* SMObj = FObjectFactory::Get().Create("ULuaAnimStateMachine");
+		StateMachine = Cast<UAnimationStateMachine>(SMObj); // 부모 클래스나 인터페이스로 캐스팅
+
+		if (StateMachine)
+		{
+			StateMachine->Initialize(InOwner, this);
+			StateMachine->LoadScript(InScriptPath);
+		}
+	}
 }
 
 void UAnimInstance::Update(float DeltaTime)

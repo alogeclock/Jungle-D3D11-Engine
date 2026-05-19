@@ -7,9 +7,9 @@
 
 IMPLEMENT_CLASS(ULuaAnimStateMachine, UAnimationStateMachine)
 
-void ULuaAnimStateMachine::Initialize(USkeletalMeshComponent* InOwner)
+void ULuaAnimStateMachine::Initialize(USkeletalMeshComponent* InOwner, UAnimInstance* InAnimInstance)
 {
-	Super::Initialize(InOwner);
+	Super::Initialize(InOwner, InAnimInstance);
 }
 
 void ULuaAnimStateMachine::LoadScript(const std::string& ScriptPath)
@@ -24,6 +24,7 @@ void ULuaAnimStateMachine::LoadScript(const std::string& ScriptPath)
 
 	// Lua에서 'self'로 이 StateMachine 객체에 접근
 	ScriptEnv["self"] = this;
+	ScriptEnv["AnimInstance"] = OwnerAnimInstance;
 
 	std::string Content;
 	if (!FLuaScriptManager::ReadScriptFileContent(ScriptPath, Content))

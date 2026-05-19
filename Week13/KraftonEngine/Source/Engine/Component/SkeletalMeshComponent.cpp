@@ -7,6 +7,34 @@
 
 IMPLEMENT_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
+BEGIN_CLASS_PROPERTIES(USkeletalMeshComponent)
+REGISTER_PROPERTY(AnimInstanceClassName, "Anim Instance Class", EPropertyType::String, "Animation", CPF_Edit)
+REGISTER_PROPERTY(LuaScriptPath, "Lua State Machine", EPropertyType::String, "Animation", CPF_Edit)
+END_CLASS_PROPERTIES(USkeletalMeshComponent)
+
+void USkeletalMeshComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (AnimInstanceClassName.empty())
+		return;
+
+	// 클래스 이름으로 AnimInstance 생성
+	UObject* Obj = FObjectFactory::Get().Create(AnimInstanceClassName.c_str());
+	AnimInstance = Cast<UAnimInstance>(Obj);
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Initialize(this, LuaScriptPath);
+}
+
+void USkeletalMeshComponent::Serialize(FArchive& Ar)
+{
+	Super::Serialize(Ar);
+	Ar << AnimInstanceClassName;
+	Ar << LuaScriptPath;
+}
+
 FPrimitiveSceneProxy* USkeletalMeshComponent::CreateSceneProxy()
 {
 	return new FSkeletalMeshSceneProxy(this);
