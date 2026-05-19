@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/CoreTypes.h"
+#include "Core/PropertyTypes.h"
 #include "Math/Quat.h"
 #include "Math/Transform.h"
 #include "Math/Vector.h"
@@ -74,15 +75,74 @@ struct FAnimNotifyEvent
 
 struct FTwoBoneIKChain
 {
+	bool bEnabled = true;
+
 	/** UpperArm or Thigh */
-	int RootBoneIndex;
+	int RootBoneIndex = -1;
 
 	/** LowerArm or Calf */
-	int MidBoneIndex;
+	int MidBoneIndex = -1;
 
 	/** Hand or Foot */
-	int EndBoneIndex;
+	int EndBoneIndex = -1;
 
-	FVector TargetPosition;
-	FVector PolePosition;
+	FVector TargetPosition = FVector::ZeroVector;
+	FVector PolePosition = FVector::ForwardVector;
+
+	static void DescribeProperties(void* Ptr, std::vector<FProperty>& OutProps)
+	{
+		auto* Chain = static_cast<FTwoBoneIKChain*>(Ptr);
+
+		FProperty Enabled;
+		Enabled.Name = "Enabled";
+		Enabled.Type = EPropertyType::Bool;
+		Enabled.ValuePtr = &Chain->bEnabled;
+		OutProps.push_back(Enabled);
+
+		FProperty RootBone;
+		RootBone.Name = "Root Bone Index";
+		RootBone.Type = EPropertyType::Int;
+		RootBone.Speed = 1.0f;
+		RootBone.ValuePtr = &Chain->RootBoneIndex;
+		OutProps.push_back(RootBone);
+
+		FProperty MidBone;
+		MidBone.Name = "Mid Bone Index";
+		MidBone.Type = EPropertyType::Int;
+		MidBone.Speed = 1.0f;
+		MidBone.ValuePtr = &Chain->MidBoneIndex;
+		OutProps.push_back(MidBone);
+
+		FProperty EndBone;
+		EndBone.Name = "End Bone Index";
+		EndBone.Type = EPropertyType::Int;
+		EndBone.Speed = 1.0f;
+		EndBone.ValuePtr = &Chain->EndBoneIndex;
+		OutProps.push_back(EndBone);
+
+		FProperty Target;
+		Target.Name = "Target Position";
+		Target.Type = EPropertyType::Vec3;
+		Target.Speed = 1.0f;
+		Target.ValuePtr = &Chain->TargetPosition;
+		OutProps.push_back(Target);
+
+		FProperty Pole;
+		Pole.Name = "Pole Position";
+		Pole.Type = EPropertyType::Vec3;
+		Pole.Speed = 1.0f;
+		Pole.ValuePtr = &Chain->PolePosition;
+		OutProps.push_back(Pole);
+	}
+
+	friend FArchive& operator<<(FArchive& Ar, FTwoBoneIKChain& Chain)
+	{
+		Ar << Chain.bEnabled;
+		Ar << Chain.RootBoneIndex;
+		Ar << Chain.MidBoneIndex;
+		Ar << Chain.EndBoneIndex;
+		Ar << Chain.TargetPosition;
+		Ar << Chain.PolePosition;
+		return Ar;
+	}
 };

@@ -27,6 +27,7 @@
 #include "Mesh/MeshManager.h"
 #include "Mesh/StaticMesh.h"
 #include "Mesh/SkeletalMesh.h"
+#include "Mesh/SkeletonAsset.h"
 #include "Platform/Paths.h"
 #include "SimpleJSON/json.hpp"
 
@@ -56,6 +57,210 @@ namespace
 
 		return Component->IsHiddenInComponentTree()
 			&& !(bShowEditorOnlyComponents && Component->IsEditorOnlyComponent());
+	}
+
+	enum class EIKBonePickerRole
+	{
+		None,
+		Root,
+		Mid,
+		End
+	};
+
+	FProperty* FindChildProperty(TArray<FProperty>& Props, const char* Name)
+	{
+		for (FProperty& Prop : Props)
+		{
+			if (Prop.Name == Name)
+			{
+				return &Prop;
+			}
+		}
+
+		return nullptr;
+	}
+
+	bool IsTwoBoneIKChainStruct(TArray<FProperty>& Props)
+	{
+		FProperty* Root = FindChildProperty(Props, "Root Bone Index");
+		FProperty* Mid = FindChildProperty(Props, "Mid Bone Index");
+		FProperty* End = FindChildProperty(Props, "End Bone Index");
+		return Root && Mid && End
+			&& Root->Type == EPropertyType::Int
+			&& Mid->Type == EPropertyType::Int
+			&& End->Type == EPropertyType::Int;
+	}
+
+	EIKBonePickerRole GetIKBonePickerRole(const FProperty& Prop)
+	{
+		if (Prop.Name == "Root Bone Index")
+		{
+			return EIKBonePickerRole::Root;
+		}
+		if (Prop.Name == "Mid Bone Index")
+		{
+			return EIKBonePickerRole::Mid;
+		}
+		if (Prop.Name == "End Bone Index")
+		{
+			return EIKBonePickerRole::End;
+		}
+
+		return EIKBonePickerRole::None;
+	}
+
+	int32 GetIntPropertyValue(const FProperty* Prop)
+	{
+		return Prop && Prop->ValuePtr ? *static_cast<int32*>(Prop->ValuePtr) : -1;
+	}
+
+	bool IsValidBoneIndex(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex)
+	{
+		return SkeletonAsset
+			&& BoneIndex >= 0
+			&& BoneIndex < static_cast<int32>(SkeletonAsset->Bones.size());
+	}
+
+	bool IsBoneDescendantOf(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex, int32 ParentBoneIndex)
+	{
+		if (!IsValidBoneIndex(SkeletonAsset, BoneIndex) || !IsValidBoneIndex(SkeletonAsset, ParentBoneIndex))
+		{
+			return false;
+		}
+
+		int32 CurrentIndex = SkeletonAsset->Bones[BoneIndex].ParentIndex;
+		while (CurrentIndex >= 0 && CurrentIndex < static_cast<int32>(SkeletonAsset->Bones.size()))
+		{
+			if (CurrentIndex == ParentBoneIndex)
+			{
+				return true;
+			}
+
+			CurrentIndex = SkeletonAsset->Bones[CurrentIndex].ParentIndex;
+		}
+
+		return false;
+	}
+
+	const FSkeletonAsset* GetSelectedSkeletonAsset(const UActorComponent* SelectedComponent)
+	{
+		const USkeletalMeshComponent* MeshComponent = Cast<USkeletalMeshComponent>(SelectedComponent);
+		if (!MeshComponent || !MeshComponent->GetSkeletalMesh())
+		{
+			return nullptr;
+		}
+
+		return MeshComponent->GetSkeletalMesh()->GetSkeletonAsset();
+	}
+
+	bool IsBoneCandidateAllowed(
+		const FSkeletonAsset* SkeletonAsset,
+		int32 BoneIndex,
+		EIKBonePickerRole Role,
+		int32 RootBoneIndex,
+		int32 MidBoneIndex)
+	{
+		if (!IsValidBoneIndex(SkeletonAsset, BoneIndex))
+		{
+			return false;
+		}
+
+		switch (Role)
+		{
+		case EIKBonePickerRole::Root:
+			return true;
+		case EIKBonePickerRole::Mid:
+			return IsValidBoneIndex(SkeletonAsset, RootBoneIndex)
+				? IsBoneDescendantOf(SkeletonAsset, BoneIndex, RootBoneIndex)
+				: true;
+		case EIKBonePickerRole::End:
+			if (IsValidBoneIndex(SkeletonAsset, MidBoneIndex))
+			{
+				return IsBoneDescendantOf(SkeletonAsset, BoneIndex, MidBoneIndex);
+			}
+			if (IsValidBoneIndex(SkeletonAsset, RootBoneIndex))
+			{
+				return IsBoneDescendantOf(SkeletonAsset, BoneIndex, RootBoneIndex);
+			}
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	FString MakeBonePickerLabel(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex)
+	{
+		if (BoneIndex < 0)
+		{
+			return "None (-1)";
+		}
+
+		if (!IsValidBoneIndex(SkeletonAsset, BoneIndex))
+		{
+			return "Invalid (" + std::to_string(BoneIndex) + ")";
+		}
+
+		return std::to_string(BoneIndex) + ": " + SkeletonAsset->Bones[BoneIndex].Name;
+	}
+
+	bool RenderIKBoneCombo(
+		const FSkeletonAsset* SkeletonAsset,
+		EIKBonePickerRole Role,
+		int32& BoneIndex,
+		int32 RootBoneIndex,
+		int32 MidBoneIndex)
+	{
+		if (!SkeletonAsset)
+		{
+			return false;
+		}
+
+		bool bChanged = false;
+		const FString Preview = MakeBonePickerLabel(SkeletonAsset, BoneIndex);
+
+		if (ImGui::BeginCombo("##Value", Preview.c_str()))
+		{
+			const bool bNoneSelected = BoneIndex < 0;
+			if (ImGui::Selectable("None (-1)", bNoneSelected))
+			{
+				BoneIndex = -1;
+				bChanged = true;
+			}
+			if (bNoneSelected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+
+			if (BoneIndex >= 0 && !IsValidBoneIndex(SkeletonAsset, BoneIndex))
+			{
+				const FString InvalidLabel = MakeBonePickerLabel(SkeletonAsset, BoneIndex);
+				ImGui::Selectable(InvalidLabel.c_str(), true, ImGuiSelectableFlags_Disabled);
+			}
+
+			for (int32 CandidateIndex = 0; CandidateIndex < static_cast<int32>(SkeletonAsset->Bones.size()); ++CandidateIndex)
+			{
+				if (!IsBoneCandidateAllowed(SkeletonAsset, CandidateIndex, Role, RootBoneIndex, MidBoneIndex))
+				{
+					continue;
+				}
+
+				const FString Label = MakeBonePickerLabel(SkeletonAsset, CandidateIndex);
+				const bool bSelected = BoneIndex == CandidateIndex;
+				if (ImGui::Selectable(Label.c_str(), bSelected))
+				{
+					BoneIndex = CandidateIndex;
+					bChanged = true;
+				}
+				if (bSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		return bChanged;
 	}
 
 	struct FComponentClassGroup
@@ -1413,6 +1618,13 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 		{
 			TArray<FProperty> ChildProps;
 			Prop.StructFunc(Prop.ValuePtr, ChildProps);
+			const bool bIsTwoBoneIKChain = IsTwoBoneIKChainStruct(ChildProps);
+			FProperty* RootBoneProp = bIsTwoBoneIKChain ? FindChildProperty(ChildProps, "Root Bone Index") : nullptr;
+			FProperty* MidBoneProp = bIsTwoBoneIKChain ? FindChildProperty(ChildProps, "Mid Bone Index") : nullptr;
+			FProperty* EndBoneProp = bIsTwoBoneIKChain ? FindChildProperty(ChildProps, "End Bone Index") : nullptr;
+			const FSkeletonAsset* SelectedSkeletonAsset = bIsTwoBoneIKChain
+				? GetSelectedSkeletonAsset(SelectedComponent)
+				: nullptr;
 
 			ImGui::Indent(8.0f);
 
@@ -1421,23 +1633,152 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 				ImGui::PushID(ci);
 
 				FProperty& ChildProp = ChildProps[ci];
-				// Struct 자식 프로퍼티는 재귀적으로 같은 위젯 렌더링 함수를 사용
-				// 단, SelectedComponent의 PostEditProperty는 부모 Struct 이름으로 호출
-				int32 ChildIdx = ci;
+				ImGui::AlignTextToFramePadding();
+				ImGui::TextUnformatted(PropLabel(ChildProp));
+				ImGui::SameLine(120.0f);
+				ImGui::SetNextItemWidth(-1);
 
-				// Enum 위젯 인라인 렌더링 (가장 빈번한 자식 타입)
-				if (ChildProp.Type == EPropertyType::Enum && ChildProp.EnumNames && ChildProp.EnumCount > 0)
+				const EIKBonePickerRole IKRole = bIsTwoBoneIKChain ? GetIKBonePickerRole(ChildProp) : EIKBonePickerRole::None;
+				if (IKRole != EIKBonePickerRole::None && SelectedSkeletonAsset && ChildProp.ValuePtr)
 				{
+					int32& BoneIndex = *static_cast<int32*>(ChildProp.ValuePtr);
+					const int32 RootBoneIndex = GetIntPropertyValue(RootBoneProp);
+					const int32 MidBoneIndex = GetIntPropertyValue(MidBoneProp);
+
+					if (RenderIKBoneCombo(SelectedSkeletonAsset, IKRole, BoneIndex, RootBoneIndex, MidBoneIndex))
+					{
+						bChanged = true;
+
+						if (IKRole == EIKBonePickerRole::Root && MidBoneProp && EndBoneProp)
+						{
+							int32& MidValue = *static_cast<int32*>(MidBoneProp->ValuePtr);
+							int32& EndValue = *static_cast<int32*>(EndBoneProp->ValuePtr);
+
+							if (!IsValidBoneIndex(SelectedSkeletonAsset, BoneIndex))
+							{
+								MidValue = -1;
+								EndValue = -1;
+							}
+							else
+							{
+								if (MidValue >= 0 && !IsBoneDescendantOf(SelectedSkeletonAsset, MidValue, BoneIndex))
+								{
+									MidValue = -1;
+								}
+								if (EndValue >= 0 && !IsBoneDescendantOf(SelectedSkeletonAsset, EndValue, BoneIndex))
+								{
+									EndValue = -1;
+								}
+							}
+						}
+						else if (IKRole == EIKBonePickerRole::Mid && EndBoneProp)
+						{
+							int32& EndValue = *static_cast<int32*>(EndBoneProp->ValuePtr);
+							if (!IsValidBoneIndex(SelectedSkeletonAsset, BoneIndex)
+								|| (EndValue >= 0 && !IsBoneDescendantOf(SelectedSkeletonAsset, EndValue, BoneIndex)))
+							{
+								EndValue = -1;
+							}
+						}
+					}
+
+					ImGui::PopID();
+					continue;
+				}
+
+				switch (ChildProp.Type)
+				{
+				case EPropertyType::Bool:
+				{
+					bool* Val = static_cast<bool*>(ChildProp.ValuePtr);
+					bChanged |= ImGui::Checkbox("##Value", Val);
+					break;
+				}
+				case EPropertyType::ByteBool:
+				{
+					uint8* Val = static_cast<uint8*>(ChildProp.ValuePtr);
+					bool bVal = (*Val != 0);
+					if (ImGui::Checkbox("##Value", &bVal))
+					{
+						*Val = bVal ? 1 : 0;
+						bChanged = true;
+					}
+					break;
+				}
+				case EPropertyType::Int:
+				{
+					int32* Val = static_cast<int32*>(ChildProp.ValuePtr);
+					const float Speed = ChildProp.Speed > 0.0f ? ChildProp.Speed : 1.0f;
+					bChanged |= ImGui::DragInt("##Value", Val, Speed);
+					break;
+				}
+				case EPropertyType::Float:
+				{
+					float* Val = static_cast<float*>(ChildProp.ValuePtr);
+					const float Speed = ChildProp.Speed > 0.0f ? ChildProp.Speed : 0.1f;
+					bChanged |= ImGui::DragFloat("##Value", Val, Speed);
+					break;
+				}
+				case EPropertyType::Vec3:
+				case EPropertyType::Rotator:
+				{
+					float* Val = static_cast<float*>(ChildProp.ValuePtr);
+					const float Speed = ChildProp.Speed > 0.0f ? ChildProp.Speed : 1.0f;
+					bChanged |= ImGui::DragFloat3("##Value", Val, Speed);
+					break;
+				}
+				case EPropertyType::Vec4:
+				case EPropertyType::Color4:
+				{
+					float* Val = static_cast<float*>(ChildProp.ValuePtr);
+					const float Speed = ChildProp.Speed > 0.0f ? ChildProp.Speed : 1.0f;
+					if (ChildProp.Type == EPropertyType::Color4)
+					{
+						bChanged |= ImGui::ColorEdit4("##Value", Val);
+					}
+					else
+					{
+						bChanged |= ImGui::DragFloat4("##Value", Val, Speed);
+					}
+					break;
+				}
+				case EPropertyType::String:
+				case EPropertyType::Script:
+				{
+					FString* Val = static_cast<FString*>(ChildProp.ValuePtr);
+					char Buf[256];
+					strncpy_s(Buf, sizeof(Buf), Val->c_str(), _TRUNCATE);
+					if (ImGui::InputText("##Value", Buf, sizeof(Buf)))
+					{
+						*Val = Buf;
+						bChanged = true;
+					}
+					break;
+				}
+				case EPropertyType::Name:
+				{
+					FName* Val = static_cast<FName*>(ChildProp.ValuePtr);
+					char Buf[256];
+					const FString Current = Val->ToString();
+					strncpy_s(Buf, sizeof(Buf), Current.c_str(), _TRUNCATE);
+					if (ImGui::InputText("##Value", Buf, sizeof(Buf)))
+					{
+						*Val = FName(Buf);
+						bChanged = true;
+					}
+					break;
+				}
+				case EPropertyType::Enum:
+				{
+					if (!ChildProp.EnumNames || ChildProp.EnumCount == 0)
+					{
+						break;
+					}
+
 					int32 Val = 0;
 					memcpy(&Val, ChildProp.ValuePtr, ChildProp.EnumSize);
 
 					const char* Preview = ((uint32)Val < ChildProp.EnumCount) ? ChildProp.EnumNames[Val] : "Unknown";
-
-					ImGui::AlignTextToFramePadding();
-					ImGui::TextUnformatted(PropLabel(ChildProp));
-
-					ImGui::SameLine(120.0f);
-					ImGui::SetNextItemWidth(-1);
 
 					if (ImGui::BeginCombo("##Value", Preview))
 					{
@@ -1456,6 +1797,13 @@ bool FEditorPropertyWidget::RenderPropertyWidget(TArray<FProperty>& Props, int32
 						}
 						ImGui::EndCombo();
 					}
+					break;
+				}
+				default:
+				{
+					ImGui::TextDisabled("Unsupported");
+					break;
+				}
 				}
 				ImGui::PopID();
 			}
