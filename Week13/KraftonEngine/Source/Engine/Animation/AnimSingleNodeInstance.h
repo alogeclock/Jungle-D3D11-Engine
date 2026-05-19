@@ -11,7 +11,7 @@ public:
 	DECLARE_CLASS(UAnimSingleNodeInstance, UAnimInstance)
 
 	void SetAnimation(UAnimationAsset* Asset);
-	void Play(bool bLooping);
+	void Play(bool bInLooping);
 	void Stop();
 	void SetPlayRate(float Rate);
 
