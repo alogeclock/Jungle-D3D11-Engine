@@ -39,4 +39,59 @@ PS_Input_UV FullscreenTriangleVS(uint vertexID)
     return output;
 }
 
+float4x4 BuildSkinMatrix(int4 boneIndices, float4 boneWeights)
+{
+    float4x4 skinMatrix = (float4x4) 0;
+
+    [unroll]
+    for (int i = 0; i < 4; ++i)
+    {
+        int boneIndex = boneIndices[i];
+        float boneWeight = boneWeights[i];
+        if (boneIndex >= 0 && boneWeight > 0.0f)
+        {
+            skinMatrix += SkinMatrices[boneIndex] * boneWeight;
+        }
+    }
+
+    return skinMatrix;
+}
+
+float GetSkinWeightSum(int4 boneIndices, float4 boneWeights)
+{
+    float weightSum = 0.0f;
+
+    [unroll]
+    for (int i = 0; i < 4; ++i)
+    {
+        if (boneIndices[i] >= 0 && boneWeights[i] > 0.0f)
+        {
+            weightSum += boneWeights[i];
+        }
+    }
+
+    return weightSum;
+}
+
+float GetBoneWeightByIndex(int4 boneIndices, float4 boneWeights, int selectedBoneIndex)
+{
+    if (selectedBoneIndex < 0)
+    {
+        return 0.0f;
+    }
+
+    float weight = 0.0f;
+
+    [unroll]
+    for (int i = 0; i < 4; ++i)
+    {
+        if (boneIndices[i] == selectedBoneIndex)
+        {
+            weight += boneWeights[i];
+        }
+    }
+
+    return saturate(weight);
+}
+
 #endif // FUNCTIONS_HLSL

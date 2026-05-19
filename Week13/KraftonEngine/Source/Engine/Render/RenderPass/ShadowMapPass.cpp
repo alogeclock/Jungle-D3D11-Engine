@@ -650,18 +650,11 @@ void FShadowMapPass::UpdateShadowCB(const FPassContext& Ctx)
 // DrawShadowCasters — 공용 프록시 순회 + depth-only 렌더링
 // ============================================================
 
-void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, FSystemResources& Resources, const FConvexVolume& LightFrustum, FSpatialPartition* Partition)
+void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, FSystemResources& Resources,
+	const FPrimitiveDrawOptions& Options, const FConvexVolume& LightFrustum, const FShowFlags& ShowFlags, FSpatialPartition* Partition)
 {
-	FShader* ShadowShader = FShaderManager::Get().GetOrCreate(EShaderPath::ShadowDepth);
-	if (!ShadowShader || !ShadowShader->IsValid()) return;
-
 	ID3D11Device* Device = nullptr;
 	DC->GetDevice(&Device);
-
-	ShadowShader->Bind(DC);
-
-	if (CurrentFilterMode != EShadowFilterMode::VSM)
-		DC->PSSetShader(nullptr, nullptr, 0);
 
 	TArray<FPrimitiveSceneProxy*> BroadPhaseProxies;
 	const TArray<FPrimitiveSceneProxy*>* ProxyList = nullptr;
@@ -678,18 +671,67 @@ void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, F
 
 	LastDrawCasterCount = 0;
 	bool bCurrentTwoSided = false;
+	FShader* BoundShadowShader = nullptr;
+
+	auto BindSkinning = [DC](const FSkinningDrawBindings& Skinning)
+	{
+		if (Skinning.bEnabled)
+		{
+			ID3D11Buffer* RawCB = Skinning.SkeletalRenderCB ? Skinning.SkeletalRenderCB->GetBuffer() : nullptr;
+			ID3D11ShaderResourceView* SRV = Skinning.SkinMatrixSRV;
+			DC->VSSetConstantBuffers(ECBSlot::SkeletalRender, 1, &RawCB);
+			DC->VSSetShaderResources(ESystemTexSlot::SkinMatrices, 1, &SRV);
+		}
+		else
+		{
+			ID3D11Buffer* nullCB = nullptr;
+			ID3D11ShaderResourceView* nullSRV = nullptr;
+			DC->VSSetConstantBuffers(ECBSlot::SkeletalRender, 1, &nullCB);
+			DC->VSSetShaderResources(ESystemTexSlot::SkinMatrices, 1, &nullSRV);
+		}
+	};
+
 	for (FPrimitiveSceneProxy* Proxy : *ProxyList)
 	{
 		if (!Proxy || !Proxy->IsVisible()) continue;
 		if (!Proxy->CastsShadow()) continue;
 		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::NeverCull)) continue;
 		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::EditorOnly)) continue;
+		if (!ShowFlags.bSkeletalMesh) continue;
 
 		if (!Partition && !LightFrustum.IntersectAABB(Proxy->GetCachedBounds())) continue;
 
+		FShader* ShadowShader = FShaderManager::Get().GetOrCreate(
+			FShaderKey(EShaderPath::ShadowDepth, Proxy->GetVertexShaderEntryName(), "PS"));
+		if (!ShadowShader || !ShadowShader->IsValid()) continue;
+
+		if (ShadowShader != BoundShadowShader)
+		{
+			ShadowShader->Bind(DC);
+			BoundShadowShader = ShadowShader;
+
+			if (CurrentFilterMode != EShadowFilterMode::VSM)
+			{
+				DC->PSSetShader(nullptr, nullptr, 0);
+			}
+		}
+
+		const bool bUseGpuSkinning = Proxy->WantsGpuSkinning(Options);
+
 		FDrawCommandBuffer ProxyBuffer;
-		if (!Proxy->PrepareDrawBuffer(Device, DC, ProxyBuffer)) continue;
+		if (bUseGpuSkinning)
+		{
+			if (!Proxy->PrepareGpuSkinningDrawBuffer(Device, DC, ProxyBuffer)) continue;
+		}
+		else
+		{
+			if (!Proxy->PrepareDrawBuffer(Device, DC, ProxyBuffer)) continue;
+		}
 		if (!ProxyBuffer.VB || !ProxyBuffer.IB) continue;
+
+		FDrawCommand ShadowCmd;
+		if (!Proxy->PrepareDrawCommandBindings(Device, DC, Options, ShadowCmd)) continue;
+		BindSkinning(ShadowCmd.Skinning);
 
 		// Two-sided shadow: front-cull ↔ no-cull 전환
 		bool bTwoSided = Proxy->CastsShadowAsTwoSided();
@@ -723,6 +765,9 @@ void FShadowMapPass::DrawShadowCasters(ID3D11DeviceContext* DC, FScene& Scene, F
 	if (bCurrentTwoSided)
 		Resources.RasterizerStateManager.Set(DC, ERasterizerState::SolidFrontCull);
 
+	FSkinningDrawBindings NullSkinning;
+	BindSkinning(NullSkinning);
+
 	if (Device)
 	{
 		Device->Release();
@@ -733,7 +778,14 @@ void FShadowMapPass::DrawShadowCasters(const FPassContext& Ctx, const FConvexVol
 {
 	UWorld* World = Ctx.World;
 	FSpatialPartition* Partition = World ? &World->GetPartition() : nullptr;
-	DrawShadowCasters(Ctx.Device.GetDeviceContext(), *Ctx.Scene, Ctx.Resources, LightFrustum, Partition);
+
+	// 정보 보존 목적
+	// TODO: 반드시 수정
+	FPrimitiveDrawOptions Options = {};
+	Options.SkinningMode = Ctx.Frame.SkinningMode;
+	Options.bBoneWeightHeatmap = Ctx.Frame.EditorVisualizationOptions.bBoneWeightHeatmap;
+	Options.BoneWeightHeatmapBoneIndex = Ctx.Frame.EditorVisualizationOptions.BoneWeightHeatmapBoneIndex;
+	DrawShadowCasters(Ctx.Device.GetDeviceContext(), *Ctx.Scene, Ctx.Resources, Options, LightFrustum, Ctx.Frame.RenderOptions.ShowFlags, Partition);
 }
 
 // ============================================================

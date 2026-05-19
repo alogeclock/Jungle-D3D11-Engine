@@ -68,4 +68,15 @@ Texture2DArray    ShadowMapSpotAtlas : register(t22);
 // t23: Point Light Atlas (Texture2DArray, page-based multi-light packing)
 Texture2DArray ShadowMapPointLightAtlas : register(t23);
 
+// b6: SkeletalMesh 렌더링 옵션
+cbuffer SkeletalRenderBuffer : register(b6)
+{
+    uint SkinningMode;
+    uint HeatmapMode;
+    int SelectedBoneIndex;
+    float _Pad4;
+};
+// t26: Skin Matrices
+StructuredBuffer<float4x4> SkinMatrices : register(t26);
+
 #endif // CONSTANT_BUFFERS_HLSL
