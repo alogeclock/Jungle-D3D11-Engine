@@ -1210,8 +1210,11 @@ void FEditorPropertyWidget::PropagatePropertyChange(const FString& PropName, con
 				case EPropertyType::Name:           *static_cast<FName*>(DstValuePtr) = *static_cast<FName*>(SrcValuePtr); break;
 				case EPropertyType::MaterialSlot:   *static_cast<FMaterialSlot*>(DstValuePtr) = *static_cast<FMaterialSlot*>(SrcValuePtr); break;
 				case EPropertyType::Enum:
-					Size = static_cast<const FEnumProperty&>(*SrcProp).EnumSize;
+				{
+					const UEnum* Enum = static_cast<const FEnumProperty&>(*SrcProp).GetEnum();
+					Size = Enum ? Enum->GetUnderlyingSize() : SrcProp->ElementSize;
 					break;
+				}
 				case EPropertyType::Array:
 					{
 						const FArrayProperty& SrcArray = static_cast<const FArrayProperty&>(*SrcProp);
@@ -1769,19 +1772,23 @@ bool FEditorPropertyWidget::RenderPropertyWidget(
 	case EPropertyType::Enum:
 	{
 		const FEnumProperty& EnumProp = static_cast<const FEnumProperty&>(Prop);
-		if (!EnumProp.EnumNames || EnumProp.EnumCount == 0) break;
-		int32 Val = 0;
-		memcpy(&Val, ValuePtr, EnumProp.EnumSize);
-		const char* Preview = ((uint32)Val < EnumProp.EnumCount) ? EnumProp.EnumNames[Val] : "Unknown";
+		const UEnum* Enum = EnumProp.GetEnum();
+		if (!Enum || Enum->NumEnums() == 0) break;
+
+		int64 Val = 0;
+		const uint32 UnderlyingSize = Enum->GetUnderlyingSize();
+		memcpy(&Val, ValuePtr, std::min<uint32>(UnderlyingSize, sizeof(Val)));
+		const int32 CurrentIndex = Enum->GetIndexByValue(Val);
+		const char* Preview = CurrentIndex >= 0 ? Enum->GetNameByIndex(static_cast<uint32>(CurrentIndex)) : "Unknown";
 		if (ImGui::BeginCombo("##Value", Preview))
 		{
-			for (uint32 i = 0; i < EnumProp.EnumCount; ++i)
+			for (uint32 i = 0; i < Enum->NumEnums(); ++i)
 			{
-				bool bSelected = (Val == (int32)i);
-				if (ImGui::Selectable(EnumProp.EnumNames[i], bSelected))
+				bool bSelected = (CurrentIndex == static_cast<int32>(i));
+				if (ImGui::Selectable(Enum->GetNameByIndex(i), bSelected))
 				{
-					int32 NewVal = (int32)i;
-					memcpy(ValuePtr, &NewVal, EnumProp.EnumSize);
+					int64 NewVal = Enum->GetValueByIndex(i);
+					memcpy(ValuePtr, &NewVal, std::min<uint32>(UnderlyingSize, sizeof(NewVal)));
 					bChanged = true;
 				}
 				if (bSelected) ImGui::SetItemDefaultFocus();

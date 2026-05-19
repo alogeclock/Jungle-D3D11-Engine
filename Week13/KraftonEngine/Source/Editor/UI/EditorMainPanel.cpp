@@ -98,6 +98,7 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 
 void FEditorMainPanel::Release()
 {
+	AssetEditorManager.Shutdown();
 	ConsoleWidget.Shutdown();
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

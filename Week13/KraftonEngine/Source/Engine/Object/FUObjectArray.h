@@ -42,6 +42,13 @@ public:
 	int32 AddObject(UObject* Object);
 	int32 AddStaticObject(UObject* Object);
 
+	// Reflected-type instances (UClass / UScriptStruct / UEnum) are constructed at
+	// static-init time, before GUObjectArray and FNamePool are guaranteed to be
+	// alive. They queue themselves here via DeferStaticObject and are flushed
+	// from EngineLoop after both globals are ready.
+	static void DeferStaticObject(UObject* Object);
+	void FlushDeferredStatics();
+
 	// Does not actually removes the object from memory. It simply detaches from the array as of now.
 	void RemoveObject(UObject* Object);
 	void DestroyObject(UObject* Object);

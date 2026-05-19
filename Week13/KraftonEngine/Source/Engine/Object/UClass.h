@@ -36,12 +36,7 @@ class UClass : public UStruct
 {
 public:
 	UClass(const char* InName, UClass* InSuperClass, size_t InSize,
-		uint32 InFlags = CF_None, uint32 InCastFlags = CASTCLASS_None)
-		: UStruct(InName, InSuperClass, InSize)
-		, ClassFlags(InFlags)
-		, OwnClassCastFlags(InCastFlags)
-		, ClassCastFlags(InCastFlags)
-	{}
+		uint32 InFlags = CF_None, uint32 InCastFlags = CASTCLASS_None);
 
 	~UClass() = default;
 
@@ -80,27 +75,15 @@ public:
 		return nullptr;
 	}
 
-	static void RegisterClassesAsStaticObjects();
-
 	static UClass* StaticClass() { return &StaticClassInstance; }
 	UClass* GetClass() const override { return StaticClass(); }
 
 public:
 	static UClass StaticClassInstance;
-	static FClassRegistrar s_Registrar;
 
 private:
 	bool   bBound		  = false;
 	uint32 ClassFlags     = CF_None;
 	uint32 OwnClassCastFlags = CASTCLASS_None;
 	uint32 ClassCastFlags = CASTCLASS_None;
-};
-
-// static initializer 에서 UClass를 전역 레지스트리에 등록
-struct FClassRegistrar
-{
-	FClassRegistrar(UClass* InClass)
-	{
-		UClass::GetAllClasses().push_back(InClass);
-	}
 };

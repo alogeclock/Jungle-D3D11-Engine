@@ -1826,7 +1826,7 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		AStaticMeshActor* Actor = World->SpawnActor<AStaticMeshActor>();
 		if (Actor)
 		{
-			Actor->InitDefaultComponents("Data/BasicShape/Cube.OBJ");
+			Actor->InitDefaultComponents("Asset/Mesh/BasicShape/Cube_StaticMesh.uasset");
 			SpawnedActor = Actor;
 		}
 		break;
@@ -1836,7 +1836,7 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		AStaticMeshActor* Actor = World->SpawnActor<AStaticMeshActor>();
 		if (Actor)
 		{
-			Actor->InitDefaultComponents("Data/BasicShape/Sphere.OBJ");
+			Actor->InitDefaultComponents("Asset/Mesh/BasicShape/Sphere_StaticMesh.uasset");
 			SpawnedActor = Actor;
 		}
 		break;
@@ -1846,7 +1846,7 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		AStaticMeshActor* Actor = World->SpawnActor<AStaticMeshActor>();
 		if (Actor)
 		{
-			Actor->InitDefaultComponents("Data/BasicShape/Cylinder.obj");
+			Actor->InitDefaultComponents("Asset/Mesh/BasicShape/Cylinder_StaticMesh.uasset");
 			SpawnedActor = Actor;
 		}
 		break;
@@ -1974,7 +1974,7 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		ASkeletalMeshActor* Actor = World->SpawnActor<ASkeletalMeshActor>();
 		if (Actor)
 		{
-			Actor->InitDefaultComponents("Data/Samba Dancing (10).fbx");
+			Actor->InitDefaultComponents("Asset/Mesh/Samba Dancing/Samba Dancing (10)_SkeletalMesh.uasset");
 			SpawnedActor = Actor;
 		}
 		break;

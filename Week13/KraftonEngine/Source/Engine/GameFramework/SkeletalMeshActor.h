@@ -15,7 +15,7 @@ public:
 
 	void BeginPlay() override;
 
-	void InitDefaultComponents(const FString& SkeletalMeshFileName = "Data/Samba Dancing (10).fbx");
+	void InitDefaultComponents(const FString& SkeletalMeshFileName = "Asset/Mesh/Samba Dancing/Samba Dancing (10)_SkeletalMesh.uasset");
 
 private:
 	USkeletalMeshComponent* SkeletalMeshComponent = nullptr;

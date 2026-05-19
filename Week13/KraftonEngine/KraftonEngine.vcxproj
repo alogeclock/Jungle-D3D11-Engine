@@ -406,7 +406,6 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Component\HeightFogComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\LuaScriptComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\MeshComponent.cpp" />
-    <ClCompile Include="Source\Engine\Component\Movement\CharacterMovementComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\PrimitiveComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\SceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\ShapeComponent.cpp" />
@@ -423,6 +422,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Component\Light\LightComponentBase.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\PointLightComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\SpotLightComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\Movement\CharacterMovementComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Movement\FloatingPawnMovementComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Movement\InterpToMovementComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Movement\MovementComponent.cpp" />
@@ -495,6 +495,8 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Object\Object.cpp" />
     <ClCompile Include="Source\Engine\Object\ScriptStruct.cpp" />
     <ClCompile Include="Source\Engine\Object\UClass.cpp" />
+    <ClCompile Include="Source\Engine\Object\UEnum.cpp" />
+    <ClCompile Include="Source\Engine\Object\UField.cpp" />
     <ClCompile Include="Source\Engine\Object\UStruct.cpp" />
     <ClCompile Include="Source\Engine\Object\UUIDGenerator.cpp" />
     <ClCompile Include="Source\Engine\Physics\NativePhysicsScene.cpp" />
@@ -691,7 +693,6 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Component\HeightFogComponent.h" />
     <ClInclude Include="Source\Engine\Component\LuaScriptComponent.h" />
     <ClInclude Include="Source\Engine\Component\MeshComponent.h" />
-    <ClInclude Include="Source\Engine\Component\Movement\CharacterMovementComponent.h" />
     <ClInclude Include="Source\Engine\Component\PrimitiveComponent.h" />
     <ClInclude Include="Source\Engine\Component\SceneComponent.h" />
     <ClInclude Include="Source\Engine\Component\ShapeComponent.h" />
@@ -708,6 +709,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Component\Light\LightComponentBase.h" />
     <ClInclude Include="Source\Engine\Component\Light\PointLightComponent.h" />
     <ClInclude Include="Source\Engine\Component\Light\SpotLightComponent.h" />
+    <ClInclude Include="Source\Engine\Component\Movement\CharacterMovementComponent.h" />
     <ClInclude Include="Source\Engine\Component\Movement\FloatingPawnMovementComponent.h" />
     <ClInclude Include="Source\Engine\Component\Movement\InterpToMovementComponent.h" />
     <ClInclude Include="Source\Engine\Component\Movement\MovementComponent.h" />
@@ -810,6 +812,8 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Object\ObjectMacros.h" />
     <ClInclude Include="Source\Engine\Object\ScriptStruct.h" />
     <ClInclude Include="Source\Engine\Object\UClass.h" />
+    <ClInclude Include="Source\Engine\Object\UEnum.h" />
+    <ClInclude Include="Source\Engine\Object\UField.h" />
     <ClInclude Include="Source\Engine\Object\UStruct.h" />
     <ClInclude Include="Source\Engine\Object\UUIDGenerator.h" />
     <ClInclude Include="Source\Engine\Physics\IPhysicsScene.h" />

@@ -60,82 +60,163 @@ class UInterpToMovementComponent : public UMovementComponent
 
 저장은 enum 의 underlying type 크기 그대로(보통 4바이트). 디스크립터는 그 사이즈만 알면 된다.
 
-### 1-2. 디스크립터
-[`FEnumProperty`](../KraftonEngine/Source/Engine/Core/Property/FEnumProperty.h) 는 다음 세 가지 추가 메타데이터를 보유한다.
+### 1-2. 디스크립터 — 이제는 메타 객체 `UEnum` 을 들고 있다
+[`FEnumProperty`](../KraftonEngine/Source/Engine/Core/Property/FEnumProperty.h) 는 raw 배열·정수 세 개 대신, **`UEnum* EnumDesc` 하나**만 보유한다.
 
 ```cpp
 class FEnumProperty final : public FProperty {
 public:
-    const char** EnumNames = nullptr;      // 이름 문자열 배열 (인덱스 → 표시 문자열)
-    uint32       EnumCount = 0;            // 항목 개수
-    uint32       EnumSize  = sizeof(int32);// 실제 메모리 폭 (1/2/4/8)
+    UEnum* GetEnum() const { return EnumDesc; }
+
+    EPropertyType GetType() const override { return EPropertyType::Enum; }
+    json::JSON Serialize(const void* Instance) const override;
+    void Deserialize(void* Instance, const json::JSON& Value) const override;
+
+private:
+    UEnum* EnumDesc = nullptr;
 };
 ```
 
-`EnumSize` 가 별도로 있는 이유는 `enum class X : uint8` 처럼 **underlying type 가변**을 지원하기 위함이다. 이 폭을 모르면 `memcpy` 가 어긋난다.
-
-### 1-3. Codegen 산출물
-[`Scripts/GenerateCode.py`](../Scripts/GenerateCode.py) 는 `UENUM()` 을 발견하면 **`.generated.h` 에 이름 테이블**을 emit 한다.
+[`UEnum`](../KraftonEngine/Source/Engine/Object/UEnum.h) 은 **`UField → UObject` 체인을 정식으로 상속하는 메타 객체**이며, 다음을 제공한다.
 
 ```cpp
-// InterpToMovementComponent.generated.h
-inline const char* GInterpBehaviourNames[] = {
-    "OneShot",
-    "OneShotReverse",
-    "Loop",
-    "PingPong"
+class UEnum : public UField {
+public:
+    UEnum(const char* InName,
+          uint32 InUnderlyingSize = sizeof(int32),
+          ECppForm InForm = ECppForm::EnumClass);
+
+    void   AddEnumerator(const char* InName, int64 InValue);
+    uint32 NumEnums() const;
+    const char* GetNameByIndex(uint32 Index) const;
+    int64       GetValueByIndex(uint32 Index) const;
+    FString     GetNameByValue(int64 Value) const;
+    int32       GetIndexByValue(int64 Value) const;
+    int64       GetValueByName(FString Name) const;
+    int64       GetMaxEnumValue() const;
+    uint32      GetUnderlyingSize() const;
+
+private:
+    TArray<TPair<FString, int64>> DisplayNames;  // (이름, 값) 쌍 — 값은 임의의 int64
+    FString  CppType;
+    uint32   UnderlyingSize = sizeof(int32);
+    ECppForm CppForm;   // Regular / NameSpaced / EnumClass
 };
 ```
 
-- `inline` 변수(C++17)이므로 여러 TU에서 include해도 ODR 안전하게 병합된다.
-- 이름 규칙: `enum_names_symbol("EInterpBehaviour")` → 앞의 `E` 한 글자를 떼고 `G<Stem>Names`.
-- 이 헤더는 enum 을 사용하는 다른 헤더에 자연스럽게 include 체인을 따라 들어가므로, **다른 헤더의 `UPROPERTY` 에서도 이 enum 을 그대로 참조 가능**하다.
+이전과의 핵심 차이:
 
-`.gen.cpp` 의 등록 코드는 짧다:
+| 항목 | 이전 (raw) | 현재 (`UEnum`) |
+|---|---|---|
+| 이름 보관 | `const char**` 정적 배열 | `TArray<TPair<FString, int64>>` |
+| 항목 값 | **인덱스 = 값** 으로 암묵 가정 | 항목마다 명시적 `int64` 값 |
+| 폭 정보 | `uint32 EnumSize` 필드 | `UEnum::GetUnderlyingSize()` |
+| 메타 객체 위치 | 없음 (자유 배열) | `GUObjectArray` 안의 정적 객체 — RTTI 가능, `IsA<UEnum>` 가능 |
+| 표현 형태 | 단일 (배열) | `ECppForm` 으로 `enum class` / namespaced / regular 구분 |
+
+**`DisplayNames` 가 `(FString, int64)` 쌍의 배열**이라는 점이 본질적이다. 이로써 `enum class EFoo : uint8 { A = 5, B = 10, C = 200 }` 같이 **값이 sparse 하거나 큰 폭의 underlying type** 도 표현 가능하다.
+
+### 1-3. Codegen 산출물
+[`Scripts/GenerateCode.py`](../Scripts/GenerateCode.py) 는 `UENUM()` 을 발견하면 **`.generated.h` 에 자유 함수 한 개를 선언**하고 (또는 정의를 inline 으로 두고), `.gen.cpp` 에서 `UEnum` 정적 인스턴스를 만든다.
+
+```cpp
+// InterpToMovementComponent.gen.cpp
+UEnum* StaticEnum_EInterpBehaviour()
+{
+    static UEnum Enum("EInterpBehaviour",
+                      sizeof(EInterpBehaviour),
+                      ECppForm::EnumClass);
+    static const bool bRegistered = []()
+    {
+        Enum.AddEnumerator("OneShot",        static_cast<int64>(EInterpBehaviour::OneShot));
+        Enum.AddEnumerator("OneShotReverse", static_cast<int64>(EInterpBehaviour::OneShotReverse));
+        Enum.AddEnumerator("Loop",           static_cast<int64>(EInterpBehaviour::Loop));
+        Enum.AddEnumerator("PingPong",       static_cast<int64>(EInterpBehaviour::PingPong));
+        return true;
+    }();
+    (void)bRegistered;
+    return &Enum;
+}
+```
+
+- **`static UEnum`** 으로 정적 수명을 보장하고, 람다-1회-실행 트릭으로 항목 등록이 **딱 한 번** 일어나도록 만든다.
+- `UEnum` 의 생성자는 부모 `UField` 의 ctor 안에서 `FUObjectArray::DeferStaticObject(this)` 를 호출하므로, EngineLoop 가 큐를 비울 때 자동으로 `GUObjectArray` 에 등록된다. (UClass · UScriptStruct 와 같은 흐름.)
+- 캐스팅용 `CASTCLASS_UEnum` 비트가 정의되어 있어, 일반 `UObject*` 로부터 `IsA<UEnum>()` / `Cast<UEnum>` 가 빠르게 동작한다.
+
+호스트 클래스의 `.gen.cpp` 의 등록 코드도 더 짧아졌다:
 
 ```cpp
 Cls->AddProperty(new FEnumProperty(
     "Interpolation Behaviour", "Movement", CPF_Edit,
     offsetof(ThisClass, InterpBehaviour),
     sizeof(((ThisClass*)0)->InterpBehaviour),
-    GInterpBehaviourNames, 4, sizeof(EInterpBehaviour)));
+    StaticEnum_EInterpBehaviour()));   // ← UEnum* 하나만 전달
 ```
 
-수동 enum(=헤더 툴이 안 만든 외부 enum)을 쓰려면 `UPROPERTY(EnumNames=GMyNames, EnumCount=3, EnumSize=sizeof(int32))` 처럼 명시 메타데이터를 줘야 한다([`GenerateCode.py:802-814`](../Scripts/GenerateCode.py#L802-L814)).
-
 ### 1-4. 직렬화
-값을 항상 `int32` 로 승격시켜 저장하므로 폭에 관계없이 JSON 호환된다.
+폭 가변 대응을 위해 내부 임시 변수가 `int64` 로 확장되었다.
 
 ```cpp
 // PropertyTypes.cpp
 json::JSON FEnumProperty::Serialize(const void* Instance) const {
-    int32 Value = 0;
-    std::memcpy(&Value, ContainerPtrToValuePtr(Instance), EnumSize);
-    return json::JSON(Value);
+    const void* ValuePtr = ContainerPtrToValuePtr(Instance);
+    int64 Value = 0;
+    const uint32 ValueSize = EnumDesc ? EnumDesc->GetUnderlyingSize() : ElementSize;
+    std::memcpy(&Value, ValuePtr, std::min<uint32>(ValueSize, sizeof(Value)));
+    return json::JSON(static_cast<int32>(Value));
 }
+
 void FEnumProperty::Deserialize(void* Instance, const json::JSON& Value) const {
-    int32 Stored = Value.ToInt();
-    std::memcpy(ContainerPtrToValuePtr(Instance), &Stored, EnumSize);
+    void* Target = ContainerPtrToValuePtr(Instance);
+    int64 StoredValue = Value.ToInt();
+    const uint32 ValueSize = EnumDesc ? EnumDesc->GetUnderlyingSize() : ElementSize;
+    std::memcpy(Target, &StoredValue, std::min<uint32>(ValueSize, sizeof(StoredValue)));
 }
 ```
 
-⚠️ **이름이 아니라 정수 인덱스로 저장**한다. 항목 순서가 바뀌면 기존 씬 파일이 깨진다. 이름 기반 저장(예: `"OneShot"`)으로 가는 것이 후일 마이그레이션 대상.
+요점:
+
+- 메모리 폭은 **`EnumDesc->GetUnderlyingSize()`** 가 권위 — `EnumDesc` 가 nullptr 인 fallback 에 한해서만 디스크립터의 `ElementSize` 를 사용.
+- `std::min<uint32>(ValueSize, sizeof(Value))` 클램프로 **8바이트보다 큰 가짜 underlying type 이 들어와도 스택 오버런이 나지 않음** 을 보장.
+- 저장은 여전히 raw 정수 값이지만, 이제는 **인덱스가 아니라 enum 본래의 값** 이다. `enum class EFoo { A = 0, B = 10 }` 처럼 sparse 한 값도 정확히 보존된다.
+- ⚠️ 최종 JSON 으로 내려갈 때 `static_cast<int32>(Value)` 로 **int32 로 다운캐스트**된다. underlying type 이 `int64` 이고 실제 값이 `INT32_MAX` 를 넘는 경우 손실이 생긴다 — 현재는 일어날 일이 드물지만 향후 64bit 보존이 필요해지면 JSON 측 폭을 늘려야 한다.
 
 ### 1-5. 에디터 UI
-[`EditorPropertyWidget.cpp:1564`](../KraftonEngine/Source/Editor/UI/EditorPropertyWidget.cpp#L1564) 에서 그냥 `ImGui::BeginCombo` 로 이름 테이블을 그대로 보여준다.
+콤보 박스 구성도 `UEnum` 메서드 호출로 바뀐다.
 
 ```cpp
 const FEnumProperty& EnumProp = static_cast<const FEnumProperty&>(Prop);
-int32 Val = 0;
-memcpy(&Val, ValuePtr, EnumProp.EnumSize);
-const char* Preview = ((uint32)Val < EnumProp.EnumCount) ? EnumProp.EnumNames[Val] : "Unknown";
-// → 콤보 박스
+UEnum* Enum = EnumProp.GetEnum();
+if (!Enum) break;
+
+int64 Val = 0;
+memcpy(&Val, ValuePtr, Enum->GetUnderlyingSize());
+
+const char* Preview = Enum->GetNameByValue(Val).c_str();
+if (ImGui::BeginCombo("##Value", Preview))
+{
+    for (uint32 i = 0; i < Enum->NumEnums(); ++i)
+    {
+        const char* Name  = Enum->GetNameByIndex(i);
+        const int64 Value = Enum->GetValueByIndex(i);
+        bool bSelected = (Val == Value);
+        if (ImGui::Selectable(Name, bSelected))
+        {
+            int64 NewVal = Value;
+            memcpy(ValuePtr, &NewVal, Enum->GetUnderlyingSize());
+        }
+    }
+    ImGui::EndCombo();
+}
 ```
 
+> 실제 [`EditorPropertyWidget.cpp:1564`](../KraftonEngine/Source/Editor/UI/EditorPropertyWidget.cpp#L1564) 의 코드는 위 형태로 마이그레이션이 필요하다. (이전의 `EnumNames`/`EnumCount`/`EnumSize` 접근은 더 이상 컴파일되지 않는다.)
+
 ### 1-6. 한계
-- 이름 기반 직렬화가 아직 없음.
-- "Hidden enum entry" 같은 메타데이터 없음.
-- `enum`(class 아님)은 지원하지 않음 — `enum class` 만 파싱.
+- 여전히 **값 기반** 직렬화 — 이름 기반이 아니다. enum 항목의 *이름* 만 바뀌고 값은 그대로면 호환되지만, 값이 바뀌면 깨진다. 다행히 이제 `UEnum` 이 이름 ↔ 값 양방향 변환을 보유하므로, 향후 "이름으로 저장" 으로의 전환은 `Serialize` / `Deserialize` 두 함수 수정만으로 끝난다.
+- JSON 측 int32 다운캐스트로 **64bit 손실 가능성** (위 §1-4 참고).
+- `enum` (class 아님) 은 codegen 이 `enum class` 만 파싱하므로 미지원.
+- "Hidden enum entry" / "Display name override" 같은 항목별 메타데이터는 아직 `UEnum` 이 들고 있지 않다.
 
 ---
 
@@ -163,77 +244,176 @@ struct FTransform
 
 값은 구조체 그 자체로 메모리에 인라인된다. 별도 포인터·박싱 없음.
 
-### 2-2. 디스크립터
-[`FStructProperty`](../KraftonEngine/Source/Engine/Core/Property/FStructProperty.h) 는 자식 필드 스키마를 **함수 포인터**로 받는다.
+### 2-2. 디스크립터 — 이제는 정식 메타 객체 `UScriptStruct` 를 들고 있다
+[`FStructProperty`](../KraftonEngine/Source/Engine/Core/Property/FStructProperty.h) 는 자식 스키마를 *자유 함수 포인터* 로 받던 방식에서, **`UScriptStruct*` 메타 객체 하나** 를 들고 있는 형태로 진화했다.
 
 ```cpp
-using FStructPropertySchemaFn = const std::vector<FProperty*>& (*)();
-
 class FStructProperty final : public FProperty {
 public:
-    FStructPropertySchemaFn SchemaFn = nullptr;
+    UScriptStruct* ScriptStruct = nullptr;
+
+    EPropertyType GetType() const override { return EPropertyType::Struct; }
+    json::JSON Serialize(const void* Instance) const override;
+    void Deserialize(void* Instance, const json::JSON& Value) const override;
+
+    const TArray<FProperty*>& GetStructProperties() const
+    {
+        if (ScriptStruct) return ScriptStruct->GetProperties();
+        static const TArray<FProperty*> Empty;
+        return Empty;
+    }
 };
 ```
 
-함수 포인터로 받는 이유:
-- **순환 의존 회피**: 구조체 A 안에 구조체 B 가, B 안에 A 의 다른 인스턴스가 있을 수 있다. 즉시 평가 대신 lazy 평가.
-- **정적 초기화 순서 회피**: `static const std::vector` 가 함수 안에 있으므로 첫 호출에서 초기화된다.
+자식 프로퍼티 목록은 `UStruct::GetProperties()` (즉, `UScriptStruct` 가 `UStruct` 로부터 그대로 상속) 에서 얻는다. **이전의 `SchemaFn()` 함수 포인터는 사라졌다.**
 
-### 2-3. Codegen 산출물
-`USTRUCT()` 가 붙은 타입은 `KE_GENERATED_BODY_<Name>()` 매크로 안에 `static const std::vector<FProperty*>& GetSchema();` 선언을 emit하고 ([`GenerateCode.py:567-570`](../Scripts/GenerateCode.py#L567-L570)), `.gen.cpp` 에 정의를 만든다.
+### 2-3. 메타 객체 — [`UScriptStruct`](../KraftonEngine/Source/Engine/Object/ScriptStruct.h)
+WIP 였던 `UScriptStruct` 가 정식으로 들어왔다. 핵심 두 부분:
 
-`FTransform` 의 산출물 ([`Transform.gen.cpp`](../KraftonEngine/Intermediate/Generated/Source/Transform.gen.cpp)):
+**(a) UObject 메타 계층의 정식 멤버**
 
-```cpp
-const std::vector<FProperty*>& FTransform::GetSchema()
-{
-    static const std::vector<FProperty*> Schema = []() {
-        std::vector<FProperty*> Properties;
-        Properties.push_back(new FVec3Property(
-            "Location", "Transform", CPF_Edit,
-            offsetof(FTransform, Location), sizeof(((FTransform*)0)->Location)));
-        Properties.push_back(new FVec3Property(
-            "Scale", "Transform", CPF_Edit,
-            offsetof(FTransform, Scale), sizeof(((FTransform*)0)->Scale)));
-        return Properties;
-    }();
-    return Schema;
-}
+```
+UObject → UField → UStruct → UScriptStruct
+                          ↘ UClass
 ```
 
-호스트 클래스(예: `AActor`)가 `FTransform` 멤버를 가지면, 그 클래스의 `PropertyRegistrar` 가 다음과 같이 디스크립터를 만든다:
+- `UStruct` 의 `Properties` 컨테이너와 `FindPropertyByName` / `GetEditableProperties` / `GetNonTransientProperties` 가 그대로 재사용된다.
+- `CASTCLASS_UScriptStruct` 비트가 있어 `IsA<UScriptStruct>` / `Cast<UScriptStruct>` 가 빠르게 동작.
+- 생성자에서 `UField::UField` 가 `FUObjectArray::DeferStaticObject(this)` 를 호출하므로, `GUObjectArray` 에 자동으로 정적 객체로 등록된다 — `UEnum` / `UClass` 와 같은 흐름.
+
+**(b) C++ 측 생애 주기 추상화 — `ICppStructOps`**
+
+구조체가 진짜 메타 객체가 되었다는 것은, **메타 객체가 그 타입을 직접 만들고 파괴하고 복사할 수 있어야 한다** 는 뜻이다. (예: TArray 의 inner 가 USTRUCT 일 때 element 를 in-place 로 만들고 지우려면 타입 소거된 생성/파괴 인터페이스가 필요하다.)
+
+```cpp
+class ICppStructOps {
+public:
+    virtual void Construct(void* Dest) const = 0;
+    virtual void Destruct (void* Dest) const = 0;
+    virtual void Copy     (void* Dest, const void* Src) const = 0;
+};
+
+template <typename T>
+class TCppStructOps final : public ICppStructOps {
+public:
+    void Construct(void* Dest) const override            { new (Dest) T(); }
+    void Destruct (void* Dest) const override            { static_cast<T*>(Dest)->~T(); }
+    void Copy     (void* Dest, const void* Src) const override
+                                                         { *static_cast<T*>(Dest) = *static_cast<const T*>(Src); }
+};
+
+class UScriptStruct : public UStruct {
+public:
+    UScriptStruct(const char* InName, UScriptStruct* InSuperStruct,
+                  size_t InSize, size_t InAlignment,
+                  const ICppStructOps* InCppStructOps);
+
+    size_t GetAlignment() const;
+    const ICppStructOps* GetCppStructOps() const;
+
+    void InitializeStruct (void* Dest) const;            // CppStructOps->Construct
+    void DestroyStruct    (void* Dest) const;            // CppStructOps->Destruct
+    void CopyScriptStruct (void* Dest, const void* Src) const;  // CppStructOps->Copy
+};
+```
+
+이전의 `FStructPropertySchemaFn` (자유 함수 포인터) 가 갖지 못했던 능력들이 추가된다.
+
+- **정렬(`alignof`) 정보** — TArray\<FStruct\> 같은 컨테이너가 정확한 정렬로 슬롯을 잡을 수 있음.
+- **타입 소거된 생성/파괴/복사** — 향후 GC 의 회수, `TArray<FStruct>::AddDefault`, 객체 `Duplicate` 의 깊은 복사가 한 인터페이스로 처리됨.
+- **상속 가능** — 생성자가 `UScriptStruct* InSuperStruct` 를 받는다. (실제 사용은 향후 작업이지만 인터페이스는 열려 있다.)
+
+### 2-4. Codegen 산출물
+`USTRUCT()` 가 붙은 타입에 대해 codegen 은 두 가지를 emit 한다.
+
+**(a) `.generated.h`** — `KE_GENERATED_BODY_<Name>()` 매크로 안에 `StaticStruct()` 등을 선언.
+
+**(b) `.gen.cpp`** — `TCppStructOps<T>` 인스턴스 + `UScriptStruct` 정적 인스턴스 + 자식 프로퍼티 등록 (`FTransform` 의 산출물, [`Transform.gen.cpp`](../KraftonEngine/Intermediate/Generated/Source/Transform.gen.cpp)):
+
+```cpp
+static const TCppStructOps<FTransform> GFTransformCppStructOps;
+
+UScriptStruct FTransform::StaticStructInstance(
+    "FTransform", nullptr,
+    sizeof(FTransform), alignof(FTransform),
+    &GFTransformCppStructOps);
+
+static void RegisterFTransformStructProperties(UScriptStruct* Struct)
+{
+    static bool bRegistered = false;
+    if (bRegistered || !Struct) return;
+    bRegistered = true;
+    Struct->AddProperty(new FVec3Property(
+        "Location", "Transform", CPF_Edit,
+        offsetof(FTransform, Location), sizeof(((FTransform*)0)->Location)));
+    Struct->AddProperty(new FVec3Property(
+        "Scale", "Transform", CPF_Edit,
+        offsetof(FTransform, Scale), sizeof(((FTransform*)0)->Scale)));
+}
+
+struct FTransform_StructPropertyRegistrar {
+    FTransform_StructPropertyRegistrar() {
+        RegisterFTransformStructProperties(FTransform::StaticStruct());
+    }
+};
+static FTransform_StructPropertyRegistrar s_FTransform_StructPropertyReg;
+```
+
+주목할 점:
+
+- `TCppStructOps<FTransform>` 가 **`static const`** 로 잡혀 있어 메모리·정적 수명 모두 안정. `UScriptStruct` 는 이 인터페이스 포인터만 보유.
+- 프로퍼티 등록은 별도 함수 + 1회 가드(`static bool bRegistered`) 로 구성 — `GUObjectArray` 등록과 자식 프로퍼티 등록이 한 곳에서 꼬이지 않게 분리.
+- `UScriptStruct` 의 ctor 가 `UField` ctor 를 거치면서 `DeferStaticObject` 가 호출되므로, **`GUObjectArray` 등록 시점은 EngineLoop 가 큐를 비우는 안전한 시점으로 미뤄진다** ([`UField.h`](../KraftonEngine/Source/Engine/Object/UField.h) 코멘트 참고). 이전의 자유 함수 방식보다 정적 초기화 순서에 더 강건.
+
+호스트 클래스 측 등록은 단순해졌다:
 
 ```cpp
 new FStructProperty(
     "Transform", "Actor", CPF_Edit,
     offsetof(AActor, ActorTransform),
     sizeof(((AActor*)0)->ActorTransform),
-    &FTransform::GetSchema);   // ← 함수 포인터로 자식 스키마 전달
+    FTransform::StaticStruct());   // ← UScriptStruct* 하나만 전달
 ```
 
-### 2-4. 직렬화
-재귀적이다. 각 자식 `FProperty` 의 `Serialize` 를 호출해 JSON 객체로 합친다.
+### 2-5. 직렬화
+구현은 본질적으로 같지만, 자식 목록을 얻는 경로가 함수 포인터에서 메타 객체 호출로 바뀌었다.
 
 ```cpp
 json::JSON FStructProperty::Serialize(const void* Instance) const {
     const void* StructInstance = ContainerPtrToValuePtr(Instance);
+    if (!StructInstance) return json::JSON();
+
+    const TArray<FProperty*>& StructProperties = GetStructProperties();
+    if (StructProperties.empty()) return json::JSON();   // ScriptStruct nullptr 또는 빈 스키마
+
     json::JSON Object = json::Object();
-    for (const FProperty* Child : SchemaFn()) {
+    for (const FProperty* Child : StructProperties) {
         if (Child) Object[Child->Name] = Child->Serialize(StructInstance);
     }
     return Object;
 }
+
+void FStructProperty::Deserialize(void* Instance, const json::JSON& Value) const {
+    void* StructInstance = ContainerPtrToValuePtr(Instance);
+    if (!StructInstance) return;
+
+    const TArray<FProperty*>& StructProperties = GetStructProperties();
+    for (const FProperty* Child : StructProperties) {
+        if (!Child || !Value.hasKey(Child->Name.c_str())) continue;
+        Child->Deserialize(StructInstance, Value.at(Child->Name.c_str()));
+    }
+}
 ```
 
-`Deserialize` 도 같은 모양: 자식 키가 JSON에 없으면 그 필드는 건너뛴다(=기본값 유지). 이 동작 덕분에 **구조체에 필드를 추가해도 기존 씬 파일이 깨지지 않는다.**
+`Deserialize` 의 *"자식 키가 JSON 에 없으면 건너뛴다"* 정책은 그대로 유지되므로 **구조체에 필드를 추가해도 기존 씬 파일이 깨지지 않는다** 는 보장 역시 그대로다.
 
-### 2-5. 에디터 UI
-[`EditorPropertyWidget.cpp:1666`](../KraftonEngine/Source/Editor/UI/EditorPropertyWidget.cpp#L1666) 에서 트리 노드로 펼치고, 자식들을 재귀적으로 `RenderPropertyWidget` 에 다시 넣는다. 자식의 변경은 부모 struct property 의 `PostEditProperty` 한 번으로 bubble-up 된다.
+### 2-6. 에디터 UI
+[`EditorPropertyWidget.cpp:1666`](../KraftonEngine/Source/Editor/UI/EditorPropertyWidget.cpp#L1666) 의 트리 노드 + 재귀 렌더 로직은 골격이 같지만, 자식 목록 접근이 `StructProp.SchemaFn()` 에서 `StructProp.GetStructProperties()` (또는 `StructProp.ScriptStruct->GetProperties()`) 로 바뀌어야 한다.
 
-### 2-6. 한계
-- **상속 없음**: USTRUCT 끼리 상속을 지원하지 않는다. 자식 스키마는 자기 자신의 필드만.
-- **TArray<USTRUCT>** 는 v1 에서 차단되어 있다 ([`GenerateCode.py:660`](../Scripts/GenerateCode.py#L660)). 곧 풀릴 예정.
-- **`UScriptStruct`** 도입은 WIP — 현재는 `FTransform::GetSchema()` 같은 *free function* 만 만들고 메타 객체(UStruct 인스턴스)는 없다.
+### 2-7. 한계와 향후
+- **상속 인터페이스는 열려 있지만 미사용** — `UScriptStruct` ctor 가 `SuperStruct` 인자를 받기 시작했고 `UStruct::GetAllProperties` 가 부모 → 자식 순서로 재귀하므로 *기술적으로는* 가능하다. codegen 측에서 `USTRUCT()` 의 베이스를 파싱하는 작업이 추가되면 즉시 켤 수 있다.
+- **`TArray<USTRUCT>`** — v1 에서 차단되어 있다 ([`GenerateCode.py:660`](../Scripts/GenerateCode.py#L660)). 이제 `UScriptStruct` 가 `ICppStructOps::Construct/Destruct/Copy` 를 제공하므로, `FArrayAccessor::AddDefault` 가 `Ops->Construct` 를 호출하도록 일반화하면 차단을 푸는 길이 열렸다.
+- **GC 통합** — `UScriptStruct` 는 이제 `GUObjectArray` 의 정적 객체이므로 *메타 객체 자체* 는 자연스레 GC 루트가 된다. 구조체 *인스턴스* 내부의 `UObject*` 멤버 순회는 `FObjectProperty` 가 도입되면 다른 컨테이너와 동일한 방식으로 처리된다.
 
 ---
 
@@ -591,8 +771,8 @@ public:
 
 | 디스크립터 | 추가 메타데이터 | 직렬화 표현 | GC 의미 (예정) |
 |---|---|---|---|
-| `FEnumProperty` | `EnumNames[]`, `EnumCount`, `EnumSize` | int32 인덱스 | — (값 타입) |
-| `FStructProperty` | `SchemaFn` (자식 디스크립터) | JSON 객체 (자식 재귀) | 자식 재귀 |
+| `FEnumProperty` | `UEnum*` (메타 객체) | enum 본래 값 (raw int, int32 다운캐스트) | — (값 타입) |
+| `FStructProperty` | `UScriptStruct*` (메타 객체 + `ICppStructOps`) | JSON 객체 (자식 재귀) | 자식 재귀 |
 | `FArrayProperty` | `Inner` 디스크립터, `Accessor` 함수 테이블 | JSON 배열 (요소 재귀) | 요소 재귀 |
 | `FSceneComponentRefProperty` | 없음 (FString 그대로) | 경로 문자열 | — (문자열) |
 | `FSoftObjectProperty` | `PropertyClass` | 경로 문자열 | **약 참조** (미로드 시 nullptr) |
@@ -603,4 +783,4 @@ public:
 
 ## 8. 한 줄 요약
 
-> **enum 은 이름 테이블, struct 는 자식 스키마 함수, 배열은 타입 소거 액세서, soft 참조는 경로+캐시, hard 참조는 (도입 시) raw 포인터+`PropertyClass` 제약** — 추상 베이스 `FProperty` 의 `Serialize`/`Deserialize` 두 가상 메서드 뒤에, 각 특수 타입마다 *딱 그 타입에만 필요한 최소한의 메타데이터* 만 더해서 모든 처리를 일반화한다. `FObjectProperty` 의 스텁을 채우는 일은 **단순한 포인터 처리 함수 한 쌍**이지만, **하드 참조의 직렬화 표현(UUID vs 경로 vs Outer-relative path)을 결정하는 정책 작업**이 본질적인 무게이다.
+> **enum 은 `UEnum` 메타 객체, struct 는 `UScriptStruct` 메타 객체(+`ICppStructOps`), 배열은 타입 소거 액세서, soft 참조는 경로+캐시, hard 참조는 (도입 시) raw 포인터+`PropertyClass` 제약** — 자유 함수 포인터·raw 배열로 흩어져 있던 메타데이터가 **`UObject → UField` 계층 안의 정식 메타 객체로 통합**되면서, 리플렉션·직렬화·GC·향후 상속이 모두 같은 인터페이스(`UStruct::GetProperties`, `IsA<UEnum>`, `Cast<UScriptStruct>`) 위에서 동작하게 되었다. 남은 큰 작업은 여전히 [`FObjectProperty`](../KraftonEngine/Source/Engine/Core/Property/FObjectPropertyBase/FObjectProperty.h) / [`FClassProperty`](../KraftonEngine/Source/Engine/Core/Property/FObjectPropertyBase/FClassProperty.h) 의 빈 스텁을 채우는 정책 결정이다.

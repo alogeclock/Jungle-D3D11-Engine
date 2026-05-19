@@ -8,7 +8,6 @@ UClass UStruct::StaticClassInstance(
 	CF_None,
 	CASTCLASS_UStruct
 );
-FClassRegistrar UStruct::s_Registrar(&UStruct::StaticClassInstance);
 
 bool UStruct::IsChildOf(const UStruct* Other)
 {

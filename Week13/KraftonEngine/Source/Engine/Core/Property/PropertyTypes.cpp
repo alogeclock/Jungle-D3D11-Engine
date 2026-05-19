@@ -1,5 +1,6 @@
 ﻿#include "Core/Property/PropertyTypes.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "Core/Property/FArrayProperty.h"
@@ -199,16 +200,18 @@ void FNameProperty::Deserialize(void* Instance, const json::JSON& Value) const
 json::JSON FEnumProperty::Serialize(const void* Instance) const
 {
 	const void* ValuePtr = ContainerPtrToValuePtr(Instance);
-	int32 Value = 0;
-	std::memcpy(&Value, ValuePtr, EnumSize);
-	return json::JSON(Value);
+	int64 Value = 0;
+	const uint32 ValueSize = EnumDesc ? EnumDesc->GetUnderlyingSize() : ElementSize;
+	std::memcpy(&Value, ValuePtr, std::min<uint32>(ValueSize, sizeof(Value)));
+	return json::JSON(static_cast<int32>(Value));
 }
 
 void FEnumProperty::Deserialize(void* Instance, const json::JSON& Value) const
 {
 	void* Target = ContainerPtrToValuePtr(Instance);
-	int32 StoredValue = Value.ToInt();
-	std::memcpy(Target, &StoredValue, EnumSize);
+	int64 StoredValue = Value.ToInt();
+	const uint32 ValueSize = EnumDesc ? EnumDesc->GetUnderlyingSize() : ElementSize;
+	std::memcpy(Target, &StoredValue, std::min<uint32>(ValueSize, sizeof(StoredValue)));
 }
 
 json::JSON FArrayProperty::Serialize(const void* Instance) const

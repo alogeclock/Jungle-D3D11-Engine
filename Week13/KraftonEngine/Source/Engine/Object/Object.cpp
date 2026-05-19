@@ -76,4 +76,3 @@ void UObject::GetNonTransientProperties(TArray<const FProperty*>& OutProps)
 }
 
 UClass UObject::StaticClassInstance("UObject", nullptr, sizeof(UObject), CF_None);
-FClassRegistrar UObject::s_Registrar(&UObject::StaticClassInstance);

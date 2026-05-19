@@ -246,17 +246,12 @@ protected:
 
 	UPROPERTY(Edit, Category="Collision", DisplayName="Collision Enabled",
 	          Type=Enum,
-	          EnumNames=GCollisionEnabledNames,
-	          EnumCount=(uint32)ECollisionEnabled::COUNT,
-	          EnumSize=sizeof(ECollisionEnabled))
+	          Enum=StaticEnum_ECollisionEnabled())
 	ECollisionEnabled CollisionEnabled = ECollisionEnabled::NoCollision;
 
-	// Names array is 16 entries, but the dropdown only exposes active channels.
 	UPROPERTY(Edit, Category="Collision", DisplayName="Object Type",
 	          Type=Enum,
-	          EnumNames=GCollisionChannelNames,
-	          EnumCount=(uint32)NumActiveCollisionChannels,
-	          EnumSize=sizeof(ECollisionChannel))
+	          Enum=StaticEnum_ECollisionChannel())
 	ECollisionChannel ObjectType = ECollisionChannel::WorldStatic;
 
 	UPROPERTY(Edit, Category="Collision", DisplayName="Response Container",

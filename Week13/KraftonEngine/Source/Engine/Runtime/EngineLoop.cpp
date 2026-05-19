@@ -1,6 +1,5 @@
 ﻿#include "Engine/Runtime/EngineLoop.h"
 #include "Profiling/StartupProfiler.h"
-#include "Object/ScriptStruct.h"
 #include "Object/UClass.h"
 
 FEngineLoop::FEngineLoop(FCreateEngineFn InEngineFactory)
@@ -32,8 +31,7 @@ bool FEngineLoop::Init(HINSTANCE hInstance, int nShowCmd)
 
 	{
 		SCOPE_STARTUP_STAT("UClass::RegisterStaticObjects");
-		UClass::RegisterClassesAsStaticObjects();
-		UScriptStruct::RegisterScriptStructsAsStaticObjects();
+		GUObjectArray.FlushDeferredStatics();
 	}
 
 	Application.SetOnSizingCallback([this]()

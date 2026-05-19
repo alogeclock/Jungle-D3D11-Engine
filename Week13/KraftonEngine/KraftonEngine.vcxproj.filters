@@ -767,6 +767,9 @@
     <ClCompile Include="Source\Engine\Component\Light\SpotLightComponent.cpp">
       <Filter>Source\Engine\Component\Light</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Component\Movement\CharacterMovementComponent.cpp">
+      <Filter>Source\Engine\Component\Movement</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Component\Movement\FloatingPawnMovementComponent.cpp">
       <Filter>Source\Engine\Component\Movement</Filter>
     </ClCompile>
@@ -846,6 +849,9 @@
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\CapsuleActor.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\Character.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\DecalActor.cpp">
@@ -978,6 +984,12 @@
       <Filter>Source\Engine\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Object\UClass.cpp">
+      <Filter>Source\Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Object\UEnum.cpp">
+      <Filter>Source\Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Object\UField.cpp">
       <Filter>Source\Engine\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Object\UStruct.cpp">
@@ -1266,12 +1278,6 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\GameFramework\Character.cpp">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Component\Movement\CharacterMovementComponent.cpp">
-      <Filter>Source\Engine\Component\Movement</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -1616,6 +1622,9 @@
     <ClInclude Include="Source\Engine\Component\Light\SpotLightComponent.h">
       <Filter>Source\Engine\Component\Light</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Component\Movement\CharacterMovementComponent.h">
+      <Filter>Source\Engine\Component\Movement</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Component\Movement\FloatingPawnMovementComponent.h">
       <Filter>Source\Engine\Component\Movement</Filter>
     </ClInclude>
@@ -1743,6 +1752,9 @@
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\CapsuleActor.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\Character.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\DecalActor.h">
@@ -1889,6 +1901,9 @@
     <ClInclude Include="Source\Engine\Mesh\StaticMeshAsset.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Object\EStructFlags.h">
+      <Filter>Source\Engine\Object</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Object\FName.h">
       <Filter>Source\Engine\Object</Filter>
     </ClInclude>
@@ -1914,6 +1929,12 @@
       <Filter>Source\Engine\Object</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Object\UClass.h">
+      <Filter>Source\Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Object\UEnum.h">
+      <Filter>Source\Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Object\UField.h">
       <Filter>Source\Engine\Object</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Object\UStruct.h">
@@ -3913,12 +3934,6 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\sol2\include\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\include\sol\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\GameFramework\Character.h">
-      <Filter>Source\Engine\GameFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Component\Movement\CharacterMovementComponent.h">
-      <Filter>Source\Engine\Component\Movement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

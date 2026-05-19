@@ -5,17 +5,6 @@
 
 class UPrimitiveComponent;
 
-// TODO: Enum Table을 만들려면 enum class로 선언
-// 근데 MovementMode는 여기저기서 사용 가능해야함 -> 전역 enum이어야 한다
-// 따라서 MovementMode는 그냥 enum으로 유지하고 별도의 inline 보조 테이블 생성
-// 추후 일반 enum도 UENUM이 가능해진다면 그때 이걸 삭제
-inline const char* GCharacterMovementModeNames[] = {
-	"MOVE_None",
-	"MOVE_Walking",
-	"MOVE_Falling",
-	"MOVE_Max"
-};
-
 /*
  * ACharacter가 사용할 경량 CharacterMovementComponent
  * ACharacter는 이 컴포넌트를 소유 초기화 시 SetUpdatedComponent(RootComponent)를 호출
@@ -97,7 +86,7 @@ private:
 	float ControllerDesiredYawDegrees = 0.0f;
 
 	// 현재 캐릭터 이동 상태.
-	UPROPERTY(Edit, Category="Character Movement", DisplayName="Movement Mode", Type=Enum, EnumNames=GCharacterMovementModeNames, EnumCount=4, EnumSize=sizeof(EMovementMode))
+	UPROPERTY(Edit, Category="Character Movement", DisplayName="Movement Mode")
 	EMovementMode MovementMode = MOVE_Walking;
 
 	// 지상 이동 시 도달할 수 있는 최대 2D 속도.

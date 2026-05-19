@@ -8,19 +8,18 @@ UClass UScriptStruct::StaticClassInstance(
 	CF_None,
 	CASTCLASS_UScriptStruct
 );
-FClassRegistrar UScriptStruct::s_Registrar(&UScriptStruct::StaticClassInstance);
+
+UScriptStruct::UScriptStruct(
+	const char* InName,
+	UScriptStruct* InSuperStruct,
+	size_t InSize,
+	size_t InAlignment,
+	const ICppStructOps* InCppStructOps)
+	: UStruct(InName, InSuperStruct, InSize)
+	, Alignment(InAlignment)
+	, CppStructOps(InCppStructOps)
+{
+	// FName + DeferStaticObject are handled by UField's ctor.
+}
 
 UScriptStruct::~UScriptStruct() = default;
-
-void UScriptStruct::RegisterScriptStructsAsStaticObjects()
-{
-	for (UScriptStruct* Struct : GetAllScriptStructs())
-	{
-		if (!Struct) continue;
-		if (const char* Name = Struct->GetName())
-		{
-			Struct->SetFName(FName(Name));
-		}
-		GUObjectArray.AddStaticObject(Struct);
-	}
-}

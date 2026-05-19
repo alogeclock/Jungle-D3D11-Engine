@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <filesystem>
 #include <imgui.h>
 
@@ -123,16 +124,29 @@ namespace
 		case EPropertyType::Enum:
 		{
 			const FEnumProperty& EnumProp = static_cast<const FEnumProperty&>(Prop);
-			if (EnumProp.EnumNames && EnumProp.EnumCount > 0)
+			const UEnum* Enum = EnumProp.GetEnum();
+			if (Enum && Enum->NumEnums() > 0)
 			{
-				int32 Idx = 0;
-				if (EnumProp.EnumSize == 1)      Idx = *static_cast<uint8*>(ValuePtr);
-				else if (EnumProp.EnumSize == 4) Idx = *static_cast<int32*>(ValuePtr);
-				if (ImGui::Combo("##v", &Idx, EnumProp.EnumNames, static_cast<int32>(EnumProp.EnumCount)))
+				int64 Value = 0;
+				const uint32 UnderlyingSize = Enum->GetUnderlyingSize();
+				memcpy(&Value, ValuePtr, std::min<uint32>(UnderlyingSize, sizeof(Value)));
+				int32 Idx = Enum->GetIndexByValue(Value);
+				if (Idx < 0) Idx = 0;
+				const bool bChangedSelection = ImGui::BeginCombo("##v", Enum->GetNameByIndex(static_cast<uint32>(Idx)));
+				if (bChangedSelection)
 				{
-					if (EnumProp.EnumSize == 1)      *static_cast<uint8*>(ValuePtr) = static_cast<uint8>(Idx);
-					else if (EnumProp.EnumSize == 4) *static_cast<int32*>(ValuePtr) = Idx;
-					bChanged = true;
+					for (uint32 i = 0; i < Enum->NumEnums(); ++i)
+					{
+						const bool bSelected = Idx == static_cast<int32>(i);
+						if (ImGui::Selectable(Enum->GetNameByIndex(i), bSelected))
+						{
+							int64 NewValue = Enum->GetValueByIndex(i);
+							memcpy(ValuePtr, &NewValue, std::min<uint32>(UnderlyingSize, sizeof(NewValue)));
+							bChanged = true;
+						}
+						if (bSelected) ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
 				}
 			}
 			break;
@@ -153,6 +167,15 @@ FAnimSequenceEditorWidget::FAnimSequenceEditorWidget()
 	const FString Id = std::to_string(GNextAnimSequenceEditorInstanceId++);
 	PreviewWorldHandle = FName("AnimSequenceEditorPreview_" + Id);
 	WindowIdSuffix = "###AnimSequenceEditor_" + Id;
+}
+
+FAnimSequenceEditorWidget::~FAnimSequenceEditorWidget()
+{
+	for (FAnimNotifyEvent& Notify : PreviewNotifyMarkers)
+	{
+		delete Notify.NotifyTrigger;
+		Notify.NotifyTrigger = nullptr;
+	}
 }
 
 bool FAnimSequenceEditorWidget::CanEdit(UObject* Object) const
@@ -1028,6 +1051,7 @@ void FAnimSequenceEditorWidget::RenderViewportPanel(float Deltatime)
 			{
 				ViewportClient.SetBoneDebugDrawMode(static_cast<EBoneDebugDrawMode>(BoneDrawMode));
 			}
+
 		};
 
 		FViewportToolbar::Render(Context);
@@ -1330,7 +1354,7 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	ImGui::BeginDisabled(!bCanPlay);
 	if (DrawTimelineButton("<##ReversePlay", "역재생", ImVec2(ButtonWidth, 0.0f)))
 	{
-		PlayTimeline(-1.0f);
+		PlayTimeline(-std::abs(TimelinePlayRate));
 	}
 	ImGui::EndDisabled();
 
@@ -1346,7 +1370,7 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	ImGui::BeginDisabled(!bCanPlay);
 	if (DrawTimelineButton(">##ForwardPlay", "정재생", ImVec2(ButtonWidth, 0.0f)))
 	{
-		PlayTimeline(1.0f);
+		PlayTimeline(std::abs(TimelinePlayRate));
 	}
 	ImGui::EndDisabled();
 
@@ -1373,6 +1397,38 @@ void FAnimSequenceEditorWidget::RenderTimelinePanel()
 	{
 		if (SingleNodeInstance)
 			SingleNodeInstance->SetLooping(bLooping);
+	}
+
+	ImGui::SameLine();
+	if (PreviewMeshComponent)
+	{
+		bool bIgnore = PreviewMeshComponent->GetIgnoreRootMotion();
+		if (ImGui::Checkbox("Ignore Root Motion", &bIgnore))
+		{
+			PreviewMeshComponent->SetIgnoreRootMotion(bIgnore);
+		}
+	}
+	else
+	{
+		ImGui::BeginDisabled();
+		bool bDummy = true;
+		ImGui::Checkbox("Ignore Root Motion", &bDummy);
+		ImGui::EndDisabled();
+	}
+
+	ImGui::SameLine();
+
+	ImGui::SetNextItemWidth(60.0f);
+	float SpeedInput = std::abs(TimelinePlayRate);
+	if (ImGui::DragFloat("Speed", &SpeedInput, 0.05f, 0.1f, 8.0f, "%.2fx"))
+	{
+		SpeedInput = std::max(0.1f, SpeedInput);
+		const float Sign = (TimelinePlayRate >= 0.0f) ? 1.0f : -1.0f;
+		TimelinePlayRate = Sign * SpeedInput;
+		if (SingleNodeInstance && SingleNodeInstance->IsPlaying())
+		{
+			SingleNodeInstance->SetPlayRate(TimelinePlayRate);
+		}
 	}
 
 	ImGui::SameLine();
