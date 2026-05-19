@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "PropertyTypes.h"
+#include "Object/UEnum.h"
 
 class FEnumProperty final : public FProperty
 {
@@ -10,21 +11,18 @@ public:
 		uint32 InPropertyFlag,
 		uint32 InOffset,
 		uint32 InElementSize,
-		const char** InEnumNames,
-		uint32 InEnumCount,
-		uint32 InEnumSize = sizeof(int32))
+		UEnum* InEnum = nullptr)
 		: FProperty(InName, InCategory, InPropertyFlag, InOffset, InElementSize)
-		, EnumNames(InEnumNames)
-		, EnumCount(InEnumCount)
-		, EnumSize(InEnumSize)
+		, EnumDesc(InEnum)
 	{
 	}
 
-	const char** EnumNames = nullptr;
-	uint32 EnumCount = 0;
-	uint32 EnumSize = sizeof(int32);
+	UEnum* GetEnum() const { return EnumDesc; }
 
 	EPropertyType GetType() const override { return EPropertyType::Enum; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+
+private:
+	UEnum* EnumDesc = nullptr;
 };

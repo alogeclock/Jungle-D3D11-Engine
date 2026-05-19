@@ -84,10 +84,8 @@ class PropertyInfo:
     min: str | None = None     # raw expression, emitted as-is
     max: str | None = None
     speed: str | None = None
-    enum_names: str | None = None
-    enum_count: str | None = None
-    enum_size: str | None = None
     enum_type: str | None = None
+    enum_expr: str | None = None
     struct_type: str | None = None
     array_inner_type: str | None = None  # for TArray<T>
     property_class: str | None = None    # for FObjectPropertyBase derivatives
@@ -119,6 +117,7 @@ class EnumInfo:
     name: str
     entries: list[str]
     underlying_type: str | None = None
+    cpp_form: str = "EnumClass"
 
 @dataclass
 class StructInfo:
@@ -136,7 +135,7 @@ class StructInfo:
 # ──────────────────────────────────────────────
 # Annotation argument lists may contain:
 #   - quoted strings with ')' chars: DisplayName="Amplitude (deg)"
-#   - C++ casts and sizeof: EnumCount=(uint32)EFoo::COUNT, EnumSize=sizeof(EFoo)
+#   - C++ casts and function calls: Enum=StaticEnum_EFoo(), Class=UFoo::StaticClass()
 #   - multi-line layouts with newlines for readability
 # Three alternatives in the inner group: non-special char, atomic quoted
 # string, atomic single-level paren group. The paren-group branch handles
@@ -154,7 +153,7 @@ CLASS_RE = re.compile(
 
 ENUM_RE = re.compile(
     rf"UENUM\s*\({ANNOTATION_ARGS_RE}\)\s*"
-    r"enum\s+class\s+(\w+)"
+    r"enum\s+(?:(class)\s+)?(\w+)"
     r"(?:\s*:\s*(\w+))?",
     re.MULTILINE,
 )
@@ -359,14 +358,15 @@ def parse_enums(path: Path) -> list[EnumInfo]:
     enums: list[EnumInfo] = []
 
     for m in ENUM_RE.finditer(text):
-        _, name, underlying_type = m.group(1), m.group(2), m.group(3)
+        _, class_keyword, name, underlying_type = m.group(1), m.group(2), m.group(3), m.group(4)
         body = find_braced_body(text, m.end())
         if not body:
             raise CodegenError(f"{path}: could not locate enum body for {name}")
         entries = parse_enum_entries(body)
         if not entries:
             raise CodegenError(f"{path}: enum {name} has no entries")
-        enums.append(EnumInfo(name=name, entries=entries, underlying_type=underlying_type))
+        cpp_form = "EnumClass" if class_keyword else "Regular"
+        enums.append(EnumInfo(name=name, entries=entries, underlying_type=underlying_type, cpp_form=cpp_form))
     return enums
 
 
@@ -455,12 +455,17 @@ def parse_property(
     # TArray<const T*> keep their qualifiers intact.
     cpp_type = re.sub(r"^\s*((?:mutable|const|volatile)\s+)+", "", cpp_type).strip()
     enum_type = None
+    enum_expr = None
     struct_type = None
 
     # Explicit Type= override bypasses classify_type.
     if "Type" in kvs:
         prop_type = f"EPropertyType::{kvs['Type']}"
         array_inner = None
+        if prop_type == "EPropertyType::Enum":
+            enum_expr = kvs.get("Enum")
+            if not enum_expr and cpp_type in known_enums:
+                enum_type = cpp_type
         if prop_type == "EPropertyType::Struct":
             struct_type = kvs.get("Struct", cpp_type)
     else:
@@ -482,10 +487,8 @@ def parse_property(
         min=kvs.get("Min"),
         max=kvs.get("Max"),
         speed=kvs.get("Speed"),
-        enum_names=kvs.get("EnumNames"),
-        enum_count=kvs.get("EnumCount"),
-        enum_size=kvs.get("EnumSize"),
         enum_type=enum_type,
+        enum_expr=enum_expr,
         struct_type=struct_type,
         array_inner_type=array_inner,
         property_class=kvs.get("Class"),
@@ -558,7 +561,6 @@ CLASS_MACRO_TEMPLATE = """\
 #define KE_GENERATED_BODY_{class_name}() \\
     using Super = {parent}; \\
     static UClass StaticClassInstance; \\
-    static FClassRegistrar s_Registrar; \\
     static UClass* StaticClass() {{ return &StaticClassInstance; }} \\
     UClass* GetClass() const override {{ return StaticClass(); }} \\
     friend struct {class_name}_PropertyRegistrar;
@@ -568,6 +570,11 @@ STRUCT_MACRO_TEMPLATE = """\
 #define KE_GENERATED_BODY_{struct_name}() \\
     static class UScriptStruct StaticStructInstance; \\
     static class UScriptStruct* StaticStruct() {{ return &StaticStructInstance; }}
+"""
+
+ENUM_FORWARD_TEMPLATE = """\
+class UEnum;
+UEnum* {static_enum_symbol}();
 """
 
 def emit_generated_header(
@@ -587,7 +594,10 @@ def emit_generated_header(
             for s in structs
         ))
     if enums:
-        sections.append("\n".join(emit_enum_names_table(e) for e in enums))
+        sections.append("\n".join(
+            ENUM_FORWARD_TEMPLATE.format(static_enum_symbol=static_enum_symbol(e.name))
+            for e in enums
+        ))
     return GENERATED_H_TEMPLATE.format(body_macros="\n".join(sections))
 
 
@@ -597,6 +607,7 @@ def emit_generated_header(
 def emit_gen_cpp(
     source_header_include: str,
     classes: list[ClassInfo],
+    enums: list[EnumInfo],
     structs: list[StructInfo],
     known_enums: dict[str, EnumInfo],
     known_structs: dict[str, StructInfo],
@@ -607,6 +618,8 @@ def emit_gen_cpp(
         f'#include "{source_header_include}"',
         '#include "Object/ObjectFactory.h"',
     ]
+    if enums:
+        out.append('#include "Object/UEnum.h"')
     if structs:
         out.append('#include "Object/ScriptStruct.h"')
     out.extend(
@@ -617,6 +630,8 @@ def emit_gen_cpp(
         out.append('#include "Object/LuaClassRegistry.h"')
         out.append("#include <sol/sol.hpp>")
     out.append("")
+    for e in enums:
+        out.append(emit_enum_schema(e))
     for s in structs:
         out.append(emit_struct_schema(s, known_enums, known_structs))
     for c in classes:
@@ -628,22 +643,32 @@ def emit_gen_cpp(
     return "\n".join(out)
 
 
-def enum_names_symbol(enum_name: str) -> str:
-    stem = enum_name[1:] if enum_name.startswith("E") else enum_name
-    return f"G{stem}Names"
+def static_enum_symbol(enum_name: str) -> str:
+    return f"StaticEnum_{enum_name}"
 
 
-def emit_enum_names_table(enum: EnumInfo) -> str:
-    entries = ",\n".join(f'    "{entry}"' for entry in enum.entries)
-    # C++17 inline variable: ODR-merged across TUs so a UENUM in Foo.h can
-    # be referenced from a UPROPERTY in Bar.h. Emitted in .generated.h (not
-    # .gen.cpp) because Bar.h transitively reaches Foo.generated.h through
-    # the include chain that brings the enum type itself into Bar.h.
-    return (
-        f"inline const char* {enum_names_symbol(enum.name)}[] = {{\n"
-        f"{entries}\n"
-        "};\n"
-    )
+def emit_enum_schema(enum: EnumInfo) -> str:
+    cpp_form = "ECppForm::EnumClass" if enum.cpp_form == "EnumClass" else "ECppForm::Regular"
+    lines = [
+        f"UEnum* {static_enum_symbol(enum.name)}()",
+        "{",
+        f'    static UEnum Enum("{enum.name}", sizeof({enum.name}), {cpp_form});',
+        "    static const bool bRegistered = []()",
+        "    {",
+    ]
+    for entry in enum.entries:
+        value_expr = f"{enum.name}::{entry}" if enum.cpp_form == "EnumClass" else entry
+        lines.append(
+            f'        Enum.AddEnumerator("{entry}", static_cast<int64>({value_expr}));'
+        )
+    lines.extend([
+        "        return true;",
+        "    }();",
+        "    (void)bRegistered;",
+        "    return &Enum;",
+        "}",
+    ])
+    return "\n".join(lines) + "\n"
 
 
 def emit_struct_schema(
@@ -656,7 +681,6 @@ def emit_struct_schema(
         f"UScriptStruct {s.name}::StaticStructInstance(",
         f'    "{s.name}", nullptr,',
         f"    sizeof({s.name}), alignof({s.name}), &G{s.name}CppStructOps);",
-        f"static FScriptStructRegistrar s_{s.name}_StructReg({s.name}::StaticStruct());",
         "",
         f"static void Register{s.name}StructProperties(UScriptStruct* Struct)",
         "{",
@@ -731,7 +755,6 @@ def emit_class_static(c: ClassInfo) -> str:
         f"UClass {c.name}::StaticClassInstance(",
         f'    "{c.name}", &{c.parent}::StaticClassInstance,',
         f"    sizeof({c.name}), {flag_args});",
-        f"FClassRegistrar {c.name}::s_Registrar(&{c.name}::StaticClassInstance);",
     ]
     # Default: register with FObjectFactory so SceneSaveManager can spawn
     # this type by name (matches IMPLEMENT_CLASS = DEFINE_CLASS + REGISTER_FACTORY
@@ -818,11 +841,11 @@ def emit_property_constructor_args(
             enum = known_enums.get(p.enum_type)
             if not enum:
                 raise CodegenError(f"unknown generated enum type {p.enum_type}")
-            return [enum_names_symbol(enum.name), str(len(enum.entries)), f"sizeof({enum.name})"]
-        if p.enum_names and p.enum_count and p.enum_size:
-            return [p.enum_names, p.enum_count, p.enum_size]
+            return [f"{static_enum_symbol(enum.name)}()"]
+        if p.enum_expr:
+            return [p.enum_expr]
         raise CodegenError(
-            f"enum {error_context} {p.name}: v1 requires generated UENUM or EnumNames=/EnumCount=/EnumSize="
+            f"enum {error_context} {p.name}: requires generated UENUM or Enum=StaticEnum_*()"
         )
     if p.prop_type == "EPropertyType::Struct":
         if p.struct_type:
@@ -1057,14 +1080,13 @@ def main():
             if args.verbose:
                 print(f"  wrote {h.stem}.generated.h")
 
-        # Enum-only headers don't need a .gen.cpp — the names table lives in
-        # the .generated.h and there's no UClass static to define.
-        if classes or structs:
+        if classes or enums or structs:
             cpp_path = OUT_SRC / f"{h.stem}.gen.cpp"
             expected_sources.add(cpp_path)
             cpp_text = emit_gen_cpp(
                 make_include_path(h),
                 classes,
+                enums,
                 structs,
                 known_enums,
                 known_structs,

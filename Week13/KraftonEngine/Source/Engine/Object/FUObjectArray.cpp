@@ -59,6 +59,28 @@ int32 FUObjectArray::AddObject(UObject* Object)
 	return Index;
 }
 
+static TArray<UObject*>& GetDeferredStaticQueue()
+{
+	static TArray<UObject*> Queue;
+	return Queue;
+}
+
+void FUObjectArray::DeferStaticObject(UObject* Object)
+{
+	if (!Object) return;
+	GetDeferredStaticQueue().push_back(Object);
+}
+
+void FUObjectArray::FlushDeferredStatics()
+{
+	TArray<UObject*>& Queue = GetDeferredStaticQueue();
+	for (UObject* Object : Queue)
+	{
+		AddStaticObject(Object);
+	}
+	Queue.clear();
+}
+
 int32 FUObjectArray::AddStaticObject(UObject* Object)
 {
 	if (!Object) return -1;

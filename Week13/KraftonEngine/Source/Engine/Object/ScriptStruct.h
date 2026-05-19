@@ -41,12 +41,7 @@ public:
 		UScriptStruct* InSuperStruct,
 		size_t InSize,
 		size_t InAlignment,
-		const ICppStructOps* InCppStructOps)
-		: UStruct(InName, InSuperStruct, InSize)
-		, Alignment(InAlignment)
-		, CppStructOps(InCppStructOps)
-	{
-	}
+		const ICppStructOps* InCppStructOps);
 
 	virtual ~UScriptStruct();
 
@@ -71,28 +66,11 @@ public:
 	static UClass* StaticClass() { return &StaticClassInstance; }
 	UClass* GetClass() const override { return StaticClass(); }
 
-	static TArray<UScriptStruct*>& GetAllScriptStructs()
-	{
-		static TArray<UScriptStruct*> Registry;
-		return Registry;
-	}
-
-	static void RegisterScriptStructsAsStaticObjects();
-
 public:
 	static UClass StaticClassInstance;
-	static FClassRegistrar s_Registrar;
 
 
 private:
 	size_t Alignment = 0;
 	const ICppStructOps* CppStructOps = nullptr;
-};
-
-struct FScriptStructRegistrar
-{
-	FScriptStructRegistrar(UScriptStruct* InStruct)
-	{
-		UScriptStruct::GetAllScriptStructs().push_back(InStruct);
-	}
 };

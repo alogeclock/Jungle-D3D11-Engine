@@ -9,19 +9,15 @@ UClass UClass::StaticClassInstance(
 	CASTCLASS_UClass
 );
 
-FClassRegistrar UClass::s_Registrar(&UClass::StaticClassInstance);
-
-void UClass::RegisterClassesAsStaticObjects()
+UClass::UClass(const char* InName, UClass* InSuperClass, size_t InSize,
+	uint32 InFlags, uint32 InCastFlags)
+	: UStruct(InName, InSuperClass, InSize)
+	, ClassFlags(InFlags)
+	, OwnClassCastFlags(InCastFlags)
+	, ClassCastFlags(InCastFlags)
 {
-	for (UClass* C : GetAllClasses())
-	{
-		if (!C) continue;
-		if (const char* Name = C->GetName())
-		{
-			C->SetFName(FName(Name));
-		}
-		GUObjectArray.AddStaticObject(C);
-	}
+	// FName + DeferStaticObject are handled by UField's ctor.
+	GetAllClasses().push_back(this);
 }
 
 void UClass::Bind()

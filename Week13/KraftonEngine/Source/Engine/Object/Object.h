@@ -7,7 +7,6 @@
 #include "Object/FUObjectArray.h"
 
 class FArchive;
-struct FClassRegistrar;
 
 // ---------------------------------------------------------------------------
 // RTTI Macros
@@ -16,7 +15,6 @@ struct FClassRegistrar;
 #define DECLARE_CLASS(ClassName, ParentClass)                               \
     using Super = ParentClass;                                             \
     static UClass StaticClassInstance;                                      \
-    static FClassRegistrar s_Registrar;                                    \
     static UClass* StaticClass() { return &StaticClassInstance; }           \
     UClass* GetClass() const override { return StaticClass(); }				\
 	friend struct ClassName##_PropertyRegistrar;
@@ -28,8 +26,7 @@ struct FClassRegistrar;
         sizeof(ClassName),                                                 \
         FlagsValue,                                                        \
         CastFlagsValue                                                     \
-    );                                                                     \
-    FClassRegistrar ClassName::s_Registrar(&ClassName::StaticClassInstance);
+    );
 
 #define DEFINE_CLASS_WITH_FLAGS(ClassName, ParentClass, FlagsValue)         \
     DEFINE_CLASS_WITH_CAST_FLAGS(ClassName, ParentClass, FlagsValue, CASTCLASS_None)
@@ -84,10 +81,6 @@ struct FClassRegistrar;
 
 #define PROPERTY_BOOL_OFFSET(InName, InCategory, InOffset, InFlags) \
 	KE_REGISTER_PROPERTY_OFFSET_IMPL(InName, EPropertyType::Bool, InCategory, InOffset, sizeof(bool), InFlags, (void)0)
-
-#define PROPERTY_ENUM_OFFSET(InName, InCategory, InOffset, InSize, EnumNamesArr, EnumCountVal, EnumSizeVal, InFlags) \
-	KE_REGISTER_PROPERTY_OFFSET_IMPL(InName, EPropertyType::Enum, InCategory, InOffset, InSize, InFlags, \
-		(P->EnumNames = (EnumNamesArr), P->EnumCount = (EnumCountVal), P->EnumSize = (EnumSizeVal)))
 
 #define PROPERTY_STRUCT_OFFSET(InName, InCategory, InOffset, InSize, ScriptStructPtr, InFlags) \
 	KE_REGISTER_PROPERTY_OFFSET_IMPL(InName, EPropertyType::Struct, InCategory, InOffset, InSize, InFlags, \
@@ -187,7 +180,6 @@ public:
 	bool IsA(const UClass* Other) const;
 
 	static UClass StaticClassInstance;
-	static FClassRegistrar s_Registrar;
 	static UClass* StaticClass() { return &StaticClassInstance; }
 
 protected:

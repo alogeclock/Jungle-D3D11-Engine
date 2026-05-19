@@ -3,17 +3,12 @@
 #include "Core/CoreTypes.h"
 #include "Core/Property/FEnumProperty.h"
 #include "Core/Property/PropertyTypes.h"
+#include "Object/UEnum.h"
 #include "Object/ScriptStruct.h"
 
 class AActor;
 class UPrimitiveComponent;
 
-// ============================================================
-// ECollisionChannel — 충돌 채널 (오브젝트 분류용)
-// Intentionally NOT UENUM-marked: the 16-slot placeholder names array can't
-// be expressed via codegen. UPROPERTY sites reference GCollisionChannelNames
-// directly via Type=Enum, EnumNames=, ...
-// ============================================================
 enum class ECollisionChannel : uint8
 {
 	WorldStatic = 0,
@@ -27,23 +22,22 @@ enum class ECollisionChannel : uint8
 inline constexpr int32 NumActiveCollisionChannels = 5;
 inline constexpr int32 MaxCollisionChannels = 16;
 
-// 채널 이름 문자열 (에디터 Enum 드롭다운용)
-inline const char* GCollisionChannelNames[] =
+inline UEnum* StaticEnum_ECollisionChannel()
 {
-	"WorldStatic",
-	"WorldDynamic",
-	"Pawn",
-	"Projectile",
-	"Trigger",
-	"Channel5", "Channel6", "Channel7",
-	"Channel8", "Channel9", "Channel10", "Channel11",
-	"Channel12", "Channel13", "Channel14", "Channel15"
-};
+	static UEnum Enum("ECollisionChannel", sizeof(ECollisionChannel));
+	static const bool bRegistered = []()
+	{
+		Enum.AddEnumerator("WorldStatic", static_cast<int64>(ECollisionChannel::WorldStatic));
+		Enum.AddEnumerator("WorldDynamic", static_cast<int64>(ECollisionChannel::WorldDynamic));
+		Enum.AddEnumerator("Pawn", static_cast<int64>(ECollisionChannel::Pawn));
+		Enum.AddEnumerator("Projectile", static_cast<int64>(ECollisionChannel::Projectile));
+		Enum.AddEnumerator("Trigger", static_cast<int64>(ECollisionChannel::Trigger));
+		return true;
+	}();
+	(void)bRegistered;
+	return &Enum;
+}
 
-// ============================================================
-// ECollisionResponse — 채널 간 응답 방식
-// Trailing COUNT sentinel excluded from GCollisionResponseNames — not UENUM.
-// ============================================================
 enum class ECollisionResponse : uint8
 {
 	Ignore = 0,
@@ -53,17 +47,20 @@ enum class ECollisionResponse : uint8
 	COUNT
 };
 
-inline const char* GCollisionResponseNames[] =
+inline UEnum* StaticEnum_ECollisionResponse()
 {
-	"Ignore",
-	"Overlap",
-	"Block"
-};
+	static UEnum Enum("ECollisionResponse", sizeof(ECollisionResponse));
+	static const bool bRegistered = []()
+	{
+		Enum.AddEnumerator("Ignore", static_cast<int64>(ECollisionResponse::Ignore));
+		Enum.AddEnumerator("Overlap", static_cast<int64>(ECollisionResponse::Overlap));
+		Enum.AddEnumerator("Block", static_cast<int64>(ECollisionResponse::Block));
+		return true;
+	}();
+	(void)bRegistered;
+	return &Enum;
+}
 
-// ============================================================
-// ECollisionEnabled — 충돌 활성화 모드
-// Trailing COUNT sentinel excluded from GCollisionEnabledNames — not UENUM.
-// ============================================================
 enum class ECollisionEnabled : uint8
 {
 	NoCollision = 0,
@@ -74,18 +71,25 @@ enum class ECollisionEnabled : uint8
 	COUNT
 };
 
-inline const char* GCollisionEnabledNames[] =
+inline UEnum* StaticEnum_ECollisionEnabled()
 {
-	"NoCollision",
-	"QueryOnly",
-	"PhysicsOnly",
-	"QueryAndPhysics"
-};
+	static UEnum Enum("ECollisionEnabled", sizeof(ECollisionEnabled));
+	static const bool bRegistered = []()
+	{
+		Enum.AddEnumerator("NoCollision", static_cast<int64>(ECollisionEnabled::NoCollision));
+		Enum.AddEnumerator("QueryOnly", static_cast<int64>(ECollisionEnabled::QueryOnly));
+		Enum.AddEnumerator("PhysicsOnly", static_cast<int64>(ECollisionEnabled::PhysicsOnly));
+		Enum.AddEnumerator("QueryAndPhysics", static_cast<int64>(ECollisionEnabled::QueryAndPhysics));
+		return true;
+	}();
+	(void)bRegistered;
+	return &Enum;
+}
 
 // ============================================================
 // FCollisionResponseContainer — 채널별 응답 테이블
 // Manual UScriptStruct metadata because the active collision-channel fields
-// are generated from GCollisionChannelNames rather than ordinary members.
+// are generated from ECollisionChannel metadata rather than ordinary members.
 // ============================================================
 struct FCollisionResponseContainer
 {
@@ -128,20 +132,19 @@ struct FCollisionResponseContainer
 			sizeof(FCollisionResponseContainer),
 			alignof(FCollisionResponseContainer),
 			&CppStructOps);
-		static FScriptStructRegistrar Registrar(&Struct);
 		static const bool bPropertiesRegistered = []()
 		{
+			UEnum* ChannelEnum = StaticEnum_ECollisionChannel();
+			UEnum* ResponseEnum = StaticEnum_ECollisionResponse();
 			for (int32 i = 0; i < NumActiveCollisionChannels; ++i)
 			{
 				Struct.AddProperty(new FEnumProperty(
-					GCollisionChannelNames[i],
+					ChannelEnum->GetNameByIndex(static_cast<uint32>(i)),
 					"",
 					CPF_Edit,
 					static_cast<uint32>(offsetof(FCollisionResponseContainer, Responses) + sizeof(ECollisionResponse) * i),
 					sizeof(ECollisionResponse),
-					GCollisionResponseNames,
-					static_cast<uint32>(ECollisionResponse::COUNT),
-					sizeof(ECollisionResponse)));
+					ResponseEnum));
 			}
 
 			return true;

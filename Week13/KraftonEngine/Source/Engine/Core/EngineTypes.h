@@ -2,6 +2,8 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Vector.h"
+#include "Object/ObjectMacros.h"
+#include "EngineTypes.generated.h"
 
 // ============================================================
 // FColor — RGBA 색상 (0~255 정수 기반, 셰이더 전달 시 Normalized)
@@ -144,6 +146,7 @@ enum EEngineShowFlags : uint32
 // ============================================================
 // EMovementMode — CMC 움직임 분기
 // ============================================================
+UENUM()
 enum EMovementMode
 {
 	MOVE_None,			// movement disabled

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Object/Object.h"
+#include "Object/UField.h"
 #include "Core/CoreTypes.h"
 #include "Core/Property/PropertyTypes.h"
 #include <cstring>
@@ -7,7 +7,7 @@
 
 class UClass;
 
-class UStruct : public UObject {
+class UStruct : public UField {
 public:
 	virtual ~UStruct() {
 		for (FProperty* Property : ChildProperties)
@@ -19,13 +19,12 @@ public:
 
 	UStruct() = default;
 	UStruct(const char* InName, UStruct* InSuperStruct, size_t InSize)
-		: Name(InName), SuperStruct(InSuperStruct), Size(InSize)
+		: UField(InName), SuperStruct(InSuperStruct), Size(InSize)
 	{
 	}
 
 	bool IsChildOf(const UStruct* Other);
 
-	const char* GetName() const { return Name; }
 	UStruct*	GetSuperStruct()	const { return SuperStruct; }
 	size_t      GetSize() const { return Size; }
 
@@ -67,7 +66,6 @@ public:
 
 public:
 	static UClass StaticClassInstance;
-	static FClassRegistrar s_Registrar;
 
 
 protected:
@@ -76,7 +74,6 @@ protected:
 
 
 protected:
-	const char* Name		= nullptr;
 	UStruct*	SuperStruct	= nullptr;
 	size_t      Size		= 0;
 
