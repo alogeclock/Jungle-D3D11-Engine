@@ -29,10 +29,10 @@ public:
 	UCharacterMovementComponent() = default;
 	~UCharacterMovementComponent() override = default;
 
-	void BeginPlay() override;
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
-	void Serialize(FArchive& Ar) override;
-	void PostEditProperty(const char* PropertyName) override;
+	void			BeginPlay() override;
+	void			TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
+	void			Serialize(FArchive& Ar) override;
+	void			PostEditProperty(const char* PropertyName) override;
 
 	UFUNCTION(Lua)
 	void			SetMoveInput(float ForwardValue, float RightValue);
@@ -68,6 +68,15 @@ public:
 	bool			IsMovingOnGround() const;
 
 private:
+	void			PhysWalking(float DeltaTime);
+	void			PhysFalling(float DeltaTime);
+	void			UpdateVelocityWalking(float DeltaTime);
+	void			UpdateVelocityFalling(float DeltaTime);
+	FVector			GetCurrentMoveDirection() const;
+	FVector			GetPlanarForward() const;
+	FVector			GetPlanarRight() const;
+	void			LimitVelocity2D(float MaxSpeed);
+
 	UPrimitiveComponent* UpdatedPrimitive = nullptr;
 
 	// 런타임 이동 상태입니다. 저장/에디터 노출 대상이 아니므로 UPROPERTY로 만들지 않습니다.

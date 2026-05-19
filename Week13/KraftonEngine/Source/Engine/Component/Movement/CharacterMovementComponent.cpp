@@ -16,6 +16,26 @@ void UCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 {
 	UMovementComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	UpdatedPrimitive = Cast<UPrimitiveComponent>(GetUpdatedComponent());
+
+	if (!UpdatedPrimitive || DeltaTime <= 0.0f)
+	{
+		ClearLookInput();
+		return;
+	}
+
+	switch (MovementMode)
+	{
+	case MOVE_Walking:
+		PhysWalking(DeltaTime);
+		break;
+	case MOVE_Falling:
+		PhysFalling(DeltaTime);
+		break;
+	default:
+		break;
+	}
+
+	ClearLookInput();
 }
 
 void UCharacterMovementComponent::Serialize(FArchive& Ar)
@@ -169,4 +189,133 @@ bool UCharacterMovementComponent::IsFalling() const
 bool UCharacterMovementComponent::IsMovingOnGround() const
 {
 	return IsWalking();
+}
+
+void UCharacterMovementComponent::PhysWalking(float DeltaTime)
+{
+	UpdateVelocityWalking(DeltaTime);
+	UpdatedPrimitive->SetLinearVelocity(Velocity);
+}
+
+void UCharacterMovementComponent::PhysFalling(float DeltaTime)
+{
+	UpdateVelocityFalling(DeltaTime);
+	UpdatedPrimitive->SetLinearVelocity(Velocity);
+}
+
+void UCharacterMovementComponent::UpdateVelocityWalking(float DeltaTime)
+{
+	const FVector MoveDirection = GetCurrentMoveDirection();
+
+	if (!MoveDirection.IsNearlyZero())
+	{
+		Acceleration = MoveDirection * MaxAcceleration;
+		Velocity += Acceleration * DeltaTime;
+		Velocity.Z = 0.0f;
+		LimitVelocity2D(MaxWalkSpeed);
+		return;
+	}
+
+	Acceleration = FVector::ZeroVector;
+	Velocity.Z = 0.0f;
+
+	const float Speed2D = GetSpeed2D();
+	if (Speed2D <= 0.0f)
+	{
+		Velocity.X = 0.0f;
+		Velocity.Y = 0.0f;
+		return;
+	}
+
+	// 입력이 없을 때는 마찰과 제동 감속을 함께 써서 수평 속도를 줄입니다.
+	const float BrakingAmount = (BrakingDecelerationWalking + Speed2D * GroundFriction) * DeltaTime;
+	const float NewSpeed = std::max(0.0f, Speed2D - BrakingAmount);
+	const float SpeedScale = NewSpeed / Speed2D;
+	Velocity.X *= SpeedScale;
+	Velocity.Y *= SpeedScale;
+}
+
+void UCharacterMovementComponent::UpdateVelocityFalling(float DeltaTime)
+{
+	const FVector MoveDirection = GetCurrentMoveDirection();
+
+	if (!MoveDirection.IsNearlyZero())
+	{
+		Acceleration = MoveDirection * (MaxAcceleration * AirControl);
+		Velocity.X += Acceleration.X * DeltaTime;
+		Velocity.Y += Acceleration.Y * DeltaTime;
+	}
+	else
+	{
+		Acceleration = FVector::ZeroVector;
+	}
+
+	Velocity.Z += GravityZ * DeltaTime;
+	LimitVelocity2D(MaxWalkSpeed);
+}
+
+FVector UCharacterMovementComponent::GetCurrentMoveDirection() const
+{
+	const float ForwardInput = std::clamp(MoveForwardInput, -1.0f, 1.0f);
+	const float RightInput = std::clamp(MoveRightInput, -1.0f, 1.0f);
+
+	FVector Direction = GetPlanarForward() * ForwardInput + GetPlanarRight() * RightInput;
+	Direction.Z = 0.0f;
+
+	const float DirectionLength = Direction.Length();
+	if (DirectionLength > 1.0f)
+	{
+		Direction.Normalize();
+	}
+	else if (DirectionLength <= 0.0f)
+	{
+		Direction = FVector::ZeroVector;
+	}
+
+	return Direction;
+}
+
+FVector UCharacterMovementComponent::GetPlanarForward() const
+{
+	FVector Forward = UpdatedPrimitive ? UpdatedPrimitive->GetForwardVector() : FVector::ForwardVector;
+	Forward.Z = 0.0f;
+	if (Forward.IsNearlyZero())
+	{
+		return FVector::ForwardVector;
+	}
+	Forward.Normalize();
+	return Forward;
+}
+
+FVector UCharacterMovementComponent::GetPlanarRight() const
+{
+	FVector Right = UpdatedPrimitive ? UpdatedPrimitive->GetRightVector() : FVector::RightVector;
+	Right.Z = 0.0f;
+	if (Right.IsNearlyZero())
+	{
+		return FVector::RightVector;
+	}
+	Right.Normalize();
+	return Right;
+}
+
+void UCharacterMovementComponent::LimitVelocity2D(float MaxSpeed)
+{
+	const float ClampedMaxSpeed = std::max(0.0f, MaxSpeed);
+	const float Speed2D = GetSpeed2D();
+	if (Speed2D <= ClampedMaxSpeed)
+	{
+		return;
+	}
+
+	if (ClampedMaxSpeed <= 0.0f)
+	{
+		Velocity.X = 0.0f;
+		Velocity.Y = 0.0f;
+		return;
+	}
+
+	const float SpeedScale = ClampedMaxSpeed / Speed2D;
+	Velocity.X *= SpeedScale;
+	Velocity.Y *= SpeedScale;
 }
