@@ -195,7 +195,7 @@ void FAnimSequenceEditorWidget::InitializeFromAnimSequence()
 	PreviewMeshComponent = nullptr;
 	SingleNodeInstance = nullptr;
 	PreviewStatusMessage.clear();
-	EvaluatedLocalPose.clear();
+	EvaluatedLocalPose.Reset();
 	bLastPoseEvaluationSucceeded = false;
 	SelectedBoneIndex = -1;
 
@@ -417,7 +417,7 @@ const FSkeletonAsset* FAnimSequenceEditorWidget::GetEditableSkeletonAsset() cons
 
 void FAnimSequenceEditorWidget::ApplyAnimationPoseToPreview(float Time)
 {
-	EvaluatedLocalPose.clear();
+	EvaluatedLocalPose.Reset();
 	bLastPoseEvaluationSucceeded = false;
 
 	if (!AnimSequence)
@@ -440,7 +440,11 @@ void FAnimSequenceEditorWidget::ApplyAnimationPoseToPreview(float Time)
 
 	// AnimSequence 평가 결과는 skeleton 전체 local pose이므로 batch API로 한 번에 넣습니다.
 	// bone마다 setter를 호출하면 CPU skinning이 bone 수만큼 반복되어 Timeline 재생 중 큰 병목이 됩니다.
-	PreviewMeshComponent->SetBoneLocalTransformByArray(EvaluatedLocalPose);
+	TArray<FMatrix> TempMatrices;
+	TempMatrices.resize(EvaluatedLocalPose.BoneLocalTransforms.size());
+	for (size_t i = 0; i < EvaluatedLocalPose.BoneLocalTransforms.size(); ++i)
+		TempMatrices[i] = EvaluatedLocalPose.BoneLocalTransforms[i].ToMatrix();
+	PreviewMeshComponent->SetBoneLocalTransformByArray(TempMatrices);
 }
 
 void FAnimSequenceEditorWidget::CaptureSelectedBoneOverrideFromPreview()
@@ -474,9 +478,9 @@ FTransform FAnimSequenceEditorWidget::GetCurrentBoneLocalTransformForDetails(int
 		return PreviewMeshComponent->GetBoneLocalTransformByIndex(BoneIndex);
 	}
 
-	if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(EvaluatedLocalPose.size()))
+	if (BoneIndex >= 0 && BoneIndex < static_cast<int32>(EvaluatedLocalPose.BoneLocalTransforms.size()))
 	{
-		return FTransform(EvaluatedLocalPose[BoneIndex]);
+		return EvaluatedLocalPose.BoneLocalTransforms[BoneIndex];
 	}
 
 	const FSkeletonAsset* SkeletonAsset = GetEditableSkeletonAsset();
@@ -499,7 +503,7 @@ void FAnimSequenceEditorWidget::Close()
 	PreviewMeshComponent = nullptr;
 	SingleNodeInstance = nullptr;
 	PreviewStatusMessage.clear();
-	EvaluatedLocalPose.clear();
+	EvaluatedLocalPose.Reset();
 	bLastPoseEvaluationSucceeded = false;
 	SelectedBoneIndex = -1;
 	EditorBoneOverrides.clear();

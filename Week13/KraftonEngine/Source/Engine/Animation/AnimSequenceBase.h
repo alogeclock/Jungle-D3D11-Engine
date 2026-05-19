@@ -2,6 +2,7 @@
 
 #include "Animation/AnimationAsset.h"
 #include "Math/Matrix.h"
+#include "Animation/AnimTypes.h"
 
 /** 시간축이 있는 애니메이션의 공통 기반입니다. */
 class UAnimSequenceBase : public UAnimationAsset
@@ -26,7 +27,7 @@ public:
 	virtual int32 GetNumberOfSampledKeys() const { return 0; }
 	virtual float GetSamplingFrameRate() const { return 0.0f; }
 	virtual float GetTimeAtFrame(int32 FrameIndex) const;
-	virtual bool EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, bool bLoopOverride = true) const;
+	virtual bool EvaluatePose(float Time, FPoseContext& OutPose, bool bLoopOverride = true) const;
 
 private:
 	float SequenceLength = 0.0f;

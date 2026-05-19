@@ -251,7 +251,7 @@ void USkinnedMeshComponent::ResetBoneEditPose()
 	for (const FBone& Bone : SkeletonAsset->Bones)
 	{
 		BoneEditLocalMatrices.push_back(Bone.LocalMatrix);
-	}
+	}  
 }
 
 FVector USkinnedMeshComponent::GetBoneLocationByIndex(int32 BoneIndex) const
@@ -668,12 +668,6 @@ void USkinnedMeshComponent::EnsureCPUSkinnedVertices() const
 	if (SkinnedVertices.size() != Asset->Vertices.size())
 	{
 		SkinnedVertices.resize(Asset->Vertices.size());
-	}
-	
-	if (bIgnoreRootMotion && TargetRootBoneIndex >= 0 && TargetRootBoneIndex < (int32)BoneGlobals.size())
-	{
-		// 루트 본의 Global Matrix에서 위치(Location) 정보만 강제로 원점(0,0,0)으로 초기화
-		BoneGlobals[TargetRootBoneIndex].SetLocation(FVector::ZeroVector);
 	}
 
 	for (uint32 i = 0; i < (uint32)Asset->Vertices.size(); ++i)

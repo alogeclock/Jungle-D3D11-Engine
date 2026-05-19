@@ -71,13 +71,8 @@ void UAnimSingleNodeInstance::GetCurrentPose(FPoseContext& OutPose)
 	if (!Sequence)
 		return;
 
-	TArray<FMatrix> LocalMatrices;
-	if (!Sequence->EvaluatePose(CurrentTime, LocalMatrices))
+	if (!Sequence->EvaluatePose(CurrentTime, OutPose))
 		return;
-
-	OutPose.BoneLocalTransforms.resize(LocalMatrices.size());
-	for (size_t i = 0; i < LocalMatrices.size(); ++i)
-		OutPose.BoneLocalTransforms[i] = FTransform(LocalMatrices[i]);
 
 	Sequence->CollectNotifies(PrevTime, CurrentTime, bLooping, PlayRate < 0.0f, NotifyQueue);
 

@@ -1,4 +1,4 @@
-#include "Animation/AnimSequenceBase.h"
+﻿#include "Animation/AnimSequenceBase.h"
 
 #include "Object/ObjectFactory.h"
 #include "Serialization/Archive.h"
@@ -27,10 +27,10 @@ float UAnimSequenceBase::GetTimeAtFrame(int32 FrameIndex) const
 	return std::max(0.0f, std::min(Time, SequenceLength));
 }
 
-bool UAnimSequenceBase::EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, bool bLoopOverride) const
+bool UAnimSequenceBase::EvaluatePose(float Time, FPoseContext& OutPose, bool bLoopOverride) const
 {
 	(void)Time;
 	(void)bLoopOverride;
-	OutLocalMatrices.clear();
+	OutPose.Reset();
 	return false;
 }

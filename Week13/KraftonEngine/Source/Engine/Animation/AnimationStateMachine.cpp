@@ -7,7 +7,6 @@
 
 void UAnimationStateMachine::UpdateAnimationState(float DeltaTime)
 {
-	// ProcessState() 호출 전에 저장 — EvaluatePose에서 구간 체크에 사용
 	PrevStateLocalTime = StateLocalTime;
 
 	if (BlendAlpha < 1.0f)
@@ -26,36 +25,25 @@ void UAnimationStateMachine::GenerateFinalPose(FPoseContext& OutPose, TArray<FAn
 	if (!CurrentSequence)
 		return;
 
-	TArray<FMatrix> CurrMatrices;
-	if (!CurrentSequence->EvaluatePose(StateLocalTime, CurrMatrices))
+	FPoseContext CurrentPose;
+	if (!CurrentSequence->EvaluatePose(StateLocalTime, CurrentPose))
 		return;
 
 	if (BlendAlpha >= 1.0f || !PrevSequence)
 	{
-		OutPose.BoneLocalTransforms.resize(CurrMatrices.size());
-		for (size_t i = 0; i < CurrMatrices.size(); ++i)
-			OutPose.BoneLocalTransforms[i] = FTransform(CurrMatrices[i]);
+		OutPose = CurrentPose;
 	}
 	else
 	{
-		TArray<FMatrix> PrevMatrices;
-		if (!PrevSequence->EvaluatePose(BeldingPrevStateTime, PrevMatrices) || PrevMatrices.size() != CurrMatrices.size())
+		FPoseContext PrevPose;
+		if (!PrevSequence->EvaluatePose(BeldingPrevStateTime, PrevPose) 
+			|| PrevPose.BoneLocalTransforms.size() != CurrentPose.BoneLocalTransforms.size())
 		{
-			OutPose.BoneLocalTransforms.resize(CurrMatrices.size());
-			for (size_t i = 0; i < CurrMatrices.size(); ++i)
-				OutPose.BoneLocalTransforms[i] = FTransform(CurrMatrices[i]);
+			OutPose = CurrentPose;
 		}
 		else
 		{
-			FPoseContext PrevPose, CurrPose;
-			PrevPose.BoneLocalTransforms.resize(PrevMatrices.size());
-			CurrPose.BoneLocalTransforms.resize(CurrMatrices.size());
-			for (size_t i = 0; i < CurrMatrices.size(); ++i)
-			{
-				PrevPose.BoneLocalTransforms[i] = FTransform(PrevMatrices[i]);
-				CurrPose.BoneLocalTransforms[i] = FTransform(CurrMatrices[i]);
-			}
-			FAnimationRuntime::BlendTwoPoses(PrevPose, CurrPose, BlendAlpha, OutPose);
+			FAnimationRuntime::BlendTwoPoses(PrevPose, CurrentPose, BlendAlpha, OutPose);
 		}
 	}
 

@@ -62,35 +62,37 @@ void UAnimSequence::SetDataModel(UAnimDataModel* InDataModel)
 
 void UAnimSequence::CollectNotifies(float PrevTime, float CurrentTime, bool bLooping, bool bReverse, TArray<FAnimNotifyEvent>& OutNotifies)
 {
-	float SeqLength = DataModel->GetPlayLength();
+	const float SeqLength = DataModel->GetPlayLength();
+	if (SeqLength <= 0.f) return;
+
+	// 누적 시간 → 시퀀스 내 위치로 변환
+	float LocalPrev = fmod(PrevTime, SeqLength);
+	float LocalCurrent = fmod(CurrentTime, SeqLength);
+
+	// 이번 틱에서 wrap이 몇 번 일어났는지
+	const int32 PrevLap = floor(PrevTime / SeqLength);
+	const int32 CurrentLap = floor(CurrentTime / SeqLength);
+	const bool  bWrapped = bLooping && (CurrentLap > PrevLap);
 
 	for (const FAnimNotifyEvent& Notify : DataModel->GetNotifies())
 	{
+		const float T = Notify.TriggerTime;
 		bool bShouldTrigger = false;
 
 		if (!bReverse)
 		{
-			if (bLooping && CurrentTime < PrevTime)
-			{
-				bShouldTrigger = (Notify.TriggerTime > PrevTime && Notify.TriggerTime <= SeqLength)
-					|| (Notify.TriggerTime <= CurrentTime);
-			}
+			if (bWrapped)
+				bShouldTrigger = T > LocalPrev || T <= LocalCurrent;
 			else
-			{
-				bShouldTrigger = Notify.TriggerTime > PrevTime && Notify.TriggerTime <= CurrentTime;
-			}
+				bShouldTrigger = T > LocalPrev && T <= LocalCurrent;
 		}
 		else
 		{
-			if (bLooping && CurrentTime > PrevTime)
-			{
-				bShouldTrigger = (Notify.TriggerTime < PrevTime && Notify.TriggerTime >= 0.f)
-					|| (Notify.TriggerTime <= SeqLength && Notify.TriggerTime >= CurrentTime);
-			}
+			// 역방향이면 누적 시간은 감소 방향
+			if (bWrapped)
+				bShouldTrigger = T < LocalPrev || T >= LocalCurrent;
 			else
-			{
-				bShouldTrigger = Notify.TriggerTime < PrevTime && Notify.TriggerTime >= CurrentTime;
-			}
+				bShouldTrigger = T < LocalPrev && T >= LocalCurrent;
 		}
 
 		if (bShouldTrigger)
@@ -114,9 +116,9 @@ float UAnimSequence::GetSamplingFrameRate() const
 	return DataModel ? DataModel->GetFrameRate() : 0.0f;
 }
 
-bool UAnimSequence::EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, bool bLoopOverride) const
+bool UAnimSequence::EvaluatePose(float Time, FPoseContext& OutPose, bool bLoopOverride) const
 {
-	OutLocalMatrices.clear();
+	OutPose.Reset();
 
 	const FSkeletonAsset* SkeletonAsset = GetSkeletonAsset();
 	if (!DataModel || !SkeletonAsset)
@@ -125,10 +127,10 @@ bool UAnimSequence::EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, 
 	}
 
 	const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
-	OutLocalMatrices.resize(BoneCount);
+	OutPose.BoneLocalTransforms.resize(BoneCount);
 	for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
 	{
-		OutLocalMatrices[BoneIndex] = SkeletonAsset->Bones[BoneIndex].LocalMatrix;
+		OutPose.BoneLocalTransforms[BoneIndex] = FTransform(SkeletonAsset->Bones[BoneIndex].LocalMatrix);
 	}
 
 	if (BoneCount == 0 || DataModel->GetBoneAnimationTracks().empty())
@@ -147,7 +149,7 @@ bool UAnimSequence::EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, 
 		const FTransform RefTransform(SkeletonAsset->Bones[Track.BoneTreeIndex].LocalMatrix);
 		FTransform SampledTransform;
 		DataModel->EvaluateBoneTrackTransform(Track, EvalTime, SampledTransform, RefTransform);
-		OutLocalMatrices[Track.BoneTreeIndex] = SampledTransform.ToMatrix();
+		OutPose.BoneLocalTransforms[Track.BoneTreeIndex] = SampledTransform;
 	}
 
 	return true;

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Animation/AnimSequenceBase.h"
-#include "Animation/AnimTypes.h"
 
 class UAnimDataModel;
 
@@ -21,7 +20,7 @@ public:
 
 	int32 GetNumberOfSampledKeys() const override;
 	float GetSamplingFrameRate() const override;
-	bool EvaluatePose(float Time, TArray<FMatrix>& OutLocalMatrices, bool bLoopOverride = true) const override;
+	bool EvaluatePose(float Time, FPoseContext& OutPose, bool bLoopOverride = true) const override;
 
 	void CollectNotifies(float PrevTime, float CurrentTime, bool bLooping,
 		bool bReverse, TArray<FAnimNotifyEvent>& OutNotifies);

@@ -53,6 +53,11 @@ void USkeletalMeshComponent::ApplyPoseToComponent(const FPoseContext& Pose)
 
 		FTransform BoneTM = Pose.BoneLocalTransforms[BoneIdx];
 
+		if (bIgnoreRootMotion && BoneIdx == TargetRootBoneIndex)
+		{
+			BoneTM.Location = FVector::ZeroVector;
+		}
+
 		BoneEditLocalMatrices[BoneIdx] = BoneTM.ToMatrix();
 	}
 

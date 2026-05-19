@@ -89,7 +89,7 @@ private:
 	USkeletalMeshComponent* PreviewMeshComponent = nullptr;
 	UAnimSingleNodeInstance* SingleNodeInstance = nullptr;
 	FString PreviewStatusMessage;
-	TArray<FMatrix> EvaluatedLocalPose;
+	FPoseContext EvaluatedLocalPose;
 	bool bLastPoseEvaluationSucceeded = false;
 
 	SWindow MeshViewportWindow;
