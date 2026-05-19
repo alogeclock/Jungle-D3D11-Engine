@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "SkinnedMeshComponent.h"
 #include "Animation/AnimInstance.h"
@@ -15,7 +15,6 @@ public:
 	~USkeletalMeshComponent() override = default;
 
 	void BeginPlay() override;
-	void Serialize(FArchive& Ar) override;
 
 	// Render access 섹션: SceneProxy
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
@@ -56,6 +55,4 @@ private:
 
 	UAnimInstance* AnimInstance = nullptr;
 
-	FString AnimInstanceClassName;
-	FString LuaScriptPath;
 };

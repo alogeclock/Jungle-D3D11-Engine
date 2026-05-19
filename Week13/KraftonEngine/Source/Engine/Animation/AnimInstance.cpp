@@ -1,6 +1,5 @@
 ﻿#include "AnimInstance.h"
 #include "Animation/AnimationStateMachine.h"
-#include "Animation/LuaAnimStateMachine.h"
 #include "Object/ObjectFactory.h"
 #include "Component/SkeletalMeshComponent.h"
 
@@ -9,14 +8,6 @@ IMPLEMENT_CLASS(UAnimInstance, UObject)
 void UAnimInstance::Initialize(USkeletalMeshComponent* InOwner, const FString& InScriptPath)
 {
 	OwnerComponent = InOwner;
-
-	if (InScriptPath.empty())
-		return;
-
-	ULuaAnimStateMachine* LuaSM = GUObjectArray.CreateObject<ULuaAnimStateMachine>(this);
-	LuaSM->Initialize(InOwner, this);
-	LuaSM->LoadScript(InScriptPath);
-	SetStateMachine(LuaSM);
 }
 
 void UAnimInstance::Update(float DeltaTime)

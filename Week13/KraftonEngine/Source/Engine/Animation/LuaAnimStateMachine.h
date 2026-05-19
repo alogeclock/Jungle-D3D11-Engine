@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "Animation/AnimationStateMachine.h"
-#include "Animation/AnimInstance.h"
 #include <sol/sol.hpp>
 
 class UAnimSequence;

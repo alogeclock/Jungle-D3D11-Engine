@@ -11,24 +11,6 @@
 void USkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (AnimInstanceClassName.empty())
-		return;
-
-	// 클래스 이름으로 AnimInstance 생성
-	UObject* Obj = FObjectFactory::Get().Create(AnimInstanceClassName.c_str());
-	AnimInstance = Cast<UAnimInstance>(Obj);
-	if (!AnimInstance)
-		return;
-
-	AnimInstance->Initialize(this, LuaScriptPath);
-}
-
-void USkeletalMeshComponent::Serialize(FArchive& Ar)
-{
-	Super::Serialize(Ar);
-	Ar << AnimInstanceClassName;
-	Ar << LuaScriptPath;
 }
 
 FPrimitiveSceneProxy* USkeletalMeshComponent::CreateSceneProxy()
