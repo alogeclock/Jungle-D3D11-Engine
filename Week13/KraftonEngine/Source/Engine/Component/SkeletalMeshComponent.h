@@ -24,6 +24,11 @@ public:
 	void SetAnimInstance(UAnimInstance* InInstance);
 	UAnimInstance* GetAnimInstance() const { return AnimInstance; }
 
+	void SetAnimScriptPath(const FString& Path) { AnimScriptPath = Path; }
+	const FString& GetAnimScriptPath() const { return AnimScriptPath; }
+
+	void EndPlay() override;
+
 	void SetTwoBoneIKEnabled(bool bEnabled) { bEnableTwoBoneIK = bEnabled; }
 	bool IsTwoBoneIKEnabled() const { return bEnableTwoBoneIK; }
 	void SetTwoBoneIKChains(const TArray<FTwoBoneIKChain>& InChains);
@@ -46,6 +51,9 @@ private:
 	void ApplyTwoBoneIKChains(FPoseContext& Pose);
 
 	void SolveTwoBoneIK(FPoseContext& Pose, int RootBoneIndex, int MidBoneIndex, int EndBoneIndex, const FVector& TargetPosition, const FVector& PolePosition);
+
+	UPROPERTY(Edit, Category="Animation", DisplayName="Anim Script Path")
+	FString AnimScriptPath;
 
 	UPROPERTY(Edit, Category="IK", DisplayName="Enable Two Bone IK")
 	bool bEnableTwoBoneIK = true;

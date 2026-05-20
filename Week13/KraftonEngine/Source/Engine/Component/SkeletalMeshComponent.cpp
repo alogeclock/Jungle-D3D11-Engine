@@ -1,6 +1,8 @@
 ﻿#include "SkeletalMeshComponent.h"
 #include "Animation/AnimationRuntime.h"
+#include "Animation/CharacterAnimInstance.h"
 #include "Core/Log.h"
+#include "Object/FUObjectArray.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletonAsset.h"
@@ -11,6 +13,30 @@
 void USkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (AnimScriptPath.empty())
+		return;
+
+	// PIE 재시작 등으로 이미 인스턴스가 있으면 먼저 정리
+	if (AnimInstance)
+	{
+		GUObjectArray.DestroyObject(AnimInstance);
+		AnimInstance = nullptr;
+	}
+
+	UCharacterAnimInstance* Inst = GUObjectArray.CreateObject<UCharacterAnimInstance>();
+	AnimInstance = Inst;
+	Inst->Initialize(this, AnimScriptPath);
+}
+
+void USkeletalMeshComponent::EndPlay()
+{
+	if (AnimInstance)
+	{
+		GUObjectArray.DestroyObject(AnimInstance);
+		AnimInstance = nullptr;
+	}
+	Super::EndPlay();
 }
 
 FPrimitiveSceneProxy* USkeletalMeshComponent::CreateSceneProxy()
@@ -22,6 +48,7 @@ void USkeletalMeshComponent::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
 
+	Ar << AnimScriptPath;
 	Ar << bEnableTwoBoneIK;
 
 	uint32 ChainCount = static_cast<uint32>(TwoBoneIKChains.size());
@@ -41,8 +68,6 @@ void USkeletalMeshComponent::Serialize(FArchive& Ar)
 void USkeletalMeshComponent::SetAnimInstance(UAnimInstance* InInstance)
 {
 	AnimInstance = InInstance;
-	if (AnimInstance)
-		AnimInstance->Initialize(this, "");
 }
 
 void USkeletalMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType,

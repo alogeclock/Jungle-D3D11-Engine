@@ -10,8 +10,12 @@ ACharacter::ACharacter()
 
 void ACharacter::BeginPlay()
 {
-	SyncSpringArmRotationMode();
+	// 씬이 이전 버전으로 저장된 경우 AnimScriptPath가 비어있을 수 있으므로 fallback 설정.
+	// 반드시 APawn::BeginPlay() (= 컴포넌트 BeginPlay) 보다 먼저 실행되어야 함.
+	if (Mesh && Mesh->GetAnimScriptPath().empty())
+		Mesh->SetAnimScriptPath("CharacterAnimStateMachine.lua");
 
+	SyncSpringArmRotationMode();
 	APawn::BeginPlay();
 }
 
@@ -27,6 +31,7 @@ void ACharacter::InitDefaultComponents()
 	SetRootComponent(CapsuleComponent);
 
 	Mesh = AddComponent<USkeletalMeshComponent>();
+	Mesh->SetAnimScriptPath("CharacterAnimStateMachine.lua");
 	GetRootComponent()->AddChild(Mesh);
 
 	SpringArm = AddComponent<USpringArmComponent>();
@@ -146,7 +151,7 @@ bool ACharacter::CanJump() const
 
 bool ACharacter::IsJumping() const
 {
-	return bPressedJump && IsFalling();
+	return IsFalling();
 }
 
 bool ACharacter::IsFalling() const

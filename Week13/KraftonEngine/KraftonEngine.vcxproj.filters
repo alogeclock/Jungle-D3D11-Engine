@@ -629,6 +629,9 @@
     <ClCompile Include="Source\Engine\Animation\AnimationStateMachine.cpp">
       <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\CharacterAnimInstance.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Animation\LuaAnimStateMachine.cpp">
       <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
@@ -1479,6 +1482,9 @@
       <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Animation\AnimationStateMachine.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\CharacterAnimInstance.h">
       <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Animation\LuaAnimStateMachine.h">
