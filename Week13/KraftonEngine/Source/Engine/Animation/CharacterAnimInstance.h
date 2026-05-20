@@ -15,8 +15,9 @@ public:
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	// BindProperty가 포인터를 캡처하므로 public
-	float Speed     = 0.f;
-	bool bIsJumping = false;
+	float Speed      = 0.f;
+	float JumpState  = 0.f;   // 0=Ground, 1=Rise, 2=Fall, 3=Land
+	bool bIsJumping  = false;
 	bool bIsGrounded = true;
 
 private:

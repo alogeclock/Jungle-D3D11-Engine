@@ -15,7 +15,7 @@ class ACharacter : public APawn
 public:
 	GENERATED_BODY(ACharacter)
 
-	ACharacter();
+	ACharacter() = default;
 	~ACharacter() override = default;
 
 	void BeginPlay() override;
@@ -28,20 +28,15 @@ public:
 	void PostDuplicate() override;
 	
 
-	// ── 이동 입력 (PlayerController가 호출) ──────────────────
-	void AddMovementInput(FVector WorldDir, float Scale = 1.0f);
-	void AddControllerYawInput(float Val);
-	void AddControllerPitchInput(float Val);
-
 	// ── 점프 ─────────────────────────────────────────────────
 	virtual void Jump();
-	virtual void StopJumping();
-	bool CanJump() const;
 
 	// ── 상태 조회 ─────────────────────────────────────────────
 	bool IsJumping() const;
-	bool IsFalling() const;
 	bool IsOnGround() const;
+
+	// JumpState: 0=Ground, 1=Rise, 2=Fall, 3=Land
+	float GetJumpState() const;
 
 	// ── 컴포넌트 접근자 ───────────────────────────────────────
 	UCapsuleComponent*           GetCapsuleComponent()    const { return CapsuleComponent; }
@@ -54,9 +49,6 @@ protected:
 	void PossessedBy(APlayerController* PC) override;
 	void UnPossessed() override;
 
-	virtual void OnJumped() {}
-	virtual void OnLanded(const FVector& HitNormal) {}
-
 private:
 	UCapsuleComponent*				CapsuleComponent  = nullptr;
 	USkeletalMeshComponent*			Mesh              = nullptr;
@@ -68,9 +60,7 @@ private:
 	// Character를 상속받은 객체에 CameraComponent를 만들어야함
 	UCameraComponent*				Camera = nullptr;
 
-	bool  bPressedJump    = false;
-	float JumpKeyHoldTime = 0.0f;
-
+	void ConfigureTickOrder();
 	void SyncSpringArmRotationMode();
 
 	// 시연용 state를 위한 변수들
@@ -80,7 +70,4 @@ private:
 
 	bool bWasFallingLastFrame = false;
 
-	// JumpState
-	// 0: Ground, 1: Rise, 2: Fall, 3: Land
-	float GetJumpState() const;
 };
