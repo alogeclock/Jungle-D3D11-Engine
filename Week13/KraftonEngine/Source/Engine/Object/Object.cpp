@@ -28,9 +28,11 @@ UObject* UObject::Duplicate(UObject* NewOuter) const
 	}
 
 	FMemoryArchive Writer(/*bIsSaving=*/true);
+	Writer.SetIsDuplicating(true);
 	const_cast<UObject*>(this)->Serialize(Writer);
 
 	FMemoryArchive Reader(Writer.GetBuffer(), /*bIsSaving=*/false);
+	Reader.SetIsDuplicating(true);
 	Dup->Serialize(Reader);
 
 	Dup->PostDuplicate();
@@ -44,9 +46,13 @@ bool UObject::IsA(const UClass* Other) const
 
 void UObject::Serialize(FArchive& Ar)
 {
-	// 기본 UObject는 직렬화할 상태 없음.
-	// UUID/InternalIndex/Name은 직렬화 금지 (복제 시 새로 발급).
+	// UUID/InternalIndex/Outer는 직렬화 금지 (복제 시 새로 발급/Outer는 호출자가 지정).
 	Ar << ObjectName;
+
+	if (UClass* Cls = GetClass())
+	{
+		Cls->SerializeBin(Ar, this);
+	}
 }
 
 void UObject::GetAllProperties(TArray<const FProperty*>& OutProps)

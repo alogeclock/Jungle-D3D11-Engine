@@ -138,29 +138,6 @@ void UCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	// Lua 쪽에서 매 프레임 SetMoveInput(0.0f, 0.0f)을 호출
 }
 
-void UCharacterMovementComponent::Serialize(FArchive& Ar)
-{
-	UMovementComponent::Serialize(Ar);
-	Ar << MovementMode;
-	Ar << MaxWalkSpeed;
-	Ar << MaxAcceleration;
-	Ar << BrakingDecelerationWalking;
-	Ar << GroundFriction;
-	Ar << MaxStepHeight;
-	Ar << MaxStepDownHeight;
-	Ar << FloorProbeUp;
-	Ar << FloorProbeDown;
-	Ar << GravityZ;
-	Ar << JumpZVelocity;
-	Ar << AirControl;
-	Ar << bOrientRotationToMovement;
-	Ar << bUseControllerDesiredRotation;
-	Ar << RotationRateYaw;
-	Ar << MouseSensitivity;
-	Ar << MinControllerPitchDegrees;
-	Ar << MaxControllerPitchDegrees;
-}
-
 void UCharacterMovementComponent::PostEditProperty(const char* PropertyName)
 {
 	if (!PropertyName)

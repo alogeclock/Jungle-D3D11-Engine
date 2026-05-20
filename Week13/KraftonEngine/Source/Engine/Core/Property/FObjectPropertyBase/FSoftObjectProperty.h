@@ -22,6 +22,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::SoftObject; }  
 	json::JSON Serialize(const void* Instance) const override;        // FString path to JSON  
 	void Deserialize(void* Instance, const json::JSON& Value) const override;  
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 
 	// In Unreal Engine 5.6, calling GetObjectPropertyValue on an FSoftObjectProperty returns a UObject* to the referenced asset, 
 	// but only if that asset is already loaded in memory. If the asset is not loaded, it returns nullptr.

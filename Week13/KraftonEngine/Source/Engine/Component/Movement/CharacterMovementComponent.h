@@ -22,7 +22,6 @@ public:
 
 	void			BeginPlay() override;
 	void			TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;
-	void			Serialize(FArchive& Ar) override;
 	void			PostEditProperty(const char* PropertyName) override;
 
 	UFUNCTION(Lua)

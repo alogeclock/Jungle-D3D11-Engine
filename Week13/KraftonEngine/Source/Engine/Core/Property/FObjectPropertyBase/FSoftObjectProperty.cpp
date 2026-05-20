@@ -1,6 +1,7 @@
 ﻿#include "FSoftObjectProperty.h"
 #include "Core/UObject/FSoftObjectPtr.h"
 #include "Object/Object.h"
+#include "Serialization/Archive.h"
 #include "SimpleJSON/json.hpp"
 
 UObject* FSoftObjectProperty::GetObjectPropertyValue(void* Addr) const
@@ -33,4 +34,9 @@ json::JSON FSoftObjectProperty::Serialize(const void* Instance) const
 void FSoftObjectProperty::Deserialize(void* Instance, const json::JSON& Value) const
 {
 	static_cast<FSoftObjectPtr*>(ContainerPtrToValuePtr(Instance))->SetPath(Value.ToString());
+}
+
+void FSoftObjectProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<FSoftObjectPtr*>(Value);
 }

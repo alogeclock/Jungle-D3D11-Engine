@@ -89,9 +89,3 @@ void UFloatingPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick T
 	LookInputY = 0.0f;
 }
 
-void UFloatingPawnMovementComponent::Serialize(FArchive& Ar)
-{
-	UMovementComponent::Serialize(Ar);
-	Ar << Speed;
-	Ar << MouseSensitivity;
-}
