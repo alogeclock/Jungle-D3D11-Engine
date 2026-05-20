@@ -11,12 +11,19 @@ class FArchive
 protected:
 	bool bIsLoading = false;
 	bool bIsSaving = false;
+	bool bIsDuplicating = false;
+	bool bIsPIE = false;
 
 public:
 	virtual ~FArchive() = default;
 
 	inline bool IsLoading() const { return bIsLoading; }
 	inline bool IsSaving() const { return bIsSaving; }
+	inline bool IsDuplicating() const { return bIsDuplicating; }
+	inline bool IsPIE() const { return bIsPIE; }
+
+	inline void SetIsDuplicating(bool bInIsDuplicating) { bIsDuplicating = bInIsDuplicating; }
+	inline void SetIsPIE(bool bInIsPIE) { bIsPIE = bInIsPIE; }
 
 	// 핵심 순수 가상 함수: 파생 클래스(Writer/Reader)가 구현해야 할 실제 입출력 로직
 	// Data 포인터부터 Num 바이트만큼을 읽거나 씁니다.

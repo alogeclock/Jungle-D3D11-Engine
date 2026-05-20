@@ -70,6 +70,7 @@ struct FMaterialSlot
 	std::string Path;
 };
 
+class FArchive;
 class FProperty;
 
 // Should inherit from FField when ready
@@ -89,6 +90,7 @@ public:
 	virtual EPropertyType GetType() const = 0;
 	virtual json::JSON Serialize(const void* Instance) const = 0;
 	virtual void Deserialize(void* Instance, const json::JSON& Value) const = 0;
+	virtual void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const = 0;
 
 	void* ContainerPtrToValuePtr(void* Container) const
 	{
@@ -128,6 +130,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Bool; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -142,6 +145,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::ByteBool; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -190,6 +194,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Int; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -212,6 +217,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Float; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -226,6 +232,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Color4; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -240,6 +247,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::MaterialSlot; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -254,6 +262,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Name; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -268,6 +277,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Rotator; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -282,6 +292,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::SceneComponentRef; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -296,6 +307,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Script; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -311,6 +323,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::String; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -325,6 +338,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Vec3; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };
 
 
@@ -339,4 +353,5 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Vec4; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 };

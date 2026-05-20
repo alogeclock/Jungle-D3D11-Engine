@@ -45,6 +45,7 @@ public:
 	void	AddClassFlags(uint32 Flags) { ClassFlags |= Flags; }
 	uint32	GetClassCastFlags() const { return ClassCastFlags; }
 	UClass* GetSuperClass() const { return (UClass*)GetSuperStruct(); }
+	void	SerializeBin(FArchive& Ar, void* Data);
 
 	// Not a virtual override, but rather a C++ function overload that utilizes Name Hiding.
 	// This is a deliberate decision.

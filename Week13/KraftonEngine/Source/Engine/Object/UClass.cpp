@@ -49,3 +49,35 @@ bool UClass::IsChildOf(const UClass* Other)
 	// SLOW PATH: walk the SuperStruct chain by pointer-equality.
 	return UStruct::IsChildOf(Other);
 }
+
+void UClass::SerializeBin(FArchive& Ar, void* Data)
+{
+	TArray<const FProperty*> Properties;
+	GetAllProperties(Properties);
+
+	const bool bDuplicating = Ar.IsDuplicating();
+	const bool bPIE = Ar.IsPIE();
+
+	for (const FProperty* Property : Properties)
+	{
+		if (!Property)
+		{
+			continue;
+		}
+
+		if (bDuplicating)
+		{
+			const uint32 Flags = Property->PropertyFlag;
+			if (Flags & CPF_DuplicateTransient)
+			{
+				continue;
+			}
+			if (!bPIE && (Flags & CPF_NonPIEDuplicateTransient))
+			{
+				continue;
+			}
+		}
+
+		Property->SerializeItem(Ar, Property->ContainerPtrToValuePtr(Data), nullptr);
+	}
+}

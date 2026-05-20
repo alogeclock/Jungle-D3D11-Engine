@@ -46,16 +46,6 @@ void UInterpToMovementComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	UpdateLerp(DeltaTime);
 }
 
-void UInterpToMovementComponent::Serialize(FArchive& Ar)
-{
-	UMovementComponent::Serialize(Ar);
-	Ar << InterpBehaviour;
-	Ar << Duration;
-	Ar << bAutoActivate;
-	Ar << bFaceTargetDir;
-	Ar << ControlPoints;
-}
-
 // --- Control Point Management--------------------------------------------
 void UInterpToMovementComponent::AddControlPoint(FVector InControlPoint) {
 	ControlPoints.push_back(InControlPoint);

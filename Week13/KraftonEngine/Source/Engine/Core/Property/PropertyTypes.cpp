@@ -9,6 +9,8 @@
 #include "Core/Property/FObjectPropertyBase/FSoftObjectProperty.h"
 #include "Object/FName.h"
 #include "SimpleJSON/json.hpp"
+#include "Serialization/Archive.h"
+#include "Math/Vector.h"
 
 namespace
 {
@@ -48,6 +50,11 @@ void FBoolProperty::Deserialize(void* Instance, const json::JSON& Value) const
 	*Target = Value.ToBool();
 }
 
+void FBoolProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<bool*>(Value);
+}
+
 json::JSON FByteBoolProperty::Serialize(const void* Instance) const
 {
 	const auto* Value = static_cast<const uint8_t*>(ContainerPtrToValuePtr(Instance));
@@ -58,6 +65,11 @@ void FByteBoolProperty::Deserialize(void* Instance, const json::JSON& Value) con
 {
 	auto* Target = static_cast<uint8_t*>(ContainerPtrToValuePtr(Instance));
 	*Target = Value.ToBool() ? 1 : 0;
+}
+
+void FByteBoolProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<uint8_t*>(Value);
 }
 
 json::JSON FIntProperty::Serialize(const void* Instance) const
@@ -72,6 +84,11 @@ void FIntProperty::Deserialize(void* Instance, const json::JSON& Value) const
 	*Target = Value.ToInt();
 }
 
+void FIntProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar.Serialize(Value, ElementSize);
+}
+
 json::JSON FFloatProperty::Serialize(const void* Instance) const
 {
 	const auto* Value = static_cast<const float*>(ContainerPtrToValuePtr(Instance));
@@ -82,6 +99,11 @@ void FFloatProperty::Deserialize(void* Instance, const json::JSON& Value) const
 {
 	auto* Target = static_cast<float*>(ContainerPtrToValuePtr(Instance));
 	*Target = static_cast<float>(Value.ToFloat());
+}
+
+void FFloatProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<float*>(Value);
 }
 
 json::JSON FVec3Property::Serialize(const void* Instance) const
@@ -96,6 +118,11 @@ void FVec3Property::Deserialize(void* Instance, const json::JSON& Value) const
 	DeserializeFloatArray(Target, 3, Value);
 }
 
+void FVec3Property::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<FVector*>(Value);
+}
+
 json::JSON FRotatorProperty::Serialize(const void* Instance) const
 {
 	const auto* Value = static_cast<const float*>(ContainerPtrToValuePtr(Instance));
@@ -108,10 +135,20 @@ void FRotatorProperty::Deserialize(void* Instance, const json::JSON& Value) cons
 	DeserializeFloatArray(Target, 3, Value);
 }
 
+void FRotatorProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar.Serialize(Value, ElementSize);
+}
+
 json::JSON FVec4Property::Serialize(const void* Instance) const
 {
 	const auto* Value = static_cast<const float*>(ContainerPtrToValuePtr(Instance));
 	return SerializeFloatArray(Value, 4);
+}
+
+void FVec4Property::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<FVector4*>(Value);
 }
 
 void FVec4Property::Deserialize(void* Instance, const json::JSON& Value) const
@@ -132,6 +169,11 @@ void FColor4Property::Deserialize(void* Instance, const json::JSON& Value) const
 	DeserializeFloatArray(Target, 4, Value);
 }
 
+void FColor4Property::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar.Serialize(Value, ElementSize);
+}
+
 json::JSON FStringProperty::Serialize(const void* Instance) const
 {
 	const auto* Value = static_cast<const FString*>(ContainerPtrToValuePtr(Instance));
@@ -142,6 +184,11 @@ void FStringProperty::Deserialize(void* Instance, const json::JSON& Value) const
 {
 	auto* Target = static_cast<FString*>(ContainerPtrToValuePtr(Instance));
 	*Target = Value.ToString();
+}
+
+void FStringProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<FString*>(Value);
 }
 
 json::JSON FScriptProperty::Serialize(const void* Instance) const
@@ -156,6 +203,11 @@ void FScriptProperty::Deserialize(void* Instance, const json::JSON& Value) const
 	*Target = Value.ToString();
 }
 
+void FScriptProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<FString*>(Value);
+}
+
 json::JSON FSceneComponentRefProperty::Serialize(const void* Instance) const
 {
 	const auto* Value = static_cast<const FString*>(ContainerPtrToValuePtr(Instance));
@@ -166,6 +218,11 @@ void FSceneComponentRefProperty::Deserialize(void* Instance, const json::JSON& V
 {
 	auto* Target = static_cast<FString*>(ContainerPtrToValuePtr(Instance));
 	*Target = Value.ToString();
+}
+
+void FSceneComponentRefProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<FString*>(Value);
 }
 
 json::JSON FMaterialSlotProperty::Serialize(const void* Instance) const
@@ -185,6 +242,11 @@ void FMaterialSlotProperty::Deserialize(void* Instance, const json::JSON& Value)
 	}
 }
 
+void FMaterialSlotProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << static_cast<FMaterialSlot*>(Value)->Path;
+}
+
 json::JSON FNameProperty::Serialize(const void* Instance) const
 {
 	const auto* Value = static_cast<const FName*>(ContainerPtrToValuePtr(Instance));
@@ -195,6 +257,11 @@ void FNameProperty::Deserialize(void* Instance, const json::JSON& Value) const
 {
 	auto* Target = static_cast<FName*>(ContainerPtrToValuePtr(Instance));
 	*Target = FName(Value.ToString());
+}
+
+void FNameProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	Ar << *static_cast<FName*>(Value);
 }
 
 json::JSON FEnumProperty::Serialize(const void* Instance) const
@@ -212,6 +279,12 @@ void FEnumProperty::Deserialize(void* Instance, const json::JSON& Value) const
 	int64 StoredValue = Value.ToInt();
 	const uint32 ValueSize = EnumDesc ? EnumDesc->GetUnderlyingSize() : ElementSize;
 	std::memcpy(Target, &StoredValue, std::min<uint32>(ValueSize, sizeof(StoredValue)));
+}
+
+void FEnumProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	const uint32 ValueSize = EnumDesc ? EnumDesc->GetUnderlyingSize() : ElementSize;
+	Ar.Serialize(Value, ValueSize);
 }
 
 json::JSON FArrayProperty::Serialize(const void* Instance) const
@@ -265,6 +338,37 @@ void FArrayProperty::Deserialize(void* Instance, const json::JSON& Value) const
 	}
 }
 
+void FArrayProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	if (!Accessor || !Inner || !Value)
+	{
+		return;
+	}
+
+	uint32 Count = Accessor->Num(Value);
+	Ar << Count;
+
+	if (Ar.IsLoading())
+	{
+		Accessor->Clear(Value);
+		for (uint32 Index = 0; Index < Count; ++Index)
+		{
+			Accessor->AddDefault(Value);
+		}
+	}
+
+	const uint32 DefaultCount = Defaults ? Accessor->Num(Defaults) : 0;
+	for (uint32 Index = 0; Index < Count; ++Index)
+	{
+		void* ElementValue = Accessor->GetAt(Value, Index);
+		const void* ElementDefaults = Index < DefaultCount
+			? Accessor->GetAt(const_cast<void*>(Defaults), Index)
+			: nullptr;
+
+		Inner->SerializeItem(Ar, ElementValue, ElementDefaults);
+	}
+}
+
 json::JSON FStructProperty::Serialize(const void* Instance) const
 {
 	const void* StructInstance = ContainerPtrToValuePtr(Instance);
@@ -308,5 +412,25 @@ void FStructProperty::Deserialize(void* Instance, const json::JSON& Value) const
 
 		const json::JSON& ChildValue = Value.at(Child->Name.c_str());
 		Child->Deserialize(StructInstance, ChildValue);
+	}
+}
+
+void FStructProperty::SerializeItem(FArchive& Ar, void* Value, const void* Defaults) const
+{
+	if (!Value)
+	{
+		return;
+	}
+
+	for (const FProperty* Child : GetStructProperties())
+	{
+		if (!Child)
+		{
+			continue;
+		}
+
+		void* ChildValue = Child->ContainerPtrToValuePtr(Value);
+		const void* ChildDefaults = Defaults ? Child->ContainerPtrToValuePtr(Defaults) : nullptr;
+		Child->SerializeItem(Ar, ChildValue, ChildDefaults);
 	}
 }

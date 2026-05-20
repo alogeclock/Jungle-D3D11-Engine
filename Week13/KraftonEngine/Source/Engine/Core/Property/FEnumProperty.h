@@ -22,6 +22,7 @@ public:
 	EPropertyType GetType() const override { return EPropertyType::Enum; }
 	json::JSON Serialize(const void* Instance) const override;
 	void Deserialize(void* Instance, const json::JSON& Value) const override;
+	void SerializeItem(FArchive& Ar, void* Value, void const* Defaults) const override;
 
 private:
 	UEnum* EnumDesc = nullptr;
