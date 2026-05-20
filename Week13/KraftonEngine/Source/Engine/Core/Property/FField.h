@@ -1,6 +1,14 @@
 ﻿#pragma once
 #include "FFieldVariant.h"
 
+/*========================================================================================================================
+	FField is the variable instance itself (e.g., "The health property named Health").
+
+	FFieldVariant defines who owns it (e.g., "This property belongs to AMyCharacter OR it is nested inside a TArray").
+
+	FFieldClass defines what type of variable it is (e.g., "This is an FIntProperty type").
+========================================================================================================================*/
+
 // TODO
 // FField is the base class for all reflection fields (Properties, Functions) 
 // that do NOT need to be UObjects.
