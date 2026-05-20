@@ -438,6 +438,9 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Core\Log.cpp" />
     <ClCompile Include="Source\Engine\Core\Notification.cpp" />
     <ClCompile Include="Source\Engine\Core\ProjectSettings.cpp" />
+    <ClCompile Include="Source\Engine\Core\Property\FField.cpp" />
+    <ClCompile Include="Source\Engine\Core\Property\FFieldClass.cpp" />
+    <ClCompile Include="Source\Engine\Core\Property\FFieldVariant.cpp" />
     <ClCompile Include="Source\Engine\Core\TickFunction.cpp" />
     <ClCompile Include="Source\Engine\Core\Property\PropertyTypes.cpp" />
     <ClCompile Include="Source\Engine\Core\Property\FObjectPropertyBase\FSoftObjectProperty.cpp" />
@@ -735,6 +738,9 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Core\Log.h" />
     <ClInclude Include="Source\Engine\Core\Notification.h" />
     <ClInclude Include="Source\Engine\Core\ProjectSettings.h" />
+    <ClInclude Include="Source\Engine\Core\Property\FField.h" />
+    <ClInclude Include="Source\Engine\Core\Property\FFieldClass.h" />
+    <ClInclude Include="Source\Engine\Core\Property\FFieldVariant.h" />
     <ClInclude Include="Source\Engine\Core\RayTypes.h" />
     <ClInclude Include="Source\Engine\Core\ResourceTypes.h" />
     <ClInclude Include="Source\Engine\Core\Singleton.h" />
