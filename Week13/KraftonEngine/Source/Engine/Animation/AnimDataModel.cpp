@@ -17,6 +17,8 @@ IMPLEMENT_CLASS(UAnimDataModel, UObject)
 
 namespace
 {
+	constexpr uint32 AnimNotifyListMagic = 0x544E5645; // EVNT
+	constexpr uint32 AnimNotifyListVersion = 1;
 	constexpr uint32 AnimNotifyPayloadMagic = 0x544F4E41; // ANOT
 	constexpr uint32 AnimNotifyPayloadVersion = 1;
 	constexpr uint32 MaxNotifyPayloadStringBytes = 4096;
@@ -185,6 +187,83 @@ namespace
 		}
 
 		Ar.Serialize(Values, ByteCount);
+		return true;
+	}
+
+	bool ReadLegacyNotifyList(FArchive& Ar, uint32 NotifyCount, TArray<FAnimNotifyEvent>& Notifies)
+	{
+		if (NotifyCount == 0)
+		{
+			Notifies.clear();
+			return true;
+		}
+
+		const size_t ByteCount = sizeof(FAnimNotifyEvent) * static_cast<size_t>(NotifyCount);
+		if (!Ar.CanSerialize(ByteCount))
+		{
+			Notifies.clear();
+			return false;
+		}
+
+		Notifies.resize(NotifyCount);
+		Ar.Serialize(Notifies.data(), ByteCount);
+		return true;
+	}
+
+	bool SerializeNotifyList(FArchive& Ar, TArray<FAnimNotifyEvent>& Notifies)
+	{
+		if (Ar.IsSaving())
+		{
+			uint32 Magic = AnimNotifyListMagic;
+			uint32 Version = AnimNotifyListVersion;
+			uint32 NotifyCount = static_cast<uint32>(Notifies.size());
+			WriteValue(Ar, Magic);
+			WriteValue(Ar, Version);
+			WriteValue(Ar, NotifyCount);
+
+			for (FAnimNotifyEvent& Notify : Notifies)
+			{
+				Ar << Notify;
+			}
+			return true;
+		}
+
+		if (!Ar.IsLoading())
+		{
+			return true;
+		}
+
+		uint32 MagicOrLegacyCount = 0;
+		if (!ReadValue(Ar, MagicOrLegacyCount))
+		{
+			return false;
+		}
+
+		if (MagicOrLegacyCount != AnimNotifyListMagic)
+		{
+			return ReadLegacyNotifyList(Ar, MagicOrLegacyCount, Notifies);
+		}
+
+		uint32 Version = 0;
+		if (!ReadValue(Ar, Version) || Version != AnimNotifyListVersion)
+		{
+			Notifies.clear();
+			UE_LOG("AnimNotify load warning: unsupported notify list version.");
+			return false;
+		}
+
+		uint32 NotifyCount = 0;
+		if (!ReadValue(Ar, NotifyCount))
+		{
+			Notifies.clear();
+			return false;
+		}
+
+		Notifies.resize(NotifyCount);
+		for (FAnimNotifyEvent& Notify : Notifies)
+		{
+			Ar << Notify;
+		}
 		return true;
 	}
 
@@ -527,7 +606,7 @@ namespace
 void UAnimDataModel::Serialize(FArchive& Ar)
 {
 	Ar << BoneAnimationTracks;
-	Ar << Notifies;
+	SerializeNotifyList(Ar, Notifies);
 	if (Ar.IsLoading())
 	{
 		for (FAnimNotifyEvent& Notify : Notifies)
