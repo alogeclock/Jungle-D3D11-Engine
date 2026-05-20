@@ -19,8 +19,6 @@ void UNotify_PlaySound::OnNotify(AActor* MeshOwner, USkeletalMeshComponent* Mesh
 	if (AudioKey.empty())
 		return;
 
-	UE_LOG("Notify_PlaySound");
-
 	FAudioManager::Get().PlayAudio(AudioKey, Volume);
 }
 

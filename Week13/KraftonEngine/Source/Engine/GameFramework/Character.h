@@ -43,6 +43,9 @@ public:
 	bool IsFalling() const;
 	bool IsOnGround() const;
 
+	// JumpState: 0=Ground, 1=Rise, 2=Fall, 3=Land
+	float GetJumpState() const;
+
 	// ── 컴포넌트 접근자 ───────────────────────────────────────
 	UCapsuleComponent*           GetCapsuleComponent()    const { return CapsuleComponent; }
 	USkeletalMeshComponent*      GetMesh()                const { return Mesh; }
@@ -80,7 +83,4 @@ private:
 
 	bool bWasFallingLastFrame = false;
 
-	// JumpState
-	// 0: Ground, 1: Rise, 2: Fall, 3: Land
-	float GetJumpState() const;
 };

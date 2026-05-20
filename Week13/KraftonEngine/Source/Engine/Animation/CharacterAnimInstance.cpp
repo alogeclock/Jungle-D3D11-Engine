@@ -35,6 +35,7 @@ void UCharacterAnimInstance::Initialize(USkeletalMeshComponent* InOwner, const F
 
 	// LoadScript가 ScriptEnv를 생성하므로 반드시 그 이후에 바인딩
 	SM->BindProperty("speed",      &Speed);
+	SM->BindProperty("jumpState",  &JumpState);
 	SM->BindProperty("isJumping",  &bIsJumping);
 	SM->BindProperty("isGrounded", &bIsGrounded);
 
@@ -46,7 +47,8 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!MovementComponent || !OwnerCharacter)
 		return;
 
-	Speed      = MovementComponent->GetSpeed2D();
-	bIsJumping = OwnerCharacter->IsJumping();
+	Speed       = MovementComponent->GetSpeed2D();
+	JumpState   = OwnerCharacter->GetJumpState();
+	bIsJumping  = OwnerCharacter->IsJumping();
 	bIsGrounded = OwnerCharacter->IsOnGround();
 }
