@@ -572,6 +572,9 @@
     <ClCompile Include="Source\Editor\UI\Asset\FloatCurveEditorWidget.cpp">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Asset\MaterialEditorWidget.cpp">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Editor\UI\Asset\MeshEditorWidget.cpp">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClCompile>
@@ -1419,6 +1422,9 @@
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\UI\Asset\FloatCurveEditorWidget.h">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Asset\MaterialEditorWidget.h">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\UI\Asset\MeshEditorWidget.h">
