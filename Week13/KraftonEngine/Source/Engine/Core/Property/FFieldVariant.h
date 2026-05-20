@@ -1,6 +1,18 @@
 ﻿#pragma once
 #include "Object/FName.h"
 
+/*===============================================================================================================================
+FFieldVariant is a specialized type-safe union (container). It describes where a property lives.
+
+The Problem: 
+
+A property (FProperty) must always have an owner. However, in UE5, a property’s owner can be two different things:
+A UObject (e.g., a UClass, UFunction, or UScriptStruct).
+Another FField (e.g., an FIntProperty inside an FArrayProperty is owned by that ArrayProperty).
+The Solution: Since UObject and FField do not share a common base class, you cannot have a single pointer that points to both.
+FFieldVariant is a small wrapper that holds either a UObject* or an FField*.
+/*===============================================================================================================================*/
+
 class UObject;
 class FField;
 
