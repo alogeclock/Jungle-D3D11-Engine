@@ -76,7 +76,7 @@ private:
 	// 시연용 state를 위한 변수들
 	// 착지 상태 관련
 	float LandingTimer = 0.0f;
-	float LandingDuration = 0.05f; // 애니메이션 길이에 맞게 조정
+	float LandingDuration = 0.02f; // 애니메이션 길이에 맞게 조정
 
 	bool bWasFallingLastFrame = false;
 
