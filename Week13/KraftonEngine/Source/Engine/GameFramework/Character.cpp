@@ -1,6 +1,7 @@
 ﻿#include "Character.h"
 #include "GameFramework/PlayerController.h"
 #include "Serialization/Archive.h"
+#include "Animation/AnimGraphInstance.h"
 #include <Component/CameraComponent.h>
 
 ACharacter::ACharacter()
@@ -10,11 +11,6 @@ ACharacter::ACharacter()
 
 void ACharacter::BeginPlay()
 {
-	// 씬이 이전 버전으로 저장된 경우 AnimScriptPath가 비어있을 수 있으므로 fallback 설정.
-	// 반드시 APawn::BeginPlay() (= 컴포넌트 BeginPlay) 보다 먼저 실행되어야 함.
-	if (Mesh && Mesh->GetAnimScriptPath().empty())
-		Mesh->SetAnimScriptPath("CharacterAnimStateMachine.lua");
-
 	SyncSpringArmRotationMode();
 	APawn::BeginPlay();
 }
@@ -22,6 +18,29 @@ void ACharacter::BeginPlay()
 void ACharacter::Tick(float DeltaTime)
 {
 	APawn::Tick(DeltaTime);
+
+	// 착지 감지: 지난 프레임 Falling → 이번 프레임 Walking
+	const bool bIsFallingNow = CharacterMovement->IsFalling();
+	if (bWasFallingLastFrame && !bIsFallingNow)
+	{
+		LandingTimer = LandingDuration;
+	}
+	bWasFallingLastFrame = bIsFallingNow;
+
+	// Land 타이머 소진
+	if (LandingTimer > 0.0f)
+	{
+		LandingTimer -= DeltaTime;
+		if (LandingTimer < 0.0f) LandingTimer = 0.0f;
+	}
+
+	UAnimGraphInstance* AnimInst = Cast<UAnimGraphInstance>(Mesh->GetAnimInstance());
+	if (AnimInst)
+	{
+		AnimInst->SetFloatParameter("Speed", CharacterMovement->GetSpeed2D());
+		AnimInst->SetFloatParameter("JumpState", GetJumpState());
+	}
+
 	SyncSpringArmRotationMode();
 }
 
@@ -29,10 +48,6 @@ void ACharacter::InitDefaultComponents()
 {
 	CapsuleComponent = AddComponent<UCapsuleComponent>();
 	SetRootComponent(CapsuleComponent);
-
-	Mesh = AddComponent<USkeletalMeshComponent>();
-	Mesh->SetAnimScriptPath("CharacterAnimStateMachine.lua");
-	GetRootComponent()->AddChild(Mesh);
 
 	SpringArm = AddComponent<USpringArmComponent>();
 	GetRootComponent()->AddChild(SpringArm);
@@ -151,7 +166,7 @@ bool ACharacter::CanJump() const
 
 bool ACharacter::IsJumping() const
 {
-	return IsFalling();
+	return bPressedJump && IsFalling();
 }
 
 bool ACharacter::IsFalling() const
@@ -182,4 +197,14 @@ void ACharacter::SyncSpringArmRotationMode()
 	// 둘 다 꺼져도 캐릭터만 고정될 뿐, 마우스 look으로 카메라는 회전해야 한다.
 	SpringArm->bInheritParentRotation = false;
 	SpringArm->SetFixedWorldYaw(CharacterMovement->GetControllerDesiredYaw());
+}
+
+float ACharacter::GetJumpState() const
+{
+	if (LandingTimer > 0.0f)                          return 3; // Land
+	if (CharacterMovement->IsFalling())
+	{
+		return (CharacterMovement->GetVelocity().Z > 0.0f) ? 1 : 2;
+	}
+	return 0; // Ground
 }

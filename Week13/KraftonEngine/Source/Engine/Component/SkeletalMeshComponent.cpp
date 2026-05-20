@@ -175,6 +175,7 @@ bool USkeletalMeshComponent::RebuildAnimInstanceFromAsset()
 	}
 
 	UAnimGraphInstance* RuntimeInstance = Asset->CreateRuntimeInstance();
+	RuntimeInstance->Initialize(this);
 	SetAnimInstance(RuntimeInstance);
 	return RuntimeInstance != nullptr;
 }

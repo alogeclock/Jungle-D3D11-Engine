@@ -467,6 +467,7 @@ void FAnimSequenceEditorWidget::InitializePreviewWorld()
 
 		SingleNodeInstance = GUObjectArray.CreateObject<UAnimSingleNodeInstance>();
 		PreviewMeshComponent->SetAnimInstance(SingleNodeInstance);
+		SingleNodeInstance->Initialize(PreviewMeshComponent);
 		SingleNodeInstance->SetAnimation(AnimSequence);
 	}
 
