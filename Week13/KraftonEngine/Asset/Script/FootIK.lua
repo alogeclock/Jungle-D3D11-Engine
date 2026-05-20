@@ -154,7 +154,7 @@ function FootIK:UpdateLeg(leg, dt, isMoving)
     local footWorld = getPreIKBoneLocation(self.mesh, leg.footIndex)
     local traceStart = footWorld + Vector.Up() * self.config.traceUp
     local traceLength = self.config.traceUp + self.config.traceDown
-    local hit = World.PhysicsRaycast(traceStart, Vector.Down(), traceLength, self.actor)
+    local hit = World.PhysicsRaycast(traceStart, Vector.Down(), traceLength, self.actor, "FootIK")
 
     if hit == nil or hit.bHit == false then
         self:DisableLeg(leg)

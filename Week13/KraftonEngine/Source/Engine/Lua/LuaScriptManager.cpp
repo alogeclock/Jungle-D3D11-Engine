@@ -45,6 +45,77 @@ std::mutex FLuaScriptManager::ComponentMutex;
 TArray<ULuaScriptComponent*> FLuaScriptManager::RegisteredComponents;
 FSubscriptionID FLuaScriptManager::WatchSub = 0;
 
+namespace
+{
+	bool TryParseCollisionChannelName(const FString& ChannelName, ECollisionChannel& OutChannel)
+	{
+		if (ChannelName == "WorldStatic")
+		{
+			OutChannel = ECollisionChannel::WorldStatic;
+			return true;
+		}
+		if (ChannelName == "WorldDynamic")
+		{
+			OutChannel = ECollisionChannel::WorldDynamic;
+			return true;
+		}
+		if (ChannelName == "Pawn")
+		{
+			OutChannel = ECollisionChannel::Pawn;
+			return true;
+		}
+		if (ChannelName == "Projectile")
+		{
+			OutChannel = ECollisionChannel::Projectile;
+			return true;
+		}
+		if (ChannelName == "Trigger")
+		{
+			OutChannel = ECollisionChannel::Trigger;
+			return true;
+		}
+		if (ChannelName == "FootIK")
+		{
+			OutChannel = ECollisionChannel::FootIK;
+			return true;
+		}
+		return false;
+	}
+
+	bool ReadPhysicsRaycastOptions(sol::variadic_args Args, const AActor*& OutIgnoreActor, ECollisionChannel& OutTraceChannel)
+	{
+		OutIgnoreActor = nullptr;
+		OutTraceChannel = ECollisionChannel::WorldStatic;
+
+		for (sol::object Arg : Args)
+		{
+			if (!Arg.valid() || Arg.get_type() == sol::type::nil)
+			{
+				continue;
+			}
+
+			if (Arg.is<AActor*>())
+			{
+				OutIgnoreActor = Arg.as<AActor*>();
+				continue;
+			}
+
+			if (Arg.is<FString>())
+			{
+				if (!TryParseCollisionChannelName(Arg.as<FString>(), OutTraceChannel))
+				{
+					return false;
+				}
+				continue;
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+}
+
 void FLuaScriptManager::SetOnEscapePressed(sol::protected_function Callback)
 {
 	OnEscapePressedCallback = std::move(Callback);
@@ -1123,10 +1194,17 @@ void FLuaScriptManager::RegisterActorBindings(sol::state& Lua)
 		}
 		return nullptr;
 	});
-	World.set_function("PhysicsRaycast", [](const FVector& Start, const FVector& Dir, float MaxDist, sol::optional<AActor*> IgnoreActor) -> sol::object
+	World.set_function("PhysicsRaycast", [](const FVector& Start, const FVector& Dir, float MaxDist, sol::variadic_args Args) -> sol::object
 	{
 		sol::state& State = FLuaScriptManager::GetState();
 		if (!GEngine || !GEngine->GetWorld() || MaxDist <= 0.0f || Dir.IsNearlyZero())
+		{
+			return sol::make_object(State, sol::nil);
+		}
+
+		const AActor* Ignored = nullptr;
+		ECollisionChannel TraceChannel = ECollisionChannel::WorldStatic;
+		if (!ReadPhysicsRaycastOptions(Args, Ignored, TraceChannel))
 		{
 			return sol::make_object(State, sol::nil);
 		}
@@ -1135,8 +1213,7 @@ void FLuaScriptManager::RegisterActorBindings(sol::state& Lua)
 		NormalizedDir.Normalize();
 
 		FHitResult Hit;
-		const AActor* Ignored = IgnoreActor.value_or(nullptr);
-		if (!GEngine->GetWorld()->PhysicsRaycast(Start, NormalizedDir, MaxDist, Hit, ECollisionChannel::WorldStatic, Ignored))
+		if (!GEngine->GetWorld()->PhysicsRaycast(Start, NormalizedDir, MaxDist, Hit, TraceChannel, Ignored))
 		{
 			return sol::make_object(State, sol::nil);
 		}

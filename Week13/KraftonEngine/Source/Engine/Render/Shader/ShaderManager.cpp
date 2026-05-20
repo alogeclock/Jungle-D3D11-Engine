@@ -35,6 +35,7 @@ void FShaderManager::Initialize(ID3D11Device* InDevice)
 	GetOrCreate(EShaderPath::Gizmo, StartupError);
 	GetOrCreate(EShaderPath::Editor, StartupError);
 	GetOrCreate(EShaderPath::Decal, StartupError);
+	GetOrCreate(EShaderPath::PrototypeGrid, StartupError);
 	GetOrCreate(EShaderPath::Outline, StartupError);
 	GetOrCreate(EShaderPath::SceneDepth, StartupError);
 	GetOrCreate(EShaderPath::SceneNormal, StartupError);

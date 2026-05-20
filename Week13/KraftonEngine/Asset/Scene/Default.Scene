@@ -1,46 +1,5 @@
 {
   "Actors" : [{
-      "ClassName" : "AStaticMeshActor",
-      "Name" : "AStaticMeshActor_5",
-      "NonSceneComponents" : [],
-      "Properties" : {
-
-      },
-      "RootComponent" : {
-        "Children" : [],
-        "ClassName" : "UStaticMeshComponent",
-        "Properties" : {
-          "Auto Activate" : true,
-          "Cast Shadow" : true,
-          "Cast Shadow as Two-Sided" : false,
-          "Center of Mass" : [0.000000, 0.000000, 0.000000],
-          "Collision Enabled" : 1,
-          "Generate Overlap Events" : false,
-          "Is Visible" : true,
-          "Mass (Kg)" : 1.000000,
-          "Materials" : [{
-              "Path" : "Asset/Mesh/CubeGrid/SM_CubeGrid_M_CubeGrid.mat"
-            }],
-          "Object Type" : 0,
-          "RelativeTransform" : {
-            "Location" : [0.000000, 0.000000, 0.042190],
-            "Scale" : [50.000000, 50.000000, 1.000000]
-          },
-          "Response Container" : {
-            "Pawn" : 2,
-            "Projectile" : 2,
-            "Trigger" : 2,
-            "WorldDynamic" : 2,
-            "WorldStatic" : 2
-          },
-          "Rotation" : [0.000000, 0.000000, 0.000000],
-          "Simulate Physics" : false,
-          "Static Mesh" : "Asset/Mesh/CubeGrid/SM_CubeGrid_StaticMesh.uasset",
-          "bEditorOnly" : false,
-          "bTickEnable" : true
-        }
-      }
-    }, {
       "ClassName" : "ADirectionalLightActor",
       "Name" : "ADirectionalLightActor_1",
       "NonSceneComponents" : [],
@@ -69,6 +28,7 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -132,6 +92,7 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -195,6 +156,7 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -217,7 +179,7 @@
           "Intensity" : 2.400000,
           "LightFalloffExponent" : 0.840000,
           "RelativeTransform" : {
-            "Location" : [0.000000, 0.000000, 5.199981],
+            "Location" : [-2.307842, 0.000000, 5.978370],
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
@@ -260,6 +222,7 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -284,7 +247,7 @@
           "LightFalloffExponent" : 0.050000,
           "OuterConeAngle" : 36.500000,
           "RelativeTransform" : {
-            "Location" : [0.000000, 0.000000, 0.000000],
+            "Location" : [0.000000, 0.000000, 8.890461],
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Rotation" : [61.853668, -89.514763, -43.256897],
@@ -327,6 +290,7 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -351,7 +315,7 @@
           "LightFalloffExponent" : 0.620000,
           "OuterConeAngle" : 40.000000,
           "RelativeTransform" : {
-            "Location" : [0.000000, 0.000000, 0.000000],
+            "Location" : [0.000000, 0.000000, 8.752577],
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Rotation" : [45.774841, 66.692856, -3.998230],
@@ -394,6 +358,7 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -414,7 +379,7 @@
           "Color" : [1.000000, 1.000000, 1.000000, 1.000000],
           "Intensity" : 0.150000,
           "RelativeTransform" : {
-            "Location" : [0.000000, 0.000000, 0.000000],
+            "Location" : [0.000000, 0.000000, 11.941832],
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
@@ -457,6 +422,7 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -498,11 +464,17 @@
             "Auto Activate" : true,
             "Auto Register Updated" : false,
             "Braking Deceleration Walking" : 20.000000,
+            "Floor Probe Down" : 8.000000,
+            "Floor Probe Up" : 0.250000,
             "Gravity Z" : -9.800000,
             "Ground Friction" : 8.000000,
             "Jump Z Velocity" : 6.000000,
             "Max Acceleration" : 20.000000,
+            "Max Controller Pitch" : 45.000000,
+            "Max Step Down Height" : 1.250000,
+            "Max Step Height" : 0.750000,
             "Max Walk Speed" : 10.000000,
+            "Min Controller Pitch" : -80.000000,
             "Mouse Sensitivity" : 0.100000,
             "Movement Mode" : 1,
             "Orient Rotation To Movement" : true,
@@ -551,6 +523,7 @@
                 "Scale" : [3.000000, 3.000000, 3.000000]
               },
               "Response Container" : {
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "Projectile" : 2,
                 "Trigger" : 2,
@@ -562,14 +535,14 @@
               "Skeletal Mesh" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset",
               "Two Bone IK Chains" : [{
                   "Enabled" : true,
-                  "End Bone Index" : 75,
+                  "End Bone Index" : 76,
                   "Mid Bone Index" : 74,
                   "Pole Position" : [1.000000, 0.000000, 0.000000],
                   "Root Bone Index" : 73,
                   "Target Position" : [0.000000, 0.000000, 0.000000]
                 }, {
                   "Enabled" : true,
-                  "End Bone Index" : 67,
+                  "End Bone Index" : 68,
                   "Mid Bone Index" : 66,
                   "Pole Position" : [1.000000, 0.000000, 0.000000],
                   "Root Bone Index" : 65,
@@ -627,7 +600,7 @@
         "Properties" : {
           "Auto Activate" : true,
           "Capsule Half Height" : 3.000000,
-          "Capsule Radius" : 1.800000,
+          "Capsule Radius" : 0.600000,
           "Cast Shadow" : false,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -638,10 +611,11 @@
           "Mass (Kg)" : 1.000000,
           "Object Type" : 0,
           "RelativeTransform" : {
-            "Location" : [0.000000, 0.000000, 4.000000],
+            "Location" : [0.726700, 0.439234, 8.216960],
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
+            "FootIK" : 2,
             "Pawn" : 2,
             "Projectile" : 2,
             "Trigger" : 2,
@@ -657,7 +631,480 @@
       }
     }, {
       "ClassName" : "AStaticMeshActor",
-      "Name" : "AStaticMeshActor_20",
+      "Name" : "AStaticMeshActor_7",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [{
+                "Children" : [{
+                    "Children" : [{
+                        "Children" : [{
+                            "Children" : [{
+                                "Children" : [{
+                                    "Children" : [{
+                                        "Children" : [],
+                                        "ClassName" : "UStaticMeshComponent",
+                                        "Properties" : {
+                                          "Auto Activate" : true,
+                                          "Cast Shadow" : true,
+                                          "Cast Shadow as Two-Sided" : false,
+                                          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+                                          "Collision Enabled" : 1,
+                                          "Generate Overlap Events" : false,
+                                          "Is Visible" : true,
+                                          "Mass (Kg)" : 1.000000,
+                                          "Materials" : [{
+                                              "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                                            }],
+                                          "Object Type" : 5,
+                                          "RelativeTransform" : {
+                                            "Location" : [1.000000, 0.000000, 0.500000],
+                                            "Scale" : [1.000000, 1.000000, 1.000000]
+                                          },
+                                          "Response Container" : {
+                                            "FootIK" : 2,
+                                            "Pawn" : 0,
+                                            "Projectile" : 2,
+                                            "Trigger" : 2,
+                                            "WorldDynamic" : 2,
+                                            "WorldStatic" : 0
+                                          },
+                                          "Rotation" : [0.000000, 0.000000, 0.000000],
+                                          "Simulate Physics" : false,
+                                          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+                                          "bEditorOnly" : false,
+                                          "bTickEnable" : true
+                                        }
+                                      }],
+                                    "ClassName" : "UStaticMeshComponent",
+                                    "Properties" : {
+                                      "Auto Activate" : true,
+                                      "Cast Shadow" : true,
+                                      "Cast Shadow as Two-Sided" : false,
+                                      "Center of Mass" : [0.000000, 0.000000, 0.000000],
+                                      "Collision Enabled" : 1,
+                                      "Generate Overlap Events" : false,
+                                      "Is Visible" : true,
+                                      "Mass (Kg)" : 1.000000,
+                                      "Materials" : [{
+                                          "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                                        }],
+                                      "Object Type" : 5,
+                                      "RelativeTransform" : {
+                                        "Location" : [1.100000, 0.000000, 0.500000],
+                                        "Scale" : [1.000000, 1.000000, 1.000000]
+                                      },
+                                      "Response Container" : {
+                                        "FootIK" : 2,
+                                        "Pawn" : 0,
+                                        "Projectile" : 2,
+                                        "Trigger" : 2,
+                                        "WorldDynamic" : 2,
+                                        "WorldStatic" : 0
+                                      },
+                                      "Rotation" : [0.000000, 0.000000, 0.000000],
+                                      "Simulate Physics" : false,
+                                      "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+                                      "bEditorOnly" : false,
+                                      "bTickEnable" : true
+                                    }
+                                  }],
+                                "ClassName" : "UStaticMeshComponent",
+                                "Properties" : {
+                                  "Auto Activate" : true,
+                                  "Cast Shadow" : true,
+                                  "Cast Shadow as Two-Sided" : false,
+                                  "Center of Mass" : [0.000000, 0.000000, 0.000000],
+                                  "Collision Enabled" : 1,
+                                  "Generate Overlap Events" : false,
+                                  "Is Visible" : true,
+                                  "Mass (Kg)" : 1.000000,
+                                  "Materials" : [{
+                                      "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                                    }],
+                                  "Object Type" : 5,
+                                  "RelativeTransform" : {
+                                    "Location" : [1.100000, 0.000000, 0.500000],
+                                    "Scale" : [1.000000, 1.000000, 1.000000]
+                                  },
+                                  "Response Container" : {
+                                    "FootIK" : 2,
+                                    "Pawn" : 0,
+                                    "Projectile" : 2,
+                                    "Trigger" : 2,
+                                    "WorldDynamic" : 2,
+                                    "WorldStatic" : 0
+                                  },
+                                  "Rotation" : [0.000000, 0.000000, 0.000000],
+                                  "Simulate Physics" : false,
+                                  "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+                                  "bEditorOnly" : false,
+                                  "bTickEnable" : true
+                                }
+                              }],
+                            "ClassName" : "UStaticMeshComponent",
+                            "Properties" : {
+                              "Auto Activate" : true,
+                              "Cast Shadow" : true,
+                              "Cast Shadow as Two-Sided" : false,
+                              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+                              "Collision Enabled" : 1,
+                              "Generate Overlap Events" : false,
+                              "Is Visible" : true,
+                              "Mass (Kg)" : 1.000000,
+                              "Materials" : [{
+                                  "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                                }],
+                              "Object Type" : 5,
+                              "RelativeTransform" : {
+                                "Location" : [1.000000, 0.000000, 0.500000],
+                                "Scale" : [1.000000, 1.000000, 1.000000]
+                              },
+                              "Response Container" : {
+                                "FootIK" : 2,
+                                "Pawn" : 0,
+                                "Projectile" : 2,
+                                "Trigger" : 2,
+                                "WorldDynamic" : 2,
+                                "WorldStatic" : 0
+                              },
+                              "Rotation" : [0.000000, 0.000000, 0.000000],
+                              "Simulate Physics" : false,
+                              "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+                              "bEditorOnly" : false,
+                              "bTickEnable" : true
+                            }
+                          }],
+                        "ClassName" : "UStaticMeshComponent",
+                        "Properties" : {
+                          "Auto Activate" : true,
+                          "Cast Shadow" : true,
+                          "Cast Shadow as Two-Sided" : false,
+                          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+                          "Collision Enabled" : 1,
+                          "Generate Overlap Events" : false,
+                          "Is Visible" : true,
+                          "Mass (Kg)" : 1.000000,
+                          "Materials" : [{
+                              "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                            }],
+                          "Object Type" : 5,
+                          "RelativeTransform" : {
+                            "Location" : [1.100000, 0.000000, 0.500000],
+                            "Scale" : [1.000000, 1.000000, 1.000000]
+                          },
+                          "Response Container" : {
+                            "FootIK" : 2,
+                            "Pawn" : 0,
+                            "Projectile" : 2,
+                            "Trigger" : 2,
+                            "WorldDynamic" : 2,
+                            "WorldStatic" : 0
+                          },
+                          "Rotation" : [0.000000, 0.000000, 0.000000],
+                          "Simulate Physics" : false,
+                          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+                          "bEditorOnly" : false,
+                          "bTickEnable" : true
+                        }
+                      }],
+                    "ClassName" : "UStaticMeshComponent",
+                    "Properties" : {
+                      "Auto Activate" : true,
+                      "Cast Shadow" : true,
+                      "Cast Shadow as Two-Sided" : false,
+                      "Center of Mass" : [0.000000, 0.000000, 0.000000],
+                      "Collision Enabled" : 1,
+                      "Generate Overlap Events" : false,
+                      "Is Visible" : true,
+                      "Mass (Kg)" : 1.000000,
+                      "Materials" : [{
+                          "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                        }],
+                      "Object Type" : 5,
+                      "RelativeTransform" : {
+                        "Location" : [0.800000, 0.000000, 0.500000],
+                        "Scale" : [1.000000, 1.000000, 1.000000]
+                      },
+                      "Response Container" : {
+                        "FootIK" : 2,
+                        "Pawn" : 0,
+                        "Projectile" : 2,
+                        "Trigger" : 2,
+                        "WorldDynamic" : 2,
+                        "WorldStatic" : 0
+                      },
+                      "Rotation" : [0.000000, 0.000000, 0.000000],
+                      "Simulate Physics" : false,
+                      "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+                      "bEditorOnly" : false,
+                      "bTickEnable" : true
+                    }
+                  }],
+                "ClassName" : "UStaticMeshComponent",
+                "Properties" : {
+                  "Auto Activate" : true,
+                  "Cast Shadow" : true,
+                  "Cast Shadow as Two-Sided" : false,
+                  "Center of Mass" : [0.000000, 0.000000, 0.000000],
+                  "Collision Enabled" : 1,
+                  "Generate Overlap Events" : false,
+                  "Is Visible" : true,
+                  "Mass (Kg)" : 1.000000,
+                  "Materials" : [{
+                      "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                    }],
+                  "Object Type" : 5,
+                  "RelativeTransform" : {
+                    "Location" : [0.800000, 0.000000, 0.500000],
+                    "Scale" : [1.000000, 1.000000, 0.900000]
+                  },
+                  "Response Container" : {
+                    "FootIK" : 2,
+                    "Pawn" : 0,
+                    "Projectile" : 2,
+                    "Trigger" : 2,
+                    "WorldDynamic" : 2,
+                    "WorldStatic" : 0
+                  },
+                  "Rotation" : [0.000000, 0.000000, 0.000000],
+                  "Simulate Physics" : false,
+                  "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+                  "bEditorOnly" : false,
+                  "bTickEnable" : true
+                }
+              }],
+            "ClassName" : "UStaticMeshComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 1,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                }],
+              "Object Type" : 5,
+              "RelativeTransform" : {
+                "Location" : [0.900000, 0.000000, 0.500000],
+                "Scale" : [1.000000, 1.000000, 0.800000]
+              },
+              "Response Container" : {
+                "FootIK" : 2,
+                "Pawn" : 0,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 0
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+              "bEditorOnly" : false,
+              "bTickEnable" : true
+            }
+          }, {
+            "Children" : [],
+            "ClassName" : "UBoxComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Box Extent" : [1.000000, 1.000000, 1.000000],
+              "Cast Shadow" : false,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 1,
+              "Draw Only If Selected" : false,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [2.200000, 0.000000, 1.400000],
+                "Scale" : [10.000000, 1.000000, 0.400000]
+              },
+              "Response Container" : {
+                "FootIK" : 0,
+                "Pawn" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [-28.800003, 0.000000, 0.000000],
+              "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : false,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [30.387091, -2.706437, -0.697434],
+            "Scale" : [1.000000, 19.873184, 1.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 0,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 0
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "Ground",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 5.000000, 0.000000],
+            "Scale" : [100.000000, 100.000000, 1.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Plane_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_4",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 0.000000, -4.717308],
+            "Scale" : [15.000000, 15.000000, 10.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Cylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_11",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, -10.000000, 0.000000],
+            "Scale" : [10.000000, 20.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Cube_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_48",
       "NonSceneComponents" : [],
       "Properties" : {
 
@@ -671,18 +1118,103 @@
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
           "Collision Enabled" : 1,
-          "Generate Overlap Events" : true,
+          "Generate Overlap Events" : false,
           "Is Visible" : true,
           "Mass (Kg)" : 1.000000,
           "Materials" : [{
-              "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [5.000000, -10.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -180.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_49",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [10.000000, 5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_71",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
             }],
           "Object Type" : 0,
           "RelativeTransform" : {
-            "Location" : [-4.560575, -1.130351, 0.642783],
-            "Scale" : [1.000000, 1.000000, 1.000000]
+            "Location" : [5.000000, 5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
+            "FootIK" : 2,
             "Pawn" : 2,
             "Projectile" : 2,
             "Trigger" : 2,
@@ -691,7 +1223,259 @@
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_12",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-10.000000, -5.000000, 0.000000],
+            "Scale" : [20.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Cube_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_72",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [5.100000, -5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_73",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, -5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -180.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_74",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, 5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_50",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, 10.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_51",
+      "NonSceneComponents" : [],
+      "Properties" : {
+
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [-10.000000, -5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
           "bEditorOnly" : false,
           "bTickEnable" : true
         }
@@ -704,9 +1488,9 @@
   "PerspectiveCamera" : {
     "FOV" : 1.047198,
     "FarClip" : 1000.000000,
-    "Location" : [0.042617, -13.200090, 5.406310],
+    "Location" : [27.043396, 23.554169, 3.963244],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 19.872149, 69.752144]
+    "Rotation" : [0.000000, 12.072420, -437.238770]
   },
   "Version" : 2,
   "WorldSettings" : {

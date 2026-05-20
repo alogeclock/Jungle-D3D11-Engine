@@ -378,6 +378,9 @@
     <FxCompile Include="Shaders\Geometry\Primitive.hlsl">
       <Filter>Shaders\Geometry</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Geometry\PrototypeGrid.hlsl">
+      <Filter>Shaders\Geometry</Filter>
+    </FxCompile>
     <FxCompile Include="Shaders\Geometry\UberLit.hlsl">
       <Filter>Shaders\Geometry</Filter>
     </FxCompile>

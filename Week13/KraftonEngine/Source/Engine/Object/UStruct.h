@@ -81,4 +81,3 @@ protected:
 	TArray<FProperty*> ChildProperties;
 	std::unordered_set<FString> HiddenProperties;
 };
-

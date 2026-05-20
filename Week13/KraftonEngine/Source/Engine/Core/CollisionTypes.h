@@ -16,10 +16,11 @@ enum class ECollisionChannel : uint8
 	Pawn = 2,
 	Projectile = 3,
 	Trigger = 4,
+	FootIK = 5,
 	// 필요 시 확장
 };
 
-inline constexpr int32 NumActiveCollisionChannels = 5;
+inline constexpr int32 NumActiveCollisionChannels = 6;
 inline constexpr int32 MaxCollisionChannels = 16;
 
 inline UEnum* StaticEnum_ECollisionChannel()
@@ -32,6 +33,7 @@ inline UEnum* StaticEnum_ECollisionChannel()
 		Enum.AddEnumerator("Pawn", static_cast<int64>(ECollisionChannel::Pawn));
 		Enum.AddEnumerator("Projectile", static_cast<int64>(ECollisionChannel::Projectile));
 		Enum.AddEnumerator("Trigger", static_cast<int64>(ECollisionChannel::Trigger));
+		Enum.AddEnumerator("FootIK", static_cast<int64>(ECollisionChannel::FootIK));
 		return true;
 	}();
 	(void)bRegistered;

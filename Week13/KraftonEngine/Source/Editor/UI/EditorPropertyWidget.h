@@ -15,6 +15,7 @@ public:
 	bool IsShowingEditorOnlyComponents() const { return bShowEditorOnlyComponents; }
 
 private:
+	void SyncRenameBufferFromActor(AActor* Actor);
 	void RenameActor(AActor* PrimaryActor);
 	void RenderComponentTree(AActor* Actor);
 	void RenderSceneComponentNode(class USceneComponent* Comp);
@@ -41,7 +42,8 @@ private:
 	bool bShowEditorOnlyComponents = false;
 
 	char RenameBuffer[256] = {};
-	bool bShowDuplicateWarning = false;
+	bool bShowRenameWarning = false;
+	FString RenameWarningMessage;
 	FString PendingStaticMeshImportPath;
 	FSoftObjectPath* PendingStaticMeshImportTarget = nullptr;
 	int32 PendingStaticFbxSkinnedMeshPolicy = 0;
