@@ -191,7 +191,7 @@ UberPS_Output PS(UberVS_Output input)
     // Bone Weight Heatmap
     if (HeatmapMode != 0)
     {
-        finalColor = ComputeBoneWeightColor(input.boneWeightHeat);
+        float3 finalColor = ComputeBoneWeightColor(input.boneWeightHeat);
 
         output.Color = float4(ApplyWireframe(finalColor), 1.0f);
         output.Normal = float4(N, 1.0f);
