@@ -1,22 +1,23 @@
 @echo off
 setlocal EnableExtensions
 
-:: 에디터 실행용 Release 패키지 빌드
-:: CONFIGURATION 값은 Visual Studio 솔루션 구성 이름과 일치해야 함
+:: 단독 실행용 게임 클라이언트 패키지 빌드
+:: GameClient 구성은 vcxproj에서 TargetName=JSEngineGame 사용
 set "SOLUTION_DIR=%~dp0"
 set "PROJECT_DIR=%SOLUTION_DIR%JSEngine"
 set "SOLUTION_FILE=%SOLUTION_DIR%JSEngine.sln"
-set "CONFIGURATION=Release"
+set "CONFIGURATION=GameClientRelease"
 set "PLATFORM=x64"
 set "BUILD_OUTPUT=%PROJECT_DIR%\Bin\%CONFIGURATION%"
-set "PACKAGE_DIR=%SOLUTION_DIR%ReleaseBuild"
-set "EXE_NAME=JSEngine.exe"
+set "PACKAGE_DIR=%SOLUTION_DIR%GameBuild"
+set "EXE_NAME=JSEngineGame.exe"
+set "DEFAULT_SCENE=Asset/Scene/Demonstrate.Scene"    
 
 call :LoadVsDevEnvironment
 if errorlevel 1 goto :Fail
 
 echo ============================================
-echo  Release Build Script
+echo  Game Build Script
 echo  Configuration: %CONFIGURATION% ^| Platform: %PLATFORM%
 echo ============================================
 
@@ -43,7 +44,7 @@ echo [3/3] Copying files...
 :: 실행 파일과 빌드 산출 DLL은 선택된 OutDir에서 가져옴
 call :CopyRequiredFile "%BUILD_OUTPUT%\%EXE_NAME%" "%PACKAGE_DIR%\" "%EXE_NAME%"
 if errorlevel 1 goto :Fail
-call :CopyOptionalFile "%BUILD_OUTPUT%\JSEngine.pdb" "%PACKAGE_DIR%\" "JSEngine.pdb"
+call :CopyOptionalFile "%BUILD_OUTPUT%\JSEngineGame.pdb" "%PACKAGE_DIR%\" "JSEngineGame.pdb"
 if errorlevel 1 goto :Fail
 call :CopyBuildDlls
 if errorlevel 1 goto :Fail
@@ -51,10 +52,8 @@ call :EnsureRuntimeDll "lua51.dll" "%BUILD_OUTPUT%\lua51.dll" "%PROJECT_DIR%\Thi
 if errorlevel 1 goto :Fail
 call :EnsureRuntimeDll "libfbxsdk.dll" "%BUILD_OUTPUT%\libfbxsdk.dll" "%PROJECT_DIR%\ThirdParty\FBX\lib\release\libfbxsdk.dll"
 if errorlevel 1 goto :Fail
-call :CopyOptionalFile "%PROJECT_DIR%\imgui.ini" "%PACKAGE_DIR%\" "imgui.ini"
-if errorlevel 1 goto :Fail
 
-:: 런타임 데이터는 에디터와 패키저가 FPaths::RootDir() 아래에서 기대하는 구조를 따름
+:: 런타임 데이터는 게임 런타임이 FPaths::RootDir() 아래에서 기대하는 구조를 따름
 call :CopyOptionalDir "%PROJECT_DIR%\Shaders" "%PACKAGE_DIR%\Shaders" "Shaders"
 if errorlevel 1 goto :Fail
 call :CopyOptionalDir "%PROJECT_DIR%\DerivedData\ShaderCache" "%PACKAGE_DIR%\DerivedData\ShaderCache" "ShaderCache"
@@ -65,7 +64,12 @@ call :CopyOptionalDir "%PROJECT_DIR%\Asset" "%PACKAGE_DIR%\Asset" "Asset"
 if errorlevel 1 goto :Fail
 call :CopyOptionalDir "%PROJECT_DIR%\Settings" "%PACKAGE_DIR%\Settings" "Settings"
 if errorlevel 1 goto :Fail
-call :CopyOptionalSaves
+
+if not exist "%PACKAGE_DIR%\Settings" mkdir "%PACKAGE_DIR%\Settings"
+if not exist "%PACKAGE_DIR%\Saves" mkdir "%PACKAGE_DIR%\Saves"
+:: 에디터 패키저는 더 풍부한 Game.ini를 작성함. 이 기본값은 에디터에서
+:: 패키징 데이터를 만들지 않았을 때도 수동 스크립트 빌드가 실행 가능하도록 함
+call :WriteDefaultGameIni
 if errorlevel 1 goto :Fail
 
 echo.
@@ -189,18 +193,36 @@ if errorlevel 2 (
 echo Copied %~3
 exit /b 0
 
-:CopyOptionalSaves
-if not exist "%PROJECT_DIR%\Saves\" (
-    echo Skipped Saves
-    exit /b 0
-)
-:: crash dump는 ReleaseBuild 패키지에서 제외
-robocopy "%PROJECT_DIR%\Saves" "%PACKAGE_DIR%\Saves" /e /xd "%PROJECT_DIR%\Saves\Dump" /xf *.dmp >nul
-if errorlevel 8 (
-    echo Failed to copy Saves
+:WriteDefaultGameIni
+:: UGameEngine::LoadGameSettings()가 읽는 최소 시작 설정
+(
+    echo [Game]
+    echo GameName=CyberPsycho
+    echo ExecutableName=%EXE_NAME%
+    echo StartupScene=%DEFAULT_SCENE%
+    echo GameModeClass=AGameModeBase
+    echo PlayerControllerClass=APlayerController
+    echo DefaultPawnClass=ADefaultPawn
+    echo DefaultPawnPrefabPath=
+    echo.
+    echo [Scenes]
+    echo Count=1
+    echo Scene0=%DEFAULT_SCENE%
+    echo.
+    echo [Branding]
+    echo Icon=
+    echo Splash=
+    echo SplashMinSeconds=3
+    echo.
+    echo [Render]
+    echo bShadow=true
+    echo bSkeletalMesh=true
+) > "%PACKAGE_DIR%\Settings\Game.ini"
+if errorlevel 1 (
+    echo Failed to write Settings\Game.ini
     exit /b 1
 )
-echo Copied Saves
+echo Wrote Settings\Game.ini
 exit /b 0
 
 :Fail
