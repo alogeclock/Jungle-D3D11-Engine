@@ -127,26 +127,43 @@ bool ContentBrowserElement::RenderSelectSpace(ContentBrowserContext& Context)
 			ImDrawFlags_RoundCornersTop);
 	}
 
-	const float Padding = 8.0f;
+	float ContentPadding = 12.0f; // Text + Image 전체 패딩
 	const float FontSize = ImGui::GetFontSize();
 
-	const float LabelHeight = FontSize * 2.4f;
-	ImVec2 IconMin(Min.x + Padding, Min.y + Padding);
-	ImVec2 IconMax(Max.x - Padding, Max.y - Padding - LabelHeight);
+	ImVec2 ContentMin(Min.x + ContentPadding, Min.y + ContentPadding);
+	ImVec2 ContentMax(Max.x - ContentPadding, Max.y - ContentPadding);
 
-	if (Icon && IconMax.y > IconMin.y)
+	ImVec2 TextMin(ContentMin.x, ContentMax.y - FontSize * 2.0f);
+	ImVec2 TextMax(ContentMax.x, ContentMax.y);
+
+	ImVec2 ImageMin(ContentMin.x, ContentMin.y);
+	ImVec2 ImageMax(ContentMax.x, TextMin.y);
+
+	const float ImageAreaWidth = ImageMax.x - ImageMin.x;
+	const float ImageAreaHeight = ImageMax.y - ImageMin.y;
+	const float ImageSize = (std::min)(ImageAreaWidth, ImageAreaHeight);
+
+	ImVec2 ImageDrawMin = {
+		ImageMin.x + (ImageAreaWidth - ImageSize) * 0.5f,
+		ImageMin.y + (ImageAreaHeight - ImageSize) * 0.5f
+	};
+	ImVec2 ImageDrawMax = {
+		ImageDrawMin.x + ImageSize,
+		ImageDrawMin.y + ImageSize
+	};
+
+	if (Icon && ImageSize > 0.0f)
 	{
-		DrawList->AddImage(Icon, IconMin, IconMax);
+		DrawList->AddImage(Icon, ImageDrawMin, ImageDrawMax);
 	}
+
+	const FString DisplayName = EllipsisText(GetDisplayName(), TextMax.x - TextMin.x);
+
+	ImVec2 TypePos(TextMin.x, TextMin.y);
+	ImVec2 NamePos(TextMin.x, TextMin.y + FontSize);
 
 	const char* TypeLabel = GetTypeLabel();
 	const bool bHasTypeLabel = TypeLabel && TypeLabel[0] != '\0';
-
-	const FString DisplayName = EllipsisText(GetDisplayName(), CardSize.x - Padding * 2);
-
-	ImVec2 TypePos(Min.x + Padding, Max.y - Padding - FontSize * 2.0f);
-	ImVec2 NamePos(Min.x + Padding, Max.y - Padding - FontSize);
-
 	if (bHasTypeLabel)
 	{
 		DrawList->AddText(TypePos, ImGui::GetColorU32(ImGuiCol_TextDisabled), TypeLabel);
