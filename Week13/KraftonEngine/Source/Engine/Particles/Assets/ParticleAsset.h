@@ -72,7 +72,7 @@ class UParticleEmitter : public UObject
 
     const TArray<UParticleLODLevel *> &GetLODLevels() const { return LODLevels; }
 
-    UParticleLODLevel *GetLODLevel(int32 Index) const { return Index >= LODLevels.size() ? LODLevels[Index] : nullptr; }
+    UParticleLODLevel *GetLODLevel(int32 Index) const { return (Index >= 0 && Index < LODLevels.size()) ? LODLevels[Index] : nullptr; }
 
     void AddLODLevel(UParticleLODLevel *InLODLevel) { LODLevels.push_back(InLODLevel); }
 
@@ -109,7 +109,7 @@ class UParticleSystem : public UObject
   public:
     const TArray<UParticleEmitter *> &GetEmitters() const { return Emitters; }
 
-    UParticleEmitter *GetEmitter(int32 Index) const { return Index >= Emitters.size() ? Emitters[Index] : nullptr; }
+    UParticleEmitter *GetEmitter(int32 Index) const { return (Index >= 0 && Index < Emitters.size()) ? Emitters[Index] : nullptr; }
 
     void AddEmitter(UParticleEmitter *InEmitter) { Emitters.push_back(InEmitter); }
 

@@ -16,14 +16,20 @@
 struct FBaseParticle
 {
     FVector Location;              // 현재 위치
+	float   RelativeTime = 0.0f;   // 수명 진행 비율
+
     FVector Velocity;              // 현재 속도
-    float   RelativeTime = 0.0f;   // 수명 진행 비율
     float   Lifetime = 1.0f;       // 전체 수명
+
     FVector BaseVelocity;          // 기준 속도
-    float   Rotation = 0.0f;       // 현재 회전
-    float   RotationRate = 0.0f;   // 회전 속도
+	float	BaseRotationRate;	   // 초기 회전 속도
+	
+	FVector	BaseSize;				// 초기 사이즈
+	float	RotationRate;			// 현재 회전 속도
+
     FVector Size = FVector(1.0f, 1.0f, 1.0f);  // 현재 크기
     FColor  Color = FColor::White(); // 현재 색상
+    FColor  BaseColor = FColor::White(); // 현재 색상
     int32   SubImageIndex = 0;     // SubUV 프레임 인덱스
 };
 

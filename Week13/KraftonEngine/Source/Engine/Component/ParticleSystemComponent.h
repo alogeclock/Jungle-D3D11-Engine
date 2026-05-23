@@ -18,12 +18,11 @@ class UParticleSystemComponent : public UPrimitiveComponent
 {
   public:
     void InitializeComponent();          // Component 초기화
+	void EndPlay() override;
     void ActivateSystem();               // ParticleSystem 재생
     void DeactivateSystem();             // ParticleSystem 정지
     void ResetSystem();                  // ParticleSystem 리셋
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;// Component 매 프레임 갱신
-
-	virtual void PostEditProperty(const char* PropertyName) override;
 
     UParticleSystem *GetTemplate() const { return Template; }
     void             SetTemplate(UParticleSystem *InTemplate);
@@ -43,6 +42,7 @@ class UParticleSystemComponent : public UPrimitiveComponent
 	void SendRenderDynamicData();
 private:
 	void CreateEmitterInstances(); //Emitter정보를 가지고 Instance를 제작함
+	void ClearEmitterInstances();
 
   private:
     TArray<FParticleEmitterInstance *>	EmitterInstances;        // Runtime Emitter Instance 목록

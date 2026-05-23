@@ -4,22 +4,45 @@
 
 void UParticleSystemComponent::InitializeComponent()
 {
+	ClearEmitterInstances();
+
+	EmitterDelay = 0;
+	DeltaTimeTick = 0;
+	CustomTimeDilation = 1;
+
+	CurrentLODLevelIndex = 0;
+	TotalActiveParticles = 0;
+
+	EmitterMaterials.clear();
+	CollisionEvents.clear();
+	EmitterRenderData.clear();
+}
+
+void UParticleSystemComponent::EndPlay()
+{
+	DeactivateSystem();
+	ClearEmitterInstances();
+
+	UPrimitiveComponent::EndPlay();
 }
 
 void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
 {
-	if (Template == nullptr || Template->GetEmitters().size() == 0)
-	{
-		// Disable our tick here, will be enabled when activating
-		SetComponentTickEnabled(false);
-		return;
-	}
+	UPrimitiveComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if ((IsActive() == false) && (bAutoActivate == false))
-	{
-		// Disable our tick here, will be enabled when activating
-		SetComponentTickEnabled(false);
+	if (!Template)
 		return;
+
+	if (!IsActive())
+	{
+		if (!IsActive() && bAutoActivate)
+		{
+			ActivateSystem();
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	bool bRequiresReset = bResetTriggered;
@@ -43,6 +66,7 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	//이벤트 버퍼 정리
 	CollisionEvents.clear();
+	TotalActiveParticles = 0;
 
 	// 인스턴스 tick
 	for (auto instance : EmitterInstances) {
@@ -58,14 +82,18 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UParticleSystemComponent::SetTemplate(UParticleSystem* InTemplate)
 {
-	if (!InTemplate || Template == InTemplate) {
+	if (Template == InTemplate) {
 		return;
 	}
 
 	DeactivateSystem();
+	ClearEmitterInstances();
 
 	Template = InTemplate;
-	CreateEmitterInstances();
+	if (Template)
+	{
+		CreateEmitterInstances();
+	}
 }
 
 void UParticleSystemComponent::SetLODLevel(int32 InLODLevel)
@@ -101,6 +129,8 @@ void UParticleSystemComponent::CreateEmitterInstances()
 		return;
 	}
 
+	ClearEmitterInstances();
+
 	const TArray<UParticleEmitter*> TemplateEmitters = Template->GetEmitters();
 	for (auto Emitter : TemplateEmitters) {
 		FParticleEmitterInstance* Instance = new FParticleEmitterInstance();
@@ -128,6 +158,17 @@ void UParticleSystemComponent::ActivateSystem()
 void UParticleSystemComponent::DeactivateSystem()
 {
 	bIsActive = false;
+	SetComponentTickEnabled(false);
+
+	for (FParticleEmitterInstance* Instance : EmitterInstances)
+	{
+		if (Instance)
+		{
+			Instance->KillAllParticles();
+		}
+	}
+
+	TotalActiveParticles = 0;
 }
 
 void UParticleSystemComponent::ResetSystem()
@@ -135,6 +176,21 @@ void UParticleSystemComponent::ResetSystem()
 	for (FParticleEmitterInstance* instance : EmitterInstances) {
 		instance->Reset();
 	}
+}
+
+void UParticleSystemComponent::ClearEmitterInstances()
+{
+	for (FParticleEmitterInstance* Instance : EmitterInstances)
+	{
+		if (Instance)
+		{
+			Instance->KillAllParticles();
+			delete Instance;
+		}
+	}
+
+	EmitterInstances.clear();
+	TotalActiveParticles = 0;
 }
 
 void UParticleSystemComponent::SendRenderDynamicData()
