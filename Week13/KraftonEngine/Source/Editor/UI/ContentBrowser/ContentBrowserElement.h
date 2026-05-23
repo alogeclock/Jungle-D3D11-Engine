@@ -148,6 +148,9 @@ class ImageElement final : public ContentBrowserElement
 {
 public:
 	virtual const char* GetDragItemType() override { return "ImageContentItem"; }
+protected:
+	const char* GetTypeLabel() const override { return "Texture"; }
+	uint32 GetAccentColor() const override { return IM_COL32(192, 64, 64, 255); }
 };
 
 class MaterialElement final : public ContentBrowserElement
