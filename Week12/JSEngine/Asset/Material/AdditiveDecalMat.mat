@@ -1,10 +1,10 @@
 ﻿{
-    "Name": "DecalMat",
+    "Name": "AdditiveDecalMat",
     "ShaderType" : "Decal",
     "BlendState": {
         "BlendEnable": true,
-        "SrcColor": "SrcAlpha",
-        "DestColor": "InvSrcAlpha",
+        "SrcColor": "One",
+        "DestColor": "One",
         "ColorOp": "Add",
         "SrcAlpha": "One",
         "DestAlpha": "Zero",
