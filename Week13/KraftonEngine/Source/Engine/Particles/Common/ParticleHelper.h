@@ -18,9 +18,11 @@
 #define DECLARE_PARTICLE_PTR(Index) FBaseParticle &Particle = *reinterpret_cast<FBaseParticle *>(ParticleData + ParticleStride * ParticleIndices[Index])
 
 #define BEGIN_UPDATE_LOOP                                                                                                                                                                              \
-    for (int32 ParticleIndex = 0; ParticleIndex < Owner->ActiveParticles; ++ParticleIndex)                                                                                                             \
-    {                                                                                                                                                                                                  \
-        DECLARE_PARTICLE_PTR(ParticleIndex);
+    for(int Index = ActiveParticles - 1 ; Index >= 0; Index--)							\
+	{																					\
+		const int32 CurrentIndex = ParticleIndices[Index];								\
+		const uint8* ParticlePtr = ParticleData + CurrentIndex * ParticleStride;		\
+		FBaseParticle& Particle = *((FBaseParticle*) ParticlePtr);	
 
 #define END_UPDATE_LOOP }
 

@@ -8,15 +8,20 @@
 
 #pragma once
 #include "Particles/Assets/ParticleAsset.h"
+#include "Particles/Runtime/ParticleRuntimeTypes.h"
 #include "Core/CoreTypes.h"
 #include "Component/PrimitiveComponent.h"
+#include "ParticleSystemComponent.generated.h"
 
 struct FParticleEventCollideData;
 
 /** 월드에 배치되어 ParticleSystem을 재생하고 렌더 데이터를 관리하는 Component */
+UCLASS()
 class UParticleSystemComponent : public UPrimitiveComponent
 {
   public:
+	GENERATED_BODY(UParticleSystemComponent)
+
     void InitializeComponent();          // Component 초기화
 	void EndPlay() override;
     void ActivateSystem();               // ParticleSystem 재생

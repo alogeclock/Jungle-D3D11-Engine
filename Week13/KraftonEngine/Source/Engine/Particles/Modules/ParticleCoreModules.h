@@ -49,6 +49,8 @@ class UParticleModuleSpawn : public UParticleModule
     float GetSpawnRate() const { return SpawnRate; }
     void  SetSpawnRate(float InSpawnRate) { SpawnRate = InSpawnRate; }
 
+	int32 GetBurstCount() const { return BurstCount; }
+	void  SetBurstCount(int32 InBurstCount) { BurstCount = InBurstCount; }
   private:
     float SpawnRate = 10.0f; // 초당 Particle 생성 수
     int32 BurstCount = 0;    // 순간 Spawn 개수

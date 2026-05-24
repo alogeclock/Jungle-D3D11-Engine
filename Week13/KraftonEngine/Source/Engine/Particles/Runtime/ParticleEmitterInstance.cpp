@@ -17,7 +17,8 @@ FParticleEmitterInstance::~FParticleEmitterInstance()
 
 	delete[] InstanceData;
 	InstanceData = nullptr;
-	//BurstFired.Empty();
+	
+	BurstFired.clear();
 }
 
 void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UParticleEmitter* InTemplate)
@@ -63,6 +64,9 @@ void FParticleEmitterInstance::Tick(float DeltaTime)
 
 	if(!bEnabled) return;
 
+	// 이미터 시간 갱신
+	EmitterTime += DeltaTime;
+
 	//life타임 없는 애들 삭제 하는 로직
 	KillExpiredParticles();
 
@@ -76,25 +80,32 @@ void FParticleEmitterInstance::Tick(float DeltaTime)
 
 	//시간되었으면 spawn하는 로직
 	Tick_SpawnParticles(DeltaTime);
-	//if (ActiveParticles > 0) UpdateBoundingBox(DeltaTime);
+
+	if(!bFirstTime){
+		//if (ActiveParticles > 0) UpdateBoundingBox(DeltaTime); 
+		// 원래는 해당 로직 안에서 파티클 이동 진행
+		BEGIN_UPDATE_LOOP
+			Particle.Location += Particle.Velocity * DeltaTime;
+		END_UPDATE_LOOP
+	}
 
 	ProcessEvents();
 }
 
+//StartTime : 현재 프레임에서 첫 번째 파티클이 태어날 때까지 프레임 단위 시간
 void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, float Increment, const FVector& InitialLocation, const FVector& InitialVelocity)
 {
 	for (int32 i = 0; i < Count; ++i)
 	{
 		if (ActiveParticles >= MaxActiveParticles)
 			break;
-
 		const int32 ActiveIndex = ActiveParticles;
 
 		DECLARE_PARTICLE_PTR(ActiveIndex);
 
-		PreSpawn(Particle, InitialLocation, InitialVelocity);
+		PreSpawn(Particle, InitialLocation, InitialVelocity);	
 
-		const float SpawnTime = StartTime + Increment * i;
+		const float SpawnTime = StartTime - Increment * i;
 
 		for (UParticleModule* Module : CurrentLODLevel->GetSpawnModules())
 		{
@@ -110,17 +121,20 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
 
 void FParticleEmitterInstance::KillParticle(int32 Index)
 {
-	if (Index < ActiveParticles)
-	{
-		int32 KillIndex = ParticleIndices[Index];
+	if (Index < 0 || Index >= ActiveParticles)
+		return;
 
-		for (int32 i = Index; i < ActiveParticles - 1; i++)
-		{
-			ParticleIndices[i] = ParticleIndices[i + 1];
-		}
-		ParticleIndices[ActiveParticles - 1] = KillIndex;
-		ActiveParticles--;
+	const int32 LastActiveIndex = ActiveParticles - 1;
+
+	if (Index != LastActiveIndex)
+	{
+		const int32 DeadParticleSlot = ParticleIndices[Index];
+
+		ParticleIndices[Index] = ParticleIndices[LastActiveIndex];
+		ParticleIndices[LastActiveIndex] = DeadParticleSlot;
 	}
+
+	ActiveParticles--;
 }
 
 void FParticleEmitterInstance::KillAllParticles()
@@ -180,6 +194,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime)
 	if (EmitterTime < 0.0f)
 		return;
 
+	//Burst는 일단 미구현
 	float SpawnRate = 0.0f;
 	int32 BurstCount = 0;
 
@@ -209,6 +224,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime)
 
 	if (TotalSpawnCount > 0)
 	{
+		//
 		const float Increment = SpawnRate > 0.0f ? 1.0f / SpawnRate : 0.0f;
 		const float StartTime = DeltaTime + SpawnFraction * Increment - Increment;
 
@@ -236,9 +252,14 @@ FDynamicEmitterDataBase* FParticleEmitterInstance::CreateDynamicEmitterData(FDyn
 
 void FParticleEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVector& InitialLocation, const FVector& InitialVelocity)
 {
+	std::memset(&Particle, 0, ParticleStride);
+
 	Particle.Location = InitialLocation;
 	Particle.Velocity = InitialVelocity;
 	Particle.BaseVelocity = InitialVelocity;
+	
+	//TODO: 모듈 생성시 아래 초기화 없앨것
+	//현재 모듈이 없어서 초기화 불가능해서 일단 여기서 진행 
 	Particle.RelativeTime = 0.0f;
 	Particle.Lifetime = 1.0f;
 	Particle.Color = FColor::White();
@@ -273,14 +294,12 @@ void FParticleEmitterInstance::PostSpawn(FBaseParticle& Particle, float SpawnTim
 
 void FParticleEmitterInstance::KillExpiredParticles()
 {
-    for (int32 i = ActiveParticles - 1; i >= 0; --i)
-    {
-		DECLARE_PARTICLE_PTR(i);
-        if (Particle.RelativeTime >= 1.0f)
-        {
-            KillParticle(i);
-        }
-    }
+	BEGIN_UPDATE_LOOP
+	if (Particle.RelativeTime >= 1.0f)
+	{
+		KillParticle(Index);
+	}
+	END_UPDATE_LOOP
 }
 
 void FParticleEmitterInstance::ProcessEvents()

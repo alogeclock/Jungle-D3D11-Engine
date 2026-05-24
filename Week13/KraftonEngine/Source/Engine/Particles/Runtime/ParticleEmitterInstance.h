@@ -36,14 +36,15 @@ struct FParticleEmitterInstance
     float  SpawnFraction = 0.0f;                   // SpawnRate 소수점 이월값
 
     TArray<FParticleEventData> PendingEvents; // 이번 프레임 처리 대기 Event 목록
-
-    void Init(UParticleSystemComponent *InComponent, UParticleEmitter *InTemplate);                                                     // Instance 초기화
+	TArray<bool> BurstFired;
+    
+	void Init(UParticleSystemComponent *InComponent, UParticleEmitter *InTemplate);                                                     // Instance 초기화
     void Tick(float DeltaTime);                                                                                                         // 매 프레임 갱신
     void SpawnParticles(int32 Count, float StartTime, float Increment, const FVector &InitialLocation, const FVector &InitialVelocity); // Particle 생성
     void KillParticle(int32 Index);                                                                                                     // 단일 Particle 제거
     void KillAllParticles();                                                                                                            // 전체 Particle 제거
 	void Reset();
-	void ResetParticleParameters(float DeltaTime);																										// 전체 초기화 아님, 틱 중에 초기화되어야하는 파라미터 초기화
+	void ResetParticleParameters(float DeltaTime);												// 전체 초기화 아님, 틱 중에 초기화되어야하는 파라미터 초기화
 
 	void Tick_SpawnParticles(float DeltaTime);
     int32 GetActiveParticleCount() const { return ActiveParticles; }
@@ -61,6 +62,7 @@ struct FParticleEmitterInstance
 	bool bFirstTime;		// 처음 스폰 여부
 	bool bEnabled;			// 가동 여부
 	int32 LoopCount;		// 루프 개수
+	int32 BurstCount;		// burst 회수
 
 	float EmitterTime;		// 이미터 시간
 	float LastDeltaTime;	// 마지막으로 스폰한 시간
