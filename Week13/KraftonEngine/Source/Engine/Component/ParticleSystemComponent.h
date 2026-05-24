@@ -10,8 +10,7 @@
 #include "Particles/Assets/ParticleAsset.h"
 #include "Core/CoreTypes.h"
 #include "Component/PrimitiveComponent.h"
-
-struct FParticleEventCollideData;
+#include "Particles/Runtime/ParticleRuntimeTypes.h"
 
 /** 월드에 배치되어 ParticleSystem을 재생하고 렌더 데이터를 관리하는 Component */
 class UParticleSystemComponent : public UPrimitiveComponent
@@ -23,7 +22,7 @@ class UParticleSystemComponent : public UPrimitiveComponent
     void ResetSystem();                  // ParticleSystem 리셋
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;// Component 매 프레임 갱신
 
-	virtual void PostEditProperty(const char* PropertyName) override;
+	// virtual void PostEditProperty(const char* PropertyName) override;
 
     UParticleSystem *GetTemplate() const { return Template; }
     void             SetTemplate(UParticleSystem *InTemplate);

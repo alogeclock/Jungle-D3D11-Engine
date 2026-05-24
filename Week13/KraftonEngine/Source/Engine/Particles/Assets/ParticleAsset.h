@@ -115,8 +115,13 @@ class UParticleSystem : public UObject
 
     void CacheSystemModuleInfo(); // 전체 Emitter Module 정보 캐싱
 
+    void SetSourcePath(const FString& InPath) { SourcePath = InPath; }
+    const FString& GetSourcePath() const { return SourcePath; }
+    const FString& GetAssetPathFileName() const override { return SourcePath; }
+
 	//UPROPERTY()
 	TArray<float> LODDistances; // ParticleSystem 구성 Emitter 목록
   private:
     TArray<UParticleEmitter *> Emitters; // ParticleSystem 구성 Emitter 목록
+    FString SourcePath;
 };
