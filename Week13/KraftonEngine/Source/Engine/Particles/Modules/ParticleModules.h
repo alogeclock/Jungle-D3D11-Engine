@@ -17,11 +17,13 @@ class UParticleModule : public UObject
   public:
     virtual EParticleModuleType        GetModuleType() const { return EParticleModuleType::PMT_Custom; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const { return EParticleModuleClass::Unknown; }
 
     virtual void InitializeModule(UParticleEmitter *InEmitter) {}
     virtual void PreSpawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle) {}
     virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime) {}
     virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime) {}
+    virtual void Serialize(FArchive& Ar) override;
 
     bool IsEnabled() const { return bEnabled; }
     void SetEnabled(bool bInEnabled) { bEnabled = bInEnabled; }

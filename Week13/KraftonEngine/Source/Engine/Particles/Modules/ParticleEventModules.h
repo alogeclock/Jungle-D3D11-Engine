@@ -31,6 +31,8 @@ class UParticleModuleEventGenerator : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Event; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::EventGenerator; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     TArray<EParticleEventType> GeneratedEvents; // 생성할 Event 종류 목록
@@ -42,6 +44,8 @@ class UParticleModuleEventReceiverSpawn : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Event; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::EventReceiverSpawn; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     EParticleEventType ListenEventType = EParticleEventType::PEET_Collision; // 수신할 Event 종류
@@ -54,6 +58,8 @@ class UParticleModuleEventReceiverKillAll : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Event; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::EventReceiverKillAll; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     EParticleEventType ListenEventType = EParticleEventType::PEET_Collision; // 수신할 Event 종류

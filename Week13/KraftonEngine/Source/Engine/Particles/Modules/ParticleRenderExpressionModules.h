@@ -20,6 +20,8 @@ class UParticleModuleSubUV : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_SubUV; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::SubUV; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     int32 HorizontalCount = 1;       // Texture Atlas 가로 프레임 수
@@ -35,6 +37,8 @@ class UParticleModuleLight : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Light; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Light; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     FColor LightColor = FColor::White(); // Particle Light 색상
@@ -48,6 +52,8 @@ class UParticleModuleVectorField : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_VectorField; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::VectorField; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     UObject *VectorFieldAsset = nullptr; // Vector Field Asset 참조
@@ -60,6 +66,8 @@ class UParticleModuleCamera : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Camera; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Camera; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     float CameraOffset = 0.0f; // 카메라 방향 기준 위치 보정값
@@ -71,6 +79,8 @@ class UParticleModuleParameter : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Parameter; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Parameter; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     FName    ParameterName;  // 외부로 전달할 Parameter 이름

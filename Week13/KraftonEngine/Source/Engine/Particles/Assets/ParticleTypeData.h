@@ -19,6 +19,8 @@ class UParticleModuleTypeDataBase : public UParticleModule
 {
   public:
     virtual EParticleEmitterType GetEmitterType() const = 0;
+    virtual EParticleModuleClass GetModuleClass() const override = 0;
+    virtual void Serialize(FArchive& Ar) override = 0;
 };
 
 /** Sprite Emitter TypeData */
@@ -26,6 +28,8 @@ class UParticleModuleTypeDataSprite : public UParticleModuleTypeDataBase
 {
   public:
     virtual EParticleEmitterType GetEmitterType() const override { return EParticleEmitterType::PET_Sprite; }
+    virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::TypeDataSprite; }
+    virtual void Serialize(FArchive& Ar) override;
 };
 
 /** Mesh Particle Emitter TypeData */
@@ -33,12 +37,15 @@ class UParticleModuleTypeDataMesh : public UParticleModuleTypeDataBase
 {
   public:
     virtual EParticleEmitterType GetEmitterType() const override { return EParticleEmitterType::PET_Mesh; }
+    virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::TypeDataMesh; }
+    virtual void Serialize(FArchive& Ar) override;
 
     UStaticMesh *GetMesh() const { return Mesh; }
     void         SetMesh(UStaticMesh *InMesh) { Mesh = InMesh; }
 
   private:
-    UStaticMesh *Mesh = nullptr; // Mesh Particle에 사용할 StaticMesh
+    UStaticMesh *Mesh = nullptr;      // Mesh Particle에 사용할 StaticMesh
+    FString      MeshPath;            // Serialize 시 경로 저장용
 };
 
 /** Beam Emitter TypeData */
@@ -46,6 +53,8 @@ class UParticleModuleTypeDataBeam : public UParticleModuleTypeDataBase
 {
   public:
     virtual EParticleEmitterType GetEmitterType() const override { return EParticleEmitterType::PET_Beam; }
+    virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::TypeDataBeam; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     FVector Source = FVector::ZeroVector; // Beam 시작점
@@ -59,6 +68,8 @@ class UParticleModuleTypeDataRibbon : public UParticleModuleTypeDataBase
 {
   public:
     virtual EParticleEmitterType GetEmitterType() const override { return EParticleEmitterType::PET_Ribbon; }
+    virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::TypeDataRibbon; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     float Width = 1.0f;         // Ribbon 폭

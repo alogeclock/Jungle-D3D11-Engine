@@ -18,6 +18,8 @@ class UParticleModuleCollision : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Collision; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Collision; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     bool  bEnableCollision = true;  // Collision 사용 여부
@@ -32,6 +34,8 @@ class UParticleModuleKill : public UParticleModule
   public:
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Kill; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Kill; }
+    virtual void Serialize(FArchive& Ar) override;
 
   private:
     bool  bUseKillBox = false;    // Box 기준 제거 사용 여부
