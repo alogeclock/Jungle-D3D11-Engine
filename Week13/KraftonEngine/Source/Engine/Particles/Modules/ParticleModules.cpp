@@ -8,6 +8,7 @@
 #include "Materials/Material.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/StaticMesh.h"
+#include "Mesh/MeshManager.h"
 
 // ─────────────────────────────────────────
 // UParticleModule (base)
@@ -237,15 +238,15 @@ void UParticleModuleTypeDataSprite::Serialize(FArchive& Ar)
     // Sprite는 추가 설정값 없음
 }
 
+// MeshManager가 초기화 되어있다고 가정 
 void UParticleModuleTypeDataMesh::Serialize(FArchive& Ar)
 {
     UParticleModule::Serialize(Ar);
-    // Mesh는 경로로 저장 (로드 시 MeshManager가 초기화되어 있으면 조회)
     if (Ar.IsSaving())
         MeshPath = Mesh ? Mesh->GetAssetPathFileName() : FString();
     Ar << MeshPath;
-    // 로드 시점에 Mesh 포인터 복원은 MeshManager가 준비된 이후에 별도 처리 필요
-    // 현재는 nullptr로 유지하고 MeshPath를 통해 외부에서 복원 가능
+    if (Ar.IsLoading() && !MeshPath.empty())
+        Mesh = FMeshManager::FindStaticMesh(MeshPath);
 }
 
 void UParticleModuleTypeDataBeam::Serialize(FArchive& Ar)
