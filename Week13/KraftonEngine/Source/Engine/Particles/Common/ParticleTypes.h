@@ -19,7 +19,7 @@
 #include "Math/Vector.h"
 
 class UObject;
-class UMaterialInterface;
+class UMaterial;
 class UTexture;
 class UStaticMesh;
 class UParticleSystem;

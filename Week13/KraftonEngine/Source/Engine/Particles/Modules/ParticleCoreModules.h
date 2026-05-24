@@ -26,15 +26,15 @@ class UParticleModuleRequired : public UParticleModule
     EParticleEmitterType GetEmitterType() const { return EmitterType; }
     void                 SetEmitterType(EParticleEmitterType InType) { EmitterType = InType; }
 
-    UMaterialInterface *GetMaterial() const { return Material; }
-    void                SetMaterial(UMaterialInterface *InMaterial) { Material = InMaterial; }
+    UMaterial *GetMaterial() const { return Material; }
+    void       SetMaterial(UMaterial *InMaterial) { Material = InMaterial; }
 
     EParticleSortMode GetSortMode() const { return SortMode; }
     void              SetSortMode(EParticleSortMode InSortMode) { SortMode = InSortMode; }
 
   private:
     EParticleEmitterType EmitterType = EParticleEmitterType::PET_Sprite; // 기본 Emitter 타입
-    UMaterialInterface  *Material = nullptr;                         // Particle 렌더링 Material
+    UMaterial           *Material = nullptr;                         // Particle 렌더링 Material
     EParticleSortMode    SortMode = EParticleSortMode::PSM_None;         // Particle 정렬 방식
     int32                TranslucencySortPriority = 0;               // Translucent Pass 정렬 우선순위
 };
