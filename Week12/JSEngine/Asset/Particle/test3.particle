@@ -60,10 +60,10 @@
             "ObjectName" : "UParticleLODLevel_2",
             "Properties" : {
               "Level" : 0,
-              "Modules" : [18],
+              "Modules" : [],
               "RequiredModule" : 16,
               "SpawnModule" : 17,
-              "TypeDataModule" : 19,
+              "TypeDataModule" : 18,
               "bEnabled" : true,
               "bSolo" : false
             },
@@ -266,22 +266,6 @@
             "Type" : "UParticleModuleSpawn"
           }, {
             "Id" : 18,
-            "ObjectName" : "UParticleModuleLifetime_0",
-            "Properties" : {
-              "Lifetime" : {
-                "Constant" : 1.000000,
-                "Curve" : "",
-                "Max" : 1.000000,
-                "MaxCurve" : "",
-                "Min" : 1.000000,
-                "MinCurve" : "",
-                "Mode" : 0
-              },
-              "bEnabled" : true
-            },
-            "Type" : "UParticleModuleLifetime"
-          }, {
-            "Id" : 19,
             "ObjectName" : "UParticleModuleTypeDataBase_2",
             "Properties" : {
               "bEnabled" : true
