@@ -1348,6 +1348,7 @@
       <Filter>Source\Engine\Particles\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.cpp" />
+    <ClCompile Include="HighPerformanceGpuHint.cpp" />
     <ClCompile Include="Source\Engine\Render\Proxy\ParticleSceneProxy.cpp" />
   </ItemGroup>
   <ItemGroup>
