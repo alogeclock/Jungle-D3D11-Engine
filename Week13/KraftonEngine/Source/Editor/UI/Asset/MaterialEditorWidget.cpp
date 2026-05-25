@@ -1,4 +1,4 @@
-#include "MaterialEditorWidget.h"
+﻿#include "MaterialEditorWidget.h"
 
 #include "Component/Light/DirectionalLightComponent.h"
 #include "Component/StaticMeshComponent.h"
@@ -263,13 +263,8 @@ void FMaterialEditorWidget::Render(float DeltaTime)
 		VisibleTitle += " *";
 	}
 
-	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_None;
-	if (ViewportClient.IsMouseOverViewport())
-	{
-		WindowFlags |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
-	}
-
-	ImGui::SetNextWindowSize(ImVec2(1040.0f, 640.0f), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(1080.0f, 640.0f), ImGuiCond_Once);
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoSavedSettings;
 	FString WindowTitle = VisibleTitle + WindowIdSuffix;
 	if (ConsumeFocusRequest())
 	{

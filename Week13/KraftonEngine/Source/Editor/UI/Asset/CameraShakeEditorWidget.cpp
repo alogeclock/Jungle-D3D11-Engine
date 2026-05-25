@@ -397,10 +397,10 @@ void FCameraShakeEditorWidget::Render(float DeltaTime)
 		VisibleTitle += " *";
 	}
 
-	ImGui::SetNextWindowSize(ImVec2(560.0f, 520.0f), ImGuiCond_Once);
-
+	ImGui::SetNextWindowSize(ImVec2(560.0f, 800.0f), ImGuiCond_Once);
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoSavedSettings;
 	FString WindowTitle = VisibleTitle + "###CameraShakeEditor";
-	if (!ImGui::Begin(WindowTitle.c_str(), &bWindowOpen))
+	if (!ImGui::Begin(WindowTitle.c_str(), &bWindowOpen, WindowFlags))
 	{
 		ImGui::End();
 		if (!bWindowOpen)

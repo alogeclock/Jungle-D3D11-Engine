@@ -734,12 +734,8 @@ void FAnimSequenceEditorWidget::Render(float DeltaTime)
 		VisibleTitle += " *";
 	}
 
-	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_None;
-	if (ViewportClient.IsMouseOverViewport())
-	{
-		WindowFlags |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
-	}
-
+	ImGui::SetNextWindowSize(ImVec2(1080.0f, 640.0f), ImGuiCond_Once);
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoSavedSettings;
 	const FString WindowTitle = VisibleTitle + WindowIdSuffix;
 	if (ConsumeFocusRequest())
 	{

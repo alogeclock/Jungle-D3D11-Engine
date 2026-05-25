@@ -333,13 +333,15 @@ void FAnimInstanceEditorWidget::Render(float DeltaTime)
 		VisibleTitle += " *";
 	}
 
-	ImGui::SetNextWindowSize(ImVec2(980.0f, 620.0f), ImGuiCond_Once);
 	if (ConsumeFocusRequest())
 	{
 		ImGui::SetNextWindowFocus();
 	}
+
+	ImGui::SetNextWindowSize(ImVec2(1080.0f, 640.0f), ImGuiCond_Once);
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoSavedSettings;
 	const FString WindowTitle = VisibleTitle + "###AnimInstanceEditor";
-	if (!ImGui::Begin(WindowTitle.c_str(), &bWindowOpen))
+	if (!ImGui::Begin(WindowTitle.c_str(), &bWindowOpen, WindowFlags))
 	{
 		ImGui::End();
 		if (!bWindowOpen)
