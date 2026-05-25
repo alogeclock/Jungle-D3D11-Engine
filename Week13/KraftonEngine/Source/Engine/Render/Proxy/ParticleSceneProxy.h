@@ -4,4 +4,3 @@
 class FParticleSceneProxy : public FPrimitiveSceneProxy
 {
 };
-

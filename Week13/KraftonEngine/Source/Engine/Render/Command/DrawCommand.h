@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Render/Types/RenderTypes.h"
 #include "Render/Types/RenderStateTypes.h"
@@ -75,6 +75,7 @@ struct FDrawCommand
 
 	// ===== Sort =====
 	uint64 SortKey = 0;                              // 정렬 키 (Pass → Shader → MeshBuffer → SRV)
+	float  SortDepth = 0.0f;                         // AlphaBlend back-to-front 정렬용 view depth
 
 	// Fullscreen triangle 초기화 (PostProcess 등 SV_VertexID 기반 드로우)
 	void InitFullscreenTriangle(FShader* InShader, ERenderPass InPass, const FDrawCommandRenderState& InRenderState)
