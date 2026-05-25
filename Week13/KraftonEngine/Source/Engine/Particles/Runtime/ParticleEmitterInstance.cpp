@@ -55,6 +55,13 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 	LoopCount = 0;
 	EmitterTime = 0.0f;
 	LastDeltaTime = 0.0f;
+
+	// 각 모듈의 RandomSeedInfo를 바탕으로 모듈 전용 스트림 초기화
+	for (UParticleModule* Module : CurrentLODLevel->GetModules())
+	{
+		if (Module)
+			Module->InitializeStream();
+	}
 }
 
 void FParticleEmitterInstance::Tick(float DeltaTime)

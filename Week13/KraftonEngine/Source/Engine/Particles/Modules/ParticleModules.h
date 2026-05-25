@@ -29,9 +29,18 @@ class UParticleModule : public UObject
     virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime) {}
     virtual void Serialize(FArchive& Ar) override;
 
+    /** UDistribution 에디터 데이터로부터 FRawDistribution 런타임 캐시를 재구성한다. */
+    virtual void CacheModuleValues() {}
+
+    /** RandomSeedInfo를 바탕으로 ModuleStream을 초기화한다. Init 시 한 번 호출. */
+    void InitializeStream();
+
     bool IsEnabled() const { return bEnabled; }
     void SetEnabled(bool bInEnabled) { bEnabled = bInEnabled; }
 
+    FParticleRandomSeedInfo RandomSeedInfo; // 에디터에서 설정하는 Seed 정보
+
   protected:
-    bool bEnabled = true; // Module 활성 여부
+    bool          bEnabled    = true; // Module 활성 여부
+    FRandomStream ModuleStream;       // 이 모듈 전용 랜덤 스트림 (런타임, 직렬화 안 함)
 };

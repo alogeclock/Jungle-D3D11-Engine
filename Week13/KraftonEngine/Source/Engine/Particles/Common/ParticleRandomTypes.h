@@ -9,6 +9,7 @@
 #pragma once
 
 #include "ParticleTypes.h"
+#include "ParticleDistribution.h"
 
 /** Seed 기반 난수 재현 설정 */
 struct FParticleRandomSeedInfo
