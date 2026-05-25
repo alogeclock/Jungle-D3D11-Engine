@@ -39,6 +39,7 @@ void FParticleSystemEditorWidget::Open(UObject* Object)
     WorldContext.World->InitWorld();
 
     AActor* Actor = WorldContext.World->SpawnActor<AActor>();
+	Actor->bTickInEditor = true;
     if (UParticleSystem* Asset = Cast<UParticleSystem>(EditedObject))
     {
         UParticleSystemComponent* Comp = Actor->AddComponent<UParticleSystemComponent>();

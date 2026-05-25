@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file ParticleModules.cpp
  * @brief 모든 Particle Module 및 TypeData Serialize / Spawn / Update / CacheModuleValues 구현.
  */
@@ -153,7 +153,7 @@ void UParticleModuleVelocity::CacheModuleValues()
 void UParticleModuleVelocity::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
 {
     if (!bEnabled) return;
-    const FVector V       = RawVelocity.GetValue(0.f, &ModuleStream);
+    const FVector V       = FVector(0.f, 0.f, 5.f); //RawVelocity.GetValue(0.f, &ModuleStream);
     Particle.BaseVelocity = V;
     Particle.Velocity     = V;
 }
