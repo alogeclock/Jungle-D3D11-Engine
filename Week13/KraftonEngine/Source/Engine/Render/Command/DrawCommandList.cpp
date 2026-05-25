@@ -72,8 +72,18 @@ void FDrawCommandList::Sort()
 		std::sort(Commands.begin(), Commands.end(),
 			[](const FDrawCommand& A, const FDrawCommand& B)
 			{
+				if (A.Pass != B.Pass)
+					return static_cast<uint32>(A.Pass) < static_cast<uint32>(B.Pass);
+
+				if (A.Pass == ERenderPass::AlphaBlend)
+				{
+					if (A.SortDepth != B.SortDepth)
+						return A.SortDepth > B.SortDepth;
+				}
+
 				return A.SortKey < B.SortKey;
 			});
+
 	}
 
 	// 패스별 오프셋 빌드 — 정렬 후 1회 선형 스캔

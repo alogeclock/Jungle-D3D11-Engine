@@ -80,6 +80,8 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame)
 {
 	DrawCommandList.Reset();
 	CollectViewMode = Frame.RenderOptions.ViewMode;
+	CollectCameraPosition = Frame.CameraPosition;
+	CollectCameraForward = Frame.CameraForward;
 
 	// FPrimitiveDrawOptions 설정
 	DrawOptions = {};
@@ -119,6 +121,13 @@ FShader* FDrawCommandBuilder::SelectEffectiveShader(FShader* ProxyShader, EViewM
 	case EViewMode::LightCulling: return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::Phong));
 	default:                      return ProxyShader;
 	}
+}
+
+float FDrawCommandBuilder::ComputeAlphaSortDepth(const FPrimitiveSceneProxy& Proxy) const
+{
+	const FBoundingBox& Bounds = Proxy.GetCachedBounds();
+	const FVector SortPosition = Bounds.IsValid() ? Bounds.GetCenter() : Proxy.GetCachedWorldPos();
+	return (SortPosition - CollectCameraPosition).Dot(CollectCameraForward);
 }
 
 // ============================================================
@@ -186,6 +195,7 @@ void FDrawCommandBuilder::BuildCommandForProxy(FScene& Scene, const FPrimitiveSc
 		Cmd.Pass = Pass;
 		Cmd.Shader = EffectiveShader;
 		Cmd.RenderState = BaseRenderState;
+		Cmd.SortDepth = (Pass == ERenderPass::AlphaBlend) ? ComputeAlphaSortDepth(Proxy) : 0.0f;
 		Cmd.Buffer = ProxyBuffer;
 		Cmd.PerObjectCB = PerObjCB;
 		Cmd.Buffer.FirstIndex = Section.FirstIndex;

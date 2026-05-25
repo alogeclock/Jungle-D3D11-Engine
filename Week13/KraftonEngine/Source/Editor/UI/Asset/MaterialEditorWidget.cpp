@@ -266,7 +266,7 @@ void FMaterialEditorWidget::Render(float DeltaTime)
 	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_None;
 	if (ViewportClient.IsMouseOverViewport())
 	{
-		WindowFlags |= ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+		WindowFlags |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
 	}
 
 	ImGui::SetNextWindowSize(ImVec2(1040.0f, 640.0f), ImGuiCond_Once);
@@ -384,6 +384,23 @@ bool FMaterialEditorWidget::RenderDetailsPanel(UMaterial* Material)
 	bool bChanged = false;
 	ImGui::TextUnformatted("Material Details");
 	ImGui::Separator();
+
+	const char* BlendModeItems[] =
+	{
+		MaterialBlendMode::ToString(EMaterialBlendMode::Opaque),
+		MaterialBlendMode::ToString(EMaterialBlendMode::Translucent),
+	};
+	int BlendModeIndex = static_cast<int>(Material->GetBlendMode());
+	if (BlendModeIndex < 0 || BlendModeIndex >= IM_ARRAYSIZE(BlendModeItems))
+	{
+		BlendModeIndex = static_cast<int>(EMaterialBlendMode::Opaque);
+	}
+	if (ImGui::Combo("Blend Mode", &BlendModeIndex, BlendModeItems, IM_ARRAYSIZE(BlendModeItems)))
+	{
+		Material->SetBlendMode(static_cast<EMaterialBlendMode>(BlendModeIndex));
+		bChanged = true;
+	}
+	ImGui::Spacing();
 
 	if (ImGui::CollapsingHeader("Shader Parameters", ImGuiTreeNodeFlags_DefaultOpen))
 	{

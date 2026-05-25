@@ -60,6 +60,7 @@ private:
 	void EmitLineCommand(FLineGeometry& Lines, FShader* Shader, const FDrawCommandRenderState& RS);
 	void ApplyMaterialRenderState(FDrawCommandRenderState& OutState, const UMaterial* Mat, const FDrawCommandRenderState& BaseState);
 	FShader* SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode, const FPrimitiveSceneProxy& Proxy);
+	float ComputeAlphaSortDepth(const FPrimitiveSceneProxy& Proxy) const;
 
 	FConstantBuffer* GetPerObjectCBForProxy(FScene* Scene, const FPrimitiveSceneProxy& Proxy);
 	void EnsurePerObjectCBPoolCapacity(FScene* Scene, uint32 RequiredCount);
@@ -70,6 +71,8 @@ private:
 	// Collect 페이즈 상태
 	const FPassRenderStateTable* PassRenderStateTable = nullptr;
 	EViewMode CollectViewMode = EViewMode::Lit_Phong;
+	FVector CollectCameraPosition = FVector::ZeroVector;
+	FVector CollectCameraForward = FVector(1.0f, 0.0f, 0.0f);
 	FPrimitiveDrawOptions DrawOptions;
 	bool bHasSelectionMaskCommands = false;
 
