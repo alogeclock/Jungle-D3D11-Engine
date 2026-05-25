@@ -35,8 +35,8 @@ class UDistributionFloat : public UObject
     EDistributionType Type    = EDistributionType::Constant;
     float             Min     = 0.f;
     float             Max     = 0.f;
-    FFloatCurve       MinCurve;
-    FFloatCurve       MaxCurve;
+    FParticleFloatCurve       MinCurve;
+    FParticleFloatCurve       MaxCurve;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

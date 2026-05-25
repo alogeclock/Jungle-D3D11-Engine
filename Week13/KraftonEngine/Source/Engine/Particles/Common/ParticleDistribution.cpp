@@ -44,26 +44,26 @@ FVector FRandomStream::VRandRange(const FVector& InMin, const FVector& InMax) co
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FFloatCurve
+// FParticleFloatCurve
 // ─────────────────────────────────────────────────────────────────────────────
 
-void FFloatCurve::AddKey(float Time, float Value, float ArriveTangent, float LeaveTangent)
+void FParticleFloatCurve::AddKey(float Time, float Value, float ArriveTangent, float LeaveTangent)
 {
     FFloatCurveKey Key;
     Key.Time           = Time;
     Key.Value          = Value;
     Key.ArriveTangent  = ArriveTangent;
-    Key.LeaveTangent   = (InterpMode == ECurveInterpMode::CurveUser) ? ArriveTangent : LeaveTangent;
+    Key.LeaveTangent   = (InterpMode == EParticleCurveInterpMode::CurveUser) ? ArriveTangent : LeaveTangent;
 
     Keys.push_back(Key);
     std::sort(Keys.begin(), Keys.end(),
         [](const FFloatCurveKey& A, const FFloatCurveKey& B) { return A.Time < B.Time; });
 
-    if (InterpMode == ECurveInterpMode::CurveAuto)
+    if (InterpMode == EParticleCurveInterpMode::CurveAuto)
         ComputeAutoTangents();
 }
 
-void FFloatCurve::ComputeAutoTangents()
+void FParticleFloatCurve::ComputeAutoTangents()
 {
     const int32 N = static_cast<int32>(Keys.size());
     if (N < 2) return;
@@ -83,7 +83,7 @@ void FFloatCurve::ComputeAutoTangents()
     }
 }
 
-float FFloatCurve::HermiteInterp(float s, float Dt,
+float FParticleFloatCurve::HermiteInterp(float s, float Dt,
                                   float P0, float M0,
                                   float P1, float M1)
 {
@@ -96,7 +96,7 @@ float FFloatCurve::HermiteInterp(float s, float Dt,
     return h00*P0 + h10*Dt*M0 + h01*P1 + h11*Dt*M1;
 }
 
-float FFloatCurve::Eval(float T) const
+float FParticleFloatCurve::Eval(float T) const
 {
     if (Keys.empty()) return 0.f;
     if (Keys.size() == 1) return Keys[0].Value;
@@ -118,13 +118,13 @@ float FFloatCurve::Eval(float T) const
 
     switch (InterpMode)
     {
-    case ECurveInterpMode::Constant:
+    case EParticleCurveInterpMode::Constant:
         return A.Value;
-    case ECurveInterpMode::Linear:
+    case EParticleCurveInterpMode::Linear:
         return A.Value + s * (B.Value - A.Value);
-    case ECurveInterpMode::CurveAuto:
-    case ECurveInterpMode::CurveUser:
-    case ECurveInterpMode::CurveBreak:
+    case EParticleCurveInterpMode::CurveAuto:
+    case EParticleCurveInterpMode::CurveUser:
+    case EParticleCurveInterpMode::CurveBreak:
         return HermiteInterp(s, Dt, A.Value, A.LeaveTangent, B.Value, B.ArriveTangent);
     }
     return A.Value;
@@ -339,11 +339,11 @@ FArchive& operator<<(FArchive& Ar, FRandomStream& S)
     return Ar;
 }
 
-FArchive& operator<<(FArchive& Ar, FFloatCurve& C)
+FArchive& operator<<(FArchive& Ar, FParticleFloatCurve& C)
 {
     uint8 Mode = static_cast<uint8>(C.InterpMode);
     Ar << Mode;
-    if (Ar.IsLoading()) C.InterpMode = static_cast<ECurveInterpMode>(Mode);
+    if (Ar.IsLoading()) C.InterpMode = static_cast<EParticleCurveInterpMode>(Mode);
     Ar << C.Keys;
     return Ar;
 }

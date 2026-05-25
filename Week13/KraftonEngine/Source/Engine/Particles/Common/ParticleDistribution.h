@@ -41,7 +41,7 @@ private:
 // Curve — 키프레임 보간
 // ─────────────────────────────────────────────────────────────────────────────
 
-enum class ECurveInterpMode : uint8
+enum class EParticleCurveInterpMode : uint8
 {
     Linear,      // 직선 보간
     Constant,    // 계단식 (다음 키까지 값 유지)
@@ -65,10 +65,10 @@ struct FFloatCurveKey
     float LeaveTangent   = 0.f; // 이 키에서 나가는 기울기 (dV/dT)
 };
 
-struct FFloatCurve
+struct FParticleFloatCurve
 {
     TArray<FFloatCurveKey> Keys;
-    ECurveInterpMode       InterpMode = ECurveInterpMode::Linear;
+    EParticleCurveInterpMode InterpMode = EParticleCurveInterpMode::Linear;
 
     float Eval(float T) const;
 
@@ -89,7 +89,7 @@ private:
 
 struct FVectorCurve
 {
-    FFloatCurve X, Y, Z;
+    FParticleFloatCurve X, Y, Z;
 
     FVector Eval(float T) const { return FVector(X.Eval(T), Y.Eval(T), Z.Eval(T)); }
 
@@ -104,7 +104,7 @@ struct FVectorCurve
 /** RGBA 채널별 독립 커브 — Color 모듈 전용 */
 struct FLinearColorCurve
 {
-    FFloatCurve R, G, B, A;
+    FParticleFloatCurve R, G, B, A;
 
     FLinearColor Eval(float T) const
     {
@@ -120,7 +120,7 @@ struct FLinearColorCurve
     }
 
     // 모든 채널의 InterpMode를 한 번에 설정
-    void SetInterpMode(ECurveInterpMode Mode)
+    void SetInterpMode(EParticleCurveInterpMode Mode)
     {
         R.InterpMode = G.InterpMode = B.InterpMode = A.InterpMode = Mode;
     }
@@ -203,6 +203,6 @@ struct FRawDistributionLinearColor
 
 // Curve 타입 직렬화 (UDistribution* Serialize에서 사용)
 FArchive& operator<<(FArchive& Ar, FRandomStream& S);
-FArchive& operator<<(FArchive& Ar, FFloatCurve& C);
+FArchive& operator<<(FArchive& Ar, FParticleFloatCurve& C);
 FArchive& operator<<(FArchive& Ar, FVectorCurve& C);
 FArchive& operator<<(FArchive& Ar, FLinearColorCurve& C);
