@@ -1055,6 +1055,12 @@
     <ClCompile Include="Source\Engine\Particles\Assets\ParticleAsset.cpp">
       <Filter>Source\Engine\Particles\Assets</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Particles\Common\ParticleDistribution.cpp">
+      <Filter>Source\Engine\Particles\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Particles\Common\ParticleDistributionTypes.cpp">
+      <Filter>Source\Engine\Particles\Common</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Particles\Modules\ParticleModules.cpp">
       <Filter>Source\Engine\Particles\Modules</Filter>
     </ClCompile>
@@ -1143,6 +1149,9 @@
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\Proxy\GizmoSceneProxy.cpp">
+      <Filter>Source\Engine\Render\Proxy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Render\Proxy\ParticleSceneProxy.cpp">
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\Proxy\PrimitiveSceneProxy.cpp">
@@ -1344,7 +1353,6 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\Render\Proxy\ParticleSceneProxy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -2049,6 +2057,12 @@
     <ClInclude Include="Source\Engine\Particles\Assets\ParticleTypeData.h">
       <Filter>Source\Engine\Particles\Assets</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Particles\Common\ParticleDistribution.h">
+      <Filter>Source\Engine\Particles\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Particles\Common\ParticleDistributionTypes.h">
+      <Filter>Source\Engine\Particles\Common</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Particles\Common\ParticleHelper.h">
       <Filter>Source\Engine\Particles\Common</Filter>
     </ClInclude>
@@ -2188,6 +2202,9 @@
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\Proxy\GizmoSceneProxy.h">
+      <Filter>Source\Engine\Render\Proxy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Render\Proxy\ParticleSceneProxy.h">
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\Proxy\PrimitiveSceneProxy.h">
@@ -4083,7 +4100,6 @@
     <ClInclude Include="ThirdParty\sol2\include\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\include\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Render\Proxy\ParticleSceneProxy.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

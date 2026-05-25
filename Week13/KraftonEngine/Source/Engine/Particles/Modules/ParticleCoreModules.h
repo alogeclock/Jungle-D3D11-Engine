@@ -1,23 +1,22 @@
-﻿/**
+/**
  * @file ParticleCoreModules.h
  * @brief 기본 Particle Module 정의.
  *
- * 포함 클래스:
- * - UParticleModuleRequired: Emitter 필수 설정
- * - UParticleModuleSpawn: Particle 생성량 / 생성 주기 제어
- * - UParticleModuleLifetime: Particle 수명 설정
- * - UParticleModuleLocation: Particle 초기 위치 설정
- * - UParticleModuleVelocity: Particle 초기 속도 설정
- * - UParticleModuleColor: Particle 색상 / 알파 설정
- * - UParticleModuleSize: Particle 크기 설정
+ * 각 모듈은 에디터 측 UDistribution* (커브 편집 가능) 과
+ * 런타임 측 FRawDistribution (Baked 테이블) 을 함께 보유한다.
+ * CacheModuleValues()를 호출하면 UDistribution → FRawDistribution 동기화가 된다.
  */
 
 #pragma once
 
 #include "ParticleModules.h"
+#include "Particles/Common/ParticleDistributionTypes.h"
 #include "ParticleCoreModules.generated.h"
 
-/** Emitter 필수 렌더링 설정 모듈 */
+// ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleRequired
+// ─────────────────────────────────────────────────────────────────────────────
+
 UCLASS()
 class UParticleModuleRequired : public UParticleModule
 {
@@ -40,12 +39,15 @@ class UParticleModuleRequired : public UParticleModule
 
   private:
     EParticleEmitterType EmitterType = EParticleEmitterType::PET_Sprite; // 기본 Emitter 타입
-    UMaterial           *Material = nullptr;                         // Particle 렌더링 Material
+    UMaterial           *Material = nullptr;                             // Particle 렌더링 Material
     EParticleSortMode    SortMode = EParticleSortMode::PSM_None;         // Particle 정렬 방식
-    int32                TranslucencySortPriority = 0;               // Translucent Pass 정렬 우선순위
+    int32                TranslucencySortPriority = 0;                   // Translucent Pass 정렬 우선순위
 };
 
-/** Particle 생성량과 Burst를 제어하는 모듈 */
+// ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleSpawn
+// ─────────────────────────────────────────────────────────────────────────────
+
 UCLASS()
 class UParticleModuleSpawn : public UParticleModule
 {
@@ -60,14 +62,18 @@ class UParticleModuleSpawn : public UParticleModule
     float GetSpawnRate() const { return SpawnRate; }
     void  SetSpawnRate(float InSpawnRate) { SpawnRate = InSpawnRate; }
 
-	int32 GetBurstCount() const { return BurstCount; }
-	void  SetBurstCount(int32 InBurstCount) { BurstCount = InBurstCount; }
+    int32 GetBurstCount() const { return BurstCount; }
+    void  SetBurstCount(int32 InBurstCount) { BurstCount = InBurstCount; }
+
   private:
-    float SpawnRate = 10.0f; // 초당 Particle 생성 수
+    float SpawnRate  = 10.0f; // 초당 Particle 생성 수
     int32 BurstCount = 0;    // 순간 Spawn 개수
 };
 
-/** Particle 수명을 설정하는 모듈 */
+// ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleLifetime
+// ─────────────────────────────────────────────────────────────────────────────
+
 UCLASS()
 class UParticleModuleLifetime : public UParticleModule
 {
@@ -78,15 +84,22 @@ class UParticleModuleLifetime : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Lifetime; }
     virtual void Serialize(FArchive& Ar) override;
+    virtual void CacheModuleValues() override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
 
-    float GetLifetime() const { return Lifetime; }
-    void  SetLifetime(float InLifetime) { Lifetime = InLifetime; }
+    UDistributionFloat* GetLifetimeDist() const { return LifetimeDist; }
 
   private:
-    float Lifetime = 1.0f; // Particle 전체 수명
+    // 에디터 측: 커브/범위 편집 가능
+    UDistributionFloat* LifetimeDist = nullptr;
+    // 런타임 측: Baked 테이블
+    FRawDistributionFloat RawLifetime = FRawDistributionFloat::MakeConstant(1.0f);
 };
 
-/** Particle 초기 위치와 Spawn 영역을 설정하는 모듈 */
+// ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleLocation
+// ─────────────────────────────────────────────────────────────────────────────
+
 UCLASS()
 class UParticleModuleLocation : public UParticleModule
 {
@@ -97,19 +110,24 @@ class UParticleModuleLocation : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Location; }
     virtual void Serialize(FArchive& Ar) override;
+    virtual void CacheModuleValues() override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
 
-    FVector GetInitialLocation() const { return InitialLocation; }
-    void    SetInitialLocation(const FVector &InLocation) { InitialLocation = InLocation; }
+    UDistributionVector* GetLocationDist() const { return LocationDist; }
 
   private:
-    FVector                 InitialLocation = FVector::ZeroVector; // Spawn 시 초기 위치 오프셋
-    float                   SphereRadius = 0.0f;                   // Sphere Spawn 반경
-    float                   CylinderRadius = 0.0f;                 // Cylinder Spawn 반경
-    float                   CylinderHeight = 0.0f;                 // Cylinder Spawn 높이
-    FParticleRandomSeedInfo RandomSeedInfo;                        // Seed 기반 위치 난수 설정
+    UDistributionVector* LocationDist = nullptr;
+    FRawDistributionVector RawLocation;
+
+    float SphereRadius   = 0.0f;
+    float CylinderRadius = 0.0f;
+    float CylinderHeight = 0.0f;
 };
 
-/** Particle 초기 속도를 설정하는 모듈 */
+// ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleVelocity
+// ─────────────────────────────────────────────────────────────────────────────
+
 UCLASS()
 class UParticleModuleVelocity : public UParticleModule
 {
@@ -120,17 +138,20 @@ class UParticleModuleVelocity : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Velocity; }
     virtual void Serialize(FArchive& Ar) override;
-	virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void CacheModuleValues() override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
 
-    FVector GetInitialVelocity() const { return InitialVelocity; }
-    void    SetInitialVelocity(const FVector &InVelocity) { InitialVelocity = InVelocity; }
+    UDistributionVector* GetVelocityDist() const { return VelocityDist; }
 
   private:
-    FVector                 InitialVelocity = FVector::ZeroVector; // Spawn 시 초기 속도
-    FParticleRandomSeedInfo RandomSeedInfo;                        // Seed 기반 속도 난수 설정
+    UDistributionVector* VelocityDist = nullptr;
+    FRawDistributionVector RawVelocity;
 };
 
-/** Particle 색상과 Alpha 변화를 설정하는 모듈 */
+// ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleColor
+// ─────────────────────────────────────────────────────────────────────────────
+
 UCLASS()
 class UParticleModuleColor : public UParticleModule
 {
@@ -141,17 +162,21 @@ class UParticleModuleColor : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Color; }
     virtual void Serialize(FArchive& Ar) override;
+    virtual void CacheModuleValues() override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime) override;
 
-    FColor GetInitialColor() const { return InitialColor; }
-    void   SetInitialColor(const FColor &InColor) { InitialColor = InColor; }
+    UDistributionLinearColor* GetColorDist() const { return ColorDist; }
 
   private:
-    FColor InitialColor = FColor::White(); // Spawn 시 초기 색상
-    FColor FinalColor = FColor::White();   // 수명 종료 시 목표 색상
-    bool   bUseColorOverLife = false;    // 수명 기반 색상 변화 사용 여부
+    UDistributionLinearColor* ColorDist = nullptr;
+    FRawDistributionLinearColor RawColor = FRawDistributionLinearColor::MakeConstant(FLinearColor::White());
 };
 
-/** Particle 크기와 수명 기반 크기 변화를 설정하는 모듈 */
+// ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleSize
+// ─────────────────────────────────────────────────────────────────────────────
+
 UCLASS()
 class UParticleModuleSize : public UParticleModule
 {
@@ -162,13 +187,13 @@ class UParticleModuleSize : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Size; }
     virtual void Serialize(FArchive& Ar) override;
+    virtual void CacheModuleValues() override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime) override;
 
-    FVector GetInitialSize() const { return InitialSize; }
-    void    SetInitialSize(const FVector &InSize) { InitialSize = InSize; }
+    UDistributionVector* GetSizeDist() const { return SizeDist; }
 
   private:
-    FVector                 InitialSize = FVector(1.0f, 1.0f, 1.0f); // Spawn 시 초기 크기
-    FVector                 FinalSize = FVector(1.0f, 1.0f, 1.0f);   // 수명 종료 시 목표 크기
-    bool                    bUseSizeByLife = false;                  // 수명 기반 크기 변화 사용 여부
-    FParticleRandomSeedInfo RandomSeedInfo;                          // Seed 기반 크기 난수 설정
+    UDistributionVector* SizeDist = nullptr;
+    FRawDistributionVector RawSize = FRawDistributionVector::MakeConstant(FVector(1.f, 1.f, 1.f));
 };
