@@ -1,6 +1,7 @@
 ﻿#include "ParticleSystemComponent.h"
 #include "Particles/Runtime/ParticleEmitterInstance.h"
 #include "Particles/Rendering/ParticleRenderData.h"
+#include "Render/Proxy/ParticleSceneProxy.h"
 #include <algorithm>
 
 void UParticleSystemComponent::InitializeComponent()
@@ -110,7 +111,7 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 FPrimitiveSceneProxy* UParticleSystemComponent::CreateSceneProxy()
 {
-	return nullptr;
+	return new FParticleSceneProxy(this);
 }
 
 void UParticleSystemComponent::SetTemplate(UParticleSystem* InTemplate)

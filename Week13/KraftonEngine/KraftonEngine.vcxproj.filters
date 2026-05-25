@@ -16,6 +16,9 @@
     <Filter Include="Shaders\Lighting">
       <UniqueIdentifier>{97acd6e6-5b21-8302-b62a-106ac9f908a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Particles">
+      <UniqueIdentifier>{e1158f55-1b84-2636-f230-1e6a9b193ce4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Shaders\PostProcess">
       <UniqueIdentifier>{99e90c3e-d2e3-6436-6596-dd1cf09f1909}</UniqueIdentifier>
     </Filter>
@@ -426,6 +429,9 @@
     <FxCompile Include="Shaders\Lighting\VSMBlur.hlsl">
       <Filter>Shaders\Lighting</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Particles\Particle.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
     <FxCompile Include="Shaders\PostProcess\Blit.hlsl">
       <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
@@ -596,6 +602,9 @@
     <ClCompile Include="Source\Editor\UI\Asset\MeshEditorWidget.cpp">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.cpp">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Editor\UI\Asset\StaticMeshEditorWidget.cpp">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClCompile>
@@ -621,6 +630,9 @@
       <Filter>Source\Editor\Viewport</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\Viewport\MeshEditorViewportClient.cpp">
+      <Filter>Source\Editor\Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Viewport\ParticleSystemEditorViewportClient.cpp">
       <Filter>Source\Editor\Viewport</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\Viewport\StaticMeshEditorViewportClient.cpp">
@@ -1052,6 +1064,9 @@
     <ClCompile Include="Source\Engine\Particles\Assets\ParticleAsset.cpp">
       <Filter>Source\Engine\Particles\Assets</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Particles\Assets\ParticleSystemAssetManager.cpp">
+      <Filter>Source\Engine\Particles\Assets</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Particles\Common\ParticleDistribution.cpp">
       <Filter>Source\Engine\Particles\Common</Filter>
     </ClCompile>
@@ -1060,6 +1075,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Particles\Modules\ParticleModules.cpp">
       <Filter>Source\Engine\Particles\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Particles\Rendering\ParticleRenderData.cpp">
+      <Filter>Source\Engine\Particles\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Particles\Runtime\ParticleEmitterInstance.cpp">
       <Filter>Source\Engine\Particles\Runtime</Filter>
@@ -1350,15 +1368,6 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Editor\Viewport\ParticleSystemEditorViewportClient.cpp">
-      <Filter>Source\Editor\Viewport</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Particles\Assets\ParticleSystemAssetManager.cpp">
-      <Filter>Source\Engine\Particles\Assets</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.cpp" />
-    <ClCompile Include="HighPerformanceGpuHint.cpp" />
-    <ClCompile Include="Source\Engine\Render\Proxy\ParticleSceneProxy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -1490,6 +1499,9 @@
     <ClInclude Include="Source\Editor\UI\Asset\MeshEditorWidget.h">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.h">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Editor\UI\Asset\StaticMeshEditorWidget.h">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClInclude>
@@ -1530,6 +1542,9 @@
       <Filter>Source\Editor\Viewport</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\Viewport\MeshEditorViewportClient.h">
+      <Filter>Source\Editor\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Viewport\ParticleSystemEditorViewportClient.h">
       <Filter>Source\Editor\Viewport</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\Viewport\StaticMeshEditorViewportClient.h">
@@ -2055,6 +2070,9 @@
       <Filter>Source\Engine\Object</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Particles\Assets\ParticleAsset.h">
+      <Filter>Source\Engine\Particles\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Particles\Assets\ParticleSystemAssetManager.h">
       <Filter>Source\Engine\Particles\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Particles\Assets\ParticleTypeData.h">
@@ -4103,14 +4121,6 @@
     <ClInclude Include="ThirdParty\sol2\include\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\include\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Editor\Viewport\ParticleSystemEditorViewportClient.h">
-      <Filter>Source\Editor\Viewport</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Particles\Assets\ParticleSystemAssetManager.h">
-      <Filter>Source\Engine\Particles\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.h" />
-    <ClInclude Include="Source\Engine\Render\Proxy\ParticleSceneProxy.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

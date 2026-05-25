@@ -3,6 +3,7 @@
  * @brief Particle 렌더링 전달 데이터 정의.
  *
  * 포함 타입:
+ * - FParticleVertexBuildContext: 카메라 정보 전달용 렌더 컨텍스트
  * - FDynamicEmitterReplayDataBase: Emitter 공통 렌더링 스냅샷
  * - FDynamicSpriteEmitterReplayData: Sprite Emitter ReplayData
  * - FDynamicMeshEmitterReplayData: Mesh Emitter ReplayData
@@ -18,6 +19,14 @@
 #pragma once
 
 #include "ParticleVertexTypes.h"
+
+/** UpdatePerViewport → GatherRenderData 로 전달되는 카메라 정보 */
+struct FParticleVertexBuildContext
+{
+    FVector CamRight;
+    FVector CamUp;
+    FVector CamForward;
+};
 
 /** 렌더링에 전달할 Emitter 공통 ReplayData */
 struct FDynamicEmitterReplayDataBase
@@ -73,8 +82,18 @@ struct FDynamicEmitterDataBase
     virtual void BuildRenderData()
     {
     }
-    virtual int32 GetDynamicVertexStride() const = 0;
     virtual ~FDynamicEmitterDataBase() = default;
+
+    // ============================================================
+    // GPU 정점/인덱스 조립 — 타입별 서브클래스가 오버라이드
+    // OutVertices / OutIndices 에 append하며, 인덱스는 OutVertices.size()
+    // 기준으로 계산한다. 기본 구현은 no-op.
+    // ============================================================
+    virtual void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                                      TArray<FSpriteParticleInstanceVertex> &OutInstances,
+                                      TArray<uint32> &OutIndices) const
+    {
+    }
 };
 
 /** Sprite Particle 렌더링 데이터 */
@@ -82,18 +101,18 @@ struct FDynamicSpriteEmitterData : public FDynamicEmitterDataBase
 {
     FDynamicSpriteEmitterReplayData Source; // Sprite ReplayData
 
-	~FDynamicSpriteEmitterData() override {
-		Source.DataContainer.Release();
-	}
+    ~FDynamicSpriteEmitterData() override
+    {
+        Source.DataContainer.Release();
+    }
 
-    virtual const FDynamicEmitterReplayDataBase &GetSource() const override
+    const FDynamicEmitterReplayDataBase &GetSource() const override
     {
         return Source;
     }
-    virtual int32 GetDynamicVertexStride() const override
-    {
-        return sizeof(FParticleSpriteVertex);
-    }
+    void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                              TArray<FSpriteParticleInstanceVertex> &OutInstances,
+                              TArray<uint32> &OutIndices) const override;
 };
 
 /** Mesh Particle 렌더링 데이터 */
@@ -106,14 +125,14 @@ struct FDynamicMeshEmitterData : public FDynamicEmitterDataBase
         Source.DataContainer.Release();
     }
 
-    virtual const FDynamicEmitterReplayDataBase &GetSource() const override
+    const FDynamicEmitterReplayDataBase &GetSource() const override
     {
         return Source;
     }
-    virtual int32 GetDynamicVertexStride() const override
-    {
-        return sizeof(FMeshParticleInstanceVertex);
-    }
+    // Mesh Particle: 별도 인스턴싱 패스
+    void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                              TArray<FSpriteParticleInstanceVertex> &OutInstances,
+                              TArray<uint32> &OutIndices) const override;
 };
 
 /** Beam Emitter 렌더링 데이터 */
@@ -126,14 +145,14 @@ struct FDynamicBeamEmitterData : public FDynamicEmitterDataBase
         Source.DataContainer.Release();
     }
 
-    virtual const FDynamicEmitterReplayDataBase &GetSource() const override
+    const FDynamicEmitterReplayDataBase &GetSource() const override
     {
         return Source;
     }
-    virtual int32 GetDynamicVertexStride() const override
-    {
-        return sizeof(FParticleSpriteVertex);
-    }
+    // Source → Target 사이 빔 quad 생성
+    void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                              TArray<FSpriteParticleInstanceVertex> &OutInstances,
+                              TArray<uint32> &OutIndices) const override;
 };
 
 /** Ribbon Emitter 렌더링 데이터 */
@@ -141,12 +160,12 @@ struct FDynamicRibbonEmitterData : public FDynamicEmitterDataBase
 {
     FDynamicRibbonEmitterReplayData Source; // Ribbon ReplayData
 
-    virtual const FDynamicEmitterReplayDataBase &GetSource() const override
+    const FDynamicEmitterReplayDataBase &GetSource() const override
     {
         return Source;
     }
-    virtual int32 GetDynamicVertexStride() const override
-    {
-        return sizeof(FParticleSpriteVertex);
-    }
+    // 파티클 경로 따라 ribbon strip 생성
+    void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                              TArray<FSpriteParticleInstanceVertex> &OutInstances,
+                              TArray<uint32> &OutIndices) const override;
 };

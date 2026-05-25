@@ -111,7 +111,24 @@ namespace EShaderPath
 	inline constexpr const char* OverlayFont = "Shaders/UI/OverlayFont.hlsl";
 	inline constexpr const char* SubUV = "Shaders/UI/SubUV.hlsl";
 	inline constexpr const char* Billboard = "Shaders/UI/Billboard.hlsl";
+	inline constexpr const char* ParticleSprite  = "Shaders/Particles/ParticleSprite.hlsl";
+	inline constexpr const char* ParticleMesh   = "Shaders/Particles/ParticleMesh.hlsl";
+	inline constexpr const char* ParticleBeam   = "Shaders/Particles/ParticleBeam.hlsl";
+	inline constexpr const char* ParticleRibbon = "Shaders/Particles/ParticleRibbon.hlsl";
+}
 
+// Particle 셰이더 permutation 매크로 (셰이더별 네임스페이스로 분리)
+namespace EParticleDefines
+{
+	namespace Sprite
+	{
+		// SubUV atlas 샘플링
+		inline const D3D_SHADER_MACRO SubUV[] = { {"USE_SUBUV", "1"}, {nullptr, nullptr} };
+	}
+}
+
+namespace EShaderPath
+{
 	inline constexpr const char* ShadowDepth = "Shaders/Lighting/ShadowDepth.hlsl";
 	inline constexpr const char* VSMBlur = "Shaders/Lighting/VSMBlur.hlsl";
 	inline constexpr const char* ShadowMapVis = "Shaders/PostProcess/ShadowMapVis.hlsl";

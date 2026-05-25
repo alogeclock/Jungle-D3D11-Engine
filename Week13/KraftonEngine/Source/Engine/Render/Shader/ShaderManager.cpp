@@ -44,6 +44,13 @@ void FShaderManager::Initialize(ID3D11Device* InDevice)
 	GetOrCreate(EShaderPath::OverlayFont, StartupError);
 	GetOrCreate(EShaderPath::SubUV, StartupError);
 	GetOrCreate(EShaderPath::Billboard, StartupError);
+
+	// Particle shaders (emitter 타입별 전용 파일)
+	GetOrCreate(EShaderPath::ParticleSprite,  StartupError);
+	PreCompile(FShaderKey(EShaderPath::ParticleSprite, EParticleDefines::Sprite::SubUV), EParticleDefines::Sprite::SubUV, StartupError);
+	GetOrCreate(EShaderPath::ParticleMesh,   StartupError);
+	GetOrCreate(EShaderPath::ParticleBeam,   StartupError);
+	GetOrCreate(EShaderPath::ParticleRibbon, StartupError);
 	GetOrCreate(EShaderPath::HeightFog, StartupError);
 	GetOrCreate(EShaderPath::GammaCorrection, StartupError);
 	GetOrCreate(EShaderPath::ShadowDepth, StartupError);
