@@ -92,4 +92,11 @@ private:
 	UParticleModule* CurvePrevModule   = nullptr;
 
 	bool bPendingClose = false;
+
+	// Viewport playback controls
+	bool  bAnimPaused     = false;
+	bool  bAnimRealtime   = true;
+	bool  bAnimLoop       = true;
+	float AnimSpeedScale  = 1.0f;
+	bool  bWasActive      = false;
 };
