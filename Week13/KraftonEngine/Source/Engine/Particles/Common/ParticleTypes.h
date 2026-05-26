@@ -125,6 +125,18 @@ enum class EParticleModuleClass : uint8
     Unknown = 0xFF
 };
 
+/** Collision Module에서 MaxCollisions 초과 시 취할 동작 */
+UENUM()
+enum class EParticleCollisionCompletionOption : uint8
+{
+    EPCC_Kill,             // MaxCollisions 도달 시 파티클 제거
+    EPCC_Freeze,           // 파티클 완전 고정, 이후 업데이트 중단
+    EPCC_HaltCollisions,   // 충돌 검사만 중단, 나머지 업데이트는 계속
+    EPCC_FreezeTranslation,// 위치 이동만 멈추고, 나머지 업데이트는 계속
+    EPCC_FreezeRotation,   // 회전만 멈추고, 위치 이동 등은 계속
+    EPCC_FreezeMovement,   // 위치 이동 + 회전을 멈추고, 나머지 업데이트는 계속
+};
+
 /** Rendering 계층으로 전달되는 Dynamic Emitter 타입 */
 enum class EDynamicEmitterType : uint8
 {
