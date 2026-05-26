@@ -83,18 +83,15 @@ class UParticleModuleSpawn : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Spawn; }
     virtual void Serialize(FArchive& Ar) override;
+    virtual void CacheModuleValues() override;
 
-    float GetSpawnRate() const { return SpawnRate; }
-    void  SetSpawnRate(float InSpawnRate) { SpawnRate = InSpawnRate; }
-
-    int32 GetBurstCount() const { return BurstCount; }
-    void  SetBurstCount(int32 InBurstCount) { BurstCount = InBurstCount; }
+    float GetSpawnRate(float EmitterTime = 0.0f) const { return RawSpawnRate.GetValue(EmitterTime, const_cast<FRandomStream*>(&ModuleStream)); }
+    UDistributionFloat* GetSpawnRateDist() const { return SpawnRateDist; }
 
   private:
-    UPROPERTY(Edit, Category="Particle", DisplayName="Spawn Rate", Min=0.0, Max=10000.0, Speed=0.1)
-    float SpawnRate  = 10.0f; // 초당 Particle 생성 수
-    UPROPERTY(Edit, Category="Particle", DisplayName="Burst Count", Min=0, Max=100000, Speed=1.0)
-    int32 BurstCount = 0;    // 순간 Spawn 개수
+    UPROPERTY(Edit, Category="Particle", DisplayName="Spawn Rate", Type=Distribution, Class=UDistributionFloat)
+    UDistributionFloat* SpawnRateDist = nullptr;
+    FRawDistributionFloat RawSpawnRate = FRawDistributionFloat::MakeConstant(10.0f);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -118,6 +115,7 @@ class UParticleModuleLifetime : public UParticleModule
 
   private:
     // 에디터 측: 커브/범위 편집 가능
+    UPROPERTY(Edit, Category="Particle", DisplayName="Lifetime", Type=Distribution, Class=UDistributionFloat)
     UDistributionFloat* LifetimeDist = nullptr;
     // 런타임 측: Baked 테이블
     FRawDistributionFloat RawLifetime = FRawDistributionFloat::MakeConstant(1.0f);
@@ -143,6 +141,7 @@ class UParticleModuleLocation : public UParticleModule
     UDistributionVector* GetLocationDist() const { return LocationDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Location", Type=Distribution, Class=UDistributionVector)
     UDistributionVector* LocationDist = nullptr;
     FRawDistributionVector RawLocation = FRawDistributionVector::MakeConstant(FVector::ZeroVector);
 
@@ -174,6 +173,7 @@ class UParticleModuleVelocity : public UParticleModule
     UDistributionVector* GetVelocityDist() const { return VelocityDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Velocity", Type=Distribution, Class=UDistributionVector)
     UDistributionVector* VelocityDist = nullptr;
     FRawDistributionVector RawVelocity = FRawDistributionVector::MakeUniform(FVector(0.f, 0.f, 0.f), FVector(0.f, 0.f, 10.f));
 };
@@ -199,6 +199,7 @@ class UParticleModuleColor : public UParticleModule
     UDistributionLinearColor* GetColorDist() const { return ColorDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Color", Type=Distribution, Class=UDistributionLinearColor)
     UDistributionLinearColor* ColorDist = nullptr;
     FRawDistributionLinearColor RawColor = FRawDistributionLinearColor::MakeConstant(FLinearColor::White());
 };
@@ -224,6 +225,7 @@ class UParticleModuleSize : public UParticleModule
     UDistributionVector* GetSizeDist() const { return SizeDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Size", Type=Distribution, Class=UDistributionVector)
     UDistributionVector* SizeDist = nullptr;
     FRawDistributionVector RawSize = FRawDistributionVector::MakeConstant(FVector(1.f, 1.f, 1.f));
 };

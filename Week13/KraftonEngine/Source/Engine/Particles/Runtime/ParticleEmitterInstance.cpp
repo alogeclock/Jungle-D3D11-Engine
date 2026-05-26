@@ -57,8 +57,6 @@ FParticleEmitterInstance::~FParticleEmitterInstance()
 
 	delete[] InstanceData;
 	InstanceData = nullptr;
-	
-	BurstFired.clear();
 }
 
 void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UParticleEmitter* InTemplate)
@@ -94,7 +92,6 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 	bFirstTime = true;
 	bEnabled = true;
 	LoopCount = 0;
-	BurstCount = 0;
 	EmitterTime = 0.0f;
 	LastDeltaTime = 0.0f;
 	RealDeltaTime = 0.0f;
@@ -199,14 +196,12 @@ void FParticleEmitterInstance::Reset()
 	LastDeltaTime = 0;
 	RealDeltaTime = 0;
 	LoopCount = 0;
-	BurstCount = 0;
 	ParticleCounter = 0;
 	ActiveParticles = 0;
 	SpawnFraction = 0.0f;
 	bFirstTime = true;
 	bEnabled = true;
 	ReceivedEvents.clear();
-	BurstFired.clear();
 
 	if (CurrentLODLevel)
 	{
@@ -262,9 +257,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, TArray<FPart
 	if (EmitterTime < 0.0f)
 		return;
 
-	//Burst는 일단 미구현
 	float SpawnRate = 0.0f;
-	int32 BurstCount = 0;
 
 	for (UParticleModule* Module : CurrentLODLevel->GetSpawnModules())
 	{
@@ -274,12 +267,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, TArray<FPart
 		if (Module->GetModuleType() == EParticleModuleType::PMT_Spawn)
 		{
 			UParticleModuleSpawn* SpawnModule = static_cast<UParticleModuleSpawn*>(Module);
-			SpawnRate += std::max(0.0f, SpawnModule->GetSpawnRate());
-
-			if (bFirstTime)
-			{
-				//BurstCount += SpawnModule->GetBurstCount();
-			}
+			SpawnRate += std::max(0.0f, SpawnModule->GetSpawnRate(EmitterTime));
 		}
 	}
 
@@ -288,7 +276,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, TArray<FPart
 	float NewSpawnFraction = NewLeftover - SpawnCount;
 
 	const int32 AvailableSlots = MaxActiveParticles - ActiveParticles;
-	const int32 TotalSpawnCount = std::min(SpawnCount + BurstCount, AvailableSlots);
+	const int32 TotalSpawnCount = std::min(SpawnCount, AvailableSlots);
 
 	if (TotalSpawnCount > 0)
 	{

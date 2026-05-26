@@ -5,6 +5,7 @@
 #include "Engine/Particles/Modules/ParticleCoreModules.h"
 #include "Engine/Particles/Modules/ParticleMotionModules.h"
 #include "Engine/Particles/Modules/ParticleRenderExpressionModules.h"
+#include "Engine/Core/Property/FDistributionProperty.h"
 #include "Core/Property/FEnumProperty.h"
 #include "Core/Property/FObjectPropertyBase/FSoftObjectProperty.h"
 #include "Core/Property/FStructProperty.h"
@@ -30,6 +31,7 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <cstring>
 #include <cstdio>
 
 // 바닥 시각화
@@ -935,6 +937,7 @@ bool FParticleSystemEditorWidget::RenderParticleDistribution(UParticleModule* Mo
 	}
 
 	bool bChanged = false;
+	int32 CurvePropertyChannelIdx = 0;
 	auto DrawType = [&bChanged](EDistributionType& Type)
 	{
 		ImGui::PushID("DistributionType");
@@ -1046,13 +1049,22 @@ bool FParticleSystemEditorWidget::RenderParticleDistribution(UParticleModule* Mo
 		ImGui::NextColumn();
 		ImGui::PopID();
 	};
-	auto DrawFloatCurve = [&bChanged](const char* Name, FParticleFloatCurve& Curve)
+	auto DrawFloatCurve = [this, &bChanged, &CurvePropertyChannelIdx](const char* Name, FParticleFloatCurve& Curve)
 	{
+		const int32 ThisChannelIdx = CurvePropertyChannelIdx++;
+		const bool bSelectMaxCurve = std::strstr(Name, "(Max)") != nullptr;
 		ImGui::PushID(Name);
 		ImGui::TextUnformatted(Name);
 		ImGui::NextColumn();
-		ImGui::SetNextItemWidth(-1.0f);
-		ImGui::TextDisabled("Use Curve Editor for per-key interpolation");
+		const float CurveButtonWidth = 96.0f;
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (std::max)(0.0f, ImGui::GetContentRegionAvail().x - CurveButtonWidth));
+		if (ImGui::Button("Curve Editor", ImVec2(CurveButtonWidth, 0.0f)))
+		{
+			CurveChannelIdx = ThisChannelIdx;
+			CurveSelectedKey = -1;
+			CurveSelCurve = bSelectMaxCurve ? 1 : 0;
+			PFitCurveViewToKeys(&Curve, nullptr, CurveViewMinT, CurveViewMaxT, CurveViewMinV, CurveViewMaxV);
+		}
 		ImGui::NextColumn();
 
 		ImGui::TextUnformatted("Key Count");
@@ -1068,12 +1080,20 @@ bool FParticleSystemEditorWidget::RenderParticleDistribution(UParticleModule* Mo
 		}
 		ImGui::NextColumn();
 
+		if (!Curve.Keys.empty())
+		{
+			ImGui::TextDisabled("Fields");
+			ImGui::NextColumn();
+			ImGui::TextDisabled("T / V / AT / LT");
+			ImGui::NextColumn();
+		}
+
 		for (int32 KeyIndex = 0; KeyIndex < static_cast<int32>(Curve.Keys.size()); ++KeyIndex)
 		{
 			FFloatCurveKey& Key = Curve.Keys[KeyIndex];
 			ImGui::PushID(KeyIndex);
 			char Label[64];
-			snprintf(Label, sizeof(Label), "Key %d T/V/AT/LT", KeyIndex);
+			snprintf(Label, sizeof(Label), "Key %d", KeyIndex);
 			ImGui::TextUnformatted(Label);
 			ImGui::NextColumn();
 			float Values[4] = { Key.Time, Key.Value, Key.ArriveTangent, Key.LeaveTangent };
@@ -1192,70 +1212,41 @@ bool FParticleSystemEditorWidget::RenderParticleDistribution(UParticleModule* Mo
 		if (bUniform) DrawBool("Use Extremes", Dist->bUseExtremes);
 	};
 
-	if (UParticleModuleLifetime* Lifetime = Cast<UParticleModuleLifetime>(Module))
+	TArray<const FProperty*> Props;
+	Module->GetClass()->GetAllProperties(Props);
+
+	bool bFoundDistribution = false;
+	for (const FProperty* Prop : Props)
 	{
-		UDistributionFloat* Dist = Lifetime->GetLifetimeDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "LifetimeDist" : "LifetimeDist is null"); ImGui::NextColumn();
-		FloatDistFields(Dist);
+		if (!Prop || Prop->GetType() != EPropertyType::Distribution)
+		{
+			continue;
+		}
+		bFoundDistribution = true;
+
+		const FDistributionProperty& DistProp = static_cast<const FDistributionProperty&>(*Prop);
+		UObject* DistObject = DistProp.GetDistributionPropertyValue(const_cast<void*>(DistProp.ContainerPtrToValuePtr(Module)));
+
+		ImGui::TextUnformatted("Object");
+		ImGui::NextColumn();
+		ImGui::TextUnformatted(DistObject ? Prop->Name.c_str() : "Distribution is null");
+		ImGui::NextColumn();
+
+		if (UDistributionFloat* FloatDist = Cast<UDistributionFloat>(DistObject))
+		{
+			FloatDistFields(FloatDist);
+		}
+		else if (UDistributionVector* VectorDist = Cast<UDistributionVector>(DistObject))
+		{
+			VectorDistFields(VectorDist);
+		}
+		else if (UDistributionLinearColor* ColorDist = Cast<UDistributionLinearColor>(DistObject))
+		{
+			ColorDistFields(ColorDist);
+		}
 	}
-	else if (UParticleModuleLocation* Location = Cast<UParticleModuleLocation>(Module))
-	{
-		UDistributionVector* Dist = Location->GetLocationDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "LocationDist" : "LocationDist is null"); ImGui::NextColumn();
-		VectorDistFields(Dist);
-	}
-	else if (UParticleModuleVelocity* Velocity = Cast<UParticleModuleVelocity>(Module))
-	{
-		UDistributionVector* Dist = Velocity->GetVelocityDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "VelocityDist" : "VelocityDist is null"); ImGui::NextColumn();
-		VectorDistFields(Dist);
-	}
-	else if (UParticleModuleColor* Color = Cast<UParticleModuleColor>(Module))
-	{
-		UDistributionLinearColor* Dist = Color->GetColorDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "ColorDist" : "ColorDist is null"); ImGui::NextColumn();
-		ColorDistFields(Dist);
-	}
-	else if (UParticleModuleSize* Size = Cast<UParticleModuleSize>(Module))
-	{
-		UDistributionVector* Dist = Size->GetSizeDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "SizeDist" : "SizeDist is null"); ImGui::NextColumn();
-		VectorDistFields(Dist);
-	}
-	else if (UParticleModuleRotation* Rotation = Cast<UParticleModuleRotation>(Module))
-	{
-		UDistributionFloat* Dist = Rotation->GetRotationDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "RotationDist" : "RotationDist is null"); ImGui::NextColumn();
-		FloatDistFields(Dist);
-	}
-	else if (UParticleModuleRotationRate* RotationRate = Cast<UParticleModuleRotationRate>(Module))
-	{
-		UDistributionFloat* Dist = RotationRate->GetRotationRateDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "RotationRateDist" : "RotationRateDist is null"); ImGui::NextColumn();
-		FloatDistFields(Dist);
-	}
-	else if (UParticleModuleSubImageIndex* SubImageIndex = Cast<UParticleModuleSubImageIndex>(Module))
-	{
-		UDistributionFloat* Dist = SubImageIndex->GetSubImageIndexDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "SubImageIndex" : "SubImageIndex is null"); ImGui::NextColumn();
-		FloatDistFields(Dist);
-	}
-	else if (UParticleModuleSubUVMovie* SubUVMovie = Cast<UParticleModuleSubUVMovie>(Module))
-	{
-		UDistributionFloat* Dist = SubUVMovie->GetFrameRateDist();
-		ImGui::TextUnformatted("Object"); ImGui::NextColumn();
-		ImGui::TextUnformatted(Dist ? "FrameRate" : "FrameRate is null"); ImGui::NextColumn();
-		FloatDistFields(Dist);
-	}
-	else
+
+	if (!bFoundDistribution)
 	{
 		ImGui::TextUnformatted("Object");
 		ImGui::NextColumn();
@@ -1293,6 +1284,10 @@ bool FParticleSystemEditorWidget::RenderEditableProperties(UObject* Object)
 	{
 		const FProperty* Prop = Props[PropIndex];
 		if (!Prop)
+		{
+			continue;
+		}
+		if (Prop->GetType() == EPropertyType::Distribution)
 		{
 			continue;
 		}
@@ -1420,6 +1415,9 @@ bool FParticleSystemEditorWidget::RenderParticleProperty(const FProperty& Prop, 
 
 		return bChanged;
 	}
+	case EPropertyType::Distribution:
+		ImGui::TextDisabled("Edited below");
+		return false;
 	case EPropertyType::MaterialSlot:
 	{
 		FMaterialSlot* Slot = static_cast<FMaterialSlot*>(ValuePtr);
@@ -1973,7 +1971,7 @@ bool FParticleSystemEditorWidget::RenderCurveEditorPanel()
 	// ── 활성 커브 채널 목록 수집 ────────────────────────────────────────────
 	struct FCurveChannel
 	{
-		const char*          Name;
+		FString              Name;
 		FParticleFloatCurve* MinCurve;
 		FParticleFloatCurve* MaxCurve; // null = ConstantCurve (Min만 사용)
 	};
@@ -1990,9 +1988,9 @@ bool FParticleSystemEditorWidget::RenderCurveEditorPanel()
 		if (!bCurve) return;
 		bIsCurveType = true;
 		if (ChannelCount < MaxChannels)
-			Channels[ChannelCount++] = { Label, &D->MinCurve, bUniform ? &D->MaxCurve : nullptr };
+			Channels[ChannelCount++] = { FString(Label), &D->MinCurve, bUniform ? &D->MaxCurve : nullptr };
 	};
-	auto TryAddVector = [&](UDistributionVector* D, const char* XL, const char* YL, const char* ZL)
+	auto TryAddVector = [&](UDistributionVector* D, const FString& XL, const FString& YL, const FString& ZL)
 	{
 		if (!D) return;
 		const bool bCurve   = (D->Type == EDistributionType::ConstantCurve || D->Type == EDistributionType::UniformCurve);
@@ -2010,21 +2008,39 @@ bool FParticleSystemEditorWidget::RenderCurveEditorPanel()
 		const bool bUniform = (D->Type == EDistributionType::UniformCurve);
 		if (!bCurve) return;
 		bIsCurveType = true;
-		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { "R", &D->MinCurve.R, bUniform ? &D->MaxCurve.R : nullptr };
-		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { "G", &D->MinCurve.G, bUniform ? &D->MaxCurve.G : nullptr };
-		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { "B", &D->MinCurve.B, bUniform ? &D->MaxCurve.B : nullptr };
-		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { "A", &D->MinCurve.A, bUniform ? &D->MaxCurve.A : nullptr };
+		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { FString("R"), &D->MinCurve.R, bUniform ? &D->MaxCurve.R : nullptr };
+		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { FString("G"), &D->MinCurve.G, bUniform ? &D->MaxCurve.G : nullptr };
+		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { FString("B"), &D->MinCurve.B, bUniform ? &D->MaxCurve.B : nullptr };
+		if (ChannelCount < MaxChannels) Channels[ChannelCount++] = { FString("A"), &D->MinCurve.A, bUniform ? &D->MaxCurve.A : nullptr };
 	};
 
-	if (UParticleModuleLifetime* M      = Cast<UParticleModuleLifetime>(SelectedModule))     TryAddFloat(M->GetLifetimeDist(), "Lifetime");
-	else if (UParticleModuleRotation* M = Cast<UParticleModuleRotation>(SelectedModule))     TryAddFloat(M->GetRotationDist(), "Rotation");
-	else if (UParticleModuleRotationRate* M = Cast<UParticleModuleRotationRate>(SelectedModule)) TryAddFloat(M->GetRotationRateDist(), "RotRate");
-	else if (UParticleModuleLocation* M = Cast<UParticleModuleLocation>(SelectedModule))     TryAddVector(M->GetLocationDist(), "Loc.X","Loc.Y","Loc.Z");
-	else if (UParticleModuleVelocity* M = Cast<UParticleModuleVelocity>(SelectedModule))     TryAddVector(M->GetVelocityDist(), "Vel.X","Vel.Y","Vel.Z");
-	else if (UParticleModuleSize* M     = Cast<UParticleModuleSize>(SelectedModule))         TryAddVector(M->GetSizeDist(),     "Size.X","Size.Y","Size.Z");
-	else if (UParticleModuleColor* M    = Cast<UParticleModuleColor>(SelectedModule))        TryAddColor(M->GetColorDist());
-	else if (UParticleModuleSubImageIndex* M = Cast<UParticleModuleSubImageIndex>(SelectedModule)) TryAddFloat(M->GetSubImageIndexDist(), "SubImageIndex");
-	else if (UParticleModuleSubUVMovie* M = Cast<UParticleModuleSubUVMovie>(SelectedModule)) TryAddFloat(M->GetFrameRateDist(), "FrameRate");
+	TArray<const FProperty*> Props;
+	SelectedModule->GetClass()->GetAllProperties(Props);
+	for (const FProperty* Prop : Props)
+	{
+		if (!Prop || Prop->GetType() != EPropertyType::Distribution)
+		{
+			continue;
+		}
+
+		const FDistributionProperty& DistProp = static_cast<const FDistributionProperty&>(*Prop);
+		UObject* DistObject = DistProp.GetDistributionPropertyValue(const_cast<void*>(DistProp.ContainerPtrToValuePtr(SelectedModule)));
+		if (UDistributionFloat* FloatDist = Cast<UDistributionFloat>(DistObject))
+		{
+			TryAddFloat(FloatDist, Prop->Name.c_str());
+		}
+		else if (UDistributionVector* VectorDist = Cast<UDistributionVector>(DistObject))
+		{
+			const FString XLabel = Prop->Name + ".X";
+			const FString YLabel = Prop->Name + ".Y";
+			const FString ZLabel = Prop->Name + ".Z";
+			TryAddVector(VectorDist, XLabel, YLabel, ZLabel);
+		}
+		else if (UDistributionLinearColor* ColorDist = Cast<UDistributionLinearColor>(DistObject))
+		{
+			TryAddColor(ColorDist);
+		}
+	}
 
 	if (!bIsCurveType)
 	{
@@ -2052,23 +2068,25 @@ bool FParticleSystemEditorWidget::RenderCurveEditorPanel()
 		CurveSelCurve = 0;
 	}
 
+	if (ImGui::Button("Fit##CurveFit"))
+	{
+		PFitCurveViewToKeys(Ch.MinCurve, Ch.MaxCurve, CurveViewMinT, CurveViewMaxT, CurveViewMinV, CurveViewMaxV);
+	}
 	if (ChannelCount > 1)
 	{
 		const char* Names[MaxChannels];
-		for (int32 i = 0; i < ChannelCount; ++i) Names[i] = Channels[i].Name;
+		for (int32 i = 0; i < ChannelCount; ++i) Names[i] = Channels[i].Name.c_str();
+		ImGui::SameLine();
+		ImGui::TextUnformatted("Ch");
+		ImGui::SameLine();
 		ImGui::SetNextItemWidth(120.0f);
-		if (ImGui::Combo("Ch##CurveCh", &CurveChannelIdx, Names, ChannelCount))
+		if (ImGui::Combo("##CurveCh", &CurveChannelIdx, Names, ChannelCount))
 		{
 			CurveSelectedKey = -1;
 			CurveSelCurve = 0;
 			CurveDraggingTangentHandle = ECurveTangentHandle::None;
 			bCurveDragKey = false;
 		}
-		ImGui::SameLine();
-	}
-	if (ImGui::Button("Fit##CurveFit"))
-	{
-		PFitCurveViewToKeys(Ch.MinCurve, Ch.MaxCurve, CurveViewMinT, CurveViewMaxT, CurveViewMinV, CurveViewMaxV);
 	}
 
 	constexpr float InspectorHeight = 108.0f;

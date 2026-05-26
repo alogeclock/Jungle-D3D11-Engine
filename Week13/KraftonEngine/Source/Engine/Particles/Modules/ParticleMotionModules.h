@@ -35,13 +35,14 @@ class UParticleModuleRotation : public UParticleModule
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
-    UDistributionFloat *GetRotationDist() const
+    UDistributionFloat* GetRotationDist() const
     {
         return RotationDist;
     }
 
   private:
-    UDistributionFloat *RotationDist = nullptr;
+    UPROPERTY(Edit, Category="Particle", DisplayName="Rotation", Type=Distribution, Class=UDistributionFloat)
+    UDistributionFloat* RotationDist = nullptr;
     FRawDistributionFloat RawRotation = FRawDistributionFloat::MakeConstant(0.f);
     UPROPERTY(Edit, Category="Particle", DisplayName="Initial Mesh Rotation")
     FRotator InitialMeshRotation; // Mesh Particle 초기 회전값
@@ -74,13 +75,14 @@ class UParticleModuleRotationRate : public UParticleModule
     virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
     virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime, int32 ModuleOffset = INDEX_NONE) override;
 
-    UDistributionFloat *GetRotationRateDist() const
+    UDistributionFloat* GetRotationRateDist() const
     {
         return RotationRateDist;
     }
 
   private:
-    UDistributionFloat *RotationRateDist = nullptr;
+    UPROPERTY(Edit, Category="Particle", DisplayName="Rotation Rate", Type=Distribution, Class=UDistributionFloat)
+    UDistributionFloat* RotationRateDist = nullptr;
     FRawDistributionFloat RawRotationRate = FRawDistributionFloat::MakeConstant(0.f);
     UPROPERTY(Edit, Category="Particle", DisplayName="Mesh Rotation Rate")
     FVector MeshRotationRate; // Mesh Particle 회전 속도

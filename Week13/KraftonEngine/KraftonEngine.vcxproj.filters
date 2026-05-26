@@ -869,6 +869,9 @@
     <ClCompile Include="Source\Engine\Core\Property\PropertyTypes.cpp">
       <Filter>Source\Engine\Core\Property</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Property\FDistributionProperty.cpp">
+      <Filter>Source\Engine\Core\Property</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Property\FObjectPropertyBase\FSoftObjectProperty.cpp">
       <Filter>Source\Engine\Core\Property\FObjectPropertyBase</Filter>
     </ClCompile>
@@ -1818,6 +1821,9 @@
       <Filter>Source\Engine\Core\Property</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Core\Property\PropertyTypes.h">
+      <Filter>Source\Engine\Core\Property</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Core\Property\FDistributionProperty.h">
       <Filter>Source\Engine\Core\Property</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Core\Property\FObjectPropertyBase\FClassProperty.h">

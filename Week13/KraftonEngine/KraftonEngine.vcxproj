@@ -452,6 +452,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Core\Property\FFieldClass.cpp" />
     <ClCompile Include="Source\Engine\Core\Property\FFieldVariant.cpp" />
     <ClCompile Include="Source\Engine\Core\Property\PropertyTypes.cpp" />
+    <ClCompile Include="Source\Engine\Core\Property\FDistributionProperty.cpp" />
     <ClCompile Include="Source\Engine\Core\Property\FObjectPropertyBase\FSoftObjectProperty.cpp" />
     <ClCompile Include="Source\Engine\Core\UObject\FSoftObjectPath.cpp" />
     <ClCompile Include="Source\Engine\Core\UObject\FSoftObjectPtr.cpp" />
@@ -771,6 +772,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Core\Property\FFieldVariant.h" />
     <ClInclude Include="Source\Engine\Core\Property\FStructProperty.h" />
     <ClInclude Include="Source\Engine\Core\Property\PropertyTypes.h" />
+    <ClInclude Include="Source\Engine\Core\Property\FDistributionProperty.h" />
     <ClInclude Include="Source\Engine\Core\Property\FObjectPropertyBase\FClassProperty.h" />
     <ClInclude Include="Source\Engine\Core\Property\FObjectPropertyBase\FObjectProperty.h" />
     <ClInclude Include="Source\Engine\Core\Property\FObjectPropertyBase\FObjectPropertyBase.h" />

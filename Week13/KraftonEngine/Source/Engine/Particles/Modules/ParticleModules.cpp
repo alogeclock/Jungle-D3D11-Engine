@@ -165,8 +165,37 @@ void UParticleModuleRequired::Serialize(FArchive& Ar)
 void UParticleModuleSpawn::Serialize(FArchive& Ar)
 {
     UParticleModule::Serialize(Ar);
-    Ar << SpawnRate;
-    Ar << BurstCount;
+
+    if (!SpawnRateDist)
+    {
+        SpawnRateDist = GUObjectArray.CreateObject<UDistributionFloat>(this);
+        if (Ar.IsSaving())
+        {
+            SpawnRateDist->Type = EDistributionType::Constant;
+            SpawnRateDist->Min = 10.0f;
+            SpawnRateDist->Max = 10.0f;
+        }
+    }
+
+    SpawnRateDist->Serialize(Ar);
+
+    if (Ar.IsLoading())
+    {
+        RawSpawnRate = SpawnRateDist->BuildRaw();
+    }
+}
+
+void UParticleModuleSpawn::CacheModuleValues()
+{
+    if (!SpawnRateDist)
+    {
+        SpawnRateDist = GUObjectArray.CreateObject<UDistributionFloat>(this);
+        SpawnRateDist->Type = EDistributionType::Constant;
+        SpawnRateDist->Min = 10.0f;
+        SpawnRateDist->Max = 10.0f;
+    }
+
+    RawSpawnRate = SpawnRateDist->BuildRaw();
 }
 
 // ── Lifetime ─────────────────────────────────────────────────────────────────

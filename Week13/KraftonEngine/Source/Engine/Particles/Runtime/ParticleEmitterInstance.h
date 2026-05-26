@@ -37,7 +37,6 @@ struct FParticleEmitterInstance
     float  SpawnFraction = 0.0f;                   // SpawnRate 소수점 이월값
 
     TArray<FParticleEventData>  ReceivedEvents; // 이 Emitter가 받을 Event 목록
-	TArray<bool> BurstFired;
     
 	virtual void Init(UParticleSystemComponent *InComponent, UParticleEmitter *InTemplate);                                                     // Instance 초기화
     virtual void Tick(float DeltaTime, TArray<FParticleEventData>& OutEventQueue, float RealDeltaTime = -1.0f);                                 // 매 프레임 갱신
@@ -69,7 +68,6 @@ struct FParticleEmitterInstance
 	bool bFirstTime = true;	// 처음 스폰 여부
 	bool bEnabled = true;	// 가동 여부
 	int32 LoopCount = 0;		// 루프 개수
-	int32 BurstCount = 0;	// burst 회수
 
 	float EmitterTime = 0.0f;	// 이미터 시간
 	float LastDeltaTime = 0.0f;	// 마지막으로 스폰한 시간

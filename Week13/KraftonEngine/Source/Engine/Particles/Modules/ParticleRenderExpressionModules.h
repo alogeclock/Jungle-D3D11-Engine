@@ -67,6 +67,7 @@ class UParticleModuleSubImageIndex : public UParticleModuleSubUVBase
     void InitializeRandomSubImage(FParticleEmitterInstance* Owner, FBaseParticle& Particle);
     void ApplyRandomSubImage(FParticleEmitterInstance* Owner, FBaseParticle& Particle);
 
+    UPROPERTY(Edit, Category="Particle", DisplayName="Sub Image Index", Type=Distribution, Class=UDistributionFloat)
     UDistributionFloat* SubImageIndexDist = nullptr;
     FRawDistributionFloat RawSubImageIndex = FRawDistributionFloat::MakeConstant(0.0f);
 };
@@ -91,6 +92,7 @@ class UParticleModuleSubUVMovie : public UParticleModuleSubUVBase
     int32 ResolveStartingFrame(FParticleEmitterInstance* Owner);
     void ApplyMovieFrame(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float DeltaTime);
 
+    UPROPERTY(Edit, Category="Particle", DisplayName="Frame Rate", Type=Distribution, Class=UDistributionFloat)
     UDistributionFloat* FrameRateDist = nullptr;
     FRawDistributionFloat RawFrameRate = FRawDistributionFloat::MakeConstant(30.0f);
 
