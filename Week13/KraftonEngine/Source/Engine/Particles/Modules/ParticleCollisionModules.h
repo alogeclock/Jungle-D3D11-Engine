@@ -48,6 +48,7 @@ class UParticleModuleCollision : public UParticleModule
     }
 
     virtual void Serialize(FArchive &Ar) override;
+    virtual void PostEditProperty(const char* PropertyName) override;
     virtual void PreSpawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle) override;
     virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime, TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
@@ -55,6 +56,13 @@ class UParticleModuleCollision : public UParticleModule
     // ── 파티클 쪽 설정 ──────────────────────────────────────────────
     UPROPERTY(Edit, Category = "Collision", DisplayName = "Enable Collision")
     bool bEnableCollision = true;
+
+    // Raycast           : 빠름, 대량 소형 파티클 (spark, rain)
+    // ExpandedAABBSweep : 빠른 반지름 근사, 일반 파티클 기본값
+    // SphereSweep       : 정확, 크기가 보이는 파티클 (debris, mesh particle)
+    UPROPERTY(Edit, Category = "Collision", DisplayName = "Collision Query Mode",
+              Type = Enum, Enum = StaticEnum_EParticleCollisionQueryMode())
+    EParticleCollisionQueryMode CollisionQueryMode = EParticleCollisionQueryMode::ExpandedAABBSweep;
 
     UPROPERTY(Edit, Category = "Collision", DisplayName = "Max Collisions", Min = 1, Speed = 1)
     int32 MaxCollisions = 1; // 이 횟수 초과 시 CompletionOption 실행
@@ -71,8 +79,8 @@ class UParticleModuleCollision : public UParticleModule
     UPROPERTY(Edit, Category = "Collision", DisplayName = "Damping Factor", Min = 0.0, Max = 2.0, Speed = 0.01)
     float DampingFactor = 1.0f; // 반사 후 전체 속도에 곱하는 스케일
 
-    UPROPERTY(Edit, Category = "Collision", DisplayName = "Collision Radius", Min = 0.0, Speed = 0.1)
-    float CollisionRadius = 1.0f; // 충돌 판정용 구 반지름 (렌더 크기 무관)
+    UPROPERTY(Edit, Category = "Collision", DisplayName = "Collision Radius", Min = 0.01, Speed = 0.1)
+    float CollisionRadius = 1.0f; // 충돌 판정용 구 반지름 (렌더 크기 무관, 0 이하 불가)
 
     UPROPERTY(Edit, Category = "Collision", DisplayName = "Max Collision Distance", Min = 0.0, Speed = 1.0)
     float MaxCollisionDistance = 0.0f; // 이미터 기준 이 거리 초과 파티클은 충돌 무시 (0=제한없음)
