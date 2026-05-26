@@ -12,6 +12,10 @@
 #include "../Common/ParticleRandomTypes.h"
 #include "ParticleModules.generated.h"
 
+struct FParticleEventData;
+struct FBaseParticle;
+struct FParticleEmitterInstance;
+
 /** 모든 Particle Module의 공통 기반 클래스 */
 UCLASS()
 class UParticleModule : public UObject

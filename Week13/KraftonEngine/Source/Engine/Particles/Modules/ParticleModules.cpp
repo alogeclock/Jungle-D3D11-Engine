@@ -17,6 +17,7 @@
 #include "Object/FUObjectArray.h"
 #include "Component/ParticleSystemComponent.h"
 #include "Core/CollisionTypes.h"
+#include "Core/Notification.h"
 #include "GameFramework/World.h"
 #include <chrono>
 #include <cstring>
@@ -524,6 +525,37 @@ void UParticleModuleCollision::Serialize(FArchive& Ar)
     Ar << ChannelInt;
     if (Ar.IsLoading())
         TraceChannel = static_cast<ECollisionChannel>(ChannelInt);
+
+    int32 QueryModeInt = static_cast<int32>(CollisionQueryMode);
+    Ar << QueryModeInt;
+    if (Ar.IsLoading())
+        CollisionQueryMode = static_cast<EParticleCollisionQueryMode>(QueryModeInt);
+}
+
+void UParticleModuleCollision::PostEditProperty(const char* PropertyName)
+{
+    UParticleModule::PostEditProperty(PropertyName);
+
+    // 1. CollisionRadius는 0 이하 불가 — 최솟값으로 클램프
+    if (CollisionRadius < 0.01f)
+    {
+        CollisionRadius = 0.01f;
+        FNotificationManager::Get().AddNotification(
+            "Collision Radius는 0.01 이상이어야 합니다. 최솟값으로 보정했습니다.",
+            ENotificationType::Error, 4.0f);
+    }
+
+    // 2. Raycast 모드에서 CollisionRadius 설정 시 경고
+    //    Raycast는 선분 검사이므로 radius는 충돌 감지 형상에 영향을 주지 않습니다.
+    //    (ray 길이 보정과 반사 위치 보정에만 부분적으로 사용됩니다.)
+    if (CollisionQueryMode == EParticleCollisionQueryMode::Raycast)
+    {
+        FNotificationManager::Get().AddNotification(
+            "Collision Query Mode가 Raycast입니다.\n"
+            "Raycast는 선분 검사이므로 Collision Radius가 충돌 형상에 적용되지 않습니다.\n"
+            "반지름 기반 충돌이 필요하면 ExpandedAABBSweep 또는 SphereSweep을 사용하세요.",
+            ENotificationType::Info, 5.0f);
+    }
 }
 
 void UParticleModuleCollision::PreSpawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle)
@@ -617,44 +649,84 @@ void UParticleModuleCollision::Update(
         // --------------------------------------------------------
         // 7. 이번 프레임 이동 방향 / 이동 거리 계산
         // --------------------------------------------------------
-        FVector MoveDir = Particle.Velocity * DeltaTime;
-        float MoveDist = MoveDir.Length();
+        const FVector Move = Particle.Velocity * DeltaTime;
+        const float MoveDist = Move.Length();
 
         if (MoveDist < 1e-4f)
             continue;
 
-        MoveDir.Normalize();
-
         // --------------------------------------------------------
-        // 8. PhysicsScene에 Collision Query 수행
-        // --------------------------------------------------------
-        // NOTE:
-        // 현재 구현은 Raycast 기반이다.
-        // CollisionRadius는 정확한 sphere collision 반지름이라기보다는
-        // ray 길이 보정 + hit 후 위치 보정 용도로 사용된다.
+        // 8. CollisionQueryMode에 따라 Raycast 또는 SphereSweep 수행
         //
-        // 정확한 반지름 기반 충돌을 원하면 Raycast 대신 SphereSweep이 더 적절하다.
+        // Raycast     : 파티클 중심점 경로(선)로 검사. 빠름.
+        // SphereSweep : CollisionRadius 크기의 구가 이동한 부피로 검사. 정확함.
+        //               Hit.ShapeLocation = 충돌 당시 구 중심 위치.
+        //               Hit.WorldHitLocation = 표면 접촉점.
+        // --------------------------------------------------------
         FHitResult Hit;
-        if (!PhysScene->Raycast(
+        bool bGotHit = false;
+
+        if (CollisionQueryMode == EParticleCollisionQueryMode::Raycast)
+        {
+            // 파티클 중심점 경로(선)로 검사. MoveDist + Radius로 ray를 살짝 늘려
+            // 표면 진입 직전에 감지. 빠르지만 radius 기반 정확도는 낮음.
+            const FVector MoveDir = Move / MoveDist;
+            bGotHit = PhysScene->Raycast(
                 Particle.Location,
                 MoveDir,
                 MoveDist + CollisionRadius,
                 Hit,
                 TraceChannel,
-                OwnerActor))
+                OwnerActor);
+        }
+        else if (CollisionQueryMode == EParticleCollisionQueryMode::ExpandedAABBSweep)
         {
-            continue;
+            // AABB를 Radius만큼 팽창 후 ray test (Minkowski sum 근사).
+            // Raycast보다 정확하고, 완전한 sphere sweep보다 빠름.
+            // Native / PhysX 모두 동일한 ExpandedAABB 경로를 사용한다.
+            const FVector SweepEnd = Particle.Location + Move;
+            bGotHit = PhysScene->SphereSweep(
+                Particle.Location,
+                SweepEnd,
+                CollisionRadius,
+                Hit,
+                TraceChannel,
+                OwnerActor);
+        }
+        else // SphereSweep
+        {
+            // 구가 이동한 부피를 정확히 검사.
+            // PhysX 백엔드에서는 PxScene::sweep()을 사용하여 가장 정확함.
+            // Native 백엔드에서는 ExpandedAABBSweep으로 폴백.
+            const FVector SweepEnd = Particle.Location + Move;
+            bGotHit = PhysScene->SphereSweep(
+                Particle.Location,
+                SweepEnd,
+                CollisionRadius,
+                Hit,
+                TraceChannel,
+                OwnerActor);
         }
 
-        if (!Hit.bHit)
+        if (!bGotHit || !Hit.bHit)
             continue;
 
         // --------------------------------------------------------
         // 9. Hit Object 표면 normal 획득
         // --------------------------------------------------------
-        // ImpactNormal은 충돌한 월드 객체의 표면 법선이다.
-        // 반사 / 위치 보정 기준 normal로 사용한다.
         const FVector ImpactNormal = Hit.ImpactNormal;
+
+        // --------------------------------------------------------
+        // 9-1. 모드별 파티클 위치 보정 기준점 계산
+        // --------------------------------------------------------
+        // Raycast     : Hit.ShapeLocation == 표면 접촉점.
+        //               CollisionRadius만큼 normal 방향으로 띄워야 표면 안으로 파고들지 않음.
+        // SphereSweep : Hit.ShapeLocation == 구 중심 위치 (이미 Radius만큼 떠 있음).
+        //               그대로 사용.
+        const FVector RestPosition =
+            (CollisionQueryMode == EParticleCollisionQueryMode::Raycast)
+            ? Hit.WorldHitLocation + ImpactNormal * CollisionRadius
+            : Hit.ShapeLocation;
 
         // --------------------------------------------------------
         // 10. 충돌 횟수 누적
@@ -682,10 +754,7 @@ void UParticleModuleCollision::Update(
         // 의도치 않게 Kill / Freeze 등이 바로 실행될 수 있다.
         if (MaxCollisions > 0 && Payload->CollisionCount >= MaxCollisions)
         {
-            // 충돌 지점에서 표면 바깥쪽으로 살짝 밀어낸 위치.
-            // 파티클이 벽 / 바닥 안쪽으로 파고드는 것을 방지한다.
-            const FVector CorrectedLocation =
-                Hit.WorldHitLocation + ImpactNormal * CollisionRadius;
+            const FVector CorrectedLocation = RestPosition;
 
             switch (CompletionOption)
             {
@@ -783,8 +852,7 @@ void UParticleModuleCollision::Update(
 
         if (NdotV >= 0.0f)
         {
-            // 그래도 위치는 표면 바깥쪽으로 보정해둔다.
-            Particle.Location = Hit.WorldHitLocation + ImpactNormal * CollisionRadius;
+            Particle.Location = RestPosition;
             continue;
         }
 
@@ -819,8 +887,7 @@ void UParticleModuleCollision::Update(
         Particle.Velocity = Reflected;
         Particle.BaseVelocity = Reflected;
 
-        // 표면 안쪽으로 파고드는 것을 방지하기 위해 normal 방향으로 보정한다.
-        Particle.Location = Hit.WorldHitLocation + ImpactNormal * CollisionRadius;
+        Particle.Location = RestPosition;
     }
 }
 
