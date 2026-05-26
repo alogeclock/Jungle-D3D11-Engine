@@ -59,6 +59,10 @@ class UParticleSystemComponent : public UPrimitiveComponent
 
 	void SetLODLevel(int32 Level);
 	int32 GetLODLevel() {return CurrentLODLevelIndex;}
+	int32 CalculateLODLevel(const FVector& EffectLocation) const;
+
+	void SetCustomTimeDilation(float InDilation) { CustomTimeDilation = InDilation; }
+	float GetCustomTimeDilation() const { return CustomTimeDilation; }
 
     void BuildRenderData();
 	void ClearRenderData();
@@ -97,4 +101,6 @@ private:
 
 	int32 CurrentLODLevelIndex;		 // 현재 LODLevel
 	int32 TotalActiveParticles;		 // 액티브된 모든 파티클 개수
+	float AccumLODDistanceCheckTime; // LOD 거리 재검사 누적 시간
+	bool  bCalculateLODLevel;        // 자동 LOD 계산 활성 여부
 };

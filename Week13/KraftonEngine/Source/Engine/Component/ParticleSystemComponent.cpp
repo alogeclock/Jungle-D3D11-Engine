@@ -4,6 +4,8 @@
 #include "Particles/Assets/ParticleTypeData.h"
 #include "Render/Proxy/ParticleSceneProxy.h"
 #include "Particles/Assets/ParticleSystemAssetManager.h"
+#include "GameFramework/World.h"
+#include "GameFramework/AActor.h"
 #include "Core/Log.h"
 #include "Profiling/Timer.h"
 #include "Runtime/Engine.h"
@@ -138,6 +140,8 @@ UParticleSystemComponent::UParticleSystemComponent()
 
 	CurrentLODLevelIndex = 0;
 	TotalActiveParticles = 0;
+	AccumLODDistanceCheckTime = 0.0f;
+	bCalculateLODLevel = true;
 
 	EmitterMaterials.clear();
 	FrameEventQueue.clear();
@@ -200,16 +204,30 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	const float RawDeltaTime = (GEngine && GEngine->GetTimer()) ? GEngine->GetTimer()->GetRawDeltaTime() : DeltaTime;
 	DeltaTimeTick = DeltaTime * CustomTimeDilation;
-	//AccumLODDistanceCheckTime += DeltaTimeTick;
 
-	//LOD처리
-	//if (bCalculateLODLevel == true && AccumLODDistanceCheckTime > Template->LODDistanceCheckTime)
-	//{
-	//	AccumLODDistanceCheckTime = 0;
-	//	FVector EffectLocation = GetWorldLocation();
-	//	int32 LODLevel = CalculateLODLevel(EffectLocation);
-	//	SetLODLevel(LODLevel);
-	//}
+	// LOD 자동 거리 검사 (Automatic 모드, 레벨 뷰포트에서만 — EditorPreview는 수동 선택 우선)
+	UWorld* OwnerWorld = GetOwner() ? GetOwner()->GetWorld() : nullptr;
+	const bool bIsPreviewWorld = OwnerWorld && OwnerWorld->GetWorldType() == EWorldType::EditorPreview;
+	if (bCalculateLODLevel && !bIsPreviewWorld && Template->GetLODMethod() == EParticleSystemLODMethod::Automatic)
+	{
+		AccumLODDistanceCheckTime += DeltaTimeTick;
+		if (AccumLODDistanceCheckTime >= Template->LODDistanceCheckTime)
+		{
+			AccumLODDistanceCheckTime = 0.0f;
+			const FVector EffectLocation = GetWorldLocation();
+			const int32 NewLOD = CalculateLODLevel(EffectLocation);
+			SetLODLevel(NewLOD);
+		}
+	}
+
+	// EmitterDelay 카운트다운 — 0 이하가 될 때까지 Emitter tick 스킵
+	if (EmitterDelay > 0.0f)
+	{
+		EmitterDelay -= DeltaTimeTick;
+		if (EmitterDelay > 0.0f)
+			return;
+		EmitterDelay = 0.0f;
+	}
 
 	//이벤트 버퍼 정리
 	FrameEventQueue.clear();
@@ -319,13 +337,19 @@ void UParticleSystemComponent::SetTemplate(UParticleSystem* InTemplate)
 
 void UParticleSystemComponent::SetLODLevel(int32 InLODLevel)
 {
-	if (!Template)
+	if (!Template || InLODLevel < 0)
 		return;
 
-	if (Template->LODDistances.empty())
-		return;
-
-	const int32 MaxLOD = static_cast<int32>(Template->LODDistances.size()) - 1;
+	// 에미터들이 실제로 가진 LOD 레벨 수 기준으로 상한 결정
+	int32 MaxLOD = Template->LODDistances.empty()
+		? 0
+		: static_cast<int32>(Template->LODDistances.size()) - 1;
+	for (const UParticleEmitter* Emitter : Template->GetEmitters())
+	{
+		if (Emitter)
+			MaxLOD = std::min(MaxLOD, Emitter->GetLODLevelCount() - 1);
+	}
+	MaxLOD = std::max(0, MaxLOD);
 	const int32 NewLODLevel = std::clamp(InLODLevel, 0, MaxLOD);
 
 	if (CurrentLODLevelIndex == NewLODLevel)
@@ -336,12 +360,40 @@ void UParticleSystemComponent::SetLODLevel(int32 InLODLevel)
 	for (FParticleEmitterInstance* Instance : EmitterInstances)
 	{
 		if (Instance)
-		{
-			//Instance->SetCurrentLODIndex(CurrentLODLevel, true);
-		}
+			Instance->SetCurrentLODIndex(CurrentLODLevelIndex, false);
 	}
 
 	MarkProxyDirty(EDirtyFlag::Mesh);
+}
+
+int32 UParticleSystemComponent::CalculateLODLevel(const FVector& EffectLocation) const
+{
+	if (!Template || Template->LODDistances.empty())
+		return 0;
+
+	UWorld* World = GetOwner() ? GetOwner()->GetWorld() : nullptr;
+	if (!World)
+		return 0;
+
+	FMinimalViewInfo POV;
+	if (!World->GetActivePOV(POV))
+		return 0;
+
+	const float Dist = (EffectLocation - POV.Location).Length();
+
+	// LODDistances[i]가 LOD i의 시작 거리
+	// 거리 조건에 맞는 가장 높은(멀리 있는) LOD 인덱스 반환
+	const int32 NumLODs = static_cast<int32>(Template->LODDistances.size());
+	int32 BestLOD = 0;
+	for (int32 i = 1; i < NumLODs; ++i)
+	{
+		if (Dist >= Template->LODDistances[i])
+			BestLOD = i;
+		else
+			break;
+	}
+
+	return BestLOD;
 }
 
 FParticleEmitterInstance* UParticleSystemComponent::CreateEmitterInstanceForEmitter(UParticleEmitter* Emitter) const
@@ -395,7 +447,9 @@ void UParticleSystemComponent::CreateEmitterInstances()
 		if (!Instance)
 			continue;
 
-		Instance->CurrentLODLevelIndex = CurrentLODLevelIndex;
+		// 에미터가 해당 LOD 레벨을 가지고 있지 않으면 0으로 폴백
+		const int32 SafeLODIndex = Emitter->GetLODLevel(CurrentLODLevelIndex) ? CurrentLODLevelIndex : 0;
+		Instance->CurrentLODLevelIndex = SafeLODIndex;
 		Instance->Init(this, Emitter);
 
 		EmitterInstances.push_back(Instance);
@@ -403,7 +457,7 @@ void UParticleSystemComponent::CreateEmitterInstances()
 }
 
 void UParticleSystemComponent::ActivateSystem()
-{	
+{
 	if (IsActive() || !Template) {
 		return;
 	}
@@ -411,10 +465,31 @@ void UParticleSystemComponent::ActivateSystem()
 	bIsActive = true;
 	SetComponentTickEnabled(true);
 
-	//LOD처리
-	//FVector EffectLocation = GetWorldLocation();
-	//int32 LODLevel = CalculateLODLevel(EffectLocation);
-	//SetLODLevel(LODLevel);
+	// Asset의 Delay 설정 적용
+	if (Template->GetUseDelayRange())
+	{
+		float Lo = Template->GetDelayLow();
+		float Hi = Template->GetDelay();
+		if (Lo > Hi) std::swap(Lo, Hi);
+		EmitterDelay = Lo + (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * (Hi - Lo);
+	}
+	else
+	{
+		EmitterDelay = Template->GetDelay();
+	}
+
+	// LOD 초기화
+	AccumLODDistanceCheckTime = 0.0f;
+	const EParticleSystemLODMethod LODMethod = Template->GetLODMethod();
+	bCalculateLODLevel = (LODMethod == EParticleSystemLODMethod::Automatic);
+
+	if (LODMethod == EParticleSystemLODMethod::Automatic ||
+		LODMethod == EParticleSystemLODMethod::ActivateAutomatic)
+	{
+		const FVector EffectLocation = GetWorldLocation();
+		const int32 InitLOD = CalculateLODLevel(EffectLocation);
+		SetLODLevel(InitLOD);
+	}
 }
 
 void UParticleSystemComponent::DeactivateSystem()
