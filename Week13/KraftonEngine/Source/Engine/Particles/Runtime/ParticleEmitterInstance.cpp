@@ -92,12 +92,10 @@ void FParticleEmitterInstance::Tick(float DeltaTime)
 	if(!bFirstTime){
 		//if (ActiveParticles > 0) UpdateBoundingBox(DeltaTime); 
 		// 원래는 해당 로직 안에서 파티클 이동 진행
-		BEGIN_UPDATE_LOOP
+		BEGIN_PARTICLE_UPDATE_LOOP
 			Particle.Location += Particle.Velocity * DeltaTime;
-		END_UPDATE_LOOP
+		END_PARTICLE_UPDATE_LOOP
 	}
-
-	ProcessEvents();
 }
 
 //StartTime : 현재 프레임에서 첫 번째 파티클이 태어날 때까지 프레임 단위 시간
@@ -341,12 +339,12 @@ void FParticleEmitterInstance::PostSpawn(FBaseParticle& Particle, float SpawnTim
 
 void FParticleEmitterInstance::KillExpiredParticles()
 {
-	BEGIN_UPDATE_LOOP
+	BEGIN_PARTICLE_UPDATE_LOOP
 	if (Particle.Lifetime > 0.0f && Particle.RelativeTime >= 1.0f)
 	{
 		KillParticle(Index);
 	}
-	END_UPDATE_LOOP
+	END_PARTICLE_UPDATE_LOOP
 }
 
 void FParticleEmitterInstance::ProcessEvents()
