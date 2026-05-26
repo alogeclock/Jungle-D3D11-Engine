@@ -48,6 +48,8 @@ struct FParticleEmitterInstance
 	void Reset();
 	void ResetParticleParameters(float DeltaTime);												// 전체 초기화 아님, 틱 중에 초기화되어야하는 파라미터 초기화
 
+    void SetCurrentLODIndex(int32 NewIndex, bool bFullReset = false); // LOD 레벨 전환
+
     virtual void PreSpawn(FBaseParticle& Particle, const FVector& InitialLocation, const FVector& InitialVelocity); // Spawn 기본값 설정
     virtual void PostSpawn(FBaseParticle& Particle, float SpawnTime, TArray<FParticleEventData>* OutEventQueue);
 	void Tick_SpawnParticles(float DeltaTime, TArray<FParticleEventData>* OutEventQueue);
