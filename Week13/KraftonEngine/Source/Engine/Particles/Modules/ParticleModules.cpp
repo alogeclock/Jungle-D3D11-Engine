@@ -507,7 +507,11 @@ void UParticleModuleCollision::Serialize(FArchive& Ar)
     Ar << bKillOnCollision;
     Ar << Bounce;
     Ar << Friction;
-}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Kill Modules
+// ─────────────────────────────────────────────────────────────────────────────
+
 
 void UParticleModuleKill::Serialize(FArchive& Ar)
 {
@@ -516,6 +520,42 @@ void UParticleModuleKill::Serialize(FArchive& Ar)
     Ar << bUseKillHeight;
     Ar << KillBox;
     Ar << KillHeight;
+}
+
+void UParticleModuleKill::Update(FParticleEmitterInstance* Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/)
+{
+    if (!bEnabled)
+        return;
+    if (!bUseKillBox && !bUseKillHeight)
+        return;
+
+    uint8*  ParticleData    = Owner->ParticleData;
+    uint16* ParticleIndices = Owner->ParticleIndices;
+    int32   ParticleStride  = Owner->ParticleStride;
+    int32   ActiveParticles = Owner->ActiveParticles;
+
+    for (int32 Index = ActiveParticles - 1; Index >= 0; --Index)
+    {
+        const int32    RealIndex = ParticleIndices[Index];
+        FBaseParticle& Particle  = *reinterpret_cast<FBaseParticle*>(ParticleData + RealIndex * ParticleStride);
+
+        bool bKill = false;
+
+        if (bUseKillHeight && Particle.Location.Z <= KillHeight)
+            bKill = true;
+
+        if (!bKill && bUseKillBox)
+        {
+            const FVector& P = Particle.Location;
+            if (P.X >= KillBox.Min.X && P.X <= KillBox.Max.X &&
+                P.Y >= KillBox.Min.Y && P.Y <= KillBox.Max.Y &&
+                P.Z >= KillBox.Min.Z && P.Z <= KillBox.Max.Z)
+                bKill = true;
+        }
+
+        if (bKill)
+            Owner->KillParticle(Index);
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
