@@ -50,12 +50,13 @@ class UParticleSystemComponent : public UPrimitiveComponent
 	void SetLODLevel(int32 Level);
 	int32 GetLODLevel() {return CurrentLODLevelIndex;}
 
-	void BuildRenderData();
+    void BuildRenderData();
 	void ClearRenderData();
 
 	void PostEditProperty(const char* PropertyName) override;
 	void PostDuplicate() override;
 private:
+	FParticleEmitterInstance* CreateEmitterInstanceForEmitter(UParticleEmitter* Emitter) const;
 	void CreateEmitterInstances(); //Emitter정보를 가지고 Instance를 제작함
 	void ClearEmitterInstances();
 
