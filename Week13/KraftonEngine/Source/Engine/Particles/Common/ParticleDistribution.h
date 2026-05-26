@@ -167,8 +167,8 @@ struct FRawDistributionFloat
 struct FRawDistributionVector
 {
     EDistributionType Type      = EDistributionType::Constant;
-    FVector           Min       = FVector(0.f, 0.f, 5.f); //FVector::ZeroVector;
-    FVector           Max       = FVector(0.f, 0.f, 10.f); //FVector::ZeroVector;
+    FVector           Min       = FVector::ZeroVector;
+    FVector           Max       = FVector::ZeroVector;
     bool              bLockAxes = false;
 
     TArray<FVector> BakedMin;
