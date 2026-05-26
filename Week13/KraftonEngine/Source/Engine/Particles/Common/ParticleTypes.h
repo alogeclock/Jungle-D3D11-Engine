@@ -139,6 +139,23 @@ enum class EParticleModuleClass : uint8
     Unknown = 0xFF
 };
 
+/** ParticleSystem LOD 전환 방식 */
+UENUM()
+enum class EParticleSystemLODMethod : uint8
+{
+    Automatic,          // 카메라 거리 기준으로 자동 전환
+    DirectSet,          // 코드에서 직접 LOD 레벨 지정
+    ActivateAutomatic   // 활성화 시점에 자동 LOD 적용 후 고정
+};
+
+/** ParticleSystem 전역 업데이트 방식 */
+UENUM()
+enum class EParticleSystemUpdateMode : uint8
+{
+    EPSUM_RealTime,  // 실제 경과 시간 기준 업데이트
+    EPSUM_FixedTime  // 고정 타임스텝 기준 업데이트 (UpdateTimeFPS 참조)
+};
+
 /** Collision Module의 충돌 쿼리 방식 */
 UENUM()
 enum class EParticleCollisionQueryMode : uint8

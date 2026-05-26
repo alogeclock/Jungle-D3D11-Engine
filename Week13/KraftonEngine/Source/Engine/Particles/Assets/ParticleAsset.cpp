@@ -307,6 +307,15 @@ void UParticleEmitter::InsertLODLevel(int32 Index, UParticleLODLevel* InLODLevel
     RefreshLODLevelIndices();
 }
 
+void UParticleEmitter::RemoveLODLevel(int32 Index)
+{
+    if (Index < 0 || Index >= static_cast<int32>(LODLevels.size()))
+        return;
+
+    LODLevels.erase(LODLevels.begin() + Index);
+    RefreshLODLevelIndices();
+}
+
 void UParticleEmitter::RefreshLODLevelIndices()
 {
     for (int32 LODIndex = 0; LODIndex < static_cast<int32>(LODLevels.size()); ++LODIndex)
@@ -429,6 +438,29 @@ void UParticleSystem::Serialize(FArchive& Ar)
             Emitters[i] = GUObjectArray.CreateObject<UParticleEmitter>(this);
         Emitters[i]->Serialize(Ar);
     }
+
+    // 전역 설정 — LOD
+    Ar << LODDistanceCheckTime;
+    Ar << LODSettings;
+
+    int32 LODMethodInt = static_cast<int32>(LODMethod);
+    Ar << LODMethodInt;
+    if (Ar.IsLoading()) LODMethod = static_cast<EParticleSystemLODMethod>(LODMethodInt);
+
+    // 전역 설정 — System Update
+    int32 UpdateModeInt = static_cast<int32>(SystemUpdateMode);
+    Ar << UpdateModeInt;
+    if (Ar.IsLoading()) SystemUpdateMode = static_cast<EParticleSystemUpdateMode>(UpdateModeInt);
+
+    Ar << UpdateTimeFPS;
+    Ar << WarmupTime;
+    Ar << WarmupTickRate;
+    Ar << bUseFixedRelativeBoundingBox;
+    Ar << FixedRelativeBoundsExtent;
+    Ar << SecondsBeforeInactive;
+    Ar << Delay;
+    Ar << DelayLow;
+    Ar << bUseDelayRange;
 
     if (Ar.IsLoading())
         CacheSystemModuleInfo();
