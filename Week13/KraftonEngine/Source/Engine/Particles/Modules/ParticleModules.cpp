@@ -119,8 +119,8 @@ namespace
     constexpr float   DefaultParticleLifetime    = 1.0f;
     const     FVector DefaultLocationMin         = FVector::ZeroVector;
     const     FVector DefaultLocationMax         = FVector::ZeroVector;
-    const     FVector DefaultVelocityMin         = FVector(0.f, 0.f,  50.f);
-    const     FVector DefaultVelocityMax         = FVector(0.f, 0.f, 150.f);
+    const     FVector DefaultVelocityMin         = FVector(0.f, 0.f, 0.f);
+    const     FVector DefaultVelocityMax         = FVector(0.f, 0.f, 10.f);
 
     void InitializeDefaultLifetimeDistribution(UDistributionFloat* Distribution)
     {

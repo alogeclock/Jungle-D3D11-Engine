@@ -158,7 +158,7 @@ class UParticleModuleVelocity : public UParticleModule
 
   private:
     UDistributionVector* VelocityDist = nullptr;
-    FRawDistributionVector RawVelocity = FRawDistributionVector::MakeUniform(FVector(0.f, 0.f, 50.f), FVector(0.f, 0.f, 150.f));
+    FRawDistributionVector RawVelocity = FRawDistributionVector::MakeUniform(FVector(0.f, 0.f, 0.f), FVector(0.f, 0.f, 10.f));
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
