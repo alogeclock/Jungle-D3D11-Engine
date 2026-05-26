@@ -202,6 +202,30 @@ void UParticleLODLevel::AddModule(UParticleModule* InModule)
         Modules.push_back(InModule);
 }
 
+bool UParticleLODLevel::MoveModule(int32 FromIndex, int32 ToIndex)
+{
+    const int32 ModuleCount = static_cast<int32>(Modules.size());
+    if (FromIndex < 0 || FromIndex >= ModuleCount || ToIndex < 0 || ToIndex > ModuleCount)
+    {
+        return false;
+    }
+
+    if (FromIndex == ToIndex || FromIndex + 1 == ToIndex)
+    {
+        return false;
+    }
+
+    UParticleModule* Module = Modules[FromIndex];
+    Modules.erase(Modules.begin() + FromIndex);
+    if (FromIndex < ToIndex)
+    {
+        --ToIndex;
+    }
+
+    Modules.insert(Modules.begin() + ToIndex, Module);
+    return true;
+}
+
 void UParticleLODLevel::CacheModules()
 {
     SyncTypeDataModuleToRequired();
@@ -265,6 +289,43 @@ void UParticleLODLevel::Serialize(FArchive& Ar)
 // ─────────────────────────────────────────
 // UParticleEmitter
 // ─────────────────────────────────────────
+
+void UParticleEmitter::AddLODLevel(UParticleLODLevel* InLODLevel)
+{
+    InsertLODLevel(static_cast<int32>(LODLevels.size()), InLODLevel);
+}
+
+void UParticleEmitter::InsertLODLevel(int32 Index, UParticleLODLevel* InLODLevel)
+{
+    if (!InLODLevel)
+    {
+        return;
+    }
+
+    const int32 ClampedIndex = (std::clamp)(Index, 0, static_cast<int32>(LODLevels.size()));
+    LODLevels.insert(LODLevels.begin() + ClampedIndex, InLODLevel);
+    RefreshLODLevelIndices();
+}
+
+void UParticleEmitter::RemoveLODLevel(int32 Index)
+{
+    if (Index < 0 || Index >= static_cast<int32>(LODLevels.size()))
+        return;
+
+    LODLevels.erase(LODLevels.begin() + Index);
+    RefreshLODLevelIndices();
+}
+
+void UParticleEmitter::RefreshLODLevelIndices()
+{
+    for (int32 LODIndex = 0; LODIndex < static_cast<int32>(LODLevels.size()); ++LODIndex)
+    {
+        if (LODLevels[LODIndex])
+        {
+            LODLevels[LODIndex]->SetLevel(LODIndex);
+        }
+    }
+}
 
 void UParticleEmitter::CacheEmitterModuleInfo()
 {
@@ -344,7 +405,10 @@ void UParticleEmitter::Serialize(FArchive& Ar)
     }
 
     if (Ar.IsLoading())
+    {
+        RefreshLODLevelIndices();
         CacheEmitterModuleInfo();
+    }
 }
 
 // ─────────────────────────────────────────
@@ -374,6 +438,29 @@ void UParticleSystem::Serialize(FArchive& Ar)
             Emitters[i] = GUObjectArray.CreateObject<UParticleEmitter>(this);
         Emitters[i]->Serialize(Ar);
     }
+
+    // 전역 설정 — LOD
+    Ar << LODDistanceCheckTime;
+    Ar << LODSettings;
+
+    int32 LODMethodInt = static_cast<int32>(LODMethod);
+    Ar << LODMethodInt;
+    if (Ar.IsLoading()) LODMethod = static_cast<EParticleSystemLODMethod>(LODMethodInt);
+
+    // 전역 설정 — System Update
+    int32 UpdateModeInt = static_cast<int32>(SystemUpdateMode);
+    Ar << UpdateModeInt;
+    if (Ar.IsLoading()) SystemUpdateMode = static_cast<EParticleSystemUpdateMode>(UpdateModeInt);
+
+    Ar << UpdateTimeFPS;
+    Ar << WarmupTime;
+    Ar << WarmupTickRate;
+    Ar << bUseFixedRelativeBoundingBox;
+    Ar << FixedRelativeBoundsExtent;
+    Ar << SecondsBeforeInactive;
+    Ar << Delay;
+    Ar << DelayLow;
+    Ar << bUseDelayRange;
 
     if (Ar.IsLoading())
         CacheSystemModuleInfo();

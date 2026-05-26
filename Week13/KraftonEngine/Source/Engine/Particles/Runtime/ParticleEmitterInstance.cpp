@@ -67,6 +67,14 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 	EmitterTemplate = InTemplate;
 	EmitterTemplate->CacheEmitterModuleInfo();
 	CurrentLODLevel = InTemplate->GetLODLevel(CurrentLODLevelIndex);
+	if (!CurrentLODLevel)
+	{
+		// 요청한 LOD 레벨이 없으면 LOD 0으로 폴백
+		CurrentLODLevelIndex = 0;
+		CurrentLODLevel = InTemplate->GetLODLevel(0);
+	}
+	if (!CurrentLODLevel)
+		return;
 
 	MaxActiveParticles = EmitterTemplate->GetMaxActiveParticles();
 
@@ -205,6 +213,26 @@ void FParticleEmitterInstance::KillAllParticles(TArray<FParticleEventData>* OutE
 	for (int32 Index = ActiveParticles - 1; Index >= 0; --Index)
 	{
 		KillParticleWithEvents(Index, OutEventQueue);
+	}
+}
+
+void FParticleEmitterInstance::SetCurrentLODIndex(int32 NewIndex, bool bFullReset)
+{
+	if (!EmitterTemplate) return;
+	if (NewIndex < 0) return;
+
+	UParticleLODLevel* NewLODLevel = EmitterTemplate->GetLODLevel(NewIndex);
+	if (!NewLODLevel || !NewLODLevel->IsEnabled()) return;
+
+	CurrentLODLevelIndex = NewIndex;
+	CurrentLODLevel = NewLODLevel;
+
+	if (bFullReset)
+	{
+		KillAllParticles();
+		EmitterTime = 0.0f;
+		SpawnFraction = 0.0f;
+		bFirstTime = true;
 	}
 }
 

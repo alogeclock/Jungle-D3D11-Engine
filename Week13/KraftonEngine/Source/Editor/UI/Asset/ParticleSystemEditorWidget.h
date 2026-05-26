@@ -8,6 +8,7 @@
 struct ImVec2;
 class UParticleSystem;
 class UParticleEmitter;
+class UParticleLODLevel;
 class UParticleModule;
 class UParticleSystemComponent;
 class UObject;
@@ -45,6 +46,11 @@ private:
 	bool RenderEmitterModules(UParticleEmitter* Emitter, int32 EmitterIndex);
 	bool RenderParticleModuleItem(UParticleModule* Module, int32 EmitterIndex);
 	bool RenderCurveEditorPanel();
+	int32 GetEditedLODIndex(const UParticleSystem* Asset) const;
+	UParticleLODLevel* GetEditedLODLevel(UParticleEmitter* Emitter) const;
+	const UParticleLODLevel* GetEditedLODLevel(const UParticleEmitter* Emitter) const;
+	void SyncEditedLODSelection(bool bRefreshPreview = true);
+	bool InsertLODRelativeToCurrent(bool bInsertAfter);
 
 private:
 	enum class ECurveTangentHandle : uint8
@@ -66,6 +72,7 @@ private:
 	float RightTopPanelRatio = 0.4f;
 
 	int32 SelectedEmitterIndex = -1;
+	int32 EditedLODIndex = 0;
 	UParticleModule* SelectedModule = nullptr;
 
 	// Curve editor panel state
@@ -85,4 +92,11 @@ private:
 	UParticleModule* CurvePrevModule   = nullptr;
 
 	bool bPendingClose = false;
+
+	// Viewport playback controls
+	bool  bAnimPaused     = false;
+	bool  bAnimRealtime   = true;
+	bool  bAnimLoop       = true;
+	float AnimSpeedScale  = 1.0f;
+	bool  bWasActive      = false;
 };

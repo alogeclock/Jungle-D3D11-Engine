@@ -14,6 +14,19 @@
 #include "Particles/Assets/ParticleTypeData.h"
 #include "ParticleAsset.generated.h"
 
+/** LOD 레벨별 시스템 설정 (LODDistances 배열과 1:1 대응) */
+USTRUCT()
+struct FParticleSystemLOD
+{
+    GENERATED_BODY(FParticleSystemLOD)
+    // 향후 LOD별 품질 설정 항목을 여기에 추가
+};
+
+inline FArchive& operator<<(FArchive& Ar, FParticleSystemLOD&)
+{
+    return Ar; // 현재 직렬화할 멤버 없음
+}
+
 /** LOD별 Module, TypeData, 실행 캐시를 보관하는 클래스 */
 UCLASS()
 class UParticleLODLevel : public UObject
@@ -41,6 +54,7 @@ class UParticleLODLevel : public UObject
 
     void AddModule(UParticleModule *InModule); // 일반 Module 추가
     void RemoveModule(int32 Index) { Modules.erase(Modules.begin() + Index); }
+    bool MoveModule(int32 FromIndex, int32 ToIndex);
     void CacheModules();                       // Spawn / Update 실행 캐시 구성
     virtual void Serialize(FArchive& Ar) override;
 
@@ -85,9 +99,13 @@ class UParticleEmitter : public UObject
 
     const TArray<UParticleLODLevel *> &GetLODLevels() const { return LODLevels; }
 
-    UParticleLODLevel *GetLODLevel(int32 Index) const { return Index < (int32)LODLevels.size() ? LODLevels[Index] : nullptr; }
+    UParticleLODLevel *GetLODLevel(int32 Index) const { return (Index >= 0 && Index < (int32)LODLevels.size()) ? LODLevels[Index] : nullptr; }
 
-    void AddLODLevel(UParticleLODLevel *InLODLevel) { LODLevels.push_back(InLODLevel); }
+    int32 GetLODLevelCount() const { return static_cast<int32>(LODLevels.size()); }
+    void AddLODLevel(UParticleLODLevel *InLODLevel);
+    void InsertLODLevel(int32 Index, UParticleLODLevel *InLODLevel);
+    void RemoveLODLevel(int32 Index);
+    void RefreshLODLevelIndices();
 
     void CacheEmitterModuleInfo(); // Emitter Module 정보 캐싱
     virtual void Serialize(FArchive& Ar) override;
@@ -142,14 +160,73 @@ class UParticleSystem : public UObject
     void CacheSystemModuleInfo(); // 전체 Emitter Module 정보 캐싱
     virtual void Serialize(FArchive& Ar) override;
 
-    //UPROPERTY()
-    TArray<float> LODDistances; // LOD 전환 거리 목록
+    UPROPERTY(Edit, Category="LOD", DisplayName="LOD Distance Check Time", Min=0.0, Max=10.0, Speed=0.01)
+    float LODDistanceCheckTime = 0.25f; // LOD 전환 거리 재검사 주기 (초)
+
+    UPROPERTY(Edit, FixedSize, Category="LOD", DisplayName="LOD Distances")
+    TArray<float> LODDistances; // LOD 전환 거리 목록 (추가/삭제는 LOD 툴바에서만)
+
+    TArray<FParticleSystemLOD> LODSettings; // LOD 레벨별 설정 (현재 편집 가능한 필드 없음)
 
     void SetSourcePath(const FString& InPath) { SourcePath = InPath; }
     const FString& GetSourcePath() const { return SourcePath; }
     const FString& GetAssetPathFileName() const override { return SourcePath; }
 
+    // ── 전역 설정 접근자 ──────────────────────────────────────────
+    float                     GetLODDistanceCheckTime() const { return LODDistanceCheckTime; }
+    const TArray<FParticleSystemLOD>& GetLODSettings() const { return LODSettings; }
+    EParticleSystemLODMethod  GetLODMethod() const { return LODMethod; }
+    EParticleSystemUpdateMode GetSystemUpdateMode() const { return SystemUpdateMode; }
+    float GetUpdateTimeFPS() const { return UpdateTimeFPS; }
+    float GetWarmupTime() const { return WarmupTime; }
+    float GetWarmupTickRate() const { return WarmupTickRate; }
+    bool  GetUseFixedRelativeBoundingBox() const { return bUseFixedRelativeBoundingBox; }
+    FVector GetFixedRelativeBoundsExtent() const { return FixedRelativeBoundsExtent; }
+    float GetSecondsBeforeInactive() const { return SecondsBeforeInactive; }
+    float GetDelay() const { return Delay; }
+    float GetDelayLow() const { return DelayLow; }
+    bool  GetUseDelayRange() const { return bUseDelayRange; }
+
   private:
     TArray<UParticleEmitter *> Emitters; // ParticleSystem 구성 Emitter 목록
     FString SourcePath;
+
+    // ── LOD ───────────────────────────────────────────────────────
+    UPROPERTY(Edit, Category="LOD", DisplayName="LOD Method", Type=Enum, Enum=StaticEnum_EParticleSystemLODMethod())
+    EParticleSystemLODMethod LODMethod = EParticleSystemLODMethod::Automatic;
+
+    // ── System 업데이트 방식 ──────────────────────────────────────
+    UPROPERTY(Edit, Category="System", DisplayName="System Update Mode", Type=Enum, Enum=StaticEnum_EParticleSystemUpdateMode())
+    EParticleSystemUpdateMode SystemUpdateMode = EParticleSystemUpdateMode::EPSUM_RealTime;
+
+    UPROPERTY(Edit, Category="System", DisplayName="Update Time FPS", Min=1.0, Max=120.0, Speed=1.0)
+    float UpdateTimeFPS = 60.0f;
+
+    // ── Warmup ────────────────────────────────────────────────────
+    UPROPERTY(Edit, Category="Warmup", DisplayName="Warmup Time", Min=0.0, Max=100.0, Speed=0.1)
+    float WarmupTime = 0.0f;
+
+    UPROPERTY(Edit, Category="Warmup", DisplayName="Warmup Tick Rate", Min=0.0, Max=100.0, Speed=0.1)
+    float WarmupTickRate = 0.0f;
+
+    // ── Bounds ────────────────────────────────────────────────────
+    UPROPERTY(Edit, Category="Bounds", DisplayName="Use Fixed Bounds")
+    bool bUseFixedRelativeBoundingBox = false;
+
+    UPROPERTY(Edit, Category="Bounds", DisplayName="Fixed Bounds Extent")
+    FVector FixedRelativeBoundsExtent = FVector(100.0f, 100.0f, 100.0f);
+
+    // ── 활성 시간 ─────────────────────────────────────────────────
+    UPROPERTY(Edit, Category="Activity", DisplayName="Seconds Before Inactive", Min=0.0, Max=60.0, Speed=0.1)
+    float SecondsBeforeInactive = 0.0f;
+
+    // ── 재생 지연 ─────────────────────────────────────────────────
+    UPROPERTY(Edit, Category="Delay", DisplayName="Delay", Min=0.0, Max=100.0, Speed=0.1)
+    float Delay = 0.0f;
+
+    UPROPERTY(Edit, Category="Delay", DisplayName="Delay Low", Min=0.0, Max=100.0, Speed=0.1)
+    float DelayLow = 0.0f;
+
+    UPROPERTY(Edit, Category="Delay", DisplayName="Use Delay Range")
+    bool bUseDelayRange = false;
 };
