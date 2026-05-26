@@ -12,10 +12,44 @@
 #include "Math/Matrix.h"
 
 #include <d3d11.h>
+#include <algorithm>
 #include <wrl/client.h>
 
 namespace
 {
+	float CalculateEmitterDistanceSquared(const FDynamicEmitterReplayDataBase& Source, const FVector& CameraPosition)
+	{
+		if (!Source.IsValid() || !Source.DataContainer.ParticleIndices || Source.ParticleStride <= 0)
+		{
+			return 0.0f;
+		}
+
+		FVector Center = FVector::ZeroVector;
+		const uint8* RawData = Source.DataContainer.ParticleData;
+		int32 ValidParticleCount = 0;
+
+		for (int32 i = 0; i < Source.ActiveParticleCount; ++i)
+		{
+			const uint16 ParticleIdx = Source.DataContainer.ParticleIndices[i];
+			const FBaseParticle* Particle = reinterpret_cast<const FBaseParticle*>(
+				RawData + Source.ParticleStride * ParticleIdx);
+
+			Center += FVector(
+				Particle->Location.X * Source.Scale.X,
+				Particle->Location.Y * Source.Scale.Y,
+				Particle->Location.Z * Source.Scale.Z);
+			++ValidParticleCount;
+		}
+
+		if (ValidParticleCount <= 0)
+		{
+			return 0.0f;
+		}
+
+		Center /= static_cast<float>(ValidParticleCount);
+		return FVector::DistSquared(Center, CameraPosition);
+	}
+
 	ID3D11ShaderResourceView* GetParticleFallbackWhiteSRV()
 	{
 		static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> WhiteSRV;
@@ -196,15 +230,63 @@ void FParticleSceneProxy::UpdatePerViewport(const FFrameContext& Frame)
 
 	const FParticleVertexBuildContext Ctx
 	{
+		Frame.CameraPosition,
 		Frame.CameraRight,
 		Frame.CameraUp,
 		Frame.CameraForward
 	};
 	TArray<uint32> IgnoredIndices;
 
+	struct FSortedEmitter
+	{
+		FCachedEmitter E;
+		int32 Priority = 0;
+		float DistanceSq = 0.0f;
+		int32 OriginalOrder = 0;
+	};
+
+	TArray<FSortedEmitter> SortedEmitters;
+	SortedEmitters.reserve(CachedEmitters.size());
+
 	for (int32 i = 0; i < static_cast<int32>(CachedEmitters.size()); ++i)
 	{
 		const FCachedEmitter& E = CachedEmitters[i];
+		if (!E.Data)
+		{
+			continue;
+		}
+
+		const FDynamicEmitterReplayDataBase& Source = E.Data->GetSource();
+		if (Source.eEmitterType != EDynamicEmitterType::DET_Sprite)
+		{
+			continue;
+		}
+
+		SortedEmitters.push_back({
+			E,
+			Source.TranslucencySortPriority,
+			CalculateEmitterDistanceSquared(Source, Frame.CameraPosition),
+			i
+		});
+	}
+
+	std::stable_sort(SortedEmitters.begin(), SortedEmitters.end(),
+		[](const FSortedEmitter& A, const FSortedEmitter& B)
+		{
+			if (A.Priority != B.Priority)
+			{
+				return A.Priority < B.Priority;
+			}
+			if (A.DistanceSq != B.DistanceSq)
+			{
+				return A.DistanceSq > B.DistanceSq;
+			}
+			return A.OriginalOrder < B.OriginalOrder;
+		});
+
+	for (const FSortedEmitter& SortedEmitter : SortedEmitters)
+	{
+		const FCachedEmitter& E = SortedEmitter.E;
 		const int32 MaterialIndex = E.MaterialIndex;
 		if (!E.Data ||
 			MaterialIndex < 0 ||
@@ -215,8 +297,6 @@ void FParticleSceneProxy::UpdatePerViewport(const FFrameContext& Frame)
 		}
 
 		const FDynamicEmitterReplayDataBase& Source = E.Data->GetSource();
-		if (Source.eEmitterType != EDynamicEmitterType::DET_Sprite)
-			continue;
 
 		const uint32 FirstInstance = static_cast<uint32>(StagedInstances.size());
 
