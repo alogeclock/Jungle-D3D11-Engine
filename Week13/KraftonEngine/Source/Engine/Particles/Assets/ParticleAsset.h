@@ -41,6 +41,7 @@ class UParticleLODLevel : public UObject
 
     void AddModule(UParticleModule *InModule); // 일반 Module 추가
     void RemoveModule(int32 Index) { Modules.erase(Modules.begin() + Index); }
+    bool MoveModule(int32 FromIndex, int32 ToIndex);
     void CacheModules();                       // Spawn / Update 실행 캐시 구성
     virtual void Serialize(FArchive& Ar) override;
 
@@ -85,9 +86,12 @@ class UParticleEmitter : public UObject
 
     const TArray<UParticleLODLevel *> &GetLODLevels() const { return LODLevels; }
 
-    UParticleLODLevel *GetLODLevel(int32 Index) const { return Index < (int32)LODLevels.size() ? LODLevels[Index] : nullptr; }
+    UParticleLODLevel *GetLODLevel(int32 Index) const { return (Index >= 0 && Index < (int32)LODLevels.size()) ? LODLevels[Index] : nullptr; }
 
-    void AddLODLevel(UParticleLODLevel *InLODLevel) { LODLevels.push_back(InLODLevel); }
+    int32 GetLODLevelCount() const { return static_cast<int32>(LODLevels.size()); }
+    void AddLODLevel(UParticleLODLevel *InLODLevel);
+    void InsertLODLevel(int32 Index, UParticleLODLevel *InLODLevel);
+    void RefreshLODLevelIndices();
 
     void CacheEmitterModuleInfo(); // Emitter Module 정보 캐싱
     virtual void Serialize(FArchive& Ar) override;

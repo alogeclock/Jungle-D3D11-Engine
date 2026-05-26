@@ -196,6 +196,12 @@ struct FParticleModuleAddOption
 	const char* Name;
 };
 
+struct FParticleModuleDragDropPayload
+{
+	int32 EmitterIndex = -1;
+	UParticleModule* Module = nullptr;
+};
+
 static const char* GetParticleEmitterTypeLabel(EParticleEmitterType Type)
 {
 	switch (Type)
@@ -349,6 +355,48 @@ static bool AreParticleModulesEffectivelyShared(UParticleModule* CurrentModule, 
 	return CurrentWriter.GetBuffer() == PreviousWriter.GetBuffer();
 }
 
+static bool IsParticleEventModuleClass(EParticleModuleClass ModuleClass)
+{
+	return ModuleClass == EParticleModuleClass::EventGenerator
+		|| ModuleClass == EParticleModuleClass::EventReceiverSpawn
+		|| ModuleClass == EParticleModuleClass::EventReceiverKillAll;
+}
+
+static bool IsParticleSubUVModuleClass(EParticleModuleClass ModuleClass)
+{
+	return ModuleClass == EParticleModuleClass::SubImageIndex
+		|| ModuleClass == EParticleModuleClass::SubUVMovie;
+}
+
+static bool IsParticleModuleFixedInStack(EParticleModuleClass ModuleClass)
+{
+	return ModuleClass == EParticleModuleClass::Required
+		|| ModuleClass == EParticleModuleClass::Spawn
+		|| ModuleClass == EParticleModuleClass::TypeDataSprite
+		|| ModuleClass == EParticleModuleClass::TypeDataMesh
+		|| ModuleClass == EParticleModuleClass::TypeDataBeam
+		|| ModuleClass == EParticleModuleClass::TypeDataRibbon;
+}
+
+static int32 FindParticleModuleIndex(const UParticleLODLevel* LODLevel, const UParticleModule* Module)
+{
+	if (!LODLevel || !Module)
+	{
+		return -1;
+	}
+
+	const TArray<UParticleModule*>& Modules = LODLevel->GetModules();
+	for (int32 ModuleIndex = 0; ModuleIndex < static_cast<int32>(Modules.size()); ++ModuleIndex)
+	{
+		if (Modules[ModuleIndex] == Module)
+		{
+			return ModuleIndex;
+		}
+	}
+
+	return -1;
+}
+
 static void DrawSharedModuleStripeOverlay(ImDrawList* DrawList, const ImRect& Rect)
 {
 	if (!DrawList)
@@ -364,7 +412,7 @@ static void DrawSharedModuleStripeOverlay(ImDrawList* DrawList, const ImRect& Re
 		DrawList->AddLine(
 			ImVec2(X, Rect.Max.y),
 			ImVec2(X + StripeRun, Rect.Min.y),
-			IM_COL32(0, 0, 0, 46),
+			IM_COL32(0, 0, 0, 88),
 			1.0f);
 	}
 	DrawList->PopClipRect();
@@ -420,6 +468,8 @@ static ID3D11ShaderResourceView* GetParticleEmitterPreviewSRV(UParticleEmitter* 
 constexpr FParticleModuleStyleColors ParticleTypeDataModuleColors = { ImVec4(0.078f, 0.078f, 0.098f, 1.0f), ImVec4(1.0f, 0.39f, 0.0f, 1.0f) };
 constexpr FParticleModuleStyleColors ParticleRequiredModuleColors = { ImVec4(0.784f, 0.784f, 0.392f, 1.0f), ImVec4(1.0f, 0.882f, 0.196f, 1.0f) };
 constexpr FParticleModuleStyleColors ParticleSpawnModuleColors = { ImVec4(0.784f, 0.392f, 0.392f, 1.0f), ImVec4(1.0f, 0.196f, 0.196f, 1.0f) };
+constexpr FParticleModuleStyleColors ParticleEventModuleColors = { ImVec4(0.212f, 0.282f, 0.824f, 1.0f), ImVec4(0.290f, 0.376f, 0.922f, 1.0f) };
+constexpr FParticleModuleStyleColors ParticleSubUVModuleColors = { ImVec4(0.192f, 0.345f, 0.192f, 1.0f), ImVec4(0.239f, 0.820f, 0.357f, 1.0f) };
 constexpr FParticleModuleStyleColors ParticleNormalModuleColors = { ImVec4(0.157f, 0.157f, 0.192f, 1.0f), ImVec4(1.0f, 0.392f, 0.0f, 1.0f) };
 
 static bool IsParticleMaterialPath(const FString& MaterialPath)
@@ -496,11 +546,39 @@ constexpr float ParticleEmitterHeaderBadgeHeight = 18.0f;
 constexpr float ParticleEmitterHeaderNameOffsetY = 6.0f;
 
 constexpr float ParticleModuleItemSpacing = 0.0f;
-constexpr float ParticleModuleHeight = 28.0f;
-constexpr ImVec2 ParticleModuleFramePadding = ImVec2(10.0f, 4.0f);
+constexpr float ParticleModuleHeight = 32.0f;
+constexpr ImVec2 ParticleModuleFramePadding = ImVec2(10.0f, 6.0f);
 constexpr ImVec2 ParticleModuleTextAlign = ImVec2(0.06f, 0.5f);
 constexpr float ParticleModuleCheckboxFramePadding = 1.0f;
 constexpr float ParticleModuleCheckboxRightPadding = 6.0f;
+
+static void DrawParticleModuleLabel(ImDrawList* DrawList, const ImRect& Rect, const char* ModuleName, bool bCanToggleModule)
+{
+	if (!DrawList || !ModuleName || ModuleName[0] == '\0')
+	{
+		return;
+	}
+
+	const float CheckboxSize = ImGui::GetFontSize() + ParticleModuleCheckboxFramePadding * 2.0f;
+	const float TextRightPadding = ParticleModuleFramePadding.x +
+		(bCanToggleModule ? CheckboxSize + ParticleModuleCheckboxRightPadding : 0.0f);
+	const ImVec2 TextSize = ImGui::CalcTextSize(ModuleName);
+	const ImVec2 TextPos(
+		Rect.Min.x + ParticleModuleFramePadding.x,
+		Rect.Min.y + (Rect.GetHeight() - TextSize.y) * 0.5f);
+	const ImVec2 ClipMax(Rect.Max.x - TextRightPadding, Rect.Max.y);
+
+	if (ClipMax.x <= TextPos.x)
+	{
+		return;
+	}
+
+	DrawList->PushClipRect(Rect.Min, ClipMax, true);
+	DrawList->AddText(ImVec2(TextPos.x + 1.0f, TextPos.y), IM_COL32(0, 0, 0, 200), ModuleName);
+	DrawList->AddText(ImVec2(TextPos.x, TextPos.y + 1.0f), IM_COL32(0, 0, 0, 200), ModuleName);
+	DrawList->AddText(TextPos, IM_COL32(255, 255, 255, 255), ModuleName);
+	DrawList->PopClipRect();
+}
 
 const FVector ParticlePreviewFloorLocation = FVector(0.0f, 0.0f, -1.0f);
 const FVector ParticlePreviewFloorScale = FVector(10.0f, 10.0f, 0.02f);
@@ -821,19 +899,27 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 
 	const int32 TotalLODCount = GetParticleSystemLODCount(Asset);
 	const bool bCanEditLODs = TotalLODCount > 0 && !Asset->GetEmitters().empty();
-	const float LODToolbarWidth = 430.0f;
+	const char* AddHigherDetailLODLabel = "Add Higher-detail LOD";
+	const char* AddLowerDetailLODLabel = "Add Lower-detail LOD";
+	const ImGuiStyle& Style = ImGui::GetStyle();
+	const float LODToolbarWidth =
+		ImGui::CalcTextSize(AddHigherDetailLODLabel).x +
+		ImGui::CalcTextSize(AddLowerDetailLODLabel).x +
+		180.0f +
+		Style.FramePadding.x * 8.0f +
+		Style.ItemSpacing.x * 5.0f;
 	ImGui::SameLine();
 	const float LODToolbarTargetX = ImGui::GetCursorPosX() + (std::max)(0.0f, ImGui::GetContentRegionAvail().x - LODToolbarWidth);
 	ImGui::SetCursorPosX(LODToolbarTargetX);
 	ImGui::BeginDisabled(!bCanEditLODs);
-	if (ImGui::Button("Add LOD Before"))
-	{
-		InsertLODRelativeToCurrent(false);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Add LOD After"))
+	if (ImGui::Button(AddHigherDetailLODLabel))
 	{
 		InsertLODRelativeToCurrent(true);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button(AddLowerDetailLODLabel))
+	{
+		InsertLODRelativeToCurrent(false);
 	}
 	ImGui::SameLine(0.0f, 12.0f);
 	ImGui::AlignTextToFramePadding();
@@ -848,12 +934,13 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 	}
 	ImGui::SameLine();
 	ImGui::BeginGroup();
-	if (ImGui::ArrowButton("##ParticleEditorLODUp", ImGuiDir_Up) && TotalLODCount > 0)
+	if (ImGui::ArrowButton("##ParticleEditorLODLeft", ImGuiDir_Left) && TotalLODCount > 0)
 	{
 		EditedLODIndex = (std::max)(0, EditedLODIndex - 1);
 		SyncEditedLODSelection();
 	}
-	if (ImGui::ArrowButton("##ParticleEditorLODDown", ImGuiDir_Down) && TotalLODCount > 0)
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("##ParticleEditorLODRight", ImGuiDir_Right) && TotalLODCount > 0)
 	{
 		EditedLODIndex = (std::min)(TotalLODCount - 1, EditedLODIndex + 1);
 		SyncEditedLODSelection();
@@ -2194,7 +2281,11 @@ bool FParticleSystemEditorWidget::RenderEmitterHeader(UParticleEmitter* Emitter,
 	const ImVec2 BadgeMin(TextMin.x, HeaderRect.Max.y - ParticleEmitterHeaderPaddingY - ParticleEmitterHeaderBadgeHeight);
 	const ImVec2 TypeBadgeMax((std::min)(TextMaxX, BadgeMin.x + 62.0f), BadgeMin.y + ParticleEmitterHeaderBadgeHeight);
 	DrawList->AddRectFilled(BadgeMin, TypeBadgeMax, IM_COL32(28, 28, 32, 180), 3.0f);
-	DrawList->AddText(ImVec2(BadgeMin.x + 6.0f, BadgeMin.y + 2.0f), TypeColor, TypeLabel);
+	const ImVec2 TypeBadgeTextSize = ImGui::CalcTextSize(TypeLabel);
+	DrawList->AddText(
+		ImVec2(BadgeMin.x + 6.0f, BadgeMin.y + (ParticleEmitterHeaderBadgeHeight - TypeBadgeTextSize.y) * 0.5f),
+		TypeColor,
+		TypeLabel);
 
 	const float CountBadgeWidth = 28.0f;
 	const ImVec2 CountBadgeMin(TypeBadgeMax.x + 6.0f, BadgeMin.y);
@@ -2204,7 +2295,9 @@ bool FParticleSystemEditorWidget::RenderEmitterHeader(UParticleEmitter* Emitter,
 		DrawList->AddRectFilled(CountBadgeMin, CountBadgeMax, IM_COL32(28, 28, 32, 180), 3.0f);
 		const ImVec2 CountSize = ImGui::CalcTextSize(CountText);
 		DrawList->AddText(
-			ImVec2(CountBadgeMin.x + (CountBadgeWidth - CountSize.x) * 0.5f, CountBadgeMin.y + 2.0f),
+			ImVec2(
+				CountBadgeMin.x + (CountBadgeWidth - CountSize.x) * 0.5f,
+				CountBadgeMin.y + (ParticleEmitterHeaderBadgeHeight - CountSize.y) * 0.5f),
 			IM_COL32(245, 245, 245, 255),
 			CountText);
 	}
@@ -2232,7 +2325,7 @@ bool FParticleSystemEditorWidget::RenderEmitterModules(UParticleEmitter* Emitter
 	UParticleModuleRequired* RequiredModule = LODLevel->GetRequiredModule();
 	bChanged |= RenderParticleModuleItem(RequiredModule, EmitterIndex);
 
-	const TArray<UParticleModule*>& Modules = LODLevel->GetModules();
+	const TArray<UParticleModule*> Modules = LODLevel->GetModules();
 	for (int32 ModuleIndex = 0; ModuleIndex < static_cast<int32>(Modules.size()); ++ModuleIndex)
 	{
 		UParticleModule* Module = Modules[ModuleIndex];
@@ -2291,10 +2384,23 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 		(ModuleClass != EParticleModuleClass::TypeDataMesh) &&
 		(ModuleClass != EParticleModuleClass::TypeDataBeam) &&
 		(ModuleClass != EParticleModuleClass::TypeDataRibbon);
+	UParticleLODLevel* CurrentLODLevel = nullptr;
+	int32 ModuleIndexInStack = -1;
+	if (UParticleSystem* Asset = Cast<UParticleSystem>(EditedObject))
+	{
+		if (UParticleEmitter* Emitter = Asset->GetEmitter(EmitterIndex))
+		{
+			CurrentLODLevel = GetEditedLODLevel(Emitter);
+			ModuleIndexInStack = FindParticleModuleIndex(CurrentLODLevel, Module);
+		}
+	}
+	const bool bCanReorderModule = ModuleIndexInStack >= 0 && !IsParticleModuleFixedInStack(ModuleClass);
 	const bool bModuleSelected = SelectedModule == Module;
 	const FParticleModuleStyleColors& ModuleColors =
 		(ModuleClass == EParticleModuleClass::Spawn) ? ParticleSpawnModuleColors :
 		((ModuleClass == EParticleModuleClass::Required) ? ParticleRequiredModuleColors :
+		(IsParticleEventModuleClass(ModuleClass)) ? ParticleEventModuleColors :
+		(IsParticleSubUVModuleClass(ModuleClass)) ? ParticleSubUVModuleColors :
 		(((ModuleClass == EParticleModuleClass::TypeDataSprite)
 		|| (ModuleClass == EParticleModuleClass::TypeDataMesh)
 		|| (ModuleClass == EParticleModuleClass::TypeDataBeam)
@@ -2330,11 +2436,13 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 	ImGui::PushStyleColor(ImGuiCol_Header, ModuleColor);
 	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ModuleColor);
 	ImGui::PushStyleColor(ImGuiCol_HeaderActive, ModuleColor);
-	if (ImGui::Selectable(ModuleName, true, SelectableFlags, ImVec2(0.0f, ParticleModuleHeight)))
+	ImGui::PushID(Module);
+	if (ImGui::Selectable("##ParticleModuleRow", true, SelectableFlags, ImVec2(0.0f, ParticleModuleHeight)))
 	{
 		SelectedEmitterIndex = EmitterIndex;
 		SelectedModule = Module;
 	}
+	ImGui::PopID();
 	const ImRect ModuleRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 	ImGui::PopStyleColor(3);
 	ImGui::PopStyleVar(2);
@@ -2342,6 +2450,50 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 	if (bSharedFromPreviousLOD)
 	{
 		DrawSharedModuleStripeOverlay(ImGui::GetWindowDrawList(), ModuleRect);
+	}
+
+	DrawParticleModuleLabel(ImGui::GetWindowDrawList(), ModuleRect, ModuleName, bCanToggleModule);
+
+	if (bCanReorderModule && ImGui::BeginDragDropSource())
+	{
+		const FParticleModuleDragDropPayload Payload = { EmitterIndex, Module };
+		ImGui::SetDragDropPayload("ParticleModuleReorder", &Payload, sizeof(Payload));
+		ImGui::TextUnformatted(ModuleName);
+		ImGui::EndDragDropSource();
+	}
+
+	if (bCanReorderModule && ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("ParticleModuleReorder"))
+		{
+			if (Payload->DataSize == sizeof(FParticleModuleDragDropPayload))
+			{
+				const FParticleModuleDragDropPayload& DragPayload = *static_cast<const FParticleModuleDragDropPayload*>(Payload->Data);
+				if (DragPayload.EmitterIndex == EmitterIndex && DragPayload.Module && DragPayload.Module != Module && CurrentLODLevel)
+				{
+					const int32 DraggedModuleIndex = FindParticleModuleIndex(CurrentLODLevel, DragPayload.Module);
+					if (DraggedModuleIndex >= 0)
+					{
+						const bool bDropAfter = ImGui::GetMousePos().y >= (ModuleRect.Min.y + ModuleRect.Max.y) * 0.5f;
+						const int32 TargetIndex = bDropAfter ? ModuleIndexInStack + 1 : ModuleIndexInStack;
+						if (CurrentLODLevel->MoveModule(DraggedModuleIndex, TargetIndex))
+						{
+							CurrentLODLevel->CacheModules();
+							if (UParticleSystem* Asset = Cast<UParticleSystem>(EditedObject))
+							{
+								Asset->CacheSystemModuleInfo();
+							}
+							SelectedEmitterIndex = EmitterIndex;
+							SelectedModule = DragPayload.Module;
+							SyncEditedLODSelection();
+							MarkDirty();
+							bChanged = true;
+						}
+					}
+				}
+			}
+		}
+		ImGui::EndDragDropTarget();
 	}
 
 	if (bCanToggleModule)
@@ -2353,6 +2505,10 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 			RowStart.y + (ParticleModuleHeight - CheckboxSize) * 0.5f));
 		ImGui::PushID(Module);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ParticleModuleCheckboxFramePadding, ParticleModuleCheckboxFramePadding));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(92, 92, 92, 255));
+		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(108, 108, 108, 255));
+		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, IM_COL32(122, 122, 122, 255));
+		ImGui::PushStyleColor(ImGuiCol_CheckMark, IM_COL32(255, 255, 255, 255));
 		bool bEnabled = Module->IsEnabled();
 		if (ImGui::Checkbox("##ModuleEnabled", &bEnabled))
 		{
@@ -2360,6 +2516,7 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 			MarkDirty();
 			bChanged = true;
 		}
+		ImGui::PopStyleColor(4);
 		ImGui::PopStyleVar();
 		ImGui::PopID();
 		ImGui::SetCursorScreenPos(RowEnd);
