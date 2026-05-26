@@ -1,4 +1,4 @@
-#include "ParticleRenderData.h"
+﻿#include "ParticleRenderData.h"
 #include "Particles/Runtime/ParticleRuntimeTypes.h"
 
 // ============================================================
@@ -55,7 +55,50 @@ void FDynamicMeshEmitterData::GatherRenderData(
     TArray<FSpriteParticleInstanceVertex>& /*OutInstances*/,
     TArray<uint32>&                        /*OutIndices*/) const
 {
-    // 미구현 — Mesh Particle은 FMeshParticleInstanceVertex 기반 별도 인스턴싱 패스가 필요
+    // Mesh Particle uses the mesh-instance overload below.
+}
+
+void FDynamicMeshEmitterData::GatherRenderData(
+    const FParticleVertexBuildContext& /*Ctx*/,
+    TArray<FMeshParticleInstanceVertex>& OutInstances) const
+{
+    if (!Source.IsValid() || !Source.Mesh) return;
+
+    const int32 Stride = Source.ParticleStride;
+    const uint8* RawData = Source.DataContainer.ParticleData;
+    if (!RawData || Stride <= 0) return;
+
+    OutInstances.reserve(OutInstances.size() + Source.ActiveParticleCount);
+
+    for (int32 i = 0; i < Source.ActiveParticleCount; ++i)
+    {
+        const uint16 ParticleIdx = Source.DataContainer.ParticleIndices[i];
+        const FBaseParticle* P = reinterpret_cast<const FBaseParticle*>(RawData + Stride * ParticleIdx);
+
+        const FVector Position(
+            P->Location.X * Source.Scale.X,
+            P->Location.Y * Source.Scale.Y,
+            P->Location.Z * Source.Scale.Z);
+
+        const FVector Scale(
+            P->Size.X * Source.Scale.X,
+            P->Size.Y * Source.Scale.Y,
+            P->Size.Z * Source.Scale.Z);
+
+        const float Rotation = P->RotationRate * P->RelativeTime * P->Lifetime;
+
+        FMeshParticleInstanceVertex Instance;
+        Instance.Transform = FMatrix::MakeScaleMatrix(Scale)
+            * FMatrix::MakeRotationZ(Rotation)
+            * FMatrix::MakeTranslationMatrix(Position);
+        Instance.Color = FVector4(
+            P->Color.R / 255.0f,
+            P->Color.G / 255.0f,
+            P->Color.B / 255.0f,
+            P->Color.A / 255.0f);
+
+        OutInstances.push_back(Instance);
+    }
 }
 
 // TODO

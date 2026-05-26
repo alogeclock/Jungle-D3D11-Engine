@@ -94,6 +94,11 @@ struct FDynamicEmitterDataBase
                                       TArray<uint32> &OutIndices) const
     {
     }
+
+    virtual void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                                      TArray<FMeshParticleInstanceVertex> &OutInstances) const
+    {
+    }
 };
 
 /** Sprite Particle 렌더링 데이터 */
@@ -133,6 +138,8 @@ struct FDynamicMeshEmitterData : public FDynamicEmitterDataBase
     void GatherRenderData(const FParticleVertexBuildContext &Ctx,
                               TArray<FSpriteParticleInstanceVertex> &OutInstances,
                               TArray<uint32> &OutIndices) const override;
+    void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                              TArray<FMeshParticleInstanceVertex> &OutInstances) const override;
 };
 
 /** Beam Emitter 렌더링 데이터 */
