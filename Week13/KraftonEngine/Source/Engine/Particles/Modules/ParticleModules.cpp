@@ -318,7 +318,7 @@ void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, FBaseParticle&
     Particle.Color = Particle.BaseColor;
 }
 
-void UParticleModuleColor::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleColor::Update(FParticleEmitterInstance* Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/)
 {
     if (!bEnabled) return;
 
@@ -381,7 +381,7 @@ void UParticleModuleSize::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& 
     Particle.Size     = S;
 }
 
-void UParticleModuleSize::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleSize::Update(FParticleEmitterInstance* Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/)
 {
     if (!bEnabled) return;
 
@@ -458,7 +458,7 @@ void UParticleModuleRotationRate::Spawn(FParticleEmitterInstance* Owner, FBasePa
     Particle.RotationRate     = Rate;
 }
 
-void UParticleModuleRotationRate::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleRotationRate::Update(FParticleEmitterInstance* Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/)
 {
     if (!bEnabled) return;
 

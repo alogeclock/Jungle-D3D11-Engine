@@ -49,7 +49,7 @@ class UParticleModuleCollision : public UParticleModule
 
     virtual void Serialize(FArchive &Ar) override;
     virtual void PreSpawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle) override;
-    virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime) override;
+    virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime, TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
   private:
     // ── 파티클 쪽 설정 ──────────────────────────────────────────────

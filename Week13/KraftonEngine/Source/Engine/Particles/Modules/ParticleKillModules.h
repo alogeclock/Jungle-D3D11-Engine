@@ -24,7 +24,7 @@ class UParticleModuleKill : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Kill; }
     virtual void Serialize(FArchive& Ar) override;
-    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime) override;
+    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/ = nullptr) override;
 
   private:
     UPROPERTY(Edit, Category="Particle", DisplayName="Use Kill Box")
