@@ -117,7 +117,7 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
 
 		for (UParticleModule* Module : CurrentLODLevel->GetSpawnModules())
 		{
-			if (Module)
+			if (Module && Module->IsEnabled())
 			{
 				Module->Spawn(this, Particle, SpawnTime);
 			}
@@ -343,7 +343,7 @@ void FParticleEmitterInstance::PostSpawn(FBaseParticle& Particle, float SpawnTim
 void FParticleEmitterInstance::KillExpiredParticles()
 {
 	BEGIN_UPDATE_LOOP
-	if (Particle.RelativeTime >= 1.0f)
+	if (Particle.Lifetime > 0.0f && Particle.RelativeTime >= 1.0f)
 	{
 		KillParticle(Index);
 	}

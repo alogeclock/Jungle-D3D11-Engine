@@ -130,6 +130,8 @@ void UParticleLODLevel::CacheModules()
     {
         if (!M || !M->IsEnabled()) continue;
 
+        M->CacheModuleValues();
+
         EParticleModuleUpdatePhase Phase = M->GetUpdatePhase();
         if (Phase == EParticleModuleUpdatePhase::PMUP_Spawn ||
             Phase == EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate)

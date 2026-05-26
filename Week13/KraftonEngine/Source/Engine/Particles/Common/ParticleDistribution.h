@@ -146,8 +146,8 @@ static constexpr int32 NUM_BAKED_SAMPLES = 256; // 커브를 256등분으로 굽
 struct FRawDistributionFloat
 {
     EDistributionType Type = EDistributionType::Constant;
-    float             Min  = 5.f;
-    float             Max  = 10.f;
+    float             Min  = 0.f;
+    float             Max  = 0.f;
 
     // 런타임 Baked 테이블 (Curve 타입일 때 사용, 직렬화하지 않음)
     TArray<float> BakedMin;

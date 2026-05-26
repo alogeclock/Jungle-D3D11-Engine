@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file ParticleCoreModules.h
  * @brief 기본 Particle Module 정의.
  *
@@ -93,7 +93,7 @@ class UParticleModuleLifetime : public UParticleModule
     // 에디터 측: 커브/범위 편집 가능
     UDistributionFloat* LifetimeDist = nullptr;
     // 런타임 측: Baked 테이블
-    FRawDistributionFloat RawLifetime = FRawDistributionFloat::MakeConstant(1.0f);
+    FRawDistributionFloat RawLifetime = FRawDistributionFloat::MakeConstant(0.1f);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -75,12 +75,35 @@ void UParticleModuleSpawn::Serialize(FArchive& Ar)
 
 // ── Lifetime ─────────────────────────────────────────────────────────────────
 
+namespace
+{
+    constexpr float DefaultParticleLifetime = 0.1f;
+
+    void InitializeDefaultLifetimeDistribution(UDistributionFloat* Distribution)
+    {
+        if (!Distribution)
+        {
+            return;
+        }
+
+        Distribution->Type = EDistributionType::Constant;
+        Distribution->Min = DefaultParticleLifetime;
+        Distribution->Max = DefaultParticleLifetime;
+    }
+}
+
 void UParticleModuleLifetime::Serialize(FArchive& Ar)
 {
     UParticleModule::Serialize(Ar);
 
     if (!LifetimeDist)
+    {
         LifetimeDist = GUObjectArray.CreateObject<UDistributionFloat>(this);
+        if (Ar.IsSaving())
+        {
+            InitializeDefaultLifetimeDistribution(LifetimeDist);
+        }
+    }
 
     LifetimeDist->Serialize(Ar);
 
@@ -90,6 +113,12 @@ void UParticleModuleLifetime::Serialize(FArchive& Ar)
 
 void UParticleModuleLifetime::CacheModuleValues()
 {
+    if (!LifetimeDist)
+    {
+        LifetimeDist = GUObjectArray.CreateObject<UDistributionFloat>(this);
+        InitializeDefaultLifetimeDistribution(LifetimeDist);
+    }
+
     if (LifetimeDist)
         RawLifetime = LifetimeDist->BuildRaw();
 }
@@ -98,7 +127,7 @@ void UParticleModuleLifetime::Spawn(FParticleEmitterInstance* Owner, FBasePartic
 {
     if (!bEnabled) return;
     Particle.Lifetime     = RawLifetime.GetValue(0.f, &ModuleStream);
-    Particle.RelativeTime = 0.f;
+    Particle.RelativeTime = Particle.Lifetime > 0.0f ? SpawnTime / Particle.Lifetime : 0.0f;
 }
 
 // ── Location ─────────────────────────────────────────────────────────────────
