@@ -130,7 +130,7 @@ namespace
 
 UParticleSystemComponent::UParticleSystemComponent()
 {
-	ClearEmitterInstances();
+	ClearEmitterInstances(false);
 
 	EmitterDelay = 0;
 	DeltaTimeTick = 0;
@@ -142,6 +142,12 @@ UParticleSystemComponent::UParticleSystemComponent()
 	EmitterMaterials.clear();
 	FrameEventQueue.clear();
 	EmitterRenderData.clear();
+}
+
+UParticleSystemComponent::~UParticleSystemComponent()
+{
+	bIsActive = false;
+	ClearEmitterInstances(false);
 }
 
 void UParticleSystemComponent::EndPlay()
@@ -430,7 +436,7 @@ void UParticleSystemComponent::ResetSystem()
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
-void UParticleSystemComponent::ClearEmitterInstances()
+void UParticleSystemComponent::ClearEmitterInstances(bool bNotifyRender)
 {
 	for (FParticleEmitterInstance* Instance : EmitterInstances)
 	{
@@ -444,8 +450,11 @@ void UParticleSystemComponent::ClearEmitterInstances()
 	FrameEventQueue.clear();
 	TotalActiveParticles = 0;
 	ClearRenderData();
-	MarkWorldBoundsDirty();
-	MarkProxyDirty(EDirtyFlag::Mesh);
+	if (bNotifyRender)
+	{
+		MarkWorldBoundsDirty();
+		MarkProxyDirty(EDirtyFlag::Mesh);
+	}
 }
 
 void UParticleSystemComponent::ClearRenderData()

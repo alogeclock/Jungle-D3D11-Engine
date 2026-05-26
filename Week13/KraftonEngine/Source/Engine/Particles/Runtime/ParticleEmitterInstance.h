@@ -66,13 +66,13 @@ struct FParticleEmitterInstance
 	
 	FBaseParticle& GetParticle(int32 index);
 
-	bool bFirstTime;		// 처음 스폰 여부
-	bool bEnabled;			// 가동 여부
-	int32 LoopCount;		// 루프 개수
-	int32 BurstCount;		// burst 회수
+	bool bFirstTime = true;	// 처음 스폰 여부
+	bool bEnabled = true;	// 가동 여부
+	int32 LoopCount = 0;		// 루프 개수
+	int32 BurstCount = 0;	// burst 회수
 
-	float EmitterTime;		// 이미터 시간
-	float LastDeltaTime;	// 마지막으로 스폰한 시간
+	float EmitterTime = 0.0f;	// 이미터 시간
+	float LastDeltaTime = 0.0f;	// 마지막으로 스폰한 시간
     float RealDeltaTime = 0.0f; // Time dilation 적용 전 delta
 };
 

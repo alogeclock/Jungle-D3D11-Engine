@@ -74,6 +74,7 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 	bFirstTime = true;
 	bEnabled = true;
 	LoopCount = 0;
+	BurstCount = 0;
 	EmitterTime = 0.0f;
 	LastDeltaTime = 0.0f;
 	RealDeltaTime = 0.0f;
@@ -178,9 +179,25 @@ void FParticleEmitterInstance::Reset()
 	LastDeltaTime = 0;
 	RealDeltaTime = 0;
 	LoopCount = 0;
+	BurstCount = 0;
 	ParticleCounter = 0;
 	ActiveParticles = 0;
+	SpawnFraction = 0.0f;
+	bFirstTime = true;
 	bEnabled = true;
+	ReceivedEvents.clear();
+	BurstFired.clear();
+
+	if (CurrentLODLevel)
+	{
+		for (UParticleModule* Module : CurrentLODLevel->GetModules())
+		{
+			if (Module)
+			{
+				Module->InitializeStream();
+			}
+		}
+	}
 }
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
