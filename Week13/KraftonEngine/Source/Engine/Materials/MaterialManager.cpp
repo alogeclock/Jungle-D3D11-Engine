@@ -12,9 +12,45 @@
 #include <algorithm>
 #include <cwctype>
 
+namespace
+{
+	std::filesystem::path ResolveMaterialDiskPath(const FString& Path)
+	{
+		std::filesystem::path DiskPath(FPaths::ToWide(Path));
+		if (!DiskPath.is_absolute())
+		{
+			DiskPath = std::filesystem::path(FPaths::RootDir()) / DiskPath;
+		}
+		return DiskPath.lexically_normal();
+	}
+
+	FString MakeMaterialCacheKey(const std::filesystem::path& Path)
+	{
+		return FPaths::MakeProjectRelative(FPaths::ToUtf8(Path.lexically_normal().generic_wstring()));
+	}
+
+	FString MakeAssetStem(const FString& AssetName)
+	{
+		std::filesystem::path NamePath(FPaths::ToWide(AssetName));
+		FString Stem = FPaths::ToUtf8(NamePath.stem().wstring());
+		if (Stem.empty())
+		{
+			Stem = AssetName;
+		}
+		return Stem;
+	}
+
+	bool IsParticleMaterialShaderPath(const FString& ShaderPath)
+	{
+		static constexpr const char* ParticleShaderPrefix = "Shaders/Particles/";
+		return ShaderPath.rfind(ParticleShaderPrefix, 0) == 0;
+	}
+}
+
 void FMaterialManager::ScanMaterialAssets()
 {
 	AvailableMaterialFiles.clear();
+	AvailableParticleMaterialFiles.clear();
 
 	const std::filesystem::path MaterialRoot = FPaths::RootDir() + L"Asset/";
 
@@ -36,9 +72,21 @@ void FMaterialManager::ScanMaterialAssets()
 		if (Ext != L".mat") continue;
 		if (Path.stem() == L"None") continue; // Fallback 머티리얼은 목록에서 제외
 
+		const FString RelativePath = FPaths::ToUtf8(Path.lexically_relative(ProjectRoot).generic_wstring());
+		json::JSON JsonData = ReadJsonFile(RelativePath);
+
 		FMaterialAssetListItem Item;
 		Item.DisplayName = FPaths::ToUtf8(Path.stem().wstring());
-		Item.FullPath = FPaths::ToUtf8(Path.lexically_relative(ProjectRoot).generic_wstring());
+		Item.FullPath = RelativePath;
+		if (!JsonData.IsNull() && JsonData.hasKey(MatKeys::ShaderPath))
+		{
+			Item.ShaderPath = JsonData[MatKeys::ShaderPath].ToString().c_str();
+		}
+
+		if (IsParticleMaterialShaderPath(Item.ShaderPath))
+		{
+			AvailableParticleMaterialFiles.push_back(Item);
+		}
 		AvailableMaterialFiles.push_back(std::move(Item));
 	}
 }
@@ -88,6 +136,9 @@ UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
 	FString BlendStr = JsonData.hasKey(MatKeys::BlendState) ? JsonData[MatKeys::BlendState].ToString().c_str() : "";
 	FString DepthStr = JsonData.hasKey(MatKeys::DepthStencilState) ? JsonData[MatKeys::DepthStencilState].ToString().c_str() : "";
 	FString RasterStr = JsonData.hasKey(MatKeys::RasterizerState) ? JsonData[MatKeys::RasterizerState].ToString().c_str() : "";
+	const bool bHasExplicitBlendState = !BlendStr.empty();
+	const bool bHasExplicitDepthState = !DepthStr.empty();
+	const bool bHasExplicitRasterState = !RasterStr.empty();
 
 	EBlendState BlendState = EBlendState::Opaque;
 	EDepthStencilState DepthState = EDepthStencilState::Default;
@@ -95,10 +146,10 @@ UMaterial* FMaterialManager::GetOrCreateMaterial(const FString& MatFilePath)
 
 	if (bHasBlendMode && !(BlendMode == EMaterialBlendMode::Opaque && bHasSpecialRenderPass))
 	{
-		RenderPass = MaterialBlendMode::GetDefaultRenderPass(BlendMode);
-		BlendState = MaterialBlendMode::GetDefaultBlendState(BlendMode);
-		DepthState = MaterialBlendMode::GetDefaultDepthStencilState(BlendMode);
-		RasterState = MaterialBlendMode::GetDefaultRasterizerState(BlendMode);
+		RenderPass = bHasExplicitRenderPass ? StringToRenderPass(RenderPassStr) : MaterialBlendMode::GetDefaultRenderPass(BlendMode);
+		BlendState = bHasExplicitBlendState ? StringToBlendState(BlendStr, RenderPass) : MaterialBlendMode::GetDefaultBlendState(BlendMode);
+		DepthState = bHasExplicitDepthState ? StringToDepthStencilState(DepthStr, RenderPass) : MaterialBlendMode::GetDefaultDepthStencilState(BlendMode);
+		RasterState = bHasExplicitRasterState ? StringToRasterizerState(RasterStr, RenderPass) : MaterialBlendMode::GetDefaultRasterizerState(BlendMode);
 	}
 	else
 	{
@@ -269,6 +320,87 @@ bool FMaterialManager::SaveMaterial(UMaterial* Material)
 	return SaveToJSON(JsonData, MatFilePath);
 }
 
+bool FMaterialManager::RenameMaterial(const FString& MatFilePath, const FString& NewAssetName, FString& OutNewMatFilePath)
+{
+	const std::filesystem::path OldPath = ResolveMaterialDiskPath(MatFilePath);
+	if (!std::filesystem::exists(OldPath) || !std::filesystem::is_regular_file(OldPath))
+	{
+		return false;
+	}
+
+	std::wstring Extension = OldPath.extension().wstring();
+	std::transform(Extension.begin(), Extension.end(), Extension.begin(), ::towlower);
+	if (Extension != L".mat")
+	{
+		return false;
+	}
+
+	const FString NewStem = MakeAssetStem(NewAssetName);
+	if (NewStem.empty())
+	{
+		return false;
+	}
+
+	const std::filesystem::path NewPath = OldPath.parent_path() / (FPaths::ToWide(NewStem) + L".mat");
+	const FString OldCacheKey = MakeMaterialCacheKey(OldPath);
+	const FString NewCacheKey = MakeMaterialCacheKey(NewPath);
+
+	if (OldCacheKey == NewCacheKey)
+	{
+		OutNewMatFilePath = NewCacheKey;
+		return true;
+	}
+
+	if (std::filesystem::exists(NewPath))
+	{
+		return false;
+	}
+
+	json::JSON JsonData = ReadJsonFile(OldCacheKey);
+	if (JsonData.IsNull())
+	{
+		return false;
+	}
+
+	std::error_code Error;
+	std::filesystem::rename(OldPath, NewPath, Error);
+	if (Error)
+	{
+		return false;
+	}
+
+	JsonData[MatKeys::PathFileName] = NewCacheKey.c_str();
+	if (!SaveToJSON(JsonData, NewCacheKey))
+	{
+		std::error_code RestoreError;
+		std::filesystem::rename(NewPath, OldPath, RestoreError);
+		return false;
+	}
+
+	auto CacheIt = MaterialCache.find(OldCacheKey);
+	if (CacheIt != MaterialCache.end())
+	{
+		UMaterial* Material = CacheIt->second;
+		MaterialCache.erase(CacheIt);
+		if (Material)
+		{
+			Material->SetAssetPathFileName(NewCacheKey);
+			MaterialCache[NewCacheKey] = Material;
+		}
+	}
+
+	ScanMaterialAssets();
+	OutNewMatFilePath = NewCacheKey;
+	return true;
+}
+
+void FMaterialManager::ForgetMaterial(const FString& MatFilePath)
+{
+	const std::filesystem::path Path = ResolveMaterialDiskPath(MatFilePath);
+	const FString CacheKey = MakeMaterialCacheKey(Path);
+	MaterialCache.erase(CacheKey);
+}
+
 json::JSON FMaterialManager::ReadJsonFile(const FString& FilePath) const
 {
 	std::ifstream File(FPaths::ToWide(FilePath).c_str());
@@ -341,6 +473,7 @@ void FMaterialManager::ApplyTextures(UMaterial* Material, json::JSON& JsonData)
 		FString TexturePath = Pair.second.ToString().c_str();
 		const bool bIsColorTexture =
 			SlotName == "DiffuseTexture" ||
+			SlotName == "ParticleTexture" ||
 			SlotName == "EmissiveTexture" ||
 			SlotName == "Custom0Texture" ||
 			SlotName == "Custom1Texture";
