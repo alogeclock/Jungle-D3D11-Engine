@@ -1,6 +1,7 @@
 ﻿#include "ParticleEmitterInstance.h"
 #include "Particles/Common/ParticleHelper.h"
 #include "Particles/Modules/ParticleEventModules.h"
+#include "Particles/Modules/ParticleRenderExpressionModules.h"
 #include "Core/EngineTypes.h"
 #include "Component/ParticleSystemComponent.h"
 #include "Math/Vector.h"
@@ -25,6 +26,25 @@ namespace
 		}
 	}
 #endif
+
+	int32 GetModulePayloadOffset(const UParticleEmitter* EmitterTemplate, const UParticleModule* Module)
+	{
+		return EmitterTemplate ? EmitterTemplate->GetModulePayloadOffset(Module) : INDEX_NONE;
+	}
+
+	int32 FindModulePayloadOffset(const UParticleEmitter* EmitterTemplate, const UParticleLODLevel* LODLevel, EParticleModuleClass ModuleClass)
+	{
+		if (!EmitterTemplate || !LODLevel)
+			return INDEX_NONE;
+
+		for (UParticleModule* Module : LODLevel->GetModules())
+		{
+			if (Module && Module->GetModuleClass() == ModuleClass)
+				return EmitterTemplate->GetModulePayloadOffset(Module);
+		}
+
+		return INDEX_NONE;
+	}
 }
 
 FParticleEmitterInstance::~FParticleEmitterInstance()
@@ -37,8 +57,6 @@ FParticleEmitterInstance::~FParticleEmitterInstance()
 
 	delete[] InstanceData;
 	InstanceData = nullptr;
-	
-	BurstFired.clear();
 }
 
 void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UParticleEmitter* InTemplate)
@@ -47,6 +65,7 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 
 	OwnerComponent = InComponent;
 	EmitterTemplate = InTemplate;
+	EmitterTemplate->CacheEmitterModuleInfo();
 	CurrentLODLevel = InTemplate->GetLODLevel(CurrentLODLevelIndex);
 
 	MaxActiveParticles = EmitterTemplate->GetMaxActiveParticles();
@@ -75,6 +94,7 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 	LoopCount = 0;
 	EmitterTime = 0.0f;
 	LastDeltaTime = 0.0f;
+	RealDeltaTime = 0.0f;
 
 	// 각 모듈의 RandomSeedInfo를 바탕으로 모듈 전용 스트림 초기화
 	for (UParticleModule* Module : CurrentLODLevel->GetModules())
@@ -84,12 +104,14 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 	}
 }
 
-void FParticleEmitterInstance::Tick(float DeltaTime, TArray<FParticleEventData>& OutEventQueue)
+void FParticleEmitterInstance::Tick(float DeltaTime, TArray<FParticleEventData>& OutEventQueue, float InRealDeltaTime)
 {
 	if (!CurrentLODLevel)
 		return;
 
 	if(!bEnabled) return;
+
+	RealDeltaTime = InRealDeltaTime >= 0.0f ? InRealDeltaTime : DeltaTime;
 
 	// 이미터 시간 갱신
 	EmitterTime += DeltaTime;
@@ -102,7 +124,7 @@ void FParticleEmitterInstance::Tick(float DeltaTime, TArray<FParticleEventData>&
 	for (UParticleModule* Module : CurrentLODLevel->GetUpdateModules())
 	{
 		if (Module && Module->IsEnabled())
-			Module->Update(this, DeltaTime, &OutEventQueue);
+			Module->Update(this, DeltaTime, GetModulePayloadOffset(EmitterTemplate, Module), &OutEventQueue);
 	}
 
 	//시간되었으면 spawn하는 로직
@@ -136,7 +158,7 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
 		{
 			if (Module && Module->IsEnabled())
 			{
-				Module->Spawn(this, Particle, SpawnTime);
+				Module->Spawn(this, Particle, SpawnTime, GetModulePayloadOffset(EmitterTemplate, Module));
 			}
 		}
 
@@ -171,10 +193,25 @@ void FParticleEmitterInstance::Reset()
 {
 	EmitterTime = 0;
 	LastDeltaTime = 0;
+	RealDeltaTime = 0;
 	LoopCount = 0;
 	ParticleCounter = 0;
 	ActiveParticles = 0;
+	SpawnFraction = 0.0f;
+	bFirstTime = true;
 	bEnabled = true;
+	ReceivedEvents.clear();
+
+	if (CurrentLODLevel)
+	{
+		for (UParticleModule* Module : CurrentLODLevel->GetModules())
+		{
+			if (Module)
+			{
+				Module->InitializeStream();
+			}
+		}
+	}
 }
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
@@ -219,9 +256,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, TArray<FPart
 	if (EmitterTime < 0.0f)
 		return;
 
-	//Burst는 일단 미구현
 	float SpawnRate = 0.0f;
-	int32 BurstCount = 0;
 
 	for (UParticleModule* Module : CurrentLODLevel->GetSpawnModules())
 	{
@@ -231,12 +266,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, TArray<FPart
 		if (Module->GetModuleType() == EParticleModuleType::PMT_Spawn)
 		{
 			UParticleModuleSpawn* SpawnModule = static_cast<UParticleModuleSpawn*>(Module);
-			SpawnRate += std::max(0.0f, SpawnModule->GetSpawnRate());
-
-			if (bFirstTime)
-			{
-				//BurstCount += SpawnModule->GetBurstCount();
-			}
+			SpawnRate += std::max(0.0f, SpawnModule->GetSpawnRate(EmitterTime));
 		}
 	}
 
@@ -245,7 +275,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, TArray<FPart
 	float NewSpawnFraction = NewLeftover - SpawnCount;
 
 	const int32 AvailableSlots = MaxActiveParticles - ActiveParticles;
-	const int32 TotalSpawnCount = std::min(SpawnCount + BurstCount, AvailableSlots);
+	const int32 TotalSpawnCount = std::min(SpawnCount, AvailableSlots);
 
 	if (TotalSpawnCount > 0)
 	{
@@ -295,7 +325,7 @@ void FParticleEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVector& 
 	for (UParticleModule* Module : CurrentLODLevel->GetSpawnModules())
 	{
 		if (Module && Module->IsEnabled())
-			Module->PreSpawn(this, Particle);
+			Module->PreSpawn(this, Particle, GetModulePayloadOffset(EmitterTemplate, Module));
 	}
 }
 
@@ -499,6 +529,7 @@ FDynamicEmitterDataBase* FParticleSpriteEmitterInstance::CreateDynamicEmitterDat
 	Source.eEmitterType = EDynamicEmitterType::DET_Sprite;
 	Source.ActiveParticleCount = ActiveParticles;
 	Source.ParticleStride = ParticleStride;
+	Source.RotationModuleOffset = FindModulePayloadOffset(EmitterTemplate, CurrentLODLevel, EParticleModuleClass::Rotation);
 	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
 
 	UParticleModuleRequired* RequiredModule = CurrentLODLevel->GetRequiredModule();
@@ -509,6 +540,20 @@ FDynamicEmitterDataBase* FParticleSpriteEmitterInstance::CreateDynamicEmitterDat
 		Source.Material = RequiredModule->GetMaterial();
 		Source.SortMode = RequiredModule->GetSortMode();
 		Source.TranslucencySortPriority = RequiredModule->GetTranslucencySortPriority();
+		Source.SubUVInterpolationMethod = RequiredModule->GetSubUVInterpolationMethod();
+		Source.SubUVHorizontalCount = RequiredModule->GetSubImagesHorizontal();
+		Source.SubUVVerticalCount = RequiredModule->GetSubImagesVertical();
+	}
+
+	for (UParticleModule* Module : CurrentLODLevel->GetModules())
+	{
+		UParticleModuleSubUVBase* SubUVModule = Cast<UParticleModuleSubUVBase>(Module);
+		if (SubUVModule && SubUVModule->IsEnabled())
+		{
+			Source.bUseSubUV = RequiredModule
+				&& RequiredModule->GetSubUVInterpolationMethod() != EParticleSubUVInterpMethod::PSUVIM_None;
+			break;
+		}
 	}
 
 	Source.DataContainer.Allocate(ParticleStride, ActiveParticles);
@@ -543,9 +588,9 @@ void FParticleMeshEmitterInstance::Init(UParticleSystemComponent* InComponent, U
 	}
 }
 
-void FParticleMeshEmitterInstance::Tick(float DeltaTime, TArray<FParticleEventData>& OutEventQueue)
+void FParticleMeshEmitterInstance::Tick(float DeltaTime, TArray<FParticleEventData>& OutEventQueue, float InRealDeltaTime)
 {
-	FParticleEmitterInstance::Tick(DeltaTime, OutEventQueue);
+	FParticleEmitterInstance::Tick(DeltaTime, OutEventQueue, InRealDeltaTime);
 
 	//MeshRotation및 payload계산
 }
@@ -574,6 +619,7 @@ FDynamicEmitterDataBase* FParticleMeshEmitterInstance::CreateDynamicEmitterData(
 	Source.eEmitterType = EDynamicEmitterType::DET_Mesh;
 	Source.ActiveParticleCount = ActiveParticles;
 	Source.ParticleStride = ParticleStride;
+	Source.RotationModuleOffset = FindModulePayloadOffset(EmitterTemplate, CurrentLODLevel, EParticleModuleClass::Rotation);
 	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
 	Source.Mesh = MeshTypeData->GetMesh();
 
@@ -612,4 +658,99 @@ FDynamicEmitterDataBase* FParticleMeshEmitterInstance::CreateDynamicEmitterData(
 	}
 
 	return Data;
+}
+
+void FParticleBeamEmitterInstance::Init(UParticleSystemComponent* InComponent, UParticleEmitter* InTemplate)
+{
+	FParticleEmitterInstance::Init(InComponent, InTemplate);
+
+	BeamTypeData = nullptr;
+	if (CurrentLODLevel)
+	{
+		BeamTypeData = Cast<UParticleModuleTypeDataBeam>(CurrentLODLevel->GetTypeDataModule());
+	}
+}
+
+FDynamicEmitterDataBase* FParticleBeamEmitterInstance::CreateDynamicEmitterData()
+{
+	if (ActiveParticles <= 0)
+		return nullptr;
+
+	if (!ParticleData || !ParticleIndices)
+		return nullptr;
+
+	if (!CurrentLODLevel)
+		return nullptr;
+
+	if (!BeamTypeData)
+	{
+		UE_LOG("BeamTypeData is null, cannot create Beam Emitter Data.");
+		return nullptr;
+	}
+
+	FDynamicBeamEmitterData* Data = new FDynamicBeamEmitterData();
+	FDynamicBeamEmitterReplayData& Source = Data->Source;
+
+	Source.eEmitterType = EDynamicEmitterType::DET_Beam;
+	Source.ActiveParticleCount = ActiveParticles;
+	Source.ParticleStride = ParticleStride;
+	Source.RotationModuleOffset = FindModulePayloadOffset(EmitterTemplate, CurrentLODLevel, EParticleModuleClass::Rotation);
+	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
+	Source.Source = BeamTypeData->GetSource();
+	Source.Target = BeamTypeData->GetTarget();
+	Source.Width = BeamTypeData->GetWidth();
+	Source.TextureTiling = BeamTypeData->GetTextureTiling();
+	const int32 BeamPayloadOffset = GetModulePayloadOffset(EmitterTemplate, BeamTypeData);
+	Source.PayloadOffset = BeamPayloadOffset != INDEX_NONE ? BeamPayloadOffset : PayloadOffset;
+
+	UParticleModuleRequired* RequiredModule = CurrentLODLevel->GetRequiredModule();
+	Source.RequiredModule = RequiredModule;
+
+	if (RequiredModule)
+	{
+		Source.Material = RequiredModule->GetMaterial();
+		Source.SortMode = RequiredModule->GetSortMode();
+		Source.TranslucencySortPriority = RequiredModule->GetTranslucencySortPriority();
+	}
+
+	Source.DataContainer.Allocate(ParticleStride, ActiveParticles);
+
+	for (int32 i = 0; i < ActiveParticles; ++i)
+	{
+		uint16 SrcIndex = ParticleIndices[i];
+
+		memcpy(
+			Source.DataContainer.ParticleData + ParticleStride * i,
+			ParticleData + ParticleStride * SrcIndex,
+			ParticleStride
+		);
+
+		Source.DataContainer.ParticleIndices[i] = i;
+	}
+
+	return Data;
+}
+
+void FParticleBeamEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVector& InitialLocation, const FVector& InitialVelocity)
+{
+	FParticleEmitterInstance::PreSpawn(Particle, InitialLocation, InitialVelocity);
+
+	if (!BeamTypeData)
+		return;
+
+	const int32 BeamPayloadOffset = GetModulePayloadOffset(EmitterTemplate, BeamTypeData);
+	if (BeamPayloadOffset == INDEX_NONE)
+		return;
+
+	FBeamParticlePayload* Payload =
+		reinterpret_cast<FBeamParticlePayload*>(
+			reinterpret_cast<uint8*>(&Particle) + BeamPayloadOffset);
+
+	if (!Payload)
+		return;
+
+	Payload->Source = BeamTypeData->GetSource();
+	Payload->Target = BeamTypeData->GetTarget();
+	Payload->Width = BeamTypeData->GetWidth();
+	Payload->TextureTiling = BeamTypeData->GetTextureTiling();
 }

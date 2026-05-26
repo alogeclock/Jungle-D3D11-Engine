@@ -272,6 +272,9 @@ TYPE_MAP = {
     "FSoftObjectPath": ("EPropertyType::SoftObject", None),
     "FName":           ("EPropertyType::Name",     None),
     "FMaterialSlot":   ("EPropertyType::MaterialSlot", None),
+    "UDistributionFloat*": ("EPropertyType::Distribution", None),
+    "UDistributionVector*": ("EPropertyType::Distribution", None),
+    "UDistributionLinearColor*": ("EPropertyType::Distribution", None),
 }
 
 # uint8 → ByteBool requires explicit Type=ByteBool override since uint8 is
@@ -290,6 +293,10 @@ def classify_type(
 ) -> tuple[str, str | None, str | None]:
     """Returns (EPropertyType, helper_macro_or_None, array_inner_type_or_None)."""
     t = cpp_type.strip()
+
+    if t in TYPE_MAP:
+        et, helper = TYPE_MAP[t]
+        return et, helper, None
 
     if t.endswith("*"):
         base = t.rstrip("*").strip()
@@ -493,7 +500,7 @@ def parse_property(
         enum_expr=enum_expr,
         struct_type=struct_type,
         array_inner_type=array_inner,
-        property_class=kvs.get("Class"),
+        property_class=kvs.get("Class", cpp_type.rstrip("*").strip() if prop_type == "EPropertyType::Distribution" else None),
     )
 
 
@@ -782,6 +789,7 @@ def property_ctor_name(prop_type: str) -> str:
         "EPropertyType::Script": "FScriptProperty",
         "EPropertyType::Array": "FArrayProperty",
         "EPropertyType::SoftObject": "FSoftObjectProperty",
+        "EPropertyType::Distribution": "FDistributionProperty",
     }.get(prop_type) or (_ for _ in ()).throw(CodegenError(f"unknown property type {prop_type}"))
 
 
@@ -803,6 +811,7 @@ PROPERTY_HEADER_BY_TYPE = {
     "EPropertyType::Script": "Core/Property/PropertyTypes.h",
     "EPropertyType::Array": "Core/Property/FArrayProperty.h",
     "EPropertyType::SoftObject": "Core/Property/FObjectPropertyBase/FSoftObjectProperty.h",
+    "EPropertyType::Distribution": "Core/Property/FDistributionProperty.h",
 }
 
 
@@ -873,6 +882,12 @@ def emit_property_constructor_args(
         if not p.property_class:
             raise CodegenError(
                 f"soft object {error_context} {p.name}: v1 requires Class="
+            )
+        return [f"{p.property_class}::StaticClass()"]
+    if p.prop_type == "EPropertyType::Distribution":
+        if not p.property_class:
+            raise CodegenError(
+                f"distribution {error_context} {p.name}: requires a distribution class"
             )
         return [f"{p.property_class}::StaticClass()"]
     return []

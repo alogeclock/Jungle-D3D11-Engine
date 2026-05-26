@@ -49,8 +49,12 @@ class UParticleModuleCollision : public UParticleModule
 
     virtual void Serialize(FArchive &Ar) override;
     virtual void PostEditProperty(const char* PropertyName) override;
-    virtual void PreSpawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle) override;
-    virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime, TArray<FParticleEventData>* OutEventQueue = nullptr) override;
+    virtual void PreSpawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(
+        FParticleEmitterInstance *Owner,
+        float DeltaTime,
+        int32 ModuleOffset = INDEX_NONE,
+        TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
   private:
     // ── 파티클 쪽 설정 ──────────────────────────────────────────────

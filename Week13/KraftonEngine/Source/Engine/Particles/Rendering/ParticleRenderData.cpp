@@ -2,6 +2,37 @@
 #include "Particles/Runtime/ParticleRuntimeTypes.h"
 
 #include <algorithm>
+#include <cmath>
+
+namespace
+{
+	constexpr int32 RotationModuleRotationOffset = 0;
+	constexpr int32 RotationModuleMeshRotationOffset = sizeof(float);
+	constexpr int32 RotationModuleDataSize = sizeof(float) + sizeof(FVector);
+
+	const uint8* GetModuleData(const FDynamicEmitterReplayDataBase& Source, const FBaseParticle* Particle, int32 ModuleOffset, int32 RequiredBytes)
+	{
+		if (!Particle || ModuleOffset == INDEX_NONE || ModuleOffset < 0)
+			return nullptr;
+
+		if (ModuleOffset + RequiredBytes > Source.ParticleStride)
+			return nullptr;
+
+		return reinterpret_cast<const uint8*>(Particle) + ModuleOffset;
+	}
+
+	float ReadRotationModuleValue(const FDynamicEmitterReplayDataBase& Source, const FBaseParticle* Particle)
+	{
+		const uint8* ModuleData = GetModuleData(Source, Particle, Source.RotationModuleOffset, RotationModuleDataSize);
+		return ModuleData ? *reinterpret_cast<const float*>(ModuleData + RotationModuleRotationOffset) : 0.0f;
+	}
+
+	FVector ReadRotationModuleMeshValue(const FDynamicEmitterReplayDataBase& Source, const FBaseParticle* Particle)
+	{
+		const uint8* ModuleData = GetModuleData(Source, Particle, Source.RotationModuleOffset, RotationModuleDataSize);
+		return ModuleData ? *reinterpret_cast<const FVector*>(ModuleData + RotationModuleMeshRotationOffset) : FVector::ZeroVector;
+	}
+}
 
 // ============================================================
 // FDynamicSpriteEmitterData::GatherRenderData
@@ -23,8 +54,7 @@ void FDynamicSpriteEmitterData::GatherRenderData(
     {
         const FBaseParticle* P           = reinterpret_cast<const FBaseParticle*>(RawData + Stride * ParticleIdx);
 
-        // FBaseParticle에 누적 Rotation 필드 없음 → RotationRate * elapsed 근사
-        const float Rotation = P->RotationRate * P->RelativeTime * P->Lifetime;
+        const float Rotation = ReadRotationModuleValue(Source, P) + P->RotationRate * P->RelativeTime * P->Lifetime;
 
         const FVector Position(
             P->Location.X * Source.Scale.X,
@@ -37,11 +67,42 @@ void FDynamicSpriteEmitterData::GatherRenderData(
             P->Color.B / 255.f,
             P->Color.A / 255.f);
 
+        FVector4 UVRegionA(0.0f, 0.0f, 1.0f, 1.0f);
+        FVector4 UVRegionB(0.0f, 0.0f, 1.0f, 1.0f);
+        float SubUVLerp = 0.0f;
+        if (Source.bUseSubUV)
+        {
+            const int32 Columns = (std::max)(1, Source.SubUVHorizontalCount);
+            const int32 Rows = (std::max)(1, Source.SubUVVerticalCount);
+            const int32 TotalFrames = Columns * Rows;
+            const float FrameWidth = 1.0f / static_cast<float>(Columns);
+            const float FrameHeight = 1.0f / static_cast<float>(Rows);
+
+            auto FrameToRegion = [&](float InFrame)
+            {
+                const int32 FrameIndex = (std::clamp)(static_cast<int32>(std::floor(InFrame)), 0, TotalFrames - 1);
+                const int32 Column = FrameIndex % Columns;
+                const int32 Row = FrameIndex / Columns;
+                return FVector4(
+                    static_cast<float>(Column) * FrameWidth,
+                    static_cast<float>(Row) * FrameHeight,
+                    FrameWidth,
+                    FrameHeight);
+            };
+
+            UVRegionA = FrameToRegion(P->SubUVFrameA);
+            UVRegionB = FrameToRegion(P->SubUVFrameB);
+            SubUVLerp = (std::clamp)(P->SubUVLerp, 0.0f, 1.0f);
+        }
+
         FSpriteParticleInstanceVertex Instance;
         Instance.Position = Position;
         Instance.Rotation = Rotation;
         Instance.Size = FVector4(P->Size.X * Source.Scale.X, P->Size.Y * Source.Scale.Y, 0.0f, 0.0f);
         Instance.Color = Color;
+        Instance.UVRegionA = UVRegionA;
+        Instance.UVRegionB = UVRegionB;
+        Instance.SubUVLerp = SubUVLerp;
         OutInstances.push_back(Instance);
     };
 
@@ -153,11 +214,13 @@ void FDynamicMeshEmitterData::GatherRenderData(
             P->Size.Y * Source.Scale.Y,
             P->Size.Z * Source.Scale.Z);
 
-        const float Rotation = P->RotationRate * P->RelativeTime * P->Lifetime;
+        const float Rotation = ReadRotationModuleValue(Source, P) + P->RotationRate * P->RelativeTime * P->Lifetime;
+        FVector MeshRotation = ReadRotationModuleMeshValue(Source, P);
+        MeshRotation.Z += Rotation * 57.295779513f;
 
         FMeshParticleInstanceVertex Instance;
         Instance.Transform = FMatrix::MakeScaleMatrix(Scale)
-            * FMatrix::MakeRotationZ(Rotation)
+            * FMatrix::MakeRotationEuler(MeshRotation)
             * FMatrix::MakeTranslationMatrix(Position);
         Instance.Color = FVector4(
             P->Color.R / 255.0f,

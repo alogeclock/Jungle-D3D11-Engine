@@ -1,16 +1,136 @@
 ﻿#include "ParticleSystemComponent.h"
 #include "Particles/Runtime/ParticleEmitterInstance.h"
 #include "Particles/Rendering/ParticleRenderData.h"
+#include "Particles/Assets/ParticleTypeData.h"
 #include "Render/Proxy/ParticleSceneProxy.h"
 #include "Particles/Assets/ParticleSystemAssetManager.h"
 #include "Core/Log.h"
+#include "Profiling/Timer.h"
+#include "Runtime/Engine.h"
 
 #include <algorithm>
+#include <cmath>
 #include <Platform/Paths.h>
+
+namespace
+{
+	const FBaseParticle* GetActiveParticle(const FParticleEmitterInstance* Instance, int32 ActiveIndex)
+	{
+		if (!Instance || !Instance->ParticleData || !Instance->ParticleIndices)
+			return nullptr;
+
+		if (Instance->ParticleStride <= 0 || ActiveIndex < 0 || ActiveIndex >= Instance->ActiveParticles)
+			return nullptr;
+
+		const uint16 ParticleIndex = Instance->ParticleIndices[ActiveIndex];
+		return reinterpret_cast<const FBaseParticle*>(
+			Instance->ParticleData + Instance->ParticleStride * ParticleIndex);
+	}
+
+	EParticleEmitterType GetEmitterType(const FParticleEmitterInstance* Instance)
+	{
+		if (!Instance || !Instance->CurrentLODLevel)
+			return EParticleEmitterType::PET_Sprite;
+
+		const UParticleModuleTypeDataBase* TypeData = Instance->CurrentLODLevel->GetTypeDataModule();
+		return TypeData ? TypeData->GetEmitterType() : EParticleEmitterType::PET_Sprite;
+	}
+
+	void ExpandBoundsBySpriteParticle(FBoundingBox& Bounds, const FBaseParticle& Particle)
+	{
+		const float HalfDiagonal = 0.5f * std::sqrt(
+			Particle.Size.X * Particle.Size.X + Particle.Size.Y * Particle.Size.Y);
+		const FVector Extent(HalfDiagonal, HalfDiagonal, HalfDiagonal);
+
+		Bounds.Expand(Particle.Location - Extent);
+		Bounds.Expand(Particle.Location + Extent);
+	}
+
+	void ExpandBoundsByTransformedBox(
+		FBoundingBox& Bounds,
+		const FVector& LocalCenter,
+		const FVector& LocalExtent,
+		const FMatrix& LocalToWorld)
+	{
+		const FBoundingBox LocalBounds(LocalCenter - LocalExtent, LocalCenter + LocalExtent);
+		FVector Corners[8];
+		LocalBounds.GetCorners(Corners);
+
+		for (const FVector& Corner : Corners)
+		{
+			Bounds.Expand(LocalToWorld.TransformPositionWithW(Corner));
+		}
+	}
+
+	bool ExpandBoundsByMeshEmitter(FBoundingBox& Bounds, const FParticleEmitterInstance* Instance)
+	{
+		if (!Instance || !Instance->CurrentLODLevel)
+			return false;
+
+		UParticleModuleTypeDataBase* TypeData = Instance->CurrentLODLevel->GetTypeDataModule();
+		UParticleModuleTypeDataMesh* MeshTypeData = Cast<UParticleModuleTypeDataMesh>(TypeData);
+		if (!MeshTypeData || !MeshTypeData->GetMesh())
+			return false;
+
+		FStaticMesh* MeshAsset = MeshTypeData->GetMesh()->GetStaticMeshAsset();
+		if (!MeshAsset || MeshAsset->Vertices.empty())
+			return false;
+
+		if (!MeshAsset->bBoundsValid)
+		{
+			MeshAsset->CacheBounds();
+		}
+
+		if (!MeshAsset->bBoundsValid)
+			return false;
+
+		bool bExpanded = false;
+		for (int32 ActiveIndex = 0; ActiveIndex < Instance->ActiveParticles; ++ActiveIndex)
+		{
+			const FBaseParticle* Particle = GetActiveParticle(Instance, ActiveIndex);
+			if (!Particle)
+				continue;
+
+			const float Rotation = Particle->RotationRate * Particle->RelativeTime * Particle->Lifetime;
+			const FMatrix ParticleToWorld =
+				FMatrix::MakeScaleMatrix(Particle->Size)
+				* FMatrix::MakeRotationZ(Rotation)
+				* FMatrix::MakeTranslationMatrix(Particle->Location);
+
+			ExpandBoundsByTransformedBox(
+				Bounds,
+				MeshAsset->BoundsCenter,
+				MeshAsset->BoundsExtent,
+				ParticleToWorld);
+			bExpanded = true;
+		}
+
+		return bExpanded;
+	}
+
+	bool ExpandBoundsBySpriteEmitter(FBoundingBox& Bounds, const FParticleEmitterInstance* Instance)
+	{
+		if (!Instance)
+			return false;
+
+		bool bExpanded = false;
+		for (int32 ActiveIndex = 0; ActiveIndex < Instance->ActiveParticles; ++ActiveIndex)
+		{
+			const FBaseParticle* Particle = GetActiveParticle(Instance, ActiveIndex);
+			if (!Particle)
+				continue;
+
+			ExpandBoundsBySpriteParticle(Bounds, *Particle);
+			bExpanded = true;
+		}
+
+		return bExpanded;
+	}
+}
 
 UParticleSystemComponent::UParticleSystemComponent()
 {
-	ClearEmitterInstances();
+	ClearEmitterInstances(false);
 
 	EmitterDelay = 0;
 	DeltaTimeTick = 0;
@@ -22,6 +142,12 @@ UParticleSystemComponent::UParticleSystemComponent()
 	EmitterMaterials.clear();
 	FrameEventQueue.clear();
 	EmitterRenderData.clear();
+}
+
+UParticleSystemComponent::~UParticleSystemComponent()
+{
+	bIsActive = false;
+	ClearEmitterInstances(false);
 }
 
 void UParticleSystemComponent::EndPlay()
@@ -72,6 +198,7 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		ResetSystem();
 	}
 
+	const float RawDeltaTime = (GEngine && GEngine->GetTimer()) ? GEngine->GetTimer()->GetRawDeltaTime() : DeltaTime;
 	DeltaTimeTick = DeltaTime * CustomTimeDilation;
 	//AccumLODDistanceCheckTime += DeltaTimeTick;
 
@@ -91,7 +218,7 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// 인스턴스 tick
 	for (auto instance : EmitterInstances) {
 		if (!instance) continue;
-		instance->Tick(DeltaTimeTick, FrameEventQueue);
+		instance->Tick(DeltaTimeTick, FrameEventQueue, RawDeltaTime);
 	}
 
 #if defined(_DEBUG)
@@ -115,6 +242,7 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 #endif
 
 	// RenderData 수집
+	MarkWorldBoundsDirty();
 	BuildRenderData();
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
@@ -122,6 +250,45 @@ void UParticleSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 FPrimitiveSceneProxy* UParticleSystemComponent::CreateSceneProxy()
 {
 	return new FParticleSceneProxy(this);
+}
+
+void UParticleSystemComponent::UpdateWorldAABB() const
+{
+	FBoundingBox ParticleBounds;
+	bool bHasParticleBounds = false;
+
+	for (const FParticleEmitterInstance* Instance : EmitterInstances)
+	{
+		if (!Instance || Instance->ActiveParticles <= 0)
+			continue;
+
+		switch (GetEmitterType(Instance))
+		{
+		case EParticleEmitterType::PET_Mesh:
+			bHasParticleBounds |= ExpandBoundsByMeshEmitter(ParticleBounds, Instance);
+			break;
+
+		case EParticleEmitterType::PET_Sprite:
+			bHasParticleBounds |= ExpandBoundsBySpriteEmitter(ParticleBounds, Instance);
+			break;
+
+		case EParticleEmitterType::PET_Beam:
+		case EParticleEmitterType::PET_Ribbon:
+		default:
+			break;
+		}
+	}
+
+	if (!bHasParticleBounds || !ParticleBounds.IsValid())
+	{
+		UPrimitiveComponent::UpdateWorldAABB();
+		return;
+	}
+
+	WorldAABBMinLocation = ParticleBounds.Min;
+	WorldAABBMaxLocation = ParticleBounds.Max;
+	bWorldAABBDirty = false;
+	bHasValidWorldAABB = true;
 }
 
 void UParticleSystemComponent::SetTemplate(UParticleSystem* InTemplate)
@@ -146,6 +313,7 @@ void UParticleSystemComponent::SetTemplate(UParticleSystem* InTemplate)
 		ActivateSystem();
 	}
 
+	MarkWorldBoundsDirty();
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
@@ -205,6 +373,8 @@ FParticleEmitterInstance* UParticleSystemComponent::CreateEmitterInstanceForEmit
 		return new FParticleMeshEmitterInstance();
 
 	case EParticleEmitterType::PET_Beam:
+		return new FParticleBeamEmitterInstance();
+
 	case EParticleEmitterType::PET_Ribbon:
 	default:
 		return new FParticleEmitterInstance();
@@ -264,10 +434,11 @@ void UParticleSystemComponent::ResetSystem()
 	FrameEventQueue.clear();
 	TotalActiveParticles = 0;
 	ClearRenderData();
+	MarkWorldBoundsDirty();
 	MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
-void UParticleSystemComponent::ClearEmitterInstances()
+void UParticleSystemComponent::ClearEmitterInstances(bool bNotifyRender)
 {
 	for (FParticleEmitterInstance* Instance : EmitterInstances)
 	{
@@ -281,7 +452,11 @@ void UParticleSystemComponent::ClearEmitterInstances()
 	FrameEventQueue.clear();
 	TotalActiveParticles = 0;
 	ClearRenderData();
-	MarkProxyDirty(EDirtyFlag::Mesh);
+	if (bNotifyRender)
+	{
+		MarkWorldBoundsDirty();
+		MarkProxyDirty(EDirtyFlag::Mesh);
+	}
 }
 
 void UParticleSystemComponent::ClearRenderData()

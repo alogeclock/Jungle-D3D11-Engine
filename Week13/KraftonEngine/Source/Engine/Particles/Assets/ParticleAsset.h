@@ -93,6 +93,7 @@ class UParticleEmitter : public UObject
     virtual void Serialize(FArchive& Ar) override;
 
     int32 GetParticleSize() const { return ParticleSize; }
+    int32 GetModulePayloadOffset(const UParticleModule* Module) const;
 
     int32 GetMaxActiveParticles() const { return MaxActiveParticles; }
     void  SetMaxActiveParticles(int32 InMaxCount) { MaxActiveParticles = InMaxCount; }
@@ -118,6 +119,7 @@ class UParticleEmitter : public UObject
     TArray<UParticleLODLevel *> LODLevels; // Emitter LOD 목록
 
     int32 ParticleSize = 0; // Particle 1개 메모리 크기
+    TMap<const UParticleModule*, int32> ModuleOffsetMap; // Module별 payload 시작 offset
 
     UPROPERTY(Edit, Category="Particle", DisplayName="Max Active Particles", Min=1, Max=100000, Speed=1.0)
     int32 MaxActiveParticles = 1000; // 최대 활성 Particle 수

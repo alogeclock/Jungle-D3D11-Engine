@@ -25,6 +25,7 @@ class UParticleSystemComponent : public UPrimitiveComponent
 	GENERATED_BODY(UParticleSystemComponent)
 
     UParticleSystemComponent(); // Component 초기화
+	~UParticleSystemComponent() override;
 	void EndPlay() override;
 	void Activate() override;
 	void Deactivate() override;
@@ -34,6 +35,7 @@ class UParticleSystemComponent : public UPrimitiveComponent
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction) override;// Component 매 프레임 갱신
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
+	void UpdateWorldAABB() const override;
 
     UParticleSystem *GetTemplate() const { return Template; }
     void             SetTemplate(UParticleSystem *InTemplate);
@@ -66,7 +68,7 @@ class UParticleSystemComponent : public UPrimitiveComponent
 private:
 	FParticleEmitterInstance* CreateEmitterInstanceForEmitter(UParticleEmitter* Emitter) const;
 	void CreateEmitterInstances(); //Emitter정보를 가지고 Instance를 제작함
-	void ClearEmitterInstances();
+	void ClearEmitterInstances(bool bNotifyRender = true);
 
   private:
     TArray<FParticleEmitterInstance *>	EmitterInstances;        // Runtime Emitter Instance 목록

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file ParticleModules.h
  * @brief Particle Module 공통 기반 클래스 정의.
  *
@@ -28,9 +28,13 @@ class UParticleModule : public UObject
     virtual EParticleModuleClass       GetModuleClass() const { return EParticleModuleClass::Unknown; }
 
     virtual void InitializeModule(UParticleEmitter *InEmitter) {}
-    virtual void PreSpawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle) {}
-    virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime) {}
-    virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/ = nullptr) {}
+    virtual void PreSpawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, int32 ModuleOffset = INDEX_NONE) {}
+    virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) {}
+    virtual void Update(
+        FParticleEmitterInstance *Owner,
+        float DeltaTime,
+        int32 ModuleOffset = INDEX_NONE,
+        TArray<FParticleEventData>* OutEventQueue = nullptr) {}
     virtual void Serialize(FArchive& Ar) override;
 	//나중에 추가적 payload를 가진 module이 있으면 사용해야함
 	virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const { return 0; }

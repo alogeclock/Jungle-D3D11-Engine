@@ -40,6 +40,12 @@ class UParticleModuleRequired : public UParticleModule
     EParticleSortMode GetSortMode() const { return SortMode; }
     void              SetSortMode(EParticleSortMode InSortMode) { SortMode = InSortMode; }
     int32             GetTranslucencySortPriority() const { return TranslucencySortPriority; }
+    int32             GetSubImagesHorizontal() const;
+    int32             GetSubImagesVertical() const;
+    int32             GetSubImageCount() const;
+    EParticleSubUVInterpMethod GetSubUVInterpolationMethod() const { return InterpolationMethod; }
+    int32             GetRandomImageChanges() const { return RandomImageChanges; }
+    float             GetRandomImageTime() const;
 
     virtual void PostEditProperty(const char* PropertyName) override;
 
@@ -53,6 +59,14 @@ class UParticleModuleRequired : public UParticleModule
     EParticleSortMode    SortMode = EParticleSortMode::PSM_None;         // Particle 정렬 방식
     UPROPERTY(Edit, Category="Particle", DisplayName="Translucency Sort Priority", Speed=1.0)
     int32                TranslucencySortPriority = 0;                   // Translucent Pass 정렬 우선순위
+    UPROPERTY(Edit, Category="SubUV", DisplayName="Sub Images Horizontal", Min=1, Max=1024, Speed=1.0)
+    int32                SubImages_Horizontal = 1;                       // SubUV atlas 가로 프레임 수
+    UPROPERTY(Edit, Category="SubUV", DisplayName="Sub Images Vertical", Min=1, Max=1024, Speed=1.0)
+    int32                SubImages_Vertical = 1;                         // SubUV atlas 세로 프레임 수
+    UPROPERTY(Edit, Category="SubUV", DisplayName="Interpolation Method")
+    EParticleSubUVInterpMethod InterpolationMethod = EParticleSubUVInterpMethod::PSUVIM_None;
+    UPROPERTY(Edit, Category="SubUV", DisplayName="Random Image Changes", Min=0, Max=1024, Speed=1.0)
+    int32                RandomImageChanges = 0;                         // 수명 중 random frame 변경 횟수
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -69,18 +83,15 @@ class UParticleModuleSpawn : public UParticleModule
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Spawn; }
     virtual void Serialize(FArchive& Ar) override;
+    virtual void CacheModuleValues() override;
 
-    float GetSpawnRate() const { return SpawnRate; }
-    void  SetSpawnRate(float InSpawnRate) { SpawnRate = InSpawnRate; }
-
-    int32 GetBurstCount() const { return BurstCount; }
-    void  SetBurstCount(int32 InBurstCount) { BurstCount = InBurstCount; }
+    float GetSpawnRate(float EmitterTime = 0.0f) const { return RawSpawnRate.GetValue(EmitterTime, const_cast<FRandomStream*>(&ModuleStream)); }
+    UDistributionFloat* GetSpawnRateDist() const { return SpawnRateDist; }
 
   private:
-    UPROPERTY(Edit, Category="Particle", DisplayName="Spawn Rate", Min=0.0, Max=10000.0, Speed=0.1)
-    float SpawnRate  = 10.0f; // 초당 Particle 생성 수
-    UPROPERTY(Edit, Category="Particle", DisplayName="Burst Count", Min=0, Max=100000, Speed=1.0)
-    int32 BurstCount = 0;    // 순간 Spawn 개수
+    UPROPERTY(Edit, Category="Particle", DisplayName="Spawn Rate", Type=Distribution, Class=UDistributionFloat)
+    UDistributionFloat* SpawnRateDist = nullptr;
+    FRawDistributionFloat RawSpawnRate = FRawDistributionFloat::MakeConstant(10.0f);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -98,12 +109,13 @@ class UParticleModuleLifetime : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Lifetime; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionFloat* GetLifetimeDist() const { return LifetimeDist; }
 
   private:
     // 에디터 측: 커브/범위 편집 가능
+    UPROPERTY(Edit, Category="Particle", DisplayName="Lifetime", Type=Distribution, Class=UDistributionFloat)
     UDistributionFloat* LifetimeDist = nullptr;
     // 런타임 측: Baked 테이블
     FRawDistributionFloat RawLifetime = FRawDistributionFloat::MakeConstant(1.0f);
@@ -124,11 +136,12 @@ class UParticleModuleLocation : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Location; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionVector* GetLocationDist() const { return LocationDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Location", Type=Distribution, Class=UDistributionVector)
     UDistributionVector* LocationDist = nullptr;
     FRawDistributionVector RawLocation = FRawDistributionVector::MakeConstant(FVector::ZeroVector);
 
@@ -155,11 +168,12 @@ class UParticleModuleVelocity : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Velocity; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionVector* GetVelocityDist() const { return VelocityDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Velocity", Type=Distribution, Class=UDistributionVector)
     UDistributionVector* VelocityDist = nullptr;
     FRawDistributionVector RawVelocity = FRawDistributionVector::MakeUniform(FVector(0.f, 0.f, 0.f), FVector(0.f, 0.f, 10.f));
 };
@@ -179,12 +193,17 @@ class UParticleModuleColor : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Color; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
-    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/ = nullptr) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(
+        FParticleEmitterInstance* Owner,
+        float DeltaTime,
+        int32 ModuleOffset = INDEX_NONE,
+        TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
     UDistributionLinearColor* GetColorDist() const { return ColorDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Color", Type=Distribution, Class=UDistributionLinearColor)
     UDistributionLinearColor* ColorDist = nullptr;
     FRawDistributionLinearColor RawColor = FRawDistributionLinearColor::MakeConstant(FLinearColor::White());
 };
@@ -204,12 +223,17 @@ class UParticleModuleSize : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Size; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
-    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime, TArray<FParticleEventData>* /*OutEventQueue*/ = nullptr) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(
+        FParticleEmitterInstance* Owner,
+        float DeltaTime,
+        int32 ModuleOffset = INDEX_NONE,
+        TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
     UDistributionVector* GetSizeDist() const { return SizeDist; }
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Size", Type=Distribution, Class=UDistributionVector)
     UDistributionVector* SizeDist = nullptr;
     FRawDistributionVector RawSize = FRawDistributionVector::MakeConstant(FVector(1.f, 1.f, 1.f));
 };

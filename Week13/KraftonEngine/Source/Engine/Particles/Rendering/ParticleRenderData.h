@@ -35,6 +35,7 @@ struct FDynamicEmitterReplayDataBase
     EDynamicEmitterType eEmitterType = EDynamicEmitterType::DET_Sprite; // Emitter 렌더링 타입
     int32 ActiveParticleCount = 0;                                      // 활성 Particle 수
     int32 ParticleStride = 0;                                           // Particle 메모리 간격
+    int32 RotationModuleOffset = INDEX_NONE;                            // Rotation module payload offset
     FParticleDataContainer DataContainer;                               // 렌더링용 Particle 데이터
     FVector Scale = FVector(1.0f, 1.0f, 1.0f);                           // Emitter 스케일
     EParticleSortMode SortMode = EParticleSortMode::PSM_None;           // 정렬 방식
@@ -52,7 +53,10 @@ struct FDynamicEmitterReplayDataBase
 /** Sprite Emitter 렌더링용 ReplayData */
 struct FDynamicSpriteEmitterReplayData : public FDynamicEmitterReplayDataBase
 {
-    int32 SubImageIndex = 0; // SubUV 프레임 인덱스
+    bool  bUseSubUV = false;        // Texture atlas 사용 여부
+    int32 SubUVHorizontalCount = 1;  // Texture atlas 가로 프레임 수
+    int32 SubUVVerticalCount = 1;    // Texture atlas 세로 프레임 수
+    EParticleSubUVInterpMethod SubUVInterpolationMethod = EParticleSubUVInterpMethod::PSUVIM_None;
 };
 
 /** Mesh Emitter 렌더링용 ReplayData */
@@ -67,6 +71,8 @@ struct FDynamicBeamEmitterReplayData : public FDynamicEmitterReplayDataBase
     FVector Source;     // Beam 시작점
     FVector Target;     // Beam 끝점
     float Width = 1.0f; // Beam 두께
+    float TextureTiling = 1.0f; // Beam Texture 반복 비율
+    int32 PayloadOffset = sizeof(FBaseParticle); // FBeamParticlePayload 위치
 };
 
 /** Ribbon Emitter 렌더링용 ReplayData */
