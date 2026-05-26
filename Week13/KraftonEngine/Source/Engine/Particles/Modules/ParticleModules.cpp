@@ -62,19 +62,23 @@ void UParticleModuleRequired::SetMaterial(UMaterial* InMaterial)
 	}
 }
 
+void UParticleModuleRequired::SetMaterialPath(const FString& InMaterialPath)
+{
+	if (InMaterialPath.empty() || InMaterialPath == "None")
+	{
+		SetMaterial(nullptr);
+		return;
+	}
+
+	SetMaterial(FMaterialManager::Get().GetOrCreateMaterial(InMaterialPath));
+}
+
 void UParticleModuleRequired::PostEditProperty(const char* PropertyName)
 {
     UParticleModule::PostEditProperty(PropertyName);
-    if (PropertyName && strcmp(PropertyName, "Material") == 0)
+    if (PropertyName && (strcmp(PropertyName, "Material") == 0 || strcmp(PropertyName, "MaterialSlot") == 0))
     {
-        if (MaterialSlot.Path.empty() || MaterialSlot.Path == "None")
-        {
-            SetMaterial(nullptr);
-        }
-        else
-        {
-            SetMaterial(FMaterialManager::Get().GetOrCreateMaterial(MaterialSlot.Path));
-        }
+        SetMaterialPath(MaterialSlot.Path);
     }
     else if (PropertyName && strcmp(PropertyName, "Emitter Type") == 0)
     {
