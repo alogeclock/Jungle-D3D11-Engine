@@ -35,6 +35,7 @@ struct FDynamicEmitterReplayDataBase
     EDynamicEmitterType eEmitterType = EDynamicEmitterType::DET_Sprite; // Emitter 렌더링 타입
     int32 ActiveParticleCount = 0;                                      // 활성 Particle 수
     int32 ParticleStride = 0;                                           // Particle 메모리 간격
+    int32 RotationModuleOffset = INDEX_NONE;                            // Rotation module payload offset
     FParticleDataContainer DataContainer;                               // 렌더링용 Particle 데이터
     FVector Scale = FVector(1.0f, 1.0f, 1.0f);                           // Emitter 스케일
     EParticleSortMode SortMode = EParticleSortMode::PSM_None;           // 정렬 방식

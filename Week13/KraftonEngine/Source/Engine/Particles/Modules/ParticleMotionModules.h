@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file ParticleMotionModules.h
  * @brief Particle 운동 / 회전 / 힘 관련 Module 정의.
  */
@@ -32,7 +32,8 @@ class UParticleModuleRotation : public UParticleModule
     }
     virtual void Serialize(FArchive &Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime) override;
+    virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
+    virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionFloat *GetRotationDist() const
     {
@@ -70,8 +71,8 @@ class UParticleModuleRotationRate : public UParticleModule
     }
     virtual void Serialize(FArchive &Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime) override;
-    virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime) override;
+    virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionFloat *GetRotationRateDist() const
     {
@@ -108,6 +109,9 @@ class UParticleModuleAcceleration : public UParticleModule
         return EParticleModuleClass::Acceleration;
     }
     virtual void Serialize(FArchive &Ar) override;
+    virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
+    virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(FParticleEmitterInstance *Owner, float DeltaTime, int32 ModuleOffset = INDEX_NONE) override;
 
   private:
     UPROPERTY(Edit, Category="Particle", DisplayName="Acceleration")

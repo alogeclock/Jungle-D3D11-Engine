@@ -202,6 +202,28 @@ namespace
         Distribution->Min  = DefaultVelocityMin;
         Distribution->Max  = DefaultVelocityMax;
     }
+
+	constexpr int32 RotationModuleRotationOffset = 0;
+	constexpr int32 RotationModuleMeshRotationOffset = RotationModuleRotationOffset + sizeof(float);
+	constexpr int32 RotationModulePayloadSize = RotationModuleMeshRotationOffset + sizeof(FVector);
+
+	constexpr int32 AccelerationModuleAccelerationOffset = 0;
+	constexpr int32 AccelerationModuleConstAccelerationOffset = AccelerationModuleAccelerationOffset + sizeof(FVector);
+	constexpr int32 AccelerationModuleDragOffset = AccelerationModuleConstAccelerationOffset + sizeof(FVector);
+	constexpr int32 AccelerationModulePayloadSize = AccelerationModuleDragOffset + sizeof(float);
+
+	uint8* GetWritableModuleData(FBaseParticle& Particle, int32 ModuleOffset, int32 RequiredBytes)
+	{
+		if (ModuleOffset == INDEX_NONE || ModuleOffset < 0 || RequiredBytes <= 0)
+			return nullptr;
+
+		return reinterpret_cast<uint8*>(&Particle) + ModuleOffset;
+	}
+
+	const uint8* GetReadableModuleData(const FBaseParticle& Particle, int32 ModuleOffset, int32 RequiredBytes)
+	{
+		return GetWritableModuleData(const_cast<FBaseParticle&>(Particle), ModuleOffset, RequiredBytes);
+	}
 }
 
 void UParticleModuleLifetime::Serialize(FArchive& Ar)
@@ -235,7 +257,7 @@ void UParticleModuleLifetime::CacheModuleValues()
         RawLifetime = LifetimeDist->BuildRaw();
 }
 
-void UParticleModuleLifetime::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleLifetime::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
     Particle.Lifetime     = RawLifetime.GetValue(0.f, &ModuleStream);
@@ -274,7 +296,7 @@ void UParticleModuleLocation::CacheModuleValues()
         RawLocation = LocationDist->BuildRaw();
 }
 
-void UParticleModuleLocation::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleLocation::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
     Particle.Location += RawLocation.GetValue(0.f, &ModuleStream);
@@ -311,7 +333,7 @@ void UParticleModuleVelocity::CacheModuleValues()
         RawVelocity = VelocityDist->BuildRaw();
 }
 
-void UParticleModuleVelocity::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleVelocity::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
     const FVector V       = RawVelocity.GetValue(0.f, &ModuleStream);
@@ -349,7 +371,7 @@ void UParticleModuleColor::CacheModuleValues()
         RawColor = ColorDist->BuildRaw();
 }
 
-void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
     const FLinearColor C = RawColor.GetValue(0.f, &ModuleStream);
@@ -362,7 +384,7 @@ void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, FBaseParticle&
     Particle.Color = Particle.BaseColor;
 }
 
-void UParticleModuleColor::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleColor::Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
 
@@ -417,7 +439,7 @@ void UParticleModuleSize::CacheModuleValues()
         RawSize = SizeDist->BuildRaw();
 }
 
-void UParticleModuleSize::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleSize::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
     const FVector S  = RawSize.GetValue(0.f, &ModuleStream);
@@ -425,7 +447,7 @@ void UParticleModuleSize::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& 
     Particle.Size     = S;
 }
 
-void UParticleModuleSize::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleSize::Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
 
@@ -466,9 +488,26 @@ void UParticleModuleRotation::CacheModuleValues()
         RawRotation = RotationDist->BuildRaw();
 }
 
-void UParticleModuleRotation::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+uint32 UParticleModuleRotation::RequiredBytes(UParticleModuleTypeDataBase* TypeData) const
 {
-    // 초기 회전각은 렌더러가 별도 필드로 관리하는 경우에만 적용
+	return RotationModulePayloadSize;
+}
+
+void UParticleModuleRotation::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
+{
+	if (!bEnabled)
+		return;
+
+	uint8* ModuleData = GetWritableModuleData(Particle, ModuleOffset, RotationModulePayloadSize);
+	if (!ModuleData)
+		return;
+
+	float& UsedRotation = *reinterpret_cast<float*>(ModuleData + RotationModuleRotationOffset);
+	FVector& UsedMeshRotation = *reinterpret_cast<FVector*>(ModuleData + RotationModuleMeshRotationOffset);
+
+	const float EvalTime = Owner ? Owner->GetEmitterTime() - SpawnTime : 0.0f;
+	UsedRotation = 2.0f * M_PI * RawRotation.GetValue(EvalTime, &ModuleStream);
+	UsedMeshRotation = InitialMeshRotation.ToVector();
 }
 
 void UParticleModuleRotationRate::Serialize(FArchive& Ar)
@@ -494,7 +533,7 @@ void UParticleModuleRotationRate::CacheModuleValues()
         RawRotationRate = RotationRateDist->BuildRaw();
 }
 
-void UParticleModuleRotationRate::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleRotationRate::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
     const float Rate          = RawRotationRate.GetValue(0.f, &ModuleStream);
@@ -502,7 +541,7 @@ void UParticleModuleRotationRate::Spawn(FParticleEmitterInstance* Owner, FBasePa
     Particle.RotationRate     = Rate;
 }
 
-void UParticleModuleRotationRate::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleRotationRate::Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
 
@@ -523,6 +562,68 @@ void UParticleModuleAcceleration::Serialize(FArchive& Ar)
     Ar << ConstAcceleration;
     Ar << Drag;
     Ar << bUseAccelerationOverLife;
+}
+
+uint32 UParticleModuleAcceleration::RequiredBytes(UParticleModuleTypeDataBase* TypeData) const
+{
+	return AccelerationModulePayloadSize;
+}
+
+void UParticleModuleAcceleration::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
+{
+	if (!bEnabled)
+		return;
+
+	uint8* ModuleData = GetWritableModuleData(Particle, ModuleOffset, AccelerationModulePayloadSize);
+	if (!ModuleData)
+		return;
+
+	FVector& UsedAcceleration = *reinterpret_cast<FVector*>(ModuleData + AccelerationModuleAccelerationOffset);
+	FVector& UsedConstAcceleration = *reinterpret_cast<FVector*>(ModuleData + AccelerationModuleConstAccelerationOffset);
+	float& UsedDrag = *reinterpret_cast<float*>(ModuleData + AccelerationModuleDragOffset);
+
+	UsedAcceleration = Acceleration;
+	UsedConstAcceleration = ConstAcceleration;
+	UsedDrag = (std::max)(0.0f, Drag);
+
+	if (SpawnTime > 0.0f)
+	{
+		const FVector TotalAcceleration = UsedConstAcceleration + (bUseAccelerationOverLife ? UsedAcceleration * Particle.RelativeTime : UsedAcceleration);
+		Particle.Velocity += TotalAcceleration * SpawnTime;
+		if (UsedDrag > 0.0f)
+		{
+			Particle.Velocity *= std::exp(-UsedDrag * SpawnTime);
+		}
+	}
+}
+
+void UParticleModuleAcceleration::Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset)
+{
+	if (!bEnabled || !Owner)
+		return;
+
+	uint8* ParticleData = Owner->ParticleData;
+	uint16* ParticleIndices = Owner->ParticleIndices;
+	int32 ParticleStride = Owner->ParticleStride;
+	int32 ActiveParticles = Owner->ActiveParticles;
+
+	BEGIN_PARTICLE_UPDATE_LOOP
+		const uint8* ModuleData = GetReadableModuleData(Particle, ModuleOffset, AccelerationModulePayloadSize);
+		if (!ModuleData)
+			continue;
+
+		const FVector& UsedAcceleration = *reinterpret_cast<const FVector*>(ModuleData + AccelerationModuleAccelerationOffset);
+		const FVector& UsedConstAcceleration = *reinterpret_cast<const FVector*>(ModuleData + AccelerationModuleConstAccelerationOffset);
+		const float UsedDrag = *reinterpret_cast<const float*>(ModuleData + AccelerationModuleDragOffset);
+		const float Age = Particle.RelativeTime * Particle.Lifetime;
+		const FVector TotalAcceleration = UsedConstAcceleration + (bUseAccelerationOverLife ? UsedAcceleration * Particle.RelativeTime : UsedAcceleration);
+
+		Particle.Velocity += TotalAcceleration * DeltaTime;
+		if (UsedDrag > 0.0f)
+		{
+			Particle.Velocity *= std::exp(-UsedDrag * DeltaTime);
+		}
+	END_PARTICLE_UPDATE_LOOP
 }
 
 void UParticleModuleAttractor::Serialize(FArchive& Ar)
@@ -817,7 +918,7 @@ void UParticleModuleSubImageIndex::ApplySubImageIndex(FParticleEmitterInstance* 
     SetParticleSequentialSubUV(Owner, Particle, ImageIndex, bBlend, false);
 }
 
-void UParticleModuleSubImageIndex::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleSubImageIndex::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
 
@@ -832,7 +933,7 @@ void UParticleModuleSubImageIndex::Spawn(FParticleEmitterInstance* Owner, FBaseP
     ApplySubImageIndex(Owner, Particle);
 }
 
-void UParticleModuleSubImageIndex::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleSubImageIndex::Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
 
@@ -907,7 +1008,7 @@ void UParticleModuleSubUVMovie::ApplyMovieFrame(FParticleEmitterInstance* Owner,
     SetParticleSequentialSubUV(Owner, Particle, ImageIndex, bBlend, true);
 }
 
-void UParticleModuleSubUVMovie::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime)
+void UParticleModuleSubUVMovie::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
 
@@ -923,7 +1024,7 @@ void UParticleModuleSubUVMovie::Spawn(FParticleEmitterInstance* Owner, FBasePart
     ApplyMovieFrame(Owner, Particle, 0.0f);
 }
 
-void UParticleModuleSubUVMovie::Update(FParticleEmitterInstance* Owner, float DeltaTime)
+void UParticleModuleSubUVMovie::Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
 

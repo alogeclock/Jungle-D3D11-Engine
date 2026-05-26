@@ -26,6 +26,25 @@ namespace
 		}
 	}
 #endif
+
+	int32 GetModulePayloadOffset(const UParticleEmitter* EmitterTemplate, const UParticleModule* Module)
+	{
+		return EmitterTemplate ? EmitterTemplate->GetModulePayloadOffset(Module) : INDEX_NONE;
+	}
+
+	int32 FindModulePayloadOffset(const UParticleEmitter* EmitterTemplate, const UParticleLODLevel* LODLevel, EParticleModuleClass ModuleClass)
+	{
+		if (!EmitterTemplate || !LODLevel)
+			return INDEX_NONE;
+
+		for (UParticleModule* Module : LODLevel->GetModules())
+		{
+			if (Module && Module->GetModuleClass() == ModuleClass)
+				return EmitterTemplate->GetModulePayloadOffset(Module);
+		}
+
+		return INDEX_NONE;
+	}
 }
 
 FParticleEmitterInstance::~FParticleEmitterInstance()
@@ -48,6 +67,7 @@ void FParticleEmitterInstance::Init(UParticleSystemComponent* InComponent, UPart
 
 	OwnerComponent = InComponent;
 	EmitterTemplate = InTemplate;
+	EmitterTemplate->CacheEmitterModuleInfo();
 	CurrentLODLevel = InTemplate->GetLODLevel(CurrentLODLevelIndex);
 
 	MaxActiveParticles = EmitterTemplate->GetMaxActiveParticles();
@@ -107,7 +127,7 @@ void FParticleEmitterInstance::Tick(float DeltaTime, TArray<FParticleEventData>&
 	for (UParticleModule* Module : CurrentLODLevel->GetUpdateModules())
 	{
 		if (Module && Module->IsEnabled()) {
-			Module->Update(this, DeltaTime);
+			Module->Update(this, DeltaTime, GetModulePayloadOffset(EmitterTemplate, Module));
 		}
 	}
 
@@ -142,7 +162,7 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
 		{
 			if (Module && Module->IsEnabled())
 			{
-				Module->Spawn(this, Particle, SpawnTime);
+				Module->Spawn(this, Particle, SpawnTime, GetModulePayloadOffset(EmitterTemplate, Module));
 			}
 		}
 
@@ -318,7 +338,7 @@ void FParticleEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVector& 
 	for (UParticleModule* Module : CurrentLODLevel->GetSpawnModules())
 	{
 		if (Module && Module->IsEnabled())
-			Module->PreSpawn(this, Particle);
+			Module->PreSpawn(this, Particle, GetModulePayloadOffset(EmitterTemplate, Module));
 	}
 }
 
@@ -522,6 +542,7 @@ FDynamicEmitterDataBase* FParticleSpriteEmitterInstance::CreateDynamicEmitterDat
 	Source.eEmitterType = EDynamicEmitterType::DET_Sprite;
 	Source.ActiveParticleCount = ActiveParticles;
 	Source.ParticleStride = ParticleStride;
+	Source.RotationModuleOffset = FindModulePayloadOffset(EmitterTemplate, CurrentLODLevel, EParticleModuleClass::Rotation);
 	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
 
 	UParticleModuleRequired* RequiredModule = CurrentLODLevel->GetRequiredModule();
@@ -611,6 +632,7 @@ FDynamicEmitterDataBase* FParticleMeshEmitterInstance::CreateDynamicEmitterData(
 	Source.eEmitterType = EDynamicEmitterType::DET_Mesh;
 	Source.ActiveParticleCount = ActiveParticles;
 	Source.ParticleStride = ParticleStride;
+	Source.RotationModuleOffset = FindModulePayloadOffset(EmitterTemplate, CurrentLODLevel, EParticleModuleClass::Rotation);
 	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
 	Source.Mesh = MeshTypeData->GetMesh();
 
@@ -685,12 +707,14 @@ FDynamicEmitterDataBase* FParticleBeamEmitterInstance::CreateDynamicEmitterData(
 	Source.eEmitterType = EDynamicEmitterType::DET_Beam;
 	Source.ActiveParticleCount = ActiveParticles;
 	Source.ParticleStride = ParticleStride;
+	Source.RotationModuleOffset = FindModulePayloadOffset(EmitterTemplate, CurrentLODLevel, EParticleModuleClass::Rotation);
 	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
 	Source.Source = BeamTypeData->GetSource();
 	Source.Target = BeamTypeData->GetTarget();
 	Source.Width = BeamTypeData->GetWidth();
 	Source.TextureTiling = BeamTypeData->GetTextureTiling();
-	Source.PayloadOffset = PayloadOffset;
+	const int32 BeamPayloadOffset = GetModulePayloadOffset(EmitterTemplate, BeamTypeData);
+	Source.PayloadOffset = BeamPayloadOffset != INDEX_NONE ? BeamPayloadOffset : PayloadOffset;
 
 	UParticleModuleRequired* RequiredModule = CurrentLODLevel->GetRequiredModule();
 	Source.RequiredModule = RequiredModule;
@@ -724,11 +748,18 @@ void FParticleBeamEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVect
 {
 	FParticleEmitterInstance::PreSpawn(Particle, InitialLocation, InitialVelocity);
 
+	if (!BeamTypeData)
+		return;
+
+	const int32 BeamPayloadOffset = GetModulePayloadOffset(EmitterTemplate, BeamTypeData);
+	if (BeamPayloadOffset == INDEX_NONE)
+		return;
+
 	FBeamParticlePayload* Payload =
 		reinterpret_cast<FBeamParticlePayload*>(
-			reinterpret_cast<uint8*>(&Particle) + PayloadOffset);
+			reinterpret_cast<uint8*>(&Particle) + BeamPayloadOffset);
 
-	if (!Payload || !BeamTypeData)
+	if (!Payload)
 		return;
 
 	Payload->Source = BeamTypeData->GetSource();

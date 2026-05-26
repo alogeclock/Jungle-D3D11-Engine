@@ -56,8 +56,8 @@ class UParticleModuleSubImageIndex : public UParticleModuleSubUVBase
     virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::SubImageIndex; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
-    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionFloat* GetSubImageIndexDist() const { return SubImageIndexDist; }
 
@@ -81,8 +81,8 @@ class UParticleModuleSubUVMovie : public UParticleModuleSubUVBase
     virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::SubUVMovie; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
-    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionFloat* GetFrameRateDist() const { return FrameRateDist; }
 

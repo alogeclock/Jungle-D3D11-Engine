@@ -271,16 +271,23 @@ void UParticleEmitter::CacheEmitterModuleInfo()
     // FBaseParticle 크기를 기본값으로 설정
     // 추후 Module별 payload가 추가되면 여기서 누적
     ParticleSize = sizeof(FBaseParticle);
+	ModuleOffsetMap.clear();
 
 	if (LODLevels.size() == 0)
 		return;
 	UParticleLODLevel* HightestLODLevel = LODLevels[0];
+	int32 CurrentPayloadOffset = sizeof(FBaseParticle);
 
 	UParticleModuleTypeDataBase* HighTypeData = HightestLODLevel->GetTypeDataModule();
 	if (HighTypeData)
 	{
 		// TODO : Mesh, Beam 처리	
-		ParticleSize += HighTypeData->RequiredBytes(HighTypeData);
+		const int32 ReqBytes = HighTypeData->RequiredBytes(HighTypeData);
+		if (ReqBytes > 0)
+		{
+			ModuleOffsetMap[HighTypeData] = CurrentPayloadOffset;
+			CurrentPayloadOffset += ReqBytes;
+		}
 	}
 
 	auto& Modules = HightestLODLevel->GetModules();
@@ -293,10 +300,22 @@ void UParticleEmitter::CacheEmitterModuleInfo()
 			int32 ReqBytes = ParticleModule->RequiredBytes(HighTypeData);
 			if (ReqBytes)
 			{
-				ParticleSize += ReqBytes;
+				ModuleOffsetMap[ParticleModule] = CurrentPayloadOffset;
+				CurrentPayloadOffset += ReqBytes;
 			}
 		}
 	}
+
+	ParticleSize = CurrentPayloadOffset;
+}
+
+int32 UParticleEmitter::GetModulePayloadOffset(const UParticleModule* Module) const
+{
+	if (!Module)
+		return INDEX_NONE;
+
+	const auto It = ModuleOffsetMap.find(Module);
+	return It != ModuleOffsetMap.end() ? It->second : INDEX_NONE;
 }
 
 void UParticleEmitter::Serialize(FArchive& Ar)

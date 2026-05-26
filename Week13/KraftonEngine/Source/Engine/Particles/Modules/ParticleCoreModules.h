@@ -112,7 +112,7 @@ class UParticleModuleLifetime : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Lifetime; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionFloat* GetLifetimeDist() const { return LifetimeDist; }
 
@@ -138,7 +138,7 @@ class UParticleModuleLocation : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Location; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionVector* GetLocationDist() const { return LocationDist; }
 
@@ -169,7 +169,7 @@ class UParticleModuleVelocity : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Velocity; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionVector* GetVelocityDist() const { return VelocityDist; }
 
@@ -193,8 +193,8 @@ class UParticleModuleColor : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Color; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
-    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionLinearColor* GetColorDist() const { return ColorDist; }
 
@@ -218,8 +218,8 @@ class UParticleModuleSize : public UParticleModule
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Size; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
-    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime) override;
-    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime) override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(FParticleEmitterInstance* Owner, float DeltaTime, int32 ModuleOffset = INDEX_NONE) override;
 
     UDistributionVector* GetSizeDist() const { return SizeDist; }
 
