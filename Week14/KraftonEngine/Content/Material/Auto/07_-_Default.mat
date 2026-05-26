@@ -1,18 +1,15 @@
 {
   "BlendState" : "",
   "DepthStencilState" : "",
-  "Origin" : "FbxImport",
+  "Origin" : "ObjImport",
   "Parameters" : {
     "HasNormalMap" : 0.000000,
-    "SectionColor" : [1.000000, 1.000000, 1.000000, 1.000000],
+    "SectionColor" : [0.364706, 0.909804, 0.000000, 1.000000],
     "_pad" : [0.000000, 0.000000, 0.000000]
   },
-  "PathFileName" : "Content/Material/Auto/M_CubeGrid.mat",
+  "PathFileName" : "Content/Material/Auto/07_-_Default.mat",
   "RasterizerState" : "",
   "RenderPass" : "Opaque",
   "ShaderPath" : "Shaders/Geometry/UberLit.hlsl",
-  "ShadowMode" : "Opaque",
-  "Textures" : {
-    "DiffuseTexture" : "Content/Data/CubeGrid/uvgrid.png"
-  }
+  "ShadowMode" : "Opaque"
 }
