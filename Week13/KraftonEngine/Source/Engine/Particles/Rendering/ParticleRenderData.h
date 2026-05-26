@@ -23,6 +23,7 @@
 /** UpdatePerViewport → GatherRenderData 로 전달되는 카메라 정보 */
 struct FParticleVertexBuildContext
 {
+    FVector CameraPosition;
     FVector CamRight;
     FVector CamUp;
     FVector CamForward;
@@ -37,6 +38,7 @@ struct FDynamicEmitterReplayDataBase
     FParticleDataContainer DataContainer;                               // 렌더링용 Particle 데이터
     FVector Scale = FVector(1.0f, 1.0f, 1.0f);                           // Emitter 스케일
     EParticleSortMode SortMode = EParticleSortMode::PSM_None;           // 정렬 방식
+    int32 TranslucencySortPriority = 0;                                  // Emitter 단위 반투명 정렬 우선순위
 
     UMaterial *Material = nullptr;                     // Emitter 렌더링 Material
     UParticleModuleRequired *RequiredModule = nullptr; // Required Module 참조
@@ -94,6 +96,11 @@ struct FDynamicEmitterDataBase
                                       TArray<uint32> &OutIndices) const
     {
     }
+
+    virtual void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                                      TArray<FMeshParticleInstanceVertex> &OutInstances) const
+    {
+    }
 };
 
 /** Sprite Particle 렌더링 데이터 */
@@ -133,6 +140,8 @@ struct FDynamicMeshEmitterData : public FDynamicEmitterDataBase
     void GatherRenderData(const FParticleVertexBuildContext &Ctx,
                               TArray<FSpriteParticleInstanceVertex> &OutInstances,
                               TArray<uint32> &OutIndices) const override;
+    void GatherRenderData(const FParticleVertexBuildContext &Ctx,
+                              TArray<FMeshParticleInstanceVertex> &OutInstances) const override;
 };
 
 /** Beam Emitter 렌더링 데이터 */

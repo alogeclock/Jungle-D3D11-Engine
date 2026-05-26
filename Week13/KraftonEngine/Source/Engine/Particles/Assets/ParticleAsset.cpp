@@ -48,6 +48,18 @@ static UParticleModule* CreateModuleByClass(EParticleModuleClass ClassTag, UObje
     }
 }
 
+static UParticleModuleTypeDataBase* CreateTypeDataByEmitterType(EParticleEmitterType EmitterType, UObject* Outer)
+{
+    switch (EmitterType)
+    {
+    case EParticleEmitterType::PET_Sprite: return GUObjectArray.CreateObject<UParticleModuleTypeDataSprite>(Outer);
+    case EParticleEmitterType::PET_Mesh:   return GUObjectArray.CreateObject<UParticleModuleTypeDataMesh>(Outer);
+    case EParticleEmitterType::PET_Beam:   return GUObjectArray.CreateObject<UParticleModuleTypeDataBeam>(Outer);
+    case EParticleEmitterType::PET_Ribbon: return GUObjectArray.CreateObject<UParticleModuleTypeDataRibbon>(Outer);
+    default:                               return GUObjectArray.CreateObject<UParticleModuleTypeDataSprite>(Outer);
+    }
+}
+
 // UParticleModule* 하나를 Archive에 저장/복원
 static void SerializeModulePtr(FArchive& Ar, UParticleModule*& Module, UObject* Outer)
 {
@@ -115,6 +127,47 @@ static void SerializeTypeDataPtr(FArchive& Ar, UParticleModuleTypeDataBase*& Typ
 // UParticleLODLevel
 // ─────────────────────────────────────────
 
+void UParticleLODLevel::SetRequiredModule(UParticleModuleRequired* InModule)
+{
+    RequiredModule = InModule;
+}
+
+void UParticleLODLevel::SetTypeDataModule(UParticleModuleTypeDataBase* InModule)
+{
+    TypeDataModule = InModule;
+    SyncRequiredModuleToTypeData();
+}
+
+void UParticleLODLevel::SyncRequiredModuleToTypeData()
+{
+    if (RequiredModule && TypeDataModule)
+    {
+        RequiredModule->SetEmitterType(TypeDataModule->GetEmitterType());
+    }
+}
+
+void UParticleLODLevel::SyncTypeDataModuleToRequired()
+{
+    if (!RequiredModule)
+    {
+        return;
+    }
+
+    const EParticleEmitterType RequiredEmitterType = RequiredModule->GetEmitterType();
+    if (TypeDataModule && TypeDataModule->GetEmitterType() == RequiredEmitterType)
+    {
+        return;
+    }
+
+    UParticleModuleTypeDataBase* OldTypeData = TypeDataModule;
+    TypeDataModule = CreateTypeDataByEmitterType(RequiredEmitterType, this);
+
+    if (OldTypeData && OldTypeData != TypeDataModule)
+    {
+        GUObjectArray.DestroyObject(OldTypeData);
+    }
+}
+
 void UParticleLODLevel::AddModule(UParticleModule* InModule)
 {
     if (InModule)
@@ -123,6 +176,8 @@ void UParticleLODLevel::AddModule(UParticleModule* InModule)
 
 void UParticleLODLevel::CacheModules()
 {
+    SyncTypeDataModuleToRequired();
+
     SpawnModules.clear();
     UpdateModules.clear();
 
@@ -173,7 +228,10 @@ void UParticleLODLevel::Serialize(FArchive& Ar)
         SerializeModulePtr(Ar, Modules[i], this);
 
     if (Ar.IsLoading())
+    {
+        SyncRequiredModuleToTypeData();
         CacheModules();
+    }
 }
 
 // ─────────────────────────────────────────

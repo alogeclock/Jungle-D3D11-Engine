@@ -6,8 +6,10 @@
 #include "Engine/Particles/Modules/ParticleMotionModules.h"
 #include "Engine/Particles/Modules/ParticleRenderExpressionModules.h"
 #include "Core/Property/FEnumProperty.h"
+#include "Core/Property/FObjectPropertyBase/FSoftObjectProperty.h"
 #include "Core/Property/FStructProperty.h"
 #include "Core/Property/PropertyTypes.h"
+#include "Core/UObject/TSoftObjectPtr.h"
 #include "Engine/GameFramework/WorldContext.h"
 #include "Engine/Runtime/Engine.h"
 #include "Engine/Component/ParticleSystemComponent.h"
@@ -31,6 +33,7 @@
 // 바닥 시각화
 #include "Mesh/StaticMesh.h"
 #include "Mesh/StaticMeshAsset.h"
+#include "Mesh/MeshManager.h"
 #include "GameFramework/StaticMeshActor.h"
 #include "Engine/Component/StaticMeshComponent.h"
 
@@ -1334,6 +1337,60 @@ bool FParticleSystemEditorWidget::RenderParticleProperty(const FProperty& Prop, 
 			return true;
 		}
 		return false;
+	}
+	case EPropertyType::SoftObject:
+	{
+		const FSoftObjectProperty& SoftObjectProp = static_cast<const FSoftObjectProperty&>(Prop);
+		if (SoftObjectProp.PropertyClass != UStaticMesh::StaticClass())
+		{
+			ImGui::TextDisabled("Unsupported");
+			return false;
+		}
+
+		auto* Value = static_cast<TSoftObjectPtr<UStaticMesh>*>(ValuePtr);
+		const FString& CurrentPath = Value->GetPath().ToString();
+		const FString Preview = (CurrentPath.empty() || CurrentPath == "None") ? FString("None") : CurrentPath;
+		bool bChanged = false;
+
+		if (ImGui::BeginCombo("##Value", Preview.c_str()))
+		{
+			const bool bSelectedNone = CurrentPath.empty() || CurrentPath == "None";
+			if (ImGui::Selectable("None", bSelectedNone))
+			{
+				Value->Reset();
+				bChanged = true;
+			}
+			if (bSelectedNone)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+
+			const TArray<FMeshAssetListItem>& MeshFiles = FMeshManager::GetAvailableStaticMeshFiles();
+			for (const FMeshAssetListItem& Item : MeshFiles)
+			{
+				const bool bSelected = CurrentPath == Item.FullPath;
+				if (ImGui::Selectable(Item.DisplayName.c_str(), bSelected))
+				{
+					ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
+					if (UStaticMesh* LoadedMesh = FMeshManager::LoadStaticMesh(Item.FullPath, Device))
+					{
+						*Value = LoadedMesh;
+					}
+					else
+					{
+						Value->SetPath(Item.FullPath);
+					}
+					bChanged = true;
+				}
+				if (bSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		return bChanged;
 	}
 	case EPropertyType::MaterialSlot:
 	{

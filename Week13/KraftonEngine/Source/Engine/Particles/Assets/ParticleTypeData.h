@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file ParticleTypeData.h
  * @brief Emitter 렌더링 타입을 결정하는 TypeData 정의.
  *
@@ -13,6 +13,8 @@
 #pragma once
 
 #include "../Modules/ParticleRenderExpressionModules.h"
+#include "Core/UObject/TSoftObjectPtr.h"
+#include "Mesh/StaticMesh.h"
 #include "ParticleTypeData.generated.h"
 
 /** Emitter 렌더링 타입을 결정하는 TypeData 기반 클래스 */
@@ -49,11 +51,14 @@ class UParticleModuleTypeDataMesh : public UParticleModuleTypeDataBase
     virtual EParticleEmitterType GetEmitterType() const override { return EParticleEmitterType::PET_Mesh; }
     virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::TypeDataMesh; }
     virtual void Serialize(FArchive& Ar) override;
+    virtual void PostEditProperty(const char* PropertyName) override;
 
     UStaticMesh *GetMesh() const { return Mesh; }
-    void         SetMesh(UStaticMesh *InMesh) { Mesh = InMesh; }
+    void         SetMesh(UStaticMesh *InMesh);
 
   private:
+    UPROPERTY(Edit, Category="Particle", DisplayName="Static Mesh", Type=SoftObject, Class=UStaticMesh)
+    TSoftObjectPtr<UStaticMesh> MeshAsset;
     UStaticMesh *Mesh = nullptr;      // Mesh Particle에 사용할 StaticMesh
     FString      MeshPath;            // Serialize 시 경로 저장용
 };

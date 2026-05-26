@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file ParticleAsset.h
  * @brief ParticleSystem Asset 계층 정의.
  *
@@ -28,10 +28,12 @@ class UParticleLODLevel : public UObject
     void SetEnabled(bool bInEnabled) { bEnabled = bInEnabled; }
 
     UParticleModuleRequired *GetRequiredModule() const { return RequiredModule; }
-    void                     SetRequiredModule(UParticleModuleRequired *InModule) { RequiredModule = InModule; }
+    void                     SetRequiredModule(UParticleModuleRequired *InModule);
 
     UParticleModuleTypeDataBase *GetTypeDataModule() const { return TypeDataModule; }
-    void                         SetTypeDataModule(UParticleModuleTypeDataBase *InModule) { TypeDataModule = InModule; }
+    void                         SetTypeDataModule(UParticleModuleTypeDataBase *InModule);
+    void                         SyncRequiredModuleToTypeData();
+    void                         SyncTypeDataModuleToRequired();
 
     const TArray<UParticleModule *> &GetModules() const { return Modules; }
     const TArray<UParticleModule *> &GetSpawnModules() const { return SpawnModules; }

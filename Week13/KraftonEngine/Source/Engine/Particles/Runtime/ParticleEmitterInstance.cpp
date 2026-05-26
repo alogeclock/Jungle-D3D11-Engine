@@ -4,6 +4,7 @@
 #include "Core/EngineTypes.h"
 #include "Component/ParticleSystemComponent.h"
 #include "Math/Vector.h"
+#include "Mesh/StaticMesh.h"
 
 #include <utility>
 #include <Core/Log.h>
@@ -272,49 +273,7 @@ void FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, TArray<FPart
 
 FDynamicEmitterDataBase* FParticleEmitterInstance::CreateDynamicEmitterData()
 {
-	if (ActiveParticles <= 0)
-		return nullptr;
-
-	if (!ParticleData || !ParticleIndices)
-		return nullptr;
-
-	if (!CurrentLODLevel)
-		return nullptr;
-
-	FDynamicSpriteEmitterData* Data = new FDynamicSpriteEmitterData();
-
-	FDynamicSpriteEmitterReplayData& Source = Data->Source;
-
-	Source.eEmitterType = EDynamicEmitterType::DET_Sprite;
-	Source.ActiveParticleCount = ActiveParticles;
-	Source.ParticleStride = ParticleStride;
-	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
-
-	UParticleModuleRequired* RequiredModule = CurrentLODLevel->GetRequiredModule();
-	Source.RequiredModule = RequiredModule;
-
-	if (RequiredModule)
-	{
-		Source.Material = RequiredModule->GetMaterial();
-		Source.SortMode = RequiredModule->GetSortMode();
-	}
-
-	Source.DataContainer.Allocate(ParticleStride, ActiveParticles);
-
-	for (int32 i = 0; i < ActiveParticles; ++i)
-	{
-		uint16 SrcIndex = ParticleIndices[i];
-
-		memcpy(
-			Source.DataContainer.ParticleData + ParticleStride * i,
-			ParticleData + ParticleStride * SrcIndex,
-			ParticleStride
-		);
-
-		Source.DataContainer.ParticleIndices[i] = i;
-	}
-
-	return Data;
+	return nullptr;
 }
 
 void FParticleEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVector& InitialLocation, const FVector& InitialVelocity)
@@ -522,6 +481,56 @@ int32 FParticleEmitterInstance::ResolveEmitterIndex() const
 	return INDEX_NONE;
 }
 
+// Sprite Paticle============================================================
+FDynamicEmitterDataBase* FParticleSpriteEmitterInstance::CreateDynamicEmitterData()
+{
+	if (ActiveParticles <= 0)
+		return nullptr;
+
+	if (!ParticleData || !ParticleIndices)
+		return nullptr;
+
+	if (!CurrentLODLevel)
+		return nullptr;
+
+	FDynamicSpriteEmitterData* Data = new FDynamicSpriteEmitterData();
+
+	FDynamicSpriteEmitterReplayData& Source = Data->Source;
+
+	Source.eEmitterType = EDynamicEmitterType::DET_Sprite;
+	Source.ActiveParticleCount = ActiveParticles;
+	Source.ParticleStride = ParticleStride;
+	Source.Scale = FVector(1.0f, 1.0f, 1.0f);
+
+	UParticleModuleRequired* RequiredModule = CurrentLODLevel->GetRequiredModule();
+	Source.RequiredModule = RequiredModule;
+
+	if (RequiredModule)
+	{
+		Source.Material = RequiredModule->GetMaterial();
+		Source.SortMode = RequiredModule->GetSortMode();
+		Source.TranslucencySortPriority = RequiredModule->GetTranslucencySortPriority();
+	}
+
+	Source.DataContainer.Allocate(ParticleStride, ActiveParticles);
+
+	for (int32 i = 0; i < ActiveParticles; ++i)
+	{
+		uint16 SrcIndex = ParticleIndices[i];
+
+		memcpy(
+			Source.DataContainer.ParticleData + ParticleStride * i,
+			ParticleData + ParticleStride * SrcIndex,
+			ParticleStride
+		);
+
+		Source.DataContainer.ParticleIndices[i] = i;
+	}
+
+	return Data;
+}
+
+
 
 // Mesh Paticle============================================================
 void FParticleMeshEmitterInstance::Init(UParticleSystemComponent* InComponent, UParticleEmitter* InTemplate)
@@ -554,7 +563,10 @@ FDynamicEmitterDataBase* FParticleMeshEmitterInstance::CreateDynamicEmitterData(
 		return nullptr;
 
 	if (!MeshTypeData || !MeshTypeData->GetMesh())
+	{
+		UE_LOG("MeshTypeData or Mesh is null, cannot create Mesh Emitter Data.");
 		return nullptr;
+	}
 
 	FDynamicMeshEmitterData* Data = new FDynamicMeshEmitterData();
 
@@ -573,6 +585,16 @@ FDynamicEmitterDataBase* FParticleMeshEmitterInstance::CreateDynamicEmitterData(
 	{
 		Source.Material = RequiredModule->GetMaterial();
 		Source.SortMode = RequiredModule->GetSortMode();
+		Source.TranslucencySortPriority = RequiredModule->GetTranslucencySortPriority();
+	}
+
+	if (!Source.Material && Source.Mesh)
+	{
+		const TArray<FStaticMaterial>& StaticMaterials = Source.Mesh->GetStaticMaterials();
+		if (!StaticMaterials.empty())
+		{
+			Source.Material = StaticMaterials[0].MaterialInterface;
+		}
 	}
 
 	Source.DataContainer.Allocate(ParticleStride, ActiveParticles);

@@ -4,6 +4,7 @@
  */
 
 #include "Particles/Assets/ParticleTypeData.h"
+#include "Particles/Assets/ParticleAsset.h"
 #include "Particles/Runtime/ParticleRuntimeTypes.h"
 #include "Particles/Common/ParticleHelper.h"
 #include "Particles/Common/ParticleDistributionTypes.h"
@@ -12,6 +13,7 @@
 #include "Materials/MaterialManager.h"
 #include "Mesh/StaticMesh.h"
 #include "Mesh/MeshManager.h"
+#include "Engine/Runtime/Engine.h"
 #include "Object/FUObjectArray.h"
 #include <chrono>
 #include <cstring>
@@ -77,6 +79,13 @@ void UParticleModuleRequired::PostEditProperty(const char* PropertyName)
     if (PropertyName && (strcmp(PropertyName, "Material") == 0 || strcmp(PropertyName, "MaterialSlot") == 0))
     {
         SetMaterialPath(MaterialSlot.Path);
+    }
+    else if (PropertyName && strcmp(PropertyName, "Emitter Type") == 0)
+    {
+        if (UParticleLODLevel* LODLevel = GetTypedOuter<UParticleLODLevel>())
+        {
+            LODLevel->SyncTypeDataModuleToRequired();
+        }
     }
 }
 
@@ -628,15 +637,47 @@ void UParticleModuleTypeDataSprite::Serialize(FArchive& Ar)
     // Sprite는 추가 설정값 없음
 }
 
+void UParticleModuleTypeDataMesh::PostEditProperty(const char* PropertyName)
+{
+    UParticleModuleTypeDataBase::PostEditProperty(PropertyName);
+
+    if (PropertyName && strcmp(PropertyName, "Static Mesh") == 0)
+    {
+        if (MeshAsset.IsNull())
+        {
+            SetMesh(nullptr);
+        }
+        else
+        {
+            ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
+            SetMesh(FMeshManager::LoadStaticMesh(MeshAsset.GetPath().ToString(), Device));
+        }
+    }
+}
+
+void UParticleModuleTypeDataMesh::SetMesh(UStaticMesh* InMesh)
+{
+	Mesh = InMesh;
+	MeshAsset = InMesh;
+	MeshPath = Mesh ? Mesh->GetAssetPathFileName() : FString("None");
+}
+
 // MeshManager가 초기화 되어있다고 가정
 void UParticleModuleTypeDataMesh::Serialize(FArchive& Ar)
 {
     UParticleModule::Serialize(Ar);
     if (Ar.IsSaving())
-        MeshPath = Mesh ? Mesh->GetAssetPathFileName() : FString();
-    Ar << MeshPath;
-    if (Ar.IsLoading() && !MeshPath.empty())
-        Mesh = FMeshManager::FindStaticMesh(MeshPath);
+        MeshPath = Mesh ? Mesh->GetAssetPathFileName() : MeshAsset.GetPath().ToString();
+    
+	Ar << MeshPath;
+    
+	if (Ar.IsLoading())
+    {
+        MeshAsset.SetPath(MeshPath);
+        Mesh = nullptr;
+
+		Ar << Mesh;
+    }
 }
 
 void UParticleModuleTypeDataBeam::Serialize(FArchive& Ar)
