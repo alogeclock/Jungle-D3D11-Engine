@@ -39,7 +39,7 @@ struct FParticleEmitterInstance
 	TArray<bool> BurstFired;
     
 	virtual void Init(UParticleSystemComponent *InComponent, UParticleEmitter *InTemplate);                                                     // Instance 초기화
-    virtual void Tick(float DeltaTime);                                                                                                         // 매 프레임 갱신
+    virtual void Tick(float DeltaTime, float RealDeltaTime = -1.0f);                                                                            // 매 프레임 갱신
     void SpawnParticles(int32 Count, float StartTime, float Increment, const FVector &InitialLocation, const FVector &InitialVelocity); // Particle 생성
     void KillParticle(int32 Index);                                                                                                     // 단일 Particle 제거
     void KillAllParticles();                                                                                                            // 전체 Particle 제거
@@ -48,6 +48,8 @@ struct FParticleEmitterInstance
 
 	void Tick_SpawnParticles(float DeltaTime);
     int32 GetActiveParticleCount() const { return ActiveParticles; }
+    float GetEmitterTime() const { return EmitterTime; }
+    float GetRealDeltaTime() const { return RealDeltaTime; }
 
     virtual FDynamicEmitterDataBase *CreateDynamicEmitterData(); // 렌더링 데이터 생성
 
@@ -66,6 +68,7 @@ struct FParticleEmitterInstance
 
 	float EmitterTime;		// 이미터 시간
 	float LastDeltaTime;	// 마지막으로 스폰한 시간
+    float RealDeltaTime = 0.0f; // Time dilation 적용 전 delta
 };
 
 // Sprite Paticle============================================================
@@ -83,7 +86,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 {
 public:
 	void Init(UParticleSystemComponent* InComponent, UParticleEmitter* InTemplate) override;
-	void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime, float RealDeltaTime = -1.0f) override;
 	FDynamicEmitterDataBase* CreateDynamicEmitterData() override;
 
 private:
