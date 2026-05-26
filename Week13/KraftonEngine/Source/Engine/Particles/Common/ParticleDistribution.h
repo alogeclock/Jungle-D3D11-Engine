@@ -201,6 +201,7 @@ struct FRawDistributionFloat
 
     // T: 파티클 RelativeTime(0~1), Stream: nullptr이면 중간값
     float GetValue(float T, FRandomStream* Stream = nullptr) const;
+    float GetValue(float T, float RandomFactor) const;
 
     static FRawDistributionFloat MakeConstant(float Value);
     static FRawDistributionFloat MakeUniform(float InMin, float InMax);
@@ -227,6 +228,7 @@ struct FRawDistributionVector
     TArray<FVector> BakedMax;
 
     FVector GetValue(float T, FRandomStream* Stream = nullptr) const;
+    FVector GetValue(float T, const FVector& RandomFactors, const FVector& MirrorRandomFactors) const;
 
     static FRawDistributionVector MakeConstant(const FVector& Value);
     static FRawDistributionVector MakeUniform(const FVector& InMin, const FVector& InMax);
@@ -252,6 +254,7 @@ struct FRawDistributionLinearColor
     TArray<FLinearColor> BakedMax;
 
     FLinearColor GetValue(float T, FRandomStream* Stream = nullptr) const;
+    FLinearColor GetValue(float T, float RandomFactor) const;
 
     static FRawDistributionLinearColor MakeConstant(const FLinearColor& Value);
     static FRawDistributionLinearColor MakeUniform(const FLinearColor& InMin,

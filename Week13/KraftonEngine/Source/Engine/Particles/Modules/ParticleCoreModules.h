@@ -191,6 +191,7 @@ class UParticleModuleColor : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Color; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Color; }
+    virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
@@ -221,6 +222,7 @@ class UParticleModuleSize : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Size; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Size; }
+    virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;

@@ -11,6 +11,21 @@ namespace
 {
     constexpr float ParticleCurveTimeEpsilon = 1e-6f;
 
+    static float GetRandomFactor(FRandomStream* Stream)
+    {
+        return Stream ? Stream->GetFraction() : 0.5f;
+    }
+
+    static float EvaluateUniformFloat(float MinValue, float MaxValue, bool bUseExtremes, float RandomFactor)
+    {
+        if (bUseExtremes)
+        {
+            return RandomFactor < 0.5f ? MinValue : MaxValue;
+        }
+
+        return MinValue + (MaxValue - MinValue) * RandomFactor;
+    }
+
     static FArchive& operator<<(FArchive& Ar, FFloatCurveKey& Key)
     {
         Ar << Key.Time;
@@ -95,24 +110,33 @@ namespace
         return Result;
     }
 
-    static float MaybeMirrorFloat(float Value, bool bMirror, FRandomStream* Stream)
+    static float MaybeMirrorFloat(float Value, bool bMirror, float RandomFactor)
     {
         if (!bMirror)
         {
             return Value;
         }
 
-        const float Sign = (Stream ? Stream->GetFraction() : 0.5f) < 0.5f ? -1.0f : 1.0f;
+        const float Sign = RandomFactor < 0.5f ? -1.0f : 1.0f;
         return std::fabs(Value) * Sign;
+    }
+
+    static FVector ApplyMirrorFlags(const FVector& Value, uint8 MirrorFlags, const FVector& MirrorRandomFactors)
+    {
+        FVector Result = Value;
+        Result.X = MaybeMirrorFloat(Result.X, (MirrorFlags & PMF_X) != 0, MirrorRandomFactors.X);
+        Result.Y = MaybeMirrorFloat(Result.Y, (MirrorFlags & PMF_Y) != 0, MirrorRandomFactors.Y);
+        Result.Z = MaybeMirrorFloat(Result.Z, (MirrorFlags & PMF_Z) != 0, MirrorRandomFactors.Z);
+        return Result;
     }
 
     static FVector ApplyMirrorFlags(const FVector& Value, uint8 MirrorFlags, FRandomStream* Stream)
     {
-        FVector Result = Value;
-        Result.X = MaybeMirrorFloat(Result.X, (MirrorFlags & PMF_X) != 0, Stream);
-        Result.Y = MaybeMirrorFloat(Result.Y, (MirrorFlags & PMF_Y) != 0, Stream);
-        Result.Z = MaybeMirrorFloat(Result.Z, (MirrorFlags & PMF_Z) != 0, Stream);
-        return Result;
+        const FVector MirrorRandomFactors(
+            GetRandomFactor(Stream),
+            GetRandomFactor(Stream),
+            GetRandomFactor(Stream));
+        return ApplyMirrorFlags(Value, MirrorFlags, MirrorRandomFactors);
     }
 
     static FLinearColor EvalLinearColorCurveWithOptions(const FLinearColorCurve& Curve, float T, bool bIsLooped, float LoopKeyOffset)
@@ -279,20 +303,18 @@ float FParticleFloatCurve::Eval(float T) const
 
 float FRawDistributionFloat::GetValue(float T, FRandomStream* Stream) const
 {
+    return GetValue(T, GetRandomFactor(Stream));
+}
+
+float FRawDistributionFloat::GetValue(float T, float RandomFactor) const
+{
     switch (Type)
     {
     case EDistributionType::Constant:
         return Min;
 
     case EDistributionType::Uniform:
-    {
-        if (bUseExtremes)
-        {
-            return (Stream ? Stream->GetFraction() : 0.5f) < 0.5f ? Min : Max;
-        }
-        const float Alpha = Stream ? Stream->GetFraction() : 0.5f;
-        return Min + (Max - Min) * Alpha;
-    }
+        return EvaluateUniformFloat(Min, Max, bUseExtremes, RandomFactor);
 
     case EDistributionType::ConstantCurve:
     case EDistributionType::UniformCurve:
@@ -319,12 +341,7 @@ float FRawDistributionFloat::GetValue(float T, FRandomStream* Stream) const
         {
             return MinVal;
         }
-        if (bUseExtremes)
-        {
-            return (Stream ? Stream->GetFraction() : 0.5f) < 0.5f ? MinVal : MaxVal;
-        }
-        const float Alpha  = Stream ? Stream->GetFraction() : 0.5f;
-        return MinVal + (MaxVal - MinVal) * Alpha;
+        return EvaluateUniformFloat(MinVal, MaxVal, bUseExtremes, RandomFactor);
     }
     }
     return Min;
@@ -354,6 +371,19 @@ FRawDistributionFloat FRawDistributionFloat::MakeUniform(float InMin, float InMa
 
 FVector FRawDistributionVector::GetValue(float T, FRandomStream* Stream) const
 {
+    const FVector RandomFactors(
+        GetRandomFactor(Stream),
+        GetRandomFactor(Stream),
+        GetRandomFactor(Stream));
+    const FVector MirrorRandomFactors(
+        GetRandomFactor(Stream),
+        GetRandomFactor(Stream),
+        GetRandomFactor(Stream));
+    return GetValue(T, RandomFactors, MirrorRandomFactors);
+}
+
+FVector FRawDistributionVector::GetValue(float T, const FVector& RandomFactors, const FVector& MirrorRandomFactors) const
+{
     switch (Type)
     {
     case EDistributionType::Constant:
@@ -364,18 +394,21 @@ FVector FRawDistributionVector::GetValue(float T, FRandomStream* Stream) const
         FVector Result = FVector::ZeroVector;
         if (bUseExtremes)
         {
-            Result = (Stream ? Stream->GetFraction() : 0.5f) < 0.5f ? Min : Max;
+            Result = FVector(
+                RandomFactors.X < 0.5f ? Min.X : Max.X,
+                RandomFactors.Y < 0.5f ? Min.Y : Max.Y,
+                RandomFactors.Z < 0.5f ? Min.Z : Max.Z);
         }
         else
         {
-            Result = Stream ? Stream->VRandRange(Min, Max)
-                            : FVector(Min.X + (Max.X - Min.X) * 0.5f,
-                                      Min.Y + (Max.Y - Min.Y) * 0.5f,
-                                      Min.Z + (Max.Z - Min.Z) * 0.5f);
+            Result = FVector(
+                EvaluateUniformFloat(Min.X, Max.X, false, RandomFactors.X),
+                EvaluateUniformFloat(Min.Y, Max.Y, false, RandomFactors.Y),
+                EvaluateUniformFloat(Min.Z, Max.Z, false, RandomFactors.Z));
         }
 
         Result = ApplyLockedAxes(Result, LockedAxesMode);
-        return ApplyMirrorFlags(Result, MirrorFlags, Stream);
+        return ApplyMirrorFlags(Result, MirrorFlags, MirrorRandomFactors);
     }
 
     case EDistributionType::ConstantCurve:
@@ -413,18 +446,21 @@ FVector FRawDistributionVector::GetValue(float T, FRandomStream* Stream) const
         FVector Result = FVector::ZeroVector;
         if (bUseExtremes)
         {
-            Result = (Stream ? Stream->GetFraction() : 0.5f) < 0.5f ? MinVal : MaxVal;
+            Result = FVector(
+                RandomFactors.X < 0.5f ? MinVal.X : MaxVal.X,
+                RandomFactors.Y < 0.5f ? MinVal.Y : MaxVal.Y,
+                RandomFactors.Z < 0.5f ? MinVal.Z : MaxVal.Z);
         }
         else
         {
-            Result = Stream ? Stream->VRandRange(MinVal, MaxVal)
-                            : FVector(MinVal.X + (MaxVal.X - MinVal.X) * 0.5f,
-                                      MinVal.Y + (MaxVal.Y - MinVal.Y) * 0.5f,
-                                      MinVal.Z + (MaxVal.Z - MinVal.Z) * 0.5f);
+            Result = FVector(
+                EvaluateUniformFloat(MinVal.X, MaxVal.X, false, RandomFactors.X),
+                EvaluateUniformFloat(MinVal.Y, MaxVal.Y, false, RandomFactors.Y),
+                EvaluateUniformFloat(MinVal.Z, MaxVal.Z, false, RandomFactors.Z));
         }
 
         Result = ApplyLockedAxes(Result, LockedAxesMode);
-        return ApplyMirrorFlags(Result, MirrorFlags, Stream);
+        return ApplyMirrorFlags(Result, MirrorFlags, MirrorRandomFactors);
     }
     }
     return Min;
@@ -464,20 +500,18 @@ static FLinearColor LerpColor(const FLinearColor& A, const FLinearColor& B, floa
 
 FLinearColor FRawDistributionLinearColor::GetValue(float T, FRandomStream* Stream) const
 {
+    return GetValue(T, GetRandomFactor(Stream));
+}
+
+FLinearColor FRawDistributionLinearColor::GetValue(float T, float RandomFactor) const
+{
     switch (Type)
     {
     case EDistributionType::Constant:
         return Min;
 
     case EDistributionType::Uniform:
-    {
-        if (bUseExtremes)
-        {
-            return (Stream ? Stream->GetFraction() : 0.5f) < 0.5f ? Min : Max;
-        }
-        const float Alpha = Stream ? Stream->GetFraction() : 0.5f;
-        return LerpColor(Min, Max, Alpha);
-    }
+        return LerpColor(Min, Max, bUseExtremes ? (RandomFactor < 0.5f ? 0.0f : 1.0f) : RandomFactor);
 
     case EDistributionType::ConstantCurve:
     case EDistributionType::UniformCurve:
@@ -504,12 +538,7 @@ FLinearColor FRawDistributionLinearColor::GetValue(float T, FRandomStream* Strea
         {
             return MinVal;
         }
-        if (bUseExtremes)
-        {
-            return (Stream ? Stream->GetFraction() : 0.5f) < 0.5f ? MinVal : MaxVal;
-        }
-        const float Alpha = Stream ? Stream->GetFraction() : 0.5f;
-        return LerpColor(MinVal, MaxVal, Alpha);
+        return LerpColor(MinVal, MaxVal, bUseExtremes ? (RandomFactor < 0.5f ? 0.0f : 1.0f) : RandomFactor);
     }
     }
     return Min;
