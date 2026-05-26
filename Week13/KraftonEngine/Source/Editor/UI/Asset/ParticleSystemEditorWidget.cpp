@@ -294,22 +294,31 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 	ImGui::BeginDisabled(!bCanRemoveEmitter);
 	if (ImGui::Button("Remove Emitter"))
 	{
-		Asset->RemoveEmitter(SelectedEmitterIndex);
-		Asset->CacheSystemModuleInfo();
-
-		if (UParticleSystemComponent* PreviewComponent = ViewportClient.GetPreviewComponent())
+		if (SelectedEmitterIndex >= 0 && SelectedEmitterIndex < static_cast<int32>(Asset->GetEmitters().size()))
 		{
-			PreviewComponent->SetTemplate(Asset);
-		}
+			Asset->RemoveEmitter(SelectedEmitterIndex);
+			Asset->CacheSystemModuleInfo();
 
-		SelectedEmitterIndex = -1;
-		SelectedModule = nullptr;
-		MarkDirty();
+			SelectedEmitterIndex = -1;
+			SelectedModule = nullptr;
+
+			if (UParticleSystemComponent* PreviewComponent = ViewportClient.GetPreviewComponent())
+			{
+				PreviewComponent->SetTemplate(Asset);
+			}
+
+			MarkDirty();
+		}
 	}
 	ImGui::EndDisabled();
 	ImGui::SameLine();
 
-	UParticleEmitter* SelectedEmitter = bCanRemoveEmitter ? Asset->GetEmitter(SelectedEmitterIndex) : nullptr;
+	UParticleEmitter* SelectedEmitter = nullptr;
+	if (SelectedEmitterIndex >= 0 && SelectedEmitterIndex < static_cast<int32>(Asset->GetEmitters().size()))
+	{
+		SelectedEmitter = Asset->GetEmitter(SelectedEmitterIndex);
+	}
+
 	UParticleLODLevel* SelectedLOD = SelectedEmitter ? SelectedEmitter->GetLODLevel(0) : nullptr;
 	ImGui::BeginDisabled(!SelectedEmitter);
 	if (ImGui::Button("Add Module"))
