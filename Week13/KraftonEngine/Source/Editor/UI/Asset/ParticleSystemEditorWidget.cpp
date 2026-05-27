@@ -296,6 +296,23 @@ static ImU32 GetParticleEmitterTypeColor(EParticleEmitterType Type)
 	}
 }
 
+static ImU32 GetParticleEmitterIndexColor(int32 EmitterIndex)
+{
+	// Fluorescent color palette, cycling per emitter index. Start with magenta, cyan.
+	static const ImU32 Palette[] = {
+		IM_COL32(255,  0, 255, 255),  // Magenta
+		IM_COL32(  0, 255, 255, 255),  // Cyan
+		IM_COL32(128, 255,   0, 255),  // Chartreuse / Yellow-green
+		IM_COL32(255, 255,   0, 255),  // Yellow
+		IM_COL32(  0, 255, 128, 255),  // Spring green
+		IM_COL32(255, 128,   0, 255),  // Orange
+		IM_COL32(  0, 128, 255, 255),  // Azure
+		IM_COL32(255,  64, 128, 255),  // Rose
+	};
+	constexpr int32 PaletteSize = static_cast<int32>(sizeof(Palette) / sizeof(Palette[0]));
+	return Palette[EmitterIndex % PaletteSize];
+}
+
 static int32 GetParticleSystemLODCount(const UParticleSystem* Asset)
 {
 	if (!Asset)
@@ -849,6 +866,23 @@ void FParticleSystemEditorWidget::Tick(float DeltaTime)
 		{
 			bWasActive = Comp->IsActive();
 		}
+
+		// Update per-emitter peak particle counts
+		const TArray<FParticleEmitterInstance*>& Instances = Comp->GetEmitterInstances();
+		const int32 InstanceCount = static_cast<int32>(Instances.size());
+		if (EmitterPeakParticleCounts.size() != static_cast<size_t>(InstanceCount))
+		{
+			EmitterPeakParticleCounts.resize(InstanceCount, 0);
+		}
+		for (int32 i = 0; i < InstanceCount; ++i)
+		{
+			if (Instances[i])
+			{
+				const int32 Active = Instances[i]->GetActiveParticleCount();
+				if (Active > EmitterPeakParticleCounts[i])
+					EmitterPeakParticleCounts[i] = Active;
+			}
+		}
 	}
 }
 
@@ -990,7 +1024,7 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 			MarkDirty();
 		}
 		ImGui::BeginDisabled(!bCanRemoveEmitter);
-		if (ImGui::Selectable("Remove Emitter"))
+		if (ImGui::Selectable("Delete Emitter"))
 		{
 			Asset->RemoveEmitter(SelectedEmitterIndex);
 			Asset->CacheSystemModuleInfo();
@@ -1061,7 +1095,7 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 			ImGui::EndMenu();
 		}
 		ImGui::BeginDisabled(!bCanRemoveModule);
-		if (ImGui::Selectable("Remove Module"))
+		if (ImGui::Selectable("Delete Module"))
 		{
 			RemoveSelectedModule();
 		}
@@ -1529,6 +1563,7 @@ void FParticleSystemEditorWidget::RenderPreviewViewport(const ImVec2& Size)
 
 		if (bShowPreviewStats)
 			RenderPreviewStatsOverlay(ViewportPos, ViewportSize);
+		RenderEmitterCountOverlay(ViewportPos, ViewportSize);
 	}
 
 	ImGui::EndChild();
@@ -1627,6 +1662,66 @@ void FParticleSystemEditorWidget::RenderPreviewStatsOverlay(const ImVec2& Viewpo
 	}
 }
 
+void FParticleSystemEditorWidget::RenderEmitterCountOverlay(const ImVec2& ViewportPos, const ImVec2& ViewportSize) const
+{
+	UParticleSystemComponent* PreviewComponent = GetPreviewParticleComponent();
+	if (!PreviewComponent || ViewportSize.x <= 0.0f || ViewportSize.y <= 0.0f)
+		return;
+
+	const TArray<FParticleEmitterInstance*>& Instances = PreviewComponent->GetEmitterInstances();
+	const int32 NumEmitters = static_cast<int32>(Instances.size());
+	if (NumEmitters <= 0)
+		return;
+
+	constexpr float EmitterGap    = 3.0f;
+	constexpr float BotOffset     = 8.0f;
+	constexpr float RightOffset   = 10.0f;
+	constexpr float SlashW        = 8.0f;
+
+	const float LineH = ImGui::GetTextLineHeight();
+
+	float MaxAliveW = 0.0f, MaxPeakW = 0.0f;
+	for (int32 i = 0; i < NumEmitters; ++i)
+	{
+		const int32 Alive = Instances[i] ? Instances[i]->GetActiveParticleCount() : 0;
+		const int32 Peak  = (i < static_cast<int32>(EmitterPeakParticleCounts.size())) ? EmitterPeakParticleCounts[i] : 0;
+		char Buf[16];
+		snprintf(Buf, sizeof(Buf), "%d", Alive);
+		MaxAliveW = (std::max)(MaxAliveW, ImGui::CalcTextSize(Buf).x);
+		snprintf(Buf, sizeof(Buf), "%d", Peak);
+		MaxPeakW  = (std::max)(MaxPeakW,  ImGui::CalcTextSize(Buf).x);
+	}
+
+	const float RowH   = LineH + EmitterGap;
+	const float BlockW = MaxAliveW + SlashW + MaxPeakW;
+	const float BlockH = RowH * NumEmitters - EmitterGap;
+
+	const float StartX = ViewportPos.x + ViewportSize.x - BlockW - RightOffset;
+	const float StartY = ViewportPos.y + ViewportSize.y - BlockH - BotOffset;
+
+	ImDrawList* DL = ImGui::GetWindowDrawList();
+	const float AliveX = StartX;
+	const float SlashX = AliveX + MaxAliveW + 2.0f;
+	const float PeakX  = SlashX + SlashW;
+
+	for (int32 i = 0; i < NumEmitters; ++i)
+	{
+		const int32 Alive = Instances[i] ? Instances[i]->GetActiveParticleCount() : 0;
+		const int32 Peak  = (i < static_cast<int32>(EmitterPeakParticleCounts.size())) ? EmitterPeakParticleCounts[i] : 0;
+		const ImU32 Col   = GetParticleEmitterIndexColor(i);
+		const float EY    = StartY + RowH * i;
+
+		char AliveBuf[16], PeakBuf[16];
+		snprintf(AliveBuf, sizeof(AliveBuf), "%d", Alive);
+		snprintf(PeakBuf,  sizeof(PeakBuf),  "%d", Peak);
+
+		const float AW = ImGui::CalcTextSize(AliveBuf).x;
+		DL->AddText(ImVec2(AliveX + MaxAliveW - AW, EY), Col, AliveBuf);
+		DL->AddText(ImVec2(SlashX, EY), IM_COL32(140, 140, 140, 200), "/");
+		DL->AddText(ImVec2(PeakX, EY), Col, PeakBuf);
+	}
+}
+
 UParticleSystemComponent* FParticleSystemEditorWidget::GetPreviewParticleComponent() const
 {
 	return ViewportClient.GetPreviewComponent();
@@ -1643,6 +1738,9 @@ void FParticleSystemEditorWidget::ReplayPreviewParticleSystem()
 		}
 		PreviewComponent->DeactivateSystem();
 		PreviewComponent->ActivateSystem();
+		// Reset peak counts on replay
+		for (int32& Peak : EmitterPeakParticleCounts)
+			Peak = 0;
 	}
 }
 
@@ -2812,6 +2910,7 @@ bool FParticleSystemEditorWidget::RenderEmitterHeader(UParticleEmitter* Emitter,
 		: (RequiredModule ? RequiredModule->GetEmitterType() : EParticleEmitterType::PET_Sprite);
 	const char* TypeLabel = GetParticleEmitterTypeLabel(EmitterType);
 	const ImU32 TypeColor = GetParticleEmitterTypeColor(EmitterType);
+	const ImU32 AccentColor = GetParticleEmitterIndexColor(EmitterIndex);
 	const int32 ModuleCount = LODLevel ? static_cast<int32>(LODLevel->GetModules().size()) + 2 : 0;
 
 	const ImVec2 HeaderPos = ImGui::GetCursorScreenPos();
@@ -2839,7 +2938,7 @@ bool FParticleSystemEditorWidget::RenderEmitterHeader(UParticleEmitter* Emitter,
 	DrawList->AddRectFilled(
 		HeaderRect.Min,
 		ImVec2(HeaderRect.Min.x + ParticlePanelAccentWidth, HeaderRect.Max.y),
-		TypeColor);
+		AccentColor);
 
 	const ImVec2 PreviewMin(
 		HeaderRect.Max.x - ParticleEmitterHeaderPreviewInset - ParticleEmitterHeaderPreviewSize,
