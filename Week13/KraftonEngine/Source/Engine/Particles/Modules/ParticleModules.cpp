@@ -24,6 +24,12 @@
 #include <cstring>
 #include <cmath>
 
+namespace
+{
+    constexpr uint32 RibbonTypeDataSchemaMagic = 0x52494232u; // RIB2
+    constexpr uint32 RibbonTypeDataSchemaVersion = 1u;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // UParticleModule (base)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -200,6 +206,22 @@ void UParticleModuleSpawn::CacheModuleValues()
     }
 
     RawSpawnRate = SpawnRateDist->BuildRaw();
+}
+
+void UParticleModuleSpawnPerUnit::Serialize(FArchive& Ar)
+{
+    UParticleModule::Serialize(Ar);
+    Ar << UnitDistance;
+    Ar << MaxSpawnCountPerFrame;
+    Ar << MaxFrameDistance;
+    Ar << bIgnoreSpawnRate;
+
+    if (Ar.IsLoading())
+    {
+        UnitDistance = (std::max)(0.001f, UnitDistance);
+        MaxSpawnCountPerFrame = (std::max)(1, MaxSpawnCountPerFrame);
+        MaxFrameDistance = (std::max)(0.0f, MaxFrameDistance);
+    }
 }
 
 // ── Lifetime ─────────────────────────────────────────────────────────────────
@@ -1658,6 +1680,12 @@ void UParticleModuleParameter::Serialize(FArchive& Ar)
     Ar << ParameterValue;
 }
 
+void UParticleModuleTrailSource::Serialize(FArchive& Ar)
+{
+    UParticleModule::Serialize(Ar);
+    Ar << SourceEmitterName;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // TypeData Modules
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1723,7 +1751,59 @@ void UParticleModuleTypeDataBeam::Serialize(FArchive& Ar)
 void UParticleModuleTypeDataRibbon::Serialize(FArchive& Ar)
 {
     UParticleModule::Serialize(Ar);
-    Ar << Width;
-    Ar << Lifetime;
-    Ar << TextureTiling;
+
+    uint32 SchemaMagic = RibbonTypeDataSchemaMagic;
+    if (Ar.IsSaving())
+    {
+        uint32 SchemaVersion = RibbonTypeDataSchemaVersion;
+        Ar << SchemaMagic;
+        Ar << SchemaVersion;
+    }
+    else
+    {
+        if (!Ar.CanSerialize(sizeof(uint32)))
+        {
+            return;
+        }
+
+        Ar << SchemaMagic;
+        if (SchemaMagic != RibbonTypeDataSchemaMagic)
+        {
+            float LegacyLifetime = 0.0f;
+            float LegacyTextureTiling = 0.0f;
+            if (Ar.CanSerialize(sizeof(float) * 2))
+            {
+                Ar << LegacyLifetime;
+                Ar << LegacyTextureTiling;
+            }
+            return;
+        }
+
+        uint32 SchemaVersion = 0u;
+        Ar << SchemaVersion;
+        if (SchemaVersion != RibbonTypeDataSchemaVersion)
+        {
+            return;
+        }
+    }
+
+    Ar << SheetsPerTrail;
+    Ar << MaxTrailCount;
+    Ar << MaxParticleInTrailCount;
+    Ar << bSpawnInitialParticle;
+    Ar << bDeadTrailsOnDeactivate;
+    Ar << bDeadTrailsOnSourceLoss;
+
+    int32 RenderAxisInt = static_cast<int32>(RenderAxis);
+    Ar << RenderAxisInt;
+    if (Ar.IsLoading()) RenderAxis = static_cast<EParticleRibbonRenderAxis>(RenderAxisInt);
+
+    Ar << TilingDistance;
+    Ar << DistanceTessellationStepSize;
+    Ar << bTangentRecalculationEveryFrame;
+    Ar << bEnablePreviousTangentRecalculation;
+    Ar << bRenderGeometry;
+    Ar << bRenderSpawnPoints;
+    Ar << bRenderTangents;
+    Ar << bRenderTessellation;
 }

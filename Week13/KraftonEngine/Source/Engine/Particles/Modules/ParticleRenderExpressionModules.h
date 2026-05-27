@@ -183,3 +183,22 @@ class UParticleModuleParameter : public UParticleModule
     UPROPERTY(Edit, Category="Particle", DisplayName="Parameter Value")
     FVector4 ParameterValue; // Material 등에 전달할 Parameter 값
 };
+
+/** Ribbon emitter가 따라갈 source emitter를 지정하는 모듈 */
+UCLASS()
+class UParticleModuleTrailSource : public UParticleModule
+{
+  public:
+    GENERATED_BODY(UParticleModuleTrailSource)
+
+    virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_TrailSource; }
+    virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Update; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::TrailSource; }
+    virtual void Serialize(FArchive& Ar) override;
+
+    const FName& GetSourceEmitterName() const { return SourceEmitterName; }
+
+  private:
+    UPROPERTY(Edit, Category="Trail Source", DisplayName="Source Emitter Name")
+    FName SourceEmitterName;
+};
