@@ -144,16 +144,9 @@ class UParticleModuleLocation : public UParticleModule
     UDistributionVector* GetLocationDist() const { return LocationDist; }
 
   private:
-    UPROPERTY(Edit, Category="Particle", DisplayName="Location", Type=Distribution, Class=UDistributionVector)
-    UDistributionVector* LocationDist = nullptr;
-    FRawDistributionVector RawLocation = FRawDistributionVector::MakeConstant(FVector::ZeroVector);
-
-    UPROPERTY(Edit, Category="Particle", DisplayName="Sphere Radius", Min=0.0, Max=100000.0, Speed=0.1)
-    float SphereRadius   = 0.0f;
-    UPROPERTY(Edit, Category="Particle", DisplayName="Cylinder Radius", Min=0.0, Max=100000.0, Speed=0.1)
-    float CylinderRadius = 0.0f;
-    UPROPERTY(Edit, Category="Particle", DisplayName="Cylinder Height", Min=0.0, Max=100000.0, Speed=0.1)
-    float CylinderHeight = 0.0f;
+	UPROPERTY(Edit, Category="Particle", DisplayName="Location", Type=Distribution, Class=UDistributionVector)
+	UDistributionVector* LocationDist = nullptr;
+	FRawDistributionVector RawLocation = FRawDistributionVector::MakeConstant(FVector::ZeroVector);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -193,18 +186,13 @@ class UParticleModuleColor : public UParticleModule
     GENERATED_BODY(UParticleModuleColor)
 
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Color; }
-    virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
+    virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Color; }
     virtual bool SupportsRandomSeed() const override { return true; }
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
-    virtual void Update(
-        FParticleEmitterInstance* Owner,
-        float DeltaTime,
-        int32 ModuleOffset = INDEX_NONE,
-        TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
     UDistributionLinearColor* GetColorDist() const { return ColorDist; }
 
@@ -225,18 +213,13 @@ class UParticleModuleSize : public UParticleModule
     GENERATED_BODY(UParticleModuleSize)
 
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Size; }
-    virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
+    virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Size; }
     virtual bool SupportsRandomSeed() const override { return true; }
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
-    virtual void Update(
-        FParticleEmitterInstance* Owner,
-        float DeltaTime,
-        int32 ModuleOffset = INDEX_NONE,
-        TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
     UDistributionVector* GetSizeDist() const { return SizeDist; }
 

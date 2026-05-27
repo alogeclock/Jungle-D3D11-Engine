@@ -68,7 +68,7 @@ class UParticleModuleRotationRate : public UParticleModule
     }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override
     {
-        return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate;
+        return EParticleModuleUpdatePhase::PMUP_Spawn;
     }
     virtual EParticleModuleClass GetModuleClass() const override
     {
@@ -81,11 +81,6 @@ class UParticleModuleRotationRate : public UParticleModule
     virtual void Serialize(FArchive &Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
-    virtual void Update(
-        FParticleEmitterInstance *Owner,
-        float DeltaTime,
-        int32 ModuleOffset = INDEX_NONE,
-        TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
     UDistributionFloat* GetRotationRateDist() const
     {
@@ -122,7 +117,12 @@ class UParticleModuleAcceleration : public UParticleModule
     {
         return EParticleModuleClass::Acceleration;
     }
+    virtual bool SupportsRandomSeed() const override
+    {
+        return true;
+    }
     virtual void Serialize(FArchive &Ar) override;
+    virtual void CacheModuleValues() override;
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Spawn(FParticleEmitterInstance *Owner, FBaseParticle &Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
     virtual void Update(
@@ -132,13 +132,10 @@ class UParticleModuleAcceleration : public UParticleModule
         TArray<FParticleEventData>* OutEventQueue = nullptr) override;
 
   private:
-    UPROPERTY(Edit, Category="Particle", DisplayName="Acceleration")
-    FVector Acceleration = FVector::ZeroVector;      // 매 프레임 적용할 가속도
-    UPROPERTY(Edit, Category="Particle", DisplayName="Const Acceleration")
-    FVector ConstAcceleration = FVector::ZeroVector; // 고정 가속도
+    UPROPERTY(Edit, Category="Particle", DisplayName="Acceleration", Type=Distribution, Class=UDistributionVector)
+    UDistributionVector* AccelerationDist = nullptr;
+    FRawDistributionVector RawAcceleration = FRawDistributionVector::MakeConstant(FVector::ZeroVector);
     UPROPERTY(Edit, Category="Particle", DisplayName="Drag", Min=0.0, Max=1000.0, Speed=0.01)
     float   Drag = 0.0f;                             // 속도 감쇠 계수
-    UPROPERTY(Edit, Category="Particle", DisplayName="Use Acceleration Over Life")
-    bool    bUseAccelerationOverLife = false;        // 수명 기반 가속도 변화 사용 여부
 };
 

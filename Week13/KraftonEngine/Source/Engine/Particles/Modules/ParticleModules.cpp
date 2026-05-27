@@ -308,10 +308,13 @@ namespace
 	constexpr int32 RotationModuleMeshRotationOffset = RotationModuleRotationOffset + sizeof(float);
 	constexpr int32 RotationModulePayloadSize = RotationModuleMeshRotationOffset + sizeof(FVector);
 
-	constexpr int32 AccelerationModuleAccelerationOffset = 0;
-	constexpr int32 AccelerationModuleConstAccelerationOffset = AccelerationModuleAccelerationOffset + sizeof(FVector);
-	constexpr int32 AccelerationModuleDragOffset = AccelerationModuleConstAccelerationOffset + sizeof(FVector);
-	constexpr int32 AccelerationModulePayloadSize = AccelerationModuleDragOffset + sizeof(float);
+	struct FParticleAccelerationPayload
+	{
+		FVector Acceleration = FVector::ZeroVector;
+		float Drag = 0.0f;
+	};
+
+	constexpr int32 AccelerationModulePayloadSize = sizeof(FParticleAccelerationPayload);
 
     struct FParticleColorPayload
     {
@@ -374,6 +377,16 @@ namespace
     {
         return reinterpret_cast<const FParticleSizePayload*>(GetReadableModuleData(Particle, ModuleOffset, SizeModulePayloadSize));
     }
+
+	FParticleAccelerationPayload* GetAccelerationPayload(FBaseParticle& Particle, int32 ModuleOffset)
+	{
+		return reinterpret_cast<FParticleAccelerationPayload*>(GetWritableModuleData(Particle, ModuleOffset, AccelerationModulePayloadSize));
+	}
+
+	const FParticleAccelerationPayload* GetAccelerationPayload(const FBaseParticle& Particle, int32 ModuleOffset)
+	{
+		return reinterpret_cast<const FParticleAccelerationPayload*>(GetReadableModuleData(Particle, ModuleOffset, AccelerationModulePayloadSize));
+	}
 }
 
 void UParticleModuleLifetime::Serialize(FArchive& Ar)
@@ -410,7 +423,8 @@ void UParticleModuleLifetime::CacheModuleValues()
 void UParticleModuleLifetime::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
-    Particle.Lifetime     = RawLifetime.GetValue(0.f, &ModuleStream);
+    const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
+    Particle.Lifetime     = RawLifetime.GetValue(EvalTime, &ModuleStream);
     Particle.RelativeTime = Particle.Lifetime > 0.0f ? SpawnTime / Particle.Lifetime : 0.0f;
 }
 
@@ -428,7 +442,6 @@ void UParticleModuleLocation::Serialize(FArchive& Ar)
     }
 
     LocationDist->Serialize(Ar);
-    Ar << SphereRadius << CylinderRadius << CylinderHeight;
 
     if (Ar.IsLoading())
         RawLocation = LocationDist->BuildRaw();
@@ -449,7 +462,8 @@ void UParticleModuleLocation::CacheModuleValues()
 void UParticleModuleLocation::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
-    Particle.Location += RawLocation.GetValue(0.f, &ModuleStream);
+    const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
+    Particle.Location += RawLocation.GetValue(EvalTime, &ModuleStream);
 }
 
 // ── Velocity ─────────────────────────────────────────────────────────────────
@@ -486,7 +500,8 @@ void UParticleModuleVelocity::CacheModuleValues()
 void UParticleModuleVelocity::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
-    const FVector V       = RawVelocity.GetValue(0.f, &ModuleStream);
+    const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
+    const FVector V       = RawVelocity.GetValue(EvalTime, &ModuleStream);
     Particle.BaseVelocity += V;
     Particle.Velocity     += V;
 }
@@ -535,31 +550,10 @@ void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, FBaseParticle&
         Payload->RandomFactor = RandomFactor;
     }
 
-    const FLinearColor C = RawColor.GetValue(0.f, Payload ? Payload->RandomFactor : RandomFactor);
+    const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
+    const FLinearColor C = RawColor.GetValue(EvalTime, Payload ? Payload->RandomFactor : RandomFactor);
     Particle.BaseColor = ToParticleColor(C);
     Particle.Color = Particle.BaseColor;
-}
-
-void UParticleModuleColor::Update(
-    FParticleEmitterInstance* Owner,
-    float DeltaTime,
-    int32 ModuleOffset,
-    TArray<FParticleEventData>* OutEventQueue)
-{
-    if (!bEnabled) return;
-
-    uint8*  ParticleData    = Owner->ParticleData;
-    uint16* ParticleIndices = Owner->ParticleIndices;
-    int32   ParticleStride  = Owner->ParticleStride;
-    int32   ActiveParticles = Owner->ActiveParticles;
-
-    BEGIN_PARTICLE_UPDATE_LOOP
-        const FParticleColorPayload* Payload = GetColorPayload(Particle, ModuleOffset);
-        const FLinearColor C = Payload
-            ? RawColor.GetValue(Particle.RelativeTime, Payload->RandomFactor)
-            : RawColor.GetValue(Particle.RelativeTime, nullptr);
-        Particle.Color = ToParticleColor(C);
-    END_PARTICLE_UPDATE_LOOP
 }
 
 // ── Size ──────────────────────────────────────────────────────────────────────
@@ -620,33 +614,13 @@ void UParticleModuleSize::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& 
         Payload->MirrorRandomFactors = MirrorRandomFactors;
     }
 
+    const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
     const FVector S = RawSize.GetValue(
-        0.f,
+        EvalTime,
         Payload ? Payload->RandomFactors : RandomFactors,
         Payload ? Payload->MirrorRandomFactors : MirrorRandomFactors);
     Particle.BaseSize = S;
     Particle.Size     = S;
-}
-
-void UParticleModuleSize::Update(
-    FParticleEmitterInstance* Owner,
-    float DeltaTime,
-    int32 ModuleOffset,
-    TArray<FParticleEventData>* OutEventQueue)
-{
-    if (!bEnabled) return;
-
-    uint8*  ParticleData    = Owner->ParticleData;
-    uint16* ParticleIndices = Owner->ParticleIndices;
-    int32   ParticleStride  = Owner->ParticleStride;
-    int32   ActiveParticles = Owner->ActiveParticles;
-
-    BEGIN_PARTICLE_UPDATE_LOOP
-        const FParticleSizePayload* Payload = GetSizePayload(Particle, ModuleOffset);
-        Particle.Size = Payload
-            ? RawSize.GetValue(Particle.RelativeTime, Payload->RandomFactors, Payload->MirrorRandomFactors)
-            : RawSize.GetValue(Particle.RelativeTime, nullptr);
-    END_PARTICLE_UPDATE_LOOP
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -693,7 +667,7 @@ void UParticleModuleRotation::Spawn(FParticleEmitterInstance* Owner, FBasePartic
 	float& UsedRotation = *reinterpret_cast<float*>(ModuleData + RotationModuleRotationOffset);
 	FVector& UsedMeshRotation = *reinterpret_cast<FVector*>(ModuleData + RotationModuleMeshRotationOffset);
 
-	const float EvalTime = Owner ? Owner->GetEmitterTime() - SpawnTime : 0.0f;
+	const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
 	UsedRotation = 2.0f * M_PI * RawRotation.GetValue(EvalTime, &ModuleStream);
 	UsedMeshRotation = InitialMeshRotation.ToVector();
 }
@@ -724,36 +698,45 @@ void UParticleModuleRotationRate::CacheModuleValues()
 void UParticleModuleRotationRate::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
 {
     if (!bEnabled) return;
-    const float Rate          = RawRotationRate.GetValue(0.f, &ModuleStream);
+    const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
+    const float Rate          = RawRotationRate.GetValue(EvalTime, &ModuleStream);
     Particle.BaseRotationRate = Rate;
     Particle.RotationRate     = Rate;
-}
-
-void UParticleModuleRotationRate::Update(
-    FParticleEmitterInstance* Owner,
-    float DeltaTime,
-    int32 ModuleOffset,
-    TArray<FParticleEventData>* OutEventQueue)
-{
-    if (!bEnabled) return;
-
-    uint8*  ParticleData    = Owner->ParticleData;
-    uint16* ParticleIndices = Owner->ParticleIndices;
-    int32   ParticleStride  = Owner->ParticleStride;
-    int32   ActiveParticles = Owner->ActiveParticles;
-
-    BEGIN_PARTICLE_UPDATE_LOOP
-        Particle.RotationRate = RawRotationRate.GetValue(Particle.RelativeTime, nullptr);
-    END_PARTICLE_UPDATE_LOOP
 }
 
 void UParticleModuleAcceleration::Serialize(FArchive& Ar)
 {
     UParticleModule::Serialize(Ar);
-    Ar << Acceleration;
-    Ar << ConstAcceleration;
+
+    if (!AccelerationDist)
+    {
+        AccelerationDist = GUObjectArray.CreateObject<UDistributionVector>(this);
+        if (Ar.IsSaving())
+        {
+            AccelerationDist->Type = EDistributionType::Constant;
+            AccelerationDist->Min = FVector::ZeroVector;
+            AccelerationDist->Max = FVector::ZeroVector;
+        }
+    }
+    AccelerationDist->Serialize(Ar);
     Ar << Drag;
-    Ar << bUseAccelerationOverLife;
+
+    if (Ar.IsLoading())
+    {
+        RawAcceleration = AccelerationDist->BuildRaw();
+    }
+}
+
+void UParticleModuleAcceleration::CacheModuleValues()
+{
+    if (!AccelerationDist)
+    {
+        AccelerationDist = GUObjectArray.CreateObject<UDistributionVector>(this);
+        AccelerationDist->Type = EDistributionType::Constant;
+        AccelerationDist->Min = FVector::ZeroVector;
+        AccelerationDist->Max = FVector::ZeroVector;
+    }
+    RawAcceleration = AccelerationDist->BuildRaw();
 }
 
 uint32 UParticleModuleAcceleration::RequiredBytes(UParticleModuleTypeDataBase* TypeData) const
@@ -766,27 +749,34 @@ void UParticleModuleAcceleration::Spawn(FParticleEmitterInstance* Owner, FBasePa
 	if (!bEnabled)
 		return;
 
-	uint8* ModuleData = GetWritableModuleData(Particle, ModuleOffset, AccelerationModulePayloadSize);
-	if (!ModuleData)
+	FParticleAccelerationPayload* Payload = GetAccelerationPayload(Particle, ModuleOffset);
+	if (!Payload)
 		return;
 
-	FVector& UsedAcceleration = *reinterpret_cast<FVector*>(ModuleData + AccelerationModuleAccelerationOffset);
-	FVector& UsedConstAcceleration = *reinterpret_cast<FVector*>(ModuleData + AccelerationModuleConstAccelerationOffset);
-	float& UsedDrag = *reinterpret_cast<float*>(ModuleData + AccelerationModuleDragOffset);
-
-	UsedAcceleration = Acceleration;
-	UsedConstAcceleration = ConstAcceleration;
-	UsedDrag = (std::max)(0.0f, Drag);
+	const FVector AccelerationRandomFactors(
+		ModuleStream.GetFraction(),
+		ModuleStream.GetFraction(),
+		ModuleStream.GetFraction());
+	const FVector AccelerationMirrorRandomFactors(
+		ModuleStream.GetFraction(),
+		ModuleStream.GetFraction(),
+		ModuleStream.GetFraction());
+	const float EvalTime = Owner->GetEmitterTime() - SpawnTime;
+	Payload->Acceleration = RawAcceleration.GetValue(
+		EvalTime,
+		AccelerationRandomFactors,
+		AccelerationMirrorRandomFactors);
+	Payload->Drag = (std::max)(0.0f, Drag);
 
 	if (SpawnTime > 0.0f)
 	{
-		const FVector TotalAcceleration = UsedConstAcceleration + (bUseAccelerationOverLife ? UsedAcceleration * Particle.RelativeTime : UsedAcceleration);
-		Particle.Velocity += TotalAcceleration * SpawnTime;
-		Particle.BaseVelocity += TotalAcceleration * SpawnTime;
-		if (UsedDrag > 0.0f)
+		const FVector UsedAcceleration = Payload->Acceleration;
+		Particle.Velocity += UsedAcceleration * SpawnTime;
+		Particle.BaseVelocity += UsedAcceleration * SpawnTime;
+		if (Payload->Drag > 0.0f)
 		{
-			Particle.Velocity *= std::exp(-UsedDrag * SpawnTime);
-			Particle.BaseVelocity *= std::exp(-UsedDrag * SpawnTime);
+			Particle.Velocity *= std::exp(-Payload->Drag * SpawnTime);
+			Particle.BaseVelocity *= std::exp(-Payload->Drag * SpawnTime);
 		}
 	}
 }
@@ -797,7 +787,7 @@ void UParticleModuleAcceleration::Update(
     int32 ModuleOffset,
     TArray<FParticleEventData>* OutEventQueue)
 {
-	if (!bEnabled || !Owner)
+	if (!bEnabled)
 		return;
 
 	uint8* ParticleData = Owner->ParticleData;
@@ -806,18 +796,15 @@ void UParticleModuleAcceleration::Update(
 	int32 ActiveParticles = Owner->ActiveParticles;
 
 	BEGIN_PARTICLE_UPDATE_LOOP
-		const uint8* ModuleData = GetReadableModuleData(Particle, ModuleOffset, AccelerationModulePayloadSize);
-		if (!ModuleData)
+		const FParticleAccelerationPayload* Payload = GetAccelerationPayload(Particle, ModuleOffset);
+		if (!Payload)
 			continue;
 
-		const FVector& UsedAcceleration = *reinterpret_cast<const FVector*>(ModuleData + AccelerationModuleAccelerationOffset);
-		const FVector& UsedConstAcceleration = *reinterpret_cast<const FVector*>(ModuleData + AccelerationModuleConstAccelerationOffset);
-		const float UsedDrag = *reinterpret_cast<const float*>(ModuleData + AccelerationModuleDragOffset);
-		const float Age = Particle.RelativeTime * Particle.Lifetime;
-		const FVector TotalAcceleration = UsedConstAcceleration + (bUseAccelerationOverLife ? UsedAcceleration * Particle.RelativeTime : UsedAcceleration);
+		const FVector UsedAcceleration = Payload->Acceleration;
+		const float UsedDrag = Payload->Drag;
 
-		Particle.Velocity += TotalAcceleration * DeltaTime;
-		Particle.BaseVelocity += TotalAcceleration * DeltaTime;
+		Particle.Velocity += UsedAcceleration * DeltaTime;
+		Particle.BaseVelocity += UsedAcceleration * DeltaTime;
 		if (UsedDrag > 0.0f)
 		{
 			Particle.Velocity *= std::exp(-UsedDrag * DeltaTime);
