@@ -10,7 +10,8 @@ void FBlendStateManager::Create(ID3D11Device* InDevice)
 	Desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	Desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	Desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	Desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	// Alpha는 src.a를 다시 곱하지 않고 Porter-Duff over 방식으로 누적한다.
+	Desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	Desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	Desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	Desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
