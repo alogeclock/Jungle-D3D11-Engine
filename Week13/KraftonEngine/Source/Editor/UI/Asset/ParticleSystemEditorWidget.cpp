@@ -6,6 +6,7 @@
 #include "Engine/Particles/Modules/ParticleEventModules.h"
 #include "Engine/Particles/Modules/ParticleMotionModules.h"
 #include "Engine/Particles/Modules/ParticleRenderExpressionModules.h"
+#include "Engine/Particles/Runtime/ParticleEmitterInstance.h"
 #include "Engine/Core/Log.h"
 #include "Engine/Core/Property/FDistributionProperty.h"
 #include "Core/Property/FArrayProperty.h"
@@ -25,6 +26,7 @@
 #include "Materials/MaterialManager.h"
 #include "Object/FUObjectArray.h"
 #include "Platform/Paths.h"
+#include "Profiling/Stats.h"
 #include "Serialization/MemoryArchive.h"
 #include "Texture/Texture2D.h"
 #include "UI/Toolbar/ViewportToolbar.h"
@@ -204,6 +206,71 @@ struct FParticleModuleDragDropPayload
 	int32 EmitterIndex = -1;
 	UParticleModule* Module = nullptr;
 };
+
+struct FParticlePreviewStats
+{
+	int32 TotalEmitters = 0;
+	int32 ActiveEmitters = 0;
+	int32 ActiveParticles = 0;
+	int32 MaxParticles = 0;
+	int32 RenderedEmitters = 0;
+	int32 QueuedEvents = 0;
+};
+
+static const FStatEntry* FindParticleStatEntry(const char* Name)
+{
+	if (!Name)
+	{
+		return nullptr;
+	}
+
+	const TArray<FStatEntry>& Snapshot = FStatManager::Get().GetSnapshot();
+	for (const FStatEntry& Entry : Snapshot)
+	{
+		if (!Entry.Name || !Entry.Category)
+		{
+			continue;
+		}
+
+		if (strcmp(Entry.Category, "Particles") == 0 && strcmp(Entry.Name, Name) == 0)
+		{
+			return &Entry;
+		}
+	}
+
+	return nullptr;
+}
+
+static FParticlePreviewStats GatherParticlePreviewStats(const UParticleSystemComponent* Component)
+{
+	FParticlePreviewStats Stats;
+	if (!Component)
+	{
+		return Stats;
+	}
+
+	const TArray<FParticleEmitterInstance*>& Instances = Component->GetEmitterInstances();
+	Stats.TotalEmitters = static_cast<int32>(Instances.size());
+	Stats.RenderedEmitters = static_cast<int32>(Component->GetEmitterRenderData().size());
+	Stats.QueuedEvents = static_cast<int32>(Component->GetFrameEventQueue().size());
+	Stats.ActiveParticles = Component->GetTotalActiveParticles();
+
+	for (const FParticleEmitterInstance* Instance : Instances)
+	{
+		if (!Instance)
+		{
+			continue;
+		}
+
+		Stats.MaxParticles += Instance->MaxActiveParticles;
+		if (Instance->GetActiveParticleCount() > 0)
+		{
+			++Stats.ActiveEmitters;
+		}
+	}
+
+	return Stats;
+}
 
 static const char* GetParticleEmitterTypeLabel(EParticleEmitterType Type)
 {
@@ -1014,6 +1081,21 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 		ImGui::EndCombo();
 	}
 	ImGui::EndDisabled(); // Module BeginDisabled 종료
+	ImGui::SameLine();
+
+	// ── Stat 토글 버튼 ───────────────────────────────────────────────
+	{
+		const bool bStatActive = bShowPreviewStats;
+		if (bStatActive)
+		{
+			const ImVec4 ActiveCol = ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive);
+			ImGui::PushStyleColor(ImGuiCol_Button, ActiveCol);
+		}
+		if (ImGui::Button("Stat##PSStatToggle"))
+			bShowPreviewStats = !bShowPreviewStats;
+		if (bStatActive)
+			ImGui::PopStyleColor();
+	}
 
 	// ── 우측 정렬 LOD 섹션 ───────────────────────────────────────────
 	const ImGuiStyle& Style = ImGui::GetStyle();
@@ -1456,11 +1538,105 @@ void FParticleSystemEditorWidget::RenderPreviewViewport(const ImVec2& Size)
 		Context.bShowViewMode = false;
 
 		FViewportToolbar::Render(Context);
+
+		if (bShowPreviewStats)
+			RenderPreviewStatsOverlay(ViewportPos, ViewportSize);
 	}
 
 	ImGui::EndChild();
 	ImGui::PopStyleVar();
 	ImGui::PopStyleColor();
+}
+
+void FParticleSystemEditorWidget::RenderPreviewStatsOverlay(const ImVec2& ViewportPos, const ImVec2& ViewportSize) const
+{
+	UParticleSystemComponent* PreviewComponent = GetPreviewParticleComponent();
+	if (!PreviewComponent || ViewportSize.x <= 0.0f || ViewportSize.y <= 0.0f)
+		return;
+
+	const FParticlePreviewStats Stats = GatherParticlePreviewStats(PreviewComponent);
+	const FStatEntry* TickEntry = FindParticleStatEntry("ParticleSystemComponent::Tick");
+
+	// ── 행 구성 ───────────────────────────────────────────────────────
+	struct FRow { char Label[24]; char Value[96]; };
+	FRow Rows[6] = {};
+	int32 RowCount = 0;
+
+	auto AddRow = [&](const char* Label, const char* Fmt, ...)
+	{
+		FRow& R = Rows[RowCount++];
+		strncpy_s(R.Label, Label, sizeof(R.Label) - 1);
+		va_list Args; va_start(Args, Fmt);
+		vsnprintf(R.Value, sizeof(R.Value), Fmt, Args);
+		va_end(Args);
+	};
+
+	// Playback : Playing 0.50x | 0.42 s | Loop
+	{
+		const char* Pb = bAnimPaused ? "Paused" : "Playing";
+		const float  T = PreviewComponent->GetSystemElapsedTime();
+		if (bAnimLoop)
+			AddRow("Playback", "%s  %.2fx  |  %.2f s  |  Loop", Pb, AnimSpeedScale, T);
+		else
+			AddRow("Playback", "%s  %.2fx  |  %.2f s", Pb, AnimSpeedScale, T);
+	}
+
+	AddRow("LOD",       "%d", EditedLODIndex);
+	AddRow("Emitters",  "%d / %d active", Stats.ActiveEmitters, Stats.TotalEmitters);
+	AddRow("Particles", "%d alive / %d max", Stats.ActiveParticles, Stats.MaxParticles);
+	AddRow("Frame",     "+%d spawn  /  -%d kill  /  %d events",
+		PreviewComponent->GetTotalSpawnedThisFrame(),
+		PreviewComponent->GetTotalKilledThisFrame(),
+		Stats.QueuedEvents);
+	AddRow("CPU",       "%.3f ms", TickEntry ? TickEntry->LastTime * 1000.0 : 0.0);
+
+	// ── 레이아웃 ──────────────────────────────────────────────────────
+	constexpr float PadX         = 12.0f;
+	constexpr float PadY         = 10.0f;
+	constexpr float LineSpacing  = 4.0f;
+	constexpr float TopOffset    = 6.0f;
+	constexpr float RightOffset  = 10.0f;
+	constexpr float MinWidth     = 220.0f;
+	constexpr float ColGap       = 14.0f;
+
+	const float LineH = ImGui::GetTextLineHeight();
+
+	float MaxLabelW = 0.0f, MaxValueW = 0.0f;
+	for (int32 i = 0; i < RowCount; ++i)
+	{
+		MaxLabelW = (std::max)(MaxLabelW, ImGui::CalcTextSize(Rows[i].Label).x);
+		MaxValueW = (std::max)(MaxValueW, ImGui::CalcTextSize(Rows[i].Value).x);
+	}
+
+	const float ContentW  = MaxLabelW + ColGap + MaxValueW;
+	const float PanelW    = (std::max)(MinWidth, ContentW + PadX * 2.0f);
+	const float TitleH    = LineH + 4.0f;
+	const float PanelH    = PadY * 2.0f + TitleH
+		+ LineH * static_cast<float>(RowCount)
+		+ LineSpacing * static_cast<float>(RowCount - 1);
+
+	const ImVec2 PMin(ViewportPos.x + ViewportSize.x - PanelW - RightOffset, ViewportPos.y + TopOffset);
+	const ImVec2 PMax(PMin.x + PanelW, PMin.y + PanelH);
+
+	// ── 렌더링 ────────────────────────────────────────────────────────
+	ImDrawList* DL = ImGui::GetWindowDrawList();
+	DL->AddRectFilled(PMin, PMax, IM_COL32(10, 12, 16, 215), 6.0f);
+	DL->AddRect(PMin, PMax, IM_COL32(0, 181, 219, 180), 6.0f, 0, 1.0f);
+	DL->AddText(ImVec2(PMin.x + PadX, PMin.y + PadY), IM_COL32(170, 220, 235, 255), "Preview Stats");
+
+	const float LabelX   = PMin.x + PadX;
+	const float ValueX   = LabelX + MaxLabelW + ColGap;
+	const ImU32 ColLabel = IM_COL32(175, 175, 175, 255);
+	const ImU32 ColValue = IM_COL32(235, 235, 235, 255);
+	const ImU32 ColCPU   = IM_COL32(132, 214, 255, 255);
+
+	float CurY = PMin.y + PadY + TitleH;
+	for (int32 i = 0; i < RowCount; ++i)
+	{
+		DL->AddText(ImVec2(LabelX, CurY), ColLabel, Rows[i].Label);
+		DL->AddText(ImVec2(ValueX, CurY), (i == RowCount - 1) ? ColCPU : ColValue, Rows[i].Value);
+		CurY += LineH + LineSpacing;
+	}
 }
 
 UParticleSystemComponent* FParticleSystemEditorWidget::GetPreviewParticleComponent() const
