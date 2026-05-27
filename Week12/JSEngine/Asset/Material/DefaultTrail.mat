@@ -1,5 +1,5 @@
 {
-    "Name": "AdditiveParticle",
+    "Name": "DefaultTrail",
     "ShaderType": "None",
     "BlendMode": "Translucent",
     "BlendState": {
@@ -8,7 +8,7 @@
         "DestColor": "One",
         "ColorOp": "Add",
         "SrcAlpha": "One",
-        "DestAlpha": "One",
+        "DestAlpha": "Zero",
         "AlphaOp": "Add",
         "WriteMask": 15
     },
@@ -19,7 +19,7 @@
         { "Name": "EmissiveColor", "Type": "Vector3", "Value": [1.0, 0.2, 0.0] },
         { "Name": "Shininess", "Type": "Float", "Value": 8.0 },
         { "Name": "Opacity", "Type": "Float", "Value": 0.75 },
-        { "Name": "DiffuseMap", "Type": "Texture", "Value": "Asset/Cube/Projectile.png" },
+        { "Name": "DiffuseMap", "Type": "Texture", "Value": "Asset/Texture/SimpleTrail.png" },
         { "Name": "bHasDiffuseMap", "Type": "Bool", "Value": true },
         { "Name": "bHasSpecularMap", "Type": "Bool", "Value": false },
         { "Name": "bHasAmbientMap", "Type": "Bool", "Value": false },
