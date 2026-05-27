@@ -426,7 +426,7 @@ void FMaterialEditorWidget::RenderPreviewUnavailable(float DetailsWidth)
 
 		ImGui::BeginChild("MaterialPreviewUnavailable", Size, true);
 		ImGui::TextDisabled("Preview unavailable for this shader.");
-		ImGui::TextWrapped("Particle Sprite materials can be edited here, but they are rendered through the particle pipeline.");
+		ImGui::TextWrapped("Particle materials can be edited here, but they are rendered through the particle pipeline.");
 		ImGui::EndChild();
 	}
 	ImGui::EndGroup();

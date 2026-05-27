@@ -5,7 +5,7 @@
 enum class EMaterialCreatePreset
 {
 	UberLit,
-	ParticleSprite,
+	Particle,
 };
 
 class FAssetFactory

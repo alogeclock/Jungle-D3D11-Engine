@@ -564,9 +564,9 @@ void FEditorContentBrowserWidget::DrawContents()
 				{
 					BeginMaterialCreate(EMaterialCreatePreset::UberLit, "NewUberLitMaterial");
 				}
-				if (ImGui::MenuItem("Particle Sprite"))
+				if (ImGui::MenuItem("Particle"))
 				{
-					BeginMaterialCreate(EMaterialCreatePreset::ParticleSprite, "NewParticleSpriteMaterial");
+					BeginMaterialCreate(EMaterialCreatePreset::Particle, "NewParticleMaterial");
 				}
 				ImGui::EndMenu();
 			}

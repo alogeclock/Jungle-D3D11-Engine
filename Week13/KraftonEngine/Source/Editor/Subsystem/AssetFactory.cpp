@@ -81,7 +81,7 @@ namespace
 
 		switch (Preset)
 		{
-		case EMaterialCreatePreset::ParticleSprite:
+		case EMaterialCreatePreset::Particle:
 			JsonData["ShaderPath"] = "Shaders/Particles/ParticleSprite.hlsl";
 			JsonData["BlendMode"] = "Translucent";
 			JsonData["RenderPass"] = "AlphaBlend";
