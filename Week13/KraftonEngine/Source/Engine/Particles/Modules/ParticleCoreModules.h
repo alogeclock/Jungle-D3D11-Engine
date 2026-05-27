@@ -82,6 +82,7 @@ class UParticleModuleSpawn : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Spawn; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Spawn; }
+    virtual bool SupportsRandomSeed() const override { return true; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
 
@@ -107,6 +108,7 @@ class UParticleModuleLifetime : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Lifetime; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Lifetime; }
+    virtual bool SupportsRandomSeed() const override { return true; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
@@ -134,6 +136,7 @@ class UParticleModuleLocation : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Location; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Location; }
+    virtual bool SupportsRandomSeed() const override { return true; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
@@ -166,6 +169,7 @@ class UParticleModuleVelocity : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Velocity; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_Spawn; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Velocity; }
+    virtual bool SupportsRandomSeed() const override { return true; }
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
     virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
@@ -191,6 +195,7 @@ class UParticleModuleColor : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Color; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Color; }
+    virtual bool SupportsRandomSeed() const override { return true; }
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;
@@ -222,6 +227,7 @@ class UParticleModuleSize : public UParticleModule
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Size; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
     virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::Size; }
+    virtual bool SupportsRandomSeed() const override { return true; }
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
     virtual void Serialize(FArchive& Ar) override;
     virtual void CacheModuleValues() override;

@@ -30,6 +30,10 @@ class UParticleModuleRotation : public UParticleModule
     {
         return EParticleModuleClass::Rotation;
     }
+    virtual bool SupportsRandomSeed() const override
+    {
+        return true;
+    }
     virtual void Serialize(FArchive &Ar) override;
     virtual void CacheModuleValues() override;
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
@@ -69,6 +73,10 @@ class UParticleModuleRotationRate : public UParticleModule
     virtual EParticleModuleClass GetModuleClass() const override
     {
         return EParticleModuleClass::RotationRate;
+    }
+    virtual bool SupportsRandomSeed() const override
+    {
+        return true;
     }
     virtual void Serialize(FArchive &Ar) override;
     virtual void CacheModuleValues() override;

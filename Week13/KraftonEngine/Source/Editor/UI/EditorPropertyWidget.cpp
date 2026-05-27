@@ -57,9 +57,101 @@
 
 namespace
 {
+	constexpr ImVec4 LevelDetailsAccentColor = ImVec4(0.0f, 0.71f, 0.86f, 1.0f);
+	constexpr ImVec4 LevelDetailsPanelHeaderColor = ImVec4(0.30f, 0.30f, 0.30f, 1.0f);
+	constexpr ImVec4 LevelDetailsPanelBodyColor = ImVec4(0.14f, 0.14f, 0.14f, 1.0f);
+	constexpr ImVec4 LevelDetailsSectionColor = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+	constexpr ImVec4 LevelDetailsSectionHoveredColor = ImVec4(0.27f, 0.27f, 0.27f, 1.0f);
+	constexpr ImVec4 LevelDetailsSectionActiveColor = ImVec4(0.31f, 0.31f, 0.31f, 1.0f);
+	constexpr ImVec4 LevelDetailsTableRowColor = ImVec4(0.17f, 0.17f, 0.17f, 0.0f);
+	constexpr ImVec4 LevelDetailsTableRowAltColor = ImVec4(0.20f, 0.20f, 0.20f, 0.0f);
+	constexpr ImVec4 LevelDetailsTableBorderColor = ImVec4(0.24f, 0.24f, 0.24f, 1.0f);
+	constexpr ImVec4 LevelDetailsInputFrameColor = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+	constexpr ImVec4 LevelDetailsInputFrameHoveredColor = ImVec4(0.31f, 0.31f, 0.31f, 1.0f);
+	constexpr ImVec4 LevelDetailsInputFrameActiveColor = ImVec4(0.36f, 0.36f, 0.36f, 1.0f);
+	constexpr ImVec4 LevelDetailsButtonColor = ImVec4(0.22f, 0.22f, 0.22f, 1.0f);
+	constexpr ImVec4 LevelDetailsButtonHoveredColor = ImVec4(0.28f, 0.28f, 0.28f, 1.0f);
+	constexpr ImVec4 LevelDetailsButtonActiveColor = ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+	constexpr ImVec4 LevelDetailsPopupColor = ImVec4(0.13f, 0.13f, 0.13f, 1.0f);
+	constexpr ImVec4 LevelDetailsCheckMarkColor = ImVec4(0.0f, 0.71f, 0.86f, 1.0f);
+	constexpr ImVec2 LevelDetailsPanelPadding = ImVec2(12.0f, 10.0f);
+	constexpr ImVec2 LevelDetailsSectionPadding = ImVec2(6.0f, 4.0f);
+	constexpr float LevelDetailsHeaderHeight = 28.0f;
+	constexpr float LevelDetailsHeaderAccentWidth = 4.0f;
+	constexpr float LevelDetailsHeaderTitleOffsetX = 12.0f;
+	constexpr float LevelDetailsHeaderTitleOffsetY = 7.0f;
+	constexpr float LevelDetailsHeaderSpacing = 34.0f;
+
 	inline const char* PropLabel(const FProperty& Prop)
 	{
 		return Prop.Name.c_str();
+	}
+
+	void DrawLevelDetailsPanelHeader(const char* Title)
+	{
+		ImDrawList* DrawList = ImGui::GetWindowDrawList();
+		const ImVec2 Start = ImGui::GetCursorScreenPos();
+		const float Width = ImGui::GetContentRegionAvail().x;
+
+		DrawList->AddRectFilled(
+			Start,
+			ImVec2(Start.x + Width, Start.y + LevelDetailsHeaderHeight),
+			ImGui::GetColorU32(LevelDetailsPanelHeaderColor));
+		DrawList->AddRectFilled(
+			Start,
+			ImVec2(Start.x + LevelDetailsHeaderAccentWidth, Start.y + LevelDetailsHeaderHeight),
+			ImGui::GetColorU32(LevelDetailsAccentColor));
+		DrawList->AddText(
+			ImVec2(Start.x + LevelDetailsHeaderTitleOffsetX, Start.y + LevelDetailsHeaderTitleOffsetY),
+			ImGui::GetColorU32(ImGuiCol_Text),
+			Title);
+
+		ImGui::Dummy(ImVec2(Width, LevelDetailsHeaderSpacing));
+	}
+
+	void PushLevelDetailsWidgetStyles()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.0f, 4.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6.0f, 5.0f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, LevelDetailsInputFrameColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, LevelDetailsInputFrameHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, LevelDetailsInputFrameActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_Button, LevelDetailsButtonColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, LevelDetailsButtonHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, LevelDetailsButtonActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_PopupBg, LevelDetailsPopupColor);
+		ImGui::PushStyleColor(ImGuiCol_CheckMark, LevelDetailsCheckMarkColor);
+	}
+
+	void PopLevelDetailsWidgetStyles()
+	{
+		ImGui::PopStyleColor(8);
+		ImGui::PopStyleVar(2);
+	}
+
+	void PushLevelPropertyTableStyles()
+	{
+		ImGui::PushStyleColor(ImGuiCol_TableRowBg, LevelDetailsTableRowColor);
+		ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, LevelDetailsTableRowAltColor);
+		ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, LevelDetailsTableBorderColor);
+		ImGui::PushStyleColor(ImGuiCol_TableBorderLight, LevelDetailsTableBorderColor);
+	}
+
+	void PopLevelPropertyTableStyles()
+	{
+		ImGui::PopStyleColor(4);
+	}
+
+	bool BeginLevelDetailsSection(const char* Label)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Header, LevelDetailsSectionColor);
+		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, LevelDetailsSectionHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_HeaderActive, LevelDetailsSectionActiveColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, LevelDetailsSectionPadding);
+		const bool bOpen = ImGui::CollapsingHeader(Label, ImGuiTreeNodeFlags_DefaultOpen);
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor(3);
+		return bOpen;
 	}
 
 	bool IsFbxFilePath(const FString& Path)
@@ -546,11 +638,18 @@ void FEditorPropertyWidget::Render(float DeltaTime)
 	float ScrollHeight = ImGui::GetContentRegionAvail().y;
 	if (ScrollHeight < 50.0f) ScrollHeight = 50.0f;
 
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, LevelDetailsPanelBodyColor);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, LevelDetailsPanelPadding);
 	ImGui::BeginChild("##Details", ImVec2(0, ScrollHeight), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	{
+		DrawLevelDetailsPanelHeader("Details");
+		PushLevelDetailsWidgetStyles();
 		RenderDetails(PrimaryActor, SelectedActors);
+		PopLevelDetailsWidgetStyles();
 	}
 	ImGui::EndChild();
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor();
 
 	ImGui::End();
 }
@@ -681,8 +780,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor* PrimaryActor, const TA
 			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 150.0f);
 			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
-			ImGui::PushStyleColor(ImGuiCol_TableRowBg, ImVec4(0.13f, 0.13f, 0.13f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, ImVec4(0.145f, 0.145f, 0.145f, 1.0f));
+			PushLevelPropertyTableStyles();
 
 			for (int32 i = 0; i < (int32)Props.size(); ++i)
 			{
@@ -711,7 +809,7 @@ void FEditorPropertyWidget::RenderActorProperties(AActor* PrimaryActor, const TA
 			}
 
 			ImGui::EndTable();
-			ImGui::PopStyleColor(2);
+			PopLevelPropertyTableStyles();
 		}
 	};
 
@@ -731,15 +829,14 @@ void FEditorPropertyWidget::RenderActorProperties(AActor* PrimaryActor, const TA
 
 		if (!TransformProps.empty())
 		{
-			ImGui::Separator();
-			ImGui::Text("Transform");
-			ImGui::Spacing();
-
-			RenderPropertyTable("##ActorRootTransformTable", TransformProps, RootComponent,
-				[RootComponent](const FProperty& Prop)
-				{
-					RootComponent->PostEditProperty(Prop.Name.c_str());
-				});
+			if (BeginLevelDetailsSection("Transform"))
+			{
+				RenderPropertyTable("##ActorRootTransformTable", TransformProps, RootComponent,
+					[RootComponent](const FProperty& Prop)
+					{
+						RootComponent->PostEditProperty(Prop.Name.c_str());
+					});
+			}
 		}
 	}
 
@@ -784,11 +881,12 @@ void FEditorPropertyWidget::RenderActorProperties(AActor* PrimaryActor, const TA
 			continue;
 		}
 
-		ImGui::Separator();
 		if (!Category.empty())
 		{
-			ImGui::TextUnformatted(Category.c_str());
-			ImGui::Spacing();
+			if (!BeginLevelDetailsSection(Category.c_str()))
+			{
+				continue;
+			}
 		}
 
 		RenderPropertyTable(("##ActorPropertyTable_" + Category).c_str(), CategoryProps, PrimaryActor,
@@ -916,6 +1014,8 @@ void FEditorPropertyWidget::RenderComponentTree(AActor* Actor)
 
 	static float TreeHeight = 100.0f;
 
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, LevelDetailsPanelBodyColor);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 8.0f));
 	ImGui::BeginChild("##ComponentTree", ImVec2(0, TreeHeight), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	{
 		if (Root)
@@ -965,6 +1065,8 @@ void FEditorPropertyWidget::RenderComponentTree(AActor* Actor)
 	}
 
 	ImGui::EndChild();
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor();
 
 	ImGui::InvisibleButton("##TreeResize", ImVec2(-1, 6));
 
@@ -1140,20 +1242,12 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 		if (bPropsInvalidated) break;
 
 		// 카테고리 헤더 (빈 문자열이면 헤더 없이 렌더)
-		bool bInTreeNode = false;
 		if (!Cat.empty())
 		{
-			ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.22f, 0.22f, 0.22f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.27f, 0.27f, 0.27f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.30f, 0.30f, 0.30f, 1.0f));
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f, 3.0f));
-
-			bool bOpen = ImGui::CollapsingHeader(Cat.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
-
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor(3);
-
-			if (!bOpen) continue;
+			if (!BeginLevelDetailsSection(Cat.c_str()))
+			{
+				continue;
+			}
 		}
 
 		if (ImGui::BeginTable("##PropertyTable", 2,
@@ -1162,8 +1256,7 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 150.0f);
 			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
-			ImGui::PushStyleColor(ImGuiCol_TableRowBg, ImVec4(0.13f, 0.13f, 0.13f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, ImVec4(0.145f, 0.145f, 0.145f, 1.0f));
+			PushLevelPropertyTableStyles();
 
 			for (int32 i = 0; i < (int32)Props.size(); ++i)
 			{
@@ -1203,7 +1296,7 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 			}
 
 			ImGui::EndTable();
-			ImGui::PopStyleColor(2);
+			PopLevelPropertyTableStyles();
 		}
 	}
 
@@ -1381,23 +1474,25 @@ bool FEditorPropertyWidget::RenderPropertyWidget(
 	case EPropertyType::Bool:
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.07f, 0.07f, 0.07f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.055f, 0.525f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, LevelDetailsInputFrameColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, LevelDetailsInputFrameHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, LevelDetailsInputFrameActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_CheckMark, LevelDetailsCheckMarkColor);
 
 		bool* Val = static_cast<bool*>(ValuePtr);
 		bChanged = ImGui::Checkbox("##Value", Val);
 
-		ImGui::PopStyleColor(3);
+		ImGui::PopStyleColor(4);
 		ImGui::PopStyleVar();
 		break;
 	}
 	case EPropertyType::ByteBool:
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.07f, 0.07f, 0.07f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.055f, 0.525f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, LevelDetailsInputFrameColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, LevelDetailsInputFrameHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, LevelDetailsInputFrameActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_CheckMark, LevelDetailsCheckMarkColor);
 
 		uint8* Val = static_cast<uint8*>(ValuePtr);
 		bool bVal = (*Val != 0);
@@ -1407,7 +1502,7 @@ bool FEditorPropertyWidget::RenderPropertyWidget(
 			bChanged = true;
 		}
 
-		ImGui::PopStyleColor(3);
+		ImGui::PopStyleColor(4);
 		ImGui::PopStyleVar();
 		break;
 	}

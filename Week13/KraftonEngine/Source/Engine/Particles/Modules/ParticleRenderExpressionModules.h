@@ -26,6 +26,7 @@ class UParticleModuleSubUVBase : public UParticleModule
 
     virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_SubUV; }
     virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
+    virtual bool SupportsRandomSeed() const override { return true; }
     virtual void Serialize(FArchive& Ar) override;
 
     bool UsesRealTime() const { return bUseRealTime; }

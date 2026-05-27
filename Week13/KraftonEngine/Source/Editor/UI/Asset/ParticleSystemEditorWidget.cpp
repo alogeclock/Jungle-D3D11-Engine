@@ -355,6 +355,24 @@ static bool AreParticleModulesEffectivelyShared(UParticleModule* CurrentModule, 
 	return CurrentWriter.GetBuffer() == PreviousWriter.GetBuffer();
 }
 
+static bool ShouldDisplayParticleEditableProperty(const UObject* Object, const FProperty* Prop)
+{
+	if (!Object || !Prop)
+	{
+		return false;
+	}
+
+	const UParticleModule* ParticleModule = Cast<UParticleModule>(Object);
+	if (ParticleModule
+		&& (Prop->Name == "RandomSeedInfo" || Prop->Name == "Random Seed Info")
+		&& !ParticleModule->SupportsRandomSeed())
+	{
+		return false;
+	}
+
+	return true;
+}
+
 static bool IsParticleEventModuleClass(EParticleModuleClass ModuleClass)
 {
 	return ModuleClass == EParticleModuleClass::EventGenerator
@@ -1842,6 +1860,10 @@ bool FParticleSystemEditorWidget::RenderParticleDistribution(UParticleModule* Mo
 	int32 DistIdx = 0;
 	for (const FProperty* Prop : Props)
 	{
+		if (!ShouldDisplayParticleEditableProperty(Module, Prop))
+		{
+			continue;
+		}
 		if (!Prop || Prop->GetType() != EPropertyType::Distribution)
 		{
 			continue;
@@ -1916,7 +1938,16 @@ bool FParticleSystemEditorWidget::RenderEditableProperties(UObject* Object)
 
 	TArray<const FProperty*> Props;
 	Object->GetEditableProperties(Props);
-	if (Props.empty())
+	TArray<const FProperty*> VisibleProps;
+	VisibleProps.reserve(Props.size());
+	for (const FProperty* Prop : Props)
+	{
+		if (ShouldDisplayParticleEditableProperty(Object, Prop))
+		{
+			VisibleProps.push_back(Prop);
+		}
+	}
+	if (VisibleProps.empty())
 	{
 		ImGui::TextDisabled("No editable properties.");
 		return false;
@@ -1924,7 +1955,7 @@ bool FParticleSystemEditorWidget::RenderEditableProperties(UObject* Object)
 
 	// 카테고리별 그룹 수집 (최초 등장 순서 유지)
 	std::vector<FString> CategoryOrder;
-	for (const FProperty* Prop : Props)
+	for (const FProperty* Prop : VisibleProps)
 	{
 		if (!Prop || Prop->GetType() == EPropertyType::Distribution) continue;
 		bool bFound = false;
@@ -1950,7 +1981,7 @@ bool FParticleSystemEditorWidget::RenderEditableProperties(UObject* Object)
 		ImGui::Columns(2, ColID.c_str(), false);
 		ImGui::SetColumnWidth(0, ParticleDetailsColumnWidth);
 
-		for (const FProperty* Prop : Props)
+		for (const FProperty* Prop : VisibleProps)
 		{
 			if (!Prop || Prop->Category != Category) continue;
 			if (Prop->GetType() == EPropertyType::Distribution) continue;
