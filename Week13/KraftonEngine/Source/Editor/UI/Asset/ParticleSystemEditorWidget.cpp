@@ -719,6 +719,7 @@ constexpr FParticleModuleAddOption ParticleModuleAddOptions[] =
 	{ EParticleModuleClass::Location, "Location" },
 	{ EParticleModuleClass::Velocity, "Velocity" },
 	{ EParticleModuleClass::Color, "Color" },
+	{ EParticleModuleClass::ColorOverLife, "Color Over Life" },
 	{ EParticleModuleClass::Size, "Size" },
 	{ EParticleModuleClass::Rotation, "Rotation" },
 	{ EParticleModuleClass::RotationRate, "Rotation Rate" },
@@ -1183,6 +1184,7 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 					case EParticleModuleClass::Location:             NewModule = GUObjectArray.CreateObject<UParticleModuleLocation>(SelectedLOD); break;
 					case EParticleModuleClass::Velocity:             NewModule = GUObjectArray.CreateObject<UParticleModuleVelocity>(SelectedLOD); break;
 					case EParticleModuleClass::Color:                NewModule = GUObjectArray.CreateObject<UParticleModuleColor>(SelectedLOD); break;
+					case EParticleModuleClass::ColorOverLife:        NewModule = GUObjectArray.CreateObject<UParticleModuleColorOverLife>(SelectedLOD); break;
 					case EParticleModuleClass::Size:                 NewModule = GUObjectArray.CreateObject<UParticleModuleSize>(SelectedLOD); break;
 					case EParticleModuleClass::Rotation:             NewModule = GUObjectArray.CreateObject<UParticleModuleRotation>(SelectedLOD); break;
 					case EParticleModuleClass::RotationRate:         NewModule = GUObjectArray.CreateObject<UParticleModuleRotationRate>(SelectedLOD); break;
@@ -3190,6 +3192,7 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 	case EParticleModuleClass::Location: ModuleName = "Location"; break;
 	case EParticleModuleClass::Velocity: ModuleName = "Velocity"; break;
 	case EParticleModuleClass::Color: ModuleName = "Color"; break;
+	case EParticleModuleClass::ColorOverLife: ModuleName = "Color Over Life"; break;
 	case EParticleModuleClass::Size: ModuleName = "Size"; break;
 	case EParticleModuleClass::Rotation: ModuleName = "Rotation"; break;
 	case EParticleModuleClass::RotationRate: ModuleName = "Rotation Rate"; break;

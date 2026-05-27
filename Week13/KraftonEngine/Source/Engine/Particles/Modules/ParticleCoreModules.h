@@ -233,6 +233,42 @@ class UParticleModuleColor : public UParticleModule
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// UParticleModuleColorOverLife
+// ─────────────────────────────────────────────────────────────────────────────
+
+UCLASS()
+class UParticleModuleColorOverLife : public UParticleModule
+{
+  public:
+    GENERATED_BODY(UParticleModuleColorOverLife)
+
+    virtual EParticleModuleType        GetModuleType() const override { return EParticleModuleType::PMT_Color; }
+    virtual EParticleModuleUpdatePhase GetUpdatePhase() const override { return EParticleModuleUpdatePhase::PMUP_SpawnAndUpdate; }
+    virtual EParticleModuleClass       GetModuleClass() const override { return EParticleModuleClass::ColorOverLife; }
+    virtual bool SupportsRandomSeed() const override { return true; }
+    virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData) const override;
+    virtual void Serialize(FArchive& Ar) override;
+    virtual void CacheModuleValues() override;
+    virtual void Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset = INDEX_NONE) override;
+    virtual void Update(
+        FParticleEmitterInstance* Owner,
+        float DeltaTime,
+        int32 ModuleOffset = INDEX_NONE,
+        TArray<FParticleEventData>* OutEventQueue = nullptr) override;
+
+    UDistributionVector* GetColorOverLifeDist() const { return ColorOverLifeDist; }
+    UDistributionFloat* GetAlphaOverLifeDist() const { return AlphaOverLifeDist; }
+
+  private:
+    UPROPERTY(Edit, Category="Color Over Life", DisplayName="Color Over Life", Type=Distribution, Class=UDistributionVector)
+    UDistributionVector* ColorOverLifeDist = nullptr;
+    UPROPERTY(Edit, Category="Color Over Life", DisplayName="Alpha Over Life", Type=Distribution, Class=UDistributionFloat)
+    UDistributionFloat* AlphaOverLifeDist = nullptr;
+    FRawDistributionVector RawColorOverLife = FRawDistributionVector::MakeConstant(FVector(1.f, 1.f, 1.f));
+    FRawDistributionFloat RawAlphaOverLife = FRawDistributionFloat::MakeConstant(1.0f);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // UParticleModuleSize
 // ─────────────────────────────────────────────────────────────────────────────
 

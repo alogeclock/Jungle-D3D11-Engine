@@ -26,6 +26,7 @@ static UParticleModule* CreateModuleByClass(EParticleModuleClass ClassTag, UObje
     case EParticleModuleClass::Location:             return GUObjectArray.CreateObject<UParticleModuleLocation>(Outer);
     case EParticleModuleClass::Velocity:             return GUObjectArray.CreateObject<UParticleModuleVelocity>(Outer);
     case EParticleModuleClass::Color:                return GUObjectArray.CreateObject<UParticleModuleColor>(Outer);
+    case EParticleModuleClass::ColorOverLife:        return GUObjectArray.CreateObject<UParticleModuleColorOverLife>(Outer);
     case EParticleModuleClass::Size:                 return GUObjectArray.CreateObject<UParticleModuleSize>(Outer);
     case EParticleModuleClass::Rotation:             return GUObjectArray.CreateObject<UParticleModuleRotation>(Outer);
     case EParticleModuleClass::RotationRate:         return GUObjectArray.CreateObject<UParticleModuleRotationRate>(Outer);

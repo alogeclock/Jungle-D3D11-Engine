@@ -155,6 +155,7 @@ enum class EParticleModuleClass : uint8
     BeamTarget,
     BeamShape,
     BeamNoise,
+    ColorOverLife,
     Unknown = 0xFF
 };
 

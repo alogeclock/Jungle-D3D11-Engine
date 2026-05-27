@@ -298,6 +298,8 @@ namespace
     const     FVector DefaultLocationMax         = FVector::ZeroVector;
     const     FVector DefaultVelocityMin         = FVector(0.f, 0.f, 0.f);
     const     FVector DefaultVelocityMax         = FVector(0.f, 0.f, 10.f);
+    const     FVector DefaultColorOverLife       = FVector(1.f, 1.f, 1.f);
+    constexpr float   DefaultAlphaOverLife       = 1.0f;
 
     void InitializeDefaultLifetimeDistribution(UDistributionFloat* Distribution)
     {
@@ -323,6 +325,22 @@ namespace
         Distribution->Max  = DefaultVelocityMax;
     }
 
+    void InitializeDefaultColorOverLifeDistribution(UDistributionVector* Distribution)
+    {
+        if (!Distribution) return;
+        Distribution->Type = EDistributionType::Constant;
+        Distribution->Min  = DefaultColorOverLife;
+        Distribution->Max  = DefaultColorOverLife;
+    }
+
+    void InitializeDefaultAlphaOverLifeDistribution(UDistributionFloat* Distribution)
+    {
+        if (!Distribution) return;
+        Distribution->Type = EDistributionType::Constant;
+        Distribution->Min  = DefaultAlphaOverLife;
+        Distribution->Max  = DefaultAlphaOverLife;
+    }
+
 	constexpr int32 RotationModuleRotationOffset = 0;
 	constexpr int32 RotationModuleMeshRotationOffset = RotationModuleRotationOffset + sizeof(float);
 	constexpr int32 RotationModulePayloadSize = RotationModuleMeshRotationOffset + sizeof(FVector);
@@ -340,6 +358,13 @@ namespace
         float RandomFactor = 0.5f;
     };
 
+    struct FParticleColorOverLifePayload
+    {
+        FVector ColorRandomFactors = FVector(0.5f, 0.5f, 0.5f);
+        FVector ColorMirrorRandomFactors = FVector(0.5f, 0.5f, 0.5f);
+        float AlphaRandomFactor = 0.5f;
+    };
+
     struct FParticleSizePayload
     {
         FVector RandomFactors = FVector(0.5f, 0.5f, 0.5f);
@@ -347,6 +372,7 @@ namespace
     };
 
     constexpr int32 ColorModulePayloadSize = sizeof(FParticleColorPayload);
+    constexpr int32 ColorOverLifeModulePayloadSize = sizeof(FParticleColorOverLifePayload);
     constexpr int32 SizeModulePayloadSize = sizeof(FParticleSizePayload);
 
     FColor ToParticleColor(const FLinearColor& InColor)
@@ -362,6 +388,20 @@ namespace
             ToChannel(InColor.G),
             ToChannel(InColor.B),
             ToChannel(InColor.A));
+    }
+
+    FColor EvaluateColorOverLife(
+        const FRawDistributionVector& RawColorOverLife,
+        const FRawDistributionFloat& RawAlphaOverLife,
+        float RelativeTime,
+        const FVector& ColorRandomFactors,
+        const FVector& ColorMirrorRandomFactors,
+        float AlphaRandomFactor)
+    {
+        const float EvalTime = std::clamp(RelativeTime, 0.0f, 1.0f);
+        const FVector RGB = RawColorOverLife.GetValue(EvalTime, ColorRandomFactors, ColorMirrorRandomFactors);
+        const float Alpha = RawAlphaOverLife.GetValue(EvalTime, AlphaRandomFactor);
+        return ToParticleColor(FLinearColor(RGB.X, RGB.Y, RGB.Z, Alpha));
     }
 
 	uint8* GetWritableModuleData(FBaseParticle& Particle, int32 ModuleOffset, int32 RequiredBytes)
@@ -385,6 +425,16 @@ namespace
     const FParticleColorPayload* GetColorPayload(const FBaseParticle& Particle, int32 ModuleOffset)
     {
         return reinterpret_cast<const FParticleColorPayload*>(GetReadableModuleData(Particle, ModuleOffset, ColorModulePayloadSize));
+    }
+
+    FParticleColorOverLifePayload* GetColorOverLifePayload(FBaseParticle& Particle, int32 ModuleOffset)
+    {
+        return reinterpret_cast<FParticleColorOverLifePayload*>(GetWritableModuleData(Particle, ModuleOffset, ColorOverLifeModulePayloadSize));
+    }
+
+    const FParticleColorOverLifePayload* GetColorOverLifePayload(const FBaseParticle& Particle, int32 ModuleOffset)
+    {
+        return reinterpret_cast<const FParticleColorOverLifePayload*>(GetReadableModuleData(Particle, ModuleOffset, ColorOverLifeModulePayloadSize));
     }
 
     FParticleSizePayload* GetSizePayload(FBaseParticle& Particle, int32 ModuleOffset)
@@ -573,6 +623,127 @@ void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, FBaseParticle&
     const FLinearColor C = RawColor.GetValue(EvalTime, Payload ? Payload->RandomFactor : RandomFactor);
     Particle.BaseColor = ToParticleColor(C);
     Particle.Color = Particle.BaseColor;
+}
+
+// ── Color Over Life ──────────────────────────────────────────────────────────
+
+uint32 UParticleModuleColorOverLife::RequiredBytes(UParticleModuleTypeDataBase* TypeData) const
+{
+    return ColorOverLifeModulePayloadSize;
+}
+
+void UParticleModuleColorOverLife::Serialize(FArchive& Ar)
+{
+    UParticleModule::Serialize(Ar);
+
+    if (!ColorOverLifeDist)
+    {
+        ColorOverLifeDist = GUObjectArray.CreateObject<UDistributionVector>(this);
+        if (Ar.IsSaving())
+        {
+            InitializeDefaultColorOverLifeDistribution(ColorOverLifeDist);
+        }
+    }
+
+    if (!AlphaOverLifeDist)
+    {
+        AlphaOverLifeDist = GUObjectArray.CreateObject<UDistributionFloat>(this);
+        if (Ar.IsSaving())
+        {
+            InitializeDefaultAlphaOverLifeDistribution(AlphaOverLifeDist);
+        }
+    }
+
+    ColorOverLifeDist->Serialize(Ar);
+    AlphaOverLifeDist->Serialize(Ar);
+
+    if (Ar.IsLoading())
+    {
+        RawColorOverLife = ColorOverLifeDist->BuildRaw();
+        RawAlphaOverLife = AlphaOverLifeDist->BuildRaw();
+    }
+}
+
+void UParticleModuleColorOverLife::CacheModuleValues()
+{
+    if (!ColorOverLifeDist)
+    {
+        ColorOverLifeDist = GUObjectArray.CreateObject<UDistributionVector>(this);
+        InitializeDefaultColorOverLifeDistribution(ColorOverLifeDist);
+    }
+
+    if (!AlphaOverLifeDist)
+    {
+        AlphaOverLifeDist = GUObjectArray.CreateObject<UDistributionFloat>(this);
+        InitializeDefaultAlphaOverLifeDistribution(AlphaOverLifeDist);
+    }
+
+    RawColorOverLife = ColorOverLifeDist->BuildRaw();
+    RawAlphaOverLife = AlphaOverLifeDist->BuildRaw();
+}
+
+void UParticleModuleColorOverLife::Spawn(FParticleEmitterInstance* Owner, FBaseParticle& Particle, float SpawnTime, int32 ModuleOffset)
+{
+    if (!bEnabled) return;
+
+    FParticleColorOverLifePayload* Payload = GetColorOverLifePayload(Particle, ModuleOffset);
+    const FVector ColorRandomFactors(
+        ModuleStream.GetFraction(),
+        ModuleStream.GetFraction(),
+        ModuleStream.GetFraction());
+    const FVector ColorMirrorRandomFactors(
+        ModuleStream.GetFraction(),
+        ModuleStream.GetFraction(),
+        ModuleStream.GetFraction());
+    const float AlphaRandomFactor = ModuleStream.GetFraction();
+
+    if (Payload)
+    {
+        Payload->ColorRandomFactors = ColorRandomFactors;
+        Payload->ColorMirrorRandomFactors = ColorMirrorRandomFactors;
+        Payload->AlphaRandomFactor = AlphaRandomFactor;
+    }
+
+    Particle.Color = EvaluateColorOverLife(
+        RawColorOverLife,
+        RawAlphaOverLife,
+        Particle.RelativeTime,
+        Payload ? Payload->ColorRandomFactors : ColorRandomFactors,
+        Payload ? Payload->ColorMirrorRandomFactors : ColorMirrorRandomFactors,
+        Payload ? Payload->AlphaRandomFactor : AlphaRandomFactor);
+}
+
+void UParticleModuleColorOverLife::Update(
+    FParticleEmitterInstance* Owner,
+    float,
+    int32 ModuleOffset,
+    TArray<FParticleEventData>*)
+{
+    if (!bEnabled)
+        return;
+
+    uint8* ParticleData = Owner->ParticleData;
+    uint16* ParticleIndices = Owner->ParticleIndices;
+    int32 ParticleStride = Owner->ParticleStride;
+    int32 ActiveParticles = Owner->ActiveParticles;
+
+    BEGIN_PARTICLE_UPDATE_LOOP
+        const FParticleColorOverLifePayload* Payload = GetColorOverLifePayload(Particle, ModuleOffset);
+        const FVector ColorRandomFactors = Payload
+            ? Payload->ColorRandomFactors
+            : FVector(0.5f, 0.5f, 0.5f);
+        const FVector ColorMirrorRandomFactors = Payload
+            ? Payload->ColorMirrorRandomFactors
+            : FVector(0.5f, 0.5f, 0.5f);
+        const float AlphaRandomFactor = Payload ? Payload->AlphaRandomFactor : 0.5f;
+        Particle.Color = EvaluateColorOverLife(
+            RawColorOverLife,
+            RawAlphaOverLife,
+            Particle.RelativeTime,
+            ColorRandomFactors,
+            ColorMirrorRandomFactors,
+            AlphaRandomFactor);
+    END_PARTICLE_UPDATE_LOOP
 }
 
 // ── Size ──────────────────────────────────────────────────────────────────────
