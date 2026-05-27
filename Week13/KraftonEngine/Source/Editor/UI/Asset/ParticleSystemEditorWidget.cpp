@@ -664,8 +664,6 @@ constexpr FParticleModuleAddOption ParticleModuleAddOptions[] =
 	{ EParticleModuleClass::Rotation, "Rotation" },
 	{ EParticleModuleClass::RotationRate, "Rotation Rate" },
 	{ EParticleModuleClass::Acceleration, "Acceleration" },
-	{ EParticleModuleClass::Attractor, "Attractor" },
-	{ EParticleModuleClass::Orbit, "Orbit" },
 	{ EParticleModuleClass::Collision, "Collision" },
 	{ EParticleModuleClass::Kill, "Kill" },
 	{ EParticleModuleClass::EventGenerator, "Event Generator" },
@@ -673,10 +671,6 @@ constexpr FParticleModuleAddOption ParticleModuleAddOptions[] =
 	{ EParticleModuleClass::EventReceiverKillAll, "Event Receiver Kill All" },
 	{ EParticleModuleClass::SubImageIndex, "SubImage Index" },
 	{ EParticleModuleClass::SubUVMovie, "SubUV Movie" },
-	{ EParticleModuleClass::Light, "Light" },
-	{ EParticleModuleClass::VectorField, "Vector Field" },
-	{ EParticleModuleClass::Camera, "Camera" },
-	{ EParticleModuleClass::Parameter, "Parameter" },
 };
 
 constexpr ImVec4 ParticlePanelAccentColor = ImVec4(0.0f, 0.71f, 0.86f, 1.0f);
@@ -1043,8 +1037,6 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 					case EParticleModuleClass::Rotation:             NewModule = GUObjectArray.CreateObject<UParticleModuleRotation>(SelectedLOD); break;
 					case EParticleModuleClass::RotationRate:         NewModule = GUObjectArray.CreateObject<UParticleModuleRotationRate>(SelectedLOD); break;
 					case EParticleModuleClass::Acceleration:         NewModule = GUObjectArray.CreateObject<UParticleModuleAcceleration>(SelectedLOD); break;
-					case EParticleModuleClass::Attractor:            NewModule = GUObjectArray.CreateObject<UParticleModuleAttractor>(SelectedLOD); break;
-					case EParticleModuleClass::Orbit:                NewModule = GUObjectArray.CreateObject<UParticleModuleOrbit>(SelectedLOD); break;
 					case EParticleModuleClass::Collision:            NewModule = GUObjectArray.CreateObject<UParticleModuleCollision>(SelectedLOD); break;
 					case EParticleModuleClass::Kill:                 NewModule = GUObjectArray.CreateObject<UParticleModuleKill>(SelectedLOD); break;
 					case EParticleModuleClass::EventGenerator:       NewModule = GUObjectArray.CreateObject<UParticleModuleEventGenerator>(SelectedLOD); break;
@@ -1052,10 +1044,6 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 					case EParticleModuleClass::EventReceiverKillAll: NewModule = GUObjectArray.CreateObject<UParticleModuleEventReceiverKillAll>(SelectedLOD); break;
 					case EParticleModuleClass::SubImageIndex:        NewModule = GUObjectArray.CreateObject<UParticleModuleSubImageIndex>(SelectedLOD); break;
 					case EParticleModuleClass::SubUVMovie:           NewModule = GUObjectArray.CreateObject<UParticleModuleSubUVMovie>(SelectedLOD); break;
-					case EParticleModuleClass::Light:                NewModule = GUObjectArray.CreateObject<UParticleModuleLight>(SelectedLOD); break;
-					case EParticleModuleClass::VectorField:          NewModule = GUObjectArray.CreateObject<UParticleModuleVectorField>(SelectedLOD); break;
-					case EParticleModuleClass::Camera:               NewModule = GUObjectArray.CreateObject<UParticleModuleCamera>(SelectedLOD); break;
-					case EParticleModuleClass::Parameter:            NewModule = GUObjectArray.CreateObject<UParticleModuleParameter>(SelectedLOD); break;
 					default: break;
 					}
 					if (NewModule)
@@ -2988,8 +2976,6 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 	case EParticleModuleClass::Rotation: ModuleName = "Rotation"; break;
 	case EParticleModuleClass::RotationRate: ModuleName = "Rotation Rate"; break;
 	case EParticleModuleClass::Acceleration: ModuleName = "Acceleration"; break;
-	case EParticleModuleClass::Attractor: ModuleName = "Attractor"; break;
-	case EParticleModuleClass::Orbit: ModuleName = "Orbit"; break;
 	case EParticleModuleClass::Collision: ModuleName = "Collision"; break;
 	case EParticleModuleClass::Kill: ModuleName = "Kill"; break;
 	case EParticleModuleClass::EventGenerator: ModuleName = "Event Generator"; break;
@@ -2997,10 +2983,6 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 	case EParticleModuleClass::EventReceiverKillAll: ModuleName = "Event Receiver Kill All"; break;
 	case EParticleModuleClass::SubImageIndex: ModuleName = "SubImage Index"; break;
 	case EParticleModuleClass::SubUVMovie: ModuleName = "SubUV Movie"; break;
-	case EParticleModuleClass::Light: ModuleName = "Light"; break;
-	case EParticleModuleClass::VectorField: ModuleName = "Vector Field"; break;
-	case EParticleModuleClass::Camera: ModuleName = "Camera"; break;
-	case EParticleModuleClass::Parameter: ModuleName = "Parameter"; break;
 	default: break;
 	}
 

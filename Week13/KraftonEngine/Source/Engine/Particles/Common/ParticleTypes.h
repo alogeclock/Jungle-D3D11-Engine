@@ -76,13 +76,6 @@ enum class EParticleModuleType : uint8
     PMT_Event,          // Particle 이벤트 처리
     PMT_SubUV,          // Texture Atlas / Flipbook
 
-    PMT_Light,          // Particle 기반 Light 효과
-    PMT_VectorField,    // 3D Vector Field 기반 이동
-    PMT_Attractor,      // 특정 위치 / Actor 방향 흡인
-    PMT_Orbit,          // 렌더링 위치 궤도 오프셋
-    PMT_Camera,         // 카메라 기준 동작 보정
-    PMT_Parameter,      // 외부 시스템 / Material 값 전달
-
     PMT_Custom          // 확장용 Module
 };
 
@@ -129,11 +122,10 @@ enum class EParticleSubUVInterpMethod : uint8
 enum class EParticleModuleClass : uint8
 {
     Required = 0, Spawn, Lifetime, Location, Velocity, Color, Size,
-    Rotation, RotationRate, Acceleration, Attractor, Orbit,
-    Collision, Kill,
+    Rotation, RotationRate, Acceleration,
+    Collision = 12, Kill,
     EventGenerator, EventReceiverSpawn, EventReceiverKillAll,
-    SubUVLegacy, Light, VectorField, Camera, Parameter,
-    TypeDataSprite, TypeDataMesh, TypeDataBeam, TypeDataRibbon,
+    TypeDataSprite = 22, TypeDataMesh, TypeDataBeam, TypeDataRibbon,
     SubImageIndex,
     SubUVMovie,
     Unknown = 0xFF

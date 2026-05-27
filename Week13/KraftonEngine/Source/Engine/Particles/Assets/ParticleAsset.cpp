@@ -28,17 +28,11 @@ static UParticleModule* CreateModuleByClass(EParticleModuleClass ClassTag, UObje
     case EParticleModuleClass::Rotation:             return GUObjectArray.CreateObject<UParticleModuleRotation>(Outer);
     case EParticleModuleClass::RotationRate:         return GUObjectArray.CreateObject<UParticleModuleRotationRate>(Outer);
     case EParticleModuleClass::Acceleration:         return GUObjectArray.CreateObject<UParticleModuleAcceleration>(Outer);
-    case EParticleModuleClass::Attractor:            return GUObjectArray.CreateObject<UParticleModuleAttractor>(Outer);
-    case EParticleModuleClass::Orbit:                return GUObjectArray.CreateObject<UParticleModuleOrbit>(Outer);
     case EParticleModuleClass::Collision:            return GUObjectArray.CreateObject<UParticleModuleCollision>(Outer);
     case EParticleModuleClass::Kill:                 return GUObjectArray.CreateObject<UParticleModuleKill>(Outer);
     case EParticleModuleClass::EventGenerator:       return GUObjectArray.CreateObject<UParticleModuleEventGenerator>(Outer);
     case EParticleModuleClass::EventReceiverSpawn:   return GUObjectArray.CreateObject<UParticleModuleEventReceiverSpawn>(Outer);
     case EParticleModuleClass::EventReceiverKillAll: return GUObjectArray.CreateObject<UParticleModuleEventReceiverKillAll>(Outer);
-    case EParticleModuleClass::Light:                return GUObjectArray.CreateObject<UParticleModuleLight>(Outer);
-    case EParticleModuleClass::VectorField:          return GUObjectArray.CreateObject<UParticleModuleVectorField>(Outer);
-    case EParticleModuleClass::Camera:               return GUObjectArray.CreateObject<UParticleModuleCamera>(Outer);
-    case EParticleModuleClass::Parameter:            return GUObjectArray.CreateObject<UParticleModuleParameter>(Outer);
     case EParticleModuleClass::TypeDataSprite:       return GUObjectArray.CreateObject<UParticleModuleTypeDataSprite>(Outer);
     case EParticleModuleClass::TypeDataMesh:         return GUObjectArray.CreateObject<UParticleModuleTypeDataMesh>(Outer);
     case EParticleModuleClass::TypeDataBeam:         return GUObjectArray.CreateObject<UParticleModuleTypeDataBeam>(Outer);
@@ -61,27 +55,6 @@ static UParticleModuleTypeDataBase* CreateTypeDataByEmitterType(EParticleEmitter
     }
 }
 
-static void SkipLegacySubUVModule(FArchive& Ar)
-{
-    bool bEnabled = false;
-    bool bUseSeed = false;
-    int32 Seed = 0;
-    int32 HorizontalCount = 1;
-    int32 VerticalCount = 1;
-    int32 StartFrame = 0;
-    int32 EndFrame = 0;
-    bool bUseSubImageIndex = false;
-
-    Ar << bEnabled;
-    Ar << bUseSeed;
-    Ar << Seed;
-    Ar << HorizontalCount;
-    Ar << VerticalCount;
-    Ar << StartFrame;
-    Ar << EndFrame;
-    Ar << bUseSubImageIndex;
-}
-
 // UParticleModule* 하나를 Archive에 저장/복원
 static void SerializeModulePtr(FArchive& Ar, UParticleModule*& Module, UObject* Outer)
 {
@@ -99,12 +72,6 @@ static void SerializeModulePtr(FArchive& Ar, UParticleModule*& Module, UObject* 
         uint8 Tag = 0;
         Ar << Tag;
         EParticleModuleClass Class = static_cast<EParticleModuleClass>(Tag);
-        if (Class == EParticleModuleClass::SubUVLegacy)
-        {
-            SkipLegacySubUVModule(Ar);
-            Module = nullptr;
-            return;
-        }
         Module = CreateModuleByClass(Class, Outer);
         if (Module)
             Module->Serialize(Ar);
