@@ -1704,36 +1704,6 @@ void UParticleModuleSubUVMovie::Update(
     END_UPDATE_LOOP
 }
 
-void UParticleModuleLight::Serialize(FArchive& Ar)
-{
-    UParticleModule::Serialize(Ar);
-    Ar << LightColor;
-    Ar << Intensity;
-    Ar << Radius;
-}
-
-void UParticleModuleVectorField::Serialize(FArchive& Ar)
-{
-    UParticleModule::Serialize(Ar);
-    // VectorFieldAsset은 이 엔진에서 지원하지 않음 - 경로 placeholder만 저장
-    FString VectorFieldPath;
-    Ar << VectorFieldPath;
-    Ar << Intensity;
-}
-
-void UParticleModuleCamera::Serialize(FArchive& Ar)
-{
-    UParticleModule::Serialize(Ar);
-    Ar << CameraOffset;
-}
-
-void UParticleModuleParameter::Serialize(FArchive& Ar)
-{
-    UParticleModule::Serialize(Ar);
-    Ar << ParameterName;
-    Ar << ParameterValue;
-}
-
 void UParticleModuleTrailSource::Serialize(FArchive& Ar)
 {
     UParticleModule::Serialize(Ar);

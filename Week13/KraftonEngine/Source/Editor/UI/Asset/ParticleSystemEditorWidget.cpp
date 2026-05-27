@@ -702,10 +702,6 @@ constexpr FParticleModuleAddOption ParticleModuleAddOptions[] =
 	{ EParticleModuleClass::SubImageIndex, "SubImage Index" },
 	{ EParticleModuleClass::SubUVMovie, "SubUV Movie" },
 	{ EParticleModuleClass::TrailSource, "Trail Source" },
-	{ EParticleModuleClass::Light, "Light" },
-	{ EParticleModuleClass::VectorField, "Vector Field" },
-	{ EParticleModuleClass::Camera, "Camera" },
-	{ EParticleModuleClass::Parameter, "Parameter" },
 };
 
 constexpr ImVec4 ParticlePanelAccentColor = ImVec4(0.0f, 0.71f, 0.86f, 1.0f);
@@ -1152,10 +1148,6 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 					case EParticleModuleClass::SubImageIndex:        NewModule = GUObjectArray.CreateObject<UParticleModuleSubImageIndex>(SelectedLOD); break;
 					case EParticleModuleClass::SubUVMovie:           NewModule = GUObjectArray.CreateObject<UParticleModuleSubUVMovie>(SelectedLOD); break;
 					case EParticleModuleClass::TrailSource:          NewModule = GUObjectArray.CreateObject<UParticleModuleTrailSource>(SelectedLOD); break;
-					case EParticleModuleClass::Light:                NewModule = GUObjectArray.CreateObject<UParticleModuleLight>(SelectedLOD); break;
-					case EParticleModuleClass::VectorField:          NewModule = GUObjectArray.CreateObject<UParticleModuleVectorField>(SelectedLOD); break;
-					case EParticleModuleClass::Camera:               NewModule = GUObjectArray.CreateObject<UParticleModuleCamera>(SelectedLOD); break;
-					case EParticleModuleClass::Parameter:            NewModule = GUObjectArray.CreateObject<UParticleModuleParameter>(SelectedLOD); break;
 					default: break;
 					}
 					if (NewModule)
@@ -3162,10 +3154,6 @@ bool FParticleSystemEditorWidget::RenderParticleModuleItem(UParticleModule* Modu
 	case EParticleModuleClass::SubImageIndex: ModuleName = "SubImage Index"; break;
 	case EParticleModuleClass::SubUVMovie: ModuleName = "SubUV Movie"; break;
 	case EParticleModuleClass::TrailSource: ModuleName = "Trail Source"; break;
-	case EParticleModuleClass::Light: ModuleName = "Light"; break;
-	case EParticleModuleClass::VectorField: ModuleName = "Vector Field"; break;
-	case EParticleModuleClass::Camera: ModuleName = "Camera"; break;
-	case EParticleModuleClass::Parameter: ModuleName = "Parameter"; break;
 	default: break;
 	}
 
