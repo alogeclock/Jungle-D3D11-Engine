@@ -24,6 +24,15 @@
 #include <cstring>
 #include <cmath>
 
+namespace
+{
+    bool IsRandomSeedInfoProperty(const FProperty* Prop)
+    {
+        return Prop
+            && (Prop->Name == "RandomSeedInfo" || Prop->Name == "Random Seed Info");
+    }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // UParticleModule (base)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -33,6 +42,26 @@ void UParticleModule::Serialize(FArchive& Ar)
     Ar << bEnabled;
     Ar << RandomSeedInfo.bUseSeed;
     Ar << RandomSeedInfo.Seed;
+}
+
+void UParticleModule::GetEditableProperties(TArray<const FProperty*>& OutProps)
+{
+    UObject::GetEditableProperties(OutProps);
+
+    if (SupportsRandomSeed())
+    {
+        return;
+    }
+
+    OutProps.erase(
+        std::remove_if(
+            OutProps.begin(),
+            OutProps.end(),
+            [](const FProperty* Prop)
+            {
+                return IsRandomSeedInfoProperty(Prop);
+            }),
+        OutProps.end());
 }
 
 void UParticleModule::InitializeStream()
