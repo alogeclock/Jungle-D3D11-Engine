@@ -490,6 +490,14 @@ static bool ShouldDisplayParticleEditableProperty(const UObject* Object, const F
 		return false;
 	}
 
+	if (ParticleModule
+		&& (Prop->Name == "bEnabled" || Prop->Name == "Enabled")
+		&& (ParticleModule->IsA<UParticleModuleRequired>()
+			|| ParticleModule->GetClass()->IsChildOf(UParticleModuleTypeDataBase::StaticClass())))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -713,7 +721,6 @@ static bool IsParticleMaterialPath(const FString& MaterialPath)
 
 constexpr FParticleModuleAddOption ParticleModuleAddOptions[] =
 {
-	{ EParticleModuleClass::Spawn, "Spawn" },
 	{ EParticleModuleClass::SpawnPerUnit, "Spawn Per Unit" },
 	{ EParticleModuleClass::Lifetime, "Lifetime" },
 	{ EParticleModuleClass::Location, "Location" },
@@ -1163,22 +1170,11 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 					continue;
 				}
 
-				bool bAlreadyExists = false;
-				for (UParticleModule* Module : SelectedLOD->GetModules())
-				{
-					if (Module && Module->GetModuleClass() == Option.Class)
-					{
-						bAlreadyExists = true;
-						break;
-					}
-				}
-				ImGui::BeginDisabled(bAlreadyExists);
-				if (ImGui::MenuItem(Option.Name, nullptr, false, !bAlreadyExists))
+				if (ImGui::MenuItem(Option.Name))
 				{
 					UParticleModule* NewModule = nullptr;
 					switch (Option.Class)
 					{
-					case EParticleModuleClass::Spawn:                NewModule = GUObjectArray.CreateObject<UParticleModuleSpawn>(SelectedLOD); break;
 					case EParticleModuleClass::SpawnPerUnit:         NewModule = GUObjectArray.CreateObject<UParticleModuleSpawnPerUnit>(SelectedLOD); break;
 					case EParticleModuleClass::Lifetime:             NewModule = GUObjectArray.CreateObject<UParticleModuleLifetime>(SelectedLOD); break;
 					case EParticleModuleClass::Location:             NewModule = GUObjectArray.CreateObject<UParticleModuleLocation>(SelectedLOD); break;
@@ -1213,7 +1209,6 @@ void FParticleSystemEditorWidget::Render(float DeltaTime)
 						MarkDirty();
 					}
 				}
-				ImGui::EndDisabled();
 			}
 			ImGui::EndMenu();
 		}
