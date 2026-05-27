@@ -131,6 +131,16 @@ namespace
 		return (ParticleStride - PointDataOffset) / static_cast<int32>(sizeof(FVector));
 	}
 
+	float MakeBeamNoiseSeed(uint32 SpawnId)
+	{
+		uint32 Hash = SpawnId * 747796405u + 2891336453u;
+		Hash = (Hash ^ (Hash >> 16)) * 2246822519u;
+		Hash = (Hash ^ (Hash >> 13)) * 3266489917u;
+		Hash ^= Hash >> 16;
+		const float Unit = static_cast<float>(Hash & 0x00ffffffu) / static_cast<float>(0x01000000u);
+		return Unit * 997.0f;
+	}
+
 	struct FBeamEndpoints
 	{
 		FVector Source = FVector::ZeroVector;
@@ -285,6 +295,7 @@ namespace
 		const FVector& Target,
 		const TArray<FVector>* BasePoints,
 		float EmitterTime,
+		float NoiseSeed,
 		TArray<FVector>& OutGeneratedPoints)
 	{
 		const UParticleModuleBeamNoise* BeamNoiseModule = FindEnabledBeamNoiseModule(LODLevel);
@@ -306,7 +317,7 @@ namespace
 			BuildLinearBeamPoints(BeamTypeData, Source, Target, OutGeneratedPoints);
 		}
 
-		BeamNoiseModule->ApplyNoise(EmitterTime, OutGeneratedPoints);
+		BeamNoiseModule->ApplyNoise(EmitterTime, NoiseSeed, OutGeneratedPoints);
 		return OutGeneratedPoints.size() >= 2 ? &OutGeneratedPoints : BasePoints;
 	}
 
@@ -1178,27 +1189,32 @@ void FParticleBeamEmitterInstance::UpdateBeamPayloads(float /*DeltaTime*/)
 	const int32 PointCapacity = GetBeamPayloadPointCapacity(ParticleStride, BeamPayloadOffset);
 	const FBeamEndpoints Endpoints = ResolveBeamEndpoints(CurrentLODLevel, BeamTypeData);
 	TArray<FVector> ShapeBeamPoints;
-	const TArray<FVector>* OverrideBeamPoints = BuildBeamShapePoints(
+	const TArray<FVector>* BaseBeamPoints = BuildBeamShapePoints(
 		CurrentLODLevel,
 		BeamTypeData,
 		Endpoints.Source,
 		Endpoints.Target,
 		ShapeBeamPoints);
-	TArray<FVector> NoiseBeamPoints;
-	OverrideBeamPoints = BuildBeamNoisePoints(
-		CurrentLODLevel,
-		BeamTypeData,
-		Endpoints.Source,
-		Endpoints.Target,
-		OverrideBeamPoints,
-		EmitterTime,
-		NoiseBeamPoints);
 
 	for (int32 i = 0; i < ActiveParticles; ++i)
 	{
 		uint8* ParticleBase = ParticleData + ParticleStride * ParticleIndices[i];
+		FBaseParticle* Particle = reinterpret_cast<FBaseParticle*>(ParticleBase);
 		FBeamParticlePayload* Payload =
 			reinterpret_cast<FBeamParticlePayload*>(ParticleBase + BeamPayloadOffset);
+
+		Payload->NoiseSeed = MakeBeamNoiseSeed(Particle->SpawnId);
+
+		TArray<FVector> NoiseBeamPoints;
+		const TArray<FVector>* OverrideBeamPoints = BuildBeamNoisePoints(
+			CurrentLODLevel,
+			BeamTypeData,
+			Endpoints.Source,
+			Endpoints.Target,
+			BaseBeamPoints,
+			EmitterTime,
+			Payload->NoiseSeed,
+			NoiseBeamPoints);
 
 		FillBeamPayload(Payload, BeamTypeData, Endpoints.Source, Endpoints.Target, PointCapacity, OverrideBeamPoints);
 	}
@@ -1292,6 +1308,7 @@ void FParticleBeamEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVect
 		Endpoints.Source,
 		Endpoints.Target,
 		ShapeBeamPoints);
+	const float NoiseSeed = MakeBeamNoiseSeed(ParticleCounter);
 	TArray<FVector> NoiseBeamPoints;
 	OverrideBeamPoints = BuildBeamNoisePoints(
 		CurrentLODLevel,
@@ -1300,7 +1317,9 @@ void FParticleBeamEmitterInstance::PreSpawn(FBaseParticle& Particle, const FVect
 		Endpoints.Target,
 		OverrideBeamPoints,
 		EmitterTime,
+		NoiseSeed,
 		NoiseBeamPoints);
+	Payload->NoiseSeed = NoiseSeed;
 	FillBeamPayload(Payload, BeamTypeData, Endpoints.Source, Endpoints.Target, PointCapacity, OverrideBeamPoints);
 }
 

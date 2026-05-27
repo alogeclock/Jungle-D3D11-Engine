@@ -217,7 +217,7 @@ class UParticleModuleBeamNoise : public UParticleModule
     virtual EParticleModuleClass GetModuleClass() const override { return EParticleModuleClass::BeamNoise; }
     virtual void Serialize(FArchive& Ar) override;
 
-    void ApplyNoise(float EmitterTime, TArray<FVector>& InOutPoints) const;
+    void ApplyNoise(float EmitterTime, float NoiseSeed, TArray<FVector>& InOutPoints) const;
 
   private:
     UPROPERTY(Edit, Category="Beam", DisplayName="Noise Amplitude")

@@ -70,6 +70,7 @@ struct FBeamParticlePayload
     float   Width = 1.0f;
     float   TextureTiling = 1.0f;
     int32   PointCount = 0;
+    float   NoiseSeed = 0.0f;
 
     FVector* GetPoints()
     {

@@ -915,6 +915,7 @@ void UParticleModuleBeamNoise::Serialize(FArchive& Ar)
 
 void UParticleModuleBeamNoise::ApplyNoise(
 	float EmitterTime,
+	float NoiseSeed,
 	TArray<FVector>& InOutPoints) const
 {
 	if (InOutPoints.size() < 3)
@@ -944,22 +945,56 @@ void UParticleModuleBeamNoise::ApplyNoise(
 	const FVector SideDir = FVector::Cross(Up, BeamDir).Normalized();
 	const FVector UpDir = FVector::Cross(BeamDir, SideDir).Normalized();
 
-	constexpr float Pi = 3.14159265358979323846f;
-	const float ClampedFrequency = (std::max)(0.0f, Frequency);
-	const float TimePhase = Phase + EmitterTime * Speed;
+	const float ClampedFrequency = (std::max)(0.001f, Frequency);
+	const float TimePhase = Phase + NoiseSeed + EmitterTime * Speed;
 	const int32 LastPointIndex = static_cast<int32>(InOutPoints.size()) - 1;
+
+	const auto Frac = [](float Value)
+	{
+		return Value - std::floor(Value);
+	};
+
+	const auto SmoothStep = [](float Value)
+	{
+		return Value * Value * (3.0f - 2.0f * Value);
+	};
+
+	const auto LerpFloat = [](float A, float B, float Alpha)
+	{
+		return A + (B - A) * Alpha;
+	};
+
+	const auto Hash01 = [&](float Value, float Salt)
+	{
+		return Frac(std::sin(Value * 127.1f + Salt * 311.7f) * 43758.5453123f);
+	};
+
+	const auto ValueNoise = [&](float X, float Salt)
+	{
+		const float Cell = std::floor(X);
+		const float LocalT = X - Cell;
+		const float A = Hash01(Cell, Salt);
+		const float B = Hash01(Cell + 1.0f, Salt);
+		return LerpFloat(A, B, SmoothStep(LocalT)) * 2.0f - 1.0f;
+	};
 
 	for (int32 PointIndex = 1; PointIndex < LastPointIndex; ++PointIndex)
 	{
 		const float Alpha = static_cast<float>(PointIndex) / static_cast<float>(LastPointIndex);
-		const float EndFade = std::sin(Alpha * Pi);
-		const float WavePhase = TimePhase + Alpha * ClampedFrequency * Pi * 2.0f;
-		const float PrimaryWave = std::sin(WavePhase);
-		const float SecondaryWave = std::sin(WavePhase * 1.37f + Pi * 0.5f);
+		const float EndFade = Alpha * (1.0f - Alpha) * 4.0f;
+		const float NoiseX = TimePhase + Alpha * ClampedFrequency;
+		const float SideNoise = (std::clamp)(
+			(ValueNoise(NoiseX, 11.0f) + ValueNoise(NoiseX * 2.13f + 19.0f, 17.0f) * 0.5f) * 0.6666667f,
+			-1.0f,
+			1.0f);
+		const float UpNoise = (std::clamp)(
+			(ValueNoise(NoiseX + 73.0f, 23.0f) + ValueNoise(NoiseX * 1.91f + 41.0f, 29.0f) * 0.5f) * 0.6666667f,
+			-1.0f,
+			1.0f);
 
 		const FVector Offset =
-			(SideDir * (NoiseAmplitude.X * SecondaryWave) +
-			 UpDir * (NoiseAmplitude.Z * PrimaryWave)) * EndFade;
+			(SideDir * (NoiseAmplitude.X * SideNoise) +
+			 UpDir * (NoiseAmplitude.Z * UpNoise)) * EndFade;
 
 		InOutPoints[PointIndex] += Offset;
 	}
@@ -1892,7 +1927,15 @@ void UParticleModuleTypeDataMesh::Serialize(FArchive& Ar)
         MeshAsset.SetPath(MeshPath);
         Mesh = nullptr;
 
-		Ar << Mesh;
+		if (!MeshPath.empty() && MeshPath != "None" && GEngine)
+		{
+			ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
+			Mesh = FMeshManager::LoadStaticMesh(MeshPath, Device);
+			if (Mesh)
+			{
+				MeshAsset.SetCache(Mesh);
+			}
+		}
     }
 }
 
