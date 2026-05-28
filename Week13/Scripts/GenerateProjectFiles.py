@@ -113,12 +113,26 @@ FBX_DLL            = "libfbxsdk.dll"
 FBX_DEFINE         = "FBXSDK_SHARED"
 FBX_CONFIGS        = {"Debug", "Release", "Game"}  # x64 와 결합되는 구성만 FBX 포함
 
-# PhysX (NuGet, 4.1.229882250) — vcpkg auto applocal-deps가 일부 환경에서 동작하지 않아
-# PostBuildEvent 에서 명시적으로 *.dll 을 OutDir 로 복사한다.
-# Debug 구성은 debug\\bin, 그 외(Release/Game/Demo)는 release bin 사용.
-PHYSX_DEBUG_BIN   = "packages\\NVIDIA.PhysX.4.1.229882250\\installed\\x64-windows\\debug\\bin"
-PHYSX_RELEASE_BIN = "packages\\NVIDIA.PhysX.4.1.229882250\\installed\\x64-windows\\bin"
-
+# PhysX (NuGet, 4.1.229882250)
+# This NuGet package is a vcpkg-exported native package. On some machines the
+# package .props/.targets imports do not inject include/lib paths reliably, so
+# we derive the paths from the centralized package id/version below.
+PHYSX_PACKAGE_ID = "NVIDIA.PhysX"
+PHYSX_PACKAGE_VERSION = "4.1.229882250"
+PHYSX_PACKAGE_DIR = f"packages\\{PHYSX_PACKAGE_ID}.{PHYSX_PACKAGE_VERSION}"
+PHYSX_TRIPLET = "x64-windows"
+PHYSX_INC_DIR = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\include"
+PHYSX_LIB_DIR_DEBUG = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\debug\\lib"
+PHYSX_LIB_DIR_RELEASE = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\lib"
+PHYSX_DEBUG_BIN = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\debug\\bin"
+PHYSX_RELEASE_BIN = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\bin"
+PHYSX_LIBS = [
+    "PhysX_64.lib",
+    "PhysXCommon_64.lib",
+    "PhysXFoundation_64.lib",
+    "PhysXExtensions_static_64.lib",
+    "PhysXPvdSDK_static_64.lib",
+]
 # Lua (LuaJIT, 5.1 ABI) — lua51.dll 은 .gitignore 의 **/[Bb]in/* 에 걸려 있어
 # 팀원이 직접 ThirdParty\\lua\\bin\\lua51.dll 위치에 배치해야 한다 (LuaJIT 배포본).
 LUA_LIB_DIR = "ThirdParty\\lua\\lib"
@@ -137,7 +151,7 @@ ADDITIONAL_DEPENDENCIES = [
 # NuGet packages (id, version) — restored via packages.config
 NUGET_PACKAGES = [
     ("directxtk_desktop_win10", "2026.5.8.1"),
-    ("NVIDIA.PhysX", "4.1.229882250"),
+    (PHYSX_PACKAGE_ID, PHYSX_PACKAGE_VERSION),
 ]
 
 NS = "http://schemas.microsoft.com/developer/msbuild/2003"
@@ -289,7 +303,18 @@ def generate_vcxproj(files: dict[str, list[str]]):
         ET.SubElement(pg, "CharacterSet").text = "Unicode"
 
     ET.SubElement(proj, "Import", Project="$(VCTargetsPath)\\Microsoft.Cpp.props")
-    ET.SubElement(proj, "ImportGroup", Label="ExtensionSettings")
+
+    # NuGet package property imports
+    # Native C++ NuGet packages inject include/lib settings through
+    # build\native\<PackageId>.props. Do not hard-code package include/lib
+    # directories here; keep package id/version centralized in NUGET_PACKAGES.
+    extension_settings = ET.SubElement(proj, "ImportGroup", Label="ExtensionSettings")
+    for pkg_id, pkg_ver in NUGET_PACKAGES:
+        props_path = f"packages\\{pkg_id}.{pkg_ver}\\build\\native\\{pkg_id}.props"
+        ET.SubElement(extension_settings, "Import",
+                      Project=props_path,
+                      Condition=f"Exists('{props_path}')")
+
     ET.SubElement(proj, "ImportGroup", Label="Shared")
 
     # PropertySheets
@@ -310,6 +335,8 @@ def generate_vcxproj(files: dict[str, list[str]]):
         has_fbx = is_x64 and cfg in FBX_CONFIGS
 
         include_paths = list(INCLUDE_PATHS)
+        if is_x64:
+            include_paths.append(PHYSX_INC_DIR)
         if has_fbx:
             include_paths.append(FBX_INC_DIR)
         include_path_value = ";".join(include_paths) + ";$(IncludePath)"
@@ -318,6 +345,7 @@ def generate_vcxproj(files: dict[str, list[str]]):
         library_paths = [rmlui_dir] if is_x64 else []
         if is_x64:
             library_paths.append(FMOD_LIB_DIR)
+            library_paths.append(PHYSX_LIB_DIR_DEBUG if cfg == "Debug" else PHYSX_LIB_DIR_RELEASE)
         if has_fbx:
             library_paths.append(FBX_LIB_DIR_DEBUG if cfg == "Debug" else FBX_LIB_DIR_RELEASE)
         library_path_value = ";".join(library_paths) + ";$(LibraryPath)" if library_paths else "$(LibraryPath)"
@@ -383,6 +411,8 @@ def generate_vcxproj(files: dict[str, list[str]]):
         all_deps = list(ADDITIONAL_DEPENDENCIES)
         if is_x64:
             all_deps.extend(RMLUI_DEPENDENCIES)
+            # PhysX NuGet/vcpkg package does not reliably inject link inputs in this project.
+            all_deps.extend(PHYSX_LIBS)
             # fmod: Debug면 logging 버전(fmodL_vc.lib), 그 외 release 버전(fmod_vc.lib)
             all_deps.append(FMOD_DEBUG_LIB if cfg == "Debug" else FMOD_RELEASE_LIB)
         if has_fbx:

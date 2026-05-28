@@ -429,7 +429,16 @@
     <FxCompile Include="Shaders\Lighting\VSMBlur.hlsl">
       <Filter>Shaders\Lighting</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\Particles\Particle.hlsl">
+    <FxCompile Include="Shaders\Particles\ParticleBeam.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\ParticleMesh.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\ParticleRibbon.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\ParticleSprite.hlsl">
       <Filter>Shaders\Particles</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\PostProcess\Blit.hlsl">
@@ -857,6 +866,9 @@
     <ClCompile Include="Source\Engine\Core\TickFunction.cpp">
       <Filter>Source\Engine\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Property\FDistributionProperty.cpp">
+      <Filter>Source\Engine\Core\Property</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Property\FField.cpp">
       <Filter>Source\Engine\Core\Property</Filter>
     </ClCompile>
@@ -867,9 +879,6 @@
       <Filter>Source\Engine\Core\Property</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\Property\PropertyTypes.cpp">
-      <Filter>Source\Engine\Core\Property</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Core\Property\FDistributionProperty.cpp">
       <Filter>Source\Engine\Core\Property</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\Property\FObjectPropertyBase\FSoftObjectProperty.cpp">
@@ -1805,6 +1814,9 @@
     <ClInclude Include="Source\Engine\Core\Property\FArrayProperty.h">
       <Filter>Source\Engine\Core\Property</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Core\Property\FDistributionProperty.h">
+      <Filter>Source\Engine\Core\Property</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Core\Property\FEnumProperty.h">
       <Filter>Source\Engine\Core\Property</Filter>
     </ClInclude>
@@ -1821,9 +1833,6 @@
       <Filter>Source\Engine\Core\Property</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Core\Property\PropertyTypes.h">
-      <Filter>Source\Engine\Core\Property</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Core\Property\FDistributionProperty.h">
       <Filter>Source\Engine\Core\Property</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Core\Property\FObjectPropertyBase\FClassProperty.h">
@@ -2102,13 +2111,13 @@
     <ClInclude Include="Source\Engine\Particles\Modules\ParticleCollisionModules.h">
       <Filter>Source\Engine\Particles\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Particles\Modules\ParticleKillModules.h">
-      <Filter>Source\Engine\Particles\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Particles\Modules\ParticleCoreModules.h">
       <Filter>Source\Engine\Particles\Modules</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Particles\Modules\ParticleEventModules.h">
+      <Filter>Source\Engine\Particles\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Particles\Modules\ParticleKillModules.h">
       <Filter>Source\Engine\Particles\Modules</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Particles\Modules\ParticleModules.h">
