@@ -54,6 +54,7 @@ SCAN_DIRS = ["Source", "ThirdParty"]
 EXCLUDED_SCAN_DIRS = {
     "ThirdParty\\PhysX",
     "ThirdParty\\PhysXSource",
+    "ThirdParty\\NvCloth",
 }
 
 # Directories to scan for shader files
@@ -135,6 +136,19 @@ PHYSX_LIBS = [
     "PhysXExtensions_static_64.lib",
     "PhysXPvdSDK_static_64.lib",
 ]
+
+# NvCloth 1.1.6 is built from source by Scripts\SetupNvCloth.bat. CUDA is
+# disabled in that pipeline; the staged library includes the CPU and DX11 paths.
+NVCLOTH_INC_DIRS = [
+    "ThirdParty\\NvCloth\\Include",
+    "ThirdParty\\NvCloth\\Include\\PxShared",
+]
+NVCLOTH_LIB_DIR_DEBUG = "ThirdParty\\NvCloth\\Lib\\x64\\Debug"
+NVCLOTH_LIB_DIR_RELEASE = "ThirdParty\\NvCloth\\Lib\\x64\\Release"
+NVCLOTH_DEBUG_BIN = "ThirdParty\\NvCloth\\Bin\\x64\\Debug"
+NVCLOTH_RELEASE_BIN = "ThirdParty\\NvCloth\\Bin\\x64\\Release"
+NVCLOTH_DEBUG_LIB = "NvClothDEBUG_x64.lib"
+NVCLOTH_RELEASE_LIB = "NvCloth_x64.lib"
 # Lua (LuaJIT, 5.1 ABI) — lua51.dll 은 .gitignore 의 **/[Bb]in/* 에 걸려 있어
 # 팀원이 직접 ThirdParty\\lua\\bin\\lua51.dll 위치에 배치해야 한다 (LuaJIT 배포본).
 LUA_LIB_DIR = "ThirdParty\\lua\\lib"
@@ -343,6 +357,7 @@ def generate_vcxproj(files: dict[str, list[str]]):
         include_paths = list(INCLUDE_PATHS)
         if is_x64:
             include_paths.extend(PHYSX_INC_DIRS)
+            include_paths.extend(NVCLOTH_INC_DIRS)
         if has_fbx:
             include_paths.append(FBX_INC_DIR)
         include_path_value = ";".join(include_paths) + ";$(IncludePath)"
@@ -352,6 +367,7 @@ def generate_vcxproj(files: dict[str, list[str]]):
         if is_x64:
             library_paths.append(FMOD_LIB_DIR)
             library_paths.append(PHYSX_LIB_DIR_DEBUG if cfg == "Debug" else PHYSX_LIB_DIR_RELEASE)
+            library_paths.append(NVCLOTH_LIB_DIR_DEBUG if cfg == "Debug" else NVCLOTH_LIB_DIR_RELEASE)
         if has_fbx:
             library_paths.append(FBX_LIB_DIR_DEBUG if cfg == "Debug" else FBX_LIB_DIR_RELEASE)
         library_path_value = ";".join(library_paths) + ";$(LibraryPath)" if library_paths else "$(LibraryPath)"
@@ -418,6 +434,7 @@ def generate_vcxproj(files: dict[str, list[str]]):
         if is_x64:
             all_deps.extend(RMLUI_DEPENDENCIES)
             all_deps.extend(PHYSX_LIBS)
+            all_deps.append(NVCLOTH_DEBUG_LIB if cfg == "Debug" else NVCLOTH_RELEASE_LIB)
             # fmod: Debug면 logging 버전(fmodL_vc.lib), 그 외 release 버전(fmod_vc.lib)
             all_deps.append(FMOD_DEBUG_LIB if cfg == "Debug" else FMOD_RELEASE_LIB)
         if has_fbx:
@@ -431,10 +448,12 @@ def generate_vcxproj(files: dict[str, list[str]]):
             rmlui_dir = RMLUI_DEBUG_DIR if cfg == "Debug" else RMLUI_RELEASE_DIR
             fmod_dll = FMOD_DEBUG_DLL if cfg == "Debug" else FMOD_RELEASE_DLL
             physx_bin = PHYSX_DEBUG_BIN if cfg == "Debug" else PHYSX_RELEASE_BIN
+            nvcloth_bin = NVCLOTH_DEBUG_BIN if cfg == "Debug" else NVCLOTH_RELEASE_BIN
             post_build_lines = [
                 f'xcopy /Y "$(ProjectDir){rmlui_dir}\\*.dll" "$(OutDir)"',
                 f'xcopy /Y "$(ProjectDir){FMOD_LIB_DIR}\\{fmod_dll}" "$(OutDir)"',
                 f'xcopy /Y "$(ProjectDir){physx_bin}\\*.dll" "$(OutDir)"',
+                f'xcopy /Y "$(ProjectDir){nvcloth_bin}\\*.dll" "$(OutDir)"',
                 f'xcopy /Y "$(ProjectDir){LUA_BIN_DIR}\\{LUA_DLL}" "$(OutDir)"',
             ]
             if has_fbx:
