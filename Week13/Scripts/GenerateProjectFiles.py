@@ -51,6 +51,10 @@ CONFIG_PROPS = {
 
 # Directories to recursively scan for source files
 SCAN_DIRS = ["Source", "ThirdParty"]
+EXCLUDED_SCAN_DIRS = {
+    "ThirdParty\\PhysX",
+    "ThirdParty\\PhysXSource",
+}
 
 # Directories to scan for shader files
 SHADER_DIRS = ["Shaders"]
@@ -113,19 +117,17 @@ FBX_DLL            = "libfbxsdk.dll"
 FBX_DEFINE         = "FBXSDK_SHARED"
 FBX_CONFIGS        = {"Debug", "Release", "Game"}  # x64 와 결합되는 구성만 FBX 포함
 
-# PhysX (NuGet, 4.1.229882250)
-# This NuGet package is a vcpkg-exported native package. On some machines the
-# package .props/.targets imports do not inject include/lib paths reliably, so
-# we derive the paths from the centralized package id/version below.
-PHYSX_PACKAGE_ID = "NVIDIA.PhysX"
-PHYSX_PACKAGE_VERSION = "4.1.229882250"
-PHYSX_PACKAGE_DIR = f"packages\\{PHYSX_PACKAGE_ID}.{PHYSX_PACKAGE_VERSION}"
-PHYSX_TRIPLET = "x64-windows"
-PHYSX_INC_DIR = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\include"
-PHYSX_LIB_DIR_DEBUG = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\debug\\lib"
-PHYSX_LIB_DIR_RELEASE = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\lib"
-PHYSX_DEBUG_BIN = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\debug\\bin"
-PHYSX_RELEASE_BIN = f"{PHYSX_PACKAGE_DIR}\\installed\\{PHYSX_TRIPLET}\\bin"
+# PhysX is built from source by Scripts\SetupPhysX.bat and staged under the
+# project ThirdParty tree. The generated engine project must not depend on the
+# old packaged binary layout.
+PHYSX_INC_DIRS = [
+    "ThirdParty\\PhysX\\Include\\physx",
+    "ThirdParty\\PhysX\\Include\\pxshared",
+]
+PHYSX_LIB_DIR_DEBUG = "ThirdParty\\PhysX\\Lib\\x64\\Debug"
+PHYSX_LIB_DIR_RELEASE = "ThirdParty\\PhysX\\Lib\\x64\\Release"
+PHYSX_DEBUG_BIN = "ThirdParty\\PhysX\\Bin\\x64\\Debug"
+PHYSX_RELEASE_BIN = "ThirdParty\\PhysX\\Bin\\x64\\Release"
 PHYSX_LIBS = [
     "PhysX_64.lib",
     "PhysXCommon_64.lib",
@@ -151,7 +153,6 @@ ADDITIONAL_DEPENDENCIES = [
 # NuGet packages (id, version) — restored via packages.config
 NUGET_PACKAGES = [
     ("directxtk_desktop_win10", "2026.5.8.1"),
-    (PHYSX_PACKAGE_ID, PHYSX_PACKAGE_VERSION),
 ]
 
 NS = "http://schemas.microsoft.com/developer/msbuild/2003"
@@ -169,7 +170,12 @@ def scan_files(project_dir: Path) -> dict[str, list[str]]:
         full_dir = project_dir / scan_dir
         if not full_dir.exists():
             continue
-        for dirpath, _, filenames in os.walk(full_dir):
+        for dirpath, dirnames, filenames in os.walk(full_dir):
+            current_dir = Path(dirpath)
+            dirnames[:] = [
+                dirname for dirname in dirnames
+                if str((current_dir / dirname).relative_to(project_dir)).replace("/", "\\") not in EXCLUDED_SCAN_DIRS
+            ]
             for fname in sorted(filenames):
                 full = Path(dirpath) / fname
                 rel = full.relative_to(project_dir)
@@ -336,7 +342,7 @@ def generate_vcxproj(files: dict[str, list[str]]):
 
         include_paths = list(INCLUDE_PATHS)
         if is_x64:
-            include_paths.append(PHYSX_INC_DIR)
+            include_paths.extend(PHYSX_INC_DIRS)
         if has_fbx:
             include_paths.append(FBX_INC_DIR)
         include_path_value = ";".join(include_paths) + ";$(IncludePath)"
@@ -411,7 +417,6 @@ def generate_vcxproj(files: dict[str, list[str]]):
         all_deps = list(ADDITIONAL_DEPENDENCIES)
         if is_x64:
             all_deps.extend(RMLUI_DEPENDENCIES)
-            # PhysX NuGet/vcpkg package does not reliably inject link inputs in this project.
             all_deps.extend(PHYSX_LIBS)
             # fmod: Debug면 logging 버전(fmodL_vc.lib), 그 외 release 버전(fmod_vc.lib)
             all_deps.append(FMOD_DEBUG_LIB if cfg == "Debug" else FMOD_RELEASE_LIB)

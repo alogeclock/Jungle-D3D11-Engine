@@ -88,7 +88,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
     <Import Project="packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.props" Condition="Exists('packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.props')" />
-    <Import Project="packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props" Condition="Exists('packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props')" />
   </ImportGroup>
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -130,15 +129,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\include;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
-    <LibraryPath>ThirdParty\RmlUi\Debug;ThirdParty\fmod\lib;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\debug\lib;ThirdParty\fbx\lib\x64\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;ThirdParty\PhysX\Include\physx;ThirdParty\PhysX\Include\pxshared;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
+    <LibraryPath>ThirdParty\RmlUi\Debug;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Debug;ThirdParty\fbx\lib\x64\debug;$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\include;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
-    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\lib;ThirdParty\fbx\lib\x64\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;ThirdParty\PhysX\Include\physx;ThirdParty\PhysX\Include\pxshared;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
+    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Release;ThirdParty\fbx\lib\x64\release;$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'">
@@ -151,15 +150,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Game|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\include;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
-    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\lib;ThirdParty\fbx\lib\x64\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;ThirdParty\PhysX\Include\physx;ThirdParty\PhysX\Include\pxshared;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
+    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Release;ThirdParty\fbx\lib\x64\release;$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
-    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\include;$(IncludePath)</IncludePath>
-    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;ThirdParty\PhysX\Include\physx;ThirdParty\PhysX\Include\pxshared;$(IncludePath)</IncludePath>
+    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Release;$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -218,7 +217,7 @@
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Debug\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\fmod\lib\fmodL.dll" "$(OutDir)"
-xcopy /Y "$(ProjectDir)packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\debug\bin\*.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)ThirdParty\PhysX\Bin\x64\Debug\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\debug\libfbxsdk.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
@@ -245,7 +244,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\debug\libfbxsdk.dll" "$(OutDir)"</
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\fmod\lib\fmod.dll" "$(OutDir)"
-xcopy /Y "$(ProjectDir)packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\bin\*.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)ThirdParty\PhysX\Bin\x64\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
@@ -291,7 +290,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\fmod\lib\fmod.dll" "$(OutDir)"
-xcopy /Y "$(ProjectDir)packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\bin\*.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)ThirdParty\PhysX\Bin\x64\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
@@ -318,7 +317,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\fmod\lib\fmod.dll" "$(OutDir)"
-xcopy /Y "$(ProjectDir)packages\NVIDIA.PhysX.4.1.229882250\installed\x64-windows\bin\*.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)ThirdParty\PhysX\Bin\x64\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -1822,13 +1821,11 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
   </Target>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets" Condition="Exists('packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets')" />
-    <Import Project="packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets" Condition="Exists('packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets'))" />
-    <Error Condition="!Exists('packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets'))" />
   </Target>
 </Project>
