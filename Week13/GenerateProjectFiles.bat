@@ -13,6 +13,10 @@ call "%ROOT_DIR%Scripts\SetupPhysX.bat"
 set "RESULT=%ERRORLEVEL%"
 if not "%RESULT%"=="0" goto DONE
 
+call "%ROOT_DIR%Scripts\SetupNvCloth.bat"
+set "RESULT=%ERRORLEVEL%"
+if not "%RESULT%"=="0" goto DONE
+
 "%ROOT_DIR%Scripts\python\python.exe" "%ROOT_DIR%Scripts\GenerateProjectFiles.py" %*
 set "RESULT=%ERRORLEVEL%"
 
