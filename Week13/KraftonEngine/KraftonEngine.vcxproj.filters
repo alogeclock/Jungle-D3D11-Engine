@@ -76,6 +76,9 @@
     <Filter Include="Source\Engine\Audio">
       <UniqueIdentifier>{60f7fb11-d80b-bf66-98c3-689d6f8326ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\CameraDepth">
+      <UniqueIdentifier>{f92fcc12-8b16-ecf1-a926-46fce0f4e93a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Engine\CameraShake">
       <UniqueIdentifier>{6402e8a9-52cd-5e58-13d2-0638ee5aff09}</UniqueIdentifier>
     </Filter>
@@ -1624,6 +1627,18 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Audio\AudioManager.h">
       <Filter>Source\Engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\CameraDepth\CameraDOFSettings.h">
+      <Filter>Source\Engine\CameraDepth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\CameraDepth\CameraDepthTypes.h">
+      <Filter>Source\Engine\CameraDepth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\CameraDepth\CameraFocusTypes.h">
+      <Filter>Source\Engine\CameraDepth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\CameraDepth\SceneDepthTypes.h">
+      <Filter>Source\Engine\CameraDepth</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\CameraShake\CameraShakeAsset.h">
       <Filter>Source\Engine\CameraShake</Filter>

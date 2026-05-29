@@ -701,6 +701,10 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Animation\Notify_PlaySound.h" />
     <ClInclude Include="Source\Engine\Asset\AssetPackage.h" />
     <ClInclude Include="Source\Engine\Audio\AudioManager.h" />
+    <ClInclude Include="Source\Engine\CameraDepth\CameraDOFSettings.h" />
+    <ClInclude Include="Source\Engine\CameraDepth\CameraDepthTypes.h" />
+    <ClInclude Include="Source\Engine\CameraDepth\CameraFocusTypes.h" />
+    <ClInclude Include="Source\Engine\CameraDepth\SceneDepthTypes.h" />
     <ClInclude Include="Source\Engine\CameraShake\CameraShakeAsset.h" />
     <ClInclude Include="Source\Engine\CameraShake\CameraShakeManager.h" />
     <ClInclude Include="Source\Engine\Collision\CollisionMath.h" />
