@@ -7,6 +7,52 @@
 #include "Render/Types/MinimalViewInfo.h"
 #include <cmath>
 
+namespace
+{
+	float ResolveFocusDistance(const FCameraViewSettings& Settings, const FVector& CameraLocation)
+	{
+		switch (Settings.FocusSettings.FocusMode)
+		{
+		case ECameraFocusMode::CFM_TrackingActor:
+			if (Settings.FocusSettings.TrackingTarget)
+			{
+				return (Settings.FocusSettings.TrackingTarget->GetActorLocation() - CameraLocation).Length();
+			}
+			return Settings.FocusSettings.ManualFocusDistance;
+		case ECameraFocusMode::CFM_ScreenCenter:
+		case ECameraFocusMode::CFM_Manual:
+			return Settings.FocusSettings.ManualFocusDistance;
+		case ECameraFocusMode::CFM_None:
+		default:
+			return 0.0f;
+		}
+	}
+
+	FCameraDepthViewData ResolveCameraDepthViewData(
+		const FCameraViewSettings& Settings,
+		const FCameraState& CameraState,
+		const FVector& CameraLocation)
+	{
+		FCameraDepthViewData Data;
+		Data.bEnableDOF = Settings.DOFSettings.bEnableDOF
+			&& Settings.FocusSettings.FocusMode != ECameraFocusMode::CFM_None;
+		Data.bUseSceneDepth = Settings.SceneDepthDesc.bUseSceneDepth || Data.bEnableDOF;
+		Data.bLinearizeDepth = Settings.SceneDepthDesc.bLinearizeDepth;
+		Data.DepthSpace = Settings.SceneDepthDesc.DepthSpace;
+		Data.NearPlane = CameraState.NearZ;
+		Data.FarPlane = CameraState.FarZ;
+		Data.FocalLength = Settings.DOFSettings.FocalLength;
+		Data.FocusRange = Settings.DOFSettings.FocusRange;
+		Data.Aperture = Settings.DOFSettings.Aperture;
+		Data.MaxCoCRadius = Settings.DOFSettings.MaxBlurRadius;
+		Data.MaxNearCoCRadius = Settings.DOFSettings.MaxBlurRadius;
+		Data.MaxFarCoCRadius = Settings.DOFSettings.MaxBlurRadius;
+		Data.CurrentFocusDistance = ResolveFocusDistance(Settings, CameraLocation);
+		Data.DebugView = Settings.DOFSettings.DebugView;
+		return Data;
+	}
+}
+
 void UCameraComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -70,7 +116,8 @@ void UCameraComponent::SetCameraState(const FCameraState& NewState)
 void UCameraComponent::GetCameraView(float /*DeltaTime*/, FMinimalViewInfo& OutPOV) const
 {
 	UpdateWorldMatrix();
-	OutPOV.Location    = GetWorldLocation();
+	const FVector CameraLocation = GetWorldLocation();
+	OutPOV.Location    = CameraLocation;
 	OutPOV.Rotation    = GetWorldMatrix().ToRotator();
 	OutPOV.FOV         = CameraState.FOV;
 	OutPOV.AspectRatio = CameraState.AspectRatio;
@@ -78,5 +125,5 @@ void UCameraComponent::GetCameraView(float /*DeltaTime*/, FMinimalViewInfo& OutP
 	OutPOV.NearClip    = CameraState.NearZ;
 	OutPOV.FarClip     = CameraState.FarZ;
 	OutPOV.bIsOrtho    = CameraState.bIsOrthogonal;
+	OutPOV.DepthViewData = ResolveCameraDepthViewData(CameraViewSettings, CameraState, CameraLocation);
 }
-

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Object/ObjectFactory.h"
 #include "Component/SceneComponent.h"
+#include "CameraDepth/SceneDepthTypes.h"
 #include "Math/MathUtils.h"
 #include "Math/Vector.h"
 
@@ -43,6 +44,8 @@ public:
 	void LookAt(const FVector& Target);
 	void SetCameraState(const FCameraState& NewState);
 	const FCameraState& GetCameraState() const { return CameraState; }
+	void SetCameraViewSettings(const FCameraViewSettings& NewSettings) { CameraViewSettings = NewSettings; }
+	const FCameraViewSettings& GetCameraViewSettings() const { return CameraViewSettings; }
 
 	// 카메라 POV 통화 산출 — UE: UCameraComponent::GetCameraView.
 	// CameraManager / RenderPipeline 이 이걸 받아 매트릭스/프러스텀을 빌드한다.
@@ -64,4 +67,6 @@ public:
 private:
 	UPROPERTY(Edit, Category="Camera", DisplayName="Camera State")
 	FCameraState CameraState;
+
+	FCameraViewSettings CameraViewSettings;
 };

@@ -36,11 +36,39 @@ struct FSceneDepthDesc
 };
 
 /** CameraDepth가 Rendering / PostProcess로 전달하는 공용 데이터 */
-struct FCameraDepthViewData
+struct FCameraViewSettings
 {
     FCameraFocusSettings FocusSettings; // Camera Focus 설정
     FCameraDOFSettings   DOFSettings;   // DOF 효과 설정
     FSceneDepthDesc      SceneDepthDesc; // SceneDepth 해석 설정
+};
+
+struct FCameraDepthViewData
+{
+	// SceneDepth 사용 여부
+	bool bUseSceneDepth = true;
+	bool bLinearizeDepth = true;
+
+	bool bEnableDOF = false; // DOF 사용 여부
+	ESceneDepthSpace DepthSpace = ESceneDepthSpace::SDS_LinearDepth; // Depth 값 해석 방식
+
+	float NearPlane = 0.1f;
+	float FarPlane = 10000.0f;
+
+	float FocalLength = 10.0f; // 초점 길이(렌즈에서 센서까지의 거리)
+	float FocusRange = 5.0f;  // 초점으로 인정할 범위
+
+	float Aperture = 4.0f;      // 조리개 값
+	// CoC 최대 반지름, 픽셀 단위
+	float MaxCoCRadius = 8.0f;
+
+	// Near / Far blur 분리용
+	float MaxNearCoCRadius = 8.0f;
+	float MaxFarCoCRadius = 8.0f;
+
+	float CurrentFocusDistance = 10.0f; // 현재 보간된 FocusDistance
+
+	ECameraDepthDebugView DebugView = ECameraDepthDebugView::CDDV_None; // DOF 디버그 표시 모드
 };
 
 /** DOF Blur Amount 계산식 */

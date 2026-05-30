@@ -35,6 +35,7 @@ struct FShowFlags
 	bool bOctree = false;
 	bool bFog = true;
 	bool bFXAA = false;
+	bool bDepthOfField = false;
 	bool bGammaCorrection = true;
 	bool bViewLightCulling = false;
 	bool bVisualize25DCulling = false;
@@ -73,6 +74,9 @@ struct FViewportRenderOptions
 	int32 SceneDepthVisMode = 0;
 	float Exponent = 128.0f;
 	float Range = 1000.0f;
+
+	// DOF 전용 설정 (ECameraDepthDebugView 값)
+	int32 DepthOfFieldDebugView = 0;
 
 	// FXAA 전용 설정
 	float EdgeThreshold = 0.125f;

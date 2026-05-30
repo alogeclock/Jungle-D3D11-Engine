@@ -579,5 +579,15 @@ FMinimalViewInfo APlayerCameraManager::LerpPOV(const FMinimalViewInfo& From, con
 	Result.NearClip = From.NearClip + (To.NearClip - From.NearClip) * Alpha;
 	Result.FarClip = From.FarClip + (To.FarClip - From.FarClip) * Alpha;
 	Result.bIsOrtho = To.bIsOrtho; // 보통 블렌드 중간에 갑자기 바뀌는 경우는 없으므로 To 기준으로.
+	Result.DepthViewData = To.DepthViewData;
+	Result.DepthViewData.NearPlane = From.DepthViewData.NearPlane + (To.DepthViewData.NearPlane - From.DepthViewData.NearPlane) * Alpha;
+	Result.DepthViewData.FarPlane = From.DepthViewData.FarPlane + (To.DepthViewData.FarPlane - From.DepthViewData.FarPlane) * Alpha;
+	Result.DepthViewData.FocalLength = From.DepthViewData.FocalLength + (To.DepthViewData.FocalLength - From.DepthViewData.FocalLength) * Alpha;
+	Result.DepthViewData.FocusRange = From.DepthViewData.FocusRange + (To.DepthViewData.FocusRange - From.DepthViewData.FocusRange) * Alpha;
+	Result.DepthViewData.Aperture = From.DepthViewData.Aperture + (To.DepthViewData.Aperture - From.DepthViewData.Aperture) * Alpha;
+	Result.DepthViewData.MaxCoCRadius = From.DepthViewData.MaxCoCRadius + (To.DepthViewData.MaxCoCRadius - From.DepthViewData.MaxCoCRadius) * Alpha;
+	Result.DepthViewData.MaxNearCoCRadius = From.DepthViewData.MaxNearCoCRadius + (To.DepthViewData.MaxNearCoCRadius - From.DepthViewData.MaxNearCoCRadius) * Alpha;
+	Result.DepthViewData.MaxFarCoCRadius = From.DepthViewData.MaxFarCoCRadius + (To.DepthViewData.MaxFarCoCRadius - From.DepthViewData.MaxFarCoCRadius) * Alpha;
+	Result.DepthViewData.CurrentFocusDistance = From.DepthViewData.CurrentFocusDistance + (To.DepthViewData.CurrentFocusDistance - From.DepthViewData.CurrentFocusDistance) * Alpha;
 	return Result;
 }

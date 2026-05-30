@@ -32,6 +32,7 @@ namespace Key
 	constexpr const char* bOctree = "bOctree";
 	constexpr const char* bFog = "bFog";
 	constexpr const char* bFXAA = "bFXAA";
+	constexpr const char* bDepthOfField = "bDepthOfField";
 	constexpr const char* bGammaCorrection = "bGammaCorrection";
 	constexpr const char* bViewLightCulling = "bViewLightCulling";
 	constexpr const char* bVisualize25DCulling = "bVisualize25DCulling";
@@ -43,6 +44,7 @@ namespace Key
 	constexpr const char* CameraMoveSensitivity = "CameraMoveSensitivity";
 	constexpr const char* CameraRotateSensitivity = "CameraRotateSensitivity";
 	constexpr const char* SceneDepthVisMode = "SceneDepthVisMode";
+	constexpr const char* DepthOfFieldDebugView = "DepthOfFieldDebugView";
 	constexpr const char* Exponent = "Exponent";
 	constexpr const char* Range = "Range";
 	constexpr const char* EdgeThreshold = "EdgeThreshold";
@@ -137,6 +139,7 @@ json::JSON SaveRenderOptions(const FViewportRenderOptions& Opts)
 	Obj[Key::bOctree] = Opts.ShowFlags.bOctree;
 	Obj[Key::bFog] = Opts.ShowFlags.bFog;
 	Obj[Key::bFXAA] = Opts.ShowFlags.bFXAA;
+	Obj[Key::bDepthOfField] = Opts.ShowFlags.bDepthOfField;
 	Obj[Key::bGammaCorrection] = Opts.ShowFlags.bGammaCorrection;
 	Obj[Key::bViewLightCulling] = Opts.ShowFlags.bViewLightCulling;
 	Obj[Key::bVisualize25DCulling] = Opts.ShowFlags.bVisualize25DCulling;
@@ -148,6 +151,7 @@ json::JSON SaveRenderOptions(const FViewportRenderOptions& Opts)
 	Obj[Key::CameraMoveSensitivity] = Opts.CameraMoveSensitivity;
 	Obj[Key::CameraRotateSensitivity] = Opts.CameraRotateSensitivity;
 	Obj[Key::SceneDepthVisMode] = Opts.SceneDepthVisMode;
+	Obj[Key::DepthOfFieldDebugView] = Opts.DepthOfFieldDebugView;
 	Obj[Key::Exponent] = Opts.Exponent;
 	Obj[Key::Range] = Opts.Range;
 	Obj[Key::EdgeThreshold] = Opts.EdgeThreshold;
@@ -187,6 +191,8 @@ void LoadRenderOptions(json::JSON Obj, FViewportRenderOptions& Opts)
 		Opts.ShowFlags.bFog = Obj[Key::bFog].ToBool();
 	if (Obj.hasKey(Key::bFXAA))
 		Opts.ShowFlags.bFXAA = Obj[Key::bFXAA].ToBool();
+	if (Obj.hasKey(Key::bDepthOfField))
+		Opts.ShowFlags.bDepthOfField = Obj[Key::bDepthOfField].ToBool();
 	if (Obj.hasKey(Key::bGammaCorrection))
 		Opts.ShowFlags.bGammaCorrection = Obj[Key::bGammaCorrection].ToBool();
 	if (Obj.hasKey(Key::bViewLightCulling))
@@ -209,6 +215,8 @@ void LoadRenderOptions(json::JSON Obj, FViewportRenderOptions& Opts)
 		Opts.CameraRotateSensitivity = static_cast<float>(Obj[Key::CameraRotateSensitivity].ToFloat());
 	if (Obj.hasKey(Key::SceneDepthVisMode))
 		Opts.SceneDepthVisMode = Obj[Key::SceneDepthVisMode].ToInt();
+	if (Obj.hasKey(Key::DepthOfFieldDebugView))
+		Opts.DepthOfFieldDebugView = Obj[Key::DepthOfFieldDebugView].ToInt();
 	if (Obj.hasKey(Key::Exponent))
 		Opts.Exponent = static_cast<float>(Obj[Key::Exponent].ToFloat());
 	if (Obj.hasKey(Key::Range))

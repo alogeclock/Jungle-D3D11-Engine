@@ -6,6 +6,7 @@
 #include "Render/Types/ViewTypes.h"
 #include "Render/Types/LODContext.h"
 #include "Collision/ConvexVolume.h"
+#include "CameraDepth/SceneDepthTypes.h"
 #include "GameFramework/WorldContext.h"
 #include "GameFramework/CameraTypes.h"
 #include "Render/Types/RenderFeatureSettings.h"
@@ -89,6 +90,7 @@ struct FFrameContext
 	FCameraFadeState CameraFade;
 	FCameraVignetteState CameraVignette;
 	FCameraLetterboxState CameraLetterbox;
+	FCameraDepthViewData CameraDepth;
 
 	// Derived helpers
 	bool IsFixedOrtho() const

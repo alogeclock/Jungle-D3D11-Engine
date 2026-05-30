@@ -1,4 +1,5 @@
 ﻿#include "ViewportToolbar.h"
+#include "CameraDepth/CameraDepthTypes.h"
 #include "Component/GizmoComponent.h"
 #include "Editor/UI/EditorTextureManager.h"
 #include "Render/Pipeline/Renderer.h"
@@ -602,6 +603,51 @@ void FViewportToolbar::RenderShowFlags(const FToolbarRenderState& State)
 		ImGui::Checkbox("Octree", &RenderOptions.ShowFlags.bOctree);
 		ImGui::Checkbox("Fog", &RenderOptions.ShowFlags.bFog);
 		ImGui::Checkbox("FXAA", &RenderOptions.ShowFlags.bFXAA);
+		ImGui::Checkbox("Depth Of Field", &RenderOptions.ShowFlags.bDepthOfField);
+		if (RenderOptions.ShowFlags.bDepthOfField)
+		{
+			struct FDOFDebugViewItem
+			{
+				ECameraDepthDebugView Value;
+				const char* Label;
+			};
+
+			static constexpr FDOFDebugViewItem DebugViews[] = {
+				{ ECameraDepthDebugView::CDDV_None, "Off" },
+				{ ECameraDepthDebugView::CDDV_SceneDepth, "Scene Depth" },
+				{ ECameraDepthDebugView::CDDV_FocusPlane, "Focus Plane" },
+				{ ECameraDepthDebugView::CDDV_BlurAmount, "Blur Amount" },
+			};
+
+			const char* CurrentLabel = DebugViews[0].Label;
+			for (const FDOFDebugViewItem& Item : DebugViews)
+			{
+				if (RenderOptions.DepthOfFieldDebugView == static_cast<int32>(Item.Value))
+				{
+					CurrentLabel = Item.Label;
+					break;
+				}
+			}
+
+			ImGui::SetNextItemWidth(160.0f);
+			if (ImGui::BeginCombo("DOF Debug", CurrentLabel))
+			{
+				for (const FDOFDebugViewItem& Item : DebugViews)
+				{
+					const int32 Value = static_cast<int32>(Item.Value);
+					const bool bSelected = RenderOptions.DepthOfFieldDebugView == Value;
+					if (ImGui::Selectable(Item.Label, bSelected))
+					{
+						RenderOptions.DepthOfFieldDebugView = Value;
+					}
+					if (bSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+		}
 		ImGui::Checkbox("Gamma Correction", &RenderOptions.ShowFlags.bGammaCorrection);
 		ImGui::Checkbox("View Light Culling", &RenderOptions.ShowFlags.bViewLightCulling);
 		ImGui::Checkbox("Visualize 2.5D Culling", &RenderOptions.ShowFlags.bVisualize25DCulling);
