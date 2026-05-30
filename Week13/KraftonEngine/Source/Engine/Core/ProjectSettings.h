@@ -3,7 +3,7 @@
 #include "Core/CoreTypes.h"
 #include "Core/Singleton.h"
 #include "Platform/Paths.h"
-#include "Physics/IPhysicsScene.h"  // EPhysicsBackend
+#include "Physics/Runtime/PhysicsSceneInterface.h"  // EPhysicsBackend
 
 /*
 	FProjectSettings — 프로젝트 전역 설정 (per-viewport가 아닌 전체 공유).

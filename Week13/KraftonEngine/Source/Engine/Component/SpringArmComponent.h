@@ -68,7 +68,7 @@ public:
 	UPROPERTY(Edit, Category="SpringArm", DisplayName="Do Collision Test")
 	bool bDoCollisionTest = false;
 	UPROPERTY(Type=Enum, Enum=StaticEnum_ECollisionChannel())
-	ECollisionChannel ProbeChannel = ECollisionChannel::WorldStatic;
+	ECollisionChannel ProbeChannel = ECollisionChannel::ECC_WorldStatic;
 	UPROPERTY(Edit, Category="SpringArm", DisplayName="Probe Size", Min=0.0, Max=100.0, Speed=0.01)
 	float ProbeSize = 0.12f;               // hit 지점에서 ProbeSize 만큼 안쪽에 정지
 

@@ -10,6 +10,7 @@
 #include "Render/Types/VertexTypes.h"
 #include "Render/Proxy/DirtyFlag.h"
 
+class FPhysicsBodyInstance;
 class FPrimitiveSceneProxy;
 class FScene;
 class FMeshBuffer;
@@ -250,7 +251,7 @@ protected:
 	UPROPERTY(Edit, Category="Collision", DisplayName="Object Type",
 	          Type=Enum,
 	          Enum=StaticEnum_ECollisionChannel())
-	ECollisionChannel ObjectType = ECollisionChannel::WorldStatic;
+	ECollisionChannel ObjectType = ECollisionChannel::ECC_WorldStatic;
 
 	UPROPERTY(Edit, Category="Collision", DisplayName="Response Container",
 	          Type=Struct,
@@ -260,4 +261,7 @@ protected:
 
 	FOctree* OctreeNode = nullptr;
 	bool bInOctreeOverflow = false;
+
+	// 이 컴포넌트에 대응하는 Physics Body 인스턴스 (CreateBody/DestroyBody 관리)
+	FPhysicsBodyInstance* PhysicsBodyInstance = nullptr;
 };
