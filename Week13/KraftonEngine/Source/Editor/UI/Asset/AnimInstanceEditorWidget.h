@@ -3,7 +3,7 @@
 #include "AssetEditorWidget.h"
 #include "Editor/Subsystem/EditorAnimationAssetLibrary.h"
 
-#include <imgui.h>
+#include "ImGui/imgui.h"
 
 class UAnimInstanceAsset;
 enum class EAnimGraphParameterType : uint8;
