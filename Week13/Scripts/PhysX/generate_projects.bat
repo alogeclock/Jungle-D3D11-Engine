@@ -11,6 +11,12 @@ SET PM_PXSHARED_PATH=%PHYSX_ROOT_DIR%/../pxshared
 SET PM_TARGA_PATH=%PHYSX_ROOT_DIR%/../externals/targa
 SET PM_PATHS=%PM_CMAKEMODULES_PATH%;%PM_TARGA_PATH%
 
+if NOT "%PM_CMAKE_PATH%" == "" (
+    if exist "%PM_CMAKE_PATH%/bin/cmake.exe" (
+        GOTO CMAKE_EXTERNAL
+    )
+)
+
 if exist "%PHYSX_ROOT_DIR%/../externals/cmake/x64/bin/cmake.exe" (
     SET "PM_CMAKE_PATH=%PHYSX_ROOT_DIR%/../externals/cmake/x64"
     GOTO CMAKE_EXTERNAL    
