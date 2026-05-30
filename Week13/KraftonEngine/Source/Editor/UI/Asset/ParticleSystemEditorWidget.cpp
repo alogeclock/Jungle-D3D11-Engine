@@ -860,7 +860,7 @@ void FParticleSystemEditorWidget::Open(UObject* Object)
 	FloorBoxComponent->AttachToComponent(FloorActor->GetRootComponent());
 	FloorBoxComponent->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
 	FloorBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	FloorBoxComponent->SetCollisionObjectType(ECollisionChannel::WorldStatic);
+	FloorBoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	FloorActor->SetActorLocation(ParticlePreviewFloorLocation);
 	FloorActor->SetActorScale(ParticlePreviewFloorScale);
 

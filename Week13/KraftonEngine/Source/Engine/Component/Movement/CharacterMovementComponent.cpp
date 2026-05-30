@@ -430,7 +430,7 @@ bool UCharacterMovementComponent::FindFloorAtLocation(const FVector& CapsuleCent
 		FVector::DownVector,
 		TraceDistance,
 		OutFloorHit,
-		ECollisionChannel::WorldStatic,
+		ECollisionChannel::ECC_WorldStatic,
 		GetOwner());
 }
 
