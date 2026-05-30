@@ -140,9 +140,9 @@ private:
 public:
 	IPhysicsScene* GetPhysicsScene() const { return PhysicsScene.get(); }
 
-	// Physics raycast convenience — delegates to IPhysicsScene::Raycast
+	// Physics raycast convenience — IPhysicsScene::Raycast에 위임 (Start+End 변환).
 	bool PhysicsRaycast(const FVector& Start, const FVector& Dir, float MaxDist, FHitResult& OutHit,
-		ECollisionChannel TraceChannel = ECollisionChannel::WorldStatic,
+		ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic,
 		const AActor* IgnoreActor = nullptr) const;
 
 	// --- Game flow ---

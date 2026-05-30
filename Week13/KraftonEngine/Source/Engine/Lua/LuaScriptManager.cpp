@@ -51,32 +51,47 @@ namespace
 	{
 		if (ChannelName == "WorldStatic")
 		{
-			OutChannel = ECollisionChannel::WorldStatic;
+			OutChannel = ECollisionChannel::ECC_WorldStatic;
 			return true;
 		}
 		if (ChannelName == "WorldDynamic")
 		{
-			OutChannel = ECollisionChannel::WorldDynamic;
+			OutChannel = ECollisionChannel::ECC_WorldDynamic;
 			return true;
 		}
 		if (ChannelName == "Pawn")
 		{
-			OutChannel = ECollisionChannel::Pawn;
+			OutChannel = ECollisionChannel::ECC_Pawn;
 			return true;
 		}
-		if (ChannelName == "Projectile")
+		if (ChannelName == "PhysicsBody" || ChannelName == "Projectile")
 		{
-			OutChannel = ECollisionChannel::Projectile;
+			OutChannel = ECollisionChannel::ECC_PhysicsBody;
 			return true;
 		}
-		if (ChannelName == "Trigger")
+		if (ChannelName == "Visibility" || ChannelName == "Trigger")
 		{
-			OutChannel = ECollisionChannel::Trigger;
+			OutChannel = ECollisionChannel::ECC_Visibility;
 			return true;
 		}
-		if (ChannelName == "FootIK")
+		if (ChannelName == "Camera" || ChannelName == "FootIK")
 		{
-			OutChannel = ECollisionChannel::FootIK;
+			OutChannel = ECollisionChannel::ECC_Camera;
+			return true;
+		}
+		if (ChannelName == "ECC_Projectile" || ChannelName == "Projectile")
+		{
+			OutChannel = ECollisionChannel::ECC_Projectile;
+			return true;
+		}
+		if (ChannelName == "ECC_Trigger" || ChannelName == "Trigger")
+		{
+			OutChannel = ECollisionChannel::ECC_Trigger;
+			return true;
+		}
+		if (ChannelName == "ECC_FootIK" || ChannelName == "FootIK")
+		{
+			OutChannel = ECollisionChannel::ECC_FootIK;
 			return true;
 		}
 		return false;
@@ -85,7 +100,7 @@ namespace
 	bool ReadPhysicsRaycastOptions(sol::variadic_args Args, const AActor*& OutIgnoreActor, ECollisionChannel& OutTraceChannel)
 	{
 		OutIgnoreActor = nullptr;
-		OutTraceChannel = ECollisionChannel::WorldStatic;
+		OutTraceChannel = ECollisionChannel::ECC_WorldStatic;
 
 		for (sol::object Arg : Args)
 		{
@@ -1203,7 +1218,7 @@ void FLuaScriptManager::RegisterActorBindings(sol::state& Lua)
 		}
 
 		const AActor* Ignored = nullptr;
-		ECollisionChannel TraceChannel = ECollisionChannel::WorldStatic;
+		ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic;
 		if (!ReadPhysicsRaycastOptions(Args, Ignored, TraceChannel))
 		{
 			return sol::make_object(State, sol::nil);

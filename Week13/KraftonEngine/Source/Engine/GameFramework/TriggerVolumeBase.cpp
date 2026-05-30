@@ -14,7 +14,7 @@ void ATriggerVolumeBase::InitDefaultComponents(const FVector& Extent)
 	TriggerBox->SetBoxExtent(Extent);
 	// Overlap-only — 물리적으로 충돌하지 않고 진입만 감지.
 	TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	TriggerBox->SetCollisionObjectType(ECollisionChannel::Trigger);
+	TriggerBox->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
 	TriggerBox->SetCollisionResponseToAllChannels(ECollisionResponse::Overlap);
 	TriggerBox->SetGenerateOverlapEvents(true);
 }
@@ -48,7 +48,7 @@ void ATriggerVolumeBase::BeginPlay()
 	if (TriggerBox)
 	{
 		TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		TriggerBox->SetCollisionObjectType(ECollisionChannel::Trigger);
+		TriggerBox->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
 		TriggerBox->SetCollisionResponseToAllChannels(ECollisionResponse::Overlap);
 		TriggerBox->SetGenerateOverlapEvents(true);
 		TriggerBox->SetSimulatePhysics(false);

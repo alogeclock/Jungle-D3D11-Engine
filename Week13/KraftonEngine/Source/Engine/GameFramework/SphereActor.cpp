@@ -8,7 +8,7 @@ void ASphereActor::InitDefaultComponents()
 	SetRootComponent(SphereComponent);
 	SphereComponent->SetSphereRadius(1.0f);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	SphereComponent->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	SphereComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 }
 
 void ASphereActor::PostDuplicate()

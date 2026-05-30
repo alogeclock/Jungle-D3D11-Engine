@@ -98,5 +98,5 @@ class UParticleModuleCollision : public UParticleModule
     // (WorldStatic = 지형/건물, WorldDynamic = 움직이는 오브젝트, Projectile 등)
     UPROPERTY(Edit, Category = "Collision", DisplayName = "Trace Channel", Type = Enum,
               Enum = StaticEnum_ECollisionChannel())
-    ECollisionChannel TraceChannel = ECollisionChannel::WorldStatic;
+    ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic;
 };
