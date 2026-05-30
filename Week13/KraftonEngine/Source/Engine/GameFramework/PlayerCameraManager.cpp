@@ -588,6 +588,7 @@ FMinimalViewInfo APlayerCameraManager::LerpPOV(const FMinimalViewInfo& From, con
 	Result.DepthViewData.MaxCoCRadius = From.DepthViewData.MaxCoCRadius + (To.DepthViewData.MaxCoCRadius - From.DepthViewData.MaxCoCRadius) * Alpha;
 	Result.DepthViewData.MaxNearCoCRadius = From.DepthViewData.MaxNearCoCRadius + (To.DepthViewData.MaxNearCoCRadius - From.DepthViewData.MaxNearCoCRadius) * Alpha;
 	Result.DepthViewData.MaxFarCoCRadius = From.DepthViewData.MaxFarCoCRadius + (To.DepthViewData.MaxFarCoCRadius - From.DepthViewData.MaxFarCoCRadius) * Alpha;
+	Result.DepthViewData.NearCoCScale = From.DepthViewData.NearCoCScale + (To.DepthViewData.NearCoCScale - From.DepthViewData.NearCoCScale) * Alpha;
 	Result.DepthViewData.CurrentFocusDistance = From.DepthViewData.CurrentFocusDistance + (To.DepthViewData.CurrentFocusDistance - From.DepthViewData.CurrentFocusDistance) * Alpha;
 	return Result;
 }

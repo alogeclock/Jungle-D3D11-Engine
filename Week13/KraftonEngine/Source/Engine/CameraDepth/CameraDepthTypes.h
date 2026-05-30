@@ -9,6 +9,8 @@
 #pragma once
 
 #include "Core/CoreTypes.h"
+#include "Object/ObjectMacros.h"
+#include "CameraDepthTypes.generated.h"
 
 class AActor;
 class UCameraComponent;
@@ -18,6 +20,7 @@ struct FCameraFocusSettings;
 struct FSceneDepthDesc;
 
 /** CameraDepth 디버그 표시 모드 */
+UENUM()
 enum class ECameraDepthDebugView : uint8
 {
     CDDV_None,       // 디버그 표시 없음

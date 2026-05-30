@@ -68,5 +68,6 @@ private:
 	UPROPERTY(Edit, Category="Camera", DisplayName="Camera State")
 	FCameraState CameraState;
 
+	UPROPERTY(Edit, Category="Camera", DisplayName="Depth Of Field")
 	FCameraViewSettings CameraViewSettings;
 };

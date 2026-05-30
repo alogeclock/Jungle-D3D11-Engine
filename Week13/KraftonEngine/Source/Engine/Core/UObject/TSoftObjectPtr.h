@@ -20,7 +20,12 @@ public:
 	// Returns nullptr (not a bad pointer) if the resolved object isn't a T.
 	T* Get() const
 	{
-		UObject* Resolved = FSoftObjectPtr::Get();
+		if (!CachedObject.IsValid() && !Path.IsNull())
+		{
+			CachedObject = Path.ResolveObject(T::StaticClass());
+		}
+
+		UObject* Resolved = CachedObject.Get();
 		return (Resolved && Resolved->IsA<T>()) ? static_cast<T*>(Resolved) : nullptr;
 	}
 

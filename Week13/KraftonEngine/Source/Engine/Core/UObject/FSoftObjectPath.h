@@ -2,6 +2,7 @@
 #include "Core/ClassTypes.h"
 
 class FArchive;
+class UClass;
 
 struct FSoftObjectPath
 {
@@ -36,6 +37,7 @@ public:
 	}
 
 	UObject* ResolveObject() const;
+	UObject* ResolveObject(const UClass* ExpectedClass) const;
 };
 
 FArchive& operator<<(FArchive& Ar, FSoftObjectPath& Path);

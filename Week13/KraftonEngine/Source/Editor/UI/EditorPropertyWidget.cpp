@@ -29,6 +29,8 @@
 #include "Core/Property/PropertyTypes.h"
 #include "Core/UObject/TSoftObjectPtr.h"
 #include "Core/ClassTypes.h"
+#include "GameFramework/AActor.h"
+#include "GameFramework/World.h"
 #include "Math/FloatCurve.h"
 #include "Lua/LuaScriptManager.h"
 #include "Resource/ResourceManager.h"
@@ -81,6 +83,30 @@ namespace
 	constexpr float LevelDetailsHeaderTitleOffsetX = 12.0f;
 	constexpr float LevelDetailsHeaderTitleOffsetY = 7.0f;
 	constexpr float LevelDetailsHeaderSpacing = 34.0f;
+
+	FString GetActorSoftObjectPath(const AActor* Actor)
+	{
+		return Actor ? Actor->GetFName().ToString() : FString();
+	}
+
+	FString GetActorPickerDisplayName(const AActor* Actor)
+	{
+		if (!Actor)
+		{
+			return "None";
+		}
+
+		FString Name = Actor->GetFName().ToString();
+		if (Name.empty())
+		{
+			Name = Actor->GetClass()->GetName();
+		}
+
+		Name += " (";
+		Name += Actor->GetClass()->GetName();
+		Name += ")";
+		return Name;
+	}
 
 	inline const char* PropLabel(const FProperty& Prop)
 	{
@@ -1634,7 +1660,70 @@ bool FEditorPropertyWidget::RenderPropertyWidget(
 	{
 		const FSoftObjectProperty& SoftObjectProp = static_cast<const FSoftObjectProperty&>(Prop);
 
-		if (SoftObjectProp.PropertyClass == UStaticMesh::StaticClass())
+		if (SoftObjectProp.PropertyClass == AActor::StaticClass())
+		{
+			auto* Val = static_cast<TSoftObjectPtr<AActor>*>(ValuePtr);
+			AActor* CurrentActor = Val->Get();
+			const FString& CurrentPath = Val->GetPath().ToString();
+			FString Preview = CurrentActor ? GetActorPickerDisplayName(CurrentActor) : FString("None");
+			if (!CurrentActor && !CurrentPath.empty() && CurrentPath != "None")
+			{
+				Preview = "Missing: " + CurrentPath;
+			}
+
+			ImGui::SetNextItemWidth(-1);
+			if (ImGui::BeginCombo("##Actor", Preview.c_str()))
+			{
+				const bool bPathIsNone = CurrentPath.empty() || CurrentPath == "None";
+				const bool bSelectedNone = (CurrentActor == nullptr && bPathIsNone);
+				if (ImGui::Selectable("None", bSelectedNone))
+				{
+					Val->Reset();
+					bChanged = true;
+				}
+				if (bSelectedNone)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+
+				UWorld* World = EditorEngine ? EditorEngine->GetWorld() : nullptr;
+				if (World)
+				{
+					for (AActor* Candidate : World->GetActors())
+					{
+						if (!Candidate)
+						{
+							continue;
+						}
+
+						const FString CandidatePath = GetActorSoftObjectPath(Candidate);
+						if (CandidatePath.empty())
+						{
+							continue;
+						}
+
+						FString Label = GetActorPickerDisplayName(Candidate);
+						Label += "##";
+						Label += CandidatePath;
+
+						const bool bSelected = (CurrentActor == Candidate) || (CurrentPath == CandidatePath);
+						if (ImGui::Selectable(Label.c_str(), bSelected))
+						{
+							Val->SetPath(CandidatePath);
+							Val->SetCache(Candidate);
+							bChanged = true;
+						}
+						if (bSelected)
+						{
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+		}
+		else if (SoftObjectProp.PropertyClass == UStaticMesh::StaticClass())
 		{
 			auto* Val = static_cast<TSoftObjectPtr<UStaticMesh>*>(ValuePtr);
 			const FString& CurrentPath = Val->GetPath().ToString();

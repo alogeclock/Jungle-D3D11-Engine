@@ -53,6 +53,10 @@ void FShaderManager::Initialize(ID3D11Device* InDevice)
 	GetOrCreate(EShaderPath::ParticleRibbon, StartupError);
 	GetOrCreate(EShaderPath::HeightFog, StartupError);
 	GetOrCreate(EShaderPath::GammaCorrection, StartupError);
+	GetOrCreate(EShaderPath::DepthOfFieldCoC, StartupError);
+	GetOrCreate(EShaderPath::DepthOfFieldPrefilter, StartupError);
+	GetOrCreate(EShaderPath::DepthOfFieldBlur, StartupError);
+	GetOrCreate(EShaderPath::DepthOfFieldComposite, StartupError);
 	GetOrCreate(EShaderPath::ShadowDepth, StartupError);
 	GetOrCreate(EShaderPath::ShadowMapVis, StartupError);
 	GetOrCreate(EShaderPath::CameraFade, StartupError);

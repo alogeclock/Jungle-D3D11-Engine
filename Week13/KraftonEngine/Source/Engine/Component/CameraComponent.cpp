@@ -47,6 +47,7 @@ namespace
 		Data.MaxCoCRadius = Settings.DOFSettings.MaxBlurRadius;
 		Data.MaxNearCoCRadius = Settings.DOFSettings.MaxBlurRadius;
 		Data.MaxFarCoCRadius = Settings.DOFSettings.MaxBlurRadius;
+		Data.NearCoCScale = Settings.DOFSettings.NearCoCScale;
 		Data.CurrentFocusDistance = ResolveFocusDistance(Settings, CameraLocation);
 		Data.DebugView = Settings.DOFSettings.DebugView;
 		return Data;

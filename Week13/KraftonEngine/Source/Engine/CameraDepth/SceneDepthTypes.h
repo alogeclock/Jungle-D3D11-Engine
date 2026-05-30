@@ -14,6 +14,7 @@
 #include "CameraDOFSettings.h"
 #include "Core/CoreTypes.h"
 #include "Math/MathUtils.h"
+#include "SceneDepthTypes.generated.h"
 
 /** SceneDepth 값 해석 방식 */
 enum class ESceneDepthSpace : uint8
@@ -36,10 +37,17 @@ struct FSceneDepthDesc
 };
 
 /** CameraDepth가 Rendering / PostProcess로 전달하는 공용 데이터 */
+USTRUCT()
 struct FCameraViewSettings
 {
+    GENERATED_BODY(FCameraViewSettings)
+
+    UPROPERTY(Edit, Category="Depth Of Field", DisplayName="Focus")
     FCameraFocusSettings FocusSettings; // Camera Focus 설정
+
+    UPROPERTY(Edit, Category="Depth Of Field", DisplayName="DOF")
     FCameraDOFSettings   DOFSettings;   // DOF 효과 설정
+
     FSceneDepthDesc      SceneDepthDesc; // SceneDepth 해석 설정
 };
 
@@ -65,6 +73,7 @@ struct FCameraDepthViewData
 	// Near / Far blur 분리용
 	float MaxNearCoCRadius = 8.0f;
 	float MaxFarCoCRadius = 8.0f;
+	float NearCoCScale = 0.5f;
 
 	float CurrentFocusDistance = 10.0f; // 현재 보간된 FocusDistance
 
