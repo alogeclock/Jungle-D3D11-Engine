@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Physics/IPhysicsScene.h"
+#include "Physics/Runtime/PhysicsSceneInterface.h"
 
 #include <algorithm>
 
@@ -11,7 +11,7 @@
  * week13new의 FPhysicsScene 역할을 엔진의 Native / PhysX 백엔드가
  * 공통으로 사용할 수 있도록 정리한 공용 기반이다.
  */
-class FPhysicsScene : public IPhysicsScene
+class FPhysicsScene : public IPhysicsSceneInterface
 {
 public:
     virtual ~FPhysicsScene() override = default;

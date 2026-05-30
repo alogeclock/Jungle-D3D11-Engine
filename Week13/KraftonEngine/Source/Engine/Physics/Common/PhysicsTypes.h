@@ -22,7 +22,6 @@ struct FRagdollBuildDesc;
 class FPhysicsBodyInstance;
 class FPhysicsConstraintInstance;
 class FPhysicsScene;
-class IPhysicsScene;
 class IPhysicsSceneInterface;
 
 /** Physics 전체에서 공통으로 사용하는 Shape 분류 */

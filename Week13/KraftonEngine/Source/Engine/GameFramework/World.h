@@ -15,7 +15,7 @@
 #include <Collision/Octree.h>
 #include <Collision/SpatialPartition.h>
 #include "GameFramework/WorldSettings.h"
-#include "Physics/IPhysicsScene.h"
+#include "Physics/Runtime/PhysicsSceneInterface.h"
 #include "World.generated.h"
 #include <memory>
 
@@ -131,16 +131,16 @@ private:
 	FTickManager TickManager;
 
 	FSpatialPartition Partition;
-	std::unique_ptr<IPhysicsScene> PhysicsScene;
+	std::unique_ptr<IPhysicsSceneInterface> PhysicsScene;
 
 	// Game flow — Editor 월드에서는 nullptr로 유지된다.
 	AGameModeBase* GameMode = nullptr;
 	UClass* GameModeClass = nullptr;  // GameEngine 등이 BeginPlay 전에 세팅
 
 public:
-	IPhysicsScene* GetPhysicsScene() const { return PhysicsScene.get(); }
+	IPhysicsSceneInterface* GetPhysicsScene() const { return PhysicsScene.get(); }
 
-	// Physics raycast convenience — IPhysicsScene::Raycast에 위임 (Start+End 변환).
+	// Physics raycast convenience — IPhysicsSceneInterface::Raycast에 위임 (Start+End 변환).
 	bool PhysicsRaycast(const FVector& Start, const FVector& Dir, float MaxDist, FHitResult& OutHit,
 		ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic,
 		const AActor* IgnoreActor = nullptr) const;

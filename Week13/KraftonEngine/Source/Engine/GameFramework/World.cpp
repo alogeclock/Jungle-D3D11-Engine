@@ -4,8 +4,8 @@
 #include "Component/StaticMeshComponent.h"
 #include "Engine/Component/CameraComponent.h"
 #include "Render/Types/LODContext.h"
-#include "Physics/NativePhysicsScene.h"
-#include "Physics/PhysXPhysicsScene.h"
+#include "Physics/Backends/NativePhysicsScene.h"
+#include "Physics/Backends/PhysXPhysicsScene.h"
 #include "Core/ProjectSettings.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/GameStateBase.h"
@@ -239,7 +239,8 @@ bool UWorld::PhysicsRaycast(const FVector& Start, const FVector& Dir, float MaxD
 	if (PhysicsScene)
 	{
 		FHitResult PhysicsHit;
-		if (PhysicsScene->Raycast(Start, NormalizedDir, MaxDist, PhysicsHit, TraceChannel, IgnoreActor)
+		const FVector RayEnd = Start + NormalizedDir * MaxDist;
+		if (PhysicsScene->Raycast(Start, RayEnd, PhysicsHit, TraceChannel, IgnoreActor)
 			&& PhysicsHit.Distance >= 0.0f
 			&& PhysicsHit.Distance <= MaxDist)
 		{
@@ -363,7 +364,7 @@ void UWorld::InitWorld()
 		PhysicsScene = std::make_unique<FPhysXPhysicsScene>();
 	else
 		PhysicsScene = std::make_unique<FNativePhysicsScene>();
-	PhysicsScene->Initialize(this);
+	PhysicsScene->InitializeScene(this);
 }
 
 void UWorld::BeginPlay()
@@ -414,7 +415,10 @@ void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 	if (bHasBegunPlay && PhysicsScene)
 	{
 		SCOPE_STAT_CAT("PhysicsScene", "1_WorldTick");
-		PhysicsScene->Tick(DeltaTime);
+		FPhysicsStepInfo StepInfo;
+		StepInfo.DeltaTime = DeltaTime;
+		PhysicsScene->Simulate(StepInfo);
+		PhysicsScene->FetchResults(true);
 	}
 
 	TickManager.Tick(this, DeltaTime, TickType);
@@ -460,7 +464,7 @@ void UWorld::EndPlay()
 	// 물리 시스템 정리 — 액터/컴포넌트가 아직 살아있는 동안 해제
 	if (PhysicsScene)
 	{
-		PhysicsScene->Shutdown();
+		PhysicsScene->ReleaseScene();
 	}
 
 	// Clear spatial partition while actors/components are still alive.
