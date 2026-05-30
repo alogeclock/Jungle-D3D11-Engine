@@ -30,12 +30,12 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -100,12 +100,12 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -170,12 +170,12 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -242,12 +242,12 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -316,12 +316,12 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -390,12 +390,12 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -460,12 +460,12 @@
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -572,12 +572,12 @@
                 "Scale" : [3.000000, 3.000000, 3.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, -90.000000, 0.000000],
               "Simulate Physics" : false,
@@ -671,12 +671,12 @@
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
@@ -725,12 +725,12 @@
                                             "Scale" : [1.000000, 1.000000, 1.000000]
                                           },
                                           "Response Container" : {
-                                            "ECC_Camera" : 2,
-                                            "ECC_Pawn" : 0,
-                                            "ECC_PhysicsBody" : 2,
-                                            "ECC_Visibility" : 2,
-                                            "ECC_WorldDynamic" : 2,
-                                            "ECC_WorldStatic" : 0
+                                            "Camera" : 2,
+                                            "Pawn" : 0,
+                                            "PhysicsBody" : 2,
+                                            "Visibility" : 2,
+                                            "WorldDynamic" : 2,
+                                            "WorldStatic" : 0
                                           },
                                           "Rotation" : [0.000000, 0.000000, 0.000000],
                                           "Simulate Physics" : false,
@@ -760,12 +760,12 @@
                                         "Scale" : [1.000000, 1.000000, 1.000000]
                                       },
                                       "Response Container" : {
-                                        "ECC_Camera" : 2,
-                                        "ECC_Pawn" : 0,
-                                        "ECC_PhysicsBody" : 2,
-                                        "ECC_Visibility" : 2,
-                                        "ECC_WorldDynamic" : 2,
-                                        "ECC_WorldStatic" : 0
+                                        "Camera" : 2,
+                                        "Pawn" : 0,
+                                        "PhysicsBody" : 2,
+                                        "Visibility" : 2,
+                                        "WorldDynamic" : 2,
+                                        "WorldStatic" : 0
                                       },
                                       "Rotation" : [0.000000, 0.000000, 0.000000],
                                       "Simulate Physics" : false,
@@ -795,12 +795,12 @@
                                     "Scale" : [1.000000, 1.000000, 1.000000]
                                   },
                                   "Response Container" : {
-                                    "ECC_Camera" : 2,
-                                    "ECC_Pawn" : 0,
-                                    "ECC_PhysicsBody" : 2,
-                                    "ECC_Visibility" : 2,
-                                    "ECC_WorldDynamic" : 2,
-                                    "ECC_WorldStatic" : 0
+                                    "Camera" : 2,
+                                    "Pawn" : 0,
+                                    "PhysicsBody" : 2,
+                                    "Visibility" : 2,
+                                    "WorldDynamic" : 2,
+                                    "WorldStatic" : 0
                                   },
                                   "Rotation" : [0.000000, 0.000000, 0.000000],
                                   "Simulate Physics" : false,
@@ -830,12 +830,12 @@
                                 "Scale" : [1.000000, 1.000000, 1.000000]
                               },
                               "Response Container" : {
-                                "ECC_Camera" : 2,
-                                "ECC_Pawn" : 0,
-                                "ECC_PhysicsBody" : 2,
-                                "ECC_Visibility" : 2,
-                                "ECC_WorldDynamic" : 2,
-                                "ECC_WorldStatic" : 0
+                                "Camera" : 2,
+                                "Pawn" : 0,
+                                "PhysicsBody" : 2,
+                                "Visibility" : 2,
+                                "WorldDynamic" : 2,
+                                "WorldStatic" : 0
                               },
                               "Rotation" : [0.000000, 0.000000, 0.000000],
                               "Simulate Physics" : false,
@@ -865,12 +865,12 @@
                             "Scale" : [1.000000, 1.000000, 1.000000]
                           },
                           "Response Container" : {
-                            "ECC_Camera" : 2,
-                            "ECC_Pawn" : 0,
-                            "ECC_PhysicsBody" : 2,
-                            "ECC_Visibility" : 2,
-                            "ECC_WorldDynamic" : 2,
-                            "ECC_WorldStatic" : 0
+                            "Camera" : 2,
+                            "Pawn" : 0,
+                            "PhysicsBody" : 2,
+                            "Visibility" : 2,
+                            "WorldDynamic" : 2,
+                            "WorldStatic" : 0
                           },
                           "Rotation" : [0.000000, 0.000000, 0.000000],
                           "Simulate Physics" : false,
@@ -900,12 +900,12 @@
                         "Scale" : [1.000000, 1.000000, 1.000000]
                       },
                       "Response Container" : {
-                        "ECC_Camera" : 2,
-                        "ECC_Pawn" : 0,
-                        "ECC_PhysicsBody" : 2,
-                        "ECC_Visibility" : 2,
-                        "ECC_WorldDynamic" : 2,
-                        "ECC_WorldStatic" : 0
+                        "Camera" : 2,
+                        "Pawn" : 0,
+                        "PhysicsBody" : 2,
+                        "Visibility" : 2,
+                        "WorldDynamic" : 2,
+                        "WorldStatic" : 0
                       },
                       "Rotation" : [0.000000, 0.000000, 0.000000],
                       "Simulate Physics" : false,
@@ -935,12 +935,12 @@
                     "Scale" : [1.000000, 1.000000, 0.900000]
                   },
                   "Response Container" : {
-                    "ECC_Camera" : 2,
-                    "ECC_Pawn" : 0,
-                    "ECC_PhysicsBody" : 2,
-                    "ECC_Visibility" : 2,
-                    "ECC_WorldDynamic" : 2,
-                    "ECC_WorldStatic" : 0
+                    "Camera" : 2,
+                    "Pawn" : 0,
+                    "PhysicsBody" : 2,
+                    "Visibility" : 2,
+                    "WorldDynamic" : 2,
+                    "WorldStatic" : 0
                   },
                   "Rotation" : [0.000000, 0.000000, 0.000000],
                   "Simulate Physics" : false,
@@ -970,12 +970,12 @@
                 "Scale" : [1.000000, 1.000000, 0.800000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 0,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 0
+                "Camera" : 2,
+                "Pawn" : 0,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 0
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Simulate Physics" : false,
@@ -1005,12 +1005,12 @@
                 "Scale" : [10.000000, 1.000000, 0.400000]
               },
               "Response Container" : {
-                "ECC_Camera" : 0,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 0,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [-28.800003, 0.000000, 0.000000],
               "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
@@ -1040,12 +1040,12 @@
             "Scale" : [1.000000, 19.873184, 1.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 0,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 0
+            "Camera" : 2,
+            "Pawn" : 0,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 0
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1086,12 +1086,12 @@
                 "Scale" : [300.000000, 300.000000, 1.000000]
               },
               "Response Container" : {
-                "ECC_Camera" : 2,
-                "ECC_Pawn" : 2,
-                "ECC_PhysicsBody" : 2,
-                "ECC_Visibility" : 2,
-                "ECC_WorldDynamic" : 2,
-                "ECC_WorldStatic" : 2
+                "Camera" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
               "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
@@ -1121,12 +1121,12 @@
             "Scale" : [100.000000, 100.000000, 1.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1167,12 +1167,12 @@
             "Scale" : [15.000000, 15.000000, 10.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1213,12 +1213,12 @@
             "Scale" : [10.000000, 20.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1259,12 +1259,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, -180.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1305,12 +1305,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, -90.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1351,12 +1351,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1397,12 +1397,12 @@
             "Scale" : [20.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1443,12 +1443,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, -90.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1489,12 +1489,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, -180.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1535,12 +1535,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 90.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1581,12 +1581,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1627,12 +1627,12 @@
             "Scale" : [10.000000, 10.000000, 5.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 90.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1672,12 +1672,12 @@
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1717,12 +1717,12 @@
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
@@ -1762,12 +1762,12 @@
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
-            "ECC_Camera" : 2,
-            "ECC_Pawn" : 2,
-            "ECC_PhysicsBody" : 2,
-            "ECC_Visibility" : 2,
-            "ECC_WorldDynamic" : 2,
-            "ECC_WorldStatic" : 2
+            "Camera" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,

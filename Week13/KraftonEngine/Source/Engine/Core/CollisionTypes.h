@@ -49,6 +49,16 @@ inline UEnum* StaticEnum_ECollisionChannel()
 	return &Enum;
 }
 
+inline FString GetCollisionChannelPropertyName(const char* EnumName)
+{
+	FString PropertyName = EnumName ? EnumName : "";
+	if (PropertyName.rfind("ECC_", 0) == 0)
+	{
+		PropertyName.erase(0, 4);
+	}
+	return PropertyName;
+}
+
 enum class ECollisionResponse : uint8
 {
 	Ignore = 0,
@@ -150,7 +160,7 @@ struct FCollisionResponseContainer
 			for (int32 i = 0; i < NumActiveCollisionChannels; ++i)
 			{
 				Struct.AddProperty(new FEnumProperty(
-					ChannelEnum->GetNameByIndex(static_cast<uint32>(i)),
+					GetCollisionChannelPropertyName(ChannelEnum->GetNameByIndex(static_cast<uint32>(i))),
 					"",
 					CPF_Edit,
 					static_cast<uint32>(offsetof(FCollisionResponseContainer, Responses) + sizeof(ECollisionResponse) * i),
