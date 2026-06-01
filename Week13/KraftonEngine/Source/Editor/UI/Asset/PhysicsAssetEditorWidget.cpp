@@ -3313,7 +3313,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 											const FVector ConstraintOrigin = (PFrame.Location + CFrame.Location) * 0.5f;
 
 											const FVector ToOrigin = ConstraintOrigin - Ray.Origin;
-											const float RayT = FVector::Dot(ToOrigin, Ray.Direction);
+											const float RayT = ToOrigin.Dot(Ray.Direction);
 											if (RayT <= 0.0f) continue;
 
 											const FVector ClosestOnRay = Ray.Origin + Ray.Direction * RayT;
