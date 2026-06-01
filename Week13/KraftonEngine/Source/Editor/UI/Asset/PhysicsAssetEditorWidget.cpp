@@ -1747,87 +1747,6 @@ namespace
 			return MeshWorldMatrix;
 		}
 
-		FVector RotateAroundAxis(const FVector& Vector, const FVector& Axis, float Radians)
-		{
-			FVector SafeAxis = Axis;
-			if (SafeAxis.IsNearlyZero())
-			{
-				return Vector;
-			}
-
-			SafeAxis.Normalize();
-			const float CosTheta = std::cos(Radians);
-			const float SinTheta = std::sin(Radians);
-			return Vector * CosTheta
-				+ SafeAxis.Cross(Vector) * SinTheta
-				+ SafeAxis * (SafeAxis.Dot(Vector) * (1.0f - CosTheta));
-		}
-
-		void DrawDebugArc(UWorld* World, const FVector& Origin, const FVector& AxisA, const FVector& AxisB, float Radius, float MinDegrees, float MaxDegrees, const FColor& Color, float Duration)
-		{
-			const int32 SegmentCount = 20;
-			FVector PreviousPoint = Origin + AxisA * Radius;
-			bool bHasPrevious = false;
-			for (int32 SegmentIndex = 0; SegmentIndex <= SegmentCount; ++SegmentIndex)
-			{
-				const float Alpha = static_cast<float>(SegmentIndex) / static_cast<float>(SegmentCount);
-				const float AngleDegrees = MinDegrees + (MaxDegrees - MinDegrees) * Alpha;
-				const float AngleRadians = AngleDegrees * Pi / 180.0f;
-				const FVector Point = Origin + (AxisA * std::cos(AngleRadians) + AxisB * std::sin(AngleRadians)) * Radius;
-				if (bHasPrevious)
-				{
-					DrawDebugLine(World, PreviousPoint, Point, Color, Duration);
-				}
-				PreviousPoint = Point;
-				bHasPrevious = true;
-			}
-		}
-
-		void DrawConstraintLimitDebug(UWorld* World, const FTransform& Frame, const FPhysicsConstraintSetup& Constraint, bool bSelected, float Duration, float VisualScale)
-		{
-			if (!World)
-			{
-				return;
-			}
-
-			const FVector Origin = Frame.Location;
-			const FRotator Rotation = Frame.GetRotator();
-			FVector Forward = Rotation.GetForwardVector();
-			FVector Right = Rotation.GetRightVector();
-			FVector Up = Rotation.GetUpVector();
-			Forward.Normalize();
-			Right.Normalize();
-			Up.Normalize();
-
-			const float AxisLength = VisualScale * (bSelected ? 1.35f : 1.0f);
-			const float LimitRadius = VisualScale * (bSelected ? 1.15f : 0.9f);
-			DrawDebugLine(World, Origin, Origin + Forward * AxisLength, FColor(255, 64, 64), Duration);
-			DrawDebugLine(World, Origin, Origin + Right * AxisLength, FColor(64, 255, 64), Duration);
-			DrawDebugLine(World, Origin, Origin + Up * AxisLength, FColor(64, 160, 255), Duration);
-
-			if (Constraint.Swing1Motion != EPhysicsConstraintMotionMode::Locked)
-			{
-				const float Swing1Limit = Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Free ? 90.0f : Constraint.SwingLimitY;
-				DrawDebugArc(World, Origin, Forward, Right, LimitRadius, -Swing1Limit, Swing1Limit, FColor(72, 255, 96), Duration);
-				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Up, Swing1Limit * Pi / 180.0f) * LimitRadius, FColor(72, 255, 96), Duration);
-				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Up, -Swing1Limit * Pi / 180.0f) * LimitRadius, FColor(72, 255, 96), Duration);
-			}
-
-			if (Constraint.Swing2Motion != EPhysicsConstraintMotionMode::Locked)
-			{
-				const float Swing2Limit = Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Free ? 90.0f : Constraint.SwingLimitZ;
-				DrawDebugArc(World, Origin, Forward, Up, LimitRadius, -Swing2Limit, Swing2Limit, FColor(255, 96, 96), Duration);
-				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Right, Swing2Limit * Pi / 180.0f) * LimitRadius, FColor(255, 96, 96), Duration);
-				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Right, -Swing2Limit * Pi / 180.0f) * LimitRadius, FColor(255, 96, 96), Duration);
-			}
-
-			if (Constraint.TwistMotion != EPhysicsConstraintMotionMode::Locked)
-			{
-				const float TwistMin = Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free ? -180.0f : Constraint.TwistLimitMin;
-				const float TwistMax = Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free ? 180.0f : Constraint.TwistLimitMax;
-				DrawDebugArc(World, Origin, Right, Up, LimitRadius * 0.45f, TwistMin, TwistMax, FColor(255, 220, 96), Duration);
-			}
-		}
 
 	FVector ComputeConvexBoundsExtent(const FPhysicsConvexShapeSetup& Shape)
 	{
@@ -2783,17 +2702,26 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 		const FMatrix ChildBoneMatrix = BuildBoneWorldMatrix(PreviewMeshComponent, &BoneGlobalMatrices, ChildBoneIndex);
 		const FTransform ParentFrame(Constraint.ParentLocalFrame.ToMatrix() * ParentBoneMatrix);
 		const FTransform ChildFrame(Constraint.ChildLocalFrame.ToMatrix() * ChildBoneMatrix);
-		const FVector MidPoint = (ParentFrame.Location + ChildFrame.Location) * 0.5f;
 		const bool bSelected = ConstraintIndex == SelectedConstraintIndex;
 
-		DrawDebugLine(PreviewWorld, ParentFrame.Location, ChildFrame.Location, bSelected ? FColor(255, 210, 96) : FColor(140, 160, 180), ConstraintDebugDuration);
-		DrawDebugPoint(PreviewWorld, ParentFrame.Location, bSelected ? 0.6f : 0.35f, FColor(96, 180, 255), ConstraintDebugDuration);
-		DrawDebugPoint(PreviewWorld, ChildFrame.Location, bSelected ? 0.6f : 0.35f, FColor(96, 255, 180), ConstraintDebugDuration);
+		const FRotator Rotation = ParentFrame.GetRotator();
+		const FVector AxisX = Rotation.GetForwardVector();
+		const FVector AxisY = Rotation.GetRightVector();
+		const FVector AxisZ = Rotation.GetUpVector();
+		const FVector Origin = (ParentFrame.Location + ChildFrame.Location) * 0.5f;
 
-		FTransform DebugFrame = ParentFrame;
-		DebugFrame.Location = MidPoint;
-		const float ConstraintVisualScale = (std::max)(ConstraintAxisLength, FVector::Distance(ParentFrame.Location, ChildFrame.Location) * 0.35f);
-		DrawConstraintLimitDebug(PreviewWorld, DebugFrame, Constraint, bSelected, ConstraintDebugDuration, ConstraintVisualScale);
+		if (bSelected)
+		{
+			DrawDebugLine(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 140, 51), ConstraintDebugDuration);
+			DrawDebugLine(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(140, 255, 89), ConstraintDebugDuration);
+			DrawDebugLine(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(115, 191, 255), ConstraintDebugDuration);
+		}
+		else
+		{
+			DrawDebugLine(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 31, 31), ConstraintDebugDuration);
+			DrawDebugLine(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(31, 255, 31), ConstraintDebugDuration);
+			DrawDebugLine(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(46, 115, 255), ConstraintDebugDuration);
+		}
 	}
 }
 
