@@ -3588,7 +3588,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PhysicsPanelContentPadding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, PhysicsPanelItemSpacing);
 		ImGui::BeginChild("PhysicsSkeletonTree", ImVec2(0.0f, SkeletonHeight), true, SkeletonTreeFlags);
-		DrawPhysicsPanelHeader("Body Tree");
+		DrawPhysicsPanelHeader("Skeletal Tree");
 		ImGui::SetNextItemWidth(-1.0f);
 		ImGui::InputTextWithHint("##PhysicsBoneSearch", "Search Skeleton Tree...", BoneSearchBuffer, sizeof(BoneSearchBuffer));
 		ImGui::Separator();
