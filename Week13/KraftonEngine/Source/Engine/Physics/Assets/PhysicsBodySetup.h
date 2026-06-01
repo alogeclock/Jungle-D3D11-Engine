@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Object/Object.h"
 #include "Object/FName.h"
 #include "PhysicsShapeSetup.h"
+#include "PhysicsBodySetup.generated.h"
 
 /**
  * @file PhysicsBodySetup.h
@@ -9,9 +11,12 @@
  */
 
 /** Bone 또는 Component에 대응되는 Physics Body 설정 */
+UCLASS()
 class UPhysicsBodySetup : public UObject
 {
 public:
+    GENERATED_BODY(UPhysicsBodySetup)
+
     UPhysicsBodySetup() = default;
     virtual ~UPhysicsBodySetup() = default;
 
@@ -51,6 +56,8 @@ public:
         Desc.Shapes         = ShapeSetup.BuildShapeDescs();
         return Desc;
     }
+
+    void Serialize(FArchive& Ar) override;
 
 private:
     FName                       TargetBoneName = FName::None;
