@@ -2,6 +2,7 @@
 
 #include "Object/FName.h"
 #include "Physics/Common/PhysicsDescTypes.h"
+#include "Serialization/Archive.h"
 
 /**
  * @file PhysicsShapeSetup.h
@@ -29,6 +30,25 @@ struct FPhysicsSphereShapeSetup
     }
 };
 
+inline FArchive& operator<<(FArchive& Ar, FPhysicsSphereShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.Radius;
+
+    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
+    Ar << bHasPhysicalMaterial;
+    if (Ar.IsLoading())
+    {
+        ShapeSetup.PhysicalMaterial = nullptr;
+    }
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
+
 /** Box Collision Shape 설정 */
 struct FPhysicsBoxShapeSetup
 {
@@ -49,6 +69,25 @@ struct FPhysicsBoxShapeSetup
         return Desc;
     }
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsBoxShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.HalfExtent;
+
+    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
+    Ar << bHasPhysicalMaterial;
+    if (Ar.IsLoading())
+    {
+        ShapeSetup.PhysicalMaterial = nullptr;
+    }
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
 
 /** Capsule Collision Shape 설정 */
 struct FPhysicsCapsuleShapeSetup
@@ -72,6 +111,26 @@ struct FPhysicsCapsuleShapeSetup
     }
 };
 
+inline FArchive& operator<<(FArchive& Ar, FPhysicsCapsuleShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.Radius;
+    Ar << ShapeSetup.Length;
+
+    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
+    Ar << bHasPhysicalMaterial;
+    if (Ar.IsLoading())
+    {
+        ShapeSetup.PhysicalMaterial = nullptr;
+    }
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
+
 /** Convex Collision Shape 설정 */
 struct FPhysicsConvexShapeSetup
 {
@@ -92,6 +151,25 @@ struct FPhysicsConvexShapeSetup
         return Desc;
     }
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsConvexShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.VertexData;
+
+    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
+    Ar << bHasPhysicalMaterial;
+    if (Ar.IsLoading())
+    {
+        ShapeSetup.PhysicalMaterial = nullptr;
+    }
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
 
 /** 하나의 Body에 포함되는 Collision Shape 묶음 */
 struct FPhysicsAggregateShapeSetup
@@ -130,3 +208,12 @@ struct FPhysicsAggregateShapeSetup
                ConvexShapeSetups.empty();
     }
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsAggregateShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.SphereShapeSetups;
+    Ar << ShapeSetup.BoxShapeSetups;
+    Ar << ShapeSetup.CapsuleShapeSetups;
+    Ar << ShapeSetup.ConvexShapeSetups;
+    return Ar;
+}
