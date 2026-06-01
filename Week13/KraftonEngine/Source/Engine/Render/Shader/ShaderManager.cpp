@@ -77,6 +77,15 @@ void FShaderManager::Initialize(ID3D11Device* InDevice)
 	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Skeletal", "PS", EUberLitDefines::Gouraud), EUberLitDefines::Gouraud, StartupError);
 	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Skeletal", "PS", EUberLitDefines::Lambert), EUberLitDefines::Lambert, StartupError);
 	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Skeletal", "PS", EUberLitDefines::Phong),   EUberLitDefines::Phong,   StartupError);
+	// UberLit MRT 변형 (NormalRTV + CullingHeatmapRTV가 바인딩된 경우)
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Static", "PS", EUberLitDefines::UnlitMRT),   EUberLitDefines::UnlitMRT,   StartupError);
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Static", "PS", EUberLitDefines::GouraudMRT), EUberLitDefines::GouraudMRT, StartupError);
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Static", "PS", EUberLitDefines::LambertMRT), EUberLitDefines::LambertMRT, StartupError);
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Static", "PS", EUberLitDefines::PhongMRT),   EUberLitDefines::PhongMRT,   StartupError);
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Skeletal", "PS", EUberLitDefines::UnlitMRT),   EUberLitDefines::UnlitMRT,   StartupError);
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Skeletal", "PS", EUberLitDefines::GouraudMRT), EUberLitDefines::GouraudMRT, StartupError);
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Skeletal", "PS", EUberLitDefines::LambertMRT), EUberLitDefines::LambertMRT, StartupError);
+	PreCompile(FShaderKey(EShaderPath::UberLit, "VS_Skeletal", "PS", EUberLitDefines::PhongMRT),   EUberLitDefines::PhongMRT,   StartupError);
 
 	// include 역매핑 구축
 	RebuildIncludeDependents();

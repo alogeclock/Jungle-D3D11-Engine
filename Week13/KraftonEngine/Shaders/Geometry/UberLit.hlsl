@@ -170,14 +170,21 @@ UberVS_Output VS(VS_Input_PNCTT input)
 }
 
 // =============================================================================
-// MRT 출력 구조체
+// 출력 구조체 (USE_MRT 시에만 Normal/Culling 슬롯 포함)
 // =============================================================================
+#if defined(USE_MRT)
 struct UberPS_Output
 {
-    float4 Color : SV_TARGET0; // 최종 색상 (기존 프레임 버퍼)
-    float4 Normal : SV_TARGET1; // World Normal (GBuffer Normal RT)
-    float4 Culling : SV_TARGET2; // Tile Culling Heatmap
+    float4 Color   : SV_TARGET0;
+    float4 Normal  : SV_TARGET1;
+    float4 Culling : SV_TARGET2;
 };
+#else
+struct UberPS_Output
+{
+    float4 Color : SV_TARGET0;
+};
+#endif
 
 // =============================================================================
 // Pixel Shader
@@ -194,8 +201,10 @@ UberPS_Output PS(UberVS_Output input)
         float3 finalColor = ComputeBoneWeightColor(input.boneWeightHeat);
 
         output.Color = float4(ApplyWireframe(finalColor), 1.0f);
-        output.Normal = float4(N, 1.0f);
+#if defined(USE_MRT)
+        output.Normal  = float4(N, 1.0f);
         output.Culling = float4(0, 0, 0, 0);
+#endif
         return output;
     }
 
@@ -224,7 +233,9 @@ UberPS_Output PS(UberVS_Output input)
 #if defined(LIGHTING_MODEL_UNLIT) && LIGHTING_MODEL_UNLIT
     // Unlit: 라이팅 없이 Albedo만 출력
     float3 finalColor = ApplyWireframe(baseColor.rgb);
+#if defined(USE_MRT)
     output.Culling = float4(0, 0, 0, 0);
+#endif
 
 #else
     float3 diffuse = float3(0, 0, 0);
@@ -244,15 +255,17 @@ UberPS_Output PS(UberVS_Output input)
 
 #endif
 
+#if defined(USE_MRT)
     output.Culling = ComputeCullingHeatmap(input.position, input.worldPos);
-    // Diffuse에만 albedo를 곱하고, Specular는 빛 색상 그대로 더한다
-    // (비금속 표면: specular 반사 = 빛의 색, 물체 색이 아님)
+#endif
     float3 finalColor = baseColor.rgb * diffuse + specular + g_DefaultEmissive.rgb;
     finalColor = ApplyWireframe(finalColor);
 #endif
 
     output.Color = float4(finalColor, baseColor.a);
-    output.Normal = float4(N, 1.0f); // alpha=1: 유효한 노말 마킹
+#if defined(USE_MRT)
+    output.Normal = float4(N, 1.0f);
+#endif
     
     return output;
 }

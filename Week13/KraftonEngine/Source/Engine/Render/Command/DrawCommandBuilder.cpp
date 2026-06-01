@@ -81,6 +81,7 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame)
 {
 	DrawCommandList.Reset();
 	CollectViewMode = Frame.RenderOptions.ViewMode;
+	bCollectMRT = (Frame.NormalRTV != nullptr);
 	CollectCameraPosition = Frame.CameraPosition;
 	CollectCameraForward = Frame.CameraForward;
 
@@ -113,6 +114,18 @@ FShader* FDrawCommandBuilder::SelectEffectiveShader(FShader* ProxyShader, EViewM
 
 	const FString VSEntryName = Proxy.GetVertexShaderEntryName();
 
+	if (bCollectMRT)
+	{
+		switch (ViewMode)
+		{
+		case EViewMode::Unlit:        return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::UnlitMRT));
+		case EViewMode::Lit_Gouraud:  return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::GouraudMRT));
+		case EViewMode::Lit_Lambert:  return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::LambertMRT));
+		case EViewMode::Lit_Phong:    return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::PhongMRT));
+		case EViewMode::LightCulling: return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::PhongMRT));
+		default:                      return ProxyShader;
+		}
+	}
 	switch (ViewMode)
 	{
 	case EViewMode::Unlit:        return FShaderManager::Get().GetOrCreate(FShaderKey(EShaderPath::UberLit, VSEntryName, "PS", EUberLitDefines::Unlit));
