@@ -4,7 +4,7 @@
 
 #include <PxPhysicsAPI.h>
 
-// PhysX scene read lock wrapper.
+// PhysX scene read lock wrapper. 
 // PxSceneReadLock 대신 nullptr 방어와 파일/라인 전달을 한 곳에 모은다.
 class FPhysXSceneReadLock
 {

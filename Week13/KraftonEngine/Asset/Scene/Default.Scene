@@ -31,8 +31,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -101,8 +104,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -171,8 +177,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -243,8 +252,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -317,8 +329,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -391,8 +406,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -461,8 +479,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -573,8 +594,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -614,6 +638,19 @@
                     "Is Orthogonal" : false,
                     "Near Z" : 0.100000,
                     "Ortho Width" : 10.000000
+                  },
+                  "Depth Of Field" : {
+                    "DOF" : {
+                      "Aperture F-Stop" : 4.000000,
+                      "Enable DOF" : false,
+                      "Focal Length" : 10.000000,
+                      "Focus Range" : 5.000000,
+                      "Max Blur Radius" : 8.000000,
+                      "Near CoC Scale" : 0.500000
+                    },
+                    "Focus" : {
+                      "Manual Focus Distance" : 10.000000
+                    }
                   },
                   "RelativeTransform" : {
                     "Location" : [0.000000, 0.000000, 0.000000],
@@ -672,8 +709,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -726,8 +766,11 @@
                                           },
                                           "Response Container" : {
                                             "Camera" : 2,
+                                            "FootIK" : 2,
                                             "Pawn" : 0,
                                             "PhysicsBody" : 2,
+                                            "Projectile" : 2,
+                                            "Trigger" : 2,
                                             "Visibility" : 2,
                                             "WorldDynamic" : 2,
                                             "WorldStatic" : 0
@@ -761,8 +804,11 @@
                                       },
                                       "Response Container" : {
                                         "Camera" : 2,
+                                        "FootIK" : 2,
                                         "Pawn" : 0,
                                         "PhysicsBody" : 2,
+                                        "Projectile" : 2,
+                                        "Trigger" : 2,
                                         "Visibility" : 2,
                                         "WorldDynamic" : 2,
                                         "WorldStatic" : 0
@@ -796,8 +842,11 @@
                                   },
                                   "Response Container" : {
                                     "Camera" : 2,
+                                    "FootIK" : 2,
                                     "Pawn" : 0,
                                     "PhysicsBody" : 2,
+                                    "Projectile" : 2,
+                                    "Trigger" : 2,
                                     "Visibility" : 2,
                                     "WorldDynamic" : 2,
                                     "WorldStatic" : 0
@@ -831,8 +880,11 @@
                               },
                               "Response Container" : {
                                 "Camera" : 2,
+                                "FootIK" : 2,
                                 "Pawn" : 0,
                                 "PhysicsBody" : 2,
+                                "Projectile" : 2,
+                                "Trigger" : 2,
                                 "Visibility" : 2,
                                 "WorldDynamic" : 2,
                                 "WorldStatic" : 0
@@ -866,8 +918,11 @@
                           },
                           "Response Container" : {
                             "Camera" : 2,
+                            "FootIK" : 2,
                             "Pawn" : 0,
                             "PhysicsBody" : 2,
+                            "Projectile" : 2,
+                            "Trigger" : 2,
                             "Visibility" : 2,
                             "WorldDynamic" : 2,
                             "WorldStatic" : 0
@@ -901,8 +956,11 @@
                       },
                       "Response Container" : {
                         "Camera" : 2,
+                        "FootIK" : 2,
                         "Pawn" : 0,
                         "PhysicsBody" : 2,
+                        "Projectile" : 2,
+                        "Trigger" : 2,
                         "Visibility" : 2,
                         "WorldDynamic" : 2,
                         "WorldStatic" : 0
@@ -936,8 +994,11 @@
                   },
                   "Response Container" : {
                     "Camera" : 2,
+                    "FootIK" : 2,
                     "Pawn" : 0,
                     "PhysicsBody" : 2,
+                    "Projectile" : 2,
+                    "Trigger" : 2,
                     "Visibility" : 2,
                     "WorldDynamic" : 2,
                     "WorldStatic" : 0
@@ -971,8 +1032,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 0,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 0
@@ -1006,8 +1070,11 @@
               },
               "Response Container" : {
                 "Camera" : 0,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -1041,8 +1108,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 0,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 0
@@ -1087,8 +1157,11 @@
               },
               "Response Container" : {
                 "Camera" : 2,
+                "FootIK" : 2,
                 "Pawn" : 2,
                 "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
                 "Visibility" : 2,
                 "WorldDynamic" : 2,
                 "WorldStatic" : 2
@@ -1122,8 +1195,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1168,8 +1244,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1214,8 +1293,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1260,8 +1342,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1306,8 +1391,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1352,8 +1440,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1398,8 +1489,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1444,8 +1538,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1490,8 +1587,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1536,8 +1636,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1582,8 +1685,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1628,8 +1734,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1673,8 +1782,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1718,8 +1830,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1763,8 +1878,11 @@
           },
           "Response Container" : {
             "Camera" : 2,
+            "FootIK" : 2,
             "Pawn" : 2,
             "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
             "Visibility" : 2,
             "WorldDynamic" : 2,
             "WorldStatic" : 2
@@ -1772,6 +1890,61 @@
           "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
           "Template" : "Asset/ParticleSystems/Missile.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_0",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 2,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_01_New.mat"
+            }, {
+              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
+            }],
+          "Object Type" : 3,
+          "RelativeTransform" : {
+            "Location" : [19.481632, 4.766359, 7.606903],
+            "Scale" : [5.000000, 5.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
           "bEditorOnly" : false,
           "bHiddenInComponentTree" : false,
           "bIsActive" : true,
@@ -1786,9 +1959,9 @@
   "PerspectiveCamera" : {
     "FOV" : 1.047198,
     "FarClip" : 1000.000000,
-    "Location" : [1.563377, -16.562860, 15.883238],
+    "Location" : [-3.680404, -4.077588, 16.771675],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 28.272402, -625.192017]
+    "Rotation" : [0.000000, 21.522503, -690.894226]
   },
   "Version" : 2,
   "WorldSettings" : {
