@@ -588,6 +588,7 @@
                   "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
                 }],
               "Object Type" : 0,
+              "Physics Asset" : "",
               "RelativeTransform" : {
                 "Location" : [0.000000, 0.000000, -3.000000],
                 "Scale" : [3.000000, 3.000000, 3.000000]
@@ -1915,7 +1916,7 @@
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
-          "Collision Enabled" : 2,
+          "Collision Enabled" : 3,
           "Enable Two Bone IK" : true,
           "Generate Overlap Events" : false,
           "Is Visible" : true,
@@ -1926,6 +1927,7 @@
               "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
             }],
           "Object Type" : 3,
+          "Physics Asset" : "",
           "RelativeTransform" : {
             "Location" : [19.481632, 4.766359, 7.606903],
             "Scale" : [5.000000, 5.000000, 5.000000]

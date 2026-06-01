@@ -300,6 +300,7 @@ bool UWorld::PhysicsRaycast(const FVector& Start, const FVector& Dir, float MaxD
 		for (UPrimitiveComponent* Primitive : Actor->GetPrimitiveComponents())
 		{
 			if (!Primitive
+				|| !Primitive->IsA<UStaticMeshComponent>()
 				|| !Primitive->IsQueryCollisionEnabled()
 				|| Primitive->GetCollisionResponseToChannel(TraceChannel) != ECollisionResponse::Block)
 			{
