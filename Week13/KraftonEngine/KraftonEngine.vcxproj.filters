@@ -1148,6 +1148,9 @@
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Backends\PhysXSceneThreading.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Assets\PhysicsAsset.cpp">
       <Filter>Source\Engine\Physics\Assets</Filter>
     </ClCompile>
@@ -2230,6 +2233,9 @@
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXSceneThreading.h">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAsset.h">

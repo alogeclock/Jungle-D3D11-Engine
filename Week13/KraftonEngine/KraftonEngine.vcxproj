@@ -536,6 +536,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Backends\PhysXSceneThreading.cpp" />
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp" />
     <ClCompile Include="Source\Engine\Platform\DirectoryWatcher.cpp" />
     <ClCompile Include="Source\Engine\Platform\Paths.cpp" />
@@ -895,6 +896,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Particles\Runtime\ParticleRuntimeTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h" />
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXSceneThreading.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAsset.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAssetManager.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsBodySetup.h" />

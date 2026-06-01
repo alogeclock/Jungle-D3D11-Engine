@@ -2,6 +2,9 @@
 
 #include "Physics/Runtime/PhysicsScene.h"
 #include "Core/CoreTypes.h"
+#include <atomic>
+#include <functional>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 
@@ -104,4 +107,14 @@ private:
 
     void RegisterComponentInternal(UPrimitiveComponent* Comp);
     void UnregisterComponentInternal(UPrimitiveComponent* Comp);
+
+    void WaitForSimulation();
+    void ExecuteOrDeferSceneWrite(std::function<void()> Command);
+    void FlushDeferredSceneCommands();
+    void SyncEngineTransformsToPhysX();
+    void SyncPhysXTransformsToEngine();
+
+    std::atomic_bool bSimulationInFlight{ false };
+    std::mutex DeferredSceneCommandMutex;
+    std::vector<std::function<void()>> DeferredSceneCommands;
 };
