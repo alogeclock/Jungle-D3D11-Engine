@@ -5,6 +5,12 @@
 
 class UPhysicsAsset;
 
+struct FPhysicsAssetListItem
+{
+    FString DisplayName;
+    FString FullPath;
+};
+
 class FPhysicsAssetManager : public TSingleton<FPhysicsAssetManager>
 {
     friend class TSingleton<FPhysicsAssetManager>;
@@ -15,6 +21,10 @@ public:
 
     bool Save(UPhysicsAsset* Asset);
 
+    void ScanPhysicsAssets();
+    const TArray<FPhysicsAssetListItem>& GetAvailablePhysicsAssetFiles() const { return AvailablePhysicsAssetFiles; }
+
 private:
     TMap<FString, UPhysicsAsset*> LoadedAssets;
+    TArray<FPhysicsAssetListItem> AvailablePhysicsAssetFiles;
 };

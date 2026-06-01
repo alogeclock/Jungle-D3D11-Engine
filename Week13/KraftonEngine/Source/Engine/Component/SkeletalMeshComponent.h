@@ -3,6 +3,7 @@
 #include "SkinnedMeshComponent.h"
 #include "Animation/AnimInstanceAsset.h"
 #include "Animation/AnimInstance.h"
+#include "Physics/Assets/PhysicsAsset.h"
 #include "SkeletalMeshComponent.generated.h"
 
 // SkeletalMesh 전용 render proxy만 제공하는 얇은 wrapper.
@@ -80,4 +81,6 @@ private:
 
 	UAnimInstance* AnimInstance = nullptr;
 
+	UPROPERTY(Edit, Category="Physics", DisplayName="Physics Asset", Type=SoftObject, Class=UPhysicsAsset)
+	TSoftObjectPtr<UPhysicsAsset> PhysicsAssetRef;
 };

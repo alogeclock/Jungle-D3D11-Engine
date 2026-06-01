@@ -6,6 +6,11 @@
 #include "Platform/Paths.h"
 #include "Serialization/WindowsArchive.h"
 
+#include <algorithm>
+#include <cwctype>
+#include <filesystem>
+#include <utility>
+
 UPhysicsAsset* FPhysicsAssetManager::Load(const FString& Path)
 {
     const FString NormalizedPath = FPaths::MakeProjectRelative(Path);
@@ -87,4 +92,61 @@ bool FPhysicsAssetManager::Save(UPhysicsAsset* Asset)
     Asset->Serialize(Ar);
 
     return Ar.IsValid();
+}
+
+void FPhysicsAssetManager::ScanPhysicsAssets()
+{
+    AvailablePhysicsAssetFiles.clear();
+
+    const std::filesystem::path ProjectRoot(FPaths::RootDir());
+    const std::filesystem::path AssetRoots[] = {
+        ProjectRoot / L"Asset",
+        ProjectRoot / L"Content",
+        ProjectRoot / L"Data",
+    };
+
+    for (const std::filesystem::path& AssetRoot : AssetRoots)
+    {
+        if (!std::filesystem::exists(AssetRoot))
+        {
+            continue;
+        }
+
+        for (const auto& Entry : std::filesystem::recursive_directory_iterator(AssetRoot))
+        {
+            if (!Entry.is_regular_file())
+            {
+                continue;
+            }
+
+            const std::filesystem::path& Path = Entry.path();
+            std::wstring Extension = Path.extension().wstring();
+            std::transform(Extension.begin(), Extension.end(), Extension.begin(), ::towlower);
+            if (Extension != L".uasset")
+            {
+                continue;
+            }
+
+            const FString RelPath = FPaths::MakeProjectRelative(
+                FPaths::ToUtf8(Path.lexically_normal().generic_wstring()));
+
+            EAssetPackageType PackageType = EAssetPackageType::Unknown;
+            if (!FAssetPackage::GetPackageType(RelPath, PackageType)
+                || PackageType != EAssetPackageType::PhysicsAsset)
+            {
+                continue;
+            }
+
+            FPhysicsAssetListItem Item;
+            Item.DisplayName = FPaths::ToUtf8(Path.stem().wstring());
+            Item.FullPath = RelPath;
+            AvailablePhysicsAssetFiles.push_back(std::move(Item));
+        }
+    }
+
+    std::sort(AvailablePhysicsAssetFiles.begin(), AvailablePhysicsAssetFiles.end(),
+        [](const FPhysicsAssetListItem& A, const FPhysicsAssetListItem& B)
+        {
+            return A.FullPath < B.FullPath;
+        });
 }
