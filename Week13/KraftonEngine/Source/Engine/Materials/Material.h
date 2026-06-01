@@ -145,6 +145,7 @@ private:
 	TMap<FString, UTexture2D*> TextureParameters;  //텍스처는 슬롯 이름으로 관리
 
 	FShader* TransientShader = nullptr; // CreateTransient에서 직접 지정된 셰이더 (Template 없는 경우)
+	FShader* ShaderOverride = nullptr;  // 인스턴스별 셰이더 오버라이드 (Unlit 등 permutation 전환용)
 
 	// Per-shader CB 오버라이드 — transient Material에서 프록시가 관리하는 외부 CB
 	FConstantBufferBinding PerShaderOverride;
@@ -189,13 +190,16 @@ public:
 
 	void Bind(ID3D11DeviceContext* Context);
 
-	FShader* GetShader() const { return Template ? Template->GetShader() : TransientShader; }
+	FShader* GetShader() const { return ShaderOverride ? ShaderOverride : (Template ? Template->GetShader() : TransientShader); }
+	void SetShaderOverride(FShader* InShader) { ShaderOverride = InShader; }
 	EMaterialBlendMode GetBlendMode() const { return BlendMode; }
 	void SetBlendMode(EMaterialBlendMode InMode);
 	ERenderPass GetRenderPass() const { return RenderPass; }
 	EBlendState GetBlendState() const { return BlendState; }
 	EDepthStencilState GetDepthStencilState() const { return DepthStencilState; }
+	void SetDepthStencilState(EDepthStencilState InState) { DepthStencilState = InState; }
 	ERasterizerState GetRasterizerState() const { return RasterizerState; }
+	void SetRasterizerState(ERasterizerState InState) { RasterizerState = InState; }
 
 	// Per-shader CB 오버라이드 — transient Material에서 Gizmo/SubUV/Decal 등이 사용
 	template<typename T>

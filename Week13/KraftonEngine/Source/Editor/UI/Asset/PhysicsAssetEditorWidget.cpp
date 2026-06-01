@@ -27,6 +27,7 @@
 #include "Asset/AssetPackage.h"
 #include "Platform/Paths.h"
 #include "Render/Types/MinimalViewInfo.h"
+#include "Render/Shader/ShaderManager.h"
 #include "Runtime/Engine.h"
 #include "Settings/EditorSettings.h"
 #include "Slate/SlateApplication.h"
@@ -2834,6 +2835,10 @@ UMaterial* FPhysicsAssetEditorWidget::CreatePreviewShapeMaterial(float Alpha, bo
 	if (bDisableDepthTest)
 	{
 		PreviewMaterial->SetDepthStencilState(EDepthStencilState::NoDepth);
+		FShader* UnlitShader = FShaderManager::Get().GetOrCreate(
+			FShaderKey(EShaderPath::UberLit, "VS_Static", "PS", EUberLitDefines::Unlit));
+		if (UnlitShader)
+			PreviewMaterial->SetShaderOverride(UnlitShader);
 	}
 	PreviewMaterial->SetVector4Parameter("SectionColor", FVector4(PreviewShapeTint.X, PreviewShapeTint.Y, PreviewShapeTint.Z, Alpha));
 	return PreviewMaterial;
