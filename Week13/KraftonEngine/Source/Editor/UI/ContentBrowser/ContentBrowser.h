@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Editor/UI/EditorWidget.h"
 #include "ContentItem.h"
 #include <d3d11.h>
@@ -39,6 +39,10 @@ private:
 	void BeginParticleSystemCreate(const FString& DefaultName);
 	void RenderParticleSystemCreatePopup();
 	bool ExecuteParticleSystemCreate();
+	void BeginPhysicsAssetCreate();
+	void RenderPhysicsAssetMeshPickerPopup();
+	void RenderPhysicsAssetCreatePopup();
+	bool ExecutePhysicsAssetCreate();
 	void BeginRenameAsset(const FContentItem& Item);
 	void RenderRenamePopup();
 	bool ExecuteRenameAsset();
@@ -69,6 +73,17 @@ private:
 	bool bOpenParticleSystemCreatePopup = false;
 	char ParticleSystemCreateName[128] = {};
 	FString ParticleSystemCreateError;
+
+	bool bOpenPhysicsAssetMeshPickerPopup = false;
+	bool bOpenPhysicsAssetCreatePopup = false;
+	char PhysicsAssetMeshSearch[128] = {};
+	FString PhysicsAssetCreateError;
+	FString PhysicsAssetCreateWarning;
+	FString PendingPhysicsAssetMeshPath;
+	FString PendingPhysicsAssetMeshName;
+	int32 SelectedPhysicsMeshIndex = -1;
+	TArray<FMeshAssetListItem> PhysicsMeshOptions;
+	FPhysicsAssetCreateParams PhysicsAssetCreateParams;
 
 	bool bOpenRenamePopup = false;
 	std::filesystem::path RenameSourcePath;

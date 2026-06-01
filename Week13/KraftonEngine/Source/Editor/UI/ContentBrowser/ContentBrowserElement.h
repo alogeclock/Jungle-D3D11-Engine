@@ -176,3 +176,14 @@ protected:
 	const char* GetTypeLabel() const override { return "Particle System"; }
 	uint32 GetAccentColor() const override { return IM_COL32(255, 255, 255, 255); }
 };
+
+class PhysicsAssetElement final : public ContentBrowserElement
+{
+public:
+	virtual const char* GetDragItemType() override { return "PhysicsAssetContentItem"; }
+	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
+
+protected:
+	const char* GetTypeLabel() const override { return "Physics Asset"; }
+	uint32 GetAccentColor() const override { return IM_COL32(120, 190, 255, 255); }
+};
