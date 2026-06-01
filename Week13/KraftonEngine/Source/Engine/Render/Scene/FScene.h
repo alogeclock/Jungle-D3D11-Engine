@@ -57,8 +57,8 @@ public:
 	const TArray<FDebugAABB>& GetDebugAABBs() const { return DebugAABBs; }
 
 	// --- Debug lines ---
-	struct FDebugLine { FVector Start; FVector End; FColor Color; };
-	void AddDebugLine(const FVector& Start, const FVector& End, const FColor& Color);
+	struct FDebugLine { FVector Start; FVector End; FColor Color; bool bAlwaysOnTop = false; };
+	void AddDebugLine(const FVector& Start, const FVector& End, const FColor& Color, bool bAlwaysOnTop = false);
 	const TArray<FDebugLine>& GetDebugLines() const { return DebugLines; }
 
 	// --- Grid ---
