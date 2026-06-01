@@ -100,6 +100,7 @@ private:
         physx::PxRigidActor* Actor      = nullptr;
         UPrimitiveComponent* RootComp   = nullptr;
         TArray<UPrimitiveComponent*> Components;
+        bool bStandaloneShapeActor = false;
     };
     std::vector<FBodyMapping> BodyMappings;
     std::unordered_map<UPrimitiveComponent*, FPhysicsBodyInstance*> BodyInstances;

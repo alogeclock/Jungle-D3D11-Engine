@@ -5,6 +5,7 @@
 #include "Component/BoxComponent.h"
 #include "Component/SphereComponent.h"
 #include "Component/CapsuleComponent.h"
+#include "Component/ShapeComponent.h"
 #include "GameFramework/World.h"
 #include "GameFramework/AActor.h"
 #include "Math/Quat.h"
@@ -848,10 +849,13 @@ void FPhysXPhysicsScene::RegisterComponentInternal(UPrimitiveComponent* Comp)
     AActor* OwnerActor = Comp->GetOwner();
     if (!OwnerActor) return;
 
-    FBodyMapping* Mapping = FindMappingByActor(OwnerActor);
+    const bool bStandaloneShapeActor = Comp && Comp->IsA<UShapeComponent>();
+    FBodyMapping* Mapping = bStandaloneShapeActor ? nullptr : FindMappingByActor(OwnerActor);
     if (!Mapping)
     {
-        UPrimitiveComponent* RootPrim = Cast<UPrimitiveComponent>(OwnerActor->GetRootComponent());
+        UPrimitiveComponent* RootPrim = bStandaloneShapeActor
+            ? Comp
+            : Cast<UPrimitiveComponent>(OwnerActor->GetRootComponent());
         if (!RootPrim) RootPrim = Comp;
 
         const bool bDynamic = RootPrim->GetSimulatePhysics();
@@ -877,6 +881,7 @@ void FPhysXPhysicsScene::RegisterComponentInternal(UPrimitiveComponent* Comp)
         NewMapping.OwnerActor = OwnerActor;
         NewMapping.Actor      = Body;
         NewMapping.RootComp   = RootPrim;
+        NewMapping.bStandaloneShapeActor = bStandaloneShapeActor;
         BodyMappings.push_back(NewMapping);
         Mapping = &BodyMappings.back();
     }
@@ -923,10 +928,8 @@ void FPhysXPhysicsScene::RebuildBody(UPrimitiveComponent* Comp)
 {
     if (!Comp || !Scene) return;
     WaitForSimulation();
-    AActor* OwnerActor = Comp->GetOwner();
-    if (!OwnerActor) return;
 
-    FBodyMapping* Mapping = FindMappingByActor(OwnerActor);
+    FBodyMapping* Mapping = FindMappingByComponent(Comp);
     if (!Mapping) return;
 
     TArray<UPrimitiveComponent*> CompList = Mapping->Components;
@@ -1234,12 +1237,20 @@ void FPhysXPhysicsScene::DetachShapeForComponent(FBodyMapping& Mapping, UPrimiti
 
 FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByActor(AActor* OwnerActor)
 {
-    for (auto& M : BodyMappings) if (M.OwnerActor == OwnerActor) return &M;
+    for (auto& M : BodyMappings)
+    {
+        if (M.OwnerActor == OwnerActor && !M.bStandaloneShapeActor)
+            return &M;
+    }
     return nullptr;
 }
 const FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByActor(AActor* OwnerActor) const
 {
-    for (const auto& M : BodyMappings) if (M.OwnerActor == OwnerActor) return &M;
+    for (const auto& M : BodyMappings)
+    {
+        if (M.OwnerActor == OwnerActor && !M.bStandaloneShapeActor)
+            return &M;
+    }
     return nullptr;
 }
 FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByComponent(UPrimitiveComponent* Comp)
