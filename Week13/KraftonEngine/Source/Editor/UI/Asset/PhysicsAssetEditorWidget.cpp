@@ -805,45 +805,79 @@ namespace
 	{
 		bool bChanged = false;
 
-		bChanged |= ImGui::DragFloat("Min Bone Size", &Params.MinBoneSize, 0.1f, 1.0f, 1000.0f);
-
-		int32 PrimitiveType = static_cast<int32>(Params.PrimitiveType);
-		const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
-		if (ImGui::Combo("Primitive Type", &PrimitiveType, PrimitiveLabels, IM_ARRAYSIZE(PrimitiveLabels)))
+		if (!ImGui::BeginTable("CreateParamsTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
 		{
-			Params.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
-			bChanged = true;
+			return false;
 		}
 
-		int32 VertexWeightingType = static_cast<int32>(Params.VertexWeightingType);
-		const char* VertexWeightLabels[] = { "Dominant Weight", "Any Weight" };
-		if (ImGui::Combo("Vertex Weighting Type", &VertexWeightingType, VertexWeightLabels, IM_ARRAYSIZE(VertexWeightLabels)))
+		auto Row = [](const char* Label)
 		{
-			Params.VertexWeightingType = static_cast<EPhysicsAssetVertexWeightingType>(VertexWeightingType);
-			bChanged = true;
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TextUnformatted(Label);
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-1.0f);
+		};
+
+		Row("Min Bone Size");
+		bChanged |= ImGui::DragFloat("##MinBoneSize", &Params.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+
+		Row("Primitive Type");
+		{
+			int32 PrimitiveType = static_cast<int32>(Params.PrimitiveType);
+			const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
+			if (ImGui::Combo("##PrimitiveType", &PrimitiveType, PrimitiveLabels, IM_ARRAYSIZE(PrimitiveLabels)))
+			{
+				Params.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
+				bChanged = true;
+			}
 		}
 
-		bChanged |= ImGui::Checkbox("Auto Orient to Bone", &Params.bAutoOrientToBone);
-		bChanged |= ImGui::Checkbox("Walk Past Small Bones", &Params.bWalkPastSmallBones);
-		bChanged |= ImGui::Checkbox("Create Body for All Bones", &Params.bCreateBodyForAllBones);
-		bChanged |= ImGui::Checkbox("Disable Collisions by Default", &Params.bDisableCollisionsByDefault);
+		Row("Vertex Weighting Type");
+		{
+			int32 VertexWeightingType = static_cast<int32>(Params.VertexWeightingType);
+			const char* VertexWeightLabels[] = { "Dominant Weight", "Any Weight" };
+			if (ImGui::Combo("##VertexWeightingType", &VertexWeightingType, VertexWeightLabels, IM_ARRAYSIZE(VertexWeightLabels)))
+			{
+				Params.VertexWeightingType = static_cast<EPhysicsAssetVertexWeightingType>(VertexWeightingType);
+				bChanged = true;
+			}
+		}
 
-		if (ImGui::InputInt("LOD Index", &Params.LodIndex))
+		Row("Auto Orient to Bone");
+		bChanged |= ImGui::Checkbox("##AutoOrientToBone", &Params.bAutoOrientToBone);
+
+		Row("Walk Past Small Bones");
+		bChanged |= ImGui::Checkbox("##WalkPastSmallBones", &Params.bWalkPastSmallBones);
+
+		Row("Create Body for All Bones");
+		bChanged |= ImGui::Checkbox("##CreateBodyForAllBones", &Params.bCreateBodyForAllBones);
+
+		Row("Disable Collisions by Default");
+		bChanged |= ImGui::Checkbox("##DisableCollisionsByDefault", &Params.bDisableCollisionsByDefault);
+
+		Row("LOD Index");
+		if (ImGui::InputInt("##LodIndex", &Params.LodIndex))
 		{
 			Params.LodIndex = (std::max)(Params.LodIndex, 0);
 			bChanged = true;
 		}
 
-		bChanged |= ImGui::Checkbox("Create Constraints", &Params.bCreateConstraints);
+		Row("Create Constraints");
+		bChanged |= ImGui::Checkbox("##CreateConstraints", &Params.bCreateConstraints);
 
-		int32 AngularMode = static_cast<int32>(Params.AngularConstraintMode);
-		const char* AngularModeLabels[] = { "Limited", "Locked", "Free" };
-		if (ImGui::Combo("Angular Constraint Mode", &AngularMode, AngularModeLabels, IM_ARRAYSIZE(AngularModeLabels)))
+		Row("Angular Constraint Mode");
 		{
-			Params.AngularConstraintMode = static_cast<EPhysicsAssetAngularConstraintMode>(AngularMode);
-			bChanged = true;
+			int32 AngularMode = static_cast<int32>(Params.AngularConstraintMode);
+			const char* AngularModeLabels[] = { "Limited", "Locked", "Free" };
+			if (ImGui::Combo("##AngularConstraintMode", &AngularMode, AngularModeLabels, IM_ARRAYSIZE(AngularModeLabels)))
+			{
+				Params.AngularConstraintMode = static_cast<EPhysicsAssetAngularConstraintMode>(AngularMode);
+				bChanged = true;
+			}
 		}
 
+		ImGui::EndTable();
 		return bChanged;
 	}
 
