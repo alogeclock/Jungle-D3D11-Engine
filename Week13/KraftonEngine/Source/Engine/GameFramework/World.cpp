@@ -11,13 +11,48 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/PlayerCameraManager.h"
+#include "Math/MathUtils.h"
 #include "Object/UClass.h"
 #include "Profiling/Stats.h"
 #include "Profiling/Timer.h"
 #include "Runtime/Engine.h"
 #include <algorithm>
 
+namespace
+{
+	// 월드 내의 모든 PrimitiveComponent에 콜백을 적용하는 유틸리티 함수
+	template<typename Func>
+	void ForEachPrimitive(UWorld* World, Func&& Callback)
+	{
+		if (!World) return;
 
+		for (AActor* Actor : World->GetActors())
+		{
+			if (!Actor) continue;
+
+			for (UPrimitiveComponent* Primitive : Actor->GetPrimitiveComponents())
+			{
+				if (Primitive)
+				{
+					Callback(Primitive);
+				}
+			}
+		}
+	}
+
+	// 월드의 모든 PrimitiveComponent 중 SimulatePhysics가 활성화된 컴포넌트에만 콜백을 적용하는 유틸리티 함수
+	template<typename Func>
+    void ForEachSimulatingPrimitive(UWorld* World, Func&& Callback)
+    {
+        ForEachPrimitive(World, [&Callback](UPrimitiveComponent* Primitive)
+        {
+            if (Primitive->GetSimulatePhysics())
+            {
+                Callback(Primitive);
+            }
+        });
+    }
+}
 
 UWorld::~UWorld()
 {
@@ -356,6 +391,8 @@ void UWorld::InitWorld()
 	Partition.Reset(FBoundingBox());
 	PersistentLevel = GUObjectArray.CreateObject<ULevel>(this);
 	PersistentLevel->SetWorld(this);
+	PhysicsTimeAccumulator = 0.0f;
+	PhysicsInterpolationAlpha = 0.0f;
 
 	// E.2/3: CameraManager spawn 은 PC 의 BeginPlay 가 담당. World 는 보유하지 않음.
 
@@ -394,8 +431,13 @@ void UWorld::BeginPlay()
 	// E.2/3: AutoPossessDefaultCamera 는 PC 의 BeginPlay 가 처리.
 }
 
+// PhysX 연산을 Fixed Timestep으로 수행하면서 물리 연산과 렌더링 프레임이 분리된다. 
+// 이에 따라 렌더링 프레임의 보간을 위한 Physics Scene Snapshot이 필요하다.
 void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 {
+    // Tick 시작 시점의 Primitive Transform을 보간 이전 상태로 초기화
+	RestorePhysicsInterpolation();
+
 	{
 		SCOPE_STAT_CAT("FlushPrimitive", "1_WorldTick");
 		Partition.FlushPrimitive();
@@ -403,29 +445,182 @@ void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 
 	Scene.GetDebugDrawQueue().Tick(DeltaTime);
 
-	// bPaused 동안 PhysicsScene + TickManager skip — GameMode 타이머, Lua Tick, 차량
-	// 이동, PhysX 시뮬레이션 모두 정지. Render / UI / Input poll 은 호출자 (UEngine::Tick)
-	// 가 따로 돌리므로 영향 없음 → 메뉴/인트로 위에서 화면 보이고 클릭 가능.
+	// bPaused 동안 PhysicsScene + TickManager skip — GameMode 타이머, Lua Tick, 차량 이동, PhysX 시뮬레이션 모두 정지. 
+	// Render / UI / Input poll 은 호출자 (UEngine::Tick)가 따로 돌리므로 영향 X → 메뉴/인트로 위에서 화면 보이고 클릭 가능.
 	if (bPaused)
 	{
+		PhysicsTimeAccumulator = 0.0f;
+		PhysicsInterpolationAlpha = 0.0f;
 		TickPlayerCamera();
 		return;
 	}
+	
+	// ─────────────────────── Begin Frame: 본격적인 프레임 업데이트 시작 ───────────────────────
+	TickManager.BeginFrame(this, TickType);
 
+	TickManager.TickGroup(TG_PrePhysics, DeltaTime, TickType); // Pre-Physics
+
+	bool bDispatchedDuringPhysics = false;
 	if (bHasBegunPlay && PhysicsScene)
 	{
 		SCOPE_STAT_CAT("PhysicsScene", "1_WorldTick");
-		FPhysicsStepInfo StepInfo;
-		StepInfo.DeltaTime = DeltaTime;
-		PhysicsScene->Simulate(StepInfo);
-		PhysicsScene->FetchResults(true);
+		bDispatchedDuringPhysics = TickPhysics(DeltaTime, TickType);
+	}
+	else
+	{
+		ResetPhysicsInterpolation();
+		PhysicsTimeAccumulator = 0.0f;
+		PhysicsInterpolationAlpha = 0.0f;
 	}
 
-	TickManager.Tick(this, DeltaTime, TickType);
+	if (!bDispatchedDuringPhysics)
+	{
+		TickManager.TickGroup(TG_DuringPhysics, DeltaTime, TickType);
+	}
+
+	TickManager.TickGroup(TG_PostPhysics, DeltaTime, TickType); // Post-Physics
+
+	TickManager.TickGroup(TG_PostUpdateWork, DeltaTime, TickType);
+
+	// 물리 렌더링 보간 — Fixed Timestep 설정 사용 시, 렌더링 프레임과 물리 틱 사이의 남은 시간을 바탕으로 보간을 적용한다.
+	if (bHasBegunPlay && PhysicsScene && FProjectSettings::Get().Physics.bUseFixedTimestep)
+	{
+		ApplyPhysicsInterpolation(PhysicsInterpolationAlpha);
+	}
 
 	// 카메라는 물리/액터 Tick 이후 갱신 — 차량 1인칭처럼 physics body 에 붙은 카메라가
 	// 같은 프레임의 최신 transform 으로 POV cache 를 채운다.
 	TickPlayerCamera();
+}
+
+bool UWorld::TickPhysics(float DeltaTime, ELevelTick TickType)
+{
+	if (FProjectSettings::Get().Physics.bUseFixedTimestep)
+	{
+		return TickFixedPhysics(DeltaTime, TickType);
+	}
+	return TickVariablePhysics(DeltaTime, TickType);
+}
+
+// 가변 프레임 방식으로 물리 시뮬레이션을 수행한다.
+bool UWorld::TickVariablePhysics(float DeltaTime, ELevelTick TickType)
+{
+	ResetPhysicsInterpolation();
+	PhysicsTimeAccumulator = 0.0f;
+	PhysicsInterpolationAlpha = 0.0f;
+
+	// 현재 프레임의 DeltaTime만큼 물리 시뮬레이션을 전진시킨다.
+	FPhysicsStepInfo StepInfo;
+	StepInfo.DeltaTime = DeltaTime;
+	PhysicsScene->Simulate(StepInfo);
+
+	TickManager.TickGroup(TG_DuringPhysics, DeltaTime, TickType);
+
+	PhysicsScene->FetchResults(true);
+
+	return true;
+}
+
+// Fixed Timestep 방식으로 물리 시뮬레이션을 수행한다. DeltaTime이 고정된 간격으로 나누어지며, 남은 시간은 보간에 사용된다.
+bool UWorld::TickFixedPhysics(float DeltaTime, ELevelTick TickType)
+{
+	const auto& PhysicsOption = FProjectSettings::Get().Physics;
+
+	// 설정된 고정 물리 틱 시간을 가져오고, 최소/최대치를 제한한다.
+	const float FixedDeltaTime = Clamp(PhysicsOption.FixedDeltaTime, 1.0f / 240.0f, 1.0f / 15.0f);
+	const int32 MaxSubsteps = (std::max)(1, (std::min)(PhysicsOption.MaxSubsteps, 16));
+	const float ClampedFrameDelta = Clamp(DeltaTime, 0.0f, FixedDeltaTime * static_cast<float>(MaxSubsteps));
+
+	PhysicsTimeAccumulator += ClampedFrameDelta;
+
+	bool bDispatchedDuringPhysics = false;
+	int32 SubstepIndex = 0;
+
+	// 누적된 시간이 고정 틱 시간보다 큰 동안 물리 스텝을 쪼개며 연산한다.
+	while (PhysicsTimeAccumulator + 1.0e-6f >= FixedDeltaTime && SubstepIndex < MaxSubsteps)
+	{
+		CapturePrePhysicsSnapshot();
+
+		FPhysicsStepInfo StepInfo;
+		StepInfo.DeltaTime = FixedDeltaTime;
+		StepInfo.SubstepCount = SubstepIndex + 1;
+		PhysicsScene->Simulate(StepInfo);
+
+		if (!bDispatchedDuringPhysics)
+		{
+			TickManager.TickGroup(TG_DuringPhysics, DeltaTime, TickType);
+			bDispatchedDuringPhysics = true;
+		}
+
+		PhysicsScene->FetchResults(true);
+		CapturePostPhysicsSnapshot();
+
+		PhysicsTimeAccumulator -= FixedDeltaTime;
+		++SubstepIndex;
+	}
+
+	if (PhysicsTimeAccumulator < 0.0f)
+	{
+		PhysicsTimeAccumulator = 0.0f;
+	}
+
+	PhysicsInterpolationAlpha = FixedDeltaTime > 0.0f ? Clamp(PhysicsTimeAccumulator / FixedDeltaTime, 0.0f, 1.0f) : 0.0f;
+
+	return bDispatchedDuringPhysics;
+}
+
+// 물리 시뮬레이션 스텝 진입 직전의 위치/회전 값을 보간 시작점으로 스냅샷을 찍는다.
+void UWorld::CapturePrePhysicsSnapshot()
+{
+	if (!FProjectSettings::Get().Physics.bEnableRenderInterpolation) return;
+
+	ForEachSimulatingPrimitive(this, [](UPrimitiveComponent* Primitive)
+	{
+		Primitive->CapturePrePhysicsSnapshot();
+	});
+}
+
+// 물리 시뮬레이션 스텝 직후의 위치/회전 값을 보간 목표점으로 스냅샷을 찍는다.
+void UWorld::CapturePostPhysicsSnapshot()
+{
+	if (!FProjectSettings::Get().Physics.bEnableRenderInterpolation) return;
+
+	ForEachSimulatingPrimitive(this, [](UPrimitiveComponent* Primitive)
+	{
+		Primitive->CapturePostPhysicsSnapshot();
+	});
+}
+
+// 계산된 Alpha 값을 바탕으로 월드의 프리미티브의 모든 이전/현재 트랜스폼을 보간한다.
+void UWorld::ApplyPhysicsInterpolation(float Alpha)
+{
+	if (!FProjectSettings::Get().Physics.bEnableRenderInterpolation)
+	{
+		return;
+	}
+
+	ForEachSimulatingPrimitive(this, [Alpha](UPrimitiveComponent* Primitive)
+	{
+		Primitive->ApplyPhysicsInterpolation(Alpha);
+	});
+}
+
+// 렌더링을 위해 보간되었던 트랜스폼을 실제 물리 시뮬레이션 결과로 되돌린다.
+void UWorld::RestorePhysicsInterpolation()
+{
+	ForEachPrimitive(this, [](UPrimitiveComponent* Primitive)
+	{
+		Primitive->RestorePhysicsInterpolation();
+	});
+}
+
+// 보간과 관련된 모든 트랜스폼 상태를 초기화한다.
+void UWorld::ResetPhysicsInterpolation()
+{
+	ForEachPrimitive(this, [](UPrimitiveComponent* Primitive)
+	{
+		Primitive->ResetPhysicsInterpolation();
+	});
 }
 
 void UWorld::TickPlayerCamera() const
@@ -446,6 +641,9 @@ void UWorld::TickPlayerCamera() const
 
 void UWorld::EndPlay()
 {
+	RestorePhysicsInterpolation();
+	ResetPhysicsInterpolation();
+
 	if (GameMode)
 	{
 		GameMode->EndMatch();

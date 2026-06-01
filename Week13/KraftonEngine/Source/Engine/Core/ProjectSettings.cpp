@@ -1,8 +1,10 @@
 #include "Core/ProjectSettings.h"
+#include "Math/MathUtils.h"
 #include "SimpleJSON/json.hpp"
 
 #include <fstream>
 #include <filesystem>
+#include <algorithm>
 
 namespace PSKey
 {
@@ -16,6 +18,10 @@ namespace PSKey
 
 	constexpr const char* PhysicsSection = "Physics";
 	constexpr const char* Backend = "Backend";
+	constexpr const char* bUseFixedTimestep = "bUseFixedTimestep";
+	constexpr const char* FixedDeltaTime = "FixedDeltaTime";
+	constexpr const char* MaxSubsteps = "MaxSubsteps";
+	constexpr const char* bEnableRenderInterpolation = "bEnableRenderInterpolation";
 
 	constexpr const char* GameSection = "Game";
 	constexpr const char* StartLevelName = "StartLevelName";
@@ -39,6 +45,10 @@ void FProjectSettings::SaveToFile(const FString& Path) const
 
 	JSON PhysObj = Object();
 	PhysObj[PSKey::Backend] = static_cast<int>(Physics.Backend);
+	PhysObj[PSKey::bUseFixedTimestep] = Physics.bUseFixedTimestep;
+	PhysObj[PSKey::FixedDeltaTime] = Physics.FixedDeltaTime;
+	PhysObj[PSKey::MaxSubsteps] = Physics.MaxSubsteps;
+	PhysObj[PSKey::bEnableRenderInterpolation] = Physics.bEnableRenderInterpolation;
 	Root[PSKey::PhysicsSection] = PhysObj;
 
 	JSON GameObj = Object();
@@ -79,6 +89,20 @@ void FProjectSettings::LoadFromFile(const FString& Path)
 			else
 				Physics.Backend = EPhysicsBackend::Native;
 		}
+		if (P.hasKey(PSKey::bUseFixedTimestep))
+			Physics.bUseFixedTimestep = P[PSKey::bUseFixedTimestep].ToBool();
+		if (P.hasKey(PSKey::FixedDeltaTime))
+		{
+			float v = static_cast<float>(P[PSKey::FixedDeltaTime].ToFloat());
+			Physics.FixedDeltaTime = Clamp(v, 1.0f / 240.0f, 1.0f / 15.0f);
+		}
+		if (P.hasKey(PSKey::MaxSubsteps))
+		{
+			int v = P[PSKey::MaxSubsteps].ToInt();
+			Physics.MaxSubsteps = (std::max)(1, (std::min)(v, 16));
+		}
+		if (P.hasKey(PSKey::bEnableRenderInterpolation))
+			Physics.bEnableRenderInterpolation = P[PSKey::bEnableRenderInterpolation].ToBool();
 	}
 
 	if (Root.hasKey(PSKey::GameSection))

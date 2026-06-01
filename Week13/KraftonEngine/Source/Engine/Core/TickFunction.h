@@ -23,7 +23,7 @@ enum ETickingGroup : int
     TG_MAX,
 };
 
-//TODO: Actor에 PrimaryTick을 구현해야함
+//TODO: Actor에 Primary Tick을 구현
 struct FTickFunction
 {
     ETickingGroup TickGroup = TG_PrePhysics;      // 최소 실행 그룹
@@ -112,6 +112,8 @@ public:
 class FTickManager
 {
 public:
+	void BeginFrame(UWorld* World, ELevelTick TickType);
+	void TickGroup(ETickingGroup TickGroup, float DeltaTime, ELevelTick TickType);
 	void Tick(UWorld* World, float DeltaTime, ELevelTick TickType);
 	void Reset();
 

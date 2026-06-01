@@ -1,5 +1,6 @@
 ﻿#include "Editor/UI/EditorProjectSettingsWidget.h"
 #include "Core/ProjectSettings.h"
+#include "Math/MathUtils.h"
 #include "Serialization/SceneSaveManager.h"
 #include "GameFramework/GameModeBase.h"
 #include "Object/UClass.h"
@@ -96,7 +97,25 @@ void EditorProjectSettingsWidget::Render()
 		{
 			PS.Physics.Backend = static_cast<EPhysicsBackend>(CurrentBackend);
 		}
-		ImGui::TextDisabled("Requires scene reload to take effect.");
+
+		ImGui::Checkbox("Use Fixed Timestep", &PS.Physics.bUseFixedTimestep);
+		if (PS.Physics.bUseFixedTimestep)
+		{
+			float FixedDeltaTime = PS.Physics.FixedDeltaTime;
+			if (ImGui::DragFloat("Fixed Delta Time", &FixedDeltaTime, 0.0001f, 1.0f / 240.0f, 1.0f / 15.0f, "%.4f"))
+			{
+				PS.Physics.FixedDeltaTime = Clamp(FixedDeltaTime, 1.0f / 240.0f, 1.0f / 15.0f);
+			}
+
+			int MaxSubsteps = PS.Physics.MaxSubsteps;
+			if (ImGui::SliderInt("Max Substeps", &MaxSubsteps, 1, 16))
+			{
+				PS.Physics.MaxSubsteps = MaxSubsteps;
+			}
+
+			ImGui::Checkbox("Render Interpolation", &PS.Physics.bEnableRenderInterpolation);
+		}
+		ImGui::TextDisabled("Backend changes require scene reload.");
 	}
 
 	if (ImGui::CollapsingHeader("Shadow", ImGuiTreeNodeFlags_DefaultOpen))

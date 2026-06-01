@@ -74,6 +74,14 @@ private:
 	// PlayerCameraManager 갱신 — Slomo / HitStop 등 TimeDilation 의 영향을 받지 않도록
 	// FTimer 의 raw delta 를 직접 사용한다. Tick 의 paused / 정상 흐름 양쪽에서 호출.
 	void TickPlayerCamera() const;
+	bool TickPhysics(float DeltaTime, ELevelTick TickType);
+	bool TickVariablePhysics(float DeltaTime, ELevelTick TickType);
+	bool TickFixedPhysics(float DeltaTime, ELevelTick TickType);
+	void CapturePrePhysicsSnapshot();
+	void CapturePostPhysicsSnapshot();
+	void ApplyPhysicsInterpolation(float Alpha);
+	void RestorePhysicsInterpolation();
+	void ResetPhysicsInterpolation();
 
 public:
 
@@ -132,6 +140,8 @@ private:
 
 	FSpatialPartition Partition;
 	std::unique_ptr<IPhysicsSceneInterface> PhysicsScene;
+	float PhysicsTimeAccumulator = 0.0f;
+	float PhysicsInterpolationAlpha = 0.0f;
 
 	// Game flow — Editor 월드에서는 nullptr로 유지된다.
 	AGameModeBase* GameMode = nullptr;

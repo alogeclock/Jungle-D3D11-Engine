@@ -44,6 +44,15 @@ static FMatrix GetRotationTranslationWithoutScale(const FMatrix& Matrix)
 	return Result;
 }
 
+static FTransform InterpolateTransform(const FTransform& A, const FTransform& B, float Alpha)
+{
+	const float ClampedAlpha = Clamp(Alpha, 0.0f, 1.0f);
+	return FTransform(
+		FVector::Lerp(A.Location, B.Location, ClampedAlpha),
+		FQuat::Slerp(A.Rotation, B.Rotation, ClampedAlpha),
+		FVector::Lerp(A.Scale, B.Scale, ClampedAlpha));
+}
+
 void USceneComponent::AttachToComponent(USceneComponent* InParent)
 {
 	if (!InParent || InParent == this) return;
@@ -470,4 +479,68 @@ void USceneComponent::Rotate(float DeltaYaw, float DeltaPitch)
 FMatrix USceneComponent::GetRelativeMatrix() const
 {
 	return RelativeTransform.ToMatrix();
+}
+
+void USceneComponent::CapturePrePhysicsSnapshot()
+{
+	RestorePhysicsInterpolation();
+
+	PreviousPhysicsRelativeTransform = bHasPhysicsInterpolationTransform
+		? CurrentPhysicsRelativeTransform
+		: RelativeTransform;
+	CurrentPhysicsRelativeTransform = PreviousPhysicsRelativeTransform;
+	bHasPhysicsInterpolationTransform = true;
+}
+
+void USceneComponent::CapturePostPhysicsSnapshot()
+{
+	RestorePhysicsInterpolation();
+
+	if (!bHasPhysicsInterpolationTransform)
+	{
+		PreviousPhysicsRelativeTransform = RelativeTransform;
+	}
+
+	CurrentPhysicsRelativeTransform = RelativeTransform;
+	bHasPhysicsInterpolationTransform = true;
+}
+
+void USceneComponent::ApplyPhysicsInterpolation(float Alpha)
+{
+	if (!bHasPhysicsInterpolationTransform)
+	{
+		return;
+	}
+
+	if (!bUsingPhysicsInterpolation)
+	{
+		SavedNonInterpolatedRelativeTransform = RelativeTransform;
+	}
+
+	RelativeTransform = InterpolateTransform(PreviousPhysicsRelativeTransform, CurrentPhysicsRelativeTransform, Alpha);
+	bCachedEulerDirty = true;
+	bUsingPhysicsInterpolation = true;
+	MarkTransformDirty();
+}
+
+void USceneComponent::RestorePhysicsInterpolation()
+{
+	if (!bUsingPhysicsInterpolation)
+	{
+		return;
+	}
+
+	RelativeTransform = SavedNonInterpolatedRelativeTransform;
+	bCachedEulerDirty = true;
+	bUsingPhysicsInterpolation = false;
+	MarkTransformDirty();
+}
+
+void USceneComponent::ResetPhysicsInterpolation()
+{
+	RestorePhysicsInterpolation();
+	bHasPhysicsInterpolationTransform = false;
+	PreviousPhysicsRelativeTransform = RelativeTransform;
+	CurrentPhysicsRelativeTransform = RelativeTransform;
+	SavedNonInterpolatedRelativeTransform = RelativeTransform;
 }

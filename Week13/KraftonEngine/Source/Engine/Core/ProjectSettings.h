@@ -29,6 +29,10 @@ class FProjectSettings : public TSingleton<FProjectSettings>
 	struct FPhysicsOption
 	{
 		EPhysicsBackend Backend = EPhysicsBackend::Native;
+		bool  bUseFixedTimestep = true;
+		float FixedDeltaTime = 1.0f / 60.0f;
+		int32 MaxSubsteps = 5;
+		bool  bEnableRenderInterpolation = true;
 	};
 
 	// --- Game ---
