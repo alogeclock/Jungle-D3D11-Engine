@@ -2416,9 +2416,12 @@ namespace
 		Section.FirstIndex = 0;
 		Section.NumTriangles = 0;
 
+		const FVector4 White(1.0f, 1.0f, 1.0f, 1.0f);
+
 		FNormalVertex Apex{};
 		Apex.pos    = FVector::ZeroVector;
 		Apex.normal = FVector(-1, 0, 0);
+		Apex.color  = White;
 
 		// 측면 삼각형 (Apex → 밑면 두 점)
 		for (int32 i = 0; i < Segments; ++i)
@@ -2427,8 +2430,10 @@ namespace
 			const float T1 = 2.0f * Pi * (i + 1) / Segments;
 
 			FNormalVertex V0{}, V1{};
-			V0.pos = FVector(1.0f, std::cos(T0), std::sin(T0));
-			V1.pos = FVector(1.0f, std::cos(T1), std::sin(T1));
+			V0.pos   = FVector(1.0f, std::cos(T0), std::sin(T0));
+			V0.color = White;
+			V1.pos   = FVector(1.0f, std::cos(T1), std::sin(T1));
+			V1.color = White;
 
 			// outward normal for side face
 			const FVector Side0 = V0.pos - Apex.pos;
@@ -3300,6 +3305,8 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 	constexpr float PhysicsEditorMinViewportWidth = 320.0f;
 	constexpr float PhysicsEditorMinTopPanelHeight = 220.0f;
 	constexpr float PhysicsEditorMinBottomPanelHeight = 160.0f;
+	constexpr float PhysicsEditorMinBodyTreeHeight = 160.0f;
+	constexpr float PhysicsEditorMinGraphHeight = 100.0f;
 
 	bool bChanged = false;
 	bool bGraphLayoutChanged = false;
@@ -3340,7 +3347,11 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 
 	ImGui::BeginChild("PhysicsAssetLeftPanel", ImVec2(LeftPanelWidth, MainContentSize.y), true);
 	{
-		const float SkeletonHeight = (std::max)(160.0f, ImGui::GetContentRegionAvail().y - GraphHeight - ImGui::GetStyle().ItemSpacing.y);
+		const float LeftPanelHeight = ImGui::GetContentRegionAvail().y;
+		const float MaxGraphHeight = (std::max)(PhysicsEditorMinGraphHeight, LeftPanelHeight - PhysicsEditorSplitterThickness - PhysicsEditorMinBodyTreeHeight);
+		GraphHeight = (std::clamp)(GraphHeight, PhysicsEditorMinGraphHeight, MaxGraphHeight);
+		const float SkeletonHeight = LeftPanelHeight - GraphHeight - PhysicsEditorSplitterThickness;
+
 		const ImGuiWindowFlags SkeletonTreeFlags = ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_HorizontalScrollbar;
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, PhysicsPanelBodyColor);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PhysicsPanelContentPadding);
@@ -3374,6 +3385,25 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 		ImGui::EndChild();
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor();
+
+		const ImVec2 LeftHSplitterPos = ImGui::GetCursorScreenPos();
+		ImRect LeftHSplitterRect(
+			LeftHSplitterPos,
+			ImVec2(LeftHSplitterPos.x + ImGui::GetContentRegionAvail().x, LeftHSplitterPos.y + PhysicsEditorSplitterThickness));
+		float SplitTopHeight = SkeletonHeight;
+		float SplitBottomHeight = GraphHeight;
+		if (ImGui::SplitterBehavior(
+				LeftHSplitterRect,
+				ImGui::GetID("##PhysicsEditorLeftHorizontalSplitter"),
+				ImGuiAxis_Y,
+				&SplitTopHeight,
+				&SplitBottomHeight,
+				PhysicsEditorMinBodyTreeHeight,
+				PhysicsEditorMinGraphHeight))
+		{
+			GraphHeight = SplitBottomHeight;
+		}
+		ImGui::Dummy(ImVec2(0.0f, PhysicsEditorSplitterThickness));
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, PhysicsPanelBodyColor);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PhysicsPanelContentPadding);
