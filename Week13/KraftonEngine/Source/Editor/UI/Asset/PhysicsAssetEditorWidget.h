@@ -51,6 +51,7 @@ private:
 	void ClearPreviewShapeComponents();
 	void RebuildPreviewShapeComponents(UPhysicsAsset* PhysicsAsset);
 	void SyncPreviewShapeComponents(UPhysicsAsset* PhysicsAsset);
+	void DrawConstraintDebug(UPhysicsAsset* PhysicsAsset);
 	UStaticMeshComponent* CreatePreviewShapeComponent(UStaticMesh* StaticMesh, int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex, int32 PartIndex, const FVector& BaseMeshExtent);
 	UMaterial* CreatePreviewShapeMaterial(float Alpha) const;
 	void SelectBodyShape(int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex);
@@ -61,7 +62,7 @@ private:
 	void RenderSkeletonTree(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex, const FString& SearchText);
 	bool RenderGraphPanel(UPhysicsAsset* PhysicsAsset);
 	bool RenderDetailsPanel(UPhysicsAsset* PhysicsAsset);
-	bool RenderPreviewSettingsPanel();
+	bool RenderPreviewSettingsPanel(bool bShowHeader = true);
 	bool RenderToolsPanel(UPhysicsAsset* PhysicsAsset);
 	void SyncSelectionToViewport();
 	int32 FindBoneIndexByName(const FSkeletonAsset* SkeletonAsset, const FName& BoneName) const;
@@ -91,10 +92,14 @@ private:
 	EPhysicsAssetPreviewShapeType SelectedShapeType = EPhysicsAssetPreviewShapeType::None;
 	int32 SelectedShapeIndex = -1;
 	FVector PreviewShapeTint = FVector(1.0f, 1.0f, 1.0f);
-	float PreviewBaseShapeOpacity = 0.18f;
+	float PreviewBaseShapeOpacity = 0.3f;
 	float PreviewConstraintShapeOpacity = 0.35f;
 	float PreviewSelectedShapeOpacity = 0.45f;
+	bool bShowConstraintDebug = true;
+	float ConstraintAxisLength = 10.0f;
 
 	char BoneSearchBuffer[128] = {};
+	bool bExpandBodyTreeOnNextRender = false;
+	bool bFrameGraphOnNextRender = false;
 	bool bPendingClose = false;
 };

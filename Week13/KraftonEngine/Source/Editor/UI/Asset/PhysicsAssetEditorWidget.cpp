@@ -4,9 +4,11 @@
 #include "Component/Light/DirectionalLightComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "Component/GizmoComponent.h"
+#include "Debug/DrawDebugHelpers.h"
 #include "GameFramework/Light/DirectionalLightActor.h"
 #include "GameFramework/StaticMeshActor.h"
 #include "ImGui/imgui.h"
+#include "ImGui/imgui_internal.h"
 #include "Materials/Material.h"
 #include "Materials/MaterialManager.h"
 #include "Mesh/MeshManager.h"
@@ -15,11 +17,15 @@
 #include "Mesh/StaticMesh.h"
 #include "Object/FName.h"
 #include "Object/FUObjectArray.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
+#include "Physics/Common/PhysicsMaterialTypes.h"
 #include "Physics/Assets/PhysicsConstraintSetup.h"
 #include "Physics/Assets/PhysicsAsset.h"
 #include "Physics/Assets/PhysicsAssetManager.h"
 #include "Physics/Assets/PhysicsBodySetup.h"
 #include "Physics/Assets/PhysicsShapeSetup.h"
+#include "Asset/AssetPackage.h"
+#include "Platform/Paths.h"
 #include "Render/Types/MinimalViewInfo.h"
 #include "Runtime/Engine.h"
 #include "Settings/EditorSettings.h"
@@ -27,6 +33,7 @@
 #include "UI/Toolbar/ViewportToolbar.h"
 #include "Viewport/Viewport.h"
 #include "Gizmo/GizmoTransformTarget.h"
+#include "Component/BoxComponent.h"
 #include "Component/StaticMeshComponent.h"
 
 #include <algorithm>
@@ -34,6 +41,7 @@
 #include <cctype>
 #include <cmath>
 #include <cstdio>
+#include <filesystem>
 
 namespace
 {
@@ -41,8 +49,43 @@ namespace
 	constexpr float Pi = 3.14159265358979323846f;
 	const FVector PhysicsAssetCapsuleAxis = FVector::ForwardVector;
 	const FVector PositiveXMeshAxis = FVector::ForwardVector;
+	constexpr ImVec4 PhysicsPanelAccentColor = ImVec4(0.0f, 0.71f, 0.86f, 1.0f);
+	constexpr ImVec4 PhysicsPanelHeaderColor = ImVec4(0.30f, 0.30f, 0.30f, 1.0f);
+	constexpr ImVec4 PhysicsPanelBodyColor = ImVec4(0.23f, 0.23f, 0.23f, 1.0f);
+	constexpr ImVec2 PhysicsPanelContentPadding = ImVec2(12.0f, 10.0f);
+	constexpr ImVec2 PhysicsPanelItemSpacing = ImVec2(8.0f, 8.0f);
+	constexpr ImVec2 PhysicsGraphControlItemSpacing = ImVec2(10.0f, 8.0f);
+	constexpr ImVec2 PhysicsGraphControlFramePadding = ImVec2(8.0f, 5.0f);
+	constexpr ImVec2 PhysicsToolsPanelContentPadding = ImVec2(14.0f, 12.0f);
+	constexpr ImVec2 PhysicsToolsPanelItemSpacing = ImVec2(10.0f, 10.0f);
+	constexpr float PhysicsPanelHeaderHeight = 28.0f;
+	constexpr float PhysicsPanelAccentWidth = 4.0f;
+	constexpr float PhysicsPanelTitleOffsetX = 12.0f;
+	constexpr float PhysicsPanelTitleOffsetY = 7.0f;
+	constexpr float PhysicsPanelHeaderSpacing = 34.0f;
+	constexpr float PhysicsViewportToolbarHeight = 34.0f;
 
 	FMatrix BuildBoneWorldMatrix(const USkeletalMeshComponent* MeshComponent, const TArray<FMatrix>* CachedBoneGlobals, int32 BoneIndex);
+
+	void DrawPhysicsPanelHeader(const char* Title)
+	{
+		ImDrawList* DrawList = ImGui::GetWindowDrawList();
+		const ImVec2 HeaderMin = ImGui::GetCursorScreenPos();
+		const float Width = ImGui::GetContentRegionAvail().x;
+		DrawList->AddRectFilled(
+			HeaderMin,
+			ImVec2(HeaderMin.x + Width, HeaderMin.y + PhysicsPanelHeaderHeight),
+			ImGui::GetColorU32(PhysicsPanelHeaderColor));
+		DrawList->AddRectFilled(
+			HeaderMin,
+			ImVec2(HeaderMin.x + PhysicsPanelAccentWidth, HeaderMin.y + PhysicsPanelHeaderHeight),
+			ImGui::GetColorU32(PhysicsPanelAccentColor));
+		DrawList->AddText(
+			ImVec2(HeaderMin.x + PhysicsPanelTitleOffsetX, HeaderMin.y + PhysicsPanelTitleOffsetY),
+			ImGui::GetColorU32(ImGuiCol_Text),
+			Title);
+		ImGui::Dummy(ImVec2(Width, PhysicsPanelHeaderSpacing));
+	}
 
 	bool InputFString(const char* Label, FString& Value)
 	{
@@ -99,16 +142,16 @@ namespace
 		return bChanged;
 	}
 
-	bool RenderBodyTypeCombo(EPhysicsBodyType& BodyType)
-	{
-		const char* Labels[] = { "Static", "Dynamic", "Kinematic" };
-		int32 CurrentIndex = static_cast<int32>(BodyType);
-		if (ImGui::Combo("Body Type", &CurrentIndex, Labels, IM_ARRAYSIZE(Labels)))
+		bool RenderBodyTypeCombo(EPhysicsBodyType& BodyType, const char* Label = "Body Type")
 		{
-			BodyType = static_cast<EPhysicsBodyType>(CurrentIndex);
-			return true;
-		}
-		return false;
+			const char* Labels[] = { "Static", "Dynamic", "Kinematic" };
+			int32 CurrentIndex = static_cast<int32>(BodyType);
+			if (ImGui::Combo(Label, &CurrentIndex, Labels, IM_ARRAYSIZE(Labels)))
+			{
+				BodyType = static_cast<EPhysicsBodyType>(CurrentIndex);
+				return true;
+			}
+			return false;
 	}
 
 	bool RenderCollisionEnabledCombo(const char* Label, EPhysicsCollisionEnabled& CollisionEnabled)
@@ -147,20 +190,20 @@ namespace
 		return false;
 	}
 
-	bool RenderJointTypeCombo(EPhysicsJointType& JointType)
-	{
-		const char* Labels[] = { "Fixed", "Distance", "Revolute", "Prismatic", "Spherical", "D6" };
-		int32 CurrentIndex = static_cast<int32>(JointType);
-		if (ImGui::Combo("Joint Type", &CurrentIndex, Labels, IM_ARRAYSIZE(Labels)))
+		bool RenderJointTypeCombo(EPhysicsJointType& JointType, const char* Label = "Joint Type")
 		{
-			JointType = static_cast<EPhysicsJointType>(CurrentIndex);
-			return true;
-		}
+			const char* Labels[] = { "Fixed", "Distance", "Revolute", "Prismatic", "Spherical", "D6" };
+			int32 CurrentIndex = static_cast<int32>(JointType);
+			if (ImGui::Combo(Label, &CurrentIndex, Labels, IM_ARRAYSIZE(Labels)))
+			{
+				JointType = static_cast<EPhysicsJointType>(CurrentIndex);
+				return true;
+			}
 		return false;
 	}
 
-	bool RenderCollisionDesc(FPhysicsCollisionDesc& CollisionDesc)
-	{
+		bool RenderCollisionDesc(FPhysicsCollisionDesc& CollisionDesc)
+		{
 		bool bChanged = false;
 
 		bChanged |= RenderCollisionEnabledCombo("Collision Enabled", CollisionDesc.CollisionEnabled);
@@ -200,8 +243,94 @@ namespace
 			ImGui::TreePop();
 		}
 
-		return bChanged;
-	}
+			return bChanged;
+		}
+
+		TArray<FString> GatherPhysicalMaterialAssetPaths()
+		{
+			TArray<FString> Paths;
+			const std::filesystem::path AssetRoot(FPaths::AssetDir());
+			if (!std::filesystem::exists(AssetRoot))
+			{
+				return Paths;
+			}
+
+			for (const auto& Entry : std::filesystem::recursive_directory_iterator(AssetRoot))
+			{
+				if (!Entry.is_regular_file() || Entry.path().extension() != L".uasset")
+				{
+					continue;
+				}
+
+				const FString PackagePath = FPaths::MakeProjectRelative(FPaths::ToUtf8(Entry.path().generic_wstring()));
+				EAssetPackageType PackageType = EAssetPackageType::Unknown;
+				if (FAssetPackage::GetPackageType(PackagePath, PackageType) && PackageType == EAssetPackageType::PhysicalMaterial)
+				{
+					Paths.push_back(PackagePath);
+				}
+			}
+
+			std::sort(Paths.begin(), Paths.end());
+			return Paths;
+		}
+
+		bool RenderPhysicalMaterialPicker(const char* Label, UPhysicalMaterial*& PhysicalMaterial)
+		{
+			const TArray<FString> MaterialPaths = GatherPhysicalMaterialAssetPaths();
+			const FString CurrentPath = PhysicalMaterial ? PhysicalMaterial->GetAssetPathFileName() : FString();
+			FString PreviewLabel = CurrentPath.empty() ? FString("None") : std::filesystem::path(FPaths::ToWide(CurrentPath)).stem().string();
+
+			bool bChanged = false;
+			if (ImGui::BeginCombo(Label, PreviewLabel.c_str()))
+			{
+				const bool bSelectedNone = CurrentPath.empty();
+				if (ImGui::Selectable("None", bSelectedNone))
+				{
+					PhysicalMaterial = nullptr;
+					bChanged = true;
+				}
+
+				for (const FString& MaterialPath : MaterialPaths)
+				{
+					const FString DisplayName = FPaths::ToUtf8(std::filesystem::path(FPaths::ToWide(MaterialPath)).stem().wstring());
+					const bool bSelected = MaterialPath == CurrentPath;
+					if (ImGui::Selectable(DisplayName.c_str(), bSelected))
+					{
+						PhysicalMaterial = FPhysicalMaterialManager::Get().Load(MaterialPath);
+						bChanged = true;
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+
+			return bChanged;
+		}
+
+		bool RenderConstraintMotionRow(const char* Label, EPhysicsConstraintMotionMode& MotionMode)
+		{
+			bool bChanged = false;
+			ImGui::PushID(Label);
+			if (ImGui::RadioButton("Free", MotionMode == EPhysicsConstraintMotionMode::Free))
+			{
+				MotionMode = EPhysicsConstraintMotionMode::Free;
+				bChanged = true;
+			}
+			ImGui::SameLine();
+			if (ImGui::RadioButton("Limited", MotionMode == EPhysicsConstraintMotionMode::Limited))
+			{
+				MotionMode = EPhysicsConstraintMotionMode::Limited;
+				bChanged = true;
+			}
+			ImGui::SameLine();
+			if (ImGui::RadioButton("Locked", MotionMode == EPhysicsConstraintMotionMode::Locked))
+			{
+				MotionMode = EPhysicsConstraintMotionMode::Locked;
+				bChanged = true;
+			}
+			ImGui::PopID();
+			return bChanged;
+		}
 
 	template<typename TShapeArray, typename TRenderBody>
 	bool RenderShapeArraySection(const char* Label, TShapeArray& Shapes, const char* AddButtonLabel, TRenderBody&& RenderBody)
@@ -320,119 +449,356 @@ namespace
 		return bChanged;
 	}
 
-	bool RenderBodySetupInspector(UPhysicsBodySetup* BodySetup)
-	{
-		if (!BodySetup)
+		bool RenderBodySetupInspector(UPhysicsBodySetup* BodySetup)
 		{
-			return false;
+			if (!BodySetup)
+			{
+				return false;
+			}
+
+			bool bChanged = false;
+
+			if (ImGui::CollapsingHeader("Physics", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::BeginTable("BodyPhysicsTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+				{
+					auto Row = [](const char* Label)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TextUnformatted(Label);
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1.0f);
+					};
+
+					Row("Mass (kg)");
+					bChanged |= ImGui::Checkbox("##OverrideMass", &BodySetup->bOverrideMass);
+					ImGui::SameLine();
+					{
+						float Mass = BodySetup->GetMass();
+						ImGui::BeginDisabled(!BodySetup->bOverrideMass);
+						if (ImGui::DragFloat("##Mass", &Mass, 0.05f, 0.0f, 100000.0f))
+						{
+							BodySetup->SetMass(Mass);
+							bChanged = true;
+						}
+						ImGui::EndDisabled();
+					}
+
+					Row("Linear Damping");
+					{
+						float LinearDamping = BodySetup->GetLinearDamping();
+						if (ImGui::DragFloat("##LinearDamping", &LinearDamping, 0.01f, 0.0f, 1000.0f))
+						{
+							BodySetup->SetLinearDamping(LinearDamping);
+							bChanged = true;
+						}
+					}
+
+					Row("Angular Damping");
+					{
+						float AngularDamping = BodySetup->GetAngularDamping();
+						if (ImGui::DragFloat("##AngularDamping", &AngularDamping, 0.01f, 0.0f, 1000.0f))
+						{
+							BodySetup->SetAngularDamping(AngularDamping);
+							bChanged = true;
+						}
+					}
+
+					Row("Enable Gravity");
+					bChanged |= ImGui::Checkbox("##EnableGravity", &BodySetup->bEnableGravity);
+
+					Row("Gravity Group Index");
+					bChanged |= ImGui::InputInt("##GravityGroupIndex", &BodySetup->GravityGroupIndex);
+
+					Row("Update Kinematic from Simulation");
+					bChanged |= ImGui::Checkbox("##UpdateKinematicFromSimulation", &BodySetup->bUpdateKinematicFromSimulation);
+
+					Row("Gyroscopic Torque Enabled");
+					bChanged |= ImGui::Checkbox("##GyroscopicTorqueEnabled", &BodySetup->bGyroscopicTorqueEnabled);
+
+					Row("Double Sided Geometry");
+					bChanged |= ImGui::Checkbox("##DoubleSidedGeometry", &BodySetup->bDoubleSidedGeometry);
+
+					Row("Simple Collision Physical Material");
+					bChanged |= RenderPhysicalMaterialPicker("##SimpleCollisionPhysicalMaterial", BodySetup->SimpleCollisionPhysicalMaterial);
+
+					Row("Physics Type");
+					{
+						EPhysicsBodyType BodyType = BodySetup->GetBodyType();
+						if (RenderBodyTypeCombo(BodyType, "##BodyType"))
+						{
+							BodySetup->SetBodyType(BodyType);
+							bChanged = true;
+						}
+					}
+
+					ImGui::EndTable();
+				}
+			}
+
+			if (ImGui::CollapsingHeader("Body Setup", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::BeginTable("BodySetupMetaTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+				{
+					auto Row = [](const char* Label)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TextUnformatted(Label);
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1.0f);
+					};
+
+					Row("Skip Scale from Animation");
+					bChanged |= ImGui::Checkbox("##SkipScaleFromAnimation", &BodySetup->bSkipScaleFromAnimation);
+					ImGui::EndTable();
+				}
+			}
+
+			if (ImGui::CollapsingHeader("Primitives", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::BeginTable("BodyPrimitiveMetaTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+				{
+					auto Row = [](const char* Label)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TextUnformatted(Label);
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1.0f);
+					};
+
+					Row("Consider for Bounds");
+					bChanged |= ImGui::Checkbox("##ConsiderForBounds", &BodySetup->bConsiderForBounds);
+
+					Row("Bone Name");
+					{
+						char BoneName[256];
+						std::snprintf(BoneName, sizeof(BoneName), "%s", BodySetup->GetTargetBoneName().ToString().c_str());
+						ImGui::BeginDisabled();
+						ImGui::InputText("##BodyBoneName", BoneName, sizeof(BoneName), ImGuiInputTextFlags_ReadOnly);
+						ImGui::EndDisabled();
+					}
+
+					ImGui::EndTable();
+				}
+
+				FPhysicsAggregateShapeSetup& ShapeSetup = BodySetup->GetMutableShapeSetup();
+				bChanged |= RenderShapeArraySection("Sphere Shapes", ShapeSetup.SphereShapeSetups, "Add Sphere",
+					[](FPhysicsSphereShapeSetup& Shape) { return RenderSphereShape(Shape); });
+				bChanged |= RenderShapeArraySection("Box Shapes", ShapeSetup.BoxShapeSetups, "Add Box",
+					[](FPhysicsBoxShapeSetup& Shape) { return RenderBoxShape(Shape); });
+				bChanged |= RenderShapeArraySection("Capsule Shapes", ShapeSetup.CapsuleShapeSetups, "Add Capsule",
+					[](FPhysicsCapsuleShapeSetup& Shape) { return RenderCapsuleShape(Shape); });
+				bChanged |= RenderShapeArraySection("Convex Shapes", ShapeSetup.ConvexShapeSetups, "Add Convex",
+					[](FPhysicsConvexShapeSetup& Shape) { return RenderConvexShape(Shape); });
+			}
+
+			if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::BeginTable("BodyCollisionTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+				{
+					auto Row = [](const char* Label)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TextUnformatted(Label);
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1.0f);
+					};
+
+					Row("Simulation Generates Hit Events");
+					bChanged |= ImGui::Checkbox("##SimulationGeneratesHitEvents", &BodySetup->bSimulationGeneratesHitEvents);
+
+					Row("Phys Material Override");
+					bChanged |= RenderPhysicalMaterialPicker("##PhysMaterialOverride", BodySetup->PhysMaterialOverride);
+
+					Row("Never Needs Cooked Collision Data");
+					bChanged |= ImGui::Checkbox("##NeverNeedsCookedCollisionData", &BodySetup->bNeverNeedsCookedCollisionData);
+
+					Row("Collision Complexity");
+					{
+						const char* Labels[] = { "Project Default", "Use Simple Collision As Complex", "Use Complex Collision As Simple" };
+						int CurrentIndex = static_cast<int>(BodySetup->CollisionComplexity);
+						if (ImGui::Combo("##CollisionComplexity", &CurrentIndex, Labels, IM_ARRAYSIZE(Labels)))
+						{
+							BodySetup->CollisionComplexity = static_cast<EPhysicsBodyCollisionComplexity>(CurrentIndex);
+							bChanged = true;
+						}
+					}
+
+					Row("Collision Response");
+					{
+						FPhysicsCollisionDesc CollisionDesc = BodySetup->GetCollisionDesc();
+						if (RenderCollisionEnabledCombo("##BodyCollisionEnabled", CollisionDesc.CollisionEnabled))
+						{
+							BodySetup->SetCollisionDesc(CollisionDesc);
+							bChanged = true;
+						}
+					}
+
+					ImGui::EndTable();
+				}
+
+				FPhysicsCollisionDesc CollisionDesc = BodySetup->GetCollisionDesc();
+				if (ImGui::TreeNode("Collision Response Details"))
+				{
+					if (RenderCollisionDesc(CollisionDesc))
+					{
+						BodySetup->SetCollisionDesc(CollisionDesc);
+						bChanged = true;
+					}
+					ImGui::TreePop();
+				}
+			}
+
+			return bChanged;
 		}
 
-		bool bChanged = false;
+		bool RenderConstraintInspector(FPhysicsConstraintSetup& Constraint)
+		{
+			bool bChanged = false;
 
-		FName TargetBoneName = BodySetup->GetTargetBoneName();
-		if (InputFName("Target Bone", TargetBoneName))
-		{
-			BodySetup->SetTargetBoneName(TargetBoneName);
-			bChanged = true;
-		}
+			if (ImGui::BeginTable("ConstraintTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+			{
+				auto Row = [](const char* Label)
+				{
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::TextUnformatted(Label);
+					ImGui::TableSetColumnIndex(1);
+					ImGui::SetNextItemWidth(-1.0f);
+				};
 
-		EPhysicsBodyType BodyType = BodySetup->GetBodyType();
-		if (RenderBodyTypeCombo(BodyType))
-		{
-			BodySetup->SetBodyType(BodyType);
-			bChanged = true;
-		}
+				Row("Joint Name");
+				bChanged |= InputFName("##ConstraintName", Constraint.ConstraintName);
 
-		float Mass = BodySetup->GetMass();
-		if (ImGui::DragFloat("Mass", &Mass, 0.05f, 0.0f, 100000.0f))
-		{
-			BodySetup->SetMass(Mass);
-			bChanged = true;
-		}
+				Row("Child Bone Name");
+				bChanged |= InputFName("##ChildBoneName", Constraint.ChildBoneName);
 
-		float LinearDamping = BodySetup->GetLinearDamping();
-		if (ImGui::DragFloat("Linear Damping", &LinearDamping, 0.01f, 0.0f, 1000.0f))
-		{
-			BodySetup->SetLinearDamping(LinearDamping);
-			bChanged = true;
-		}
+				Row("Parent Bone Name");
+				bChanged |= InputFName("##ParentBoneName", Constraint.ParentBoneName);
 
-		float AngularDamping = BodySetup->GetAngularDamping();
-		if (ImGui::DragFloat("Angular Damping", &AngularDamping, 0.01f, 0.0f, 1000.0f))
-		{
-			BodySetup->SetAngularDamping(AngularDamping);
-			bChanged = true;
-		}
+				ImGui::EndTable();
+			}
 
-		FPhysicsCollisionDesc CollisionDesc = BodySetup->GetCollisionDesc();
-		if (RenderCollisionDesc(CollisionDesc))
-		{
-			BodySetup->SetCollisionDesc(CollisionDesc);
-			bChanged = true;
-		}
+			if (ImGui::CollapsingHeader("Constraint Transforms", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				bChanged |= RenderTransformEditor("Child", Constraint.ChildLocalFrame);
+				bChanged |= RenderTransformEditor("Parent", Constraint.ParentLocalFrame);
+			}
 
-		FPhysicsAggregateShapeSetup& ShapeSetup = BodySetup->GetMutableShapeSetup();
-		bChanged |= RenderShapeArraySection("Sphere Shapes", ShapeSetup.SphereShapeSetups, "Add Sphere",
-			[](FPhysicsSphereShapeSetup& Shape) { return RenderSphereShape(Shape); });
-		bChanged |= RenderShapeArraySection("Box Shapes", ShapeSetup.BoxShapeSetups, "Add Box",
-			[](FPhysicsBoxShapeSetup& Shape) { return RenderBoxShape(Shape); });
-		bChanged |= RenderShapeArraySection("Capsule Shapes", ShapeSetup.CapsuleShapeSetups, "Add Capsule",
-			[](FPhysicsCapsuleShapeSetup& Shape) { return RenderCapsuleShape(Shape); });
-		bChanged |= RenderShapeArraySection("Convex Shapes", ShapeSetup.ConvexShapeSetups, "Add Convex",
-			[](FPhysicsConvexShapeSetup& Shape) { return RenderConvexShape(Shape); });
+			if (ImGui::CollapsingHeader("Constraint Behavior", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::BeginTable("ConstraintBehaviorTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+				{
+					auto Row = [](const char* Label)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TextUnformatted(Label);
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1.0f);
+					};
 
-		return bChanged;
-	}
+					Row("Disable Collision");
+					bChanged |= ImGui::Checkbox("##ConstraintDisableCollision", &Constraint.bDisableCollision);
 
-	bool RenderConstraintInspector(FPhysicsConstraintSetup& Constraint)
-	{
-		bool bChanged = false;
+					Row("Parent Dominates");
+					bChanged |= ImGui::Checkbox("##ConstraintParentDominates", &Constraint.bParentDominates);
 
-		bChanged |= InputFName("Constraint Name", Constraint.ConstraintName);
-		bChanged |= InputFName("Parent Bone", Constraint.ParentBoneName);
-		bChanged |= InputFName("Child Bone", Constraint.ChildBoneName);
-		bChanged |= RenderJointTypeCombo(Constraint.JointType);
-		bChanged |= RenderTransformEditor("Parent Local Frame", Constraint.ParentLocalFrame);
-		bChanged |= RenderTransformEditor("Child Local Frame", Constraint.ChildLocalFrame);
-		if (ImGui::DragFloat("Linear Limit", &Constraint.LinearLimit, 0.1f, 0.0f, 100000.0f))
-		{
-			bChanged = true;
-		}
-		if (ImGui::DragFloat("Angular Limit", &Constraint.AngularLimit, 0.1f, 0.0f, 360.0f))
-		{
-			bChanged = true;
-		}
-		if (ImGui::DragFloat("Twist Limit Min", &Constraint.TwistLimitMin, 0.1f, -360.0f, 360.0f))
-		{
-			bChanged = true;
-		}
-		if (ImGui::DragFloat("Twist Limit Max", &Constraint.TwistLimitMax, 0.1f, -360.0f, 360.0f))
-		{
-			bChanged = true;
-		}
-		if (ImGui::DragFloat("Swing Limit Y", &Constraint.SwingLimitY, 0.1f, 0.0f, 360.0f))
-		{
-			bChanged = true;
-		}
-		if (ImGui::DragFloat("Swing Limit Z", &Constraint.SwingLimitZ, 0.1f, 0.0f, 360.0f))
-		{
-			bChanged = true;
-		}
-		if (ImGui::Checkbox("Disable Collision", &Constraint.bDisableCollision))
-		{
-			bChanged = true;
-		}
-		if (ImGui::DragFloat("Stiffness", &Constraint.Stiffness, 0.1f, 0.0f, 100000.0f))
-		{
-			bChanged = true;
-		}
-		if (ImGui::DragFloat("Damping", &Constraint.Damping, 0.1f, 0.0f, 100000.0f))
-		{
-			bChanged = true;
-		}
+					Row("Enable Mass Conditioning");
+					bChanged |= ImGui::Checkbox("##ConstraintMassConditioning", &Constraint.bEnableMassConditioning);
 
-		return bChanged;
-	}
+					Row("Use Linear Joint Solver");
+					bChanged |= ImGui::Checkbox("##ConstraintLinearJointSolver", &Constraint.bUseLinearJointSolver);
+
+					Row("Joint Type");
+					bChanged |= RenderJointTypeCombo(Constraint.JointType, "##ConstraintJointType");
+
+					ImGui::EndTable();
+				}
+			}
+
+			if (ImGui::CollapsingHeader("Linear Limits", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::BeginTable("ConstraintLinearTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+				{
+					auto Row = [](const char* Label)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TextUnformatted(Label);
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1.0f);
+					};
+
+					Row("X Motion");
+					bChanged |= RenderConstraintMotionRow("XMotion", Constraint.XMotion);
+
+					Row("Y Motion");
+					bChanged |= RenderConstraintMotionRow("YMotion", Constraint.YMotion);
+
+					Row("Z Motion");
+					bChanged |= RenderConstraintMotionRow("ZMotion", Constraint.ZMotion);
+
+					Row("Limit");
+					bChanged |= ImGui::DragFloat("##ConstraintLinearLimit", &Constraint.LinearLimit, 0.1f, 0.0f, 100000.0f);
+
+					Row("Scale Linear Limits");
+					bChanged |= ImGui::Checkbox("##ConstraintScaleLinearLimits", &Constraint.bScaleLinearLimits);
+
+					ImGui::EndTable();
+				}
+			}
+
+			if (ImGui::CollapsingHeader("Angular Limits", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::BeginTable("ConstraintAngularTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+				{
+					auto Row = [](const char* Label)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TextUnformatted(Label);
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1.0f);
+					};
+
+					Row("Swing 1 Motion");
+					bChanged |= RenderConstraintMotionRow("Swing1Motion", Constraint.Swing1Motion);
+
+					Row("Swing 2 Motion");
+					bChanged |= RenderConstraintMotionRow("Swing2Motion", Constraint.Swing2Motion);
+
+					Row("Twist Motion");
+					bChanged |= RenderConstraintMotionRow("TwistMotion", Constraint.TwistMotion);
+
+					Row("Swing 1 Limit");
+					bChanged |= ImGui::DragFloat("##Swing1Limit", &Constraint.SwingLimitY, 0.1f, 0.0f, 360.0f);
+
+					Row("Swing 2 Limit");
+					bChanged |= ImGui::DragFloat("##Swing2Limit", &Constraint.SwingLimitZ, 0.1f, 0.0f, 360.0f);
+
+					Row("Twist Limit Min");
+					bChanged |= ImGui::DragFloat("##TwistLimitMin", &Constraint.TwistLimitMin, 0.1f, -360.0f, 360.0f);
+
+					Row("Twist Limit Max");
+					bChanged |= ImGui::DragFloat("##TwistLimitMax", &Constraint.TwistLimitMax, 0.1f, -360.0f, 360.0f);
+
+					Row("Stiffness");
+					bChanged |= ImGui::DragFloat("##ConstraintStiffness", &Constraint.Stiffness, 0.1f, 0.0f, 100000.0f);
+
+					Row("Damping");
+					bChanged |= ImGui::DragFloat("##ConstraintDamping", &Constraint.Damping, 0.1f, 0.0f, 100000.0f);
+
+					ImGui::EndTable();
+				}
+			}
+
+			return bChanged;
+		}
 
 	bool RenderCreateParamsEditor(FPhysicsAssetCreateParams& Params)
 	{
@@ -775,6 +1141,43 @@ namespace
 		NewLayout.NodeKey = NodeKey;
 		NewLayout.Position = DefaultPosition;
 		return static_cast<int32>(NodeLayouts.size()) - 1;
+	}
+
+	void FramePhysicsGraphNodes(const TArray<FPhysicsGraphNodeVisual>& GraphNodes, const ImVec2& CanvasSize, FPhysicsAssetGraphViewState& ViewState)
+	{
+		constexpr float GraphFrameMargin = 32.0f;
+		if (GraphNodes.empty())
+		{
+			ViewState.Pan = FVector2(GraphFrameMargin, GraphFrameMargin);
+			ViewState.Zoom = 1.0f;
+			return;
+		}
+
+		float MinX = FLT_MAX;
+		float MinY = FLT_MAX;
+		float MaxX = -FLT_MAX;
+		float MaxY = -FLT_MAX;
+		for (const FPhysicsGraphNodeVisual& Node : GraphNodes)
+		{
+			MinX = (std::min)(MinX, Node.Position.X);
+			MinY = (std::min)(MinY, Node.Position.Y);
+			MaxX = (std::max)(MaxX, Node.Position.X + Node.Size.x);
+			MaxY = (std::max)(MaxY, Node.Position.Y + Node.Size.y);
+		}
+
+		const float BoundsWidth = (std::max)(1.0f, MaxX - MinX);
+		const float BoundsHeight = (std::max)(1.0f, MaxY - MinY);
+		const float AvailableWidth = (std::max)(1.0f, CanvasSize.x - GraphFrameMargin * 2.0f);
+		const float AvailableHeight = (std::max)(1.0f, CanvasSize.y - GraphFrameMargin * 2.0f);
+		const float FitZoomX = AvailableWidth / BoundsWidth;
+		const float FitZoomY = AvailableHeight / BoundsHeight;
+		ViewState.Zoom = (std::max)(PhysicsGraphMinZoom, (std::min)((std::min)(FitZoomX, FitZoomY), PhysicsGraphMaxZoom));
+
+		const float CenteredOffsetX = GraphFrameMargin + (std::max)(0.0f, (CanvasSize.x - GraphFrameMargin * 2.0f - BoundsWidth * ViewState.Zoom) * 0.5f);
+		const float CenteredOffsetY = GraphFrameMargin + (std::max)(0.0f, (CanvasSize.y - GraphFrameMargin * 2.0f - BoundsHeight * ViewState.Zoom) * 0.5f);
+		ViewState.Pan = FVector2(
+			CenteredOffsetX - MinX * ViewState.Zoom,
+			CenteredOffsetY - MinY * ViewState.Zoom);
 	}
 
 	ImVec2 PhysicsGraphToScreen(const FVector2& GraphPosition, const ImVec2& CanvasMin, const FPhysicsAssetGraphViewState& ViewState)
@@ -1316,8 +1719,8 @@ namespace
 		return FTransform(LocalMatrix * ParentMatrix);
 	}
 
-	FMatrix BuildBoneWorldMatrix(const USkeletalMeshComponent* MeshComponent, const TArray<FMatrix>* CachedBoneGlobals, int32 BoneIndex)
-	{
+		FMatrix BuildBoneWorldMatrix(const USkeletalMeshComponent* MeshComponent, const TArray<FMatrix>* CachedBoneGlobals, int32 BoneIndex)
+		{
 		if (!MeshComponent)
 		{
 			return FMatrix::Identity;
@@ -1341,8 +1744,90 @@ namespace
 			}
 		}
 
-		return MeshWorldMatrix;
-	}
+			return MeshWorldMatrix;
+		}
+
+		FVector RotateAroundAxis(const FVector& Vector, const FVector& Axis, float Radians)
+		{
+			FVector SafeAxis = Axis;
+			if (SafeAxis.IsNearlyZero())
+			{
+				return Vector;
+			}
+
+			SafeAxis.Normalize();
+			const float CosTheta = std::cos(Radians);
+			const float SinTheta = std::sin(Radians);
+			return Vector * CosTheta
+				+ SafeAxis.Cross(Vector) * SinTheta
+				+ SafeAxis * (SafeAxis.Dot(Vector) * (1.0f - CosTheta));
+		}
+
+		void DrawDebugArc(UWorld* World, const FVector& Origin, const FVector& AxisA, const FVector& AxisB, float Radius, float MinDegrees, float MaxDegrees, const FColor& Color, float Duration)
+		{
+			const int32 SegmentCount = 20;
+			FVector PreviousPoint = Origin + AxisA * Radius;
+			bool bHasPrevious = false;
+			for (int32 SegmentIndex = 0; SegmentIndex <= SegmentCount; ++SegmentIndex)
+			{
+				const float Alpha = static_cast<float>(SegmentIndex) / static_cast<float>(SegmentCount);
+				const float AngleDegrees = MinDegrees + (MaxDegrees - MinDegrees) * Alpha;
+				const float AngleRadians = AngleDegrees * Pi / 180.0f;
+				const FVector Point = Origin + (AxisA * std::cos(AngleRadians) + AxisB * std::sin(AngleRadians)) * Radius;
+				if (bHasPrevious)
+				{
+					DrawDebugLine(World, PreviousPoint, Point, Color, Duration);
+				}
+				PreviousPoint = Point;
+				bHasPrevious = true;
+			}
+		}
+
+		void DrawConstraintLimitDebug(UWorld* World, const FTransform& Frame, const FPhysicsConstraintSetup& Constraint, bool bSelected, float Duration, float VisualScale)
+		{
+			if (!World)
+			{
+				return;
+			}
+
+			const FVector Origin = Frame.Location;
+			const FRotator Rotation = Frame.GetRotator();
+			FVector Forward = Rotation.GetForwardVector();
+			FVector Right = Rotation.GetRightVector();
+			FVector Up = Rotation.GetUpVector();
+			Forward.Normalize();
+			Right.Normalize();
+			Up.Normalize();
+
+			const float AxisLength = VisualScale * (bSelected ? 1.35f : 1.0f);
+			const float LimitRadius = VisualScale * (bSelected ? 1.15f : 0.9f);
+			DrawDebugLine(World, Origin, Origin + Forward * AxisLength, FColor(255, 64, 64), Duration);
+			DrawDebugLine(World, Origin, Origin + Right * AxisLength, FColor(64, 255, 64), Duration);
+			DrawDebugLine(World, Origin, Origin + Up * AxisLength, FColor(64, 160, 255), Duration);
+
+			if (Constraint.Swing1Motion != EPhysicsConstraintMotionMode::Locked)
+			{
+				const float Swing1Limit = Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Free ? 90.0f : Constraint.SwingLimitY;
+				DrawDebugArc(World, Origin, Forward, Right, LimitRadius, -Swing1Limit, Swing1Limit, FColor(72, 255, 96), Duration);
+				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Up, Swing1Limit * Pi / 180.0f) * LimitRadius, FColor(72, 255, 96), Duration);
+				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Up, -Swing1Limit * Pi / 180.0f) * LimitRadius, FColor(72, 255, 96), Duration);
+			}
+
+			if (Constraint.Swing2Motion != EPhysicsConstraintMotionMode::Locked)
+			{
+				const float Swing2Limit = Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Free ? 90.0f : Constraint.SwingLimitZ;
+				DrawDebugArc(World, Origin, Forward, Up, LimitRadius, -Swing2Limit, Swing2Limit, FColor(255, 96, 96), Duration);
+				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Right, Swing2Limit * Pi / 180.0f) * LimitRadius, FColor(255, 96, 96), Duration);
+				DrawDebugLine(World, Origin, Origin + RotateAroundAxis(Forward, Right, -Swing2Limit * Pi / 180.0f) * LimitRadius, FColor(255, 96, 96), Duration);
+			}
+
+			if (Constraint.TwistMotion != EPhysicsConstraintMotionMode::Locked)
+			{
+				const float TwistMin = Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free ? -180.0f : Constraint.TwistLimitMin;
+				const float TwistMax = Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free ? 180.0f : Constraint.TwistLimitMax;
+				DrawDebugArc(World, Origin, Right, Up, LimitRadius * 0.45f, TwistMin, TwistMax, FColor(255, 220, 96), Duration);
+			}
+		}
 
 	FVector ComputeConvexBoundsExtent(const FPhysicsConvexShapeSetup& Shape)
 	{
@@ -1853,6 +2338,8 @@ void FPhysicsAssetEditorWidget::Open(UObject* Object)
 	SelectedShapeType = EPhysicsAssetPreviewShapeType::None;
 	SelectedShapeIndex = -1;
 	BoneSearchBuffer[0] = '\0';
+	bExpandBodyTreeOnNextRender = true;
+	bFrameGraphOnNextRender = true;
 	ToolSettings = FPhysicsAssetCreateParams();
 	PreviewSkeletalMesh = nullptr;
 	if (!BodyGizmoTarget)
@@ -1949,12 +2436,18 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	}
 
 	AStaticMeshActor* FloorActor = WorldContext.World->SpawnActor<AStaticMeshActor>();
-	FloorActor->InitDefaultComponents("Asset/Mesh/BasicShape/Cube_StaticMesh.uasset");
-	FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -0.05f));
-	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 0.02f));
+	FloorActor->InitDefaultComponents("Asset/Mesh/CubeGrid/SM_CubeGrid_StaticMesh.uasset");
+	UBoxComponent* FloorBoxComponent = FloorActor->AddComponent<UBoxComponent>();
+	FloorBoxComponent->AttachToComponent(FloorActor->GetRootComponent());
+	FloorBoxComponent->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+	FloorBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	FloorBoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -1.0f));
+	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 1.0f));
 
 	ViewportClient.Initialize(Device, 1280, 720);
 	ViewportClient.GetRenderOptions().ShowFlags.bGrid = false;
+	ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw = true;
 	ViewportClient.SetPreviewWorld(WorldContext.World);
 	ViewportClient.SetPreviewActor(Actor);
 	ViewportClient.SetPreviewMeshComponent(MeshComponent);
@@ -2252,6 +2745,58 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 	}
 }
 
+void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
+{
+	UWorld* PreviewWorld = ViewportClient.GetPreviewWorld();
+	if (PreviewWorld)
+	{
+		PreviewWorld->GetScene().GetDebugDrawQueue().Clear();
+	}
+
+	if (!PhysicsAsset || !bShowConstraintDebug || !ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw)
+	{
+		return;
+	}
+
+	USkeletalMeshComponent* PreviewMeshComponent = ViewportClient.GetPreviewMeshComponent();
+	const FSkeletonAsset* SkeletonAsset = PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr;
+	if (!PreviewMeshComponent || !PreviewWorld || !SkeletonAsset)
+	{
+		return;
+	}
+
+	constexpr float ConstraintDebugDuration = 0.1f;
+	TArray<FMatrix> BoneGlobalMatrices;
+	PreviewMeshComponent->GetCurrentBoneGlobalMatrices(BoneGlobalMatrices);
+
+	for (int32 ConstraintIndex = 0; ConstraintIndex < static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()); ++ConstraintIndex)
+	{
+		const FPhysicsConstraintSetup& Constraint = PhysicsAsset->GetConstraintSetups()[ConstraintIndex];
+		const int32 ParentBoneIndex = FindBoneIndexByName(SkeletonAsset, Constraint.ParentBoneName);
+		const int32 ChildBoneIndex = FindBoneIndexByName(SkeletonAsset, Constraint.ChildBoneName);
+		if (ParentBoneIndex < 0 || ChildBoneIndex < 0)
+		{
+			continue;
+		}
+
+		const FMatrix ParentBoneMatrix = BuildBoneWorldMatrix(PreviewMeshComponent, &BoneGlobalMatrices, ParentBoneIndex);
+		const FMatrix ChildBoneMatrix = BuildBoneWorldMatrix(PreviewMeshComponent, &BoneGlobalMatrices, ChildBoneIndex);
+		const FTransform ParentFrame(Constraint.ParentLocalFrame.ToMatrix() * ParentBoneMatrix);
+		const FTransform ChildFrame(Constraint.ChildLocalFrame.ToMatrix() * ChildBoneMatrix);
+		const FVector MidPoint = (ParentFrame.Location + ChildFrame.Location) * 0.5f;
+		const bool bSelected = ConstraintIndex == SelectedConstraintIndex;
+
+		DrawDebugLine(PreviewWorld, ParentFrame.Location, ChildFrame.Location, bSelected ? FColor(255, 210, 96) : FColor(140, 160, 180), ConstraintDebugDuration);
+		DrawDebugPoint(PreviewWorld, ParentFrame.Location, bSelected ? 0.6f : 0.35f, FColor(96, 180, 255), ConstraintDebugDuration);
+		DrawDebugPoint(PreviewWorld, ChildFrame.Location, bSelected ? 0.6f : 0.35f, FColor(96, 255, 180), ConstraintDebugDuration);
+
+		FTransform DebugFrame = ParentFrame;
+		DebugFrame.Location = MidPoint;
+		const float ConstraintVisualScale = (std::max)(ConstraintAxisLength, FVector::Distance(ParentFrame.Location, ChildFrame.Location) * 0.35f);
+		DrawConstraintLimitDebug(PreviewWorld, DebugFrame, Constraint, bSelected, ConstraintDebugDuration, ConstraintVisualScale);
+	}
+}
+
 void FPhysicsAssetEditorWidget::Close()
 {
 	ClearPreviewShapeComponents();
@@ -2304,7 +2849,9 @@ void FPhysicsAssetEditorWidget::Tick(float DeltaTime)
 	if (ViewportClient.IsRenderable())
 	{
 		ViewportClient.Tick(DeltaTime);
-		SyncPreviewShapeComponents(static_cast<UPhysicsAsset*>(EditedObject));
+		UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
+		SyncPreviewShapeComponents(PhysicsAsset);
+		DrawConstraintDebug(PhysicsAsset);
 	}
 }
 
@@ -2509,18 +3056,62 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 	ImGui::TextDisabled("%s", PhysicsAsset->GetPreviewSkeletalMeshPath().empty() ? "Preview Mesh: None" : PhysicsAsset->GetPreviewSkeletalMeshPath().c_str());
 	ImGui::Separator();
 
-	static float LeftPanelWidth = 300.0f;
+	static float LeftPanelWidth = 360.0f;
 	static float RightPanelWidth = 360.0f;
 	static float GraphHeight = 220.0f;
+	static float RightTopPanelHeight = 420.0f;
+	constexpr float PhysicsEditorSplitterThickness = 6.0f;
+	constexpr float PhysicsEditorMinSidePanelWidth = 220.0f;
+	constexpr float PhysicsEditorMinViewportWidth = 320.0f;
+	constexpr float PhysicsEditorMinTopPanelHeight = 220.0f;
+	constexpr float PhysicsEditorMinBottomPanelHeight = 160.0f;
 
 	bool bChanged = false;
 	bool bGraphLayoutChanged = false;
+	bool bPreviewSettingsChanged = false;
 
-	ImGui::BeginChild("PhysicsAssetLeftPanel", ImVec2(LeftPanelWidth, 0.0f), true);
+	const ImVec2 MainContentSize = ImGui::GetContentRegionAvail();
+	const float TotalSplitterWidth = PhysicsEditorSplitterThickness * 2.0f;
+	const float MaxCombinedSideWidth = (std::max)(0.0f, MainContentSize.x - PhysicsEditorMinViewportWidth - TotalSplitterWidth);
+	if (MaxCombinedSideWidth > 0.0f)
+	{
+		const float CurrentCombinedSideWidth = (std::max)(1.0f, LeftPanelWidth + RightPanelWidth);
+		if (LeftPanelWidth + RightPanelWidth > MaxCombinedSideWidth)
+		{
+			const float Scale = MaxCombinedSideWidth / CurrentCombinedSideWidth;
+			LeftPanelWidth *= Scale;
+			RightPanelWidth *= Scale;
+		}
+
+		const float MinSidePanelWidth = (std::min)(PhysicsEditorMinSidePanelWidth, (std::max)(120.0f, MaxCombinedSideWidth * 0.5f));
+		if (MaxCombinedSideWidth < MinSidePanelWidth * 2.0f)
+		{
+			LeftPanelWidth = MaxCombinedSideWidth * 0.5f;
+			RightPanelWidth = MaxCombinedSideWidth - LeftPanelWidth;
+		}
+		else
+		{
+			LeftPanelWidth = (std::clamp)(LeftPanelWidth, MinSidePanelWidth, MaxCombinedSideWidth - MinSidePanelWidth);
+			RightPanelWidth = (std::clamp)(RightPanelWidth, MinSidePanelWidth, MaxCombinedSideWidth - LeftPanelWidth);
+			if (LeftPanelWidth + RightPanelWidth > MaxCombinedSideWidth)
+			{
+				RightPanelWidth = MaxCombinedSideWidth - LeftPanelWidth;
+			}
+		}
+	}
+	const float ViewportWidth = (std::max)(PhysicsEditorMinViewportWidth, MainContentSize.x - LeftPanelWidth - RightPanelWidth - TotalSplitterWidth);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	ImGui::BeginChild("PhysicsAssetLeftPanel", ImVec2(LeftPanelWidth, MainContentSize.y), true);
 	{
 		const float SkeletonHeight = (std::max)(160.0f, ImGui::GetContentRegionAvail().y - GraphHeight - ImGui::GetStyle().ItemSpacing.y);
-		ImGui::BeginChild("PhysicsSkeletonTree", ImVec2(0.0f, SkeletonHeight), true);
-		ImGui::TextUnformatted("Body Tree");
+		const ImGuiWindowFlags SkeletonTreeFlags = ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_HorizontalScrollbar;
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, PhysicsPanelBodyColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PhysicsPanelContentPadding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, PhysicsPanelItemSpacing);
+		ImGui::BeginChild("PhysicsSkeletonTree", ImVec2(0.0f, SkeletonHeight), true, SkeletonTreeFlags);
+		DrawPhysicsPanelHeader("Body Tree");
 		ImGui::SetNextItemWidth(-1.0f);
 		ImGui::InputTextWithHint("##PhysicsBoneSearch", "Search Skeleton Tree...", BoneSearchBuffer, sizeof(BoneSearchBuffer));
 		ImGui::Separator();
@@ -2537,6 +3128,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 						RenderSkeletonTree(SkeletonAsset, BoneIndex, SearchText);
 					}
 				}
+				bExpandBodyTreeOnNextRender = false;
 			}
 		}
 		else
@@ -2544,26 +3136,54 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 			ImGui::TextDisabled("No preview skeletal mesh is associated with this Physics Asset.");
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
 
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, PhysicsPanelBodyColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PhysicsPanelContentPadding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, PhysicsPanelItemSpacing);
 		ImGui::BeginChild("PhysicsGraphPanel", ImVec2(0.0f, 0.0f), true);
 		ImGui::TextUnformatted("Graph");
 		ImGui::Separator();
 		bGraphLayoutChanged = RenderGraphPanel(PhysicsAsset);
 		ImGui::EndChild();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
 	}
 	ImGui::EndChild();
 
 	ImGui::SameLine();
-
-	ImGui::BeginGroup();
 	{
-		const float ViewportWidth = (std::max)(320.0f, ImGui::GetContentRegionAvail().x - RightPanelWidth - ImGui::GetStyle().ItemSpacing.x);
+		const float MinSidePanelWidth = (std::min)(PhysicsEditorMinSidePanelWidth, (std::max)(120.0f, MaxCombinedSideWidth * 0.5f));
+		const ImVec2 SplitterPos = ImGui::GetCursorScreenPos();
+		ImRect SplitterRect(
+			SplitterPos,
+			ImVec2(SplitterPos.x + PhysicsEditorSplitterThickness, SplitterPos.y + MainContentSize.y));
+		float LeftWidth = LeftPanelWidth;
+		float RemainingWidth = MainContentSize.x - LeftPanelWidth - PhysicsEditorSplitterThickness;
+		if (ImGui::SplitterBehavior(
+				SplitterRect,
+				ImGui::GetID("##PhysicsEditorLeftSplitter"),
+				ImGuiAxis_X,
+				&LeftWidth,
+				&RemainingWidth,
+				MinSidePanelWidth,
+				PhysicsEditorMinViewportWidth + RightPanelWidth + PhysicsEditorSplitterThickness))
+		{
+			LeftPanelWidth = LeftWidth;
+		}
+		ImGui::Dummy(ImVec2(PhysicsEditorSplitterThickness, MainContentSize.y));
+	}
+
+	ImGui::SameLine();
+	ImGui::BeginChild("PhysicsAssetViewportColumn", ImVec2(ViewportWidth, MainContentSize.y), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+	{
 		const ImVec2 ViewportSize(ViewportWidth, ImGui::GetContentRegionAvail().y);
 		const ImVec2 ViewportPos = ImGui::GetCursorScreenPos();
 
 		if (ViewportClient.IsRenderable())
 		{
-			constexpr float ToolbarHeight = 28.0f;
+			constexpr float ToolbarHeight = PhysicsViewportToolbarHeight;
 			ViewportClient.SetViewportRect(ViewportPos.x, ViewportPos.y, ViewportSize.x, ViewportSize.y);
 			if (FViewport* Viewport = ViewportClient.GetViewport())
 			{
@@ -2630,6 +3250,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 				Context.ToolbarLeft = ViewportPos.x;
 				Context.ToolbarTop = ViewportPos.y;
 				Context.ToolbarWidth = ViewportSize.x;
+				Context.ToolbarHeight = ToolbarHeight;
 				Context.bReservePlayStopSpace = false;
 				Context.bShowAddActor = false;
 				Context.OnCoordSystemToggled = [&]()
@@ -2653,6 +3274,8 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 							ImGui::Text("Selected Body: %s", BodySetup->GetTargetBoneName().ToString().c_str());
 						}
 					}
+					ImGui::Separator();
+					bPreviewSettingsChanged |= RenderPreviewSettingsPanel(false);
 				};
 
 				FViewportToolbar::Render(Context);
@@ -2666,52 +3289,78 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 			ImGui::EndChild();
 		}
 	}
-	ImGui::EndGroup();
+	ImGui::EndChild();
 
 	ImGui::SameLine();
-
-	bool bPreviewSettingsChanged = false;
-	ImGui::BeginChild("PhysicsAssetRightPanel", ImVec2(0.0f, 0.0f), true);
 	{
-		const float TopPanelHeight = (std::max)(220.0f, ImGui::GetContentRegionAvail().y - 280.0f);
-		const float AvailableWidth = ImGui::GetContentRegionAvail().x;
-		const float PanelSpacing = ImGui::GetStyle().ItemSpacing.x;
-		const float PreviewPanelWidth = 280.0f;
-		const float MinDetailsPanelWidth = 260.0f;
-		const bool bStackTopPanels = AvailableWidth < (PreviewPanelWidth + MinDetailsPanelWidth + PanelSpacing);
-
-		if (bStackTopPanels)
+		const float MinSidePanelWidth = (std::min)(PhysicsEditorMinSidePanelWidth, (std::max)(120.0f, MaxCombinedSideWidth * 0.5f));
+		const ImVec2 SplitterPos = ImGui::GetCursorScreenPos();
+		ImRect SplitterRect(
+			SplitterPos,
+			ImVec2(SplitterPos.x + PhysicsEditorSplitterThickness, SplitterPos.y + MainContentSize.y));
+		float LeftRegionWidth = MainContentSize.x - RightPanelWidth - PhysicsEditorSplitterThickness;
+		float RightWidth = RightPanelWidth;
+		if (ImGui::SplitterBehavior(
+				SplitterRect,
+				ImGui::GetID("##PhysicsEditorRightSplitter"),
+				ImGuiAxis_X,
+				&LeftRegionWidth,
+				&RightWidth,
+				LeftPanelWidth + PhysicsEditorSplitterThickness + PhysicsEditorMinViewportWidth,
+				MinSidePanelWidth))
 		{
-			const float DetailsHeight = (std::max)(150.0f, TopPanelHeight * 0.58f);
-			const float PreviewHeight = (std::max)(110.0f, TopPanelHeight - DetailsHeight - PanelSpacing);
-
-			ImGui::BeginChild("PhysicsDetailsPanel", ImVec2(0.0f, DetailsHeight), true);
-			bChanged |= RenderDetailsPanel(PhysicsAsset);
-			ImGui::EndChild();
-
-			ImGui::BeginChild("PhysicsPreviewSettingsPanel", ImVec2(0.0f, PreviewHeight), true);
-			bPreviewSettingsChanged |= RenderPreviewSettingsPanel();
-			ImGui::EndChild();
+			RightPanelWidth = RightWidth;
 		}
-		else
+		ImGui::Dummy(ImVec2(PhysicsEditorSplitterThickness, MainContentSize.y));
+	}
+
+	ImGui::SameLine();
+	ImGui::BeginChild("PhysicsAssetRightPanel", ImVec2(RightPanelWidth, MainContentSize.y), true);
+	{
+		const float RightPanelHeight = ImGui::GetContentRegionAvail().y;
+		const float MaxTopPanelHeight = (std::max)(PhysicsEditorMinTopPanelHeight, RightPanelHeight - PhysicsEditorSplitterThickness - PhysicsEditorMinBottomPanelHeight);
+		RightTopPanelHeight = (std::clamp)(RightTopPanelHeight, PhysicsEditorMinTopPanelHeight, MaxTopPanelHeight);
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, PhysicsPanelBodyColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PhysicsPanelContentPadding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, PhysicsPanelItemSpacing);
+		ImGui::BeginChild("PhysicsDetailsPanel", ImVec2(0.0f, RightTopPanelHeight), true);
+		bChanged |= RenderDetailsPanel(PhysicsAsset);
+		ImGui::EndChild();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
+
+		const ImVec2 HorizontalSplitterPos = ImGui::GetCursorScreenPos();
+		ImRect HorizontalSplitterRect(
+			HorizontalSplitterPos,
+			ImVec2(HorizontalSplitterPos.x + ImGui::GetContentRegionAvail().x, HorizontalSplitterPos.y + PhysicsEditorSplitterThickness));
+		float TopHeight = RightTopPanelHeight;
+		float BottomHeight = RightPanelHeight - RightTopPanelHeight - PhysicsEditorSplitterThickness;
+		if (ImGui::SplitterBehavior(
+				HorizontalSplitterRect,
+				ImGui::GetID("##PhysicsEditorRightHorizontalSplitter"),
+				ImGuiAxis_Y,
+				&TopHeight,
+				&BottomHeight,
+				PhysicsEditorMinTopPanelHeight,
+				PhysicsEditorMinBottomPanelHeight))
 		{
-			const float DetailsWidth = (std::max)(MinDetailsPanelWidth, AvailableWidth - PreviewPanelWidth - PanelSpacing);
-			ImGui::BeginChild("PhysicsDetailsPanel", ImVec2(DetailsWidth, TopPanelHeight), true);
-			bChanged |= RenderDetailsPanel(PhysicsAsset);
-			ImGui::EndChild();
-
-			ImGui::SameLine();
-
-			ImGui::BeginChild("PhysicsPreviewSettingsPanel", ImVec2(0.0f, TopPanelHeight), true);
-			bPreviewSettingsChanged |= RenderPreviewSettingsPanel();
-			ImGui::EndChild();
+			RightTopPanelHeight = TopHeight;
 		}
+		ImGui::Dummy(ImVec2(0.0f, PhysicsEditorSplitterThickness));
 
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, PhysicsPanelBodyColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, PhysicsToolsPanelContentPadding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, PhysicsToolsPanelItemSpacing);
 		ImGui::BeginChild("PhysicsToolsPanel", ImVec2(0.0f, 0.0f), true);
 		bChanged |= RenderToolsPanel(PhysicsAsset);
 		ImGui::EndChild();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
 	}
 	ImGui::EndChild();
+
+	ImGui::PopStyleVar();
 
 	if (bChanged)
 	{
@@ -2769,6 +3418,10 @@ void FPhysicsAssetEditorWidget::RenderSkeletonTree(const FSkeletonAsset* Skeleto
 	{
 		Flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 	}
+	else if (bExpandBodyTreeOnNextRender || !SearchText.empty())
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Always);
+	}
 
 	FString Label = Bone.Name;
 	if (BodyIndex < 0)
@@ -2810,22 +3463,25 @@ bool FPhysicsAssetEditorWidget::RenderGraphPanel(UPhysicsAsset* PhysicsAsset)
 		bLayoutChanged = true;
 	}
 
+	bool bRequestResetView = false;
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, PhysicsGraphControlItemSpacing);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, PhysicsGraphControlFramePadding);
 	if (ImGui::Button("Reset View"))
 	{
-		GraphViewState.Pan = FVector2(32.0f, 32.0f);
-		GraphViewState.Zoom = 1.0f;
-		bLayoutChanged = true;
+		bRequestResetView = true;
 	}
 	ImGui::SameLine();
+	bool bRequestAutoArrange = false;
 	if (ImGui::Button("Auto Arrange"))
 	{
-		GraphViewState.Pan = FVector2(32.0f, 32.0f);
-		GraphViewState.Zoom = 1.0f;
 		GraphViewState.NodeLayouts.clear();
+		bRequestAutoArrange = true;
 		bLayoutChanged = true;
 	}
 	ImGui::SameLine();
+	ImGui::AlignTextToFramePadding();
 	ImGui::TextDisabled("LMB drag node | Wheel zoom | MMB/RMB pan");
+	ImGui::PopStyleVar(2);
 
 	const TArray<FPhysicsConstraintSetup>& ConstraintSetups = PhysicsAsset->GetConstraintSetups();
 	const TArray<UPhysicsBodySetup*>& BodySetups = PhysicsAsset->GetBodySetups();
@@ -2970,6 +3626,16 @@ bool FPhysicsAssetEditorWidget::RenderGraphPanel(UPhysicsAsset* PhysicsAsset)
 	ImVec2 CanvasSize = ImGui::GetContentRegionAvail();
 	CanvasSize.x = (std::max)(CanvasSize.x, 240.0f);
 	CanvasSize.y = (std::max)(CanvasSize.y, 180.0f);
+	const bool bApplyInitialFrame = bFrameGraphOnNextRender;
+	if (bRequestResetView || bRequestAutoArrange || bApplyInitialFrame)
+	{
+		FramePhysicsGraphNodes(GraphNodes, CanvasSize, GraphViewState);
+		bFrameGraphOnNextRender = false;
+		if (bRequestResetView || bRequestAutoArrange)
+		{
+			bLayoutChanged = true;
+		}
+	}
 	const ImVec2 CanvasMax(CanvasMin.x + CanvasSize.x, CanvasMin.y + CanvasSize.y);
 	ImGui::InvisibleButton("##PhysicsGraphCanvas", CanvasSize, ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
 	const bool bCanvasHovered = ImGui::IsItemHovered();
@@ -3198,8 +3864,7 @@ bool FPhysicsAssetEditorWidget::RenderDetailsPanel(UPhysicsAsset* PhysicsAsset)
 	}
 
 	bool bChanged = false;
-	ImGui::TextUnformatted("Details");
-	ImGui::Separator();
+	DrawPhysicsPanelHeader("Details");
 
 	TArray<UPhysicsBodySetup*>& BodySetups = PhysicsAsset->GetMutableBodySetups();
 	TArray<FPhysicsConstraintSetup>& ConstraintSetups = PhysicsAsset->GetMutableConstraintSetups();
@@ -3245,11 +3910,33 @@ bool FPhysicsAssetEditorWidget::RenderDetailsPanel(UPhysicsAsset* PhysicsAsset)
 	return bChanged;
 }
 
-bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel()
+bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel(bool bShowHeader)
 {
 	bool bChanged = false;
-	ImGui::TextUnformatted("Preview Settings");
-	ImGui::Separator();
+	if (bShowHeader)
+	{
+		ImGui::TextUnformatted("Preview Settings");
+		ImGui::Separator();
+	}
+
+	if (ImGui::Checkbox("Show Constraints", &bShowConstraintDebug))
+	{
+		if (bShowConstraintDebug)
+		{
+			ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw = true;
+		}
+		bChanged = true;
+	}
+
+	if (bShowConstraintDebug && !ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw)
+	{
+		ImGui::TextDisabled("Constraint overlays use Show Flags > Debug Draw.");
+	}
+
+	if (bShowConstraintDebug)
+	{
+		bChanged |= ImGui::DragFloat("Constraint Axis Length", &ConstraintAxisLength, 0.5f, 0.5f, 200.0f, "%.1f");
+	}
 
 	float ShapeTint[3] = { PreviewShapeTint.X, PreviewShapeTint.Y, PreviewShapeTint.Z };
 	if (ImGui::ColorEdit3("Shape Color", ShapeTint))
@@ -3265,9 +3952,10 @@ bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel()
 	if (ImGui::Button("Reset Preview Style"))
 	{
 		PreviewShapeTint = FVector(1.0f, 1.0f, 1.0f);
-		PreviewBaseShapeOpacity = 0.18f;
+		PreviewBaseShapeOpacity = 0.3f;
 		PreviewConstraintShapeOpacity = 0.35f;
 		PreviewSelectedShapeOpacity = 0.45f;
+		ConstraintAxisLength = 10.0f;
 		bChanged = true;
 	}
 
@@ -3284,8 +3972,7 @@ bool FPhysicsAssetEditorWidget::RenderToolsPanel(UPhysicsAsset* PhysicsAsset)
 	}
 
 	bool bChanged = false;
-	ImGui::TextUnformatted("Tools");
-	ImGui::Separator();
+	DrawPhysicsPanelHeader("Tools");
 
 	ImGui::Text("Preview Mesh");
 	ImGui::TextWrapped("%s", PhysicsAsset->GetPreviewSkeletalMeshPath().empty() ? "None" : PhysicsAsset->GetPreviewSkeletalMeshPath().c_str());
