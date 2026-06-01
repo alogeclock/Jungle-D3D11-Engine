@@ -541,7 +541,10 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 	}
 	for (const auto& Line : Scene->GetDebugLines())
 	{
-		EditorLines.AddLine(Line.Start, Line.End, Line.Color.ToVector4());
+		if (Line.bAlwaysOnTop)
+			DebugBoneLines.AddLine(Line.Start, Line.End, Line.Color.ToVector4());
+		else
+			EditorLines.AddLine(Line.Start, Line.End, Line.Color.ToVector4());
 	}
 
 	// --- Grid 패스: 월드 그리드 + 축 ---

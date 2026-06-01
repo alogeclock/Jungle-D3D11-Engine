@@ -23,6 +23,10 @@
 #include "Animation/AnimSequenceManager.h"
 #include "Particles/Assets/ParticleAsset.h"
 #include "Particles/Assets/ParticleSystemAssetManager.h"
+#include "Physics/Assets/PhysicsAsset.h"
+#include "Physics/Assets/PhysicsAssetManager.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
+#include "Physics/Common/PhysicsMaterialTypes.h"
 
 #include <algorithm>
 #include <cctype>
@@ -655,6 +659,34 @@ void ParticleSystemElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
 {
 	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
 	if (UParticleSystem* Asset = FParticleSystemAssetManager::Get().Load(FilePath))
+	{
+		Context.EditorEngine->OpenAssetEditorForObject(Asset);
+	}
+}
+
+void PhysicalMaterialElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
+{
+	if (!Context.EditorEngine)
+	{
+		return;
+	}
+
+	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
+	if (UPhysicalMaterial* Asset = FPhysicalMaterialManager::Get().Load(FilePath))
+	{
+		Context.EditorEngine->OpenAssetEditorForObject(Asset);
+	}
+}
+
+void PhysicsAssetElement::OnDoubleLeftClicked(ContentBrowserContext& Context)
+{
+	if (!Context.EditorEngine)
+	{
+		return;
+	}
+
+	const FString FilePath = FPaths::ToUtf8(ContentItem.Path.wstring());
+	if (UPhysicsAsset* Asset = FPhysicsAssetManager::Get().Load(FilePath))
 	{
 		Context.EditorEngine->OpenAssetEditorForObject(Asset);
 	}

@@ -338,6 +338,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Editor\Slate\SWindow.cpp" />
     <ClCompile Include="Source\Editor\Slate\SlateApplication.cpp" />
     <ClCompile Include="Source\Editor\Subsystem\AssetFactory.cpp" />
+    <ClCompile Include="Source\Editor\Subsystem\PhysicsAssetGenerator.cpp" />
     <ClCompile Include="Source\Editor\Subsystem\EditorAnimationAssetLibrary.cpp" />
     <ClCompile Include="Source\Editor\Subsystem\OverlayStatSystem.cpp" />
     <ClCompile Include="Source\Editor\UI\EditorConsoleWidget.cpp" />
@@ -366,6 +367,8 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Editor\UI\Asset\MaterialEditorWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\Asset\MeshEditorWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Asset\PhysicalMaterialEditorWidget.cpp" />
+    <ClCompile Include="Source\Editor\UI\Asset\PhysicsAssetEditorWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\Asset\StaticMeshEditorWidget.cpp" />
     <ClCompile Include="Source\Editor\UI\ContentBrowser\ContentBrowser.cpp" />
     <ClCompile Include="Source\Editor\UI\ContentBrowser\ContentBrowserElement.cpp" />
@@ -526,6 +529,11 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Particles\Modules\ParticleModules.cpp" />
     <ClCompile Include="Source\Engine\Particles\Rendering\ParticleRenderData.cpp" />
     <ClCompile Include="Source\Engine\Particles\Runtime\ParticleEmitterInstance.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Assets\PhysicsAsset.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Assets\PhysicsAssetManager.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Assets\PhysicsBodySetup.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Common\PhysicalMaterialManager.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp" />
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp" />
@@ -641,6 +649,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Editor\Slate\SWindow.h" />
     <ClInclude Include="Source\Editor\Slate\SlateApplication.h" />
     <ClInclude Include="Source\Editor\Subsystem\AssetFactory.h" />
+    <ClInclude Include="Source\Editor\Subsystem\PhysicsAssetGenerator.h" />
     <ClInclude Include="Source\Editor\Subsystem\EditorAnimationAssetLibrary.h" />
     <ClInclude Include="Source\Editor\Subsystem\OverlayStatSystem.h" />
     <ClInclude Include="Source\Editor\UI\EditorConsoleWidget.h" />
@@ -669,6 +678,8 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Editor\UI\Asset\MaterialEditorWidget.h" />
     <ClInclude Include="Source\Editor\UI\Asset\MeshEditorWidget.h" />
     <ClInclude Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Asset\PhysicalMaterialEditorWidget.h" />
+    <ClInclude Include="Source\Editor\UI\Asset\PhysicsAssetEditorWidget.h" />
     <ClInclude Include="Source\Editor\UI\Asset\StaticMeshEditorWidget.h" />
     <ClInclude Include="Source\Editor\UI\ContentBrowser\ContentBrowser.h" />
     <ClInclude Include="Source\Editor\UI\ContentBrowser\ContentBrowserContext.h" />
@@ -885,9 +896,11 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAsset.h" />
+    <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAssetManager.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsBodySetup.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsConstraintSetup.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsShapeSetup.h" />
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsCollisionTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsDescTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.h" />

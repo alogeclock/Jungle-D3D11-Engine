@@ -2,6 +2,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Editor/Import/EditorFbxImportService.h"
+#include "Editor/Subsystem/AssetFactory.h"
 #include "Mesh/MeshManager.h"
 
 class UEditorEngine;
@@ -34,6 +35,7 @@ private:
 	void RenderSummary() const;
 	void RenderStaticOptions();
 	void RenderTargetSkeletonCombo();
+	void RenderPhysicsAssetOptions();
 	void RenderSection(const char* Label, TArray<FImportRow>& Rows);
 	bool ExecuteImport(UEditorEngine* EditorEngine);
 
@@ -65,6 +67,9 @@ private:
 	TArray<FImportRow> AnimSequenceRows;
 
 	int32 PendingStaticFbxSkinnedMeshPolicy = 1;
+	bool bCreatePhysicsAssetForImportedSkeletalMeshes = false;
+	FPhysicsAssetCreateParams PhysicsAssetCreateParams;
+	FString PhysicsAssetCreateWarning;
 	int32 SelectedTargetSkeletonIndex = 0;
 	TArray<FMeshAssetListItem> TargetSkeletonOptions;
 };

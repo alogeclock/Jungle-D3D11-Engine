@@ -38,6 +38,7 @@ struct FViewportToolbarContext
 	float ToolbarLeft = 0.0f;
 	float ToolbarTop = 0.0f;
 	float ToolbarWidth = 0.0f;
+	float ToolbarHeight = 28.0f;
 
 	bool bReservePlayStopSpace = false;
 

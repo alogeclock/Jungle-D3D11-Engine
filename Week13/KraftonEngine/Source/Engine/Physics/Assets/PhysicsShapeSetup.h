@@ -1,12 +1,35 @@
 #pragma once
 
 #include "Object/FName.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
 #include "Physics/Common/PhysicsDescTypes.h"
+#include "Serialization/Archive.h"
 
 /**
  * @file PhysicsShapeSetup.h
  * @brief PhysicsAsset에 저장되는 Collision Shape 설정 정의.
  */
+
+/** Physical Material 참조를 경로로 직렬화한다. */
+inline FString GetPhysicalMaterialAssetPath(UPhysicalMaterial* PhysicalMaterial)
+{
+    return PhysicalMaterial ? PhysicalMaterial->GetAssetPathFileName() : FString();
+}
+
+inline void SerializePhysicalMaterialReference(FArchive& Ar, UPhysicalMaterial*& PhysicalMaterial)
+{
+    FString PhysicalMaterialPath = Ar.IsSaving()
+        ? GetPhysicalMaterialAssetPath(PhysicalMaterial)
+        : FString();
+    Ar << PhysicalMaterialPath;
+
+    if (Ar.IsLoading())
+    {
+        PhysicalMaterial = PhysicalMaterialPath.empty()
+            ? nullptr
+            : FPhysicalMaterialManager::Get().Load(PhysicalMaterialPath);
+    }
+}
 
 /** Sphere Collision Shape 설정 */
 struct FPhysicsSphereShapeSetup
@@ -29,6 +52,20 @@ struct FPhysicsSphereShapeSetup
     }
 };
 
+inline FArchive& operator<<(FArchive& Ar, FPhysicsSphereShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.Radius;
+
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
+
 /** Box Collision Shape 설정 */
 struct FPhysicsBoxShapeSetup
 {
@@ -49,6 +86,20 @@ struct FPhysicsBoxShapeSetup
         return Desc;
     }
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsBoxShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.HalfExtent;
+
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
 
 /** Capsule Collision Shape 설정 */
 struct FPhysicsCapsuleShapeSetup
@@ -72,6 +123,21 @@ struct FPhysicsCapsuleShapeSetup
     }
 };
 
+inline FArchive& operator<<(FArchive& Ar, FPhysicsCapsuleShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.Radius;
+    Ar << ShapeSetup.Length;
+
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
+
 /** Convex Collision Shape 설정 */
 struct FPhysicsConvexShapeSetup
 {
@@ -92,6 +158,20 @@ struct FPhysicsConvexShapeSetup
         return Desc;
     }
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsConvexShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.Name;
+    Ar << ShapeSetup.LocalTransform.Location;
+    Ar << ShapeSetup.LocalTransform.Rotation;
+    Ar << ShapeSetup.LocalTransform.Scale;
+    Ar << ShapeSetup.VertexData;
+
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
+
+    Ar << ShapeSetup.CollisionDesc;
+    return Ar;
+}
 
 /** 하나의 Body에 포함되는 Collision Shape 묶음 */
 struct FPhysicsAggregateShapeSetup
@@ -130,3 +210,12 @@ struct FPhysicsAggregateShapeSetup
                ConvexShapeSetups.empty();
     }
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsAggregateShapeSetup& ShapeSetup)
+{
+    Ar << ShapeSetup.SphereShapeSetups;
+    Ar << ShapeSetup.BoxShapeSetups;
+    Ar << ShapeSetup.CapsuleShapeSetups;
+    Ar << ShapeSetup.ConvexShapeSetups;
+    return Ar;
+}

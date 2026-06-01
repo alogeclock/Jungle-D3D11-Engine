@@ -9,6 +9,68 @@
 
 #include "ImGui/imgui.h"
 
+namespace
+{
+	constexpr float ToolbarDefaultHeight = 28.0f;
+	constexpr float ToolbarIconSize = 16.0f;
+	constexpr float ToolbarIconButtonWidth = 24.0f;
+	constexpr float ToolbarTextButtonWidth = 90.0f;
+	constexpr float ToolbarButtonSpacing = 4.0f;
+	constexpr float ToolbarGroupSpacing = 12.0f;
+	constexpr float ToolbarPlayStopButtonWidth = 24.0f;
+
+	constexpr ImVec4 ToolbarPopupBgColor = ImVec4(0.22f, 0.22f, 0.22f, 0.98f);
+	constexpr ImVec4 ToolbarPopupBorderColor = ImVec4(0.34f, 0.34f, 0.34f, 1.0f);
+	constexpr ImVec4 ToolbarPopupFrameBgColor = ImVec4(0.29f, 0.29f, 0.29f, 1.0f);
+	constexpr ImVec4 ToolbarPopupFrameBgHoveredColor = ImVec4(0.36f, 0.36f, 0.36f, 1.0f);
+	constexpr ImVec4 ToolbarPopupFrameBgActiveColor = ImVec4(0.24f, 0.24f, 0.24f, 1.0f);
+	constexpr ImVec4 ToolbarPopupButtonColor = ImVec4(0.29f, 0.29f, 0.29f, 1.0f);
+	constexpr ImVec4 ToolbarPopupButtonHoveredColor = ImVec4(0.38f, 0.38f, 0.38f, 1.0f);
+	constexpr ImVec4 ToolbarPopupButtonActiveColor = ImVec4(0.24f, 0.24f, 0.24f, 1.0f);
+	constexpr ImVec4 ToolbarPopupHeaderColor = ImVec4(0.0f, 0.71f, 0.86f, 0.22f);
+	constexpr ImVec4 ToolbarPopupHeaderHoveredColor = ImVec4(0.0f, 0.71f, 0.86f, 0.32f);
+	constexpr ImVec4 ToolbarPopupHeaderActiveColor = ImVec4(0.0f, 0.71f, 0.86f, 0.42f);
+	constexpr ImVec4 ToolbarPopupCheckMarkColor = ImVec4(0.0f, 0.78f, 0.95f, 1.0f);
+	constexpr ImVec2 ToolbarPopupWindowPadding = ImVec2(14.0f, 10.0f);
+	constexpr ImVec2 ToolbarPopupItemSpacing = ImVec2(8.0f, 8.0f);
+	constexpr ImVec2 ToolbarPopupFramePadding = ImVec2(6.0f, 5.0f);
+
+	float GetToolbarHeight(const FViewportToolbarContext& Context)
+	{
+		return Context.ToolbarHeight > 0.0f ? Context.ToolbarHeight : ToolbarDefaultHeight;
+	}
+
+	float GetToolbarButtonPadding(const FViewportToolbarContext& Context)
+	{
+		return (GetToolbarHeight(Context) - ToolbarIconSize) * 0.5f;
+	}
+
+	void PushToolbarPopupStyle()
+	{
+		ImGui::PushStyleColor(ImGuiCol_PopupBg, ToolbarPopupBgColor);
+		ImGui::PushStyleColor(ImGuiCol_Border, ToolbarPopupBorderColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ToolbarPopupFrameBgColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ToolbarPopupFrameBgHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ToolbarPopupFrameBgActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_Button, ToolbarPopupButtonColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ToolbarPopupButtonHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ToolbarPopupButtonActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_Header, ToolbarPopupHeaderColor);
+		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ToolbarPopupHeaderHoveredColor);
+		ImGui::PushStyleColor(ImGuiCol_HeaderActive, ToolbarPopupHeaderActiveColor);
+		ImGui::PushStyleColor(ImGuiCol_CheckMark, ToolbarPopupCheckMarkColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ToolbarPopupWindowPadding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ToolbarPopupItemSpacing);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ToolbarPopupFramePadding);
+	}
+
+	void PopToolbarPopupStyle()
+	{
+		ImGui::PopStyleVar(3);
+		ImGui::PopStyleColor(12);
+	}
+}
+
 #pragma region Toolbar Icon Helper
 static FString GetToolbarIconPath(EToolbarIcon Icon)
 {
@@ -88,45 +150,41 @@ static bool DrawToolbarIconButton(const char* Id, EToolbarIcon Icon, const char*
 
 static float CalcRightToolbarWidth(const FViewportToolbarContext& Context)
 {
-	constexpr float IconButtonWidth = 24.0f;
-	constexpr float TextButtonMinWidth = 90.0f;
-	constexpr float ButtonSpacing = 4.0f;
-	constexpr float GroupSpacing = 12.0f;
-
 	float Width = 0.0f;
-	
+	const float CameraValueWidth = ImGui::CalcTextSize("100.000").x;
+
 	auto AddGroup = [&](float ItemWidth)
 	{
 		if (Width > 0.0f)
 		{
-			Width += GroupSpacing;
+			Width += ToolbarGroupSpacing;
 		}
 		Width += ItemWidth;
 	};
 
 	if (Context.bShowViewportType)
 	{
-		AddGroup(TextButtonMinWidth);
+		AddGroup(ToolbarTextButtonWidth);
 	}
 
 	if (Context.bShowCameraControls)
 	{
-		AddGroup(IconButtonWidth);
+		AddGroup(ToolbarIconButtonWidth + 2.0f + CameraValueWidth);
 	}
 
 	if (Context.bShowViewMode)
 	{
-		AddGroup(TextButtonMinWidth);
+		AddGroup(ToolbarIconButtonWidth);
 	}
 
 	if (Context.bShowShowFlags)
 	{
-		AddGroup(IconButtonWidth);
+		AddGroup(ToolbarIconButtonWidth);
 	}
 
 	if (Context.bShowLayoutControls)
 	{
-		AddGroup(IconButtonWidth * 2 + ButtonSpacing);
+		AddGroup(ToolbarIconButtonWidth * 2 + ToolbarButtonSpacing);
 	}
 
 	return Width;
@@ -157,9 +215,10 @@ void FViewportToolbar::Render(const FViewportToolbarContext& Context)
 	RenderLeftToolbarSection(RenderState);
 
 	const float RightWidth = CalcRightToolbarWidth(Context);
-	const float RightX = Context.ToolbarLeft + Context.ToolbarWidth - RightWidth - 8.0f;
+	const float ButtonPadding = GetToolbarButtonPadding(Context);
+	const float RightX = Context.ToolbarLeft + Context.ToolbarWidth - RightWidth - ButtonPadding;
 
-	ImGui::SetCursorScreenPos(ImVec2(RightX, Context.ToolbarTop + 6.0f));
+	ImGui::SetCursorScreenPos(ImVec2(RightX, Context.ToolbarTop + ButtonPadding));
 
 	RenderRightToolbarSection(RenderState);
 
@@ -176,12 +235,9 @@ void FViewportToolbar::Render(const FViewportToolbarContext& Context)
 
 void FViewportToolbar::BeginToolbar(const FToolbarRenderState& State)
 {
-	constexpr float ToolbarHeight = 28.0f;
-	constexpr float IconSize = 16.0f;
-	constexpr float ButtonPadding = (ToolbarHeight - IconSize) * 0.5f;
-	constexpr float PlayStopButtonWidth = 24.0f;
+	const float ButtonPadding = GetToolbarButtonPadding(State.Context);
 
-	const float PlayStopOffset = State.Context.bReservePlayStopSpace ? (PlayStopButtonWidth * 2.0f) + ButtonPadding : 0.0f;
+	const float PlayStopOffset = State.Context.bReservePlayStopSpace ? (ToolbarPlayStopButtonWidth * 2.0f) + ButtonPadding : 0.0f;
 
 	ImGui::SetCursorScreenPos(ImVec2(
 		State.Context.ToolbarLeft + ButtonPadding + PlayStopOffset,
@@ -253,6 +309,7 @@ void FViewportToolbar::RenderLayoutControls(const FToolbarRenderState& State)
 		ImGui::OpenPopup("##LayoutPopup");
 	}
 
+	PushToolbarPopupStyle();
 	if (ImGui::BeginPopup("##LayoutPopup"))
 	{
 		constexpr int32 Columns = 4;
@@ -307,6 +364,7 @@ void FViewportToolbar::RenderLayoutControls(const FToolbarRenderState& State)
 		}
 		ImGui::EndPopup();
 	}
+	PopToolbarPopupStyle();
 
 	ImGui::SameLine(0.0f, State.ButtonSpacing);
 
@@ -382,6 +440,7 @@ void FViewportToolbar::RenderViewportType(const FToolbarRenderState& State)
 		ImGui::OpenPopup("##ViewportTypePopup");
 	}
 
+	PushToolbarPopupStyle();
 	if (ImGui::BeginPopup("##ViewportTypePopup"))
 	{
 		for (int32 TypeIndex = 0; TypeIndex < ViewportTypeCount; ++TypeIndex)
@@ -402,6 +461,7 @@ void FViewportToolbar::RenderViewportType(const FToolbarRenderState& State)
 		}
 		ImGui::EndPopup();
 	}
+	PopToolbarPopupStyle();
 }
 
 void FViewportToolbar::RenderGizmoControls(const FToolbarRenderState& State)
@@ -522,9 +582,9 @@ void FViewportToolbar::RenderCameraControls(const FToolbarRenderState& State)
 
 	State.CameraSettings().MoveSpeed;
 	ImGui::SameLine(0.0f, 2.0f);
-	ImGui::SetNextItemWidth(48.0f);
 	ImGui::Text("%.3f", State.CameraSettings().MoveSpeed);
 
+	PushToolbarPopupStyle();
 	if (ImGui::BeginPopup("##CameraPopup"))
 	{
 		auto& Camera = State.CameraSettings();
@@ -541,6 +601,7 @@ void FViewportToolbar::RenderCameraControls(const FToolbarRenderState& State)
 
 		ImGui::EndPopup();
 	}
+	PopToolbarPopupStyle();
 }
 
 void FViewportToolbar::RenderViewMode(const FToolbarRenderState& State)
@@ -553,6 +614,11 @@ void FViewportToolbar::RenderViewMode(const FToolbarRenderState& State)
 		ImGui::OpenPopup("##ViewModePopup");
 	}
 
+	const ImVec2 ViewModeButtonMin = ImGui::GetItemRectMin();
+	const ImVec2 ViewModeButtonMax = ImGui::GetItemRectMax();
+	ImGui::SetNextWindowPos(ImVec2(ViewModeButtonMin.x, ViewModeButtonMax.y + 4.0f), ImGuiCond_Appearing);
+
+	PushToolbarPopupStyle();
 	if (ImGui::BeginPopup("##ViewModePopup"))
 	{
 		int32 CurrentMode = static_cast<int32>(RenderOptions.ViewMode);
@@ -576,6 +642,7 @@ void FViewportToolbar::RenderViewMode(const FToolbarRenderState& State)
 
 		ImGui::EndPopup();
 	}
+	PopToolbarPopupStyle();
 }
 
 void FViewportToolbar::RenderShowFlags(const FToolbarRenderState& State)
@@ -588,6 +655,7 @@ void FViewportToolbar::RenderShowFlags(const FToolbarRenderState& State)
 		ImGui::OpenPopup("##ShowFlagsPopup");
 	}
 
+	PushToolbarPopupStyle();
 	if (ImGui::BeginPopup("##ShowFlagsPopup"))
 	{
 		ImGui::Text("Show Flags");
@@ -657,4 +725,5 @@ void FViewportToolbar::RenderShowFlags(const FToolbarRenderState& State)
 
 		ImGui::EndPopup();
 	}
+	PopToolbarPopupStyle();
 }

@@ -46,20 +46,13 @@ FVector FVector::Cross(const FVector& Other) const {
 	__m128 vec1 = _mm_set_ps(0.f, Other.Z, Other.Y, Other.X);
 	alignas(16) float vTemp[4];
 
-	// for intel
-	__m128 tmp0 = _mm_shuffle_ps(vec0, vec0, _MM_SHUFFLE(3, 0, 2, 1));
-	__m128 tmp1 = _mm_shuffle_ps(vec1, vec1, _MM_SHUFFLE(3, 1, 0, 2));
-	__m128 tmp2 = _mm_mul_ps(tmp0, vec1);
-	__m128 tmp3 = _mm_mul_ps(tmp0, tmp1);
-	__m128 tmp4 = _mm_shuffle_ps(tmp2, tmp2, _MM_SHUFFLE(3, 0, 2, 1));
-	_mm_storeu_ps(vTemp, _mm_sub_ps(tmp3, tmp4));
-	// for amd
-	//__m128 tmp0 = _mm_shuffle_ps(vec0, vec0, _MM_SHUFFLE(3, 0, 2, 1));
-	//__m128 tmp1 = _mm_shuffle_ps(vec1, vec1, _MM_SHUFFLE(3, 1, 0, 2));
-	//__m128 tmp2 = _mm_shuffle_ps(vec0, vec0, _MM_SHUFFLE(3, 1, 0, 2));
-	//__m128 tmp3 = _mm_shuffle_ps(vec1, vec1, _MM_SHUFFLE(3, 0, 2, 1));
-	//__m128 tmp4 = _mm_sub_ps(_mm_mul_ps(tmp0, tmp1), _mm_mul_ps(tmp2, tmp3));
-	//_mm_store_ps(vTemp, tmp4);
+	// Correct SSE cross product: a_yzx * b_zxy - a_zxy * b_yzx.
+	__m128 a_yzx = _mm_shuffle_ps(vec0, vec0, _MM_SHUFFLE(3, 0, 2, 1));
+	__m128 b_zxy = _mm_shuffle_ps(vec1, vec1, _MM_SHUFFLE(3, 1, 0, 2));
+	__m128 a_zxy = _mm_shuffle_ps(vec0, vec0, _MM_SHUFFLE(3, 1, 0, 2));
+	__m128 b_yzx = _mm_shuffle_ps(vec1, vec1, _MM_SHUFFLE(3, 0, 2, 1));
+	__m128 cross = _mm_sub_ps(_mm_mul_ps(a_yzx, b_zxy), _mm_mul_ps(a_zxy, b_yzx));
+	_mm_storeu_ps(vTemp, cross);
 	return FVector(vTemp[0], vTemp[1], vTemp[2]);
 #else
 	return FVector{

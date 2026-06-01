@@ -19,6 +19,8 @@ enum class EAssetPackageType : uint32
 	AnimSequence,
 	AnimInstance,
 	ParticleSystem,
+	PhysicsAsset,
+	PhysicalMaterial,
 };
 
 struct FAssetPackageHeader

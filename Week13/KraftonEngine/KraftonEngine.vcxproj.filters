@@ -569,6 +569,9 @@
     <ClCompile Include="Source\Editor\Subsystem\AssetFactory.cpp">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Editor\Subsystem\PhysicsAssetGenerator.cpp">
+      <Filter>Source\Editor\Subsystem</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Editor\Subsystem\EditorAnimationAssetLibrary.cpp">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClCompile>
@@ -651,6 +654,12 @@
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.cpp">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Asset\PhysicalMaterialEditorWidget.cpp">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\UI\Asset\PhysicsAssetEditorWidget.cpp">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\UI\Asset\StaticMeshEditorWidget.cpp">
@@ -1139,6 +1148,21 @@
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Assets\PhysicsAsset.cpp">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Assets\PhysicsAssetManager.cpp">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Assets\PhysicsBodySetup.cpp">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Common\PhysicalMaterialManager.cpp">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp">
       <Filter>Source\Engine\Platform</Filter>
     </ClCompile>
@@ -1470,6 +1494,9 @@
     <ClInclude Include="Source\Editor\Subsystem\AssetFactory.h">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Editor\Subsystem\PhysicsAssetGenerator.h">
+      <Filter>Source\Editor\Subsystem</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Editor\Subsystem\EditorAnimationAssetLibrary.h">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClInclude>
@@ -1552,6 +1579,12 @@
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\UI\Asset\ParticleSystemEditorWidget.h">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Asset\PhysicalMaterialEditorWidget.h">
+      <Filter>Source\Editor\UI\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\UI\Asset\PhysicsAssetEditorWidget.h">
       <Filter>Source\Editor\UI\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\UI\Asset\StaticMeshEditorWidget.h">
@@ -2202,6 +2235,9 @@
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAsset.h">
       <Filter>Source\Engine\Physics\Assets</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAssetManager.h">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsBodySetup.h">
       <Filter>Source\Engine\Physics\Assets</Filter>
     </ClInclude>
@@ -2215,6 +2251,9 @@
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsDescTypes.h">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h">
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.h">

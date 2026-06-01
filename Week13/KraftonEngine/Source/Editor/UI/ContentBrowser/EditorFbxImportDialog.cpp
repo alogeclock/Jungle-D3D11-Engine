@@ -305,6 +305,7 @@ bool FEditorFbxImportDialog::Render(UEditorEngine* EditorEngine)
 	{
 		RenderStaticOptions();
 		RenderTargetSkeletonCombo();
+		RenderPhysicsAssetOptions();
 		RenderSection("Static Meshes", StaticMeshRows);
 		RenderSection("Skeletal Meshes", SkeletalMeshRows);
 		RenderSection("Animation Sequences", AnimSequenceRows);
@@ -375,6 +376,9 @@ void FEditorFbxImportDialog::Reset()
 	StaticMeshRows.clear();
 	SkeletalMeshRows.clear();
 	AnimSequenceRows.clear();
+	bCreatePhysicsAssetForImportedSkeletalMeshes = false;
+	PhysicsAssetCreateParams = FPhysicsAssetCreateParams();
+	PhysicsAssetCreateWarning.clear();
 	SelectedTargetSkeletonIndex = 0;
 	TargetSkeletonOptions.clear();
 }
@@ -574,6 +578,78 @@ void FEditorFbxImportDialog::RenderTargetSkeletonCombo()
 	}
 }
 
+
+void FEditorFbxImportDialog::RenderPhysicsAssetOptions()
+{
+	if (SkeletalMeshRows.empty())
+	{
+		return;
+	}
+
+	bool bAnySkeletalMeshSelected = false;
+	for (const FImportRow& Row : SkeletalMeshRows)
+	{
+		if (IsRowVisible(Row) && Row.bImport)
+		{
+			bAnySkeletalMeshSelected = true;
+			break;
+		}
+	}
+
+	if (!bAnySkeletalMeshSelected)
+	{
+		return;
+	}
+
+	if (!ImGui::CollapsingHeader("Physics Asset", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		return;
+	}
+
+	ImGui::Checkbox("Create Physics Asset after skeletal import", &bCreatePhysicsAssetForImportedSkeletalMeshes);
+	ImGui::BeginDisabled(!bCreatePhysicsAssetForImportedSkeletalMeshes);
+
+	int32 BodyGenerationMethod = static_cast<int32>(PhysicsAssetCreateParams.BodyGenerationMethod);
+	const char* BodyGenerationLabels[] = { "Vertex Weight", "Bone Length" };
+	ImGui::SetNextItemWidth(180.0f);
+	if (ImGui::Combo("Body Generation", &BodyGenerationMethod, BodyGenerationLabels, IM_ARRAYSIZE(BodyGenerationLabels)))
+	{
+		PhysicsAssetCreateParams.BodyGenerationMethod = static_cast<EPhysicsAssetBodyGenerationMethod>(BodyGenerationMethod);
+	}
+
+	const bool bUseVertexWeight = PhysicsAssetCreateParams.BodyGenerationMethod == EPhysicsAssetBodyGenerationMethod::VertexWeight;
+	ImGui::BeginDisabled(!bUseVertexWeight);
+	int32 VertexWeightingType = static_cast<int32>(PhysicsAssetCreateParams.VertexWeightingType);
+	const char* VertexWeightLabels[] = { "Dominant Weight", "Any Weight" };
+	ImGui::SetNextItemWidth(180.0f);
+	if (ImGui::Combo("Vertex Weighting Type", &VertexWeightingType, VertexWeightLabels, IM_ARRAYSIZE(VertexWeightLabels)))
+	{
+		PhysicsAssetCreateParams.VertexWeightingType = static_cast<EPhysicsAssetVertexWeightingType>(VertexWeightingType);
+	}
+	ImGui::Checkbox("Fallback to Bone Length", &PhysicsAssetCreateParams.bFallbackToBoneLength);
+	ImGui::TextWrapped("Small vertex fits are merged into the parent. Fallback runs only when vertex generation creates no bodies.");
+	ImGui::EndDisabled();
+
+	int32 PrimitiveType = static_cast<int32>(PhysicsAssetCreateParams.PrimitiveType);
+	const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
+	ImGui::SetNextItemWidth(180.0f);
+	if (ImGui::Combo("Primitive Type", &PrimitiveType, PrimitiveLabels, IM_ARRAYSIZE(PrimitiveLabels)))
+	{
+		PhysicsAssetCreateParams.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
+	}
+
+	ImGui::SetNextItemWidth(180.0f);
+	ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+	ImGui::Checkbox("Auto Orient", &PhysicsAssetCreateParams.bAutoOrientToBone);
+	ImGui::Checkbox("Create Constraints", &PhysicsAssetCreateParams.bCreateConstraints);
+	ImGui::EndDisabled();
+
+	if (!PhysicsAssetCreateWarning.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.75f, 0.25f, 1.0f), "%s", PhysicsAssetCreateWarning.c_str());
+	}
+}
+
 void FEditorFbxImportDialog::RenderSection(const char* Label, TArray<FImportRow>& Rows)
 {
 	if (Rows.empty())
@@ -738,12 +814,53 @@ bool FEditorFbxImportDialog::ExecuteImport(UEditorEngine* EditorEngine)
 	ID3D11Device* Device = EditorEngine->GetRenderer().GetFD3DDevice().GetDevice();
 	const bool bSucceeded = FEditorFbxImportService::ImportFromRequest(Request, Device, LastResult);
 
-	StatusMessages = LastResult.Messages;
 	if (bSucceeded)
 	{
+		PhysicsAssetCreateWarning.clear();
+		if (bCreatePhysicsAssetForImportedSkeletalMeshes)
+		{
+			const TArray<FString> ImportedPathsSnapshot = LastResult.ImportedPackagePaths;
+			for (const FString& ImportedPath : ImportedPathsSnapshot)
+			{
+				FAssetImportMetadata Metadata;
+				if (!FAssetPackage::ReadMetadata(ImportedPath, EAssetPackageType::SkeletalMesh, Metadata))
+				{
+					continue;
+				}
+
+				const std::filesystem::path MeshPath = ResolveProjectPath(ImportedPath);
+				const FString AssetName = FPaths::ToUtf8(MeshPath.stem().wstring()) + "_PhysicsAsset";
+				FString CreatedPhysicsAssetPath;
+				if (FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(
+					FPaths::ToUtf8(MeshPath.parent_path().generic_wstring()),
+					AssetName,
+					ImportedPath,
+					PhysicsAssetCreateParams,
+					Device,
+					CreatedPhysicsAssetPath))
+				{
+					LastResult.ImportedPackagePaths.push_back(CreatedPhysicsAssetPath);
+					const FString& Warning = FAssetFactory::GetLastPhysicsAssetCreateWarning();
+					if (!Warning.empty())
+					{
+						PhysicsAssetCreateWarning = Warning;
+						LastResult.Messages.push_back(Warning);
+					}
+				}
+				else
+				{
+					LastResult.Messages.push_back("Physics Asset creation failed: " + ImportedPath);
+				}
+			}
+		}
+
 		bImportedThisSession = true;
 		bIsOpen = false;
 		ImGui::CloseCurrentPopup();
+		if (!PhysicsAssetCreateWarning.empty())
+		{
+			FNotificationManager::Get().AddNotification(PhysicsAssetCreateWarning, ENotificationType::Info, 6.0f);
+		}
 		FNotificationManager::Get().AddNotification("FBX import completed.", ENotificationType::Success, 3.0f);
 	}
 	else
@@ -751,6 +868,7 @@ bool FEditorFbxImportDialog::ExecuteImport(UEditorEngine* EditorEngine)
 		FNotificationManager::Get().AddNotification("FBX import failed. See log.", ENotificationType::Error, 5.0f);
 	}
 
+	StatusMessages = LastResult.Messages;
 	return bSucceeded;
 }
 

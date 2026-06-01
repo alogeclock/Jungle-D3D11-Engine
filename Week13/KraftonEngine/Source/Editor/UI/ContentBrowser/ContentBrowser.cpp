@@ -1,8 +1,9 @@
-﻿#include "ContentBrowser.h"
+#include "ContentBrowser.h"
 
 #include "Asset/AssetPackage.h"
 #include "ContentBrowserElement.h"
 #include "Core/Log.h"
+#include "Core/Notification.h"
 #include "Editor/Settings/EditorSettings.h"
 #include "Editor/Subsystem/AssetFactory.h"
 #include "Editor/UI/EditorTextureManager.h"
@@ -23,6 +24,10 @@
 #include "Animation/AnimSequenceManager.h"
 #include "Particles/Assets/ParticleAsset.h"
 #include "Particles/Assets/ParticleSystemAssetManager.h"
+#include "Physics/Assets/PhysicsAsset.h"
+#include "Physics/Assets/PhysicsAssetManager.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
+#include "Physics/Common/PhysicsMaterialTypes.h"
 
 #include <Windows.h>
 #include <commdlg.h>
@@ -224,6 +229,59 @@ namespace
 		OutError.clear();
 		return true;
 	}
+
+	FString ToLowerCopy(const FString& Value)
+	{
+		FString Lower = Value;
+		std::transform(Lower.begin(), Lower.end(), Lower.begin(),
+			[](unsigned char Ch) { return static_cast<char>(std::tolower(Ch)); });
+		return Lower;
+	}
+
+	bool MatchesSearchToken(const FString& SearchText, const FMeshAssetListItem& Item)
+	{
+		if (SearchText.empty())
+		{
+			return true;
+		}
+
+		const FString LowerSearch = ToLowerCopy(SearchText);
+		return ToLowerCopy(Item.DisplayName).find(LowerSearch) != FString::npos
+			|| ToLowerCopy(Item.FullPath).find(LowerSearch) != FString::npos;
+	}
+
+	std::wstring GetContentBrowserIconFileName(const FString& Extension, EAssetPackageType PackageType)
+	{
+		if (Extension == ".mat")
+		{
+			return L"Material_64.png";
+		}
+
+		if (Extension == ".fbx")
+		{
+			return L"SkeletalMesh_64.png";
+		}
+
+		if (Extension == ".uasset")
+		{
+			switch (PackageType)
+			{
+			case EAssetPackageType::StaticMesh:
+			case EAssetPackageType::SkeletalMesh:
+				return L"SkeletalMesh_64.png";
+			case EAssetPackageType::ParticleSystem:
+				return L"ParticleSystem_64x.png";
+			case EAssetPackageType::PhysicsAsset:
+				return L"PhysicsAsset_64x.png";
+			case EAssetPackageType::PhysicalMaterial:
+				return L"PhysicalMaterial_64.png";
+			default:
+				break;
+			}
+		}
+
+		return L"";
+	}
 }
 
 void FEditorContentBrowserWidget::Initialize(UEditorEngine* InEditor, ID3D11Device* InDevice)
@@ -233,9 +291,9 @@ void FEditorContentBrowserWidget::Initialize(UEditorEngine* InEditor, ID3D11Devi
 
 	IconFileMap[".Scene"] = L"World_64x.png";
 	IconFileMap[".obj"] = L"icon_MatEd_Mesh_40x.png";
-	IconFileMap[".mat"] = L"Sphere_64x.png";
+	IconFileMap[".mat"] = L"Material_64.png";
 	IconFileMap[".shake"] = L"StartMerge_42x.png";
-	IconFileMap[".fbx"] = L"icon_MatEd_Mesh_40x.png";
+	IconFileMap[".fbx"] = L"SkeletalMesh_64.png";
 	IconFileMap[".uasset"] = L"icon_MatEd_Mesh_40x.png";
 
 	ContentBrowserContext Context;
@@ -298,6 +356,8 @@ void FEditorContentBrowserWidget::Render(float DeltaTime)
 	RenderFbxImportPopup();
 	RenderMaterialCreatePopup();
 	RenderParticleSystemCreatePopup();
+	RenderPhysicsAssetMeshPickerPopup();
+	RenderPhysicsAssetCreatePopup();
 	RenderRenamePopup();
 	RenderDeletePopup();
 
@@ -382,6 +442,7 @@ void FEditorContentBrowserWidget::RefreshContent()
 		std::shared_ptr<ContentBrowserElement> Element;
 		FString Extension = GetLowerExtension(Content.Path);
 		ID3D11ShaderResourceView* Icon = nullptr;
+		EAssetPackageType PackageType = EAssetPackageType::Unknown;
 
 		if (Content.bIsDirectory)
 		{
@@ -421,10 +482,9 @@ void FEditorContentBrowserWidget::RefreshContent()
 		{
 			FString PackagePath = FPaths::ToUtf8(Content.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
 
-			EAssetPackageType Type = EAssetPackageType::Unknown;
-			if (FAssetPackage::GetPackageType(PackagePath, Type))
+			if (FAssetPackage::GetPackageType(PackagePath, PackageType))
 			{
-				switch (Type)
+				switch (PackageType)
 				{
 				case EAssetPackageType::StaticMesh:
 					Element = std::make_shared<ObjectElement>();
@@ -450,6 +510,12 @@ void FEditorContentBrowserWidget::RefreshContent()
 				case EAssetPackageType::ParticleSystem:
 					Element = std::make_shared<ParticleSystemElement>();
 					break;
+				case EAssetPackageType::PhysicsAsset:
+					Element = std::make_shared<PhysicsAssetElement>();
+					break;
+				case EAssetPackageType::PhysicalMaterial:
+					Element = std::make_shared<PhysicalMaterialElement>();
+					break;
 				default:
 					Element = std::make_shared<ContentBrowserElement>();
 					break;
@@ -464,7 +530,12 @@ void FEditorContentBrowserWidget::RefreshContent()
 		if (!Icon)
 		{
 			std::wstring IconFileName = L"StartMerge_42x.png";
-			if (auto It = IconFileMap.find(Extension); It != IconFileMap.end())
+			const std::wstring TypeSpecificIconFile = GetContentBrowserIconFileName(Extension, PackageType);
+			if (!TypeSpecificIconFile.empty())
+			{
+				IconFileName = TypeSpecificIconFile;
+			}
+			else if (auto It = IconFileMap.find(Extension); It != IconFileMap.end())
 			{
 				IconFileName = It->second;
 			}
@@ -618,6 +689,25 @@ void FEditorContentBrowserWidget::DrawContents()
 			if (ImGui::MenuItem("Particle System"))
 			{
 				BeginParticleSystemCreate("NewParticleSystem");
+			}
+			if (ImGui::MenuItem("Physical Material"))
+			{
+				FString CreatedPath;
+				if (FAssetFactory::CreatePhysicalMaterial(FPaths::ToUtf8(BrowserContext.CurrentPath), "NewPhysicalMaterial", CreatedPath))
+				{
+					Refresh();
+					if (BrowserContext.EditorEngine)
+					{
+						if (UPhysicalMaterial* Asset = FPhysicalMaterialManager::Get().Load(CreatedPath))
+						{
+							BrowserContext.EditorEngine->OpenAssetEditorForObject(Asset);
+						}
+					}
+				}
+			}
+			if (ImGui::MenuItem("Physics Asset"))
+			{
+				BeginPhysicsAssetCreate();
 			}
 			ImGui::EndMenu();
 		}
@@ -791,6 +881,261 @@ bool FEditorContentBrowserWidget::ExecuteParticleSystemCreate()
 		{
 			BrowserContext.EditorEngine->OpenAssetEditorForObject(Asset);
 		}
+	}
+
+	return true;
+}
+
+void FEditorContentBrowserWidget::BeginPhysicsAssetCreate()
+{
+	FMeshManager::ScanMeshAssets();
+	PhysicsMeshOptions = FMeshManager::GetAvailableSkeletalMeshFiles();
+	std::sort(PhysicsMeshOptions.begin(), PhysicsMeshOptions.end(),
+		[](const FMeshAssetListItem& A, const FMeshAssetListItem& B)
+		{
+			return A.FullPath < B.FullPath;
+		});
+
+	PhysicsAssetMeshSearch[0] = '\0';
+	PhysicsAssetCreateError.clear();
+	PendingPhysicsAssetMeshPath.clear();
+	PendingPhysicsAssetMeshName.clear();
+	SelectedPhysicsMeshIndex = PhysicsMeshOptions.empty() ? -1 : 0;
+	PhysicsAssetCreateParams = FPhysicsAssetCreateParams();
+	bOpenPhysicsAssetMeshPickerPopup = true;
+}
+
+void FEditorContentBrowserWidget::RenderPhysicsAssetMeshPickerPopup()
+{
+	constexpr const char* PopupName = "Pick Skeletal Mesh";
+	if (bOpenPhysicsAssetMeshPickerPopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenPhysicsAssetMeshPickerPopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextUnformatted("Select the skeletal mesh used to initialize the Physics Asset.");
+	ImGui::SetNextItemWidth(420.0f);
+	ImGui::InputTextWithHint("##PhysicsAssetMeshSearch", "Search Assets", PhysicsAssetMeshSearch, sizeof(PhysicsAssetMeshSearch));
+
+	ImGui::BeginChild("PhysicsAssetMeshList", ImVec2(480.0f, 320.0f), true);
+	if (PhysicsMeshOptions.empty())
+	{
+		ImGui::TextDisabled("No skeletal mesh assets were found.");
+	}
+	else
+	{
+		const FString SearchText = PhysicsAssetMeshSearch;
+		for (int32 Index = 0; Index < static_cast<int32>(PhysicsMeshOptions.size()); ++Index)
+		{
+			const FMeshAssetListItem& Item = PhysicsMeshOptions[Index];
+			if (!MatchesSearchToken(SearchText, Item))
+			{
+				continue;
+			}
+
+			ImGui::PushID(Index);
+			const bool bSelected = SelectedPhysicsMeshIndex == Index;
+			if (ImGui::Selectable(Item.DisplayName.c_str(), bSelected, ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				SelectedPhysicsMeshIndex = Index;
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					PendingPhysicsAssetMeshPath = Item.FullPath;
+					PendingPhysicsAssetMeshName = Item.DisplayName;
+					PhysicsAssetCreateError.clear();
+					bOpenPhysicsAssetCreatePopup = true;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::TextDisabled("%s", Item.FullPath.c_str());
+			ImGui::Separator();
+			ImGui::PopID();
+		}
+	}
+	ImGui::EndChild();
+
+	if (ImGui::Button("Next"))
+	{
+		if (SelectedPhysicsMeshIndex >= 0 && SelectedPhysicsMeshIndex < static_cast<int32>(PhysicsMeshOptions.size()))
+		{
+			PendingPhysicsAssetMeshPath = PhysicsMeshOptions[SelectedPhysicsMeshIndex].FullPath;
+			PendingPhysicsAssetMeshName = PhysicsMeshOptions[SelectedPhysicsMeshIndex].DisplayName;
+			PhysicsAssetCreateError.clear();
+			PhysicsAssetCreateWarning.clear();
+			bOpenPhysicsAssetCreatePopup = true;
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+void FEditorContentBrowserWidget::RenderPhysicsAssetCreatePopup()
+{
+	constexpr const char* PopupName = "New Physics Asset";
+	if (bOpenPhysicsAssetCreatePopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenPhysicsAssetCreatePopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::Text("Skeletal Mesh: %s", PendingPhysicsAssetMeshName.empty() ? "None" : PendingPhysicsAssetMeshName.c_str());
+	ImGui::Separator();
+
+	if (ImGui::CollapsingHeader("Body Creation", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+
+		int32 PrimitiveType = static_cast<int32>(PhysicsAssetCreateParams.PrimitiveType);
+		const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Primitive Type", &PrimitiveType, PrimitiveLabels, IM_ARRAYSIZE(PrimitiveLabels)))
+		{
+			PhysicsAssetCreateParams.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
+		}
+
+		int32 BodyGenerationMethod = static_cast<int32>(PhysicsAssetCreateParams.BodyGenerationMethod);
+		const char* BodyGenerationLabels[] = { "Vertex Weight", "Bone Length" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Body Generation", &BodyGenerationMethod, BodyGenerationLabels, IM_ARRAYSIZE(BodyGenerationLabels)))
+		{
+			PhysicsAssetCreateParams.BodyGenerationMethod = static_cast<EPhysicsAssetBodyGenerationMethod>(BodyGenerationMethod);
+		}
+
+		const bool bUseVertexWeight = PhysicsAssetCreateParams.BodyGenerationMethod == EPhysicsAssetBodyGenerationMethod::VertexWeight;
+		ImGui::BeginDisabled(!bUseVertexWeight);
+		int32 VertexWeightingType = static_cast<int32>(PhysicsAssetCreateParams.VertexWeightingType);
+		const char* VertexWeightLabels[] = { "Dominant Weight", "Any Weight" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Vertex Weighting Type", &VertexWeightingType, VertexWeightLabels, IM_ARRAYSIZE(VertexWeightLabels)))
+		{
+			PhysicsAssetCreateParams.VertexWeightingType = static_cast<EPhysicsAssetVertexWeightingType>(VertexWeightingType);
+		}
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Vertex Weight", &PhysicsAssetCreateParams.MinVertexWeight, 0.01f, 0.0f, 1.0f);
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Weld Size", &PhysicsAssetCreateParams.MinWeldSize, 0.0001f, 0.0f, 10.0f, "%.4f");
+		ImGui::TextWrapped("Small vertex fits are merged into their parent bone. Bone-length fallback is used only if vertex generation creates no bodies.");
+		ImGui::Checkbox("Fallback to Bone Length", &PhysicsAssetCreateParams.bFallbackToBoneLength);
+		ImGui::EndDisabled();
+
+		ImGui::Checkbox("Auto Orient to Bone", &PhysicsAssetCreateParams.bAutoOrientToBone);
+		ImGui::Checkbox("Walk Past Small Bones", &PhysicsAssetCreateParams.bWalkPastSmallBones);
+		ImGui::Checkbox("Create Body for All Bones", &PhysicsAssetCreateParams.bCreateBodyForAllBones);
+		ImGui::Checkbox("Disable Collisions by Default", &PhysicsAssetCreateParams.bDisableCollisionsByDefault);
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::InputInt("LOD Index", &PhysicsAssetCreateParams.LodIndex);
+		if (PhysicsAssetCreateParams.LodIndex < 0)
+		{
+			PhysicsAssetCreateParams.LodIndex = 0;
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Advanced"))
+	{
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Primitive Size", &PhysicsAssetCreateParams.MinPrimitiveSize, 0.01f, 0.01f, 100.0f);
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Fit Padding", &PhysicsAssetCreateParams.FitPadding, 0.01f, 1.0f, 2.0f);
+		ImGui::TextDisabled("LOD is currently reserved for future generation refinements.");
+	}
+
+	if (ImGui::CollapsingHeader("Constraint Creation", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Checkbox("Create Constraints", &PhysicsAssetCreateParams.bCreateConstraints);
+
+		int32 AngularMode = static_cast<int32>(PhysicsAssetCreateParams.AngularConstraintMode);
+		const char* AngularModeLabels[] = { "Limited", "Locked", "Free" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Angular Constraint Mode", &AngularMode, AngularModeLabels, IM_ARRAYSIZE(AngularModeLabels)))
+		{
+			PhysicsAssetCreateParams.AngularConstraintMode = static_cast<EPhysicsAssetAngularConstraintMode>(AngularMode);
+		}
+	}
+
+	if (!PhysicsAssetCreateWarning.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.75f, 0.25f, 1.0f), "%s", PhysicsAssetCreateWarning.c_str());
+	}
+
+	if (!PhysicsAssetCreateError.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.32f, 0.26f, 1.0f), "%s", PhysicsAssetCreateError.c_str());
+	}
+
+	if (ImGui::Button("Create Asset"))
+	{
+		if (ExecutePhysicsAssetCreate())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+bool FEditorContentBrowserWidget::ExecutePhysicsAssetCreate()
+{
+	if (PendingPhysicsAssetMeshPath.empty())
+	{
+		PhysicsAssetCreateError = "Select a skeletal mesh first.";
+		return false;
+	}
+
+	if (!BrowserContext.EditorEngine)
+	{
+		PhysicsAssetCreateError = "Editor engine is unavailable.";
+		return false;
+	}
+
+	FString AssetName = PendingPhysicsAssetMeshName.empty() ? FString("NewPhysicsAsset") : PendingPhysicsAssetMeshName;
+	AssetName += "_PhysicsAsset";
+	FString CreatedPath;
+	PhysicsAssetCreateWarning.clear();
+	if (!FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(
+		FPaths::ToUtf8(BrowserContext.CurrentPath),
+		AssetName,
+		PendingPhysicsAssetMeshPath,
+		PhysicsAssetCreateParams,
+		BrowserContext.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
+		CreatedPath))
+	{
+		PhysicsAssetCreateError = "Failed to create Physics Asset.";
+		return false;
+	}
+
+	PhysicsAssetCreateWarning = FAssetFactory::GetLastPhysicsAssetCreateWarning();
+	if (!PhysicsAssetCreateWarning.empty())
+	{
+		FNotificationManager::Get().AddNotification(PhysicsAssetCreateWarning, ENotificationType::Info, 6.0f);
+	}
+
+	Refresh();
+	if (UPhysicsAsset* Asset = FPhysicsAssetManager::Get().Load(CreatedPath))
+	{
+		BrowserContext.EditorEngine->OpenAssetEditorForObject(Asset);
 	}
 
 	return true;

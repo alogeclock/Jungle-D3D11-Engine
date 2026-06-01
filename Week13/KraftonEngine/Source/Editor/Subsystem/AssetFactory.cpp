@@ -1,10 +1,6 @@
-﻿#include "Editor/Subsystem/AssetFactory.h"
+#include "Editor/Subsystem/AssetFactory.h"
 
-#include "Object/ObjectFactory.h"
-#include "Platform/Paths.h"
-#include "SimpleJSON/json.hpp"
-#include <fstream>
-#include <filesystem>
+#include "Editor/Subsystem/PhysicsAssetGenerator.h"
 
 #include "Animation/AnimInstanceAsset.h"
 #include "Animation/AnimInstanceAssetManager.h"
@@ -12,8 +8,19 @@
 #include "CameraShake/CameraShakeManager.h"
 #include "FloatCurve/FloatCurveAsset.h"
 #include "FloatCurve/FloatCurveManager.h"
+#include "Object/FUObjectArray.h"
+#include "Object/ObjectFactory.h"
 #include "Particles/Assets/ParticleAsset.h"
 #include "Particles/Assets/ParticleSystemAssetManager.h"
+#include "Physics/Assets/PhysicsAsset.h"
+#include "Physics/Assets/PhysicsAssetManager.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
+#include "Physics/Common/PhysicsMaterialTypes.h"
+#include "Platform/Paths.h"
+#include "SimpleJSON/json.hpp"
+
+#include <filesystem>
+#include <fstream>
 
 namespace
 {
@@ -46,7 +53,7 @@ namespace
 		}
 	}
 
-	void InitializeDefaultParticleSystem(UParticleSystem* NewAsset) 
+	void InitializeDefaultParticleSystem(UParticleSystem* NewAsset)
 	{
 		if (!NewAsset)
 		{
@@ -105,6 +112,19 @@ namespace
 			JsonData["Textures"] = json::Object();
 			break;
 		}
+	}
+
+	FString MakeDefaultPhysicsAssetName(const FString& SkeletalMeshPath)
+	{
+		const std::filesystem::path MeshPath(FPaths::ToWide(SkeletalMeshPath));
+		FString BaseName = FPaths::ToUtf8(MeshPath.stem().wstring());
+		if (BaseName.empty())
+		{
+			BaseName = "NewPhysicsAsset";
+		}
+
+		BaseName += "_PhysicsAsset";
+		return BaseName;
 	}
 }
 
@@ -229,6 +249,105 @@ bool FAssetFactory::CreateParticleSystemAsset(const FString& DirectoryPath, cons
 
 	OutCreatedPath = FPaths::ToUtf8(AssetPath.wstring());
 	return true;
+}
+
+bool FAssetFactory::CreatePhysicsAsset(const FString& DirectoryPath, const FString& AssetName, FString& OutCreatedPath)
+{
+	const std::filesystem::path Directory(FPaths::ToWide(DirectoryPath));
+	if (!std::filesystem::exists(Directory) || !std::filesystem::is_directory(Directory))
+	{
+		return false;
+	}
+
+	const FString DefaultName = AssetName.empty() ? FString("NewPhysicsAsset") : AssetName;
+	const std::filesystem::path AssetPath = BuildUniqueAssetPath(Directory, DefaultName, L".uasset");
+
+	UPhysicsAsset* NewAsset = GUObjectArray.CreateObject<UPhysicsAsset>();
+	NewAsset->SetAssetPathFileName(FPaths::ToUtf8(AssetPath.wstring()));
+
+	const bool bSaved = FPhysicsAssetManager::Get().Save(NewAsset);
+	GUObjectArray.DestroyObject(NewAsset);
+
+	if (!bSaved)
+	{
+		return false;
+	}
+
+	OutCreatedPath = FPaths::ToUtf8(AssetPath.wstring());
+	return true;
+}
+
+bool FAssetFactory::CreatePhysicalMaterial(const FString& DirectoryPath, const FString& AssetName, FString& OutCreatedPath)
+{
+	const std::filesystem::path Directory(FPaths::ToWide(DirectoryPath));
+	if (!std::filesystem::exists(Directory) || !std::filesystem::is_directory(Directory))
+	{
+		return false;
+	}
+
+	const FString DefaultName = AssetName.empty() ? FString("NewPhysicalMaterial") : AssetName;
+	const std::filesystem::path AssetPath = BuildUniqueAssetPath(Directory, DefaultName, L".uasset");
+
+	UPhysicalMaterial* NewAsset = GUObjectArray.CreateObject<UPhysicalMaterial>();
+	NewAsset->SetAssetPathFileName(FPaths::ToUtf8(AssetPath.wstring()));
+
+	const bool bSaved = FPhysicalMaterialManager::Get().Save(NewAsset);
+	GUObjectArray.DestroyObject(NewAsset);
+
+	if (!bSaved)
+	{
+		return false;
+	}
+
+	OutCreatedPath = FPaths::ToUtf8(AssetPath.wstring());
+	return true;
+}
+
+bool FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(
+	const FString& DirectoryPath,
+	const FString& AssetName,
+	const FString& SkeletalMeshPath,
+	const FPhysicsAssetCreateParams& CreateParams,
+	ID3D11Device* Device,
+	FString& OutCreatedPath)
+{
+	const std::filesystem::path Directory(FPaths::ToWide(DirectoryPath));
+	if (!std::filesystem::exists(Directory) || !std::filesystem::is_directory(Directory))
+	{
+		return false;
+	}
+
+	const FString DefaultName = AssetName.empty() ? MakeDefaultPhysicsAssetName(SkeletalMeshPath) : AssetName;
+	const std::filesystem::path AssetPath = BuildUniqueAssetPath(Directory, DefaultName, L".uasset");
+
+	UPhysicsAsset* NewAsset = GUObjectArray.CreateObject<UPhysicsAsset>();
+	NewAsset->SetAssetPathFileName(FPaths::ToUtf8(AssetPath.wstring()));
+
+	const bool bInitialized = PopulatePhysicsAssetFromSkeletalMesh(NewAsset, SkeletalMeshPath, CreateParams, Device);
+	const bool bSaved = bInitialized && FPhysicsAssetManager::Get().Save(NewAsset);
+	GUObjectArray.DestroyObject(NewAsset);
+
+	if (!bSaved)
+	{
+		return false;
+	}
+
+	OutCreatedPath = FPaths::ToUtf8(AssetPath.wstring());
+	return true;
+}
+
+bool FAssetFactory::PopulatePhysicsAssetFromSkeletalMesh(
+	UPhysicsAsset* PhysicsAsset,
+	const FString& SkeletalMeshPath,
+	const FPhysicsAssetCreateParams& CreateParams,
+	ID3D11Device* Device)
+{
+	return FPhysicsAssetGenerator::PopulatePhysicsAssetFromSkeletalMesh(PhysicsAsset, SkeletalMeshPath, CreateParams, Device);
+}
+
+const FString& FAssetFactory::GetLastPhysicsAssetCreateWarning()
+{
+	return FPhysicsAssetGenerator::GetLastPhysicsAssetCreateWarning();
 }
 
 bool FAssetFactory::CreateMaterial(const FString& DirectoryPath, const FString& AssetName, EMaterialCreatePreset Preset, FString& OutCreatedPath)
