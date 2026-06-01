@@ -1954,6 +1954,7 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 0.02f));
 
 	ViewportClient.Initialize(Device, 1280, 720);
+	ViewportClient.GetRenderOptions().ShowFlags.bGrid = false;
 	ViewportClient.SetPreviewWorld(WorldContext.World);
 	ViewportClient.SetPreviewActor(Actor);
 	ViewportClient.SetPreviewMeshComponent(MeshComponent);

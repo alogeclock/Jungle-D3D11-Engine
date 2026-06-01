@@ -728,7 +728,7 @@ void AddFittedShapeToBody(UPhysicsBodySetup *BodySetup, const FName &BoneName, c
         CapsuleShape.Name = FName(BoneName.ToString() + "_Capsule");
         CapsuleShape.LocalTransform = ElementTransform;
 
-        FQuat AxisRotation = FQuat::Identity;
+        FQuat CapsuleRotation = ElementTransform.Rotation;
         if (BoxExtent.X > BoxExtent.Y && BoxExtent.X > BoxExtent.Z)
         {
             CapsuleShape.Radius = (std::max)((std::max)(BoxExtent.Y, BoxExtent.Z) * CreateParams.FitPadding,
@@ -738,7 +738,8 @@ void AddFittedShapeToBody(UPhysicsBodySetup *BodySetup, const FName &BoneName, c
         }
         else if (BoxExtent.Y > BoxExtent.X && BoxExtent.Y > BoxExtent.Z)
         {
-            AxisRotation = MakeAxisAlignmentQuat(PhysicsAssetCapsuleAxis, FVector::YAxisVector);
+            const FVector TargetAxis = ElementTransform.Rotation.RotateVector(FVector::YAxisVector);
+            CapsuleRotation = MakeAxisAlignmentQuat(PhysicsAssetCapsuleAxis, TargetAxis);
             CapsuleShape.Radius = (std::max)((std::max)(BoxExtent.X, BoxExtent.Z) * CreateParams.FitPadding,
                                              CreateParams.MinPrimitiveSize);
             CapsuleShape.Length =
@@ -746,14 +747,15 @@ void AddFittedShapeToBody(UPhysicsBodySetup *BodySetup, const FName &BoneName, c
         }
         else
         {
-            AxisRotation = MakeAxisAlignmentQuat(PhysicsAssetCapsuleAxis, FVector::ZAxisVector);
+            const FVector TargetAxis = ElementTransform.Rotation.RotateVector(FVector::ZAxisVector);
+            CapsuleRotation = MakeAxisAlignmentQuat(PhysicsAssetCapsuleAxis, TargetAxis);
             CapsuleShape.Radius = (std::max)((std::max)(BoxExtent.X, BoxExtent.Y) * CreateParams.FitPadding,
                                              CreateParams.MinPrimitiveSize);
             CapsuleShape.Length =
                 (std::max)(BoxExtent.Z * 2.0f * CreateParams.FitPadding - CapsuleShape.Radius * 2.0f, 0.0f);
         }
 
-        CapsuleShape.LocalTransform.Rotation = (AxisRotation * ElementTransform.Rotation).GetNormalized();
+        CapsuleShape.LocalTransform.Rotation = CapsuleRotation.GetNormalized();
         CapsuleShape.CollisionDesc = CollisionDesc;
         ShapeSetup.CapsuleShapeSetups.push_back(CapsuleShape);
         break;
