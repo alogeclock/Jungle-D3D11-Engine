@@ -251,6 +251,8 @@ void FEditorConsoleWidget::RegisterDiagnosticsCommands()
 		"Diagnostics", "stat skinning", "Shows the skinning overlay stat.");
 	RegisterCommand("stat particle", [this](const TArray<FString>& Args) { HandleStatParticle(Args); },
 		"Diagnostics", "stat particle", "Shows the particle overlay stat.");
+	RegisterCommand("stat vehicle", [this](const TArray<FString>& Args) { HandleStatVehicle(Args); },
+		"Diagnostics", "stat vehicle", "Shows the vehicle overlay stat.");
 	RegisterCommand("stat none", [this](const TArray<FString>& Args) { HandleStatNone(Args); },
 		"Diagnostics", "stat none", "Hides all overlay stats.");
 }
@@ -883,6 +885,18 @@ void FEditorConsoleWidget::HandleStatParticle(const TArray<FString>& Args)
 	}
 	const bool bEnabled = EditorEngine->GetOverlayStatSystem().ToggleParticle();
 	AddLog("Overlay stat %s: particle\n", bEnabled ? "enabled" : "disabled");
+}
+
+void FEditorConsoleWidget::HandleStatVehicle(const TArray<FString>& Args)
+{
+	(void)Args;
+	if (!EditorEngine)
+	{
+		AddLog("[ERROR] EditorEngine is null.\n");
+		return;
+	}
+	const bool bEnabled = EditorEngine->GetOverlayStatSystem().ToggleVehicle();
+	AddLog("Overlay stat %s: vehicle\n", bEnabled ? "enabled" : "disabled");
 }
 
 void FEditorConsoleWidget::HandleStatNone(const TArray<FString>& Args)

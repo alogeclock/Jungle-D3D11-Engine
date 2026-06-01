@@ -412,6 +412,11 @@ void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 		return;
 	}
 
+	if (APlayerController* PC = GetFirstPlayerController())
+	{
+		PC->ProcessPlayerInput(DeltaTime);
+	}
+
 	if (bHasBegunPlay && PhysicsScene)
 	{
 		SCOPE_STAT_CAT("PhysicsScene", "1_WorldTick");

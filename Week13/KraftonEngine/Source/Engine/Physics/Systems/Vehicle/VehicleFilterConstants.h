@@ -2,15 +2,11 @@
 #pragma once
 #include "PxPhysicsAPI.h"
 
-// Scene Query 필터 (레이캐스트용)
-static const physx::PxU32 DRIVABLE_SURFACE = 0xffff0000;
-static const physx::PxU32 UNDRIVABLE_SURFACE = 0x0000ffff;
+// Vehicle suspension raycast용 query filter flag.
+// Query filter layout:
+// word0 = ECollisionChannel, word1 = block response bitmask, word2 = owner UUID, word3 = drivable flag.
+// Simulation filter는 기존 엔진 layout(word0 channel, word1 block mask, word2 overlap mask, word3 owner UUID)을 유지한다.
+static const physx::PxU32 DRIVABLE_SURFACE = (1 << 0);
+static const physx::PxU32 UNDRIVABLE_SURFACE = 0;
 
-// Simulation 필터 (충돌용)
-static const physx::PxU32 COLLISION_FLAG_CHASSIS = (1 << 0);
-static const physx::PxU32 COLLISION_FLAG_WHEEL = (1 << 1);
-static const physx::PxU32 COLLISION_FLAG_GROUND = (1 << 2);
-
-static const physx::PxU32 COLLISION_FLAG_CHASSIS_AGAINST = (1 << 2); // ground랑 충돌
-static const physx::PxU32 COLLISION_FLAG_WHEEL_AGAINST = 0;        // 아무것도 충돌 안함
-static const physx::PxU32 COLLISION_FLAG_GROUND_AGAINST = (1 << 0); // chassis랑 충돌
+// Simulation filter는 엔진의 ECollisionChannel/ResponseContainer 기반 필터를 그대로 사용한다.

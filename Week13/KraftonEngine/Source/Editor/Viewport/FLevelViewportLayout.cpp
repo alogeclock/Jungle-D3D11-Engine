@@ -45,6 +45,7 @@
 #include "Engine/Runtime/ActorPlacementRegistry.h"
 
 #include <algorithm>
+#include <GameFramework/VehiclePawn.h>
 
 namespace
 {
@@ -1355,6 +1356,7 @@ void FLevelViewportLayout::RenderViewportPlaceActorPopup()
 		ImGui::Separator();
 		PlaceActorMenuItem("Character", EViewportPlaceActorType::Character);
 		PlaceActorMenuItem("Skeletal Mesh Actor", EViewportPlaceActorType::SkeletalMesh);
+		PlaceActorMenuItem("Vehicle Actor", EViewportPlaceActorType::Vehicle);
 
 		// Game 모듈이 등록한 액터들 (예: ACarPawn). 등록 순서대로 표시.
 		const auto& RegistryEntries = FActorPlacementRegistry::Get().GetEntries();
@@ -1702,6 +1704,16 @@ AActor* FLevelViewportLayout::SpawnActorFromViewportMenu(EViewportPlaceActorType
 		if (Actor)
 		{
 			Actor->InitDefaultComponents("Asset/Mesh/Samba Dancing/Samba Dancing (10)_SkeletalMesh.uasset");
+			SpawnedActor = Actor;
+		}
+		break;
+	}
+	case EViewportPlaceActorType::Vehicle:
+	{
+		AVehiclePawn* Actor = World->SpawnActor<AVehiclePawn>();
+		if (Actor)
+		{
+			Actor->InitDefaultComponents();
 			SpawnedActor = Actor;
 		}
 		break;

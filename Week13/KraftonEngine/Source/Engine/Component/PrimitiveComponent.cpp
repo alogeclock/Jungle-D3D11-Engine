@@ -57,7 +57,7 @@ void UPrimitiveComponent::BeginPlay()
 	// 직렬화나 InitDefaultComponents에서 CollisionEnabled가 이미 설정된 경우 등록.
 	// 이 시점에 SimulatePhysics/ObjectType/Response/Mass/COM 등 모든 셋업이 끝나있어
 	// PhysX/Native가 정확한 값으로 body를 생성한다.
-	if (IsQueryCollisionEnabled())
+	if (ShouldCreatePhysicsBody())
 	{
 		if (Owner)
 		{
@@ -111,6 +111,7 @@ void UPrimitiveComponent::EndPlay()
 void UPrimitiveComponent::NotifyPhysicsBodyDirty()
 {
 	if (!bComponentHasBegunPlay) return;
+	if (!bAutoCreatePhysicsBody) return;
 	if (!Owner) return;
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
@@ -125,6 +126,38 @@ void UPrimitiveComponent::SetSimulatePhysics(bool bInSimulate)
 	if (bSimulatePhysics == bInSimulate) return;
 	bSimulatePhysics = bInSimulate;
 	NotifyPhysicsBodyDirty();
+}
+
+void UPrimitiveComponent::SetAutoCreatePhysicsBody(bool bInAutoCreate)
+{
+	if (bAutoCreatePhysicsBody == bInAutoCreate) return;
+	bAutoCreatePhysicsBody = bInAutoCreate;
+
+	if (!bComponentHasBegunPlay) return;
+	if (!Owner) return;
+
+	UWorld* World = Owner->GetWorld();
+	if (!World) return;
+
+	IPhysicsSceneInterface* PS = World->GetPhysicsScene();
+	if (!PS) return;
+
+	if (!bAutoCreatePhysicsBody)
+	{
+		PS->DestroyBody(PhysicsBodyInstance);
+		PhysicsBodyInstance = nullptr;
+		return;
+	}
+
+	if (IsQueryCollisionEnabled())
+	{
+		PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
+	}
+}
+
+bool UPrimitiveComponent::ShouldCreatePhysicsBody() const
+{
+	return bAutoCreatePhysicsBody && IsQueryCollisionEnabled();
 }
 
 void UPrimitiveComponent::MarkProxyDirty(EDirtyFlag Flag) const
@@ -219,7 +252,7 @@ void UPrimitiveComponent::PostEditProperty(const char* PropertyName)
 			{
 				if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 				{
-					if (IsQueryCollisionEnabled())
+					if (ShouldCreatePhysicsBody())
 					{
 						PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
 					}
@@ -416,7 +449,7 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 	{
 		if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 		{
-			if (bIsQuery)
+			if (bIsQuery && bAutoCreatePhysicsBody)
 				PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
 			else
 			{

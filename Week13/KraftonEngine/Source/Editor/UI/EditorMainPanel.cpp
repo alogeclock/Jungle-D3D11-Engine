@@ -299,6 +299,12 @@ void FEditorMainPanel::RenderMainMenuBar()
 			OverlayStats.ShowParticle(!bShowParticle);
 		}
 
+		bool bShowVehicle = OverlayStats.IsShowingVehicle();
+		if (ImGui::MenuItem("Vehicle", nullptr, bShowVehicle))
+		{
+			OverlayStats.ShowVehicle(!bShowVehicle);
+		}
+
 		ImGui::Separator();
 		if (ImGui::MenuItem("None"))
 		{

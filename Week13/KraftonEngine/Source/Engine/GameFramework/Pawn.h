@@ -4,6 +4,7 @@
 #include "Pawn.generated.h"
 
 class APlayerController;
+struct FInputSystemSnapshot;
 
 // ============================================================
 // APawn — PlayerController가 Possess할 수 있는 액터의 베이스
@@ -26,6 +27,7 @@ public:
 	// 입력 활성화/카메라 전환 등을 처리할 수 있다.
 	virtual void PossessedBy(APlayerController* PC);
 	virtual void UnPossessed();
+	virtual void ProcessPlayerInput(const FInputSystemSnapshot& Input, float DeltaTime);
 
 	APlayerController* GetController() const { return Controller; }
 	bool IsPossessed() const { return Controller != nullptr; }

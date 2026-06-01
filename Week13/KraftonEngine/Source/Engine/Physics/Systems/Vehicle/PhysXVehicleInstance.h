@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "VehicleTypes.h"
+#include "VehicleDebugTypes.h"
 #include "PxPhysicsAPI.h"
 #include "Component/SceneComponent.h"
 #include "vehicle/PxVehicleSDK.h"
@@ -39,4 +40,5 @@ public:
 	PxVehicleDrivableSurfaceToTireFrictionPairs* FrictionPairs = nullptr;
 
 	FVehicleInputState                           InputState;
+	FVehicleRuntimeStats                         DebugStats;
 };

@@ -19,6 +19,7 @@ struct FVehicleWheelDesc
     FVector            LocalPosition = FVector::ZeroVector;
     float              Radius        = 0.3f;
     float              Width         = 0.2f;
+    float              Mass          = 20.0f;
     EVehicleWheelRole  WheelRole     = EVehicleWheelRole::VWR_None;
     FVehicleSuspensionDesc Suspension;
 };

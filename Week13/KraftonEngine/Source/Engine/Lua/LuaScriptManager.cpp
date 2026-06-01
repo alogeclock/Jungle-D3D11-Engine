@@ -9,6 +9,7 @@
 #include "Component/ActionComponent.h"
 #include "Component/LuaScriptComponent.h"
 #include "Component/Movement/FloatingPawnMovementComponent.h"
+#include "Component/VehicleMovementComponent.h"
 #include "Component/CameraComponent.h"
 #include "Component/PrimitiveComponent.h"
 #include "Component/SceneComponent.h"
@@ -869,6 +870,17 @@ void FLuaScriptManager::RegisterActorBindings(sol::state& Lua)
 		"SetMoveInput", &UFloatingPawnMovementComponent::SetMoveInput,
 		"SetLookInput", &UFloatingPawnMovementComponent::SetLookInput);
 
+	Lua.new_usertype<UVehicleMovementComponent>("VehicleMovementComponent",
+		"SetThrottle", &UVehicleMovementComponent::SetThrottle,
+		"SetBrake", &UVehicleMovementComponent::SetBrake,
+		"SetSteering", &UVehicleMovementComponent::SetSteering,
+		"SetHandbrake", &UVehicleMovementComponent::SetHandbrake,
+		"GetForwardSpeedKmh", &UVehicleMovementComponent::GetForwardSpeedKmh,
+		"GetEngineRpm", &UVehicleMovementComponent::GetEngineRpm,
+		"GetCurrentGear", &UVehicleMovementComponent::GetCurrentGear,
+		"IsInAir", &UVehicleMovementComponent::IsInAir,
+		"IsVehicleValid", &UVehicleMovementComponent::IsVehicleValid);
+
 	Lua.new_usertype<USceneComponent>("SceneComponent",
 		"Location", sol::property(
 		[](USceneComponent& Component)
@@ -1070,6 +1082,11 @@ void FLuaScriptManager::RegisterActorBindings(sol::state& Lua)
 		"GetFloatingPawnMovement", [](AActor& Actor)
 	{
 		return Actor.GetComponentByClass<UFloatingPawnMovementComponent>();
+	},
+
+		"GetVehicleMovement", [](AActor& Actor)
+	{
+		return Actor.GetComponentByClass<UVehicleMovementComponent>();
 	},
 
 		"GetCharacterMovement", [](AActor& Actor) -> UCharacterMovementComponent*

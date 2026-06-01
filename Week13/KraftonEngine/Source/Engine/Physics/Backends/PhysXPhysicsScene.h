@@ -80,6 +80,8 @@ public:
 	//Vehicle 관련 API
 	FVehicleRuntimeHandle CreateVehicle(const FVehicleRuntimeCreateDesc& BuildDesc);
 	void DestroyVehicle(FVehicleRuntimeHandle& Handle);
+	void UpdateVehicles(float DeltaTime);
+	void SyncVehiclePose();
 
 private:
     UWorld* World = nullptr;
@@ -109,6 +111,7 @@ private:
 
     physx::PxShape* AddShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp);
     void DetachShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp);
+    void SetComponentVehicleDrivableSurface(UPrimitiveComponent* Comp, bool bDrivable);
 
     void RegisterComponentInternal(UPrimitiveComponent* Comp);
     void UnregisterComponentInternal(UPrimitiveComponent* Comp);

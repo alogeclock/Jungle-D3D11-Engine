@@ -28,6 +28,7 @@ public:
 	// Pawn을 점유한다. 이미 다른 Pawn을 점유 중이면 먼저 해제.
 	void Possess(APawn* Pawn);
 	void UnPossess();
+	void ProcessPlayerInput(float DeltaTime);
 
 	APawn* GetPossessedPawn() const { return PossessedPawn; }
 

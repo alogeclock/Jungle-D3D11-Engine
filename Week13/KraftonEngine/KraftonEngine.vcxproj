@@ -326,6 +326,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\GameFramework\PlayerStart.cpp" />
     <ClCompile Include="Source\Editor\EditorEngine.cpp" />
     <ClCompile Include="Source\Editor\EditorRenderPipeline.cpp" />
     <ClCompile Include="Source\Editor\Import\EditorFbxImportService.cpp" />
@@ -434,6 +435,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Component\StaticMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\SubUVComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\TextRenderComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\VehicleMovementComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\AmbientLightComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\DirectionalLightComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\LightComponent.cpp" />
@@ -489,6 +491,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\GameFramework\StaticMeshActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\TriggerVolumeBase.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\VehicleGameMode.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\VehiclePawn.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\World.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\Light\AmbientLightActor.cpp" />
@@ -634,6 +637,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Engine\GameFramework\PlayerStart.h" />
     <ClInclude Include="Source\Editor\EditorEngine.h" />
     <ClInclude Include="Source\Editor\EditorRenderPipeline.h" />
     <ClInclude Include="Source\Editor\Import\EditorFbxImportService.h" />
@@ -758,6 +762,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Component\StaticMeshComponent.h" />
     <ClInclude Include="Source\Engine\Component\SubUVComponent.h" />
     <ClInclude Include="Source\Engine\Component\TextRenderComponent.h" />
+    <ClInclude Include="Source\Engine\Component\VehicleMovementComponent.h" />
     <ClInclude Include="Source\Engine\Component\Light\AmbientLightComponent.h" />
     <ClInclude Include="Source\Engine\Component\Light\DirectionalLightComponent.h" />
     <ClInclude Include="Source\Engine\Component\Light\LightComponent.h" />
@@ -829,6 +834,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\GameFramework\StaticMeshActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\TriggerVolumeBase.h" />
     <ClInclude Include="Source\Engine\GameFramework\VehicleGameMode.h" />
+    <ClInclude Include="Source\Engine\GameFramework\VehiclePawn.h" />
     <ClInclude Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.h" />
     <ClInclude Include="Source\Engine\GameFramework\World.h" />
     <ClInclude Include="Source\Engine\GameFramework\WorldContext.h" />
