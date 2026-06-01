@@ -27,6 +27,15 @@ enum class EPhysicsAssetPreviewShapeType : uint8
 
 class FPhysicsAssetEditorWidget : public FAssetEditorWidget
 {
+	struct FPreviewConstraintConeEntry
+	{
+		UStaticMeshComponent* Component = nullptr;
+		UMaterial* Material = nullptr;
+		UStaticMesh* Mesh = nullptr;
+		int32 ConstraintIndex = -1;
+		bool bIsSwing1 = true;
+	};
+
 	struct FPreviewShapeComponentEntry
 	{
 		UStaticMeshComponent* Component = nullptr;
@@ -53,6 +62,9 @@ private:
 	void ClearPreviewShapeComponents();
 	void RebuildPreviewShapeComponents(UPhysicsAsset* PhysicsAsset);
 	void SyncPreviewShapeComponents(UPhysicsAsset* PhysicsAsset);
+	void ClearConstraintConeComponents();
+	void RebuildConstraintConeComponents(UPhysicsAsset* PhysicsAsset);
+	void SyncConstraintConeComponents(UPhysicsAsset* PhysicsAsset);
 	void DrawConstraintDebug(UPhysicsAsset* PhysicsAsset);
 	UStaticMeshComponent* CreatePreviewShapeComponent(UStaticMesh* StaticMesh, int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex, int32 PartIndex, const FVector& BaseMeshExtent);
 	UMaterial* CreatePreviewShapeMaterial(float Alpha) const;
@@ -86,6 +98,7 @@ private:
 
 	FPhysicsAssetCreateParams ToolSettings;
 	TArray<FPreviewShapeComponentEntry> PreviewShapeComponents;
+	TArray<FPreviewConstraintConeEntry> PreviewConstraintCones;
 	IGizmoTransformTarget* BodyGizmoTarget = nullptr;
 
 	int32 SelectedBoneIndex = -1;
@@ -98,7 +111,7 @@ private:
 	float PreviewConstraintShapeOpacity = 0.35f;
 	float PreviewSelectedShapeOpacity = 0.45f;
 	bool bShowConstraintDebug = true;
-	float ConstraintAxisLength = 10.0f;
+	float ConstraintAxisLength = 0.5f;
 
 	char BoneSearchBuffer[128] = {};
 	bool bExpandBodyTreeOnNextRender = false;

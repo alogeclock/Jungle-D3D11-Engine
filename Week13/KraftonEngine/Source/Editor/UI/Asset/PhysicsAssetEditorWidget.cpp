@@ -2386,6 +2386,201 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	RebuildPreviewShapeComponents(PhysicsAsset);
 }
 
+// ---------------------------------------------------------------------------
+// Constraint cone (filled sector) helpers
+// ---------------------------------------------------------------------------
+
+namespace
+{
+	UStaticMesh* CreateConstraintSectorMesh(
+		UStaticMesh* MaterialSourceMesh,
+		float HalfAngleDeg,
+		bool bXZPlane,
+		ID3D11Device* Device)
+	{
+		if (!Device || HalfAngleDeg <= 0.0f) return nullptr;
+
+		const float HalfAngleRad = HalfAngleDeg * Pi / 180.0f;
+		constexpr int32 Segments = 24;
+
+		UStaticMesh* SectorMesh = GUObjectArray.CreateObject<UStaticMesh>();
+		FStaticMesh* SectorAsset = new FStaticMesh();
+		SectorAsset->PathFileName = "__ConstraintSector__";
+
+		if (MaterialSourceMesh)
+		{
+			TArray<FStaticMaterial> Mats = MaterialSourceMesh->GetStaticMaterials();
+			SectorMesh->SetStaticMaterials(std::move(Mats));
+		}
+
+		FStaticMeshSection Section;
+		Section.MaterialSlotName = SectorMesh->GetStaticMaterials().empty()
+			? FString("None") : SectorMesh->GetStaticMaterials()[0].MaterialSlotName;
+		Section.FirstIndex = 0;
+		Section.NumTriangles = 0;
+
+		FNormalVertex Apex{};
+		Apex.pos    = FVector::ZeroVector;
+		Apex.normal = bXZPlane ? FVector(0, 1, 0) : FVector(0, 0, 1);
+
+		for (int32 i = 0; i < Segments; ++i)
+		{
+			const float T0 = -HalfAngleRad + (2.0f * HalfAngleRad * i       / Segments);
+			const float T1 = -HalfAngleRad + (2.0f * HalfAngleRad * (i + 1) / Segments);
+
+			FNormalVertex V0 = Apex, V1 = Apex;
+			if (bXZPlane)
+			{
+				V0.pos = FVector(std::cos(T0), 0.0f, std::sin(T0));
+				V1.pos = FVector(std::cos(T1), 0.0f, std::sin(T1));
+			}
+			else
+			{
+				V0.pos = FVector(std::cos(T0), std::sin(T0), 0.0f);
+				V1.pos = FVector(std::cos(T1), std::sin(T1), 0.0f);
+			}
+
+			// front face
+			AppendPreviewTriangle(SectorAsset, Section, Apex, V0, V1);
+			// back face (double-sided)
+			AppendPreviewTriangle(SectorAsset, Section, Apex, V1, V0);
+		}
+
+		if (Section.NumTriangles == 0)
+		{
+			delete SectorAsset;
+			GUObjectArray.DestroyObject(SectorMesh);
+			return nullptr;
+		}
+
+		SectorAsset->Sections.push_back(Section);
+		SectorAsset->CacheBounds();
+		SectorMesh->SetAssetPathFileName("__ConstraintSector__");
+		SectorMesh->SetStaticMeshAsset(SectorAsset);
+		SectorMesh->InitResources(Device);
+		return SectorMesh;
+	}
+}
+
+void FPhysicsAssetEditorWidget::ClearConstraintConeComponents()
+{
+	for (FPreviewConstraintConeEntry& Entry : PreviewConstraintCones)
+	{
+		if (PreviewShapeActor && Entry.Component)
+		{
+			PreviewShapeActor->RemoveComponent(Entry.Component);
+			Entry.Component = nullptr;
+		}
+		if (Entry.Material)
+		{
+			GUObjectArray.DestroyObject(Entry.Material);
+			Entry.Material = nullptr;
+		}
+		if (Entry.Mesh)
+		{
+			GUObjectArray.DestroyObject(Entry.Mesh);
+			Entry.Mesh = nullptr;
+		}
+	}
+	PreviewConstraintCones.clear();
+}
+
+void FPhysicsAssetEditorWidget::RebuildConstraintConeComponents(UPhysicsAsset* PhysicsAsset)
+{
+	ClearConstraintConeComponents();
+	if (!PhysicsAsset || !PreviewShapeActor || !GEngine) return;
+
+	ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
+	const TArray<FPhysicsConstraintSetup>& Constraints = PhysicsAsset->GetConstraintSetups();
+
+	auto AddCone = [&](int32 ConstraintIndex, float HalfAngleDeg, bool bXZPlane, const FVector4& Color)
+	{
+		if (HalfAngleDeg <= 0.0f) return;
+		UStaticMesh* Mesh = CreateConstraintSectorMesh(PreviewSphereMesh, HalfAngleDeg, bXZPlane, Device);
+		if (!Mesh) return;
+
+		UStaticMeshComponent* Comp = PreviewShapeActor->AddComponent<UStaticMeshComponent>();
+		if (!Comp) { GUObjectArray.DestroyObject(Mesh); return; }
+		Comp->SetStaticMesh(Mesh);
+		Comp->SetCastShadow(false);
+
+		UMaterial* Mat = CreatePreviewShapeMaterial(PreviewConstraintShapeOpacity);
+		if (Mat) Mat->SetVector4Parameter("SectionColor", Color);
+		if (Mat) Comp->SetMaterial(0, Mat);
+
+		FPreviewConstraintConeEntry Entry;
+		Entry.Component = Comp;
+		Entry.Material  = Mat;
+		Entry.Mesh      = Mesh;
+		Entry.ConstraintIndex = ConstraintIndex;
+		Entry.bIsSwing1 = bXZPlane;
+		PreviewConstraintCones.push_back(Entry);
+	};
+
+	for (int32 Ci = 0; Ci < static_cast<int32>(Constraints.size()); ++Ci)
+	{
+		const FPhysicsConstraintSetup& CS = Constraints[Ci];
+
+		// Swing 1 (Red) — rotation around Y, fan in XZ plane
+		if (CS.Swing1Motion != EPhysicsConstraintMotionMode::Locked)
+		{
+			const float Lim = CS.Swing1Motion == EPhysicsConstraintMotionMode::Free ? 89.0f : CS.SwingLimitY;
+			AddCone(Ci, Lim, true, FVector4(1.0f, 0.2f, 0.2f, PreviewConstraintShapeOpacity));
+		}
+
+		// Swing 2 (Green) — rotation around Z, fan in XY plane
+		if (CS.Swing2Motion != EPhysicsConstraintMotionMode::Locked)
+		{
+			const float Lim = CS.Swing2Motion == EPhysicsConstraintMotionMode::Free ? 89.0f : CS.SwingLimitZ;
+			AddCone(Ci, Lim, false, FVector4(0.2f, 1.0f, 0.2f, PreviewConstraintShapeOpacity));
+		}
+	}
+}
+
+void FPhysicsAssetEditorWidget::SyncConstraintConeComponents(UPhysicsAsset* PhysicsAsset)
+{
+	if (PreviewConstraintCones.empty() || !PhysicsAsset) return;
+
+	const FSkeletonAsset* Skel = PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr;
+	USkeletalMeshComponent* MC = ViewportClient.GetPreviewMeshComponent();
+	if (!Skel || !MC) return;
+
+	TArray<FMatrix> BoneGlobals;
+	MC->GetCurrentBoneGlobalMatrices(BoneGlobals);
+	const TArray<FPhysicsConstraintSetup>& Constraints = PhysicsAsset->GetConstraintSetups();
+
+	for (FPreviewConstraintConeEntry& Entry : PreviewConstraintCones)
+	{
+		if (!Entry.Component || Entry.ConstraintIndex >= static_cast<int32>(Constraints.size())) continue;
+
+		const FPhysicsConstraintSetup& CS = Constraints[Entry.ConstraintIndex];
+		const int32 PBone = FindBoneIndexByName(Skel, CS.ParentBoneName);
+		const int32 CBone = FindBoneIndexByName(Skel, CS.ChildBoneName);
+		if (PBone < 0 || CBone < 0) { Entry.Component->SetVisibility(false); continue; }
+
+		const FTransform PFrame(CS.ParentLocalFrame.ToMatrix() * BuildBoneWorldMatrix(MC, &BoneGlobals, PBone));
+		const FTransform CFrame(CS.ChildLocalFrame.ToMatrix()  * BuildBoneWorldMatrix(MC, &BoneGlobals, CBone));
+		const FVector Origin = (PFrame.Location + CFrame.Location) * 0.5f;
+
+		const bool bSelected = Entry.ConstraintIndex == SelectedConstraintIndex;
+		const float VisualLength = bSelected ? ConstraintAxisLength * 2.0f : ConstraintAxisLength;
+		const float Alpha = bSelected ? PreviewSelectedShapeOpacity : PreviewConstraintShapeOpacity;
+
+		Entry.Component->SetVisibility(bShowConstraintDebug);
+		Entry.Component->SetRelativeLocation(Origin);
+		Entry.Component->SetRelativeRotation(PFrame.GetRotator());
+		Entry.Component->SetRelativeScale(FVector(VisualLength, VisualLength, VisualLength));
+
+		if (Entry.Material)
+		{
+			FVector4 Color = Entry.bIsSwing1
+				? FVector4(bSelected ? 1.0f : 0.9f, 0.2f, 0.2f, Alpha)
+				: FVector4(0.2f, bSelected ? 1.0f : 0.9f, 0.2f, Alpha);
+			Entry.Material->SetVector4Parameter("SectionColor", Color);
+		}
+	}
+}
+
 void FPhysicsAssetEditorWidget::ClearPreviewShapeComponents()
 {
 	for (FPreviewShapeComponentEntry& Entry : PreviewShapeComponents)
@@ -2467,6 +2662,7 @@ UStaticMeshComponent* FPhysicsAssetEditorWidget::CreatePreviewShapeComponent(USt
 void FPhysicsAssetEditorWidget::RebuildPreviewShapeComponents(UPhysicsAsset* PhysicsAsset)
 {
 	ClearPreviewShapeComponents();
+	RebuildConstraintConeComponents(PhysicsAsset);
 
 	if (!PhysicsAsset || !PreviewShapeActor)
 	{
@@ -2520,6 +2716,7 @@ void FPhysicsAssetEditorWidget::RebuildPreviewShapeComponents(UPhysicsAsset* Phy
 	}
 
 	SyncPreviewShapeComponents(PhysicsAsset);
+	SyncConstraintConeComponents(PhysicsAsset);
 }
 
 void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* PhysicsAsset)
@@ -2833,6 +3030,7 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 
 void FPhysicsAssetEditorWidget::Close()
 {
+	ClearConstraintConeComponents();
 	ClearPreviewShapeComponents();
 	PreviewShapeActor = nullptr;
 	PreviewCubeMesh = nullptr;
@@ -2885,6 +3083,7 @@ void FPhysicsAssetEditorWidget::Tick(float DeltaTime)
 		ViewportClient.Tick(DeltaTime);
 		UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
 		SyncPreviewShapeComponents(PhysicsAsset);
+		SyncConstraintConeComponents(PhysicsAsset);
 		DrawConstraintDebug(PhysicsAsset);
 	}
 }
@@ -3027,7 +3226,9 @@ void FPhysicsAssetEditorWidget::SyncSelectionToViewport()
 		}
 	}
 
-	SyncPreviewShapeComponents(static_cast<UPhysicsAsset*>(EditedObject));
+	UPhysicsAsset* __SyncPA = static_cast<UPhysicsAsset*>(EditedObject);
+	SyncPreviewShapeComponents(__SyncPA);
+	SyncConstraintConeComponents(__SyncPA);
 }
 
 int32 FPhysicsAssetEditorWidget::FindBoneIndexByName(const FSkeletonAsset* SkeletonAsset, const FName& BoneName) const
@@ -3466,6 +3667,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 	else if (bPreviewSettingsChanged)
 	{
 		SyncPreviewShapeComponents(PhysicsAsset);
+		SyncConstraintConeComponents(PhysicsAsset);
 	}
 	else if (bGraphLayoutChanged)
 	{
@@ -4098,7 +4300,7 @@ bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel(bool bShowHeader)
 		PreviewBaseShapeOpacity = 0.3f;
 		PreviewConstraintShapeOpacity = 0.35f;
 		PreviewSelectedShapeOpacity = 0.45f;
-		ConstraintAxisLength = 10.0f;
+		ConstraintAxisLength = 0.5f;
 		bChanged = true;
 	}
 
