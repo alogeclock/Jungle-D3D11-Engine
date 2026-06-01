@@ -149,7 +149,7 @@ public:
 
 	// --- Overlap / Hit ---
 
-	void SetSimulatePhysics(bool bInSimulate);
+	virtual void SetSimulatePhysics(bool bInSimulate);
 	bool GetSimulatePhysics() const { return bSimulatePhysics; }
 	void SetEnableGravity(bool bInEnableGravity);
 	bool GetEnableGravity() const { return bEnableGravity; }

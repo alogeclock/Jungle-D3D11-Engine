@@ -23,6 +23,7 @@ public:
 
 	void BeginPlay() override;
 	void SetSkeletalMesh(USkeletalMesh* InMesh) override;
+	void SetSimulatePhysics(bool bInSimulate) override;
 	void PostDuplicate() override;
 	void PostEditProperty(const char* PropertyName) override;
 
@@ -72,6 +73,7 @@ private:
 	void ApplyPoseToComponent(const FPoseContext& Pose);
 	void CachePreIKPoseBoneWorldLocations(const FPoseContext& Pose);
 	void ApplyTwoBoneIKChains(FPoseContext& Pose);
+	void RefreshRagdollFromPhysicsState(bool bForceRecreate = false);
 
 	void SolveTwoBoneIK(FPoseContext& Pose, int RootBoneIndex, int MidBoneIndex, int EndBoneIndex, const FVector& TargetPosition, const FVector& PolePosition);
 

@@ -194,6 +194,16 @@ bool FRagdollInstance::Initialize(
     return true;
 }
 
+void FRagdollInstance::RestoreInitialPose(USkeletalMeshComponent* MeshComp) const
+{
+    if (!MeshComp || InitialLocalPose.empty())
+    {
+        return;
+    }
+
+    MeshComp->ApplyPhysicsBoneLocalMatrices(InitialLocalPose);
+}
+
 void FRagdollInstance::Release(IPhysicsSceneInterface* Scene)
 {
     if (Scene)

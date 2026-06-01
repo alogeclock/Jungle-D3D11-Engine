@@ -14,6 +14,7 @@ class FPhysicsConstraintInstance;
 struct FRagdollInstance
 {
     bool Initialize(UPhysicsAsset* PhysicsAsset, USkeletalMeshComponent* MeshComp, IPhysicsSceneInterface* Scene);
+    void RestoreInitialPose(USkeletalMeshComponent* MeshComp) const;
     void Release(IPhysicsSceneInterface* Scene);
     void SyncBonesFromBodies(USkeletalMeshComponent* MeshComp, IPhysicsSceneInterface* Scene);
 

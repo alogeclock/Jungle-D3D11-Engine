@@ -32,22 +32,22 @@ void USkeletalMeshComponent::BeginPlay()
 			AnimInstance = nullptr;
 		}
 		RebuildAnimInstanceFromAsset();
-		return;
 	}
-
-	if (AnimScriptPath.empty())
-		return;
-
-	// PIE 재시작 등으로 이미 인스턴스가 있으면 먼저 정리
-	if (AnimInstance)
+	else if (!AnimScriptPath.empty())
 	{
-		GUObjectArray.DestroyObject(AnimInstance);
-		AnimInstance = nullptr;
+		// PIE 재시작 등으로 이미 인스턴스가 있으면 먼저 정리
+		if (AnimInstance)
+		{
+			GUObjectArray.DestroyObject(AnimInstance);
+			AnimInstance = nullptr;
+		}
+
+		UCharacterAnimInstance* Inst = GUObjectArray.CreateObject<UCharacterAnimInstance>();
+		AnimInstance = Inst;
+		Inst->Initialize(this, AnimScriptPath);
 	}
 
-	UCharacterAnimInstance* Inst = GUObjectArray.CreateObject<UCharacterAnimInstance>();
-	AnimInstance = Inst;
-	Inst->Initialize(this, AnimScriptPath);
+	RefreshRagdollFromPhysicsState();
 }
 
 void USkeletalMeshComponent::EndPlay()
@@ -64,16 +64,24 @@ void USkeletalMeshComponent::EndPlay()
 
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {
-	if (IsRagdollActive())
-	{
-		SetRagdollEnabled(false);
-	}
+	const bool bShouldRefreshRagdoll = GetSimulatePhysics() || IsRagdollActive();
+	SetRagdollEnabled(false);
 
 	Super::SetSkeletalMesh(InMesh);
 	if (!AnimInstanceAsset.IsNull())
 	{
 		RebuildAnimInstanceFromAsset();
 	}
+	if (bShouldRefreshRagdoll)
+	{
+		RefreshRagdollFromPhysicsState(true);
+	}
+}
+
+void USkeletalMeshComponent::SetSimulatePhysics(bool bInSimulate)
+{
+	Super::SetSimulatePhysics(bInSimulate);
+	RefreshRagdollFromPhysicsState();
 }
 
 void USkeletalMeshComponent::PostDuplicate()
@@ -83,6 +91,7 @@ void USkeletalMeshComponent::PostDuplicate()
 	{
 		RebuildAnimInstanceFromAsset();
 	}
+	RefreshRagdollFromPhysicsState();
 }
 
 void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
@@ -97,9 +106,16 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 
 	if (PropertyName
 		&& (strcmp(PropertyName, "Physics Asset") == 0 || strcmp(PropertyName, "PhysicsAssetRef") == 0)
-		&& IsRagdollActive())
+		&& (GetSimulatePhysics() || IsRagdollActive()))
 	{
 		SetRagdollEnabled(false);
+		RefreshRagdollFromPhysicsState(true);
+	}
+
+	if (PropertyName
+		&& (strcmp(PropertyName, "Simulate Physics") == 0 || strcmp(PropertyName, "bSimulatePhysics") == 0))
+	{
+		RefreshRagdollFromPhysicsState();
 	}
 }
 
@@ -186,6 +202,7 @@ bool USkeletalMeshComponent::RebuildAnimInstanceFromAsset()
 void USkeletalMeshComponent::SetPhysicsAsset(UPhysicsAsset* InAsset)
 {
 	const bool bWasRagdollActive = IsRagdollActive();
+	const bool bShouldRefreshRagdoll = bWasRagdollActive || GetSimulatePhysics();
 	if (bWasRagdollActive)
 	{
 		SetRagdollEnabled(false);
@@ -200,9 +217,9 @@ void USkeletalMeshComponent::SetPhysicsAsset(UPhysicsAsset* InAsset)
 		PhysicsAssetRef.Reset();
 	}
 
-	if (bWasRagdollActive && InAsset)
+	if (bShouldRefreshRagdoll)
 	{
-		SetRagdollEnabled(true);
+		RefreshRagdollFromPhysicsState(true);
 	}
 }
 
@@ -247,6 +264,7 @@ void USkeletalMeshComponent::SetRagdollEnabled(bool bEnable)
 	{
 		if (Ragdoll)
 		{
+			Ragdoll->RestoreInitialPose(this);
 			Ragdoll->Release(Scene);
 			Ragdoll.reset();
 		}
@@ -287,6 +305,31 @@ void USkeletalMeshComponent::SetRagdollEnabled(bool bEnable)
 bool USkeletalMeshComponent::IsRagdollActive() const
 {
 	return bRagdollEnabled && Ragdoll && Ragdoll->IsActive();
+}
+
+void USkeletalMeshComponent::RefreshRagdollFromPhysicsState(bool bForceRecreate)
+{
+	if (!GetSimulatePhysics() || PhysicsAssetRef.IsNull() || !GetSkeletalMesh())
+	{
+		SetRagdollEnabled(false);
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World || !World->GetPhysicsScene())
+	{
+		return;
+	}
+
+	if (bForceRecreate)
+	{
+		SetRagdollEnabled(false);
+	}
+
+	if (!IsRagdollActive())
+	{
+		SetRagdollEnabled(true);
+	}
 }
 
 void USkeletalMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType,
