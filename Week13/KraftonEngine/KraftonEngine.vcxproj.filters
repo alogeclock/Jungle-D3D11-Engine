@@ -160,11 +160,11 @@
     <Filter Include="Source\Engine\Physics">
       <UniqueIdentifier>{c1985821-1144-9a46-639a-f7de31f4a1fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Engine\Physics\Backends">
-      <UniqueIdentifier>{6b8f72f0-41b2-4d17-a5e9-a11b86fc8ed7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Engine\Physics\Assets">
       <UniqueIdentifier>{6250ce0e-1e91-2579-0e9f-8654bad9ec29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Backends">
+      <UniqueIdentifier>{5943b57d-edb2-a818-aeba-5a8de208dac1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Engine\Physics\Common">
       <UniqueIdentifier>{8f351b81-d0b4-4490-a9c6-7c06823531ca}</UniqueIdentifier>
@@ -569,13 +569,13 @@
     <ClCompile Include="Source\Editor\Subsystem\AssetFactory.cpp">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Editor\Subsystem\PhysicsAssetGenerator.cpp">
-      <Filter>Source\Editor\Subsystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Editor\Subsystem\EditorAnimationAssetLibrary.cpp">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\Subsystem\OverlayStatSystem.cpp">
+      <Filter>Source\Editor\Subsystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\Subsystem\PhysicsAssetGenerator.cpp">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\UI\EditorConsoleWidget.cpp">
@@ -1022,6 +1022,9 @@
     <ClCompile Include="Source\Engine\GameFramework\TriggerVolumeBase.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\VehicleGameMode.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
@@ -1142,12 +1145,6 @@
     <ClCompile Include="Source\Engine\Particles\Runtime\ParticleEmitterInstance.cpp">
       <Filter>Source\Engine\Particles\Runtime</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp">
-      <Filter>Source\Engine\Physics\Backends</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp">
-      <Filter>Source\Engine\Physics\Backends</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Assets\PhysicsAsset.cpp">
       <Filter>Source\Engine\Physics\Assets</Filter>
     </ClCompile>
@@ -1157,11 +1154,20 @@
     <ClCompile Include="Source\Engine\Physics\Assets\PhysicsBodySetup.cpp">
       <Filter>Source\Engine\Physics\Assets</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Common\PhysicalMaterialManager.cpp">
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp">
       <Filter>Source\Engine\Physics\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.cpp">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp">
       <Filter>Source\Engine\Platform</Filter>
@@ -1269,6 +1275,9 @@
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\RenderPass\DecalPass.cpp">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Render\RenderPass\DepthOfFieldPass.cpp">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\RenderPass\EditorLinesPass.cpp">
@@ -1443,7 +1452,6 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\Render\RenderPass\DepthOfFieldPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -1494,13 +1502,13 @@
     <ClInclude Include="Source\Editor\Subsystem\AssetFactory.h">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Editor\Subsystem\PhysicsAssetGenerator.h">
-      <Filter>Source\Editor\Subsystem</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Editor\Subsystem\EditorAnimationAssetLibrary.h">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\Subsystem\OverlayStatSystem.h">
+      <Filter>Source\Editor\Subsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\Subsystem\PhysicsAssetGenerator.h">
       <Filter>Source\Editor\Subsystem</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\UI\EditorConsoleWidget.h">
@@ -2028,6 +2036,9 @@
     <ClInclude Include="Source\Engine\GameFramework\TriggerVolumeBase.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\VehicleGameMode.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
@@ -2226,12 +2237,6 @@
     <ClInclude Include="Source\Engine\Particles\Runtime\ParticleRuntimeTypes.h">
       <Filter>Source\Engine\Particles\Runtime</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h">
-      <Filter>Source\Engine\Physics\Backends</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h">
-      <Filter>Source\Engine\Physics\Backends</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAsset.h">
       <Filter>Source\Engine\Physics\Assets</Filter>
     </ClInclude>
@@ -2247,13 +2252,22 @@
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsShapeSetup.h">
       <Filter>Source\Engine\Physics\Assets</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsCollisionTypes.h">
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Physics\Common\PhysicsDescTypes.h">
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicsConversionTypes.h">
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h">
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicsDescTypes.h">
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.h">
@@ -2274,6 +2288,9 @@
     <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsRuntimeTypes.h">
       <Filter>Source\Engine\Physics\Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsScene.h">
+      <Filter>Source\Engine\Physics\Runtime</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsSceneInterface.h">
       <Filter>Source\Engine\Physics\Runtime</Filter>
     </ClInclude>
@@ -2292,7 +2309,16 @@
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollTypes.h">
       <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\FVehicleRuntimeTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleDebugTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleFilterConstants.h">
       <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleInputTypes.h">
@@ -2425,6 +2451,9 @@
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\RenderPass\DecalPass.h">
+      <Filter>Source\Engine\Render\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Render\RenderPass\DepthOfFieldPass.h">
       <Filter>Source\Engine\Render\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\RenderPass\EditorLinesPass.h">
@@ -4293,7 +4322,6 @@
     <ClInclude Include="ThirdParty\sol2\include\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\include\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Render\RenderPass\DepthOfFieldPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

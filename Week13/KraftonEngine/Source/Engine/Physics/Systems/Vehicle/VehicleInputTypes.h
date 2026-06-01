@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "VehicleWheelTypes.h"
 
@@ -26,6 +26,6 @@ struct FVehicleBuildDesc
 
     bool IsValid() const
     {
-        return !WheelDescs.empty();
+        return WheelDescs.size() == 4 && DriveDesc.ChassisMass > 0.0f;
     }
 };

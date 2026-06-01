@@ -160,6 +160,7 @@ PHYSX_LIBS = [
     "PhysXFoundation_64.lib",
     "PhysXExtensions_static_64.lib",
     "PhysXPvdSDK_static_64.lib",
+    "PhysXVehicle_static_64.lib",
 ]
 
 # NvCloth 1.1.6 is built from source by Scripts\SetupNvCloth.bat. CUDA is

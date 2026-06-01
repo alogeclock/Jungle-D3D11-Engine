@@ -1,11 +1,14 @@
-#pragma once
+﻿#pragma once
 
 #include "Physics/Runtime/PhysicsScene.h"
 #include "Core/CoreTypes.h"
 #include <unordered_map>
 #include <vector>
 
+struct FVehicleRuntimeHandle;
+struct FVehicleRuntimeCreateDesc;
 class AActor;
+class FPhysXVehicleInstance;
 
 namespace physx
 {
@@ -74,6 +77,10 @@ public:
         ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic,
         const AActor* IgnoreActor = nullptr) const override;
 
+	//Vehicle 관련 API
+	FVehicleRuntimeHandle CreateVehicle(const FVehicleRuntimeCreateDesc& BuildDesc);
+	void DestroyVehicle(FVehicleRuntimeHandle& Handle);
+
 private:
     UWorld* World = nullptr;
 
@@ -83,6 +90,7 @@ private:
     physx::PxDefaultCpuDispatcher* Dispatcher      = nullptr;
     physx::PxMaterial*             DefaultMaterial = nullptr;
     FPhysXSimulationCallback*      EventCallback   = nullptr;
+	TArray<FPhysXVehicleInstance*> VehicleInstances;
 
     struct FBodyMapping
     {
