@@ -68,7 +68,7 @@ private:
 	void SyncConstraintConeComponents(UPhysicsAsset* PhysicsAsset);
 	void DrawConstraintDebug(UPhysicsAsset* PhysicsAsset);
 	UStaticMeshComponent* CreatePreviewShapeComponent(UStaticMesh* StaticMesh, int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex, int32 PartIndex, const FVector& BaseMeshExtent);
-	UMaterial* CreatePreviewShapeMaterial(float Alpha) const;
+	UMaterial* CreatePreviewShapeMaterial(float Alpha, bool bDisableDepthTest = false) const;
 	void SelectBodyShape(int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex);
 	void SelectBoneByIndex(int32 BoneIndex);
 	void SelectBodyByIndex(int32 BodyIndex);
@@ -101,6 +101,7 @@ private:
 	TArray<FPreviewShapeComponentEntry> PreviewShapeComponents;
 	TArray<FPreviewConstraintConeEntry> PreviewConstraintCones;
 	IGizmoTransformTarget* BodyGizmoTarget = nullptr;
+	IGizmoTransformTarget* ConstraintGizmoTarget = nullptr;
 
 	int32 SelectedBoneIndex = -1;
 	int32 SelectedBodyIndex = -1;
@@ -110,14 +111,13 @@ private:
 	FVector PreviewShapeTint = FVector(1.0f, 1.0f, 1.0f);
 	float PreviewBaseShapeOpacity = 0.3f;
 	float PreviewConstraintShapeOpacity = 0.35f;
-	float PreviewSelectedShapeOpacity = 0.45f;
 	bool bShowConstraintDebug = true;
-	float ConstraintAxisLength = 0.5f;
+	float ConstraintAxisLength = 0.1f;
 
 	char BoneSearchBuffer[128] = {};
 	bool bExpandBodyTreeOnNextRender = false;
 	bool bFrameGraphOnNextRender = false;
-	bool bNeedsInitialCameraReset = false;
+	bool bScrollToSelectedConstraintOnNextRender = false;
 	bool bPendingClose = false;
 
 	ID3D11ShaderResourceView* CapsuleBodyIcon = nullptr;

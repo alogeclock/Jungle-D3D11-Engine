@@ -3356,7 +3356,7 @@ void FPhysicsAssetEditorWidget::SelectConstraintByIndex(int32 ConstraintIndex)
 	SelectedBoneIndex = FindBoneIndexByName(
 		PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr,
 		PhysicsAsset->GetConstraintSetups()[ConstraintIndex].ChildBoneName);
-	bFrameGraphOnNextRender = true;
+	bScrollToSelectedConstraintOnNextRender = true;
 
 	SyncSelectionToViewport();
 }
@@ -3490,7 +3490,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 
 	static float LeftPanelWidth = 360.0f;
 	static float RightPanelWidth = 360.0f;
-	static float GraphHeight = 220.0f;
+	static float GraphHeight = 320.0f;
 	static float RightTopPanelHeight = 420.0f;
 	constexpr float PhysicsEditorSplitterThickness = 6.0f;
 	constexpr float PhysicsEditorMinSidePanelWidth = 220.0f;
@@ -4205,6 +4205,23 @@ bool FPhysicsAssetEditorWidget::RenderGraphPanel(UPhysicsAsset* PhysicsAsset)
 		if (bRequestResetView || bRequestAutoArrange)
 		{
 			bLayoutChanged = true;
+		}
+	}
+
+	if (bScrollToSelectedConstraintOnNextRender && SelectedConstraintIndex >= 0)
+	{
+		bScrollToSelectedConstraintOnNextRender = false;
+		for (const FPhysicsGraphNodeVisual& Node : GraphNodes)
+		{
+			if (Node.NodeKind == EPhysicsGraphNodeKind::Constraint && Node.DataIndex == SelectedConstraintIndex)
+			{
+				const float NodeCenterX = Node.Position.X + Node.Size.x * 0.5f;
+				const float NodeCenterY = Node.Position.Y + Node.Size.y * 0.5f;
+				GraphViewState.Pan.X = CanvasSize.x * 0.5f - NodeCenterX * GraphViewState.Zoom;
+				GraphViewState.Pan.Y = CanvasSize.y * 0.5f - NodeCenterY * GraphViewState.Zoom;
+				bLayoutChanged = true;
+				break;
+			}
 		}
 	}
 	const ImVec2 CanvasMax(CanvasMin.x + CanvasSize.x, CanvasMin.y + CanvasSize.y);
