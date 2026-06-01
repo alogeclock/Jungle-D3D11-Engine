@@ -2392,73 +2392,71 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 
 namespace
 {
-	UStaticMesh* CreateConstraintSectorMesh(
-		UStaticMesh* MaterialSourceMesh,
-		float HalfAngleDeg,
-		bool bXZPlane,
-		ID3D11Device* Device)
+	// 3D 원뿔 메시 생성: 정점(0,0,0), 축 = +X, 밑면 반지름 = 1, 높이 = 1
+	// 사용 시 Scale = (Length, Length*tan(HalfAngle), Length*tan(HalfAngle)) 로 조정
+	UStaticMesh* CreateUnitConeMesh(UStaticMesh* MaterialSourceMesh, ID3D11Device* Device)
 	{
-		if (!Device || HalfAngleDeg <= 0.0f) return nullptr;
+		if (!Device) return nullptr;
 
-		const float HalfAngleRad = HalfAngleDeg * Pi / 180.0f;
 		constexpr int32 Segments = 24;
 
-		UStaticMesh* SectorMesh = GUObjectArray.CreateObject<UStaticMesh>();
-		FStaticMesh* SectorAsset = new FStaticMesh();
-		SectorAsset->PathFileName = "__ConstraintSector__";
+		UStaticMesh* ConeMesh = GUObjectArray.CreateObject<UStaticMesh>();
+		FStaticMesh* ConeAsset = new FStaticMesh();
+		ConeAsset->PathFileName = "__ConstraintCone__";
 
 		if (MaterialSourceMesh)
 		{
 			TArray<FStaticMaterial> Mats = MaterialSourceMesh->GetStaticMaterials();
-			SectorMesh->SetStaticMaterials(std::move(Mats));
+			ConeMesh->SetStaticMaterials(std::move(Mats));
 		}
 
 		FStaticMeshSection Section;
-		Section.MaterialSlotName = SectorMesh->GetStaticMaterials().empty()
-			? FString("None") : SectorMesh->GetStaticMaterials()[0].MaterialSlotName;
+		Section.MaterialSlotName = ConeMesh->GetStaticMaterials().empty()
+			? FString("None") : ConeMesh->GetStaticMaterials()[0].MaterialSlotName;
 		Section.FirstIndex = 0;
 		Section.NumTriangles = 0;
 
 		FNormalVertex Apex{};
 		Apex.pos    = FVector::ZeroVector;
-		Apex.normal = bXZPlane ? FVector(0, 1, 0) : FVector(0, 0, 1);
+		Apex.normal = FVector(-1, 0, 0);
 
+		// 측면 삼각형 (Apex → 밑면 두 점)
 		for (int32 i = 0; i < Segments; ++i)
 		{
-			const float T0 = -HalfAngleRad + (2.0f * HalfAngleRad * i       / Segments);
-			const float T1 = -HalfAngleRad + (2.0f * HalfAngleRad * (i + 1) / Segments);
+			const float T0 = 2.0f * Pi * i       / Segments;
+			const float T1 = 2.0f * Pi * (i + 1) / Segments;
 
-			FNormalVertex V0 = Apex, V1 = Apex;
-			if (bXZPlane)
-			{
-				V0.pos = FVector(std::cos(T0), 0.0f, std::sin(T0));
-				V1.pos = FVector(std::cos(T1), 0.0f, std::sin(T1));
-			}
-			else
-			{
-				V0.pos = FVector(std::cos(T0), std::sin(T0), 0.0f);
-				V1.pos = FVector(std::cos(T1), std::sin(T1), 0.0f);
-			}
+			FNormalVertex V0{}, V1{};
+			V0.pos = FVector(1.0f, std::cos(T0), std::sin(T0));
+			V1.pos = FVector(1.0f, std::cos(T1), std::sin(T1));
 
-			// front face
-			AppendPreviewTriangle(SectorAsset, Section, Apex, V0, V1);
-			// back face (double-sided)
-			AppendPreviewTriangle(SectorAsset, Section, Apex, V1, V0);
+			// outward normal for side face
+			const FVector Side0 = V0.pos - Apex.pos;
+			const FVector Side1 = V1.pos - Apex.pos;
+			FVector FaceNormal = Side0.Cross(Side1);
+			FaceNormal.Normalize();
+
+			V0.normal = FaceNormal;
+			V1.normal = FaceNormal;
+
+			// front & back faces for transparency
+			AppendPreviewTriangle(ConeAsset, Section, Apex, V0, V1);
+			AppendPreviewTriangle(ConeAsset, Section, Apex, V1, V0);
 		}
 
 		if (Section.NumTriangles == 0)
 		{
-			delete SectorAsset;
-			GUObjectArray.DestroyObject(SectorMesh);
+			delete ConeAsset;
+			GUObjectArray.DestroyObject(ConeMesh);
 			return nullptr;
 		}
 
-		SectorAsset->Sections.push_back(Section);
-		SectorAsset->CacheBounds();
-		SectorMesh->SetAssetPathFileName("__ConstraintSector__");
-		SectorMesh->SetStaticMeshAsset(SectorAsset);
-		SectorMesh->InitResources(Device);
-		return SectorMesh;
+		ConeAsset->Sections.push_back(Section);
+		ConeAsset->CacheBounds();
+		ConeMesh->SetAssetPathFileName("__ConstraintCone__");
+		ConeMesh->SetStaticMeshAsset(ConeAsset);
+		ConeMesh->InitResources(Device);
+		return ConeMesh;
 	}
 }
 
@@ -2496,7 +2494,7 @@ void FPhysicsAssetEditorWidget::RebuildConstraintConeComponents(UPhysicsAsset* P
 	auto AddCone = [&](int32 ConstraintIndex, float HalfAngleDeg, bool bXZPlane, const FVector4& Color)
 	{
 		if (HalfAngleDeg <= 0.0f) return;
-		UStaticMesh* Mesh = CreateConstraintSectorMesh(PreviewSphereMesh, HalfAngleDeg, bXZPlane, Device);
+		UStaticMesh* Mesh = CreateUnitConeMesh(PreviewSphereMesh, Device);
 		if (!Mesh) return;
 
 		UStaticMeshComponent* Comp = PreviewShapeActor->AddComponent<UStaticMeshComponent>();
@@ -2509,11 +2507,12 @@ void FPhysicsAssetEditorWidget::RebuildConstraintConeComponents(UPhysicsAsset* P
 		if (Mat) Comp->SetMaterial(0, Mat);
 
 		FPreviewConstraintConeEntry Entry;
-		Entry.Component = Comp;
-		Entry.Material  = Mat;
-		Entry.Mesh      = Mesh;
+		Entry.Component    = Comp;
+		Entry.Material     = Mat;
+		Entry.Mesh         = Mesh;
 		Entry.ConstraintIndex = ConstraintIndex;
-		Entry.bIsSwing1 = bXZPlane;
+		Entry.bIsSwing1    = bXZPlane;
+		Entry.HalfAngleDeg = HalfAngleDeg;
 		PreviewConstraintCones.push_back(Entry);
 	};
 
@@ -2566,10 +2565,13 @@ void FPhysicsAssetEditorWidget::SyncConstraintConeComponents(UPhysicsAsset* Phys
 		const float VisualLength = bSelected ? ConstraintAxisLength * 2.0f : ConstraintAxisLength;
 		const float Alpha = bSelected ? PreviewSelectedShapeOpacity : PreviewConstraintShapeOpacity;
 
+		// 원뿔 Scale: X=길이, Y=Z=길이*tan(반각) (unit cone의 밑면 반지름 조정)
+		const float HalfRad = (std::min)(Entry.HalfAngleDeg, 89.0f) * Pi / 180.0f;
+		const float ConeRadius = VisualLength * std::tan(HalfRad);
 		Entry.Component->SetVisibility(bShowConstraintDebug);
 		Entry.Component->SetRelativeLocation(Origin);
 		Entry.Component->SetRelativeRotation(PFrame.GetRotator());
-		Entry.Component->SetRelativeScale(FVector(VisualLength, VisualLength, VisualLength));
+		Entry.Component->SetRelativeScale(FVector(VisualLength, ConeRadius, ConeRadius));
 
 		if (Entry.Material)
 		{
@@ -2999,32 +3001,18 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 		// 선택된 constraint는 2배 크기로 렌더
 		const float VisualLength = bSelected ? ConstraintAxisLength * 2.0f : ConstraintAxisLength;
 
-		// Swing 1 = Red  (rotation around Y, sweeps in X-Z plane)
-		const FColor Swing1Color = bSelected ? FColor(255, 130, 130) : FColor(220, 60, 60);
-		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * VisualLength, Swing1Color, ConstraintDebugDuration);
-		DrawConstraintFan(PreviewWorld, Origin, AxisX, AxisZ,
-			Constraint.SwingLimitY,
-			Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Free,
-			Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Locked,
-			VisualLength, Swing1Color, ConstraintDebugDuration);
+		// 짧은 방향 축선 (R=Swing1/Y, G=Swing2/Z, B=Twist/X)
+		const float AxisLineLen = VisualLength * 0.35f;
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * AxisLineLen, bSelected ? FColor(255, 130, 130) : FColor(220, 60,  60),  ConstraintDebugDuration);
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * AxisLineLen, bSelected ? FColor(130, 255, 130) : FColor(60,  200, 60),  ConstraintDebugDuration);
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * AxisLineLen, bSelected ? FColor(130, 180, 255) : FColor(60,  120, 255), ConstraintDebugDuration);
 
-		// Swing 2 = Green (rotation around Z, sweeps in X-Y plane)
-		const FColor Swing2Color = bSelected ? FColor(130, 255, 130) : FColor(60, 200, 60);
-		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * VisualLength, Swing2Color, ConstraintDebugDuration);
-		DrawConstraintFan(PreviewWorld, Origin, AxisX, AxisY,
-			Constraint.SwingLimitZ,
-			Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Free,
-			Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Locked,
-			VisualLength, Swing2Color, ConstraintDebugDuration);
-
-		// Twist = Blue (rotation around X, arc in Y-Z plane)
-		const FColor TwistColor = bSelected ? FColor(130, 180, 255) : FColor(60, 120, 255);
-		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * VisualLength, TwistColor, ConstraintDebugDuration);
+		// Twist arc (Blue)
 		DrawTwistArc(PreviewWorld, Origin, AxisX, AxisY, AxisZ,
 			Constraint.TwistLimitMin, Constraint.TwistLimitMax,
 			Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free,
 			Constraint.TwistMotion == EPhysicsConstraintMotionMode::Locked,
-			VisualLength * 0.45f, TwistColor, ConstraintDebugDuration);
+			VisualLength * 0.45f, bSelected ? FColor(130, 180, 255) : FColor(60, 120, 255), ConstraintDebugDuration);
 	}
 }
 

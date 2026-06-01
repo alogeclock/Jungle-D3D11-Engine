@@ -34,6 +34,7 @@ class FPhysicsAssetEditorWidget : public FAssetEditorWidget
 		UStaticMesh* Mesh = nullptr;
 		int32 ConstraintIndex = -1;
 		bool bIsSwing1 = true;
+		float HalfAngleDeg = 45.0f;
 	};
 
 	struct FPreviewShapeComponentEntry
