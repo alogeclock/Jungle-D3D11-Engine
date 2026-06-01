@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Object/FName.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
 #include "Physics/Common/PhysicsDescTypes.h"
 #include "Serialization/Archive.h"
 
@@ -8,6 +9,27 @@
  * @file PhysicsShapeSetup.h
  * @brief PhysicsAsset에 저장되는 Collision Shape 설정 정의.
  */
+
+/** Physical Material 참조를 경로로 직렬화한다. */
+inline FString GetPhysicalMaterialAssetPath(UPhysicalMaterial* PhysicalMaterial)
+{
+    return PhysicalMaterial ? PhysicalMaterial->GetAssetPathFileName() : FString();
+}
+
+inline void SerializePhysicalMaterialReference(FArchive& Ar, UPhysicalMaterial*& PhysicalMaterial)
+{
+    FString PhysicalMaterialPath = Ar.IsSaving()
+        ? GetPhysicalMaterialAssetPath(PhysicalMaterial)
+        : FString();
+    Ar << PhysicalMaterialPath;
+
+    if (Ar.IsLoading())
+    {
+        PhysicalMaterial = PhysicalMaterialPath.empty()
+            ? nullptr
+            : FPhysicalMaterialManager::Get().Load(PhysicalMaterialPath);
+    }
+}
 
 /** Sphere Collision Shape 설정 */
 struct FPhysicsSphereShapeSetup
@@ -38,12 +60,7 @@ inline FArchive& operator<<(FArchive& Ar, FPhysicsSphereShapeSetup& ShapeSetup)
     Ar << ShapeSetup.LocalTransform.Scale;
     Ar << ShapeSetup.Radius;
 
-    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
-    Ar << bHasPhysicalMaterial;
-    if (Ar.IsLoading())
-    {
-        ShapeSetup.PhysicalMaterial = nullptr;
-    }
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
 
     Ar << ShapeSetup.CollisionDesc;
     return Ar;
@@ -78,12 +95,7 @@ inline FArchive& operator<<(FArchive& Ar, FPhysicsBoxShapeSetup& ShapeSetup)
     Ar << ShapeSetup.LocalTransform.Scale;
     Ar << ShapeSetup.HalfExtent;
 
-    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
-    Ar << bHasPhysicalMaterial;
-    if (Ar.IsLoading())
-    {
-        ShapeSetup.PhysicalMaterial = nullptr;
-    }
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
 
     Ar << ShapeSetup.CollisionDesc;
     return Ar;
@@ -120,12 +132,7 @@ inline FArchive& operator<<(FArchive& Ar, FPhysicsCapsuleShapeSetup& ShapeSetup)
     Ar << ShapeSetup.Radius;
     Ar << ShapeSetup.Length;
 
-    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
-    Ar << bHasPhysicalMaterial;
-    if (Ar.IsLoading())
-    {
-        ShapeSetup.PhysicalMaterial = nullptr;
-    }
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
 
     Ar << ShapeSetup.CollisionDesc;
     return Ar;
@@ -160,12 +167,7 @@ inline FArchive& operator<<(FArchive& Ar, FPhysicsConvexShapeSetup& ShapeSetup)
     Ar << ShapeSetup.LocalTransform.Scale;
     Ar << ShapeSetup.VertexData;
 
-    bool bHasPhysicalMaterial = ShapeSetup.PhysicalMaterial != nullptr;
-    Ar << bHasPhysicalMaterial;
-    if (Ar.IsLoading())
-    {
-        ShapeSetup.PhysicalMaterial = nullptr;
-    }
+    SerializePhysicalMaterialReference(Ar, ShapeSetup.PhysicalMaterial);
 
     Ar << ShapeSetup.CollisionDesc;
     return Ar;

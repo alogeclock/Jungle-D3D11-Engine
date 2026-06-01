@@ -10,6 +10,14 @@
  * @brief Bone 또는 Component에 대응되는 Physics Body 설정 정의.
  */
 
+/** Body 충돌 복잡도 설정 */
+enum class EPhysicsBodyCollisionComplexity : uint8
+{
+	ProjectDefault = 0,
+	UseSimpleAsComplex,
+	UseComplexAsSimple,
+};
+
 /** Bone 또는 Component에 대응되는 Physics Body 설정 */
 UCLASS()
 class UPhysicsBodySetup : public UObject
@@ -58,6 +66,21 @@ public:
     }
 
     void Serialize(FArchive& Ar) override;
+
+public:
+    bool                           bOverrideMass                  = false;
+    bool                           bEnableGravity                 = true;
+    int32                          GravityGroupIndex              = 0;
+    bool                           bUpdateKinematicFromSimulation = false;
+    bool                           bGyroscopicTorqueEnabled       = false;
+    bool                           bDoubleSidedGeometry           = false;
+    UPhysicalMaterial*             SimpleCollisionPhysicalMaterial = nullptr;
+    UPhysicalMaterial*             PhysMaterialOverride            = nullptr;
+    bool                           bSkipScaleFromAnimation        = false;
+    bool                           bConsiderForBounds             = true;
+    bool                           bSimulationGeneratesHitEvents  = false;
+    bool                           bNeverNeedsCookedCollisionData = false;
+    EPhysicsBodyCollisionComplexity CollisionComplexity           = EPhysicsBodyCollisionComplexity::UseSimpleAsComplex;
 
 private:
     FName                       TargetBoneName = FName::None;
