@@ -154,6 +154,7 @@ public:
 	void SetEnableGravity(bool bInEnableGravity);
 	bool GetEnableGravity() const { return bEnableGravity; }
 	virtual bool NeedsPhysicsInterpolation() const;
+
 	virtual void OnPrePhysicsSync();
 	virtual void OnPostPhysicsSync();
 

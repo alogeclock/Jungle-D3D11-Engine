@@ -3524,6 +3524,11 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 		}
 	}
 	ImGui::SameLine();
+	if (ImGui::Button("Save as Json"))
+	{
+		FPhysicsAssetManager::Get().SaveAsJson(PhysicsAsset);
+	}
+	ImGui::SameLine();
 	ImGui::TextDisabled("%s", PhysicsAsset->GetPreviewSkeletalMeshPath().empty() ? "Preview Mesh: None" : PhysicsAsset->GetPreviewSkeletalMeshPath().c_str());
 	ImGui::Separator();
 

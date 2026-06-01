@@ -20,6 +20,7 @@ public:
     UPhysicsAsset* Find(const FString& Path) const;
 
     bool Save(UPhysicsAsset* Asset);
+    bool SaveAsJson(UPhysicsAsset* Asset, const FString& OverridePath = FString());
 
     void ScanPhysicsAssets();
     const TArray<FPhysicsAssetListItem>& GetAvailablePhysicsAssetFiles() const { return AvailablePhysicsAssetFiles; }
