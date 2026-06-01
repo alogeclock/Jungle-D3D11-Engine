@@ -2673,54 +2673,47 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 
 namespace
 {
-	void DrawSwingCone(
+	// Swing fan (pie slice): rotation around RotAxis, bone sweeps from -LimitDeg to +LimitDeg
+	// CenterDir: the zero-angle direction (usually AxisX / bone forward)
+	// SweepDir:  the direction toward positive angle
+	void DrawConstraintFan(
 		UWorld* World,
 		const FVector& Apex,
-		const FVector& AxisX,
-		const FVector& AxisY,
-		const FVector& AxisZ,
-		float LimYDeg,
-		float LimZDeg,
-		bool bYFree,
-		bool bZFree,
+		const FVector& CenterDir,
+		const FVector& SweepDir,
+		float LimitDeg,
+		bool bFree,
+		bool bLocked,
 		float Length,
 		const FColor& Color,
 		float Duration)
 	{
-		if (!bYFree && LimYDeg <= 0.0f && !bZFree && LimZDeg <= 0.0f)
-		{
-			return;
-		}
+		if (bLocked) return;
+		const float Limit = bFree ? 89.0f : LimitDeg;
+		if (Limit <= 0.0f) return;
 
-		const float HY = std::sin(bYFree ? (Pi * 0.5f) : (LimYDeg * Pi / 180.0f));
-		const float HZ = std::sin(bZFree ? (Pi * 0.5f) : (LimZDeg * Pi / 180.0f));
-
-		constexpr int32 N = 24;
+		constexpr int32 N = 20;
 		FVector PrevPoint = FVector::ZeroVector;
 
 		for (int32 i = 0; i <= N; ++i)
 		{
-			const float T = 2.0f * Pi * i / N;
-			const float SinY = HY * std::cos(T);
-			const float SinZ = HZ * std::sin(T);
-			const float CosX = std::sqrt((std::max)(0.0f, 1.0f - SinY * SinY - SinZ * SinZ));
-
-			FVector WorldDir = AxisX * CosX + AxisY * SinY + AxisZ * SinZ;
-			WorldDir.Normalize();
-			const FVector Point = Apex + WorldDir * Length;
+			const float T   = -Limit + (2.0f * Limit * i / N);
+			const float Rad = T * Pi / 180.0f;
+			FVector Dir = CenterDir * std::cos(Rad) + SweepDir * std::sin(Rad);
+			Dir.Normalize();
+			const FVector Point = Apex + Dir * Length;
 
 			if (i > 0)
-			{
 				DrawDebugLineAlwaysOnTop(World, PrevPoint, Point, Color, Duration);
-			}
-			if (i % (N / 6) == 0)
-			{
+			// 양 끝과 중심 방사선
+			if (i == 0 || i == N || i == N / 2)
 				DrawDebugLineAlwaysOnTop(World, Apex, Point, Color, Duration);
-			}
+
 			PrevPoint = Point;
 		}
 	}
 
+	// Twist arc: rotation around TwistAxis (AxisX), arc drawn in AxisY-AxisZ plane
 	void DrawTwistArc(
 		UWorld* World,
 		const FVector& Origin,
@@ -2730,35 +2723,31 @@ namespace
 		float TwistMinDeg,
 		float TwistMaxDeg,
 		bool bFree,
+		bool bLocked,
 		float Radius,
 		const FColor& Color,
 		float Duration)
 	{
-		const float TMin = bFree ? -180.0f : TwistMinDeg;
-		const float TMax = bFree ? 180.0f : TwistMaxDeg;
-		if (TMax - TMin < 1.0f)
-		{
-			return;
-		}
+		if (bLocked) return;
+		const float TMin = bFree ? -179.0f : TwistMinDeg;
+		const float TMax = bFree ?  179.0f : TwistMaxDeg;
+		if (TMax - TMin < 1.0f) return;
 
-		const FVector ArcOrigin = Origin + AxisX * Radius * 0.3f;
+		(void)AxisX;
 		constexpr int32 N = 20;
 		FVector PrevPoint = FVector::ZeroVector;
 
 		for (int32 i = 0; i <= N; ++i)
 		{
-			const float T = TMin + (TMax - TMin) * i / N;
+			const float T    = TMin + (TMax - TMin) * i / N;
 			const float TRad = T * Pi / 180.0f;
-			const FVector Point = ArcOrigin + (AxisY * std::cos(TRad) + AxisZ * std::sin(TRad)) * Radius;
+			const FVector Point = Origin + (AxisY * std::cos(TRad) + AxisZ * std::sin(TRad)) * Radius;
 
 			if (i > 0)
-			{
 				DrawDebugLineAlwaysOnTop(World, PrevPoint, Point, Color, Duration);
-			}
 			if (i == 0 || i == N)
-			{
-				DrawDebugLineAlwaysOnTop(World, ArcOrigin, Point, Color, Duration);
-			}
+				DrawDebugLineAlwaysOnTop(World, Origin, Point, Color, Duration);
+
 			PrevPoint = Point;
 		}
 	}
@@ -2810,33 +2799,35 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 		const FVector AxisZ = Rotation.GetUpVector();
 		const FVector Origin = (ParentFrame.Location + ChildFrame.Location) * 0.5f;
 
-		const FColor AxisColor  = bSelected ? FColor(255, 160, 64)  : FColor(255, 64,  64);
-		const FColor SwingColor = bSelected ? FColor(255, 120, 120) : FColor(220, 80,  80);
-		const FColor TwistColor = bSelected ? FColor(140, 255, 100) : FColor(80,  200, 80);
+		// 선택된 constraint는 2배 크기로 렌더
+		const float VisualLength = bSelected ? ConstraintAxisLength * 2.0f : ConstraintAxisLength;
 
-		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, AxisColor, ConstraintDebugDuration);
+		// Swing 1 = Red  (rotation around Y, sweeps in X-Z plane)
+		const FColor Swing1Color = bSelected ? FColor(255, 130, 130) : FColor(220, 60, 60);
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * VisualLength, Swing1Color, ConstraintDebugDuration);
+		DrawConstraintFan(PreviewWorld, Origin, AxisX, AxisZ,
+			Constraint.SwingLimitY,
+			Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Free,
+			Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Locked,
+			VisualLength, Swing1Color, ConstraintDebugDuration);
 
-		const bool bSwing1Free = Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Free;
-		const bool bSwing2Free = Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Free;
-		const bool bSwing1Locked = Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Locked;
-		const bool bSwing2Locked = Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Locked;
+		// Swing 2 = Green (rotation around Z, sweeps in X-Y plane)
+		const FColor Swing2Color = bSelected ? FColor(130, 255, 130) : FColor(60, 200, 60);
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * VisualLength, Swing2Color, ConstraintDebugDuration);
+		DrawConstraintFan(PreviewWorld, Origin, AxisX, AxisY,
+			Constraint.SwingLimitZ,
+			Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Free,
+			Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Locked,
+			VisualLength, Swing2Color, ConstraintDebugDuration);
 
-		if (!bSwing1Locked || !bSwing2Locked)
-		{
-			DrawSwingCone(PreviewWorld, Origin, AxisX, AxisY, AxisZ,
-				Constraint.SwingLimitY, Constraint.SwingLimitZ,
-				bSwing1Free, bSwing2Free,
-				ConstraintAxisLength, SwingColor, ConstraintDebugDuration);
-		}
-
-		const bool bTwistFree = Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free;
-		if (Constraint.TwistMotion != EPhysicsConstraintMotionMode::Locked)
-		{
-			DrawTwistArc(PreviewWorld, Origin, AxisX, AxisY, AxisZ,
-				Constraint.TwistLimitMin, Constraint.TwistLimitMax,
-				bTwistFree,
-				ConstraintAxisLength * 0.4f, TwistColor, ConstraintDebugDuration);
-		}
+		// Twist = Blue (rotation around X, arc in Y-Z plane)
+		const FColor TwistColor = bSelected ? FColor(130, 180, 255) : FColor(60, 120, 255);
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * VisualLength, TwistColor, ConstraintDebugDuration);
+		DrawTwistArc(PreviewWorld, Origin, AxisX, AxisY, AxisZ,
+			Constraint.TwistLimitMin, Constraint.TwistLimitMax,
+			Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free,
+			Constraint.TwistMotion == EPhysicsConstraintMotionMode::Locked,
+			VisualLength * 0.45f, TwistColor, ConstraintDebugDuration);
 	}
 }
 
@@ -3299,7 +3290,45 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 								}
 								else
 								{
-									ClearSelection();
+									// constraint 피킹: 광선과 constraint origin 거리 검사
+									int32 BestConstraintIndex = -1;
+									float BestConstraintRayT = FLT_MAX;
+									const FSkeletonAsset* Skel = PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr;
+									USkeletalMeshComponent* MC = ViewportClient.GetPreviewMeshComponent();
+									if (Skel && MC)
+									{
+										TArray<FMatrix> BoneMatrices;
+										MC->GetCurrentBoneGlobalMatrices(BoneMatrices);
+										const float PickRadius = ConstraintAxisLength * 1.2f;
+
+										for (int32 Ci = 0; Ci < static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()); ++Ci)
+										{
+											const FPhysicsConstraintSetup& CS = PhysicsAsset->GetConstraintSetups()[Ci];
+											const int32 PBoneIdx = FindBoneIndexByName(Skel, CS.ParentBoneName);
+											const int32 CBoneIdx = FindBoneIndexByName(Skel, CS.ChildBoneName);
+											if (PBoneIdx < 0 || CBoneIdx < 0) continue;
+
+											const FTransform PFrame(CS.ParentLocalFrame.ToMatrix() * BuildBoneWorldMatrix(MC, &BoneMatrices, PBoneIdx));
+											const FTransform CFrame(CS.ChildLocalFrame.ToMatrix()  * BuildBoneWorldMatrix(MC, &BoneMatrices, CBoneIdx));
+											const FVector ConstraintOrigin = (PFrame.Location + CFrame.Location) * 0.5f;
+
+											const FVector ToOrigin = ConstraintOrigin - Ray.Origin;
+											const float RayT = FVector::Dot(ToOrigin, Ray.Direction);
+											if (RayT <= 0.0f) continue;
+
+											const FVector ClosestOnRay = Ray.Origin + Ray.Direction * RayT;
+											if (FVector::Distance(ConstraintOrigin, ClosestOnRay) < PickRadius && RayT < BestConstraintRayT)
+											{
+												BestConstraintRayT = RayT;
+												BestConstraintIndex = Ci;
+											}
+										}
+									}
+
+									if (BestConstraintIndex >= 0)
+										SelectConstraintByIndex(BestConstraintIndex);
+									else
+										ClearSelection();
 								}
 							}
 						}
