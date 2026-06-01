@@ -26,6 +26,8 @@
 #include "Particles/Assets/ParticleSystemAssetManager.h"
 #include "Physics/Assets/PhysicsAsset.h"
 #include "Physics/Assets/PhysicsAssetManager.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
+#include "Physics/Common/PhysicsMaterialTypes.h"
 
 #include <Windows.h>
 #include <commdlg.h>
@@ -247,6 +249,39 @@ namespace
 		return ToLowerCopy(Item.DisplayName).find(LowerSearch) != FString::npos
 			|| ToLowerCopy(Item.FullPath).find(LowerSearch) != FString::npos;
 	}
+
+	std::wstring GetContentBrowserIconFileName(const FString& Extension, EAssetPackageType PackageType)
+	{
+		if (Extension == ".mat")
+		{
+			return L"Material_64.png";
+		}
+
+		if (Extension == ".fbx")
+		{
+			return L"SkeletalMesh_64.png";
+		}
+
+		if (Extension == ".uasset")
+		{
+			switch (PackageType)
+			{
+			case EAssetPackageType::StaticMesh:
+			case EAssetPackageType::SkeletalMesh:
+				return L"SkeletalMesh_64.png";
+			case EAssetPackageType::ParticleSystem:
+				return L"ParticleSystem_64x.png";
+			case EAssetPackageType::PhysicsAsset:
+				return L"PhysicsAsset_64x.png";
+			case EAssetPackageType::PhysicalMaterial:
+				return L"PhysicalMaterial_64.png";
+			default:
+				break;
+			}
+		}
+
+		return L"";
+	}
 }
 
 void FEditorContentBrowserWidget::Initialize(UEditorEngine* InEditor, ID3D11Device* InDevice)
@@ -256,9 +291,9 @@ void FEditorContentBrowserWidget::Initialize(UEditorEngine* InEditor, ID3D11Devi
 
 	IconFileMap[".Scene"] = L"World_64x.png";
 	IconFileMap[".obj"] = L"icon_MatEd_Mesh_40x.png";
-	IconFileMap[".mat"] = L"Sphere_64x.png";
+	IconFileMap[".mat"] = L"Material_64.png";
 	IconFileMap[".shake"] = L"StartMerge_42x.png";
-	IconFileMap[".fbx"] = L"icon_MatEd_Mesh_40x.png";
+	IconFileMap[".fbx"] = L"SkeletalMesh_64.png";
 	IconFileMap[".uasset"] = L"icon_MatEd_Mesh_40x.png";
 
 	ContentBrowserContext Context;
@@ -407,6 +442,7 @@ void FEditorContentBrowserWidget::RefreshContent()
 		std::shared_ptr<ContentBrowserElement> Element;
 		FString Extension = GetLowerExtension(Content.Path);
 		ID3D11ShaderResourceView* Icon = nullptr;
+		EAssetPackageType PackageType = EAssetPackageType::Unknown;
 
 		if (Content.bIsDirectory)
 		{
@@ -446,10 +482,9 @@ void FEditorContentBrowserWidget::RefreshContent()
 		{
 			FString PackagePath = FPaths::ToUtf8(Content.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
 
-			EAssetPackageType Type = EAssetPackageType::Unknown;
-			if (FAssetPackage::GetPackageType(PackagePath, Type))
+			if (FAssetPackage::GetPackageType(PackagePath, PackageType))
 			{
-				switch (Type)
+				switch (PackageType)
 				{
 				case EAssetPackageType::StaticMesh:
 					Element = std::make_shared<ObjectElement>();
@@ -478,6 +513,9 @@ void FEditorContentBrowserWidget::RefreshContent()
 				case EAssetPackageType::PhysicsAsset:
 					Element = std::make_shared<PhysicsAssetElement>();
 					break;
+				case EAssetPackageType::PhysicalMaterial:
+					Element = std::make_shared<PhysicalMaterialElement>();
+					break;
 				default:
 					Element = std::make_shared<ContentBrowserElement>();
 					break;
@@ -492,7 +530,12 @@ void FEditorContentBrowserWidget::RefreshContent()
 		if (!Icon)
 		{
 			std::wstring IconFileName = L"StartMerge_42x.png";
-			if (auto It = IconFileMap.find(Extension); It != IconFileMap.end())
+			const std::wstring TypeSpecificIconFile = GetContentBrowserIconFileName(Extension, PackageType);
+			if (!TypeSpecificIconFile.empty())
+			{
+				IconFileName = TypeSpecificIconFile;
+			}
+			else if (auto It = IconFileMap.find(Extension); It != IconFileMap.end())
 			{
 				IconFileName = It->second;
 			}
@@ -646,6 +689,21 @@ void FEditorContentBrowserWidget::DrawContents()
 			if (ImGui::MenuItem("Particle System"))
 			{
 				BeginParticleSystemCreate("NewParticleSystem");
+			}
+			if (ImGui::MenuItem("Physical Material"))
+			{
+				FString CreatedPath;
+				if (FAssetFactory::CreatePhysicalMaterial(FPaths::ToUtf8(BrowserContext.CurrentPath), "NewPhysicalMaterial", CreatedPath))
+				{
+					Refresh();
+					if (BrowserContext.EditorEngine)
+					{
+						if (UPhysicalMaterial* Asset = FPhysicalMaterialManager::Get().Load(CreatedPath))
+						{
+							BrowserContext.EditorEngine->OpenAssetEditorForObject(Asset);
+						}
+					}
+				}
 			}
 			if (ImGui::MenuItem("Physics Asset"))
 			{

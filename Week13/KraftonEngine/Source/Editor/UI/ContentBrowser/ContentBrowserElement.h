@@ -177,6 +177,17 @@ protected:
 	uint32 GetAccentColor() const override { return IM_COL32(255, 255, 255, 255); }
 };
 
+class PhysicalMaterialElement final : public ContentBrowserElement
+{
+public:
+	virtual const char* GetDragItemType() override { return "PhysicalMaterialContentItem"; }
+	void OnDoubleLeftClicked(ContentBrowserContext& Context) override;
+
+protected:
+	const char* GetTypeLabel() const override { return "Physical Material"; }
+	uint32 GetAccentColor() const override { return IM_COL32(170, 210, 255, 255); }
+};
+
 class PhysicsAssetElement final : public ContentBrowserElement
 {
 public:

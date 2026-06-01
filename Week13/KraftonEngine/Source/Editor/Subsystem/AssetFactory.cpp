@@ -14,6 +14,8 @@
 #include "Particles/Assets/ParticleSystemAssetManager.h"
 #include "Physics/Assets/PhysicsAsset.h"
 #include "Physics/Assets/PhysicsAssetManager.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
+#include "Physics/Common/PhysicsMaterialTypes.h"
 #include "Platform/Paths.h"
 #include "SimpleJSON/json.hpp"
 
@@ -264,6 +266,32 @@ bool FAssetFactory::CreatePhysicsAsset(const FString& DirectoryPath, const FStri
 	NewAsset->SetAssetPathFileName(FPaths::ToUtf8(AssetPath.wstring()));
 
 	const bool bSaved = FPhysicsAssetManager::Get().Save(NewAsset);
+	GUObjectArray.DestroyObject(NewAsset);
+
+	if (!bSaved)
+	{
+		return false;
+	}
+
+	OutCreatedPath = FPaths::ToUtf8(AssetPath.wstring());
+	return true;
+}
+
+bool FAssetFactory::CreatePhysicalMaterial(const FString& DirectoryPath, const FString& AssetName, FString& OutCreatedPath)
+{
+	const std::filesystem::path Directory(FPaths::ToWide(DirectoryPath));
+	if (!std::filesystem::exists(Directory) || !std::filesystem::is_directory(Directory))
+	{
+		return false;
+	}
+
+	const FString DefaultName = AssetName.empty() ? FString("NewPhysicalMaterial") : AssetName;
+	const std::filesystem::path AssetPath = BuildUniqueAssetPath(Directory, DefaultName, L".uasset");
+
+	UPhysicalMaterial* NewAsset = GUObjectArray.CreateObject<UPhysicalMaterial>();
+	NewAsset->SetAssetPathFileName(FPaths::ToUtf8(AssetPath.wstring()));
+
+	const bool bSaved = FPhysicalMaterialManager::Get().Save(NewAsset);
 	GUObjectArray.DestroyObject(NewAsset);
 
 	if (!bSaved)

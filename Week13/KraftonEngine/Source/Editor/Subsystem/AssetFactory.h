@@ -67,6 +67,7 @@ public:
 	static bool CreateAnimInstanceAsset(const FString& DirectoryPath, const FString& AssetName, FString& OutCreatedPath);
 	static bool CreateParticleSystemAsset(const FString& DirectoryPath, const FString& AssetName, FString& OutCreatedPath);
 	static bool CreatePhysicsAsset(const FString& DirectoryPath, const FString& AssetName, FString& OutCreatedPath);
+	static bool CreatePhysicalMaterial(const FString& DirectoryPath, const FString& AssetName, FString& OutCreatedPath);
 	static bool CreatePhysicsAssetFromSkeletalMesh(
 		const FString& DirectoryPath,
 		const FString& AssetName,
