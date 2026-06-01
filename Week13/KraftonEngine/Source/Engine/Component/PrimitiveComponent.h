@@ -133,6 +133,7 @@ public:
 	ECollisionEnabled GetCollisionEnabled() const { return CollisionEnabled; }
 	bool IsCollisionEnabled() const { return CollisionEnabled != ECollisionEnabled::NoCollision; }
 	bool IsQueryCollisionEnabled() const;
+	bool IsPhysicsCollisionEnabled() const;
 
 	void SetCollisionObjectType(ECollisionChannel InChannel);
 	ECollisionChannel GetCollisionObjectType() const { return ObjectType; }

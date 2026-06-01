@@ -1194,6 +1194,8 @@ PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimit
     Shape->setLocalPose(LocalPose);
 
     SetupFilterData(Shape, Comp);
+    Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, Comp->IsQueryCollisionEnabled());
+    Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, Comp->IsPhysicsCollisionEnabled());
 
     bool bShouldBeTrigger = Comp->GetGenerateOverlapEvents();
     if (!bShouldBeTrigger)
