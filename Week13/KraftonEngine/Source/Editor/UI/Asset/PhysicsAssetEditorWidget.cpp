@@ -3935,7 +3935,7 @@ bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel(bool bShowHeader)
 
 	if (bShowConstraintDebug)
 	{
-		bChanged |= ImGui::DragFloat("Constraint Axis Length", &ConstraintAxisLength, 0.5f, 0.5f, 200.0f, "%.1f");
+		bChanged |= ImGui::DragFloat("Constraint Axis Length", &ConstraintAxisLength, 0.1f, 0.01f, 200.0f, "%.2f");
 	}
 
 	float ShapeTint[3] = { PreviewShapeTint.X, PreviewShapeTint.Y, PreviewShapeTint.Z };
