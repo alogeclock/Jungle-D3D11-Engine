@@ -26,6 +26,7 @@ public:
 	void CreatePreviewGizmo();
 	void CreateBoneDebugComponent();
 	void ResetCameraToPreviewBounds();
+	void FocusOnLocation(const FVector& TargetLoc, float Radius);
 
 	void SetPreviewWorld(UWorld* InWorld) { PreviewWorld = InWorld; }
 	void SetPreviewActor(AActor* InActor) { PreviewActor = InActor; }

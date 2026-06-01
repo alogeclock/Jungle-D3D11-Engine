@@ -5,6 +5,8 @@
 #include "Editor/Subsystem/AssetFactory.h"
 #include "Editor/Viewport/MeshEditorViewportClient.h"
 
+struct ID3D11ShaderResourceView;
+
 class AActor;
 class IGizmoTransformTarget;
 class UMaterial;
@@ -101,5 +103,9 @@ private:
 	char BoneSearchBuffer[128] = {};
 	bool bExpandBodyTreeOnNextRender = false;
 	bool bFrameGraphOnNextRender = false;
+	bool bNeedsInitialCameraReset = false;
 	bool bPendingClose = false;
+
+	ID3D11ShaderResourceView* CapsuleBodyIcon = nullptr;
+	int32 BoneTreeRowCounter = 0;
 };

@@ -30,6 +30,7 @@
 #include "Runtime/Engine.h"
 #include "Settings/EditorSettings.h"
 #include "Slate/SlateApplication.h"
+#include "UI/EditorTextureManager.h"
 #include "UI/Toolbar/ViewportToolbar.h"
 #include "Viewport/Viewport.h"
 #include "Gizmo/GizmoTransformTarget.h"
@@ -2266,6 +2267,12 @@ void FPhysicsAssetEditorWidget::Open(UObject* Object)
 		BodyGizmoTarget = new FPhysicsBodyGizmoTarget();
 	}
 
+	if (!CapsuleBodyIcon)
+	{
+		const FString IconPath = FPaths::ToUtf8(FPaths::Combine(FPaths::AssetDir(), L"Editor/Icons/Capsule_16px.png"));
+		CapsuleBodyIcon = FEditorTextureManager::Get().GetOrLoadIcon(IconPath);
+	}
+
 	InitializePreviewScene(static_cast<UPhysicsAsset*>(EditedObject));
 
 	UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
@@ -2364,14 +2371,14 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -1.0f));
 	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 1.0f));
 
-	ViewportClient.Initialize(Device, 1280, 720);
+	ViewportClient.Initialize(Device, 320, 240);
 	ViewportClient.GetRenderOptions().ShowFlags.bGrid = false;
 	ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw = true;
 	ViewportClient.SetPreviewWorld(WorldContext.World);
 	ViewportClient.SetPreviewActor(Actor);
 	ViewportClient.SetPreviewMeshComponent(MeshComponent);
 	ViewportClient.CreatePreviewGizmo();
-	ViewportClient.ResetCameraToPreviewBounds();
+	bNeedsInitialCameraReset = true;
 	WorldContext.World->SetEditorPOVProvider(&ViewportClient);
 	ViewportClient.SetSelectedBone(PreviewSkeletalMesh, -1);
 
@@ -2664,6 +2671,99 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 	}
 }
 
+namespace
+{
+	void DrawSwingCone(
+		UWorld* World,
+		const FVector& Apex,
+		const FVector& AxisX,
+		const FVector& AxisY,
+		const FVector& AxisZ,
+		float LimYDeg,
+		float LimZDeg,
+		bool bYFree,
+		bool bZFree,
+		float Length,
+		const FColor& Color,
+		float Duration)
+	{
+		if (!bYFree && LimYDeg <= 0.0f && !bZFree && LimZDeg <= 0.0f)
+		{
+			return;
+		}
+
+		const float HY = std::sin(bYFree ? (Pi * 0.5f) : (LimYDeg * Pi / 180.0f));
+		const float HZ = std::sin(bZFree ? (Pi * 0.5f) : (LimZDeg * Pi / 180.0f));
+
+		constexpr int32 N = 24;
+		FVector PrevPoint = FVector::ZeroVector;
+
+		for (int32 i = 0; i <= N; ++i)
+		{
+			const float T = 2.0f * Pi * i / N;
+			const float SinY = HY * std::cos(T);
+			const float SinZ = HZ * std::sin(T);
+			const float CosX = std::sqrt((std::max)(0.0f, 1.0f - SinY * SinY - SinZ * SinZ));
+
+			FVector WorldDir = AxisX * CosX + AxisY * SinY + AxisZ * SinZ;
+			WorldDir.Normalize();
+			const FVector Point = Apex + WorldDir * Length;
+
+			if (i > 0)
+			{
+				DrawDebugLineAlwaysOnTop(World, PrevPoint, Point, Color, Duration);
+			}
+			if (i % (N / 6) == 0)
+			{
+				DrawDebugLineAlwaysOnTop(World, Apex, Point, Color, Duration);
+			}
+			PrevPoint = Point;
+		}
+	}
+
+	void DrawTwistArc(
+		UWorld* World,
+		const FVector& Origin,
+		const FVector& AxisX,
+		const FVector& AxisY,
+		const FVector& AxisZ,
+		float TwistMinDeg,
+		float TwistMaxDeg,
+		bool bFree,
+		float Radius,
+		const FColor& Color,
+		float Duration)
+	{
+		const float TMin = bFree ? -180.0f : TwistMinDeg;
+		const float TMax = bFree ? 180.0f : TwistMaxDeg;
+		if (TMax - TMin < 1.0f)
+		{
+			return;
+		}
+
+		const FVector ArcOrigin = Origin + AxisX * Radius * 0.3f;
+		constexpr int32 N = 20;
+		FVector PrevPoint = FVector::ZeroVector;
+
+		for (int32 i = 0; i <= N; ++i)
+		{
+			const float T = TMin + (TMax - TMin) * i / N;
+			const float TRad = T * Pi / 180.0f;
+			const FVector Point = ArcOrigin + (AxisY * std::cos(TRad) + AxisZ * std::sin(TRad)) * Radius;
+
+			if (i > 0)
+			{
+				DrawDebugLineAlwaysOnTop(World, PrevPoint, Point, Color, Duration);
+			}
+			if (i == 0 || i == N)
+			{
+				DrawDebugLineAlwaysOnTop(World, ArcOrigin, Point, Color, Duration);
+			}
+			PrevPoint = Point;
+		}
+	}
+}
+
 void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 {
 	UWorld* PreviewWorld = ViewportClient.GetPreviewWorld();
@@ -2710,17 +2810,32 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 		const FVector AxisZ = Rotation.GetUpVector();
 		const FVector Origin = (ParentFrame.Location + ChildFrame.Location) * 0.5f;
 
-		if (bSelected)
+		const FColor AxisColor  = bSelected ? FColor(255, 160, 64)  : FColor(255, 64,  64);
+		const FColor SwingColor = bSelected ? FColor(255, 120, 120) : FColor(220, 80,  80);
+		const FColor TwistColor = bSelected ? FColor(140, 255, 100) : FColor(80,  200, 80);
+
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, AxisColor, ConstraintDebugDuration);
+
+		const bool bSwing1Free = Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Free;
+		const bool bSwing2Free = Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Free;
+		const bool bSwing1Locked = Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Locked;
+		const bool bSwing2Locked = Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Locked;
+
+		if (!bSwing1Locked || !bSwing2Locked)
 		{
-			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 140, 51), ConstraintDebugDuration);
-			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(140, 255, 89), ConstraintDebugDuration);
-			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(115, 191, 255), ConstraintDebugDuration);
+			DrawSwingCone(PreviewWorld, Origin, AxisX, AxisY, AxisZ,
+				Constraint.SwingLimitY, Constraint.SwingLimitZ,
+				bSwing1Free, bSwing2Free,
+				ConstraintAxisLength, SwingColor, ConstraintDebugDuration);
 		}
-		else
+
+		const bool bTwistFree = Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free;
+		if (Constraint.TwistMotion != EPhysicsConstraintMotionMode::Locked)
 		{
-			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 31, 31), ConstraintDebugDuration);
-			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(31, 255, 31), ConstraintDebugDuration);
-			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(46, 115, 255), ConstraintDebugDuration);
+			DrawTwistArc(PreviewWorld, Origin, AxisX, AxisY, AxisZ,
+				Constraint.TwistLimitMin, Constraint.TwistLimitMax,
+				bTwistFree,
+				ConstraintAxisLength * 0.4f, TwistColor, ConstraintDebugDuration);
 		}
 	}
 }
@@ -2851,6 +2966,12 @@ void FPhysicsAssetEditorWidget::SelectBodyByIndex(int32 BodyIndex)
 		FindPreferredShapeSelection(BodySetup, SelectedShapeType, SelectedShapeIndex);
 	}
 
+	if (SelectedBoneIndex >= 0 && ViewportClient.GetPreviewMeshComponent())
+	{
+		const FVector BoneLoc = ViewportClient.GetPreviewMeshComponent()->GetBoneLocationByIndex(SelectedBoneIndex);
+		ViewportClient.FocusOnLocation(BoneLoc, 1.5f);
+	}
+
 	SyncSelectionToViewport();
 }
 
@@ -2869,6 +2990,12 @@ void FPhysicsAssetEditorWidget::SelectConstraintByIndex(int32 ConstraintIndex)
 	SelectedBoneIndex = FindBoneIndexByName(
 		PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr,
 		PhysicsAsset->GetConstraintSetups()[ConstraintIndex].ChildBoneName);
+
+	if (SelectedBoneIndex >= 0 && ViewportClient.GetPreviewMeshComponent())
+	{
+		const FVector BoneLoc = ViewportClient.GetPreviewMeshComponent()->GetBoneLocationByIndex(SelectedBoneIndex);
+		ViewportClient.FocusOnLocation(BoneLoc, 1.5f);
+	}
 
 	SyncSelectionToViewport();
 }
@@ -3049,6 +3176,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 			if (const FSkeletonAsset* SkeletonAsset = PreviewSkeletalMesh->GetSkeletonAsset())
 			{
 				const FString SearchText = BoneSearchBuffer;
+				BoneTreeRowCounter = 0;
 				for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(SkeletonAsset->Bones.size()); ++BoneIndex)
 				{
 					if (SkeletonAsset->Bones[BoneIndex].ParentIndex == -1)
@@ -3115,7 +3243,18 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 			ViewportClient.SetViewportRect(ViewportPos.x, ViewportPos.y, ViewportSize.x, ViewportSize.y);
 			if (FViewport* Viewport = ViewportClient.GetViewport())
 			{
-				Viewport->RequestResize(static_cast<uint32>(ViewportSize.x), static_cast<uint32>(ViewportSize.y));
+				const uint32 NewW = static_cast<uint32>(ViewportSize.x);
+				const uint32 NewH = static_cast<uint32>(ViewportSize.y);
+				if (Viewport->GetWidth() != NewW || Viewport->GetHeight() != NewH)
+				{
+					Viewport->RequestResize(NewW, NewH);
+					ViewportClient.NotifyViewportResized(static_cast<int32>(NewW), static_cast<int32>(NewH - static_cast<uint32>(ToolbarHeight)));
+					if (bNeedsInitialCameraReset)
+					{
+						ViewportClient.ResetCameraToPreviewBounds();
+						bNeedsInitialCameraReset = false;
+					}
+				}
 				PhysicsAssetViewportWindow.SetRect(FRect(ViewportPos.x, ViewportPos.y, ViewportSize.x, ViewportSize.y));
 
 				if (Viewport->GetSRV())
@@ -3337,11 +3476,34 @@ void FPhysicsAssetEditorWidget::RenderSkeletonTree(const FSkeletonAsset* Skeleto
 		}
 	}
 
-	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-	if (BodyIndex >= 0 && BodyIndex == SelectedBodyIndex)
+	// --- Row background (alternating + selection highlight) ---
+	const bool bIsSelected = (BodyIndex >= 0 && BodyIndex == SelectedBodyIndex);
+	const int32 CurrentRow = BoneTreeRowCounter++;
+
 	{
-		Flags |= ImGuiTreeNodeFlags_Selected;
+		ImDrawList* DrawList = ImGui::GetWindowDrawList();
+		const ImVec2 RowMin = ImGui::GetCursorScreenPos();
+		const float RowHeight = ImGui::GetFrameHeight();
+		const ImVec2 WindowPos = ImGui::GetWindowPos();
+		const float WindowWidth = ImGui::GetWindowSize().x;
+
+		ImU32 BgColor;
+		if (bIsSelected)
+			BgColor = IM_COL32(50, 110, 210, 210);
+		else if (CurrentRow % 2 == 0)
+			BgColor = IM_COL32(62, 62, 62, 255);  // 밝은 회색
+		else
+			BgColor = IM_COL32(54, 54, 54, 255);  // 어두운 회색
+
+		DrawList->AddRectFilled(
+			ImVec2(WindowPos.x, RowMin.y),
+			ImVec2(WindowPos.x + WindowWidth, RowMin.y + RowHeight),
+			BgColor
+		);
 	}
+
+	// --- Tree node flags ---
+	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 	if (!bHasChildren)
 	{
 		Flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -3351,15 +3513,39 @@ void FPhysicsAssetEditorWidget::RenderSkeletonTree(const FSkeletonAsset* Skeleto
 		ImGui::SetNextItemOpen(true, ImGuiCond_Always);
 	}
 
-	FString Label = Bone.Name;
-	if (BodyIndex < 0)
-	{
-		Label += " (No Body)";
-	}
+	// Header 색상을 투명하게 해서 우리가 그린 배경이 보이도록
+	ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.08f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(1.0f, 1.0f, 1.0f, 0.12f));
+
+	const FString Label = Bone.Name;
 	const bool bOpen = ImGui::TreeNodeEx(Label.c_str(), Flags);
+
+	ImGui::PopStyleColor(3);
+
 	if (ImGui::IsItemClicked() && BodyIndex >= 0)
 	{
 		SelectBodyByIndex(BodyIndex);
+	}
+
+	// --- 텍스트 바로 우측에 캡슐 아이콘 (body가 있는 경우) ---
+	if (BodyIndex >= 0 && CapsuleBodyIcon)
+	{
+		const float IconSize = 14.0f;
+		const ImVec2 ItemMin = ImGui::GetItemRectMin();
+		const ImVec2 ItemMax = ImGui::GetItemRectMax();
+
+		// 트리 노드 화살표/들여쓰기 이후 텍스트 시작 X
+		const float TextStartX = ItemMin.x + ImGui::GetTreeNodeToLabelSpacing();
+		const float TextWidth = ImGui::CalcTextSize(Label.c_str()).x;
+		const float IconX = TextStartX + TextWidth + 6.0f;
+		const float IconY = ItemMin.y + (ItemMax.y - ItemMin.y - IconSize) * 0.5f;
+
+		ImGui::GetWindowDrawList()->AddImage(
+			(ImTextureID)CapsuleBodyIcon,
+			ImVec2(IconX, IconY),
+			ImVec2(IconX + IconSize, IconY + IconSize)
+		);
 	}
 
 	if (bOpen && bHasChildren)

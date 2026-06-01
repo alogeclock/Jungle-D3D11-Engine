@@ -231,6 +231,28 @@ FEditorVisualizationOptions FMeshEditorViewportClient::GetEditorVisualizationOpt
 	return Options;
 }
 
+void FMeshEditorViewportClient::FocusOnLocation(const FVector& TargetLoc, float Radius)
+{
+	const float FocusDistance = std::max(Radius * 2.0f, 0.3f);
+	const FVector CameraForward = ViewTransform.ViewRotation.GetForwardVector();
+	const FVector OriginalLoc = ViewTransform.ViewLocation;
+	const FRotator OriginalRot = ViewTransform.ViewRotation;
+
+	ViewTransform.ViewLocation = TargetLoc - CameraForward * FocusDistance;
+	ViewTransform.LookAt(TargetLoc);
+	const FRotator TargetRot = ViewTransform.ViewRotation;
+
+	ViewTransform.ViewLocation = OriginalLoc;
+	ViewTransform.ViewRotation = OriginalRot;
+
+	bIsFocusAnimating = true;
+	FocusAnimTimer = 0.0f;
+	FocusStartLoc = OriginalLoc;
+	FocusStartRot = OriginalRot;
+	FocusEndLoc = TargetLoc - CameraForward * FocusDistance;
+	FocusEndRot = TargetRot;
+}
+
 void FMeshEditorViewportClient::TickShortcuts()
 {
 	if (!FSlateApplication::Get().DoesClientOwnKeyboardInput(this)) return;
