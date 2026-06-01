@@ -90,12 +90,169 @@ namespace
 			}
 		}
 	}
+
+	void LoadLegacySphereShape(FArchive& Ar, FPhysicsSphereShapeSetup& ShapeSetup)
+	{
+		Ar << ShapeSetup.Name;
+		Ar << ShapeSetup.LocalTransform.Location;
+		Ar << ShapeSetup.LocalTransform.Rotation;
+		Ar << ShapeSetup.LocalTransform.Scale;
+		Ar << ShapeSetup.Radius;
+		bool bHasPhysicalMaterial = false;
+		Ar << bHasPhysicalMaterial;
+		ShapeSetup.PhysicalMaterial = nullptr;
+		Ar << ShapeSetup.CollisionDesc;
+	}
+
+	void LoadLegacyBoxShape(FArchive& Ar, FPhysicsBoxShapeSetup& ShapeSetup)
+	{
+		Ar << ShapeSetup.Name;
+		Ar << ShapeSetup.LocalTransform.Location;
+		Ar << ShapeSetup.LocalTransform.Rotation;
+		Ar << ShapeSetup.LocalTransform.Scale;
+		Ar << ShapeSetup.HalfExtent;
+		bool bHasPhysicalMaterial = false;
+		Ar << bHasPhysicalMaterial;
+		ShapeSetup.PhysicalMaterial = nullptr;
+		Ar << ShapeSetup.CollisionDesc;
+	}
+
+	void LoadLegacyCapsuleShape(FArchive& Ar, FPhysicsCapsuleShapeSetup& ShapeSetup)
+	{
+		Ar << ShapeSetup.Name;
+		Ar << ShapeSetup.LocalTransform.Location;
+		Ar << ShapeSetup.LocalTransform.Rotation;
+		Ar << ShapeSetup.LocalTransform.Scale;
+		Ar << ShapeSetup.Radius;
+		Ar << ShapeSetup.Length;
+		bool bHasPhysicalMaterial = false;
+		Ar << bHasPhysicalMaterial;
+		ShapeSetup.PhysicalMaterial = nullptr;
+		Ar << ShapeSetup.CollisionDesc;
+	}
+
+	void LoadLegacyConvexShape(FArchive& Ar, FPhysicsConvexShapeSetup& ShapeSetup)
+	{
+		Ar << ShapeSetup.Name;
+		Ar << ShapeSetup.LocalTransform.Location;
+		Ar << ShapeSetup.LocalTransform.Rotation;
+		Ar << ShapeSetup.LocalTransform.Scale;
+		Ar << ShapeSetup.VertexData;
+		bool bHasPhysicalMaterial = false;
+		Ar << bHasPhysicalMaterial;
+		ShapeSetup.PhysicalMaterial = nullptr;
+		Ar << ShapeSetup.CollisionDesc;
+	}
+
+	void LoadLegacyAggregateShapeSetup(FArchive& Ar, FPhysicsAggregateShapeSetup& ShapeSetup)
+	{
+		uint32 SphereCount = 0u;
+		Ar << SphereCount;
+		ShapeSetup.SphereShapeSetups.resize(SphereCount);
+		for (FPhysicsSphereShapeSetup& Shape : ShapeSetup.SphereShapeSetups)
+		{
+			LoadLegacySphereShape(Ar, Shape);
+		}
+
+		uint32 BoxCount = 0u;
+		Ar << BoxCount;
+		ShapeSetup.BoxShapeSetups.resize(BoxCount);
+		for (FPhysicsBoxShapeSetup& Shape : ShapeSetup.BoxShapeSetups)
+		{
+			LoadLegacyBoxShape(Ar, Shape);
+		}
+
+		uint32 CapsuleCount = 0u;
+		Ar << CapsuleCount;
+		ShapeSetup.CapsuleShapeSetups.resize(CapsuleCount);
+		for (FPhysicsCapsuleShapeSetup& Shape : ShapeSetup.CapsuleShapeSetups)
+		{
+			LoadLegacyCapsuleShape(Ar, Shape);
+		}
+
+		uint32 ConvexCount = 0u;
+		Ar << ConvexCount;
+		ShapeSetup.ConvexShapeSetups.resize(ConvexCount);
+		for (FPhysicsConvexShapeSetup& Shape : ShapeSetup.ConvexShapeSetups)
+		{
+			LoadLegacyConvexShape(Ar, Shape);
+		}
+	}
+
+	void LoadLegacyBodySetup(FArchive& Ar, UPhysicsBodySetup* BodySetup)
+	{
+		if (!BodySetup)
+		{
+			return;
+		}
+
+		FName TargetBoneName;
+		FPhysicsAggregateShapeSetup ShapeSetup;
+		uint8 SerializedBodyType = 0u;
+		float Mass = 1.0f;
+		float LinearDamping = 0.0f;
+		float AngularDamping = 0.05f;
+		FPhysicsCollisionDesc CollisionDesc;
+
+		Ar << TargetBoneName;
+		LoadLegacyAggregateShapeSetup(Ar, ShapeSetup);
+		Ar << SerializedBodyType;
+		Ar << Mass;
+		Ar << LinearDamping;
+		Ar << AngularDamping;
+		Ar << CollisionDesc;
+
+		BodySetup->SetTargetBoneName(TargetBoneName);
+		BodySetup->SetShapeSetup(ShapeSetup);
+		BodySetup->SetBodyType(static_cast<EPhysicsBodyType>(SerializedBodyType));
+		BodySetup->SetMass(Mass);
+		BodySetup->SetLinearDamping(LinearDamping);
+		BodySetup->SetAngularDamping(AngularDamping);
+		BodySetup->SetCollisionDesc(CollisionDesc);
+	}
+
+	void LoadLegacyConstraintSetup(FArchive& Ar, FPhysicsConstraintSetup& ConstraintSetup)
+	{
+		Ar << ConstraintSetup.ConstraintName;
+		Ar << ConstraintSetup.ParentBoneName;
+		Ar << ConstraintSetup.ChildBoneName;
+
+		uint8 JointType = static_cast<uint8>(ConstraintSetup.JointType);
+		Ar << JointType;
+		ConstraintSetup.JointType = static_cast<EPhysicsJointType>(JointType);
+
+		Ar << ConstraintSetup.ParentLocalFrame.Location;
+		Ar << ConstraintSetup.ParentLocalFrame.Rotation;
+		Ar << ConstraintSetup.ParentLocalFrame.Scale;
+		Ar << ConstraintSetup.ChildLocalFrame.Location;
+		Ar << ConstraintSetup.ChildLocalFrame.Rotation;
+		Ar << ConstraintSetup.ChildLocalFrame.Scale;
+
+		Ar << ConstraintSetup.LinearLimit;
+		Ar << ConstraintSetup.AngularLimit;
+		Ar << ConstraintSetup.TwistLimitMin;
+		Ar << ConstraintSetup.TwistLimitMax;
+		Ar << ConstraintSetup.SwingLimitY;
+		Ar << ConstraintSetup.SwingLimitZ;
+		Ar << ConstraintSetup.bDisableCollision;
+		Ar << ConstraintSetup.Stiffness;
+		Ar << ConstraintSetup.Damping;
+
+		ConstraintSetup.XMotion = ConstraintSetup.LinearLimit > 0.0f ? EPhysicsConstraintMotionMode::Limited : EPhysicsConstraintMotionMode::Locked;
+		ConstraintSetup.YMotion = ConstraintSetup.XMotion;
+		ConstraintSetup.ZMotion = ConstraintSetup.XMotion;
+		ConstraintSetup.Swing1Motion = ConstraintSetup.SwingLimitY > 0.0f ? EPhysicsConstraintMotionMode::Limited : EPhysicsConstraintMotionMode::Locked;
+		ConstraintSetup.Swing2Motion = ConstraintSetup.SwingLimitZ > 0.0f ? EPhysicsConstraintMotionMode::Limited : EPhysicsConstraintMotionMode::Locked;
+		ConstraintSetup.TwistMotion = (ConstraintSetup.TwistLimitMin != 0.0f || ConstraintSetup.TwistLimitMax != 0.0f)
+			? EPhysicsConstraintMotionMode::Limited
+			: EPhysicsConstraintMotionMode::Locked;
+	}
 }
 
 void UPhysicsAsset::Serialize(FArchive& Ar)
 {
     constexpr uint32 PhysicsAssetVersionTag = 0x50485953u;
-    constexpr uint32 PhysicsAssetVersion = 4u;
+    constexpr uint32 PhysicsAssetVersion = 5u;
 
     uint32 BodySetupCount = 0u;
     uint32 AssetVersion = PhysicsAssetVersion;
@@ -186,7 +343,14 @@ void UPhysicsAsset::Serialize(FArchive& Ar)
 
         if (BodySetup)
         {
-            BodySetup->Serialize(Ar);
+            if (Ar.IsLoading() && AssetVersion < 5u)
+            {
+                LoadLegacyBodySetup(Ar, BodySetup);
+            }
+            else
+            {
+                BodySetup->Serialize(Ar);
+            }
         }
 
         if (Ar.IsLoading())
@@ -195,7 +359,21 @@ void UPhysicsAsset::Serialize(FArchive& Ar)
         }
     }
 
-    Ar << ConstraintSetups;
+    if (Ar.IsLoading() && AssetVersion < 5u)
+    {
+        uint32 ConstraintCount = 0u;
+        Ar << ConstraintCount;
+        ConstraintSetups.clear();
+        ConstraintSetups.resize(ConstraintCount);
+        for (FPhysicsConstraintSetup& ConstraintSetup : ConstraintSetups)
+        {
+            LoadLegacyConstraintSetup(Ar, ConstraintSetup);
+        }
+    }
+    else
+    {
+        Ar << ConstraintSetups;
+    }
 
     if (Ar.IsLoading() && AssetVersion < 4u)
     {
