@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Object/FName.h"
 #include "Physics/Common/PhysicsDescTypes.h"
@@ -8,14 +8,6 @@
  * @file PhysicsConstraintSetup.h
  * @brief PhysicsAsset에 저장되는 Constraint 설정 정의.
  */
-
-/** Constraint 축별 Motion 모드 */
-enum class EPhysicsConstraintMotionMode : uint8
-{
-	Free = 0,
-	Limited,
-	Locked,
-};
 
 /** Parent Body와 Child Body 사이의 Constraint 설정 */
 struct FPhysicsConstraintSetup
@@ -66,6 +58,12 @@ struct FPhysicsConstraintSetup
         Desc.bDisableCollision = bDisableCollision;
         Desc.Stiffness         = Stiffness;
         Desc.Damping           = Damping;
+        Desc.XMotion           = XMotion;
+        Desc.YMotion           = YMotion;
+        Desc.ZMotion           = ZMotion;
+        Desc.Swing1Motion      = Swing1Motion;
+        Desc.Swing2Motion      = Swing2Motion;
+        Desc.TwistMotion       = TwistMotion;
         return Desc;
     }
 };

@@ -127,6 +127,19 @@ void UPrimitiveComponent::SetSimulatePhysics(bool bInSimulate)
 	NotifyPhysicsBodyDirty();
 }
 
+bool UPrimitiveComponent::NeedsPhysicsInterpolation() const
+{
+	return bSimulatePhysics;
+}
+
+void UPrimitiveComponent::OnPrePhysicsSync()
+{
+}
+
+void UPrimitiveComponent::OnPostPhysicsSync()
+{
+}
+
 void UPrimitiveComponent::MarkProxyDirty(EDirtyFlag Flag) const
 {
 	if (!SceneProxy || !Owner || !Owner->GetWorld()) return;

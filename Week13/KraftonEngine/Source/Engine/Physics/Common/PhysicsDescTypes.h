@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "PhysicsCollisionTypes.h"
 #include "PhysicsMaterialTypes.h"
@@ -32,6 +32,14 @@ struct FPhysicsBodyDesc
     TArray<FPhysicsShapeDesc> Shapes;
 };
 
+/** Constraint 축별 Motion 모드 */
+enum class EPhysicsConstraintMotionMode : uint8
+{
+    Free = 0,
+    Limited,
+    Locked,
+};
+
 /** Runtime Constraint 생성 정보 */
 struct FPhysicsConstraintDesc
 {
@@ -47,4 +55,10 @@ struct FPhysicsConstraintDesc
     bool              bDisableCollision  = false;
     float             Stiffness          =   0.0f;
     float             Damping            =   0.0f;
+    EPhysicsConstraintMotionMode XMotion      = EPhysicsConstraintMotionMode::Locked;
+    EPhysicsConstraintMotionMode YMotion      = EPhysicsConstraintMotionMode::Locked;
+    EPhysicsConstraintMotionMode ZMotion      = EPhysicsConstraintMotionMode::Locked;
+    EPhysicsConstraintMotionMode Swing1Motion = EPhysicsConstraintMotionMode::Limited;
+    EPhysicsConstraintMotionMode Swing2Motion = EPhysicsConstraintMotionMode::Limited;
+    EPhysicsConstraintMotionMode TwistMotion  = EPhysicsConstraintMotionMode::Limited;
 };

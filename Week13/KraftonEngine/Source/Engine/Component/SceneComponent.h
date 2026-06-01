@@ -67,11 +67,11 @@ public:
 
 	FMatrix GetRelativeMatrix() const;
 
-	void CapturePrePhysicsSnapshot();
-	void CapturePostPhysicsSnapshot();
-	void ApplyPhysicsInterpolation(float Alpha);
-	void RestorePhysicsInterpolation();
-	void ResetPhysicsInterpolation();
+	virtual void CapturePrePhysicsSnapshot();
+	virtual void CapturePostPhysicsSnapshot();
+	virtual void ApplyPhysicsInterpolation(float Alpha);
+	virtual void RestorePhysicsInterpolation();
+	virtual void ResetPhysicsInterpolation();
 
 	void Move(const FVector& Delta);
 	void MoveLocal(const FVector& Delta);

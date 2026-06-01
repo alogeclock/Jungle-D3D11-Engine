@@ -1,5 +1,6 @@
-#include "Physics/Backends/PhysXPhysicsScene.h"
+﻿#include "Physics/Backends/PhysXPhysicsScene.h"
 #include "Physics/Backends/PhysXSceneThreading.h"
+#include "Physics/Runtime/PhysicsConstraintInstance.h"
 #include "Component/PrimitiveComponent.h"
 #include "Component/BoxComponent.h"
 #include "Component/SphereComponent.h"
@@ -206,10 +207,35 @@ static PxVec3 ToPxVec3(const FVector& V) { return PxVec3(V.X, V.Y, V.Z); }
 static PxQuat ToPxQuat(const FQuat& Q)   { return PxQuat(Q.X, Q.Y, Q.Z, Q.W); }
 static FVector ToFVector(const PxVec3& V) { return FVector(V.x, V.y, V.z); }
 static FQuat   ToFQuat  (const PxQuat& Q) { return FQuat(Q.x, Q.y, Q.z, Q.w); }
+static float ToRadians(float Degrees) { return Degrees * (PxPi / 180.0f); }
 
 static PxTransform GetPxTransform(UPrimitiveComponent* Comp)
 {
     return PxTransform(ToPxVec3(Comp->GetWorldLocation()), ToPxQuat(Comp->GetWorldMatrix().ToQuat()));
+}
+
+static PxTransform ToPxTransform(const FTransform& Transform)
+{
+    return PxTransform(ToPxVec3(Transform.Location), ToPxQuat(Transform.Rotation));
+}
+
+static FTransform ToFTransform(const PxTransform& Transform)
+{
+    return FTransform(ToFVector(Transform.p), ToFQuat(Transform.q), FVector::OneVector);
+}
+
+static PxD6Motion::Enum ToPxD6Motion(EPhysicsConstraintMotionMode Motion)
+{
+    switch (Motion)
+    {
+    case EPhysicsConstraintMotionMode::Free:
+        return PxD6Motion::eFREE;
+    case EPhysicsConstraintMotionMode::Limited:
+        return PxD6Motion::eLIMITED;
+    case EPhysicsConstraintMotionMode::Locked:
+    default:
+        return PxD6Motion::eLOCKED;
+    }
 }
 
 static void ApplyRootMassAndCOM(PxRigidDynamic* Dyn, UPrimitiveComponent* Root)
@@ -280,6 +306,80 @@ static PxFilterFlags KraftonFilterShader(
     return PxFilterFlag::eKILL;
 }
 
+static void ConfigureShapeCollisionFlags(PxShape* Shape, const FPhysicsCollisionDesc& CollisionDesc)
+{
+    if (!Shape)
+    {
+        return;
+    }
+
+    const bool bQueryEnabled =
+        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryOnly ||
+        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryAndPhysics;
+    const bool bPhysicsEnabled =
+        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_PhysicsOnly ||
+        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryAndPhysics;
+
+    Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, bQueryEnabled);
+    Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, bPhysicsEnabled);
+    Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+}
+
+static PxShape* CreateShapeFromDesc(PxPhysics* Physics, PxMaterial* DefaultMaterial, const FPhysicsShapeDesc& ShapeDesc, UPrimitiveComponent* OwnerComponent)
+{
+    if (!Physics || !DefaultMaterial)
+    {
+        return nullptr;
+    }
+
+    PxGeometryHolder Geom;
+    bool bHasGeometry = false;
+
+    switch (ShapeDesc.ShapeType)
+    {
+    case EPhysicsShapeType::PST_Sphere:
+        Geom = PxSphereGeometry((std::max)(0.01f, std::abs(ShapeDesc.Size.X)));
+        bHasGeometry = true;
+        break;
+    case EPhysicsShapeType::PST_Box:
+        Geom = PxBoxGeometry(
+            (std::max)(0.01f, std::abs(ShapeDesc.Size.X)),
+            (std::max)(0.01f, std::abs(ShapeDesc.Size.Y)),
+            (std::max)(0.01f, std::abs(ShapeDesc.Size.Z)));
+        bHasGeometry = true;
+        break;
+    case EPhysicsShapeType::PST_Capsule:
+        Geom = PxCapsuleGeometry(
+            (std::max)(0.01f, std::abs(ShapeDesc.Size.X)),
+            (std::max)(0.01f, std::abs(ShapeDesc.Size.Y) * 0.5f));
+        bHasGeometry = true;
+        break;
+    case EPhysicsShapeType::PST_Convex:
+    default:
+        break;
+    }
+
+    if (!bHasGeometry)
+    {
+        return nullptr;
+    }
+
+    PxShape* Shape = Physics->createShape(Geom.any(), *DefaultMaterial, true);
+    if (!Shape)
+    {
+        return nullptr;
+    }
+
+    Shape->setLocalPose(ToPxTransform(ShapeDesc.LocalTransform));
+    ConfigureShapeCollisionFlags(Shape, ShapeDesc.CollisionDesc);
+    if (OwnerComponent)
+    {
+        SetupFilterData(Shape, OwnerComponent);
+    }
+    Shape->userData = OwnerComponent;
+    return Shape;
+}
+
 // ============================================================
 // Lifecycle
 // ============================================================
@@ -328,6 +428,35 @@ void FPhysXPhysicsScene::ReleaseScene()
 {
     WaitForSimulation();
     FlushDeferredSceneCommands();
+
+    for (FPhysicsConstraintInstance* ConstraintInstance : StandaloneConstraintInstances)
+    {
+        if (!ConstraintInstance) continue;
+        if (PxJoint* Joint = static_cast<PxJoint*>(ConstraintInstance->GetJointHandle().NativeJoint))
+        {
+            Joint->release();
+        }
+        UnregisterConstraintInstance(ConstraintInstance);
+        delete ConstraintInstance;
+    }
+    StandaloneConstraintInstances.clear();
+    GetMutableRuntimeStats().ConstraintCount = 0;
+
+    {
+        SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+        for (FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+        {
+            if (!BodyInstance) continue;
+            if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
+            {
+                Scene->removeActor(*Actor);
+                Actor->release();
+            }
+            UnregisterBodyInstance(BodyInstance);
+            delete BodyInstance;
+        }
+    }
+    StandaloneBodyInstances.clear();
 
     for (auto& Pair : BodyInstances) delete Pair.second;
     BodyInstances.clear();
@@ -390,11 +519,127 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBody(UPrimitiveComponent* Comp, 
     return Instance;
 }
 
+FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
+    UPrimitiveComponent* OwnerComponent,
+    const FPhysicsBodyDesc& BodyDesc,
+    const FTransform& WorldTransform,
+    bool bSyncOwnerTransform)
+{
+    if (!Scene || !Physics || !DefaultMaterial || BodyDesc.Shapes.empty())
+    {
+        return nullptr;
+    }
+
+    WaitForSimulation();
+
+    PxRigidActor* Actor = nullptr;
+    const PxTransform BodyPose = ToPxTransform(WorldTransform);
+    if (BodyDesc.BodyType == EPhysicsBodyType::PBT_Static)
+    {
+        Actor = Physics->createRigidStatic(BodyPose);
+    }
+    else
+    {
+        PxRigidDynamic* DynamicActor = Physics->createRigidDynamic(BodyPose);
+        if (DynamicActor)
+        {
+            DynamicActor->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
+            DynamicActor->setLinearDamping((std::max)(0.0f, BodyDesc.LinearDamping));
+            DynamicActor->setAngularDamping((std::max)(0.0f, BodyDesc.AngularDamping));
+            DynamicActor->setRigidBodyFlag(
+                PxRigidBodyFlag::eKINEMATIC,
+                BodyDesc.BodyType == EPhysicsBodyType::PBT_Kinematic);
+            PxRigidBodyExt::setMassAndUpdateInertia(*DynamicActor, (std::max)(0.001f, BodyDesc.Mass));
+        }
+        Actor = DynamicActor;
+    }
+
+    if (!Actor)
+    {
+        return nullptr;
+    }
+
+    int32 AttachedShapeCount = 0;
+    for (const FPhysicsShapeDesc& ShapeDesc : BodyDesc.Shapes)
+    {
+        PxShape* Shape = CreateShapeFromDesc(Physics, DefaultMaterial, ShapeDesc, OwnerComponent);
+        if (!Shape)
+        {
+            continue;
+        }
+
+        Actor->attachShape(*Shape);
+        ++AttachedShapeCount;
+        Shape->release();
+    }
+
+    if (AttachedShapeCount == 0)
+    {
+        Actor->release();
+        return nullptr;
+    }
+
+    Actor->userData = OwnerComponent ? OwnerComponent->GetOwner() : nullptr;
+    {
+        SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+        Scene->addActor(*Actor);
+    }
+
+    if (bSyncOwnerTransform && OwnerComponent)
+    {
+        OwnerComponent->SetWorldLocation(WorldTransform.Location);
+        OwnerComponent->SetRelativeRotation(WorldTransform.Rotation);
+    }
+
+    FPhysicsBodyInstance* Instance = new FPhysicsBodyInstance();
+    Instance->SetOwnerComponent(OwnerComponent);
+    Instance->SetBodyDesc(BodyDesc);
+
+    FPhysicsActorHandle Handle;
+    Handle.NativeActor = static_cast<void*>(Actor);
+    Instance->SetActorHandle(Handle);
+    Instance->SetActorState(EPhysicsActorState::PAS_Added);
+
+    StandaloneBodyInstances.push_back(Instance);
+    RegisterBodyInstance(Instance);
+    GetMutableRuntimeStats().BodyCount =
+        static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
+    return Instance;
+}
+
 // runtime body instance와 연결된 PhysX actor를 scene에서 제거하고 해제한다.
 void FPhysXPhysicsScene::DestroyBody(FPhysicsBodyInstance* BodyInstance)
 {
     if (!BodyInstance) return;
     WaitForSimulation();
+
+    auto StandaloneIt = std::find(
+        StandaloneBodyInstances.begin(),
+        StandaloneBodyInstances.end(),
+        BodyInstance);
+    if (StandaloneIt != StandaloneBodyInstances.end())
+    {
+        if (Scene)
+        {
+            SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+            if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
+            {
+                Scene->removeActor(*Actor);
+                Actor->release();
+            }
+        }
+
+        StandaloneBodyInstances.erase(StandaloneIt);
+        UnregisterBodyInstance(BodyInstance);
+        BodyInstance->SetActorState(EPhysicsActorState::PAS_Destroyed);
+        BodyInstance->GetMutableActorHandle().Reset();
+        delete BodyInstance;
+
+        GetMutableRuntimeStats().BodyCount =
+            static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
+        return;
+    }
+
     UPrimitiveComponent* Comp = BodyInstance->GetOwnerComponent();
     if (!Comp) return;
 
@@ -406,20 +651,188 @@ void FPhysXPhysicsScene::DestroyBody(FPhysicsBodyInstance* BodyInstance)
     BodyInstance->GetMutableActorHandle().Reset();
     delete BodyInstance;
 
-    GetMutableRuntimeStats().BodyCount = static_cast<int32>(BodyInstances.size());
+    GetMutableRuntimeStats().BodyCount =
+        static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
+}
+
+bool FPhysXPhysicsScene::GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const
+{
+    if (!Scene || !BodyInstance || !BodyInstance->IsValidBodyInstance())
+    {
+        return false;
+    }
+
+    PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+    if (!Actor)
+    {
+        return false;
+    }
+
+    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+    OutTransform = ToFTransform(Actor->getGlobalPose());
+    return true;
+}
+
+void FPhysXPhysicsScene::SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform)
+{
+    if (!Scene || !BodyInstance || !BodyInstance->IsValidBodyInstance())
+    {
+        return;
+    }
+
+    PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+    if (!Actor)
+    {
+        return;
+    }
+
+    WaitForSimulation();
+    SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+    const PxTransform NewPose = ToPxTransform(WorldTransform);
+    if (PxRigidDynamic* DynamicActor = Actor->is<PxRigidDynamic>())
+    {
+        if (DynamicActor->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC)
+        {
+            DynamicActor->setKinematicTarget(NewPose);
+        }
+        else
+        {
+            DynamicActor->setGlobalPose(NewPose);
+        }
+    }
+    else
+    {
+        Actor->setGlobalPose(NewPose);
+    }
 }
 
 FPhysicsConstraintInstance* FPhysXPhysicsScene::CreateConstraint(
-    FPhysicsBodyInstance* /*ParentBody*/,
-    FPhysicsBodyInstance* /*ChildBody*/,
-    const FPhysicsConstraintDesc& /*ConstraintDesc*/)
+    FPhysicsBodyInstance* ParentBody,
+    FPhysicsBodyInstance* ChildBody,
+    const FPhysicsConstraintDesc& ConstraintDesc)
 {
-    return nullptr; // 향후 PxJoint 구현 예정
+    if (!Scene || !Physics || !ParentBody || !ChildBody ||
+        !ParentBody->IsValidBodyInstance() || !ChildBody->IsValidBodyInstance())
+    {
+        return nullptr;
+    }
+
+    PxRigidActor* ParentActor = static_cast<PxRigidActor*>(ParentBody->GetActorHandle().NativeActor);
+    PxRigidActor* ChildActor  = static_cast<PxRigidActor*>(ChildBody->GetActorHandle().NativeActor);
+    if (!ParentActor || !ChildActor)
+    {
+        return nullptr;
+    }
+
+    WaitForSimulation();
+
+    PxJoint* Joint = nullptr;
+    const PxTransform ParentLocalFrame = ToPxTransform(ConstraintDesc.ParentLocalFrame);
+    const PxTransform ChildLocalFrame  = ToPxTransform(ConstraintDesc.ChildLocalFrame);
+
+    if (ConstraintDesc.JointType == EPhysicsJointType::PJT_Fixed)
+    {
+        Joint = PxFixedJointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
+    }
+    else
+    {
+        PxD6Joint* D6Joint = PxD6JointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
+        if (D6Joint)
+        {
+            D6Joint->setMotion(PxD6Axis::eX,      ToPxD6Motion(ConstraintDesc.XMotion));
+            D6Joint->setMotion(PxD6Axis::eY,      ToPxD6Motion(ConstraintDesc.YMotion));
+            D6Joint->setMotion(PxD6Axis::eZ,      ToPxD6Motion(ConstraintDesc.ZMotion));
+            D6Joint->setMotion(PxD6Axis::eSWING1, ToPxD6Motion(ConstraintDesc.Swing1Motion));
+            D6Joint->setMotion(PxD6Axis::eSWING2, ToPxD6Motion(ConstraintDesc.Swing2Motion));
+            D6Joint->setMotion(PxD6Axis::eTWIST,  ToPxD6Motion(ConstraintDesc.TwistMotion));
+
+            if (ConstraintDesc.XMotion == EPhysicsConstraintMotionMode::Limited ||
+                ConstraintDesc.YMotion == EPhysicsConstraintMotionMode::Limited ||
+                ConstraintDesc.ZMotion == EPhysicsConstraintMotionMode::Limited)
+            {
+                PxJointLinearLimit LinearLimit(Physics->getTolerancesScale(), (std::max)(0.01f, ConstraintDesc.LinearLimit));
+                LinearLimit.stiffness = ConstraintDesc.Stiffness;
+                LinearLimit.damping   = ConstraintDesc.Damping;
+                D6Joint->setLinearLimit(LinearLimit);
+            }
+
+            if (ConstraintDesc.Swing1Motion == EPhysicsConstraintMotionMode::Limited ||
+                ConstraintDesc.Swing2Motion == EPhysicsConstraintMotionMode::Limited)
+            {
+                PxJointLimitCone SwingLimit(
+                    (std::max)(0.001f, ToRadians(ConstraintDesc.SwingLimitY)),
+                    (std::max)(0.001f, ToRadians(ConstraintDesc.SwingLimitZ)));
+                SwingLimit.stiffness = ConstraintDesc.Stiffness;
+                SwingLimit.damping   = ConstraintDesc.Damping;
+                D6Joint->setSwingLimit(SwingLimit);
+            }
+
+            if (ConstraintDesc.TwistMotion == EPhysicsConstraintMotionMode::Limited)
+            {
+                float TwistMin = ToRadians(ConstraintDesc.TwistLimitMin);
+                float TwistMax = ToRadians(ConstraintDesc.TwistLimitMax);
+                if (TwistMin > TwistMax)
+                {
+                    std::swap(TwistMin, TwistMax);
+                }
+                PxJointAngularLimitPair TwistLimit(TwistMin, TwistMax);
+                TwistLimit.stiffness = ConstraintDesc.Stiffness;
+                TwistLimit.damping   = ConstraintDesc.Damping;
+                D6Joint->setTwistLimit(TwistLimit);
+            }
+        }
+        Joint = D6Joint;
+    }
+
+    if (!Joint)
+    {
+        return nullptr;
+    }
+
+    Joint->setConstraintFlag(PxConstraintFlag::eCOLLISION_ENABLED, !ConstraintDesc.bDisableCollision);
+
+    FPhysicsConstraintInstance* Instance = new FPhysicsConstraintInstance();
+    Instance->SetParentBody(ParentBody);
+    Instance->SetChildBody(ChildBody);
+    Instance->SetConstraintDesc(ConstraintDesc);
+
+    FPhysicsJointHandle Handle;
+    Handle.NativeJoint = static_cast<void*>(Joint);
+    Instance->SetJointHandle(Handle);
+
+    StandaloneConstraintInstances.push_back(Instance);
+    RegisterConstraintInstance(Instance);
+    GetMutableRuntimeStats().ConstraintCount = static_cast<int32>(StandaloneConstraintInstances.size());
+    return Instance;
 }
 
-void FPhysXPhysicsScene::DestroyConstraint(FPhysicsConstraintInstance* /*ConstraintInstance*/)
+void FPhysXPhysicsScene::DestroyConstraint(FPhysicsConstraintInstance* ConstraintInstance)
 {
-    // noop
+    if (!ConstraintInstance)
+    {
+        return;
+    }
+
+    WaitForSimulation();
+    auto It = std::find(
+        StandaloneConstraintInstances.begin(),
+        StandaloneConstraintInstances.end(),
+        ConstraintInstance);
+
+    if (PxJoint* Joint = static_cast<PxJoint*>(ConstraintInstance->GetJointHandle().NativeJoint))
+    {
+        Joint->release();
+    }
+
+    if (It != StandaloneConstraintInstances.end())
+    {
+        StandaloneConstraintInstances.erase(It);
+    }
+    UnregisterConstraintInstance(ConstraintInstance);
+    ConstraintInstance->GetMutableJointHandle().Reset();
+    delete ConstraintInstance;
+
+    GetMutableRuntimeStats().ConstraintCount = static_cast<int32>(StandaloneConstraintInstances.size());
 }
 
 // ============================================================

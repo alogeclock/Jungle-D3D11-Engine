@@ -149,6 +149,9 @@ public:
 
 	void SetSimulatePhysics(bool bInSimulate);
 	bool GetSimulatePhysics() const { return bSimulatePhysics; }
+	virtual bool NeedsPhysicsInterpolation() const;
+	virtual void OnPrePhysicsSync();
+	virtual void OnPostPhysicsSync();
 
 	// --- Physics Force/Velocity API ---
 	void AddForce(const FVector& Force);

@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/CollisionTypes.h"
+#include "Math/Transform.h"
 #include "Math/Vector.h"
 #include "PhysicsEventCallback.h"
 
@@ -41,7 +42,10 @@ public:
     virtual FPhysicsBodyInstance* CreateBody(
         UPrimitiveComponent* OwnerComponent,
         const FPhysicsBodyDesc& BodyDesc) = 0;
+    virtual FPhysicsBodyInstance* CreateBodyAtTransform(UPrimitiveComponent* OwnerComponent, const FPhysicsBodyDesc& BodyDesc, const FTransform& WorldTransform, bool bSyncOwnerTransform = false) = 0;
     virtual void DestroyBody(FPhysicsBodyInstance* BodyInstance) = 0;
+    virtual bool GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const = 0;
+    virtual void SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform) = 0;
 
     virtual FPhysicsConstraintInstance* CreateConstraint(
         FPhysicsBodyInstance* ParentBody,

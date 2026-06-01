@@ -59,6 +59,7 @@ public:
 	void SetBoneScaleByIndex(int32 BoneIndex, const FVector& NewScale);
 	void SetBoneLocalTransformByIndex(int32 BoneIndex, const FTransform& NewLocalTransform);
 	void SetBoneLocalTransformByArray(const TArray<FMatrix>& NewLocalMatrices);
+	void ApplyPhysicsBoneLocalMatrices(const TArray<FMatrix>& NewLocalMatrices);
 
 	void GetCurrentBoneGlobalTransforms(TArray<FTransform>& OutGlobals) const;
 	void GetCurrentBoneGlobalMatrices(TArray<FMatrix>& OutGlobals) const;

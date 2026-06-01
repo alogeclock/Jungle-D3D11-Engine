@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Physics/Runtime/PhysicsScene.h"
 #include "Core/CoreTypes.h"
@@ -36,7 +36,14 @@ public:
     void ReleaseScene() override;
 
     FPhysicsBodyInstance* CreateBody(UPrimitiveComponent* OwnerComponent, const FPhysicsBodyDesc& BodyDesc) override;
+    FPhysicsBodyInstance* CreateBodyAtTransform(
+        UPrimitiveComponent* OwnerComponent,
+        const FPhysicsBodyDesc& BodyDesc,
+        const FTransform& WorldTransform,
+        bool bSyncOwnerTransform = false) override;
     void DestroyBody(FPhysicsBodyInstance* BodyInstance) override;
+    bool GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const override;
+    void SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform) override;
 
     FPhysicsConstraintInstance* CreateConstraint(
         FPhysicsBodyInstance* ParentBody,
@@ -96,6 +103,8 @@ private:
     };
     std::vector<FBodyMapping> BodyMappings;
     std::unordered_map<UPrimitiveComponent*, FPhysicsBodyInstance*> BodyInstances;
+    std::vector<FPhysicsBodyInstance*> StandaloneBodyInstances;
+    std::vector<FPhysicsConstraintInstance*> StandaloneConstraintInstances;
 
     FBodyMapping* FindMappingByActor(AActor* OwnerActor);
     const FBodyMapping* FindMappingByActor(AActor* OwnerActor) const;
