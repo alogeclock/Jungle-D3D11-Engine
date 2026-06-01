@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PhysicsTypes.h"
+#include "Serialization/Archive.h"
 
 /** Collision 사용 방식 */
 enum class EPhysicsCollisionEnabled : uint8
@@ -38,6 +39,23 @@ struct FPhysicsCollisionResponsePair
     EPhysicsCollisionResponse Response = EPhysicsCollisionResponse::PCR_Block;
 };
 
+inline FArchive& operator<<(FArchive& Ar, FPhysicsCollisionResponsePair& Pair)
+{
+    uint8 Channel = static_cast<uint8>(Pair.Channel);
+    uint8 Response = static_cast<uint8>(Pair.Response);
+
+    Ar << Channel;
+    Ar << Response;
+
+    if (Ar.IsLoading())
+    {
+        Pair.Channel = static_cast<EPhysicsCollisionChannel>(Channel);
+        Pair.Response = static_cast<EPhysicsCollisionResponse>(Response);
+    }
+
+    return Ar;
+}
+
 /** Body / Shape 공용 Collision 설정 */
 struct FPhysicsCollisionDesc
 {
@@ -46,3 +64,21 @@ struct FPhysicsCollisionDesc
 
     TArray<FPhysicsCollisionResponsePair> Responses;
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsCollisionDesc& Desc)
+{
+    uint8 CollisionEnabled = static_cast<uint8>(Desc.CollisionEnabled);
+    uint8 ObjectChannel = static_cast<uint8>(Desc.ObjectChannel);
+
+    Ar << CollisionEnabled;
+    Ar << ObjectChannel;
+    Ar << Desc.Responses;
+
+    if (Ar.IsLoading())
+    {
+        Desc.CollisionEnabled = static_cast<EPhysicsCollisionEnabled>(CollisionEnabled);
+        Desc.ObjectChannel = static_cast<EPhysicsCollisionChannel>(ObjectChannel);
+    }
+
+    return Ar;
+}

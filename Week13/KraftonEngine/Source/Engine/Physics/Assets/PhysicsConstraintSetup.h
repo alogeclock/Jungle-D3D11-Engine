@@ -2,6 +2,7 @@
 
 #include "Object/FName.h"
 #include "Physics/Common/PhysicsDescTypes.h"
+#include "Serialization/Archive.h"
 
 /**
  * @file PhysicsConstraintSetup.h
@@ -48,3 +49,37 @@ struct FPhysicsConstraintSetup
         return Desc;
     }
 };
+
+inline FArchive& operator<<(FArchive& Ar, FPhysicsConstraintSetup& ConstraintSetup)
+{
+    Ar << ConstraintSetup.ConstraintName;
+    Ar << ConstraintSetup.ParentBoneName;
+    Ar << ConstraintSetup.ChildBoneName;
+
+    uint8 JointType = static_cast<uint8>(ConstraintSetup.JointType);
+    Ar << JointType;
+
+    Ar << ConstraintSetup.ParentLocalFrame.Location;
+    Ar << ConstraintSetup.ParentLocalFrame.Rotation;
+    Ar << ConstraintSetup.ParentLocalFrame.Scale;
+    Ar << ConstraintSetup.ChildLocalFrame.Location;
+    Ar << ConstraintSetup.ChildLocalFrame.Rotation;
+    Ar << ConstraintSetup.ChildLocalFrame.Scale;
+
+    Ar << ConstraintSetup.LinearLimit;
+    Ar << ConstraintSetup.AngularLimit;
+    Ar << ConstraintSetup.TwistLimitMin;
+    Ar << ConstraintSetup.TwistLimitMax;
+    Ar << ConstraintSetup.SwingLimitY;
+    Ar << ConstraintSetup.SwingLimitZ;
+    Ar << ConstraintSetup.bDisableCollision;
+    Ar << ConstraintSetup.Stiffness;
+    Ar << ConstraintSetup.Damping;
+
+    if (Ar.IsLoading())
+    {
+        ConstraintSetup.JointType = static_cast<EPhysicsJointType>(JointType);
+    }
+
+    return Ar;
+}
