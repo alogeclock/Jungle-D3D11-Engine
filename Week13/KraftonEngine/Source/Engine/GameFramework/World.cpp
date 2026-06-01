@@ -42,16 +42,16 @@ namespace
 
 	// 월드의 모든 PrimitiveComponent 중 SimulatePhysics가 활성화된 컴포넌트에만 콜백을 적용하는 유틸리티 함수
 	template<typename Func>
-    void ForEachSimulatingPrimitive(UWorld* World, Func&& Callback)
-    {
-        ForEachPrimitive(World, [&Callback](UPrimitiveComponent* Primitive)
-        {
-            if (Primitive->GetSimulatePhysics())
-            {
-                Callback(Primitive);
-            }
-        });
-    }
+	void ForEachSimulatingPrimitive(UWorld* World, Func&& Callback)
+	{
+		ForEachPrimitive(World, [&Callback](UPrimitiveComponent* Primitive)
+		{
+			if (Primitive->GetSimulatePhysics())
+			{
+				Callback(Primitive);
+			}
+		});
+	}
 }
 
 UWorld::~UWorld()
@@ -436,7 +436,7 @@ void UWorld::BeginPlay()
 // 이에 따라 렌더링 프레임의 보간을 위한 Physics Scene Snapshot이 필요하다.
 void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 {
-    // Tick 시작 시점의 Primitive Transform을 보간 이전 상태로 초기화
+	// Tick 시작 시점의 Primitive Transform을 보간 이전 상태로 초기화
 	RestorePhysicsInterpolation();
 
 	{
@@ -658,17 +658,17 @@ void UWorld::EndPlay()
 		return;
 	}
 
+	// Partition dirty queue는 Actor raw pointer를 들고 있으므로 Actor 파괴 전에 비운다.
+	// Simulate Physics 컴포넌트는 매 프레임 transform dirty로 queue에 들어갈 수 있다.
+	Partition.Reset(FBoundingBox());
+
 	PersistentLevel->EndPlay();
 
-	// 물리 시스템 정리 — 액터/컴포넌트가 아직 살아있는 동안 해제
+	// Component EndPlay가 각 body를 제거한 뒤 남은 PhysX scene 리소스를 정리한다.
 	if (PhysicsScene)
 	{
 		PhysicsScene->ReleaseScene();
 	}
-
-	// Clear spatial partition while actors/components are still alive.
-	// Otherwise Octree teardown can dereference stale primitive pointers during shutdown.
-	Partition.Reset(FBoundingBox());
 
 	PersistentLevel->Clear();
 	GameMode = nullptr; // 액터 리스트가 비워지면서 dangling 되므로 명시적으로 해제

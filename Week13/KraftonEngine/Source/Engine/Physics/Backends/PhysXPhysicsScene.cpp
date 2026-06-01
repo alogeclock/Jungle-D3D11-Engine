@@ -6,6 +6,7 @@
 #include "Component/SphereComponent.h"
 #include "Component/CapsuleComponent.h"
 #include "Component/ShapeComponent.h"
+#include "Component/StaticMeshComponent.h"
 #include "GameFramework/World.h"
 #include "GameFramework/AActor.h"
 #include "Math/Quat.h"
@@ -491,7 +492,7 @@ void FPhysXPhysicsScene::ReleaseScene()
 // component 기반 actor 매핑을 재사용하거나 생성해서 runtime body instance를 만든다.
 FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBody(UPrimitiveComponent* Comp, const FPhysicsBodyDesc& BodyDesc)
 {
-    if (!Comp) return nullptr;
+    if (!Comp || !Comp->CanCreatePhysicsBody()) return nullptr;
     WaitForSimulation();
 
     // 이미 등록된 경우 기존 인스턴스 반환
@@ -500,19 +501,21 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBody(UPrimitiveComponent* Comp, 
 
     RegisterComponentInternal(Comp);
 
+    FBodyMapping* Mapping = FindMappingByComponent(Comp);
+    if (!Mapping || !Mapping->Actor)
+    {
+        return nullptr;
+    }
+
     FPhysicsBodyInstance* Instance = new FPhysicsBodyInstance();
     Instance->SetOwnerComponent(Comp);
     Instance->SetBodyDesc(BodyDesc);
 
     // 매핑에서 PxRigidActor 핸들 연결
-    FBodyMapping* Mapping = FindMappingByComponent(Comp);
-    if (Mapping && Mapping->Actor)
-    {
-        FPhysicsActorHandle Handle;
-        Handle.NativeActor = static_cast<void*>(Mapping->Actor);
-        Instance->SetActorHandle(Handle);
-        Instance->SetActorState(EPhysicsActorState::PAS_Added);
-    }
+    FPhysicsActorHandle Handle;
+    Handle.NativeActor = static_cast<void*>(Mapping->Actor);
+    Instance->SetActorHandle(Handle);
+    Instance->SetActorState(EPhysicsActorState::PAS_Added);
 
     BodyInstances[Comp] = Instance;
     RegisterBodyInstance(Instance);
@@ -544,6 +547,9 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
         PxRigidDynamic* DynamicActor = Physics->createRigidDynamic(BodyPose);
         if (DynamicActor)
         {
+            DynamicActor->setActorFlag(
+                PxActorFlag::eDISABLE_GRAVITY,
+                OwnerComponent && !OwnerComponent->GetEnableGravity());
             DynamicActor->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
             DynamicActor->setLinearDamping((std::max)(0.0f, BodyDesc.LinearDamping));
             DynamicActor->setAngularDamping((std::max)(0.0f, BodyDesc.AngularDamping));
@@ -843,6 +849,7 @@ void FPhysXPhysicsScene::DestroyConstraint(FPhysicsConstraintInstance* Constrain
 void FPhysXPhysicsScene::RegisterComponentInternal(UPrimitiveComponent* Comp)
 {
     if (!Comp || !Scene || !Physics || !DefaultMaterial) return;
+    if (!Comp->CanCreatePhysicsBody()) return;
     if (FindMappingByComponent(Comp)) return;
     WaitForSimulation();
 
@@ -868,6 +875,7 @@ void FPhysXPhysicsScene::RegisterComponentInternal(UPrimitiveComponent* Comp)
 
         if (PxRigidDynamic* DynamicBody = Body->is<PxRigidDynamic>())
         {
+            DynamicBody->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !RootPrim->GetEnableGravity());
             DynamicBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
         }
 
@@ -889,7 +897,20 @@ void FPhysXPhysicsScene::RegisterComponentInternal(UPrimitiveComponent* Comp)
     {
         SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
         PxShape* Shape = AddShapeForComponent(*Mapping, Comp);
-        if (!Shape) return;
+        if (!Shape)
+        {
+            if (Mapping->Components.empty())
+            {
+                if (Mapping->Actor)
+                {
+                    Scene->removeActor(*Mapping->Actor);
+                    Mapping->Actor->release();
+                }
+                *Mapping = BodyMappings.back();
+                BodyMappings.pop_back();
+            }
+            return;
+        }
         Mapping->Components.push_back(Comp);
 
         if (PxRigidDynamic* Dyn = Mapping->Actor->is<PxRigidDynamic>())
@@ -1152,6 +1173,7 @@ PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimit
     PxGeometryHolder Geom;
     bool bHasGeom = false;
     PxQuat ShapeAxisRot = PxQuat(PxIdentity);
+    FVector ShapeLocalOffset = FVector::ZeroVector;
 
     if (auto* Box = Cast<UBoxComponent>(Comp))
     {
@@ -1172,6 +1194,24 @@ PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimit
         ShapeAxisRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
         bHasGeom = true;
     }
+    else if (auto* StaticMesh = Cast<UStaticMeshComponent>(Comp))
+    {
+        FVector LocalCenter;
+        FVector LocalExtent;
+        if (StaticMesh->GetLocalBounds(LocalCenter, LocalExtent))
+        {
+            const FVector Scale = StaticMesh->GetWorldScale();
+            Geom = PxBoxGeometry(
+                (std::max)(0.01f, std::abs(LocalExtent.X * Scale.X)),
+                (std::max)(0.01f, std::abs(LocalExtent.Y * Scale.Y)),
+                (std::max)(0.01f, std::abs(LocalExtent.Z * Scale.Z)));
+            ShapeLocalOffset = FVector(
+                LocalCenter.X * Scale.X,
+                LocalCenter.Y * Scale.Y,
+                LocalCenter.Z * Scale.Z);
+            bHasGeom = true;
+        }
+    }
     if (!bHasGeom) return nullptr;
 
     PxShape* Shape = PxRigidActorExt::createExclusiveShape(*Mapping.Actor, Geom.any(), *DefaultMaterial);
@@ -1189,6 +1229,10 @@ PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimit
         FVector LocalPos = InvRootRot.RotateVector(CompPos - RootPos);
         FQuat   LocalRot = InvRootRot * CompRot;
         LocalPose = PxTransform(ToPxVec3(LocalPos), ToPxQuat(LocalRot));
+    }
+    if (!ShapeLocalOffset.IsNearlyZero())
+    {
+        LocalPose.p += LocalPose.q.rotate(ToPxVec3(ShapeLocalOffset));
     }
     LocalPose.q = LocalPose.q * ShapeAxisRot;
     Shape->setLocalPose(LocalPose);

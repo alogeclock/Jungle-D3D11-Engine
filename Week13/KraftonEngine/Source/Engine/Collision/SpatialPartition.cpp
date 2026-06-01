@@ -49,7 +49,7 @@ void FSpatialPartition::ClearQueuedActorFlags()
 {
 	for (AActor* Actor : DirtyActors)
 	{
-		if (Actor)
+		if (IsValid(Actor))
 		{
 			Actor->SetQueuedForPartitionUpdate(false);
 		}
@@ -272,7 +272,7 @@ void FSpatialPartition::Reset(const FBoundingBox& RootBounds)
 		Octree->GetAllPrimitives(ExistingPrimitives);
 		for (UPrimitiveComponent* Prim : ExistingPrimitives)
 		{
-			if (Prim)
+			if (IsValid(Prim))
 			{
 				Prim->ClearOctreeLocation();
 			}
@@ -281,7 +281,7 @@ void FSpatialPartition::Reset(const FBoundingBox& RootBounds)
 
 	for (UPrimitiveComponent* Prim : OverflowPrimitives)
 	{
-		if (Prim)
+		if (IsValid(Prim))
 		{
 			Prim->ClearOctreeLocation();
 		}

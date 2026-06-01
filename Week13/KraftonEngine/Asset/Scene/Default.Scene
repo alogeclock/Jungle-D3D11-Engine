@@ -1146,7 +1146,7 @@
               "Cast Shadow" : false,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
-              "Collision Enabled" : 1,
+              "Collision Enabled" : 3,
               "Draw Only If Selected" : false,
               "Generate Overlap Events" : false,
               "Is Visible" : true,
@@ -1182,7 +1182,7 @@
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
-          "Collision Enabled" : 1,
+          "Collision Enabled" : 3,
           "Generate Overlap Events" : false,
           "Is Visible" : true,
           "Mass (Kg)" : 1.000000,
@@ -1898,8 +1898,8 @@
         }
       }
     }, {
-      "ClassName" : "ASkeletalMeshActor",
-      "Name" : "ASkeletalMeshActor_0",
+      "ClassName" : "ABoxActor",
+      "Name" : "ABoxActor_0",
       "NonSceneComponents" : [],
       "Properties" : {
         "Tags" : [],
@@ -1909,22 +1909,22 @@
       "RootComponent" : {
         "Children" : [{
             "Children" : [],
-            "ClassName" : "UCapsuleComponent",
+            "ClassName" : "UStaticMeshComponent",
             "Properties" : {
               "Auto Activate" : true,
-              "Capsule Half Height" : 1.000000,
-              "Capsule Radius" : 0.500000,
-              "Cast Shadow" : false,
+              "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
               "Collision Enabled" : 3,
-              "Draw Only If Selected" : false,
               "Generate Overlap Events" : false,
               "Is Visible" : true,
               "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                }],
               "Object Type" : 0,
               "RelativeTransform" : {
-                "Location" : [0.000000, 0.000000, 0.939618],
+                "Location" : [0.000000, 0.000000, 0.000000],
                 "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
@@ -1939,37 +1939,30 @@
                 "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
-              "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
               "Simulate Physics" : true,
+              "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
               "bEditorOnly" : false,
               "bHiddenInComponentTree" : false,
               "bIsActive" : true,
               "bTickEnable" : true
             }
           }],
-        "ClassName" : "USkeletalMeshComponent",
+        "ClassName" : "UBoxComponent",
         "Properties" : {
-          "Anim Instance" : "",
-          "Anim Script Path" : "",
           "Auto Activate" : true,
-          "Cast Shadow" : true,
+          "Box Extent" : [1.000000, 1.000000, 1.000000],
+          "Cast Shadow" : false,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
           "Collision Enabled" : 3,
-          "Enable Two Bone IK" : true,
+          "Draw Only If Selected" : false,
           "Generate Overlap Events" : false,
           "Is Visible" : true,
           "Mass (Kg)" : 1.000000,
-          "Materials" : [{
-              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_01_New.mat"
-            }, {
-              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
-            }],
-          "Object Type" : 3,
-          "Physics Asset" : "Asset/ParticleSystems/SKM_Manny_Simple_SkeletalMesh_PhysicsAsset.uasset",
+          "Object Type" : 1,
           "RelativeTransform" : {
-            "Location" : [31.016478, 18.691790, 7.606903],
-            "Scale" : [5.000000, 5.000000, 5.000000]
+            "Location" : [15.542212, 17.631454, 3.810273],
+            "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
             "Camera" : 2,
@@ -1983,9 +1976,8 @@
             "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
           "Simulate Physics" : true,
-          "Skeletal Mesh" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset",
-          "Two Bone IK Chains" : [],
           "bEditorOnly" : false,
           "bHiddenInComponentTree" : false,
           "bIsActive" : true,
@@ -1993,8 +1985,8 @@
         }
       }
     }, {
-      "ClassName" : "ASkeletalMeshActor",
-      "Name" : "ASkeletalMeshActor_3",
+      "ClassName" : "ABoxActor",
+      "Name" : "ABoxActor_1",
       "NonSceneComponents" : [],
       "Properties" : {
         "Tags" : [],
@@ -2004,22 +1996,23 @@
       "RootComponent" : {
         "Children" : [{
             "Children" : [],
-            "ClassName" : "UBoxComponent",
+            "ClassName" : "UStaticMeshComponent",
             "Properties" : {
               "Auto Activate" : true,
-              "Box Extent" : [1.000000, 1.000000, 1.000000],
-              "Cast Shadow" : false,
+              "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
               "Collision Enabled" : 3,
-              "Draw Only If Selected" : false,
               "Generate Overlap Events" : false,
               "Is Visible" : true,
               "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                }],
               "Object Type" : 0,
               "RelativeTransform" : {
-                "Location" : [0.000000, 0.000000, 1.131355],
-                "Scale" : [0.292038, 0.251936, 1.000000]
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
               },
               "Response Container" : {
                 "Camera" : 2,
@@ -2033,37 +2026,30 @@
                 "WorldStatic" : 2
               },
               "Rotation" : [0.000000, 0.000000, 0.000000],
-              "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
               "Simulate Physics" : true,
+              "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
               "bEditorOnly" : false,
               "bHiddenInComponentTree" : false,
               "bIsActive" : true,
               "bTickEnable" : true
             }
           }],
-        "ClassName" : "USkeletalMeshComponent",
+        "ClassName" : "UBoxComponent",
         "Properties" : {
-          "Anim Instance" : "None",
-          "Anim Script Path" : "",
           "Auto Activate" : true,
-          "Cast Shadow" : true,
+          "Box Extent" : [1.000000, 1.000000, 1.000000],
+          "Cast Shadow" : false,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
           "Collision Enabled" : 3,
-          "Enable Two Bone IK" : true,
+          "Draw Only If Selected" : false,
           "Generate Overlap Events" : false,
           "Is Visible" : true,
           "Mass (Kg)" : 1.000000,
-          "Materials" : [{
-              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_01_New.mat"
-            }, {
-              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
-            }],
-          "Object Type" : 3,
-          "Physics Asset" : "Asset/ParticleSystems/SKM_Manny_Simple_SkeletalMesh_PhysicsAsset.uasset",
+          "Object Type" : 1,
           "RelativeTransform" : {
-            "Location" : [31.116478, 28.831747, 7.706903],
-            "Scale" : [5.000000, 5.000000, 5.000000]
+            "Location" : [14.096005, 18.879143, 3.910273],
+            "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
             "Camera" : 2,
@@ -2077,9 +2063,102 @@
             "WorldStatic" : 2
           },
           "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
           "Simulate Physics" : true,
-          "Skeletal Mesh" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset",
-          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ABoxActor",
+      "Name" : "ABoxActor_14",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "USkeletalMeshComponent",
+            "Properties" : {
+              "Anim Instance" : "",
+              "Anim Script Path" : "",
+              "Auto Activate" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Two Bone IK" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_01_New.mat"
+                }, {
+                  "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
+                }],
+              "Object Type" : 0,
+              "Physics Asset" : "",
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, -3.028949],
+                "Scale" : [3.000000, 3.000000, 3.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "Skeletal Mesh" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset",
+              "Two Bone IK Chains" : [],
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UBoxComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Box Extent" : [1.000000, 1.000000, 3.000000],
+          "Cast Shadow" : false,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Draw Only If Selected" : false,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 1,
+          "RelativeTransform" : {
+            "Location" : [16.912548, 18.901394, 8.293885],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
+          "Simulate Physics" : true,
           "bEditorOnly" : false,
           "bHiddenInComponentTree" : false,
           "bIsActive" : true,
@@ -2094,9 +2173,9 @@
   "PerspectiveCamera" : {
     "FOV" : 1.047198,
     "FarClip" : 1000.000000,
-    "Location" : [8.680638, 19.941818, 19.826509],
+    "Location" : [-3.174919, 14.902433, 15.854747],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 17.472504, -711.885315]
+    "Rotation" : [0.000000, 24.972466, -737.680664]
   },
   "Version" : 2,
   "WorldSettings" : {

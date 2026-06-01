@@ -57,7 +57,7 @@ void UPrimitiveComponent::BeginPlay()
 	// 직렬화나 InitDefaultComponents에서 CollisionEnabled가 이미 설정된 경우 등록.
 	// 이 시점에 SimulatePhysics/ObjectType/Response/Mass/COM 등 모든 셋업이 끝나있어
 	// PhysX/Native가 정확한 값으로 body를 생성한다.
-	if (IsCollisionEnabled())
+	if (IsCollisionEnabled() && CanCreatePhysicsBody())
 	{
 		if (Owner)
 		{
@@ -124,6 +124,13 @@ void UPrimitiveComponent::SetSimulatePhysics(bool bInSimulate)
 {
 	if (bSimulatePhysics == bInSimulate) return;
 	bSimulatePhysics = bInSimulate;
+	NotifyPhysicsBodyDirty();
+}
+
+void UPrimitiveComponent::SetEnableGravity(bool bInEnableGravity)
+{
+	if (bEnableGravity == bInEnableGravity) return;
+	bEnableGravity = bInEnableGravity;
 	NotifyPhysicsBodyDirty();
 }
 
@@ -232,7 +239,7 @@ void UPrimitiveComponent::PostEditProperty(const char* PropertyName)
 			{
 				if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 				{
-					if (IsCollisionEnabled())
+					if (IsCollisionEnabled() && CanCreatePhysicsBody())
 					{
 						PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
 					}
@@ -253,6 +260,10 @@ void UPrimitiveComponent::PostEditProperty(const char* PropertyName)
 	else if (strcmp(PropertyName, FName::NameToDisplayString("Center of Mass", false).c_str()) == 0)
 	{
 		SetCenterOfMass(CenterOfMassOffset);
+	}
+	else if (strcmp(PropertyName, FName::NameToDisplayString("Enable Gravity", false).c_str()) == 0)
+	{
+		NotifyPhysicsBodyDirty();
 	}
 }
 
@@ -425,11 +436,12 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
 
+	const bool bCanCreatePhysicsBody = CanCreatePhysicsBody();
 	if (bWasCollisionEnabled != bIsCollisionEnabled)
 	{
 		if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 		{
-			if (bIsCollisionEnabled)
+			if (bIsCollisionEnabled && bCanCreatePhysicsBody)
 				PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
 			else
 			{
@@ -438,7 +450,7 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 			}
 		}
 	}
-	else if (bWasCollisionEnabled && bIsCollisionEnabled)
+	else if (bWasCollisionEnabled && bIsCollisionEnabled && bCanCreatePhysicsBody)
 	{
 		// 이미 등록된 상태에서 enabled 종류 변경 (예: QueryOnly ↔ PhysicsOnly ↔ QueryAndPhysics) — 재구성
 		NotifyPhysicsBodyDirty();

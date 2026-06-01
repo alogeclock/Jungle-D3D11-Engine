@@ -40,6 +40,7 @@ public:
 
 	void PostEditProperty(const char* PropertyName) override;
 	bool LineTraceComponent(const FRay& Ray, FHitResult& OutHitResult) override;
+	bool CanCreatePhysicsBody() const override { return false; }
 
 	const FString& GetSkeletalMeshPath() const { return SkeletalMesh.GetPath().ToString(); }
 

@@ -75,6 +75,18 @@ UStaticMesh* UStaticMeshComponent::GetStaticMesh() const
 	return StaticMesh;
 }
 
+bool UStaticMeshComponent::GetLocalBounds(FVector& OutCenter, FVector& OutExtent) const
+{
+	if (!bHasValidBounds)
+	{
+		return false;
+	}
+
+	OutCenter = CachedLocalCenter;
+	OutExtent = CachedLocalExtent;
+	return true;
+}
+
 void UStaticMeshComponent::SetMaterial(int32 ElementIndex, UMaterial* InMaterial)
 {
 	if (ElementIndex >= 0 && ElementIndex < static_cast<int32>(OverrideMaterials.size()))
