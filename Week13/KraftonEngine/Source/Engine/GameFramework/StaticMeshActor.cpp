@@ -16,7 +16,7 @@ void AStaticMeshActor::BeginPlay()
 	USphereComponent* SphereComp = GetComponentByClass<USphereComponent>();
 	if(SphereComp)
 	{
-		//SphereComp->SetCollisionResponseToChannel(ECollisionChannel::WorldDynamic, ECollisionResponse::Overlap);
+		//SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::Overlap);
 
 		SphereComp->OnComponentBeginOverlap.AddLambda([](UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 		{

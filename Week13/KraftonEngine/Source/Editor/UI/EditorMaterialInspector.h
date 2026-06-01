@@ -1,12 +1,13 @@
 ﻿#pragma once
-#include "imgui.h" 
-#include "Platform/Paths.h"
-#include "Core/CoreTypes.h"
-#include <fstream>
 #include <filesystem>
-#include "SimpleJSON/json.hpp"
-#include <wrl/client.h>
+#include <fstream>
 #include <Engine/Materials/MaterialManager.h>
+#include <wrl/client.h>
+#include "Core/CoreTypes.h"
+#include "ImGui/imgui.h"
+#include "Platform/Paths.h"
+#include "SimpleJSON/json.hpp"
+
 
 struct ID3D11ShaderResourceView;
 

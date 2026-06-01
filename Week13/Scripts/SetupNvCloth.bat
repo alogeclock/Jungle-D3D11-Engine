@@ -149,6 +149,11 @@ if errorlevel 1 (
 exit /b 0
 
 :ResolveCMake
+if exist "%ENGINE_DIR%\Build\Tools\CMake\bin\cmake.exe" (
+    set "CMAKE_EXE=%ENGINE_DIR%\Build\Tools\CMake\bin\cmake.exe"
+    exit /b 0
+)
+
 where /q cmake
 if errorlevel 1 (
     call :Error "cmake.exe was not found. Install CMake 3.5 or newer or add it to PATH."

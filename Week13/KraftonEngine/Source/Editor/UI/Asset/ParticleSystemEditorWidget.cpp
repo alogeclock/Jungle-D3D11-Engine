@@ -31,8 +31,8 @@
 #include "Texture/Texture2D.h"
 #include "UI/Toolbar/ViewportToolbar.h"
 
-#include <imgui.h>
-#include <imgui_internal.h>
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_internal.h"
 
 #include <algorithm>
 #include <cfloat>
@@ -860,7 +860,7 @@ void FParticleSystemEditorWidget::Open(UObject* Object)
 	FloorBoxComponent->AttachToComponent(FloorActor->GetRootComponent());
 	FloorBoxComponent->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
 	FloorBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	FloorBoxComponent->SetCollisionObjectType(ECollisionChannel::WorldStatic);
+	FloorBoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	FloorActor->SetActorLocation(ParticlePreviewFloorLocation);
 	FloorActor->SetActorScale(ParticlePreviewFloorScale);
 

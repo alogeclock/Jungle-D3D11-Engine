@@ -1264,7 +1264,7 @@ void UParticleModuleCollision::Update(
     if (!World)
         return;
 
-    IPhysicsScene* PhysScene = World->GetPhysicsScene();
+    IPhysicsSceneInterface* PhysScene = World->GetPhysicsScene();
     if (!PhysScene)
         return;
 
@@ -1346,10 +1346,10 @@ void UParticleModuleCollision::Update(
             // 파티클 중심점 경로(선)로 검사. MoveDist + Radius로 ray를 살짝 늘려
             // 표면 진입 직전에 감지. 빠르지만 radius 기반 정확도는 낮음.
             const FVector MoveDir = Move / MoveDist;
+            const FVector RayEnd = Particle.Location + MoveDir * (MoveDist + CollisionRadius);
             bGotHit = PhysScene->Raycast(
                 Particle.Location,
-                MoveDir,
-                MoveDist + CollisionRadius,
+                RayEnd,
                 Hit,
                 TraceChannel,
                 OwnerActor);

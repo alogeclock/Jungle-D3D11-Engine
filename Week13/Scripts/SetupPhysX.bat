@@ -86,10 +86,10 @@ if not errorlevel 1 (
     )
 )
 
-call :GenerateProjects
+call :ResolveCMake
 if errorlevel 1 exit /b 1
 
-call :ResolveCMake
+call :GenerateProjects
 if errorlevel 1 exit /b 1
 
 call :BuildConfig Debug
@@ -198,6 +198,13 @@ exit /b 0
 :ResolveCMake
 if exist "%PHYSX_ROOT%\externals\cmake\x64\bin\cmake.exe" (
     set "CMAKE_EXE=%PHYSX_ROOT%\externals\cmake\x64\bin\cmake.exe"
+    set "PM_CMAKE_PATH=%PHYSX_ROOT%\externals\cmake\x64"
+    exit /b 0
+)
+
+if exist "%ENGINE_DIR%\Build\Tools\CMake\bin\cmake.exe" (
+    set "CMAKE_EXE=%ENGINE_DIR%\Build\Tools\CMake\bin\cmake.exe"
+    set "PM_CMAKE_PATH=%ENGINE_DIR%\Build\Tools\CMake"
     exit /b 0
 )
 

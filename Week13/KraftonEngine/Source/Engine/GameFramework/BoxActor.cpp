@@ -7,7 +7,7 @@ void ABoxActor::InitDefaultComponents()
 	SetRootComponent(BoxComponent);
 	BoxComponent->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
 	BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	BoxComponent->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	BoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 }
 
 void ABoxActor::PostDuplicate()

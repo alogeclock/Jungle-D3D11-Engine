@@ -4,7 +4,7 @@
 #include "Core/RayTypes.h"
 #include "Collision/RayUtils.h"
 #include "Collision/SpatialPartition.h"
-#include "Physics/IPhysicsScene.h"
+#include "Physics/Runtime/PhysicsSceneInterface.h"
 #include "Render/Resource/MeshBufferManager.h"
 #include "Core/CollisionTypes.h"
 #include "Render/Scene/FScene.h"
@@ -40,7 +40,11 @@ UPrimitiveComponent::~UPrimitiveComponent()
 	{
 		if (UWorld* World = Owner->GetWorld())
 		{
-			World->GetPhysicsScene()->UnregisterComponent(this);
+			if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
+			{
+				PS->DestroyBody(PhysicsBodyInstance);
+				PhysicsBodyInstance = nullptr;
+			}
 		}
 	}
 	DestroyRenderState();
@@ -59,7 +63,10 @@ void UPrimitiveComponent::BeginPlay()
 		{
 			if (UWorld* World = Owner->GetWorld())
 			{
-				World->GetPhysicsScene()->RegisterComponent(this);
+				if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
+				{
+					PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
+				}
 			}
 		}
 	}
@@ -79,9 +86,10 @@ void UPrimitiveComponent::EndPlay()
 	{
 		if (UWorld* World = Owner->GetWorld())
 		{
-			if (IPhysicsScene* PS = World->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 			{
-				PS->UnregisterComponent(this);
+				PS->DestroyBody(PhysicsBodyInstance);
+				PhysicsBodyInstance = nullptr;
 			}
 
 			// SpatialPartition에서도 즉시 제거. World::DestroyActor가 Partition.RemoveActor를
@@ -106,7 +114,7 @@ void UPrimitiveComponent::NotifyPhysicsBodyDirty()
 	if (!Owner) return;
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
-	if (IPhysicsScene* PS = World->GetPhysicsScene())
+	if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 	{
 		PS->RebuildBody(this);
 	}
@@ -209,13 +217,17 @@ void UPrimitiveComponent::PostEditProperty(const char* PropertyName)
 		{
 			if (UWorld* World = Owner->GetWorld())
 			{
-				if (IsQueryCollisionEnabled())
+				if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 				{
-					World->GetPhysicsScene()->RegisterComponent(this);
-				}
-				else
-				{
-					World->GetPhysicsScene()->UnregisterComponent(this);
+					if (IsQueryCollisionEnabled())
+					{
+						PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
+					}
+					else
+					{
+						PS->DestroyBody(PhysicsBodyInstance);
+						PhysicsBodyInstance = nullptr;
+					}
 				}
 			}
 		}
@@ -402,10 +414,16 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 
 	if (bWasQuery != bIsQuery)
 	{
-		if (bIsQuery)
-			World->GetPhysicsScene()->RegisterComponent(this);
-		else
-			World->GetPhysicsScene()->UnregisterComponent(this);
+		if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
+		{
+			if (bIsQuery)
+				PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
+			else
+			{
+				PS->DestroyBody(PhysicsBodyInstance);
+				PhysicsBodyInstance = nullptr;
+			}
+		}
 	}
 	else if (bWasQuery && bIsQuery)
 	{
@@ -460,7 +478,7 @@ void UPrimitiveComponent::AddForce(const FVector& Force)
 {
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				PS->AddForce(this, Force);
 }
 
@@ -468,7 +486,7 @@ void UPrimitiveComponent::AddForceAtLocation(const FVector& Force, const FVector
 {
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				PS->AddForceAtLocation(this, Force, Location);
 }
 
@@ -476,7 +494,7 @@ void UPrimitiveComponent::AddTorque(const FVector& Torque)
 {
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				PS->AddTorque(this, Torque);
 }
 
@@ -484,7 +502,7 @@ FVector UPrimitiveComponent::GetLinearVelocity() const
 {
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				return PS->GetLinearVelocity(const_cast<UPrimitiveComponent*>(this));
 	return { 0, 0, 0 };
 }
@@ -493,7 +511,7 @@ void UPrimitiveComponent::SetLinearVelocity(const FVector& Vel)
 {
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				PS->SetLinearVelocity(this, Vel);
 }
 
@@ -501,7 +519,7 @@ FVector UPrimitiveComponent::GetAngularVelocity() const
 {
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				return PS->GetAngularVelocity(const_cast<UPrimitiveComponent*>(this));
 	return { 0, 0, 0 };
 }
@@ -510,7 +528,7 @@ void UPrimitiveComponent::SetAngularVelocity(const FVector& Vel)
 {
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				PS->SetAngularVelocity(this, Vel);
 }
 
@@ -519,7 +537,7 @@ void UPrimitiveComponent::SetMass(float NewMass)
 	Mass = NewMass;
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				PS->SetMass(this, NewMass);
 }
 
@@ -528,7 +546,7 @@ void UPrimitiveComponent::SetCenterOfMass(const FVector& LocalOffset)
 	CenterOfMassOffset = LocalOffset;
 	if (Owner)
 		if (UWorld* W = Owner->GetWorld())
-			if (IPhysicsScene* PS = W->GetPhysicsScene())
+			if (IPhysicsSceneInterface* PS = W->GetPhysicsScene())
 				PS->SetCenterOfMass(this, LocalOffset);
 }
 

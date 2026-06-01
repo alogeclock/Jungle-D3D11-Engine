@@ -15,7 +15,7 @@
 #include "Settings/EditorSettings.h"
 #include "Slate/SlateApplication.h"
 
-#include <imgui.h>
+#include "ImGui/imgui.h"
 
 void FMeshEditorViewportClient::Initialize(ID3D11Device* Device, uint32 Width, uint32 Height)
 {

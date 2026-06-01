@@ -7,7 +7,7 @@
 #include "Settings/EditorViewportSettings.h"
 #include "Settings/GizmoToolSettings.h"
 
-#include <imgui.h>
+#include "ImGui/imgui.h"
 
 #pragma region Toolbar Icon Helper
 static FString GetToolbarIconPath(EToolbarIcon Icon)

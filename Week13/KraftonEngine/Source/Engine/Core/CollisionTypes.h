@@ -11,16 +11,22 @@ class UPrimitiveComponent;
 
 enum class ECollisionChannel : uint8
 {
-	WorldStatic = 0,
-	WorldDynamic = 1,
-	Pawn = 2,
-	Projectile = 3,
-	Trigger = 4,
-	FootIK = 5,
-	// 필요 시 확장
+	ECC_WorldStatic  = 0,
+	ECC_WorldDynamic = 1,
+	ECC_Pawn         = 2,
+	ECC_PhysicsBody  = 3,
+
+	ECC_Visibility   = 4,
+	ECC_Camera       = 5,
+
+	ECC_Projectile   = 6,
+	ECC_Trigger      = 7,
+	ECC_FootIK       = 8,
+
+	ECC_MAX
 };
 
-inline constexpr int32 NumActiveCollisionChannels = 6;
+inline constexpr int32 NumActiveCollisionChannels = 9;
 inline constexpr int32 MaxCollisionChannels = 16;
 
 inline UEnum* StaticEnum_ECollisionChannel()
@@ -28,16 +34,29 @@ inline UEnum* StaticEnum_ECollisionChannel()
 	static UEnum Enum("ECollisionChannel", sizeof(ECollisionChannel));
 	static const bool bRegistered = []()
 	{
-		Enum.AddEnumerator("WorldStatic", static_cast<int64>(ECollisionChannel::WorldStatic));
-		Enum.AddEnumerator("WorldDynamic", static_cast<int64>(ECollisionChannel::WorldDynamic));
-		Enum.AddEnumerator("Pawn", static_cast<int64>(ECollisionChannel::Pawn));
-		Enum.AddEnumerator("Projectile", static_cast<int64>(ECollisionChannel::Projectile));
-		Enum.AddEnumerator("Trigger", static_cast<int64>(ECollisionChannel::Trigger));
-		Enum.AddEnumerator("FootIK", static_cast<int64>(ECollisionChannel::FootIK));
+		Enum.AddEnumerator("ECC_WorldStatic",  static_cast<int64>(ECollisionChannel::ECC_WorldStatic));
+		Enum.AddEnumerator("ECC_WorldDynamic", static_cast<int64>(ECollisionChannel::ECC_WorldDynamic));
+		Enum.AddEnumerator("ECC_Pawn",         static_cast<int64>(ECollisionChannel::ECC_Pawn));
+		Enum.AddEnumerator("ECC_PhysicsBody",  static_cast<int64>(ECollisionChannel::ECC_PhysicsBody));
+		Enum.AddEnumerator("ECC_Visibility",   static_cast<int64>(ECollisionChannel::ECC_Visibility));
+		Enum.AddEnumerator("ECC_Camera",       static_cast<int64>(ECollisionChannel::ECC_Camera));
+		Enum.AddEnumerator("ECC_Projectile",   static_cast<int64>(ECollisionChannel::ECC_Projectile));
+		Enum.AddEnumerator("ECC_Trigger",      static_cast<int64>(ECollisionChannel::ECC_Trigger));
+		Enum.AddEnumerator("ECC_FootIK",       static_cast<int64>(ECollisionChannel::ECC_FootIK));
 		return true;
 	}();
 	(void)bRegistered;
 	return &Enum;
+}
+
+inline FString GetCollisionChannelPropertyName(const char* EnumName)
+{
+	FString PropertyName = EnumName ? EnumName : "";
+	if (PropertyName.rfind("ECC_", 0) == 0)
+	{
+		PropertyName.erase(0, 4);
+	}
+	return PropertyName;
 }
 
 enum class ECollisionResponse : uint8
@@ -141,7 +160,7 @@ struct FCollisionResponseContainer
 			for (int32 i = 0; i < NumActiveCollisionChannels; ++i)
 			{
 				Struct.AddProperty(new FEnumProperty(
-					ChannelEnum->GetNameByIndex(static_cast<uint32>(i)),
+					GetCollisionChannelPropertyName(ChannelEnum->GetNameByIndex(static_cast<uint32>(i))),
 					"",
 					CPF_Edit,
 					static_cast<uint32>(offsetof(FCollisionResponseContainer, Responses) + sizeof(ECollisionResponse) * i),

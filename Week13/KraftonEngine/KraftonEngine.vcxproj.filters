@@ -160,6 +160,30 @@
     <Filter Include="Source\Engine\Physics">
       <UniqueIdentifier>{c1985821-1144-9a46-639a-f7de31f4a1fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Physics\Backends">
+      <UniqueIdentifier>{6b8f72f0-41b2-4d17-a5e9-a11b86fc8ed7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Assets">
+      <UniqueIdentifier>{6250ce0e-1e91-2579-0e9f-8654bad9ec29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Common">
+      <UniqueIdentifier>{8f351b81-d0b4-4490-a9c6-7c06823531ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Runtime">
+      <UniqueIdentifier>{e668dc36-f3fe-6afa-4458-08b1a87a0cf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Systems">
+      <UniqueIdentifier>{dffcd672-042c-a315-30ed-ee15e606e9dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Systems\Cloth">
+      <UniqueIdentifier>{78250f6b-4770-643a-913e-8f909b2616d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Systems\Ragdoll">
+      <UniqueIdentifier>{b382508a-901c-0206-a0e4-fcbbebb41b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Physics\Systems\Vehicle">
+      <UniqueIdentifier>{1787a702-e69e-a449-631e-24abc4a7aca7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Engine\Platform">
       <UniqueIdentifier>{813e0a37-91de-2afc-805f-1a0f801727b9}</UniqueIdentifier>
     </Filter>
@@ -1109,11 +1133,11 @@
     <ClCompile Include="Source\Engine\Particles\Runtime\ParticleEmitterInstance.cpp">
       <Filter>Source\Engine\Particles\Runtime</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Physics\NativePhysicsScene.cpp">
-      <Filter>Source\Engine\Physics</Filter>
+    <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Physics\PhysXPhysicsScene.cpp">
-      <Filter>Source\Engine\Physics</Filter>
+    <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp">
       <Filter>Source\Engine\Platform</Filter>
@@ -2169,14 +2193,77 @@
     <ClInclude Include="Source\Engine\Particles\Runtime\ParticleRuntimeTypes.h">
       <Filter>Source\Engine\Particles\Runtime</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Physics\IPhysicsScene.h">
-      <Filter>Source\Engine\Physics</Filter>
+    <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Physics\NativePhysicsScene.h">
-      <Filter>Source\Engine\Physics</Filter>
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Physics\PhysXPhysicsScene.h">
-      <Filter>Source\Engine\Physics</Filter>
+    <ClInclude Include="Source\Engine\Physics\Assets\PhysicsAsset.h">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Assets\PhysicsBodySetup.h">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Assets\PhysicsConstraintSetup.h">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Assets\PhysicsShapeSetup.h">
+      <Filter>Source\Engine\Physics\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicsCollisionTypes.h">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicsDescTypes.h">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.h">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Common\PhysicsTypes.h">
+      <Filter>Source\Engine\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsBodyInstance.h">
+      <Filter>Source\Engine\Physics\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsConstraintInstance.h">
+      <Filter>Source\Engine\Physics\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsEventCallback.h">
+      <Filter>Source\Engine\Physics\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsRuntimeTypes.h">
+      <Filter>Source\Engine\Physics\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsSceneInterface.h">
+      <Filter>Source\Engine\Physics\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothDebugTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothSimulationTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollBuildDesc.h">
+      <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleDebugTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleInputTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleWheelTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Platform\ConsoleHelper.h">
       <Filter>Source\Engine\Platform</Filter>

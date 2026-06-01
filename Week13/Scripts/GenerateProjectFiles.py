@@ -8,13 +8,27 @@ Usage:
 
 import hashlib
 import os
+import shutil
+import urllib.request
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
 # ──────────────────────────────────────────────
 # Constants
 # ──────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
+
+PYTHON_VERSION = "3.12.4"
+PYTHON_EMBED_URL = f"https://www.python.org/ftp/python/{PYTHON_VERSION}/python-{PYTHON_VERSION}-embed-amd64.zip"
+CMAKE_VERSION = "3.31.6"
+CMAKE_URL = f"https://github.com/Kitware/CMake/releases/download/v{CMAKE_VERSION}/cmake-{CMAKE_VERSION}-windows-x86_64.zip"
+TOOLS_DIR = ROOT / "KraftonEngine" / "Build" / "Tools"
+DOWNLOADS_DIR = TOOLS_DIR / "Downloads"
+BUNDLED_PYTHON_DIR = ROOT / "Scripts" / "python"
+BUNDLED_PYTHON_EXE = BUNDLED_PYTHON_DIR / "python.exe"
+LOCAL_CMAKE_DIR = TOOLS_DIR / "CMake"
+LOCAL_CMAKE_EXE = LOCAL_CMAKE_DIR / "bin" / "cmake.exe"
 
 PROJECT_NAME = "KraftonEngine"
 PROJECT_DIR = ROOT / PROJECT_NAME
@@ -32,6 +46,17 @@ CONFIGURATIONS = [
     ("Game", "Win32"),
     ("Game", "x64"),
     ("Demo", "x64"),
+]
+
+SLN_CONFIGURATIONS = [
+    ("Debug", "x64", "Debug", "x64"),
+    ("Debug", "x86", "Debug", "Win32"),
+    ("Demo", "x64", "Demo", "x64"),
+    ("Demo", "x86", "Demo", "x64"),
+    ("Game", "x64", "Game", "x64"),
+    ("Game", "x86", "Game", "Win32"),
+    ("Release", "x64", "Release", "x64"),
+    ("Release", "x86", "Release", "Win32"),
 ]
 
 # Per-configuration overrides (base is derived from the name)
@@ -175,6 +200,74 @@ NS = "http://schemas.microsoft.com/developer/msbuild/2003"
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
+def download_file(url: str, destination: Path):
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading {url}...")
+    urllib.request.urlretrieve(url, destination)
+
+
+def ensure_bundled_python():
+    if BUNDLED_PYTHON_EXE.exists():
+        print(f"Python found at {BUNDLED_PYTHON_EXE}.")
+        return
+
+    archive = DOWNLOADS_DIR / f"python-{PYTHON_VERSION}-embed-amd64.zip"
+    download_file(PYTHON_EMBED_URL, archive)
+    BUNDLED_PYTHON_DIR.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive) as zip_file:
+        zip_file.extractall(BUNDLED_PYTHON_DIR)
+
+    if not BUNDLED_PYTHON_EXE.exists():
+        raise RuntimeError(f"Python install failed. Expected {BUNDLED_PYTHON_EXE}")
+
+    print(f"Python installed at {BUNDLED_PYTHON_EXE}.")
+
+
+def ensure_cmake():
+    if LOCAL_CMAKE_EXE.exists():
+        os.environ["PATH"] = f"{LOCAL_CMAKE_EXE.parent}{os.pathsep}{os.environ.get('PATH', '')}"
+        print(f"CMake found at {LOCAL_CMAKE_EXE}.")
+        return
+
+    path_cmake = shutil.which("cmake")
+    if path_cmake:
+        print(f"CMake found on PATH at {path_cmake}.")
+        return
+
+    archive = DOWNLOADS_DIR / f"cmake-{CMAKE_VERSION}-windows-x86_64.zip"
+    extract_dir = DOWNLOADS_DIR / f"cmake-{CMAKE_VERSION}-extract"
+    download_file(CMAKE_URL, archive)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive) as zip_file:
+        zip_file.extractall(extract_dir)
+
+    extracted_root = next(
+        (path for path in extract_dir.iterdir() if (path / "bin" / "cmake.exe").exists()),
+        None,
+    )
+    if extracted_root is None:
+        raise RuntimeError("CMake archive layout was not recognized.")
+
+    LOCAL_CMAKE_DIR.mkdir(parents=True, exist_ok=True)
+    for child in extracted_root.iterdir():
+        destination = LOCAL_CMAKE_DIR / child.name
+        if child.is_dir():
+            shutil.copytree(child, destination, dirs_exist_ok=True)
+        else:
+            shutil.copy2(child, destination)
+
+    if not LOCAL_CMAKE_EXE.exists():
+        raise RuntimeError(f"CMake install failed. Expected {LOCAL_CMAKE_EXE}")
+
+    os.environ["PATH"] = f"{LOCAL_CMAKE_EXE.parent}{os.pathsep}{os.environ.get('PATH', '')}"
+    print(f"CMake installed at {LOCAL_CMAKE_EXE}.")
+
+
+def ensure_build_tools():
+    ensure_bundled_python()
+    ensure_cmake()
+
+
 def scan_files(project_dir: Path) -> dict[str, list[str]]:
     """Scan directories and collect files grouped by type."""
     result = {"ClCompile": [], "ClInclude": [], "FxCompile": [], "ResourceCompile": [], "Natvis": [], "None": []}
@@ -630,7 +723,7 @@ def generate_sln():
     lines.append("")
     lines.append("Microsoft Visual Studio Solution File, Format Version 12.00")
     lines.append("# Visual Studio Version 17")
-    lines.append("VisualStudioVersion = 17.14.37012.4 d17.14")
+    lines.append("VisualStudioVersion = 17.14.37012.4")
     lines.append("MinimumVisualStudioVersion = 10.0.40219.1")
 
     guid_upper = PROJECT_GUID.upper()
@@ -644,17 +737,15 @@ def generate_sln():
 
     # SolutionConfigurationPlatforms
     lines.append("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution")
-    for cfg, plat in CONFIGURATIONS:
-        sln_plat = "x86" if plat == "Win32" else plat
-        lines.append(f"\t\t{cfg}|{sln_plat} = {cfg}|{sln_plat}")
+    for sln_cfg, sln_plat, _, _ in SLN_CONFIGURATIONS:
+        lines.append(f"\t\t{sln_cfg}|{sln_plat} = {sln_cfg}|{sln_plat}")
     lines.append("\tEndGlobalSection")
 
     # ProjectConfigurationPlatforms
     lines.append("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution")
-    for cfg, plat in CONFIGURATIONS:
-        sln_plat = "x86" if plat == "Win32" else plat
-        lines.append(f"\t\t{guid_upper}.{cfg}|{sln_plat}.ActiveCfg = {cfg}|{plat}")
-        lines.append(f"\t\t{guid_upper}.{cfg}|{sln_plat}.Build.0 = {cfg}|{plat}")
+    for sln_cfg, sln_plat, project_cfg, project_plat in SLN_CONFIGURATIONS:
+        lines.append(f"\t\t{guid_upper}.{sln_cfg}|{sln_plat}.ActiveCfg = {project_cfg}|{project_plat}")
+        lines.append(f"\t\t{guid_upper}.{sln_cfg}|{sln_plat}.Build.0 = {project_cfg}|{project_plat}")
     lines.append("\tEndGlobalSection")
 
     lines.append("\tGlobalSection(SolutionProperties) = preSolution")
@@ -677,6 +768,8 @@ def generate_sln():
 # Main
 # ──────────────────────────────────────────────
 def main():
+    ensure_build_tools()
+
     print(f"Scanning project files in {PROJECT_DIR}...")
 
     files = scan_files(PROJECT_DIR)

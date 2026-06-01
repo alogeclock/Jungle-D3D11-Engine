@@ -9,6 +9,14 @@ if /I "%~1"=="--no-pause" (
     shift /1
 )
 
+call :BootstrapBuildTools
+set "RESULT=%ERRORLEVEL%"
+if not "%RESULT%"=="0" goto DONE
+
+if exist "%ROOT_DIR%KraftonEngine\Build\Tools\CMake\bin\cmake.exe" (
+    set "PATH=%ROOT_DIR%KraftonEngine\Build\Tools\CMake\bin;%PATH%"
+)
+
 call "%ROOT_DIR%Scripts\SetupPhysX.bat"
 set "RESULT=%ERRORLEVEL%"
 if not "%RESULT%"=="0" goto DONE
@@ -31,3 +39,13 @@ if "%RESULT%"=="0" (
 if not defined NO_PAUSE pause
 
 endlocal & exit /b %RESULT%
+
+:BootstrapBuildTools
+where /q powershell.exe
+if errorlevel 1 (
+    echo PowerShell is required to bootstrap Python and CMake.
+    exit /b 1
+)
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%Scripts\BootstrapBuildTools.ps1" -RepoRoot "%ROOT_DIR%."
+exit /b %ERRORLEVEL%

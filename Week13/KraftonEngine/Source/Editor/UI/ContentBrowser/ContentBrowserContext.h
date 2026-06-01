@@ -1,10 +1,11 @@
 ﻿#pragma once
-#include "Core/CoreTypes.h"
-#include "ContentItem.h"
-#include "imgui.h" 
-#include "Platform/Paths.h"
 #include <functional>
 #include <memory>
+#include "ContentItem.h"
+#include "Core/CoreTypes.h"
+#include "ImGui/imgui.h"
+#include "Platform/Paths.h"
+
 
 class ContentBrowserElement;
 class UEditorEngine;
