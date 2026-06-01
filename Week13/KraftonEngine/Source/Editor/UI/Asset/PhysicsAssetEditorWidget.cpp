@@ -2712,15 +2712,15 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 
 		if (bSelected)
 		{
-			DrawDebugLine(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 140, 51), ConstraintDebugDuration);
-			DrawDebugLine(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(140, 255, 89), ConstraintDebugDuration);
-			DrawDebugLine(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(115, 191, 255), ConstraintDebugDuration);
+			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 140, 51), ConstraintDebugDuration);
+			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(140, 255, 89), ConstraintDebugDuration);
+			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(115, 191, 255), ConstraintDebugDuration);
 		}
 		else
 		{
-			DrawDebugLine(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 31, 31), ConstraintDebugDuration);
-			DrawDebugLine(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(31, 255, 31), ConstraintDebugDuration);
-			DrawDebugLine(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(46, 115, 255), ConstraintDebugDuration);
+			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * ConstraintAxisLength, FColor(255, 31, 31), ConstraintDebugDuration);
+			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * ConstraintAxisLength, FColor(31, 255, 31), ConstraintDebugDuration);
+			DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * ConstraintAxisLength, FColor(46, 115, 255), ConstraintDebugDuration);
 		}
 	}
 }
