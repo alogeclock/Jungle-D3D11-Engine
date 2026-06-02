@@ -27,14 +27,21 @@ enum class EPhysicsAssetPreviewShapeType : uint8
 
 class FPhysicsAssetEditorWidget : public FAssetEditorWidget
 {
+	enum class EPhysicsAssetConstraintVisualType : uint8
+	{
+		SwingCone,
+		TwistFan
+	};
+
 	struct FPreviewConstraintConeEntry
 	{
 		UStaticMeshComponent* Component = nullptr;
 		UMaterial* Material = nullptr;
 		UStaticMesh* Mesh = nullptr;
 		int32 ConstraintIndex = -1;
-		bool bIsSwing1 = true;
-		float HalfAngleDeg = 45.0f;
+		EPhysicsAssetConstraintVisualType VisualType = EPhysicsAssetConstraintVisualType::SwingCone;
+		float EffectivePrimaryLimit = 0.0f;
+		float EffectiveSecondaryLimit = 0.0f;
 	};
 
 	struct FPreviewShapeComponentEntry
@@ -64,6 +71,7 @@ private:
 	void RebuildPreviewShapeComponents(UPhysicsAsset* PhysicsAsset);
 	void SyncPreviewShapeComponents(UPhysicsAsset* PhysicsAsset);
 	void ClearConstraintConeComponents();
+	bool NeedsConstraintConeRebuild(UPhysicsAsset* PhysicsAsset) const;
 	void RebuildConstraintConeComponents(UPhysicsAsset* PhysicsAsset);
 	void SyncConstraintConeComponents(UPhysicsAsset* PhysicsAsset);
 	void DrawConstraintDebug(UPhysicsAsset* PhysicsAsset);
@@ -110,7 +118,7 @@ private:
 	int32 SelectedShapeIndex = -1;
 	FVector PreviewShapeTint = FVector(1.0f, 1.0f, 1.0f);
 	float PreviewBaseShapeOpacity = 0.3f;
-	float PreviewConstraintShapeOpacity = 0.35f;
+	float PreviewConstraintShapeOpacity = 0.3f;
 	bool bShowConstraintDebug = true;
 	float ConstraintAxisLength = 0.1f;
 
@@ -120,6 +128,8 @@ private:
 	bool bFrameGraphOnNextRender = false;
 	bool bScrollToSelectedConstraintOnNextRender = false;
 	bool bPendingClose = false;
+	bool bConstraintPreviewDefinitionDirty = false;
+	bool bConstraintPreviewTransformDirty = false;
 
 	ID3D11ShaderResourceView* CapsuleBodyIcon = nullptr;
 	int32 BoneTreeRowCounter = 0;
