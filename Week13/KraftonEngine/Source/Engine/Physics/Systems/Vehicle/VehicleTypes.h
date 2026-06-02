@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Physics/Common/PhysicsDescTypes.h"
+#include "Object/UEnum.h"
 
 /** 차량 구동 방식 */
 enum class EVehicleDriveType : uint8
@@ -11,6 +12,20 @@ enum class EVehicleDriveType : uint8
 };
 
 /** Wheel 역할 */
+inline UEnum* StaticEnum_EVehicleDriveType()
+{
+    static UEnum Enum("EVehicleDriveType", sizeof(EVehicleDriveType));
+    static const bool bRegistered = []()
+    {
+        Enum.AddEnumerator("VDT_FrontWheel", static_cast<int64>(EVehicleDriveType::VDT_FrontWheel));
+        Enum.AddEnumerator("VDT_RearWheel", static_cast<int64>(EVehicleDriveType::VDT_RearWheel));
+        Enum.AddEnumerator("VDT_FourWheel", static_cast<int64>(EVehicleDriveType::VDT_FourWheel));
+        return true;
+    }();
+    (void)bRegistered;
+    return &Enum;
+}
+
 enum class EVehicleWheelRole : uint8
 {
     VWR_None,       // 특수 역할 없음

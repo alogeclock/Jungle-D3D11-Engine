@@ -462,6 +462,12 @@ void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 	TickManager.TickGroup(TG_PrePhysics, DeltaTime, TickType); // Pre-Physics
 
 	bool bDispatchedDuringPhysics = false;
+
+	if (APlayerController* PC = GetFirstPlayerController())
+	{
+		PC->ProcessPlayerInput(DeltaTime);
+	}
+
 	if (bHasBegunPlay && PhysicsScene)
 	{
 		SCOPE_STAT_CAT("PhysicsScene", "1_WorldTick");

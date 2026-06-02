@@ -4,6 +4,9 @@
 #include "GameFramework/PlayerCameraManager.h"
 #include "Component/ActorComponent.h"
 #include "Component/CameraComponent.h"
+#include "Input/InputSystem.h"
+#include "Runtime/Engine.h"
+#include "Viewport/GameViewportClient.h"
 
 void APlayerController::BeginPlay()
 {
@@ -73,4 +76,36 @@ void APlayerController::UnPossess()
 	APawn* OldPawn = PossessedPawn;
 	PossessedPawn = nullptr;
 	OldPawn->UnPossessed();
+}
+
+void APlayerController::ProcessPlayerInput(float DeltaTime)
+{
+	if (!PossessedPawn)
+	{
+		return;
+	}
+
+	FInputSystemSnapshot Snapshot{};
+	bool bHasSnapshot = false;
+	if (GEngine)
+	{
+		if (UGameViewportClient* ViewportClient = GEngine->GetGameViewportClient())
+		{
+			if (!ViewportClient->IsPossessed())
+			{
+				PossessedPawn->ProcessPlayerInput(Snapshot, DeltaTime);
+				return;
+			}
+
+			Snapshot = ViewportClient->GetGameInputSnapshot();
+			bHasSnapshot = true;
+		}
+	}
+
+	if (!bHasSnapshot)
+	{
+		Snapshot = InputSystem::Get().MakeSnapshot();
+	}
+
+	PossessedPawn->ProcessPlayerInput(Snapshot, DeltaTime);
 }

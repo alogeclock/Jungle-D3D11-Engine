@@ -212,7 +212,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;NvClothDEBUG_x64.lib;fmodL_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;PhysXVehicle_static_64.lib;NvClothDEBUG_x64.lib;fmodL_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Debug\*.dll" "$(OutDir)"
@@ -240,7 +240,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\debug\libfbxsdk.dll" "$(OutDir)"</
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;NvCloth_x64.lib;fmod_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;PhysXVehicle_static_64.lib;NvCloth_x64.lib;fmod_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Release\*.dll" "$(OutDir)"
@@ -287,7 +287,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;NvCloth_x64.lib;fmod_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;PhysXVehicle_static_64.lib;NvCloth_x64.lib;fmod_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Release\*.dll" "$(OutDir)"
@@ -315,7 +315,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;NvCloth_x64.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;rmlui.lib;rmlui_debugger.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;PhysXVehicle_static_64.lib;NvCloth_x64.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)ThirdParty\RmlUi\Release\*.dll" "$(OutDir)"
@@ -434,6 +434,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Component\StaticMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\SubUVComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\TextRenderComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\VehicleMovementComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\AmbientLightComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\DirectionalLightComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\Light\LightComponent.cpp" />
@@ -483,11 +484,14 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\GameFramework\PawnStaticMesh.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\PlayerCameraManager.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\PlayerController.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\PlayerStart.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\SequenceCameraShake.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\SkeletalMeshActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\SphereActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\StaticMeshActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\TriggerVolumeBase.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\VehicleGameMode.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\VehiclePawn.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\World.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\Light\AmbientLightActor.cpp" />
@@ -537,6 +541,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Physics\Common\PhysicalMaterialManager.cpp" />
     <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp" />
     <ClCompile Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.cpp" />
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp" />
     <ClCompile Include="Source\Engine\Platform\DirectoryWatcher.cpp" />
     <ClCompile Include="Source\Engine\Platform\Paths.cpp" />
@@ -758,6 +763,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Component\StaticMeshComponent.h" />
     <ClInclude Include="Source\Engine\Component\SubUVComponent.h" />
     <ClInclude Include="Source\Engine\Component\TextRenderComponent.h" />
+    <ClInclude Include="Source\Engine\Component\VehicleMovementComponent.h" />
     <ClInclude Include="Source\Engine\Component\Light\AmbientLightComponent.h" />
     <ClInclude Include="Source\Engine\Component\Light\DirectionalLightComponent.h" />
     <ClInclude Include="Source\Engine\Component\Light\LightComponent.h" />
@@ -823,11 +829,14 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\GameFramework\PawnStaticMesh.h" />
     <ClInclude Include="Source\Engine\GameFramework\PlayerCameraManager.h" />
     <ClInclude Include="Source\Engine\GameFramework\PlayerController.h" />
+    <ClInclude Include="Source\Engine\GameFramework\PlayerStart.h" />
     <ClInclude Include="Source\Engine\GameFramework\SequenceCameraShake.h" />
     <ClInclude Include="Source\Engine\GameFramework\SkeletalMeshActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\SphereActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\StaticMeshActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\TriggerVolumeBase.h" />
+    <ClInclude Include="Source\Engine\GameFramework\VehicleGameMode.h" />
+    <ClInclude Include="Source\Engine\GameFramework\VehiclePawn.h" />
     <ClInclude Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.h" />
     <ClInclude Include="Source\Engine\GameFramework\World.h" />
     <ClInclude Include="Source\Engine\GameFramework\WorldContext.h" />
@@ -920,7 +929,10 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollBuildDesc.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollTypes.h" />
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\FVehicleRuntimeTypes.h" />
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleDebugTypes.h" />
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleFilterConstants.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleInputTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleWheelTypes.h" />

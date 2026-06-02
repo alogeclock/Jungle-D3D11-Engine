@@ -96,4 +96,5 @@ public:
         FHitResult& OutHit,
         ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic,
         const AActor* IgnoreActor = nullptr) const = 0;
+
 };

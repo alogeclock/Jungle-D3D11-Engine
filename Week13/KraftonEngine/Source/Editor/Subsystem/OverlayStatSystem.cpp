@@ -2,6 +2,7 @@
 
 #include "Editor/EditorEngine.h"
 #include "Engine/Component/ParticleSystemComponent.h"
+#include "Engine/Component/VehicleMovementComponent.h"
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/Particles/Runtime/ParticleEmitterInstance.h"
 #include "Engine/Profiling/Timer.h"
@@ -72,6 +73,27 @@ static const FStatEntry* FindParticleStatEntry(const char* Name)
 	}
 
 	return nullptr;
+}
+
+static void FormatVehicleGear(char* Buffer, int32 BufferSize, int32 Gear)
+{
+	if (!Buffer || BufferSize <= 0)
+	{
+		return;
+	}
+
+	if (Gear == 0)
+	{
+		snprintf(Buffer, BufferSize, "%d (R)", Gear);
+	}
+	else if (Gear == 1)
+	{
+		snprintf(Buffer, BufferSize, "%d (N)", Gear);
+	}
+	else
+	{
+		snprintf(Buffer, BufferSize, "%d (%d)", Gear, Gear - 1);
+	}
 }
 
 void FOverlayStatSystem::AppendLine(TArray<FOverlayStatLine>& OutLines, float Y, const FString& Text) const
@@ -355,6 +377,64 @@ void FOverlayStatSystem::BuildParticleLines(const UEditorEngine& Editor, TArray<
 #endif
 }
 
+void FOverlayStatSystem::BuildVehicleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const
+{
+	UVehicleMovementComponent* VehicleMovement = nullptr;
+	if (UWorld* World = Editor.GetWorld())
+	{
+		for (AActor* Actor : World->GetActors())
+		{
+			if (!Actor)
+			{
+				continue;
+			}
+
+			VehicleMovement = Actor->GetComponentByClass<UVehicleMovementComponent>();
+			if (VehicleMovement)
+			{
+				break;
+			}
+		}
+	}
+
+	if (!VehicleMovement)
+	{
+		AddRow(OutRows, "Vehicle", "not found");
+		return;
+	}
+
+	const FVehicleRuntimeStats* Stats = VehicleMovement->GetRuntimeStats();
+	if (!Stats || !VehicleMovement->IsVehicleValid())
+	{
+		AddRow(OutRows, "Vehicle", "runtime not valid");
+		return;
+	}
+
+	int32 GroundedWheelCount = 0;
+	for (const FVehicleWheelDebugState& Wheel : Stats->Wheels)
+	{
+		if (!Wheel.bInAir)
+		{
+			++GroundedWheelCount;
+		}
+	}
+
+	char GearText[32] = {};
+	FormatVehicleGear(GearText, sizeof(GearText), VehicleMovement->GetCurrentGear());
+
+	AddRow(OutRows, "Speed", "%.2f km/h", Stats->CurrentSpeed);
+	AddRow(OutRows, "RPM", "%.0f", Stats->EngineRpm);
+	AddRow(OutRows, "Gear", "%s", GearText);
+	AddRow(OutRows, "Throttle", "%.2f", Stats->InputState.Throttle);
+	AddRow(OutRows, "Brake", "%.2f", Stats->InputState.Brake);
+	AddRow(OutRows, "Steering", "%.2f", Stats->InputState.Steering);
+	AddRow(OutRows, "Handbrake", "%s", Stats->InputState.bHandbrake ? "on" : "off");
+	AddRow(OutRows, "Applied Accel", "%.2f", Stats->EngineTorque);
+	AddRow(OutRows, "Applied Brake", "%.2f", Stats->BrakeTorque);
+	AddRow(OutRows, "Grounded Wheels", "%d / %d", GroundedWheelCount, Stats->WheelCount);
+	AddRow(OutRows, "In Air", "%s", Stats->bInAir ? "true" : "false");
+}
+
 void FOverlayStatSystem::BuildLines(const UEditorEngine& Editor, TArray<FOverlayStatLine>& OutLines) const
 {
 	OutLines.clear();
@@ -401,6 +481,12 @@ void FOverlayStatSystem::BuildLines(const UEditorEngine& Editor, TArray<FOverlay
 	{
 		Rows.clear();
 		BuildParticleLines(Editor, Rows);
+		AppendGroup(Rows);
+	}
+	if (bShowVehicle)
+	{
+		Rows.clear();
+		BuildVehicleLines(Editor, Rows);
 		AppendGroup(Rows);
 	}
 }
@@ -552,5 +638,11 @@ void FOverlayStatSystem::RenderImGui(const UEditorEngine& Editor, const FRect& V
 		Rows.clear();
 		BuildParticleLines(Editor, Rows);
 		RenderWindow("##StatParticleOverlay", "Stat Particle", ImVec4(0.05f, 0.08f, 0.12f, 0.62f), Rows);
+	}
+	if (bShowVehicle)
+	{
+		Rows.clear();
+		BuildVehicleLines(Editor, Rows);
+		RenderWindow("##StatVehicleOverlay", "Stat Vehicle", ImVec4(0.06f, 0.08f, 0.06f, 0.62f), Rows);
 	}
 }

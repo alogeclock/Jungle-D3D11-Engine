@@ -2,6 +2,9 @@
 #include "Physics/Backends/PhysXSceneThreading.h"
 #include "Physics/Runtime/PhysicsConstraintInstance.h"
 #include "Physics/Common/PhysicsConversionTypes.h"
+#include "Physics/Systems/Vehicle/PhysXVehicleInstance.h"
+#include "Physics/Systems/Vehicle/FVehicleRuntimeTypes.h"
+#include "Physics/Systems/Vehicle/VehicleFilterConstants.h"
 #include "Component/PrimitiveComponent.h"
 #include "Component/BoxComponent.h"
 #include "Component/SphereComponent.h"
@@ -56,6 +59,7 @@ static PxDefaultAllocator  GPhysXAllocator;
 static PxFoundation* GSharedFoundation = nullptr;
 static PxPhysics*    GSharedPhysics    = nullptr;
 static int32         GSharedRefCount   = 0;
+static bool 		 GVehicleSdkInitialized = false;
 
 static void AcquireSharedPhysX(PxFoundation*& OutFoundation, PxPhysics*& OutPhysics)
 {
@@ -64,6 +68,13 @@ static void AcquireSharedPhysX(PxFoundation*& OutFoundation, PxPhysics*& OutPhys
         GSharedFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, GPhysXAllocator, GPhysXErrorCallback);
         if (GSharedFoundation)
             GSharedPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *GSharedFoundation, PxTolerancesScale());
+
+		if (GSharedPhysics && PxInitVehicleSDK(*GSharedPhysics))
+		{
+			PxVehicleSetBasisVectors(PxVec3(0.0f, 0.0f, 1.0f), PxVec3(1.0f, 0.0f, 0.0f));
+			PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+			GVehicleSdkInitialized = true;
+		}
     }
     ++GSharedRefCount;
     OutFoundation = GSharedFoundation;
@@ -74,6 +85,7 @@ static void ReleaseSharedPhysX()
 {
     if (--GSharedRefCount <= 0)
     {
+		if (GVehicleSdkInitialized) { PxCloseVehicleSDK(); GVehicleSdkInitialized = false; }
         if (GSharedPhysics)    { GSharedPhysics->release();    GSharedPhysics    = nullptr; }
         if (GSharedFoundation) { GSharedFoundation->release(); GSharedFoundation = nullptr; }
         GSharedRefCount = 0;
@@ -241,9 +253,59 @@ static FVector ToFVector(const PxVec3& V) { return FVector(V.x, V.y, V.z); }
 static FQuat   ToFQuat  (const PxQuat& Q) { return FQuat(Q.x, Q.y, Q.z, Q.w); }
 static float ToRadians(float Degrees) { return Degrees * (PxPi / 180.0f); }
 
+static void SetComponentWorldRotation(USceneComponent* Comp, const FQuat& WorldRotation)
+{
+    if (!Comp) return;
+
+    if (USceneComponent* Parent = Comp->GetParent())
+    {
+        const FQuat ParentWorldRotation = Parent->GetWorldMatrix().ToQuat();
+        Comp->SetRelativeRotation(WorldRotation * ParentWorldRotation.Inverse());
+        return;
+    }
+
+    Comp->SetRelativeRotation(WorldRotation);
+}
+
 static PxTransform GetPxTransform(UPrimitiveComponent* Comp)
 {
     return PxTransform(ToPxVec3(Comp->GetWorldLocation()), ToPxQuat(Comp->GetWorldMatrix().ToQuat()));
+}
+
+static PxVehiclePadSmoothingData CreateVehiclePadSmoothingData()
+{
+	PxVehiclePadSmoothingData SmoothingData;
+	for (PxU32 i = 0; i < PxVehicleDriveDynData::eMAX_NB_ANALOG_INPUTS; ++i)
+	{
+		SmoothingData.mRiseRates[i] = 6.0f;
+		SmoothingData.mFallRates[i] = 10.0f;
+	}
+
+	SmoothingData.mRiseRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_LEFT] = 2.5f;
+	SmoothingData.mRiseRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_RIGHT] = 2.5f;
+	SmoothingData.mFallRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_LEFT] = 5.0f;
+	SmoothingData.mFallRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_RIGHT] = 5.0f;
+
+	return SmoothingData;
+}
+
+static const PxVehiclePadSmoothingData& GetVehiclePadSmoothingData()
+{
+	static const PxVehiclePadSmoothingData SmoothingData = CreateVehiclePadSmoothingData();
+	return SmoothingData;
+}
+
+static const PxFixedSizeLookupTable<8>& GetVehicleSteerVsForwardSpeedTable()
+{
+	static const PxF32 SteerVsForwardSpeedData[] =
+	{
+		0.0f,        0.75f,
+		5.0f,        0.75f,
+		30.0f,       0.125f,
+		120.0f,      0.1f,
+	};
+	static const PxFixedSizeLookupTable<8> SteerVsForwardSpeedTable(SteerVsForwardSpeedData, 4);
+	return SteerVsForwardSpeedTable;
 }
 
 static PxTransform ToPxTransform(const FTransform& Transform)
@@ -315,6 +377,8 @@ static constexpr PxU32 FilterFlag_EnableOwnerSelfCollision = 1u << 31;
 static void SetupFilterData(PxShape* Shape, UPrimitiveComponent* Comp, bool bEnableOwnerSelfCollision = false)
 {
     PxFilterData Filter;
+    if (!Shape || !Comp) return;
+
     Filter.word0 = static_cast<PxU32>(Comp->GetCollisionObjectType());
     Filter.word1 = 0; Filter.word2 = 0;
     Filter.word3 = Comp->GetOwner() ? Comp->GetOwner()->GetUUID() : 0;
@@ -330,6 +394,30 @@ static void SetupFilterData(PxShape* Shape, UPrimitiveComponent* Comp, bool bEna
         Filter.word2 |= FilterFlag_EnableOwnerSelfCollision;
     }
     Shape->setSimulationFilterData(Filter);
+    Shape->setQueryFilterData(Filter);
+}
+
+static bool IsVehicleDrivableSurface(UPrimitiveComponent* Comp)
+{
+    if (!Comp || !Comp->IsQueryCollisionEnabled()) return false;
+    if (Comp->GetGenerateOverlapEvents()) return false;
+
+    switch (Comp->GetCollisionObjectType())
+    {
+    case ECollisionChannel::ECC_WorldStatic:
+        return true;
+    default:
+        return false;
+    }
+}
+
+static void SetupVehicleQueryFilterData(PxShape* Shape, UPrimitiveComponent* Comp, bool bDrivable)
+{
+    if (!Shape) return;
+
+    PxFilterData Filter = Shape->getQueryFilterData();
+    Filter.word2 = Comp && Comp->GetOwner() ? Comp->GetOwner()->GetUUID() : 0;
+    Filter.word3 = bDrivable ? DRIVABLE_SURFACE : UNDRIVABLE_SURFACE;
     Shape->setQueryFilterData(Filter);
 }
 
@@ -1271,6 +1359,7 @@ void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
     FlushDeferredSceneCommands();
     SyncEngineTransformsToPhysX();
 
+	UpdateVehicles(DeltaTime);
     Scene->simulate(DeltaTime);
     bSimulationInFlight.store(true);
 }
@@ -1326,6 +1415,9 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
     }
 
     SyncPhysXTransformsToEngine();
+	// Vehicle Pose 동기화
+	SyncVehiclePose();
+    // Dispatch deferred contact/trigger events
     if (EventCallback) EventCallback->DispatchPendingEvents();
     FlushDeferredSceneCommands();
 
@@ -1410,6 +1502,7 @@ PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimit
     SetupFilterData(Shape, Comp);
     Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, Comp->IsQueryCollisionEnabled());
     Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, Comp->IsPhysicsCollisionEnabled());
+    SetupVehicleQueryFilterData(Shape, Comp, IsVehicleDrivableSurface(Comp));
 
     bool bShouldBeTrigger = Comp->GetGenerateOverlapEvents();
     if (!bShouldBeTrigger)
@@ -1444,6 +1537,26 @@ void FPhysXPhysicsScene::DetachShapeForComponent(FBodyMapping& Mapping, UPrimiti
     {
         if (Shape && Shape->userData == Comp)
         { Mapping.Actor->detachShape(*Shape); break; }
+    }
+}
+
+void FPhysXPhysicsScene::SetComponentVehicleDrivableSurface(UPrimitiveComponent* Comp, bool bDrivable)
+{
+    if (!Comp) return;
+
+    FBodyMapping* Mapping = FindMappingByComponent(Comp);
+    if (!Mapping || !Mapping->Actor) return;
+
+    const PxU32 NumShapes = Mapping->Actor->getNbShapes();
+    if (NumShapes == 0) return;
+
+    std::vector<PxShape*> Shapes(NumShapes);
+    Mapping->Actor->getShapes(Shapes.data(), NumShapes);
+    for (PxShape* Shape : Shapes)
+    {
+        if (!Shape || Shape->userData != Comp) continue;
+
+        SetupVehicleQueryFilterData(Shape, Comp, bDrivable);
     }
 }
 
@@ -1733,4 +1846,485 @@ bool FPhysXPhysicsScene::SphereSweep(const FVector& Start, const FVector& End, f
         OutHit.HitActor = static_cast<AActor*>(Block.actor->userData);
     }
     return true;
+}
+
+PxQueryHitType::Enum WheelRaycastPreFilter
+(PxFilterData filterData0, PxFilterData filterData1,
+	const void* constantBlock, PxU32 constantBlockSize,
+	PxHitFlags& queryFlags)
+{
+	//filterData0 is the vehicle suspension raycast.
+	//filterData1 is the shape potentially hit by the raycast.
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
+	PX_UNUSED(queryFlags);
+	if (filterData0.word2 != 0 && filterData0.word2 == filterData1.word2)
+		return PxQueryHitType::eNONE;
+
+	if ((filterData0.word3 & DRIVABLE_SURFACE) == 0)
+		return PxQueryHitType::eNONE;
+
+	return ((0 == (filterData1.word3 & DRIVABLE_SURFACE)) ?
+		PxQueryHitType::eNONE : PxQueryHitType::eBLOCK);
+}
+
+FVehicleRuntimeHandle FPhysXPhysicsScene::CreateVehicle(const FVehicleRuntimeCreateDesc& CreateDesc)
+{
+	FVehicleRuntimeHandle Handle;
+	if (!Scene || !Physics || !DefaultMaterial || !CreateDesc.IsValid())
+	{
+		return Handle;
+	}
+
+	const FVehicleBuildDesc& BuildDesc = CreateDesc.BuildDesc;
+	const FVehicleDriveDesc& DriveDesc = BuildDesc.DriveDesc;
+	const uint32              NumWheels = (uint32)BuildDesc.WheelDescs.size();
+	if (NumWheels != GMaxNumWheels || DriveDesc.ChassisMass <= 0.0f)
+	{
+		return Handle;
+	}
+
+	CreateDesc.ChassisComponent->SetAutoCreatePhysicsBody(false);
+	for (USceneComponent* WheelVisualComponent : CreateDesc.WheelVisualComponents)
+	{
+		if (auto* WheelPrimitive = Cast<UPrimitiveComponent>(WheelVisualComponent))
+		{
+			WheelPrimitive->SetAutoCreatePhysicsBody(false);
+		}
+	}
+
+	FPhysXVehicleInstance* Instance = new FPhysXVehicleInstance();
+	Instance->ChassisComponent = CreateDesc.ChassisComponent;
+	Instance->SetWheelVisualComponents(CreateDesc.WheelVisualComponents);
+	Instance->VehicleQueryResult = { Instance->WheelQueryResults, NumWheels };
+	
+    // -------------------------------------------------------
+    // 1. WheelsSimData. setupWheelsSimulationData
+    // -------------------------------------------------------
+	PxVehicleWheelsSimData* WheelsSimData = PxVehicleWheelsSimData::allocate(NumWheels);
+	auto FailCreateVehicle = [&]() -> FVehicleRuntimeHandle
+	{
+		if (WheelsSimData)
+		{
+			WheelsSimData->free();
+			WheelsSimData = nullptr;
+		}
+		if (Instance)
+		{
+			Instance->Release();
+			delete Instance;
+			Instance = nullptr;
+		}
+		return Handle;
+	};
+	if (!WheelsSimData)
+	{
+		return FailCreateVehicle();
+	}
+
+	// 바퀴 위치 수집 (sprung mass 계산용)
+	PxVec3 WheelCenterActorOffsets[GMaxNumWheels];
+	for (uint32 i = 0; i < NumWheels; i++)
+	{
+		const FVehicleWheelDesc& WheelDesc = BuildDesc.WheelDescs[i];
+		if (WheelDesc.Radius <= 0.0f || WheelDesc.Width <= 0.0f || WheelDesc.Mass <= 0.0f)
+		{
+			return FailCreateVehicle();
+		}
+		WheelCenterActorOffsets[i] = PxVec3(WheelDesc.LocalPosition.X, WheelDesc.LocalPosition.Y, WheelDesc.LocalPosition.Z);
+	}
+
+	// chassis center of mass offset (일단 원점)
+	const PxVec3 ChassisCMOffset = ToPxVec3(DriveDesc.CenterOfMassOffset);
+
+	// Sprung mass 계산
+	PxF32 SprungMasses[GMaxNumWheels];
+	PxVehicleComputeSprungMasses(NumWheels, WheelCenterActorOffsets,
+		ChassisCMOffset, DriveDesc.ChassisMass, 2, SprungMasses);
+
+	for (uint32 i = 0; i < NumWheels; i++)
+	{
+		const FVehicleWheelDesc& WheelDesc = BuildDesc.WheelDescs[i];
+		const FVehicleSuspensionDesc& SuspensionDesc = WheelDesc.Suspension;
+
+		// Wheel
+		PxVehicleWheelData Wheel;
+		Wheel.mRadius = WheelDesc.Radius;
+		Wheel.mWidth = WheelDesc.Width;
+		Wheel.mMass = WheelDesc.Mass;
+		Wheel.mMOI = 0.5f * Wheel.mMass * Wheel.mRadius * Wheel.mRadius;
+		Wheel.mDampingRate = 0.25f;
+		Wheel.mMaxBrakeTorque = DriveDesc.MaxBrakeTorque;
+		Wheel.mMaxHandBrakeTorque =
+			(WheelDesc.WheelRole == EVehicleWheelRole::VWR_None || WheelDesc.WheelRole == EVehicleWheelRole::VWR_Drive)
+			? DriveDesc.HandbrakeTorque : 0.f;
+		Wheel.mMaxSteer =
+			(WheelDesc.WheelRole == EVehicleWheelRole::VWR_Steering || WheelDesc.WheelRole == EVehicleWheelRole::VWR_SteerDrive)
+			? PxPi * DriveDesc.MaxSteerAngle / 180.f : 0.f;
+
+		// Tire
+		PxVehicleTireData Tire;
+		Tire.mType = 0; // TIRE_TYPE_NORMAL
+
+		// Suspension
+		PxVehicleSuspensionData Susp;
+		Susp.mMaxCompression = SuspensionDesc.MaxCompression;
+		Susp.mMaxDroop = SuspensionDesc.MaxDroop;
+		Susp.mSpringStrength = SuspensionDesc.Stiffness;
+		Susp.mSpringDamperRate = SuspensionDesc.Damping;
+		Susp.mSprungMass = SprungMasses[i];
+
+		// 오프셋
+		PxVec3 WheelCMOffset = WheelCenterActorOffsets[i] - ChassisCMOffset;
+		PxVec3 SuspForceOffset = PxVec3(WheelCMOffset.x, WheelCMOffset.y, -0.3f);
+		PxVec3 TireForceOffset = PxVec3(WheelCMOffset.x, WheelCMOffset.y, -0.3f);
+
+		WheelsSimData->setWheelData(i, Wheel);
+		WheelsSimData->setTireData(i, Tire);
+		WheelsSimData->setSuspensionData(i, Susp);
+		WheelsSimData->setSuspTravelDirection(i, PxVec3(0.f, 0.f, -1.f)); // Z-up이므로 -Z
+		WheelsSimData->setWheelCentreOffset(i, WheelCMOffset);
+		WheelsSimData->setSuspForceAppPointOffset(i, SuspForceOffset);
+		WheelsSimData->setTireForceAppPointOffset(i, TireForceOffset);
+		WheelsSimData->setWheelShapeMapping(i, -1); // 1차: wheel shape 없음
+	}
+
+	// scene query filter
+	PxFilterData QryFilterData;
+	QryFilterData.word2 = CreateDesc.ChassisComponent->GetOwner()
+		? CreateDesc.ChassisComponent->GetOwner()->GetUUID()
+		: 0;
+	QryFilterData.word3 = DRIVABLE_SURFACE;
+	for (uint32 i = 0; i < NumWheels; i++)
+		WheelsSimData->setSceneQueryFilterData(i, QryFilterData);
+
+	SetComponentVehicleDrivableSurface(CreateDesc.ChassisComponent, false);
+	for (USceneComponent* WheelVisualComponent : CreateDesc.WheelVisualComponents)
+	{
+		if (auto* WheelPrimitive = Cast<UPrimitiveComponent>(WheelVisualComponent))
+			SetComponentVehicleDrivableSurface(WheelPrimitive, false);
+	}
+
+	// -------------------------------------------------------
+	// 2. DriveSimData
+	// -------------------------------------------------------
+	PxVehicleDriveSimData4W DriveSimData;
+
+	// Differential
+	PxVehicleDifferential4WData Diff;
+	switch (DriveDesc.DriveType)
+	{
+	case EVehicleDriveType::VDT_FrontWheel:
+		Diff.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_FRONTWD; break;
+	case EVehicleDriveType::VDT_RearWheel:
+		Diff.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_REARWD;  break;
+	case EVehicleDriveType::VDT_FourWheel:
+	default:
+		Diff.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD;     break;
+	}
+	DriveSimData.setDiffData(Diff);
+
+	// Engine
+	PxVehicleEngineData Engine;
+	Engine.mPeakTorque = DriveDesc.MaxEngineTorque;
+	Engine.mMaxOmega = 600.f; // ~6000rpm
+	DriveSimData.setEngineData(Engine);
+
+	// Gears
+	PxVehicleGearsData Gears;
+	Gears.mSwitchTime = 0.5f;
+	DriveSimData.setGearsData(Gears);
+
+	// Clutch
+	PxVehicleClutchData Clutch;
+	Clutch.mStrength = DriveDesc.ClutchStrength;
+	DriveSimData.setClutchData(Clutch);
+
+	// Ackermann
+	const auto AbsFloat = [](float Value) { return Value < 0.0f ? -Value : Value; };
+	const PxVec3 FrontLeftOffset = WheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT);
+	const PxVec3 FrontRightOffset = WheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_RIGHT);
+	const PxVec3 RearLeftOffset = WheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT);
+	const PxVec3 RearRightOffset = WheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_RIGHT);
+
+	PxVehicleAckermannGeometryData Ackermann;
+	Ackermann.mAccuracy = 1.f;
+	Ackermann.mAxleSeparation = AbsFloat(FrontLeftOffset.x - RearLeftOffset.x);
+	Ackermann.mFrontWidth = AbsFloat(FrontRightOffset.y - FrontLeftOffset.y);
+	Ackermann.mRearWidth = AbsFloat(RearRightOffset.y - RearLeftOffset.y);
+	if (Ackermann.mAxleSeparation <= 0.0f || Ackermann.mFrontWidth <= 0.0f || Ackermann.mRearWidth <= 0.0f)
+	{
+		return FailCreateVehicle();
+	}
+	DriveSimData.setAckermannGeometryData(Ackermann);
+
+	// -------------------------------------------------------
+	// 3. Chassis Actor
+	// -------------------------------------------------------
+
+	Instance->ChassisActor = Physics->createRigidDynamic(GetPxTransform(CreateDesc.ChassisComponent));
+	if (!Instance->ChassisActor)
+	{
+		return FailCreateVehicle();
+	}
+	Instance->ChassisActor->userData = CreateDesc.ChassisComponent->GetOwner();
+
+	// chassis convex mesh가 있으면 shape 추가, 없으면 box로 대체
+	PxShape* ChassisShape = nullptr;
+	{
+		FVector ChassisExtent(1.0f, 0.5f, 2.0f);
+		if (auto* Box = Cast<UBoxComponent>(CreateDesc.ChassisComponent))
+		{
+			ChassisExtent = Box->GetScaledBoxExtent();
+		}
+		else
+		{
+			const FBoundingBox Bounds = CreateDesc.ChassisComponent->GetWorldBoundingBox();
+			if (Bounds.IsValid())
+				ChassisExtent = Bounds.GetExtent();
+		}
+		if (ChassisExtent.X <= 0.0f || ChassisExtent.Y <= 0.0f || ChassisExtent.Z <= 0.0f)
+		{
+			return FailCreateVehicle();
+		}
+
+		PxBoxGeometry BoxGeom(ChassisExtent.X, ChassisExtent.Y, ChassisExtent.Z);
+		ChassisShape = PxRigidActorExt::createExclusiveShape(
+			*Instance->ChassisActor, BoxGeom, *DefaultMaterial);
+		if (!ChassisShape)
+		{
+			return FailCreateVehicle();
+		}
+
+		SetupFilterData(ChassisShape, CreateDesc.ChassisComponent);
+		SetupVehicleQueryFilterData(ChassisShape, CreateDesc.ChassisComponent, false);
+		ChassisShape->userData = CreateDesc.ChassisComponent;
+	}
+
+	PxRigidBodyExt::setMassAndUpdateInertia(*Instance->ChassisActor, DriveDesc.ChassisMass, &ChassisCMOffset);
+	Instance->ChassisActor->setCMassLocalPose(PxTransform(ChassisCMOffset));
+
+	// -------------------------------------------------------
+	// 4. PxVehicleDrive4W 조립
+	// -------------------------------------------------------
+	Instance->Vehicle = PxVehicleDrive4W::allocate(NumWheels);
+	if (!Instance->Vehicle)
+	{
+		return FailCreateVehicle();
+	}
+	Instance->Vehicle->setup(Physics, Instance->ChassisActor,
+		*WheelsSimData, DriveSimData, 0);
+	Instance->Vehicle->setToRestState();
+	Instance->Vehicle->mDriveDynData.setUseAutoGears(true);
+	WheelsSimData->free();
+	WheelsSimData = nullptr;
+
+	// -------------------------------------------------------
+	// 5. FrictionPairs
+	// -------------------------------------------------------
+	Instance->FrictionPairs =
+		PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(1, 1);
+	if (!Instance->FrictionPairs)
+	{
+		return FailCreateVehicle();
+	}
+
+	PxVehicleDrivableSurfaceType SurfaceType;
+	SurfaceType.mType = 0; // SURFACE_TYPE_TARMAC
+
+	const PxMaterial* SurfaceMaterials[1] = { DefaultMaterial };
+	Instance->FrictionPairs->setup(1, 1, SurfaceMaterials, &SurfaceType);
+	Instance->FrictionPairs->setTypePairFriction(0, 0, 1.f);
+
+	// -------------------------------------------------------
+	// 6. BatchQuery
+	// -------------------------------------------------------
+	PxBatchQueryDesc BqDesc(NumWheels, 0, 0);
+	BqDesc.queryMemory.userRaycastResultBuffer = Instance->SqResults;
+	BqDesc.queryMemory.userRaycastTouchBuffer = Instance->SqHitBuffer;
+	BqDesc.queryMemory.raycastTouchBufferSize = NumWheels;
+	BqDesc.preFilterShader = WheelRaycastPreFilter;
+	Instance->BatchQuery = Scene->createBatchQuery(BqDesc);
+	if (!Instance->BatchQuery)
+	{
+		return FailCreateVehicle();
+	}
+
+	// -------------------------------------------------------
+	// 7. Scene에 추가 및 Handle 반환
+	// -------------------------------------------------------
+	Scene->addActor(*Instance->ChassisActor);
+	VehicleInstances.push_back(Instance);
+
+	Handle.NativeVehicle = Instance;
+	return Handle;
+}
+
+void FPhysXPhysicsScene::DestroyVehicle(FVehicleRuntimeHandle& Handle)
+{
+	if (!Handle.IsValid())
+		return;
+
+	FPhysXVehicleInstance* Instance = static_cast<FPhysXVehicleInstance*>(Handle.NativeVehicle);
+	if (!Instance)
+		return;
+
+	// VehicleInstances 목록에서 제거
+	auto It = std::find(VehicleInstances.begin(), VehicleInstances.end(), Instance);
+	if (It != VehicleInstances.end())
+		VehicleInstances.erase(It);
+
+	// Scene에서 actor 제거
+	if (Instance->ChassisActor && Scene)
+		Scene->removeActor(*Instance->ChassisActor);
+
+	// PhysX 객체 해제
+	Instance->Release();
+
+	delete Instance;
+	Handle.Reset();
+}
+
+void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
+{
+	if (VehicleInstances.empty())
+	{
+		return;
+	}
+
+	const PxVec3 Gravity = Scene ? Scene->getGravity() : PxVec3(0, 0, -9.81f);
+	for (FPhysXVehicleInstance* Instance : VehicleInstances)
+	{
+		if (!Instance || !Instance->Vehicle || !Instance->BatchQuery || !Instance->FrictionPairs)
+		{
+			continue;
+		}
+
+		PxVehicleWheels* Vehicles[1] = { Instance->Vehicle };
+		PxVehicleSuspensionRaycasts(Instance->BatchQuery, 1, Vehicles, 4, Instance->SqResults);
+
+		const float ForwardSpeed = Instance->Vehicle->computeForwardSpeed();
+		const float ShiftSpeed = 0.5f;
+		const float RawThrottle = Instance->InputState.Throttle;
+		const float RawBrake = Instance->InputState.Brake;
+		float AppliedAccel = 0.0f;
+		float AppliedBrake = 0.0f;
+
+		if (RawThrottle > 0.0f && ForwardSpeed >= -ShiftSpeed)
+		{
+			const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
+
+			if (TargetGear == PxVehicleGearsData::eREVERSE ||
+				TargetGear == PxVehicleGearsData::eNEUTRAL)
+			{
+				Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
+			}
+
+			AppliedAccel = RawThrottle;
+		}
+		else if (RawBrake > 0.0f)
+		{
+			if (ForwardSpeed > ShiftSpeed)
+			{
+				AppliedBrake = RawBrake;
+			}
+			else
+			{
+				const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
+				if (TargetGear != PxVehicleGearsData::eREVERSE)
+				{
+					Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eREVERSE);
+				}
+				AppliedAccel = RawBrake;
+			}
+		}
+
+		PxVehicleDrive4WRawInputData RawInputData;
+		RawInputData.setAnalogAccel(AppliedAccel);
+		RawInputData.setAnalogBrake(AppliedBrake);
+		RawInputData.setAnalogHandbrake(Instance->InputState.bHandbrake ? 1.0f : 0.0f);
+		RawInputData.setAnalogSteer(Instance->InputState.Steering);
+
+		const bool bVehicleWasInAir = Instance->DebugStats.WheelCount > 0 ? Instance->DebugStats.bInAir : false;
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
+			GetVehiclePadSmoothingData(),
+			GetVehicleSteerVsForwardSpeedTable(),
+			RawInputData,
+			DeltaTime,
+			bVehicleWasInAir,
+			*Instance->Vehicle);
+
+		PxVehicleUpdates(DeltaTime, Gravity, *Instance->FrictionPairs, 1, Vehicles, &Instance->VehicleQueryResult);
+
+		Instance->DebugStats.WheelCount = GMaxNumWheels;
+		Instance->DebugStats.CurrentSpeed = Instance->Vehicle->computeForwardSpeed() * 3.6f;
+		Instance->DebugStats.EngineRpm = Instance->Vehicle->mDriveDynData.getEngineRotationSpeed() * 60.0f / 6.28318530718f;
+		Instance->DebugStats.InputState = Instance->InputState;
+		Instance->DebugStats.EngineTorque = Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_ACCEL);
+		Instance->DebugStats.BrakeTorque = Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_BRAKE);
+		Instance->DebugStats.SteeringAngle =
+			Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_STEER_RIGHT)
+			- Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_STEER_LEFT);
+		Instance->DebugStats.bInAir = true;
+		for (uint32 i = 0; i < GMaxNumWheels; ++i)
+		{
+			if (!Instance->WheelQueryResults[i].isInAir)
+			{
+				Instance->DebugStats.bInAir = false;
+				break;
+			}
+		}
+	}
+}
+
+void FPhysXPhysicsScene::SyncVehiclePose()
+{
+	for (FPhysXVehicleInstance* Instance : VehicleInstances)
+	{
+		if (!Instance || !Instance->Vehicle || !Instance->ChassisActor || !Instance->ChassisComponent)
+		{
+			continue;
+		}
+
+		PxTransform ChassisPose = Instance->ChassisActor->getGlobalPose();
+		Instance->ChassisComponent->SetWorldLocation(ToFVector(ChassisPose.p));
+		SetComponentWorldRotation(Instance->ChassisComponent, ToFQuat(ChassisPose.q));
+
+		Instance->DebugStats.CenterOfMassWorld = ToFVector(ChassisPose.transform(Instance->ChassisActor->getCMassLocalPose().p));
+		Instance->DebugStats.Wheels.resize(GMaxNumWheels);
+
+		for (uint32 i = 0; i < GMaxNumWheels; i++)
+		{
+			const PxWheelQueryResult& WheelResult = Instance->WheelQueryResults[i];
+			PxTransform WheelWorldPose = ChassisPose * WheelResult.localPose;
+			FVehicleWheelDebugState& WheelDebug = Instance->DebugStats.Wheels[i];
+			WheelDebug.SuspensionStart = ToFVector(WheelResult.suspLineStart);
+			WheelDebug.SuspensionEnd = ToFVector(WheelResult.suspLineStart + WheelResult.suspLineDir * WheelResult.suspLineLength);
+			WheelDebug.ContactPoint = ToFVector(WheelResult.tireContactPoint);
+			WheelDebug.ContactNormal = ToFVector(WheelResult.tireContactNormal);
+			WheelDebug.WheelCenter = ToFVector(WheelWorldPose.p);
+			WheelDebug.bInAir = WheelResult.isInAir;
+
+			if (i >= (uint32)Instance->WheelVisualComponents.size()) continue;
+			USceneComponent* WheelComp = Instance->WheelVisualComponents[i];
+			if (!WheelComp) continue;
+
+			if (WheelComp->GetParent() == Instance->ChassisComponent)
+			{
+				const FQuat WheelPose = ToFQuat(WheelResult.localPose.q);
+				const FQuat VisualOffset = Instance->GetWheelVisualRotationOffset(i);
+
+				WheelComp->SetRelativeRotation(WheelPose * VisualOffset);
+				WheelComp->SetRelativeLocation(ToFVector(WheelResult.localPose.p));
+			}
+			else
+			{
+				const FQuat WheelPose = ToFQuat(WheelWorldPose.q);
+				const FQuat VisualOffset = Instance->GetWheelVisualRotationOffset(i);
+
+				WheelComp->SetWorldLocation(ToFVector(WheelWorldPose.p));
+				SetComponentWorldRotation(WheelComp, WheelPose * VisualOffset);
+			}
+		}
+	}
 }

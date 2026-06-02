@@ -157,6 +157,9 @@ public:
 
 	virtual void OnPrePhysicsSync();
 	virtual void OnPostPhysicsSync();
+	void SetAutoCreatePhysicsBody(bool bInAutoCreate);
+	bool GetAutoCreatePhysicsBody() const { return bAutoCreatePhysicsBody; }
+	FPhysicsBodyInstance* GetPhysicsBodyInstance() const { return PhysicsBodyInstance; }
 
 	// --- Physics Force/Velocity API ---
 	void AddForce(const FVector& Force);
@@ -217,6 +220,7 @@ protected:
 
 	// 컴포넌트가 BeginPlay 후에만 PhysicsScene::RebuildBody 호출. 이전이면 skip.
 	void NotifyPhysicsBodyDirty();
+	bool ShouldCreatePhysicsBody() const;
 
 	FVector LocalExtents = { 0.5f, 0.5f, 0.5f };
 	mutable FVector WorldAABBMinLocation;
@@ -240,6 +244,9 @@ protected:
 
 	UPROPERTY(Edit, Category="Collision", DisplayName="Simulate Physics")
 	bool bSimulatePhysics = false;
+
+	UPROPERTY(Edit, Category="Collision", DisplayName="Auto Create Physics Body")
+	bool bAutoCreatePhysicsBody = true;
 
 	UPROPERTY(Edit, Category="Collision", DisplayName="Generate Overlap Events")
 	bool bGenerateOverlapEvents = false;

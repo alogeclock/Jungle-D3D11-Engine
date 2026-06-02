@@ -111,6 +111,7 @@ void UPrimitiveComponent::EndPlay()
 void UPrimitiveComponent::NotifyPhysicsBodyDirty()
 {
 	if (!bComponentHasBegunPlay) return;
+	if (!bAutoCreatePhysicsBody) return;
 	if (!Owner) return;
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
@@ -145,6 +146,38 @@ void UPrimitiveComponent::OnPrePhysicsSync()
 
 void UPrimitiveComponent::OnPostPhysicsSync()
 {
+}
+
+void UPrimitiveComponent::SetAutoCreatePhysicsBody(bool bInAutoCreate)
+{
+	if (bAutoCreatePhysicsBody == bInAutoCreate) return;
+	bAutoCreatePhysicsBody = bInAutoCreate;
+
+	if (!bComponentHasBegunPlay) return;
+	if (!Owner) return;
+
+	UWorld* World = Owner->GetWorld();
+	if (!World) return;
+
+	IPhysicsSceneInterface* PS = World->GetPhysicsScene();
+	if (!PS) return;
+
+	if (!bAutoCreatePhysicsBody)
+	{
+		PS->DestroyBody(PhysicsBodyInstance);
+		PhysicsBodyInstance = nullptr;
+		return;
+	}
+
+	if (IsQueryCollisionEnabled())
+	{
+		PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
+	}
+}
+
+bool UPrimitiveComponent::ShouldCreatePhysicsBody() const
+{
+	return bAutoCreatePhysicsBody && IsQueryCollisionEnabled();
 }
 
 void UPrimitiveComponent::MarkProxyDirty(EDirtyFlag Flag) const

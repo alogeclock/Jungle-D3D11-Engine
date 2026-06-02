@@ -8,7 +8,10 @@
 #include <unordered_map>
 #include <vector>
 
+struct FVehicleRuntimeHandle;
+struct FVehicleRuntimeCreateDesc;
 class AActor;
+class FPhysXVehicleInstance;
 
 namespace physx
 {
@@ -84,6 +87,12 @@ public:
         ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic,
         const AActor* IgnoreActor = nullptr) const override;
 
+	//Vehicle 관련 API
+	FVehicleRuntimeHandle CreateVehicle(const FVehicleRuntimeCreateDesc& BuildDesc);
+	void DestroyVehicle(FVehicleRuntimeHandle& Handle);
+	void UpdateVehicles(float DeltaTime);
+	void SyncVehiclePose();
+
 private:
     UWorld* World = nullptr;
 
@@ -93,6 +102,7 @@ private:
     physx::PxDefaultCpuDispatcher* Dispatcher      = nullptr;
     physx::PxMaterial*             DefaultMaterial = nullptr;
     FPhysXSimulationCallback*      EventCallback   = nullptr;
+	TArray<FPhysXVehicleInstance*> VehicleInstances;
 
     struct FBodyMapping
     {
@@ -114,6 +124,7 @@ private:
 
     physx::PxShape* AddShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp);
     void DetachShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp);
+    void SetComponentVehicleDrivableSurface(UPrimitiveComponent* Comp, bool bDrivable);
 
     void RegisterComponentInternal(UPrimitiveComponent* Comp);
     void UnregisterComponentInternal(UPrimitiveComponent* Comp);

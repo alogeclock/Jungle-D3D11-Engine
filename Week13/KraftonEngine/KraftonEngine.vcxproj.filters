@@ -860,6 +860,9 @@
     <ClCompile Include="Source\Engine\Component\TextRenderComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Component\VehicleMovementComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Component\Light\AmbientLightComponent.cpp">
       <Filter>Source\Engine\Component\Light</Filter>
     </ClCompile>
@@ -1007,6 +1010,9 @@
     <ClCompile Include="Source\Engine\GameFramework\PlayerController.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\PlayerStart.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\SequenceCameraShake.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
@@ -1020,6 +1026,12 @@
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\TriggerVolumeBase.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\VehicleGameMode.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\VehiclePawn.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.cpp">
@@ -1168,6 +1180,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.cpp">
       <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.cpp">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp">
       <Filter>Source\Engine\Platform</Filter>
@@ -1826,6 +1841,9 @@
     <ClInclude Include="Source\Engine\Component\TextRenderComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Component\VehicleMovementComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Component\Light\AmbientLightComponent.h">
       <Filter>Source\Engine\Component\Light</Filter>
     </ClInclude>
@@ -2021,6 +2039,9 @@
     <ClInclude Include="Source\Engine\GameFramework\PlayerController.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\PlayerStart.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\SequenceCameraShake.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
@@ -2034,6 +2055,12 @@
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\TriggerVolumeBase.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\VehicleGameMode.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\VehiclePawn.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\WaveOscillatorCameraShake.h">
@@ -2312,7 +2339,16 @@
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollTypes.h">
       <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\FVehicleRuntimeTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleDebugTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleFilterConstants.h">
       <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\VehicleInputTypes.h">

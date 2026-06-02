@@ -29,3 +29,6 @@ void APawn::UnPossessed()
 	Controller = nullptr;
 }
 
+void APawn::ProcessPlayerInput(const FInputSystemSnapshot&, float)
+{
+}
