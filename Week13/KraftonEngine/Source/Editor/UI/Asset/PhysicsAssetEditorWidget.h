@@ -6,6 +6,8 @@
 #include "Editor/Viewport/MeshEditorViewportClient.h"
 
 struct ID3D11ShaderResourceView;
+struct ImDrawList;
+struct ImVec2;
 
 class AActor;
 class IGizmoTransformTarget;
@@ -30,7 +32,10 @@ class FPhysicsAssetEditorWidget : public FAssetEditorWidget
 	enum class EPhysicsAssetConstraintVisualType : uint8
 	{
 		SwingCone,
-		TwistFan
+		TwistFan,
+		AxisX,
+		AxisY,
+		AxisZ
 	};
 
 	struct FPreviewConstraintConeEntry
@@ -42,6 +47,7 @@ class FPhysicsAssetEditorWidget : public FAssetEditorWidget
 		EPhysicsAssetConstraintVisualType VisualType = EPhysicsAssetConstraintVisualType::SwingCone;
 		float EffectivePrimaryLimit = 0.0f;
 		float EffectiveSecondaryLimit = 0.0f;
+		FVector4 LastColor = FVector4(0.0f, 0.0f, 0.0f, -1.0f);
 	};
 
 	struct FPreviewShapeComponentEntry
@@ -75,6 +81,7 @@ private:
 	void RebuildConstraintConeComponents(UPhysicsAsset* PhysicsAsset);
 	void SyncConstraintConeComponents(UPhysicsAsset* PhysicsAsset);
 	void DrawConstraintDebug(UPhysicsAsset* PhysicsAsset);
+	void RenderSelectedConstraintLimitOverlay(UPhysicsAsset* PhysicsAsset, ImDrawList* DrawList, const ImVec2& ViewportPos, const ImVec2& ViewportSize, float ToolbarHeight);
 	UStaticMeshComponent* CreatePreviewShapeComponent(UStaticMesh* StaticMesh, int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex, int32 PartIndex, const FVector& BaseMeshExtent);
 	UMaterial* CreatePreviewShapeMaterial(float Alpha, bool bDisableDepthTest = false) const;
 	void SelectBodyShape(int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex);
