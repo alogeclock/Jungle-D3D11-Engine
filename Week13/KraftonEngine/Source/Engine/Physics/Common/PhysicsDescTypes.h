@@ -28,6 +28,7 @@ struct FPhysicsBodyDesc
     float                     Mass           = 1.0f;
     float                     LinearDamping  = 0.0f;
     float                     AngularDamping = 0.05f;
+    bool                      bEnableSelfCollision = false;
     FPhysicsCollisionDesc     CollisionDesc;
     TArray<FPhysicsShapeDesc> Shapes;
 };

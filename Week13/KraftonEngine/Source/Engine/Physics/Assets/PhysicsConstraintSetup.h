@@ -27,7 +27,7 @@ struct FPhysicsConstraintSetup
     float TwistLimitMax     =  45.0f;
     float SwingLimitY       =  30.0f;
     float SwingLimitZ       =  30.0f;
-    bool  bDisableCollision = false;
+    bool  bDisableCollision =  false;
     float Stiffness         =   0.0f;
     float Damping           =   0.0f;
 

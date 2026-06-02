@@ -216,6 +216,7 @@ bool FRagdollInstance::Initialize(
 
         FPhysicsBodyDesc BodyDesc = BodySetup->BuildBodyDesc();
         BodyDesc.BodyType = EPhysicsBodyType::PBT_Dynamic;
+        BodyDesc.bEnableSelfCollision = true;
         ScaleBodyDescForComponent(BodyDesc, ComponentWorldScaleAtStart);
         const FPhysicsBodyDesc RuntimeBodyDesc = MakeEngineUnitBodyDesc(BodyDesc);
 

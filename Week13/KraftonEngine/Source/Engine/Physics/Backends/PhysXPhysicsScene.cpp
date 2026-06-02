@@ -309,7 +309,9 @@ static void ApplyRootMassAndCOM(PxRigidDynamic* Dyn, UPrimitiveComponent* Root)
 // ============================================================
 // Collision Filtering
 // ============================================================
-static void SetupFilterData(PxShape* Shape, UPrimitiveComponent* Comp)
+static constexpr PxU32 FilterFlag_EnableOwnerSelfCollision = 1u << 31;
+
+static void SetupFilterData(PxShape* Shape, UPrimitiveComponent* Comp, bool bEnableOwnerSelfCollision = false)
 {
     PxFilterData Filter;
     Filter.word0 = static_cast<PxU32>(Comp->GetCollisionObjectType());
@@ -322,6 +324,10 @@ static void SetupFilterData(PxShape* Shape, UPrimitiveComponent* Comp)
         if (R == ECollisionResponse::Block)   Filter.word1 |= (1u << Ch);
         if (R == ECollisionResponse::Overlap) Filter.word2 |= (1u << Ch);
     }
+    if (bEnableOwnerSelfCollision)
+    {
+        Filter.word2 |= FilterFlag_EnableOwnerSelfCollision;
+    }
     Shape->setSimulationFilterData(Filter);
     Shape->setQueryFilterData(Filter);
 }
@@ -331,8 +337,13 @@ static PxFilterFlags KraftonFilterShader(
     PxFilterObjectAttributes attributes1, PxFilterData filterData1,
     PxPairFlags& pairFlags, const void*, PxU32)
 {
-    if (filterData0.word3 != 0 && filterData0.word3 == filterData1.word3)
+    const bool bSameOwner = filterData0.word3 != 0 && filterData0.word3 == filterData1.word3;
+    const bool bAllowOwnerSelfCollision =
+        (filterData0.word2 & filterData1.word2 & FilterFlag_EnableOwnerSelfCollision) != 0;
+    if (bSameOwner && !bAllowOwnerSelfCollision)
+    {
         return PxFilterFlag::eKILL;
+    }
 
     if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
     {
@@ -386,7 +397,12 @@ static void ConfigureShapeCollisionFlags(PxShape* Shape, const FPhysicsCollision
     Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
 }
 
-static PxShape* CreateShapeFromDesc(PxPhysics* Physics, PxMaterial* DefaultMaterial, const FPhysicsShapeDesc& ShapeDesc, UPrimitiveComponent* OwnerComponent)
+static PxShape* CreateShapeFromDesc(
+    PxPhysics* Physics,
+    PxMaterial* DefaultMaterial,
+    const FPhysicsShapeDesc& ShapeDesc,
+    UPrimitiveComponent* OwnerComponent,
+    bool bEnableOwnerSelfCollision = false)
 {
     if (!Physics || !DefaultMaterial)
     {
@@ -435,7 +451,7 @@ static PxShape* CreateShapeFromDesc(PxPhysics* Physics, PxMaterial* DefaultMater
     ConfigureShapeCollisionFlags(Shape, ShapeDesc.CollisionDesc);
     if (OwnerComponent)
     {
-        SetupFilterData(Shape, OwnerComponent);
+        SetupFilterData(Shape, OwnerComponent, bEnableOwnerSelfCollision);
     }
 
     Shape->userData = OwnerComponent;
@@ -631,7 +647,12 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
     int32 AttachedShapeCount = 0;
     for (const FPhysicsShapeDesc& ShapeDesc : BodyDesc.Shapes)
     {
-        PxShape* Shape = CreateShapeFromDesc(Physics, DefaultMaterial, ShapeDesc, OwnerComponent);
+        PxShape* Shape = CreateShapeFromDesc(
+            Physics,
+            DefaultMaterial,
+            ShapeDesc,
+            OwnerComponent,
+            BodyDesc.bEnableSelfCollision);
         if (!Shape)
         {
             continue;
