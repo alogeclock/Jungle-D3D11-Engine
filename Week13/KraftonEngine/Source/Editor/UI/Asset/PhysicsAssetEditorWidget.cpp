@@ -900,7 +900,60 @@ namespace
 		return ToLowerCopy(Haystack).find(ToLowerCopy(Needle)) != FString::npos;
 	}
 
-	bool BoneMatchesSearchRecursive(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex, const FString& SearchText)
+	int32 FindBodySetupIndex(const UPhysicsAsset* PhysicsAsset, const FName& BoneName);
+
+	bool BoneHasBody(const UPhysicsAsset* PhysicsAsset, const FBone& Bone)
+	{
+		if (!PhysicsAsset)
+		{
+			return false;
+		}
+
+		return FindBodySetupIndex(PhysicsAsset, FName(Bone.Name)) >= 0;
+	}
+
+	void GatherDisplayedBonesFromSubtree(
+		const FSkeletonAsset* SkeletonAsset,
+		const UPhysicsAsset* PhysicsAsset,
+		int32 BoneIndex,
+		const FString& SearchText,
+		bool bShowBodiesOnly,
+		TArray<int32>& OutBoneIndices);
+
+	void GatherDisplayedChildBones(
+		const FSkeletonAsset* SkeletonAsset,
+		const UPhysicsAsset* PhysicsAsset,
+		int32 ParentBoneIndex,
+		const FString& SearchText,
+		bool bShowBodiesOnly,
+		TArray<int32>& OutBoneIndices)
+	{
+		if (!SkeletonAsset)
+		{
+			return;
+		}
+
+		for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(SkeletonAsset->Bones.size()); ++BoneIndex)
+		{
+			if (SkeletonAsset->Bones[BoneIndex].ParentIndex == ParentBoneIndex)
+			{
+				GatherDisplayedBonesFromSubtree(
+					SkeletonAsset,
+					PhysicsAsset,
+					BoneIndex,
+					SearchText,
+					bShowBodiesOnly,
+					OutBoneIndices);
+			}
+		}
+	}
+
+	bool BoneMatchesTreeFilterRecursive(
+		const FSkeletonAsset* SkeletonAsset,
+		const UPhysicsAsset* PhysicsAsset,
+		int32 BoneIndex,
+		const FString& SearchText,
+		bool bShowBodiesOnly)
 	{
 		if (!SkeletonAsset || BoneIndex < 0 || BoneIndex >= static_cast<int32>(SkeletonAsset->Bones.size()))
 		{
@@ -908,20 +961,52 @@ namespace
 		}
 
 		const FBone& Bone = SkeletonAsset->Bones[BoneIndex];
-		if (ContainsInsensitive(Bone.Name, SearchText))
+		const bool bMatchesSearch = ContainsInsensitive(Bone.Name, SearchText);
+		const bool bMatchesSelf = bMatchesSearch && (!bShowBodiesOnly || BoneHasBody(PhysicsAsset, Bone));
+		if (bMatchesSelf)
 		{
 			return true;
 		}
 
 		for (int32 Index = 0; Index < static_cast<int32>(SkeletonAsset->Bones.size()); ++Index)
 		{
-			if (SkeletonAsset->Bones[Index].ParentIndex == BoneIndex && BoneMatchesSearchRecursive(SkeletonAsset, Index, SearchText))
+			if (SkeletonAsset->Bones[Index].ParentIndex == BoneIndex
+				&& BoneMatchesTreeFilterRecursive(SkeletonAsset, PhysicsAsset, Index, SearchText, bShowBodiesOnly))
 			{
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	void GatherDisplayedBonesFromSubtree(
+		const FSkeletonAsset* SkeletonAsset,
+		const UPhysicsAsset* PhysicsAsset,
+		int32 BoneIndex,
+		const FString& SearchText,
+		bool bShowBodiesOnly,
+		TArray<int32>& OutBoneIndices)
+	{
+		if (!BoneMatchesTreeFilterRecursive(SkeletonAsset, PhysicsAsset, BoneIndex, SearchText, bShowBodiesOnly))
+		{
+			return;
+		}
+
+		const FBone& Bone = SkeletonAsset->Bones[BoneIndex];
+		if (!bShowBodiesOnly || BoneHasBody(PhysicsAsset, Bone))
+		{
+			OutBoneIndices.push_back(BoneIndex);
+			return;
+		}
+
+		GatherDisplayedChildBones(
+			SkeletonAsset,
+			PhysicsAsset,
+			BoneIndex,
+			SearchText,
+			bShowBodiesOnly,
+			OutBoneIndices);
 	}
 
 	int32 FindSkeletonBoneIndexByName(const FSkeletonAsset* SkeletonAsset, const FName& BoneName)
@@ -2452,6 +2537,7 @@ void FPhysicsAssetEditorWidget::Open(UObject* Object)
 	SelectedShapeType = EPhysicsAssetPreviewShapeType::None;
 	SelectedShapeIndex = -1;
 	BoneSearchBuffer[0] = '\0';
+	bShowBonesWithBodiesOnly = false;
 	bExpandBodyTreeOnNextRender = true;
 	bFrameGraphOnNextRender = true;
 	ToolSettings = FPhysicsAssetCreateParams();
@@ -3591,6 +3677,10 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 		DrawPhysicsPanelHeader("Skeletal Tree");
 		ImGui::SetNextItemWidth(-1.0f);
 		ImGui::InputTextWithHint("##PhysicsBoneSearch", "Search Skeleton Tree...", BoneSearchBuffer, sizeof(BoneSearchBuffer));
+		if (ImGui::Checkbox("Show Only Bones With Bodies", &bShowBonesWithBodiesOnly))
+		{
+			bExpandBodyTreeOnNextRender = true;
+		}
 		ImGui::Separator();
 
 		if (PreviewSkeletalMesh)
@@ -3598,13 +3688,19 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 			if (const FSkeletonAsset* SkeletonAsset = PreviewSkeletalMesh->GetSkeletonAsset())
 			{
 				const FString SearchText = BoneSearchBuffer;
+				const UPhysicsAsset* TreePhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
 				BoneTreeRowCounter = 0;
-				for (int32 BoneIndex = 0; BoneIndex < static_cast<int32>(SkeletonAsset->Bones.size()); ++BoneIndex)
+				TArray<int32> RootBoneIndices;
+				GatherDisplayedChildBones(
+					SkeletonAsset,
+					TreePhysicsAsset,
+					-1,
+					SearchText,
+					bShowBonesWithBodiesOnly,
+					RootBoneIndices);
+				for (int32 BoneIndex : RootBoneIndices)
 				{
-					if (SkeletonAsset->Bones[BoneIndex].ParentIndex == -1)
-					{
-						RenderSkeletonTree(SkeletonAsset, BoneIndex, SearchText);
-					}
+					RenderSkeletonTree(SkeletonAsset, BoneIndex, SearchText);
 				}
 				bExpandBodyTreeOnNextRender = false;
 			}
@@ -3957,20 +4053,20 @@ void FPhysicsAssetEditorWidget::RenderSkeletonTree(const FSkeletonAsset* Skeleto
 	const FBone& Bone = SkeletonAsset->Bones[BoneIndex];
 	const UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
 	const int32 BodyIndex = PhysicsAsset ? FindBodySetupIndex(PhysicsAsset, FName(Bone.Name)) : -1;
-	if (!BoneMatchesSearchRecursive(SkeletonAsset, BoneIndex, SearchText))
+	if (!BoneMatchesTreeFilterRecursive(SkeletonAsset, PhysicsAsset, BoneIndex, SearchText, bShowBonesWithBodiesOnly))
 	{
 		return;
 	}
 
-	bool bHasChildren = false;
-	for (int32 Index = 0; Index < static_cast<int32>(SkeletonAsset->Bones.size()); ++Index)
-	{
-		if (SkeletonAsset->Bones[Index].ParentIndex == BoneIndex)
-		{
-			bHasChildren = true;
-			break;
-		}
-	}
+	TArray<int32> DisplayedChildBones;
+	GatherDisplayedChildBones(
+		SkeletonAsset,
+		PhysicsAsset,
+		BoneIndex,
+		SearchText,
+		bShowBonesWithBodiesOnly,
+		DisplayedChildBones);
+	const bool bHasChildren = !DisplayedChildBones.empty();
 
 	// --- Row background (alternating + selection highlight) ---
 	const bool bIsSelected = (BodyIndex >= 0 && BodyIndex == SelectedBodyIndex);
@@ -4046,12 +4142,9 @@ void FPhysicsAssetEditorWidget::RenderSkeletonTree(const FSkeletonAsset* Skeleto
 
 	if (bOpen && bHasChildren)
 	{
-		for (int32 Index = 0; Index < static_cast<int32>(SkeletonAsset->Bones.size()); ++Index)
+		for (int32 ChildBoneIndex : DisplayedChildBones)
 		{
-			if (SkeletonAsset->Bones[Index].ParentIndex == BoneIndex)
-			{
-				RenderSkeletonTree(SkeletonAsset, Index, SearchText);
-			}
+			RenderSkeletonTree(SkeletonAsset, ChildBoneIndex, SearchText);
 		}
 		ImGui::TreePop();
 	}
