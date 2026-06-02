@@ -162,6 +162,30 @@ static bool GetBoneWorldTransform(USkeletalMeshComponent* MeshComp, int32 BoneIn
 	return true;
 }
 
+static void BuildCompPose(const FSkeletonAsset* SkeletonAsset, const TArray<FMatrix>& LocalPose, TArray<FMatrix>& OutPose)
+{
+	OutPose.clear();
+	if (!SkeletonAsset || LocalPose.empty())
+	{
+		return;
+	}
+
+	const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
+	if (BoneCount <= 0 || static_cast<int32>(LocalPose.size()) != BoneCount)
+	{
+		return;
+	}
+
+	OutPose.resize(BoneCount, FMatrix::Identity);
+	for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+	{
+		const int32 ParentIndex = SkeletonAsset->Bones[BoneIndex].ParentIndex;
+		OutPose[BoneIndex] = (ParentIndex >= 0 && ParentIndex < BoneCount)
+			? LocalPose[BoneIndex] * OutPose[ParentIndex]
+			: LocalPose[BoneIndex];
+	}
+}
+
 bool FRagdollInstance::Initialize(
 	UPhysicsAsset* PhysicsAsset,
 	USkeletalMeshComponent* MeshComp,
@@ -187,8 +211,9 @@ bool FRagdollInstance::Initialize(
 	{
 		InitialLocalPose.push_back(MeshComp->GetBoneLocalTransformByIndex(BoneIndex).ToMatrix());
 	}
+	BuildCompPose(SkeletonAsset, InitialLocalPose, InitialComponentPose);
 
-	ComponentWorldScaleAtStart = MeshComp->GetWorldScale();
+	StartScale = MeshComp->GetWorldScale();
 
 	TMap<FString, int32> BoneNameToBodyIndex;
 	const TArray<UPhysicsBodySetup*>& BodySetups = PhysicsAsset->GetBodySetups();
@@ -218,13 +243,15 @@ bool FRagdollInstance::Initialize(
 		FPhysicsBodyDesc BodyDesc = BodySetup->BuildBodyDesc();
 		BodyDesc.BodyType = EPhysicsBodyType::PBT_Dynamic;
 		BodyDesc.bEnableSelfCollision = true;
+		ScaleBodyDescForComponent(BodyDesc, StartScale);
 
-		UE_LOG("[RagdollBuildBody] Owner=%s Bone=%s BoneIndex=%d ShapeCount=%d Mass=%.3f BoneWorldP=(%.3f, %.3f, %.3f) BoneWorldQ=(%.3f, %.3f, %.3f, %.3f)",
+		UE_LOG("[RagdollBuildBody] Owner=%s Bone=%s BoneIndex=%d ShapeCount=%d Mass=%.3f ComponentScale=(%.3f, %.3f, %.3f) BoneWorldP=(%.3f, %.3f, %.3f) BoneWorldQ=(%.3f, %.3f, %.3f, %.3f)",
 			MeshComp->GetName().c_str(),
 			BoneName.c_str(),
 			BoneIndex,
 			static_cast<int32>(BodyDesc.Shapes.size()),
 			BodyDesc.Mass,
+			StartScale.X, StartScale.Y, StartScale.Z,
 			BoneWorldTransform.Location.X, BoneWorldTransform.Location.Y, BoneWorldTransform.Location.Z,
 			BoneWorldTransform.Rotation.X, BoneWorldTransform.Rotation.Y, BoneWorldTransform.Rotation.Z, BoneWorldTransform.Rotation.W);
 
@@ -296,6 +323,7 @@ bool FRagdollInstance::Initialize(
 		}
 
 		FPhysicsConstraintDesc ConstraintDesc = ConstraintSetup.BuildConstraintDesc();
+		ScaleConstraintDescForComponent(ConstraintDesc, StartScale);
 
 		FPhysicsBodyInstance* ParentBody = Bodies[ParentBodyIt->second];
 		FPhysicsBodyInstance* ChildBody = Bodies[ChildBodyIt->second];
@@ -359,6 +387,32 @@ static int32 FindRagdollFollowBodyIndex(const TArray<int32>& BodyToBoneIndex, co
 	return 0;
 }
 
+static bool MakeComponentWorldFromFollow(
+	const TArray<FMatrix>& InitialComponentPose,
+	const FVector& StartScale,
+	int32 BoneIndex,
+	const FTransform& BodyWorld,
+	FTransform& OutWorld)
+{
+	if (BoneIndex < 0 || BoneIndex >= static_cast<int32>(InitialComponentPose.size()))
+	{
+		return false;
+	}
+
+	FTransform BoneInComp(InitialComponentPose[BoneIndex]);
+	BoneInComp.Location = MultiplyVectorComponents(BoneInComp.Location, StartScale);
+	BoneInComp.Scale = FVector::OneVector;
+
+	const FTransform BodyNoScale(
+		BodyWorld.Location,
+		BodyWorld.Rotation.GetNormalized(),
+		FVector::OneVector);
+
+	OutWorld = FTransform(BoneInComp.ToMatrix().GetInverse() * BodyNoScale.ToMatrix());
+	OutWorld.Scale = FVector::OneVector;
+	return true;
+}
+
 static void ApplyWorldTransformToComponent(USkeletalMeshComponent* MeshComp, const FTransform& WorldTransform)
 {
 	if (!MeshComp)
@@ -407,7 +461,8 @@ void FRagdollInstance::Release(IPhysicsSceneInterface* Scene)
 	Bodies.clear();
 	BodyToBoneIndex.clear();
 	InitialLocalPose.clear();
-	ComponentWorldScaleAtStart = FVector::OneVector;
+	InitialComponentPose.clear();
+	StartScale = FVector::OneVector;
 	bInitialized = false;
 }
 
@@ -436,7 +491,14 @@ void FRagdollInstance::SyncBonesFromBodies(USkeletalMeshComponent* MeshComp, IPh
 		FTransform FollowBodyWorldTransform;
 		if (Scene->GetBodyWorldTransform(Bodies[FollowBodyIndex], FollowBodyWorldTransform))
 		{
-			ApplyWorldTransformToComponent(MeshComp, FollowBodyWorldTransform);
+			FTransform CompWorld;
+			const int32 BoneIndex = FollowBodyIndex < static_cast<int32>(BodyToBoneIndex.size())
+				? BodyToBoneIndex[FollowBodyIndex]
+				: INDEX_NONE;
+			if (MakeComponentWorldFromFollow(InitialComponentPose, StartScale, BoneIndex, FollowBodyWorldTransform, CompWorld))
+			{
+				ApplyWorldTransformToComponent(MeshComp, CompWorld);
+			}
 		}
 	}
 
