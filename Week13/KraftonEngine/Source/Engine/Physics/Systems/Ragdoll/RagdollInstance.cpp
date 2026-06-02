@@ -425,7 +425,7 @@ static void ApplyWorldTransformToComponent(USkeletalMeshComponent* MeshComp, con
 	const FQuat WorldRotation = WorldTransform.Rotation.GetNormalized();
 	if (USceneComponent* Parent = MeshComp->GetParent())
 	{
-		const FQuat ParentWorldRotation = FQuat::FromMatrix(Parent->GetWorldMatrix()).GetNormalized();
+		const FQuat ParentWorldRotation = FTransform(Parent->GetWorldMatrix()).Rotation.GetNormalized();
 		MeshComp->SetRelativeRotation((WorldRotation * ParentWorldRotation.Inverse()).GetNormalized());
 		return;
 	}
@@ -509,11 +509,9 @@ void FRagdollInstance::SyncBonesFromBodies(USkeletalMeshComponent* MeshComp, IPh
 
 	const FMatrix ComponentWorld = MeshComp->GetWorldMatrix();
 	const FMatrix ComponentWorldInv = ComponentWorld.GetInverse();
-	const FTransform ComponentWorldNoScale(
-		MeshComp->GetWorldLocation(),
-		ComponentWorld.ToQuat(),
-		FVector::OneVector);
-	const FMatrix ComponentWorldNoScaleInv = ComponentWorldNoScale.ToMatrix().GetInverse();
+	const FQuat ComponentWorldRotation = FTransform(ComponentWorld).Rotation.GetNormalized();
+	const FTransform ComponentWorldUnitScale(MeshComp->GetWorldLocation(), ComponentWorldRotation, FVector::OneVector);
+	const FMatrix ComponentWorldUnitScaleInv = ComponentWorldUnitScale.ToMatrix().GetInverse();
 
 	for (int32 BodyIndex = 0; BodyIndex < static_cast<int32>(Bodies.size()); ++BodyIndex)
 	{
@@ -534,9 +532,8 @@ void FRagdollInstance::SyncBonesFromBodies(USkeletalMeshComponent* MeshComp, IPh
 			continue;
 		}
 
-		FMatrix ComponentGlobal =
-			FTransform(BodyWorldTransform.Location, BodyWorldTransform.Rotation, FVector::OneVector).ToMatrix()
-			* ComponentWorldNoScaleInv;
+		FMatrix ComponentGlobal = FTransform(BodyWorldTransform.Location, BodyWorldTransform.Rotation, FVector::OneVector).ToMatrix() * ComponentWorldUnitScaleInv;
+		
 		ComponentGlobal.SetLocation(ComponentWorldInv.TransformPositionWithW(BodyWorldTransform.Location));
 
 		ComponentGlobals[BoneIndex] = ComponentGlobal;
