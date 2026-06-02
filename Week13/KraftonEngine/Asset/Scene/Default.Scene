@@ -1830,7 +1830,7 @@
               "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
             }],
           "Object Type" : 0,
-          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset_1.uasset",
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
           "RelativeTransform" : {
             "Location" : [22.715458, 17.571968, 13.841932],
             "Scale" : [10.000000, 10.000000, 10.000000]

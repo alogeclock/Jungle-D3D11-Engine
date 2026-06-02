@@ -1,6 +1,7 @@
 ﻿#include "Physics/Backends/PhysXPhysicsScene.h"
 #include "Physics/Backends/PhysXSceneThreading.h"
 #include "Physics/Runtime/PhysicsConstraintInstance.h"
+#include "Physics/Common/PhysicsConversionTypes.h"
 #include "Component/PrimitiveComponent.h"
 #include "Component/BoxComponent.h"
 #include "Component/SphereComponent.h"
@@ -610,12 +611,14 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
         return nullptr;
     }
 
+    const FPhysicsBodyDesc RuntimeBodyDesc = MakeEngineUnitBodyDesc(BodyDesc);
+
     WaitForSimulation();
 
     PxRigidActor* Actor = nullptr;
     PxRigidDynamic* DynamicActor = nullptr;
     const PxTransform BodyPose = ToPxTransform(WorldTransform);
-    if (BodyDesc.BodyType == EPhysicsBodyType::PBT_Static)
+    if (RuntimeBodyDesc.BodyType == EPhysicsBodyType::PBT_Static)
     {
         Actor = Physics->createRigidStatic(BodyPose);
     }
@@ -628,11 +631,11 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
                 PxActorFlag::eDISABLE_GRAVITY,
                 OwnerComponent && !OwnerComponent->GetEnableGravity());
             DynamicActor->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
-            DynamicActor->setLinearDamping((std::max)(0.0f, BodyDesc.LinearDamping));
-            DynamicActor->setAngularDamping((std::max)(0.0f, BodyDesc.AngularDamping));
+            DynamicActor->setLinearDamping((std::max)(0.0f, RuntimeBodyDesc.LinearDamping));
+            DynamicActor->setAngularDamping((std::max)(0.0f, RuntimeBodyDesc.AngularDamping));
             DynamicActor->setRigidBodyFlag(
                 PxRigidBodyFlag::eKINEMATIC,
-                BodyDesc.BodyType == EPhysicsBodyType::PBT_Kinematic);
+                RuntimeBodyDesc.BodyType == EPhysicsBodyType::PBT_Kinematic);
             // IMPORTANT: mass/inertia must be computed after shapes are attached.
             // Computing inertia on a shape-less actor makes ragdoll joints unstable.
         }
@@ -645,14 +648,14 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
     }
 
     int32 AttachedShapeCount = 0;
-    for (const FPhysicsShapeDesc& ShapeDesc : BodyDesc.Shapes)
+    for (const FPhysicsShapeDesc& ShapeDesc : RuntimeBodyDesc.Shapes)
     {
         PxShape* Shape = CreateShapeFromDesc(
             Physics,
             DefaultMaterial,
             ShapeDesc,
             OwnerComponent,
-            BodyDesc.bEnableSelfCollision);
+            RuntimeBodyDesc.bEnableSelfCollision);
         if (!Shape)
         {
             continue;
@@ -667,14 +670,14 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
     {
         const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
         UE_LOG("[RagdollBodyError] Owner=%s BodyType=%d has no attached shapes. Actor will be released.",
-            OwnerName.c_str(), static_cast<int32>(BodyDesc.BodyType));
+            OwnerName.c_str(), static_cast<int32>(RuntimeBodyDesc.BodyType));
         Actor->release();
         return nullptr;
     }
 
     if (DynamicActor)
     {
-        const float Mass = (std::max)(0.001f, BodyDesc.Mass);
+        const float Mass = (std::max)(0.001f, RuntimeBodyDesc.Mass);
         PxRigidBodyExt::setMassAndUpdateInertia(*DynamicActor, Mass);
         DynamicActor->setSolverIterationCounts(12, 4);
 
@@ -706,7 +709,7 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 
     FPhysicsBodyInstance* Instance = new FPhysicsBodyInstance();
     Instance->SetOwnerComponent(OwnerComponent);
-    Instance->SetBodyDesc(BodyDesc);
+    Instance->SetBodyDesc(RuntimeBodyDesc);
 
     FPhysicsActorHandle Handle;
     Handle.NativeActor = static_cast<void*>(Actor);
@@ -839,33 +842,35 @@ FPhysicsConstraintInstance* FPhysXPhysicsScene::CreateConstraint(
 
     WaitForSimulation();
 
+    const FPhysicsConstraintDesc RuntimeConstraintDesc = MakeEngineUnitConstraintDesc(ConstraintDesc);
+
     PxJoint* Joint = nullptr;
-    const PxTransform ParentLocalFrame = ToPxTransform(ConstraintDesc.ParentLocalFrame);
-    const PxTransform ChildLocalFrame  = ToPxTransform(ConstraintDesc.ChildLocalFrame);
+    const PxTransform ParentLocalFrame = ToPxTransform(RuntimeConstraintDesc.ParentLocalFrame);
+    const PxTransform ChildLocalFrame  = ToPxTransform(RuntimeConstraintDesc.ChildLocalFrame);
 
     UE_LOG("[RagdollCreateJoint] ParentActor=%p ChildActor=%p JointType=%d "
            "ParentFrameP=(%.3f, %.3f, %.3f) ParentFrameQ=(%.3f, %.3f, %.3f, %.3f) "
            "ChildFrameP=(%.3f, %.3f, %.3f) ChildFrameQ=(%.3f, %.3f, %.3f, %.3f) "
            "MotionXYZ=(%d,%d,%d) Swing=(%d,%d) Twist=%d LinearLimit=%.3f Swing=(%.3f, %.3f) TwistLimit=(%.3f, %.3f) DisableCollision=%d",
-        ParentActor, ChildActor, static_cast<int32>(ConstraintDesc.JointType),
-        ConstraintDesc.ParentLocalFrame.Location.X, ConstraintDesc.ParentLocalFrame.Location.Y, ConstraintDesc.ParentLocalFrame.Location.Z,
-        ConstraintDesc.ParentLocalFrame.Rotation.X, ConstraintDesc.ParentLocalFrame.Rotation.Y,
-        ConstraintDesc.ParentLocalFrame.Rotation.Z, ConstraintDesc.ParentLocalFrame.Rotation.W,
-        ConstraintDesc.ChildLocalFrame.Location.X, ConstraintDesc.ChildLocalFrame.Location.Y, ConstraintDesc.ChildLocalFrame.Location.Z,
-        ConstraintDesc.ChildLocalFrame.Rotation.X, ConstraintDesc.ChildLocalFrame.Rotation.Y,
-        ConstraintDesc.ChildLocalFrame.Rotation.Z, ConstraintDesc.ChildLocalFrame.Rotation.W,
-        static_cast<int32>(ConstraintDesc.XMotion),
-        static_cast<int32>(ConstraintDesc.YMotion),
-        static_cast<int32>(ConstraintDesc.ZMotion),
-        static_cast<int32>(ConstraintDesc.Swing1Motion),
-        static_cast<int32>(ConstraintDesc.Swing2Motion),
-        static_cast<int32>(ConstraintDesc.TwistMotion),
-        ConstraintDesc.LinearLimit,
-        ConstraintDesc.SwingLimitY, ConstraintDesc.SwingLimitZ,
-        ConstraintDesc.TwistLimitMin, ConstraintDesc.TwistLimitMax,
-        ConstraintDesc.bDisableCollision ? 1 : 0);
+        ParentActor, ChildActor, static_cast<int32>(RuntimeConstraintDesc.JointType),
+        RuntimeConstraintDesc.ParentLocalFrame.Location.X, RuntimeConstraintDesc.ParentLocalFrame.Location.Y, RuntimeConstraintDesc.ParentLocalFrame.Location.Z,
+        RuntimeConstraintDesc.ParentLocalFrame.Rotation.X, RuntimeConstraintDesc.ParentLocalFrame.Rotation.Y,
+        RuntimeConstraintDesc.ParentLocalFrame.Rotation.Z, RuntimeConstraintDesc.ParentLocalFrame.Rotation.W,
+        RuntimeConstraintDesc.ChildLocalFrame.Location.X, RuntimeConstraintDesc.ChildLocalFrame.Location.Y, RuntimeConstraintDesc.ChildLocalFrame.Location.Z,
+        RuntimeConstraintDesc.ChildLocalFrame.Rotation.X, RuntimeConstraintDesc.ChildLocalFrame.Rotation.Y,
+        RuntimeConstraintDesc.ChildLocalFrame.Rotation.Z, RuntimeConstraintDesc.ChildLocalFrame.Rotation.W,
+        static_cast<int32>(RuntimeConstraintDesc.XMotion),
+        static_cast<int32>(RuntimeConstraintDesc.YMotion),
+        static_cast<int32>(RuntimeConstraintDesc.ZMotion),
+        static_cast<int32>(RuntimeConstraintDesc.Swing1Motion),
+        static_cast<int32>(RuntimeConstraintDesc.Swing2Motion),
+        static_cast<int32>(RuntimeConstraintDesc.TwistMotion),
+        RuntimeConstraintDesc.LinearLimit,
+        RuntimeConstraintDesc.SwingLimitY, RuntimeConstraintDesc.SwingLimitZ,
+        RuntimeConstraintDesc.TwistLimitMin, RuntimeConstraintDesc.TwistLimitMax,
+        RuntimeConstraintDesc.bDisableCollision ? 1 : 0);
 
-    if (ConstraintDesc.JointType == EPhysicsJointType::PJT_Fixed)
+    if (RuntimeConstraintDesc.JointType == EPhysicsJointType::PJT_Fixed)
     {
         Joint = PxFixedJointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
     }
@@ -874,45 +879,45 @@ FPhysicsConstraintInstance* FPhysXPhysicsScene::CreateConstraint(
         PxD6Joint* D6Joint = PxD6JointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
         if (D6Joint)
         {
-            D6Joint->setMotion(PxD6Axis::eX,      ToPxD6Motion(ConstraintDesc.XMotion));
-            D6Joint->setMotion(PxD6Axis::eY,      ToPxD6Motion(ConstraintDesc.YMotion));
-            D6Joint->setMotion(PxD6Axis::eZ,      ToPxD6Motion(ConstraintDesc.ZMotion));
-            D6Joint->setMotion(PxD6Axis::eSWING1, ToPxD6Motion(ConstraintDesc.Swing1Motion));
-            D6Joint->setMotion(PxD6Axis::eSWING2, ToPxD6Motion(ConstraintDesc.Swing2Motion));
-            D6Joint->setMotion(PxD6Axis::eTWIST,  ToPxD6Motion(ConstraintDesc.TwistMotion));
+            D6Joint->setMotion(PxD6Axis::eX,      ToPxD6Motion(RuntimeConstraintDesc.XMotion));
+            D6Joint->setMotion(PxD6Axis::eY,      ToPxD6Motion(RuntimeConstraintDesc.YMotion));
+            D6Joint->setMotion(PxD6Axis::eZ,      ToPxD6Motion(RuntimeConstraintDesc.ZMotion));
+            D6Joint->setMotion(PxD6Axis::eSWING1, ToPxD6Motion(RuntimeConstraintDesc.Swing1Motion));
+            D6Joint->setMotion(PxD6Axis::eSWING2, ToPxD6Motion(RuntimeConstraintDesc.Swing2Motion));
+            D6Joint->setMotion(PxD6Axis::eTWIST,  ToPxD6Motion(RuntimeConstraintDesc.TwistMotion));
 
-            if (ConstraintDesc.XMotion == EPhysicsConstraintMotionMode::Limited ||
-                ConstraintDesc.YMotion == EPhysicsConstraintMotionMode::Limited ||
-                ConstraintDesc.ZMotion == EPhysicsConstraintMotionMode::Limited)
+            if (RuntimeConstraintDesc.XMotion == EPhysicsConstraintMotionMode::Limited ||
+                RuntimeConstraintDesc.YMotion == EPhysicsConstraintMotionMode::Limited ||
+                RuntimeConstraintDesc.ZMotion == EPhysicsConstraintMotionMode::Limited)
             {
-                PxJointLinearLimit LinearLimit(Physics->getTolerancesScale(), (std::max)(0.01f, ConstraintDesc.LinearLimit));
-                LinearLimit.stiffness = ConstraintDesc.Stiffness;
-                LinearLimit.damping   = ConstraintDesc.Damping;
+                PxJointLinearLimit LinearLimit(Physics->getTolerancesScale(), (std::max)(0.01f, RuntimeConstraintDesc.LinearLimit));
+                LinearLimit.stiffness = RuntimeConstraintDesc.Stiffness;
+                LinearLimit.damping   = RuntimeConstraintDesc.Damping;
                 D6Joint->setLinearLimit(LinearLimit);
             }
 
-            if (ConstraintDesc.Swing1Motion == EPhysicsConstraintMotionMode::Limited ||
-                ConstraintDesc.Swing2Motion == EPhysicsConstraintMotionMode::Limited)
+            if (RuntimeConstraintDesc.Swing1Motion == EPhysicsConstraintMotionMode::Limited ||
+                RuntimeConstraintDesc.Swing2Motion == EPhysicsConstraintMotionMode::Limited)
             {
                 PxJointLimitCone SwingLimit(
-                    (std::max)(0.001f, ToRadians(ConstraintDesc.SwingLimitY)),
-                    (std::max)(0.001f, ToRadians(ConstraintDesc.SwingLimitZ)));
-                SwingLimit.stiffness = ConstraintDesc.Stiffness;
-                SwingLimit.damping   = ConstraintDesc.Damping;
+                    (std::max)(0.001f, ToRadians(RuntimeConstraintDesc.SwingLimitY)),
+                    (std::max)(0.001f, ToRadians(RuntimeConstraintDesc.SwingLimitZ)));
+                SwingLimit.stiffness = RuntimeConstraintDesc.Stiffness;
+                SwingLimit.damping   = RuntimeConstraintDesc.Damping;
                 D6Joint->setSwingLimit(SwingLimit);
             }
 
-            if (ConstraintDesc.TwistMotion == EPhysicsConstraintMotionMode::Limited)
+            if (RuntimeConstraintDesc.TwistMotion == EPhysicsConstraintMotionMode::Limited)
             {
-                float TwistMin = ToRadians(ConstraintDesc.TwistLimitMin);
-                float TwistMax = ToRadians(ConstraintDesc.TwistLimitMax);
+                float TwistMin = ToRadians(RuntimeConstraintDesc.TwistLimitMin);
+                float TwistMax = ToRadians(RuntimeConstraintDesc.TwistLimitMax);
                 if (TwistMin > TwistMax)
                 {
                     std::swap(TwistMin, TwistMax);
                 }
                 PxJointAngularLimitPair TwistLimit(TwistMin, TwistMax);
-                TwistLimit.stiffness = ConstraintDesc.Stiffness;
-                TwistLimit.damping   = ConstraintDesc.Damping;
+                TwistLimit.stiffness = RuntimeConstraintDesc.Stiffness;
+                TwistLimit.damping   = RuntimeConstraintDesc.Damping;
                 D6Joint->setTwistLimit(TwistLimit);
             }
         }
@@ -924,12 +929,12 @@ FPhysicsConstraintInstance* FPhysXPhysicsScene::CreateConstraint(
         return nullptr;
     }
 
-    Joint->setConstraintFlag(PxConstraintFlag::eCOLLISION_ENABLED, !ConstraintDesc.bDisableCollision);
+    Joint->setConstraintFlag(PxConstraintFlag::eCOLLISION_ENABLED, !RuntimeConstraintDesc.bDisableCollision);
 
     FPhysicsConstraintInstance* Instance = new FPhysicsConstraintInstance();
     Instance->SetParentBody(ParentBody);
     Instance->SetChildBody(ChildBody);
-    Instance->SetConstraintDesc(ConstraintDesc);
+    Instance->SetConstraintDesc(RuntimeConstraintDesc);
 
     FPhysicsJointHandle Handle;
     Handle.NativeJoint = static_cast<void*>(Joint);

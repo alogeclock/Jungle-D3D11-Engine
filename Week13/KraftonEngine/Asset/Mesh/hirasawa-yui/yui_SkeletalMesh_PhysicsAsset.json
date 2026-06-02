@@ -1,0 +1,1121 @@
+{
+        "AssetPath" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+        "Bodies" : [{
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.031305,
+                "LocalTransform" : {
+                  "Location" : [-0.021820, 0.049228, -0.031222],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 Pelvis_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.192134,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 Pelvis",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.164881,
+                "LocalTransform" : {
+                  "Location" : [-0.199451, 0.018836, 0.002141],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 L Thigh_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.101000,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 L Thigh",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.262689,
+                "LocalTransform" : {
+                  "Location" : [-0.223717, 0.038166, -0.006401],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 L Calf_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.109871,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 L Calf",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.164881,
+                "LocalTransform" : {
+                  "Location" : [-0.199450, 0.018836, -0.002141],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 R Thigh_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.101000,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 R Thigh",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.262689,
+                "LocalTransform" : {
+                  "Location" : [-0.223717, 0.038166, 0.006401],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 R Calf_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.109871,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 R Calf",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.006879,
+                "LocalTransform" : {
+                  "Location" : [-0.154301, 0.019826, 0.004823],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 Spine1_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.142195,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 Spine1",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.222634,
+                "LocalTransform" : {
+                  "Location" : [-0.205492, -0.011343, -0.019399],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 L UpperArm_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.101000,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 L UpperArm",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.000000,
+                "LocalTransform" : {
+                  "Location" : [-0.065654, 0.004586, -0.007593],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 L Hand_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.101000,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 L Hand",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.029589,
+                "LocalTransform" : {
+                  "Location" : [-0.076228, -0.028043, 0.011760],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 Head_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.158840,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 Head",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.222404,
+                "LocalTransform" : {
+                  "Location" : [-0.205519, -0.011349, 0.019993],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 R UpperArm_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.101000,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 R UpperArm",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 0.100000,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 0.000000,
+                "LocalTransform" : {
+                  "Location" : [-0.068929, 0.004724, 0.005758],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "Bip001 R Hand_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 0.101000,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "Bip001 R Hand",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }],
+        "ClassName" : "PhysicsAsset",
+        "Constraints" : [{
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 L Hand",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 L Hand_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 L UpperArm",
+            "ParentLocalFrame" : {
+              "Location" : [-0.401649, -0.013539, -0.000001],
+              "Rotation" : [-0.696017, -0.021414, 0.022071, 0.717367],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 L Thigh",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 L Thigh_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 Pelvis",
+            "ParentLocalFrame" : {
+              "Location" : [-0.000000, 0.000000, 0.072071],
+              "Rotation" : [-0.036309, 0.999298, 0.000702, -0.009224],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 L Calf",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 L Calf_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 L Thigh",
+            "ParentLocalFrame" : {
+              "Location" : [-0.375112, -0.000000, 0.000000],
+              "Rotation" : [-0.000000, -0.000000, 0.114561, 0.993416],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 L UpperArm",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 L UpperArm_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 Spine1",
+            "ParentLocalFrame" : {
+              "Location" : [-0.194716, 0.000004, 0.134264],
+              "Rotation" : [-0.365361, 0.001721, 0.930749, 0.014674],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 R Thigh",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 R Thigh_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 Pelvis",
+            "ParentLocalFrame" : {
+              "Location" : [0.000000, -0.000000, -0.072071],
+              "Rotation" : [-0.036309, 0.999298, -0.000703, 0.009225],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 R Calf",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 R Calf_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 R Thigh",
+            "ParentLocalFrame" : {
+              "Location" : [-0.375112, -0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.114561, 0.993416],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 Spine1",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 Spine1_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 Pelvis",
+            "ParentLocalFrame" : {
+              "Location" : [-0.218001, -0.000159, -0.000000],
+              "Rotation" : [-0.000002, -0.000001, -0.000398, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 Head",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 Head_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 Spine1",
+            "ParentLocalFrame" : {
+              "Location" : [-0.309755, 0.012412, -0.000000],
+              "Rotation" : [0.000000, 0.000001, 0.000398, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 R UpperArm",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 R UpperArm_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 Spine1",
+            "ParentLocalFrame" : {
+              "Location" : [-0.194716, 0.000004, -0.134264],
+              "Rotation" : [0.365361, -0.001724, 0.930749, 0.014673],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "Bip001 R Hand",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "Bip001 R Hand_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "Bip001 R UpperArm",
+            "ParentLocalFrame" : {
+              "Location" : [-0.401649, -0.013539, -0.000000],
+              "Rotation" : [0.696017, 0.021414, 0.022071, 0.717367],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }],
+        "GraphViewState" : {
+          "NodeLayouts" : [{
+              "NodeKey" : "Body:Bip001 Pelvis",
+              "Position" : [810.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 L Calf",
+              "Position" : [1350.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 R Calf",
+              "Position" : [1350.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 Spine1",
+              "Position" : [1350.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 L UpperArm",
+              "Position" : [1890.000000, 472.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 L Hand",
+              "Position" : [2430.000000, 826.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 Head",
+              "Position" : [1890.000000, 590.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 R UpperArm",
+              "Position" : [1890.000000, 708.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 R Hand",
+              "Position" : [2430.000000, 944.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L Hand_Constraint:Bip001 L UpperArm:Bip001 L Hand",
+              "Position" : [2160.000000, 649.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L Calf_Constraint:Bip001 Pelvis:Bip001 L Calf",
+              "Position" : [1080.000000, 59.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R Calf_Constraint:Bip001 Pelvis:Bip001 R Calf",
+              "Position" : [1080.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 Spine1_Constraint:Bip001 Pelvis:Bip001 Spine1",
+              "Position" : [1080.000000, 177.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 Head_Constraint:Bip001 Spine1:Bip001 Head",
+              "Position" : [1620.000000, 472.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L UpperArm_Constraint:Bip001 Spine1:Bip001 L UpperArm",
+              "Position" : [1620.000000, 413.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R UpperArm_Constraint:Bip001 Spine1:Bip001 R UpperArm",
+              "Position" : [1620.000000, 531.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R Hand_Constraint:Bip001 R UpperArm:Bip001 R Hand",
+              "Position" : [2160.000000, 826.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 L Thigh",
+              "Position" : [1080.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 R Thigh",
+              "Position" : [1080.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L Thigh_Constraint:Bip001 Pelvis:Bip001 L Thigh",
+              "Position" : [945.000000, 59.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L Calf_Constraint:Bip001 L Thigh:Bip001 L Calf",
+              "Position" : [1215.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R Thigh_Constraint:Bip001 Pelvis:Bip001 R Thigh",
+              "Position" : [945.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R Calf_Constraint:Bip001 R Thigh:Bip001 R Calf",
+              "Position" : [1215.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:::",
+              "Position" : [135.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_23:UPhysicsBodySetup_24",
+              "Position" : [135.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_17:UPhysicsBodySetup_18",
+              "Position" : [135.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_18:UPhysicsBodySetup_19",
+              "Position" : [135.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_22:UPhysicsBodySetup_23",
+              "Position" : [135.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_17:UPhysicsBodySetup_20",
+              "Position" : [135.000000, 472.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_20:UPhysicsBodySetup_21",
+              "Position" : [135.000000, 590.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_17:UPhysicsBodySetup_22",
+              "Position" : [135.000000, 708.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_22:NewScene",
+              "Position" : [135.000000, 826.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_22:UMaterial_28",
+              "Position" : [135.000000, 944.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UMaterial_28:UMaterial_31",
+              "Position" : [135.000000, 1062.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:umaterial_75:Bip001 L UpperArm:Bip001 L Hand",
+              "Position" : [2160.000000, 885.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:ustaticmesh_17:Bip001 Pelvis:Bip001 L Thigh",
+              "Position" : [945.000000, 59.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:ustaticmeshcomponent_45:Bip001 L Thigh:Bip001 L Calf",
+              "Position" : [1215.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:umaterial_76:Bip001 Spine1:Bip001 L UpperArm",
+              "Position" : [1620.000000, 649.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:ustaticmesh_18:Bip001 Pelvis:Bip001 R Thigh",
+              "Position" : [945.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:ustaticmeshcomponent_46:Bip001 R Thigh:Bip001 R Calf",
+              "Position" : [1215.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:ustaticmeshcomponent_36:Bip001 Pelvis:Bip001 Spine1",
+              "Position" : [1080.000000, 295.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:umaterial_77:Bip001 Spine1:Bip001 Head",
+              "Position" : [1620.000000, 708.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:ustaticmesh_19:Bip001 Spine1:Bip001 R UpperArm",
+              "Position" : [1620.000000, 767.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:ustaticmeshcomponent_47:Bip001 R UpperArm:Bip001 R Hand",
+              "Position" : [2160.000000, 1062.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:uanimdatamodel_1:UStaticMeshComponent_17:UStaticMeshComponent_18",
+              "Position" : [135.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:walksound:UMaterial_33:UMaterial_34",
+              "Position" : [135.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:unotify_playsound_0:UMaterial_34:UDirectionalLightComponent_1",
+              "Position" : [135.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:unotify_playsound_1:UStaticMeshComponent_16:UStaticMeshComponent_17",
+              "Position" : [135.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:unotify_playsound_2:UMaterial_33:UBoxComponent_4",
+              "Position" : [135.000000, 472.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:unotify_playsound_3:UBoxComponent_4:UMaterial_36",
+              "Position" : [135.000000, 590.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:foot_r:UMaterial_33:UStaticMeshComponent_16",
+              "Position" : [135.000000, 708.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:umaterial_53:UStaticMeshComponent_16:KON001_Hirasawa_Yui",
+              "Position" : [135.000000, 826.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:umaterial_54:UStaticMeshComponent_16:Bip001 L Calf",
+              "Position" : [675.000000, 649.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:umaterial_55:Bip001 L Calf:Bip001 L Toe0_end",
+              "Position" : [1485.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 L Foot",
+              "Position" : [1620.000000, 1770.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 R Foot",
+              "Position" : [1620.000000, 1888.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 Spine",
+              "Position" : [1080.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 L Forearm",
+              "Position" : [2160.000000, 2360.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Bip001 R Forearm",
+              "Position" : [2160.000000, 2478.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_B_01",
+              "Position" : [1080.000000, 472.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_BL_01",
+              "Position" : [1080.000000, 590.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_BR_01",
+              "Position" : [1080.000000, 708.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_F_01",
+              "Position" : [1080.000000, 826.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_FL_01",
+              "Position" : [1080.000000, 944.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_FR_01",
+              "Position" : [1080.000000, 1062.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_L_01",
+              "Position" : [1080.000000, 1180.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:Skirt_R_01",
+              "Position" : [1080.000000, 1298.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R Foot_Constraint:Bip001 R Calf:Bip001 R Foot",
+              "Position" : [1485.000000, 1711.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_B_01_Constraint:Bip001 Pelvis:Skirt_B_01",
+              "Position" : [945.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 Spine_Constraint:Bip001 Pelvis:Bip001 Spine",
+              "Position" : [945.000000, 177.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_BL_01_Constraint:Bip001 Pelvis:Skirt_BL_01",
+              "Position" : [945.000000, 295.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L Foot_Constraint:Bip001 L Calf:Bip001 L Foot",
+              "Position" : [1485.000000, 1593.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_BR_01_Constraint:Bip001 Pelvis:Skirt_BR_01",
+              "Position" : [945.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_FL_01_Constraint:Bip001 Pelvis:Skirt_FL_01",
+              "Position" : [945.000000, 472.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 Spine1_Constraint:Bip001 Spine:Bip001 Spine1",
+              "Position" : [1215.000000, 1003.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_FR_01_Constraint:Bip001 Pelvis:Skirt_FR_01",
+              "Position" : [945.000000, 531.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L Forearm_Constraint:Bip001 L UpperArm:Bip001 L Forearm",
+              "Position" : [2025.000000, 2183.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 L Hand_Constraint:Bip001 L Forearm:Bip001 L Hand",
+              "Position" : [2295.000000, 2478.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R Forearm_Constraint:Bip001 R UpperArm:Bip001 R Forearm",
+              "Position" : [2025.000000, 2360.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Bip001 R Hand_Constraint:Bip001 R Forearm:Bip001 R Hand",
+              "Position" : [2295.000000, 2596.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_F_01_Constraint:Bip001 Pelvis:Skirt_F_01",
+              "Position" : [945.000000, 413.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_L_01_Constraint:Bip001 Pelvis:Skirt_L_01",
+              "Position" : [945.000000, 590.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:Skirt_R_01_Constraint:Bip001 Pelvis:Skirt_R_01",
+              "Position" : [945.000000, 649.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 R Hand:Bip001 R Hand_Capsule",
+              "Position" : [2565.000000, 2714.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UStaticMeshComponent_18",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:Bip001 R UpperArm",
+              "Position" : [1350.000000, 1121.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 R UpperArm:Bip001 R UpperArm_Capsule",
+              "Position" : [2025.000000, 2242.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:Skirt_B_01_Capsule",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UMaterial_41",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 R UpperArm_Capsule:UPhysicsBodySetup_20",
+              "Position" : [135.000000, 708.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UStaticMeshComponent_21",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UPhysicsBodySetup_21",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::UPhysicsBodySetup_21:Bip001 R Hand",
+              "Position" : [1215.000000, 1888.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UStaticMeshComponent_24",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Skirt_B_01_Capsule:Bip001 Spine1",
+              "Position" : [675.000000, 1475.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Spine1:Skirt_BL_01",
+              "Position" : [1215.000000, 1121.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UMaterial_47",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Skirt_BL_01:Skirt_BL_01_Capsule",
+              "Position" : [1215.000000, 590.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Skirt_BL_01_Capsule:UPhysicsBodySetup_24",
+              "Position" : [135.000000, 1770.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Spine1:ParticleSystemEditorPreview_0",
+              "Position" : [1485.000000, 1652.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Spine1:ULevel_2",
+              "Position" : [1485.000000, 1652.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::ULevel_2:USkeletalMeshComponent_4",
+              "Position" : [135.000000, 2124.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::USkeletalMeshComponent_4:AActor_4",
+              "Position" : [135.000000, 2242.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UMaterial_44",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UStaticMeshComponent_27",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint::Bip001 Pelvis:UMaterial_50",
+              "Position" : [945.000000, 0.000000, 0.000000]
+            }],
+          "Pan" : [-641.200012, -522.000000, 0.000000],
+          "Zoom" : 0.550000
+        },
+        "PreviewSkeletalMeshPath" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset"
+      }

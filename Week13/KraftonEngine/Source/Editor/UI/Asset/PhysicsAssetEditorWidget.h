@@ -128,7 +128,6 @@ private:
 	bool bScrollToSelectedConstraintOnNextRender = false;
 	bool bPendingClose = false;
 	bool bPreviewSimulating = false;
-	bool bHideEditOverlaysDuringSimulation = true;
 	float PreviewSimulationTime = 0.0f;
 
 	ID3D11ShaderResourceView* CapsuleBodyIcon = nullptr;

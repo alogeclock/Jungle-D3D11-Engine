@@ -2599,6 +2599,7 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	WorldContext.World->InitWorld();
 
 	AActor* Actor = WorldContext.World->SpawnActor<AActor>();
+	Actor->bTickInEditor = true;
 	USkeletalMeshComponent* MeshComponent = Actor->AddComponent<USkeletalMeshComponent>();
 	MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
 	Actor->SetRootComponent(MeshComponent);
@@ -2653,8 +2654,9 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	UBoxComponent* FloorBoxComponent = FloorActor->AddComponent<UBoxComponent>();
 	FloorBoxComponent->AttachToComponent(FloorActor->GetRootComponent());
 	FloorBoxComponent->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
-	FloorBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	FloorBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	FloorBoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	FloorBoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::Block);
 	FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -1.0f));
 	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 1.0f));
 
@@ -2671,7 +2673,7 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	FSlateApplication::Get().RegisterViewport(&PhysicsAssetViewportWindow, &ViewportClient);
 	ViewportClient.ResetCameraToPreviewBounds();
 	RebuildPreviewShapeComponents(PhysicsAsset);
-	SetEditorPreviewOverlaysVisible(!bPreviewSimulating || !bHideEditOverlaysDuringSimulation);
+	SetEditorPreviewOverlaysVisible(true);
 }
 
 // ---------------------------------------------------------------------------
@@ -3363,7 +3365,7 @@ void FPhysicsAssetEditorWidget::StartPreviewSimulation(UPhysicsAsset* PhysicsAss
 
 	bPreviewSimulating = MeshComponent->IsRagdollActive();
 	PreviewSimulationTime = 0.0f;
-	SetEditorPreviewOverlaysVisible(!bPreviewSimulating || !bHideEditOverlaysDuringSimulation);
+	SetEditorPreviewOverlaysVisible(true);
 }
 
 void FPhysicsAssetEditorWidget::StopPreviewSimulation(bool bResetPose)
@@ -3377,7 +3379,9 @@ void FPhysicsAssetEditorWidget::StopPreviewSimulation(bool bResetPose)
 		{
 			MeshComponent->SetWorldLocation(FVector::ZeroVector);
 			MeshComponent->SetRelativeRotation(FQuat::Identity);
+			MeshComponent->ResetBoneEditPose();
 			MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
+			MeshComponent->ResetBoneEditPose();
 		}
 	}
 
@@ -3500,12 +3504,9 @@ void FPhysicsAssetEditorWidget::Tick(float DeltaTime)
 		TickPreviewSimulation(DeltaTime);
 		ViewportClient.Tick(DeltaTime);
 		UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
-		if (!bPreviewSimulating)
-		{
-			SyncPreviewShapeComponents(PhysicsAsset);
-			SyncConstraintConeComponents(PhysicsAsset);
-			DrawConstraintDebug(PhysicsAsset);
-		}
+		SyncPreviewShapeComponents(PhysicsAsset);
+		SyncConstraintConeComponents(PhysicsAsset);
+		DrawConstraintDebug(PhysicsAsset);
 	}
 }
 
