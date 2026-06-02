@@ -60,6 +60,9 @@ private:
 	UPROPERTY(Edit, Category = "Vehicle|Drive", DisplayName = "Max Engine Torque")
 	float MaxEngineTorque = 1500.f;
 
+	UPROPERTY(Edit, Category = "Vehicle|Drive", DisplayName = "Max Engine Omega")
+	float MaxEngineOmega = 500.f;
+
 	UPROPERTY(Edit, Category = "Vehicle|Drive", DisplayName = "Max Brake Torque")
 	float MaxBrakeTorque = 3000.f;
 
