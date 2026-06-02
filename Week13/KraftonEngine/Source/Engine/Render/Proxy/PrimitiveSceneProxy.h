@@ -108,6 +108,8 @@ public:
 	virtual void CollectCollisionShapes(FDebugDrawQueue& /*Queue*/) const {}
 	virtual const char* GetVertexShaderEntryName() const { return "VS_Static"; }
 	virtual bool WantsGpuSkinning(const FPrimitiveDrawOptions& /*Options*/) const { return false; }
+	virtual bool ShouldOverrideCullMode() const { return false; }
+	virtual ERasterizerState GetCullModeOverride() const { return ERasterizerState::SolidBackCull; }
 
 	virtual bool PrepareDrawBuffer(ID3D11Device* Device, ID3D11DeviceContext* Context,
 		FDrawCommandBuffer& OutBuffer) const;

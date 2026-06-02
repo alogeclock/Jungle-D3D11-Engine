@@ -150,12 +150,18 @@ float FDrawCommandBuilder::ComputeAlphaSortDepth(const FPrimitiveSceneProxy& Pro
 // ============================================================
 // ApplyMaterialRenderState — Material 렌더 상태 오버라이드 (Wireframe 우선)
 // ============================================================
-void FDrawCommandBuilder::ApplyMaterialRenderState(FDrawCommandRenderState& OutState, const UMaterial* Mat, const FDrawCommandRenderState& BaseState)
+void FDrawCommandBuilder::ApplyMaterialRenderState(FDrawCommandRenderState& OutState, const UMaterial* Mat, const FPrimitiveSceneProxy& Proxy, const FDrawCommandRenderState& BaseState)
 {
 	OutState.Blend = Mat->GetBlendState();
 	OutState.DepthStencil = Mat->GetDepthStencilState();
 	if (BaseState.Rasterizer != ERasterizerState::WireFrame)
+	{
 		OutState.Rasterizer = Mat->GetRasterizerState();
+		if (Proxy.ShouldOverrideCullMode())
+		{
+			OutState.Rasterizer = Proxy.GetCullModeOverride();
+		}
+	}
 }
 
 // ============================================================
@@ -237,7 +243,12 @@ void FDrawCommandBuilder::BuildCommandForProxy(FScene& Scene, const FPrimitiveSc
 
 			// 섹션별 Material의 RenderPass가 현재 Pass와 일치할 때만 렌더 상태 오버라이드
 			if (Pass == Mat->GetRenderPass())
-				ApplyMaterialRenderState(Cmd.RenderState, Mat, BaseRenderState);
+				ApplyMaterialRenderState(Cmd.RenderState, Mat, Proxy, BaseRenderState);
+		}
+
+		if (BaseRenderState.Rasterizer != ERasterizerState::WireFrame && Proxy.ShouldOverrideCullMode())
+		{
+			Cmd.RenderState.Rasterizer = Proxy.GetCullModeOverride();
 		}
 
 		FPrimitiveDrawOptions CommandDrawOptions = DrawOptions;
@@ -296,7 +307,7 @@ void FDrawCommandBuilder::BuildDecalCommandForReceiver(FScene& Scene, const FPri
 			Cmd.RenderState = BaseRenderState;
 
 			// 머티리얼 기반 렌더 상태 오버라이드
-			ApplyMaterialRenderState(Cmd.RenderState, DecalMat, BaseRenderState);
+			ApplyMaterialRenderState(Cmd.RenderState, DecalMat, DecalProxy, BaseRenderState);
 
 			Cmd.Buffer = ReceiverBuffer;
 			Cmd.Buffer.FirstIndex = FirstIndex;
@@ -523,7 +534,12 @@ void FDrawCommandBuilder::BuildParticleCommands(FScene& Scene, const FParticleSc
 				Cmd.Bindings.SRVs[s] = const_cast<ID3D11ShaderResourceView*>(MatSRVs[s]);
 
 			if (Pass == Mat->GetRenderPass())
-				ApplyMaterialRenderState(Cmd.RenderState, Mat, BaseRenderState);
+				ApplyMaterialRenderState(Cmd.RenderState, Mat, *Proxy, BaseRenderState);
+		}
+
+		if (BaseRenderState.Rasterizer != ERasterizerState::WireFrame && Proxy->ShouldOverrideCullMode())
+		{
+			Cmd.RenderState.Rasterizer = Proxy->GetCullModeOverride();
 		}
 
 		FPrimitiveDrawOptions CommandDrawOptions = DrawOptions;

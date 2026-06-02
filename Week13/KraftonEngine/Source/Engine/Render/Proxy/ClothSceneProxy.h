@@ -14,6 +14,8 @@ public:
 
     void UpdateMaterial() override;
     void UpdateMesh() override;
+    bool ShouldOverrideCullMode() const override { return true; }
+    ERasterizerState GetCullModeOverride() const override { return ERasterizerState::SolidNoCull; }
     bool PrepareDrawBuffer(ID3D11Device* Device, ID3D11DeviceContext* Context, FDrawCommandBuffer& OutBuffer) const override;
 
 private:
