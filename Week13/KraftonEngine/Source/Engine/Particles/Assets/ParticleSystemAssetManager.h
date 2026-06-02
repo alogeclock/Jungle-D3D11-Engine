@@ -15,6 +15,7 @@ class FParticleSystemAssetManager : public TSingleton<FParticleSystemAssetManage
 public:
 	UParticleSystem* Load(const FString& Path);
 	UParticleSystem* Find(const FString& Path) const;
+	bool Unload(const FString& Path);
 	void RegisterAsset(const FString& Path, UParticleSystem* Asset);
 	bool Save(UParticleSystem* Asset);
 	bool IsSupportedAssetPackage(const FString& Path) const;

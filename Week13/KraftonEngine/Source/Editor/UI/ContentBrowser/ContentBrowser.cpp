@@ -8,11 +8,16 @@
 #include "Editor/Subsystem/AssetFactory.h"
 #include "Editor/UI/EditorTextureManager.h"
 #include "EditorEngine.h"
+#include "Object/Object.h"
 
 #include "Editor/Import/EditorObjImportService.h"
 #include "Editor/Import/EditorFbxImportService.h"
+#include "Animation/AnimSequence.h"
 #include "Mesh/MeshImportOptions.h"
 #include "Mesh/MeshManager.h"
+#include "Mesh/SkeletalMesh.h"
+#include "Mesh/Skeleton.h"
+#include "Mesh/SkeletonManager.h"
 #include "Materials/Material.h"
 #include "Materials/MaterialManager.h"
 #include "CameraShake/CameraShakeAsset.h"
@@ -127,6 +132,137 @@ namespace
 	FString ToProjectRelativePath(const std::filesystem::path& Path)
 	{
 		return FPaths::MakeProjectRelative(FPaths::ToUtf8(Path.lexically_normal().generic_wstring()));
+	}
+
+	UObject* FindLoadedAssetByPath(const FString& RelativePath, const FString& Extension, EAssetPackageType* OutPackageType = nullptr)
+	{
+		if (OutPackageType)
+		{
+			*OutPackageType = EAssetPackageType::Unknown;
+		}
+
+		if (Extension == ".mat")
+		{
+			return FMaterialManager::Get().FindMaterial(RelativePath);
+		}
+
+		if (Extension == ".curve")
+		{
+			return FFloatCurveManager::Get().Find(RelativePath);
+		}
+
+		if (Extension == ".shake")
+		{
+			return FCameraShakeManager::Get().Find(RelativePath);
+		}
+
+		if (Extension != ".uasset")
+		{
+			return nullptr;
+		}
+
+		EAssetPackageType PackageType = EAssetPackageType::Unknown;
+		if (!FAssetPackage::GetPackageType(RelativePath, PackageType))
+		{
+			return nullptr;
+		}
+		if (OutPackageType)
+		{
+			*OutPackageType = PackageType;
+		}
+
+		switch (PackageType)
+		{
+		case EAssetPackageType::StaticMesh:
+			return FMeshManager::FindStaticMesh(RelativePath);
+		case EAssetPackageType::SkeletalMesh:
+			return FMeshManager::FindSkeletalMesh(RelativePath);
+		case EAssetPackageType::Skeleton:
+			return FSkeletonManager::Get().Find(RelativePath);
+		case EAssetPackageType::AnimSequence:
+			return FAnimSequenceManager::Get().Find(RelativePath);
+		case EAssetPackageType::AnimInstance:
+			return FAnimInstanceAssetManager::Get().Find(RelativePath);
+		case EAssetPackageType::FloatCurve:
+			return FFloatCurveManager::Get().Find(RelativePath);
+		case EAssetPackageType::CameraShake:
+			return FCameraShakeManager::Get().Find(RelativePath);
+		case EAssetPackageType::ParticleSystem:
+			return FParticleSystemAssetManager::Get().Find(RelativePath);
+		case EAssetPackageType::PhysicsAsset:
+			return FPhysicsAssetManager::Get().Find(RelativePath);
+		case EAssetPackageType::PhysicalMaterial:
+			return FPhysicalMaterialManager::Get().Find(RelativePath);
+		default:
+			return nullptr;
+		}
+	}
+
+	void UnloadAssetByPath(const FString& RelativePath, const FString& Extension, EAssetPackageType PackageType = EAssetPackageType::Unknown)
+	{
+		if (Extension == ".mat")
+		{
+			FMaterialManager::Get().ForgetMaterial(RelativePath);
+			return;
+		}
+
+		if (Extension == ".curve")
+		{
+			FFloatCurveManager::Get().Unload(RelativePath);
+			return;
+		}
+
+		if (Extension == ".shake")
+		{
+			FCameraShakeManager::Get().Unload(RelativePath);
+			return;
+		}
+
+		if (Extension != ".uasset")
+		{
+			return;
+		}
+
+		if (PackageType == EAssetPackageType::Unknown && !FAssetPackage::GetPackageType(RelativePath, PackageType))
+		{
+			return;
+		}
+
+		switch (PackageType)
+		{
+		case EAssetPackageType::StaticMesh:
+			FMeshManager::UnloadStaticMesh(RelativePath);
+			break;
+		case EAssetPackageType::SkeletalMesh:
+			FMeshManager::UnloadSkeletalMesh(RelativePath);
+			break;
+		case EAssetPackageType::Skeleton:
+			FSkeletonManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::AnimSequence:
+			FAnimSequenceManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::AnimInstance:
+			FAnimInstanceAssetManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::FloatCurve:
+			FFloatCurveManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::CameraShake:
+			FCameraShakeManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::ParticleSystem:
+			FParticleSystemAssetManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::PhysicsAsset:
+			FPhysicsAssetManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::PhysicalMaterial:
+			FPhysicalMaterialManager::Get().Unload(RelativePath);
+			break;
+		default:
+			break;
+		}
 	}
 
 	FString OpenImportSourceFileDialog(const std::wstring& InitialDirectory)
@@ -1287,6 +1423,8 @@ bool FEditorContentBrowserWidget::ExecuteDeleteAsset()
 
 	const FString Extension = GetLowerExtension(FullPath);
 	const FString RelativePath = ToProjectRelativePath(FullPath);
+	EAssetPackageType PackageType = EAssetPackageType::Unknown;
+	UObject* LoadedAsset = FindLoadedAssetByPath(RelativePath, Extension, &PackageType);
 
 	std::error_code Error;
 	if (!std::filesystem::remove(FullPath, Error) || Error)
@@ -1295,10 +1433,12 @@ bool FEditorContentBrowserWidget::ExecuteDeleteAsset()
 		return false;
 	}
 
-	if (Extension == ".mat")
+	if (LoadedAsset && BrowserContext.EditorEngine)
 	{
-		FMaterialManager::Get().ForgetMaterial(RelativePath);
+		BrowserContext.EditorEngine->CloseAssetEditorsForObject(LoadedAsset);
 	}
+
+	UnloadAssetByPath(RelativePath, Extension, PackageType);
 
 	BrowserContext.SelectedElement.reset();
 	RefreshImportedAssetLists();

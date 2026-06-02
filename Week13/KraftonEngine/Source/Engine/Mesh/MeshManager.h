@@ -37,6 +37,8 @@ public:
 	// if it has not been loaded yet. Does no I/O and does not touch the GPU device.
 	static UStaticMesh*   FindStaticMesh(const FString& PathFileName);
 	static USkeletalMesh* FindSkeletalMesh(const FString& PathFileName);
+	static bool UnloadStaticMesh(const FString& PathFileName);
+	static bool UnloadSkeletalMesh(const FString& PathFileName);
 
 	static const TArray<FMeshAssetListItem>& GetAvailableStaticMeshFiles() { return AvailableStaticMeshFiles; };
 	static const TArray<FMeshAssetListItem>& GetAvailableSkeletalMeshFiles() { return AvailableSkeletalMeshFiles; };
