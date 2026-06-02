@@ -18,6 +18,7 @@ class FPhysicsAssetManager : public TSingleton<FPhysicsAssetManager>
 public:
     UPhysicsAsset* Load(const FString& Path);
     UPhysicsAsset* Find(const FString& Path) const;
+    bool Unload(const FString& Path);
 
     bool Save(UPhysicsAsset* Asset);
     bool SaveAsJson(UPhysicsAsset* Asset, const FString& OverridePath = FString());

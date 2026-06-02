@@ -8,6 +8,7 @@
 #include "Engine/Platform/Paths.h"
 #include "Materials/MaterialManager.h"
 #include "Asset/AssetPackage.h"
+#include "Object/FUObjectArray.h"
 
 #include <algorithm>
 #include <cwctype>
@@ -403,6 +404,34 @@ UStaticMesh* FMeshManager::FindStaticMesh(const FString& PathFileName)
 	return It != StaticMeshCache.end() ? It->second : nullptr;
 }
 
+bool FMeshManager::UnloadStaticMesh(const FString& PathFileName)
+{
+	if (PathFileName.empty() || !IsAssetPackagePath(PathFileName))
+	{
+		return false;
+	}
+
+	const FString CacheKey = GetStaticMeshBinaryFilePath(PathFileName);
+	if (CacheKey.empty())
+	{
+		return false;
+	}
+
+	auto It = StaticMeshCache.find(CacheKey);
+	if (It == StaticMeshCache.end())
+	{
+		return false;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	StaticMeshCache.erase(It);
+	return true;
+}
+
 USkeletalMesh* FMeshManager::LoadSkeletalMesh(const FString& PathFileName, ID3D11Device* InDevice)
 {
 	if (!IsAssetPackagePath(PathFileName))
@@ -471,4 +500,32 @@ USkeletalMesh* FMeshManager::FindSkeletalMesh(const FString& PathFileName)
 
 	auto It = SkeletalMeshCache.find(CacheKey);
 	return It != SkeletalMeshCache.end() ? It->second : nullptr;
+}
+
+bool FMeshManager::UnloadSkeletalMesh(const FString& PathFileName)
+{
+	if (PathFileName.empty() || !IsAssetPackagePath(PathFileName))
+	{
+		return false;
+	}
+
+	const FString CacheKey = GetSkeletalMeshBinaryFilePath(PathFileName);
+	if (CacheKey.empty())
+	{
+		return false;
+	}
+
+	auto It = SkeletalMeshCache.find(CacheKey);
+	if (It == SkeletalMeshCache.end())
+	{
+		return false;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	SkeletalMeshCache.erase(It);
+	return true;
 }

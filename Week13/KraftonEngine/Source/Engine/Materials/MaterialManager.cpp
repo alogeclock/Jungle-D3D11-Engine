@@ -8,6 +8,7 @@
 #include "Render/Resource/Buffer.h"
 #include "Texture/Texture2D.h"
 #include "Render/Pipeline/Renderer.h"
+#include "Object/FUObjectArray.h"
 
 #include <algorithm>
 #include <cwctype>
@@ -320,6 +321,14 @@ bool FMaterialManager::SaveMaterial(UMaterial* Material)
 	return SaveToJSON(JsonData, MatFilePath);
 }
 
+UMaterial* FMaterialManager::FindMaterial(const FString& MatFilePath) const
+{
+	const std::filesystem::path Path = ResolveMaterialDiskPath(MatFilePath);
+	const FString CacheKey = MakeMaterialCacheKey(Path);
+	auto It = MaterialCache.find(CacheKey);
+	return It != MaterialCache.end() ? It->second : nullptr;
+}
+
 bool FMaterialManager::RenameMaterial(const FString& MatFilePath, const FString& NewAssetName, FString& OutNewMatFilePath)
 {
 	const std::filesystem::path OldPath = ResolveMaterialDiskPath(MatFilePath);
@@ -398,7 +407,18 @@ void FMaterialManager::ForgetMaterial(const FString& MatFilePath)
 {
 	const std::filesystem::path Path = ResolveMaterialDiskPath(MatFilePath);
 	const FString CacheKey = MakeMaterialCacheKey(Path);
-	MaterialCache.erase(CacheKey);
+	auto It = MaterialCache.find(CacheKey);
+	if (It == MaterialCache.end())
+	{
+		return;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	MaterialCache.erase(It);
 }
 
 json::JSON FMaterialManager::ReadJsonFile(const FString& FilePath) const

@@ -115,6 +115,7 @@ private:
 	float ConstraintAxisLength = 0.1f;
 
 	char BoneSearchBuffer[128] = {};
+	bool bShowBonesWithBodiesOnly = false;
 	bool bExpandBodyTreeOnNextRender = false;
 	bool bFrameGraphOnNextRender = false;
 	bool bScrollToSelectedConstraintOnNextRender = false;

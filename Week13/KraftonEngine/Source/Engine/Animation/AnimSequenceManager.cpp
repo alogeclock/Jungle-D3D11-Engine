@@ -62,6 +62,24 @@ UAnimSequence* FAnimSequenceManager::Find(const FString& Path) const
 	return It != AnimSequenceCache.end() ? It->second : nullptr;
 }
 
+bool FAnimSequenceManager::Unload(const FString& Path)
+{
+	const FString NormalizedPath = FPaths::MakeProjectRelative(Path);
+	auto It = AnimSequenceCache.find(NormalizedPath);
+	if (It == AnimSequenceCache.end())
+	{
+		return false;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	AnimSequenceCache.erase(It);
+	return true;
+}
+
 void FAnimSequenceManager::RegisterAnimSequence(const FString& Path, UAnimSequence* AnimSequence)
 {
 	if (!AnimSequence)

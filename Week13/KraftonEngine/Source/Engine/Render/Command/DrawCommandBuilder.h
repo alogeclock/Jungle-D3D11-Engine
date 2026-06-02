@@ -61,7 +61,7 @@ private:
 	// 공통 헬퍼
 	void EmitLineCommand(FLineGeometry& Lines, FShader* Shader, const FDrawCommandRenderState& RS);
 	void ApplyMaterialRenderState(FDrawCommandRenderState& OutState, const UMaterial* Mat, const FDrawCommandRenderState& BaseState);
-	FShader* SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode, const FPrimitiveSceneProxy& Proxy);
+	FShader* SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode, ERenderPass Pass, const FPrimitiveSceneProxy& Proxy);
 	float ComputeAlphaSortDepth(const FPrimitiveSceneProxy& Proxy) const;
 
 	FConstantBuffer* GetPerObjectCBForProxy(FScene* Scene, const FPrimitiveSceneProxy& Proxy);

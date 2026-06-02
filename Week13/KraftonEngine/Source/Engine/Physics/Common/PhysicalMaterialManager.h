@@ -12,6 +12,7 @@ class FPhysicalMaterialManager : public TSingleton<FPhysicalMaterialManager>
 public:
 	UPhysicalMaterial* Load(const FString& Path);
 	UPhysicalMaterial* Find(const FString& Path) const;
+	bool Unload(const FString& Path);
 	bool Save(UPhysicalMaterial* Asset);
 
 private:

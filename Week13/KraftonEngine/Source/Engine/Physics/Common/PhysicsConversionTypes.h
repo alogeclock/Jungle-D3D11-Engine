@@ -31,14 +31,7 @@ inline FTransform ScalePhysicsTransformLength(const FTransform& Transform)
     return ScaledTransform;
 }
 
-inline FMatrix ScalePhysicsMatrixTranslationLength(const FMatrix& Matrix)
-{
-    FMatrix ScaledMatrix = Matrix;
-    ScaledMatrix.SetLocation(ScalePhysicsLength(ScaledMatrix.GetLocation()));
-    return ScaledMatrix;
-}
-
-inline void ScalePhysicsShapeDescLength(FPhysicsShapeDesc& ShapeDesc)
+inline FPhysicsShapeDesc MakeEngineUnitShapeDesc(FPhysicsShapeDesc ShapeDesc)
 {
     ShapeDesc.LocalTransform = ScalePhysicsTransformLength(ShapeDesc.LocalTransform);
     ShapeDesc.Size = ScalePhysicsLength(ShapeDesc.Size);
@@ -47,21 +40,26 @@ inline void ScalePhysicsShapeDescLength(FPhysicsShapeDesc& ShapeDesc)
     {
         Vertex = ScalePhysicsLength(Vertex);
     }
+
+    return ShapeDesc;
 }
 
-inline void ScalePhysicsBodyDescLength(FPhysicsBodyDesc& BodyDesc)
+inline FPhysicsBodyDesc MakeEngineUnitBodyDesc(FPhysicsBodyDesc BodyDesc)
 {
     for (FPhysicsShapeDesc& ShapeDesc : BodyDesc.Shapes)
     {
-        ScalePhysicsShapeDescLength(ShapeDesc);
+        ShapeDesc = MakeEngineUnitShapeDesc(ShapeDesc);
     }
+
+    return BodyDesc;
 }
 
-inline void ScalePhysicsConstraintDescLength(FPhysicsConstraintDesc& ConstraintDesc)
+inline FPhysicsConstraintDesc MakeEngineUnitConstraintDesc(FPhysicsConstraintDesc ConstraintDesc)
 {
     ConstraintDesc.ParentLocalFrame = ScalePhysicsTransformLength(ConstraintDesc.ParentLocalFrame);
     ConstraintDesc.ChildLocalFrame = ScalePhysicsTransformLength(ConstraintDesc.ChildLocalFrame);
     ConstraintDesc.LinearLimit *= FPhysicsUnitScale::LengthScale;
+    return ConstraintDesc;
 }
 
 /** Bone Transform 기반 Body 생성 정보 */

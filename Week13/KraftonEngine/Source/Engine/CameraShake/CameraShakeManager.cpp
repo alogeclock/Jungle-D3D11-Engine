@@ -62,6 +62,24 @@ UCameraShakeAsset* FCameraShakeManager::Find(const FString& Path) const
 	return it != LoadedShakes.end() ? it->second : nullptr;
 }
 
+bool FCameraShakeManager::Unload(const FString& Path)
+{
+	FString NormalizedPath = FPaths::MakeProjectRelative(Path);
+	auto It = LoadedShakes.find(NormalizedPath);
+	if (It == LoadedShakes.end())
+	{
+		return false;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	LoadedShakes.erase(It);
+	return true;
+}
+
 bool FCameraShakeManager::Save(UCameraShakeAsset* Asset)
 {
 	if (!Asset)

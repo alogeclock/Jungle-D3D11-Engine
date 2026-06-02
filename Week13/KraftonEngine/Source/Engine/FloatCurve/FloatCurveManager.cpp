@@ -48,6 +48,24 @@ UFloatCurveAsset* FFloatCurveManager::Find(const FString& Path) const
 	return it != LoadedCurves.end() ? it->second : nullptr;
 }
 
+bool FFloatCurveManager::Unload(const FString& Path)
+{
+	FString NormalizedPath = FPaths::MakeProjectRelative(Path);
+	auto It = LoadedCurves.find(NormalizedPath);
+	if (It == LoadedCurves.end())
+	{
+		return false;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	LoadedCurves.erase(It);
+	return true;
+}
+
 bool FFloatCurveManager::Save(UFloatCurveAsset* Asset)
 {
 	if (!Asset)
