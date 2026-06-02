@@ -1979,7 +1979,7 @@ FVehicleRuntimeHandle FPhysXPhysicsScene::CreateVehicle(const FVehicleRuntimeCre
 	// Engine
 	PxVehicleEngineData Engine;
 	Engine.mPeakTorque = DriveDesc.MaxEngineTorque;
-	Engine.mMaxOmega = 600.f; // ~6000rpm
+	Engine.mMaxOmega = DriveDesc.MaxEngineOmega; // omega = rpm * 2π / 60
 	DriveSimData.setEngineData(Engine);
 
 	// Gears

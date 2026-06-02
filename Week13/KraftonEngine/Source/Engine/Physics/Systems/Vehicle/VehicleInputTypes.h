@@ -10,6 +10,7 @@ struct FVehicleDriveDesc
 {
     EVehicleDriveType DriveType       = EVehicleDriveType::VDT_RearWheel;
     float             MaxEngineTorque = 1500.0f;
+    float             MaxEngineOmega  = 500.0f;
     float             MaxBrakeTorque  = 3000.0f;
     float             HandbrakeTorque = 4000.0f;
     float             ClutchStrength  = 10.0f;

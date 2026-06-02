@@ -283,7 +283,11 @@ void AVehiclePawn::ApplyDefaultVehicleInput(const FInputSystemSnapshot& Input)
 		return;
 	}
 
-	if (VehicleMovement->IsInAir()) return; // 공중에서는 입력 무시
+	if (VehicleMovement->IsInAir())
+	{
+		ResetVehicleInput();
+		return;
+	}
 
 	const float Throttle = Input.IsDown('W') ? 1.0f : 0.0f;
 	const float Brake = Input.IsDown('S') ? 1.0f : 0.0f;

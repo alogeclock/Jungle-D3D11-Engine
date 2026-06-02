@@ -35,10 +35,10 @@ private:
 	void SetViewport(ID3D11DeviceContext* DC, uint32 Width, uint32 Height);
 	void DrawFullscreen(ID3D11DeviceContext* DC);
 	void UpdateDOFConstants(const FPassContext& Ctx);
-	void UpdateBlurConstants(const FPassContext& Ctx, float DirectionX, float DirectionY);
+	void UpdateBlurConstants(const FPassContext& Ctx, float LayerSign);
 	void RenderCoCPass(const FPassContext& Ctx, class FShader* Shader);
 	void RenderPrefilterSplitPass(const FPassContext& Ctx, class FShader* Shader);
-	FDOFRenderTarget* RenderBlurPingPong(const FPassContext& Ctx, class FShader* Shader, FDOFRenderTarget& LayerA, FDOFRenderTarget& LayerB);
+	FDOFRenderTarget* RenderDiskBlur(const FPassContext& Ctx, class FShader* Shader, FDOFRenderTarget& LayerA, FDOFRenderTarget& LayerB, float LayerSign);
 	void RenderCompositePass(const FPassContext& Ctx, class FShader* Shader, FDOFRenderTarget* FarResult, FDOFRenderTarget* NearResult);
 
 	uint32 ResourceWidth = 0;

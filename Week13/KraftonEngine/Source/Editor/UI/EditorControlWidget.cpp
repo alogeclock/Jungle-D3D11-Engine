@@ -62,6 +62,70 @@ void FEditorControlWidget::Render(float DeltaTime)
 		bChanged = true;
 	}
 
+	ImGui::Separator();
+	ImGui::TextUnformatted("Depth Of Field");
+
+	bool bRenderDOF = VC->GetRenderOptions().ShowFlags.bDepthOfField;
+	if (ImGui::Checkbox("Render DOF", &bRenderDOF))
+	{
+		VC->GetRenderOptions().ShowFlags.bDepthOfField = bRenderDOF;
+	}
+
+	FCameraViewSettings& CameraViewSettings = VT.CameraViewSettings;
+	FCameraDOFSettings& DOFSettings = CameraViewSettings.DOFSettings;
+	if (ImGui::Checkbox("Viewport DOF", &DOFSettings.bEnableDOF))
+	{
+		if (DOFSettings.bEnableDOF)
+		{
+			CameraViewSettings.FocusSettings.FocusMode = ECameraFocusMode::CFM_Manual;
+			VC->GetRenderOptions().ShowFlags.bDepthOfField = true;
+		}
+		bChanged = true;
+	}
+
+	float FocusDistance = CameraViewSettings.FocusSettings.ManualFocusDistance;
+	if (ImGui::DragFloat("Focus Distance", &FocusDistance, 0.1f, 0.01f, 100000.0f))
+	{
+		CameraViewSettings.FocusSettings.FocusMode = ECameraFocusMode::CFM_Manual;
+		CameraViewSettings.FocusSettings.ManualFocusDistance = Clamp(FocusDistance, 0.01f, 100000.0f);
+		bChanged = true;
+	}
+
+	float FocalLength = DOFSettings.FocalLength;
+	if (ImGui::DragFloat("Focal Length", &FocalLength, 0.1f, 0.1f, 300.0f))
+	{
+		DOFSettings.FocalLength = Clamp(FocalLength, 0.1f, 300.0f);
+		bChanged = true;
+	}
+
+	float FocusRange = DOFSettings.FocusRange;
+	if (ImGui::DragFloat("Focus Range", &FocusRange, 0.1f, 0.0f, 100000.0f))
+	{
+		DOFSettings.FocusRange = Clamp(FocusRange, 0.0f, 100000.0f);
+		bChanged = true;
+	}
+
+	float Aperture = DOFSettings.Aperture;
+	if (ImGui::DragFloat("Aperture F-Stop", &Aperture, 0.1f, 0.1f, 64.0f))
+	{
+		DOFSettings.Aperture = Clamp(Aperture, 0.1f, 64.0f);
+		bChanged = true;
+	}
+
+	float MaxBlurRadius = DOFSettings.MaxBlurRadius;
+	if (ImGui::DragFloat("Max Blur Radius", &MaxBlurRadius, 0.1f, 0.0f, 12.0f))
+	{
+		DOFSettings.MaxBlurRadius = Clamp(MaxBlurRadius, 0.0f, 12.0f);
+		bChanged = true;
+	}
+
+	float NearCoCScale = DOFSettings.NearCoCScale;
+	if (ImGui::DragFloat("Near CoC Scale", &NearCoCScale, 0.01f, 0.0f, 1.0f))
+	{
+		DOFSettings.NearCoCScale = Clamp(NearCoCScale, 0.0f, 1.0f);
+		bChanged = true;
+	}
+
 	if (bChanged)
 	{
 		VC->NotifyViewTransformChanged();

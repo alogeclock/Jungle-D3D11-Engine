@@ -172,6 +172,7 @@ void UVehicleMovementComponent::BuildVehicleDesc(FVehicleBuildDesc& OutDesc) con
 	Drive.ChassisMass = ChassisMass;
 	Drive.CenterOfMassOffset = CenterOfMassOffset;
 	Drive.MaxEngineTorque = MaxEngineTorque;
+	Drive.MaxEngineOmega = MaxEngineOmega;
 	Drive.MaxBrakeTorque = MaxBrakeTorque;
 	Drive.HandbrakeTorque = HandbrakeTorque;
 	Drive.ClutchStrength = ClutchStrength;

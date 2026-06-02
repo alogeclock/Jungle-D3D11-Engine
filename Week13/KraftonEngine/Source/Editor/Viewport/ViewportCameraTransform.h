@@ -2,6 +2,7 @@
 
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
+#include "CameraDepth/SceneDepthTypes.h"
 
 // ============================================================
 // FViewportCameraTransform — 에디터 뷰포트 카메라 데이터
@@ -30,6 +31,7 @@ struct FViewportCameraTransform
 	float    NearClip     = 0.1f;
 	float    FarClip      = 1000.0f;
 	bool     bIsOrtho     = false;
+	FCameraViewSettings CameraViewSettings;
 
 	// ─── Mutation ─────────────────────────────────────────────
 	// USceneComponent / UCameraComponent 의 같은 이름 메서드와 동등한 의미.

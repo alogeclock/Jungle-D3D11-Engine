@@ -1793,6 +1793,15 @@ void FLevelViewportLayout::SaveToSettings()
 		S.PerspCamFOV      = POV.FOV * (180.0f / 3.14159265358979f); // rad → deg
 		S.PerspCamNearClip = POV.NearClip;
 		S.PerspCamFarClip  = POV.FarClip;
+
+		const FCameraViewSettings& CameraViewSettings = LevelViewportClients[0]->GetViewTransform().CameraViewSettings;
+		S.PerspCamDOFEnabled = CameraViewSettings.DOFSettings.bEnableDOF;
+		S.PerspCamFocusDistance = CameraViewSettings.FocusSettings.ManualFocusDistance;
+		S.PerspCamFocalLength = CameraViewSettings.DOFSettings.FocalLength;
+		S.PerspCamFocusRange = CameraViewSettings.DOFSettings.FocusRange;
+		S.PerspCamAperture = CameraViewSettings.DOFSettings.Aperture;
+		S.PerspCamMaxBlurRadius = CameraViewSettings.DOFSettings.MaxBlurRadius;
+		S.PerspCamNearCoCScale = CameraViewSettings.DOFSettings.NearCoCScale;
 	}
 }
 
@@ -1851,6 +1860,14 @@ void FLevelViewportLayout::LoadFromSettings()
 		VT.FOV          = S.PerspCamFOV * (3.14159265358979f / 180.0f); // deg → rad
 		VT.NearClip     = S.PerspCamNearClip;
 		VT.FarClip      = S.PerspCamFarClip;
+		VT.CameraViewSettings.FocusSettings.FocusMode = ECameraFocusMode::CFM_Manual;
+		VT.CameraViewSettings.FocusSettings.ManualFocusDistance = S.PerspCamFocusDistance;
+		VT.CameraViewSettings.DOFSettings.bEnableDOF = S.PerspCamDOFEnabled;
+		VT.CameraViewSettings.DOFSettings.FocalLength = S.PerspCamFocalLength;
+		VT.CameraViewSettings.DOFSettings.FocusRange = S.PerspCamFocusRange;
+		VT.CameraViewSettings.DOFSettings.Aperture = S.PerspCamAperture;
+		VT.CameraViewSettings.DOFSettings.MaxBlurRadius = S.PerspCamMaxBlurRadius;
+		VT.CameraViewSettings.DOFSettings.NearCoCScale = S.PerspCamNearCoCScale;
 		LevelViewportClients[0]->NotifyViewTransformChanged();
 	}
 }

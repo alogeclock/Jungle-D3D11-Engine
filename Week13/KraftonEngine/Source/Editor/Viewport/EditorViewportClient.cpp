@@ -30,6 +30,53 @@ UWorld* FEditorViewportClient::GetWorld() const
 #include "ImGui/imgui.h"
 #include "Component/Light/LightComponentBase.h"
 
+namespace
+{
+	float ResolveViewportFocusDistance(const FCameraViewSettings& Settings, const FVector& CameraLocation)
+	{
+		switch (Settings.FocusSettings.FocusMode)
+		{
+		case ECameraFocusMode::CFM_TrackingActor:
+			if (Settings.FocusSettings.TrackingTarget)
+			{
+				return (Settings.FocusSettings.TrackingTarget->GetActorLocation() - CameraLocation).Length();
+			}
+			return Settings.FocusSettings.ManualFocusDistance;
+		case ECameraFocusMode::CFM_ScreenCenter:
+		case ECameraFocusMode::CFM_Manual:
+			return Settings.FocusSettings.ManualFocusDistance;
+		case ECameraFocusMode::CFM_None:
+		default:
+			return 0.0f;
+		}
+	}
+
+	FCameraDepthViewData ResolveViewportCameraDepthViewData(const FViewportCameraTransform& ViewTransform)
+	{
+		const FCameraViewSettings& Settings = ViewTransform.CameraViewSettings;
+
+		FCameraDepthViewData Data;
+		Data.bEnableDOF = Settings.DOFSettings.bEnableDOF
+			&& Settings.FocusSettings.FocusMode != ECameraFocusMode::CFM_None
+			&& !ViewTransform.bIsOrtho;
+		Data.bUseSceneDepth = Settings.SceneDepthDesc.bUseSceneDepth || Data.bEnableDOF;
+		Data.bLinearizeDepth = Settings.SceneDepthDesc.bLinearizeDepth;
+		Data.DepthSpace = Settings.SceneDepthDesc.DepthSpace;
+		Data.NearPlane = ViewTransform.NearClip;
+		Data.FarPlane = ViewTransform.FarClip;
+		Data.FocalLength = Settings.DOFSettings.FocalLength;
+		Data.FocusRange = Settings.DOFSettings.FocusRange;
+		Data.Aperture = Settings.DOFSettings.Aperture;
+		Data.MaxCoCRadius = Settings.DOFSettings.MaxBlurRadius;
+		Data.MaxNearCoCRadius = Settings.DOFSettings.MaxBlurRadius;
+		Data.MaxFarCoCRadius = Settings.DOFSettings.MaxBlurRadius;
+		Data.NearCoCScale = Settings.DOFSettings.NearCoCScale;
+		Data.CurrentFocusDistance = ResolveViewportFocusDistance(Settings, ViewTransform.ViewLocation);
+		Data.DebugView = Settings.DOFSettings.DebugView;
+		return Data;
+	}
+}
+
 void FEditorViewportClient::Initialize(FWindowsWindow* InWindow)
 {
 	Window = InWindow;
@@ -54,6 +101,7 @@ bool FEditorViewportClient::GetCameraView(FMinimalViewInfo& OutPOV) const
 	OutPOV.NearClip    = ViewTransform.NearClip;
 	OutPOV.FarClip     = ViewTransform.FarClip;
 	OutPOV.bIsOrtho    = ViewTransform.bIsOrtho;
+	OutPOV.DepthViewData = ResolveViewportCameraDepthViewData(ViewTransform);
 	return true;
 }
 
