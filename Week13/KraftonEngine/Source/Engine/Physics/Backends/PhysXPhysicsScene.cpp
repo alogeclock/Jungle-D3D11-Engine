@@ -142,17 +142,6 @@ public:
                 {
                     const FString CompAName = CompA->GetName();
                     const FString CompBName = CompB->GetName();
-                    UE_LOG("[RagdollContact] A=%s B=%s Begin=%d Persist=%d End=%d Sep=%.3f Impulse=%.3f "
-                           "Pos=(%.3f, %.3f, %.3f) Normal=(%.3f, %.3f, %.3f)",
-                        CompAName.c_str(),
-                        CompBName.c_str(),
-                        bBegin ? 1 : 0,
-                        bPersist ? 1 : 0,
-                        bEnd ? 1 : 0,
-                        Point.separation,
-                        ImpulseMagnitude,
-                        Point.position.x, Point.position.y, Point.position.z,
-                        Point.normal.x, Point.normal.y, Point.normal.z);
                 }
             }
 
@@ -756,9 +745,6 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 
     if (AttachedShapeCount == 0)
     {
-        const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
-        UE_LOG("[RagdollBodyError] Owner=%s BodyType=%d has no attached shapes. Actor will be released.",
-            OwnerName.c_str(), static_cast<int32>(RuntimeBodyDesc.BodyType));
         Actor->release();
         return nullptr;
     }
@@ -771,16 +757,6 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 
         const PxVec3 InvInertia = DynamicActor->getMassSpaceInvInertiaTensor();
         const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
-        UE_LOG("[RagdollMass] Owner=%s Actor=%p ShapeCount=%d RequestedMass=%.3f Mass=%.3f InvMass=%.6f "
-               "InvInertia=(%.6f, %.6f, %.6f) Pose=(%.3f, %.3f, %.3f)",
-            OwnerName.c_str(),
-            DynamicActor,
-            AttachedShapeCount,
-            Mass,
-            DynamicActor->getMass(),
-            DynamicActor->getInvMass(),
-            InvInertia.x, InvInertia.y, InvInertia.z,
-            BodyPose.p.x, BodyPose.p.y, BodyPose.p.z);
     }
 
     Actor->userData = OwnerComponent ? OwnerComponent->GetOwner() : nullptr;
@@ -935,28 +911,6 @@ FPhysicsConstraintInstance* FPhysXPhysicsScene::CreateConstraint(
     PxJoint* Joint = nullptr;
     const PxTransform ParentLocalFrame = ToPxTransform(RuntimeConstraintDesc.ParentLocalFrame);
     const PxTransform ChildLocalFrame  = ToPxTransform(RuntimeConstraintDesc.ChildLocalFrame);
-
-    UE_LOG("[RagdollCreateJoint] ParentActor=%p ChildActor=%p JointType=%d "
-           "ParentFrameP=(%.3f, %.3f, %.3f) ParentFrameQ=(%.3f, %.3f, %.3f, %.3f) "
-           "ChildFrameP=(%.3f, %.3f, %.3f) ChildFrameQ=(%.3f, %.3f, %.3f, %.3f) "
-           "MotionXYZ=(%d,%d,%d) Swing=(%d,%d) Twist=%d LinearLimit=%.3f Swing=(%.3f, %.3f) TwistLimit=(%.3f, %.3f) DisableCollision=%d",
-        ParentActor, ChildActor, static_cast<int32>(RuntimeConstraintDesc.JointType),
-        RuntimeConstraintDesc.ParentLocalFrame.Location.X, RuntimeConstraintDesc.ParentLocalFrame.Location.Y, RuntimeConstraintDesc.ParentLocalFrame.Location.Z,
-        RuntimeConstraintDesc.ParentLocalFrame.Rotation.X, RuntimeConstraintDesc.ParentLocalFrame.Rotation.Y,
-        RuntimeConstraintDesc.ParentLocalFrame.Rotation.Z, RuntimeConstraintDesc.ParentLocalFrame.Rotation.W,
-        RuntimeConstraintDesc.ChildLocalFrame.Location.X, RuntimeConstraintDesc.ChildLocalFrame.Location.Y, RuntimeConstraintDesc.ChildLocalFrame.Location.Z,
-        RuntimeConstraintDesc.ChildLocalFrame.Rotation.X, RuntimeConstraintDesc.ChildLocalFrame.Rotation.Y,
-        RuntimeConstraintDesc.ChildLocalFrame.Rotation.Z, RuntimeConstraintDesc.ChildLocalFrame.Rotation.W,
-        static_cast<int32>(RuntimeConstraintDesc.XMotion),
-        static_cast<int32>(RuntimeConstraintDesc.YMotion),
-        static_cast<int32>(RuntimeConstraintDesc.ZMotion),
-        static_cast<int32>(RuntimeConstraintDesc.Swing1Motion),
-        static_cast<int32>(RuntimeConstraintDesc.Swing2Motion),
-        static_cast<int32>(RuntimeConstraintDesc.TwistMotion),
-        RuntimeConstraintDesc.LinearLimit,
-        RuntimeConstraintDesc.SwingLimitY, RuntimeConstraintDesc.SwingLimitZ,
-        RuntimeConstraintDesc.TwistLimitMin, RuntimeConstraintDesc.TwistLimitMax,
-        RuntimeConstraintDesc.bDisableCollision ? 1 : 0);
 
     if (RuntimeConstraintDesc.JointType == EPhysicsJointType::PJT_Fixed)
     {
@@ -1397,20 +1351,6 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
             const PxVec3 AngularVelocity = DynamicActor->getAngularVelocity();
             const float LinearSpeed = PxVecLength(LinearVelocity);
             const float AngularSpeed = PxVecLength(AngularVelocity);
-            if (LinearSpeed > 1000.0f || AngularSpeed > 100.0f)
-            {
-                const PxTransform Pose = DynamicActor->getGlobalPose();
-                UPrimitiveComponent* OwnerComponent = BodyInstance->GetOwnerComponent();
-                const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
-                UE_LOG("[RagdollVelocity] Owner=%s Actor=%p Pos=(%.3f, %.3f, %.3f) "
-                       "Speed=%.3f AngularSpeed=%.3f LinVel=(%.3f, %.3f, %.3f) AngVel=(%.3f, %.3f, %.3f)",
-                    OwnerName.c_str(),
-                    DynamicActor,
-                    Pose.p.x, Pose.p.y, Pose.p.z,
-                    LinearSpeed, AngularSpeed,
-                    LinearVelocity.x, LinearVelocity.y, LinearVelocity.z,
-                    AngularVelocity.x, AngularVelocity.y, AngularVelocity.z);
-            }
         }
     }
 
