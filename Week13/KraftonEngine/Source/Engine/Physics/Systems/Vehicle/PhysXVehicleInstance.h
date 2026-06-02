@@ -3,6 +3,7 @@
 #include "VehicleDebugTypes.h"
 #include "PxPhysicsAPI.h"
 #include "Component/SceneComponent.h"
+#include "Math/Quat.h"
 #include "vehicle/PxVehicleSDK.h"
 #include "vehicle/PxVehicleDrive4W.h"
 #include "vehicle/PxVehicleUtilSetup.h"
@@ -26,9 +27,12 @@ public:
 
 	bool IsValid() const;
 	void Release();
+	void SetWheelVisualComponents(const TArray<USceneComponent*>& InWheelVisualComponents);
+	FQuat GetWheelVisualRotationOffset(uint32 WheelIndex) const;
 
 	UPrimitiveComponent* ChassisComponent = nullptr;
 	TArray<USceneComponent*> WheelVisualComponents;
+	TArray<FQuat> WheelVisualRotationOffsets;
 	// PhysX 핵심 객체
 	PxRigidDynamic* ChassisActor = nullptr;
 	PxVehicleDrive4W* Vehicle = nullptr;

@@ -233,6 +233,42 @@ static PxTransform GetPxTransform(UPrimitiveComponent* Comp)
     return PxTransform(ToPxVec3(Comp->GetWorldLocation()), ToPxQuat(Comp->GetWorldMatrix().ToQuat()));
 }
 
+static PxVehiclePadSmoothingData CreateVehiclePadSmoothingData()
+{
+	PxVehiclePadSmoothingData SmoothingData;
+	for (PxU32 i = 0; i < PxVehicleDriveDynData::eMAX_NB_ANALOG_INPUTS; ++i)
+	{
+		SmoothingData.mRiseRates[i] = 6.0f;
+		SmoothingData.mFallRates[i] = 10.0f;
+	}
+
+	SmoothingData.mRiseRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_LEFT] = 2.5f;
+	SmoothingData.mRiseRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_RIGHT] = 2.5f;
+	SmoothingData.mFallRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_LEFT] = 5.0f;
+	SmoothingData.mFallRates[PxVehicleDrive4WControl::eANALOG_INPUT_STEER_RIGHT] = 5.0f;
+
+	return SmoothingData;
+}
+
+static const PxVehiclePadSmoothingData& GetVehiclePadSmoothingData()
+{
+	static const PxVehiclePadSmoothingData SmoothingData = CreateVehiclePadSmoothingData();
+	return SmoothingData;
+}
+
+static const PxFixedSizeLookupTable<8>& GetVehicleSteerVsForwardSpeedTable()
+{
+	static const PxF32 SteerVsForwardSpeedData[] =
+	{
+		0.0f,        0.75f,
+		5.0f,        0.75f,
+		30.0f,       0.125f,
+		120.0f,      0.1f,
+	};
+	static const PxFixedSizeLookupTable<8> SteerVsForwardSpeedTable(SteerVsForwardSpeedData, 4);
+	return SteerVsForwardSpeedTable;
+}
+
 static void ApplyRootMassAndCOM(PxRigidDynamic* Dyn, UPrimitiveComponent* Root)
 {
     if (!Dyn || !Root) return;
@@ -1037,7 +1073,7 @@ FVehicleRuntimeHandle FPhysXPhysicsScene::CreateVehicle(const FVehicleRuntimeCre
 
 	FPhysXVehicleInstance* Instance = new FPhysXVehicleInstance();
 	Instance->ChassisComponent = CreateDesc.ChassisComponent;
-	Instance->WheelVisualComponents = CreateDesc.WheelVisualComponents;
+	Instance->SetWheelVisualComponents(CreateDesc.WheelVisualComponents);
 	Instance->VehicleQueryResult = { Instance->WheelQueryResults, NumWheels };
 	
     // -------------------------------------------------------
@@ -1258,7 +1294,6 @@ FVehicleRuntimeHandle FPhysXPhysicsScene::CreateVehicle(const FVehicleRuntimeCre
 		*WheelsSimData, DriveSimData, 0);
 	Instance->Vehicle->setToRestState();
 	Instance->Vehicle->mDriveDynData.setUseAutoGears(true);
-	Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
 	WheelsSimData->free();
 	WheelsSimData = nullptr;
 
@@ -1353,25 +1388,17 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 		float AppliedAccel = 0.0f;
 		float AppliedBrake = 0.0f;
 
-		if (RawThrottle > 0.0f)
+		if (RawThrottle > 0.0f && ForwardSpeed >= -ShiftSpeed)
 		{
-			if (ForwardSpeed < -ShiftSpeed)
+			const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
+
+			if (TargetGear == PxVehicleGearsData::eREVERSE ||
+				TargetGear == PxVehicleGearsData::eNEUTRAL)
 			{
-				AppliedBrake = RawThrottle;
+				Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
 			}
-			else
-			{
-				const PxU32 CurrentGear = Instance->Vehicle->mDriveDynData.getCurrentGear();
-				const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
-				if (CurrentGear == PxVehicleGearsData::eREVERSE || CurrentGear == PxVehicleGearsData::eNEUTRAL)
-				{
-					if (TargetGear != PxVehicleGearsData::eFIRST)
-					{
-						Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
-					}
-				}
-				AppliedAccel = RawThrottle;
-			}
+
+			AppliedAccel = RawThrottle;
 		}
 		else if (RawBrake > 0.0f)
 		{
@@ -1390,11 +1417,20 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 			}
 		}
 
-		Instance->Vehicle->mDriveDynData.setAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_ACCEL, AppliedAccel);
-		Instance->Vehicle->mDriveDynData.setAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_BRAKE, AppliedBrake);
-		Instance->Vehicle->mDriveDynData.setAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_HANDBRAKE, Instance->InputState.bHandbrake ? 1.0f : 0.0f);
-		Instance->Vehicle->mDriveDynData.setAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_STEER_LEFT, std::max(0.0f, -Instance->InputState.Steering));
-		Instance->Vehicle->mDriveDynData.setAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_STEER_RIGHT, std::max(0.0f, Instance->InputState.Steering));
+		PxVehicleDrive4WRawInputData RawInputData;
+		RawInputData.setAnalogAccel(AppliedAccel);
+		RawInputData.setAnalogBrake(AppliedBrake);
+		RawInputData.setAnalogHandbrake(Instance->InputState.bHandbrake ? 1.0f : 0.0f);
+		RawInputData.setAnalogSteer(Instance->InputState.Steering);
+
+		const bool bVehicleWasInAir = Instance->DebugStats.WheelCount > 0 ? Instance->DebugStats.bInAir : false;
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
+			GetVehiclePadSmoothingData(),
+			GetVehicleSteerVsForwardSpeedTable(),
+			RawInputData,
+			DeltaTime,
+			bVehicleWasInAir,
+			*Instance->Vehicle);
 
 		PxVehicleUpdates(DeltaTime, Gravity, *Instance->FrictionPairs, 1, Vehicles, &Instance->VehicleQueryResult);
 
@@ -1402,9 +1438,11 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 		Instance->DebugStats.CurrentSpeed = Instance->Vehicle->computeForwardSpeed() * 3.6f;
 		Instance->DebugStats.EngineRpm = Instance->Vehicle->mDriveDynData.getEngineRotationSpeed() * 60.0f / 6.28318530718f;
 		Instance->DebugStats.InputState = Instance->InputState;
-		Instance->DebugStats.EngineTorque = AppliedAccel;
-		Instance->DebugStats.BrakeTorque = AppliedBrake;
-		Instance->DebugStats.SteeringAngle = Instance->InputState.Steering;
+		Instance->DebugStats.EngineTorque = Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_ACCEL);
+		Instance->DebugStats.BrakeTorque = Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_BRAKE);
+		Instance->DebugStats.SteeringAngle =
+			Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_STEER_RIGHT)
+			- Instance->Vehicle->mDriveDynData.getAnalogInput(PxVehicleDrive4WControl::eANALOG_INPUT_STEER_LEFT);
 		Instance->DebugStats.bInAir = true;
 		for (uint32 i = 0; i < GMaxNumWheels; ++i)
 		{
@@ -1452,15 +1490,18 @@ void FPhysXPhysicsScene::SyncVehiclePose()
 			if (WheelComp->GetParent() == Instance->ChassisComponent)
 			{
 				const FQuat WheelPose = ToFQuat(WheelResult.localPose.q);
-				const FQuat VisualOffset = FQuat::FromAxisAngle(FVector(0, 0, 1), 90.0f * DEG_TO_RAD);
+				const FQuat VisualOffset = Instance->GetWheelVisualRotationOffset(i);
 
 				WheelComp->SetRelativeRotation(WheelPose * VisualOffset);
 				WheelComp->SetRelativeLocation(ToFVector(WheelResult.localPose.p));
 			}
 			else
 			{
+				const FQuat WheelPose = ToFQuat(WheelWorldPose.q);
+				const FQuat VisualOffset = Instance->GetWheelVisualRotationOffset(i);
+
 				WheelComp->SetWorldLocation(ToFVector(WheelWorldPose.p));
-				SetComponentWorldRotation(WheelComp, ToFQuat(WheelWorldPose.q));
+				SetComponentWorldRotation(WheelComp, WheelPose * VisualOffset);
 			}
 		}
 	}

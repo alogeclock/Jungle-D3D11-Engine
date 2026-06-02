@@ -75,7 +75,7 @@ void UVehicleMovementComponent::SetWheelVisualComponents(const TArray<USceneComp
 		FPhysXVehicleInstance* Instance = static_cast<FPhysXVehicleInstance*>(VehicleHandle.NativeVehicle);
 		if (Instance)
 		{
-			Instance->WheelVisualComponents = WheelVisualComponents;
+			Instance->SetWheelVisualComponents(WheelVisualComponents);
 		}
 	}
 }
@@ -232,13 +232,13 @@ void UVehicleMovementComponent::DrawDebugVehicle() const
 		return;
 	}
 
-	DrawDebugSphere(World, Stats->CenterOfMassWorld, 0.08f, 8, FColor(255, 0, 255), 0.0f);
+	DrawDebugSphere(World, Stats->CenterOfMassWorld, 0.8f, 8, FColor(255, 0, 255), 0.0f);
 
 	for (const FVehicleWheelDebugState& Wheel : Stats->Wheels)
 	{
 		const FColor SuspensionColor = Wheel.bInAir ? FColor::Red() : FColor::Green();
 		DrawDebugLine(World, Wheel.SuspensionStart, Wheel.SuspensionEnd, SuspensionColor, 0.0f);
-		DrawDebugSphere(World, Wheel.WheelCenter, 0.05f, 8, FColor(0, 200, 255), 0.0f);
+		DrawDebugSphere(World, Wheel.WheelCenter, WheelRadius, 8, FColor(0, 200, 255), 0.0f);
 
 		if (!Wheel.bInAir)
 		{
