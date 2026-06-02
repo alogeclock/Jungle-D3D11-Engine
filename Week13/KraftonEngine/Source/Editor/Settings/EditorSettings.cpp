@@ -84,6 +84,13 @@ namespace Key
 	constexpr const char* FOV = "FOV";
 	constexpr const char* NearClip = "NearClip";
 	constexpr const char* FarClip = "FarClip";
+	constexpr const char* DOFEnabled = "DOFEnabled";
+	constexpr const char* FocusDistance = "FocusDistance";
+	constexpr const char* FocalLength = "FocalLength";
+	constexpr const char* FocusRange = "FocusRange";
+	constexpr const char* Aperture = "Aperture";
+	constexpr const char* MaxBlurRadius = "MaxBlurRadius";
+	constexpr const char* NearCoCScale = "NearCoCScale";
 
 	// Transform Tools
 	constexpr const char* TransformTools = "TransformTools";
@@ -334,6 +341,13 @@ void FEditorSettings::SaveToFile(const FString& Path) const
 	CamObj[Key::FOV] = PerspCamFOV;
 	CamObj[Key::NearClip] = PerspCamNearClip;
 	CamObj[Key::FarClip] = PerspCamFarClip;
+	CamObj[Key::DOFEnabled] = PerspCamDOFEnabled;
+	CamObj[Key::FocusDistance] = PerspCamFocusDistance;
+	CamObj[Key::FocalLength] = PerspCamFocalLength;
+	CamObj[Key::FocusRange] = PerspCamFocusRange;
+	CamObj[Key::Aperture] = PerspCamAperture;
+	CamObj[Key::MaxBlurRadius] = PerspCamMaxBlurRadius;
+	CamObj[Key::NearCoCScale] = PerspCamNearCoCScale;
 	Root[Key::PerspectiveCamera] = CamObj;
 
 	Root[Key::TransformTools] = SaveGizmoSettings(LevelViewportSettings[0].Gizmo);
@@ -484,6 +498,20 @@ void FEditorSettings::LoadFromFile(const FString& Path)
 			PerspCamNearClip = static_cast<float>(CamObj[Key::NearClip].ToFloat());
 		if (CamObj.hasKey(Key::FarClip))
 			PerspCamFarClip = static_cast<float>(CamObj[Key::FarClip].ToFloat());
+		if (CamObj.hasKey(Key::DOFEnabled))
+			PerspCamDOFEnabled = CamObj[Key::DOFEnabled].ToBool();
+		if (CamObj.hasKey(Key::FocusDistance))
+			PerspCamFocusDistance = static_cast<float>(CamObj[Key::FocusDistance].ToFloat());
+		if (CamObj.hasKey(Key::FocalLength))
+			PerspCamFocalLength = static_cast<float>(CamObj[Key::FocalLength].ToFloat());
+		if (CamObj.hasKey(Key::FocusRange))
+			PerspCamFocusRange = static_cast<float>(CamObj[Key::FocusRange].ToFloat());
+		if (CamObj.hasKey(Key::Aperture))
+			PerspCamAperture = static_cast<float>(CamObj[Key::Aperture].ToFloat());
+		if (CamObj.hasKey(Key::MaxBlurRadius))
+			PerspCamMaxBlurRadius = static_cast<float>(CamObj[Key::MaxBlurRadius].ToFloat());
+		if (CamObj.hasKey(Key::NearCoCScale))
+			PerspCamNearCoCScale = static_cast<float>(CamObj[Key::NearCoCScale].ToFloat());
 	}
 
 	if (Root.hasKey(Key::TransformTools))

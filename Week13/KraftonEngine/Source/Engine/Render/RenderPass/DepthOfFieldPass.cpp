@@ -35,8 +35,9 @@ namespace
 
 	struct FDepthOfFieldBlurConstants
 	{
-		float BlurDirection[2];
 		uint32 BlurRadius;
+		float LayerSign;
+		float MaxLayerRadius;
 		float Pad;
 	};
 	static_assert(sizeof(FDepthOfFieldBlurConstants) % 16 == 0);
@@ -136,8 +137,8 @@ void FDepthOfFieldPass::Execute(const FPassContext& Ctx)
 	UpdateDOFConstants(Ctx);
 	RenderCoCPass(Ctx, CoCShader);
 	RenderPrefilterSplitPass(Ctx, PrefilterShader);
-	FDOFRenderTarget* FarResult = RenderBlurPingPong(Ctx, BlurShader, HalfFarA, HalfFarB);
-	FDOFRenderTarget* NearResult = RenderBlurPingPong(Ctx, BlurShader, HalfNearA, HalfNearB);
+	FDOFRenderTarget* FarResult = RenderDiskBlur(Ctx, BlurShader, HalfFarA, HalfFarB, 1.0f);
+	FDOFRenderTarget* NearResult = RenderDiskBlur(Ctx, BlurShader, HalfNearA, HalfNearB, -1.0f);
 	RenderCompositePass(Ctx, CompositeShader, FarResult, NearResult);
 
 	Ctx.Cache.bForceAll = true;
@@ -306,16 +307,20 @@ void FDepthOfFieldPass::UpdateDOFConstants(const FPassContext& Ctx)
 	Ctx.Device.GetDeviceContext()->PSSetConstantBuffers(ECBSlot::PerShader0, 1, &RawCB);
 }
 
-void FDepthOfFieldPass::UpdateBlurConstants(const FPassContext& Ctx, float DirectionX, float DirectionY)
+void FDepthOfFieldPass::UpdateBlurConstants(const FPassContext& Ctx, float LayerSign)
 {
 	const FCameraDepthViewData& CameraDepth = Ctx.Frame.CameraDepth;
-	const float MaxCoC = CameraDepth.MaxCoCRadius > 0.0f ? CameraDepth.MaxCoCRadius : 0.0f;
-	const uint32 BlurRadius = static_cast<uint32>(MaxCoC > static_cast<float>(DOF_MAX_BLUR_RADIUS) ? DOF_MAX_BLUR_RADIUS : MaxCoC);
+	const float MaxGlobalCoC = CameraDepth.MaxCoCRadius > 0.0f ? CameraDepth.MaxCoCRadius : 0.0f;
+	const float RequestedLayerCoC = LayerSign < 0.0f ? CameraDepth.MaxNearCoCRadius : CameraDepth.MaxFarCoCRadius;
+	const float MaxLayerCoC = RequestedLayerCoC > 0.0f ? RequestedLayerCoC : 0.0f;
+	float ClampedLayerCoC = MaxLayerCoC < MaxGlobalCoC ? MaxLayerCoC : MaxGlobalCoC;
+	ClampedLayerCoC = ClampedLayerCoC < static_cast<float>(DOF_MAX_BLUR_RADIUS) ? ClampedLayerCoC : static_cast<float>(DOF_MAX_BLUR_RADIUS);
+	const uint32 BlurRadius = static_cast<uint32>(ClampedLayerCoC + 0.999f);
 
 	FDepthOfFieldBlurConstants Data = {};
-	Data.BlurDirection[0] = DirectionX;
-	Data.BlurDirection[1] = DirectionY;
 	Data.BlurRadius = BlurRadius;
+	Data.LayerSign = LayerSign;
+	Data.MaxLayerRadius = ClampedLayerCoC;
 	DOFBlurCB.Update(Ctx.Device.GetDeviceContext(), &Data, sizeof(Data));
 
 	ID3D11Buffer* RawCB = DOFBlurCB.GetBuffer();
@@ -348,27 +353,20 @@ void FDepthOfFieldPass::RenderPrefilterSplitPass(const FPassContext& Ctx, FShade
 	DrawFullscreen(DC);
 }
 
-FDepthOfFieldPass::FDOFRenderTarget* FDepthOfFieldPass::RenderBlurPingPong(const FPassContext& Ctx, FShader* Shader, FDOFRenderTarget& LayerA, FDOFRenderTarget& LayerB)
+FDepthOfFieldPass::FDOFRenderTarget* FDepthOfFieldPass::RenderDiskBlur(const FPassContext& Ctx, FShader* Shader, FDOFRenderTarget& LayerA, FDOFRenderTarget& LayerB, float LayerSign)
 {
 	ID3D11DeviceContext* DC = Ctx.Device.GetDeviceContext();
 	SetViewport(DC, HalfResourceWidth, HalfResourceHeight);
-	Shader->Bind(DC);
 
 	UnbindLocalSRVs(DC);
 	DC->OMSetRenderTargets(1, &LayerB.RTV, nullptr);
-	ID3D11ShaderResourceView* SourceSRV = LayerA.SRV;
-	DC->PSSetShaderResources(0, 1, &SourceSRV);
-	UpdateBlurConstants(Ctx, 1.0f, 0.0f);
+	ID3D11ShaderResourceView* SRVs[2] = { LayerA.SRV, FullCoC.SRV };
+	DC->PSSetShaderResources(0, 2, SRVs);
+	UpdateBlurConstants(Ctx, LayerSign);
+	Shader->Bind(DC);
 	DrawFullscreen(DC);
 
-	UnbindLocalSRVs(DC);
-	DC->OMSetRenderTargets(1, &LayerA.RTV, nullptr);
-	SourceSRV = LayerB.SRV;
-	DC->PSSetShaderResources(0, 1, &SourceSRV);
-	UpdateBlurConstants(Ctx, 0.0f, 1.0f);
-	DrawFullscreen(DC);
-
-	return &LayerA;
+	return &LayerB;
 }
 
 void FDepthOfFieldPass::RenderCompositePass(const FPassContext& Ctx, FShader* Shader, FDOFRenderTarget* FarResult, FDOFRenderTarget* NearResult)

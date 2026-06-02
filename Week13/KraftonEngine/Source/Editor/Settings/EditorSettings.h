@@ -29,6 +29,13 @@ public:
 	float PerspCamFOV = 60.0f;
 	float PerspCamNearClip = 0.1f;
 	float PerspCamFarClip = 1000.0f;
+	bool PerspCamDOFEnabled = false;
+	float PerspCamFocusDistance = 10.0f;
+	float PerspCamFocalLength = 10.0f;
+	float PerspCamFocusRange = 5.0f;
+	float PerspCamAperture = 4.0f;
+	float PerspCamMaxBlurRadius = 8.0f;
+	float PerspCamNearCoCScale = 0.5f;
 
 	FViewportCameraControlSettings LevelViewportCameraControls;
 	FEditorViewportSettings LevelViewportSettings[4];
