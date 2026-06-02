@@ -602,6 +602,27 @@ void USkinnedMeshComponent::SetBoneLocalTransformByArray(const TArray<FMatrix>& 
 	MarkWorldBoundsDirty();
 }
 
+void USkinnedMeshComponent::ApplyPhysicsBoneLocalMatrices(const TArray<FMatrix>& NewLocalMatrices)
+{
+	const FSkeletonAsset* SkeletonAsset = GetSkeletonAsset(SkeletalMesh);
+	if (!SkeletonAsset)
+	{
+		return;
+	}
+
+	const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
+	if (BoneCount <= 0 || static_cast<int32>(NewLocalMatrices.size()) != BoneCount)
+	{
+		return;
+	}
+
+	BoneEditLocalMatrices = NewLocalMatrices;
+	bUseBoneEditPose = true;
+
+	UpdateSkinMatrices();
+	MarkWorldBoundsDirty();
+}
+
 void USkinnedMeshComponent::GetCurrentBoneGlobalTransforms(TArray<FTransform>& OutGlobals) const
 {
 	BuildBoneEditGlobalTransforms(OutGlobals);

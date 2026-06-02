@@ -67,6 +67,12 @@ public:
 
 	FMatrix GetRelativeMatrix() const;
 
+	virtual void CapturePrePhysicsSnapshot();
+	virtual void CapturePostPhysicsSnapshot();
+	virtual void ApplyPhysicsInterpolation(float Alpha);
+	virtual void RestorePhysicsInterpolation();
+	virtual void ResetPhysicsInterpolation();
+
 	void Move(const FVector& Delta);
 	void MoveLocal(const FVector& Delta);
 	void Rotate(float DeltaYaw, float DeltaPitch);
@@ -86,6 +92,12 @@ protected:
 	mutable FRotator CachedEditRotator;	// 에디터 프로퍼티 바인딩용 (Euler 캐시)
 
 	mutable bool bCachedEulerDirty = true;	// Quat가 외부에서 변경됐을 때만 Euler 재계산
+
+	FTransform PreviousPhysicsRelativeTransform;
+	FTransform CurrentPhysicsRelativeTransform;
+	FTransform SavedNonInterpolatedRelativeTransform;
+	bool bHasPhysicsInterpolationTransform = false;
+	bool bUsingPhysicsInterpolation = false;
 
 	//world matrix caching
 	mutable FMatrix CachedWorldMatrix{};

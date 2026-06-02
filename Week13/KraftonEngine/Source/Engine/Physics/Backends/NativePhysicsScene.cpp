@@ -1,4 +1,4 @@
-#include "Physics/Backends/NativePhysicsScene.h"
+﻿#include "Physics/Backends/NativePhysicsScene.h"
 #include "Collision/CollisionMath.h"
 #include "Component/PrimitiveComponent.h"
 #include "GameFramework/World.h"
@@ -69,6 +69,15 @@ FPhysicsBodyInstance* FNativePhysicsScene::CreateBody(UPrimitiveComponent* Comp,
     return Instance;
 }
 
+FPhysicsBodyInstance* FNativePhysicsScene::CreateBodyAtTransform(
+    UPrimitiveComponent* /*OwnerComponent*/,
+    const FPhysicsBodyDesc& /*BodyDesc*/,
+    const FTransform& /*WorldTransform*/,
+    bool /*bSyncOwnerTransform*/)
+{
+    return nullptr;
+}
+
 void FNativePhysicsScene::DestroyBody(FPhysicsBodyInstance* BodyInstance)
 {
     if (!BodyInstance) return;
@@ -123,6 +132,40 @@ void FNativePhysicsScene::DestroyBody(FPhysicsBodyInstance* BodyInstance)
     delete BodyInstance;
 
     GetMutableRuntimeStats().BodyCount = static_cast<int32>(RegisteredComponents.size());
+}
+
+bool FNativePhysicsScene::GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const
+{
+    if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+    {
+        return false;
+    }
+
+    UPrimitiveComponent* Comp = BodyInstance->GetOwnerComponent();
+    if (!Comp)
+    {
+        return false;
+    }
+
+    OutTransform = FTransform(Comp->GetWorldLocation(), Comp->GetWorldMatrix().ToQuat(), Comp->GetWorldScale());
+    return true;
+}
+
+void FNativePhysicsScene::SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform)
+{
+    if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+    {
+        return;
+    }
+
+    UPrimitiveComponent* Comp = BodyInstance->GetOwnerComponent();
+    if (!Comp)
+    {
+        return;
+    }
+
+    Comp->SetWorldLocation(WorldTransform.Location);
+    Comp->SetRelativeRotation(WorldTransform.Rotation);
 }
 
 FPhysicsConstraintInstance* FNativePhysicsScene::CreateConstraint(

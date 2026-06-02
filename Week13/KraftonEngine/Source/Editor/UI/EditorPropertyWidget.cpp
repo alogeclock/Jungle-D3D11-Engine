@@ -42,6 +42,8 @@
 #include "Mesh/StaticMesh.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletonAsset.h"
+#include "Physics/Assets/PhysicsAsset.h"
+#include "Physics/Assets/PhysicsAssetManager.h"
 #include "Platform/Paths.h"
 #include "SimpleJSON/json.hpp"
 
@@ -1979,6 +1981,63 @@ bool FEditorPropertyWidget::RenderPropertyWidget(
 							ActualSkeletonPath.empty() ? "missing asset or Skeleton" : ActualSkeletonPath.c_str());
 					}
 				}
+			}
+		}
+		else if (SoftObjectProp.PropertyClass == UPhysicsAsset::StaticClass())
+		{
+			auto* Val = static_cast<TSoftObjectPtr<UPhysicsAsset>*>(ValuePtr);
+			FString CurrentPath = FPaths::MakeProjectRelative(Val->GetPath().ToString());
+			FString Preview = CurrentPath.empty() ? "None" : GetStemFromPath(CurrentPath);
+			if (CurrentPath == "None") Preview = "None";
+
+			ImGui::SetNextItemWidth(-1);
+			if (ImGui::BeginCombo("##PhysicsAsset", Preview.c_str()))
+			{
+				const bool bSelectedNone = CurrentPath.empty() || CurrentPath == "None";
+				if (ImGui::Selectable("None", bSelectedNone))
+				{
+					Val->Reset();
+					CurrentPath = "None";
+					bChanged = true;
+				}
+				if (bSelectedNone)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+
+				FPhysicsAssetManager::Get().ScanPhysicsAssets();
+				const TArray<FPhysicsAssetListItem>& PhysicsAssetFiles =
+					FPhysicsAssetManager::Get().GetAvailablePhysicsAssetFiles();
+				for (const FPhysicsAssetListItem& Item : PhysicsAssetFiles)
+				{
+					const bool bSelected = CurrentPath == Item.FullPath;
+					if (ImGui::Selectable(Item.DisplayName.c_str(), bSelected))
+					{
+						Val->SetPath(Item.FullPath);
+						CurrentPath = Item.FullPath;
+						bChanged = true;
+					}
+					if (bSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("PhysicsAssetContentItem"))
+				{
+					FContentItem ContentItem = *reinterpret_cast<const FContentItem*>(Payload->Data);
+					const FString DroppedPath =
+						FPaths::MakeProjectRelative(FPaths::ToUtf8(ContentItem.Path.generic_wstring()));
+
+					Val->SetPath(DroppedPath);
+					bChanged = true;
+				}
+				ImGui::EndDragDropTarget();
 			}
 		}
 		else if (SoftObjectProp.PropertyClass == UParticleSystem::StaticClass())

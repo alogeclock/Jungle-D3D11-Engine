@@ -40,32 +40,41 @@ void FTickFunction::UnRegisterTickFunction()
 	TickAccumulator = 0.0f;
 }
 
-void FTickManager::Tick(UWorld* World, float DeltaTime, ELevelTick TickType)
+void FTickManager::BeginFrame(UWorld* World, ELevelTick TickType)
 {
 	GatherTickFunctions(World, TickType);
+}
+
+void FTickManager::TickGroup(ETickingGroup TickGroup, float DeltaTime, ELevelTick TickType)
+{
+	for (FTickFunction* TickFunction : TickFunctions)
+	{
+		if (!TickFunction || TickFunction->GetTickGroup() != TickGroup)
+		{
+			continue;
+		}
+
+		if (!TickFunction->CanTick(TickType))
+		{
+			continue;
+		}
+
+		if (!TickFunction->ConsumeInterval(DeltaTime))
+		{
+			continue;
+		}
+
+		TickFunction->ExecuteTick(DeltaTime, TickType);
+	}
+}
+
+void FTickManager::Tick(UWorld* World, float DeltaTime, ELevelTick TickType)
+{
+	BeginFrame(World, TickType);
 
 	for (int GroupIndex = 0; GroupIndex < TG_MAX; ++GroupIndex)
 	{
-		const ETickingGroup CurrentGroup = static_cast<ETickingGroup>(GroupIndex);
-		for (FTickFunction* TickFunction : TickFunctions)
-		{
-			if (!TickFunction || TickFunction->GetTickGroup() != CurrentGroup)
-			{
-				continue;
-			}
-
-			if (!TickFunction->CanTick(TickType))
-			{
-				continue;
-			}
-
-			if (!TickFunction->ConsumeInterval(DeltaTime))
-			{
-				continue;
-			}
-
-			TickFunction->ExecuteTick(DeltaTime, TickType);
-		}
+		TickGroup(static_cast<ETickingGroup>(GroupIndex), DeltaTime, TickType);
 	}
 }
 

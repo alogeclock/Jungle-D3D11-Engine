@@ -326,7 +326,6 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Engine\GameFramework\PlayerStart.cpp" />
     <ClCompile Include="Source\Editor\EditorEngine.cpp" />
     <ClCompile Include="Source\Editor\EditorRenderPipeline.cpp" />
     <ClCompile Include="Source\Editor\Import\EditorFbxImportService.cpp" />
@@ -485,6 +484,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\GameFramework\PawnStaticMesh.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\PlayerCameraManager.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\PlayerController.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\PlayerStart.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\SequenceCameraShake.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\SkeletalMeshActor.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\SphereActor.cpp" />
@@ -537,8 +537,10 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Physics\Assets\PhysicsBodySetup.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Backends\PhysXSceneThreading.cpp" />
     <ClCompile Include="Source\Engine\Physics\Common\PhysicalMaterialManager.cpp" />
     <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.cpp" />
     <ClCompile Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.cpp" />
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp" />
     <ClCompile Include="Source\Engine\Platform\DirectoryWatcher.cpp" />
@@ -637,7 +639,6 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Engine\GameFramework\PlayerStart.h" />
     <ClInclude Include="Source\Editor\EditorEngine.h" />
     <ClInclude Include="Source\Editor\EditorRenderPipeline.h" />
     <ClInclude Include="Source\Editor\Import\EditorFbxImportService.h" />
@@ -828,6 +829,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\GameFramework\PawnStaticMesh.h" />
     <ClInclude Include="Source\Engine\GameFramework\PlayerCameraManager.h" />
     <ClInclude Include="Source\Engine\GameFramework\PlayerController.h" />
+    <ClInclude Include="Source\Engine\GameFramework\PlayerStart.h" />
     <ClInclude Include="Source\Engine\GameFramework\SequenceCameraShake.h" />
     <ClInclude Include="Source\Engine\GameFramework\SkeletalMeshActor.h" />
     <ClInclude Include="Source\Engine\GameFramework\SphereActor.h" />
@@ -908,6 +910,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsShapeSetup.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h" />
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXSceneThreading.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsCollisionTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsConversionTypes.h" />
@@ -924,6 +927,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothSimulationTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollBuildDesc.h" />
+    <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\FVehicleRuntimeTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.h" />

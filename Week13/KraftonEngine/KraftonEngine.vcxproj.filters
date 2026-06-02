@@ -1010,6 +1010,9 @@
     <ClCompile Include="Source\Engine\GameFramework\PlayerController.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\PlayerStart.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\SequenceCameraShake.cpp">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClCompile>
@@ -1166,11 +1169,17 @@
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Backends\PhysXSceneThreading.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Common\PhysicalMaterialManager.cpp">
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp">
       <Filter>Source\Engine\Physics\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.cpp">
+      <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.cpp">
       <Filter>Source\Engine\Physics\Systems\Vehicle</Filter>
@@ -1458,7 +1467,6 @@
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Engine\GameFramework\PlayerStart.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorEngine.h">
@@ -2031,6 +2039,9 @@
     <ClInclude Include="Source\Engine\GameFramework\PlayerController.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\PlayerStart.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\SequenceCameraShake.h">
       <Filter>Source\Engine\GameFramework</Filter>
     </ClInclude>
@@ -2271,6 +2282,9 @@
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXSceneThreading.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h">
       <Filter>Source\Engine\Physics\Common</Filter>
     </ClInclude>
@@ -2317,6 +2331,9 @@
       <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollBuildDesc.h">
+      <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.h">
       <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollTypes.h">
@@ -4335,7 +4352,6 @@
     <ClInclude Include="ThirdParty\sol2\include\sol\utility\to_string.hpp">
       <Filter>ThirdParty\sol2\include\sol\utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\GameFramework\PlayerStart.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KraftonEngine.rc" />

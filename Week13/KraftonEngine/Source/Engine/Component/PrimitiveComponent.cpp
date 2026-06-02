@@ -57,7 +57,7 @@ void UPrimitiveComponent::BeginPlay()
 	// 직렬화나 InitDefaultComponents에서 CollisionEnabled가 이미 설정된 경우 등록.
 	// 이 시점에 SimulatePhysics/ObjectType/Response/Mass/COM 등 모든 셋업이 끝나있어
 	// PhysX/Native가 정확한 값으로 body를 생성한다.
-	if (ShouldCreatePhysicsBody())
+	if (IsCollisionEnabled() && CanCreatePhysicsBody())
 	{
 		if (Owner)
 		{
@@ -126,6 +126,26 @@ void UPrimitiveComponent::SetSimulatePhysics(bool bInSimulate)
 	if (bSimulatePhysics == bInSimulate) return;
 	bSimulatePhysics = bInSimulate;
 	NotifyPhysicsBodyDirty();
+}
+
+void UPrimitiveComponent::SetEnableGravity(bool bInEnableGravity)
+{
+	if (bEnableGravity == bInEnableGravity) return;
+	bEnableGravity = bInEnableGravity;
+	NotifyPhysicsBodyDirty();
+}
+
+bool UPrimitiveComponent::NeedsPhysicsInterpolation() const
+{
+	return bSimulatePhysics;
+}
+
+void UPrimitiveComponent::OnPrePhysicsSync()
+{
+}
+
+void UPrimitiveComponent::OnPostPhysicsSync()
+{
 }
 
 void UPrimitiveComponent::SetAutoCreatePhysicsBody(bool bInAutoCreate)
@@ -252,7 +272,7 @@ void UPrimitiveComponent::PostEditProperty(const char* PropertyName)
 			{
 				if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 				{
-					if (ShouldCreatePhysicsBody())
+					if (IsCollisionEnabled() && CanCreatePhysicsBody())
 					{
 						PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
 					}
@@ -273,6 +293,10 @@ void UPrimitiveComponent::PostEditProperty(const char* PropertyName)
 	else if (strcmp(PropertyName, FName::NameToDisplayString("Center of Mass", false).c_str()) == 0)
 	{
 		SetCenterOfMass(CenterOfMassOffset);
+	}
+	else if (strcmp(PropertyName, FName::NameToDisplayString("Enable Gravity", false).c_str()) == 0)
+	{
+		NotifyPhysicsBodyDirty();
 	}
 }
 
@@ -433,9 +457,9 @@ void UPrimitiveComponent::EnsureWorldAABBUpdated() const
 
 void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 {
-	bool bWasQuery = IsQueryCollisionEnabled();
+	bool bWasCollisionEnabled = IsCollisionEnabled();
 	CollisionEnabled = InEnabled;
-	bool bIsQuery = IsQueryCollisionEnabled();
+	bool bIsCollisionEnabled = IsCollisionEnabled();
 
 	// 컴포넌트 BeginPlay 전이면 멤버만 변경. BeginPlay에서 한 번 등록되며 그 시점엔
 	// SimulatePhysics 등 다른 셋업이 모두 완료된 상태.
@@ -445,11 +469,12 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
 
-	if (bWasQuery != bIsQuery)
+	const bool bCanCreatePhysicsBody = CanCreatePhysicsBody();
+	if (bWasCollisionEnabled != bIsCollisionEnabled)
 	{
 		if (IPhysicsSceneInterface* PS = World->GetPhysicsScene())
 		{
-			if (bIsQuery && bAutoCreatePhysicsBody)
+			if (bIsCollisionEnabled && bCanCreatePhysicsBody)
 				PhysicsBodyInstance = PS->CreateBody(this, FPhysicsBodyDesc{});
 			else
 			{
@@ -458,9 +483,9 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 			}
 		}
 	}
-	else if (bWasQuery && bIsQuery)
+	else if (bWasCollisionEnabled && bIsCollisionEnabled && bCanCreatePhysicsBody)
 	{
-		// 이미 등록된 상태에서 enabled 종류 변경 (예: QueryOnly ↔ QueryAndPhysics) — 재구성
+		// 이미 등록된 상태에서 enabled 종류 변경 (예: QueryOnly ↔ PhysicsOnly ↔ QueryAndPhysics) — 재구성
 		NotifyPhysicsBodyDirty();
 	}
 }
@@ -468,6 +493,12 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled InEnabled)
 bool UPrimitiveComponent::IsQueryCollisionEnabled() const
 {
 	return CollisionEnabled == ECollisionEnabled::QueryOnly
+		|| CollisionEnabled == ECollisionEnabled::QueryAndPhysics;
+}
+
+bool UPrimitiveComponent::IsPhysicsCollisionEnabled() const
+{
+	return CollisionEnabled == ECollisionEnabled::PhysicsOnly
 		|| CollisionEnabled == ECollisionEnabled::QueryAndPhysics;
 }
 

@@ -40,6 +40,7 @@ public:
 
 	void PostEditProperty(const char* PropertyName) override;
 	bool LineTraceComponent(const FRay& Ray, FHitResult& OutHitResult) override;
+	bool CanCreatePhysicsBody() const override { return false; }
 
 	const FString& GetSkeletalMeshPath() const { return SkeletalMesh.GetPath().ToString(); }
 
@@ -59,6 +60,7 @@ public:
 	void SetBoneScaleByIndex(int32 BoneIndex, const FVector& NewScale);
 	void SetBoneLocalTransformByIndex(int32 BoneIndex, const FTransform& NewLocalTransform);
 	void SetBoneLocalTransformByArray(const TArray<FMatrix>& NewLocalMatrices);
+	void ApplyPhysicsBoneLocalMatrices(const TArray<FMatrix>& NewLocalMatrices);
 
 	void GetCurrentBoneGlobalTransforms(TArray<FTransform>& OutGlobals) const;
 	void GetCurrentBoneGlobalMatrices(TArray<FMatrix>& OutGlobals) const;

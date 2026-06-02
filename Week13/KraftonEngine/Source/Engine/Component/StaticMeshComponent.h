@@ -32,6 +32,7 @@ public:
 
 	void SetStaticMesh(UStaticMesh* InMesh);
 	UStaticMesh* GetStaticMesh() const;
+	bool GetLocalBounds(FVector& OutCenter, FVector& OutExtent) const;
 
 	void SetMaterial(int32 ElementIndex, UMaterial* InMaterial);
 	UMaterial* GetMaterial(int32 ElementIndex) const;

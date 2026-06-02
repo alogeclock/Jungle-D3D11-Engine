@@ -2,6 +2,9 @@
 
 #include "Physics/Runtime/PhysicsScene.h"
 #include "Core/CoreTypes.h"
+#include <atomic>
+#include <functional>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 
@@ -36,7 +39,14 @@ public:
     void ReleaseScene() override;
 
     FPhysicsBodyInstance* CreateBody(UPrimitiveComponent* OwnerComponent, const FPhysicsBodyDesc& BodyDesc) override;
+    FPhysicsBodyInstance* CreateBodyAtTransform(
+        UPrimitiveComponent* OwnerComponent,
+        const FPhysicsBodyDesc& BodyDesc,
+        const FTransform& WorldTransform,
+        bool bSyncOwnerTransform = false) override;
     void DestroyBody(FPhysicsBodyInstance* BodyInstance) override;
+    bool GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const override;
+    void SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform) override;
 
     FPhysicsConstraintInstance* CreateConstraint(
         FPhysicsBodyInstance* ParentBody,
@@ -100,9 +110,12 @@ private:
         physx::PxRigidActor* Actor      = nullptr;
         UPrimitiveComponent* RootComp   = nullptr;
         TArray<UPrimitiveComponent*> Components;
+        bool bStandaloneShapeActor = false;
     };
     std::vector<FBodyMapping> BodyMappings;
     std::unordered_map<UPrimitiveComponent*, FPhysicsBodyInstance*> BodyInstances;
+    std::vector<FPhysicsBodyInstance*> StandaloneBodyInstances;
+    std::vector<FPhysicsConstraintInstance*> StandaloneConstraintInstances;
 
     FBodyMapping* FindMappingByActor(AActor* OwnerActor);
     const FBodyMapping* FindMappingByActor(AActor* OwnerActor) const;
@@ -115,4 +128,14 @@ private:
 
     void RegisterComponentInternal(UPrimitiveComponent* Comp);
     void UnregisterComponentInternal(UPrimitiveComponent* Comp);
+
+    void WaitForSimulation();
+    void ExecuteOrDeferSceneWrite(std::function<void()> Command);
+    void FlushDeferredSceneCommands();
+    void SyncEngineTransformsToPhysX();
+    void SyncPhysXTransformsToEngine();
+
+    std::atomic_bool bSimulationInFlight{ false };
+    std::mutex DeferredSceneCommandMutex;
+    std::vector<std::function<void()>> DeferredSceneCommands;
 };

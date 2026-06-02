@@ -1,4 +1,4 @@
-#include "PhysicsAssetEditorWidget.h"
+﻿#include "PhysicsAssetEditorWidget.h"
 
 #include "Collision/RayUtils.h"
 #include "Component/Light/DirectionalLightComponent.h"
@@ -7,6 +7,7 @@
 #include "Debug/DrawDebugHelpers.h"
 #include "GameFramework/Light/DirectionalLightActor.h"
 #include "GameFramework/StaticMeshActor.h"
+#include "GameFramework/World.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "Materials/Material.h"
@@ -2540,6 +2541,8 @@ void FPhysicsAssetEditorWidget::Open(UObject* Object)
 	bShowBonesWithBodiesOnly = false;
 	bExpandBodyTreeOnNextRender = true;
 	bFrameGraphOnNextRender = true;
+	bPreviewSimulating = false;
+	PreviewSimulationTime = 0.0f;
 	ToolSettings = FPhysicsAssetCreateParams();
 	PreviewSkeletalMesh = nullptr;
 	if (!BodyGizmoTarget)
@@ -2596,6 +2599,7 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	WorldContext.World->InitWorld();
 
 	AActor* Actor = WorldContext.World->SpawnActor<AActor>();
+	Actor->bTickInEditor = true;
 	USkeletalMeshComponent* MeshComponent = Actor->AddComponent<USkeletalMeshComponent>();
 	MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
 	Actor->SetRootComponent(MeshComponent);
@@ -2650,8 +2654,9 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	UBoxComponent* FloorBoxComponent = FloorActor->AddComponent<UBoxComponent>();
 	FloorBoxComponent->AttachToComponent(FloorActor->GetRootComponent());
 	FloorBoxComponent->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
-	FloorBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	FloorBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	FloorBoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	FloorBoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::Block);
 	FloorActor->SetActorLocation(FVector(0.0f, 0.0f, -1.0f));
 	FloorActor->SetActorScale(FVector(10.0f, 10.0f, 1.0f));
 
@@ -2668,6 +2673,7 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	FSlateApplication::Get().RegisterViewport(&PhysicsAssetViewportWindow, &ViewportClient);
 	ViewportClient.ResetCameraToPreviewBounds();
 	RebuildPreviewShapeComponents(PhysicsAsset);
+	SetEditorPreviewOverlaysVisible(true);
 }
 
 // ---------------------------------------------------------------------------
@@ -3329,8 +3335,117 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 	}
 }
 
+void FPhysicsAssetEditorWidget::StartPreviewSimulation(UPhysicsAsset* PhysicsAsset)
+{
+	if (!PhysicsAsset || bPreviewSimulating)
+	{
+		return;
+	}
+
+	UWorld* PreviewWorld = ViewportClient.GetPreviewWorld();
+	USkeletalMeshComponent* MeshComponent = ViewportClient.GetPreviewMeshComponent();
+	if (!PreviewWorld || !MeshComponent || !PreviewSkeletalMesh)
+	{
+		return;
+	}
+
+	MeshComponent->SetWorldLocation(FVector::ZeroVector);
+	MeshComponent->SetRelativeRotation(FQuat::Identity);
+	MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
+	MeshComponent->SetEnableGravity(true);
+	MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::Block);
+	MeshComponent->SetPhysicsAsset(PhysicsAsset);
+	MeshComponent->SetSimulatePhysics(true);
+
+	if (!PreviewWorld->HasBegunPlay())
+	{
+		PreviewWorld->BeginPlay();
+	}
+
+	bPreviewSimulating = MeshComponent->IsRagdollActive();
+	PreviewSimulationTime = 0.0f;
+	SetEditorPreviewOverlaysVisible(true);
+}
+
+void FPhysicsAssetEditorWidget::StopPreviewSimulation(bool bResetPose)
+{
+	USkeletalMeshComponent* MeshComponent = ViewportClient.GetPreviewMeshComponent();
+	if (MeshComponent)
+	{
+		MeshComponent->SetSimulatePhysics(false);
+		MeshComponent->SetPhysicsAsset(nullptr);
+		if (bResetPose && PreviewSkeletalMesh)
+		{
+			MeshComponent->SetWorldLocation(FVector::ZeroVector);
+			MeshComponent->SetRelativeRotation(FQuat::Identity);
+			MeshComponent->ResetBoneEditPose();
+			MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
+			MeshComponent->ResetBoneEditPose();
+		}
+	}
+
+	bPreviewSimulating = false;
+	PreviewSimulationTime = 0.0f;
+	SetEditorPreviewOverlaysVisible(true);
+}
+
+void FPhysicsAssetEditorWidget::ResetPreviewSimulation(UPhysicsAsset* PhysicsAsset)
+{
+	StopPreviewSimulation(true);
+	StartPreviewSimulation(PhysicsAsset);
+}
+
+void FPhysicsAssetEditorWidget::TickPreviewSimulation(float DeltaTime)
+{
+	if (!bPreviewSimulating)
+	{
+		return;
+	}
+
+	USkeletalMeshComponent* MeshComponent = ViewportClient.GetPreviewMeshComponent();
+	if (!MeshComponent || !MeshComponent->IsRagdollActive())
+	{
+		StopPreviewSimulation(true);
+		return;
+	}
+
+	const float ClampedDeltaTime = (std::clamp)(DeltaTime, 0.0f, 1.0f / 15.0f);
+	if (ClampedDeltaTime <= 0.0f)
+	{
+		return;
+	}
+
+	PreviewSimulationTime += ClampedDeltaTime;
+}
+
+void FPhysicsAssetEditorWidget::SetEditorPreviewOverlaysVisible(bool bVisible)
+{
+	for (FPreviewShapeComponentEntry& Entry : PreviewShapeComponents)
+	{
+		if (Entry.Component)
+		{
+			Entry.Component->SetVisibility(bVisible);
+		}
+	}
+
+	for (FPreviewConstraintConeEntry& Entry : PreviewConstraintCones)
+	{
+		if (Entry.Component)
+		{
+			Entry.Component->SetVisibility(bVisible);
+		}
+	}
+
+	if (UGizmoComponent* Gizmo = ViewportClient.GetGizmo())
+	{
+		Gizmo->SetVisibility(bVisible);
+	}
+}
+
 void FPhysicsAssetEditorWidget::Close()
 {
+	StopPreviewSimulation(false);
 	ClearConstraintConeComponents();
 	ClearPreviewShapeComponents();
 	PreviewShapeActor = nullptr;
@@ -3386,6 +3501,7 @@ void FPhysicsAssetEditorWidget::Tick(float DeltaTime)
 {
 	if (ViewportClient.IsRenderable())
 	{
+		TickPreviewSimulation(DeltaTime);
 		ViewportClient.Tick(DeltaTime);
 		UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
 		SyncPreviewShapeComponents(PhysicsAsset);
@@ -3610,7 +3726,34 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 		}
 	}
 	ImGui::SameLine();
+	if (ImGui::Button("Save as Json"))
+	{
+		FPhysicsAssetManager::Get().SaveAsJson(PhysicsAsset);
+	}
+	ImGui::SameLine();
 	ImGui::TextDisabled("%s", PhysicsAsset->GetPreviewSkeletalMeshPath().empty() ? "Preview Mesh: None" : PhysicsAsset->GetPreviewSkeletalMeshPath().c_str());
+	ImGui::SameLine();
+	if (!bPreviewSimulating)
+	{
+		if (ImGui::Button("Simulate"))
+		{
+			StartPreviewSimulation(PhysicsAsset);
+		}
+	}
+	else
+	{
+		if (ImGui::Button("Stop"))
+		{
+			StopPreviewSimulation(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset Sim"))
+		{
+			ResetPreviewSimulation(PhysicsAsset);
+		}
+		ImGui::SameLine();
+		ImGui::TextDisabled("Sim %.2fs", PreviewSimulationTime);
+	}
 	ImGui::Separator();
 
 	static float LeftPanelWidth = 360.0f;
@@ -3938,6 +4081,13 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 
 				FViewportToolbar::Render(Context);
 				RenderStatsOverlay(DrawList, ViewportPos, PhysicsAsset);
+				if (bPreviewSimulating)
+				{
+					const FString SimText = "Simulating Ragdoll";
+					const ImVec2 SimTextPos(ViewportPos.x + 8.0f, ViewportPos.y + ToolbarHeight + 8.0f);
+					DrawList->AddText(ImVec2(SimTextPos.x + 1.0f, SimTextPos.y + 1.0f), IM_COL32(0, 0, 0, 220), SimText.c_str());
+					DrawList->AddText(SimTextPos, IM_COL32(120, 230, 255, 255), SimText.c_str());
+				}
 			}
 		}
 		else
@@ -4022,6 +4172,10 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 
 	if (bChanged)
 	{
+		if (bPreviewSimulating)
+		{
+			StopPreviewSimulation(true);
+		}
 		RebuildPreviewShapeComponents(PhysicsAsset);
 		MarkDirty();
 	}

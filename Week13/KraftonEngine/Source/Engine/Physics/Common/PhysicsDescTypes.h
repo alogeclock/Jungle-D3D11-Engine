@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "PhysicsCollisionTypes.h"
 #include "PhysicsMaterialTypes.h"
@@ -28,8 +28,17 @@ struct FPhysicsBodyDesc
     float                     Mass           = 1.0f;
     float                     LinearDamping  = 0.0f;
     float                     AngularDamping = 0.05f;
+    bool                      bEnableSelfCollision = false;
     FPhysicsCollisionDesc     CollisionDesc;
     TArray<FPhysicsShapeDesc> Shapes;
+};
+
+/** Constraint 축별 Motion 모드 */
+enum class EPhysicsConstraintMotionMode : uint8
+{
+    Free = 0,
+    Limited,
+    Locked,
 };
 
 /** Runtime Constraint 생성 정보 */
@@ -42,9 +51,15 @@ struct FPhysicsConstraintDesc
     float             AngularLimit       =   0.0f;
     float             TwistLimitMin      = -45.0f;
     float             TwistLimitMax      =  45.0f;
-    float             SwingLimitY        =  30.0f;
-    float             SwingLimitZ        =  30.0f;
+    float             SwingLimitY        =  15.0f;
+    float             SwingLimitZ        =  15.0f;
     bool              bDisableCollision  = false;
     float             Stiffness          =   0.0f;
     float             Damping            =   0.0f;
+    EPhysicsConstraintMotionMode XMotion      = EPhysicsConstraintMotionMode::Locked;
+    EPhysicsConstraintMotionMode YMotion      = EPhysicsConstraintMotionMode::Locked;
+    EPhysicsConstraintMotionMode ZMotion      = EPhysicsConstraintMotionMode::Locked;
+    EPhysicsConstraintMotionMode Swing1Motion = EPhysicsConstraintMotionMode::Limited;
+    EPhysicsConstraintMotionMode Swing2Motion = EPhysicsConstraintMotionMode::Limited;
+    EPhysicsConstraintMotionMode TwistMotion  = EPhysicsConstraintMotionMode::Limited;
 };

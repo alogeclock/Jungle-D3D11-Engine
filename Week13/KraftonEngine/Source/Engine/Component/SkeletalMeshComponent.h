@@ -3,7 +3,13 @@
 #include "SkinnedMeshComponent.h"
 #include "Animation/AnimInstanceAsset.h"
 #include "Animation/AnimInstance.h"
+#include "Physics/Assets/PhysicsAsset.h"
+
+#include <memory>
+
 #include "SkeletalMeshComponent.generated.h"
+
+struct FRagdollInstance;
 
 // SkeletalMesh 전용 render proxy만 제공하는 얇은 wrapper.
 // Skinning/bone/material/bounds 상태는 모두 USkinnedMeshComponent가 소유한다.
@@ -12,11 +18,12 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 {
 public:
 	GENERATED_BODY(USkeletalMeshComponent)
-	USkeletalMeshComponent() = default;
-	~USkeletalMeshComponent() override = default;
+	USkeletalMeshComponent();
+	~USkeletalMeshComponent() override;
 
 	void BeginPlay() override;
 	void SetSkeletalMesh(USkeletalMesh* InMesh) override;
+	void SetSimulatePhysics(bool bInSimulate) override;
 	void PostDuplicate() override;
 	void PostEditProperty(const char* PropertyName) override;
 
@@ -33,6 +40,12 @@ public:
 
 	void SetAnimScriptPath(const FString& Path) { AnimScriptPath = Path; }
 	const FString& GetAnimScriptPath() const { return AnimScriptPath; }
+
+	void SetPhysicsAsset(UPhysicsAsset* InAsset);
+	UPhysicsAsset* GetPhysicsAsset();
+	const FString& GetPhysicsAssetPath() const { return PhysicsAssetRef.GetPath().ToString(); }
+	void SetRagdollEnabled(bool bEnable);
+	bool IsRagdollActive() const;
 
 	void EndPlay() override;
 
@@ -60,6 +73,7 @@ private:
 	void ApplyPoseToComponent(const FPoseContext& Pose);
 	void CachePreIKPoseBoneWorldLocations(const FPoseContext& Pose);
 	void ApplyTwoBoneIKChains(FPoseContext& Pose);
+	void RefreshRagdollFromPhysicsState(bool bForceRecreate = false);
 
 	void SolveTwoBoneIK(FPoseContext& Pose, int RootBoneIndex, int MidBoneIndex, int EndBoneIndex, const FVector& TargetPosition, const FVector& PolePosition);
 
@@ -80,4 +94,9 @@ private:
 
 	UAnimInstance* AnimInstance = nullptr;
 
+	UPROPERTY(Edit, Category="Physics", DisplayName="Physics Asset", Type=SoftObject, Class=UPhysicsAsset)
+	TSoftObjectPtr<UPhysicsAsset> PhysicsAssetRef;
+
+	std::unique_ptr<FRagdollInstance> Ragdoll;
+	bool bRagdollEnabled = false;
 };

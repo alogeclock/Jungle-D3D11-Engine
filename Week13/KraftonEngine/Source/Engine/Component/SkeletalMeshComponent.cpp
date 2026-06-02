@@ -5,14 +5,20 @@
 #include "Animation/CharacterAnimInstance.h"
 #include "Core/Log.h"
 #include "Object/FUObjectArray.h"
+#include "Physics/Assets/PhysicsAssetManager.h"
+#include "Physics/Systems/Ragdoll/RagdollInstance.h"
 #include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/SkeletonAsset.h"
 #include "GameFramework/AActor.h"
+#include "GameFramework/World.h"
 #include "Platform/Paths.h"
 #include "Serialization/Archive.h"
 #include <cctype>
 #include <cstring>
+
+USkeletalMeshComponent::USkeletalMeshComponent() = default;
+USkeletalMeshComponent::~USkeletalMeshComponent() = default;
 
 void USkeletalMeshComponent::BeginPlay()
 {
@@ -26,26 +32,28 @@ void USkeletalMeshComponent::BeginPlay()
 			AnimInstance = nullptr;
 		}
 		RebuildAnimInstanceFromAsset();
-		return;
 	}
-
-	if (AnimScriptPath.empty())
-		return;
-
-	// PIE 재시작 등으로 이미 인스턴스가 있으면 먼저 정리
-	if (AnimInstance)
+	else if (!AnimScriptPath.empty())
 	{
-		GUObjectArray.DestroyObject(AnimInstance);
-		AnimInstance = nullptr;
+		// PIE 재시작 등으로 이미 인스턴스가 있으면 먼저 정리
+		if (AnimInstance)
+		{
+			GUObjectArray.DestroyObject(AnimInstance);
+			AnimInstance = nullptr;
+		}
+
+		UCharacterAnimInstance* Inst = GUObjectArray.CreateObject<UCharacterAnimInstance>();
+		AnimInstance = Inst;
+		Inst->Initialize(this, AnimScriptPath);
 	}
 
-	UCharacterAnimInstance* Inst = GUObjectArray.CreateObject<UCharacterAnimInstance>();
-	AnimInstance = Inst;
-	Inst->Initialize(this, AnimScriptPath);
+	RefreshRagdollFromPhysicsState();
 }
 
 void USkeletalMeshComponent::EndPlay()
 {
+	SetRagdollEnabled(false);
+
 	if (AnimInstance)
 	{
 		GUObjectArray.DestroyObject(AnimInstance);
@@ -56,11 +64,24 @@ void USkeletalMeshComponent::EndPlay()
 
 void USkeletalMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {
+	const bool bShouldRefreshRagdoll = GetSimulatePhysics() || IsRagdollActive();
+	SetRagdollEnabled(false);
+
 	Super::SetSkeletalMesh(InMesh);
 	if (!AnimInstanceAsset.IsNull())
 	{
 		RebuildAnimInstanceFromAsset();
 	}
+	if (bShouldRefreshRagdoll)
+	{
+		RefreshRagdollFromPhysicsState(true);
+	}
+}
+
+void USkeletalMeshComponent::SetSimulatePhysics(bool bInSimulate)
+{
+	Super::SetSimulatePhysics(bInSimulate);
+	RefreshRagdollFromPhysicsState();
 }
 
 void USkeletalMeshComponent::PostDuplicate()
@@ -70,6 +91,7 @@ void USkeletalMeshComponent::PostDuplicate()
 	{
 		RebuildAnimInstanceFromAsset();
 	}
+	RefreshRagdollFromPhysicsState();
 }
 
 void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
@@ -80,6 +102,20 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 		&& (strcmp(PropertyName, "Anim Instance") == 0 || strcmp(PropertyName, "AnimInstanceAsset") == 0))
 	{
 		RebuildAnimInstanceFromAsset();
+	}
+
+	if (PropertyName
+		&& (strcmp(PropertyName, "Physics Asset") == 0 || strcmp(PropertyName, "PhysicsAssetRef") == 0)
+		&& (GetSimulatePhysics() || IsRagdollActive()))
+	{
+		SetRagdollEnabled(false);
+		RefreshRagdollFromPhysicsState(true);
+	}
+
+	if (PropertyName
+		&& (strcmp(PropertyName, "Simulate Physics") == 0 || strcmp(PropertyName, "bSimulatePhysics") == 0))
+	{
+		RefreshRagdollFromPhysicsState();
 	}
 }
 
@@ -163,10 +199,156 @@ bool USkeletalMeshComponent::RebuildAnimInstanceFromAsset()
 	return RuntimeInstance != nullptr;
 }
 
+void USkeletalMeshComponent::SetPhysicsAsset(UPhysicsAsset* InAsset)
+{
+	const bool bWasRagdollActive = IsRagdollActive();
+	const bool bShouldRefreshRagdoll = bWasRagdollActive || GetSimulatePhysics();
+	if (bWasRagdollActive)
+	{
+		SetRagdollEnabled(false);
+	}
+
+	if (InAsset)
+	{
+		PhysicsAssetRef = InAsset;
+	}
+	else
+	{
+		PhysicsAssetRef.Reset();
+	}
+
+	if (bShouldRefreshRagdoll)
+	{
+		RefreshRagdollFromPhysicsState(true);
+	}
+}
+
+UPhysicsAsset* USkeletalMeshComponent::GetPhysicsAsset()
+{
+	if (PhysicsAssetRef.IsNull())
+	{
+		return nullptr;
+	}
+
+	UPhysicsAsset* Asset = PhysicsAssetRef.Get();
+	if (Asset)
+	{
+		return Asset;
+	}
+
+	const FString AssetPath = FPaths::MakeProjectRelative(PhysicsAssetRef.GetPath().ToString());
+	if (AssetPath.empty() || AssetPath == "None")
+	{
+		return nullptr;
+	}
+
+	Asset = FPhysicsAssetManager::Get().Load(AssetPath);
+	if (Asset)
+	{
+		PhysicsAssetRef.SetCache(Asset);
+	}
+	return Asset;
+}
+
+void USkeletalMeshComponent::SetRagdollEnabled(bool bEnable)
+{
+	if (bEnable && IsRagdollActive())
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	IPhysicsSceneInterface* Scene = World ? World->GetPhysicsScene() : nullptr;
+
+	if (!bEnable)
+	{
+		if (Ragdoll)
+		{
+			Ragdoll->RestoreInitialPose(this);
+			Ragdoll->Release(Scene);
+			Ragdoll.reset();
+		}
+		bRagdollEnabled = false;
+		return;
+	}
+
+	if (!Scene)
+	{
+		UE_LOG("SkeletalMeshComponent Ragdoll enable failed: PhysicsScene is null");
+		return;
+	}
+
+	UPhysicsAsset* PhysicsAsset = GetPhysicsAsset();
+	if (!PhysicsAsset)
+	{
+		UE_LOG("SkeletalMeshComponent Ragdoll enable failed: PhysicsAsset is null");
+		return;
+	}
+
+	if (Ragdoll)
+	{
+		Ragdoll->Release(Scene);
+	}
+	else
+	{
+		Ragdoll = std::make_unique<FRagdollInstance>();
+	}
+
+	bRagdollEnabled = Ragdoll->Initialize(PhysicsAsset, this, Scene);
+	if (!bRagdollEnabled)
+	{
+		UE_LOG("SkeletalMeshComponent Ragdoll enable failed: runtime bodies were not created");
+		Ragdoll.reset();
+	}
+}
+
+bool USkeletalMeshComponent::IsRagdollActive() const
+{
+	return bRagdollEnabled && Ragdoll && Ragdoll->IsActive();
+}
+
+void USkeletalMeshComponent::RefreshRagdollFromPhysicsState(bool bForceRecreate)
+{
+	if (!GetSimulatePhysics() || PhysicsAssetRef.IsNull() || !GetSkeletalMesh())
+	{
+		SetRagdollEnabled(false);
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World || !World->GetPhysicsScene())
+	{
+		return;
+	}
+
+	if (bForceRecreate)
+	{
+		SetRagdollEnabled(false);
+	}
+
+	if (!IsRagdollActive())
+	{
+		SetRagdollEnabled(true);
+	}
+}
+
 void USkeletalMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction& ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (IsRagdollActive())
+	{
+		UWorld* World = GetWorld();
+		IPhysicsSceneInterface* Scene = World ? World->GetPhysicsScene() : nullptr;
+		if (Scene)
+		{
+			Ragdoll->SyncBonesFromBodies(this, Scene);
+		}
+		PreIKBoneWorldLocations.clear();
+		bHasPreIKPoseCache = false;
+		return;
+	}
 
 	if (!AnimInstance)
 	{

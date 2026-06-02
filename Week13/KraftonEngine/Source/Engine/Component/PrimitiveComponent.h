@@ -133,6 +133,8 @@ public:
 	ECollisionEnabled GetCollisionEnabled() const { return CollisionEnabled; }
 	bool IsCollisionEnabled() const { return CollisionEnabled != ECollisionEnabled::NoCollision; }
 	bool IsQueryCollisionEnabled() const;
+	bool IsPhysicsCollisionEnabled() const;
+	virtual bool CanCreatePhysicsBody() const { return true; }
 
 	void SetCollisionObjectType(ECollisionChannel InChannel);
 	ECollisionChannel GetCollisionObjectType() const { return ObjectType; }
@@ -147,8 +149,14 @@ public:
 
 	// --- Overlap / Hit ---
 
-	void SetSimulatePhysics(bool bInSimulate);
+	virtual void SetSimulatePhysics(bool bInSimulate);
 	bool GetSimulatePhysics() const { return bSimulatePhysics; }
+	void SetEnableGravity(bool bInEnableGravity);
+	bool GetEnableGravity() const { return bEnableGravity; }
+	virtual bool NeedsPhysicsInterpolation() const;
+
+	virtual void OnPrePhysicsSync();
+	virtual void OnPostPhysicsSync();
 	void SetAutoCreatePhysicsBody(bool bInAutoCreate);
 	bool GetAutoCreatePhysicsBody() const { return bAutoCreatePhysicsBody; }
 	FPhysicsBodyInstance* GetPhysicsBodyInstance() const { return PhysicsBodyInstance; }
@@ -244,6 +252,9 @@ protected:
 	bool bGenerateOverlapEvents = false;
 
 	// 물리 파라미터 — RootComponent의 값만 백엔드에 적용 (compound shape 정책).
+	UPROPERTY(Edit, Category="Physics", DisplayName="Enable Gravity")
+	bool bEnableGravity = true;
+
 	UPROPERTY(Edit, Category="Physics", DisplayName="Mass (Kg)", Min = 0.0, Max = 1000.0, Speed = 0.1)
 	float Mass = 1.0f;                          // kg
 
