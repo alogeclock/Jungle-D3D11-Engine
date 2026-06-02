@@ -11,7 +11,7 @@
 /** Physics 단위 변환 기준 */
 struct FPhysicsUnitScale
 {
-    static constexpr float LengthScale = 0.01f;
+    static constexpr float LengthScale = 1.0f;
     static constexpr float MassScale   = 1.0f;
     static constexpr float TimeScale   = 1.0f;
 };

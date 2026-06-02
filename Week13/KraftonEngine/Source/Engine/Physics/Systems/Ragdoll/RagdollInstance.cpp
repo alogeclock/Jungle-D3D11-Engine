@@ -218,21 +218,19 @@ bool FRagdollInstance::Initialize(
 		FPhysicsBodyDesc BodyDesc = BodySetup->BuildBodyDesc();
 		BodyDesc.BodyType = EPhysicsBodyType::PBT_Dynamic;
 		BodyDesc.bEnableSelfCollision = true;
-		ScaleBodyDescForComponent(BodyDesc, ComponentWorldScaleAtStart);
-		const FPhysicsBodyDesc RuntimeBodyDesc = MakeEngineUnitBodyDesc(BodyDesc);
 
 		UE_LOG("[RagdollBuildBody] Owner=%s Bone=%s BoneIndex=%d ShapeCount=%d Mass=%.3f BoneWorldP=(%.3f, %.3f, %.3f) BoneWorldQ=(%.3f, %.3f, %.3f, %.3f)",
 			MeshComp->GetName().c_str(),
 			BoneName.c_str(),
 			BoneIndex,
-			static_cast<int32>(RuntimeBodyDesc.Shapes.size()),
-			RuntimeBodyDesc.Mass,
+			static_cast<int32>(BodyDesc.Shapes.size()),
+			BodyDesc.Mass,
 			BoneWorldTransform.Location.X, BoneWorldTransform.Location.Y, BoneWorldTransform.Location.Z,
 			BoneWorldTransform.Rotation.X, BoneWorldTransform.Rotation.Y, BoneWorldTransform.Rotation.Z, BoneWorldTransform.Rotation.W);
 
-		for (int32 ShapeIndex = 0; ShapeIndex < static_cast<int32>(RuntimeBodyDesc.Shapes.size()); ++ShapeIndex)
+		for (int32 ShapeIndex = 0; ShapeIndex < static_cast<int32>(BodyDesc.Shapes.size()); ++ShapeIndex)
 		{
-			const FPhysicsShapeDesc& ShapeDesc = RuntimeBodyDesc.Shapes[ShapeIndex];
+			const FPhysicsShapeDesc& ShapeDesc = BodyDesc.Shapes[ShapeIndex];
 			UE_LOG("[RagdollBuildShape] Bone=%s ShapeIndex=%d Type=%s Size=(%.3f, %.3f, %.3f) LocalP=(%.3f, %.3f, %.3f) LocalQ=(%.3f, %.3f, %.3f, %.3f)",
 				BoneName.c_str(),
 				ShapeIndex,
@@ -244,7 +242,7 @@ bool FRagdollInstance::Initialize(
 		}
 
 		FPhysicsBodyInstance* BodyInstance =
-			Scene->CreateBodyAtTransform(MeshComp, RuntimeBodyDesc, BoneWorldTransform, false);
+			Scene->CreateBodyAtTransform(MeshComp, BodyDesc, BoneWorldTransform, false);
 		if (!BodyInstance)
 		{
 			UE_LOG("[RagdollBuildBodyError] Owner=%s Bone=%s failed to create runtime body",
@@ -298,17 +296,12 @@ bool FRagdollInstance::Initialize(
 		}
 
 		FPhysicsConstraintDesc ConstraintDesc = ConstraintSetup.BuildConstraintDesc();
-		ScaleConstraintDescForComponent(ConstraintDesc, ComponentWorldScaleAtStart);
-		const FPhysicsConstraintDesc RuntimeConstraintDesc = MakeEngineUnitConstraintDesc(ConstraintDesc);
 
 		FPhysicsBodyInstance* ParentBody = Bodies[ParentBodyIt->second];
 		FPhysicsBodyInstance* ChildBody = Bodies[ChildBodyIt->second];
-		LogConstraintFrameError(ConstraintSetup, RuntimeConstraintDesc, ParentBody, ChildBody, Scene);
+		LogConstraintFrameError(ConstraintSetup, ConstraintDesc, ParentBody, ChildBody, Scene);
 
-		FPhysicsConstraintInstance* ConstraintInstance = Scene->CreateConstraint(
-			ParentBody,
-			ChildBody,
-			RuntimeConstraintDesc);
+		FPhysicsConstraintInstance* ConstraintInstance = Scene->CreateConstraint(ParentBody, ChildBody, ConstraintDesc);
 		if (ConstraintInstance)
 		{
 			Constraints.push_back(ConstraintInstance);
