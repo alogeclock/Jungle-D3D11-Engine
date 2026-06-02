@@ -1832,7 +1832,7 @@
           "Object Type" : 0,
           "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset_1.uasset",
           "RelativeTransform" : {
-            "Location" : [22.715458, 12.124769, 8.213300],
+            "Location" : [22.715458, 17.571968, 13.841932],
             "Scale" : [10.000000, 10.000000, 10.000000]
           },
           "Response Container" : {
@@ -1921,9 +1921,9 @@
   "PerspectiveCamera" : {
     "FOV" : 1.047198,
     "FarClip" : 1000.000000,
-    "Location" : [2.501744, 15.996944, 22.267687],
+    "Location" : [-1.223845, 17.379925, 22.738321],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 29.772461, -727.925476]
+    "Rotation" : [0.000000, 6.972488, -740.226440]
   },
   "Version" : 2,
   "WorldSettings" : {

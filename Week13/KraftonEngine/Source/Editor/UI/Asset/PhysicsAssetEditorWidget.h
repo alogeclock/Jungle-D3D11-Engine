@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "AssetEditorWidget.h"
 #include "Editor/Slate/SWindow.h"
@@ -69,6 +69,13 @@ private:
 	void DrawConstraintDebug(UPhysicsAsset* PhysicsAsset);
 	UStaticMeshComponent* CreatePreviewShapeComponent(UStaticMesh* StaticMesh, int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex, int32 PartIndex, const FVector& BaseMeshExtent);
 	UMaterial* CreatePreviewShapeMaterial(float Alpha, bool bDisableDepthTest = false) const;
+
+	void StartPreviewSimulation(UPhysicsAsset* PhysicsAsset);
+	void StopPreviewSimulation(bool bResetPose);
+	void ResetPreviewSimulation(UPhysicsAsset* PhysicsAsset);
+	void TickPreviewSimulation(float DeltaTime);
+	void SetEditorPreviewOverlaysVisible(bool bVisible);
+
 	void SelectBodyShape(int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex);
 	void SelectBoneByIndex(int32 BoneIndex);
 	void SelectBodyByIndex(int32 BodyIndex);
@@ -120,6 +127,9 @@ private:
 	bool bFrameGraphOnNextRender = false;
 	bool bScrollToSelectedConstraintOnNextRender = false;
 	bool bPendingClose = false;
+	bool bPreviewSimulating = false;
+	bool bHideEditOverlaysDuringSimulation = true;
+	float PreviewSimulationTime = 0.0f;
 
 	ID3D11ShaderResourceView* CapsuleBodyIcon = nullptr;
 	int32 BoneTreeRowCounter = 0;
