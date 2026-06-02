@@ -9,6 +9,7 @@ class UWorld;
 class UPrimitiveComponent;
 class AActor;
 struct FHitResult;
+class FNvClothScene;
 
 /**
  * @file PhysicsSceneInterface.h
@@ -59,6 +60,11 @@ public:
     // --- 시뮬레이션 ---
     virtual void Simulate(const FPhysicsStepInfo& StepInfo) = 0;
     virtual void FetchResults(bool bBlock) = 0;
+
+    // --- Cloth Simulation ---
+    virtual FNvClothScene* GetClothScene() = 0;
+    virtual const FNvClothScene* GetClothScene() const = 0;
+    virtual void SimulateCloth(const FPhysicsStepInfo& StepInfo) = 0;
 
     // --- 이벤트 / 런타임 통계 ---
     virtual void SetEventCallback(IPhysicsEventCallback* InCallback) = 0;

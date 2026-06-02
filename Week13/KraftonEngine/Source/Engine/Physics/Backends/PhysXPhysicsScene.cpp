@@ -34,24 +34,34 @@ static float PxVecLength(const PxVec3& V);
 class FPhysXErrorCallback : public PxErrorCallback
 {
 public:
-    void reportError(PxErrorCode::Enum code, const char* message,
-        const char* file, int line) override
-    {
-        const char* severity = "Info";
-        if (code == PxErrorCode::eABORT || code == PxErrorCode::eOUT_OF_MEMORY)
-            severity = "Fatal";
-        else if (code == PxErrorCode::eINTERNAL_ERROR || code == PxErrorCode::eINVALID_OPERATION)
-            severity = "Error";
-        else if (code == PxErrorCode::eINVALID_PARAMETER || code == PxErrorCode::ePERF_WARNING)
-            severity = "Warning";
-        else if (code == PxErrorCode::eDEBUG_WARNING)
-            severity = "Warning";
-        UE_LOG("[PhysX %s] %s (%s:%d)", severity, message, file, line);
-    }
+	void reportError(PxErrorCode::Enum code, const char* message,
+		const char* file, int line) override
+	{
+		const char* severity = "Info";
+		if (code == PxErrorCode::eABORT || code == PxErrorCode::eOUT_OF_MEMORY)
+			severity = "Fatal";
+		else if (code == PxErrorCode::eINTERNAL_ERROR || code == PxErrorCode::eINVALID_OPERATION)
+			severity = "Error";
+		else if (code == PxErrorCode::eINVALID_PARAMETER || code == PxErrorCode::ePERF_WARNING)
+			severity = "Warning";
+		else if (code == PxErrorCode::eDEBUG_WARNING)
+			severity = "Warning";
+		UE_LOG("[PhysX %s] %s (%s:%d)", severity, message, file, line);
+	}
 };
 
 static FPhysXErrorCallback GPhysXErrorCallback;
 static PxDefaultAllocator  GPhysXAllocator;
+
+physx::PxAllocatorCallback& GetSharedPhysXAllocator()
+{
+	return GPhysXAllocator;
+}
+
+physx::PxErrorCallback& GetSharedPhysXErrorCallback()
+{
+	return GPhysXErrorCallback;
+}
 
 // ============================================================
 // PhysX Foundation/Physics 싱글턴
@@ -63,11 +73,11 @@ static bool 		 GVehicleSdkInitialized = false;
 
 static void AcquireSharedPhysX(PxFoundation*& OutFoundation, PxPhysics*& OutPhysics)
 {
-    if (GSharedRefCount == 0)
-    {
-        GSharedFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, GPhysXAllocator, GPhysXErrorCallback);
-        if (GSharedFoundation)
-            GSharedPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *GSharedFoundation, PxTolerancesScale());
+	if (GSharedRefCount == 0)
+	{
+		GSharedFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, GPhysXAllocator, GPhysXErrorCallback);
+		if (GSharedFoundation)
+			GSharedPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *GSharedFoundation, PxTolerancesScale());
 
 		if (GSharedPhysics && PxInitVehicleSDK(*GSharedPhysics))
 		{
@@ -75,21 +85,21 @@ static void AcquireSharedPhysX(PxFoundation*& OutFoundation, PxPhysics*& OutPhys
 			PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
 			GVehicleSdkInitialized = true;
 		}
-    }
-    ++GSharedRefCount;
-    OutFoundation = GSharedFoundation;
-    OutPhysics    = GSharedPhysics;
+	}
+	++GSharedRefCount;
+	OutFoundation = GSharedFoundation;
+	OutPhysics    = GSharedPhysics;
 }
 
 static void ReleaseSharedPhysX()
 {
-    if (--GSharedRefCount <= 0)
-    {
+	if (--GSharedRefCount <= 0)
+	{
 		if (GVehicleSdkInitialized) { PxCloseVehicleSDK(); GVehicleSdkInitialized = false; }
-        if (GSharedPhysics)    { GSharedPhysics->release();    GSharedPhysics    = nullptr; }
-        if (GSharedFoundation) { GSharedFoundation->release(); GSharedFoundation = nullptr; }
-        GSharedRefCount = 0;
-    }
+		if (GSharedPhysics)    { GSharedPhysics->release();    GSharedPhysics    = nullptr; }
+		if (GSharedFoundation) { GSharedFoundation->release(); GSharedFoundation = nullptr; }
+		GSharedRefCount = 0;
+	}
 }
 
 // ============================================================
@@ -98,139 +108,139 @@ static void ReleaseSharedPhysX()
 class FPhysXSimulationCallback : public PxSimulationEventCallback
 {
 public:
-    struct FQueuedHit
-    {
-        UPrimitiveComponent* Self  = nullptr;
-        UPrimitiveComponent* Other = nullptr;
-        FVector NormalImpulse{0,0,0};
-        FHitResult Hit;
-        bool bBegin = true;
-    };
-    struct FQueuedTrigger
-    {
-        UPrimitiveComponent* Self  = nullptr;
-        UPrimitiveComponent* Other = nullptr;
-        bool bBegin = true;
-    };
+	struct FQueuedHit
+	{
+		UPrimitiveComponent* Self  = nullptr;
+		UPrimitiveComponent* Other = nullptr;
+		FVector NormalImpulse{0,0,0};
+		FHitResult Hit;
+		bool bBegin = true;
+	};
+	struct FQueuedTrigger
+	{
+		UPrimitiveComponent* Self  = nullptr;
+		UPrimitiveComponent* Other = nullptr;
+		bool bBegin = true;
+	};
 
-    void onContact(const PxContactPairHeader& PairHeader,
-        const PxContactPair* Pairs, PxU32 Count) override
-    {
-        if (PairHeader.flags & PxContactPairHeaderFlag::eREMOVED_ACTOR_0
-            || PairHeader.flags & PxContactPairHeaderFlag::eREMOVED_ACTOR_1)
-            return;
+	void onContact(const PxContactPairHeader& PairHeader,
+		const PxContactPair* Pairs, PxU32 Count) override
+	{
+		if (PairHeader.flags & PxContactPairHeaderFlag::eREMOVED_ACTOR_0
+			|| PairHeader.flags & PxContactPairHeaderFlag::eREMOVED_ACTOR_1)
+			return;
 
-        for (PxU32 i = 0; i < Count; ++i)
-        {
-            const PxContactPair& CP = Pairs[i];
-            const bool bBegin   = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND);
-            const bool bPersist = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS);
-            const bool bEnd     = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST);
-            if (!bBegin && !bPersist && !bEnd) continue;
+		for (PxU32 i = 0; i < Count; ++i)
+		{
+			const PxContactPair& CP = Pairs[i];
+			const bool bBegin   = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND);
+			const bool bPersist = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS);
+			const bool bEnd     = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST);
+			if (!bBegin && !bPersist && !bEnd) continue;
 
-            auto* CompA = CP.shapes[0] ? static_cast<UPrimitiveComponent*>(CP.shapes[0]->userData) : nullptr;
-            auto* CompB = CP.shapes[1] ? static_cast<UPrimitiveComponent*>(CP.shapes[1]->userData) : nullptr;
-            if (!CompA || !CompB) continue;
+			auto* CompA = CP.shapes[0] ? static_cast<UPrimitiveComponent*>(CP.shapes[0]->userData) : nullptr;
+			auto* CompB = CP.shapes[1] ? static_cast<UPrimitiveComponent*>(CP.shapes[1]->userData) : nullptr;
+			if (!CompA || !CompB) continue;
 
-            PxContactPairPoint ContactPoints[16];
-            PxU32 NumPoints = CP.extractContacts(ContactPoints, 16);
-            for (PxU32 PointIndex = 0; PointIndex < NumPoints; ++PointIndex)
-            {
-                const PxContactPairPoint& Point = ContactPoints[PointIndex];
-                const float ImpulseMagnitude = PxVecLength(Point.impulse);
-                if (Point.separation < -5.0f || ImpulseMagnitude > 100.0f)
-                {
-                    const FString CompAName = CompA->GetName();
-                    const FString CompBName = CompB->GetName();
-                }
-            }
+			PxContactPairPoint ContactPoints[16];
+			PxU32 NumPoints = CP.extractContacts(ContactPoints, 16);
+			for (PxU32 PointIndex = 0; PointIndex < NumPoints; ++PointIndex)
+			{
+				const PxContactPairPoint& Point = ContactPoints[PointIndex];
+				const float ImpulseMagnitude = PxVecLength(Point.impulse);
+				if (Point.separation < -5.0f || ImpulseMagnitude > 100.0f)
+				{
+					const FString CompAName = CompA->GetName();
+					const FString CompBName = CompB->GetName();
+				}
+			}
 
-            if (bEnd)
-            {
-                PendingHits.push_back({ CompA, CompB, {}, {}, false });
-                PendingHits.push_back({ CompB, CompA, {}, {}, false });
-                continue;
-            }
+			if (bEnd)
+			{
+				PendingHits.push_back({ CompA, CompB, {}, {}, false });
+				PendingHits.push_back({ CompB, CompA, {}, {}, false });
+				continue;
+			}
 
-            if (!bBegin)
-            {
-                continue;
-            }
+			if (!bBegin)
+			{
+				continue;
+			}
 
-            FVector ContactPos(0,0,0), ContactNormal(0,0,1);
-            float Penetration = 0.0f;
-            if (NumPoints > 0)
-            {
-                ContactPos    = FVector(ContactPoints[0].position.x, ContactPoints[0].position.y, ContactPoints[0].position.z);
-                ContactNormal = FVector(ContactPoints[0].normal.x,   ContactPoints[0].normal.y,   ContactPoints[0].normal.z);
-                Penetration   = ContactPoints[0].separation;
-            }
+			FVector ContactPos(0,0,0), ContactNormal(0,0,1);
+			float Penetration = 0.0f;
+			if (NumPoints > 0)
+			{
+				ContactPos    = FVector(ContactPoints[0].position.x, ContactPoints[0].position.y, ContactPoints[0].position.z);
+				ContactNormal = FVector(ContactPoints[0].normal.x,   ContactPoints[0].normal.y,   ContactPoints[0].normal.z);
+				Penetration   = ContactPoints[0].separation;
+			}
 
-            const FVector NI = ContactNormal * Penetration;
+			const FVector NI = ContactNormal * Penetration;
 
-            FQueuedHit A;
-            A.Self = CompA; A.Other = CompB; A.NormalImpulse = NI;
-            A.Hit.bHit = true; A.Hit.HitComponent = CompB; A.Hit.HitActor = CompB->GetOwner();
-            A.Hit.WorldHitLocation = ContactPos; A.Hit.ImpactNormal = ContactNormal;
-            A.Hit.WorldNormal = ContactNormal; A.Hit.PenetrationDepth = -Penetration;
-            PendingHits.push_back(A);
+			FQueuedHit A;
+			A.Self = CompA; A.Other = CompB; A.NormalImpulse = NI;
+			A.Hit.bHit = true; A.Hit.HitComponent = CompB; A.Hit.HitActor = CompB->GetOwner();
+			A.Hit.WorldHitLocation = ContactPos; A.Hit.ImpactNormal = ContactNormal;
+			A.Hit.WorldNormal = ContactNormal; A.Hit.PenetrationDepth = -Penetration;
+			PendingHits.push_back(A);
 
-            FQueuedHit B;
-            B.Self = CompB; B.Other = CompA; B.NormalImpulse = NI * -1.0f;
-            B.Hit.bHit = true; B.Hit.HitComponent = CompA; B.Hit.HitActor = CompA->GetOwner();
-            B.Hit.WorldHitLocation = ContactPos; B.Hit.ImpactNormal = ContactNormal * -1.0f;
-            B.Hit.WorldNormal = ContactNormal * -1.0f; B.Hit.PenetrationDepth = -Penetration;
-            PendingHits.push_back(B);
-        }
-    }
+			FQueuedHit B;
+			B.Self = CompB; B.Other = CompA; B.NormalImpulse = NI * -1.0f;
+			B.Hit.bHit = true; B.Hit.HitComponent = CompA; B.Hit.HitActor = CompA->GetOwner();
+			B.Hit.WorldHitLocation = ContactPos; B.Hit.ImpactNormal = ContactNormal * -1.0f;
+			B.Hit.WorldNormal = ContactNormal * -1.0f; B.Hit.PenetrationDepth = -Penetration;
+			PendingHits.push_back(B);
+		}
+	}
 
-    void onTrigger(PxTriggerPair* Pairs, PxU32 Count) override
-    {
-        for (PxU32 i = 0; i < Count; ++i)
-        {
-            const PxTriggerPair& TP = Pairs[i];
-            if (TP.flags & (PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER | PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
-                continue;
-            auto* TriggerComp = TP.triggerShape ? static_cast<UPrimitiveComponent*>(TP.triggerShape->userData) : nullptr;
-            auto* OtherComp   = TP.otherShape   ? static_cast<UPrimitiveComponent*>(TP.otherShape->userData)   : nullptr;
-            if (!TriggerComp || !OtherComp) continue;
-            const bool bBegin = (TP.status == PxPairFlag::eNOTIFY_TOUCH_FOUND);
-            const bool bEnd   = (TP.status == PxPairFlag::eNOTIFY_TOUCH_LOST);
-            if (!bBegin && !bEnd) continue;
-            if (TriggerComp->GetGenerateOverlapEvents()) PendingTriggers.push_back({ TriggerComp, OtherComp, bBegin });
-            if (OtherComp->GetGenerateOverlapEvents())   PendingTriggers.push_back({ OtherComp, TriggerComp, bBegin });
-        }
-    }
+	void onTrigger(PxTriggerPair* Pairs, PxU32 Count) override
+	{
+		for (PxU32 i = 0; i < Count; ++i)
+		{
+			const PxTriggerPair& TP = Pairs[i];
+			if (TP.flags & (PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER | PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
+				continue;
+			auto* TriggerComp = TP.triggerShape ? static_cast<UPrimitiveComponent*>(TP.triggerShape->userData) : nullptr;
+			auto* OtherComp   = TP.otherShape   ? static_cast<UPrimitiveComponent*>(TP.otherShape->userData)   : nullptr;
+			if (!TriggerComp || !OtherComp) continue;
+			const bool bBegin = (TP.status == PxPairFlag::eNOTIFY_TOUCH_FOUND);
+			const bool bEnd   = (TP.status == PxPairFlag::eNOTIFY_TOUCH_LOST);
+			if (!bBegin && !bEnd) continue;
+			if (TriggerComp->GetGenerateOverlapEvents()) PendingTriggers.push_back({ TriggerComp, OtherComp, bBegin });
+			if (OtherComp->GetGenerateOverlapEvents())   PendingTriggers.push_back({ OtherComp, TriggerComp, bBegin });
+		}
+	}
 
-    void DispatchPendingEvents()
-    {
-        std::vector<FQueuedHit>     Hits;    Hits.swap(PendingHits);
-        std::vector<FQueuedTrigger> Trigs;   Trigs.swap(PendingTriggers);
+	void DispatchPendingEvents()
+	{
+		std::vector<FQueuedHit>     Hits;    Hits.swap(PendingHits);
+		std::vector<FQueuedTrigger> Trigs;   Trigs.swap(PendingTriggers);
 
-        for (FQueuedHit& E : Hits)
-        {
-            if (!IsAliveObject(E.Self) || !IsAliveObject(E.Other)) continue;
-            AActor* OtherActor = E.Other->GetOwner();
-            if (E.bBegin) E.Self->NotifyComponentHit(E.Self, OtherActor, E.Other, E.NormalImpulse, E.Hit);
-            else          E.Self->NotifyComponentEndHit(E.Self, OtherActor, E.Other);
-        }
-        for (FQueuedTrigger& E : Trigs)
-        {
-            if (!IsAliveObject(E.Self) || !IsAliveObject(E.Other)) continue;
-            AActor* OtherActor = E.Other->GetOwner();
-            if (E.bBegin) { FHitResult D; E.Self->NotifyComponentBeginOverlap(E.Self, OtherActor, E.Other, 0, false, D); }
-            else            E.Self->NotifyComponentEndOverlap(E.Self, OtherActor, E.Other, 0);
-        }
-    }
+		for (FQueuedHit& E : Hits)
+		{
+			if (!IsAliveObject(E.Self) || !IsAliveObject(E.Other)) continue;
+			AActor* OtherActor = E.Other->GetOwner();
+			if (E.bBegin) E.Self->NotifyComponentHit(E.Self, OtherActor, E.Other, E.NormalImpulse, E.Hit);
+			else          E.Self->NotifyComponentEndHit(E.Self, OtherActor, E.Other);
+		}
+		for (FQueuedTrigger& E : Trigs)
+		{
+			if (!IsAliveObject(E.Self) || !IsAliveObject(E.Other)) continue;
+			AActor* OtherActor = E.Other->GetOwner();
+			if (E.bBegin) { FHitResult D; E.Self->NotifyComponentBeginOverlap(E.Self, OtherActor, E.Other, 0, false, D); }
+			else            E.Self->NotifyComponentEndOverlap(E.Self, OtherActor, E.Other, 0);
+		}
+	}
 
-    void onConstraintBreak(PxConstraintInfo*, PxU32) override {}
-    void onWake(PxActor**, PxU32) override {}
-    void onSleep(PxActor**, PxU32) override {}
-    void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) override {}
+	void onConstraintBreak(PxConstraintInfo*, PxU32) override {}
+	void onWake(PxActor**, PxU32) override {}
+	void onSleep(PxActor**, PxU32) override {}
+	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) override {}
 
 private:
-    std::vector<FQueuedHit>     PendingHits;
-    std::vector<FQueuedTrigger> PendingTriggers;
+	std::vector<FQueuedHit>     PendingHits;
+	std::vector<FQueuedTrigger> PendingTriggers;
 };
 
 // ============================================================
@@ -244,21 +254,21 @@ static float ToRadians(float Degrees) { return Degrees * (PxPi / 180.0f); }
 
 static void SetComponentWorldRotation(USceneComponent* Comp, const FQuat& WorldRotation)
 {
-    if (!Comp) return;
+	if (!Comp) return;
 
-    if (USceneComponent* Parent = Comp->GetParent())
-    {
-        const FQuat ParentWorldRotation = Parent->GetWorldMatrix().ToQuat();
-        Comp->SetRelativeRotation(WorldRotation * ParentWorldRotation.Inverse());
-        return;
-    }
+	if (USceneComponent* Parent = Comp->GetParent())
+	{
+		const FQuat ParentWorldRotation = Parent->GetWorldMatrix().ToQuat();
+		Comp->SetRelativeRotation(WorldRotation * ParentWorldRotation.Inverse());
+		return;
+	}
 
-    Comp->SetRelativeRotation(WorldRotation);
+	Comp->SetRelativeRotation(WorldRotation);
 }
 
 static PxTransform GetPxTransform(UPrimitiveComponent* Comp)
 {
-    return PxTransform(ToPxVec3(Comp->GetWorldLocation()), ToPxQuat(Comp->GetWorldMatrix().ToQuat()));
+	return PxTransform(ToPxVec3(Comp->GetWorldLocation()), ToPxQuat(Comp->GetWorldMatrix().ToQuat()));
 }
 
 static PxVehiclePadSmoothingData CreateVehiclePadSmoothingData()
@@ -299,63 +309,63 @@ static const PxFixedSizeLookupTable<8>& GetVehicleSteerVsForwardSpeedTable()
 
 static PxTransform ToPxTransform(const FTransform& Transform)
 {
-    return PxTransform(ToPxVec3(Transform.Location), ToPxQuat(Transform.Rotation));
+	return PxTransform(ToPxVec3(Transform.Location), ToPxQuat(Transform.Rotation));
 }
 
 static FTransform ToFTransform(const PxTransform& Transform)
 {
-    return FTransform(ToFVector(Transform.p), ToFQuat(Transform.q), FVector::OneVector);
+	return FTransform(ToFVector(Transform.p), ToFQuat(Transform.q), FVector::OneVector);
 }
 
 static float PxVecLength(const PxVec3& V)
 {
-    return std::sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
+	return std::sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
 }
 
 static const char* ToShapeTypeDebugName(EPhysicsShapeType ShapeType)
 {
-    switch (ShapeType)
-    {
-    case EPhysicsShapeType::PST_Sphere:  return "Sphere";
-    case EPhysicsShapeType::PST_Box:     return "Box";
-    case EPhysicsShapeType::PST_Capsule: return "Capsule";
-    case EPhysicsShapeType::PST_Convex:  return "Convex";
-    default:                             return "Unknown";
-    }
+	switch (ShapeType)
+	{
+	case EPhysicsShapeType::PST_Sphere:  return "Sphere";
+	case EPhysicsShapeType::PST_Box:     return "Box";
+	case EPhysicsShapeType::PST_Capsule: return "Capsule";
+	case EPhysicsShapeType::PST_Convex:  return "Convex";
+	default:                             return "Unknown";
+	}
 }
 
 static const char* ToCollisionEnabledDebugName(EPhysicsCollisionEnabled CollisionEnabled)
 {
-    switch (CollisionEnabled)
-    {
-    case EPhysicsCollisionEnabled::PCE_NoCollision:     return "NoCollision";
-    case EPhysicsCollisionEnabled::PCE_QueryOnly:       return "QueryOnly";
-    case EPhysicsCollisionEnabled::PCE_PhysicsOnly:     return "PhysicsOnly";
-    case EPhysicsCollisionEnabled::PCE_QueryAndPhysics: return "QueryAndPhysics";
-    default:                                            return "Unknown";
-    }
+	switch (CollisionEnabled)
+	{
+	case EPhysicsCollisionEnabled::PCE_NoCollision:     return "NoCollision";
+	case EPhysicsCollisionEnabled::PCE_QueryOnly:       return "QueryOnly";
+	case EPhysicsCollisionEnabled::PCE_PhysicsOnly:     return "PhysicsOnly";
+	case EPhysicsCollisionEnabled::PCE_QueryAndPhysics: return "QueryAndPhysics";
+	default:                                            return "Unknown";
+	}
 }
 
 static PxD6Motion::Enum ToPxD6Motion(EPhysicsConstraintMotionMode Motion)
 {
-    switch (Motion)
-    {
-    case EPhysicsConstraintMotionMode::Free:
-        return PxD6Motion::eFREE;
-    case EPhysicsConstraintMotionMode::Limited:
-        return PxD6Motion::eLIMITED;
-    case EPhysicsConstraintMotionMode::Locked:
-    default:
-        return PxD6Motion::eLOCKED;
-    }
+	switch (Motion)
+	{
+	case EPhysicsConstraintMotionMode::Free:
+		return PxD6Motion::eFREE;
+	case EPhysicsConstraintMotionMode::Limited:
+		return PxD6Motion::eLIMITED;
+	case EPhysicsConstraintMotionMode::Locked:
+	default:
+		return PxD6Motion::eLOCKED;
+	}
 }
 
 static void ApplyRootMassAndCOM(PxRigidDynamic* Dyn, UPrimitiveComponent* Root)
 {
-    if (!Dyn || !Root) return;
-    const float MassKg = (Root->GetMass() > 0.0f) ? Root->GetMass() : 1.0f;
-    PxRigidBodyExt::setMassAndUpdateInertia(*Dyn, MassKg);
-    Dyn->setCMassLocalPose(PxTransform(ToPxVec3(Root->GetCenterOfMass())));
+	if (!Dyn || !Root) return;
+	const float MassKg = (Root->GetMass() > 0.0f) ? Root->GetMass() : 1.0f;
+	PxRigidBodyExt::setMassAndUpdateInertia(*Dyn, MassKg);
+	Dyn->setCMassLocalPose(PxTransform(ToPxVec3(Root->GetCenterOfMass())));
 }
 
 // ============================================================
@@ -365,175 +375,175 @@ static constexpr PxU32 FilterFlag_EnableOwnerSelfCollision = 1u << 31;
 
 static void SetupFilterData(PxShape* Shape, UPrimitiveComponent* Comp, bool bEnableOwnerSelfCollision = false)
 {
-    PxFilterData Filter;
-    if (!Shape || !Comp) return;
+	PxFilterData Filter;
+	if (!Shape || !Comp) return;
 
-    Filter.word0 = static_cast<PxU32>(Comp->GetCollisionObjectType());
-    Filter.word1 = 0; Filter.word2 = 0;
-    Filter.word3 = Comp->GetOwner() ? Comp->GetOwner()->GetUUID() : 0;
+	Filter.word0 = static_cast<PxU32>(Comp->GetCollisionObjectType());
+	Filter.word1 = 0; Filter.word2 = 0;
+	Filter.word3 = Comp->GetOwner() ? Comp->GetOwner()->GetUUID() : 0;
 
-    for (int32 Ch = 0; Ch < NumActiveCollisionChannels; ++Ch)
-    {
-        ECollisionResponse R = Comp->GetCollisionResponseToChannel(static_cast<ECollisionChannel>(Ch));
-        if (R == ECollisionResponse::Block)   Filter.word1 |= (1u << Ch);
-        if (R == ECollisionResponse::Overlap) Filter.word2 |= (1u << Ch);
-    }
-    if (bEnableOwnerSelfCollision)
-    {
-        Filter.word2 |= FilterFlag_EnableOwnerSelfCollision;
-    }
-    Shape->setSimulationFilterData(Filter);
-    Shape->setQueryFilterData(Filter);
+	for (int32 Ch = 0; Ch < NumActiveCollisionChannels; ++Ch)
+	{
+		ECollisionResponse R = Comp->GetCollisionResponseToChannel(static_cast<ECollisionChannel>(Ch));
+		if (R == ECollisionResponse::Block)   Filter.word1 |= (1u << Ch);
+		if (R == ECollisionResponse::Overlap) Filter.word2 |= (1u << Ch);
+	}
+	if (bEnableOwnerSelfCollision)
+	{
+		Filter.word2 |= FilterFlag_EnableOwnerSelfCollision;
+	}
+	Shape->setSimulationFilterData(Filter);
+	Shape->setQueryFilterData(Filter);
 }
 
 static bool IsVehicleDrivableSurface(UPrimitiveComponent* Comp)
 {
-    if (!Comp || !Comp->IsQueryCollisionEnabled()) return false;
-    if (Comp->GetGenerateOverlapEvents()) return false;
+	if (!Comp || !Comp->IsQueryCollisionEnabled()) return false;
+	if (Comp->GetGenerateOverlapEvents()) return false;
 
-    switch (Comp->GetCollisionObjectType())
-    {
-    case ECollisionChannel::ECC_WorldStatic:
-        return true;
-    default:
-        return false;
-    }
+	switch (Comp->GetCollisionObjectType())
+	{
+	case ECollisionChannel::ECC_WorldStatic:
+		return true;
+	default:
+		return false;
+	}
 }
 
 static void SetupVehicleQueryFilterData(PxShape* Shape, UPrimitiveComponent* Comp, bool bDrivable)
 {
-    if (!Shape) return;
+	if (!Shape) return;
 
-    PxFilterData Filter = Shape->getQueryFilterData();
-    Filter.word2 = Comp && Comp->GetOwner() ? Comp->GetOwner()->GetUUID() : 0;
-    Filter.word3 = bDrivable ? DRIVABLE_SURFACE : UNDRIVABLE_SURFACE;
-    Shape->setQueryFilterData(Filter);
+	PxFilterData Filter = Shape->getQueryFilterData();
+	Filter.word2 = Comp && Comp->GetOwner() ? Comp->GetOwner()->GetUUID() : 0;
+	Filter.word3 = bDrivable ? DRIVABLE_SURFACE : UNDRIVABLE_SURFACE;
+	Shape->setQueryFilterData(Filter);
 }
 
 static PxFilterFlags KraftonFilterShader(
-    PxFilterObjectAttributes attributes0, PxFilterData filterData0,
-    PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-    PxPairFlags& pairFlags, const void*, PxU32)
+	PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void*, PxU32)
 {
-    const bool bSameOwner = filterData0.word3 != 0 && filterData0.word3 == filterData1.word3;
-    const bool bAllowOwnerSelfCollision =
-        (filterData0.word2 & filterData1.word2 & FilterFlag_EnableOwnerSelfCollision) != 0;
-    if (bSameOwner && !bAllowOwnerSelfCollision)
-    {
-        return PxFilterFlag::eKILL;
-    }
+	const bool bSameOwner = filterData0.word3 != 0 && filterData0.word3 == filterData1.word3;
+	const bool bAllowOwnerSelfCollision =
+		(filterData0.word2 & filterData1.word2 & FilterFlag_EnableOwnerSelfCollision) != 0;
+	if (bSameOwner && !bAllowOwnerSelfCollision)
+	{
+		return PxFilterFlag::eKILL;
+	}
 
-    if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
-    {
-        pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
-        return PxFilterFlag::eDEFAULT;
-    }
+	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
 
-    PxU32 channelA = filterData0.word0, channelB = filterData1.word0;
-    bool bABlocksB = (filterData0.word1 & (1u << channelB)) != 0;
-    bool bBBlocksA = (filterData1.word1 & (1u << channelA)) != 0;
+	PxU32 channelA = filterData0.word0, channelB = filterData1.word0;
+	bool bABlocksB = (filterData0.word1 & (1u << channelB)) != 0;
+	bool bBBlocksA = (filterData1.word1 & (1u << channelA)) != 0;
 
-    if (bABlocksB && bBBlocksA)
-    {
-        pairFlags = PxPairFlag::eCONTACT_DEFAULT
-            | PxPairFlag::eNOTIFY_TOUCH_FOUND
-            | PxPairFlag::eNOTIFY_TOUCH_PERSISTS
-            | PxPairFlag::eNOTIFY_TOUCH_LOST
-            | PxPairFlag::eNOTIFY_CONTACT_POINTS
-            | PxPairFlag::eDETECT_CCD_CONTACT;
-        return PxFilterFlag::eDEFAULT;
-    }
+	if (bABlocksB && bBBlocksA)
+	{
+		pairFlags = PxPairFlag::eCONTACT_DEFAULT
+			| PxPairFlag::eNOTIFY_TOUCH_FOUND
+			| PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+			| PxPairFlag::eNOTIFY_TOUCH_LOST
+			| PxPairFlag::eNOTIFY_CONTACT_POINTS
+			| PxPairFlag::eDETECT_CCD_CONTACT;
+		return PxFilterFlag::eDEFAULT;
+	}
 
-    bool bAOverlapsB = (filterData0.word2 & (1u << channelB)) != 0;
-    bool bBOverlapsA = (filterData1.word2 & (1u << channelA)) != 0;
-    if (bAOverlapsB || bBOverlapsA)
-    {
-        pairFlags = PxPairFlag::eDETECT_DISCRETE_CONTACT
-            | PxPairFlag::eNOTIFY_TOUCH_FOUND
-            | PxPairFlag::eNOTIFY_TOUCH_LOST;
-        return PxFilterFlag::eDEFAULT;
-    }
-    return PxFilterFlag::eKILL;
+	bool bAOverlapsB = (filterData0.word2 & (1u << channelB)) != 0;
+	bool bBOverlapsA = (filterData1.word2 & (1u << channelA)) != 0;
+	if (bAOverlapsB || bBOverlapsA)
+	{
+		pairFlags = PxPairFlag::eDETECT_DISCRETE_CONTACT
+			| PxPairFlag::eNOTIFY_TOUCH_FOUND
+			| PxPairFlag::eNOTIFY_TOUCH_LOST;
+		return PxFilterFlag::eDEFAULT;
+	}
+	return PxFilterFlag::eKILL;
 }
 
 static void ConfigureShapeCollisionFlags(PxShape* Shape, const FPhysicsCollisionDesc& CollisionDesc)
 {
-    if (!Shape)
-    {
-        return;
-    }
+	if (!Shape)
+	{
+		return;
+	}
 
-    const bool bQueryEnabled =
-        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryOnly ||
-        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryAndPhysics;
-    const bool bPhysicsEnabled =
-        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_PhysicsOnly ||
-        CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryAndPhysics;
+	const bool bQueryEnabled =
+		CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryOnly ||
+		CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryAndPhysics;
+	const bool bPhysicsEnabled =
+		CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_PhysicsOnly ||
+		CollisionDesc.CollisionEnabled == EPhysicsCollisionEnabled::PCE_QueryAndPhysics;
 
-    Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, bQueryEnabled);
-    Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, bPhysicsEnabled);
-    Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+	Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, bQueryEnabled);
+	Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, bPhysicsEnabled);
+	Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
 }
 
 static PxShape* CreateShapeFromDesc(
-    PxPhysics* Physics,
-    PxMaterial* DefaultMaterial,
-    const FPhysicsShapeDesc& ShapeDesc,
-    UPrimitiveComponent* OwnerComponent,
-    bool bEnableOwnerSelfCollision = false)
+	PxPhysics* Physics,
+	PxMaterial* DefaultMaterial,
+	const FPhysicsShapeDesc& ShapeDesc,
+	UPrimitiveComponent* OwnerComponent,
+	bool bEnableOwnerSelfCollision = false)
 {
-    if (!Physics || !DefaultMaterial)
-    {
-        return nullptr;
-    }
+	if (!Physics || !DefaultMaterial)
+	{
+		return nullptr;
+	}
 
-    PxGeometryHolder Geom;
-    bool bHasGeometry = false;
+	PxGeometryHolder Geom;
+	bool bHasGeometry = false;
 
-    switch (ShapeDesc.ShapeType)
-    {
-    case EPhysicsShapeType::PST_Sphere:
-        Geom = PxSphereGeometry((std::max)(0.01f, std::abs(ShapeDesc.Size.X)));
-        bHasGeometry = true;
-        break;
-    case EPhysicsShapeType::PST_Box:
-        Geom = PxBoxGeometry(
-            (std::max)(0.01f, std::abs(ShapeDesc.Size.X)),
-            (std::max)(0.01f, std::abs(ShapeDesc.Size.Y)),
-            (std::max)(0.01f, std::abs(ShapeDesc.Size.Z)));
-        bHasGeometry = true;
-        break;
-    case EPhysicsShapeType::PST_Capsule:
-        Geom = PxCapsuleGeometry(
-            (std::max)(0.01f, std::abs(ShapeDesc.Size.X)),
-            (std::max)(0.01f, std::abs(ShapeDesc.Size.Y) * 0.5f));
-        bHasGeometry = true;
-        break;
-    case EPhysicsShapeType::PST_Convex:
-    default:
-        break;
-    }
+	switch (ShapeDesc.ShapeType)
+	{
+	case EPhysicsShapeType::PST_Sphere:
+		Geom = PxSphereGeometry((std::max)(0.01f, std::abs(ShapeDesc.Size.X)));
+		bHasGeometry = true;
+		break;
+	case EPhysicsShapeType::PST_Box:
+		Geom = PxBoxGeometry(
+			(std::max)(0.01f, std::abs(ShapeDesc.Size.X)),
+			(std::max)(0.01f, std::abs(ShapeDesc.Size.Y)),
+			(std::max)(0.01f, std::abs(ShapeDesc.Size.Z)));
+		bHasGeometry = true;
+		break;
+	case EPhysicsShapeType::PST_Capsule:
+		Geom = PxCapsuleGeometry(
+			(std::max)(0.01f, std::abs(ShapeDesc.Size.X)),
+			(std::max)(0.01f, std::abs(ShapeDesc.Size.Y) * 0.5f));
+		bHasGeometry = true;
+		break;
+	case EPhysicsShapeType::PST_Convex:
+	default:
+		break;
+	}
 
-    if (!bHasGeometry)
-    {
-        return nullptr;
-    }
+	if (!bHasGeometry)
+	{
+		return nullptr;
+	}
 
-    PxShape* Shape = Physics->createShape(Geom.any(), *DefaultMaterial, true);
-    if (!Shape)
-    {
-        return nullptr;
-    }
+	PxShape* Shape = Physics->createShape(Geom.any(), *DefaultMaterial, true);
+	if (!Shape)
+	{
+		return nullptr;
+	}
 
-    Shape->setLocalPose(ToPxTransform(ShapeDesc.LocalTransform));
-    ConfigureShapeCollisionFlags(Shape, ShapeDesc.CollisionDesc);
-    if (OwnerComponent)
-    {
-        SetupFilterData(Shape, OwnerComponent, bEnableOwnerSelfCollision);
-    }
+	Shape->setLocalPose(ToPxTransform(ShapeDesc.LocalTransform));
+	ConfigureShapeCollisionFlags(Shape, ShapeDesc.CollisionDesc);
+	if (OwnerComponent)
+	{
+		SetupFilterData(Shape, OwnerComponent, bEnableOwnerSelfCollision);
+	}
 
-    Shape->userData = OwnerComponent;
-    return Shape;
+	Shape->userData = OwnerComponent;
+	return Shape;
 }
 
 // ============================================================
@@ -543,100 +553,102 @@ static PxShape* CreateShapeFromDesc(
 // PhysX SDK 객체와 multithreaded scene 설정을 초기화한다.
 bool FPhysXPhysicsScene::InitializeScene(UWorld* InWorld, EPhysicsSceneType SceneType)
 {
-    World = InWorld;
-    SetSceneType(SceneType);
-    AcquireSharedPhysX(Foundation, Physics);
-    if (!Foundation || !Physics)
-    {
-        UE_LOG("[PhysX] Failed to create Foundation or Physics");
-        return false;
-    }
+	World = InWorld;
+	SetSceneType(SceneType);
+	AcquireSharedPhysX(Foundation, Physics);
+	if (!Foundation || !Physics)
+	{
+		UE_LOG("[PhysX] Failed to create Foundation or Physics");
+		return false;
+	}
 
-    const uint32 WorkerThreadCount = GetRecommendedPhysXWorkerThreadCount();
-    Dispatcher    = PxDefaultCpuDispatcherCreate(WorkerThreadCount);
-    if (!Dispatcher)
-    {
-        UE_LOG("[PhysX] Failed to create CPU dispatcher");
-        return false;
-    }
-    EventCallback = new FPhysXSimulationCallback();
+	const uint32 WorkerThreadCount = GetRecommendedPhysXWorkerThreadCount();
+	Dispatcher    = PxDefaultCpuDispatcherCreate(WorkerThreadCount);
+	if (!Dispatcher)
+	{
+		UE_LOG("[PhysX] Failed to create CPU dispatcher");
+		return false;
+	}
+	EventCallback = new FPhysXSimulationCallback();
 
-    PxSceneDesc SceneDesc(Physics->getTolerancesScale());
-    SceneDesc.gravity                  = PxVec3(0.0f, 0.0f, -9.81f);
-    SceneDesc.cpuDispatcher            = Dispatcher;
-    SceneDesc.filterShader             = KraftonFilterShader;
-    SceneDesc.simulationEventCallback  = EventCallback;
-    ApplyPhysXMultithreadedSceneSettings(SceneDesc);
-    Scene = Physics->createScene(SceneDesc);
-    if (!Scene)
-    {
-        UE_LOG("[PhysX] Failed to create Scene");
-        return false;
-    }
-    SetNativeSceneHandle(Scene);
-    DefaultMaterial = Physics->createMaterial(0.5f, 0.5f, 0.3f);
-    UE_LOG("[PhysX] Initialized successfully (Scene=%p, WorkerThreads=%u)", Scene, WorkerThreadCount);
-    return true;
+	PxSceneDesc SceneDesc(Physics->getTolerancesScale());
+	SceneDesc.gravity                  = PxVec3(0.0f, 0.0f, -9.81f);
+	SceneDesc.cpuDispatcher            = Dispatcher;
+	SceneDesc.filterShader             = KraftonFilterShader;
+	SceneDesc.simulationEventCallback  = EventCallback;
+	ApplyPhysXMultithreadedSceneSettings(SceneDesc);
+	Scene = Physics->createScene(SceneDesc);
+	if (!Scene)
+	{
+		UE_LOG("[PhysX] Failed to create Scene");
+		return false;
+	}
+	SetNativeSceneHandle(Scene);
+	DefaultMaterial = Physics->createMaterial(0.5f, 0.5f, 0.3f);
+	InitializeClothScene();
+	UE_LOG("[PhysX] Initialized successfully (Scene=%p, WorkerThreads=%u)", Scene, WorkerThreadCount);
+	return true;
 }
 
 // 남은 시뮬레이션과 지연 명령을 정리한 뒤 PhysX scene 리소스를 해제한다.
 void FPhysXPhysicsScene::ReleaseScene()
 {
-    WaitForSimulation();
-    FlushDeferredSceneCommands();
+	ReleaseClothScene();
+	WaitForSimulation();
+	FlushDeferredSceneCommands();
 
-    for (FPhysicsConstraintInstance* ConstraintInstance : StandaloneConstraintInstances)
-    {
-        if (!ConstraintInstance) continue;
-        if (PxJoint* Joint = static_cast<PxJoint*>(ConstraintInstance->GetJointHandle().NativeJoint))
-        {
-            Joint->release();
-        }
-        UnregisterConstraintInstance(ConstraintInstance);
-        delete ConstraintInstance;
-    }
-    StandaloneConstraintInstances.clear();
-    GetMutableRuntimeStats().ConstraintCount = 0;
+	for (FPhysicsConstraintInstance* ConstraintInstance : StandaloneConstraintInstances)
+	{
+		if (!ConstraintInstance) continue;
+		if (PxJoint* Joint = static_cast<PxJoint*>(ConstraintInstance->GetJointHandle().NativeJoint))
+		{
+			Joint->release();
+		}
+		UnregisterConstraintInstance(ConstraintInstance);
+		delete ConstraintInstance;
+	}
+	StandaloneConstraintInstances.clear();
+	GetMutableRuntimeStats().ConstraintCount = 0;
 
-    {
-        SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-        for (FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
-        {
-            if (!BodyInstance) continue;
-            if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
-            {
-                Scene->removeActor(*Actor);
-                Actor->release();
-            }
-            UnregisterBodyInstance(BodyInstance);
-            delete BodyInstance;
-        }
-    }
-    StandaloneBodyInstances.clear();
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		for (FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+		{
+			if (!BodyInstance) continue;
+			if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
+			{
+				Scene->removeActor(*Actor);
+				Actor->release();
+			}
+			UnregisterBodyInstance(BodyInstance);
+			delete BodyInstance;
+		}
+	}
+	StandaloneBodyInstances.clear();
 
-    for (auto& Pair : BodyInstances) delete Pair.second;
-    BodyInstances.clear();
+	for (auto& Pair : BodyInstances) delete Pair.second;
+	BodyInstances.clear();
 
-    {
-        SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-        for (auto& Mapping : BodyMappings)
-        {
-            if (Mapping.Actor) { Mapping.Actor->release(); Mapping.Actor = nullptr; }
-        }
-    }
-    BodyMappings.clear();
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		for (auto& Mapping : BodyMappings)
+		{
+			if (Mapping.Actor) { Mapping.Actor->release(); Mapping.Actor = nullptr; }
+		}
+	}
+	BodyMappings.clear();
 
-    if (DefaultMaterial) { DefaultMaterial->release(); DefaultMaterial = nullptr; }
-    if (Scene)           { Scene->release();           Scene           = nullptr; }
-    if (EventCallback)   { delete EventCallback;       EventCallback   = nullptr; }
-    if (Dispatcher)      { Dispatcher->release();      Dispatcher      = nullptr; }
+	if (DefaultMaterial) { DefaultMaterial->release(); DefaultMaterial = nullptr; }
+	if (Scene)           { Scene->release();           Scene           = nullptr; }
+	if (EventCallback)   { delete EventCallback;       EventCallback   = nullptr; }
+	if (Dispatcher)      { Dispatcher->release();      Dispatcher      = nullptr; }
 
-    Foundation = nullptr;
-    Physics    = nullptr;
-    ReleaseSharedPhysX();
-    ClearRegisteredInstances();
-    SetNativeSceneHandle(nullptr);
-    World = nullptr;
+	Foundation = nullptr;
+	Physics    = nullptr;
+	ReleaseSharedPhysX();
+	ClearRegisteredInstances();
+	SetNativeSceneHandle(nullptr);
+	World = nullptr;
 }
 
 // ============================================================
@@ -646,375 +658,375 @@ void FPhysXPhysicsScene::ReleaseScene()
 // component 기반 actor 매핑을 재사용하거나 생성해서 runtime body instance를 만든다.
 FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBody(UPrimitiveComponent* Comp, const FPhysicsBodyDesc& BodyDesc)
 {
-    if (!Comp || !Comp->CanCreatePhysicsBody()) return nullptr;
-    WaitForSimulation();
+	if (!Comp || !Comp->CanCreatePhysicsBody()) return nullptr;
+	WaitForSimulation();
 
-    // 이미 등록된 경우 기존 인스턴스 반환
-    auto ExistingIt = BodyInstances.find(Comp);
-    if (ExistingIt != BodyInstances.end()) return ExistingIt->second;
+	// 이미 등록된 경우 기존 인스턴스 반환
+	auto ExistingIt = BodyInstances.find(Comp);
+	if (ExistingIt != BodyInstances.end()) return ExistingIt->second;
 
-    RegisterComponentInternal(Comp);
+	RegisterComponentInternal(Comp);
 
-    FBodyMapping* Mapping = FindMappingByComponent(Comp);
-    if (!Mapping || !Mapping->Actor)
-    {
-        return nullptr;
-    }
+	FBodyMapping* Mapping = FindMappingByComponent(Comp);
+	if (!Mapping || !Mapping->Actor)
+	{
+		return nullptr;
+	}
 
-    FPhysicsBodyInstance* Instance = new FPhysicsBodyInstance();
-    Instance->SetOwnerComponent(Comp);
-    Instance->SetBodyDesc(BodyDesc);
+	FPhysicsBodyInstance* Instance = new FPhysicsBodyInstance();
+	Instance->SetOwnerComponent(Comp);
+	Instance->SetBodyDesc(BodyDesc);
 
-    // 매핑에서 PxRigidActor 핸들 연결
-    FPhysicsActorHandle Handle;
-    Handle.NativeActor = static_cast<void*>(Mapping->Actor);
-    Instance->SetActorHandle(Handle);
-    Instance->SetActorState(EPhysicsActorState::PAS_Added);
+	// 매핑에서 PxRigidActor 핸들 연결
+	FPhysicsActorHandle Handle;
+	Handle.NativeActor = static_cast<void*>(Mapping->Actor);
+	Instance->SetActorHandle(Handle);
+	Instance->SetActorState(EPhysicsActorState::PAS_Added);
 
-    BodyInstances[Comp] = Instance;
-    RegisterBodyInstance(Instance);
-    GetMutableRuntimeStats().BodyCount = static_cast<int32>(BodyInstances.size());
-    return Instance;
+	BodyInstances[Comp] = Instance;
+	RegisterBodyInstance(Instance);
+	GetMutableRuntimeStats().BodyCount = static_cast<int32>(BodyInstances.size());
+	return Instance;
 }
 
 FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
-    UPrimitiveComponent* OwnerComponent,
-    const FPhysicsBodyDesc& BodyDesc,
-    const FTransform& WorldTransform,
-    bool bSyncOwnerTransform)
+	UPrimitiveComponent* OwnerComponent,
+	const FPhysicsBodyDesc& BodyDesc,
+	const FTransform& WorldTransform,
+	bool bSyncOwnerTransform)
 {
-    if (!Scene || !Physics || !DefaultMaterial || BodyDesc.Shapes.empty())
-    {
-        return nullptr;
-    }
+	if (!Scene || !Physics || !DefaultMaterial || BodyDesc.Shapes.empty())
+	{
+		return nullptr;
+	}
 
-    const FPhysicsBodyDesc RuntimeBodyDesc = MakeEngineUnitBodyDesc(BodyDesc);
+	const FPhysicsBodyDesc RuntimeBodyDesc = MakeEngineUnitBodyDesc(BodyDesc);
 
-    WaitForSimulation();
+	WaitForSimulation();
 
-    PxRigidActor* Actor = nullptr;
-    PxRigidDynamic* DynamicActor = nullptr;
-    const PxTransform BodyPose = ToPxTransform(WorldTransform);
-    if (RuntimeBodyDesc.BodyType == EPhysicsBodyType::PBT_Static)
-    {
-        Actor = Physics->createRigidStatic(BodyPose);
-    }
-    else
-    {
-        DynamicActor = Physics->createRigidDynamic(BodyPose);
-        if (DynamicActor)
-        {
-            DynamicActor->setActorFlag(
-                PxActorFlag::eDISABLE_GRAVITY,
-                OwnerComponent && !OwnerComponent->GetEnableGravity());
-            DynamicActor->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
-            DynamicActor->setLinearDamping((std::max)(0.0f, RuntimeBodyDesc.LinearDamping));
-            DynamicActor->setAngularDamping((std::max)(0.0f, RuntimeBodyDesc.AngularDamping));
-            DynamicActor->setRigidBodyFlag(
-                PxRigidBodyFlag::eKINEMATIC,
-                RuntimeBodyDesc.BodyType == EPhysicsBodyType::PBT_Kinematic);
-            // IMPORTANT: mass/inertia must be computed after shapes are attached.
-            // Computing inertia on a shape-less actor makes ragdoll joints unstable.
-        }
-        Actor = DynamicActor;
-    }
+	PxRigidActor* Actor = nullptr;
+	PxRigidDynamic* DynamicActor = nullptr;
+	const PxTransform BodyPose = ToPxTransform(WorldTransform);
+	if (RuntimeBodyDesc.BodyType == EPhysicsBodyType::PBT_Static)
+	{
+		Actor = Physics->createRigidStatic(BodyPose);
+	}
+	else
+	{
+		DynamicActor = Physics->createRigidDynamic(BodyPose);
+		if (DynamicActor)
+		{
+			DynamicActor->setActorFlag(
+				PxActorFlag::eDISABLE_GRAVITY,
+				OwnerComponent && !OwnerComponent->GetEnableGravity());
+			DynamicActor->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
+			DynamicActor->setLinearDamping((std::max)(0.0f, RuntimeBodyDesc.LinearDamping));
+			DynamicActor->setAngularDamping((std::max)(0.0f, RuntimeBodyDesc.AngularDamping));
+			DynamicActor->setRigidBodyFlag(
+				PxRigidBodyFlag::eKINEMATIC,
+				RuntimeBodyDesc.BodyType == EPhysicsBodyType::PBT_Kinematic);
+			// IMPORTANT: mass/inertia must be computed after shapes are attached.
+			// Computing inertia on a shape-less actor makes ragdoll joints unstable.
+		}
+		Actor = DynamicActor;
+	}
 
-    if (!Actor)
-    {
-        return nullptr;
-    }
+	if (!Actor)
+	{
+		return nullptr;
+	}
 
-    int32 AttachedShapeCount = 0;
-    for (const FPhysicsShapeDesc& ShapeDesc : RuntimeBodyDesc.Shapes)
-    {
-        PxShape* Shape = CreateShapeFromDesc(
-            Physics,
-            DefaultMaterial,
-            ShapeDesc,
-            OwnerComponent,
-            RuntimeBodyDesc.bEnableSelfCollision);
-        if (!Shape)
-        {
-            continue;
-        }
+	int32 AttachedShapeCount = 0;
+	for (const FPhysicsShapeDesc& ShapeDesc : RuntimeBodyDesc.Shapes)
+	{
+		PxShape* Shape = CreateShapeFromDesc(
+			Physics,
+			DefaultMaterial,
+			ShapeDesc,
+			OwnerComponent,
+			RuntimeBodyDesc.bEnableSelfCollision);
+		if (!Shape)
+		{
+			continue;
+		}
 
-        Actor->attachShape(*Shape);
-        ++AttachedShapeCount;
-        Shape->release();
-    }
+		Actor->attachShape(*Shape);
+		++AttachedShapeCount;
+		Shape->release();
+	}
 
-    if (AttachedShapeCount == 0)
-    {
-        Actor->release();
-        return nullptr;
-    }
+	if (AttachedShapeCount == 0)
+	{
+		Actor->release();
+		return nullptr;
+	}
 
-    if (DynamicActor)
-    {
-        const float Mass = (std::max)(0.001f, RuntimeBodyDesc.Mass);
-        PxRigidBodyExt::setMassAndUpdateInertia(*DynamicActor, Mass);
-        DynamicActor->setSolverIterationCounts(12, 4);
+	if (DynamicActor)
+	{
+		const float Mass = (std::max)(0.001f, RuntimeBodyDesc.Mass);
+		PxRigidBodyExt::setMassAndUpdateInertia(*DynamicActor, Mass);
+		DynamicActor->setSolverIterationCounts(12, 4);
 
-        const PxVec3 InvInertia = DynamicActor->getMassSpaceInvInertiaTensor();
-        const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
-    }
+		const PxVec3 InvInertia = DynamicActor->getMassSpaceInvInertiaTensor();
+		const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
+	}
 
-    Actor->userData = OwnerComponent ? OwnerComponent->GetOwner() : nullptr;
-    {
-        SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-        Scene->addActor(*Actor);
-    }
+	Actor->userData = OwnerComponent ? OwnerComponent->GetOwner() : nullptr;
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		Scene->addActor(*Actor);
+	}
 
-    if (bSyncOwnerTransform && OwnerComponent)
-    {
-        OwnerComponent->SetWorldLocation(WorldTransform.Location);
-        OwnerComponent->SetRelativeRotation(WorldTransform.Rotation);
-    }
+	if (bSyncOwnerTransform && OwnerComponent)
+	{
+		OwnerComponent->SetWorldLocation(WorldTransform.Location);
+		OwnerComponent->SetRelativeRotation(WorldTransform.Rotation);
+	}
 
-    FPhysicsBodyInstance* Instance = new FPhysicsBodyInstance();
-    Instance->SetOwnerComponent(OwnerComponent);
-    Instance->SetBodyDesc(RuntimeBodyDesc);
+	FPhysicsBodyInstance* Instance = new FPhysicsBodyInstance();
+	Instance->SetOwnerComponent(OwnerComponent);
+	Instance->SetBodyDesc(RuntimeBodyDesc);
 
-    FPhysicsActorHandle Handle;
-    Handle.NativeActor = static_cast<void*>(Actor);
-    Instance->SetActorHandle(Handle);
-    Instance->SetActorState(EPhysicsActorState::PAS_Added);
+	FPhysicsActorHandle Handle;
+	Handle.NativeActor = static_cast<void*>(Actor);
+	Instance->SetActorHandle(Handle);
+	Instance->SetActorState(EPhysicsActorState::PAS_Added);
 
-    StandaloneBodyInstances.push_back(Instance);
-    RegisterBodyInstance(Instance);
-    GetMutableRuntimeStats().BodyCount =
-        static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
-    return Instance;
+	StandaloneBodyInstances.push_back(Instance);
+	RegisterBodyInstance(Instance);
+	GetMutableRuntimeStats().BodyCount =
+		static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
+	return Instance;
 }
 
 // runtime body instance와 연결된 PhysX actor를 scene에서 제거하고 해제한다.
 void FPhysXPhysicsScene::DestroyBody(FPhysicsBodyInstance* BodyInstance)
 {
-    if (!BodyInstance) return;
-    WaitForSimulation();
+	if (!BodyInstance) return;
+	WaitForSimulation();
 
-    auto StandaloneIt = std::find(
-        StandaloneBodyInstances.begin(),
-        StandaloneBodyInstances.end(),
-        BodyInstance);
-    if (StandaloneIt != StandaloneBodyInstances.end())
-    {
-        if (Scene)
-        {
-            SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-            if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
-            {
-                Scene->removeActor(*Actor);
-                Actor->release();
-            }
-        }
+	auto StandaloneIt = std::find(
+		StandaloneBodyInstances.begin(),
+		StandaloneBodyInstances.end(),
+		BodyInstance);
+	if (StandaloneIt != StandaloneBodyInstances.end())
+	{
+		if (Scene)
+		{
+			SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+			if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
+			{
+				Scene->removeActor(*Actor);
+				Actor->release();
+			}
+		}
 
-        StandaloneBodyInstances.erase(StandaloneIt);
-        UnregisterBodyInstance(BodyInstance);
-        BodyInstance->SetActorState(EPhysicsActorState::PAS_Destroyed);
-        BodyInstance->GetMutableActorHandle().Reset();
-        delete BodyInstance;
+		StandaloneBodyInstances.erase(StandaloneIt);
+		UnregisterBodyInstance(BodyInstance);
+		BodyInstance->SetActorState(EPhysicsActorState::PAS_Destroyed);
+		BodyInstance->GetMutableActorHandle().Reset();
+		delete BodyInstance;
 
-        GetMutableRuntimeStats().BodyCount =
-            static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
-        return;
-    }
+		GetMutableRuntimeStats().BodyCount =
+			static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
+		return;
+	}
 
-    UPrimitiveComponent* Comp = BodyInstance->GetOwnerComponent();
-    if (!Comp) return;
+	UPrimitiveComponent* Comp = BodyInstance->GetOwnerComponent();
+	if (!Comp) return;
 
-    UnregisterComponentInternal(Comp);
-    BodyInstances.erase(Comp);
-    UnregisterBodyInstance(BodyInstance);
+	UnregisterComponentInternal(Comp);
+	BodyInstances.erase(Comp);
+	UnregisterBodyInstance(BodyInstance);
 
-    BodyInstance->SetActorState(EPhysicsActorState::PAS_Destroyed);
-    BodyInstance->GetMutableActorHandle().Reset();
-    delete BodyInstance;
+	BodyInstance->SetActorState(EPhysicsActorState::PAS_Destroyed);
+	BodyInstance->GetMutableActorHandle().Reset();
+	delete BodyInstance;
 
-    GetMutableRuntimeStats().BodyCount =
-        static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
+	GetMutableRuntimeStats().BodyCount =
+		static_cast<int32>(BodyInstances.size() + StandaloneBodyInstances.size());
 }
 
 bool FPhysXPhysicsScene::GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const
 {
-    if (!Scene || !BodyInstance || !BodyInstance->IsValidBodyInstance())
-    {
-        return false;
-    }
+	if (!Scene || !BodyInstance || !BodyInstance->IsValidBodyInstance())
+	{
+		return false;
+	}
 
-    PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
-    if (!Actor)
-    {
-        return false;
-    }
+	PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+	if (!Actor)
+	{
+		return false;
+	}
 
-    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-    OutTransform = ToFTransform(Actor->getGlobalPose());
-    return true;
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	OutTransform = ToFTransform(Actor->getGlobalPose());
+	return true;
 }
 
 void FPhysXPhysicsScene::SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform)
 {
-    if (!Scene || !BodyInstance || !BodyInstance->IsValidBodyInstance())
-    {
-        return;
-    }
+	if (!Scene || !BodyInstance || !BodyInstance->IsValidBodyInstance())
+	{
+		return;
+	}
 
-    PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
-    if (!Actor)
-    {
-        return;
-    }
+	PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+	if (!Actor)
+	{
+		return;
+	}
 
-    WaitForSimulation();
-    SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-    const PxTransform NewPose = ToPxTransform(WorldTransform);
-    if (PxRigidDynamic* DynamicActor = Actor->is<PxRigidDynamic>())
-    {
-        if (DynamicActor->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC)
-        {
-            DynamicActor->setKinematicTarget(NewPose);
-        }
-        else
-        {
-            DynamicActor->setGlobalPose(NewPose);
-        }
-    }
-    else
-    {
-        Actor->setGlobalPose(NewPose);
-    }
+	WaitForSimulation();
+	SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+	const PxTransform NewPose = ToPxTransform(WorldTransform);
+	if (PxRigidDynamic* DynamicActor = Actor->is<PxRigidDynamic>())
+	{
+		if (DynamicActor->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC)
+		{
+			DynamicActor->setKinematicTarget(NewPose);
+		}
+		else
+		{
+			DynamicActor->setGlobalPose(NewPose);
+		}
+	}
+	else
+	{
+		Actor->setGlobalPose(NewPose);
+	}
 }
 
 FPhysicsConstraintInstance* FPhysXPhysicsScene::CreateConstraint(
-    FPhysicsBodyInstance* ParentBody,
-    FPhysicsBodyInstance* ChildBody,
-    const FPhysicsConstraintDesc& ConstraintDesc)
+	FPhysicsBodyInstance* ParentBody,
+	FPhysicsBodyInstance* ChildBody,
+	const FPhysicsConstraintDesc& ConstraintDesc)
 {
-    if (!Scene || !Physics || !ParentBody || !ChildBody ||
-        !ParentBody->IsValidBodyInstance() || !ChildBody->IsValidBodyInstance())
-    {
-        return nullptr;
-    }
+	if (!Scene || !Physics || !ParentBody || !ChildBody ||
+		!ParentBody->IsValidBodyInstance() || !ChildBody->IsValidBodyInstance())
+	{
+		return nullptr;
+	}
 
-    PxRigidActor* ParentActor = static_cast<PxRigidActor*>(ParentBody->GetActorHandle().NativeActor);
-    PxRigidActor* ChildActor  = static_cast<PxRigidActor*>(ChildBody->GetActorHandle().NativeActor);
-    if (!ParentActor || !ChildActor)
-    {
-        return nullptr;
-    }
+	PxRigidActor* ParentActor = static_cast<PxRigidActor*>(ParentBody->GetActorHandle().NativeActor);
+	PxRigidActor* ChildActor  = static_cast<PxRigidActor*>(ChildBody->GetActorHandle().NativeActor);
+	if (!ParentActor || !ChildActor)
+	{
+		return nullptr;
+	}
 
-    WaitForSimulation();
+	WaitForSimulation();
 
-    const FPhysicsConstraintDesc RuntimeConstraintDesc = MakeEngineUnitConstraintDesc(ConstraintDesc);
+	const FPhysicsConstraintDesc RuntimeConstraintDesc = MakeEngineUnitConstraintDesc(ConstraintDesc);
 
-    PxJoint* Joint = nullptr;
-    const PxTransform ParentLocalFrame = ToPxTransform(RuntimeConstraintDesc.ParentLocalFrame);
-    const PxTransform ChildLocalFrame  = ToPxTransform(RuntimeConstraintDesc.ChildLocalFrame);
+	PxJoint* Joint = nullptr;
+	const PxTransform ParentLocalFrame = ToPxTransform(RuntimeConstraintDesc.ParentLocalFrame);
+	const PxTransform ChildLocalFrame  = ToPxTransform(RuntimeConstraintDesc.ChildLocalFrame);
 
-    if (RuntimeConstraintDesc.JointType == EPhysicsJointType::PJT_Fixed)
-    {
-        Joint = PxFixedJointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
-    }
-    else
-    {
-        PxD6Joint* D6Joint = PxD6JointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
-        if (D6Joint)
-        {
-            D6Joint->setMotion(PxD6Axis::eX,      ToPxD6Motion(RuntimeConstraintDesc.XMotion));
-            D6Joint->setMotion(PxD6Axis::eY,      ToPxD6Motion(RuntimeConstraintDesc.YMotion));
-            D6Joint->setMotion(PxD6Axis::eZ,      ToPxD6Motion(RuntimeConstraintDesc.ZMotion));
-            D6Joint->setMotion(PxD6Axis::eSWING1, ToPxD6Motion(RuntimeConstraintDesc.Swing1Motion));
-            D6Joint->setMotion(PxD6Axis::eSWING2, ToPxD6Motion(RuntimeConstraintDesc.Swing2Motion));
-            D6Joint->setMotion(PxD6Axis::eTWIST,  ToPxD6Motion(RuntimeConstraintDesc.TwistMotion));
+	if (RuntimeConstraintDesc.JointType == EPhysicsJointType::PJT_Fixed)
+	{
+		Joint = PxFixedJointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
+	}
+	else
+	{
+		PxD6Joint* D6Joint = PxD6JointCreate(*Physics, ParentActor, ParentLocalFrame, ChildActor, ChildLocalFrame);
+		if (D6Joint)
+		{
+			D6Joint->setMotion(PxD6Axis::eX,      ToPxD6Motion(RuntimeConstraintDesc.XMotion));
+			D6Joint->setMotion(PxD6Axis::eY,      ToPxD6Motion(RuntimeConstraintDesc.YMotion));
+			D6Joint->setMotion(PxD6Axis::eZ,      ToPxD6Motion(RuntimeConstraintDesc.ZMotion));
+			D6Joint->setMotion(PxD6Axis::eSWING1, ToPxD6Motion(RuntimeConstraintDesc.Swing1Motion));
+			D6Joint->setMotion(PxD6Axis::eSWING2, ToPxD6Motion(RuntimeConstraintDesc.Swing2Motion));
+			D6Joint->setMotion(PxD6Axis::eTWIST,  ToPxD6Motion(RuntimeConstraintDesc.TwistMotion));
 
-            if (RuntimeConstraintDesc.XMotion == EPhysicsConstraintMotionMode::Limited ||
-                RuntimeConstraintDesc.YMotion == EPhysicsConstraintMotionMode::Limited ||
-                RuntimeConstraintDesc.ZMotion == EPhysicsConstraintMotionMode::Limited)
-            {
-                PxJointLinearLimit LinearLimit(Physics->getTolerancesScale(), (std::max)(0.01f, RuntimeConstraintDesc.LinearLimit));
-                LinearLimit.stiffness = RuntimeConstraintDesc.Stiffness;
-                LinearLimit.damping   = RuntimeConstraintDesc.Damping;
-                D6Joint->setLinearLimit(LinearLimit);
-            }
+			if (RuntimeConstraintDesc.XMotion == EPhysicsConstraintMotionMode::Limited ||
+				RuntimeConstraintDesc.YMotion == EPhysicsConstraintMotionMode::Limited ||
+				RuntimeConstraintDesc.ZMotion == EPhysicsConstraintMotionMode::Limited)
+			{
+				PxJointLinearLimit LinearLimit(Physics->getTolerancesScale(), (std::max)(0.01f, RuntimeConstraintDesc.LinearLimit));
+				LinearLimit.stiffness = RuntimeConstraintDesc.Stiffness;
+				LinearLimit.damping   = RuntimeConstraintDesc.Damping;
+				D6Joint->setLinearLimit(LinearLimit);
+			}
 
-            if (RuntimeConstraintDesc.Swing1Motion == EPhysicsConstraintMotionMode::Limited ||
-                RuntimeConstraintDesc.Swing2Motion == EPhysicsConstraintMotionMode::Limited)
-            {
-                PxJointLimitCone SwingLimit(
-                    (std::max)(0.001f, ToRadians(RuntimeConstraintDesc.SwingLimitY)),
-                    (std::max)(0.001f, ToRadians(RuntimeConstraintDesc.SwingLimitZ)));
-                SwingLimit.stiffness = RuntimeConstraintDesc.Stiffness;
-                SwingLimit.damping   = RuntimeConstraintDesc.Damping;
-                D6Joint->setSwingLimit(SwingLimit);
-            }
+			if (RuntimeConstraintDesc.Swing1Motion == EPhysicsConstraintMotionMode::Limited ||
+				RuntimeConstraintDesc.Swing2Motion == EPhysicsConstraintMotionMode::Limited)
+			{
+				PxJointLimitCone SwingLimit(
+					(std::max)(0.001f, ToRadians(RuntimeConstraintDesc.SwingLimitY)),
+					(std::max)(0.001f, ToRadians(RuntimeConstraintDesc.SwingLimitZ)));
+				SwingLimit.stiffness = RuntimeConstraintDesc.Stiffness;
+				SwingLimit.damping   = RuntimeConstraintDesc.Damping;
+				D6Joint->setSwingLimit(SwingLimit);
+			}
 
-            if (RuntimeConstraintDesc.TwistMotion == EPhysicsConstraintMotionMode::Limited)
-            {
-                float TwistMin = ToRadians(RuntimeConstraintDesc.TwistLimitMin);
-                float TwistMax = ToRadians(RuntimeConstraintDesc.TwistLimitMax);
-                if (TwistMin > TwistMax)
-                {
-                    std::swap(TwistMin, TwistMax);
-                }
-                PxJointAngularLimitPair TwistLimit(TwistMin, TwistMax);
-                TwistLimit.stiffness = RuntimeConstraintDesc.Stiffness;
-                TwistLimit.damping   = RuntimeConstraintDesc.Damping;
-                D6Joint->setTwistLimit(TwistLimit);
-            }
-        }
-        Joint = D6Joint;
-    }
+			if (RuntimeConstraintDesc.TwistMotion == EPhysicsConstraintMotionMode::Limited)
+			{
+				float TwistMin = ToRadians(RuntimeConstraintDesc.TwistLimitMin);
+				float TwistMax = ToRadians(RuntimeConstraintDesc.TwistLimitMax);
+				if (TwistMin > TwistMax)
+				{
+					std::swap(TwistMin, TwistMax);
+				}
+				PxJointAngularLimitPair TwistLimit(TwistMin, TwistMax);
+				TwistLimit.stiffness = RuntimeConstraintDesc.Stiffness;
+				TwistLimit.damping   = RuntimeConstraintDesc.Damping;
+				D6Joint->setTwistLimit(TwistLimit);
+			}
+		}
+		Joint = D6Joint;
+	}
 
-    if (!Joint)
-    {
-        return nullptr;
-    }
+	if (!Joint)
+	{
+		return nullptr;
+	}
 
-    Joint->setConstraintFlag(PxConstraintFlag::eCOLLISION_ENABLED, !RuntimeConstraintDesc.bDisableCollision);
+	Joint->setConstraintFlag(PxConstraintFlag::eCOLLISION_ENABLED, !RuntimeConstraintDesc.bDisableCollision);
 
-    FPhysicsConstraintInstance* Instance = new FPhysicsConstraintInstance();
-    Instance->SetParentBody(ParentBody);
-    Instance->SetChildBody(ChildBody);
-    Instance->SetConstraintDesc(RuntimeConstraintDesc);
+	FPhysicsConstraintInstance* Instance = new FPhysicsConstraintInstance();
+	Instance->SetParentBody(ParentBody);
+	Instance->SetChildBody(ChildBody);
+	Instance->SetConstraintDesc(RuntimeConstraintDesc);
 
-    FPhysicsJointHandle Handle;
-    Handle.NativeJoint = static_cast<void*>(Joint);
-    Instance->SetJointHandle(Handle);
+	FPhysicsJointHandle Handle;
+	Handle.NativeJoint = static_cast<void*>(Joint);
+	Instance->SetJointHandle(Handle);
 
-    StandaloneConstraintInstances.push_back(Instance);
-    RegisterConstraintInstance(Instance);
-    GetMutableRuntimeStats().ConstraintCount = static_cast<int32>(StandaloneConstraintInstances.size());
-    return Instance;
+	StandaloneConstraintInstances.push_back(Instance);
+	RegisterConstraintInstance(Instance);
+	GetMutableRuntimeStats().ConstraintCount = static_cast<int32>(StandaloneConstraintInstances.size());
+	return Instance;
 }
 
 void FPhysXPhysicsScene::DestroyConstraint(FPhysicsConstraintInstance* ConstraintInstance)
 {
-    if (!ConstraintInstance)
-    {
-        return;
-    }
+	if (!ConstraintInstance)
+	{
+		return;
+	}
 
-    WaitForSimulation();
-    auto It = std::find(
-        StandaloneConstraintInstances.begin(),
-        StandaloneConstraintInstances.end(),
-        ConstraintInstance);
+	WaitForSimulation();
+	auto It = std::find(
+		StandaloneConstraintInstances.begin(),
+		StandaloneConstraintInstances.end(),
+		ConstraintInstance);
 
-    if (PxJoint* Joint = static_cast<PxJoint*>(ConstraintInstance->GetJointHandle().NativeJoint))
-    {
-        Joint->release();
-    }
+	if (PxJoint* Joint = static_cast<PxJoint*>(ConstraintInstance->GetJointHandle().NativeJoint))
+	{
+		Joint->release();
+	}
 
-    if (It != StandaloneConstraintInstances.end())
-    {
-        StandaloneConstraintInstances.erase(It);
-    }
-    UnregisterConstraintInstance(ConstraintInstance);
-    ConstraintInstance->GetMutableJointHandle().Reset();
-    delete ConstraintInstance;
+	if (It != StandaloneConstraintInstances.end())
+	{
+		StandaloneConstraintInstances.erase(It);
+	}
+	UnregisterConstraintInstance(ConstraintInstance);
+	ConstraintInstance->GetMutableJointHandle().Reset();
+	delete ConstraintInstance;
 
-    GetMutableRuntimeStats().ConstraintCount = static_cast<int32>(StandaloneConstraintInstances.size());
+	GetMutableRuntimeStats().ConstraintCount = static_cast<int32>(StandaloneConstraintInstances.size());
 }
 
 // ============================================================
@@ -1023,276 +1035,276 @@ void FPhysXPhysicsScene::DestroyConstraint(FPhysicsConstraintInstance* Constrain
 
 void FPhysXPhysicsScene::RegisterComponentInternal(UPrimitiveComponent* Comp)
 {
-    if (!Comp || !Scene || !Physics || !DefaultMaterial) return;
-    if (!Comp->CanCreatePhysicsBody()) return;
-    if (FindMappingByComponent(Comp)) return;
-    WaitForSimulation();
+	if (!Comp || !Scene || !Physics || !DefaultMaterial) return;
+	if (!Comp->CanCreatePhysicsBody()) return;
+	if (FindMappingByComponent(Comp)) return;
+	WaitForSimulation();
 
-    AActor* OwnerActor = Comp->GetOwner();
-    if (!OwnerActor) return;
+	AActor* OwnerActor = Comp->GetOwner();
+	if (!OwnerActor) return;
 
-    const bool bStandaloneShapeActor = Comp && Comp->IsA<UShapeComponent>();
-    FBodyMapping* Mapping = bStandaloneShapeActor ? nullptr : FindMappingByActor(OwnerActor);
-    if (!Mapping)
-    {
-        UPrimitiveComponent* RootPrim = bStandaloneShapeActor
-            ? Comp
-            : Cast<UPrimitiveComponent>(OwnerActor->GetRootComponent());
-        if (!RootPrim) RootPrim = Comp;
+	const bool bStandaloneShapeActor = Comp && Comp->IsA<UShapeComponent>();
+	FBodyMapping* Mapping = bStandaloneShapeActor ? nullptr : FindMappingByActor(OwnerActor);
+	if (!Mapping)
+	{
+		UPrimitiveComponent* RootPrim = bStandaloneShapeActor
+			? Comp
+			: Cast<UPrimitiveComponent>(OwnerActor->GetRootComponent());
+		if (!RootPrim) RootPrim = Comp;
 
-        const bool bDynamic = RootPrim->GetSimulatePhysics();
-        PxTransform BodyXf  = GetPxTransform(RootPrim);
+		const bool bDynamic = RootPrim->GetSimulatePhysics();
+		PxTransform BodyXf  = GetPxTransform(RootPrim);
 
-        PxRigidActor* Body = bDynamic
-            ? static_cast<PxRigidActor*>(Physics->createRigidDynamic(BodyXf))
-            : static_cast<PxRigidActor*>(Physics->createRigidStatic(BodyXf));
-        if (!Body) return;
+		PxRigidActor* Body = bDynamic
+			? static_cast<PxRigidActor*>(Physics->createRigidDynamic(BodyXf))
+			: static_cast<PxRigidActor*>(Physics->createRigidStatic(BodyXf));
+		if (!Body) return;
 
-        if (PxRigidDynamic* DynamicBody = Body->is<PxRigidDynamic>())
-        {
-            DynamicBody->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !RootPrim->GetEnableGravity());
-            DynamicBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
-        }
+		if (PxRigidDynamic* DynamicBody = Body->is<PxRigidDynamic>())
+		{
+			DynamicBody->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !RootPrim->GetEnableGravity());
+			DynamicBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
+		}
 
-        Body->userData = OwnerActor;
-        {
-            SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-            Scene->addActor(*Body);
-        }
+		Body->userData = OwnerActor;
+		{
+			SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+			Scene->addActor(*Body);
+		}
 
-        FBodyMapping NewMapping;
-        NewMapping.OwnerActor = OwnerActor;
-        NewMapping.Actor      = Body;
-        NewMapping.RootComp   = RootPrim;
-        NewMapping.bStandaloneShapeActor = bStandaloneShapeActor;
-        BodyMappings.push_back(NewMapping);
-        Mapping = &BodyMappings.back();
-    }
+		FBodyMapping NewMapping;
+		NewMapping.OwnerActor = OwnerActor;
+		NewMapping.Actor      = Body;
+		NewMapping.RootComp   = RootPrim;
+		NewMapping.bStandaloneShapeActor = bStandaloneShapeActor;
+		BodyMappings.push_back(NewMapping);
+		Mapping = &BodyMappings.back();
+	}
 
-    {
-        SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-        PxShape* Shape = AddShapeForComponent(*Mapping, Comp);
-        if (!Shape)
-        {
-            if (Mapping->Components.empty())
-            {
-                if (Mapping->Actor)
-                {
-                    Scene->removeActor(*Mapping->Actor);
-                    Mapping->Actor->release();
-                }
-                *Mapping = BodyMappings.back();
-                BodyMappings.pop_back();
-            }
-            return;
-        }
-        Mapping->Components.push_back(Comp);
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		PxShape* Shape = AddShapeForComponent(*Mapping, Comp);
+		if (!Shape)
+		{
+			if (Mapping->Components.empty())
+			{
+				if (Mapping->Actor)
+				{
+					Scene->removeActor(*Mapping->Actor);
+					Mapping->Actor->release();
+				}
+				*Mapping = BodyMappings.back();
+				BodyMappings.pop_back();
+			}
+			return;
+		}
+		Mapping->Components.push_back(Comp);
 
-        if (PxRigidDynamic* Dyn = Mapping->Actor->is<PxRigidDynamic>())
-            ApplyRootMassAndCOM(Dyn, Mapping->RootComp);
-    }
+		if (PxRigidDynamic* Dyn = Mapping->Actor->is<PxRigidDynamic>())
+			ApplyRootMassAndCOM(Dyn, Mapping->RootComp);
+	}
 }
 
 void FPhysXPhysicsScene::UnregisterComponentInternal(UPrimitiveComponent* Comp)
 {
-    if (!Comp || !Scene) return;
-    WaitForSimulation();
+	if (!Comp || !Scene) return;
+	WaitForSimulation();
 
-    FBodyMapping* Mapping = FindMappingByComponent(Comp);
-    if (!Mapping) return;
+	FBodyMapping* Mapping = FindMappingByComponent(Comp);
+	if (!Mapping) return;
 
-    {
-        SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-        DetachShapeForComponent(*Mapping, Comp);
-        Mapping->Components.erase(
-            std::remove(Mapping->Components.begin(), Mapping->Components.end(), Comp),
-            Mapping->Components.end());
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		DetachShapeForComponent(*Mapping, Comp);
+		Mapping->Components.erase(
+			std::remove(Mapping->Components.begin(), Mapping->Components.end(), Comp),
+			Mapping->Components.end());
 
-        if (Mapping->Components.empty())
-        {
-            if (Mapping->Actor) { Scene->removeActor(*Mapping->Actor); Mapping->Actor->release(); }
-            *Mapping = BodyMappings.back();
-            BodyMappings.pop_back();
-            return;
-        }
-        if (PxRigidDynamic* Dyn = Mapping->Actor->is<PxRigidDynamic>())
-            ApplyRootMassAndCOM(Dyn, Mapping->RootComp);
-    }
+		if (Mapping->Components.empty())
+		{
+			if (Mapping->Actor) { Scene->removeActor(*Mapping->Actor); Mapping->Actor->release(); }
+			*Mapping = BodyMappings.back();
+			BodyMappings.pop_back();
+			return;
+		}
+		if (PxRigidDynamic* Dyn = Mapping->Actor->is<PxRigidDynamic>())
+			ApplyRootMassAndCOM(Dyn, Mapping->RootComp);
+	}
 }
 
 void FPhysXPhysicsScene::RebuildBody(UPrimitiveComponent* Comp)
 {
-    if (!Comp || !Scene) return;
-    WaitForSimulation();
+	if (!Comp || !Scene) return;
+	WaitForSimulation();
 
-    FBodyMapping* Mapping = FindMappingByComponent(Comp);
-    if (!Mapping) return;
+	FBodyMapping* Mapping = FindMappingByComponent(Comp);
+	if (!Mapping) return;
 
-    TArray<UPrimitiveComponent*> CompList = Mapping->Components;
-    for (UPrimitiveComponent* C : CompList) UnregisterComponentInternal(C);
-    for (UPrimitiveComponent* C : CompList) RegisterComponentInternal(C);
+	TArray<UPrimitiveComponent*> CompList = Mapping->Components;
+	for (UPrimitiveComponent* C : CompList) UnregisterComponentInternal(C);
+	for (UPrimitiveComponent* C : CompList) RegisterComponentInternal(C);
 
-    // BodyInstance 핸들 갱신
-    for (UPrimitiveComponent* C : CompList)
-    {
-        auto It = BodyInstances.find(C);
-        if (It == BodyInstances.end()) continue;
-        FBodyMapping* NewMapping = FindMappingByComponent(C);
-        if (NewMapping && NewMapping->Actor)
-        {
-            FPhysicsActorHandle Handle;
-            Handle.NativeActor = static_cast<void*>(NewMapping->Actor);
-            It->second->SetActorHandle(Handle);
-        }
-    }
+	// BodyInstance 핸들 갱신
+	for (UPrimitiveComponent* C : CompList)
+	{
+		auto It = BodyInstances.find(C);
+		if (It == BodyInstances.end()) continue;
+		FBodyMapping* NewMapping = FindMappingByComponent(C);
+		if (NewMapping && NewMapping->Actor)
+		{
+			FPhysicsActorHandle Handle;
+			Handle.NativeActor = static_cast<void*>(NewMapping->Actor);
+			It->second->SetActorHandle(Handle);
+		}
+	}
 }
 
 // 진행 중인 PhysX simulation이 있으면 결과를 받아 scene을 안전한 쓰기 상태로 되돌린다.
 void FPhysXPhysicsScene::WaitForSimulation()
 {
-    if (!Scene)
-    {
-        bSimulationInFlight.store(false);
-        return;
-    }
+	if (!Scene)
+	{
+		bSimulationInFlight.store(false);
+		return;
+	}
 
-    if (bSimulationInFlight.load())
-    {
-        FetchResults(true);
-        return;
-    }
+	if (bSimulationInFlight.load())
+	{
+		FetchResults(true);
+		return;
+	}
 
-    FlushDeferredSceneCommands();
+	FlushDeferredSceneCommands();
 }
 
 // simulation 중에는 scene write 명령을 큐에 넣고, 안전한 시점에는 즉시 write lock 안에서 실행한다.
 void FPhysXPhysicsScene::ExecuteOrDeferSceneWrite(std::function<void()> Command)
 {
-    if (!Command || !Scene)
-    {
-        return;
-    }
+	if (!Command || !Scene)
+	{
+		return;
+	}
 
-    if (bSimulationInFlight.load())
-    {
-        std::lock_guard<std::mutex> Lock(DeferredSceneCommandMutex);
-        DeferredSceneCommands.push_back(std::move(Command));
-        return;
-    }
+	if (bSimulationInFlight.load())
+	{
+		std::lock_guard<std::mutex> Lock(DeferredSceneCommandMutex);
+		DeferredSceneCommands.push_back(std::move(Command));
+		return;
+	}
 
-    SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-    Command();
+	SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+	Command();
 }
 
 // FetchResults 이후 또는 다음 simulation 직전에 누적된 scene write 명령을 일괄 실행한다.
 void FPhysXPhysicsScene::FlushDeferredSceneCommands()
 {
-    if (!Scene)
-    {
-        return;
-    }
+	if (!Scene)
+	{
+		return;
+	}
 
-    std::vector<std::function<void()>> LocalCommands;
-    {
-        std::lock_guard<std::mutex> Lock(DeferredSceneCommandMutex);
-        if (DeferredSceneCommands.empty())
-        {
-            return;
-        }
-        LocalCommands.swap(DeferredSceneCommands);
-    }
+	std::vector<std::function<void()>> LocalCommands;
+	{
+		std::lock_guard<std::mutex> Lock(DeferredSceneCommandMutex);
+		if (DeferredSceneCommands.empty())
+		{
+			return;
+		}
+		LocalCommands.swap(DeferredSceneCommands);
+	}
 
-    SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-    for (std::function<void()>& Command : LocalCommands)
-    {
-        if (Command)
-        {
-            Command();
-        }
-    }
+	SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+	for (std::function<void()>& Command : LocalCommands)
+	{
+		if (Command)
+		{
+			Command();
+		}
+	}
 }
 
 // simulation 전에 엔진 Transform을 PhysX actor pose로 동기화한다.
 void FPhysXPhysicsScene::SyncEngineTransformsToPhysX()
 {
-    if (!Scene)
-    {
-        return;
-    }
+	if (!Scene)
+	{
+		return;
+	}
 
-    SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+	SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
 
-    constexpr float TeleportPosThresholdSq = 1.0f;
-    constexpr float TeleportRotThreshold   = 0.99f;
+	constexpr float TeleportPosThresholdSq = 1.0f;
+	constexpr float TeleportRotThreshold   = 0.99f;
 
-    for (auto& Mapping : BodyMappings)
-    {
-        if (!Mapping.RootComp || !Mapping.Actor) continue;
-        PxTransform NewPose = GetPxTransform(Mapping.RootComp);
+	for (auto& Mapping : BodyMappings)
+	{
+		if (!Mapping.RootComp || !Mapping.Actor) continue;
+		PxTransform NewPose = GetPxTransform(Mapping.RootComp);
 
-        if (PxRigidDynamic* Dynamic = Mapping.Actor->is<PxRigidDynamic>())
-        {
-            if (Dynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC)
-            {
-                Dynamic->setKinematicTarget(NewPose);
-            }
-            else
-            {
-                PxTransform PxPose = Dynamic->getGlobalPose();
-                PxVec3 dp = NewPose.p - PxPose.p;
-                const float DistSq = dp.x*dp.x + dp.y*dp.y + dp.z*dp.z;
-                const float QDot = std::abs(
-                    NewPose.q.x*PxPose.q.x + NewPose.q.y*PxPose.q.y +
-                    NewPose.q.z*PxPose.q.z + NewPose.q.w*PxPose.q.w);
-                if (DistSq > TeleportPosThresholdSq || QDot < TeleportRotThreshold)
-                    Dynamic->setGlobalPose(NewPose);
-            }
-        }
-        else if (Mapping.Actor->is<PxRigidStatic>())
-        {
-            Mapping.Actor->setGlobalPose(NewPose);
-        }
-    }
+		if (PxRigidDynamic* Dynamic = Mapping.Actor->is<PxRigidDynamic>())
+		{
+			if (Dynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC)
+			{
+				Dynamic->setKinematicTarget(NewPose);
+			}
+			else
+			{
+				PxTransform PxPose = Dynamic->getGlobalPose();
+				PxVec3 dp = NewPose.p - PxPose.p;
+				const float DistSq = dp.x*dp.x + dp.y*dp.y + dp.z*dp.z;
+				const float QDot = std::abs(
+					NewPose.q.x*PxPose.q.x + NewPose.q.y*PxPose.q.y +
+					NewPose.q.z*PxPose.q.z + NewPose.q.w*PxPose.q.w);
+				if (DistSq > TeleportPosThresholdSq || QDot < TeleportRotThreshold)
+					Dynamic->setGlobalPose(NewPose);
+			}
+		}
+		else if (Mapping.Actor->is<PxRigidStatic>())
+		{
+			Mapping.Actor->setGlobalPose(NewPose);
+		}
+	}
 }
 
 // FetchResults 이후 PhysX actor pose를 엔진 component Transform으로 동기화한다.
 void FPhysXPhysicsScene::SyncPhysXTransformsToEngine()
 {
-    if (!Scene)
-    {
-        return;
-    }
+	if (!Scene)
+	{
+		return;
+	}
 
-    struct FPendingTransformSync
-    {
-        UPrimitiveComponent* RootComp = nullptr;
-        FVector Location;
-        FQuat Rotation;
-    };
+	struct FPendingTransformSync
+	{
+		UPrimitiveComponent* RootComp = nullptr;
+		FVector Location;
+		FQuat Rotation;
+	};
 
-    std::vector<FPendingTransformSync> PendingTransforms;
-    {
-        SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	std::vector<FPendingTransformSync> PendingTransforms;
+	{
+		SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
 
-        for (auto& Mapping : BodyMappings)
-        {
-            if (!Mapping.RootComp || !Mapping.Actor) continue;
-            PxRigidDynamic* Dynamic = Mapping.Actor->is<PxRigidDynamic>();
-            if (!Dynamic) continue;
-            if (Dynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) continue;
-            if (Dynamic->isSleeping()) continue;
+		for (auto& Mapping : BodyMappings)
+		{
+			if (!Mapping.RootComp || !Mapping.Actor) continue;
+			PxRigidDynamic* Dynamic = Mapping.Actor->is<PxRigidDynamic>();
+			if (!Dynamic) continue;
+			if (Dynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) continue;
+			if (Dynamic->isSleeping()) continue;
 
-            PxTransform Pose = Dynamic->getGlobalPose();
-            PendingTransforms.push_back({ Mapping.RootComp, ToFVector(Pose.p), ToFQuat(Pose.q) });
-        }
-    }
+			PxTransform Pose = Dynamic->getGlobalPose();
+			PendingTransforms.push_back({ Mapping.RootComp, ToFVector(Pose.p), ToFQuat(Pose.q) });
+		}
+	}
 
-    for (const FPendingTransformSync& PendingTransform : PendingTransforms)
-    {
-        if (!PendingTransform.RootComp) continue;
-        PendingTransform.RootComp->SetWorldLocation(PendingTransform.Location);
-        PendingTransform.RootComp->SetRelativeRotation(PendingTransform.Rotation);
-    }
+	for (const FPendingTransformSync& PendingTransform : PendingTransforms)
+	{
+		if (!PendingTransform.RootComp) continue;
+		PendingTransform.RootComp->SetWorldLocation(PendingTransform.Location);
+		PendingTransform.RootComp->SetRelativeRotation(PendingTransform.Rotation);
+	}
 }
 
 // ============================================================
@@ -1302,66 +1314,66 @@ void FPhysXPhysicsScene::SyncPhysXTransformsToEngine()
 // PhysX simulation step을 시작하고, scene write 명령은 simulation 전후 안전한 시점으로 보낸다.
 void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 {
-    if (!Scene) return;
-    float DeltaTime = StepInfo.DeltaTime;
-    if (DeltaTime <= 0.0f) return;
+	if (!Scene) return;
+	float DeltaTime = StepInfo.DeltaTime;
+	if (DeltaTime <= 0.0f) return;
 
-    constexpr float MaxPhysicsDeltaTime = 0.1f;
-    if (DeltaTime > MaxPhysicsDeltaTime) DeltaTime = MaxPhysicsDeltaTime;
+	constexpr float MaxPhysicsDeltaTime = 0.1f;
+	if (DeltaTime > MaxPhysicsDeltaTime) DeltaTime = MaxPhysicsDeltaTime;
 
-    WaitForSimulation();
-    FlushDeferredSceneCommands();
-    SyncEngineTransformsToPhysX();
+	WaitForSimulation();
+	FlushDeferredSceneCommands();
+	SyncEngineTransformsToPhysX();
 
 	UpdateVehicles(DeltaTime);
-    Scene->simulate(DeltaTime);
-    bSimulationInFlight.store(true);
+	Scene->simulate(DeltaTime);
+	bSimulationInFlight.store(true);
 }
 
 // PhysX simulation 결과를 기다리고, actor pose와 지연 scene write 명령을 처리한다.
 void FPhysXPhysicsScene::FetchResults(bool bBlock)
 {
-    if (!Scene) return;
-    if (bSimulationInFlight.load())
-    {
-        if (!Scene->fetchResults(bBlock))
-        {
-            return;
-        }
-        bSimulationInFlight.store(false);
-    }
+	if (!Scene) return;
+	if (bSimulationInFlight.load())
+	{
+		if (!Scene->fetchResults(bBlock))
+		{
+			return;
+		}
+		bSimulationInFlight.store(false);
+	}
 
-    {
-        SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-        for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
-        {
-            if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
-            {
-                continue;
-            }
+	{
+		SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+		for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+		{
+			if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+			{
+				continue;
+			}
 
-            PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
-            PxRigidDynamic* DynamicActor = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-            if (!DynamicActor)
-            {
-                continue;
-            }
+			PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+			PxRigidDynamic* DynamicActor = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+			if (!DynamicActor)
+			{
+				continue;
+			}
 
-            const PxVec3 LinearVelocity = DynamicActor->getLinearVelocity();
-            const PxVec3 AngularVelocity = DynamicActor->getAngularVelocity();
-            const float LinearSpeed = PxVecLength(LinearVelocity);
-            const float AngularSpeed = PxVecLength(AngularVelocity);
-        }
-    }
+			const PxVec3 LinearVelocity = DynamicActor->getLinearVelocity();
+			const PxVec3 AngularVelocity = DynamicActor->getAngularVelocity();
+			const float LinearSpeed = PxVecLength(LinearVelocity);
+			const float AngularSpeed = PxVecLength(AngularVelocity);
+		}
+	}
 
-    SyncPhysXTransformsToEngine();
+	SyncPhysXTransformsToEngine();
 	// Vehicle Pose 동기화
 	SyncVehiclePose();
-    // Dispatch deferred contact/trigger events
-    if (EventCallback) EventCallback->DispatchPendingEvents();
-    FlushDeferredSceneCommands();
+	// Dispatch deferred contact/trigger events
+	if (EventCallback) EventCallback->DispatchPendingEvents();
+	FlushDeferredSceneCommands();
 
-    GetMutableRuntimeStats().ContactCount = 0; // PhysX 측 contact 수는 콜백에서 집계 가능 (현재 생략)
+	GetMutableRuntimeStats().ContactCount = 0; // PhysX 측 contact 수는 콜백에서 집계 가능 (현재 생략)
 }
 
 // ============================================================
@@ -1370,134 +1382,134 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
 
 PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp)
 {
-    if (!Mapping.Actor || !DefaultMaterial || !Comp) return nullptr;
+	if (!Mapping.Actor || !DefaultMaterial || !Comp) return nullptr;
 
-    PxGeometryHolder Geom;
-    bool bHasGeom = false;
-    PxQuat ShapeAxisRot = PxQuat(PxIdentity);
-    FVector ShapeLocalOffset = FVector::ZeroVector;
+	PxGeometryHolder Geom;
+	bool bHasGeom = false;
+	PxQuat ShapeAxisRot = PxQuat(PxIdentity);
+	FVector ShapeLocalOffset = FVector::ZeroVector;
 
-    if (auto* Box = Cast<UBoxComponent>(Comp))
-    {
-        FVector Ext = Box->GetScaledBoxExtent();
-        Geom = PxBoxGeometry(Ext.X, Ext.Y, Ext.Z);
-        bHasGeom = true;
-    }
-    else if (auto* Sphere = Cast<USphereComponent>(Comp))
-    {
-        Geom = PxSphereGeometry(Sphere->GetScaledSphereRadius());
-        bHasGeom = true;
-    }
-    else if (auto* Capsule = Cast<UCapsuleComponent>(Comp))
-    {
-        float Radius = Capsule->GetScaledCapsuleRadius();
-        float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
-        Geom = PxCapsuleGeometry(Radius, HalfHeight - Radius);
-        ShapeAxisRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
-        bHasGeom = true;
-    }
-    else if (auto* StaticMesh = Cast<UStaticMeshComponent>(Comp))
-    {
-        FVector LocalCenter;
-        FVector LocalExtent;
-        if (StaticMesh->GetLocalBounds(LocalCenter, LocalExtent))
-        {
-            const FVector Scale = StaticMesh->GetWorldScale();
-            Geom = PxBoxGeometry(
-                (std::max)(0.01f, std::abs(LocalExtent.X * Scale.X)),
-                (std::max)(0.01f, std::abs(LocalExtent.Y * Scale.Y)),
-                (std::max)(0.01f, std::abs(LocalExtent.Z * Scale.Z)));
-            ShapeLocalOffset = FVector(
-                LocalCenter.X * Scale.X,
-                LocalCenter.Y * Scale.Y,
-                LocalCenter.Z * Scale.Z);
-            bHasGeom = true;
-        }
-    }
-    if (!bHasGeom) return nullptr;
+	if (auto* Box = Cast<UBoxComponent>(Comp))
+	{
+		FVector Ext = Box->GetScaledBoxExtent();
+		Geom = PxBoxGeometry(Ext.X, Ext.Y, Ext.Z);
+		bHasGeom = true;
+	}
+	else if (auto* Sphere = Cast<USphereComponent>(Comp))
+	{
+		Geom = PxSphereGeometry(Sphere->GetScaledSphereRadius());
+		bHasGeom = true;
+	}
+	else if (auto* Capsule = Cast<UCapsuleComponent>(Comp))
+	{
+		float Radius = Capsule->GetScaledCapsuleRadius();
+		float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+		Geom = PxCapsuleGeometry(Radius, HalfHeight - Radius);
+		ShapeAxisRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
+		bHasGeom = true;
+	}
+	else if (auto* StaticMesh = Cast<UStaticMeshComponent>(Comp))
+	{
+		FVector LocalCenter;
+		FVector LocalExtent;
+		if (StaticMesh->GetLocalBounds(LocalCenter, LocalExtent))
+		{
+			const FVector Scale = StaticMesh->GetWorldScale();
+			Geom = PxBoxGeometry(
+				(std::max)(0.01f, std::abs(LocalExtent.X * Scale.X)),
+				(std::max)(0.01f, std::abs(LocalExtent.Y * Scale.Y)),
+				(std::max)(0.01f, std::abs(LocalExtent.Z * Scale.Z)));
+			ShapeLocalOffset = FVector(
+				LocalCenter.X * Scale.X,
+				LocalCenter.Y * Scale.Y,
+				LocalCenter.Z * Scale.Z);
+			bHasGeom = true;
+		}
+	}
+	if (!bHasGeom) return nullptr;
 
-    PxShape* Shape = PxRigidActorExt::createExclusiveShape(*Mapping.Actor, Geom.any(), *DefaultMaterial);
-    if (!Shape) return nullptr;
+	PxShape* Shape = PxRigidActorExt::createExclusiveShape(*Mapping.Actor, Geom.any(), *DefaultMaterial);
+	if (!Shape) return nullptr;
 
-    PxTransform LocalPose = PxTransform(PxIdentity);
-    if (Comp != Mapping.RootComp && Mapping.RootComp)
-    {
-        FVector RootPos = Mapping.RootComp->GetWorldLocation();
-        FQuat   RootRot = Mapping.RootComp->GetWorldMatrix().ToQuat();
-        FVector CompPos = Comp->GetWorldLocation();
-        FQuat   CompRot = Comp->GetWorldMatrix().ToQuat();
+	PxTransform LocalPose = PxTransform(PxIdentity);
+	if (Comp != Mapping.RootComp && Mapping.RootComp)
+	{
+		FVector RootPos = Mapping.RootComp->GetWorldLocation();
+		FQuat   RootRot = Mapping.RootComp->GetWorldMatrix().ToQuat();
+		FVector CompPos = Comp->GetWorldLocation();
+		FQuat   CompRot = Comp->GetWorldMatrix().ToQuat();
 
-        FQuat InvRootRot = RootRot.Inverse();
-        FVector LocalPos = InvRootRot.RotateVector(CompPos - RootPos);
-        FQuat   LocalRot = InvRootRot * CompRot;
-        LocalPose = PxTransform(ToPxVec3(LocalPos), ToPxQuat(LocalRot));
-    }
-    if (!ShapeLocalOffset.IsNearlyZero())
-    {
-        LocalPose.p += LocalPose.q.rotate(ToPxVec3(ShapeLocalOffset));
-    }
-    LocalPose.q = LocalPose.q * ShapeAxisRot;
-    Shape->setLocalPose(LocalPose);
+		FQuat InvRootRot = RootRot.Inverse();
+		FVector LocalPos = InvRootRot.RotateVector(CompPos - RootPos);
+		FQuat   LocalRot = InvRootRot * CompRot;
+		LocalPose = PxTransform(ToPxVec3(LocalPos), ToPxQuat(LocalRot));
+	}
+	if (!ShapeLocalOffset.IsNearlyZero())
+	{
+		LocalPose.p += LocalPose.q.rotate(ToPxVec3(ShapeLocalOffset));
+	}
+	LocalPose.q = LocalPose.q * ShapeAxisRot;
+	Shape->setLocalPose(LocalPose);
 
-    SetupFilterData(Shape, Comp);
-    Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, Comp->IsQueryCollisionEnabled());
-    Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, Comp->IsPhysicsCollisionEnabled());
-    SetupVehicleQueryFilterData(Shape, Comp, IsVehicleDrivableSurface(Comp));
+	SetupFilterData(Shape, Comp);
+	Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, Comp->IsQueryCollisionEnabled());
+	Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, Comp->IsPhysicsCollisionEnabled());
+	SetupVehicleQueryFilterData(Shape, Comp, IsVehicleDrivableSurface(Comp));
 
-    bool bShouldBeTrigger = Comp->GetGenerateOverlapEvents();
-    if (!bShouldBeTrigger)
-    {
-        bool bHasAnyBlockResponse = false;
-        for (int32 Ch = 0; Ch < NumActiveCollisionChannels; ++Ch)
-        {
-            if (Comp->GetCollisionResponseToChannel(static_cast<ECollisionChannel>(Ch)) == ECollisionResponse::Block)
-            { bHasAnyBlockResponse = true; break; }
-        }
-        bShouldBeTrigger = !bHasAnyBlockResponse;
-    }
-    if (bShouldBeTrigger)
-    {
-        Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
-        Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
-    }
+	bool bShouldBeTrigger = Comp->GetGenerateOverlapEvents();
+	if (!bShouldBeTrigger)
+	{
+		bool bHasAnyBlockResponse = false;
+		for (int32 Ch = 0; Ch < NumActiveCollisionChannels; ++Ch)
+		{
+			if (Comp->GetCollisionResponseToChannel(static_cast<ECollisionChannel>(Ch)) == ECollisionResponse::Block)
+			{ bHasAnyBlockResponse = true; break; }
+		}
+		bShouldBeTrigger = !bHasAnyBlockResponse;
+	}
+	if (bShouldBeTrigger)
+	{
+		Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+		Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	}
 
-    Shape->userData = Comp;
-    return Shape;
+	Shape->userData = Comp;
+	return Shape;
 }
 
 void FPhysXPhysicsScene::DetachShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp)
 {
-    if (!Mapping.Actor || !Comp) return;
-    const PxU32 NumShapes = Mapping.Actor->getNbShapes();
-    if (NumShapes == 0) return;
+	if (!Mapping.Actor || !Comp) return;
+	const PxU32 NumShapes = Mapping.Actor->getNbShapes();
+	if (NumShapes == 0) return;
 
-    std::vector<PxShape*> Shapes(NumShapes);
-    Mapping.Actor->getShapes(Shapes.data(), NumShapes);
-    for (PxShape* Shape : Shapes)
-    {
-        if (Shape && Shape->userData == Comp)
-        { Mapping.Actor->detachShape(*Shape); break; }
-    }
+	std::vector<PxShape*> Shapes(NumShapes);
+	Mapping.Actor->getShapes(Shapes.data(), NumShapes);
+	for (PxShape* Shape : Shapes)
+	{
+		if (Shape && Shape->userData == Comp)
+		{ Mapping.Actor->detachShape(*Shape); break; }
+	}
 }
 
 void FPhysXPhysicsScene::SetComponentVehicleDrivableSurface(UPrimitiveComponent* Comp, bool bDrivable)
 {
-    if (!Comp) return;
+	if (!Comp) return;
 
-    FBodyMapping* Mapping = FindMappingByComponent(Comp);
-    if (!Mapping || !Mapping->Actor) return;
+	FBodyMapping* Mapping = FindMappingByComponent(Comp);
+	if (!Mapping || !Mapping->Actor) return;
 
-    const PxU32 NumShapes = Mapping->Actor->getNbShapes();
-    if (NumShapes == 0) return;
+	const PxU32 NumShapes = Mapping->Actor->getNbShapes();
+	if (NumShapes == 0) return;
 
-    std::vector<PxShape*> Shapes(NumShapes);
-    Mapping->Actor->getShapes(Shapes.data(), NumShapes);
-    for (PxShape* Shape : Shapes)
-    {
-        if (!Shape || Shape->userData != Comp) continue;
+	std::vector<PxShape*> Shapes(NumShapes);
+	Mapping->Actor->getShapes(Shapes.data(), NumShapes);
+	for (PxShape* Shape : Shapes)
+	{
+		if (!Shape || Shape->userData != Comp) continue;
 
-        SetupVehicleQueryFilterData(Shape, Comp, bDrivable);
-    }
+		SetupVehicleQueryFilterData(Shape, Comp, bDrivable);
+	}
 }
 
 // ============================================================
@@ -1506,33 +1518,33 @@ void FPhysXPhysicsScene::SetComponentVehicleDrivableSurface(UPrimitiveComponent*
 
 FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByActor(AActor* OwnerActor)
 {
-    for (auto& M : BodyMappings)
-    {
-        if (M.OwnerActor == OwnerActor && !M.bStandaloneShapeActor)
-            return &M;
-    }
-    return nullptr;
+	for (auto& M : BodyMappings)
+	{
+		if (M.OwnerActor == OwnerActor && !M.bStandaloneShapeActor)
+			return &M;
+	}
+	return nullptr;
 }
 const FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByActor(AActor* OwnerActor) const
 {
-    for (const auto& M : BodyMappings)
-    {
-        if (M.OwnerActor == OwnerActor && !M.bStandaloneShapeActor)
-            return &M;
-    }
-    return nullptr;
+	for (const auto& M : BodyMappings)
+	{
+		if (M.OwnerActor == OwnerActor && !M.bStandaloneShapeActor)
+			return &M;
+	}
+	return nullptr;
 }
 FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByComponent(UPrimitiveComponent* Comp)
 {
-    if (!Comp) return nullptr;
-    for (auto& M : BodyMappings) for (UPrimitiveComponent* C : M.Components) if (C == Comp) return &M;
-    return nullptr;
+	if (!Comp) return nullptr;
+	for (auto& M : BodyMappings) for (UPrimitiveComponent* C : M.Components) if (C == Comp) return &M;
+	return nullptr;
 }
 const FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByComponent(UPrimitiveComponent* Comp) const
 {
-    if (!Comp) return nullptr;
-    for (const auto& M : BodyMappings) for (UPrimitiveComponent* C : M.Components) if (C == Comp) return &M;
-    return nullptr;
+	if (!Comp) return nullptr;
+	for (const auto& M : BodyMappings) for (UPrimitiveComponent* C : M.Components) if (C == Comp) return &M;
+	return nullptr;
 }
 
 // ============================================================
@@ -1541,36 +1553,36 @@ const FPhysXPhysicsScene::FBodyMapping* FPhysXPhysicsScene::FindMappingByCompone
 
 void FPhysXPhysicsScene::AddForce(UPrimitiveComponent* Comp, const FVector& Force)
 {
-    FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return;
-    PxRigidActor* Actor = M->Actor;
-    ExecuteOrDeferSceneWrite([Actor, Force]()
-    {
-        PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-        if (Dyn) Dyn->addForce(ToPxVec3(Force));
-    });
+	FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return;
+	PxRigidActor* Actor = M->Actor;
+	ExecuteOrDeferSceneWrite([Actor, Force]()
+	{
+		PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+		if (Dyn) Dyn->addForce(ToPxVec3(Force));
+	});
 }
 void FPhysXPhysicsScene::AddForceAtLocation(UPrimitiveComponent* Comp, const FVector& Force, const FVector& WorldLocation)
 {
-    FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return;
-    PxRigidActor* Actor = M->Actor;
-    ExecuteOrDeferSceneWrite([Actor, Force, WorldLocation]()
-    {
-        PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-        if (Dyn) PxRigidBodyExt::addForceAtPos(*Dyn, ToPxVec3(Force), ToPxVec3(WorldLocation));
-    });
+	FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return;
+	PxRigidActor* Actor = M->Actor;
+	ExecuteOrDeferSceneWrite([Actor, Force, WorldLocation]()
+	{
+		PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+		if (Dyn) PxRigidBodyExt::addForceAtPos(*Dyn, ToPxVec3(Force), ToPxVec3(WorldLocation));
+	});
 }
 void FPhysXPhysicsScene::AddTorque(UPrimitiveComponent* Comp, const FVector& Torque)
 {
-    FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return;
-    PxRigidActor* Actor = M->Actor;
-    ExecuteOrDeferSceneWrite([Actor, Torque]()
-    {
-        PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-        if (Dyn) Dyn->addTorque(ToPxVec3(Torque));
-    });
+	FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return;
+	PxRigidActor* Actor = M->Actor;
+	ExecuteOrDeferSceneWrite([Actor, Torque]()
+	{
+		PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+		if (Dyn) Dyn->addTorque(ToPxVec3(Torque));
+	});
 }
 
 // ============================================================
@@ -1579,41 +1591,41 @@ void FPhysXPhysicsScene::AddTorque(UPrimitiveComponent* Comp, const FVector& Tor
 
 FVector FPhysXPhysicsScene::GetLinearVelocity(UPrimitiveComponent* Comp) const
 {
-    const FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return { 0, 0, 0 };
-    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-    PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
-    return Dyn ? ToFVector(Dyn->getLinearVelocity()) : FVector(0, 0, 0);
+	const FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return { 0, 0, 0 };
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
+	return Dyn ? ToFVector(Dyn->getLinearVelocity()) : FVector(0, 0, 0);
 }
 void FPhysXPhysicsScene::SetLinearVelocity(UPrimitiveComponent* Comp, const FVector& Vel)
 {
-    FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return;
-    PxRigidActor* Actor = M->Actor;
-    ExecuteOrDeferSceneWrite([Actor, Vel]()
-    {
-        PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-        if (Dyn) Dyn->setLinearVelocity(ToPxVec3(Vel));
-    });
+	FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return;
+	PxRigidActor* Actor = M->Actor;
+	ExecuteOrDeferSceneWrite([Actor, Vel]()
+	{
+		PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+		if (Dyn) Dyn->setLinearVelocity(ToPxVec3(Vel));
+	});
 }
 FVector FPhysXPhysicsScene::GetAngularVelocity(UPrimitiveComponent* Comp) const
 {
-    const FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return { 0, 0, 0 };
-    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-    PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
-    return Dyn ? ToFVector(Dyn->getAngularVelocity()) : FVector(0, 0, 0);
+	const FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return { 0, 0, 0 };
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
+	return Dyn ? ToFVector(Dyn->getAngularVelocity()) : FVector(0, 0, 0);
 }
 void FPhysXPhysicsScene::SetAngularVelocity(UPrimitiveComponent* Comp, const FVector& Vel)
 {
-    FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return;
-    PxRigidActor* Actor = M->Actor;
-    ExecuteOrDeferSceneWrite([Actor, Vel]()
-    {
-        PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-        if (Dyn) Dyn->setAngularVelocity(ToPxVec3(Vel));
-    });
+	FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return;
+	PxRigidActor* Actor = M->Actor;
+	ExecuteOrDeferSceneWrite([Actor, Vel]()
+	{
+		PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+		if (Dyn) Dyn->setAngularVelocity(ToPxVec3(Vel));
+	});
 }
 
 // ============================================================
@@ -1622,42 +1634,42 @@ void FPhysXPhysicsScene::SetAngularVelocity(UPrimitiveComponent* Comp, const FVe
 
 void FPhysXPhysicsScene::SetMass(UPrimitiveComponent* Comp, float NewMass)
 {
-    FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return;
-    PxRigidActor* Actor = M->Actor;
-    PxVec3 LocalCOM = M->RootComp ? ToPxVec3(M->RootComp->GetCenterOfMass()) : PxVec3(0);
-    ExecuteOrDeferSceneWrite([Actor, NewMass, LocalCOM]()
-    {
-        PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-        if (Dyn) PxRigidBodyExt::setMassAndUpdateInertia(*Dyn, NewMass, &LocalCOM);
-    });
+	FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return;
+	PxRigidActor* Actor = M->Actor;
+	PxVec3 LocalCOM = M->RootComp ? ToPxVec3(M->RootComp->GetCenterOfMass()) : PxVec3(0);
+	ExecuteOrDeferSceneWrite([Actor, NewMass, LocalCOM]()
+	{
+		PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+		if (Dyn) PxRigidBodyExt::setMassAndUpdateInertia(*Dyn, NewMass, &LocalCOM);
+	});
 }
 float FPhysXPhysicsScene::GetMass(UPrimitiveComponent* Comp) const
 {
-    const FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return 1.0f;
-    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-    PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
-    return Dyn ? Dyn->getMass() : 1.0f;
+	const FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return 1.0f;
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
+	return Dyn ? Dyn->getMass() : 1.0f;
 }
 void FPhysXPhysicsScene::SetCenterOfMass(UPrimitiveComponent* Comp, const FVector& LocalOffset)
 {
-    FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return;
-    PxRigidActor* Actor = M->Actor;
-    ExecuteOrDeferSceneWrite([Actor, LocalOffset]()
-    {
-        PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
-        if (Dyn) Dyn->setCMassLocalPose(PxTransform(ToPxVec3(LocalOffset)));
-    });
+	FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return;
+	PxRigidActor* Actor = M->Actor;
+	ExecuteOrDeferSceneWrite([Actor, LocalOffset]()
+	{
+		PxRigidDynamic* Dyn = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+		if (Dyn) Dyn->setCMassLocalPose(PxTransform(ToPxVec3(LocalOffset)));
+	});
 }
 FVector FPhysXPhysicsScene::GetCenterOfMass(UPrimitiveComponent* Comp) const
 {
-    const FBodyMapping* M = FindMappingByComponent(Comp);
-    if (!M || !M->Actor) return { 0, 0, 0 };
-    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-    PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
-    return Dyn ? ToFVector(Dyn->getCMassLocalPose().p) : FVector(0, 0, 0);
+	const FBodyMapping* M = FindMappingByComponent(Comp);
+	if (!M || !M->Actor) return { 0, 0, 0 };
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	PxRigidDynamic* Dyn = M->Actor->is<PxRigidDynamic>();
+	return Dyn ? ToFVector(Dyn->getCMassLocalPose().p) : FVector(0, 0, 0);
 }
 
 // ============================================================
@@ -1665,61 +1677,61 @@ FVector FPhysXPhysicsScene::GetCenterOfMass(UPrimitiveComponent* Comp) const
 // ============================================================
 
 bool FPhysXPhysicsScene::Raycast(const FVector& Start, const FVector& End, FHitResult& OutHit,
-    ECollisionChannel TraceChannel, const AActor* IgnoreActor) const
+	ECollisionChannel TraceChannel, const AActor* IgnoreActor) const
 {
-    if (!Scene) return false;
+	if (!Scene) return false;
 
-    FVector Move = End - Start;
-    float MaxDist2 = Move.X*Move.X + Move.Y*Move.Y + Move.Z*Move.Z;
-    if (MaxDist2 < 1e-12f) return false;
-    const float MaxDist = sqrtf(MaxDist2);
-    const FVector Dir(Move.X/MaxDist, Move.Y/MaxDist, Move.Z/MaxDist);
+	FVector Move = End - Start;
+	float MaxDist2 = Move.X*Move.X + Move.Y*Move.Y + Move.Z*Move.Z;
+	if (MaxDist2 < 1e-12f) return false;
+	const float MaxDist = sqrtf(MaxDist2);
+	const FVector Dir(Move.X/MaxDist, Move.Y/MaxDist, Move.Z/MaxDist);
 
-    struct FChannelRaycastFilter : PxQueryFilterCallback
-    {
-        const AActor* IgnoreActor = nullptr;
-        PxU32 TraceBit = 0;
-        FChannelRaycastFilter(const AActor* A, ECollisionChannel Ch)
-            : IgnoreActor(A), TraceBit(1u << static_cast<PxU32>(Ch)) {}
-        PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* Shape,
-            const PxRigidActor* Actor, PxHitFlags&) override
-        {
-            if (IgnoreActor && Actor && Actor->userData == IgnoreActor) return PxQueryHitType::eNONE;
-            if (Shape && (Shape->getQueryFilterData().word1 & TraceBit) == 0) return PxQueryHitType::eNONE;
-            return PxQueryHitType::eBLOCK;
-        }
-        PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
-        { return PxQueryHitType::eBLOCK; }
-    };
+	struct FChannelRaycastFilter : PxQueryFilterCallback
+	{
+		const AActor* IgnoreActor = nullptr;
+		PxU32 TraceBit = 0;
+		FChannelRaycastFilter(const AActor* A, ECollisionChannel Ch)
+			: IgnoreActor(A), TraceBit(1u << static_cast<PxU32>(Ch)) {}
+		PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* Shape,
+			const PxRigidActor* Actor, PxHitFlags&) override
+		{
+			if (IgnoreActor && Actor && Actor->userData == IgnoreActor) return PxQueryHitType::eNONE;
+			if (Shape && (Shape->getQueryFilterData().word1 & TraceBit) == 0) return PxQueryHitType::eNONE;
+			return PxQueryHitType::eBLOCK;
+		}
+		PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
+		{ return PxQueryHitType::eBLOCK; }
+	};
 
-    PxRaycastBuffer Hit;
-    PxQueryFilterData FilterData;
-    FilterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
-    FChannelRaycastFilter FilterCallback(IgnoreActor, TraceChannel);
+	PxRaycastBuffer Hit;
+	PxQueryFilterData FilterData;
+	FilterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+	FChannelRaycastFilter FilterCallback(IgnoreActor, TraceChannel);
 
-    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-    bool bStatus = Scene->raycast(ToPxVec3(Start), ToPxVec3(Dir), MaxDist,
-        Hit, PxHitFlag::eDEFAULT, FilterData, &FilterCallback);
-    if (!bStatus || !Hit.hasBlock) return false;
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	bool bStatus = Scene->raycast(ToPxVec3(Start), ToPxVec3(Dir), MaxDist,
+		Hit, PxHitFlag::eDEFAULT, FilterData, &FilterCallback);
+	if (!bStatus || !Hit.hasBlock) return false;
 
-    const PxRaycastHit& Block = Hit.block;
-    OutHit.bHit            = true;
-    OutHit.Distance        = Block.distance;
-    OutHit.WorldHitLocation= ToFVector(Block.position);
-    OutHit.ShapeLocation   = OutHit.WorldHitLocation;
-    OutHit.ImpactNormal    = ToFVector(Block.normal);
-    OutHit.WorldNormal     = OutHit.ImpactNormal;
+	const PxRaycastHit& Block = Hit.block;
+	OutHit.bHit            = true;
+	OutHit.Distance        = Block.distance;
+	OutHit.WorldHitLocation= ToFVector(Block.position);
+	OutHit.ShapeLocation   = OutHit.WorldHitLocation;
+	OutHit.ImpactNormal    = ToFVector(Block.normal);
+	OutHit.WorldNormal     = OutHit.ImpactNormal;
 
-    if (Block.shape && Block.shape->userData)
-    {
-        OutHit.HitComponent = static_cast<UPrimitiveComponent*>(Block.shape->userData);
-        OutHit.HitActor     = OutHit.HitComponent->GetOwner();
-    }
-    else if (Block.actor && Block.actor->userData)
-    {
-        OutHit.HitActor = static_cast<AActor*>(Block.actor->userData);
-    }
-    return true;
+	if (Block.shape && Block.shape->userData)
+	{
+		OutHit.HitComponent = static_cast<UPrimitiveComponent*>(Block.shape->userData);
+		OutHit.HitActor     = OutHit.HitComponent->GetOwner();
+	}
+	else if (Block.actor && Block.actor->userData)
+	{
+		OutHit.HitActor = static_cast<AActor*>(Block.actor->userData);
+	}
+	return true;
 }
 
 // ============================================================
@@ -1727,65 +1739,65 @@ bool FPhysXPhysicsScene::Raycast(const FVector& Start, const FVector& End, FHitR
 // ============================================================
 
 bool FPhysXPhysicsScene::SphereSweep(const FVector& Start, const FVector& End, float Radius,
-    FHitResult& OutHit, ECollisionChannel TraceChannel, const AActor* IgnoreActor) const
+	FHitResult& OutHit, ECollisionChannel TraceChannel, const AActor* IgnoreActor) const
 {
-    if (!Scene) return false;
+	if (!Scene) return false;
 
-    FVector Move = End - Start;
-    float MoveDist2 = Move.X*Move.X + Move.Y*Move.Y + Move.Z*Move.Z;
-    if (MoveDist2 < 1e-12f) return false;
-    const float MoveDist = sqrtf(MoveDist2);
-    const FVector Dir(Move.X/MoveDist, Move.Y/MoveDist, Move.Z/MoveDist);
+	FVector Move = End - Start;
+	float MoveDist2 = Move.X*Move.X + Move.Y*Move.Y + Move.Z*Move.Z;
+	if (MoveDist2 < 1e-12f) return false;
+	const float MoveDist = sqrtf(MoveDist2);
+	const FVector Dir(Move.X/MoveDist, Move.Y/MoveDist, Move.Z/MoveDist);
 
-    struct FChannelSweepFilter : PxQueryFilterCallback
-    {
-        const AActor* IgnoreActor = nullptr;
-        PxU32 TraceBit = 0;
-        FChannelSweepFilter(const AActor* A, ECollisionChannel Ch)
-            : IgnoreActor(A), TraceBit(1u << static_cast<PxU32>(Ch)) {}
-        PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* Shape,
-            const PxRigidActor* Actor, PxHitFlags&) override
-        {
-            if (IgnoreActor && Actor && Actor->userData == IgnoreActor) return PxQueryHitType::eNONE;
-            if (Shape && (Shape->getQueryFilterData().word1 & TraceBit) == 0) return PxQueryHitType::eNONE;
-            return PxQueryHitType::eBLOCK;
-        }
-        PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
-        { return PxQueryHitType::eBLOCK; }
-    };
+	struct FChannelSweepFilter : PxQueryFilterCallback
+	{
+		const AActor* IgnoreActor = nullptr;
+		PxU32 TraceBit = 0;
+		FChannelSweepFilter(const AActor* A, ECollisionChannel Ch)
+			: IgnoreActor(A), TraceBit(1u << static_cast<PxU32>(Ch)) {}
+		PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* Shape,
+			const PxRigidActor* Actor, PxHitFlags&) override
+		{
+			if (IgnoreActor && Actor && Actor->userData == IgnoreActor) return PxQueryHitType::eNONE;
+			if (Shape && (Shape->getQueryFilterData().word1 & TraceBit) == 0) return PxQueryHitType::eNONE;
+			return PxQueryHitType::eBLOCK;
+		}
+		PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
+		{ return PxQueryHitType::eBLOCK; }
+	};
 
-    PxSphereGeometry SphereGeom(Radius);
-    PxTransform StartPose(ToPxVec3(Start));
-    PxSweepBuffer SweepHit;
-    PxQueryFilterData FilterData;
-    FilterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
-    FChannelSweepFilter FilterCallback(IgnoreActor, TraceChannel);
+	PxSphereGeometry SphereGeom(Radius);
+	PxTransform StartPose(ToPxVec3(Start));
+	PxSweepBuffer SweepHit;
+	PxQueryFilterData FilterData;
+	FilterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+	FChannelSweepFilter FilterCallback(IgnoreActor, TraceChannel);
 
-    SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
-    bool bStatus = Scene->sweep(SphereGeom, StartPose, ToPxVec3(Dir), MoveDist,
-        SweepHit, PxHitFlag::eDEFAULT | PxHitFlag::ePOSITION | PxHitFlag::eNORMAL,
-        FilterData, &FilterCallback);
-    if (!bStatus || !SweepHit.hasBlock) return false;
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+	bool bStatus = Scene->sweep(SphereGeom, StartPose, ToPxVec3(Dir), MoveDist,
+		SweepHit, PxHitFlag::eDEFAULT | PxHitFlag::ePOSITION | PxHitFlag::eNORMAL,
+		FilterData, &FilterCallback);
+	if (!bStatus || !SweepHit.hasBlock) return false;
 
-    const PxSweepHit& Block = SweepHit.block;
-    const FVector ImpactNormal = ToFVector(Block.normal);
-    OutHit.bHit             = true;
-    OutHit.Distance         = Block.distance;
-    OutHit.WorldHitLocation = ToFVector(Block.position);
-    OutHit.ShapeLocation    = OutHit.WorldHitLocation + ImpactNormal * Radius;
-    OutHit.ImpactNormal     = ImpactNormal;
-    OutHit.WorldNormal      = ImpactNormal;
+	const PxSweepHit& Block = SweepHit.block;
+	const FVector ImpactNormal = ToFVector(Block.normal);
+	OutHit.bHit             = true;
+	OutHit.Distance         = Block.distance;
+	OutHit.WorldHitLocation = ToFVector(Block.position);
+	OutHit.ShapeLocation    = OutHit.WorldHitLocation + ImpactNormal * Radius;
+	OutHit.ImpactNormal     = ImpactNormal;
+	OutHit.WorldNormal      = ImpactNormal;
 
-    if (Block.shape && Block.shape->userData)
-    {
-        OutHit.HitComponent = static_cast<UPrimitiveComponent*>(Block.shape->userData);
-        OutHit.HitActor     = OutHit.HitComponent->GetOwner();
-    }
-    else if (Block.actor && Block.actor->userData)
-    {
-        OutHit.HitActor = static_cast<AActor*>(Block.actor->userData);
-    }
-    return true;
+	if (Block.shape && Block.shape->userData)
+	{
+		OutHit.HitComponent = static_cast<UPrimitiveComponent*>(Block.shape->userData);
+		OutHit.HitActor     = OutHit.HitComponent->GetOwner();
+	}
+	else if (Block.actor && Block.actor->userData)
+	{
+		OutHit.HitActor = static_cast<AActor*>(Block.actor->userData);
+	}
+	return true;
 }
 
 PxQueryHitType::Enum WheelRaycastPreFilter
@@ -1838,9 +1850,9 @@ FVehicleRuntimeHandle FPhysXPhysicsScene::CreateVehicle(const FVehicleRuntimeCre
 	Instance->SetWheelVisualComponents(CreateDesc.WheelVisualComponents);
 	Instance->VehicleQueryResult = { Instance->WheelQueryResults, NumWheels };
 	
-    // -------------------------------------------------------
-    // 1. WheelsSimData. setupWheelsSimulationData
-    // -------------------------------------------------------
+	// -------------------------------------------------------
+	// 1. WheelsSimData. setupWheelsSimulationData
+	// -------------------------------------------------------
 	PxVehicleWheelsSimData* WheelsSimData = PxVehicleWheelsSimData::allocate(NumWheels);
 	auto FailCreateVehicle = [&]() -> FVehicleRuntimeHandle
 	{

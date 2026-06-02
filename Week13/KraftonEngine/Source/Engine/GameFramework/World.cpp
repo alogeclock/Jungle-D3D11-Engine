@@ -520,6 +520,7 @@ bool UWorld::TickVariablePhysics(float DeltaTime, ELevelTick TickType)
 	FPhysicsStepInfo StepInfo;
 	StepInfo.DeltaTime = DeltaTime;
 	PhysicsScene->Simulate(StepInfo);
+	PhysicsScene->SimulateCloth(StepInfo); // 메인 강체 시뮬레이션 호출 직후 Cloth 시뮬레이션 동기화되어 진행.
 
 	TickManager.TickGroup(TG_DuringPhysics, DeltaTime, TickType);
 
@@ -552,6 +553,7 @@ bool UWorld::TickFixedPhysics(float DeltaTime, ELevelTick TickType)
 		StepInfo.DeltaTime = FixedDeltaTime;
 		StepInfo.SubstepCount = SubstepIndex + 1;
 		PhysicsScene->Simulate(StepInfo);
+		PhysicsScene->SimulateCloth(StepInfo);
 
 		if (!bDispatchedDuringPhysics)
 		{

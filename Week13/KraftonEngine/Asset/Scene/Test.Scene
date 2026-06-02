@@ -1,0 +1,5400 @@
+{
+  "Actors" : [{
+      "ClassName" : "ADirectionalLightActor",
+      "Name" : "ADirectionalLightActor_1",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Material" : {
+                "Path" : "Asset/Materials/Editor/DirectionalLight.mat"
+              },
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : true,
+              "bHiddenInComponentTree" : true,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "UDirectionalLightComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 1.000000, 1.000000, 1.000000],
+          "Intensity" : 1.000000,
+          "RelativeTransform" : {
+            "Location" : [8.050000, -8.050001, 11.384422],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Rotation" : [45.000000, -45.000000, 0.000000],
+          "Shadow Bias" : -0.000100,
+          "Shadow Normal Bias" : -0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AAmbientLightActor",
+      "Name" : "AAmbientLightActor_1",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Material" : {
+                "Path" : "Asset/Materials/Editor/AmbientLight.mat"
+              },
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : true,
+              "bHiddenInComponentTree" : true,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "UAmbientLightComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 1.000000, 1.000000, 1.000000],
+          "Intensity" : 0.100000,
+          "RelativeTransform" : {
+            "Location" : [-4.000000, 0.000000, 9.300000],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shadow Bias" : -0.000100,
+          "Shadow Normal Bias" : -0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "APointLightActor",
+      "Name" : "APointLightActor_1",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Material" : {
+                "Path" : "Asset/Materials/Editor/PointLight.mat"
+              },
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : true,
+              "bHiddenInComponentTree" : true,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "UPointLightComponent",
+        "Properties" : {
+          "AttenuationRadius" : 10.000000,
+          "Auto Activate" : true,
+          "Cast Shadows" : true,
+          "Color" : [0.578059, 0.170735, 0.170735, 1.000000],
+          "Intensity" : 2.400000,
+          "LightFalloffExponent" : 0.840000,
+          "RelativeTransform" : {
+            "Location" : [-2.307842, 0.000000, 5.978370],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shadow Bias" : -0.000100,
+          "Shadow Normal Bias" : -0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "Name" : "ASpotLightActor_0",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Material" : {
+                "Path" : "Asset/Materials/Editor/SpotLight.mat"
+              },
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : true,
+              "bHiddenInComponentTree" : true,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "Properties" : {
+          "AttenuationRadius" : 20.000000,
+          "Auto Activate" : true,
+          "Cast Shadows" : true,
+          "Color" : [0.000000, 0.734177, 1.000000, 1.000000],
+          "InnerConeAngle" : 8.500000,
+          "Intensity" : 3.000000,
+          "LightFalloffExponent" : 0.050000,
+          "OuterConeAngle" : 36.500000,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 0.000000, 8.890461],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Rotation" : [61.853668, -89.514763, -43.256897],
+          "Shadow Bias" : -0.000100,
+          "Shadow Normal Bias" : -0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASpotLightActor",
+      "Name" : "ASpotLightActor_1",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Material" : {
+                "Path" : "Asset/Materials/Editor/SpotLight.mat"
+              },
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : true,
+              "bHiddenInComponentTree" : true,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "USpotLightComponent",
+        "Properties" : {
+          "AttenuationRadius" : 10.890000,
+          "Auto Activate" : true,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 0.856593, 0.244726, 1.000000],
+          "InnerConeAngle" : 20.000000,
+          "Intensity" : 3.000000,
+          "LightFalloffExponent" : 0.620000,
+          "OuterConeAngle" : 40.000000,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 0.000000, 8.752577],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Rotation" : [45.774841, 66.692856, -3.998230],
+          "Shadow Bias" : -0.000100,
+          "Shadow Normal Bias" : -0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AAmbientLightActor",
+      "Name" : "AAmbientLightActor_2",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Material" : {
+                "Path" : "Asset/Materials/Editor/AmbientLight.mat"
+              },
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : true,
+              "bHiddenInComponentTree" : true,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "UAmbientLightComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cast Shadows" : true,
+          "Color" : [1.000000, 1.000000, 1.000000, 1.000000],
+          "Intensity" : 0.150000,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 0.000000, 11.941832],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shadow Bias" : -0.000100,
+          "Shadow Normal Bias" : -0.002000,
+          "Shadow Resolution Scale" : 1.000000,
+          "Shadow Sharpen" : 0.670000,
+          "Shadow Slope Bias" : 0.000100,
+          "Visible" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AHeightFogActor",
+      "Name" : "AHeightFogActor_0",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBillboardComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Material" : {
+                "Path" : "Asset/Materials/Editor/HeightFog.mat"
+              },
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : true,
+              "bHiddenInComponentTree" : true,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            },
+            "bHiddenInComponentTree" : true
+          }],
+        "ClassName" : "UHeightFogComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Cutoff Distance" : 0.000000,
+          "Fog Density" : 0.003000,
+          "Height Falloff" : 0.100000,
+          "Inscattering Color" : [0.450000, 0.550000, 0.650000, 1.000000],
+          "Max Opacity" : 1.000000,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 0.000000, 11.200000],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Start Distance" : 18.000000,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ACharacter",
+      "Name" : "ACharacter_1",
+      "NonSceneComponents" : [{
+          "ClassName" : "UCharacterMovementComponent",
+          "Properties" : {
+            "Air Control" : 0.200000,
+            "Auto Activate" : true,
+            "Auto Register Updated" : false,
+            "Braking Deceleration Walking" : 20.000000,
+            "Floor Probe Down" : 8.000000,
+            "Floor Probe Up" : 0.250000,
+            "Gravity Z" : -9.800000,
+            "Ground Friction" : 8.000000,
+            "Jump Z Velocity" : 6.000000,
+            "Max Acceleration" : 20.000000,
+            "Max Controller Pitch" : 45.000000,
+            "Max Step Down Height" : 1.250000,
+            "Max Step Height" : 0.750000,
+            "Max Walk Speed" : 10.000000,
+            "Min Controller Pitch" : -80.000000,
+            "Mouse Sensitivity" : 0.100000,
+            "Movement Mode" : 1,
+            "Orient Rotation To Movement" : true,
+            "Rotation Rate Yaw" : 1440.000000,
+            "Updated Component" : "Root",
+            "Use Controller Desired Rotation" : false,
+            "bEditorOnly" : false,
+            "bHiddenInComponentTree" : false,
+            "bIsActive" : true,
+            "bTickEnable" : true
+          }
+        }, {
+          "ClassName" : "ULuaScriptComponent",
+          "Properties" : {
+            "Auto Activate" : true,
+            "ScriptFile" : "PlayerController.lua",
+            "bEditorOnly" : false,
+            "bHiddenInComponentTree" : false,
+            "bIsActive" : true,
+            "bTickEnable" : true
+          }
+        }],
+      "Properties" : {
+        "Tags" : [],
+        "bAutoPossessPlayer" : true,
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "USkeletalMeshComponent",
+            "Properties" : {
+              "Anim Instance" : "Asset/Mesh/Manny/Anims/CharacterAnimInstance.uasset",
+              "Anim Script Path" : "",
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 0,
+              "Enable Gravity" : true,
+              "Enable Two Bone IK" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_01_New.mat"
+                }, {
+                  "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
+                }],
+              "Object Type" : 0,
+              "Physics Asset" : "",
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, -3.000000],
+                "Scale" : [3.000000, 3.000000, 3.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, -90.000000, 0.000000],
+              "Simulate Physics" : false,
+              "Skeletal Mesh" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset",
+              "Two Bone IK Chains" : [{
+                  "Enabled" : true,
+                  "End Bone Index" : 76,
+                  "Mid Bone Index" : 74,
+                  "Pole Position" : [1.000000, 0.000000, 0.000000],
+                  "Root Bone Index" : 73,
+                  "Target Position" : [0.000000, 0.000000, 0.000000]
+                }, {
+                  "Enabled" : true,
+                  "End Bone Index" : 68,
+                  "Mid Bone Index" : 66,
+                  "Pole Position" : [1.000000, 0.000000, 0.000000],
+                  "Root Bone Index" : 65,
+                  "Target Position" : [0.000000, 0.000000, 0.000000]
+                }],
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }, {
+            "Children" : [{
+                "Children" : [],
+                "ClassName" : "UCameraComponent",
+                "Properties" : {
+                  "Auto Activate" : true,
+                  "Camera State" : {
+                    "FOV" : 1.047198,
+                    "Far Z" : 1000.000000,
+                    "Is Orthogonal" : false,
+                    "Near Z" : 0.100000,
+                    "Ortho Width" : 10.000000
+                  },
+                  "Depth Of Field" : {
+                    "DOF" : {
+                      "Aperture F-Stop" : 4.000000,
+                      "Enable DOF" : false,
+                      "Focal Length" : 10.000000,
+                      "Focus Range" : 5.000000,
+                      "Max Blur Radius" : 8.000000,
+                      "Near CoC Scale" : 0.500000
+                    },
+                    "Focus" : {
+                      "Manual Focus Distance" : 10.000000
+                    }
+                  },
+                  "RelativeTransform" : {
+                    "Location" : [0.000000, 0.000000, 0.000000],
+                    "Scale" : [1.000000, 1.000000, 1.000000]
+                  },
+                  "Rotation" : [45.000000, 0.000000, 0.000000],
+                  "bEditorOnly" : false,
+                  "bHiddenInComponentTree" : false,
+                  "bIsActive" : true,
+                  "bTickEnable" : true
+                }
+              }],
+            "ClassName" : "USpringArmComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Camera Lag Max Distance" : 0.000000,
+              "Camera Lag Speed" : 10.000000,
+              "Camera Rotation Lag Speed" : 10.000000,
+              "Do Collision Test" : false,
+              "Enable Camera Lag" : false,
+              "Enable Rotation Lag" : false,
+              "Inherit Parent Rotation" : false,
+              "Probe Size" : 0.120000,
+              "ProbeChannel" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Socket Offset" : [0.000000, 0.000000, 0.000000],
+              "Target Arm Length" : 10.000000,
+              "Target Offset" : [0.000000, 0.000000, 10.000000],
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UCapsuleComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Capsule Half Height" : 3.000000,
+          "Capsule Radius" : 0.600000,
+          "Cast Shadow" : false,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Draw Only If Selected" : false,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [0.726700, 0.439234, 8.216960],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
+          "Simulate Physics" : false,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "Ground",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UBoxComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Box Extent" : [1.000000, 1.000000, 1.000000],
+              "Cast Shadow" : false,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 3,
+              "Draw Only If Selected" : false,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
+              "Simulate Physics" : false,
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/CubeGrid/SM_CubeGrid_M_CubeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 5.000000, 0.000000],
+            "Scale" : [100.000000, 100.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/CubeGrid/SM_CubeGrid_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_4",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/BasicShapeMaterial.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 0.000000, -4.717308],
+            "Scale" : [15.000000, 15.000000, 10.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Cylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_11",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, -10.000000, 0.000000],
+            "Scale" : [10.000000, 20.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Cube_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_48",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [5.000000, -10.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -180.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_49",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [10.000000, 5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_71",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [5.000000, 5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_12",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-10.000000, -5.000000, 0.000000],
+            "Scale" : [20.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Cube_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_72",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [5.100000, -5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_73",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, -5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, -180.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_74",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, 5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_QuarterCylinder_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_50",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [-5.000000, 10.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_51",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 1,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Materials/Auto/M_PrototypeGrid.mat"
+            }],
+          "Object Type" : 5,
+          "RelativeTransform" : {
+            "Location" : [-10.000000, -5.000000, 0.000000],
+            "Scale" : [10.000000, 10.000000, 5.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 90.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/DemoScene/SM_Ramp_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AActor",
+      "Name" : "AActor_1",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UParticleSystemComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 0,
+          "Debug Event Trace" : false,
+          "EmitterDelay" : 0.000000,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [25.607994, 20.000000, 10.000000],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Template" : "Asset/ParticleSystems/Maple.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AActor",
+      "Name" : "AActor_2",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UParticleSystemComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 0,
+          "Debug Event Trace" : false,
+          "EmitterDelay" : 0.000000,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-20.000000, 20.000000, 10.000000],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Template" : "Asset/ParticleSystems/Missile.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AActor",
+      "Name" : "AActor_3",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UParticleSystemComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 0,
+          "Debug Event Trace" : false,
+          "EmitterDelay" : 0.000000,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [-15.132307, 20.072920, 16.822285],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Template" : "Asset/ParticleSystems/Missile.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ABoxActor",
+      "Name" : "ABoxActor_0",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UStaticMeshComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 3,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                }],
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : true,
+              "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UBoxComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Box Extent" : [1.000000, 1.000000, 1.000000],
+          "Cast Shadow" : false,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Draw Only If Selected" : false,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 1,
+          "RelativeTransform" : {
+            "Location" : [15.542212, 17.631454, 3.810273],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
+          "Simulate Physics" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ABoxActor",
+      "Name" : "ABoxActor_1",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UStaticMeshComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 3,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+                }],
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : true,
+              "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UBoxComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Box Extent" : [1.000000, 1.000000, 1.000000],
+          "Cast Shadow" : false,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Draw Only If Selected" : false,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 1,
+          "RelativeTransform" : {
+            "Location" : [14.096005, 18.879143, 3.910273],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Shape Color" : [0.000000, 1.000000, 0.000000, 1.000000],
+          "Simulate Physics" : true,
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_20",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [23.914932, -0.854955, 3.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_21",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [32.115528, -0.754955, 3.794810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_22",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.114933, -0.654955, 3.894810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_23",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.778936, -0.554955, 3.994810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_24",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.314934, -0.454955, 4.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_25",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.584290, -0.754955, 3.794810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_26",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [29.085678, -0.554955, 3.994810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_27",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.414932, -0.354955, 4.194810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_28",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [30.120789, -0.154955, 4.394810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_29",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.814934, 0.045045, 4.594810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_30",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.114933, -0.654955, 3.894810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_31",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.414934, -0.354955, 4.194810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_32",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.714931, -0.054955, 4.494811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_33",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.014933, 0.245045, 4.794810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_34",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [29.369057, 0.545045, 5.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_35",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [29.359850, -0.554955, 3.994810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_36",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [28.429447, -0.154955, 4.394810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_37",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.014931, 0.245045, 4.794811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_38",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [30.425589, 0.645045, 5.194810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_39",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [31.647102, 1.045045, 5.594810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_40",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.314934, -0.454955, 4.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_41",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.814936, 0.045045, 4.594810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_42",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.314930, 0.545045, 5.094811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_43",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.814932, 1.045045, 5.594810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_44",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.314934, 1.545045, 6.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_45",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.414934, -0.354955, 4.194810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_46",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [30.972506, 0.245045, 4.794810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_47",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [28.930584, 0.845045, 5.394811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_48",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.214931, 1.445045, 5.994811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_49",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.814934, 2.045045, 6.594810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AActor",
+      "Name" : "AActor_12",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UParticleSystemComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 0,
+          "Debug Event Trace" : false,
+          "EmitterDelay" : 0.000000,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [20.100000, 20.100000, 10.100000],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Template" : "Asset/ParticleSystems/Maple.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_110",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.114933, -0.654955, 3.894810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_111",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.314932, -0.454955, 4.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_112",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.514933, -0.254955, 4.294810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_113",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [27.287807, -0.054955, 4.494810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_114",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [24.914934, 0.145045, 4.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_115",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [32.667767, -0.054955, 4.494810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_116",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.014933, 0.245045, 4.794810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_117",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.314932, 0.545045, 5.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_118",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [30.128531, 0.845045, 5.394810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_119",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [28.863659, 1.145045, 5.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_120",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.314934, 0.545045, 5.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_121",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [25.714933, 0.945045, 5.494811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_122",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.114931, 1.345045, 5.894811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_123",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.514933, 1.745045, 6.294810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_124",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.914934, 2.145045, 6.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_125",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [27.804449, 1.145045, 5.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_126",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.414934, 1.645045, 6.194810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_127",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.914930, 2.145045, 6.694811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_128",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [27.414932, 2.645045, 7.194810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_129",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [31.310068, 3.145045, 7.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_130",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [26.514935, 1.745045, 6.294810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_131",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [27.114935, 2.345045, 6.894810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_132",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [30.233644, 2.945045, 7.494811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_133",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [28.314932, 3.545045, 8.094810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_134",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [28.914934, 4.145045, 8.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_135",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [27.114935, 2.345045, 6.894810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_136",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [27.814936, 3.045044, 7.594810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_137",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [28.514929, 3.745045, 8.294811],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_138",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [29.214931, 4.445045, 8.994810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "ASkeletalMeshActor",
+      "Name" : "ASkeletalMeshActor_139",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "USkeletalMeshComponent",
+        "Properties" : {
+          "Anim Instance" : "None",
+          "Anim Script Path" : "",
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Enable Two Bone IK" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_eye.003.mat"
+            }, {
+              "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
+            }],
+          "Object Type" : 0,
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "RelativeTransform" : {
+            "Location" : [29.914934, 5.145045, 9.694810],
+            "Scale" : [3.000000, 3.000000, 3.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : true,
+          "Skeletal Mesh" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh.uasset",
+          "Two Bone IK Chains" : [],
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }],
+  "ClassName" : "UWorld",
+  "ContextHandle" : "NewScene",
+  "ContextName" : "New Scene",
+  "Name" : "Test",
+  "PerspectiveCamera" : {
+    "FOV" : 1.047198,
+    "FarClip" : 1000.000000,
+    "Location" : [27.689667, -12.827035, 9.317695],
+    "NearClip" : 0.100000,
+    "Rotation" : [0.000000, 8.622477, -644.957520]
+  },
+  "Version" : 2,
+  "WorldSettings" : {
+    "GameMode" : ""
+  },
+  "WorldType" : "Editor"
+}

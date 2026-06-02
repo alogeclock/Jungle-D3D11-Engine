@@ -417,6 +417,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Component\CameraComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\CapsuleComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\CineCameraComponent.cpp" />
+    <ClCompile Include="Source\Engine\Component\ClothComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\CylindricalBillboardComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\DecalComponent.cpp" />
     <ClCompile Include="Source\Engine\Component\GizmoComponent.cpp" />
@@ -536,10 +537,13 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Physics\Assets\PhysicsAssetManager.cpp" />
     <ClCompile Include="Source\Engine\Physics\Assets\PhysicsBodySetup.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Backends\NvClothSDK.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Backends\NvClothScene.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp" />
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXSceneThreading.cpp" />
     <ClCompile Include="Source\Engine\Physics\Common\PhysicalMaterialManager.cpp" />
     <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp" />
+    <ClCompile Include="Source\Engine\Physics\Systems\Cloth\ClothInstance.cpp" />
     <ClCompile Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.cpp" />
     <ClCompile Include="Source\Engine\Physics\Systems\Vehicle\PhysXVehicleInstance.cpp" />
     <ClCompile Include="Source\Engine\Platform\CrashDump.cpp" />
@@ -565,6 +569,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClCompile Include="Source\Engine\Render\Pipeline\Renderer.cpp" />
     <ClCompile Include="Source\Engine\Render\Proxy\BillboardSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\Render\Proxy\BoneDebugSceneProxy.cpp" />
+    <ClCompile Include="Source\Engine\Render\Proxy\ClothSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\Render\Proxy\CylindricalBillboardSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\Render\Proxy\DecalSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\Render\Proxy\GizmoSceneProxy.cpp" />
@@ -746,6 +751,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Component\CameraComponent.h" />
     <ClInclude Include="Source\Engine\Component\CapsuleComponent.h" />
     <ClInclude Include="Source\Engine\Component\CineCameraComponent.h" />
+    <ClInclude Include="Source\Engine\Component\ClothComponent.h" />
     <ClInclude Include="Source\Engine\Component\CylindricalBillboardComponent.h" />
     <ClInclude Include="Source\Engine\Component\DecalComponent.h" />
     <ClInclude Include="Source\Engine\Component\GizmoComponent.h" />
@@ -909,8 +915,11 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsConstraintSetup.h" />
     <ClInclude Include="Source\Engine\Physics\Assets\PhysicsShapeSetup.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h" />
+    <ClInclude Include="Source\Engine\Physics\Backends\NvClothSDK.h" />
+    <ClInclude Include="Source\Engine\Physics\Backends\NvClothScene.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h" />
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXSceneThreading.h" />
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXSharedCallbacks.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsCollisionTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Common\PhysicsConversionTypes.h" />
@@ -923,7 +932,9 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsRuntimeTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsScene.h" />
     <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsSceneInterface.h" />
+    <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothCollisionTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothDebugTypes.h" />
+    <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothInstance.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothSimulationTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothTypes.h" />
     <ClInclude Include="Source\Engine\Physics\Systems\Ragdoll\RagdollBuildDesc.h" />
@@ -963,6 +974,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\Engine\Render\Pipeline\Renderer.h" />
     <ClInclude Include="Source\Engine\Render\Proxy\BillboardSceneProxy.h" />
     <ClInclude Include="Source\Engine\Render\Proxy\BoneDebugSceneProxy.h" />
+    <ClInclude Include="Source\Engine\Render\Proxy\ClothSceneProxy.h" />
     <ClInclude Include="Source\Engine\Render\Proxy\CylindricalBillboardSceneProxy.h" />
     <ClInclude Include="Source\Engine\Render\Proxy\DecalSceneProxy.h" />
     <ClInclude Include="Source\Engine\Render\Proxy\DirtyFlag.h" />

@@ -14,11 +14,13 @@ bool FNativePhysicsScene::InitializeScene(UWorld* InWorld, EPhysicsSceneType Sce
 {
     World = InWorld;
     SetSceneType(SceneType);
+    InitializeClothScene();
     return true;
 }
 
 void FNativePhysicsScene::ReleaseScene()
 {
+    ReleaseClothScene();
     for (auto& Pair : BodyInstances)
     {
         delete Pair.second;

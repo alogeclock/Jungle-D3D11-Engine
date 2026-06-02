@@ -809,6 +809,9 @@
     <ClCompile Include="Source\Engine\Component\CineCameraComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Component\ClothComponent.cpp">
+      <Filter>Source\Engine\Component</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Component\CylindricalBillboardComponent.cpp">
       <Filter>Source\Engine\Component</Filter>
     </ClCompile>
@@ -1166,6 +1169,12 @@
     <ClCompile Include="Source\Engine\Physics\Backends\NativePhysicsScene.cpp">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Backends\NvClothSDK.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Backends\NvClothScene.cpp">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.cpp">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClCompile>
@@ -1177,6 +1186,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Common\PhysicsMaterialTypes.cpp">
       <Filter>Source\Engine\Physics\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\Systems\Cloth\ClothInstance.cpp">
+      <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Physics\Systems\Ragdoll\RagdollInstance.cpp">
       <Filter>Source\Engine\Physics\Systems\Ragdoll</Filter>
@@ -1251,6 +1263,9 @@
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\Proxy\BoneDebugSceneProxy.cpp">
+      <Filter>Source\Engine\Render\Proxy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Render\Proxy\ClothSceneProxy.cpp">
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Render\Proxy\CylindricalBillboardSceneProxy.cpp">
@@ -1790,6 +1805,9 @@
     <ClInclude Include="Source\Engine\Component\CineCameraComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Component\ClothComponent.h">
+      <Filter>Source\Engine\Component</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Component\CylindricalBillboardComponent.h">
       <Filter>Source\Engine\Component</Filter>
     </ClInclude>
@@ -2279,10 +2297,19 @@
     <ClInclude Include="Source\Engine\Physics\Backends\NativePhysicsScene.h">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Backends\NvClothSDK.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Backends\NvClothScene.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXPhysicsScene.h">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Backends\PhysXSceneThreading.h">
+      <Filter>Source\Engine\Physics\Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Backends\PhysXSharedCallbacks.h">
       <Filter>Source\Engine\Physics\Backends</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Common\PhysicalMaterialManager.h">
@@ -2321,7 +2348,13 @@
     <ClInclude Include="Source\Engine\Physics\Runtime\PhysicsSceneInterface.h">
       <Filter>Source\Engine\Physics\Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothCollisionTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothDebugTypes.h">
+      <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothInstance.h">
       <Filter>Source\Engine\Physics\Systems\Cloth</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\Systems\Cloth\ClothSimulationTypes.h">
@@ -2439,6 +2472,9 @@
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\Proxy\BoneDebugSceneProxy.h">
+      <Filter>Source\Engine\Render\Proxy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Render\Proxy\ClothSceneProxy.h">
       <Filter>Source\Engine\Render\Proxy</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Render\Proxy\CylindricalBillboardSceneProxy.h">

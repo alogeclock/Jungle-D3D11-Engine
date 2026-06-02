@@ -1,4 +1,4 @@
-﻿#include "Editor/UI/EditorPropertyWidget.h"
+#include "Editor/UI/EditorPropertyWidget.h"
 
 #include "Editor/EditorEngine.h"
 #include "Editor/Import/EditorFbxImportService.h"
@@ -15,6 +15,7 @@
 #include "Component/GizmoComponent.h"
 #include "Component/PrimitiveComponent.h"
 #include "Component/StaticMeshComponent.h"
+#include "Component/ClothComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "Component/SceneComponent.h"
 #include "Component/TextRenderComponent.h"
@@ -454,6 +455,14 @@ namespace
 
 		const size_t End = Name.find_last_not_of(" \t\r\n");
 		return Name.substr(Start, End - Start + 1);
+	}
+
+	bool ShouldFlattenComponentProperty(const UActorComponent* Component, const FProperty& Prop)
+	{
+		return Component
+			&& Component->IsA<UClothComponent>()
+			&& Prop.GetType() == EPropertyType::Struct
+			&& Prop.Name == "Build Desc";
 	}
 }
 
@@ -1291,6 +1300,53 @@ void FEditorPropertyWidget::RenderComponentProperties(AActor* Actor, const TArra
 				if (Props[i]->Category != Cat)
 					continue;
 
+				if (ShouldFlattenComponentProperty(SelectedComponent, *Props[i]))
+				{
+					const FStructProperty& StructProp = static_cast<const FStructProperty&>(*Props[i]);
+					const TArray<FProperty*>& ChildProps = StructProp.GetStructProperties();
+					void* StructContainer = Props[i]->ContainerPtrToValuePtr(SelectedComponent);
+
+					for (int32 ChildIndex = 0; ChildIndex < static_cast<int32>(ChildProps.size()); ++ChildIndex)
+					{
+						const FProperty* ChildProp = ChildProps[ChildIndex];
+						if (!ChildProp)
+						{
+							continue;
+						}
+
+						ImGui::TableNextRow();
+						ImGui::PushID(i);
+						ImGui::PushID(ChildIndex);
+
+						ImGui::TableSetColumnIndex(0);
+
+						ImGui::SetWindowFontScale(0.92f);
+						ImGui::AlignTextToFramePadding();
+						ImGui::TextUnformatted(PropLabel(*ChildProp));
+						ImGui::SetWindowFontScale(1.0f);
+
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetNextItemWidth(-1);
+
+						TArray<const FProperty*> ChildSchema;
+						ChildSchema.push_back(ChildProp);
+						int32 ChildWidgetIndex = 0;
+						const bool bChanged = RenderPropertyWidget(ChildSchema, ChildWidgetIndex, StructContainer, false);
+
+						if (bChanged)
+						{
+							bAnyChanged = true;
+							SelectedComponent->PostEditProperty(Props[i]->Name.c_str());
+							PropagatePropertyChange(Props[i]->Name, SelectedActors);
+						}
+
+						ImGui::PopID();
+						ImGui::PopID();
+					}
+
+					continue;
+				}
+
 				ImGui::TableNextRow();
 				ImGui::PushID(i);
 
@@ -2093,13 +2149,17 @@ bool FEditorPropertyWidget::RenderPropertyWidget(
 					SlotName = SMC->GetStaticMesh()->GetStaticMaterials()[ElemIdx].MaterialSlotName;
 				}
 			}
-			else if(SelectedComponent->IsA<USkeletalMeshComponent>())
+			else if (SelectedComponent->IsA<USkeletalMeshComponent>())
 			{
 				USkeletalMeshComponent* SMC = static_cast<USkeletalMeshComponent*>(SelectedComponent);
 				if (SMC->GetSkeletalMesh() && ElemIdx < (int32)SMC->GetSkeletalMesh()->GetSkeletalMaterials().size())
 				{
 					SlotName = SMC->GetSkeletalMesh()->GetSkeletalMaterials()[ElemIdx].MaterialSlotName;
 				}
+			}
+			else if (SelectedComponent->IsA<UClothComponent>())
+			{
+				SlotName = "Cloth Material";
 			}
 		}
 

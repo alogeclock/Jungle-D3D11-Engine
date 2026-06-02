@@ -19,6 +19,7 @@
 #include "Lua/LuaScriptManager.h"
 #include "UI/UIManager.h"
 #include "Audio/AudioManager.h"
+#include "Physics/Backends/NvClothSDK.h"
 
 
 UEngine* GEngine = nullptr;
@@ -99,6 +100,7 @@ void UEngine::Shutdown()
 	RenderPipeline.reset();
 	FResourceManager::Get().ReleaseGPUResources();
 	FMeshBufferManager::Get().Release();
+	FNvClothSDK::Get().Shutdown();
 	Renderer.Release();
 }
 

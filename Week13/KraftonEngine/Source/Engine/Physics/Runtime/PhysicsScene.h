@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Physics/Runtime/PhysicsSceneInterface.h"
+#include "Physics/Backends/NvClothScene.h"
 
 #include <algorithm>
 
@@ -27,6 +28,14 @@ public:
 
     void SetEventCallback(IPhysicsEventCallback* InCallback) override { SceneEventCallback = InCallback; }
     const FPhysicsRuntimeStats& GetStats() const override { return RuntimeStats; }
+
+    FNvClothScene* GetClothScene() override { return &ClothScene; }
+    const FNvClothScene* GetClothScene() const override { return &ClothScene; }
+
+    void SimulateCloth(const FPhysicsStepInfo& StepInfo) override
+    {
+        ClothScene.Simulate(StepInfo.DeltaTime);
+    }
 
 protected:
     IPhysicsEventCallback* GetEventCallback() const { return SceneEventCallback; }
@@ -64,6 +73,16 @@ protected:
         RuntimeConstraintInstances.clear();
     }
 
+    bool InitializeClothScene()
+    {
+        return ClothScene.Initialize();
+    }
+
+    void ReleaseClothScene()
+    {
+        ClothScene.Release();
+    }
+
 private:
     EPhysicsSceneType                  SceneType = EPhysicsSceneType::PST_Game;
     void*                              NativeSceneHandle = nullptr;
@@ -71,4 +90,5 @@ private:
     TArray<FPhysicsConstraintInstance*> RuntimeConstraintInstances;
     IPhysicsEventCallback*             SceneEventCallback = nullptr;
     FPhysicsRuntimeStats               RuntimeStats;
+    FNvClothScene                      ClothScene;
 };

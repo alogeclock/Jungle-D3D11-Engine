@@ -1864,7 +1864,7 @@
           "Object Type" : 0,
           "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
           "RelativeTransform" : {
-            "Location" : [22.715458, 17.571968, 13.841932],
+            "Location" : [22.715458, 17.571968, 8.872340],
             "Scale" : [10.000000, 10.000000, 10.000000]
           },
           "Response Container" : {
@@ -1888,6 +1888,134 @@
           "bTickEnable" : true
         }
       }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_96",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UClothComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Build Desc" : {
+                "Constraint Settings" : {
+                  "Bending Stiffness" : 0.350000,
+                  "Shear Stiffness" : 0.800000,
+                  "Structural Stiffness" : 1.000000,
+                  "Tether Stiffness" : 1.000000,
+                  "Use Bending" : true,
+                  "Use Shear" : true,
+                  "Use Tether" : true
+                },
+                "Grid Desc" : {
+                  "Height" : 12,
+                  "Pin Mode" : 2,
+                  "Spacing" : 1.000000,
+                  "Width" : 16
+                },
+                "Simulation Settings" : {
+                  "Angular Drag" : [0.000000, 0.000000, 0.000000],
+                  "Collision Mass Scale" : 1.000000,
+                  "Damping" : [0.050000, 0.050000, 0.050000],
+                  "Enable CCD" : false,
+                  "Enable Self Collision" : false,
+                  "Friction" : 0.500000,
+                  "Gravity" : [0.000000, 0.000000, -980.000000],
+                  "Linear Drag" : [0.000000, 0.000000, 0.000000],
+                  "Render Normal Offset" : 0.000000,
+                  "Simulation Mode" : 2,
+                  "Solver Frequency" : 120.000000,
+                  "Stiffness Frequency" : 180.000000,
+                  "Substep Count" : 1,
+                  "Teleport Distance Threshold" : 100.000000,
+                  "Thickness" : 1.000000,
+                  "Wind Scale" : 0.000000
+                },
+                "Source Type" : 0
+              },
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 3,
+              "Enable Gravity" : true,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/CubeGrid/SM_CubeGrid_M_CubeGrid.mat"
+                }],
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [-7.378273, -4.973100, 1.129187],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : false,
+              "Static Mesh" : "None",
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 0,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [26.387127, -7.217491, 10.300072],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
     }],
   "ClassName" : "UWorld",
   "ContextHandle" : "NewScene",
@@ -1896,9 +2024,9 @@
   "PerspectiveCamera" : {
     "FOV" : 1.047198,
     "FarClip" : 1000.000000,
-    "Location" : [14.048716, -1.281657, 25.071278],
+    "Location" : [-7.291406, 2.977905, 17.372852],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 1.872485, -682.622375]
+    "Rotation" : [0.000000, 30.522442, -730.320984]
   },
   "Version" : 2,
   "WorldSettings" : {
