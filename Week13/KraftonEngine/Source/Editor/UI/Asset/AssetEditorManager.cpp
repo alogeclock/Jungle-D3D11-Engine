@@ -71,6 +71,24 @@ bool FAssetEditorManager::OpenEditorForObject(UObject* Object)
 	return false;
 }
 
+void FAssetEditorManager::CloseEditorsForObject(UObject* Object)
+{
+	if (!Object)
+	{
+		return;
+	}
+
+	for (const auto& Editor : OpenEditors)
+	{
+		if (Editor && Editor->IsEditingObject(Object))
+		{
+			Editor->Close();
+		}
+	}
+
+	RemoveClosedEditors();
+}
+
 void FAssetEditorManager::CollectPreviewViewportClients(TArray<IEditorPreviewViewportClient*>& OutClients) const
 {
 	for (const auto& Editor : OpenEditors)

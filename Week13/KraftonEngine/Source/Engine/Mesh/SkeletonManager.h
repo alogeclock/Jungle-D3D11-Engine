@@ -12,6 +12,7 @@ class FSkeletonManager : public TSingleton<FSkeletonManager>
 public:
 	USkeleton* Load(const FString& Path);
 	USkeleton* Find(const FString& Path) const;
+	bool Unload(const FString& Path);
 	void RegisterSkeleton(const FString& Path, USkeleton* Skeleton);
 	bool IsSkeletonPackage(const FString& Path) const;
 

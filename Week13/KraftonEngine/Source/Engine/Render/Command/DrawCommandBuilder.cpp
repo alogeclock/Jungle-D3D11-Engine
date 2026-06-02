@@ -107,14 +107,15 @@ void FDrawCommandBuilder::BeginCollect(const FFrameContext& Frame)
 // ============================================================
 // SelectEffectiveShader — ViewMode에 따른 UberLit 셰이더 변형 선택
 // ============================================================
-FShader* FDrawCommandBuilder::SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode, const FPrimitiveSceneProxy& Proxy)
+FShader* FDrawCommandBuilder::SelectEffectiveShader(FShader* ProxyShader, EViewMode ViewMode, ERenderPass Pass, const FPrimitiveSceneProxy& Proxy)
 {
 	if (ProxyShader != FShaderManager::Get().GetOrCreate(EShaderPath::UberLit))
 		return ProxyShader;
 
 	const FString VSEntryName = Proxy.GetVertexShaderEntryName();
 
-	if (bCollectMRT)
+	const bool bUseMRTShader = bCollectMRT && Pass == ERenderPass::Opaque;
+	if (bUseMRTShader)
 	{
 		switch (ViewMode)
 		{
@@ -203,7 +204,7 @@ void FDrawCommandBuilder::BuildCommandForProxy(FScene& Scene, const FPrimitiveSc
 		FShader* SectionShader = (Section.Material && Section.Material->GetShader())
 			? Section.Material->GetShader()
 			: Proxy.GetShader();
-		FShader* EffectiveShader = SelectEffectiveShader(SectionShader, CollectViewMode, Proxy);
+		FShader* EffectiveShader = SelectEffectiveShader(SectionShader, CollectViewMode, Pass, Proxy);
 
 		FDrawCommand& Cmd = DrawCommandList.AddCommand();
 		Cmd.Pass = Pass;
@@ -474,7 +475,7 @@ void FDrawCommandBuilder::BuildParticleCommands(FScene& Scene, const FParticleSc
 		FShader* SectionShader = (Mat && Mat->GetShader())
 			? Mat->GetShader()
 			: Proxy->GetShader();
-		FShader* EffectiveShader = SelectEffectiveShader(SectionShader, CollectViewMode, *Proxy);
+		FShader* EffectiveShader = SelectEffectiveShader(SectionShader, CollectViewMode, Pass, *Proxy);
 
 		FDrawCommand& Cmd = DrawCommandList.AddCommand();
 		Cmd.Pass = Pass;

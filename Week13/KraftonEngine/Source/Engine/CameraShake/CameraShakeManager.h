@@ -11,6 +11,7 @@ class FCameraShakeManager : public TSingleton<FCameraShakeManager>
 public:
 	UCameraShakeAsset* Load(const FString& Path);
 	UCameraShakeAsset* Find(const FString& Path) const;
+	bool Unload(const FString& Path);
 
 	bool Save(UCameraShakeAsset* Asset);
 

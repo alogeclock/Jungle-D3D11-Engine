@@ -146,6 +146,24 @@ UParticleSystem* FParticleSystemAssetManager::Find(const FString& Path) const
 	return It != LoadedAssets.end() ? It->second : nullptr;
 }
 
+bool FParticleSystemAssetManager::Unload(const FString& Path)
+{
+	const FString NormalizedPath = FPaths::MakeProjectRelative(Path);
+	auto It = LoadedAssets.find(NormalizedPath);
+	if (It == LoadedAssets.end())
+	{
+		return false;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	LoadedAssets.erase(It);
+	return true;
+}
+
 void FParticleSystemAssetManager::RegisterAsset(const FString& Path, UParticleSystem* Asset)
 {
 	if (!Asset)

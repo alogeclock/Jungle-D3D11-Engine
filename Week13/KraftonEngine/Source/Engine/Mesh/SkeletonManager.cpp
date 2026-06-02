@@ -62,6 +62,24 @@ USkeleton* FSkeletonManager::Find(const FString& Path) const
 	return It != SkeletonCache.end() ? It->second : nullptr;
 }
 
+bool FSkeletonManager::Unload(const FString& Path)
+{
+	const FString NormalizedPath = FPaths::MakeProjectRelative(Path);
+	auto It = SkeletonCache.find(NormalizedPath);
+	if (It == SkeletonCache.end())
+	{
+		return false;
+	}
+
+	if (It->second)
+	{
+		GUObjectArray.DestroyObject(It->second);
+	}
+
+	SkeletonCache.erase(It);
+	return true;
+}
+
 void FSkeletonManager::RegisterSkeleton(const FString& Path, USkeleton* Skeleton)
 {
 	if (!Skeleton)

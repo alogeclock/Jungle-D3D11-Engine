@@ -11,6 +11,7 @@ class FFloatCurveManager : public TSingleton<FFloatCurveManager>
 public:
 	UFloatCurveAsset* Load(const FString& Path);
 	UFloatCurveAsset* Find(const FString& Path) const;
+	bool Unload(const FString& Path);
 	
 	bool Save(UFloatCurveAsset* Asset);
 

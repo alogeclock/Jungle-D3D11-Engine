@@ -54,6 +54,7 @@ public:
 
 	// UMaterial 생성
 	UMaterial* GetOrCreateMaterial(const FString& MatFilePath);
+	UMaterial* FindMaterial(const FString& MatFilePath) const;
 	bool SaveMaterial(UMaterial* Material);
 	bool RenameMaterial(const FString& MatFilePath, const FString& NewAssetName, FString& OutNewMatFilePath);
 	void ForgetMaterial(const FString& MatFilePath);
