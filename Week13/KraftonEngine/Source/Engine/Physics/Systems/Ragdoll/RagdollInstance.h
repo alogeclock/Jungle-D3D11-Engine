@@ -25,7 +25,8 @@ private:
     TArray<int32> BodyToBoneIndex;
     TArray<FPhysicsConstraintInstance*> Constraints;
     TArray<FMatrix> InitialLocalPose;
-    FVector ComponentWorldScaleAtStart = FVector::OneVector;
+    TArray<FMatrix> InitialComponentPose;
+    FVector StartScale = FVector::OneVector;
     bool bInitialized = false;
 };
 

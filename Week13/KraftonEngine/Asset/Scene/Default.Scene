@@ -14,6 +14,7 @@
             "ClassName" : "UBillboardComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -88,6 +89,7 @@
             "ClassName" : "UBillboardComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -162,6 +164,7 @@
             "ClassName" : "UBillboardComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -238,6 +241,7 @@
             "ClassName" : "UBillboardComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -316,6 +320,7 @@
             "ClassName" : "UBillboardComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -394,6 +399,7 @@
             "ClassName" : "UBillboardComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -468,6 +474,7 @@
             "ClassName" : "UBillboardComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -581,6 +588,7 @@
               "Anim Instance" : "Asset/Mesh/Manny/Anims/CharacterAnimInstance.uasset",
               "Anim Script Path" : "",
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -701,6 +709,7 @@
         "ClassName" : "UCapsuleComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Capsule Half Height" : 3.000000,
           "Capsule Radius" : 0.600000,
           "Cast Shadow" : false,
@@ -752,6 +761,7 @@
             "ClassName" : "UBoxComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Box Extent" : [1.000000, 1.000000, 1.000000],
               "Cast Shadow" : false,
               "Cast Shadow as Two-Sided" : false,
@@ -790,6 +800,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -840,6 +851,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -890,6 +902,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -940,6 +953,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -990,6 +1004,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1040,6 +1055,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1090,6 +1106,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1140,6 +1157,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1190,6 +1208,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1240,6 +1259,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1290,6 +1310,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1340,6 +1361,7 @@
         "ClassName" : "UStaticMeshComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1390,6 +1412,7 @@
         "ClassName" : "UParticleSystemComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1439,6 +1462,7 @@
         "ClassName" : "UParticleSystemComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1488,6 +1512,7 @@
         "ClassName" : "UParticleSystemComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1538,6 +1563,7 @@
             "ClassName" : "UStaticMeshComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1577,6 +1603,7 @@
         "ClassName" : "UBoxComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Box Extent" : [1.000000, 1.000000, 1.000000],
           "Cast Shadow" : false,
           "Cast Shadow as Two-Sided" : false,
@@ -1627,6 +1654,7 @@
             "ClassName" : "UStaticMeshComponent",
             "Properties" : {
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1666,6 +1694,7 @@
         "ClassName" : "UBoxComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Box Extent" : [1.000000, 1.000000, 1.000000],
           "Cast Shadow" : false,
           "Cast Shadow as Two-Sided" : false,
@@ -1718,6 +1747,7 @@
               "Anim Instance" : "",
               "Anim Script Path" : "",
               "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1762,6 +1792,7 @@
         "ClassName" : "UBoxComponent",
         "Properties" : {
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Box Extent" : [1.000000, 1.000000, 3.000000],
           "Cast Shadow" : false,
           "Cast Shadow as Two-Sided" : false,
@@ -1813,6 +1844,7 @@
           "Anim Instance" : "",
           "Anim Script Path" : "",
           "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
           "Cast Shadow" : true,
           "Cast Shadow as Two-Sided" : false,
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
@@ -1856,63 +1888,6 @@
           "bTickEnable" : true
         }
       }
-    }, {
-      "ClassName" : "ASkeletalMeshActor",
-      "Name" : "ASkeletalMeshActor_22",
-      "NonSceneComponents" : [],
-      "Properties" : {
-        "Tags" : [],
-        "bNeedsTick" : true,
-        "bVisible" : true
-      },
-      "RootComponent" : {
-        "Children" : [],
-        "ClassName" : "USkeletalMeshComponent",
-        "Properties" : {
-          "Anim Instance" : "",
-          "Anim Script Path" : "",
-          "Auto Activate" : true,
-          "Cast Shadow" : true,
-          "Cast Shadow as Two-Sided" : false,
-          "Center of Mass" : [0.000000, 0.000000, 0.000000],
-          "Collision Enabled" : 3,
-          "Enable Gravity" : true,
-          "Enable Two Bone IK" : true,
-          "Generate Overlap Events" : false,
-          "Is Visible" : true,
-          "Mass (Kg)" : 1.000000,
-          "Materials" : [{
-              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_01_New.mat"
-            }, {
-              "Path" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_MI_Manny_02_New.mat"
-            }],
-          "Object Type" : 0,
-          "Physics Asset" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh_PhysicsAsset.uasset",
-          "RelativeTransform" : {
-            "Location" : [26.803028, 7.722914, 11.945656],
-            "Scale" : [10.000000, 10.000000, 10.000000]
-          },
-          "Response Container" : {
-            "Camera" : 2,
-            "FootIK" : 2,
-            "Pawn" : 2,
-            "PhysicsBody" : 2,
-            "Projectile" : 2,
-            "Trigger" : 2,
-            "Visibility" : 2,
-            "WorldDynamic" : 2,
-            "WorldStatic" : 2
-          },
-          "Rotation" : [0.000000, 0.000000, 0.000000],
-          "Simulate Physics" : true,
-          "Skeletal Mesh" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset",
-          "Two Bone IK Chains" : [],
-          "bEditorOnly" : false,
-          "bHiddenInComponentTree" : false,
-          "bIsActive" : true,
-          "bTickEnable" : true
-        }
-      }
     }],
   "ClassName" : "UWorld",
   "ContextHandle" : "NewScene",
@@ -1921,9 +1896,9 @@
   "PerspectiveCamera" : {
     "FOV" : 1.047198,
     "FarClip" : 1000.000000,
-    "Location" : [-1.223845, 17.379925, 22.738321],
+    "Location" : [14.048716, -1.281657, 25.071278],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 6.972488, -740.226440]
+    "Rotation" : [0.000000, 1.872485, -682.622375]
   },
   "Version" : 2,
   "WorldSettings" : {

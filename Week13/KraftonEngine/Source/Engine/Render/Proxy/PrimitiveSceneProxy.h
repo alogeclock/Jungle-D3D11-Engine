@@ -10,6 +10,7 @@ class UPrimitiveComponent;
 class FShader;
 class FMeshBuffer;
 class FScene;
+class FDebugDrawQueue;
 class UMaterial;
 struct FDrawCommand;
 struct FDrawCommandBuffer;
@@ -104,6 +105,7 @@ public:
 	virtual void UpdateMesh();
 	virtual void UpdateLOD(uint32 /*LODLevel*/) {}
 	virtual void UpdatePerViewport(const FFrameContext& /*Frame*/) {}
+	virtual void CollectCollisionShapes(FDebugDrawQueue& /*Queue*/) const {}
 	virtual const char* GetVertexShaderEntryName() const { return "VS_Static"; }
 	virtual bool WantsGpuSkinning(const FPrimitiveDrawOptions& /*Options*/) const { return false; }
 
