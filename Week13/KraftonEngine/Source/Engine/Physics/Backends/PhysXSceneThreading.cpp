@@ -7,7 +7,7 @@
 uint32 GetRecommendedPhysXWorkerThreadCount()
 {
     const unsigned int LogicalCores = std::thread::hardware_concurrency();
-    return static_cast<uint32>((std::max)(1u, LogicalCores));
+    return static_cast<uint32>((std::min)(4u, (std::max)(1u, LogicalCores)));
 }
 
 // PhysX scene이 멀티스레드 solver, active actor, CCD 경로를 사용할 수 있도록 기본 flag를 설정한다.
