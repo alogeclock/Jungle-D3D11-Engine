@@ -22,6 +22,8 @@
 
 using namespace physx;
 
+static float PxVecLength(const PxVec3& V);
+
 // ============================================================
 // PhysX Error Callback
 // ============================================================
@@ -108,13 +110,38 @@ public:
         for (PxU32 i = 0; i < Count; ++i)
         {
             const PxContactPair& CP = Pairs[i];
-            const bool bBegin = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND);
-            const bool bEnd   = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST);
-            if (!bBegin && !bEnd) continue;
+            const bool bBegin   = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND);
+            const bool bPersist = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS);
+            const bool bEnd     = CP.events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST);
+            if (!bBegin && !bPersist && !bEnd) continue;
 
             auto* CompA = CP.shapes[0] ? static_cast<UPrimitiveComponent*>(CP.shapes[0]->userData) : nullptr;
             auto* CompB = CP.shapes[1] ? static_cast<UPrimitiveComponent*>(CP.shapes[1]->userData) : nullptr;
             if (!CompA || !CompB) continue;
+
+            PxContactPairPoint ContactPoints[16];
+            PxU32 NumPoints = CP.extractContacts(ContactPoints, 16);
+            for (PxU32 PointIndex = 0; PointIndex < NumPoints; ++PointIndex)
+            {
+                const PxContactPairPoint& Point = ContactPoints[PointIndex];
+                const float ImpulseMagnitude = PxVecLength(Point.impulse);
+                if (Point.separation < -5.0f || ImpulseMagnitude > 100.0f)
+                {
+                    const FString CompAName = CompA->GetName();
+                    const FString CompBName = CompB->GetName();
+                    UE_LOG("[RagdollContact] A=%s B=%s Begin=%d Persist=%d End=%d Sep=%.3f Impulse=%.3f "
+                           "Pos=(%.3f, %.3f, %.3f) Normal=(%.3f, %.3f, %.3f)",
+                        CompAName.c_str(),
+                        CompBName.c_str(),
+                        bBegin ? 1 : 0,
+                        bPersist ? 1 : 0,
+                        bEnd ? 1 : 0,
+                        Point.separation,
+                        ImpulseMagnitude,
+                        Point.position.x, Point.position.y, Point.position.z,
+                        Point.normal.x, Point.normal.y, Point.normal.z);
+                }
+            }
 
             if (bEnd)
             {
@@ -123,8 +150,10 @@ public:
                 continue;
             }
 
-            PxContactPairPoint ContactPoints[1];
-            PxU32 NumPoints = CP.extractContacts(ContactPoints, 1);
+            if (!bBegin)
+            {
+                continue;
+            }
 
             FVector ContactPos(0,0,0), ContactNormal(0,0,1);
             float Penetration = 0.0f;
@@ -226,6 +255,35 @@ static FTransform ToFTransform(const PxTransform& Transform)
     return FTransform(ToFVector(Transform.p), ToFQuat(Transform.q), FVector::OneVector);
 }
 
+static float PxVecLength(const PxVec3& V)
+{
+    return std::sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
+}
+
+static const char* ToShapeTypeDebugName(EPhysicsShapeType ShapeType)
+{
+    switch (ShapeType)
+    {
+    case EPhysicsShapeType::PST_Sphere:  return "Sphere";
+    case EPhysicsShapeType::PST_Box:     return "Box";
+    case EPhysicsShapeType::PST_Capsule: return "Capsule";
+    case EPhysicsShapeType::PST_Convex:  return "Convex";
+    default:                             return "Unknown";
+    }
+}
+
+static const char* ToCollisionEnabledDebugName(EPhysicsCollisionEnabled CollisionEnabled)
+{
+    switch (CollisionEnabled)
+    {
+    case EPhysicsCollisionEnabled::PCE_NoCollision:     return "NoCollision";
+    case EPhysicsCollisionEnabled::PCE_QueryOnly:       return "QueryOnly";
+    case EPhysicsCollisionEnabled::PCE_PhysicsOnly:     return "PhysicsOnly";
+    case EPhysicsCollisionEnabled::PCE_QueryAndPhysics: return "QueryAndPhysics";
+    default:                                            return "Unknown";
+    }
+}
+
 static PxD6Motion::Enum ToPxD6Motion(EPhysicsConstraintMotionMode Motion)
 {
     switch (Motion)
@@ -290,6 +348,7 @@ static PxFilterFlags KraftonFilterShader(
     {
         pairFlags = PxPairFlag::eCONTACT_DEFAULT
             | PxPairFlag::eNOTIFY_TOUCH_FOUND
+            | PxPairFlag::eNOTIFY_TOUCH_PERSISTS
             | PxPairFlag::eNOTIFY_TOUCH_LOST
             | PxPairFlag::eNOTIFY_CONTACT_POINTS
             | PxPairFlag::eDETECT_CCD_CONTACT;
@@ -378,6 +437,7 @@ static PxShape* CreateShapeFromDesc(PxPhysics* Physics, PxMaterial* DefaultMater
     {
         SetupFilterData(Shape, OwnerComponent);
     }
+
     Shape->userData = OwnerComponent;
     return Shape;
 }
@@ -537,6 +597,7 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
     WaitForSimulation();
 
     PxRigidActor* Actor = nullptr;
+    PxRigidDynamic* DynamicActor = nullptr;
     const PxTransform BodyPose = ToPxTransform(WorldTransform);
     if (BodyDesc.BodyType == EPhysicsBodyType::PBT_Static)
     {
@@ -544,7 +605,7 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
     }
     else
     {
-        PxRigidDynamic* DynamicActor = Physics->createRigidDynamic(BodyPose);
+        DynamicActor = Physics->createRigidDynamic(BodyPose);
         if (DynamicActor)
         {
             DynamicActor->setActorFlag(
@@ -556,7 +617,8 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
             DynamicActor->setRigidBodyFlag(
                 PxRigidBodyFlag::eKINEMATIC,
                 BodyDesc.BodyType == EPhysicsBodyType::PBT_Kinematic);
-            PxRigidBodyExt::setMassAndUpdateInertia(*DynamicActor, (std::max)(0.001f, BodyDesc.Mass));
+            // IMPORTANT: mass/inertia must be computed after shapes are attached.
+            // Computing inertia on a shape-less actor makes ragdoll joints unstable.
         }
         Actor = DynamicActor;
     }
@@ -582,8 +644,31 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 
     if (AttachedShapeCount == 0)
     {
+        const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
+        UE_LOG("[RagdollBodyError] Owner=%s BodyType=%d has no attached shapes. Actor will be released.",
+            OwnerName.c_str(), static_cast<int32>(BodyDesc.BodyType));
         Actor->release();
         return nullptr;
+    }
+
+    if (DynamicActor)
+    {
+        const float Mass = (std::max)(0.001f, BodyDesc.Mass);
+        PxRigidBodyExt::setMassAndUpdateInertia(*DynamicActor, Mass);
+        DynamicActor->setSolverIterationCounts(12, 4);
+
+        const PxVec3 InvInertia = DynamicActor->getMassSpaceInvInertiaTensor();
+        const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
+        UE_LOG("[RagdollMass] Owner=%s Actor=%p ShapeCount=%d RequestedMass=%.3f Mass=%.3f InvMass=%.6f "
+               "InvInertia=(%.6f, %.6f, %.6f) Pose=(%.3f, %.3f, %.3f)",
+            OwnerName.c_str(),
+            DynamicActor,
+            AttachedShapeCount,
+            Mass,
+            DynamicActor->getMass(),
+            DynamicActor->getInvMass(),
+            InvInertia.x, InvInertia.y, InvInertia.z,
+            BodyPose.p.x, BodyPose.p.y, BodyPose.p.z);
     }
 
     Actor->userData = OwnerComponent ? OwnerComponent->GetOwner() : nullptr;
@@ -736,6 +821,28 @@ FPhysicsConstraintInstance* FPhysXPhysicsScene::CreateConstraint(
     PxJoint* Joint = nullptr;
     const PxTransform ParentLocalFrame = ToPxTransform(ConstraintDesc.ParentLocalFrame);
     const PxTransform ChildLocalFrame  = ToPxTransform(ConstraintDesc.ChildLocalFrame);
+
+    UE_LOG("[RagdollCreateJoint] ParentActor=%p ChildActor=%p JointType=%d "
+           "ParentFrameP=(%.3f, %.3f, %.3f) ParentFrameQ=(%.3f, %.3f, %.3f, %.3f) "
+           "ChildFrameP=(%.3f, %.3f, %.3f) ChildFrameQ=(%.3f, %.3f, %.3f, %.3f) "
+           "MotionXYZ=(%d,%d,%d) Swing=(%d,%d) Twist=%d LinearLimit=%.3f Swing=(%.3f, %.3f) TwistLimit=(%.3f, %.3f) DisableCollision=%d",
+        ParentActor, ChildActor, static_cast<int32>(ConstraintDesc.JointType),
+        ConstraintDesc.ParentLocalFrame.Location.X, ConstraintDesc.ParentLocalFrame.Location.Y, ConstraintDesc.ParentLocalFrame.Location.Z,
+        ConstraintDesc.ParentLocalFrame.Rotation.X, ConstraintDesc.ParentLocalFrame.Rotation.Y,
+        ConstraintDesc.ParentLocalFrame.Rotation.Z, ConstraintDesc.ParentLocalFrame.Rotation.W,
+        ConstraintDesc.ChildLocalFrame.Location.X, ConstraintDesc.ChildLocalFrame.Location.Y, ConstraintDesc.ChildLocalFrame.Location.Z,
+        ConstraintDesc.ChildLocalFrame.Rotation.X, ConstraintDesc.ChildLocalFrame.Rotation.Y,
+        ConstraintDesc.ChildLocalFrame.Rotation.Z, ConstraintDesc.ChildLocalFrame.Rotation.W,
+        static_cast<int32>(ConstraintDesc.XMotion),
+        static_cast<int32>(ConstraintDesc.YMotion),
+        static_cast<int32>(ConstraintDesc.ZMotion),
+        static_cast<int32>(ConstraintDesc.Swing1Motion),
+        static_cast<int32>(ConstraintDesc.Swing2Motion),
+        static_cast<int32>(ConstraintDesc.TwistMotion),
+        ConstraintDesc.LinearLimit,
+        ConstraintDesc.SwingLimitY, ConstraintDesc.SwingLimitZ,
+        ConstraintDesc.TwistLimitMin, ConstraintDesc.TwistLimitMax,
+        ConstraintDesc.bDisableCollision ? 1 : 0);
 
     if (ConstraintDesc.JointType == EPhysicsJointType::PJT_Fixed)
     {
@@ -1153,6 +1260,43 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
             return;
         }
         bSimulationInFlight.store(false);
+    }
+
+    {
+        SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+        for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+        {
+            if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+            {
+                continue;
+            }
+
+            PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+            PxRigidDynamic* DynamicActor = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+            if (!DynamicActor)
+            {
+                continue;
+            }
+
+            const PxVec3 LinearVelocity = DynamicActor->getLinearVelocity();
+            const PxVec3 AngularVelocity = DynamicActor->getAngularVelocity();
+            const float LinearSpeed = PxVecLength(LinearVelocity);
+            const float AngularSpeed = PxVecLength(AngularVelocity);
+            if (LinearSpeed > 1000.0f || AngularSpeed > 100.0f)
+            {
+                const PxTransform Pose = DynamicActor->getGlobalPose();
+                UPrimitiveComponent* OwnerComponent = BodyInstance->GetOwnerComponent();
+                const FString OwnerName = OwnerComponent ? OwnerComponent->GetName() : FString("None");
+                UE_LOG("[RagdollVelocity] Owner=%s Actor=%p Pos=(%.3f, %.3f, %.3f) "
+                       "Speed=%.3f AngularSpeed=%.3f LinVel=(%.3f, %.3f, %.3f) AngVel=(%.3f, %.3f, %.3f)",
+                    OwnerName.c_str(),
+                    DynamicActor,
+                    Pose.p.x, Pose.p.y, Pose.p.z,
+                    LinearSpeed, AngularSpeed,
+                    LinearVelocity.x, LinearVelocity.y, LinearVelocity.z,
+                    AngularVelocity.x, AngularVelocity.y, AngularVelocity.z);
+            }
+        }
     }
 
     SyncPhysXTransformsToEngine();

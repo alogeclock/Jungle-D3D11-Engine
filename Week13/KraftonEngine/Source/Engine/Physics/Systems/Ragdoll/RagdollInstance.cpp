@@ -6,9 +6,11 @@
 #include "Physics/Assets/PhysicsAsset.h"
 #include "Physics/Assets/PhysicsBodySetup.h"
 #include "Physics/Assets/PhysicsConstraintSetup.h"
+#include "Physics/Common/PhysicsConversionTypes.h"
 #include "Physics/Runtime/PhysicsBodyInstance.h"
 #include "Physics/Runtime/PhysicsConstraintInstance.h"
 #include "Physics/Runtime/PhysicsSceneInterface.h"
+#include "Core/Log.h"
 
 #include <algorithm>
 #include <cmath>
@@ -26,6 +28,74 @@ static FVector MultiplyVectorComponents(const FVector& A, const FVector& B)
 static float MaxComponent(const FVector& V)
 {
     return (std::max)(V.X, (std::max)(V.Y, V.Z));
+}
+
+static float QuatAngularDistanceDegrees(FQuat A, FQuat B)
+{
+    A.Normalize();
+    B.Normalize();
+
+    float Dot = std::abs(A.X * B.X + A.Y * B.Y + A.Z * B.Z + A.W * B.W);
+    Dot = std::clamp(Dot, 0.0f, 1.0f);
+    return std::acos(Dot) * 2.0f * 180.0f / 3.1415926535f;
+}
+
+static FTransform ComposeLocalWithWorld(const FTransform& LocalFrame, const FTransform& WorldFrame)
+{
+    FTransform Result(LocalFrame.ToMatrix() * WorldFrame.ToMatrix());
+    Result.Scale = FVector::OneVector;
+    return Result;
+}
+
+static void LogConstraintFrameError(
+    const FPhysicsConstraintSetup& ConstraintSetup,
+    const FPhysicsConstraintDesc& ConstraintDesc,
+    FPhysicsBodyInstance* ParentBody,
+    FPhysicsBodyInstance* ChildBody,
+    IPhysicsSceneInterface* Scene)
+{
+    if (!Scene || !ParentBody || !ChildBody)
+    {
+        return;
+    }
+
+    FTransform ParentWorld;
+    FTransform ChildWorld;
+    if (!Scene->GetBodyWorldTransform(ParentBody, ParentWorld) ||
+        !Scene->GetBodyWorldTransform(ChildBody, ChildWorld))
+    {
+        return;
+    }
+
+    const FTransform ParentJointWorld = ComposeLocalWithWorld(ConstraintDesc.ParentLocalFrame, ParentWorld);
+    const FTransform ChildJointWorld = ComposeLocalWithWorld(ConstraintDesc.ChildLocalFrame, ChildWorld);
+    const float PositionError = FVector::Distance(ParentJointWorld.Location, ChildJointWorld.Location);
+    const float AngularError = QuatAngularDistanceDegrees(ParentJointWorld.Rotation, ChildJointWorld.Rotation);
+
+    UE_LOG("[RagdollJointError] Constraint=%s Parent=%s Child=%s PosErr=%.3f AngErrDeg=%.3f "
+           "ParentJointP=(%.3f, %.3f, %.3f) ChildJointP=(%.3f, %.3f, %.3f) "
+           "ParentBodyP=(%.3f, %.3f, %.3f) ChildBodyP=(%.3f, %.3f, %.3f)",
+        ConstraintSetup.ConstraintName.ToString().c_str(),
+        ConstraintSetup.ParentBoneName.ToString().c_str(),
+        ConstraintSetup.ChildBoneName.ToString().c_str(),
+        PositionError,
+        AngularError,
+        ParentJointWorld.Location.X, ParentJointWorld.Location.Y, ParentJointWorld.Location.Z,
+        ChildJointWorld.Location.X, ChildJointWorld.Location.Y, ChildJointWorld.Location.Z,
+        ParentWorld.Location.X, ParentWorld.Location.Y, ParentWorld.Location.Z,
+        ChildWorld.Location.X, ChildWorld.Location.Y, ChildWorld.Location.Z);
+}
+
+static const char* ToShapeTypeDebugName(EPhysicsShapeType ShapeType)
+{
+    switch (ShapeType)
+    {
+    case EPhysicsShapeType::PST_Sphere:  return "Sphere";
+    case EPhysicsShapeType::PST_Box:     return "Box";
+    case EPhysicsShapeType::PST_Capsule: return "Capsule";
+    case EPhysicsShapeType::PST_Convex:  return "Convex";
+    default:                             return "Unknown";
+    }
 }
 
 static void ScaleBodyDescForComponent(FPhysicsBodyDesc& BodyDesc, const FVector& ComponentScale)
@@ -59,6 +129,8 @@ static void ScaleBodyDescForComponent(FPhysicsBodyDesc& BodyDesc, const FVector&
             break;
         }
     }
+
+    ScalePhysicsBodyDescLength(BodyDesc);
 }
 
 static void ScaleConstraintDescForComponent(FPhysicsConstraintDesc& ConstraintDesc, const FVector& ComponentScale)
@@ -68,6 +140,7 @@ static void ScaleConstraintDescForComponent(FPhysicsConstraintDesc& ConstraintDe
     ConstraintDesc.ChildLocalFrame.Location =
         MultiplyVectorComponents(ConstraintDesc.ChildLocalFrame.Location, ComponentScale);
     ConstraintDesc.LinearLimit *= (std::max)(0.01f, MaxComponent(AbsVector(ComponentScale)));
+    ScalePhysicsConstraintDescLength(ConstraintDesc);
 }
 
 static bool GetBoneWorldTransform(USkeletalMeshComponent* MeshComp, int32 BoneIndex, FTransform& OutWorldTransform)
@@ -147,10 +220,34 @@ bool FRagdollInstance::Initialize(
         BodyDesc.BodyType = EPhysicsBodyType::PBT_Dynamic;
         ScaleBodyDescForComponent(BodyDesc, ComponentWorldScaleAtStart);
 
+        UE_LOG("[RagdollBuildBody] Owner=%s Bone=%s BoneIndex=%d ShapeCount=%d Mass=%.3f BoneWorldP=(%.3f, %.3f, %.3f) BoneWorldQ=(%.3f, %.3f, %.3f, %.3f)",
+            MeshComp->GetName().c_str(),
+            BoneName.c_str(),
+            BoneIndex,
+            static_cast<int32>(BodyDesc.Shapes.size()),
+            BodyDesc.Mass,
+            BoneWorldTransform.Location.X, BoneWorldTransform.Location.Y, BoneWorldTransform.Location.Z,
+            BoneWorldTransform.Rotation.X, BoneWorldTransform.Rotation.Y, BoneWorldTransform.Rotation.Z, BoneWorldTransform.Rotation.W);
+
+        for (int32 ShapeIndex = 0; ShapeIndex < static_cast<int32>(BodyDesc.Shapes.size()); ++ShapeIndex)
+        {
+            const FPhysicsShapeDesc& ShapeDesc = BodyDesc.Shapes[ShapeIndex];
+            UE_LOG("[RagdollBuildShape] Bone=%s ShapeIndex=%d Type=%s Size=(%.3f, %.3f, %.3f) LocalP=(%.3f, %.3f, %.3f) LocalQ=(%.3f, %.3f, %.3f, %.3f)",
+                BoneName.c_str(),
+                ShapeIndex,
+                ToShapeTypeDebugName(ShapeDesc.ShapeType),
+                ShapeDesc.Size.X, ShapeDesc.Size.Y, ShapeDesc.Size.Z,
+                ShapeDesc.LocalTransform.Location.X, ShapeDesc.LocalTransform.Location.Y, ShapeDesc.LocalTransform.Location.Z,
+                ShapeDesc.LocalTransform.Rotation.X, ShapeDesc.LocalTransform.Rotation.Y,
+                ShapeDesc.LocalTransform.Rotation.Z, ShapeDesc.LocalTransform.Rotation.W);
+        }
+
         FPhysicsBodyInstance* BodyInstance =
             Scene->CreateBodyAtTransform(MeshComp, BodyDesc, BoneWorldTransform, false);
         if (!BodyInstance)
         {
+            UE_LOG("[RagdollBuildBodyError] Owner=%s Bone=%s failed to create runtime body",
+                MeshComp->GetName().c_str(), BoneName.c_str());
             continue;
         }
 
@@ -162,16 +259,38 @@ bool FRagdollInstance::Initialize(
 
     if (Bodies.empty())
     {
+        UE_LOG("[RagdollBuildError] Owner=%s no runtime bodies were created from PhysicsAsset",
+            MeshComp->GetName().c_str());
         Release(Scene);
         return false;
     }
 
+    UE_LOG("[RagdollBuildSummary] Owner=%s RuntimeBodyCount=%d AssetBodyCount=%d",
+        MeshComp->GetName().c_str(),
+        static_cast<int32>(Bodies.size()),
+        static_cast<int32>(BodySetups.size()));
+
     const TArray<FPhysicsConstraintSetup>& ConstraintSetups = PhysicsAsset->GetConstraintSetups();
     Constraints.reserve(ConstraintSetups.size());
+    UE_LOG("[RagdollBuildConstraints] Owner=%s ConstraintCount=%d RuntimeBodyCount=%d",
+        MeshComp->GetName().c_str(),
+        static_cast<int32>(ConstraintSetups.size()),
+        static_cast<int32>(Bodies.size()));
+
     for (const FPhysicsConstraintSetup& ConstraintSetup : ConstraintSetups)
     {
         const auto ParentBodyIt = BoneNameToBodyIndex.find(ConstraintSetup.ParentBoneName.ToString());
         const auto ChildBodyIt  = BoneNameToBodyIndex.find(ConstraintSetup.ChildBoneName.ToString());
+
+        UE_LOG("[RagdollConstraintMap] Constraint=%s Parent=%s Child=%s FoundParent=%d ParentBody=%d FoundChild=%d ChildBody=%d",
+            ConstraintSetup.ConstraintName.ToString().c_str(),
+            ConstraintSetup.ParentBoneName.ToString().c_str(),
+            ConstraintSetup.ChildBoneName.ToString().c_str(),
+            ParentBodyIt != BoneNameToBodyIndex.end() ? 1 : 0,
+            ParentBodyIt != BoneNameToBodyIndex.end() ? ParentBodyIt->second : -1,
+            ChildBodyIt != BoneNameToBodyIndex.end() ? 1 : 0,
+            ChildBodyIt != BoneNameToBodyIndex.end() ? ChildBodyIt->second : -1);
+
         if (ParentBodyIt == BoneNameToBodyIndex.end() || ChildBodyIt == BoneNameToBodyIndex.end())
         {
             continue;
@@ -180,15 +299,31 @@ bool FRagdollInstance::Initialize(
         FPhysicsConstraintDesc ConstraintDesc = ConstraintSetup.BuildConstraintDesc();
         ScaleConstraintDescForComponent(ConstraintDesc, ComponentWorldScaleAtStart);
 
+        FPhysicsBodyInstance* ParentBody = Bodies[ParentBodyIt->second];
+        FPhysicsBodyInstance* ChildBody = Bodies[ChildBodyIt->second];
+        LogConstraintFrameError(ConstraintSetup, ConstraintDesc, ParentBody, ChildBody, Scene);
+
         FPhysicsConstraintInstance* ConstraintInstance = Scene->CreateConstraint(
-            Bodies[ParentBodyIt->second],
-            Bodies[ChildBodyIt->second],
+            ParentBody,
+            ChildBody,
             ConstraintDesc);
         if (ConstraintInstance)
         {
             Constraints.push_back(ConstraintInstance);
         }
+        else
+        {
+            UE_LOG("[RagdollCreateConstraintError] Constraint=%s Parent=%s Child=%s failed to create runtime constraint",
+                ConstraintSetup.ConstraintName.ToString().c_str(),
+                ConstraintSetup.ParentBoneName.ToString().c_str(),
+                ConstraintSetup.ChildBoneName.ToString().c_str());
+        }
     }
+
+    UE_LOG("[RagdollBuildConstraintsSummary] Owner=%s CreatedConstraintCount=%d AssetConstraintCount=%d",
+        MeshComp->GetName().c_str(),
+        static_cast<int32>(Constraints.size()),
+        static_cast<int32>(ConstraintSetups.size()));
 
     bInitialized = true;
     return true;

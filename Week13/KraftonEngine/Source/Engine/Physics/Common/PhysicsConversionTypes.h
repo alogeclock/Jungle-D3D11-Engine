@@ -11,10 +11,58 @@
 /** Physics 단위 변환 기준 */
 struct FPhysicsUnitScale
 {
-    float LengthScale = 1.0f;
-    float MassScale   = 1.0f;
-    float TimeScale   = 1.0f;
+    static constexpr float LengthScale = 0.01f;
+    static constexpr float MassScale   = 1.0f;
+    static constexpr float TimeScale   = 1.0f;
 };
+
+inline FVector ScalePhysicsLength(const FVector& Value)
+{
+    return FVector(
+        Value.X * FPhysicsUnitScale::LengthScale,
+        Value.Y * FPhysicsUnitScale::LengthScale,
+        Value.Z * FPhysicsUnitScale::LengthScale);
+}
+
+inline FTransform ScalePhysicsTransformLength(const FTransform& Transform)
+{
+    FTransform ScaledTransform = Transform;
+    ScaledTransform.Location = ScalePhysicsLength(ScaledTransform.Location);
+    return ScaledTransform;
+}
+
+inline FMatrix ScalePhysicsMatrixTranslationLength(const FMatrix& Matrix)
+{
+    FMatrix ScaledMatrix = Matrix;
+    ScaledMatrix.SetLocation(ScalePhysicsLength(ScaledMatrix.GetLocation()));
+    return ScaledMatrix;
+}
+
+inline void ScalePhysicsShapeDescLength(FPhysicsShapeDesc& ShapeDesc)
+{
+    ShapeDesc.LocalTransform = ScalePhysicsTransformLength(ShapeDesc.LocalTransform);
+    ShapeDesc.Size = ScalePhysicsLength(ShapeDesc.Size);
+
+    for (FVector& Vertex : ShapeDesc.VertexData)
+    {
+        Vertex = ScalePhysicsLength(Vertex);
+    }
+}
+
+inline void ScalePhysicsBodyDescLength(FPhysicsBodyDesc& BodyDesc)
+{
+    for (FPhysicsShapeDesc& ShapeDesc : BodyDesc.Shapes)
+    {
+        ScalePhysicsShapeDescLength(ShapeDesc);
+    }
+}
+
+inline void ScalePhysicsConstraintDescLength(FPhysicsConstraintDesc& ConstraintDesc)
+{
+    ConstraintDesc.ParentLocalFrame = ScalePhysicsTransformLength(ConstraintDesc.ParentLocalFrame);
+    ConstraintDesc.ChildLocalFrame = ScalePhysicsTransformLength(ConstraintDesc.ChildLocalFrame);
+    ConstraintDesc.LinearLimit *= FPhysicsUnitScale::LengthScale;
+}
 
 /** Bone Transform 기반 Body 생성 정보 */
 struct FPhysicsTransformBuildInfo

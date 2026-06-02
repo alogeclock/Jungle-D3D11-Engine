@@ -19,6 +19,7 @@
 #include "Object/FUObjectArray.h"
 #include "Physics/Common/PhysicalMaterialManager.h"
 #include "Physics/Common/PhysicsMaterialTypes.h"
+#include "Physics/Common/PhysicsConversionTypes.h"
 #include "Physics/Assets/PhysicsConstraintSetup.h"
 #include "Physics/Assets/PhysicsAsset.h"
 #include "Physics/Assets/PhysicsAssetManager.h"
@@ -2968,15 +2969,17 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 			const int32 BoneIndex = FindBoneIndexByName(SkeletonAsset, BodySetup->GetTargetBoneName());
 			const FMatrix BoneMatrix = BuildBoneWorldMatrix(PreviewMeshComponent, &BoneGlobalMatrices, BoneIndex);
 
-			FTransform WorldTransform = ComposeMatrixToTransform(LocalMatrix, BoneMatrix);
+			const FMatrix RuntimeLocalMatrix = ScalePhysicsMatrixTranslationLength(LocalMatrix);
+			const FVector RuntimeTargetMeshExtent = ScalePhysicsLength(TargetMeshExtent);
+			FTransform WorldTransform = ComposeMatrixToTransform(RuntimeLocalMatrix, BoneMatrix);
 			const FVector BaseExtent(
 				(std::max)(Entry.BaseMeshExtent.X, 0.001f),
 				(std::max)(Entry.BaseMeshExtent.Y, 0.001f),
 				(std::max)(Entry.BaseMeshExtent.Z, 0.001f));
 			const FVector MeshScale(
-				TargetMeshExtent.X / BaseExtent.X,
-				TargetMeshExtent.Y / BaseExtent.Y,
-				TargetMeshExtent.Z / BaseExtent.Z);
+				RuntimeTargetMeshExtent.X / BaseExtent.X,
+				RuntimeTargetMeshExtent.Y / BaseExtent.Y,
+				RuntimeTargetMeshExtent.Z / BaseExtent.Z);
 
 			Entry.Component->SetRelativeLocation(WorldTransform.Location);
 			Entry.Component->SetRelativeRotation(WorldTransform.Rotation);
