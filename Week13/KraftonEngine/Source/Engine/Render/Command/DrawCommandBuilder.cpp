@@ -1,5 +1,6 @@
 ﻿#include "DrawCommandBuilder.h"
 
+#include "Debug/DebugDrawQueue.h"
 #include "Resource/ResourceManager.h"
 #include "Render/Types/RenderTypes.h"
 #include "Render/Types/FogParams.h"
@@ -9,6 +10,7 @@
 #include "Render/Proxy/DecalSceneProxy.h"
 #include "Render/Proxy/ParticleSceneProxy.h"
 #include "Render/Proxy/ShapeSceneProxy.h"
+#include "Render/Proxy/SkeletalMeshSceneProxy.h"
 #include "Render/Proxy/BoneDebugSceneProxy.h"
 #include "Render/Scene/FScene.h"
 #include "Render/Types/RenderConstants.h"
@@ -360,7 +362,7 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 	const bool bShowBoundingVolume = Frame.RenderOptions.ShowFlags.bBoundingVolume;
 	const bool bIsEditor = (Frame.WorldType == EWorldType::Editor);
 	const bool bShowCollision = bIsEditor
-		? Frame.RenderOptions.ShowFlags.bCollision
+		? (Frame.RenderOptions.ShowFlags.bCollision || Frame.RenderOptions.ShowFlags.bShowCollisionShape)
 		: Frame.RenderOptions.ShowFlags.bShowCollisionShape;
 
 	for (FPrimitiveSceneProxy* Proxy : Output.RenderableProxies)
@@ -400,7 +402,27 @@ void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene&
 		else if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::Particle))
 			BuildParticleCommands(Scene, static_cast<const FParticleSceneProxy*>(Proxy));
 		else
+		{
 			BuildMeshCommands(Scene, Proxy);
+
+			if (bShowCollision && Proxy->HasProxyFlag(EPrimitiveProxyFlags::SkeletalMesh))
+			{
+				FDebugDrawQueue CollisionQueue;
+				const FSkeletalMeshSceneProxy* SkeletalProxy = static_cast<const FSkeletalMeshSceneProxy*>(Proxy);
+				SkeletalProxy->CollectCollisionShapes(CollisionQueue);
+				for (const FDebugDrawItem& Item : CollisionQueue.GetItems())
+				{
+					if (Item.bAlwaysOnTop)
+					{
+						DebugBoneLines.AddLine(Item.Start, Item.End, Item.Color.ToVector4());
+					}
+					else
+					{
+						EditorLines.AddLine(Item.Start, Item.End, Item.Color.ToVector4());
+					}
+				}
+			}
+		}
 
 		if (Proxy->IsSelected())
 			BuildSelectionCommands(Proxy, bShowBoundingVolume, Scene);
