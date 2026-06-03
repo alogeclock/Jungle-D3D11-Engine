@@ -37,15 +37,23 @@ public:
 	const FVehicleRuntimeStats* GetRuntimeStats() const;
 
 	bool IsVehicleValid() const { return VehicleHandle.IsValid(); }
+	bool IsDrawDebugEnabled() const { return bDrawDebug; }
+	void SetDrawDebugEnabled(bool bEnabled) { bDrawDebug = bEnabled; }
 
 protected:
 	FPhysXPhysicsScene* GetPhysicsScene() const;
 	void BuildVehicleDesc(FVehicleBuildDesc& OutDesc) const;
 	void DrawDebugVehicle() const;
+	void UpdateVehicleAudio(float DeltaTime);
+	void ResetVehicleAudioState();
+	FString GetResolvedEngineLoopName() const;
 
 private:
 	FVehicleRuntimeHandle VehicleHandle;
 	TArray<USceneComponent*> WheelVisualComponents;
+
+	FString ActiveEngineLoopName;
+	bool bVehicleAudioStarted = false;
 
 	// Tuning - 에디터에서 편집 가능
 	UPROPERTY(Edit, Category = "Vehicle|Drive", DisplayName = "Drive Type", Type=Enum, Enum=StaticEnum_EVehicleDriveType())
@@ -105,6 +113,24 @@ private:
 	UPROPERTY(Edit, Category = "Vehicle|Wheel", DisplayName = "Wheel Z Offset")
 	float WheelZOffset = -0.35f;
 
-	UPROPERTY(Edit, Category = "Vehicle|Debug", DisplayName = "Draw Vehicle Debug")
+	UPROPERTY(Edit, Category = "Vehicle|Audio", DisplayName = "Enable Vehicle Audio")
+	bool bEnableVehicleAudio = true;
+
+	UPROPERTY(Edit, Category = "Vehicle|Audio", DisplayName = "Engine Loop Sound Key")
+	FString EngineLoopSoundKey = "CarIdleLoop";
+
+	UPROPERTY(Edit, Category = "Vehicle|Audio", DisplayName = "Engine Loop Name")
+	FString EngineLoopName = "";
+
+	UPROPERTY(Edit, Category = "Vehicle|Audio", DisplayName = "Engine Loop Volume")
+	float EngineLoopVolume = 1.0f;
+
+	UPROPERTY(Edit, Category = "Vehicle|Audio", DisplayName = "Engine Idle Pitch")
+	float EngineIdlePitch = 0.75f;
+
+	UPROPERTY(Edit, Category = "Vehicle|Audio", DisplayName = "Engine Max Pitch")
+	float EngineMaxPitch = 2.6f;
+
+	UPROPERTY()
 	bool bDrawDebug = false;
 };

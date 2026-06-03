@@ -8,6 +8,7 @@
 #include "Math/MathUtils.h"
 #include "Object/ObjectFactory.h"
 #include "Serialization/Archive.h"
+#include "Audio/AudioManager.h"
 
 void UVehicleMovementComponent::BeginPlay()
 {
@@ -28,16 +29,24 @@ void UVehicleMovementComponent::BeginPlay()
 
 
 	VehicleHandle = PhysScene->CreateVehicle(CreateDesc);
+	ResetVehicleAudioState();
+	UpdateVehicleAudio(0.0f);
 }
 
 void UVehicleMovementComponent::EndPlay()
 {
+	if (bVehicleAudioStarted && !ActiveEngineLoopName.empty())
+	{
+		FAudioManager::Get().StopLoop(ActiveEngineLoopName);
+	}
+
 	FPhysXPhysicsScene* PhysScene = GetPhysicsScene();
 	if (PhysScene && VehicleHandle.IsValid())
 	{
 		PhysScene->DestroyVehicle(VehicleHandle);
 	}
 
+	ResetVehicleAudioState();
 	UMovementComponent::EndPlay();
 }
 
@@ -46,6 +55,8 @@ void UVehicleMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	UMovementComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	// 이동은 PhysX vehicle update 결과만 신뢰
 	// Tick에서 직접 transform 건드리지 않음
+	UpdateVehicleAudio(DeltaTime);
+
 	if (bDrawDebug)
 	{
 		DrawDebugVehicle();
@@ -163,6 +174,62 @@ FPhysXPhysicsScene* UVehicleMovementComponent::GetPhysicsScene() const
 	UWorld* World = Owner->GetWorld();
 	if (!World) return nullptr;
 	return static_cast<FPhysXPhysicsScene*>(World->GetPhysicsScene());
+}
+
+void UVehicleMovementComponent::UpdateVehicleAudio(float DeltaTime)
+{
+	(void)DeltaTime;
+
+	if (!bEnableVehicleAudio || !VehicleHandle.IsValid())
+	{
+		return;
+	}
+
+	if (ActiveEngineLoopName.empty())
+	{
+		ActiveEngineLoopName = GetResolvedEngineLoopName();
+	}
+
+	if (!bVehicleAudioStarted && !EngineLoopSoundKey.empty() && !ActiveEngineLoopName.empty())
+	{
+		FAudioManager::Get().PlayLoop(EngineLoopSoundKey, ActiveEngineLoopName, EngineLoopVolume, EngineIdlePitch);
+		bVehicleAudioStarted = true;
+	}
+
+	const float EngineRpm = GetEngineRpm();
+	const float VolumeRatio = FMath::Clamp(EngineRpm / 800.0f, 0.08f, 1.0f);
+	const float TargetVolume = EngineLoopVolume * VolumeRatio;
+
+	const float MaxEngineRpm = MaxEngineOmega * 60.0f / (2.0f * FMath::Pi);
+	const float RpmRatio = MaxEngineRpm > 0.0f ? FMath::Clamp(EngineRpm / MaxEngineRpm, 0.0f, 1.0f) : 0.0f;
+	const float TargetPitch = FMath::Clamp(EngineIdlePitch + (EngineMaxPitch - EngineIdlePitch) * RpmRatio, 0.01f, 3.0f);
+
+	if (bVehicleAudioStarted && !ActiveEngineLoopName.empty())
+	{
+		FAudioManager::Get().SetLoopVolume(ActiveEngineLoopName, TargetVolume);
+		FAudioManager::Get().SetLoopPitch(ActiveEngineLoopName, TargetPitch);
+	}
+}
+
+void UVehicleMovementComponent::ResetVehicleAudioState()
+{
+	ActiveEngineLoopName.clear();
+	bVehicleAudioStarted = false;
+}
+
+FString UVehicleMovementComponent::GetResolvedEngineLoopName() const
+{
+	if (!EngineLoopName.empty())
+	{
+		return EngineLoopName;
+	}
+
+	if (AActor* Owner = GetOwner())
+	{
+		return Owner->GetName() + "_VehicleEngine";
+	}
+
+	return GetName() + "_VehicleEngine";
 }
 
 void UVehicleMovementComponent::BuildVehicleDesc(FVehicleBuildDesc& OutDesc) const
