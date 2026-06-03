@@ -1,4 +1,4 @@
-﻿#include "MeshEditorViewportClient.h"
+#include "MeshEditorViewportClient.h"
 
 #include "Render/Types/MinimalViewInfo.h"
 #include "Viewport/Viewport.h"
@@ -57,6 +57,7 @@ void FMeshEditorViewportClient::CreatePreviewGizmo()
 
 void FMeshEditorViewportClient::CreateBoneDebugComponent()
 {
+	RenderOptions.ShowFlags.bBones = true;
 	BoneDebugComponent = PreviewActor->AddComponent<UBoneDebugComponent>();
 	BoneDebugComponent->SetTargetMeshComponent(PreviewMeshComponent);
 	BoneDebugComponent->SetSelectedBoneIndex(SelectedBoneIndex);
@@ -85,7 +86,8 @@ void FMeshEditorViewportClient::ResetCameraToPreviewBounds()
 	const float FovRadians = ViewTransform.FOV;
 	const float Distance = Radius / std::tan(FovRadians * 0.5f) * 1.25f;
 
-	const FVector ViewDir = FVector(-1.0f, -1.0f, -0.6f).Normalized();
+	// Start from the opposite horizontal side so skeletal/physics asset previews face the camera by default.
+	const FVector ViewDir = FVector(1.0f, 1.0f, -0.6f).Normalized();
 	
 	ViewTransform.ViewLocation = Center - ViewDir * Distance;
 	ViewTransform.LookAt(Center);

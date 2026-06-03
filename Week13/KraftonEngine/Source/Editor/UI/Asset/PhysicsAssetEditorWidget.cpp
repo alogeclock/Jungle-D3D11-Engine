@@ -1,4 +1,4 @@
-﻿#include "PhysicsAssetEditorWidget.h"
+#include "PhysicsAssetEditorWidget.h"
 
 #include "Editor/EditorEngine.h"
 #include "Collision/RayUtils.h"
@@ -2943,10 +2943,16 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	ViewportClient.Initialize(Device, 320, 240);
 	ViewportClient.GetRenderOptions().ShowFlags.bGrid = false;
 	ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw = true;
+	ViewportClient.GetRenderOptions().ShowFlags.bPhysicsBodyShapes = bShowPreviewBodies;
+	ViewportClient.GetRenderOptions().ShowFlags.bPhysicsConstraints = bShowConstraintDebug;
 	ViewportClient.SetPreviewWorld(WorldContext.World);
 	ViewportClient.SetPreviewActor(Actor);
 	ViewportClient.SetPreviewMeshComponent(MeshComponent);
 	ViewportClient.CreatePreviewGizmo();
+	ViewportClient.CreateBoneDebugComponent();
+	// Physics Asset Editor uses the same bone debug renderer as the Skeletal Mesh Editor,
+	// but it should show the whole skeleton from the Show Flag instead of only the selected bone.
+	ViewportClient.SetBoneDebugDrawMode(EBoneDebugDrawMode::AllBones);
 	WorldContext.World->SetEditorPOVProvider(&ViewportClient);
 	ViewportClient.SetSelectedBone(PreviewSkeletalMesh, -1);
 
@@ -4502,6 +4508,8 @@ void FPhysicsAssetEditorWidget::SyncSelectionToViewport()
 		}
 	}
 
+	ViewportClient.SetSelectedBone(PreviewSkeletalMesh, SelectedBoneIndex);
+
 	UPhysicsAsset* __SyncPA = static_cast<UPhysicsAsset*>(EditedObject);
 	SyncPreviewShapeComponents(__SyncPA);
 	SyncConstraintConeComponents(__SyncPA);
@@ -4662,6 +4670,22 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 	bool bChanged = false;
 	bool bGraphLayoutChanged = false;
 	bool bPreviewSettingsChanged = false;
+
+	FViewportRenderOptions& PhysicsViewportRenderOptions = ViewportClient.GetRenderOptions();
+	if (bShowPreviewBodies != PhysicsViewportRenderOptions.ShowFlags.bPhysicsBodyShapes)
+	{
+		bShowPreviewBodies = PhysicsViewportRenderOptions.ShowFlags.bPhysicsBodyShapes;
+		bPreviewSettingsChanged = true;
+	}
+	if (bShowConstraintDebug != PhysicsViewportRenderOptions.ShowFlags.bPhysicsConstraints)
+	{
+		bShowConstraintDebug = PhysicsViewportRenderOptions.ShowFlags.bPhysicsConstraints;
+		bPreviewSettingsChanged = true;
+	}
+	if (bShowConstraintDebug)
+	{
+		PhysicsViewportRenderOptions.ShowFlags.bDebugDraw = true;
+	}
 
 	const ImVec2 MainContentSize = ImGui::GetContentRegionAvail();
 	const float TotalSplitterWidth = PhysicsEditorSplitterThickness * 2.0f;
@@ -4960,10 +4984,10 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 				{
 					ViewportClient.ApplyTransformSettingsToGizmo();
 				};
-				Context.OnRenderViewModeExtras = [&]()
+				Context.OnRenderShowFlagExtras = [&]()
 				{
-					ImGui::TextUnformatted("Physics Shapes");
-					ImGui::TextDisabled("White translucent bodies follow the current bone pose.");
+					ImGui::TextDisabled("Skeletal Mesh");
+					ImGui::TextDisabled("Body Shapes: white translucent bodies follow the current bone pose.");
 					if (SelectedBodyIndex >= 0 && SelectedBodyIndex < static_cast<int32>(PhysicsAsset->GetBodySetups().size()))
 					{
 						if (const UPhysicsBodySetup* BodySetup = PhysicsAsset->GetBodySetups()[SelectedBodyIndex])
@@ -5711,32 +5735,34 @@ bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel(bool bShowHeader)
 		ImGui::Separator();
 	}
 
-	if (ImGui::Checkbox("Show Bodies", &bShowPreviewBodies))
+	FViewportRenderOptions& RenderOptions = ViewportClient.GetRenderOptions();
+
+	if (ImGui::Checkbox("Bones", &RenderOptions.ShowFlags.bBones))
 	{
+		ViewportClient.SetBoneDebugDrawMode(EBoneDebugDrawMode::AllBones);
 		bChanged = true;
 	}
 
-	if (ImGui::Checkbox("Show Constraints", &bShowConstraintDebug))
+	if (ImGui::Checkbox("Body Shapes", &RenderOptions.ShowFlags.bPhysicsBodyShapes))
 	{
+		bShowPreviewBodies = RenderOptions.ShowFlags.bPhysicsBodyShapes;
+		bChanged = true;
+	}
+
+	if (ImGui::Checkbox("Constraints", &RenderOptions.ShowFlags.bPhysicsConstraints))
+	{
+		bShowConstraintDebug = RenderOptions.ShowFlags.bPhysicsConstraints;
 		if (bShowConstraintDebug)
 		{
-			ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw = true;
+			RenderOptions.ShowFlags.bDebugDraw = true;
 		}
 		bChanged = true;
 	}
 
-	if (ImGui::Checkbox("Enable Self Collision", &bPreviewEnableSelfCollision))
-	{
-		if (USkeletalMeshComponent* MeshComponent = ViewportClient.GetPreviewMeshComponent())
-		{
-			MeshComponent->SetRagdollSelfCollisionEnabled(bPreviewEnableSelfCollision);
-		}
-		bChanged = true;
-	}
 
-	if (bShowConstraintDebug && !ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw)
+	if (bShowConstraintDebug && !RenderOptions.ShowFlags.bDebugDraw)
 	{
-		ImGui::TextDisabled("Constraint overlays use Show Flags > Debug Draw.");
+		ImGui::TextDisabled("Constraint overlays use Flags > Debug Draw.");
 	}
 
 	if (bShowConstraintDebug)
