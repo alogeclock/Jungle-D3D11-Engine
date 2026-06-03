@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
+#include "Render/Types/VertexTypes.h"
 #include "Render/Scene/SceneEnvironment.h"
 #include "Debug/DebugDrawQueue.h"
 
@@ -61,6 +62,18 @@ public:
 	void AddDebugLine(const FVector& Start, const FVector& End, const FColor& Color, bool bAlwaysOnTop = false);
 	const TArray<FDebugLine>& GetDebugLines() const { return DebugLines; }
 
+	// --- Translucent debug meshes (per-frame, editor-only) ---
+	// Used for Level Editor PhysicsAsset Body Shapes. This is render data only,
+	// not a transient component added to the level/world actor hierarchy.
+	struct FTranslucentDebugMesh
+	{
+		TArray<FVertex> Vertices;
+		TArray<uint32> Indices;
+		FVector Center = FVector::ZeroVector;
+	};
+	FTranslucentDebugMesh& AddTranslucentDebugMesh();
+	const TArray<FTranslucentDebugMesh>& GetTranslucentDebugMeshes() const { return TranslucentDebugMeshes; }
+
 	// --- Grid ---
 	struct FGridParams { float Spacing = 0.0f; int32 HalfLineCount = 0; bool bEnabled = false; };
 	void SetGrid(float Spacing, int32 HalfLineCount);
@@ -106,6 +119,7 @@ private:
 	TArray<FOverlayText> OverlayTexts;
 	TArray<FDebugAABB>   DebugAABBs;
 	TArray<FDebugLine>   DebugLines;
+	TArray<FTranslucentDebugMesh> TranslucentDebugMeshes;
 
 	FGridParams Grid;
 	FDebugDrawQueue DebugDrawQueue;

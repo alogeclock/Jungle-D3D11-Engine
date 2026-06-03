@@ -20,6 +20,8 @@ public:
 	void Collect(UWorld* World, const FFrameContext& Frame, FCollectOutput& Output);
 	void CollectGrid(float GridSpacing, int32 GridHalfLineCount, FScene& Scene);
 	void CollectDebugDraw(const FFrameContext& Frame, FScene& Scene);
+	void CollectPhysicsAssetDebug(UWorld* World, const FFrameContext& Frame, FScene& Scene);
+	void CollectSkeletalMeshBoneDebug(UWorld* World, const FFrameContext& Frame, FScene& Scene);
 	void CollectOctreeDebug(const FOctree* Node, FScene& Scene, uint32 Depth = 0);
 
 private:

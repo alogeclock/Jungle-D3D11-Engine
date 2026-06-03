@@ -1,4 +1,4 @@
-﻿#include "DrawCommandBuilder.h"
+#include "DrawCommandBuilder.h"
 
 #include "Debug/DebugDrawQueue.h"
 #include "Resource/ResourceManager.h"
@@ -36,6 +36,9 @@ void FDrawCommandBuilder::Create(ID3D11Device* InDevice, ID3D11DeviceContext* In
 	GridLines.Create(InDevice);
 	DebugBoneLines.Create(InDevice);
 	FontGeometry.Create(InDevice);
+	TranslucentDebugVB.Create(InDevice, 1024, sizeof(FVertex));
+	TranslucentDebugIB.Create(InDevice, 2048);
+	TranslucentDebugPerObjectCB.Create(InDevice, sizeof(FPerObjectConstants), "TranslucentDebugPerObjectCB");
 
 	FogCB.Create(InDevice, sizeof(FFogConstants), "FogCB");
 	OutlineCB.Create(InDevice, sizeof(FOutlinePostProcessConstants), "OutlineCB");
@@ -54,6 +57,9 @@ void FDrawCommandBuilder::Release()
 	GridLines.Release();
 	DebugBoneLines.Release();
 	FontGeometry.Release();
+	TranslucentDebugVB.Release();
+	TranslucentDebugIB.Release();
+	TranslucentDebugPerObjectCB.Release();
 
 	for (auto& Pair : PerSceneObjectCBPool)
 	{
@@ -371,15 +377,16 @@ void FDrawCommandBuilder::BuildCommands(const FFrameContext& Frame, FScene* Scen
 void FDrawCommandBuilder::BuildProxyCommands(const FFrameContext& Frame, FScene& Scene, const FCollectOutput& Output)
 {
 	const bool bShowBoundingVolume = Frame.RenderOptions.ShowFlags.bBoundingVolume;
-	const bool bIsEditor = (Frame.WorldType == EWorldType::Editor);
-	const bool bShowCollision = bIsEditor
-		? (Frame.RenderOptions.ShowFlags.bCollision || Frame.RenderOptions.ShowFlags.bShowCollisionShape)
-		: Frame.RenderOptions.ShowFlags.bShowCollisionShape;
+	const bool bShowCollision = Frame.RenderOptions.ShowFlags.bShowCollisionShape;
 
 	for (FPrimitiveSceneProxy* Proxy : Output.RenderableProxies)
 	{
 		if (Proxy->HasProxyFlag(EPrimitiveProxyFlags::BoneDebug))
 		{
+			if (!Frame.RenderOptions.ShowFlags.bBones)
+			{
+				continue;
+			}
 			const FBoneDebugSceneProxy* BoneProxy = static_cast<const FBoneDebugSceneProxy*>(Proxy);
 			for (const FWireLine& Line : BoneProxy->GetCachedLines())
 			{
@@ -636,6 +643,7 @@ void FDrawCommandBuilder::PrepareDynamicGeometry(const FFrameContext& Frame, con
 void FDrawCommandBuilder::BuildDynamicDrawCommands(const FFrameContext& Frame, const FScene* Scene)
 {
 	EViewMode ViewMode = Frame.RenderOptions.ViewMode;
+	BuildTranslucentDebugMeshCommands(Frame, Scene);
 	BuildEditorLineCommands(ViewMode);
 	BuildPostProcessCommands(Frame, Scene);
 	BuildFontCommands(ViewMode);
@@ -673,6 +681,80 @@ void FDrawCommandBuilder::BuildEditorLineCommands(EViewMode ViewMode)
 	BoneLinesRS.DepthStencil = EDepthStencilState::NoDepth;
 
 	EmitLineCommand(DebugBoneLines, EditorShader, BoneLinesRS);
+}
+
+
+// ============================================================
+// BuildTranslucentDebugMeshCommands — editor-only translucent solid overlays
+// ============================================================
+void FDrawCommandBuilder::BuildTranslucentDebugMeshCommands(const FFrameContext& Frame, const FScene* Scene)
+{
+	if (!Scene || Scene->GetTranslucentDebugMeshes().empty())
+	{
+		return;
+	}
+
+	TArray<FVertex> Vertices;
+	TArray<uint32> Indices;
+	Vertices.reserve(2048);
+	Indices.reserve(4096);
+
+	FVector SortCenter = FVector::ZeroVector;
+	uint32 MeshCount = 0;
+
+	for (const FScene::FTranslucentDebugMesh& Mesh : Scene->GetTranslucentDebugMeshes())
+	{
+		if (Mesh.Vertices.empty() || Mesh.Indices.empty())
+		{
+			continue;
+		}
+
+		const uint32 BaseVertex = static_cast<uint32>(Vertices.size());
+		Vertices.insert(Vertices.end(), Mesh.Vertices.begin(), Mesh.Vertices.end());
+		for (uint32 Index : Mesh.Indices)
+		{
+			Indices.push_back(BaseVertex + Index);
+		}
+		SortCenter += Mesh.Center;
+		++MeshCount;
+	}
+
+	if (Vertices.empty() || Indices.empty())
+	{
+		return;
+	}
+
+	TranslucentDebugVB.EnsureCapacity(CachedDevice, static_cast<uint32>(Vertices.size()));
+	TranslucentDebugIB.EnsureCapacity(CachedDevice, static_cast<uint32>(Indices.size()));
+	if (!TranslucentDebugVB.Update(CachedContext, Vertices.data(), static_cast<uint32>(Vertices.size())))
+	{
+		return;
+	}
+	if (!TranslucentDebugIB.Update(CachedContext, Indices.data(), static_cast<uint32>(Indices.size())))
+	{
+		return;
+	}
+
+	FPerObjectConstants PerObject = FPerObjectConstants::FromWorldMatrix(FMatrix::Identity);
+	PerObject.Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+	TranslucentDebugPerObjectCB.Update(CachedContext, &PerObject, sizeof(FPerObjectConstants));
+
+	FDrawCommand& Cmd = DrawCommandList.AddCommand();
+	Cmd.Pass = ERenderPass::AlphaBlend;
+	Cmd.Shader = FShaderManager::Get().GetOrCreate(EShaderPath::Primitive);
+	Cmd.RenderState = PassRenderStateTable->ToDrawCommandState(ERenderPass::AlphaBlend, CollectViewMode);
+	Cmd.RenderState.DepthStencil = EDepthStencilState::NoDepth;
+	Cmd.RenderState.Blend = EBlendState::AlphaBlend;
+	Cmd.RenderState.Rasterizer = ERasterizerState::SolidNoCull;
+	Cmd.Buffer = { TranslucentDebugVB.GetBuffer(), TranslucentDebugVB.GetStride(), TranslucentDebugIB.GetBuffer() };
+	Cmd.Buffer.IndexCount = static_cast<uint32>(Indices.size());
+	Cmd.PerObjectCB = &TranslucentDebugPerObjectCB;
+	if (MeshCount > 0)
+	{
+		SortCenter = SortCenter / static_cast<float>(MeshCount);
+	}
+	Cmd.SortDepth = (SortCenter - Frame.CameraPosition).Dot(Frame.CameraForward);
+	Cmd.BuildSortKey(15);
 }
 
 // ============================================================

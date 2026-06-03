@@ -26,6 +26,7 @@ struct FShowFlags
 {
 	bool bStaticMesh = true;
 	bool bSkeletalMesh = true;
+	bool bBones = false;		// SkeletalMesh bone debug overlay
 	bool bGrid = true;
 	bool bWorldAxis = true;
 	bool bGizmo = true;
@@ -40,8 +41,11 @@ struct FShowFlags
 	bool bViewLightCulling = false;
 	bool bVisualize25DCulling = false;
 	bool bShowShadowFrustum = false;
-	bool bCollision = true;
-	bool bShowCollisionShape = false;	// PIE/Game에서 콘솔로 콜리전 shape 와이어프레임 강제 표시
+	bool bCollision = false;	// Deprecated: Collision Shape와 중복되어 UI에서는 노출하지 않음
+	bool bShowCollisionShape = false;	// 콜리전 shape 와이어프레임 표시
+	bool bPhysicsBodyShapes = false;	// PhysicsAsset body shape overlay
+	bool bPhysicsBodyLines = false;	// PhysicsAsset body wire overlay
+	bool bPhysicsConstraints = false;	// PhysicsAsset constraint overlay
 };
 
 // 뷰포트 카메라 프리셋 (Perspective / 6방향 Orthographic)

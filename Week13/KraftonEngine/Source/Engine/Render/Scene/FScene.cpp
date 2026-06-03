@@ -1,4 +1,4 @@
-﻿#include "Render/Scene/FScene.h"
+#include "Render/Scene/FScene.h"
 #include "Component/PrimitiveComponent.h"
 #include "GameFramework/AActor.h"
 #include "Profiling/Stats.h"
@@ -308,6 +308,7 @@ void FScene::ClearFrameData()
 	OverlayTexts.clear();
 	DebugAABBs.clear();
 	DebugLines.clear();
+	TranslucentDebugMeshes.clear();
 	Grid = {};
 }
 
@@ -324,6 +325,12 @@ void FScene::AddDebugAABB(const FVector& Min, const FVector& Max, const FColor& 
 void FScene::AddDebugLine(const FVector& Start, const FVector& End, const FColor& Color, bool bAlwaysOnTop)
 {
 	DebugLines.push_back({ Start, End, Color, bAlwaysOnTop });
+}
+
+FScene::FTranslucentDebugMesh& FScene::AddTranslucentDebugMesh()
+{
+	TranslucentDebugMeshes.push_back({});
+	return TranslucentDebugMeshes.back();
 }
 
 void FScene::SetGrid(float Spacing, int32 HalfLineCount)

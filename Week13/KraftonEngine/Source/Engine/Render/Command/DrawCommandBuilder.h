@@ -1,9 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include "Render/Command/DrawCommandList.h"
 #include "Render/Types/FrameContext.h"
 #include "Render/Geometry/LineGeometry.h"
 #include "Render/Geometry/FontGeometry.h"
+#include "Render/Resource/Buffer.h"
 #include "Render/Proxy/PrimitiveSceneProxy.h"
 
 class FPassRenderStateTable;
@@ -55,6 +56,7 @@ private:
 
 	// BuildDynamicDrawCommands 서브 메서드
 	void BuildEditorLineCommands(EViewMode ViewMode);
+	void BuildTranslucentDebugMeshCommands(const FFrameContext& Frame, const FScene* Scene);
 	void BuildPostProcessCommands(const FFrameContext& Frame, const FScene* Scene);
 	void BuildFontCommands(EViewMode ViewMode);
 
@@ -84,6 +86,9 @@ private:
 	FLineGeometry  GridLines;
 	FLineGeometry  DebugBoneLines;
 	FFontGeometry  FontGeometry;
+	FDynamicVertexBuffer TranslucentDebugVB;
+	FDynamicIndexBuffer  TranslucentDebugIB;
+	FConstantBuffer TranslucentDebugPerObjectCB;
 
 	// PerObject CB 풀
 	TMap<FScene*, TArray<FConstantBuffer>> PerSceneObjectCBPool;
