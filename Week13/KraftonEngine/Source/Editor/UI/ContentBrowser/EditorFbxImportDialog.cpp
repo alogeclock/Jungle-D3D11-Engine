@@ -647,7 +647,7 @@ void FEditorFbxImportDialog::RenderPhysicsAssetOptions()
 	}
 
 	ImGui::SetNextItemWidth(180.0f);
-	ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+	ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 0.1f, 1000.0f);
 	ImGui::Checkbox("Auto Orient", &PhysicsAssetCreateParams.bAutoOrientToBone);
 	ImGui::Checkbox("Create Constraints", &PhysicsAssetCreateParams.bCreateConstraints);
 	ImGui::EndDisabled();

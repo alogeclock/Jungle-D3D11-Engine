@@ -1137,7 +1137,7 @@ void FEditorContentBrowserWidget::RenderPhysicsAssetCreatePopup()
 	if (ImGui::CollapsingHeader("Body Creation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::SetNextItemWidth(180.0f);
-		ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+		ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 0.1f, 1000.0f);
 
 		int32 PrimitiveType = static_cast<int32>(PhysicsAssetCreateParams.PrimitiveType);
 		const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
