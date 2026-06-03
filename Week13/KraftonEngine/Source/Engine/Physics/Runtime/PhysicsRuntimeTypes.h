@@ -59,8 +59,30 @@ struct FPhysicsStepInfo
 struct FPhysicsRuntimeStats
 {
     int32 BodyCount       = 0;
+    int32 DynamicBodyCount = 0;
+    int32 ActiveBodyCount = 0;
+    int32 SleepingBodyCount = 0;
     int32 ConstraintCount = 0;
     int32 ContactCount    = 0;
+    int32 ContactPairCount = 0;
+    int32 ContactPointCount = 0;
+    int32 ActiveRagdollCount = 0;
+    int32 ActivePerBodyRagdollCount = 0;
+    int32 ActiveAggregateRagdollCount = 0;
+    int32 RagdollBodyCount = 0;
+    int32 RagdollConstraintCount = 0;
+    int32 AggregateCount = 0;
+    int32 AggregateActorCount = 0;
+    int32 PerBodyActorCount = 0;
+    int32 SolverPositionIterationCount = 0;
+    int32 SolverVelocityIterationCount = 0;
+    int32 SolverConstraintCount = 0;
+    int32 SolverContactCount = 0;
+    float PreSimTimeMs = 0.0f;
+    float SimulateTimeMs = 0.0f;
+    float FetchResultsTimeMs = 0.0f;
+    float PostSyncTimeMs = 0.0f;
+    float TotalPhysicsTimeMs = 0.0f;
     float StepTimeMs      = 0.0f;
     float SyncTimeMs      = 0.0f;
 };

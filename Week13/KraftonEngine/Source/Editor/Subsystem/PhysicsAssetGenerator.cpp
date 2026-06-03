@@ -1075,6 +1075,7 @@ bool FPhysicsAssetGenerator::PopulatePhysicsAssetFromSkeletalMesh(UPhysicsAsset 
 
     ResetPhysicsAsset(PhysicsAsset);
     PhysicsAsset->SetPreviewSkeletalMeshPath(FPaths::MakeProjectRelative(SkeletalMeshPath));
+    PhysicsAsset->SetRagdollMode(CreateParams.RagdollMode);
 
     TMap<int32, UPhysicsBodySetup *> BodyByBoneIndex;
     BuildGeneratedPhysicsBodies(PhysicsAsset, SkeletalMesh->GetSkeletalMeshAsset(), SkeletonAsset, CreateParams,

@@ -36,6 +36,25 @@ inline FArchive& operator<<(FArchive& Ar, FPhysicsAssetGraphViewState& ViewState
     return Ar;
 }
 
+enum class EPhysicsAssetRagdollMode : uint8
+{
+    PerBody = 0,
+    PxAggregate,
+};
+
+inline const char* PhysicsAssetRagdollModeToString(EPhysicsAssetRagdollMode Mode)
+{
+    switch (Mode)
+    {
+    case EPhysicsAssetRagdollMode::PerBody:
+        return "Per-Body";
+    case EPhysicsAssetRagdollMode::PxAggregate:
+        return "PxAggregate";
+    default:
+        return "Per-Body";
+    }
+}
+
 /** SkeletalMesh에 적용되는 Physics Asset */
 UCLASS()
 class UPhysicsAsset : public UObject
@@ -72,6 +91,9 @@ public:
     void SetPreviewSkeletalMeshPath(const FString& InPath) { PreviewSkeletalMeshPath = InPath; }
     const FString& GetPreviewSkeletalMeshPath() const { return PreviewSkeletalMeshPath; }
 
+    void SetRagdollMode(EPhysicsAssetRagdollMode InMode) { RagdollMode = InMode; }
+    EPhysicsAssetRagdollMode GetRagdollMode() const { return RagdollMode; }
+
     const FPhysicsAssetGraphViewState& GetGraphViewState() const { return GraphViewState; }
     FPhysicsAssetGraphViewState& GetMutableGraphViewState() { return GraphViewState; }
 
@@ -82,5 +104,6 @@ private:
     TArray<FPhysicsConstraintSetup> ConstraintSetups;
     FString                         AssetPathFileName = "None";
     FString                         PreviewSkeletalMeshPath;
+    EPhysicsAssetRagdollMode        RagdollMode = EPhysicsAssetRagdollMode::PerBody;
     FPhysicsAssetGraphViewState     GraphViewState;
 };

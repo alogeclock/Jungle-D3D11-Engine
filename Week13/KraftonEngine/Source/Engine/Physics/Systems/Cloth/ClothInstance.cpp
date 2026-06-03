@@ -2,6 +2,7 @@
 #include "Physics/Backends/NvClothSDK.h"
 #include "Mesh/StaticMeshAsset.h"
 #include "Core/Log.h"
+#include "Profiling/Stats.h"
 
 #include <NvCloth/Factory.h>
 #include <NvCloth/Fabric.h>
@@ -70,6 +71,8 @@ void FClothInstance::ClearBuildData()
     RenderRevision = 0;
     GridWidth = 0;
     GridHeight = 0;
+    LastColliderCount = 0;
+    LastCollisionTestCount = 0;
     bUseSourceMeshAttributes = false;
 }
 
@@ -481,13 +484,21 @@ void FClothInstance::ApplySimulationSettings(const FClothSimulationSettings& Set
 
 void FClothInstance::UpdateCollision(const FClothCollisionData& CollisionData)
 {
+    SCOPE_STAT_CAT("Collision", "Cloth");
+
     if (!Cloth)
     {
         return;
     }
 
-    // 캡슐은 구를 참조하고, 볼록 다면체(convex)는 평면을 참조한다.
-    // 따라서 의존 데이터부터 제거하고, sphere/plane 원본을 제거한 뒤 새 데이터를 다시 넣는다.
+    LastColliderCount =
+        static_cast<int32>(CollisionData.Spheres.size()) +
+        static_cast<int32>(CollisionData.Planes.size()) +
+        static_cast<int32>(CollisionData.Capsules.size() / 2) +
+        static_cast<int32>(CollisionData.ConvexMasks.size());
+    LastCollisionTestCount = LastColliderCount;
+
+    // 캡슐은 구를 참조하고, 볼록 다면체(convex)는 평면을 참조하므로 의존하는 데이터를 먼저 소거한다.
     Cloth->setCapsules(nv::cloth::Range<const uint32>(), 0, Cloth->getNumCapsules());
     Cloth->setConvexes(nv::cloth::Range<const uint32>(), 0, Cloth->getNumConvexes());
     Cloth->setSpheres(nv::cloth::Range<const physx::PxVec4>(), 0, Cloth->getNumSpheres());

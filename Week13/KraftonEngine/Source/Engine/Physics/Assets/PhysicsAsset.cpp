@@ -252,7 +252,7 @@ namespace
 void UPhysicsAsset::Serialize(FArchive& Ar)
 {
     constexpr uint32 PhysicsAssetVersionTag = 0x50485953u;
-    constexpr uint32 PhysicsAssetVersion = 5u;
+    constexpr uint32 PhysicsAssetVersion = 6u;
 
     uint32 BodySetupCount = 0u;
     uint32 AssetVersion = PhysicsAssetVersion;
@@ -266,6 +266,8 @@ void UPhysicsAsset::Serialize(FArchive& Ar)
         Ar << Version;
         Ar << PreviewSkeletalMeshPath;
         Ar << GraphViewState;
+        uint8 SerializedRagdollMode = static_cast<uint8>(RagdollMode);
+        Ar << SerializedRagdollMode;
     }
     else
     {
@@ -293,6 +295,17 @@ void UPhysicsAsset::Serialize(FArchive& Ar)
                 GraphViewState = FPhysicsAssetGraphViewState();
             }
 
+            if (AssetVersion >= 6u)
+            {
+                uint8 SerializedRagdollMode = 0u;
+                Ar << SerializedRagdollMode;
+                RagdollMode = static_cast<EPhysicsAssetRagdollMode>(SerializedRagdollMode);
+            }
+            else
+            {
+                RagdollMode = EPhysicsAssetRagdollMode::PerBody;
+            }
+
             Ar << BodySetupCount;
         }
         else
@@ -300,6 +313,7 @@ void UPhysicsAsset::Serialize(FArchive& Ar)
             AssetVersion = 0u;
             PreviewSkeletalMeshPath.clear();
             GraphViewState = FPhysicsAssetGraphViewState();
+            RagdollMode = EPhysicsAssetRagdollMode::PerBody;
             BodySetupCount = HeaderValue;
         }
     }

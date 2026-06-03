@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/CoreTypes.h"
+#include "Physics/Assets/PhysicsAsset.h"
 
 #include <d3d11.h>
 
@@ -55,9 +56,8 @@ struct FPhysicsAssetCreateParams
 	int32 LodIndex = 0;
 	bool bCreateConstraints = true;
 	EPhysicsAssetAngularConstraintMode AngularConstraintMode = EPhysicsAssetAngularConstraintMode::Limited;
+	EPhysicsAssetRagdollMode RagdollMode = EPhysicsAssetRagdollMode::PerBody;
 };
-
-class UPhysicsAsset;
 
 class FAssetFactory
 {

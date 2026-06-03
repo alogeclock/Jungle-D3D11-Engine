@@ -610,6 +610,11 @@ bool UWorld::TickFixedPhysics(float DeltaTime, ELevelTick TickType)
 
 		// Cloth (Soft Body) Simulation
 		PrepareClothSimulation(FixedDeltaTime);
+		{
+			SCOPE_STAT_CAT("Total Physics", "Physics");
+			PhysicsScene->Simulate(StepInfo);
+			PhysicsScene->FetchResults(true);
+		}
 		PhysicsScene->SimulateCloth(StepInfo);
 		FinalizeClothSimulation();
 

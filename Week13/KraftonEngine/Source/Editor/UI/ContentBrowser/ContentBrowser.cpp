@@ -1137,7 +1137,7 @@ void FEditorContentBrowserWidget::RenderPhysicsAssetCreatePopup()
 	if (ImGui::CollapsingHeader("Body Creation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::SetNextItemWidth(180.0f);
-		ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+		ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 0.1f, 1000.0f);
 
 		int32 PrimitiveType = static_cast<int32>(PhysicsAssetCreateParams.PrimitiveType);
 		const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
@@ -1145,6 +1145,14 @@ void FEditorContentBrowserWidget::RenderPhysicsAssetCreatePopup()
 		if (ImGui::Combo("Primitive Type", &PrimitiveType, PrimitiveLabels, IM_ARRAYSIZE(PrimitiveLabels)))
 		{
 			PhysicsAssetCreateParams.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
+		}
+
+		int32 RagdollMode = static_cast<int32>(PhysicsAssetCreateParams.RagdollMode);
+		const char* RagdollModeLabels[] = { "Per-Body", "PxAggregate" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Body Grouping", &RagdollMode, RagdollModeLabels, IM_ARRAYSIZE(RagdollModeLabels)))
+		{
+			PhysicsAssetCreateParams.RagdollMode = static_cast<EPhysicsAssetRagdollMode>(RagdollMode);
 		}
 
 		int32 BodyGenerationMethod = static_cast<int32>(PhysicsAssetCreateParams.BodyGenerationMethod);

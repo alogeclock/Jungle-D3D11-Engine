@@ -408,6 +408,7 @@ bool FPhysicsAssetManager::SaveAsJson(UPhysicsAsset* Asset, const FString& Overr
     Root["ClassName"] = "PhysicsAsset";
     Root["AssetPath"] = Asset->GetAssetPathFileName();
     Root["PreviewSkeletalMeshPath"] = Asset->GetPreviewSkeletalMeshPath();
+    Root["RagdollMode"] = PhysicsAssetRagdollModeToString(Asset->GetRagdollMode());
 
     json::JSON GraphView = json::Object();
     GraphView["Pan"] = SerializeVector(FVector(Asset->GetGraphViewState().Pan.X, Asset->GetGraphViewState().Pan.Y, 0.0f));

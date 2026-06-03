@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Core/CoreTypes.h"
 #include "Core/CollisionTypes.h"
 #include "Math/Transform.h"
 #include "Math/Vector.h"
@@ -45,6 +46,20 @@ public:
         UPrimitiveComponent* OwnerComponent,
         const FPhysicsBodyDesc& BodyDesc) = 0;
     virtual FPhysicsBodyInstance* CreateBodyAtTransform(UPrimitiveComponent* OwnerComponent, const FPhysicsBodyDesc& BodyDesc, const FTransform& WorldTransform, bool bSyncOwnerTransform = false) = 0;
+    virtual bool SupportsAggregateRagdolls() const { return false; }
+    virtual void* CreateAggregateHandle(uint32 /*MaxActorCount*/, bool /*bEnableSelfCollision*/) { return nullptr; }
+    virtual void DestroyAggregateHandle(void* /*AggregateHandle*/) {}
+    virtual FPhysicsBodyInstance* CreateBodyAtTransformInAggregate(
+        UPrimitiveComponent* OwnerComponent,
+        const FPhysicsBodyDesc& BodyDesc,
+        const FTransform& WorldTransform,
+        void* /*AggregateHandle*/,
+        bool bSyncOwnerTransform = false)
+    {
+        return CreateBodyAtTransform(OwnerComponent, BodyDesc, WorldTransform, bSyncOwnerTransform);
+    }
+    virtual void RegisterRagdollInstanceStats(bool /*bUsingAggregate*/, int32 /*BodyCount*/, int32 /*ConstraintCount*/) {}
+    virtual void UnregisterRagdollInstanceStats(bool /*bUsingAggregate*/, int32 /*BodyCount*/, int32 /*ConstraintCount*/) {}
     virtual void DestroyBody(FPhysicsBodyInstance* BodyInstance) = 0;
     virtual bool GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const = 0;
     virtual void SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform) = 0;
