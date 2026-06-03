@@ -26,6 +26,7 @@ private:
     TArray<FPhysicsConstraintInstance*> Constraints;
     TArray<FMatrix> InitialLocalPose;
     TArray<FMatrix> InitialComponentPose;
+    void* AggregateHandle = nullptr;
     FVector StartScale = FVector::OneVector;
     bool bInitialized = false;
 };

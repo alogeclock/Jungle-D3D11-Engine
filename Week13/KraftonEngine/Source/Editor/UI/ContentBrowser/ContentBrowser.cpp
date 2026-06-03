@@ -1147,6 +1147,14 @@ void FEditorContentBrowserWidget::RenderPhysicsAssetCreatePopup()
 			PhysicsAssetCreateParams.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
 		}
 
+		int32 RagdollMode = static_cast<int32>(PhysicsAssetCreateParams.RagdollMode);
+		const char* RagdollModeLabels[] = { "Per-Body", "PxAggregate" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Body Grouping", &RagdollMode, RagdollModeLabels, IM_ARRAYSIZE(RagdollModeLabels)))
+		{
+			PhysicsAssetCreateParams.RagdollMode = static_cast<EPhysicsAssetRagdollMode>(RagdollMode);
+		}
+
 		int32 BodyGenerationMethod = static_cast<int32>(PhysicsAssetCreateParams.BodyGenerationMethod);
 		const char* BodyGenerationLabels[] = { "Vertex Weight", "Bone Length" };
 		ImGui::SetNextItemWidth(180.0f);

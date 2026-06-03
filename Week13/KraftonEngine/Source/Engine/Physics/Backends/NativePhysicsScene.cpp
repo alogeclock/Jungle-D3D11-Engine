@@ -5,6 +5,17 @@
 #include "GameFramework/AActor.h"
 
 #include <algorithm>
+#include <chrono>
+
+namespace
+{
+    double GetNativePhysicsTimeMs()
+    {
+        using Clock = std::chrono::high_resolution_clock;
+        using Ms = std::chrono::duration<double, std::milli>;
+        return std::chrono::duration_cast<Ms>(Clock::now().time_since_epoch()).count();
+    }
+}
 
 // ============================================================
 // Lifecycle
@@ -197,6 +208,7 @@ void FNativePhysicsScene::RebuildBody(UPrimitiveComponent* Comp)
 
 void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 {
+    const double StepStartMs = GetNativePhysicsTimeMs();
     if (!World) return;
     const float DeltaTime = StepInfo.DeltaTime;
 
@@ -363,6 +375,8 @@ void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
     PreviousBlockPairs = CurrentBlockPairs;
 
     GetMutableRuntimeStats().ContactCount = static_cast<int32>(CurrentBlockPairs.size());
+    GetMutableRuntimeStats().StepTimeMs = static_cast<float>(GetNativePhysicsTimeMs() - StepStartMs);
+    GetMutableRuntimeStats().SyncTimeMs = 0.0f;
 }
 
 void FNativePhysicsScene::FetchResults(bool /*bBlock*/)
