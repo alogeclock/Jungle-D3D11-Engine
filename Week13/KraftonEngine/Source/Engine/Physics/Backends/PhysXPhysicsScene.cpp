@@ -21,12 +21,23 @@
 #include <PxPhysicsAPI.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <utility>
 
 using namespace physx;
 
 static float PxVecLength(const PxVec3& V);
+
+namespace
+{
+	double GetPhysXSceneTimeMs()
+	{
+		using Clock = std::chrono::high_resolution_clock;
+		using Ms = std::chrono::duration<double, std::milli>;
+		return std::chrono::duration_cast<Ms>(Clock::now().time_since_epoch()).count();
+	}
+}
 
 // ============================================================
 // PhysX Error Callback
@@ -695,6 +706,82 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 	const FTransform& WorldTransform,
 	bool bSyncOwnerTransform)
 {
+	return CreateBodyAtTransformInternal(OwnerComponent, BodyDesc, WorldTransform, bSyncOwnerTransform, nullptr);
+}
+
+void* FPhysXPhysicsScene::CreateAggregateHandle(uint32 MaxActorCount, bool bEnableSelfCollision)
+{
+	if (!Scene || !Physics)
+	{
+		return nullptr;
+	}
+
+	const PxU32 SafeActorCount = static_cast<PxU32>((std::clamp)(MaxActorCount, 1u, 128u));
+	WaitForSimulation();
+
+	PxAggregate* Aggregate = Physics->createAggregate(SafeActorCount, bEnableSelfCollision);
+	if (!Aggregate)
+	{
+		return nullptr;
+	}
+
+	bool bAddedToScene = false;
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		Scene->addAggregate(*Aggregate);
+		bAddedToScene = true;
+	}
+
+	if (!bAddedToScene)
+	{
+		Aggregate->release();
+		return nullptr;
+	}
+
+	GetMutableRuntimeStats().AggregateCount += 1;
+	return static_cast<void*>(Aggregate);
+}
+
+void FPhysXPhysicsScene::DestroyAggregateHandle(void* AggregateHandle)
+{
+	PxAggregate* Aggregate = static_cast<PxAggregate*>(AggregateHandle);
+	if (!Aggregate)
+	{
+		return;
+	}
+
+	WaitForSimulation();
+	if (Scene)
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		Scene->removeAggregate(*Aggregate);
+	}
+	Aggregate->release();
+	GetMutableRuntimeStats().AggregateCount = (std::max)(0, GetMutableRuntimeStats().AggregateCount - 1);
+}
+
+FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransformInAggregate(
+	UPrimitiveComponent* OwnerComponent,
+	const FPhysicsBodyDesc& BodyDesc,
+	const FTransform& WorldTransform,
+	void* AggregateHandle,
+	bool bSyncOwnerTransform)
+{
+	return CreateBodyAtTransformInternal(
+		OwnerComponent,
+		BodyDesc,
+		WorldTransform,
+		bSyncOwnerTransform,
+		static_cast<PxAggregate*>(AggregateHandle));
+}
+
+FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransformInternal(
+	UPrimitiveComponent* OwnerComponent,
+	const FPhysicsBodyDesc& BodyDesc,
+	const FTransform& WorldTransform,
+	bool bSyncOwnerTransform,
+	PxAggregate* Aggregate)
+{
 	if (!Scene || !Physics || !DefaultMaterial || BodyDesc.Shapes.empty())
 	{
 		return nullptr;
@@ -772,9 +859,29 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 	}
 
 	Actor->userData = OwnerComponent ? OwnerComponent->GetOwner() : nullptr;
+	bool bAddedToRuntime = false;
 	{
 		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-		Scene->addActor(*Actor);
+		if (Aggregate)
+		{
+			bAddedToRuntime = Aggregate->addActor(*Actor);
+		}
+		else
+		{
+			Scene->addActor(*Actor);
+			bAddedToRuntime = true;
+		}
+	}
+
+	if (!bAddedToRuntime)
+	{
+		Actor->release();
+		return nullptr;
+	}
+
+	if (Aggregate)
+	{
+		GetMutableRuntimeStats().AggregateActorCount += 1;
 	}
 
 	if (bSyncOwnerTransform && OwnerComponent)
@@ -816,7 +923,15 @@ void FPhysXPhysicsScene::DestroyBody(FPhysicsBodyInstance* BodyInstance)
 			SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
 			if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
 			{
-				Scene->removeActor(*Actor);
+				if (PxAggregate* Aggregate = Actor->getAggregate())
+				{
+					Aggregate->removeActor(*Actor);
+					GetMutableRuntimeStats().AggregateActorCount = (std::max)(0, GetMutableRuntimeStats().AggregateActorCount - 1);
+				}
+				else
+				{
+					Scene->removeActor(*Actor);
+				}
 				Actor->release();
 			}
 		}
@@ -1326,6 +1441,7 @@ void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 	SyncEngineTransformsToPhysX();
 
 	UpdateVehicles(DeltaTime);
+	GetMutableRuntimeStats().StepTimeMs = 0.0f;
 	Scene->simulate(DeltaTime);
 	bSimulationInFlight.store(true);
 }
@@ -1334,6 +1450,7 @@ void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 void FPhysXPhysicsScene::FetchResults(bool bBlock)
 {
 	if (!Scene) return;
+	const double FetchStartMs = GetPhysXSceneTimeMs();
 	if (bSimulationInFlight.load())
 	{
 		if (!Scene->fetchResults(bBlock))
@@ -1342,7 +1459,9 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
 		}
 		bSimulationInFlight.store(false);
 	}
+	GetMutableRuntimeStats().StepTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - FetchStartMs);
 
+	const double SyncStartMs = GetPhysXSceneTimeMs();
 	{
 		SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
 		for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
@@ -1374,6 +1493,7 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
 	FlushDeferredSceneCommands();
 
 	GetMutableRuntimeStats().ContactCount = 0; // PhysX 측 contact 수는 콜백에서 집계 가능 (현재 생략)
+	GetMutableRuntimeStats().SyncTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - SyncStartMs);
 }
 
 // ============================================================

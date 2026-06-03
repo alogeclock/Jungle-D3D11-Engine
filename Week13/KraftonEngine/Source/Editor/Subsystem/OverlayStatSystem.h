@@ -41,18 +41,21 @@ public:
 	void ShowShadow(bool bEnable = true) { bShowShadow = bEnable; }
 	void ShowSkinning(bool bEnable = true) { bShowSkinning = bEnable; }
 	void ShowParticle(bool bEnable = true) { bShowParticle = bEnable; }
+	void ShowPhysics(bool bEnable = true) { bShowPhysics = bEnable; }
 	void ShowVehicle(bool bEnable = true) { bShowVehicle = bEnable; }
 	bool IsShowingFPS() const { return bShowFPS; }
 	bool IsShowingMemory() const { return bShowMemory; }
 	bool IsShowingShadow() const { return bShowShadow; }
 	bool IsShowingSkinning() const { return bShowSkinning; }
 	bool IsShowingParticle() const { return bShowParticle; }
+	bool IsShowingPhysics() const { return bShowPhysics; }
 	bool IsShowingVehicle() const { return bShowVehicle; }
 	bool ToggleFPS() { bShowFPS = !bShowFPS; return bShowFPS; }
 	bool ToggleMemory() { bShowMemory = !bShowMemory; return bShowMemory; }
 	bool ToggleShadow() { bShowShadow = !bShowShadow; return bShowShadow; }
 	bool ToggleSkinning() { bShowSkinning = !bShowSkinning; return bShowSkinning; }
 	bool ToggleParticle() { bShowParticle = !bShowParticle; return bShowParticle; }
+	bool TogglePhysics() { bShowPhysics = !bShowPhysics; return bShowPhysics; }
 	bool ToggleVehicle() { bShowVehicle = !bShowVehicle; return bShowVehicle; }
 	void RecordPickingAttempt(double ElapsedMs);
 	void HideAll()
@@ -63,6 +66,7 @@ public:
 		bShowShadow = false;
 		bShowSkinning = false;
 		bShowParticle = false;
+		bShowPhysics = false;
 		bShowVehicle = false;
 	}
 
@@ -80,6 +84,7 @@ private:
 	void BuildShadowLines(TArray<FStatRow>& OutRows) const;
 	void BuildSkinningLines(TArray<FStatRow>& OutRows) const;
 	void BuildParticleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildPhysicsLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
 	void BuildVehicleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
 
 	bool bShowFPS = false;
@@ -88,6 +93,7 @@ private:
 	bool bShowShadow = false;
 	bool bShowSkinning = false;
 	bool bShowParticle = false;
+	bool bShowPhysics = false;
 	bool bShowVehicle = false;
 	double LastPickingTimeMs = 0.0;
 	double AccumulatedPickingTimeMs = 0.0;

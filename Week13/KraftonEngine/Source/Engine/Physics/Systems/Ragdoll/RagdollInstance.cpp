@@ -207,6 +207,32 @@ bool FRagdollInstance::Initialize(
 	Bodies.reserve(BodySetups.size());
 	BodyToBoneIndex.reserve(BodySetups.size());
 
+	const EPhysicsAssetRagdollMode RequestedRagdollMode = PhysicsAsset->GetRagdollMode();
+	const bool bRequestAggregate = RequestedRagdollMode == EPhysicsAssetRagdollMode::PxAggregate;
+	if (bRequestAggregate && !Scene->SupportsAggregateRagdolls())
+	{
+		UE_LOG("[RagdollBuildModeFallback] Owner=%s RequestedMode=%s backend does not support aggregates. Falling back to Per-Body.",
+			MeshComp->GetName().c_str(),
+			PhysicsAssetRagdollModeToString(RequestedRagdollMode));
+	}
+	else if (bRequestAggregate && BodySetups.size() > 128)
+	{
+		UE_LOG("[RagdollBuildModeFallback] Owner=%s RequestedMode=%s BodyCount=%d exceeds PhysX aggregate capacity. Falling back to Per-Body.",
+			MeshComp->GetName().c_str(),
+			PhysicsAssetRagdollModeToString(RequestedRagdollMode),
+			static_cast<int32>(BodySetups.size()));
+	}
+	else if (bRequestAggregate)
+	{
+		AggregateHandle = Scene->CreateAggregateHandle(static_cast<uint32>(BodySetups.size()), true);
+		if (!AggregateHandle)
+		{
+			UE_LOG("[RagdollBuildModeFallback] Owner=%s RequestedMode=%s aggregate creation failed. Falling back to Per-Body.",
+				MeshComp->GetName().c_str(),
+				PhysicsAssetRagdollModeToString(RequestedRagdollMode));
+		}
+	}
+
 	for (UPhysicsBodySetup* BodySetup : BodySetups)
 	{
 		if (!BodySetup)
@@ -255,8 +281,9 @@ bool FRagdollInstance::Initialize(
 				ShapeDesc.LocalTransform.Rotation.Z, ShapeDesc.LocalTransform.Rotation.W);
 		}
 
-		FPhysicsBodyInstance* BodyInstance =
-			Scene->CreateBodyAtTransform(MeshComp, BodyDesc, BoneWorldTransform, false);
+		FPhysicsBodyInstance* BodyInstance = AggregateHandle
+			? Scene->CreateBodyAtTransformInAggregate(MeshComp, BodyDesc, BoneWorldTransform, AggregateHandle, false)
+			: Scene->CreateBodyAtTransform(MeshComp, BodyDesc, BoneWorldTransform, false);
 		if (!BodyInstance)
 		{
 			UE_LOG("[RagdollBuildBodyError] Owner=%s Bone=%s failed to create runtime body",
@@ -335,6 +362,10 @@ bool FRagdollInstance::Initialize(
 		static_cast<int32>(Constraints.size()),
 		static_cast<int32>(ConstraintSetups.size()));
 
+	Scene->RegisterRagdollInstanceStats(
+		AggregateHandle != nullptr,
+		static_cast<int32>(Bodies.size()),
+		static_cast<int32>(Constraints.size()));
 	bInitialized = true;
 	return true;
 }
@@ -434,6 +465,13 @@ void FRagdollInstance::Release(IPhysicsSceneInterface* Scene)
 {
 	if (Scene)
 	{
+		if (bInitialized)
+		{
+			Scene->UnregisterRagdollInstanceStats(
+				AggregateHandle != nullptr,
+				static_cast<int32>(Bodies.size()),
+				static_cast<int32>(Constraints.size()));
+		}
 		for (FPhysicsConstraintInstance* ConstraintInstance : Constraints)
 		{
 			Scene->DestroyConstraint(ConstraintInstance);
@@ -442,6 +480,15 @@ void FRagdollInstance::Release(IPhysicsSceneInterface* Scene)
 		{
 			Scene->DestroyBody(BodyInstance);
 		}
+		if (AggregateHandle)
+		{
+			Scene->DestroyAggregateHandle(AggregateHandle);
+			AggregateHandle = nullptr;
+		}
+	}
+	else
+	{
+		AggregateHandle = nullptr;
 	}
 
 	Constraints.clear();

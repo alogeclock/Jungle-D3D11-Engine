@@ -89,6 +89,7 @@ private:
 	void StopPreviewSimulation(bool bResetPose);
 	void ResetPreviewSimulation(UPhysicsAsset* PhysicsAsset);
 	void TickPreviewSimulation(float DeltaTime);
+	void RestorePreviewMeshToEditorPose();
 	void SetEditorPreviewOverlaysVisible(bool bVisible);
 
 	void SelectBodyShape(int32 BodyIndex, EPhysicsAssetPreviewShapeType ShapeType, int32 ShapeIndex);
@@ -133,6 +134,7 @@ private:
 	FVector PreviewShapeTint = FVector(1.0f, 1.0f, 1.0f);
 	float PreviewBaseShapeOpacity = 0.3f;
 	float PreviewConstraintShapeOpacity = 0.3f;
+	bool bShowPreviewBodies = true;
 	bool bShowConstraintDebug = true;
 	float ConstraintAxisLength = 0.1f;
 

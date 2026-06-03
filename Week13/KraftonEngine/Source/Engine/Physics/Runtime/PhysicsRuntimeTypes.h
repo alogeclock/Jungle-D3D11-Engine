@@ -61,6 +61,13 @@ struct FPhysicsRuntimeStats
     int32 BodyCount       = 0;
     int32 ConstraintCount = 0;
     int32 ContactCount    = 0;
+    int32 ActiveRagdollCount = 0;
+    int32 ActivePerBodyRagdollCount = 0;
+    int32 ActiveAggregateRagdollCount = 0;
+    int32 RagdollBodyCount = 0;
+    int32 RagdollConstraintCount = 0;
+    int32 AggregateCount = 0;
+    int32 AggregateActorCount = 0;
     float StepTimeMs      = 0.0f;
     float SyncTimeMs      = 0.0f;
 };
