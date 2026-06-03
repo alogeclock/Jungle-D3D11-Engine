@@ -654,8 +654,13 @@
             "Center Of Mass Offset" : [0.000000, 0.000000, -0.250000],
             "Chassis Mass" : 1200.000000,
             "Clutch Strength" : 10.000000,
-            "Draw Vehicle Debug" : false,
             "Drive Type" : 2,
+            "Enable Vehicle Audio" : true,
+            "Engine Idle Pitch" : 0.750000,
+            "Engine Loop Name" : "",
+            "Engine Loop Sound Key" : "CarIdleLoop",
+            "Engine Loop Volume" : 1.000000,
+            "Engine Max Pitch" : 2.600000,
             "Handbrake Torque" : 4000.000000,
             "Max Brake Torque" : 3000.000000,
             "Max Compression" : 0.300000,
@@ -672,6 +677,7 @@
             "Wheel Radius" : 0.400000,
             "Wheel Width" : 0.200000,
             "Wheel Z Offset" : -0.350000,
+            "bDrawDebug" : false,
             "bEditorOnly" : false,
             "bHiddenInComponentTree" : false,
             "bIsActive" : true,
@@ -929,7 +935,7 @@
               "Cast Shadow" : true,
               "Cast Shadow as Two-Sided" : false,
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
-              "Collision Enabled" : 0,
+              "Collision Enabled" : 3,
               "Enable Gravity" : true,
               "Generate Overlap Events" : false,
               "Is Visible" : true,
@@ -975,7 +981,7 @@
         "ClassName" : "UBoxComponent",
         "Properties" : {
           "Auto Activate" : true,
-          "Auto Create Physics Body" : false,
+          "Auto Create Physics Body" : true,
           "Box Extent" : [1.200000, 0.600000, 0.350000],
           "Cast Shadow" : false,
           "Cast Shadow as Two-Sided" : false,
@@ -988,7 +994,7 @@
           "Mass (Kg)" : 1.000000,
           "Object Type" : 3,
           "RelativeTransform" : {
-            "Location" : [-4.114344, -22.947918, 128.113358],
+            "Location" : [0.000000, 0.000000, 3.000000],
             "Scale" : [1.000000, 1.000000, 1.000000]
           },
           "Response Container" : {
@@ -1013,7 +1019,58 @@
       }
     }, {
       "ClassName" : "AStaticMeshActor",
-      "Name" : "AStaticMeshActor_32",
+      "Name" : "AStaticMeshActor_41",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 3,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/CubeGrid/SM_CubeGrid_M_CubeGrid.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [0.000000, 0.000000, 0.000000],
+            "Scale" : [300.000000, 300.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/CubeGrid/SM_CubeGrid_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_44",
       "NonSceneComponents" : [],
       "Properties" : {
         "Tags" : [],
@@ -1035,152 +1092,12 @@
           "Is Visible" : true,
           "Mass (Kg)" : 1.000000,
           "Materials" : [{
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_LightObj_CubeMap.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_ConcreteOutside.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_road.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_window_2.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_StadiumRoof.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_TV_MKTV.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_TV_capture.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_ScrollingLight.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_road_WhiteLine_G.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_monument.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_road_WhiteLine.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_road_G.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_kyokyaku_2.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_MARIOKART.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_concrete_road.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_kyokyaku_1.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_bush_LeafBase.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_LightObj_NoBake.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_KabeShiro.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_MichiUra.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_ef_glideboard.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_ef_gravityboard.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_ef_dashboard.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_road_MARIOKART.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_StadiumSignboard.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_bench.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_steps.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_WhiteLine.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_nuki_5.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_RoadOther.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_nuki_1.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_TeamLogo_nuki.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_PitYuka.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_LightObj.002.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_YellowWall.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_LightObj.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_tetukabe.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_nuki_4.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_signboard.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_WhiteWall_Outside.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_StartGate.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_SignPole.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_yane.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_saku.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_window_1.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_signboard_Emm.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_grass_Outside.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_suna.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_WhiteWall.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_nuki_3_CubeMap.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_nuki_3.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_truck.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_RoadOther2.002.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_shiba.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_obj_4.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_Obj_01.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_StadiumLight.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_StadiumLight_CubeMap.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_RoofParts.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_Enkei_RedLight.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_Enkei_Building_Plane.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_nuki_2.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_flower.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_StaticShadow.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_ColorRoad.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_RoadOther2_G.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_RoadOther2.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_obj_3.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_obj_2.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_pit.mat"
-            }, {
-              "Path" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_Enkei_Building_3D.mat"
+              "Path" : "Asset/Materials/Editor/DefaultDecal.mat"
             }],
           "Object Type" : 0,
           "RelativeTransform" : {
-            "Location" : [0.000000, 0.000000, 0.000000],
-            "Scale" : [5.000000, 5.000000, 5.000000]
+            "Location" : [0.000000, 0.000000, 0.001000],
+            "Scale" : [300.000000, 50.000000, 1.000000]
           },
           "Response Container" : {
             "Camera" : 2,
@@ -1193,9 +1110,139 @@
             "WorldDynamic" : 2,
             "WorldStatic" : 2
           },
-          "Rotation" : [89.900002, 0.000000, 0.000000],
+          "Rotation" : [0.000000, 0.000000, 0.000000],
           "Simulate Physics" : false,
-          "Static Mesh" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_StaticMesh.uasset",
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
+          "bEditorOnly" : false,
+          "bHiddenInComponentTree" : false,
+          "bIsActive" : true,
+          "bTickEnable" : true
+        }
+      }
+    }, {
+      "ClassName" : "AStaticMeshActor",
+      "Name" : "AStaticMeshActor_48",
+      "NonSceneComponents" : [],
+      "Properties" : {
+        "Tags" : [],
+        "bNeedsTick" : true,
+        "bVisible" : true
+      },
+      "RootComponent" : {
+        "Children" : [{
+            "Children" : [],
+            "ClassName" : "UClothComponent",
+            "Properties" : {
+              "Auto Activate" : true,
+              "Auto Create Physics Body" : true,
+              "Build Desc" : {
+                "Constraint Settings" : {
+                  "Bending Stiffness" : 0.350000,
+                  "Shear Stiffness" : 0.800000,
+                  "Structural Stiffness" : 1.000000,
+                  "Tether Stiffness" : 1.000000,
+                  "Use Bending" : true,
+                  "Use Shear" : true,
+                  "Use Tether" : true
+                },
+                "Grid Desc" : {
+                  "Height" : 12,
+                  "Pin Mode" : 2,
+                  "Spacing" : 1.000000,
+                  "Width" : 16
+                },
+                "Simulation Settings" : {
+                  "Angular Drag" : [0.000000, 0.000000, 0.000000],
+                  "Collision Mass Scale" : 3.000000,
+                  "Damping" : [0.050000, 0.050000, 0.050000],
+                  "Enable CCD" : false,
+                  "Enable Self Collision" : false,
+                  "Friction" : 0.500000,
+                  "Gravity" : [0.000000, 0.000000, -980.000000],
+                  "Linear Drag" : [0.000000, 0.000000, 0.000000],
+                  "Render Normal Offset" : 0.000000,
+                  "Simulation Mode" : 2,
+                  "Solver Frequency" : 120.000000,
+                  "Stiffness Frequency" : 180.000000,
+                  "Substep Count" : 1,
+                  "Teleport Distance Threshold" : 100.000000,
+                  "Thickness" : 4.000000
+                },
+                "Source Type" : 0
+              },
+              "Cast Shadow" : true,
+              "Cast Shadow as Two-Sided" : false,
+              "Center of Mass" : [0.000000, 0.000000, 0.000000],
+              "Collision Enabled" : 3,
+              "Enable Gravity" : true,
+              "Enable Wind" : false,
+              "Generate Overlap Events" : false,
+              "Is Visible" : true,
+              "Mass (Kg)" : 1.000000,
+              "Materials" : [{
+                  "Path" : "Asset/Mesh/Vehicles/Truck/Kids Truck_Mat1.001.mat"
+                }],
+              "Object Type" : 0,
+              "RelativeTransform" : {
+                "Location" : [0.000000, 0.000000, 0.000000],
+                "Scale" : [1.000000, 1.000000, 1.000000]
+              },
+              "Response Container" : {
+                "Camera" : 2,
+                "FootIK" : 2,
+                "Pawn" : 2,
+                "PhysicsBody" : 2,
+                "Projectile" : 2,
+                "Trigger" : 2,
+                "Visibility" : 2,
+                "WorldDynamic" : 2,
+                "WorldStatic" : 2
+              },
+              "Rotation" : [0.000000, 0.000000, 0.000000],
+              "Simulate Physics" : true,
+              "Static Mesh" : "",
+              "Wind Direction" : [1.000000, 0.000000, 0.000000],
+              "Wind Scale" : 0.000000,
+              "bEditorOnly" : false,
+              "bHiddenInComponentTree" : false,
+              "bIsActive" : true,
+              "bTickEnable" : true
+            }
+          }],
+        "ClassName" : "UStaticMeshComponent",
+        "Properties" : {
+          "Auto Activate" : true,
+          "Auto Create Physics Body" : true,
+          "Cast Shadow" : true,
+          "Cast Shadow as Two-Sided" : false,
+          "Center of Mass" : [0.000000, 0.000000, 0.000000],
+          "Collision Enabled" : 0,
+          "Enable Gravity" : true,
+          "Generate Overlap Events" : false,
+          "Is Visible" : true,
+          "Mass (Kg)" : 1.000000,
+          "Materials" : [{
+              "Path" : "Asset/Mesh/BasicShape/Cube_BasicShapeMaterial.mat"
+            }],
+          "Object Type" : 0,
+          "RelativeTransform" : {
+            "Location" : [0.000000, -15.684044, 10.504971],
+            "Scale" : [1.000000, 1.000000, 1.000000]
+          },
+          "Response Container" : {
+            "Camera" : 2,
+            "FootIK" : 2,
+            "Pawn" : 2,
+            "PhysicsBody" : 2,
+            "Projectile" : 2,
+            "Trigger" : 2,
+            "Visibility" : 2,
+            "WorldDynamic" : 2,
+            "WorldStatic" : 2
+          },
+          "Rotation" : [0.000000, 0.000000, 0.000000],
+          "Simulate Physics" : false,
+          "Static Mesh" : "Asset/Mesh/BasicShape/Cube_StaticMesh.uasset",
           "bEditorOnly" : false,
           "bHiddenInComponentTree" : false,
           "bIsActive" : true,
@@ -1210,9 +1257,9 @@
   "PerspectiveCamera" : {
     "FOV" : 1.047198,
     "FarClip" : 1000.000000,
-    "Location" : [-23.408676, -44.870724, 139.343643],
+    "Location" : [-22.036610, 20.901964, 7.016600],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 6.222222, 67.499428]
+    "Rotation" : [0.000000, 4.871946, 658.049561]
   },
   "Version" : 2,
   "WorldSettings" : {
