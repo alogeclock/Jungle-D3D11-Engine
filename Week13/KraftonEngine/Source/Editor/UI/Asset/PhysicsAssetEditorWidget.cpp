@@ -468,44 +468,6 @@ namespace
 		return bChanged;
 	}
 
-	bool RenderConvexShape(FPhysicsConvexShapeSetup& Shape)
-	{
-		bool bChanged = false;
-		bChanged |= InputFName("Name", Shape.Name);
-		bChanged |= RenderTransformEditor("Local Transform", Shape.LocalTransform);
-
-		if (ImGui::TreeNode("Vertices"))
-		{
-			if (ImGui::Button("Add Vertex"))
-			{
-				Shape.VertexData.push_back(FVector::ZeroVector);
-				bChanged = true;
-			}
-
-			for (int32 VertexIndex = 0; VertexIndex < static_cast<int32>(Shape.VertexData.size()); ++VertexIndex)
-			{
-				ImGui::PushID(VertexIndex);
-				char Label[64];
-				std::snprintf(Label, sizeof(Label), "Vertex %d", VertexIndex);
-				bChanged |= DragVector3(Label, Shape.VertexData[VertexIndex], 0.1f);
-				ImGui::SameLine();
-				if (ImGui::SmallButton("X"))
-				{
-					Shape.VertexData.erase(Shape.VertexData.begin() + VertexIndex);
-					bChanged = true;
-					ImGui::PopID();
-					break;
-				}
-				ImGui::PopID();
-			}
-
-			ImGui::TreePop();
-		}
-
-		bChanged |= RenderCollisionDesc(Shape.CollisionDesc);
-		return bChanged;
-	}
-
 		bool RenderBodySetupInspector(UPhysicsBodySetup* BodySetup)
 		{
 			if (!BodySetup)
@@ -642,14 +604,13 @@ namespace
 				}
 
 				FPhysicsAggregateShapeSetup& ShapeSetup = BodySetup->GetMutableShapeSetup();
+				// Convex collision is intentionally hidden in the editor UI.
 				bChanged |= RenderShapeArraySection("Sphere Shapes", ShapeSetup.SphereShapeSetups, "Add Sphere",
 					[](FPhysicsSphereShapeSetup& Shape) { return RenderSphereShape(Shape); });
 				bChanged |= RenderShapeArraySection("Box Shapes", ShapeSetup.BoxShapeSetups, "Add Box",
 					[](FPhysicsBoxShapeSetup& Shape) { return RenderBoxShape(Shape); });
 				bChanged |= RenderShapeArraySection("Capsule Shapes", ShapeSetup.CapsuleShapeSetups, "Add Capsule",
 					[](FPhysicsCapsuleShapeSetup& Shape) { return RenderCapsuleShape(Shape); });
-				bChanged |= RenderShapeArraySection("Convex Shapes", ShapeSetup.ConvexShapeSetups, "Add Convex",
-					[](FPhysicsConvexShapeSetup& Shape) { return RenderConvexShape(Shape); });
 			}
 
 			if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
@@ -1224,13 +1185,6 @@ namespace
 			OutShapeIndex = 0;
 			return true;
 		}
-		if (!ShapeSetup.ConvexShapeSetups.empty())
-		{
-			OutShapeType = EPhysicsAssetPreviewShapeType::Convex;
-			OutShapeIndex = 0;
-			return true;
-		}
-
 		OutShapeType = EPhysicsAssetPreviewShapeType::None;
 		OutShapeIndex = -1;
 		return false;
@@ -1344,8 +1298,7 @@ namespace
 		return static_cast<int32>(
 			ShapeSetup.SphereShapeSetups.size()
 			+ ShapeSetup.BoxShapeSetups.size()
-			+ ShapeSetup.CapsuleShapeSetups.size()
-			+ ShapeSetup.ConvexShapeSetups.size());
+			+ ShapeSetup.CapsuleShapeSetups.size());
 	}
 
 	int32 ComputeBoneDepth(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex)
@@ -2152,29 +2105,6 @@ namespace
 
 			return MeshWorldMatrix;
 		}
-
-
-	FVector ComputeConvexBoundsExtent(const FPhysicsConvexShapeSetup& Shape)
-	{
-		if (Shape.VertexData.empty())
-		{
-			return FVector(5.0f, 5.0f, 5.0f);
-		}
-
-		FVector Min = Shape.VertexData[0];
-		FVector Max = Shape.VertexData[0];
-		for (const FVector& Vertex : Shape.VertexData)
-		{
-			Min.X = (std::min)(Min.X, Vertex.X);
-			Min.Y = (std::min)(Min.Y, Vertex.Y);
-			Min.Z = (std::min)(Min.Z, Vertex.Z);
-			Max.X = (std::max)(Max.X, Vertex.X);
-			Max.Y = (std::max)(Max.Y, Vertex.Y);
-			Max.Z = (std::max)(Max.Z, Vertex.Z);
-		}
-
-		return (Max - Min) * 0.5f;
-	}
 
 	int32 GetDominantAxisIndex(const FVector& Value)
 	{
@@ -3519,10 +3449,7 @@ void FPhysicsAssetEditorWidget::RebuildPreviewShapeComponents(UPhysicsAsset* Phy
 				CreatePreviewShapeComponent(CapsuleCapMesh, BodyIndex, EPhysicsAssetPreviewShapeType::Capsule, ShapeIndex, 2, CapsuleCapExtent);
 			}
 		}
-		for (int32 ShapeIndex = 0; ShapeIndex < static_cast<int32>(ShapeSetup.ConvexShapeSetups.size()); ++ShapeIndex)
-		{
-			CreatePreviewShapeComponent(PreviewCubeMesh, BodyIndex, EPhysicsAssetPreviewShapeType::Convex, ShapeIndex, 0, CubeExtent);
-		}
+		// Convex collision is intentionally excluded from preview rendering.
 	}
 
 	SyncPreviewShapeComponents(PhysicsAsset);
@@ -3685,14 +3612,6 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 			ApplyEntryTransform(PreviewShapeComponents[EntryIndex++], BodySetup, NegativeCapLocalMatrix, CapsuleCapExtent);
 		}
 
-		for (const FPhysicsConvexShapeSetup& Shape : ShapeSetup.ConvexShapeSetups)
-		{
-			if (EntryIndex >= static_cast<int32>(PreviewShapeComponents.size()))
-			{
-				return;
-			}
-			ApplyEntryTransform(PreviewShapeComponents[EntryIndex++], BodySetup, Shape.LocalTransform.ToMatrix(), ComputeConvexBoundsExtent(Shape));
-		}
 	}
 }
 
