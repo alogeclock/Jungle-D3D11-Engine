@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cmath>
 #include <utility>
+#include <unordered_set>
 
 using namespace physx;
 
@@ -320,6 +321,222 @@ static FTransform ToFTransform(const PxTransform& Transform)
 static float PxVecLength(const PxVec3& V)
 {
 	return std::sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
+}
+
+
+static PxVec3 TransformPointToCloth(const FMatrix& WorldToCloth, const PxVec3& WorldPoint)
+{
+	const FVector P = WorldToCloth.TransformPositionWithW(FVector(WorldPoint.x, WorldPoint.y, WorldPoint.z));
+	return PxVec3(P.X, P.Y, P.Z);
+}
+
+static PxVec3 TransformVectorToCloth(const FMatrix& WorldToCloth, const PxVec3& WorldVector)
+{
+	FVector V = WorldToCloth.TransformVector(FVector(WorldVector.x, WorldVector.y, WorldVector.z));
+	if (!V.IsNearlyZero())
+	{
+		V.Normalize();
+	}
+	return PxVec3(V.X, V.Y, V.Z);
+}
+
+static float GetApproxUniformScaleToCloth(const FMatrix& WorldToCloth)
+{
+	// TODO: Non-uniform component scale should convert spheres/capsules to conservative shapes
+	// or reject them. For now, use the largest transformed basis length to avoid underestimating radius.
+	const float X = WorldToCloth.TransformVector(FVector(1.0f, 0.0f, 0.0f)).Length();
+	const float Y = WorldToCloth.TransformVector(FVector(0.0f, 1.0f, 0.0f)).Length();
+	const float Z = WorldToCloth.TransformVector(FVector(0.0f, 0.0f, 1.0f)).Length();
+	return (std::max)(0.0001f, (std::max)(X, (std::max)(Y, Z)));
+}
+
+static bool ShouldGatherClothShape(
+	const PxRigidActor* Actor,
+	const PxShape* Shape,
+	const FClothCollisionGatherParams& Params)
+{
+	if (!Actor || !Shape)
+	{
+		return false;
+	}
+
+	if (!Shape->getFlags().isSet(PxShapeFlag::eSIMULATION_SHAPE))
+	{
+		return false;
+	}
+
+	const bool bStatic = Actor->is<PxRigidStatic>() != nullptr;
+	const bool bDynamic = Actor->is<PxRigidDynamic>() != nullptr;
+	if ((bStatic && !Params.bIncludeStatic) || (bDynamic && !Params.bIncludeDynamic))
+	{
+		return false;
+	}
+
+	UPrimitiveComponent* ShapeComp = static_cast<UPrimitiveComponent*>(Shape->userData);
+	if (ShapeComp && ShapeComp == Params.IgnoreComponent)
+	{
+		return false;
+	}
+
+	AActor* ShapeActor = ShapeComp ? ShapeComp->GetOwner() : static_cast<AActor*>(Actor->userData);
+	if (ShapeActor && ShapeActor == Params.IgnoreActor)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+static void AddClothPlaneFromWorld(
+	const FMatrix& WorldToCloth,
+	const PxVec3& WorldPoint,
+	const PxVec3& WorldNormal,
+	FClothCollisionData& Out)
+{
+	const PxVec3 LocalPoint = TransformPointToCloth(WorldToCloth, WorldPoint);
+	PxVec3 LocalNormal = TransformVectorToCloth(WorldToCloth, WorldNormal);
+	const float LenSq = LocalNormal.x * LocalNormal.x + LocalNormal.y * LocalNormal.y + LocalNormal.z * LocalNormal.z;
+	if (LenSq <= 1.0e-8f)
+	{
+		return;
+	}
+
+	// NvCloth plane convention is assumed as dot(n, x) + d = 0.
+	// TODO: Verify box plane normal sign with one-sided cloth collision tests.
+	const float D = -(LocalNormal.x * LocalPoint.x + LocalNormal.y * LocalPoint.y + LocalNormal.z * LocalPoint.z);
+	Out.Planes.push_back(PxVec4(LocalNormal.x, LocalNormal.y, LocalNormal.z, D));
+}
+
+static void GatherClothCollisionFromActor(
+	const PxRigidActor* Actor,
+	const FClothCollisionGatherParams& Params,
+	FClothCollisionData& Out)
+{
+	if (!Actor)
+	{
+		return;
+	}
+
+	const PxU32 NumShapes = Actor->getNbShapes();
+	if (NumShapes == 0)
+	{
+		return;
+	}
+
+	std::vector<PxShape*> Shapes(NumShapes);
+	Actor->getShapes(Shapes.data(), NumShapes);
+
+	const PxTransform ActorPose = Actor->getGlobalPose();
+	const float RadiusScale = GetApproxUniformScaleToCloth(Params.WorldToCloth);
+
+	for (PxShape* Shape : Shapes)
+	{
+		if (!ShouldGatherClothShape(Actor, Shape, Params))
+		{
+			continue;
+		}
+
+		const PxTransform ShapePose = ActorPose * Shape->getLocalPose();
+		switch (Shape->getGeometryType())
+		{
+		case PxGeometryType::eSPHERE:
+		{
+			if (Out.Spheres.size() >= Params.MaxSpheres)
+			{
+				continue;
+			}
+
+			PxSphereGeometry SphereGeom;
+			if (!Shape->getSphereGeometry(SphereGeom))
+			{
+				continue;
+			}
+
+			const PxVec3 LocalCenter = TransformPointToCloth(Params.WorldToCloth, ShapePose.p);
+			Out.Spheres.push_back(PxVec4(LocalCenter.x, LocalCenter.y, LocalCenter.z, SphereGeom.radius * RadiusScale));
+			break;
+		}
+		case PxGeometryType::eCAPSULE:
+		{
+			if (Out.Spheres.size() + 2 > Params.MaxSpheres)
+			{
+				continue;
+			}
+
+			PxCapsuleGeometry CapsuleGeom;
+			if (!Shape->getCapsuleGeometry(CapsuleGeom))
+			{
+				continue;
+			}
+
+			// PhysX capsule local axis is X. The shape local pose already contains any engine-axis correction.
+			const PxVec3 WorldAxis = ShapePose.q.rotate(PxVec3(1.0f, 0.0f, 0.0f));
+			const PxVec3 WorldA = ShapePose.p + WorldAxis * CapsuleGeom.halfHeight;
+			const PxVec3 WorldB = ShapePose.p - WorldAxis * CapsuleGeom.halfHeight;
+			const PxVec3 LocalA = TransformPointToCloth(Params.WorldToCloth, WorldA);
+			const PxVec3 LocalB = TransformPointToCloth(Params.WorldToCloth, WorldB);
+			const uint32 SphereIndexA = static_cast<uint32>(Out.Spheres.size());
+			const uint32 SphereIndexB = SphereIndexA + 1;
+			const float Radius = CapsuleGeom.radius * RadiusScale;
+			Out.Spheres.push_back(PxVec4(LocalA.x, LocalA.y, LocalA.z, Radius));
+			Out.Spheres.push_back(PxVec4(LocalB.x, LocalB.y, LocalB.z, Radius));
+			Out.Capsules.push_back(SphereIndexA);
+			Out.Capsules.push_back(SphereIndexB);
+			break;
+		}
+		case PxGeometryType::eBOX:
+		{
+			if (Out.Planes.size() + 6 > Params.MaxPlanes || Out.Planes.size() + 6 > 32)
+			{
+				continue;
+			}
+
+			PxBoxGeometry BoxGeom;
+			if (!Shape->getBoxGeometry(BoxGeom))
+			{
+				continue;
+			}
+
+			const uint32 PlaneStart = static_cast<uint32>(Out.Planes.size());
+			uint32 Mask = 0;
+			const PxVec3 Axes[3] =
+			{
+				ShapePose.q.rotate(PxVec3(1.0f, 0.0f, 0.0f)),
+				ShapePose.q.rotate(PxVec3(0.0f, 1.0f, 0.0f)),
+				ShapePose.q.rotate(PxVec3(0.0f, 0.0f, 1.0f))
+			};
+			const float Extents[3] = { BoxGeom.halfExtents.x, BoxGeom.halfExtents.y, BoxGeom.halfExtents.z };
+
+			for (uint32 AxisIndex = 0; AxisIndex < 3; ++AxisIndex)
+			{
+				for (int32 SignIndex = 0; SignIndex < 2; ++SignIndex)
+				{
+					const float Sign = (SignIndex == 0) ? 1.0f : -1.0f;
+					const PxVec3 WorldNormal = Axes[AxisIndex] * Sign;
+					const PxVec3 WorldPoint = ShapePose.p + WorldNormal * Extents[AxisIndex];
+					const uint32 PlaneIndex = static_cast<uint32>(Out.Planes.size());
+					AddClothPlaneFromWorld(Params.WorldToCloth, WorldPoint, WorldNormal, Out);
+					if (Out.Planes.size() > PlaneIndex)
+					{
+						Mask |= (1u << PlaneIndex);
+					}
+				}
+			}
+
+			if (Out.Planes.size() == PlaneStart + 6)
+			{
+				Out.ConvexMasks.push_back(Mask);
+			}
+			else
+			{
+				Out.Planes.resize(PlaneStart);
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
 }
 
 static const char* ToShapeTypeDebugName(EPhysicsShapeType ShapeType)
@@ -1312,7 +1529,7 @@ void FPhysXPhysicsScene::SyncPhysXTransformsToEngine()
 // ============================================================
 
 // PhysX simulation step을 시작하고, scene write 명령은 simulation 전후 안전한 시점으로 보낸다.
-void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+void FPhysXPhysicsScene::SimulateRigid(const FPhysicsStepInfo& StepInfo)
 {
 	if (!Scene) return;
 	float DeltaTime = StepInfo.DeltaTime;
@@ -1328,6 +1545,12 @@ void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 	UpdateVehicles(DeltaTime);
 	Scene->simulate(DeltaTime);
 	bSimulationInFlight.store(true);
+}
+
+
+void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+{
+	SimulateRigid(StepInfo);
 }
 
 // PhysX simulation 결과를 기다리고, actor pose와 지연 scene write 명령을 처리한다.
@@ -1374,6 +1597,61 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
 	FlushDeferredSceneCommands();
 
 	GetMutableRuntimeStats().ContactCount = 0; // PhysX 측 contact 수는 콜백에서 집계 가능 (현재 생략)
+}
+
+
+void FPhysXPhysicsScene::GatherClothCollision(
+	const FClothCollisionGatherParams& Params,
+	FClothCollisionData& Out) const
+{
+	Out.Reset();
+
+	if (!Scene)
+	{
+		return;
+	}
+
+	// This must be called after FetchResults(). If a caller violates the fixed-step order,
+	// do not read half-simulated poses and return no collision instead.
+	if (bSimulationInFlight.load())
+	{
+		return;
+	}
+
+	std::unordered_set<const PxRigidActor*> VisitedActors;
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+
+	// RuntimeBodyInstances cover normal primitive bodies and any body registered through the base scene.
+	for (const FPhysicsBodyInstance* BodyInstance : GetBodyInstances())
+	{
+		if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+		{
+			continue;
+		}
+
+		PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+		if (!Actor || !VisitedActors.insert(Actor).second)
+		{
+			continue;
+		}
+		GatherClothCollisionFromActor(Actor, Params, Out);
+	}
+
+	// StandaloneBodyInstances are iterated explicitly as well for ragdoll / desc-created bodies.
+	for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+	{
+		if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+		{
+			continue;
+		}
+
+		PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+		if (!Actor || !VisitedActors.insert(Actor).second)
+		{
+			continue;
+		}
+		GatherClothCollisionFromActor(Actor, Params, Out);
+	}
 }
 
 // ============================================================

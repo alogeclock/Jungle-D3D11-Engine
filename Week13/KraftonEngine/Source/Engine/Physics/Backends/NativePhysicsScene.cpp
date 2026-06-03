@@ -195,7 +195,7 @@ void FNativePhysicsScene::RebuildBody(UPrimitiveComponent* Comp)
 // 시뮬레이션 (구 Tick)
 // ============================================================
 
-void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+void FNativePhysicsScene::SimulateRigid(const FPhysicsStepInfo& StepInfo)
 {
     if (!World) return;
     const float DeltaTime = StepInfo.DeltaTime;
@@ -363,6 +363,21 @@ void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
     PreviousBlockPairs = CurrentBlockPairs;
 
     GetMutableRuntimeStats().ContactCount = static_cast<int32>(CurrentBlockPairs.size());
+}
+
+
+void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+{
+    SimulateRigid(StepInfo);
+}
+
+void FNativePhysicsScene::GatherClothCollision(
+    const FClothCollisionGatherParams& /*Params*/,
+    FClothCollisionData& Out) const
+{
+    // Native physics does not currently expose simple shape geometry in a form
+    // NvCloth can consume. Keep the call valid and explicitly return no collision.
+    Out.Reset();
 }
 
 void FNativePhysicsScene::FetchResults(bool /*bBlock*/)

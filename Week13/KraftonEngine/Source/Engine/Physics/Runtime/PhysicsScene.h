@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Physics/Runtime/PhysicsSceneInterface.h"
 #include "Physics/Backends/NvClothScene.h"

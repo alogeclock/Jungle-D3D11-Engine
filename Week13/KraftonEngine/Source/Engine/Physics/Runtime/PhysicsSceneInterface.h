@@ -4,6 +4,7 @@
 #include "Math/Transform.h"
 #include "Math/Vector.h"
 #include "PhysicsEventCallback.h"
+#include "Physics/Systems/Cloth/ClothCollisionTypes.h"
 
 class UWorld;
 class UPrimitiveComponent;
@@ -58,13 +59,19 @@ public:
     virtual void RebuildBody(UPrimitiveComponent* Comp) = 0;
 
     // --- 시뮬레이션 ---
-    virtual void Simulate(const FPhysicsStepInfo& StepInfo) = 0;
+    // Simulate() is kept as a compatibility wrapper. New fixed-step code should call
+    // SimulateRigid() so rigid fetch can happen before cloth preparation.
+    virtual void SimulateRigid(const FPhysicsStepInfo& StepInfo) = 0;
+    virtual void Simulate(const FPhysicsStepInfo& StepInfo) { SimulateRigid(StepInfo); }
     virtual void FetchResults(bool bBlock) = 0;
 
     // --- Cloth Simulation ---
     virtual FNvClothScene* GetClothScene() = 0;
     virtual const FNvClothScene* GetClothScene() const = 0;
     virtual void SimulateCloth(const FPhysicsStepInfo& StepInfo) = 0;
+    virtual void GatherClothCollision(
+        const FClothCollisionGatherParams& Params,
+        FClothCollisionData& Out) const = 0;
 
     // --- 이벤트 / 런타임 통계 ---
     virtual void SetEventCallback(IPhysicsEventCallback* InCallback) = 0;

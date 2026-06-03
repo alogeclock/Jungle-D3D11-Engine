@@ -21,6 +21,7 @@
 
 class UCameraComponent;
 class UPrimitiveComponent;
+class UClothComponent;
 class AGameModeBase;
 class AGameStateBase;
 class APlayerController;
@@ -69,6 +70,11 @@ public:
 	void BeginPlay();      // Triggers BeginPlay on all actors
 	void Tick(float DeltaTime, ELevelTick TickType);  // Drives the game loop every frame
 	void EndPlay();        // Cleanup before world is destroyed
+
+	void RegisterClothComponent(UClothComponent* ClothComponent);
+	void UnregisterClothComponent(UClothComponent* ClothComponent);
+	void PrepareClothSimulation(float DeltaTime);
+	void FinalizeClothSimulation();
 
 private:
 	// PlayerCameraManager 갱신 — Slomo / HitStop 등 TimeDilation 의 영향을 받지 않도록
@@ -140,6 +146,7 @@ private:
 
 	FSpatialPartition Partition;
 	std::unique_ptr<IPhysicsSceneInterface> PhysicsScene;
+	TArray<UClothComponent*> ClothComponents;
 	float PhysicsTimeAccumulator = 0.0f;
 	float PhysicsInterpolationAlpha = 0.0f;
 
