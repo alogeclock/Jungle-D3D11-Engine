@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/CoreTypes.h"
 #include "Math/Matrix.h"
@@ -33,4 +33,5 @@ struct FClothCollisionGatherParams
     bool bIncludeDynamic = true;
     uint32 MaxSpheres = 32;
     uint32 MaxPlanes = 32;
+    float Thickness = 0.0f;
 };

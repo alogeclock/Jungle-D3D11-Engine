@@ -395,6 +395,7 @@ static void AddClothPlaneFromWorld(
 	const FMatrix& WorldToCloth,
 	const PxVec3& WorldPoint,
 	const PxVec3& WorldNormal,
+	float Thickness,
 	FClothCollisionData& Out)
 {
 	const PxVec3 LocalPoint = TransformPointToCloth(WorldToCloth, WorldPoint);
@@ -407,7 +408,9 @@ static void AddClothPlaneFromWorld(
 
 	// NvCloth plane convention is assumed as dot(n, x) + d = 0.
 	// TODO: Verify box plane normal sign with one-sided cloth collision tests.
-	const float D = -(LocalNormal.x * LocalPoint.x + LocalNormal.y * LocalPoint.y + LocalNormal.z * LocalPoint.z);
+	// Move the plane inward by the cloth collision thickness to create separation
+	// from box/plane-like rigid geometry.
+	const float D = -(LocalNormal.x * LocalPoint.x + LocalNormal.y * LocalPoint.y + LocalNormal.z * LocalPoint.z) - Thickness;
 	Out.Planes.push_back(PxVec4(LocalNormal.x, LocalNormal.y, LocalNormal.z, D));
 }
 
@@ -432,6 +435,7 @@ static void GatherClothCollisionFromActor(
 
 	const PxTransform ActorPose = Actor->getGlobalPose();
 	const float RadiusScale = GetApproxUniformScaleToCloth(Params.WorldToCloth);
+	const float CollisionThickness = (std::max)(0.0f, Params.Thickness) * RadiusScale;
 
 	for (PxShape* Shape : Shapes)
 	{
@@ -457,7 +461,7 @@ static void GatherClothCollisionFromActor(
 			}
 
 			const PxVec3 LocalCenter = TransformPointToCloth(Params.WorldToCloth, ShapePose.p);
-			Out.Spheres.push_back(PxVec4(LocalCenter.x, LocalCenter.y, LocalCenter.z, SphereGeom.radius * RadiusScale));
+			Out.Spheres.push_back(PxVec4(LocalCenter.x, LocalCenter.y, LocalCenter.z, SphereGeom.radius * RadiusScale + CollisionThickness));
 			break;
 		}
 		case PxGeometryType::eCAPSULE:
@@ -481,7 +485,7 @@ static void GatherClothCollisionFromActor(
 			const PxVec3 LocalB = TransformPointToCloth(Params.WorldToCloth, WorldB);
 			const uint32 SphereIndexA = static_cast<uint32>(Out.Spheres.size());
 			const uint32 SphereIndexB = SphereIndexA + 1;
-			const float Radius = CapsuleGeom.radius * RadiusScale;
+			const float Radius = CapsuleGeom.radius * RadiusScale + CollisionThickness;
 			Out.Spheres.push_back(PxVec4(LocalA.x, LocalA.y, LocalA.z, Radius));
 			Out.Spheres.push_back(PxVec4(LocalB.x, LocalB.y, LocalB.z, Radius));
 			Out.Capsules.push_back(SphereIndexA);
@@ -519,7 +523,7 @@ static void GatherClothCollisionFromActor(
 					const PxVec3 WorldNormal = Axes[AxisIndex] * Sign;
 					const PxVec3 WorldPoint = ShapePose.p + WorldNormal * Extents[AxisIndex];
 					const uint32 PlaneIndex = static_cast<uint32>(Out.Planes.size());
-					AddClothPlaneFromWorld(Params.WorldToCloth, WorldPoint, WorldNormal, Out);
+					AddClothPlaneFromWorld(Params.WorldToCloth, WorldPoint, WorldNormal, CollisionThickness, Out);
 					if (Out.Planes.size() > PlaneIndex)
 					{
 						Mask |= (1u << PlaneIndex);

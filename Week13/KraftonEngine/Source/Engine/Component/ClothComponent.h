@@ -61,6 +61,7 @@ private:
     void RegisterClothToScene();
     void UnregisterClothFromScene();
     void UpdateSimulationSpaceTransform(bool bTeleport);
+    void ApplyRuntimeClothSettings();
     void ApplyWindToCloth();
     void UpdateClothCollision();
     void EnsureMaterialSlotCount(int32 Count);
