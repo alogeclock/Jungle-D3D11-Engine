@@ -4,6 +4,7 @@
 #include "Editor/Slate/SWindow.h"
 #include "Editor/Subsystem/AssetFactory.h"
 #include "Editor/Viewport/MeshEditorViewportClient.h"
+#include "Physics/Common/PhysicsTypes.h"
 
 struct ID3D11ShaderResourceView;
 struct ImDrawList;
@@ -13,6 +14,7 @@ class AActor;
 class IGizmoTransformTarget;
 class UMaterial;
 class UPhysicsAsset;
+class UPhysicsBodySetup;
 class USkeletalMesh;
 class UStaticMesh;
 class UStaticMeshComponent;
@@ -102,10 +104,31 @@ private:
 	bool RenderDetailsPanel(UPhysicsAsset* PhysicsAsset);
 	bool RenderPreviewSettingsPanel(bool bShowHeader = true);
 	bool RenderToolsPanel(UPhysicsAsset* PhysicsAsset);
+	bool RenderBatchBodyPropertyTools(UPhysicsAsset* PhysicsAsset);
+	bool ApplyBatchBodyProperties(UPhysicsAsset* PhysicsAsset);
+	void LoadBatchBodyPropertyValues(const UPhysicsBodySetup* BodySetup);
 	void SyncSelectionToViewport();
 	int32 FindBoneIndexByName(const FSkeletonAsset* SkeletonAsset, const FName& BoneName) const;
 
 private:
+	struct FBodyBatchEditSettings
+	{
+		bool bApplyOverrideMass = false;
+		bool bOverrideMass = false;
+		bool bApplyMass = false;
+		float Mass = 1.0f;
+		bool bApplyLinearDamping = false;
+		float LinearDamping = 0.0f;
+		bool bApplyAngularDamping = false;
+		float AngularDamping = 0.05f;
+		bool bApplyEnableGravity = false;
+		bool bEnableGravity = true;
+		bool bApplyGravityGroupIndex = false;
+		int32 GravityGroupIndex = 0;
+		bool bApplyBodyType = false;
+		EPhysicsBodyType BodyType = EPhysicsBodyType::PBT_Dynamic;
+	};
+
 	uint32 InstanceId = 0;
 	FName PreviewWorldHandle;
 	FString WindowIdSuffix;
@@ -121,6 +144,7 @@ private:
 	UStaticMesh* PreviewCapsuleMesh = nullptr;
 
 	FPhysicsAssetCreateParams ToolSettings;
+	FBodyBatchEditSettings BatchBodyEditSettings;
 	TArray<FPreviewShapeComponentEntry> PreviewShapeComponents;
 	TArray<FPreviewConstraintConeEntry> PreviewConstraintCones;
 	IGizmoTransformTarget* BodyGizmoTarget = nullptr;
@@ -136,6 +160,7 @@ private:
 	float PreviewConstraintShapeOpacity = 0.3f;
 	bool bShowPreviewBodies = true;
 	bool bShowConstraintDebug = true;
+	bool bPreviewEnableSelfCollision = false;
 	float ConstraintAxisLength = 0.1f;
 
 	char BoneSearchBuffer[128] = {};
@@ -148,6 +173,7 @@ private:
 	float PreviewSimulationTime = 0.0f;
 	bool bConstraintPreviewDefinitionDirty = false;
 	bool bConstraintPreviewTransformDirty = false;
+	FString ToolbarStatusMessage;
 
 	ID3D11ShaderResourceView* CapsuleBodyIcon = nullptr;
 	int32 BoneTreeRowCounter = 0;

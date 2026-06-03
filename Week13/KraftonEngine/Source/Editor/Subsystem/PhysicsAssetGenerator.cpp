@@ -12,7 +12,9 @@
 #include "Platform/Paths.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <initializer_list>
 
 namespace
 {
@@ -391,6 +393,43 @@ bool IsValidBoneIndex(const FSkeletonAsset *SkeletonAsset, int32 BoneIndex)
     return SkeletonAsset && BoneIndex >= 0 && BoneIndex < static_cast<int32>(SkeletonAsset->Bones.size());
 }
 
+FString MakeLowercase(FString Value)
+{
+    for (char &Character : Value)
+    {
+        Character = static_cast<char>(std::tolower(static_cast<unsigned char>(Character)));
+    }
+    return Value;
+}
+
+bool BoneNameContainsAnyToken(const FString &BoneName, std::initializer_list<const char *> Tokens)
+{
+    const FString LowercaseName = MakeLowercase(BoneName);
+    for (const char *Token : Tokens)
+    {
+        if (Token && LowercaseName.find(Token) != FString::npos)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ShouldExcludeBoneFromAutoBodyGeneration(const FString &BoneName)
+{
+    return BoneNameContainsAnyToken(
+        BoneName,
+        {
+            "twist",
+            "metacarpal",
+            "thumb_",
+            "index_",
+            "middle_",
+            "ring_",
+            "pinky_",
+        });
+}
+
 bool IsFitUsable(const FBoneShapeFit &Fit, const FPhysicsAssetCreateParams &CreateParams)
 {
     return GetBoneFitSize(Fit) > CreateParams.MinBoneSize;
@@ -465,17 +504,25 @@ FMergedBoneFitData BuildMergedBoneFitData(const FSkeletonAsset *SkeletonAsset, c
 
     for (int32 BoneIndex = BoneCount - 1; BoneIndex >= 0; --BoneIndex)
     {
+        const bool bForceMergeIntoParent =
+            !CreateParams.bCreateBodyForAllBones &&
+            ShouldExcludeBoneFromAutoBodyGeneration(SkeletonAsset->Bones[BoneIndex].Name);
         const float MyMergedSize =
             Data.MergedSizes[BoneIndex] +
             ((BoneIndex < static_cast<int32>(BoneFits.size())) ? GetBoneFitSize(BoneFits[BoneIndex]) : 0.0f);
         Data.MergedSizes[BoneIndex] = MyMergedSize;
 
-        if (!CreateParams.bWalkPastSmallBones || CreateParams.bCreateBodyForAllBones)
+        if ((!CreateParams.bWalkPastSmallBones && !bForceMergeIntoParent) || CreateParams.bCreateBodyForAllBones)
         {
             continue;
         }
 
-        if (MyMergedSize >= CreateParams.MinBoneSize || MyMergedSize < CreateParams.MinWeldSize)
+        if (MyMergedSize < CreateParams.MinWeldSize)
+        {
+            continue;
+        }
+
+        if (!bForceMergeIntoParent && MyMergedSize >= CreateParams.MinBoneSize)
         {
             continue;
         }
@@ -824,6 +871,11 @@ bool ShouldCreateBoneBody(const FSkeletonAsset *SkeletonAsset, int32 BoneIndex,
         return true;
     }
 
+    if (ShouldExcludeBoneFromAutoBodyGeneration(SkeletonAsset->Bones[BoneIndex].Name))
+    {
+        return false;
+    }
+
     if (bHasUsableFit && Fit)
     {
         return Fit->GetExtent().Length() >= (CreateParams.MinBoneSize * 0.5f);
@@ -855,6 +907,11 @@ bool PopulateVertexWeightPhysicsBodies(UPhysicsAsset *PhysicsAsset, const FSkele
         if (CreateParams.bCreateBodyForAllBones)
         {
             return true;
+        }
+
+        if (ShouldExcludeBoneFromAutoBodyGeneration(SkeletonAsset->Bones[BoneIndex].Name))
+        {
+            return false;
         }
 
         if (BoneIndex < static_cast<int32>(MergedBoneData.MergedSizes.size()) &&
