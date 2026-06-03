@@ -4,6 +4,7 @@
 #include "Engine/Component/ParticleSystemComponent.h"
 #include "Engine/Component/VehicleMovementComponent.h"
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/GameFramework/World.h"
 #include "Engine/Particles/Runtime/ParticleEmitterInstance.h"
 #include "Engine/Profiling/Timer.h"
 #include "Engine/Profiling/Stats.h"
@@ -435,6 +436,30 @@ void FOverlayStatSystem::BuildVehicleLines(const UEditorEngine& Editor, TArray<F
 	AddRow(OutRows, "In Air", "%s", Stats->bInAir ? "true" : "false");
 }
 
+void FOverlayStatSystem::BuildPhysicsLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const
+{
+	UWorld* World = Editor.GetWorld();
+	IPhysicsSceneInterface* PhysicsScene = World ? World->GetPhysicsScene() : nullptr;
+	if (!PhysicsScene)
+	{
+		AddRow(OutRows, "Physics", "scene unavailable");
+		return;
+	}
+
+	const FPhysicsRuntimeStats& Stats = PhysicsScene->GetStats();
+	AddRow(OutRows, "Bodies", "%d", Stats.BodyCount);
+	AddRow(OutRows, "Constraints", "%d", Stats.ConstraintCount);
+	AddRow(OutRows, "Contacts", "%d", Stats.ContactCount);
+	AddRow(OutRows, "Step / Sync", "%.3f / %.3f ms", Stats.StepTimeMs, Stats.SyncTimeMs);
+	AddRow(OutRows, "Ragdolls", "%d total  %d agg  %d per-body",
+		Stats.ActiveRagdollCount,
+		Stats.ActiveAggregateRagdollCount,
+		Stats.ActivePerBodyRagdollCount);
+	AddRow(OutRows, "Ragdoll Bodies", "%d", Stats.RagdollBodyCount);
+	AddRow(OutRows, "Ragdoll Constraints", "%d", Stats.RagdollConstraintCount);
+	AddRow(OutRows, "Aggregates", "%d active  %d actors", Stats.AggregateCount, Stats.AggregateActorCount);
+}
+
 void FOverlayStatSystem::BuildLines(const UEditorEngine& Editor, TArray<FOverlayStatLine>& OutLines) const
 {
 	OutLines.clear();
@@ -481,6 +506,12 @@ void FOverlayStatSystem::BuildLines(const UEditorEngine& Editor, TArray<FOverlay
 	{
 		Rows.clear();
 		BuildParticleLines(Editor, Rows);
+		AppendGroup(Rows);
+	}
+	if (bShowPhysics)
+	{
+		Rows.clear();
+		BuildPhysicsLines(Editor, Rows);
 		AppendGroup(Rows);
 	}
 	if (bShowVehicle)
@@ -638,6 +669,12 @@ void FOverlayStatSystem::RenderImGui(const UEditorEngine& Editor, const FRect& V
 		Rows.clear();
 		BuildParticleLines(Editor, Rows);
 		RenderWindow("##StatParticleOverlay", "Stat Particle", ImVec4(0.05f, 0.08f, 0.12f, 0.62f), Rows);
+	}
+	if (bShowPhysics)
+	{
+		Rows.clear();
+		BuildPhysicsLines(Editor, Rows);
+		RenderWindow("##StatPhysicsOverlay", "Stat Physics", ImVec4(0.08f, 0.08f, 0.12f, 0.62f), Rows);
 	}
 	if (bShowVehicle)
 	{
