@@ -19,7 +19,7 @@ public:
     GENERATED_BODY(UClothComponent)
 
     UClothComponent();
-    ~UClothComponent() override = default;
+    ~UClothComponent() override;
 
     void BeginPlay() override;
     void EndPlay() override;

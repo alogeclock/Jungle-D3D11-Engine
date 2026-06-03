@@ -25,6 +25,12 @@ UClothComponent::UClothComponent()
     EnsureMaterialSlotCount(1);
 }
 
+UClothComponent::~UClothComponent()
+{
+    UnregisterClothFromScene();
+    ClothInstance.Release();
+}
+
 void UClothComponent::BeginPlay()
 {
     UMeshComponent::BeginPlay();
