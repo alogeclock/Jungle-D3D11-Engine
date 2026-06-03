@@ -2,6 +2,7 @@
 #include "Object/ObjectFactory.h"
 #include "Component/PrimitiveComponent.h"
 #include "Component/StaticMeshComponent.h"
+#include "Component/ClothComponent.h"
 #include "Engine/Component/CameraComponent.h"
 #include "Render/Types/LODContext.h"
 #include "Physics/Backends/NativePhysicsScene.h"
@@ -500,6 +501,54 @@ void UWorld::Tick(float DeltaTime, ELevelTick TickType)
 	TickPlayerCamera();
 }
 
+
+void UWorld::RegisterClothComponent(UClothComponent* ClothComponent)
+{
+	if (!ClothComponent)
+	{
+		return;
+	}
+
+	if (std::find(ClothComponents.begin(), ClothComponents.end(), ClothComponent) == ClothComponents.end())
+	{
+		ClothComponents.push_back(ClothComponent);
+	}
+}
+
+void UWorld::UnregisterClothComponent(UClothComponent* ClothComponent)
+{
+	if (!ClothComponent)
+	{
+		return;
+	}
+
+	ClothComponents.erase(
+		std::remove(ClothComponents.begin(), ClothComponents.end(), ClothComponent),
+		ClothComponents.end());
+}
+
+void UWorld::PrepareClothSimulation(float DeltaTime)
+{
+	for (UClothComponent* ClothComponent : ClothComponents)
+	{
+		if (ClothComponent)
+		{
+			ClothComponent->PrepareClothSimulation(DeltaTime);
+		}
+	}
+}
+
+void UWorld::FinalizeClothSimulation()
+{
+	for (UClothComponent* ClothComponent : ClothComponents)
+	{
+		if (ClothComponent)
+		{
+			ClothComponent->FinalizeClothSimulation();
+		}
+	}
+}
+
 bool UWorld::TickPhysics(float DeltaTime, ELevelTick TickType)
 {
 	if (FProjectSettings::Get().Physics.bUseFixedTimestep)
@@ -517,14 +566,14 @@ bool UWorld::TickVariablePhysics(float DeltaTime, ELevelTick TickType)
 	PhysicsInterpolationAlpha = 0.0f;
 
 	// 현재 프레임의 DeltaTime만큼 물리 시뮬레이션을 전진시킨다.
+	// Rigid 결과 fetch 이후 같은 스텝의 최신 pose로 cloth collision을 수집한다.
 	FPhysicsStepInfo StepInfo;
 	StepInfo.DeltaTime = DeltaTime;
-	{
-		SCOPE_STAT_CAT("Total Physics", "Physics");
-		PhysicsScene->Simulate(StepInfo);
-		PhysicsScene->FetchResults(true);
-	}
-	PhysicsScene->SimulateCloth(StepInfo); // 메인 강체 시뮬레이션 호출 직후 Cloth 시뮬레이션 동기화되어 진행.
+	PhysicsScene->SimulateRigid(StepInfo);
+	PhysicsScene->FetchResults(true);
+	PrepareClothSimulation(DeltaTime);
+	PhysicsScene->SimulateCloth(StepInfo);
+	FinalizeClothSimulation();
 
 	TickManager.TickGroup(TG_DuringPhysics, DeltaTime, TickType);
 
@@ -554,12 +603,20 @@ bool UWorld::TickFixedPhysics(float DeltaTime, ELevelTick TickType)
 		FPhysicsStepInfo StepInfo;
 		StepInfo.DeltaTime = FixedDeltaTime;
 		StepInfo.SubstepCount = SubstepIndex + 1;
+
+		// Rigid Body Simulation
+		PhysicsScene->SimulateRigid(StepInfo);
+		PhysicsScene->FetchResults(true);
+
+		// Cloth (Soft Body) Simulation
+		PrepareClothSimulation(FixedDeltaTime);
 		{
 			SCOPE_STAT_CAT("Total Physics", "Physics");
 			PhysicsScene->Simulate(StepInfo);
 			PhysicsScene->FetchResults(true);
 		}
 		PhysicsScene->SimulateCloth(StepInfo);
+		FinalizeClothSimulation();
 
 		if (!bDispatchedDuringPhysics)
 		{
@@ -665,6 +722,7 @@ void UWorld::EndPlay()
 
 	bHasBegunPlay = false;
 	TickManager.Reset();
+	ClothComponents.clear();
 
 	if (!PersistentLevel)
 	{

@@ -495,18 +495,21 @@ void FClothInstance::UpdateCollision(const FClothCollisionData& CollisionData)
         static_cast<int32>(CollisionData.Spheres.size()) +
         static_cast<int32>(CollisionData.Planes.size()) +
         static_cast<int32>(CollisionData.Capsules.size() / 2) +
-        static_cast<int32>(CollisionData.ConvexMasks.size()) +
-        static_cast<int32>(CollisionData.Triangles.size() / 3);
+        static_cast<int32>(CollisionData.ConvexMasks.size());
     LastCollisionTestCount = LastColliderCount;
 
     // 캡슐은 구를 참조하고, 볼록 다면체(convex)는 평면을 참조하므로 의존하는 데이터를 먼저 소거한다.
     Cloth->setCapsules(nv::cloth::Range<const uint32>(), 0, Cloth->getNumCapsules());
     Cloth->setConvexes(nv::cloth::Range<const uint32>(), 0, Cloth->getNumConvexes());
+    Cloth->setSpheres(nv::cloth::Range<const physx::PxVec4>(), 0, Cloth->getNumSpheres());
+    Cloth->setPlanes(nv::cloth::Range<const physx::PxVec4>(), 0, Cloth->getNumPlanes());
 
-    Cloth->setSpheres(MakeConstRange(CollisionData.Spheres), 0, Cloth->getNumSpheres());
-    Cloth->setPlanes(MakeConstRange(CollisionData.Planes), 0, Cloth->getNumPlanes());
+    Cloth->setSpheres(MakeConstRange(CollisionData.Spheres), 0, 0);
+    Cloth->setPlanes(MakeConstRange(CollisionData.Planes), 0, 0);
     Cloth->setCapsules(MakeConstRange(CollisionData.Capsules), 0, 0);
     Cloth->setConvexes(MakeConstRange(CollisionData.ConvexMasks), 0, 0);
+
+    Cloth->clearInterpolation();
 }
 
 void FClothInstance::SetSimulationSpaceTransform(const FVector& WorldLocation, const FQuat& WorldRotation, bool bTeleport)

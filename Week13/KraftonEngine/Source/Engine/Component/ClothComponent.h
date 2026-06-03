@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Object/ObjectMacros.h"
 #include "Component/MeshComponent.h"
@@ -47,6 +47,8 @@ public:
     FString GetStaticMeshPath() const { return StaticMesh.GetPath().ToString(); }
 
     void RebuildCloth();
+    void PrepareClothSimulation(float DeltaTime);
+    void FinalizeClothSimulation();
     const FClothInstance& GetClothInstance() const { return ClothInstance; }
     FClothInstance& GetClothInstance() { return ClothInstance; }
 
@@ -59,6 +61,9 @@ private:
     void RegisterClothToScene();
     void UnregisterClothFromScene();
     void UpdateSimulationSpaceTransform(bool bTeleport);
+    void ApplyRuntimeClothSettings();
+    void ApplyWindToCloth();
+    void UpdateClothCollision();
     void EnsureMaterialSlotCount(int32 Count);
     void ApplyMaterialSlots();
 
@@ -68,6 +73,15 @@ private:
 
     UPROPERTY(Edit, Category = "Cloth", DisplayName = "Build Desc", Type = Struct, Struct = FClothBuildDesc)
     FClothBuildDesc BuildDesc;
+
+    UPROPERTY(Edit, Category = "Cloth | Wind", DisplayName = "Enable Wind")
+    bool bEnableWind = false;
+
+    UPROPERTY(Edit, Category = "Cloth | Wind", DisplayName = "Wind Direction")
+    FVector WindDirection = FVector(1.0f, 0.0f, 0.0f);
+
+    UPROPERTY(Edit, Category = "Cloth | Wind", DisplayName = "Wind Scale", Min = 0.0f, Speed = 0.1f)
+    float WindScale = 0.0f;
 
     UPROPERTY(Edit, FixedSize, Category = "Materials", DisplayName = "Materials")
     TArray<FMaterialSlot> MaterialSlots;
