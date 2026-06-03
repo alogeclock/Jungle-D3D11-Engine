@@ -4,6 +4,7 @@
 #include "Materials/Material.h"
 #include "Materials/MaterialManager.h"
 #include "Physics/Systems/Cloth/ClothInstance.h"
+#include "Profiling/Stats.h"
 #include "Render/Command/DrawCommand.h"
 
 FClothSceneProxy::FClothSceneProxy(UClothComponent* InComponent)
@@ -40,6 +41,8 @@ void FClothSceneProxy::UpdateMesh()
 
 bool FClothSceneProxy::PrepareDrawBuffer(ID3D11Device* Device, ID3D11DeviceContext* Context, FDrawCommandBuffer& OutBuffer) const
 {
+    SCOPE_STAT_CAT("BuildRenderData", "Cloth");
+
     UClothComponent* ClothComponent = GetClothComponent();
     if (!ClothComponent || !Device || !Context)
     {

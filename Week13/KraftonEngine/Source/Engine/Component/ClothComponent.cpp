@@ -8,6 +8,7 @@
 #include "Mesh/StaticMeshAsset.h"
 #include "Physics/Backends/NvClothScene.h"
 #include "Physics/Runtime/PhysicsSceneInterface.h"
+#include "Profiling/Stats.h"
 #include "Render/Proxy/ClothSceneProxy.h"
 
 #include <algorithm>
@@ -236,6 +237,8 @@ void UClothComponent::UnregisterClothFromScene()
 
 void UClothComponent::UpdateSimulationSpaceTransform(bool bTeleport)
 {
+    SCOPE_STAT_CAT("SkinningSync", "Cloth");
+
     const FMatrix& WorldMatrix = GetWorldMatrix();
     const FVector WorldLocation = WorldMatrix.GetLocation();
     const FQuat WorldRotation = WorldMatrix.ToQuat().GetNormalized();
@@ -334,6 +337,8 @@ bool UClothComponent::RebuildClothInternal(bool bRecreateRenderState)
 
 void UClothComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
 {
+    SCOPE_STAT_CAT("Tick", "Cloth");
+
     UMeshComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
     if (!ClothInstance.GetCloth())

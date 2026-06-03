@@ -2,6 +2,7 @@
 
 #include "Physics/Backends/NvClothSDK.h"
 #include "Physics/Systems/Cloth/ClothInstance.h"
+#include "Profiling/Stats.h"
 
 #include <NvCloth/Cloth.h>
 #include <NvCloth/Factory.h>
@@ -96,6 +97,8 @@ void FNvClothScene::RemoveInstance(FClothInstance* Instance)
 
 void FNvClothScene::Simulate(float DeltaTime)
 {
+    SCOPE_STAT_CAT("Simulate", "Cloth");
+
     if (!Solver || DeltaTime <= 0.0f || Instances.empty())
     {
         return;

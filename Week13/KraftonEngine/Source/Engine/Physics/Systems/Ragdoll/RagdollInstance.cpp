@@ -10,6 +10,7 @@
 #include "Physics/Runtime/PhysicsBodyInstance.h"
 #include "Physics/Runtime/PhysicsConstraintInstance.h"
 #include "Physics/Runtime/PhysicsSceneInterface.h"
+#include "Profiling/Stats.h"
 #include "Component/SceneComponent.h"
 #include "Core/Log.h"
 
@@ -178,6 +179,8 @@ bool FRagdollInstance::Initialize(
 	USkeletalMeshComponent* MeshComp,
 	IPhysicsSceneInterface* Scene)
 {
+	SCOPE_STAT_CAT("BuildBodies", "Ragdoll");
+
 	Release(Scene);
 
 	if (!PhysicsAsset || !MeshComp || !Scene || !MeshComp->GetSkeletalMesh())
@@ -502,6 +505,8 @@ void FRagdollInstance::Release(IPhysicsSceneInterface* Scene)
 
 void FRagdollInstance::SyncBonesFromBodies(USkeletalMeshComponent* MeshComp, IPhysicsSceneInterface* Scene)
 {
+	SCOPE_STAT_CAT("BodyToBoneSync", "Ragdoll");
+
 	if (!IsActive() || !MeshComp || !Scene || !MeshComp->GetSkeletalMesh())
 	{
 		return;

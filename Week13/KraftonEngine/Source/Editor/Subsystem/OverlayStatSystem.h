@@ -42,6 +42,8 @@ public:
 	void ShowSkinning(bool bEnable = true) { bShowSkinning = bEnable; }
 	void ShowParticle(bool bEnable = true) { bShowParticle = bEnable; }
 	void ShowPhysics(bool bEnable = true) { bShowPhysics = bEnable; }
+	void ShowRagdoll(bool bEnable = true) { bShowRagdoll = bEnable; }
+	void ShowCloth(bool bEnable = true) { bShowCloth = bEnable; }
 	void ShowVehicle(bool bEnable = true) { bShowVehicle = bEnable; }
 	bool IsShowingFPS() const { return bShowFPS; }
 	bool IsShowingMemory() const { return bShowMemory; }
@@ -49,6 +51,8 @@ public:
 	bool IsShowingSkinning() const { return bShowSkinning; }
 	bool IsShowingParticle() const { return bShowParticle; }
 	bool IsShowingPhysics() const { return bShowPhysics; }
+	bool IsShowingRagdoll() const { return bShowRagdoll; }
+	bool IsShowingCloth() const { return bShowCloth; }
 	bool IsShowingVehicle() const { return bShowVehicle; }
 	bool ToggleFPS() { bShowFPS = !bShowFPS; return bShowFPS; }
 	bool ToggleMemory() { bShowMemory = !bShowMemory; return bShowMemory; }
@@ -56,6 +60,8 @@ public:
 	bool ToggleSkinning() { bShowSkinning = !bShowSkinning; return bShowSkinning; }
 	bool ToggleParticle() { bShowParticle = !bShowParticle; return bShowParticle; }
 	bool TogglePhysics() { bShowPhysics = !bShowPhysics; return bShowPhysics; }
+	bool ToggleRagdoll() { bShowRagdoll = !bShowRagdoll; return bShowRagdoll; }
+	bool ToggleCloth() { bShowCloth = !bShowCloth; return bShowCloth; }
 	bool ToggleVehicle() { bShowVehicle = !bShowVehicle; return bShowVehicle; }
 	void RecordPickingAttempt(double ElapsedMs);
 	void HideAll()
@@ -67,6 +73,8 @@ public:
 		bShowSkinning = false;
 		bShowParticle = false;
 		bShowPhysics = false;
+		bShowRagdoll = false;
+		bShowCloth = false;
 		bShowVehicle = false;
 	}
 
@@ -85,6 +93,8 @@ private:
 	void BuildSkinningLines(TArray<FStatRow>& OutRows) const;
 	void BuildParticleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
 	void BuildPhysicsLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildRagdollLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildClothLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
 	void BuildVehicleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
 
 	bool bShowFPS = false;
@@ -94,6 +104,8 @@ private:
 	bool bShowSkinning = false;
 	bool bShowParticle = false;
 	bool bShowPhysics = false;
+	bool bShowRagdoll = false;
+	bool bShowCloth = false;
 	bool bShowVehicle = false;
 	double LastPickingTimeMs = 0.0;
 	double AccumulatedPickingTimeMs = 0.0;

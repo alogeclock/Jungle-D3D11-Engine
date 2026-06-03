@@ -252,7 +252,11 @@ void FEditorConsoleWidget::RegisterDiagnosticsCommands()
 	RegisterCommand("stat particle", [this](const TArray<FString>& Args) { HandleStatParticle(Args); },
 		"Diagnostics", "stat particle", "Shows the particle overlay stat.");
 	RegisterCommand("stat physics", [this](const TArray<FString>& Args) { HandleStatPhysics(Args); },
-		"Diagnostics", "stat physics", "Shows the physics overlay stat.");
+		"Diagnostics", "stat physics", "Shows the physics scene overlay stat.");
+	RegisterCommand("stat ragdoll", [this](const TArray<FString>& Args) { HandleStatRagdoll(Args); },
+		"Diagnostics", "stat ragdoll", "Shows the ragdoll overlay stat.");
+	RegisterCommand("stat cloth", [this](const TArray<FString>& Args) { HandleStatCloth(Args); },
+		"Diagnostics", "stat cloth", "Shows the cloth overlay stat.");
 	RegisterCommand("stat vehicle", [this](const TArray<FString>& Args) { HandleStatVehicle(Args); },
 		"Diagnostics", "stat vehicle", "Shows the vehicle overlay stat.");
 	RegisterCommand("stat none", [this](const TArray<FString>& Args) { HandleStatNone(Args); },
@@ -899,6 +903,30 @@ void FEditorConsoleWidget::HandleStatPhysics(const TArray<FString>& Args)
 	}
 	const bool bEnabled = EditorEngine->GetOverlayStatSystem().TogglePhysics();
 	AddLog("Overlay stat %s: physics\n", bEnabled ? "enabled" : "disabled");
+}
+
+void FEditorConsoleWidget::HandleStatRagdoll(const TArray<FString>& Args)
+{
+	(void)Args;
+	if (!EditorEngine)
+	{
+		AddLog("[ERROR] EditorEngine is null.\n");
+		return;
+	}
+	const bool bEnabled = EditorEngine->GetOverlayStatSystem().ToggleRagdoll();
+	AddLog("Overlay stat %s: ragdoll\n", bEnabled ? "enabled" : "disabled");
+}
+
+void FEditorConsoleWidget::HandleStatCloth(const TArray<FString>& Args)
+{
+	(void)Args;
+	if (!EditorEngine)
+	{
+		AddLog("[ERROR] EditorEngine is null.\n");
+		return;
+	}
+	const bool bEnabled = EditorEngine->GetOverlayStatSystem().ToggleCloth();
+	AddLog("Overlay stat %s: cloth\n", bEnabled ? "enabled" : "disabled");
 }
 
 void FEditorConsoleWidget::HandleStatVehicle(const TArray<FString>& Args)

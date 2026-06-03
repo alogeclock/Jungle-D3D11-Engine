@@ -312,6 +312,18 @@ void FEditorMainPanel::RenderMainMenuBar()
 			OverlayStats.ShowPhysics(!bShowPhysics);
 		}
 
+		bool bShowRagdoll = OverlayStats.IsShowingRagdoll();
+		if (ImGui::MenuItem("Ragdoll", nullptr, bShowRagdoll))
+		{
+			OverlayStats.ShowRagdoll(!bShowRagdoll);
+		}
+
+		bool bShowCloth = OverlayStats.IsShowingCloth();
+		if (ImGui::MenuItem("Cloth", nullptr, bShowCloth))
+		{
+			OverlayStats.ShowCloth(!bShowCloth);
+		}
+
 		bool bShowVehicle = OverlayStats.IsShowingVehicle();
 		if (ImGui::MenuItem("Vehicle", nullptr, bShowVehicle))
 		{

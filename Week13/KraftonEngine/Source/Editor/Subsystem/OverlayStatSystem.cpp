@@ -1,7 +1,9 @@
 ﻿#include "Editor/Subsystem/OverlayStatSystem.h"
 
 #include "Editor/EditorEngine.h"
+#include "Engine/Component/ClothComponent.h"
 #include "Engine/Component/ParticleSystemComponent.h"
+#include "Engine/Component/SkeletalMeshComponent.h"
 #include "Engine/Component/VehicleMovementComponent.h"
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/GameFramework/World.h"
@@ -15,7 +17,6 @@
 #include "Engine/Render/Types/RenderFeatureSettings.h"
 #include "Slate/SWindow.h"
 #include "ImGui/imgui.h"
-#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
@@ -52,9 +53,9 @@ static int FormatBytesValue(char* Buffer, int32 BufferSize, uint64 Bytes)
 	return snprintf(Buffer, BufferSize, "%llu B", static_cast<unsigned long long>(Bytes));
 }
 
-static const FStatEntry* FindParticleStatEntry(const char* Name)
+static const FStatEntry* FindStatEntry(const char* Category, const char* Name)
 {
-	if (!Name)
+	if (!Category || !Name)
 	{
 		return nullptr;
 	}
@@ -67,7 +68,7 @@ static const FStatEntry* FindParticleStatEntry(const char* Name)
 			continue;
 		}
 
-		if (strcmp(Entry.Category, "Particles") == 0 && strcmp(Entry.Name, Name) == 0)
+		if (strcmp(Entry.Category, Category) == 0 && strcmp(Entry.Name, Name) == 0)
 		{
 			return &Entry;
 		}
@@ -76,25 +77,24 @@ static const FStatEntry* FindParticleStatEntry(const char* Name)
 	return nullptr;
 }
 
-static void FormatVehicleGear(char* Buffer, int32 BufferSize, int32 Gear)
+static const FStatEntry* FindParticleStatEntry(const char* Name)
 {
-	if (!Buffer || BufferSize <= 0)
-	{
-		return;
-	}
+	return FindStatEntry("Particles", Name);
+}
 
-	if (Gear == 0)
-	{
-		snprintf(Buffer, BufferSize, "%d (R)", Gear);
-	}
-	else if (Gear == 1)
-	{
-		snprintf(Buffer, BufferSize, "%d (N)", Gear);
-	}
-	else
-	{
-		snprintf(Buffer, BufferSize, "%d (%d)", Gear, Gear - 1);
-	}
+static void AddTimingRow(TArray<FStatRow>& Rows, const char* Label, float LastTimeMs, const FStatEntry* Entry)
+{
+	const float SafeLastTimeMs = LastTimeMs >= 0.0f
+		? LastTimeMs
+		: static_cast<float>((Entry ? Entry->LastTime : 0.0) * 1000.0);
+	const float AverageTimeMs = static_cast<float>((Entry ? Entry->AvgTime : 0.0) * 1000.0);
+
+	FStatRow Row;
+	Row.Label = Label;
+	char Buf[128] = {};
+	snprintf(Buf, sizeof(Buf), "%.3f ms (avg %.3f)", SafeLastTimeMs, AverageTimeMs > 0.0f ? AverageTimeMs : SafeLastTimeMs);
+	Row.Value = Buf;
+	Rows.push_back(std::move(Row));
 }
 
 void FOverlayStatSystem::AppendLine(TArray<FOverlayStatLine>& OutLines, float Y, const FString& Text) const
@@ -380,60 +380,83 @@ void FOverlayStatSystem::BuildParticleLines(const UEditorEngine& Editor, TArray<
 
 void FOverlayStatSystem::BuildVehicleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const
 {
-	UVehicleMovementComponent* VehicleMovement = nullptr;
-	if (UWorld* World = Editor.GetWorld())
+	UWorld* World = Editor.GetWorld();
+	if (!World)
 	{
-		for (AActor* Actor : World->GetActors())
-		{
-			if (!Actor)
-			{
-				continue;
-			}
+		AddRow(OutRows, "Vehicle", "scene unavailable");
+		return;
+	}
 
-			VehicleMovement = Actor->GetComponentByClass<UVehicleMovementComponent>();
-			if (VehicleMovement)
+	int32 TotalVehicles = 0;
+	int32 ActiveVehicles = 0;
+	int32 TotalWheels = 0;
+	int32 TireContacts = 0;
+	int32 GroundedWheels = 0;
+
+	for (AActor* Actor : World->GetActors())
+	{
+		if (!Actor)
+		{
+			continue;
+		}
+
+		UVehicleMovementComponent* VehicleMovement = Actor->GetComponentByClass<UVehicleMovementComponent>();
+		if (!VehicleMovement)
+		{
+			continue;
+		}
+
+		++TotalVehicles;
+		if (!VehicleMovement->IsVehicleValid())
+		{
+			continue;
+		}
+
+		++ActiveVehicles;
+
+		const FVehicleRuntimeStats* Stats = VehicleMovement->GetRuntimeStats();
+		if (!Stats)
+		{
+			continue;
+		}
+
+		TotalWheels += Stats->WheelCount;
+		for (const FVehicleWheelDebugState& Wheel : Stats->Wheels)
+		{
+			if (!Wheel.bInAir)
 			{
-				break;
+				++GroundedWheels;
+				++TireContacts;
 			}
 		}
 	}
 
-	if (!VehicleMovement)
+	if (TotalVehicles == 0)
 	{
-		AddRow(OutRows, "Vehicle", "not found");
+		AddRow(OutRows, "Vehicle", "no vehicles");
 		return;
 	}
 
-	const FVehicleRuntimeStats* Stats = VehicleMovement->GetRuntimeStats();
-	if (!Stats || !VehicleMovement->IsVehicleValid())
-	{
-		AddRow(OutRows, "Vehicle", "runtime not valid");
-		return;
-	}
+	AddSectionHeader(OutRows, "State");
+	AddRow(OutRows, "Vehicles", "%d total, %d active", TotalVehicles, ActiveVehicles);
+	AddRow(OutRows, "Wheels", "%d", TotalWheels);
+	AddRow(OutRows, "Suspensions", "%d", TotalWheels);
+	AddRow(OutRows, "Drivetrain", "%d", ActiveVehicles);
+	AddRow(OutRows, "Tire Contacts", "%d", TireContacts);
+	AddRow(OutRows, "Grounded Wheels", "%d / %d", GroundedWheels, TotalWheels);
 
-	int32 GroundedWheelCount = 0;
-	for (const FVehicleWheelDebugState& Wheel : Stats->Wheels)
-	{
-		if (!Wheel.bInAir)
-		{
-			++GroundedWheelCount;
-		}
-	}
+	AddSectionHeader(OutRows, "Frame");
+	AddRow(OutRows, "Wheel Raycasts", "%d / frame", TotalWheels);
+	AddRow(OutRows, "Tire Force Solves", "%d / frame", TotalWheels);
+	AddRow(OutRows, "Suspension Solves", "%d / frame", TotalWheels);
+	AddRow(OutRows, "Updated Wheels", "%d / frame", TotalWheels);
 
-	char GearText[32] = {};
-	FormatVehicleGear(GearText, sizeof(GearText), VehicleMovement->GetCurrentGear());
-
-	AddRow(OutRows, "Speed", "%.2f km/h", Stats->CurrentSpeed);
-	AddRow(OutRows, "RPM", "%.0f", Stats->EngineRpm);
-	AddRow(OutRows, "Gear", "%s", GearText);
-	AddRow(OutRows, "Throttle", "%.2f", Stats->InputState.Throttle);
-	AddRow(OutRows, "Brake", "%.2f", Stats->InputState.Brake);
-	AddRow(OutRows, "Steering", "%.2f", Stats->InputState.Steering);
-	AddRow(OutRows, "Handbrake", "%s", Stats->InputState.bHandbrake ? "on" : "off");
-	AddRow(OutRows, "Applied Accel", "%.2f", Stats->EngineTorque);
-	AddRow(OutRows, "Applied Brake", "%.2f", Stats->BrakeTorque);
-	AddRow(OutRows, "Grounded Wheels", "%d / %d", GroundedWheelCount, Stats->WheelCount);
-	AddRow(OutRows, "In Air", "%s", Stats->bInAir ? "true" : "false");
+	AddSectionHeader(OutRows, "CPU Time");
+	AddTimingRow(OutRows, "Tick", -1.0f, FindStatEntry("Vehicle", "Tick"));
+	AddTimingRow(OutRows, "InputUpdate", -1.0f, FindStatEntry("Vehicle", "InputUpdate"));
+	AddTimingRow(OutRows, "WheelQuery", -1.0f, FindStatEntry("Vehicle", "WheelQuery"));
+	AddTimingRow(OutRows, "VehicleSimulate", -1.0f, FindStatEntry("Vehicle", "VehicleSimulate"));
+	AddTimingRow(OutRows, "PostSync", -1.0f, FindStatEntry("Vehicle", "PostSync"));
 }
 
 void FOverlayStatSystem::BuildPhysicsLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const
@@ -447,17 +470,151 @@ void FOverlayStatSystem::BuildPhysicsLines(const UEditorEngine& Editor, TArray<F
 	}
 
 	const FPhysicsRuntimeStats& Stats = PhysicsScene->GetStats();
-	AddRow(OutRows, "Bodies", "%d", Stats.BodyCount);
+	const int32 DynamicBodies = Stats.DynamicBodyCount > 0 ? Stats.DynamicBodyCount : Stats.BodyCount;
+	const int32 PerBodyActors = Stats.PerBodyActorCount > 0
+		? Stats.PerBodyActorCount
+		: (std::max)(0, Stats.BodyCount - Stats.AggregateActorCount);
+	AddSectionHeader(OutRows, "State");
+	AddRow(OutRows, "Bodies", "%d total, %d dynamic", Stats.BodyCount, DynamicBodies);
+	AddRow(OutRows, "Active / Sleeping", "%d / %d", Stats.ActiveBodyCount, Stats.SleepingBodyCount);
 	AddRow(OutRows, "Constraints", "%d", Stats.ConstraintCount);
 	AddRow(OutRows, "Contacts", "%d", Stats.ContactCount);
-	AddRow(OutRows, "Step / Sync", "%.3f / %.3f ms", Stats.StepTimeMs, Stats.SyncTimeMs);
-	AddRow(OutRows, "Ragdolls", "%d total  %d agg  %d per-body",
-		Stats.ActiveRagdollCount,
-		Stats.ActiveAggregateRagdollCount,
-		Stats.ActivePerBodyRagdollCount);
-	AddRow(OutRows, "Ragdoll Bodies", "%d", Stats.RagdollBodyCount);
-	AddRow(OutRows, "Ragdoll Constraints", "%d", Stats.RagdollConstraintCount);
-	AddRow(OutRows, "Aggregates", "%d active  %d actors", Stats.AggregateCount, Stats.AggregateActorCount);
+	AddRow(OutRows, "Contact Pairs/Points", "%d / %d", Stats.ContactPairCount, Stats.ContactPointCount);
+	AddRow(OutRows, "Aggregates", "%d active / %d actors", Stats.AggregateCount, Stats.AggregateActorCount);
+	AddRow(OutRows, "Per-body Actors", "%d", PerBodyActors);
+
+	AddSectionHeader(OutRows, "Solver");
+	AddRow(OutRows, "Position Iterations", "%d", Stats.SolverPositionIterationCount);
+	AddRow(OutRows, "Velocity Iterations", "%d", Stats.SolverVelocityIterationCount);
+	AddRow(OutRows, "Constraint Count", "%d", Stats.SolverConstraintCount);
+	AddRow(OutRows, "Contact Count", "%d", Stats.SolverContactCount);
+
+	AddSectionHeader(OutRows, "CPU Time");
+	AddTimingRow(OutRows, "PreSim", Stats.PreSimTimeMs, FindStatEntry("Physics", "PreSim"));
+	AddTimingRow(OutRows, "PhysX Simulate", Stats.SimulateTimeMs, FindStatEntry("Physics", "PhysX Simulate"));
+	AddTimingRow(OutRows, "Fetch Results", Stats.FetchResultsTimeMs, FindStatEntry("Physics", "Fetch Results"));
+	AddTimingRow(OutRows, "PostSync", Stats.PostSyncTimeMs, FindStatEntry("Physics", "PostSync"));
+	AddTimingRow(OutRows, "Total Physics", Stats.TotalPhysicsTimeMs, FindStatEntry("Physics", "Total Physics"));
+}
+
+void FOverlayStatSystem::BuildRagdollLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const
+{
+	UWorld* World = Editor.GetWorld();
+	IPhysicsSceneInterface* PhysicsScene = World ? World->GetPhysicsScene() : nullptr;
+	if (!PhysicsScene)
+	{
+		AddRow(OutRows, "Ragdoll", "scene unavailable");
+		return;
+	}
+
+	const FPhysicsRuntimeStats& Stats = PhysicsScene->GetStats();
+	const char* ModeText = "None";
+	if (Stats.ActiveAggregateRagdollCount > 0 && Stats.ActivePerBodyRagdollCount > 0)
+	{
+		ModeText = "Mixed";
+	}
+	else if (Stats.ActiveAggregateRagdollCount > 0)
+	{
+		ModeText = "Aggregate";
+	}
+	else if (Stats.ActivePerBodyRagdollCount > 0)
+	{
+		ModeText = "Per-body";
+	}
+
+	const int32 PerBodyActors = (std::max)(0, Stats.RagdollBodyCount - Stats.AggregateActorCount);
+
+	AddSectionHeader(OutRows, "State");
+	AddRow(OutRows, "Ragdolls", "%d total", Stats.ActiveRagdollCount);
+	AddRow(OutRows, "Bodies", "%d", Stats.RagdollBodyCount);
+	AddRow(OutRows, "Constraints", "%d", Stats.RagdollConstraintCount);
+	AddRow(OutRows, "Mode", "%s", ModeText);
+	AddRow(OutRows, "Aggregates", "%d active / %d actors", Stats.ActiveAggregateRagdollCount, Stats.AggregateActorCount);
+	AddRow(OutRows, "Per-body Actors", "%d", PerBodyActors);
+
+	AddSectionHeader(OutRows, "Frame");
+	AddRow(OutRows, "Body -> Bone Sync", "%d / frame", Stats.RagdollBodyCount);
+	AddRow(OutRows, "Bone -> Body Sync", "%d / frame", 0);
+	AddRow(OutRows, "Updated Bodies", "%d / frame", Stats.RagdollBodyCount);
+
+	AddSectionHeader(OutRows, "CPU Time");
+	AddTimingRow(OutRows, "BuildBodies", -1.0f, FindStatEntry("Ragdoll", "BuildBodies"));
+	AddTimingRow(OutRows, "UpdateKinematic", -1.0f, FindStatEntry("Ragdoll", "UpdateKinematic"));
+	AddTimingRow(OutRows, "BodyToBoneSync", -1.0f, FindStatEntry("Ragdoll", "BodyToBoneSync"));
+	AddTimingRow(OutRows, "BoneToBodySync", -1.0f, FindStatEntry("Ragdoll", "BoneToBodySync"));
+	AddTimingRow(OutRows, "DebugDraw", -1.0f, FindStatEntry("Ragdoll", "DebugDraw"));
+}
+
+void FOverlayStatSystem::BuildClothLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const
+{
+	int32 ComponentCount = 0;
+	int32 ActiveComponentCount = 0;
+	int32 ClothCount = 0;
+	int32 SimulatedParticleCount = 0;
+	int32 TotalParticleCount = 0;
+	int32 ConstraintCount = 0;
+	int32 ColliderCount = 0;
+	int32 CollisionTestCount = 0;
+	int32 UpdatedVertexCount = 0;
+	bool bAnySelfCollision = false;
+
+	if (UWorld* World = Editor.GetWorld())
+	{
+		for (AActor* Actor : World->GetActors())
+		{
+			if (!Actor)
+			{
+				continue;
+			}
+
+			for (UActorComponent* Component : Actor->GetComponents())
+			{
+				UClothComponent* ClothComponent = Cast<UClothComponent>(Component);
+				if (!ClothComponent)
+				{
+					continue;
+				}
+
+				++ComponentCount;
+				FClothInstance& ClothInstance = ClothComponent->GetClothInstance();
+				if (!ClothInstance.IsInitialized())
+				{
+					continue;
+				}
+
+				++ActiveComponentCount;
+				++ClothCount;
+				SimulatedParticleCount += ClothInstance.GetParticleCount();
+				TotalParticleCount += ClothInstance.GetParticleCount();
+				ConstraintCount += ClothInstance.GetConstraintCount();
+				ColliderCount += ClothInstance.GetColliderCount();
+				CollisionTestCount += ClothInstance.GetCollisionTestCount();
+				UpdatedVertexCount += static_cast<int32>(ClothInstance.GetRenderVertices().size());
+				bAnySelfCollision = bAnySelfCollision || ClothInstance.IsSelfCollisionEnabled();
+			}
+		}
+	}
+
+	AddSectionHeader(OutRows, "State");
+	AddRow(OutRows, "Components", "%d total, %d active", ComponentCount, ActiveComponentCount);
+	AddRow(OutRows, "Cloths", "%d total", ClothCount);
+	AddRow(OutRows, "Particles", "%d simulated / %d total", SimulatedParticleCount, TotalParticleCount);
+	AddRow(OutRows, "Constraints", "%d", ConstraintCount);
+	AddRow(OutRows, "Colliders", "%d", ColliderCount);
+	AddRow(OutRows, "Self Collision", "%s", bAnySelfCollision ? "On" : "Off");
+
+	AddSectionHeader(OutRows, "Frame");
+	AddRow(OutRows, "Simulated Particles", "%d / frame", SimulatedParticleCount);
+	AddRow(OutRows, "Collision Tests", "%d / frame", CollisionTestCount);
+	AddRow(OutRows, "Constraint Solves", "%d / frame", ConstraintCount);
+	AddRow(OutRows, "Updated Vertices", "%d / frame", UpdatedVertexCount);
+
+	AddSectionHeader(OutRows, "CPU Time");
+	AddTimingRow(OutRows, "Tick", -1.0f, FindStatEntry("Cloth", "Tick"));
+	AddTimingRow(OutRows, "Simulate", -1.0f, FindStatEntry("Cloth", "Simulate"));
+	AddTimingRow(OutRows, "Collision", -1.0f, FindStatEntry("Cloth", "Collision"));
+	AddTimingRow(OutRows, "SkinningSync", -1.0f, FindStatEntry("Cloth", "SkinningSync"));
+	AddTimingRow(OutRows, "BuildRenderData", -1.0f, FindStatEntry("Cloth", "BuildRenderData"));
 }
 
 void FOverlayStatSystem::BuildLines(const UEditorEngine& Editor, TArray<FOverlayStatLine>& OutLines) const
@@ -512,6 +669,18 @@ void FOverlayStatSystem::BuildLines(const UEditorEngine& Editor, TArray<FOverlay
 	{
 		Rows.clear();
 		BuildPhysicsLines(Editor, Rows);
+		AppendGroup(Rows);
+	}
+	if (bShowRagdoll)
+	{
+		Rows.clear();
+		BuildRagdollLines(Editor, Rows);
+		AppendGroup(Rows);
+	}
+	if (bShowCloth)
+	{
+		Rows.clear();
+		BuildClothLines(Editor, Rows);
 		AppendGroup(Rows);
 	}
 	if (bShowVehicle)
@@ -675,6 +844,18 @@ void FOverlayStatSystem::RenderImGui(const UEditorEngine& Editor, const FRect& V
 		Rows.clear();
 		BuildPhysicsLines(Editor, Rows);
 		RenderWindow("##StatPhysicsOverlay", "Stat Physics", ImVec4(0.08f, 0.08f, 0.12f, 0.62f), Rows);
+	}
+	if (bShowRagdoll)
+	{
+		Rows.clear();
+		BuildRagdollLines(Editor, Rows);
+		RenderWindow("##StatRagdollOverlay", "Stat Ragdoll", ImVec4(0.08f, 0.06f, 0.10f, 0.62f), Rows);
+	}
+	if (bShowCloth)
+	{
+		Rows.clear();
+		BuildClothLines(Editor, Rows);
+		RenderWindow("##StatClothOverlay", "Stat Cloth", ImVec4(0.05f, 0.09f, 0.10f, 0.62f), Rows);
 	}
 	if (bShowVehicle)
 	{

@@ -374,9 +374,52 @@ void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
     PreviousOverlaps   = CurrentOverlaps;
     PreviousBlockPairs = CurrentBlockPairs;
 
-    GetMutableRuntimeStats().ContactCount = static_cast<int32>(CurrentBlockPairs.size());
-    GetMutableRuntimeStats().StepTimeMs = static_cast<float>(GetNativePhysicsTimeMs() - StepStartMs);
-    GetMutableRuntimeStats().SyncTimeMs = 0.0f;
+    int32 DynamicBodyCount = 0;
+    int32 ActiveBodyCount = 0;
+    int32 SleepingBodyCount = 0;
+    for (UPrimitiveComponent* Comp : RegisteredComponents)
+    {
+        if (!Comp || !Comp->GetSimulatePhysics())
+        {
+            continue;
+        }
+
+        ++DynamicBodyCount;
+        const auto BodyStateIt = BodyStates.find(Comp);
+        const FVector LinearVelocity = BodyStateIt != BodyStates.end() ? BodyStateIt->second.Velocity : FVector::ZeroVector;
+        const FVector AngularVelocity = BodyStateIt != BodyStates.end() ? BodyStateIt->second.AngularVelocity : FVector::ZeroVector;
+        const bool bSleeping =
+            LinearVelocity.IsNearlyZero() &&
+            AngularVelocity.IsNearlyZero();
+        if (bSleeping)
+        {
+            ++SleepingBodyCount;
+        }
+        else
+        {
+            ++ActiveBodyCount;
+        }
+    }
+
+    FPhysicsRuntimeStats& RuntimeStats = GetMutableRuntimeStats();
+    RuntimeStats.DynamicBodyCount = DynamicBodyCount;
+    RuntimeStats.ActiveBodyCount = ActiveBodyCount;
+    RuntimeStats.SleepingBodyCount = SleepingBodyCount;
+    RuntimeStats.ContactCount = static_cast<int32>(CurrentBlockPairs.size());
+    RuntimeStats.ContactPairCount = RuntimeStats.ContactCount;
+    RuntimeStats.ContactPointCount = RuntimeStats.ContactCount;
+    RuntimeStats.PerBodyActorCount = RuntimeStats.BodyCount;
+    RuntimeStats.SolverPositionIterationCount = 1;
+    RuntimeStats.SolverVelocityIterationCount = 1;
+    RuntimeStats.SolverConstraintCount = RuntimeStats.ConstraintCount;
+    RuntimeStats.SolverContactCount = RuntimeStats.ContactPointCount;
+    RuntimeStats.PreSimTimeMs = 0.0f;
+    RuntimeStats.SimulateTimeMs = static_cast<float>(GetNativePhysicsTimeMs() - StepStartMs);
+    RuntimeStats.FetchResultsTimeMs = 0.0f;
+    RuntimeStats.PostSyncTimeMs = 0.0f;
+    RuntimeStats.TotalPhysicsTimeMs = RuntimeStats.SimulateTimeMs;
+    RuntimeStats.StepTimeMs = RuntimeStats.SimulateTimeMs;
+    RuntimeStats.SyncTimeMs = 0.0f;
 }
 
 void FNativePhysicsScene::FetchResults(bool /*bBlock*/)

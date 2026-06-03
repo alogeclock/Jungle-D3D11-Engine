@@ -15,6 +15,7 @@
 #include "GameFramework/AActor.h"
 #include "Math/Quat.h"
 #include "Object/Object.h"  // IsAliveObject
+#include "Profiling/Stats.h"
 #include "Core/Log.h"
 
 // PhysX headers
@@ -134,6 +135,15 @@ public:
 		bool bBegin = true;
 	};
 
+	void ResetFrameContactStats()
+	{
+		ContactPairCount = 0;
+		ContactPointCount = 0;
+	}
+
+	int32 GetContactPairCount() const { return ContactPairCount; }
+	int32 GetContactPointCount() const { return ContactPointCount; }
+
 	void onContact(const PxContactPairHeader& PairHeader,
 		const PxContactPair* Pairs, PxU32 Count) override
 	{
@@ -155,6 +165,11 @@ public:
 
 			PxContactPairPoint ContactPoints[16];
 			PxU32 NumPoints = CP.extractContacts(ContactPoints, 16);
+			if (bBegin || bPersist)
+			{
+				++ContactPairCount;
+				ContactPointCount += static_cast<int32>(NumPoints);
+			}
 			for (PxU32 PointIndex = 0; PointIndex < NumPoints; ++PointIndex)
 			{
 				const PxContactPairPoint& Point = ContactPoints[PointIndex];
@@ -252,6 +267,8 @@ public:
 private:
 	std::vector<FQueuedHit>     PendingHits;
 	std::vector<FQueuedTrigger> PendingTriggers;
+	int32 ContactPairCount = 0;
+	int32 ContactPointCount = 0;
 };
 
 // ============================================================
@@ -1436,12 +1453,26 @@ void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 	constexpr float MaxPhysicsDeltaTime = 0.1f;
 	if (DeltaTime > MaxPhysicsDeltaTime) DeltaTime = MaxPhysicsDeltaTime;
 
-	WaitForSimulation();
-	FlushDeferredSceneCommands();
-	SyncEngineTransformsToPhysX();
-
-	UpdateVehicles(DeltaTime);
-	GetMutableRuntimeStats().StepTimeMs = 0.0f;
+	const double PreSimStartMs = GetPhysXSceneTimeMs();
+	{
+		SCOPE_STAT_CAT("PreSim", "Physics");
+		WaitForSimulation();
+		FlushDeferredSceneCommands();
+		SyncEngineTransformsToPhysX();
+		UpdateVehicles(DeltaTime);
+		if (EventCallback)
+		{
+			EventCallback->ResetFrameContactStats();
+		}
+	}
+	FPhysicsRuntimeStats& RuntimeStats = GetMutableRuntimeStats();
+	RuntimeStats.PreSimTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - PreSimStartMs);
+	RuntimeStats.SimulateTimeMs = 0.0f;
+	RuntimeStats.FetchResultsTimeMs = 0.0f;
+	RuntimeStats.PostSyncTimeMs = 0.0f;
+	RuntimeStats.TotalPhysicsTimeMs = RuntimeStats.PreSimTimeMs;
+	RuntimeStats.StepTimeMs = 0.0f;
+	RuntimeStats.SyncTimeMs = 0.0f;
 	Scene->simulate(DeltaTime);
 	bSimulationInFlight.store(true);
 }
@@ -1450,19 +1481,26 @@ void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 void FPhysXPhysicsScene::FetchResults(bool bBlock)
 {
 	if (!Scene) return;
-	const double FetchStartMs = GetPhysXSceneTimeMs();
-	if (bSimulationInFlight.load())
-	{
-		if (!Scene->fetchResults(bBlock))
-		{
-			return;
-		}
-		bSimulationInFlight.store(false);
-	}
-	GetMutableRuntimeStats().StepTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - FetchStartMs);
+	FPhysicsRuntimeStats& RuntimeStats = GetMutableRuntimeStats();
 
-	const double SyncStartMs = GetPhysXSceneTimeMs();
+	const double SimulateStartMs = GetPhysXSceneTimeMs();
 	{
+		SCOPE_STAT_CAT("PhysX Simulate", "Physics");
+		if (bSimulationInFlight.load())
+		{
+			if (!Scene->fetchResults(bBlock))
+			{
+				return;
+			}
+			bSimulationInFlight.store(false);
+		}
+	}
+	RuntimeStats.SimulateTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - SimulateStartMs);
+	RuntimeStats.StepTimeMs = RuntimeStats.SimulateTimeMs;
+
+	const double FetchResultsStartMs = GetPhysXSceneTimeMs();
+	{
+		SCOPE_STAT_CAT("Fetch Results", "Physics");
 		SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
 		for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
 		{
@@ -1482,18 +1520,86 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
 			const PxVec3 AngularVelocity = DynamicActor->getAngularVelocity();
 			const float LinearSpeed = PxVecLength(LinearVelocity);
 			const float AngularSpeed = PxVecLength(AngularVelocity);
+			(void)LinearSpeed;
+			(void)AngularSpeed;
+		}
+	}
+	RuntimeStats.FetchResultsTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - FetchResultsStartMs);
+
+	const double SyncStartMs = GetPhysXSceneTimeMs();
+	{
+		SCOPE_STAT_CAT("PostSync", "Physics");
+		SyncPhysXTransformsToEngine();
+		SyncVehiclePose();
+		if (EventCallback)
+		{
+			EventCallback->DispatchPendingEvents();
+		}
+		FlushDeferredSceneCommands();
+	}
+	RuntimeStats.PostSyncTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - SyncStartMs);
+	RuntimeStats.SyncTimeMs = RuntimeStats.PostSyncTimeMs;
+
+	int32 DynamicBodyCount = 0;
+	int32 ActiveBodyCount = 0;
+	int32 SleepingBodyCount = 0;
+	int32 PositionIterations = 0;
+	int32 VelocityIterations = 0;
+	bool bHasSolverIterations = false;
+	{
+		SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+		for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+		{
+			if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+			{
+				continue;
+			}
+
+			PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+			PxRigidDynamic* DynamicActor = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+			if (!DynamicActor)
+			{
+				continue;
+			}
+
+			++DynamicBodyCount;
+			if (DynamicActor->isSleeping())
+			{
+				++SleepingBodyCount;
+			}
+			else
+			{
+				++ActiveBodyCount;
+			}
+
+			if (!bHasSolverIterations)
+			{
+				PxU32 PositionIterationCount = 0;
+				PxU32 VelocityIterationCount = 0;
+				DynamicActor->getSolverIterationCounts(PositionIterationCount, VelocityIterationCount);
+				PositionIterations = static_cast<int32>(PositionIterationCount);
+				VelocityIterations = static_cast<int32>(VelocityIterationCount);
+				bHasSolverIterations = true;
+			}
 		}
 	}
 
-	SyncPhysXTransformsToEngine();
-	// Vehicle Pose 동기화
-	SyncVehiclePose();
-	// Dispatch deferred contact/trigger events
-	if (EventCallback) EventCallback->DispatchPendingEvents();
-	FlushDeferredSceneCommands();
-
-	GetMutableRuntimeStats().ContactCount = 0; // PhysX 측 contact 수는 콜백에서 집계 가능 (현재 생략)
-	GetMutableRuntimeStats().SyncTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - SyncStartMs);
+	RuntimeStats.DynamicBodyCount = DynamicBodyCount;
+	RuntimeStats.ActiveBodyCount = ActiveBodyCount;
+	RuntimeStats.SleepingBodyCount = SleepingBodyCount;
+	RuntimeStats.ContactPairCount = EventCallback ? EventCallback->GetContactPairCount() : 0;
+	RuntimeStats.ContactPointCount = EventCallback ? EventCallback->GetContactPointCount() : 0;
+	RuntimeStats.ContactCount = RuntimeStats.ContactPointCount;
+	RuntimeStats.PerBodyActorCount = (std::max)(0, RuntimeStats.DynamicBodyCount - RuntimeStats.AggregateActorCount);
+	RuntimeStats.SolverPositionIterationCount = PositionIterations;
+	RuntimeStats.SolverVelocityIterationCount = VelocityIterations;
+	RuntimeStats.SolverConstraintCount = RuntimeStats.ConstraintCount;
+	RuntimeStats.SolverContactCount = RuntimeStats.ContactPointCount;
+	RuntimeStats.TotalPhysicsTimeMs =
+		RuntimeStats.PreSimTimeMs +
+		RuntimeStats.SimulateTimeMs +
+		RuntimeStats.FetchResultsTimeMs +
+		RuntimeStats.PostSyncTimeMs;
 }
 
 // ============================================================
@@ -2273,7 +2379,10 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 		}
 
 		PxVehicleWheels* Vehicles[1] = { Instance->Vehicle };
-		PxVehicleSuspensionRaycasts(Instance->BatchQuery, 1, Vehicles, 4, Instance->SqResults);
+		{
+			SCOPE_STAT_CAT("WheelQuery", "Vehicle");
+			PxVehicleSuspensionRaycasts(Instance->BatchQuery, 1, Vehicles, 4, Instance->SqResults);
+		}
 
 		const float ForwardSpeed = Instance->Vehicle->computeForwardSpeed();
 		const float ShiftSpeed = 0.5f;
@@ -2282,51 +2391,58 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 		float AppliedAccel = 0.0f;
 		float AppliedBrake = 0.0f;
 
-		if (RawThrottle > 0.0f && ForwardSpeed >= -ShiftSpeed)
 		{
-			const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
+			SCOPE_STAT_CAT("InputUpdate", "Vehicle");
 
-			if (TargetGear == PxVehicleGearsData::eREVERSE ||
-				TargetGear == PxVehicleGearsData::eNEUTRAL)
-			{
-				Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
-			}
-
-			AppliedAccel = RawThrottle;
-		}
-		else if (RawBrake > 0.0f)
-		{
-			if (ForwardSpeed > ShiftSpeed)
-			{
-				AppliedBrake = RawBrake;
-			}
-			else
+			if (RawThrottle > 0.0f && ForwardSpeed >= -ShiftSpeed)
 			{
 				const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
-				if (TargetGear != PxVehicleGearsData::eREVERSE)
+
+				if (TargetGear == PxVehicleGearsData::eREVERSE ||
+					TargetGear == PxVehicleGearsData::eNEUTRAL)
 				{
-					Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eREVERSE);
+					Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
 				}
-				AppliedAccel = RawBrake;
+
+				AppliedAccel = RawThrottle;
 			}
+			else if (RawBrake > 0.0f)
+			{
+				if (ForwardSpeed > ShiftSpeed)
+				{
+					AppliedBrake = RawBrake;
+				}
+				else
+				{
+					const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
+					if (TargetGear != PxVehicleGearsData::eREVERSE)
+					{
+						Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eREVERSE);
+					}
+					AppliedAccel = RawBrake;
+				}
+			}
+
+			PxVehicleDrive4WRawInputData RawInputData;
+			RawInputData.setAnalogAccel(AppliedAccel);
+			RawInputData.setAnalogBrake(AppliedBrake);
+			RawInputData.setAnalogHandbrake(Instance->InputState.bHandbrake ? 1.0f : 0.0f);
+			RawInputData.setAnalogSteer(Instance->InputState.Steering);
+
+			const bool bVehicleWasInAir = Instance->DebugStats.WheelCount > 0 ? Instance->DebugStats.bInAir : false;
+			PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
+				GetVehiclePadSmoothingData(),
+				GetVehicleSteerVsForwardSpeedTable(),
+				RawInputData,
+				DeltaTime,
+				bVehicleWasInAir,
+				*Instance->Vehicle);
 		}
 
-		PxVehicleDrive4WRawInputData RawInputData;
-		RawInputData.setAnalogAccel(AppliedAccel);
-		RawInputData.setAnalogBrake(AppliedBrake);
-		RawInputData.setAnalogHandbrake(Instance->InputState.bHandbrake ? 1.0f : 0.0f);
-		RawInputData.setAnalogSteer(Instance->InputState.Steering);
-
-		const bool bVehicleWasInAir = Instance->DebugStats.WheelCount > 0 ? Instance->DebugStats.bInAir : false;
-		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
-			GetVehiclePadSmoothingData(),
-			GetVehicleSteerVsForwardSpeedTable(),
-			RawInputData,
-			DeltaTime,
-			bVehicleWasInAir,
-			*Instance->Vehicle);
-
-		PxVehicleUpdates(DeltaTime, Gravity, *Instance->FrictionPairs, 1, Vehicles, &Instance->VehicleQueryResult);
+		{
+			SCOPE_STAT_CAT("VehicleSimulate", "Vehicle");
+			PxVehicleUpdates(DeltaTime, Gravity, *Instance->FrictionPairs, 1, Vehicles, &Instance->VehicleQueryResult);
+		}
 
 		Instance->DebugStats.WheelCount = GMaxNumWheels;
 		Instance->DebugStats.CurrentSpeed = Instance->Vehicle->computeForwardSpeed() * 3.6f;
@@ -2351,6 +2467,8 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 
 void FPhysXPhysicsScene::SyncVehiclePose()
 {
+	SCOPE_STAT_CAT("PostSync", "Vehicle");
+
 	for (FPhysXVehicleInstance* Instance : VehicleInstances)
 	{
 		if (!Instance || !Instance->Vehicle || !Instance->ChassisActor || !Instance->ChassisComponent)

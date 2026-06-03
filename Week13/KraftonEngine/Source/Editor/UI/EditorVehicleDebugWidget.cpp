@@ -1,6 +1,7 @@
 #include "Editor/UI/EditorVehicleDebugWidget.h"
 
 #include "Editor/EditorEngine.h"
+#include "Editor/Settings/EditorSettings.h"
 #include "Component/VehicleMovementComponent.h"
 #include "GameFramework/AActor.h"
 #include "GameFramework/World.h"
@@ -46,35 +47,63 @@ void DrawVehicleStatRow(const char* Label, const char* ValueFmt, ...)
 	ImGui::SameLine(150.0f);
 	ImGui::Text("%s", Value);
 }
+
 }
 
 void EditorVehicleDebugWidget::Render(float DeltaTime)
 {
 	(void)DeltaTime;
 
+	bool& bVehicleDebugOpen = FEditorSettings::Get().UI.bVehicleDebug;
 	ImGui::SetNextWindowSize(ImVec2(360.0f, 360.0f), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin("Vehicle Debug"))
+	constexpr ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse;
+	if (!ImGui::Begin("Vehicle Debug", &bVehicleDebugOpen, WindowFlags))
 	{
 		ImGui::End();
 		return;
 	}
 
-	UVehicleMovementComponent* VehicleMovement = FindVehicleMovement();
+	AActor* TargetActor = nullptr;
+	int32 MatchCount = 0;
+	int32 SafeMatchIndex = 0;
+	UVehicleMovementComponent* VehicleMovement = FindVehicleMovement(TargetActor, MatchCount, SafeMatchIndex);
+	MatchIndex = SafeMatchIndex;
+
+	const bool bHasMatches = MatchCount > 0;
 	if (!VehicleMovement)
 	{
-		ImGui::TextDisabled("Vehicle: not found");
+		ImGui::TextDisabled("Target: not found");
+		ImGui::Text("Matches: %d", MatchCount);
+		ImGui::BeginDisabled(true);
+		ImGui::Button("Prev");
+		ImGui::SameLine();
+		ImGui::Button("Next");
+		ImGui::EndDisabled();
 		ImGui::End();
 		return;
 	}
 
-	AActor* Owner = VehicleMovement->GetOwner();
-	ImGui::Text("Target: %s", Owner ? Owner->GetName().c_str() : VehicleMovement->GetName().c_str());
+	ImGui::Text("Target: %s (%d / %d)",
+		TargetActor ? TargetActor->GetName().c_str() : VehicleMovement->GetName().c_str(),
+		MatchIndex + 1,
+		MatchCount);
+	ImGui::Text("Matches: %d", MatchCount);
 
-	bool bDrawDebug = VehicleMovement->IsDrawDebugEnabled();
-	if (ImGui::Checkbox("Draw Vehicle Debug", &bDrawDebug))
+	ImGui::BeginDisabled(!bHasMatches);
+	if (ImGui::Button("Prev") && bHasMatches)
 	{
-		VehicleMovement->SetDrawDebugEnabled(bDrawDebug);
+		MatchIndex = (MatchIndex - 1 + MatchCount) % MatchCount;
+		VehicleMovement = FindVehicleMovement(TargetActor, MatchCount, SafeMatchIndex);
+		MatchIndex = SafeMatchIndex;
 	}
+	ImGui::SameLine();
+	if (ImGui::Button("Next") && bHasMatches)
+	{
+		MatchIndex = (MatchIndex + 1) % MatchCount;
+		VehicleMovement = FindVehicleMovement(TargetActor, MatchCount, SafeMatchIndex);
+		MatchIndex = SafeMatchIndex;
+	}
+	ImGui::EndDisabled();
 
 	ImGui::Separator();
 	RenderVehicleStats(VehicleMovement);
@@ -82,21 +111,13 @@ void EditorVehicleDebugWidget::Render(float DeltaTime)
 	ImGui::End();
 }
 
-UVehicleMovementComponent* EditorVehicleDebugWidget::FindVehicleMovement() const
+TArray<EditorVehicleDebugWidget::FVehicleMatch> EditorVehicleDebugWidget::CollectVehicleMatches() const
 {
+	TArray<FVehicleMatch> Matches;
 	UWorld* World = EditorEngine ? EditorEngine->GetWorld() : nullptr;
 	if (!World)
 	{
-		return nullptr;
-	}
-
-	AActor* Selected = EditorEngine ? EditorEngine->GetSelectionManager().GetPrimarySelection() : nullptr;
-	if (Selected && IsAliveObject(Selected))
-	{
-		if (UVehicleMovementComponent* VehicleMovement = Selected->GetComponentByClass<UVehicleMovementComponent>())
-		{
-			return VehicleMovement;
-		}
+		return Matches;
 	}
 
 	for (AActor* Actor : World->GetActors())
@@ -108,11 +129,30 @@ UVehicleMovementComponent* EditorVehicleDebugWidget::FindVehicleMovement() const
 
 		if (UVehicleMovementComponent* VehicleMovement = Actor->GetComponentByClass<UVehicleMovementComponent>())
 		{
-			return VehicleMovement;
+			Matches.push_back({ Actor, VehicleMovement });
 		}
 	}
 
-	return nullptr;
+	return Matches;
+}
+
+UVehicleMovementComponent* EditorVehicleDebugWidget::FindVehicleMovement(AActor*& OutActor, int32& OutMatchCount, int32& OutMatchIndex)
+{
+	OutActor = nullptr;
+	OutMatchCount = 0;
+	OutMatchIndex = 0;
+
+	TArray<FVehicleMatch> Matches = CollectVehicleMatches();
+	OutMatchCount = static_cast<int32>(Matches.size());
+	if (Matches.empty())
+	{
+		return nullptr;
+	}
+
+	const int32 SafeIndex = ((MatchIndex % OutMatchCount) + OutMatchCount) % OutMatchCount;
+	OutMatchIndex = SafeIndex;
+	OutActor = Matches[SafeIndex].Actor;
+	return Matches[SafeIndex].VehicleMovement;
 }
 
 void EditorVehicleDebugWidget::RenderVehicleStats(UVehicleMovementComponent* VehicleMovement) const

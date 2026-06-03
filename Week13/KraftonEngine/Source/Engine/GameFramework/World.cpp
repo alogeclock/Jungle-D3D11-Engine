@@ -519,12 +519,14 @@ bool UWorld::TickVariablePhysics(float DeltaTime, ELevelTick TickType)
 	// 현재 프레임의 DeltaTime만큼 물리 시뮬레이션을 전진시킨다.
 	FPhysicsStepInfo StepInfo;
 	StepInfo.DeltaTime = DeltaTime;
-	PhysicsScene->Simulate(StepInfo);
+	{
+		SCOPE_STAT_CAT("Total Physics", "Physics");
+		PhysicsScene->Simulate(StepInfo);
+		PhysicsScene->FetchResults(true);
+	}
 	PhysicsScene->SimulateCloth(StepInfo); // 메인 강체 시뮬레이션 호출 직후 Cloth 시뮬레이션 동기화되어 진행.
 
 	TickManager.TickGroup(TG_DuringPhysics, DeltaTime, TickType);
-
-	PhysicsScene->FetchResults(true);
 
 	return true;
 }
@@ -552,7 +554,11 @@ bool UWorld::TickFixedPhysics(float DeltaTime, ELevelTick TickType)
 		FPhysicsStepInfo StepInfo;
 		StepInfo.DeltaTime = FixedDeltaTime;
 		StepInfo.SubstepCount = SubstepIndex + 1;
-		PhysicsScene->Simulate(StepInfo);
+		{
+			SCOPE_STAT_CAT("Total Physics", "Physics");
+			PhysicsScene->Simulate(StepInfo);
+			PhysicsScene->FetchResults(true);
+		}
 		PhysicsScene->SimulateCloth(StepInfo);
 
 		if (!bDispatchedDuringPhysics)
@@ -561,7 +567,6 @@ bool UWorld::TickFixedPhysics(float DeltaTime, ELevelTick TickType)
 			bDispatchedDuringPhysics = true;
 		}
 
-		PhysicsScene->FetchResults(true);
 		CapturePostPhysicsSnapshot();
 
 		PhysicsTimeAccumulator -= FixedDeltaTime;

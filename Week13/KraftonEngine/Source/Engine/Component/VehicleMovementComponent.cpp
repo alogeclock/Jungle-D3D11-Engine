@@ -7,6 +7,7 @@
 #include "GameFramework/World.h"
 #include "Math/MathUtils.h"
 #include "Object/ObjectFactory.h"
+#include "Profiling/Stats.h"
 #include "Serialization/Archive.h"
 #include "Audio/AudioManager.h"
 
@@ -52,6 +53,8 @@ void UVehicleMovementComponent::EndPlay()
 
 void UVehicleMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction& ThisTickFunction)
 {
+	SCOPE_STAT_CAT("Tick", "Vehicle");
+
 	UMovementComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	// 이동은 PhysX vehicle update 결과만 신뢰
 	// Tick에서 직접 transform 건드리지 않음
