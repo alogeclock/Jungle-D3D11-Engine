@@ -114,7 +114,19 @@ namespace
 		}
 	}
 
-	FString MakeDefaultPhysicsAssetName(const FString& SkeletalMeshPath)
+	FString GetPhysicsAssetModeSuffix(EPhysicsAssetRagdollMode RagdollMode)
+	{
+		switch (RagdollMode)
+		{
+		case EPhysicsAssetRagdollMode::PxAggregate:
+			return "_aggregate";
+		case EPhysicsAssetRagdollMode::PerBody:
+		default:
+			return "_per_bone";
+		}
+	}
+
+	FString MakeDefaultPhysicsAssetName(const FString& SkeletalMeshPath, EPhysicsAssetRagdollMode RagdollMode)
 	{
 		const std::filesystem::path MeshPath(FPaths::ToWide(SkeletalMeshPath));
 		FString BaseName = FPaths::ToUtf8(MeshPath.stem().wstring());
@@ -124,6 +136,7 @@ namespace
 		}
 
 		BaseName += "_PhysicsAsset";
+		BaseName += GetPhysicsAssetModeSuffix(RagdollMode);
 		return BaseName;
 	}
 }
@@ -317,7 +330,9 @@ bool FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(
 		return false;
 	}
 
-	const FString DefaultName = AssetName.empty() ? MakeDefaultPhysicsAssetName(SkeletalMeshPath) : AssetName;
+	const FString DefaultName = AssetName.empty()
+		? MakeDefaultPhysicsAssetName(SkeletalMeshPath, CreateParams.RagdollMode)
+		: AssetName;
 	const std::filesystem::path AssetPath = BuildUniqueAssetPath(Directory, DefaultName, L".uasset");
 
 	UPhysicsAsset* NewAsset = GUObjectArray.CreateObject<UPhysicsAsset>();

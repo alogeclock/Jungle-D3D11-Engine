@@ -837,7 +837,7 @@ bool FEditorFbxImportDialog::ExecuteImport(UEditorEngine* EditorEngine)
 				}
 
 				const std::filesystem::path MeshPath = ResolveProjectPath(ImportedPath);
-				const FString AssetName = FPaths::ToUtf8(MeshPath.stem().wstring()) + "_PhysicsAsset";
+				const FString AssetName;
 				FString CreatedPhysicsAssetPath;
 				if (FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(
 					FPaths::ToUtf8(MeshPath.parent_path().generic_wstring()),

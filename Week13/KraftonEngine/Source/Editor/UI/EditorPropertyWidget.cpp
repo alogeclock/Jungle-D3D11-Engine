@@ -2064,15 +2064,18 @@ bool FEditorPropertyWidget::RenderPropertyWidget(
 				FPhysicsAssetManager::Get().ScanPhysicsAssets();
 				const TArray<FPhysicsAssetListItem>& PhysicsAssetFiles =
 					FPhysicsAssetManager::Get().GetAvailablePhysicsAssetFiles();
-				for (const FPhysicsAssetListItem& Item : PhysicsAssetFiles)
+				for (int32 i = 0; i < (int32)PhysicsAssetFiles.size(); ++i)
 				{
+					const FPhysicsAssetListItem& Item = PhysicsAssetFiles[i];
 					const bool bSelected = CurrentPath == Item.FullPath;
+					ImGui::PushID(i);
 					if (ImGui::Selectable(Item.DisplayName.c_str(), bSelected))
 					{
 						Val->SetPath(Item.FullPath);
 						CurrentPath = Item.FullPath;
 						bChanged = true;
 					}
+					ImGui::PopID();
 					if (bSelected)
 					{
 						ImGui::SetItemDefaultFocus();

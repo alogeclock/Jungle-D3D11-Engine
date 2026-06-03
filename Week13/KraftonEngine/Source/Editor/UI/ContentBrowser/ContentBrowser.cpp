@@ -1254,8 +1254,7 @@ bool FEditorContentBrowserWidget::ExecutePhysicsAssetCreate()
 		return false;
 	}
 
-	FString AssetName = PendingPhysicsAssetMeshName.empty() ? FString("NewPhysicsAsset") : PendingPhysicsAssetMeshName;
-	AssetName += "_PhysicsAsset";
+	FString AssetName;
 	FString CreatedPath;
 	PhysicsAssetCreateWarning.clear();
 	if (!FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(

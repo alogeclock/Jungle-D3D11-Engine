@@ -30,7 +30,7 @@ void ACharacter::Tick(float DeltaTime)
 		if (LandingTimer < 0.0f) LandingTimer = 0.0f;
 	}
 
-	UAnimGraphInstance* AnimInst = Cast<UAnimGraphInstance>(Mesh->GetAnimInstance());
+	UAnimGraphInstance* AnimInst = Mesh ? Cast<UAnimGraphInstance>(Mesh->GetAnimInstance()) : nullptr;
 	if (AnimInst)
 	{
 		AnimInst->SetFloatParameter("Speed", CharacterMovement->GetSpeed2D());
