@@ -49,6 +49,7 @@
 namespace
 {
 	static uint32 GNextPhysicsAssetEditorInstanceId = 0;
+	static uint64 GNextPhysicsAssetPreviewResourceId = 0;
 	constexpr float Pi = 3.14159265358979323846f;
 	const FVector PhysicsAssetCapsuleAxis = FVector::ForwardVector;
 	const FVector PositiveXMeshAxis = FVector::ForwardVector;
@@ -67,8 +68,62 @@ namespace
 	constexpr float PhysicsPanelTitleOffsetY = 7.0f;
 	constexpr float PhysicsPanelHeaderSpacing = 34.0f;
 	constexpr float PhysicsViewportToolbarHeight = 34.0f;
+	constexpr float ConstraintSwingVisualScale    = 0.6f;
+	constexpr float ConstraintTwistVisualScale    = 0.45f;
+	constexpr float ConstraintAxisArrowScale      = 0.35f;
+	constexpr float ConstraintAxisZArrowScale     = 0.22f;
 
 	FMatrix BuildBoneWorldMatrix(const USkeletalMeshComponent* MeshComponent, const TArray<FMatrix>* CachedBoneGlobals, int32 BoneIndex);
+
+	float GetEffectiveConstraintLimitAngle(EPhysicsConstraintMotionMode MotionMode, float LimitedAngleDeg, float FreeAngleDeg)
+	{
+		if (MotionMode == EPhysicsConstraintMotionMode::Locked)
+		{
+			return 0.0f;
+		}
+
+		return MotionMode == EPhysicsConstraintMotionMode::Free ? FreeAngleDeg : LimitedAngleDeg;
+	}
+
+	float GetSwingVisualHalfAngle(EPhysicsConstraintMotionMode MotionMode, float LimitedAngleDeg)
+	{
+		return (std::clamp)(GetEffectiveConstraintLimitAngle(MotionMode, LimitedAngleDeg, 89.0f), 0.0f, 89.0f);
+	}
+
+	float GetSymmetricTwistLimitAngle(const FPhysicsConstraintSetup& Constraint)
+	{
+		if (Constraint.TwistMotion == EPhysicsConstraintMotionMode::Locked)
+		{
+			return 0.0f;
+		}
+
+		if (Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free)
+		{
+			return 179.0f;
+		}
+
+		return (std::max)(std::fabs(Constraint.TwistLimitMin), std::fabs(Constraint.TwistLimitMax));
+	}
+
+	float GetTwistVisualHalfAngle(const FPhysicsConstraintSetup& Constraint)
+	{
+		return (std::clamp)(GetSymmetricTwistLimitAngle(Constraint), 0.0f, 179.0f);
+	}
+
+	bool ShouldRenderSwingCone(float Swing1Limit, float Swing2Limit)
+	{
+		return Swing1Limit > 0.0f && Swing2Limit > 0.0f;
+	}
+
+	bool AreConstraintVisualLimitsEqual(float A, float B)
+	{
+		return std::fabs(A - B) <= 0.01f;
+	}
+
+	FString MakePhysicsAssetPreviewResourcePath(const char* ResourceType)
+	{
+		return "__PhysicsAssetPreview__/" + FString(ResourceType) + "_" + std::to_string(GNextPhysicsAssetPreviewResourceId++);
+	}
 
 	void DrawPhysicsPanelHeader(const char* Title)
 	{
@@ -414,44 +469,6 @@ namespace
 		return bChanged;
 	}
 
-	bool RenderConvexShape(FPhysicsConvexShapeSetup& Shape)
-	{
-		bool bChanged = false;
-		bChanged |= InputFName("Name", Shape.Name);
-		bChanged |= RenderTransformEditor("Local Transform", Shape.LocalTransform);
-
-		if (ImGui::TreeNode("Vertices"))
-		{
-			if (ImGui::Button("Add Vertex"))
-			{
-				Shape.VertexData.push_back(FVector::ZeroVector);
-				bChanged = true;
-			}
-
-			for (int32 VertexIndex = 0; VertexIndex < static_cast<int32>(Shape.VertexData.size()); ++VertexIndex)
-			{
-				ImGui::PushID(VertexIndex);
-				char Label[64];
-				std::snprintf(Label, sizeof(Label), "Vertex %d", VertexIndex);
-				bChanged |= DragVector3(Label, Shape.VertexData[VertexIndex], 0.1f);
-				ImGui::SameLine();
-				if (ImGui::SmallButton("X"))
-				{
-					Shape.VertexData.erase(Shape.VertexData.begin() + VertexIndex);
-					bChanged = true;
-					ImGui::PopID();
-					break;
-				}
-				ImGui::PopID();
-			}
-
-			ImGui::TreePop();
-		}
-
-		bChanged |= RenderCollisionDesc(Shape.CollisionDesc);
-		return bChanged;
-	}
-
 		bool RenderBodySetupInspector(UPhysicsBodySetup* BodySetup)
 		{
 			if (!BodySetup)
@@ -588,14 +605,13 @@ namespace
 				}
 
 				FPhysicsAggregateShapeSetup& ShapeSetup = BodySetup->GetMutableShapeSetup();
+				// Convex collision is intentionally hidden in the editor UI.
 				bChanged |= RenderShapeArraySection("Sphere Shapes", ShapeSetup.SphereShapeSetups, "Add Sphere",
 					[](FPhysicsSphereShapeSetup& Shape) { return RenderSphereShape(Shape); });
 				bChanged |= RenderShapeArraySection("Box Shapes", ShapeSetup.BoxShapeSetups, "Add Box",
 					[](FPhysicsBoxShapeSetup& Shape) { return RenderBoxShape(Shape); });
 				bChanged |= RenderShapeArraySection("Capsule Shapes", ShapeSetup.CapsuleShapeSetups, "Add Capsule",
 					[](FPhysicsCapsuleShapeSetup& Shape) { return RenderCapsuleShape(Shape); });
-				bChanged |= RenderShapeArraySection("Convex Shapes", ShapeSetup.ConvexShapeSetups, "Add Convex",
-					[](FPhysicsConvexShapeSetup& Shape) { return RenderConvexShape(Shape); });
 			}
 
 			if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
@@ -659,9 +675,14 @@ namespace
 			return bChanged;
 		}
 
-		bool RenderConstraintInspector(FPhysicsConstraintSetup& Constraint)
+		bool RenderConstraintInspector(
+			FPhysicsConstraintSetup& Constraint,
+			bool* bOutPreviewDefinitionChanged = nullptr,
+			bool* bOutPreviewTransformChanged = nullptr)
 		{
 			bool bChanged = false;
+			bool bPreviewDefinitionChanged = false;
+			bool bPreviewTransformChanged = false;
 
 			if (ImGui::BeginTable("ConstraintTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
 			{
@@ -678,18 +699,34 @@ namespace
 				bChanged |= InputFName("##ConstraintName", Constraint.ConstraintName);
 
 				Row("Child Bone Name");
-				bChanged |= InputFName("##ChildBoneName", Constraint.ChildBoneName);
+				if (InputFName("##ChildBoneName", Constraint.ChildBoneName))
+				{
+					bChanged = true;
+					bPreviewTransformChanged = true;
+				}
 
 				Row("Parent Bone Name");
-				bChanged |= InputFName("##ParentBoneName", Constraint.ParentBoneName);
+				if (InputFName("##ParentBoneName", Constraint.ParentBoneName))
+				{
+					bChanged = true;
+					bPreviewTransformChanged = true;
+				}
 
 				ImGui::EndTable();
 			}
 
 			if (ImGui::CollapsingHeader("Constraint Transforms", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				bChanged |= RenderTransformEditor("Child", Constraint.ChildLocalFrame);
-				bChanged |= RenderTransformEditor("Parent", Constraint.ParentLocalFrame);
+				if (RenderTransformEditor("Child", Constraint.ChildLocalFrame))
+				{
+					bChanged = true;
+					bPreviewTransformChanged = true;
+				}
+				if (RenderTransformEditor("Parent", Constraint.ParentLocalFrame))
+				{
+					bChanged = true;
+					bPreviewTransformChanged = true;
+				}
 			}
 
 			if (ImGui::CollapsingHeader("Constraint Behavior", ImGuiTreeNodeFlags_DefaultOpen))
@@ -770,25 +807,65 @@ namespace
 					};
 
 					Row("Swing 1 Motion");
-					bChanged |= RenderConstraintMotionRow("Swing1Motion", Constraint.Swing1Motion);
+					if (RenderConstraintMotionRow("Swing1Motion", Constraint.Swing1Motion))
+					{
+						bChanged = true;
+						bPreviewDefinitionChanged = true;
+					}
 
 					Row("Swing 2 Motion");
-					bChanged |= RenderConstraintMotionRow("Swing2Motion", Constraint.Swing2Motion);
+					if (RenderConstraintMotionRow("Swing2Motion", Constraint.Swing2Motion))
+					{
+						bChanged = true;
+						bPreviewDefinitionChanged = true;
+					}
 
 					Row("Twist Motion");
-					bChanged |= RenderConstraintMotionRow("TwistMotion", Constraint.TwistMotion);
+					if (RenderConstraintMotionRow("TwistMotion", Constraint.TwistMotion))
+					{
+						bChanged = true;
+						bPreviewDefinitionChanged = true;
+					}
 
 					Row("Swing 1 Limit");
-					bChanged |= ImGui::DragFloat("##Swing1Limit", &Constraint.SwingLimitY, 0.1f, 0.0f, 360.0f);
+					if (ImGui::DragFloat("##Swing1Limit", &Constraint.SwingLimitY, 0.1f, 0.0f, 360.0f))
+					{
+						bChanged = true;
+						// While dragging, the selected constraint is drawn by the live filled overlay.
+						// Do not rebuild persistent UStaticMesh resources every frame.
+					}
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						// Once the drag/text edit is committed, refresh the persistent preview mesh once
+						// so this constraint still shows the latest limit when it is no longer selected.
+						bPreviewDefinitionChanged = true;
+					}
 
 					Row("Swing 2 Limit");
-					bChanged |= ImGui::DragFloat("##Swing2Limit", &Constraint.SwingLimitZ, 0.1f, 0.0f, 360.0f);
+					if (ImGui::DragFloat("##Swing2Limit", &Constraint.SwingLimitZ, 0.1f, 0.0f, 360.0f))
+					{
+						bChanged = true;
+					}
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						bPreviewDefinitionChanged = true;
+					}
 
-					Row("Twist Limit Min");
-					bChanged |= ImGui::DragFloat("##TwistLimitMin", &Constraint.TwistLimitMin, 0.1f, -360.0f, 360.0f);
-
-					Row("Twist Limit Max");
-					bChanged |= ImGui::DragFloat("##TwistLimitMax", &Constraint.TwistLimitMax, 0.1f, -360.0f, 360.0f);
+					Row("Twist Limit");
+					{
+						float TwistLimit = GetSymmetricTwistLimitAngle(Constraint);
+						if (ImGui::DragFloat("##TwistLimit", &TwistLimit, 0.1f, 0.0f, 360.0f))
+						{
+							TwistLimit = (std::max)(TwistLimit, 0.0f);
+							Constraint.TwistLimitMin = -TwistLimit;
+							Constraint.TwistLimitMax = TwistLimit;
+							bChanged = true;
+						}
+						if (ImGui::IsItemDeactivatedAfterEdit())
+						{
+							bPreviewDefinitionChanged = true;
+						}
+					}
 
 					Row("Stiffness");
 					bChanged |= ImGui::DragFloat("##ConstraintStiffness", &Constraint.Stiffness, 0.1f, 0.0f, 100000.0f);
@@ -798,6 +875,15 @@ namespace
 
 					ImGui::EndTable();
 				}
+			}
+
+			if (bOutPreviewDefinitionChanged)
+			{
+				*bOutPreviewDefinitionChanged |= bPreviewDefinitionChanged;
+			}
+			if (bOutPreviewTransformChanged)
+			{
+				*bOutPreviewTransformChanged |= bPreviewTransformChanged;
 			}
 
 			return bChanged;
@@ -1100,13 +1186,6 @@ namespace
 			OutShapeIndex = 0;
 			return true;
 		}
-		if (!ShapeSetup.ConvexShapeSetups.empty())
-		{
-			OutShapeType = EPhysicsAssetPreviewShapeType::Convex;
-			OutShapeIndex = 0;
-			return true;
-		}
-
 		OutShapeType = EPhysicsAssetPreviewShapeType::None;
 		OutShapeIndex = -1;
 		return false;
@@ -1220,8 +1299,7 @@ namespace
 		return static_cast<int32>(
 			ShapeSetup.SphereShapeSetups.size()
 			+ ShapeSetup.BoxShapeSetups.size()
-			+ ShapeSetup.CapsuleShapeSetups.size()
-			+ ShapeSetup.ConvexShapeSetups.size());
+			+ ShapeSetup.CapsuleShapeSetups.size());
 	}
 
 	int32 ComputeBoneDepth(const FSkeletonAsset* SkeletonAsset, int32 BoneIndex)
@@ -2029,29 +2107,6 @@ namespace
 			return MeshWorldMatrix;
 		}
 
-
-	FVector ComputeConvexBoundsExtent(const FPhysicsConvexShapeSetup& Shape)
-	{
-		if (Shape.VertexData.empty())
-		{
-			return FVector(5.0f, 5.0f, 5.0f);
-		}
-
-		FVector Min = Shape.VertexData[0];
-		FVector Max = Shape.VertexData[0];
-		for (const FVector& Vertex : Shape.VertexData)
-		{
-			Min.X = (std::min)(Min.X, Vertex.X);
-			Min.Y = (std::min)(Min.Y, Vertex.Y);
-			Min.Z = (std::min)(Min.Z, Vertex.Z);
-			Max.X = (std::max)(Max.X, Vertex.X);
-			Max.Y = (std::max)(Max.Y, Vertex.Y);
-			Max.Z = (std::max)(Max.Z, Vertex.Z);
-		}
-
-		return (Max - Min) * 0.5f;
-	}
-
 	int32 GetDominantAxisIndex(const FVector& Value)
 	{
 		const float AbsX = std::abs(Value.X);
@@ -2682,68 +2737,160 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 
 namespace
 {
-	// Flat swing fan mesh.
-	// - Swing1: X-Z plane fan, X axis is center direction, Z axis is sweep direction.
-	// - Swing2: X-Y plane fan, X axis is center direction, Y axis is sweep direction.
-	// Unit radius is used; component scale controls the visual length.
-	UStaticMesh* CreateConstraintSwingFanMesh(UStaticMesh* MaterialSourceMesh, float HalfAngleDeg, bool bXZPlane, ID3D11Device* Device)
+	FNormalVertex MakePreviewVertex(const FVector& Position, const FVector& Normal)
 	{
-		if (!Device || HalfAngleDeg <= 0.0f) return nullptr;
+		FNormalVertex Vertex{};
+		Vertex.pos = Position;
+		Vertex.normal = Normal.IsNearlyZero() ? FVector::ForwardVector : Normal;
+		Vertex.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		const float HalfAngleRad = (std::min)(HalfAngleDeg, 89.0f) * Pi / 180.0f;
-		constexpr int32 Segments = 24;
-
-		UStaticMesh* FanMesh = GUObjectArray.CreateObject<UStaticMesh>();
-		FStaticMesh* FanAsset = new FStaticMesh();
-		FanAsset->PathFileName = bXZPlane ? "__Swing1Fan__" : "__Swing2Fan__";
-
-		if (MaterialSourceMesh)
+		FVector Tangent = FVector::UpVector.Cross(Vertex.normal);
+		if (Tangent.IsNearlyZero())
 		{
-			TArray<FStaticMaterial> Mats = MaterialSourceMesh->GetStaticMaterials();
-			FanMesh->SetStaticMaterials(std::move(Mats));
+			Tangent = FVector::RightVector;
+		}
+		else
+		{
+			Tangent.Normalize();
+		}
+		Vertex.tangent = FVector4(Tangent, 1.0f);
+		return Vertex;
+	}
+
+	void InitializePreviewConstraintMesh(UStaticMesh* Mesh, UStaticMesh* MaterialSourceMesh)
+	{
+		if (!Mesh || !MaterialSourceMesh)
+		{
+			return;
 		}
 
+		TArray<FStaticMaterial> Materials = MaterialSourceMesh->GetStaticMaterials();
+		Mesh->SetStaticMaterials(std::move(Materials));
+	}
+
+	FStaticMeshSection MakePreviewConstraintSection(UStaticMesh* Mesh)
+	{
 		FStaticMeshSection Section;
-		Section.MaterialSlotName = FanMesh->GetStaticMaterials().empty()
-			? FString("None") : FanMesh->GetStaticMaterials()[0].MaterialSlotName;
+		Section.MaterialSlotName = Mesh && !Mesh->GetStaticMaterials().empty()
+			? Mesh->GetStaticMaterials()[0].MaterialSlotName
+			: FString("None");
 		Section.FirstIndex = 0;
 		Section.NumTriangles = 0;
+		return Section;
+	}
 
-		const FVector4 White(1.0f, 1.0f, 1.0f, 1.0f);
-		const FVector Normal = bXZPlane ? FVector(0, -1, 0) : FVector(0, 0, 1);
-
-		FNormalVertex Apex{};
-		Apex.pos    = FVector::ZeroVector;
-		Apex.normal = Normal;
-		Apex.color  = White;
-
-		for (int32 i = 0; i < Segments; ++i)
+	UStaticMesh* CreateConstraintSwingConeMesh(
+		UStaticMesh* MaterialSourceMesh,
+		float Swing1HalfAngleDeg,
+		float Swing2HalfAngleDeg,
+		ID3D11Device* Device)
+	{
+		if (!Device)
 		{
-			const float T0 = -HalfAngleRad + (2.0f * HalfAngleRad * i       / Segments);
-			const float T1 = -HalfAngleRad + (2.0f * HalfAngleRad * (i + 1) / Segments);
+			return nullptr;
+		}
 
-			FNormalVertex V0{}, V1{};
-			if (bXZPlane)
+		const float ClampedSwing1Deg = (std::max)(0.0f, (std::min)(Swing1HalfAngleDeg, 89.0f));
+		const float ClampedSwing2Deg = (std::max)(0.0f, (std::min)(Swing2HalfAngleDeg, 89.0f));
+		if (ClampedSwing1Deg <= 0.0f && ClampedSwing2Deg <= 0.0f)
+		{
+			return nullptr;
+		}
+
+		const float BaseRadiusY = sinf(ClampedSwing2Deg * Pi / 180.0f);
+		const float BaseRadiusZ = sinf(ClampedSwing1Deg * Pi / 180.0f);
+		const float RadiusY = (std::max)(BaseRadiusY, 0.001f);
+		const float RadiusZ = (std::max)(BaseRadiusZ, 0.001f);
+		constexpr int32 Segments = 32;
+
+		UStaticMesh* ConeMesh = GUObjectArray.CreateObject<UStaticMesh>();
+		if (!ConeMesh)
+		{
+			return nullptr;
+		}
+
+		const FString ConePath = MakePhysicsAssetPreviewResourcePath("SwingCone");
+		FStaticMesh* ConeAsset = new FStaticMesh();
+		ConeAsset->PathFileName = ConePath;
+		InitializePreviewConstraintMesh(ConeMesh, MaterialSourceMesh);
+
+		FStaticMeshSection Section = MakePreviewConstraintSection(ConeMesh);
+		const FNormalVertex Apex = MakePreviewVertex(FVector::ZeroVector, FVector(-1.0f, 0.0f, 0.0f));
+
+		for (int32 SegmentIndex = 0; SegmentIndex < Segments; ++SegmentIndex)
+		{
+			const float Theta0 = (2.0f * Pi * static_cast<float>(SegmentIndex)) / static_cast<float>(Segments);
+			const float Theta1 = (2.0f * Pi * static_cast<float>(SegmentIndex + 1)) / static_cast<float>(Segments);
+
+			const FVector Position0(1.0f, cosf(Theta0) * RadiusY, sinf(Theta0) * RadiusZ);
+			const FVector Position1(1.0f, cosf(Theta1) * RadiusY, sinf(Theta1) * RadiusZ);
+			FVector TriangleNormal = (Position0 - Apex.pos).Cross(Position1 - Apex.pos);
+			if (TriangleNormal.IsNearlyZero())
 			{
-				// Swing1: X-Z plane fan.
-				V0.pos = FVector(std::cos(T0), 0.0f, std::sin(T0));
-				V1.pos = FVector(std::cos(T1), 0.0f, std::sin(T1));
+				continue;
 			}
-			else
-			{
-				// Swing2: X-Y plane fan.
-				V0.pos = FVector(std::cos(T0), std::sin(T0), 0.0f);
-				V1.pos = FVector(std::cos(T1), std::sin(T1), 0.0f);
-			}
+			TriangleNormal.Normalize();
 
-			V0.color = White;
-			V1.color = White;
-			V0.normal = Normal;
-			V1.normal = Normal;
+			const FNormalVertex Vertex0 = MakePreviewVertex(Position0, TriangleNormal);
+			const FNormalVertex Vertex1 = MakePreviewVertex(Position1, TriangleNormal);
+			AppendPreviewTriangle(ConeAsset, Section, Apex, Vertex0, Vertex1);
+			AppendPreviewTriangle(ConeAsset, Section, Apex, Vertex1, Vertex0);
+		}
 
-			// Draw both sides so the translucent fan is visible from either camera side.
-			AppendPreviewTriangle(FanAsset, Section, Apex, V0, V1);
-			AppendPreviewTriangle(FanAsset, Section, Apex, V1, V0);
+		if (Section.NumTriangles == 0)
+		{
+			delete ConeAsset;
+			GUObjectArray.DestroyObject(ConeMesh);
+			return nullptr;
+		}
+
+		ConeAsset->Sections.push_back(Section);
+		ConeAsset->CacheBounds();
+		ConeMesh->SetAssetPathFileName(ConePath);
+		ConeMesh->SetStaticMeshAsset(ConeAsset);
+		ConeMesh->InitResources(Device);
+		return ConeMesh;
+	}
+
+	UStaticMesh* CreateConstraintTwistFanMesh(UStaticMesh* MaterialSourceMesh, float HalfAngleDeg, ID3D11Device* Device)
+	{
+		if (!Device)
+		{
+			return nullptr;
+		}
+
+		const float ClampedHalfAngleDeg = (std::max)(0.0f, (std::min)(HalfAngleDeg, 179.0f));
+		if (ClampedHalfAngleDeg <= 0.0f)
+		{
+			return nullptr;
+		}
+
+		const float HalfAngleRad = ClampedHalfAngleDeg * Pi / 180.0f;
+		constexpr int32 Segments = 32;
+
+		UStaticMesh* FanMesh = GUObjectArray.CreateObject<UStaticMesh>();
+		if (!FanMesh)
+		{
+			return nullptr;
+		}
+
+		const FString FanPath = MakePhysicsAssetPreviewResourcePath("TwistFan");
+		FStaticMesh* FanAsset = new FStaticMesh();
+		FanAsset->PathFileName = FanPath;
+		InitializePreviewConstraintMesh(FanMesh, MaterialSourceMesh);
+
+		FStaticMeshSection Section = MakePreviewConstraintSection(FanMesh);
+		const FNormalVertex Center = MakePreviewVertex(FVector::ZeroVector, FVector::ForwardVector);
+
+		for (int32 SegmentIndex = 0; SegmentIndex < Segments; ++SegmentIndex)
+		{
+			const float T0 = -HalfAngleRad + (2.0f * HalfAngleRad * static_cast<float>(SegmentIndex) / static_cast<float>(Segments));
+			const float T1 = -HalfAngleRad + (2.0f * HalfAngleRad * static_cast<float>(SegmentIndex + 1) / static_cast<float>(Segments));
+
+			const FNormalVertex Vertex0 = MakePreviewVertex(FVector(0.0f, cosf(T0), sinf(T0)), FVector::ForwardVector);
+			const FNormalVertex Vertex1 = MakePreviewVertex(FVector(0.0f, cosf(T1), sinf(T1)), FVector::ForwardVector);
+			AppendPreviewTriangle(FanAsset, Section, Center, Vertex0, Vertex1);
+			AppendPreviewTriangle(FanAsset, Section, Center, Vertex1, Vertex0);
 		}
 
 		if (Section.NumTriangles == 0)
@@ -2755,10 +2902,90 @@ namespace
 
 		FanAsset->Sections.push_back(Section);
 		FanAsset->CacheBounds();
-		FanMesh->SetAssetPathFileName(bXZPlane ? "__Swing1Fan__" : "__Swing2Fan__");
+		FanMesh->SetAssetPathFileName(FanPath);
 		FanMesh->SetStaticMeshAsset(FanAsset);
 		FanMesh->InitResources(Device);
 		return FanMesh;
+	}
+
+	// Arrow mesh pointing along local +X: thin cylinder shaft + cone head.
+	// Used for constraint local frame axis visualization (scale controls length).
+	UStaticMesh* CreateConstraintAxisArrowMesh(UStaticMesh* MaterialSourceMesh, ID3D11Device* Device)
+	{
+		if (!Device) return nullptr;
+
+		constexpr int32 Segments   = 8;
+		constexpr float ShaftEnd   = 0.65f;
+		constexpr float ShaftR     = 0.05f;
+		constexpr float HeadR      = 0.14f;
+
+		UStaticMesh* ArrowMesh = GUObjectArray.CreateObject<UStaticMesh>();
+		if (!ArrowMesh) return nullptr;
+
+		const FString ArrowPath = MakePhysicsAssetPreviewResourcePath("ConstraintAxisArrow");
+		FStaticMesh* ArrowAsset = new FStaticMesh();
+		ArrowAsset->PathFileName = ArrowPath;
+		InitializePreviewConstraintMesh(ArrowMesh, MaterialSourceMesh);
+
+		FStaticMeshSection Section = MakePreviewConstraintSection(ArrowMesh);
+
+		// Shaft cylinder (side walls, front + back faces for translucency)
+		for (int32 Seg = 0; Seg < Segments; ++Seg)
+		{
+			const float T0 = 2.0f * Pi * Seg / Segments;
+			const float T1 = 2.0f * Pi * (Seg + 1) / Segments;
+			const FVector P00(0.0f,    cosf(T0) * ShaftR, sinf(T0) * ShaftR);
+			const FVector P01(0.0f,    cosf(T1) * ShaftR, sinf(T1) * ShaftR);
+			const FVector P10(ShaftEnd, cosf(T0) * ShaftR, sinf(T0) * ShaftR);
+			const FVector P11(ShaftEnd, cosf(T1) * ShaftR, sinf(T1) * ShaftR);
+			const FVector N0(0.0f, cosf(T0), sinf(T0));
+			const FVector N1(0.0f, cosf(T1), sinf(T1));
+			AppendPreviewTriangle(ArrowAsset, Section, MakePreviewVertex(P00, N0),          MakePreviewVertex(P10, N0),          MakePreviewVertex(P11, N1));
+			AppendPreviewTriangle(ArrowAsset, Section, MakePreviewVertex(P00, N0),          MakePreviewVertex(P11, N1),          MakePreviewVertex(P01, N1));
+			AppendPreviewTriangle(ArrowAsset, Section, MakePreviewVertex(P00, N0 * -1.0f),  MakePreviewVertex(P11, N1 * -1.0f), MakePreviewVertex(P10, N0 * -1.0f));
+			AppendPreviewTriangle(ArrowAsset, Section, MakePreviewVertex(P00, N0 * -1.0f),  MakePreviewVertex(P01, N1 * -1.0f), MakePreviewVertex(P11, N1 * -1.0f));
+		}
+
+		// Cone head
+		const FNormalVertex Tip = MakePreviewVertex(FVector(1.0f, 0.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
+		for (int32 Seg = 0; Seg < Segments; ++Seg)
+		{
+			const float T0 = 2.0f * Pi * Seg / Segments;
+			const float T1 = 2.0f * Pi * (Seg + 1) / Segments;
+			const FVector B0(ShaftEnd, cosf(T0) * HeadR, sinf(T0) * HeadR);
+			const FVector B1(ShaftEnd, cosf(T1) * HeadR, sinf(T1) * HeadR);
+			FVector SN = (B0 - FVector(1.0f, 0.0f, 0.0f)).Cross(B1 - B0);
+			if (!SN.IsNearlyZero()) SN.Normalize(); else SN = FVector(1.0f, 0.0f, 0.0f);
+			AppendPreviewTriangle(ArrowAsset, Section, Tip, MakePreviewVertex(B0, SN), MakePreviewVertex(B1, SN));
+			AppendPreviewTriangle(ArrowAsset, Section, Tip, MakePreviewVertex(B1, SN), MakePreviewVertex(B0, SN));
+		}
+
+		// Cone base cap
+		const FNormalVertex BaseCtr = MakePreviewVertex(FVector(ShaftEnd, 0.0f, 0.0f), FVector(-1.0f, 0.0f, 0.0f));
+		for (int32 Seg = 0; Seg < Segments; ++Seg)
+		{
+			const float T0 = 2.0f * Pi * Seg / Segments;
+			const float T1 = 2.0f * Pi * (Seg + 1) / Segments;
+			const FVector B0(ShaftEnd, cosf(T0) * HeadR, sinf(T0) * HeadR);
+			const FVector B1(ShaftEnd, cosf(T1) * HeadR, sinf(T1) * HeadR);
+			const FVector BN(-1.0f, 0.0f, 0.0f);
+			AppendPreviewTriangle(ArrowAsset, Section, BaseCtr, MakePreviewVertex(B1, BN), MakePreviewVertex(B0, BN));
+			AppendPreviewTriangle(ArrowAsset, Section, BaseCtr, MakePreviewVertex(B0, BN), MakePreviewVertex(B1, BN));
+		}
+
+		if (Section.NumTriangles == 0)
+		{
+			delete ArrowAsset;
+			GUObjectArray.DestroyObject(ArrowMesh);
+			return nullptr;
+		}
+
+		ArrowAsset->Sections.push_back(Section);
+		ArrowAsset->CacheBounds();
+		ArrowMesh->SetAssetPathFileName(ArrowPath);
+		ArrowMesh->SetStaticMeshAsset(ArrowAsset);
+		ArrowMesh->InitResources(Device);
+		return ArrowMesh;
 	}
 }
 
@@ -2785,6 +3012,95 @@ void FPhysicsAssetEditorWidget::ClearConstraintConeComponents()
 	PreviewConstraintCones.clear();
 }
 
+bool FPhysicsAssetEditorWidget::NeedsConstraintConeRebuild(UPhysicsAsset* PhysicsAsset) const
+{
+	// Do not rebuild GPU meshes just because a numeric twist/swing limit changed.
+	// DragFloat can produce a new value every frame; rebuilding every constraint mesh here
+	// causes visible stutter and tanks the PhysicsAsset editor FPS.
+	// The live debug overlay is redrawn every frame from the current values, while this
+	// persistent mesh list is kept only for visibility/picking and topology changes.
+	if (!PhysicsAsset)
+	{
+		return !PreviewConstraintCones.empty();
+	}
+
+	int32 ExpectedVisualCount = 0;
+	const TArray<FPhysicsConstraintSetup>& Constraints = PhysicsAsset->GetConstraintSetups();
+	for (const FPhysicsConstraintSetup& Constraint : Constraints)
+	{
+		const float Swing1Limit = GetSwingVisualHalfAngle(Constraint.Swing1Motion, Constraint.SwingLimitY);
+		const float Swing2Limit = GetSwingVisualHalfAngle(Constraint.Swing2Motion, Constraint.SwingLimitZ);
+		if (ShouldRenderSwingCone(Swing1Limit, Swing2Limit))
+		{
+			++ExpectedVisualCount;
+		}
+
+		const float TwistLimit = GetTwistVisualHalfAngle(Constraint);
+		if (TwistLimit > 0.0f)
+		{
+			++ExpectedVisualCount;
+		}
+
+		ExpectedVisualCount += 3; // AxisX, AxisY, AxisZ arrows
+	}
+
+	if (ExpectedVisualCount != static_cast<int32>(PreviewConstraintCones.size()))
+	{
+		return true;
+	}
+
+	int32 EntryIndex = 0;
+	for (int32 ConstraintIndex = 0; ConstraintIndex < static_cast<int32>(Constraints.size()); ++ConstraintIndex)
+	{
+		const FPhysicsConstraintSetup& Constraint = Constraints[ConstraintIndex];
+		const float Swing1Limit = GetSwingVisualHalfAngle(Constraint.Swing1Motion, Constraint.SwingLimitY);
+		const float Swing2Limit = GetSwingVisualHalfAngle(Constraint.Swing2Motion, Constraint.SwingLimitZ);
+		if (ShouldRenderSwingCone(Swing1Limit, Swing2Limit))
+		{
+			if (EntryIndex >= static_cast<int32>(PreviewConstraintCones.size()))
+			{
+				return true;
+			}
+
+			const FPreviewConstraintConeEntry& Entry = PreviewConstraintCones[EntryIndex++];
+			if (Entry.ConstraintIndex != ConstraintIndex
+				|| Entry.VisualType != EPhysicsAssetConstraintVisualType::SwingCone)
+			{
+				return true;
+			}
+		}
+
+		const float TwistLimit = GetTwistVisualHalfAngle(Constraint);
+		if (TwistLimit > 0.0f)
+		{
+			if (EntryIndex >= static_cast<int32>(PreviewConstraintCones.size()))
+			{
+				return true;
+			}
+
+			const FPreviewConstraintConeEntry& Entry = PreviewConstraintCones[EntryIndex++];
+			if (Entry.ConstraintIndex != ConstraintIndex
+				|| Entry.VisualType != EPhysicsAssetConstraintVisualType::TwistFan)
+			{
+				return true;
+			}
+		}
+
+		// Axis frame arrows (always 3 per constraint)
+		for (EPhysicsAssetConstraintVisualType AxisType : {
+				EPhysicsAssetConstraintVisualType::AxisX,
+				EPhysicsAssetConstraintVisualType::AxisY,
+				EPhysicsAssetConstraintVisualType::AxisZ })
+		{
+			if (EntryIndex >= static_cast<int32>(PreviewConstraintCones.size())) return true;
+			const FPreviewConstraintConeEntry& AE = PreviewConstraintCones[EntryIndex++];
+			if (AE.ConstraintIndex != ConstraintIndex || AE.VisualType != AxisType) return true;
+		}
+	}
+
+	return false;
+}
+
 void FPhysicsAssetEditorWidget::RebuildConstraintConeComponents(UPhysicsAsset* PhysicsAsset)
 {
 	ClearConstraintConeComponents();
@@ -2793,14 +3109,12 @@ void FPhysicsAssetEditorWidget::RebuildConstraintConeComponents(UPhysicsAsset* P
 	ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
 	const TArray<FPhysicsConstraintSetup>& Constraints = PhysicsAsset->GetConstraintSetups();
 
-	auto AddFan = [&](int32 ConstraintIndex, float HalfAngleDeg, bool bXZPlane, const FVector4& Color)
+	auto AddVisual = [&](int32 ConstraintIndex, UStaticMesh* Mesh, EPhysicsAssetConstraintVisualType VisualType, const FVector4& Color) -> FPreviewConstraintConeEntry*
 	{
-		if (HalfAngleDeg <= 0.0f) return;
-		UStaticMesh* Mesh = CreateConstraintSwingFanMesh(PreviewSphereMesh, HalfAngleDeg, bXZPlane, Device);
-		if (!Mesh) return;
+		if (!Mesh) return nullptr;
 
 		UStaticMeshComponent* Comp = PreviewShapeActor->AddComponent<UStaticMeshComponent>();
-		if (!Comp) { GUObjectArray.DestroyObject(Mesh); return; }
+		if (!Comp) { GUObjectArray.DestroyObject(Mesh); return nullptr; }
 		Comp->SetStaticMesh(Mesh);
 		Comp->SetCastShadow(false);
 
@@ -2809,32 +3123,60 @@ void FPhysicsAssetEditorWidget::RebuildConstraintConeComponents(UPhysicsAsset* P
 		if (Mat) Comp->SetMaterial(0, Mat);
 
 		FPreviewConstraintConeEntry Entry;
-		Entry.Component    = Comp;
-		Entry.Material     = Mat;
-		Entry.Mesh         = Mesh;
+		Entry.Component = Comp;
+		Entry.Material = Mat;
+		Entry.Mesh = Mesh;
+		Entry.LastColor = Color;
 		Entry.ConstraintIndex = ConstraintIndex;
-		Entry.bIsSwing1    = bXZPlane;
-		Entry.HalfAngleDeg = HalfAngleDeg;
+		Entry.VisualType = VisualType;
+		Entry.EffectivePrimaryLimit = 0.0f;
+		Entry.EffectiveSecondaryLimit = 0.0f;
 		PreviewConstraintCones.push_back(Entry);
+		return &PreviewConstraintCones.back();
 	};
 
 	for (int32 Ci = 0; Ci < static_cast<int32>(Constraints.size()); ++Ci)
 	{
 		const FPhysicsConstraintSetup& CS = Constraints[Ci];
+		const float Swing1Limit = GetSwingVisualHalfAngle(CS.Swing1Motion, CS.SwingLimitY);
+		const float Swing2Limit = GetSwingVisualHalfAngle(CS.Swing2Motion, CS.SwingLimitZ);
 
-		// Swing 1 (Red) — rotation around Y, fan in XZ plane
-		if (CS.Swing1Motion != EPhysicsConstraintMotionMode::Locked)
+		// Swing limits are visualized as a single red cone around the twist axis.
+		if (ShouldRenderSwingCone(Swing1Limit, Swing2Limit))
 		{
-			const float Lim = CS.Swing1Motion == EPhysicsConstraintMotionMode::Free ? 89.0f : CS.SwingLimitY;
-			AddFan(Ci, Lim, true, FVector4(1.0f, 0.2f, 0.2f, PreviewConstraintShapeOpacity));
+			if (FPreviewConstraintConeEntry* Entry = AddVisual(
+				Ci,
+				CreateConstraintSwingConeMesh(PreviewSphereMesh, Swing1Limit, Swing2Limit, Device),
+				EPhysicsAssetConstraintVisualType::SwingCone,
+				FVector4(1.0f, 0.2f, 0.2f, PreviewConstraintShapeOpacity)))
+			{
+				Entry->EffectivePrimaryLimit = Swing1Limit;
+				Entry->EffectiveSecondaryLimit = Swing2Limit;
+			}
 		}
 
-		// Swing 2 (Green) — rotation around Z, fan in XY plane
-		if (CS.Swing2Motion != EPhysicsConstraintMotionMode::Locked)
+		// Twist is visualized as a single green fan in the YZ plane.
+		const float TwistLimit = GetTwistVisualHalfAngle(CS);
+		if (TwistLimit > 0.0f)
 		{
-			const float Lim = CS.Swing2Motion == EPhysicsConstraintMotionMode::Free ? 89.0f : CS.SwingLimitZ;
-			AddFan(Ci, Lim, false, FVector4(0.2f, 1.0f, 0.2f, PreviewConstraintShapeOpacity));
+			if (FPreviewConstraintConeEntry* Entry = AddVisual(
+				Ci,
+				CreateConstraintTwistFanMesh(PreviewSphereMesh, TwistLimit, Device),
+				EPhysicsAssetConstraintVisualType::TwistFan,
+				FVector4(0.2f, 1.0f, 0.2f, PreviewConstraintShapeOpacity)))
+			{
+				Entry->EffectivePrimaryLimit = TwistLimit;
+				Entry->EffectiveSecondaryLimit = 0.0f;
+			}
 		}
+
+		// Local frame axis arrows: X=red (Twist), Y=green (Swing1), Z=blue (Swing2)
+		AddVisual(Ci, CreateConstraintAxisArrowMesh(PreviewSphereMesh, Device),
+			EPhysicsAssetConstraintVisualType::AxisX, FVector4(0.9f, 0.15f, 0.15f, PreviewConstraintShapeOpacity));
+		AddVisual(Ci, CreateConstraintAxisArrowMesh(PreviewSphereMesh, Device),
+			EPhysicsAssetConstraintVisualType::AxisY, FVector4(0.15f, 0.9f, 0.15f, PreviewConstraintShapeOpacity));
+		AddVisual(Ci, CreateConstraintAxisArrowMesh(PreviewSphereMesh, Device),
+			EPhysicsAssetConstraintVisualType::AxisZ, FVector4(0.15f, 0.35f, 0.9f, PreviewConstraintShapeOpacity));
 	}
 }
 
@@ -2867,18 +3209,111 @@ void FPhysicsAssetEditorWidget::SyncConstraintConeComponents(UPhysicsAsset* Phys
 		const float VisualLength = bSelected ? ConstraintAxisLength * 2.0f : ConstraintAxisLength;
 		const float Alpha = PreviewConstraintShapeOpacity;
 
-		// Flat fan mesh already encodes the half angle; uniform scale controls the visual length.
-		Entry.Component->SetVisibility(bShowConstraintDebug);
-		Entry.Component->SetRelativeLocation(Origin);
-		Entry.Component->SetRelativeRotation(PFrame.GetRotator());
-		Entry.Component->SetRelativeScale(FVector(VisualLength, VisualLength, VisualLength));
+		const bool bLimitVisual = Entry.VisualType == EPhysicsAssetConstraintVisualType::SwingCone
+			|| Entry.VisualType == EPhysicsAssetConstraintVisualType::TwistFan;
 
-		if (Entry.Material)
+		// Do not recreate the selected swing/twist GPU mesh while the user drags
+		// numeric angular limits. Recreating UStaticMesh + InitResources per mouse
+		// delta is the main FPS spike. The current selected limit is visualized by
+		// DrawConstraintDebug() as a live 2x always-on-top overlay.
+
+		const bool bShowPersistentComponent = bShowConstraintDebug && !(bSelected && bLimitVisual);
+		if (Entry.Component->IsVisible() != bShowPersistentComponent)
+			Entry.Component->SetVisibility(bShowPersistentComponent);
+
+		constexpr float PosTolerance   = 1e-4f;
+		constexpr float ScaleTolerance = 1e-5f;
+		constexpr float RotTolerance   = 1e-5f;
+
+		auto SetLocIfChanged = [&](const FVector& NewLoc)
 		{
-			FVector4 Color = Entry.bIsSwing1
-				? FVector4(bSelected ? 1.0f : 0.9f, 0.2f, 0.2f, Alpha)
-				: FVector4(0.2f, bSelected ? 1.0f : 0.9f, 0.2f, Alpha);
-			Entry.Material->SetVector4Parameter("SectionColor", Color);
+			const FVector Cur = Entry.Component->GetRelativeLocation();
+			if (std::fabs(Cur.X - NewLoc.X) > PosTolerance ||
+				std::fabs(Cur.Y - NewLoc.Y) > PosTolerance ||
+				std::fabs(Cur.Z - NewLoc.Z) > PosTolerance)
+				Entry.Component->SetRelativeLocation(NewLoc);
+		};
+		auto SetRotIfChanged = [&](const FQuat& NewRot)
+		{
+			if (!Entry.Component->GetRelativeQuat().Equals(NewRot, RotTolerance))
+				Entry.Component->SetRelativeRotation(NewRot);
+		};
+		auto SetScaleIfChanged = [&](const FVector& NewScale)
+		{
+			const FVector Cur = Entry.Component->GetRelativeScale();
+			if (std::fabs(Cur.X - NewScale.X) > ScaleTolerance ||
+				std::fabs(Cur.Y - NewScale.Y) > ScaleTolerance ||
+				std::fabs(Cur.Z - NewScale.Z) > ScaleTolerance)
+				Entry.Component->SetRelativeScale(NewScale);
+		};
+		auto SetMaterialColorIfChanged = [&](const FVector4& NewColor)
+		{
+			constexpr float ColorTolerance = 1e-4f;
+			if (!Entry.Material)
+			{
+				return;
+			}
+			if (std::fabs(Entry.LastColor.X - NewColor.X) > ColorTolerance ||
+				std::fabs(Entry.LastColor.Y - NewColor.Y) > ColorTolerance ||
+				std::fabs(Entry.LastColor.Z - NewColor.Z) > ColorTolerance ||
+				std::fabs(Entry.LastColor.W - NewColor.W) > ColorTolerance)
+			{
+				Entry.Material->SetVector4Parameter("SectionColor", NewColor);
+				Entry.LastColor = NewColor;
+			}
+		};
+
+		SetLocIfChanged(Origin);
+
+		if (Entry.VisualType == EPhysicsAssetConstraintVisualType::SwingCone)
+		{
+			SetRotIfChanged(PFrame.Rotation);
+			const float SwingLength = VisualLength * ConstraintSwingVisualScale;
+			SetScaleIfChanged(FVector(SwingLength, SwingLength, SwingLength));
+			SetMaterialColorIfChanged(FVector4(bSelected ? 1.0f : 0.9f, 0.f, 0.f, Alpha));
+		}
+		else if (Entry.VisualType == EPhysicsAssetConstraintVisualType::TwistFan)
+		{
+			SetRotIfChanged(PFrame.Rotation);
+			const float TwistLength = VisualLength * ConstraintTwistVisualScale;
+			SetScaleIfChanged(FVector(TwistLength, TwistLength, TwistLength));
+			SetMaterialColorIfChanged(FVector4(0.f, bSelected ? 1.0f : 0.9f, 0.f, Alpha));
+		}
+		else
+		{
+			// Axis frame arrow: orient so the arrow's local +X aligns with the desired parent frame axis.
+			// SetAxes(Right=localX, Up=localY, Forward=localZ) — M[0] is the "forward" in GetEuler convention.
+			const FRotator PR  = PFrame.GetRotator();
+			const FVector AX   = PR.GetForwardVector(); // Twist / X
+			const FVector AY   = PR.GetRightVector();   // Swing1 / Y
+			const FVector AZ   = PR.GetUpVector();      // Swing2 / Z
+
+			FMatrix ArrowMat;
+			FVector4 ArrowColor;
+			float ArrowScale;
+
+			if (Entry.VisualType == EPhysicsAssetConstraintVisualType::AxisX)
+			{
+				ArrowMat.SetAxes(AX, AY, AZ);
+				ArrowColor = FVector4(bSelected ? 1.0f : 0.9f, 0.15f, 0.15f, Alpha);
+				ArrowScale = VisualLength * ConstraintAxisArrowScale;
+			}
+			else if (Entry.VisualType == EPhysicsAssetConstraintVisualType::AxisY)
+			{
+				ArrowMat.SetAxes(AY, AZ, AX);
+				ArrowColor = FVector4(0.15f, bSelected ? 1.0f : 0.9f, 0.15f, Alpha);
+				ArrowScale = VisualLength * ConstraintAxisArrowScale;
+			}
+			else // AxisZ
+			{
+				ArrowMat.SetAxes(AZ, AX, AY);
+				ArrowColor = FVector4(0.15f, 0.35f, bSelected ? 1.0f : 0.9f, Alpha);
+				ArrowScale = VisualLength * ConstraintAxisZArrowScale;
+			}
+
+			SetRotIfChanged(ArrowMat.ToRotator().ToQuaternion());
+			SetScaleIfChanged(FVector(ArrowScale, ArrowScale, ArrowScale));
+			SetMaterialColorIfChanged(ArrowColor);
 		}
 	}
 }
@@ -2923,6 +3358,7 @@ UMaterial* FPhysicsAssetEditorWidget::CreatePreviewShapeMaterial(float Alpha, bo
 		return nullptr;
 	}
 
+	PreviewMaterial->SetAssetPathFileName(MakePhysicsAssetPreviewResourcePath("PreviewMaterial"));
 	PreviewMaterial->SetBlendMode(EMaterialBlendMode::Translucent);
 	if (bDisableDepthTest)
 	{
@@ -3019,10 +3455,7 @@ void FPhysicsAssetEditorWidget::RebuildPreviewShapeComponents(UPhysicsAsset* Phy
 				CreatePreviewShapeComponent(CapsuleCapMesh, BodyIndex, EPhysicsAssetPreviewShapeType::Capsule, ShapeIndex, 2, CapsuleCapExtent);
 			}
 		}
-		for (int32 ShapeIndex = 0; ShapeIndex < static_cast<int32>(ShapeSetup.ConvexShapeSetups.size()); ++ShapeIndex)
-		{
-			CreatePreviewShapeComponent(PreviewCubeMesh, BodyIndex, EPhysicsAssetPreviewShapeType::Convex, ShapeIndex, 0, CubeExtent);
-		}
+		// Convex collision is intentionally excluded from preview rendering.
 	}
 
 	SyncPreviewShapeComponents(PhysicsAsset);
@@ -3070,12 +3503,33 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 				TargetMeshExtent.Y / BaseExtent.Y,
 				TargetMeshExtent.Z / BaseExtent.Z);
 
-			Entry.Component->SetRelativeLocation(WorldTransform.Location);
-			Entry.Component->SetRelativeRotation(WorldTransform.Rotation);
-			Entry.Component->SetRelativeScale(FVector(
+			const FVector NewLocation = WorldTransform.Location;
+			const FQuat NewRotation = WorldTransform.Rotation;
+			const FVector NewScale(
 				WorldTransform.Scale.X * MeshScale.X,
 				WorldTransform.Scale.Y * MeshScale.Y,
-				WorldTransform.Scale.Z * MeshScale.Z));
+				WorldTransform.Scale.Z * MeshScale.Z);
+
+			constexpr float PosTolerance = 1e-4f;
+			constexpr float ScaleTolerance = 1e-5f;
+			const FVector CurLoc = Entry.Component->GetRelativeLocation();
+			const FVector CurScale = Entry.Component->GetRelativeScale();
+			const bool bLocationChanged =
+				std::fabs(CurLoc.X - NewLocation.X) > PosTolerance ||
+				std::fabs(CurLoc.Y - NewLocation.Y) > PosTolerance ||
+				std::fabs(CurLoc.Z - NewLocation.Z) > PosTolerance;
+			const bool bRotationChanged = !Entry.Component->GetRelativeQuat().Equals(NewRotation, 1e-5f);
+			const bool bScaleChanged =
+				std::fabs(CurScale.X - NewScale.X) > ScaleTolerance ||
+				std::fabs(CurScale.Y - NewScale.Y) > ScaleTolerance ||
+				std::fabs(CurScale.Z - NewScale.Z) > ScaleTolerance;
+
+			if (bLocationChanged)
+				Entry.Component->SetRelativeLocation(NewLocation);
+			if (bRotationChanged)
+				Entry.Component->SetRelativeRotation(NewRotation);
+			if (bScaleChanged)
+				Entry.Component->SetRelativeScale(NewScale);
 
 			if (Entry.Material)
 			{
@@ -3164,80 +3618,67 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 			ApplyEntryTransform(PreviewShapeComponents[EntryIndex++], BodySetup, NegativeCapLocalMatrix, CapsuleCapExtent);
 		}
 
-		for (const FPhysicsConvexShapeSetup& Shape : ShapeSetup.ConvexShapeSetups)
-		{
-			if (EntryIndex >= static_cast<int32>(PreviewShapeComponents.size()))
-			{
-				return;
-			}
-			ApplyEntryTransform(PreviewShapeComponents[EntryIndex++], BodySetup, Shape.LocalTransform.ToMatrix(), ComputeConvexBoundsExtent(Shape));
-		}
 	}
 }
 
 namespace
 {
-	// Swing fan (pie slice): rotation around RotAxis, bone sweeps from -LimitDeg to +LimitDeg
-	// CenterDir: the zero-angle direction (usually AxisX / bone forward)
-	// SweepDir:  the direction toward positive angle
-	void DrawConstraintFan(
+	// Swing cone outline: forward axis is the cone axis and Y/Z radii come from swing2/swing1.
+	void DrawSwingCone(
 		UWorld* World,
 		const FVector& Apex,
-		const FVector& CenterDir,
-		const FVector& SweepDir,
-		float LimitDeg,
-		bool bFree,
-		bool bLocked,
+		const FVector& ForwardAxis,
+		const FVector& SideAxisY,
+		const FVector& SideAxisZ,
+		float Swing1LimitDeg,
+		float Swing2LimitDeg,
 		float Length,
 		const FColor& Color,
 		float Duration)
 	{
-		if (bLocked) return;
-		const float Limit = bFree ? 89.0f : LimitDeg;
-		if (Limit <= 0.0f) return;
+		if (Swing1LimitDeg <= 0.0f && Swing2LimitDeg <= 0.0f) return;
 
-		constexpr int32 N = 20;
+		const float RadiusY = sinf((std::max)(0.0f, (std::min)(Swing2LimitDeg, 89.0f)) * Pi / 180.0f) * Length;
+		const float RadiusZ = sinf((std::max)(0.0f, (std::min)(Swing1LimitDeg, 89.0f)) * Pi / 180.0f) * Length;
+		const FVector BaseCenter = Apex + ForwardAxis * Length;
+		constexpr int32 N = 24;
 		FVector PrevPoint = FVector::ZeroVector;
 
 		for (int32 i = 0; i <= N; ++i)
 		{
-			const float T   = -Limit + (2.0f * Limit * i / N);
-			const float Rad = T * Pi / 180.0f;
-			FVector Dir = CenterDir * std::cos(Rad) + SweepDir * std::sin(Rad);
-			Dir.Normalize();
-			const FVector Point = Apex + Dir * Length;
+			const float Theta = (2.0f * Pi * static_cast<float>(i)) / static_cast<float>(N);
+			const FVector Point = BaseCenter
+				+ SideAxisY * (cosf(Theta) * RadiusY)
+				+ SideAxisZ * (sinf(Theta) * RadiusZ);
 
 			if (i > 0)
 				DrawDebugLineAlwaysOnTop(World, PrevPoint, Point, Color, Duration);
 			// 양 끝과 중심 방사선
-			if (i == 0 || i == N || i == N / 2)
+			if (i == 0 || i == N / 4 || i == N / 2 || i == (3 * N) / 4)
 				DrawDebugLineAlwaysOnTop(World, Apex, Point, Color, Duration);
 
 			PrevPoint = Point;
 		}
+
+		DrawDebugLineAlwaysOnTop(World, Apex, BaseCenter, Color, Duration);
 	}
 
-	// Twist arc: rotation around TwistAxis (AxisX), arc drawn in AxisY-AxisZ plane
-	void DrawTwistArc(
+	// Twist fan outline in the YZ plane around the twist axis.
+	void DrawTwistFan(
 		UWorld* World,
 		const FVector& Origin,
-		const FVector& AxisX,
 		const FVector& AxisY,
 		const FVector& AxisZ,
-		float TwistMinDeg,
-		float TwistMaxDeg,
-		bool bFree,
-		bool bLocked,
+		float HalfAngleDeg,
 		float Radius,
 		const FColor& Color,
 		float Duration)
 	{
-		if (bLocked) return;
-		const float TMin = bFree ? -179.0f : TwistMinDeg;
-		const float TMax = bFree ?  179.0f : TwistMaxDeg;
-		if (TMax - TMin < 1.0f) return;
+		const float LimitDeg = (std::max)(0.0f, (std::min)(HalfAngleDeg, 179.0f));
+		if (LimitDeg <= 0.0f) return;
 
-		(void)AxisX;
+		const float TMin = -LimitDeg;
+		const float TMax = LimitDeg;
 		constexpr int32 N = 20;
 		FVector PrevPoint = FVector::ZeroVector;
 
@@ -3249,7 +3690,7 @@ namespace
 
 			if (i > 0)
 				DrawDebugLineAlwaysOnTop(World, PrevPoint, Point, Color, Duration);
-			if (i == 0 || i == N)
+			if (i == 0 || i == N || i == N / 2)
 				DrawDebugLineAlwaysOnTop(World, Origin, Point, Color, Duration);
 
 			PrevPoint = Point;
@@ -3277,7 +3718,7 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 		return;
 	}
 
-	constexpr float ConstraintDebugDuration = 0.1f;
+	constexpr float ConstraintDebugDuration = 0.0f;
 	TArray<FMatrix> BoneGlobalMatrices;
 	PreviewMeshComponent->GetCurrentBoneGlobalMatrices(BoneGlobalMatrices);
 
@@ -3296,43 +3737,193 @@ void FPhysicsAssetEditorWidget::DrawConstraintDebug(UPhysicsAsset* PhysicsAsset)
 		const FTransform ParentFrame(Constraint.ParentLocalFrame.ToMatrix() * ParentBoneMatrix);
 		const FTransform ChildFrame(Constraint.ChildLocalFrame.ToMatrix() * ChildBoneMatrix);
 		const bool bSelected = ConstraintIndex == SelectedConstraintIndex;
+		if (!bSelected)
+		{
+			continue;
+		}
 
 		const FRotator Rotation = ParentFrame.GetRotator();
 		const FVector AxisX = Rotation.GetForwardVector();
 		const FVector AxisY = Rotation.GetRightVector();
 		const FVector AxisZ = Rotation.GetUpVector();
 		const FVector Origin = (ParentFrame.Location + ChildFrame.Location) * 0.5f;
+		const float Swing1Limit = GetSwingVisualHalfAngle(Constraint.Swing1Motion, Constraint.SwingLimitY);
+		const float Swing2Limit = GetSwingVisualHalfAngle(Constraint.Swing2Motion, Constraint.SwingLimitZ);
+		const float TwistLimit = GetTwistVisualHalfAngle(Constraint);
 
 		// 선택된 constraint는 2배 크기로 렌더
 		const float VisualLength = bSelected ? ConstraintAxisLength * 2.0f : ConstraintAxisLength;
 
 		// 짧은 방향 축선 (R=Swing1/Y, G=Swing2/Z, B=Twist/X)
-		const float AxisLineLen = VisualLength * 0.35f;
-		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * AxisLineLen, bSelected ? FColor(255, 130, 130) : FColor(220, 60,  60),  ConstraintDebugDuration);
-		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * AxisLineLen, bSelected ? FColor(130, 255, 130) : FColor(60,  200, 60),  ConstraintDebugDuration);
-		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * AxisLineLen, bSelected ? FColor(130, 180, 255) : FColor(60,  120, 255), ConstraintDebugDuration);
+		const float SwingVisualLength = VisualLength * ConstraintSwingVisualScale;
+		const float TwistVisualLength = VisualLength * ConstraintTwistVisualScale;
+		const float AxisLineLen = SwingVisualLength * 0.35f;
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisY * AxisLineLen, bSelected ? FColor(255, 130, 130) : FColor(220, 60, 60), ConstraintDebugDuration);
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisZ * AxisLineLen, bSelected ? FColor(255, 130, 130) : FColor(220, 60, 60), ConstraintDebugDuration);
+		DrawDebugLineAlwaysOnTop(PreviewWorld, Origin, Origin + AxisX * AxisLineLen, bSelected ? FColor(130, 255, 130) : FColor(60, 200, 60), ConstraintDebugDuration);
 
-		// Swing1 fan outline (Red): X-Z plane, X axis sweeps toward +/-Z.
-		DrawConstraintFan(PreviewWorld, Origin, AxisX, AxisZ,
-			Constraint.SwingLimitY,
-			Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Free,
-			Constraint.Swing1Motion == EPhysicsConstraintMotionMode::Locked,
-			VisualLength, bSelected ? FColor(255, 130, 130) : FColor(220, 60, 60), ConstraintDebugDuration);
-
-		// Swing2 fan outline (Green): X-Y plane, X axis sweeps toward +/-Y.
-		DrawConstraintFan(PreviewWorld, Origin, AxisX, AxisY,
-			Constraint.SwingLimitZ,
-			Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Free,
-			Constraint.Swing2Motion == EPhysicsConstraintMotionMode::Locked,
-			VisualLength, bSelected ? FColor(130, 255, 130) : FColor(60, 200, 60), ConstraintDebugDuration);
-
-		// Twist arc (Blue): Y-Z plane around X axis.
-		DrawTwistArc(PreviewWorld, Origin, AxisX, AxisY, AxisZ,
-			Constraint.TwistLimitMin, Constraint.TwistLimitMax,
-			Constraint.TwistMotion == EPhysicsConstraintMotionMode::Free,
-			Constraint.TwistMotion == EPhysicsConstraintMotionMode::Locked,
-			VisualLength * 0.45f, bSelected ? FColor(130, 180, 255) : FColor(60, 120, 255), ConstraintDebugDuration);
+		// Filled swing/twist limit visuals for the selected constraint are rendered by
+		// RenderSelectedConstraintLimitOverlay(). That path rebuilds no UStaticMesh and
+		// therefore stays responsive while dragging numeric limit values.
 	}
+}
+
+void FPhysicsAssetEditorWidget::RenderSelectedConstraintLimitOverlay(
+	UPhysicsAsset* PhysicsAsset,
+	ImDrawList* DrawList,
+	const ImVec2& ViewportPos,
+	const ImVec2& ViewportSize,
+	float ToolbarHeight)
+{
+	if (!PhysicsAsset || !DrawList || !bShowConstraintDebug || SelectedConstraintIndex < 0
+		|| SelectedConstraintIndex >= static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()))
+	{
+		return;
+	}
+
+	USkeletalMeshComponent* PreviewMeshComponent = ViewportClient.GetPreviewMeshComponent();
+	const FSkeletonAsset* SkeletonAsset = PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr;
+	if (!PreviewMeshComponent || !SkeletonAsset)
+	{
+		return;
+	}
+
+	FMinimalViewInfo POV;
+	if (!ViewportClient.GetCameraView(POV))
+	{
+		return;
+	}
+
+	const FPhysicsConstraintSetup& Constraint = PhysicsAsset->GetConstraintSetups()[SelectedConstraintIndex];
+	const int32 ParentBoneIndex = FindBoneIndexByName(SkeletonAsset, Constraint.ParentBoneName);
+	const int32 ChildBoneIndex = FindBoneIndexByName(SkeletonAsset, Constraint.ChildBoneName);
+	if (ParentBoneIndex < 0 || ChildBoneIndex < 0)
+	{
+		return;
+	}
+
+	TArray<FMatrix> BoneGlobalMatrices;
+	PreviewMeshComponent->GetCurrentBoneGlobalMatrices(BoneGlobalMatrices);
+	const FTransform ParentFrame(Constraint.ParentLocalFrame.ToMatrix() * BuildBoneWorldMatrix(PreviewMeshComponent, &BoneGlobalMatrices, ParentBoneIndex));
+	const FTransform ChildFrame(Constraint.ChildLocalFrame.ToMatrix() * BuildBoneWorldMatrix(PreviewMeshComponent, &BoneGlobalMatrices, ChildBoneIndex));
+
+	const FRotator Rotation = ParentFrame.GetRotator();
+	const FVector AxisX = Rotation.GetForwardVector();
+	const FVector AxisY = Rotation.GetRightVector();
+	const FVector AxisZ = Rotation.GetUpVector();
+	const FVector Origin = (ParentFrame.Location + ChildFrame.Location) * 0.5f;
+
+	const float Swing1Limit = GetSwingVisualHalfAngle(Constraint.Swing1Motion, Constraint.SwingLimitY);
+	const float Swing2Limit = GetSwingVisualHalfAngle(Constraint.Swing2Motion, Constraint.SwingLimitZ);
+	const float TwistLimit = GetTwistVisualHalfAngle(Constraint);
+
+	const float VisualLength = ConstraintAxisLength * 2.0f;
+	const float SwingLength = VisualLength * ConstraintSwingVisualScale;
+	const float TwistRadius = VisualLength * ConstraintTwistVisualScale;
+	const FMatrix ViewProjection = POV.CalculateViewProjectionMatrix();
+	const FVector CameraForward = POV.Rotation.GetForwardVector();
+
+	auto Project = [&](const FVector& WorldPosition, ImVec2& OutScreen) -> bool
+	{
+		if ((WorldPosition - POV.Location).Dot(CameraForward) <= POV.NearClip)
+		{
+			return false;
+		}
+
+		const FVector Clip = ViewProjection.TransformPositionWithW(WorldPosition);
+		OutScreen.x = ViewportPos.x + (Clip.X * 0.5f + 0.5f) * ViewportSize.x;
+		OutScreen.y = ViewportPos.y + (1.0f - (Clip.Y * 0.5f + 0.5f)) * ViewportSize.y;
+		return std::isfinite(OutScreen.x) && std::isfinite(OutScreen.y);
+	};
+
+	auto AddProjectedLine = [&](const FVector& A, const FVector& B, ImU32 Color, float Thickness = 1.5f)
+	{
+		ImVec2 SA, SB;
+		if (Project(A, SA) && Project(B, SB))
+		{
+			DrawList->AddLine(SA, SB, Color, Thickness);
+		}
+	};
+
+	auto AddProjectedTriangle = [&](const FVector& A, const FVector& B, const FVector& C, ImU32 FillColor, ImU32 EdgeColor)
+	{
+		ImVec2 SA, SB, SC;
+		if (Project(A, SA) && Project(B, SB) && Project(C, SC))
+		{
+			DrawList->AddTriangleFilled(SA, SB, SC, FillColor);
+			DrawList->AddTriangle(SA, SB, SC, EdgeColor, 0.75f);
+		}
+	};
+
+	DrawList->PushClipRect(
+		ImVec2(ViewportPos.x, ViewportPos.y + ToolbarHeight),
+		ImVec2(ViewportPos.x + ViewportSize.x, ViewportPos.y + ViewportSize.y),
+		true);
+
+	const ImU32 SwingFill = IM_COL32(255, 70, 70, 58);
+	const ImU32 SwingEdge = IM_COL32(255, 135, 135, 230);
+	const ImU32 TwistFill = IM_COL32(70, 255, 70, 58);
+	const ImU32 TwistEdge = IM_COL32(135, 255, 135, 230);
+
+	// Small local axes stay visible even when the filled surfaces overlap the body.
+	const float AxisLineLength = SwingLength * 0.35f;
+	AddProjectedLine(Origin, Origin + AxisY * AxisLineLength, SwingEdge, 2.0f);
+	AddProjectedLine(Origin, Origin + AxisZ * AxisLineLength, SwingEdge, 2.0f);
+	AddProjectedLine(Origin, Origin + AxisX * AxisLineLength, TwistEdge, 2.0f);
+
+	if (ShouldRenderSwingCone(Swing1Limit, Swing2Limit))
+	{
+		const float RadiusY = sinf((std::clamp)(Swing2Limit, 0.0f, 89.0f) * Pi / 180.0f) * SwingLength;
+		const float RadiusZ = sinf((std::clamp)(Swing1Limit, 0.0f, 89.0f) * Pi / 180.0f) * SwingLength;
+		const FVector BaseCenter = Origin + AxisX * SwingLength;
+		constexpr int32 Segments = 32;
+		FVector FirstPoint = FVector::ZeroVector;
+		FVector PrevPoint = FVector::ZeroVector;
+
+		for (int32 SegmentIndex = 0; SegmentIndex <= Segments; ++SegmentIndex)
+		{
+			const float Theta = (2.0f * Pi * static_cast<float>(SegmentIndex)) / static_cast<float>(Segments);
+			const FVector Point = BaseCenter
+				+ AxisY * (cosf(Theta) * RadiusY)
+				+ AxisZ * (sinf(Theta) * RadiusZ);
+
+			if (SegmentIndex == 0)
+			{
+				FirstPoint = Point;
+			}
+			else
+			{
+				AddProjectedTriangle(Origin, PrevPoint, Point, SwingFill, SwingEdge);
+				AddProjectedLine(PrevPoint, Point, SwingEdge, 1.35f);
+			}
+
+			PrevPoint = Point;
+		}
+
+		AddProjectedLine(Origin, BaseCenter, SwingEdge, 1.5f);
+		AddProjectedLine(Origin, FirstPoint, SwingEdge, 1.35f);
+	}
+
+	if (TwistLimit > 0.0f)
+	{
+		const float LimitDeg = (std::clamp)(TwistLimit, 0.0f, 179.0f);
+		constexpr int32 Segments = 32;
+		FVector PrevPoint = FVector::ZeroVector;
+		for (int32 SegmentIndex = 0; SegmentIndex <= Segments; ++SegmentIndex)
+		{
+			const float T = -LimitDeg + (2.0f * LimitDeg * static_cast<float>(SegmentIndex) / static_cast<float>(Segments));
+			const float TRad = T * Pi / 180.0f;
+			const FVector Point = Origin + (AxisY * cosf(TRad) + AxisZ * sinf(TRad)) * TwistRadius;
+			if (SegmentIndex > 0)
+			{
+				AddProjectedTriangle(Origin, PrevPoint, Point, TwistFill, TwistEdge);
+				AddProjectedLine(PrevPoint, Point, TwistEdge, 1.35f);
+			}
+			PrevPoint = Point;
+		}
+	}
+
+	DrawList->PopClipRect();
 }
 
 void FPhysicsAssetEditorWidget::StartPreviewSimulation(UPhysicsAsset* PhysicsAsset)
@@ -3504,6 +4095,13 @@ void FPhysicsAssetEditorWidget::Tick(float DeltaTime)
 		TickPreviewSimulation(DeltaTime);
 		ViewportClient.Tick(DeltaTime);
 		UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
+		const bool bNeedsConstraintDefinitionRefresh = bConstraintPreviewDefinitionDirty || NeedsConstraintConeRebuild(PhysicsAsset);
+		if (bNeedsConstraintDefinitionRefresh)
+		{
+			RebuildConstraintConeComponents(PhysicsAsset);
+		}
+		bConstraintPreviewDefinitionDirty = false;
+		bConstraintPreviewTransformDirty = false;
 		SyncPreviewShapeComponents(PhysicsAsset);
 		SyncConstraintConeComponents(PhysicsAsset);
 		DrawConstraintDebug(PhysicsAsset);
@@ -3951,21 +4549,26 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 							FHitResult GizmoHit;
 							if (!ViewportClient.GetGizmo() || !FRayUtils::RaycastComponent(ViewportClient.GetGizmo(), Ray, GizmoHit))
 							{
-								// Pick constraints first, independent of depth. The pick target is the same
-								// fan mesh rendered in the viewport, so clicking the visible red/green fan
-								// selects the constraint instead of the translucent body behind/in front of it.
+								// Constraint previews are rendered with depth disabled so the visually topmost
+								// fan/cone is determined by draw order, not world depth. Pick using the last
+								// hit preview entry so selection matches what the user actually sees.
 								int32 BestConstraintIndex = -1;
+								int32 BestConstraintDrawOrder = -1;
 								float BestConstraintDistance = FLT_MAX;
-								for (const FPreviewConstraintConeEntry& Entry : PreviewConstraintCones)
+								for (int32 EntryOrder = 0; EntryOrder < static_cast<int32>(PreviewConstraintCones.size()); ++EntryOrder)
 								{
+									const FPreviewConstraintConeEntry& Entry = PreviewConstraintCones[EntryOrder];
 									if (!Entry.Component || !bShowConstraintDebug)
 									{
 										continue;
 									}
 
 									FHitResult ConstraintHit;
-									if (FRayUtils::RaycastComponent(Entry.Component, Ray, ConstraintHit) && ConstraintHit.Distance < BestConstraintDistance)
+									if (FRayUtils::RaycastComponent(Entry.Component, Ray, ConstraintHit)
+										&& (EntryOrder > BestConstraintDrawOrder
+											|| (EntryOrder == BestConstraintDrawOrder && ConstraintHit.Distance < BestConstraintDistance)))
 									{
+										BestConstraintDrawOrder = EntryOrder;
 										BestConstraintDistance = ConstraintHit.Distance;
 										BestConstraintIndex = Entry.ConstraintIndex;
 									}
@@ -4080,6 +4683,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 				};
 
 				FViewportToolbar::Render(Context);
+				RenderSelectedConstraintLimitOverlay(PhysicsAsset, DrawList, ViewportPos, ViewportSize, ToolbarHeight);
 				RenderStatsOverlay(DrawList, ViewportPos, PhysicsAsset);
 				if (bPreviewSimulating)
 				{
@@ -4176,7 +4780,12 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 		{
 			StopPreviewSimulation(true);
 		}
-		RebuildPreviewShapeComponents(PhysicsAsset);
+		const bool bEditingConstraint = SelectedConstraintIndex >= 0
+			&& SelectedConstraintIndex < static_cast<int32>(PhysicsAsset->GetConstraintSetups().size());
+		if (!bEditingConstraint && !bConstraintPreviewDefinitionDirty && !bConstraintPreviewTransformDirty)
+		{
+			RebuildPreviewShapeComponents(PhysicsAsset);
+		}
 		MarkDirty();
 	}
 	else if (bPreviewSettingsChanged)
@@ -4751,9 +5360,16 @@ bool FPhysicsAssetEditorWidget::RenderDetailsPanel(UPhysicsAsset* PhysicsAsset)
 	}
 	else if (SelectedConstraintIndex >= 0 && SelectedConstraintIndex < static_cast<int32>(ConstraintSetups.size()))
 	{
+		bool bPreviewDefinitionChanged = false;
+		bool bPreviewTransformChanged = false;
 		ImGui::Text("Constraint: %s", ConstraintSetups[SelectedConstraintIndex].ConstraintName.ToString().c_str());
 		ImGui::Separator();
-		bChanged |= RenderConstraintInspector(ConstraintSetups[SelectedConstraintIndex]);
+		bChanged |= RenderConstraintInspector(
+			ConstraintSetups[SelectedConstraintIndex],
+			&bPreviewDefinitionChanged,
+			&bPreviewTransformChanged);
+		bConstraintPreviewDefinitionDirty |= bPreviewDefinitionChanged;
+		bConstraintPreviewTransformDirty |= bPreviewTransformChanged;
 	}
 	else if (SelectedBoneIndex >= 0 && PreviewSkeletalMesh && PreviewSkeletalMesh->GetSkeletonAsset())
 	{
