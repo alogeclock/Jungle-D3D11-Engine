@@ -32,7 +32,7 @@ inline FArchive& operator<<(FArchive& Ar, FPhysicsAssetGraphViewState& ViewState
     Ar << ViewState.Pan.X;
     Ar << ViewState.Pan.Y;
     Ar << ViewState.Zoom;
-    Ar << ViewState.NodeLayouts;
+    SerializeArrayElements(Ar, ViewState.NodeLayouts);
     return Ar;
 }
 

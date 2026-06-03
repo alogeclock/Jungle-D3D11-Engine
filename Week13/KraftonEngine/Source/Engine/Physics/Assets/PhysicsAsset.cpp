@@ -247,12 +247,20 @@ namespace
 			? EPhysicsConstraintMotionMode::Limited
 			: EPhysicsConstraintMotionMode::Locked;
 	}
+
+	void LoadLegacyGraphViewState(FArchive& Ar, FPhysicsAssetGraphViewState& ViewState)
+	{
+		Ar << ViewState.Pan.X;
+		Ar << ViewState.Pan.Y;
+		Ar << ViewState.Zoom;
+		Ar << ViewState.NodeLayouts;
+	}
 }
 
 void UPhysicsAsset::Serialize(FArchive& Ar)
 {
     constexpr uint32 PhysicsAssetVersionTag = 0x50485953u;
-    constexpr uint32 PhysicsAssetVersion = 6u;
+    constexpr uint32 PhysicsAssetVersion = 7u;
 
     uint32 BodySetupCount = 0u;
     uint32 AssetVersion = PhysicsAssetVersion;
@@ -288,7 +296,14 @@ void UPhysicsAsset::Serialize(FArchive& Ar)
 
             if (AssetVersion >= 2u)
             {
-                Ar << GraphViewState;
+                if (AssetVersion >= 7u)
+                {
+                    Ar << GraphViewState;
+                }
+                else
+                {
+                    LoadLegacyGraphViewState(Ar, GraphViewState);
+                }
             }
             else
             {
@@ -386,7 +401,14 @@ void UPhysicsAsset::Serialize(FArchive& Ar)
     }
     else
     {
-        Ar << ConstraintSetups;
+        if (Ar.IsLoading() && AssetVersion < 7u)
+        {
+            Ar << ConstraintSetups;
+        }
+        else
+        {
+            SerializeArrayElements(Ar, ConstraintSetups);
+        }
     }
 
     if (Ar.IsLoading() && AssetVersion < 4u)

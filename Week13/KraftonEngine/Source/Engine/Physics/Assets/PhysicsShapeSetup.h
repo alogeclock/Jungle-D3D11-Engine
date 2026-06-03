@@ -213,9 +213,9 @@ struct FPhysicsAggregateShapeSetup
 
 inline FArchive& operator<<(FArchive& Ar, FPhysicsAggregateShapeSetup& ShapeSetup)
 {
-    Ar << ShapeSetup.SphereShapeSetups;
-    Ar << ShapeSetup.BoxShapeSetups;
-    Ar << ShapeSetup.CapsuleShapeSetups;
-    Ar << ShapeSetup.ConvexShapeSetups;
+    SerializeArrayElements(Ar, ShapeSetup.SphereShapeSetups);
+    SerializeArrayElements(Ar, ShapeSetup.BoxShapeSetups);
+    SerializeArrayElements(Ar, ShapeSetup.CapsuleShapeSetups);
+    SerializeArrayElements(Ar, ShapeSetup.ConvexShapeSetups);
     return Ar;
 }
