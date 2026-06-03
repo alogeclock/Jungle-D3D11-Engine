@@ -347,6 +347,8 @@ void FEditorRenderPipeline::CollectCommands(FLevelEditorViewportClient* VC, UWor
 		if (Flags.bOctree)
 			Collector.CollectOctreeDebug(World->GetOctree(), Scene);
 
+		Collector.CollectSkeletalMeshBoneDebug(World, Frame, Scene);
+		Collector.CollectPhysicsAssetDebug(World, Frame, Scene);
 		Collector.CollectDebugDraw(Frame, Scene);
 	}
 

@@ -23,6 +23,7 @@ namespace Key
 	constexpr const char* ViewMode = "ViewMode";
 	constexpr const char* bStaticMesh = "bStaticMesh";
 	constexpr const char* bSkeletalMesh = "bSkeletalMesh";
+	constexpr const char* bBones = "bBones";
 	constexpr const char* bGrid = "bGrid";
 	constexpr const char* bWorldAxis = "bWorldAxis";
 	constexpr const char* bGizmo = "bGizmo";
@@ -39,6 +40,9 @@ namespace Key
 	constexpr const char* bShowShadowFrustum = "bShowShadowFrustum";
 	constexpr const char* bCollision = "bCollision";
 	constexpr const char* bShowCollisionShape = "bShowCollisionShape";
+	constexpr const char* bPhysicsBodyShapes = "bPhysicsBodyShapes";
+	constexpr const char* bPhysicsBodyLines = "bPhysicsBodyLines";
+	constexpr const char* bPhysicsConstraints = "bPhysicsConstraints";
 	constexpr const char* GridSpacing = "GridSpacing";
 	constexpr const char* GridHalfLineCount = "GridHalfLineCount";
 	constexpr const char* CameraMoveSensitivity = "CameraMoveSensitivity";
@@ -138,6 +142,7 @@ json::JSON SaveRenderOptions(const FViewportRenderOptions& Opts)
 	Obj[Key::ViewportType] = static_cast<int32>(Opts.ViewportType);
 	Obj[Key::bStaticMesh] = Opts.ShowFlags.bStaticMesh;
 	Obj[Key::bSkeletalMesh] = Opts.ShowFlags.bSkeletalMesh;
+	Obj[Key::bBones] = Opts.ShowFlags.bBones;
 	Obj[Key::bGrid] = Opts.ShowFlags.bGrid;
 	Obj[Key::bWorldAxis] = Opts.ShowFlags.bWorldAxis;
 	Obj[Key::bGizmo] = Opts.ShowFlags.bGizmo;
@@ -154,6 +159,9 @@ json::JSON SaveRenderOptions(const FViewportRenderOptions& Opts)
 	Obj[Key::bShowShadowFrustum] = Opts.ShowFlags.bShowShadowFrustum;
 	Obj[Key::bCollision] = Opts.ShowFlags.bCollision;
 	Obj[Key::bShowCollisionShape] = Opts.ShowFlags.bShowCollisionShape;
+	Obj[Key::bPhysicsBodyShapes] = Opts.ShowFlags.bPhysicsBodyShapes;
+	Obj[Key::bPhysicsBodyLines] = Opts.ShowFlags.bPhysicsBodyLines;
+	Obj[Key::bPhysicsConstraints] = Opts.ShowFlags.bPhysicsConstraints;
 	Obj[Key::GridSpacing] = Opts.GridSpacing;
 	Obj[Key::GridHalfLineCount] = Opts.GridHalfLineCount;
 	Obj[Key::CameraMoveSensitivity] = Opts.CameraMoveSensitivity;
@@ -181,6 +189,8 @@ void LoadRenderOptions(json::JSON Obj, FViewportRenderOptions& Opts)
 		Opts.ShowFlags.bStaticMesh = Obj[Key::bStaticMesh].ToBool();
 	if (Obj.hasKey(Key::bSkeletalMesh))
 		Opts.ShowFlags.bSkeletalMesh = Obj[Key::bSkeletalMesh].ToBool();
+	if (Obj.hasKey(Key::bBones))
+		Opts.ShowFlags.bBones = Obj[Key::bBones].ToBool();
 	if (Obj.hasKey(Key::bGrid))
 		Opts.ShowFlags.bGrid = Obj[Key::bGrid].ToBool();
 	if (Obj.hasKey(Key::bWorldAxis))
@@ -213,6 +223,12 @@ void LoadRenderOptions(json::JSON Obj, FViewportRenderOptions& Opts)
 		Opts.ShowFlags.bCollision = Obj[Key::bCollision].ToBool();
 	if (Obj.hasKey(Key::bShowCollisionShape))
 		Opts.ShowFlags.bShowCollisionShape = Obj[Key::bShowCollisionShape].ToBool();
+	if (Obj.hasKey(Key::bPhysicsBodyShapes))
+		Opts.ShowFlags.bPhysicsBodyShapes = Obj[Key::bPhysicsBodyShapes].ToBool();
+	if (Obj.hasKey(Key::bPhysicsBodyLines))
+		Opts.ShowFlags.bPhysicsBodyLines = Obj[Key::bPhysicsBodyLines].ToBool();
+	if (Obj.hasKey(Key::bPhysicsConstraints))
+		Opts.ShowFlags.bPhysicsConstraints = Obj[Key::bPhysicsConstraints].ToBool();
 	if (Obj.hasKey(Key::GridSpacing))
 		Opts.GridSpacing = static_cast<float>(Obj[Key::GridSpacing].ToFloat());
 	if (Obj.hasKey(Key::GridHalfLineCount))

@@ -649,26 +649,55 @@ void FViewportToolbar::RenderShowFlags(const FToolbarRenderState& State)
 {
 	FViewportRenderOptions& RenderOptions = State.RenderOptions();
 
-	if (DrawToolbarIconButton("##ShowFlags", EToolbarIcon::ShowFlag, "Show Flags",
+	if (DrawToolbarIconButton("##ShowFlags", EToolbarIcon::ShowFlag, "Flags",
 		State.FallbackIconSize, State.MaxIconSize))
 	{
 		ImGui::OpenPopup("##ShowFlagsPopup");
 	}
 
+	auto Section = [](const char* Label)
+	{
+		ImGui::Separator();
+		ImGui::TextDisabled("%s", Label);
+	};
+
 	PushToolbarPopupStyle();
 	if (ImGui::BeginPopup("##ShowFlagsPopup"))
 	{
-		ImGui::Text("Show Flags");
+		ImGui::Text("Flags");
 
-		ImGui::Checkbox("StaticMesh", &RenderOptions.ShowFlags.bStaticMesh);
-		ImGui::Checkbox("SkeletalMesh", &RenderOptions.ShowFlags.bSkeletalMesh);
+		if (State.Context.OnRenderShowFlagExtras)
+		{
+			State.Context.OnRenderShowFlagExtras();
+		}
+		else
+		{
+			Section("Skeletal Mesh");
+			ImGui::Checkbox("Bones", &RenderOptions.ShowFlags.bBones);
+			ImGui::Checkbox("Body Shapes", &RenderOptions.ShowFlags.bPhysicsBodyShapes);
+			ImGui::Checkbox("Constraints", &RenderOptions.ShowFlags.bPhysicsConstraints);
+		}
+
+		Section("Geometry");
+		ImGui::Checkbox("Static Mesh", &RenderOptions.ShowFlags.bStaticMesh);
+		ImGui::Checkbox("Skeletal Mesh", &RenderOptions.ShowFlags.bSkeletalMesh);
+		ImGui::Checkbox("Bounding Volume", &RenderOptions.ShowFlags.bBoundingVolume);
+		ImGui::Checkbox("Collision Shape", &RenderOptions.ShowFlags.bShowCollisionShape);
+
+		Section("Viewport Helpers");
 		ImGui::Checkbox("Grid", &RenderOptions.ShowFlags.bGrid);
 		ImGui::Checkbox("World Axis", &RenderOptions.ShowFlags.bWorldAxis);
 		ImGui::Checkbox("Gizmo", &RenderOptions.ShowFlags.bGizmo);
 		ImGui::Checkbox("Billboard Text", &RenderOptions.ShowFlags.bBillboardText);
-		ImGui::Checkbox("Bounding Volume", &RenderOptions.ShowFlags.bBoundingVolume);
+
+		Section("Debug");
 		ImGui::Checkbox("Debug Draw", &RenderOptions.ShowFlags.bDebugDraw);
 		ImGui::Checkbox("Octree", &RenderOptions.ShowFlags.bOctree);
+		ImGui::Checkbox("View Light Culling", &RenderOptions.ShowFlags.bViewLightCulling);
+		ImGui::Checkbox("Visualize 2.5D Culling", &RenderOptions.ShowFlags.bVisualize25DCulling);
+		ImGui::Checkbox("Shadow Frustum", &RenderOptions.ShowFlags.bShowShadowFrustum);
+
+		Section("Post Process");
 		ImGui::Checkbox("Fog", &RenderOptions.ShowFlags.bFog);
 		ImGui::Checkbox("FXAA", &RenderOptions.ShowFlags.bFXAA);
 		ImGui::Checkbox("Depth Of Field", &RenderOptions.ShowFlags.bDepthOfField);
@@ -717,11 +746,6 @@ void FViewportToolbar::RenderShowFlags(const FToolbarRenderState& State)
 			}
 		}
 		ImGui::Checkbox("Gamma Correction", &RenderOptions.ShowFlags.bGammaCorrection);
-		ImGui::Checkbox("View Light Culling", &RenderOptions.ShowFlags.bViewLightCulling);
-		ImGui::Checkbox("Visualize 2.5D Culling", &RenderOptions.ShowFlags.bVisualize25DCulling);
-		ImGui::Checkbox("Show Shadow Frustum", &RenderOptions.ShowFlags.bShowShadowFrustum);
-		ImGui::Checkbox("Collision", &RenderOptions.ShowFlags.bCollision);
-		ImGui::Checkbox("Show Collision Shape", &RenderOptions.ShowFlags.bShowCollisionShape);
 
 		ImGui::EndPopup();
 	}

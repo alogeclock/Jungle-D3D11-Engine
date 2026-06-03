@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Core/CoreTypes.h"
 #include "Render/Types/ViewTypes.h"
 #include "Settings/EditorViewportSettings.h"
@@ -60,6 +60,7 @@ struct FViewportToolbarContext
 	std::function<void()> OnCoordSystemToggled;
 	std::function<void()> OnSettingsChanged;
 	std::function<void()> OnRenderViewModeExtras;
+	std::function<void()> OnRenderShowFlagExtras;
 
 	std::function<void(int32)> OnLayoutSelected;
 	std::function<void()> OnToggleLayout;
