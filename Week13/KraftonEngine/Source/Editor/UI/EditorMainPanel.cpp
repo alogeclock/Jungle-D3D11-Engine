@@ -76,6 +76,7 @@ void FEditorMainPanel::Create(FWindowsWindow* InWindow, FRenderer& InRenderer, U
 	StatWidget.Initialize(InEditorEngine);
 	ContentBrowserWidget.Initialize(InEditorEngine, InRenderer.GetFD3DDevice().GetDevice());
 	ShadowMapDebugWidget.Initialize(InEditorEngine);
+	VehicleDebugWidget.Initialize(InEditorEngine);
 
 	AssetEditorManager.RegisterEditor<FFloatCurveEditorWidget>();
 	AssetEditorManager.RegisterEditor<FCameraShakeEditorWidget>();
@@ -173,6 +174,11 @@ void FEditorMainPanel::Render(float DeltaTime)
 		ShadowMapDebugWidget.Render(DeltaTime);
 	}
 
+	if (!bHideEditorWindows && Settings.UI.bVehicleDebug)
+	{
+		VehicleDebugWidget.Render(DeltaTime);
+	}
+
 	ProjectSettingsWidget.Render();
 	WorldSettingsWidget.Render();
 
@@ -246,6 +252,7 @@ void FEditorMainPanel::RenderMainMenuBar()
 		ImGui::Checkbox("Stat", &Settings.UI.bStat);
 		ImGui::Checkbox("ContentBrowser", &Settings.UI.bContentBrowser);
 		ImGui::Checkbox("Shadow Map Debug", &Settings.UI.bShadowMapDebug);
+		ImGui::Checkbox("Vehicle Debug", &Settings.UI.bVehicleDebug);
 		ImGui::Separator();
 		ImGui::Checkbox("IMGUI_Setting", &Settings.UI.bImGUISettings);
 		ImGui::EndPopup();
@@ -297,6 +304,24 @@ void FEditorMainPanel::RenderMainMenuBar()
 		if (ImGui::MenuItem("Particle", nullptr, bShowParticle))
 		{
 			OverlayStats.ShowParticle(!bShowParticle);
+		}
+
+		bool bShowPhysics = OverlayStats.IsShowingPhysics();
+		if (ImGui::MenuItem("Physics", nullptr, bShowPhysics))
+		{
+			OverlayStats.ShowPhysics(!bShowPhysics);
+		}
+
+		bool bShowRagdoll = OverlayStats.IsShowingRagdoll();
+		if (ImGui::MenuItem("Ragdoll", nullptr, bShowRagdoll))
+		{
+			OverlayStats.ShowRagdoll(!bShowRagdoll);
+		}
+
+		bool bShowCloth = OverlayStats.IsShowingCloth();
+		if (ImGui::MenuItem("Cloth", nullptr, bShowCloth))
+		{
+			OverlayStats.ShowCloth(!bShowCloth);
 		}
 
 		bool bShowVehicle = OverlayStats.IsShowingVehicle();
@@ -686,6 +711,7 @@ void FEditorMainPanel::HideEditorWindows()
 	Settings.UI.bContentBrowser = false;
 	Settings.UI.bImGUISettings = false;
 	Settings.UI.bShadowMapDebug = false;
+	Settings.UI.bVehicleDebug = false;
 }
 
 void FEditorMainPanel::ShowEditorWindows()

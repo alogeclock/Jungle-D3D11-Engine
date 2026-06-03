@@ -1,9 +1,11 @@
 ﻿#pragma once
 
+#include "Core/CoreTypes.h"
 #include "Core/CollisionTypes.h"
 #include "Math/Transform.h"
 #include "Math/Vector.h"
 #include "PhysicsEventCallback.h"
+#include "Physics/Systems/Cloth/ClothCollisionTypes.h"
 
 class UWorld;
 class UPrimitiveComponent;
@@ -44,6 +46,20 @@ public:
         UPrimitiveComponent* OwnerComponent,
         const FPhysicsBodyDesc& BodyDesc) = 0;
     virtual FPhysicsBodyInstance* CreateBodyAtTransform(UPrimitiveComponent* OwnerComponent, const FPhysicsBodyDesc& BodyDesc, const FTransform& WorldTransform, bool bSyncOwnerTransform = false) = 0;
+    virtual bool SupportsAggregateRagdolls() const { return false; }
+    virtual void* CreateAggregateHandle(uint32 /*MaxActorCount*/, bool /*bEnableSelfCollision*/) { return nullptr; }
+    virtual void DestroyAggregateHandle(void* /*AggregateHandle*/) {}
+    virtual FPhysicsBodyInstance* CreateBodyAtTransformInAggregate(
+        UPrimitiveComponent* OwnerComponent,
+        const FPhysicsBodyDesc& BodyDesc,
+        const FTransform& WorldTransform,
+        void* /*AggregateHandle*/,
+        bool bSyncOwnerTransform = false)
+    {
+        return CreateBodyAtTransform(OwnerComponent, BodyDesc, WorldTransform, bSyncOwnerTransform);
+    }
+    virtual void RegisterRagdollInstanceStats(bool /*bUsingAggregate*/, int32 /*BodyCount*/, int32 /*ConstraintCount*/) {}
+    virtual void UnregisterRagdollInstanceStats(bool /*bUsingAggregate*/, int32 /*BodyCount*/, int32 /*ConstraintCount*/) {}
     virtual void DestroyBody(FPhysicsBodyInstance* BodyInstance) = 0;
     virtual bool GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const = 0;
     virtual void SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform) = 0;
@@ -58,13 +74,19 @@ public:
     virtual void RebuildBody(UPrimitiveComponent* Comp) = 0;
 
     // --- 시뮬레이션 ---
-    virtual void Simulate(const FPhysicsStepInfo& StepInfo) = 0;
+    // Simulate() is kept as a compatibility wrapper. New fixed-step code should call
+    // SimulateRigid() so rigid fetch can happen before cloth preparation.
+    virtual void SimulateRigid(const FPhysicsStepInfo& StepInfo) = 0;
+    virtual void Simulate(const FPhysicsStepInfo& StepInfo) { SimulateRigid(StepInfo); }
     virtual void FetchResults(bool bBlock) = 0;
 
     // --- Cloth Simulation ---
     virtual FNvClothScene* GetClothScene() = 0;
     virtual const FNvClothScene* GetClothScene() const = 0;
     virtual void SimulateCloth(const FPhysicsStepInfo& StepInfo) = 0;
+    virtual void GatherClothCollision(
+        const FClothCollisionGatherParams& Params,
+        FClothCollisionData& Out) const = 0;
 
     // --- 이벤트 / 런타임 통계 ---
     virtual void SetEventCallback(IPhysicsEventCallback* InCallback) = 0;

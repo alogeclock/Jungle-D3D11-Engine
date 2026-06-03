@@ -15,18 +15,31 @@
 #include "GameFramework/AActor.h"
 #include "Math/Quat.h"
 #include "Object/Object.h"  // IsAliveObject
+#include "Profiling/Stats.h"
 #include "Core/Log.h"
 
 // PhysX headers
 #include <PxPhysicsAPI.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <utility>
+#include <unordered_set>
 
 using namespace physx;
 
 static float PxVecLength(const PxVec3& V);
+
+namespace
+{
+	double GetPhysXSceneTimeMs()
+	{
+		using Clock = std::chrono::high_resolution_clock;
+		using Ms = std::chrono::duration<double, std::milli>;
+		return std::chrono::duration_cast<Ms>(Clock::now().time_since_epoch()).count();
+	}
+}
 
 // ============================================================
 // PhysX Error Callback
@@ -123,6 +136,15 @@ public:
 		bool bBegin = true;
 	};
 
+	void ResetFrameContactStats()
+	{
+		ContactPairCount = 0;
+		ContactPointCount = 0;
+	}
+
+	int32 GetContactPairCount() const { return ContactPairCount; }
+	int32 GetContactPointCount() const { return ContactPointCount; }
+
 	void onContact(const PxContactPairHeader& PairHeader,
 		const PxContactPair* Pairs, PxU32 Count) override
 	{
@@ -144,6 +166,11 @@ public:
 
 			PxContactPairPoint ContactPoints[16];
 			PxU32 NumPoints = CP.extractContacts(ContactPoints, 16);
+			if (bBegin || bPersist)
+			{
+				++ContactPairCount;
+				ContactPointCount += static_cast<int32>(NumPoints);
+			}
 			for (PxU32 PointIndex = 0; PointIndex < NumPoints; ++PointIndex)
 			{
 				const PxContactPairPoint& Point = ContactPoints[PointIndex];
@@ -241,6 +268,8 @@ public:
 private:
 	std::vector<FQueuedHit>     PendingHits;
 	std::vector<FQueuedTrigger> PendingTriggers;
+	int32 ContactPairCount = 0;
+	int32 ContactPointCount = 0;
 };
 
 // ============================================================
@@ -320,6 +349,230 @@ static FTransform ToFTransform(const PxTransform& Transform)
 static float PxVecLength(const PxVec3& V)
 {
 	return std::sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
+}
+
+
+static PxVec3 TransformPointToCloth(const FMatrix& WorldToCloth, const PxVec3& WorldPoint)
+{
+	const FVector P = WorldToCloth.TransformPositionWithW(FVector(WorldPoint.x, WorldPoint.y, WorldPoint.z));
+	return PxVec3(P.X, P.Y, P.Z);
+}
+
+static PxVec3 TransformVectorToCloth(const FMatrix& WorldToCloth, const PxVec3& WorldVector)
+{
+	FVector V = WorldToCloth.TransformVector(FVector(WorldVector.x, WorldVector.y, WorldVector.z));
+	if (!V.IsNearlyZero())
+	{
+		V.Normalize();
+	}
+	return PxVec3(V.X, V.Y, V.Z);
+}
+
+static float GetApproxUniformScaleToCloth(const FMatrix& WorldToCloth)
+{
+	// TODO: Non-uniform component scale should convert spheres/capsules to conservative shapes
+	// or reject them. For now, use the largest transformed basis length to avoid underestimating radius.
+	const float X = WorldToCloth.TransformVector(FVector(1.0f, 0.0f, 0.0f)).Length();
+	const float Y = WorldToCloth.TransformVector(FVector(0.0f, 1.0f, 0.0f)).Length();
+	const float Z = WorldToCloth.TransformVector(FVector(0.0f, 0.0f, 1.0f)).Length();
+	return (std::max)(0.0001f, (std::max)(X, (std::max)(Y, Z)));
+}
+
+static bool ShouldGatherClothShape(
+	const PxRigidActor* Actor,
+	const PxShape* Shape,
+	const FClothCollisionGatherParams& Params)
+{
+	if (!Actor || !Shape)
+	{
+		return false;
+	}
+
+	const PxShapeFlags ShapeFlags = Shape->getFlags();
+	const bool bSimulationShape = ShapeFlags.isSet(PxShapeFlag::eSIMULATION_SHAPE);
+	const bool bQueryShape = ShapeFlags.isSet(PxShapeFlag::eSCENE_QUERY_SHAPE);
+	const bool bTriggerShape = ShapeFlags.isSet(PxShapeFlag::eTRIGGER_SHAPE);
+	if (!bSimulationShape && (!bQueryShape || bTriggerShape))
+	{
+		return false;
+	}
+
+	const bool bStatic = Actor->is<PxRigidStatic>() != nullptr;
+	const bool bDynamic = Actor->is<PxRigidDynamic>() != nullptr;
+	if ((bStatic && !Params.bIncludeStatic) || (bDynamic && !Params.bIncludeDynamic))
+	{
+		return false;
+	}
+
+	UPrimitiveComponent* ShapeComp = static_cast<UPrimitiveComponent*>(Shape->userData);
+	if (ShapeComp && ShapeComp == Params.IgnoreComponent)
+	{
+		return false;
+	}
+
+	AActor* ShapeActor = ShapeComp ? ShapeComp->GetOwner() : static_cast<AActor*>(Actor->userData);
+	if (ShapeActor && ShapeActor == Params.IgnoreActor)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+static void AddClothPlaneFromWorld(
+	const FMatrix& WorldToCloth,
+	const PxVec3& WorldPoint,
+	const PxVec3& WorldNormal,
+	float Thickness,
+	FClothCollisionData& Out)
+{
+	const PxVec3 LocalPoint = TransformPointToCloth(WorldToCloth, WorldPoint);
+	PxVec3 LocalNormal = TransformVectorToCloth(WorldToCloth, WorldNormal);
+	const float LenSq = LocalNormal.x * LocalNormal.x + LocalNormal.y * LocalNormal.y + LocalNormal.z * LocalNormal.z;
+	if (LenSq <= 1.0e-8f)
+	{
+		return;
+	}
+
+	// NvCloth plane convention is assumed as dot(n, x) + d = 0.
+	// TODO: Verify box plane normal sign with one-sided cloth collision tests.
+	// Move the plane inward by the cloth collision thickness to create separation
+	// from box/plane-like rigid geometry.
+	const float D = -(LocalNormal.x * LocalPoint.x + LocalNormal.y * LocalPoint.y + LocalNormal.z * LocalPoint.z) - Thickness;
+	Out.Planes.push_back(PxVec4(LocalNormal.x, LocalNormal.y, LocalNormal.z, D));
+}
+
+static void GatherClothCollisionFromActor(
+	const PxRigidActor* Actor,
+	const FClothCollisionGatherParams& Params,
+	FClothCollisionData& Out)
+{
+	if (!Actor)
+	{
+		return;
+	}
+
+	const PxU32 NumShapes = Actor->getNbShapes();
+	if (NumShapes == 0)
+	{
+		return;
+	}
+
+	std::vector<PxShape*> Shapes(NumShapes);
+	Actor->getShapes(Shapes.data(), NumShapes);
+
+	const PxTransform ActorPose = Actor->getGlobalPose();
+	const float RadiusScale = GetApproxUniformScaleToCloth(Params.WorldToCloth);
+	const float CollisionThickness = (std::max)(0.0f, Params.Thickness) * RadiusScale;
+
+	for (PxShape* Shape : Shapes)
+	{
+		if (!ShouldGatherClothShape(Actor, Shape, Params))
+		{
+			continue;
+		}
+
+		const PxTransform ShapePose = ActorPose * Shape->getLocalPose();
+		switch (Shape->getGeometryType())
+		{
+		case PxGeometryType::eSPHERE:
+		{
+			if (Out.Spheres.size() >= Params.MaxSpheres)
+			{
+				continue;
+			}
+
+			PxSphereGeometry SphereGeom;
+			if (!Shape->getSphereGeometry(SphereGeom))
+			{
+				continue;
+			}
+
+			const PxVec3 LocalCenter = TransformPointToCloth(Params.WorldToCloth, ShapePose.p);
+			Out.Spheres.push_back(PxVec4(LocalCenter.x, LocalCenter.y, LocalCenter.z, SphereGeom.radius * RadiusScale + CollisionThickness));
+			break;
+		}
+		case PxGeometryType::eCAPSULE:
+		{
+			if (Out.Spheres.size() + 2 > Params.MaxSpheres)
+			{
+				continue;
+			}
+
+			PxCapsuleGeometry CapsuleGeom;
+			if (!Shape->getCapsuleGeometry(CapsuleGeom))
+			{
+				continue;
+			}
+
+			// PhysX capsule local axis is X. The shape local pose already contains any engine-axis correction.
+			const PxVec3 WorldAxis = ShapePose.q.rotate(PxVec3(1.0f, 0.0f, 0.0f));
+			const PxVec3 WorldA = ShapePose.p + WorldAxis * CapsuleGeom.halfHeight;
+			const PxVec3 WorldB = ShapePose.p - WorldAxis * CapsuleGeom.halfHeight;
+			const PxVec3 LocalA = TransformPointToCloth(Params.WorldToCloth, WorldA);
+			const PxVec3 LocalB = TransformPointToCloth(Params.WorldToCloth, WorldB);
+			const uint32 SphereIndexA = static_cast<uint32>(Out.Spheres.size());
+			const uint32 SphereIndexB = SphereIndexA + 1;
+			const float Radius = CapsuleGeom.radius * RadiusScale + CollisionThickness;
+			Out.Spheres.push_back(PxVec4(LocalA.x, LocalA.y, LocalA.z, Radius));
+			Out.Spheres.push_back(PxVec4(LocalB.x, LocalB.y, LocalB.z, Radius));
+			Out.Capsules.push_back(SphereIndexA);
+			Out.Capsules.push_back(SphereIndexB);
+			break;
+		}
+		case PxGeometryType::eBOX:
+		{
+			if (Out.Planes.size() + 6 > Params.MaxPlanes || Out.Planes.size() + 6 > 32)
+			{
+				continue;
+			}
+
+			PxBoxGeometry BoxGeom;
+			if (!Shape->getBoxGeometry(BoxGeom))
+			{
+				continue;
+			}
+
+			const uint32 PlaneStart = static_cast<uint32>(Out.Planes.size());
+			uint32 Mask = 0;
+			const PxVec3 Axes[3] =
+			{
+				ShapePose.q.rotate(PxVec3(1.0f, 0.0f, 0.0f)),
+				ShapePose.q.rotate(PxVec3(0.0f, 1.0f, 0.0f)),
+				ShapePose.q.rotate(PxVec3(0.0f, 0.0f, 1.0f))
+			};
+			const float Extents[3] = { BoxGeom.halfExtents.x, BoxGeom.halfExtents.y, BoxGeom.halfExtents.z };
+
+			for (uint32 AxisIndex = 0; AxisIndex < 3; ++AxisIndex)
+			{
+				for (int32 SignIndex = 0; SignIndex < 2; ++SignIndex)
+				{
+					const float Sign = (SignIndex == 0) ? 1.0f : -1.0f;
+					const PxVec3 WorldNormal = Axes[AxisIndex] * Sign;
+					const PxVec3 WorldPoint = ShapePose.p + WorldNormal * Extents[AxisIndex];
+					const uint32 PlaneIndex = static_cast<uint32>(Out.Planes.size());
+					AddClothPlaneFromWorld(Params.WorldToCloth, WorldPoint, WorldNormal, CollisionThickness, Out);
+					if (Out.Planes.size() > PlaneIndex)
+					{
+						Mask |= (1u << PlaneIndex);
+					}
+				}
+			}
+
+			if (Out.Planes.size() == PlaneStart + 6)
+			{
+				Out.ConvexMasks.push_back(Mask);
+			}
+			else
+			{
+				Out.Planes.resize(PlaneStart);
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
 }
 
 static const char* ToShapeTypeDebugName(EPhysicsShapeType ShapeType)
@@ -695,6 +948,82 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 	const FTransform& WorldTransform,
 	bool bSyncOwnerTransform)
 {
+	return CreateBodyAtTransformInternal(OwnerComponent, BodyDesc, WorldTransform, bSyncOwnerTransform, nullptr);
+}
+
+void* FPhysXPhysicsScene::CreateAggregateHandle(uint32 MaxActorCount, bool bEnableSelfCollision)
+{
+	if (!Scene || !Physics)
+	{
+		return nullptr;
+	}
+
+	const PxU32 SafeActorCount = static_cast<PxU32>((std::clamp)(MaxActorCount, 1u, 128u));
+	WaitForSimulation();
+
+	PxAggregate* Aggregate = Physics->createAggregate(SafeActorCount, bEnableSelfCollision);
+	if (!Aggregate)
+	{
+		return nullptr;
+	}
+
+	bool bAddedToScene = false;
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		Scene->addAggregate(*Aggregate);
+		bAddedToScene = true;
+	}
+
+	if (!bAddedToScene)
+	{
+		Aggregate->release();
+		return nullptr;
+	}
+
+	GetMutableRuntimeStats().AggregateCount += 1;
+	return static_cast<void*>(Aggregate);
+}
+
+void FPhysXPhysicsScene::DestroyAggregateHandle(void* AggregateHandle)
+{
+	PxAggregate* Aggregate = static_cast<PxAggregate*>(AggregateHandle);
+	if (!Aggregate)
+	{
+		return;
+	}
+
+	WaitForSimulation();
+	if (Scene)
+	{
+		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
+		Scene->removeAggregate(*Aggregate);
+	}
+	Aggregate->release();
+	GetMutableRuntimeStats().AggregateCount = (std::max)(0, GetMutableRuntimeStats().AggregateCount - 1);
+}
+
+FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransformInAggregate(
+	UPrimitiveComponent* OwnerComponent,
+	const FPhysicsBodyDesc& BodyDesc,
+	const FTransform& WorldTransform,
+	void* AggregateHandle,
+	bool bSyncOwnerTransform)
+{
+	return CreateBodyAtTransformInternal(
+		OwnerComponent,
+		BodyDesc,
+		WorldTransform,
+		bSyncOwnerTransform,
+		static_cast<PxAggregate*>(AggregateHandle));
+}
+
+FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransformInternal(
+	UPrimitiveComponent* OwnerComponent,
+	const FPhysicsBodyDesc& BodyDesc,
+	const FTransform& WorldTransform,
+	bool bSyncOwnerTransform,
+	PxAggregate* Aggregate)
+{
 	if (!Scene || !Physics || !DefaultMaterial || BodyDesc.Shapes.empty())
 	{
 		return nullptr;
@@ -772,9 +1101,29 @@ FPhysicsBodyInstance* FPhysXPhysicsScene::CreateBodyAtTransform(
 	}
 
 	Actor->userData = OwnerComponent ? OwnerComponent->GetOwner() : nullptr;
+	bool bAddedToRuntime = false;
 	{
 		SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
-		Scene->addActor(*Actor);
+		if (Aggregate)
+		{
+			bAddedToRuntime = Aggregate->addActor(*Actor);
+		}
+		else
+		{
+			Scene->addActor(*Actor);
+			bAddedToRuntime = true;
+		}
+	}
+
+	if (!bAddedToRuntime)
+	{
+		Actor->release();
+		return nullptr;
+	}
+
+	if (Aggregate)
+	{
+		GetMutableRuntimeStats().AggregateActorCount += 1;
 	}
 
 	if (bSyncOwnerTransform && OwnerComponent)
@@ -816,7 +1165,15 @@ void FPhysXPhysicsScene::DestroyBody(FPhysicsBodyInstance* BodyInstance)
 			SCOPED_PHYSX_SCENE_WRITE_LOCK(Scene);
 			if (PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor))
 			{
-				Scene->removeActor(*Actor);
+				if (PxAggregate* Aggregate = Actor->getAggregate())
+				{
+					Aggregate->removeActor(*Actor);
+					GetMutableRuntimeStats().AggregateActorCount = (std::max)(0, GetMutableRuntimeStats().AggregateActorCount - 1);
+				}
+				else
+				{
+					Scene->removeActor(*Actor);
+				}
 				Actor->release();
 			}
 		}
@@ -1312,7 +1669,7 @@ void FPhysXPhysicsScene::SyncPhysXTransformsToEngine()
 // ============================================================
 
 // PhysX simulation step을 시작하고, scene write 명령은 simulation 전후 안전한 시점으로 보낸다.
-void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+void FPhysXPhysicsScene::SimulateRigid(const FPhysicsStepInfo& StepInfo)
 {
 	if (!Scene) return;
 	float DeltaTime = StepInfo.DeltaTime;
@@ -1321,29 +1678,60 @@ void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
 	constexpr float MaxPhysicsDeltaTime = 0.1f;
 	if (DeltaTime > MaxPhysicsDeltaTime) DeltaTime = MaxPhysicsDeltaTime;
 
-	WaitForSimulation();
-	FlushDeferredSceneCommands();
-	SyncEngineTransformsToPhysX();
-
-	UpdateVehicles(DeltaTime);
+	const double PreSimStartMs = GetPhysXSceneTimeMs();
+	{
+		SCOPE_STAT_CAT("PreSim", "Physics");
+		WaitForSimulation();
+		FlushDeferredSceneCommands();
+		SyncEngineTransformsToPhysX();
+		UpdateVehicles(DeltaTime);
+		if (EventCallback)
+		{
+			EventCallback->ResetFrameContactStats();
+		}
+	}
+	FPhysicsRuntimeStats& RuntimeStats = GetMutableRuntimeStats();
+	RuntimeStats.PreSimTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - PreSimStartMs);
+	RuntimeStats.SimulateTimeMs = 0.0f;
+	RuntimeStats.FetchResultsTimeMs = 0.0f;
+	RuntimeStats.PostSyncTimeMs = 0.0f;
+	RuntimeStats.TotalPhysicsTimeMs = RuntimeStats.PreSimTimeMs;
+	RuntimeStats.StepTimeMs = 0.0f;
+	RuntimeStats.SyncTimeMs = 0.0f;
 	Scene->simulate(DeltaTime);
 	bSimulationInFlight.store(true);
+}
+
+
+void FPhysXPhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+{
+	SimulateRigid(StepInfo);
 }
 
 // PhysX simulation 결과를 기다리고, actor pose와 지연 scene write 명령을 처리한다.
 void FPhysXPhysicsScene::FetchResults(bool bBlock)
 {
 	if (!Scene) return;
-	if (bSimulationInFlight.load())
-	{
-		if (!Scene->fetchResults(bBlock))
-		{
-			return;
-		}
-		bSimulationInFlight.store(false);
-	}
+	FPhysicsRuntimeStats& RuntimeStats = GetMutableRuntimeStats();
 
+	const double SimulateStartMs = GetPhysXSceneTimeMs();
 	{
+		SCOPE_STAT_CAT("PhysX Simulate", "Physics");
+		if (bSimulationInFlight.load())
+		{
+			if (!Scene->fetchResults(bBlock))
+			{
+				return;
+			}
+			bSimulationInFlight.store(false);
+		}
+	}
+	RuntimeStats.SimulateTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - SimulateStartMs);
+	RuntimeStats.StepTimeMs = RuntimeStats.SimulateTimeMs;
+
+	const double FetchResultsStartMs = GetPhysXSceneTimeMs();
+	{
+		SCOPE_STAT_CAT("Fetch Results", "Physics");
 		SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
 		for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
 		{
@@ -1363,17 +1751,141 @@ void FPhysXPhysicsScene::FetchResults(bool bBlock)
 			const PxVec3 AngularVelocity = DynamicActor->getAngularVelocity();
 			const float LinearSpeed = PxVecLength(LinearVelocity);
 			const float AngularSpeed = PxVecLength(AngularVelocity);
+			(void)LinearSpeed;
+			(void)AngularSpeed;
+		}
+	}
+	RuntimeStats.FetchResultsTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - FetchResultsStartMs);
+
+	const double SyncStartMs = GetPhysXSceneTimeMs();
+	{
+		SCOPE_STAT_CAT("PostSync", "Physics");
+		SyncPhysXTransformsToEngine();
+		SyncVehiclePose();
+		if (EventCallback)
+		{
+			EventCallback->DispatchPendingEvents();
+		}
+		FlushDeferredSceneCommands();
+	}
+	RuntimeStats.PostSyncTimeMs = static_cast<float>(GetPhysXSceneTimeMs() - SyncStartMs);
+	RuntimeStats.SyncTimeMs = RuntimeStats.PostSyncTimeMs;
+
+	int32 DynamicBodyCount = 0;
+	int32 ActiveBodyCount = 0;
+	int32 SleepingBodyCount = 0;
+	int32 PositionIterations = 0;
+	int32 VelocityIterations = 0;
+	bool bHasSolverIterations = false;
+	{
+		SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+		for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+		{
+			if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+			{
+				continue;
+			}
+
+			PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+			PxRigidDynamic* DynamicActor = Actor ? Actor->is<PxRigidDynamic>() : nullptr;
+			if (!DynamicActor)
+			{
+				continue;
+			}
+
+			++DynamicBodyCount;
+			if (DynamicActor->isSleeping())
+			{
+				++SleepingBodyCount;
+			}
+			else
+			{
+				++ActiveBodyCount;
+			}
+
+			if (!bHasSolverIterations)
+			{
+				PxU32 PositionIterationCount = 0;
+				PxU32 VelocityIterationCount = 0;
+				DynamicActor->getSolverIterationCounts(PositionIterationCount, VelocityIterationCount);
+				PositionIterations = static_cast<int32>(PositionIterationCount);
+				VelocityIterations = static_cast<int32>(VelocityIterationCount);
+				bHasSolverIterations = true;
+			}
 		}
 	}
 
-	SyncPhysXTransformsToEngine();
-	// Vehicle Pose 동기화
-	SyncVehiclePose();
-	// Dispatch deferred contact/trigger events
-	if (EventCallback) EventCallback->DispatchPendingEvents();
-	FlushDeferredSceneCommands();
+	RuntimeStats.DynamicBodyCount = DynamicBodyCount;
+	RuntimeStats.ActiveBodyCount = ActiveBodyCount;
+	RuntimeStats.SleepingBodyCount = SleepingBodyCount;
+	RuntimeStats.ContactPairCount = EventCallback ? EventCallback->GetContactPairCount() : 0;
+	RuntimeStats.ContactPointCount = EventCallback ? EventCallback->GetContactPointCount() : 0;
+	RuntimeStats.ContactCount = RuntimeStats.ContactPointCount;
+	RuntimeStats.PerBodyActorCount = (std::max)(0, RuntimeStats.DynamicBodyCount - RuntimeStats.AggregateActorCount);
+	RuntimeStats.SolverPositionIterationCount = PositionIterations;
+	RuntimeStats.SolverVelocityIterationCount = VelocityIterations;
+	RuntimeStats.SolverConstraintCount = RuntimeStats.ConstraintCount;
+	RuntimeStats.SolverContactCount = RuntimeStats.ContactPointCount;
+	RuntimeStats.TotalPhysicsTimeMs =
+		RuntimeStats.PreSimTimeMs +
+		RuntimeStats.SimulateTimeMs +
+		RuntimeStats.FetchResultsTimeMs +
+		RuntimeStats.PostSyncTimeMs;
+}
 
-	GetMutableRuntimeStats().ContactCount = 0; // PhysX 측 contact 수는 콜백에서 집계 가능 (현재 생략)
+
+void FPhysXPhysicsScene::GatherClothCollision(
+	const FClothCollisionGatherParams& Params,
+	FClothCollisionData& Out) const
+{
+	Out.Reset();
+
+	if (!Scene)
+	{
+		return;
+	}
+
+	// This must be called after FetchResults(). If a caller violates the fixed-step order,
+	// do not read half-simulated poses and return no collision instead.
+	if (bSimulationInFlight.load())
+	{
+		return;
+	}
+
+	std::unordered_set<const PxRigidActor*> VisitedActors;
+	SCOPED_PHYSX_SCENE_READ_LOCK(Scene);
+
+	// RuntimeBodyInstances cover normal primitive bodies and any body registered through the base scene.
+	for (const FPhysicsBodyInstance* BodyInstance : GetBodyInstances())
+	{
+		if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+		{
+			continue;
+		}
+
+		PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+		if (!Actor || !VisitedActors.insert(Actor).second)
+		{
+			continue;
+		}
+		GatherClothCollisionFromActor(Actor, Params, Out);
+	}
+
+	// StandaloneBodyInstances are iterated explicitly as well for ragdoll / desc-created bodies.
+	for (const FPhysicsBodyInstance* BodyInstance : StandaloneBodyInstances)
+	{
+		if (!BodyInstance || !BodyInstance->IsValidBodyInstance())
+		{
+			continue;
+		}
+
+		PxRigidActor* Actor = static_cast<PxRigidActor*>(BodyInstance->GetActorHandle().NativeActor);
+		if (!Actor || !VisitedActors.insert(Actor).second)
+		{
+			continue;
+		}
+		GatherClothCollisionFromActor(Actor, Params, Out);
+	}
 }
 
 // ============================================================
@@ -1405,7 +1917,11 @@ PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimit
 		float Radius = Capsule->GetScaledCapsuleRadius();
 		float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
 		Geom = PxCapsuleGeometry(Radius, HalfHeight - Radius);
-		ShapeAxisRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
+		// PhysX capsules are aligned to the local X axis. UCapsuleComponent is
+		// authored/drawn along local Z, so rotate the PhysX shape X axis onto Z.
+		// The previous Z-axis rotation mapped X to Y and made visual capsule/cloth
+		// collision disagree.
+		ShapeAxisRot = PxQuat(PxHalfPi, PxVec3(0.0f, -1.0f, 0.0f));
 		bHasGeom = true;
 	}
 	else if (auto* StaticMesh = Cast<UStaticMeshComponent>(Comp))
@@ -2153,7 +2669,10 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 		}
 
 		PxVehicleWheels* Vehicles[1] = { Instance->Vehicle };
-		PxVehicleSuspensionRaycasts(Instance->BatchQuery, 1, Vehicles, 4, Instance->SqResults);
+		{
+			SCOPE_STAT_CAT("WheelQuery", "Vehicle");
+			PxVehicleSuspensionRaycasts(Instance->BatchQuery, 1, Vehicles, 4, Instance->SqResults);
+		}
 
 		const float ForwardSpeed = Instance->Vehicle->computeForwardSpeed();
 		const float ShiftSpeed = 0.5f;
@@ -2162,51 +2681,58 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 		float AppliedAccel = 0.0f;
 		float AppliedBrake = 0.0f;
 
-		if (RawThrottle > 0.0f && ForwardSpeed >= -ShiftSpeed)
 		{
-			const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
+			SCOPE_STAT_CAT("InputUpdate", "Vehicle");
 
-			if (TargetGear == PxVehicleGearsData::eREVERSE ||
-				TargetGear == PxVehicleGearsData::eNEUTRAL)
-			{
-				Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
-			}
-
-			AppliedAccel = RawThrottle;
-		}
-		else if (RawBrake > 0.0f)
-		{
-			if (ForwardSpeed > ShiftSpeed)
-			{
-				AppliedBrake = RawBrake;
-			}
-			else
+			if (RawThrottle > 0.0f && ForwardSpeed >= -ShiftSpeed)
 			{
 				const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
-				if (TargetGear != PxVehicleGearsData::eREVERSE)
+
+				if (TargetGear == PxVehicleGearsData::eREVERSE ||
+					TargetGear == PxVehicleGearsData::eNEUTRAL)
 				{
-					Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eREVERSE);
+					Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eFIRST);
 				}
-				AppliedAccel = RawBrake;
+
+				AppliedAccel = RawThrottle;
 			}
+			else if (RawBrake > 0.0f)
+			{
+				if (ForwardSpeed > ShiftSpeed)
+				{
+					AppliedBrake = RawBrake;
+				}
+				else
+				{
+					const PxU32 TargetGear = Instance->Vehicle->mDriveDynData.getTargetGear();
+					if (TargetGear != PxVehicleGearsData::eREVERSE)
+					{
+						Instance->Vehicle->mDriveDynData.setTargetGear(PxVehicleGearsData::eREVERSE);
+					}
+					AppliedAccel = RawBrake;
+				}
+			}
+
+			PxVehicleDrive4WRawInputData RawInputData;
+			RawInputData.setAnalogAccel(AppliedAccel);
+			RawInputData.setAnalogBrake(AppliedBrake);
+			RawInputData.setAnalogHandbrake(Instance->InputState.bHandbrake ? 1.0f : 0.0f);
+			RawInputData.setAnalogSteer(Instance->InputState.Steering);
+
+			const bool bVehicleWasInAir = Instance->DebugStats.WheelCount > 0 ? Instance->DebugStats.bInAir : false;
+			PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
+				GetVehiclePadSmoothingData(),
+				GetVehicleSteerVsForwardSpeedTable(),
+				RawInputData,
+				DeltaTime,
+				bVehicleWasInAir,
+				*Instance->Vehicle);
 		}
 
-		PxVehicleDrive4WRawInputData RawInputData;
-		RawInputData.setAnalogAccel(AppliedAccel);
-		RawInputData.setAnalogBrake(AppliedBrake);
-		RawInputData.setAnalogHandbrake(Instance->InputState.bHandbrake ? 1.0f : 0.0f);
-		RawInputData.setAnalogSteer(Instance->InputState.Steering);
-
-		const bool bVehicleWasInAir = Instance->DebugStats.WheelCount > 0 ? Instance->DebugStats.bInAir : false;
-		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
-			GetVehiclePadSmoothingData(),
-			GetVehicleSteerVsForwardSpeedTable(),
-			RawInputData,
-			DeltaTime,
-			bVehicleWasInAir,
-			*Instance->Vehicle);
-
-		PxVehicleUpdates(DeltaTime, Gravity, *Instance->FrictionPairs, 1, Vehicles, &Instance->VehicleQueryResult);
+		{
+			SCOPE_STAT_CAT("VehicleSimulate", "Vehicle");
+			PxVehicleUpdates(DeltaTime, Gravity, *Instance->FrictionPairs, 1, Vehicles, &Instance->VehicleQueryResult);
+		}
 
 		Instance->DebugStats.WheelCount = GMaxNumWheels;
 		Instance->DebugStats.CurrentSpeed = Instance->Vehicle->computeForwardSpeed() * 3.6f;
@@ -2231,6 +2757,8 @@ void FPhysXPhysicsScene::UpdateVehicles(float DeltaTime)
 
 void FPhysXPhysicsScene::SyncVehiclePose()
 {
+	SCOPE_STAT_CAT("PostSync", "Vehicle");
+
 	for (FPhysXVehicleInstance* Instance : VehicleInstances)
 	{
 		if (!Instance || !Instance->Vehicle || !Instance->ChassisActor || !Instance->ChassisComponent)

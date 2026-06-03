@@ -304,4 +304,5 @@ void FAudioManager::LoadDefaultAudios()
 	LoadAudio("MeteorFall", "meteor_fall.mp3");
 	LoadAudio("Whoosh", "whoosh.mp3");
 	LoadAudio("Walk", "walk.mp3");
+	LoadAudio("CarIdleLoop", "car_idle_loop.wav", true);
 }

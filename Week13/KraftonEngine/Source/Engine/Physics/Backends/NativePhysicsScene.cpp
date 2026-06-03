@@ -5,6 +5,17 @@
 #include "GameFramework/AActor.h"
 
 #include <algorithm>
+#include <chrono>
+
+namespace
+{
+    double GetNativePhysicsTimeMs()
+    {
+        using Clock = std::chrono::high_resolution_clock;
+        using Ms = std::chrono::duration<double, std::milli>;
+        return std::chrono::duration_cast<Ms>(Clock::now().time_since_epoch()).count();
+    }
+}
 
 // ============================================================
 // Lifecycle
@@ -195,8 +206,9 @@ void FNativePhysicsScene::RebuildBody(UPrimitiveComponent* Comp)
 // 시뮬레이션 (구 Tick)
 // ============================================================
 
-void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+void FNativePhysicsScene::SimulateRigid(const FPhysicsStepInfo& StepInfo)
 {
+    const double StepStartMs = GetNativePhysicsTimeMs();
     if (!World) return;
     const float DeltaTime = StepInfo.DeltaTime;
 
@@ -362,7 +374,67 @@ void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
     PreviousOverlaps   = CurrentOverlaps;
     PreviousBlockPairs = CurrentBlockPairs;
 
-    GetMutableRuntimeStats().ContactCount = static_cast<int32>(CurrentBlockPairs.size());
+    int32 DynamicBodyCount = 0;
+    int32 ActiveBodyCount = 0;
+    int32 SleepingBodyCount = 0;
+    for (UPrimitiveComponent* Comp : RegisteredComponents)
+    {
+        if (!Comp || !Comp->GetSimulatePhysics())
+        {
+            continue;
+        }
+
+        ++DynamicBodyCount;
+        const auto BodyStateIt = BodyStates.find(Comp);
+        const FVector LinearVelocity = BodyStateIt != BodyStates.end() ? BodyStateIt->second.Velocity : FVector::ZeroVector;
+        const FVector AngularVelocity = BodyStateIt != BodyStates.end() ? BodyStateIt->second.AngularVelocity : FVector::ZeroVector;
+        const bool bSleeping =
+            LinearVelocity.IsNearlyZero() &&
+            AngularVelocity.IsNearlyZero();
+        if (bSleeping)
+        {
+            ++SleepingBodyCount;
+        }
+        else
+        {
+            ++ActiveBodyCount;
+        }
+    }
+
+    FPhysicsRuntimeStats& RuntimeStats = GetMutableRuntimeStats();
+    RuntimeStats.DynamicBodyCount = DynamicBodyCount;
+    RuntimeStats.ActiveBodyCount = ActiveBodyCount;
+    RuntimeStats.SleepingBodyCount = SleepingBodyCount;
+    RuntimeStats.ContactCount = static_cast<int32>(CurrentBlockPairs.size());
+    RuntimeStats.ContactPairCount = RuntimeStats.ContactCount;
+    RuntimeStats.ContactPointCount = RuntimeStats.ContactCount;
+    RuntimeStats.PerBodyActorCount = RuntimeStats.BodyCount;
+    RuntimeStats.SolverPositionIterationCount = 1;
+    RuntimeStats.SolverVelocityIterationCount = 1;
+    RuntimeStats.SolverConstraintCount = RuntimeStats.ConstraintCount;
+    RuntimeStats.SolverContactCount = RuntimeStats.ContactPointCount;
+    RuntimeStats.PreSimTimeMs = 0.0f;
+    RuntimeStats.SimulateTimeMs = static_cast<float>(GetNativePhysicsTimeMs() - StepStartMs);
+    RuntimeStats.FetchResultsTimeMs = 0.0f;
+    RuntimeStats.PostSyncTimeMs = 0.0f;
+    RuntimeStats.TotalPhysicsTimeMs = RuntimeStats.SimulateTimeMs;
+    RuntimeStats.StepTimeMs = RuntimeStats.SimulateTimeMs;
+    RuntimeStats.SyncTimeMs = 0.0f;
+}
+
+
+void FNativePhysicsScene::Simulate(const FPhysicsStepInfo& StepInfo)
+{
+    SimulateRigid(StepInfo);
+}
+
+void FNativePhysicsScene::GatherClothCollision(
+    const FClothCollisionGatherParams& /*Params*/,
+    FClothCollisionData& Out) const
+{
+    // Native physics does not currently expose simple shape geometry in a form
+    // NvCloth can consume. Keep the call valid and explicitly return no collision.
+    Out.Reset();
 }
 
 void FNativePhysicsScene::FetchResults(bool /*bBlock*/)

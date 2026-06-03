@@ -1,10 +1,12 @@
 ﻿#include "PhysicsAssetEditorWidget.h"
 
+#include "Editor/EditorEngine.h"
 #include "Collision/RayUtils.h"
 #include "Component/Light/DirectionalLightComponent.h"
 #include "Component/SkeletalMeshComponent.h"
 #include "Component/GizmoComponent.h"
 #include "Debug/DrawDebugHelpers.h"
+#include "GameFramework/AActor.h"
 #include "GameFramework/Light/DirectionalLightActor.h"
 #include "GameFramework/StaticMeshActor.h"
 #include "GameFramework/World.h"
@@ -45,6 +47,7 @@
 #include <cmath>
 #include <cstdio>
 #include <filesystem>
+#include <unordered_set>
 
 namespace
 {
@@ -123,6 +126,15 @@ namespace
 	FString MakePhysicsAssetPreviewResourcePath(const char* ResourceType)
 	{
 		return "__PhysicsAssetPreview__/" + FString(ResourceType) + "_" + std::to_string(GNextPhysicsAssetPreviewResourceId++);
+	}
+
+	bool IsEditorPhysicsStatVisible()
+	{
+		if (UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine))
+		{
+			return EditorEngine->GetOverlayStatSystem().IsShowingPhysics();
+		}
+		return false;
 	}
 
 	void DrawPhysicsPanelHeader(const char* Title)
@@ -908,7 +920,18 @@ namespace
 		};
 
 		Row("Min Bone Size");
-		bChanged |= ImGui::DragFloat("##MinBoneSize", &Params.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+		bChanged |= ImGui::DragFloat("##MinBoneSize", &Params.MinBoneSize, 0.1f, 0.1f, 1000.0f);
+
+		Row("Body Grouping");
+		{
+			int32 RagdollMode = static_cast<int32>(Params.RagdollMode);
+			const char* RagdollModeLabels[] = { "Per-Body", "PxAggregate" };
+			if (ImGui::Combo("##RagdollMode", &RagdollMode, RagdollModeLabels, IM_ARRAYSIZE(RagdollModeLabels)))
+			{
+				Params.RagdollMode = static_cast<EPhysicsAssetRagdollMode>(RagdollMode);
+				bChanged = true;
+			}
+		}
 
 		Row("Primitive Type");
 		{
@@ -2553,16 +2576,209 @@ namespace
 		return BaseAlpha;
 	}
 
-	void RenderStatsOverlay(ImDrawList* DrawList, const ImVec2& ViewportPos, const UPhysicsAsset* PhysicsAsset)
+	void RenderStatsOverlay(
+		ImDrawList* DrawList,
+		const ImVec2& ViewportPos,
+		const UPhysicsAsset* PhysicsAsset,
+		const USkeletalMesh* PreviewSkeletalMesh,
+		const UWorld* PreviewWorld,
+		bool bPreviewSimulating)
 	{
 		if (!DrawList || !PhysicsAsset)
 		{
 			return;
 		}
 
-		const FString Text =
-			"Bodies: " + std::to_string(PhysicsAsset->GetBodySetups().size()) + "\n" +
-			"Constraints: " + std::to_string(PhysicsAsset->GetConstraintSetups().size());
+		struct FPhysicsAssetOverlaySummary
+		{
+			int32 BodyCount = 0;
+			int32 ConsideredForBoundsCount = 0;
+			int32 SphereCount = 0;
+			int32 BoxCount = 0;
+			int32 CapsuleCount = 0;
+			int32 ConvexCount = 0;
+			int32 ConstraintCount = 0;
+			int32 CrossConstraintCount = 0;
+			int32 CollisionInteractionCount = 0;
+		};
+
+		auto FormatCountLabel = [](int32 Count, const char* Singular, const char* Plural) -> FString
+		{
+			return std::to_string(Count) + " " + (Count == 1 ? Singular : Plural);
+		};
+
+		auto IsCrossConstraint = [](const FSkeletonAsset* SkeletonAsset, const FPhysicsConstraintSetup& Constraint) -> bool
+		{
+			if (!SkeletonAsset)
+			{
+				return false;
+			}
+
+			const int32 ParentBoneIndex = FindSkeletonBoneIndexByName(SkeletonAsset, Constraint.ParentBoneName);
+			const int32 ChildBoneIndex = FindSkeletonBoneIndexByName(SkeletonAsset, Constraint.ChildBoneName);
+			if (ParentBoneIndex < 0 || ChildBoneIndex < 0)
+			{
+				return false;
+			}
+
+			const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
+			if (ParentBoneIndex >= BoneCount || ChildBoneIndex >= BoneCount)
+			{
+				return false;
+			}
+
+			return SkeletonAsset->Bones[ChildBoneIndex].ParentIndex != ParentBoneIndex
+				&& SkeletonAsset->Bones[ParentBoneIndex].ParentIndex != ChildBoneIndex;
+		};
+
+		auto BuildOverlaySummary = [&](const UPhysicsAsset* Asset, const FSkeletonAsset* SkeletonAsset) -> FPhysicsAssetOverlaySummary
+		{
+			FPhysicsAssetOverlaySummary Summary;
+			if (!Asset)
+			{
+				return Summary;
+			}
+
+			const TArray<UPhysicsBodySetup*>& BodySetups = Asset->GetBodySetups();
+			Summary.BodyCount = static_cast<int32>(BodySetups.size());
+
+			for (const UPhysicsBodySetup* BodySetup : BodySetups)
+			{
+				if (!BodySetup)
+				{
+					continue;
+				}
+
+				if (BodySetup->bConsiderForBounds)
+				{
+					++Summary.ConsideredForBoundsCount;
+				}
+
+				const FPhysicsAggregateShapeSetup& ShapeSetup = BodySetup->GetShapeSetup();
+				Summary.SphereCount += static_cast<int32>(ShapeSetup.SphereShapeSetups.size());
+				Summary.BoxCount += static_cast<int32>(ShapeSetup.BoxShapeSetups.size());
+				Summary.CapsuleCount += static_cast<int32>(ShapeSetup.CapsuleShapeSetups.size());
+				Summary.ConvexCount += static_cast<int32>(ShapeSetup.ConvexShapeSetups.size());
+			}
+
+			std::unordered_set<uint64> CollisionInteractionPairs;
+			const TArray<FPhysicsConstraintSetup>& Constraints = Asset->GetConstraintSetups();
+			Summary.ConstraintCount = static_cast<int32>(Constraints.size());
+			for (const FPhysicsConstraintSetup& Constraint : Constraints)
+			{
+				if (IsCrossConstraint(SkeletonAsset, Constraint))
+				{
+					++Summary.CrossConstraintCount;
+				}
+
+				if (Constraint.bDisableCollision)
+				{
+					continue;
+				}
+
+				const int32 ParentBodyIndex = FindBodySetupIndex(Asset, Constraint.ParentBoneName);
+				const int32 ChildBodyIndex = FindBodySetupIndex(Asset, Constraint.ChildBoneName);
+				if (ParentBodyIndex < 0 || ChildBodyIndex < 0 || ParentBodyIndex == ChildBodyIndex)
+				{
+					continue;
+				}
+
+				const uint32 MinIndex = static_cast<uint32>((std::min)(ParentBodyIndex, ChildBodyIndex));
+				const uint32 MaxIndex = static_cast<uint32>((std::max)(ParentBodyIndex, ChildBodyIndex));
+				const uint64 PairKey = (static_cast<uint64>(MinIndex) << 32) | static_cast<uint64>(MaxIndex);
+				CollisionInteractionPairs.insert(PairKey);
+			}
+
+			Summary.CollisionInteractionCount = static_cast<int32>(CollisionInteractionPairs.size());
+			return Summary;
+		};
+
+		auto BuildPrimitiveSummaryText = [&](const FPhysicsAssetOverlaySummary& Summary) -> FString
+		{
+			const int32 PrimitiveCount = Summary.CapsuleCount + Summary.SphereCount + Summary.BoxCount + Summary.ConvexCount;
+			TArray<FString> PrimitiveBreakdown;
+			if (Summary.CapsuleCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.CapsuleCount, "Capsule", "Capsules"));
+			}
+			if (Summary.SphereCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.SphereCount, "Sphere", "Spheres"));
+			}
+			if (Summary.BoxCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.BoxCount, "Box", "Boxes"));
+			}
+			if (Summary.ConvexCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.ConvexCount, "Convex", "Convexes"));
+			}
+			if (PrimitiveBreakdown.empty())
+			{
+				PrimitiveBreakdown.push_back("None");
+			}
+
+			FString BreakdownText;
+			for (int32 Index = 0; Index < static_cast<int32>(PrimitiveBreakdown.size()); ++Index)
+			{
+				if (Index > 0)
+				{
+					BreakdownText += ", ";
+				}
+				BreakdownText += PrimitiveBreakdown[Index];
+			}
+
+			return FormatCountLabel(PrimitiveCount, "Primitive", "Primitives") + ": (" + BreakdownText + ")";
+		};
+
+		const FSkeletonAsset* SkeletonAsset = PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr;
+		const FPhysicsAssetOverlaySummary Summary = BuildOverlaySummary(PhysicsAsset, SkeletonAsset);
+		const int32 ConsideredPercent = Summary.BodyCount > 0
+			? static_cast<int32>(std::round(static_cast<double>(Summary.ConsideredForBoundsCount) * 100.0 / static_cast<double>(Summary.BodyCount)))
+			: 0;
+
+		const bool bShowDetailedPhysicsStats = IsEditorPhysicsStatVisible();
+		FString Text =
+			FormatCountLabel(Summary.BodyCount, "Body", "Bodies")
+			+ " (" + std::to_string(Summary.ConsideredForBoundsCount)
+			+ " Considered For Bounds, " + std::to_string(ConsideredPercent) + "%)\n"
+			+ BuildPrimitiveSummaryText(Summary) + "\n"
+			+ FormatCountLabel(Summary.ConstraintCount, "Constraint", "Constraints")
+			+ " (" + FormatCountLabel(Summary.CrossConstraintCount, "Cross Constraint", "Cross Constraints") + ")\n"
+			+ std::to_string(Summary.CollisionInteractionCount) + " Collision Interactions";
+
+		Text += "\nBody Grouping: ";
+		Text += PhysicsAssetRagdollModeToString(PhysicsAsset->GetRagdollMode());
+
+		const IPhysicsSceneInterface* PhysicsScene = PreviewWorld ? PreviewWorld->GetPhysicsScene() : nullptr;
+		if (PhysicsScene && bPreviewSimulating)
+		{
+			const FPhysicsRuntimeStats& Stats = PhysicsScene->GetStats();
+			Text += "\n\nScene Bodies: " + std::to_string(Stats.BodyCount);
+			Text += "\nActive Ragdolls: " + std::to_string(Stats.ActiveRagdollCount)
+				+ " (" + std::to_string(Stats.ActiveAggregateRagdollCount)
+				+ " agg / " + std::to_string(Stats.ActivePerBodyRagdollCount) + " per-body)";
+			Text += "\nRagdoll Bodies: " + std::to_string(Stats.RagdollBodyCount)
+				+ "  Constraints: " + std::to_string(Stats.RagdollConstraintCount);
+			Text += "\nAggregates: " + std::to_string(Stats.AggregateCount)
+				+ "  Actors: " + std::to_string(Stats.AggregateActorCount);
+			if (bShowDetailedPhysicsStats)
+			{
+				char TimingBuffer[96] = {};
+				std::snprintf(
+					TimingBuffer,
+					sizeof(TimingBuffer),
+					"Step/Sync: %.3f / %.3f ms",
+					Stats.StepTimeMs,
+					Stats.SyncTimeMs);
+				Text += "\n";
+				Text += TimingBuffer;
+			}
+		}
+		else if (bShowDetailedPhysicsStats)
+		{
+			Text += "\n\nRuntime Stats: press Simulate to populate";
+		}
 
 		const ImVec2 TextPos(ViewportPos.x + 8.0f, ViewportPos.y + 36.0f);
 		DrawList->AddText(ImVec2(TextPos.x + 1.0f, TextPos.y + 1.0f), IM_COL32(0, 0, 0, 220), Text.c_str());
@@ -2618,8 +2834,16 @@ void FPhysicsAssetEditorWidget::Open(UObject* Object)
 	InitializePreviewScene(static_cast<UPhysicsAsset*>(EditedObject));
 
 	UPhysicsAsset* PhysicsAsset = static_cast<UPhysicsAsset*>(EditedObject);
+	if (PhysicsAsset)
+	{
+		ToolSettings.RagdollMode = PhysicsAsset->GetRagdollMode();
+	}
 	if (PhysicsAsset && !PhysicsAsset->GetBodySetups().empty())
 	{
+		if (const UPhysicsBodySetup* FirstBodySetup = PhysicsAsset->GetBodySetups()[0])
+		{
+			LoadBatchBodyPropertyValues(FirstBodySetup);
+		}
 		SelectBodyByIndex(0);
 	}
 }
@@ -2656,6 +2880,7 @@ void FPhysicsAssetEditorWidget::InitializePreviewScene(UPhysicsAsset* PhysicsAss
 	AActor* Actor = WorldContext.World->SpawnActor<AActor>();
 	Actor->bTickInEditor = true;
 	USkeletalMeshComponent* MeshComponent = Actor->AddComponent<USkeletalMeshComponent>();
+	MeshComponent->SetRagdollSelfCollisionEnabled(bPreviewEnableSelfCollision);
 	MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
 	Actor->SetRootComponent(MeshComponent);
 	Actor->SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
@@ -3530,6 +3755,8 @@ void FPhysicsAssetEditorWidget::SyncPreviewShapeComponents(UPhysicsAsset* Physic
 				Entry.Component->SetRelativeRotation(NewRotation);
 			if (bScaleChanged)
 				Entry.Component->SetRelativeScale(NewScale);
+			if (Entry.Component->IsVisible() != bShowPreviewBodies)
+				Entry.Component->SetVisibility(bShowPreviewBodies);
 
 			if (Entry.Material)
 			{
@@ -3947,6 +4174,7 @@ void FPhysicsAssetEditorWidget::StartPreviewSimulation(UPhysicsAsset* PhysicsAss
 	MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 	MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::Block);
 	MeshComponent->SetPhysicsAsset(PhysicsAsset);
+	MeshComponent->SetRagdollSelfCollisionEnabled(bPreviewEnableSelfCollision);
 	MeshComponent->SetSimulatePhysics(true);
 
 	if (!PreviewWorld->HasBegunPlay())
@@ -3968,17 +4196,41 @@ void FPhysicsAssetEditorWidget::StopPreviewSimulation(bool bResetPose)
 		MeshComponent->SetPhysicsAsset(nullptr);
 		if (bResetPose && PreviewSkeletalMesh)
 		{
-			MeshComponent->SetWorldLocation(FVector::ZeroVector);
-			MeshComponent->SetRelativeRotation(FQuat::Identity);
-			MeshComponent->ResetBoneEditPose();
-			MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
-			MeshComponent->ResetBoneEditPose();
+			RestorePreviewMeshToEditorPose();
 		}
 	}
 
 	bPreviewSimulating = false;
 	PreviewSimulationTime = 0.0f;
 	SetEditorPreviewOverlaysVisible(true);
+}
+
+void FPhysicsAssetEditorWidget::RestorePreviewMeshToEditorPose()
+{
+	USkeletalMeshComponent* MeshComponent = ViewportClient.GetPreviewMeshComponent();
+	if (!MeshComponent)
+	{
+		return;
+	}
+
+	if (AActor* PreviewActor = MeshComponent->GetOwner())
+	{
+		PreviewActor->SetActorLocation(FVector::ZeroVector);
+		PreviewActor->SetActorRotation(FRotator::ZeroRotator);
+	}
+
+	MeshComponent->ResetPhysicsInterpolation();
+	MeshComponent->SetWorldLocation(FVector::ZeroVector);
+	MeshComponent->SetRelativeRotation(FQuat::Identity);
+
+	if (PreviewSkeletalMesh)
+	{
+		MeshComponent->SetSkeletalMesh(nullptr);
+		MeshComponent->SetSkeletalMesh(PreviewSkeletalMesh);
+		MeshComponent->ResetBoneEditPose();
+	}
+
+	MeshComponent->ResetPhysicsInterpolation();
 }
 
 void FPhysicsAssetEditorWidget::ResetPreviewSimulation(UPhysicsAsset* PhysicsAsset)
@@ -4016,7 +4268,7 @@ void FPhysicsAssetEditorWidget::SetEditorPreviewOverlaysVisible(bool bVisible)
 	{
 		if (Entry.Component)
 		{
-			Entry.Component->SetVisibility(bVisible);
+			Entry.Component->SetVisibility(bVisible && bShowPreviewBodies);
 		}
 	}
 
@@ -4024,7 +4276,7 @@ void FPhysicsAssetEditorWidget::SetEditorPreviewOverlaysVisible(bool bVisible)
 	{
 		if (Entry.Component)
 		{
-			Entry.Component->SetVisibility(bVisible);
+			Entry.Component->SetVisibility(bVisible && bShowConstraintDebug);
 		}
 	}
 
@@ -4321,16 +4573,57 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 		if (FPhysicsAssetManager::Get().Save(PhysicsAsset))
 		{
 			ClearDirty();
+			ToolbarStatusMessage = "PhysicsAsset saved.";
+		}
+		else
+		{
+			ToolbarStatusMessage = "PhysicsAsset save failed.";
 		}
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Save as Json"))
 	{
-		FPhysicsAssetManager::Get().SaveAsJson(PhysicsAsset);
+		if (FPhysicsAssetManager::Get().SaveAsJson(PhysicsAsset))
+		{
+			ToolbarStatusMessage = "PhysicsAsset JSON saved next to the asset.";
+		}
+		else
+		{
+			ToolbarStatusMessage = "PhysicsAsset JSON save failed.";
+		}
 	}
 	ImGui::SameLine();
 	ImGui::TextDisabled("%s", PhysicsAsset->GetPreviewSkeletalMeshPath().empty() ? "Preview Mesh: None" : PhysicsAsset->GetPreviewSkeletalMeshPath().c_str());
+	if (!ToolbarStatusMessage.empty())
+	{
+		ImGui::TextWrapped("%s", ToolbarStatusMessage.c_str());
+	}
+
+	const ImGuiStyle& Style = ImGui::GetStyle();
+	auto CalcButtonWidth = [&](const char* Label) -> float
+	{
+		return ImGui::CalcTextSize(Label).x + Style.FramePadding.x * 2.0f;
+	};
+	float SimControlsWidth = 0.0f;
+	if (!bPreviewSimulating)
+	{
+		SimControlsWidth = CalcButtonWidth("Simulate");
+	}
+	else
+	{
+		char SimTimeText[32] = {};
+		std::snprintf(SimTimeText, sizeof(SimTimeText), "Sim %.2fs", PreviewSimulationTime);
+		SimControlsWidth =
+			CalcButtonWidth("Stop Sim") +
+			Style.ItemSpacing.x +
+			CalcButtonWidth("Reset Sim") +
+			Style.ItemSpacing.x +
+			ImGui::CalcTextSize(SimTimeText).x;
+	}
+
 	ImGui::SameLine();
+	const float SimControlsStartX = (std::max)(ImGui::GetCursorPosX(), ImGui::GetWindowContentRegionMax().x - SimControlsWidth);
+	ImGui::SetCursorPosX(SimControlsStartX);
 	if (!bPreviewSimulating)
 	{
 		if (ImGui::Button("Simulate"))
@@ -4340,7 +4633,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 	}
 	else
 	{
-		if (ImGui::Button("Stop"))
+		if (ImGui::Button("Stop Sim"))
 		{
 			StopPreviewSimulation(true);
 		}
@@ -4684,11 +4977,20 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 
 				FViewportToolbar::Render(Context);
 				RenderSelectedConstraintLimitOverlay(PhysicsAsset, DrawList, ViewportPos, ViewportSize, ToolbarHeight);
-				RenderStatsOverlay(DrawList, ViewportPos, PhysicsAsset);
+				RenderStatsOverlay(
+					DrawList,
+					ViewportPos,
+					PhysicsAsset,
+					PreviewSkeletalMesh,
+					ViewportClient.GetPreviewWorld(),
+					bPreviewSimulating);
 				if (bPreviewSimulating)
 				{
 					const FString SimText = "Simulating Ragdoll";
-					const ImVec2 SimTextPos(ViewportPos.x + 8.0f, ViewportPos.y + ToolbarHeight + 8.0f);
+					const float SimTextWidth = ImGui::CalcTextSize(SimText.c_str()).x;
+					const ImVec2 SimTextPos(
+						ViewportPos.x + ViewportSize.x - SimTextWidth - 8.0f,
+						ViewportPos.y + ToolbarHeight + 8.0f);
 					DrawList->AddText(ImVec2(SimTextPos.x + 1.0f, SimTextPos.y + 1.0f), IM_COL32(0, 0, 0, 220), SimText.c_str());
 					DrawList->AddText(SimTextPos, IM_COL32(120, 230, 255, 255), SimText.c_str());
 				}
@@ -5409,11 +5711,25 @@ bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel(bool bShowHeader)
 		ImGui::Separator();
 	}
 
+	if (ImGui::Checkbox("Show Bodies", &bShowPreviewBodies))
+	{
+		bChanged = true;
+	}
+
 	if (ImGui::Checkbox("Show Constraints", &bShowConstraintDebug))
 	{
 		if (bShowConstraintDebug)
 		{
 			ViewportClient.GetRenderOptions().ShowFlags.bDebugDraw = true;
+		}
+		bChanged = true;
+	}
+
+	if (ImGui::Checkbox("Enable Self Collision", &bPreviewEnableSelfCollision))
+	{
+		if (USkeletalMeshComponent* MeshComponent = ViewportClient.GetPreviewMeshComponent())
+		{
+			MeshComponent->SetRagdollSelfCollisionEnabled(bPreviewEnableSelfCollision);
 		}
 		bChanged = true;
 	}
@@ -5448,7 +5764,7 @@ bool FPhysicsAssetEditorWidget::RenderPreviewSettingsPanel(bool bShowHeader)
 	}
 
 	ImGui::Separator();
-	ImGui::TextWrapped("These settings affect only the editor preview shapes.");
+	ImGui::TextWrapped("These settings affect only the editor preview. Self collision recreates the preview ragdoll when changed.");
 	return bChanged;
 }
 
@@ -5469,75 +5785,307 @@ bool FPhysicsAssetEditorWidget::RenderToolsPanel(UPhysicsAsset* PhysicsAsset)
 	if (ImGui::CollapsingHeader("Body Creation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		RenderCreateParamsEditor(ToolSettings);
-	}
-
-	if (ImGui::Button("Regenerate From Preview Mesh"))
-	{
-		if (!PhysicsAsset->GetPreviewSkeletalMeshPath().empty() && GEngine)
+		if (ToolSettings.RagdollMode != PhysicsAsset->GetRagdollMode())
 		{
-			if (FAssetFactory::PopulatePhysicsAssetFromSkeletalMesh(
-				PhysicsAsset,
-				PhysicsAsset->GetPreviewSkeletalMeshPath(),
-				ToolSettings,
-				GEngine->GetRenderer().GetFD3DDevice().GetDevice()))
+			ImGui::TextDisabled("Current Grouping: %s", PhysicsAssetRagdollModeToString(PhysicsAsset->GetRagdollMode()));
+			ImGui::TextDisabled("Pending Regenerate: %s", PhysicsAssetRagdollModeToString(ToolSettings.RagdollMode));
+		}
+		else
+		{
+			ImGui::TextDisabled("Current Grouping: %s", PhysicsAssetRagdollModeToString(PhysicsAsset->GetRagdollMode()));
+		}
+
+		if (ImGui::Button("Regenerate From Preview Mesh"))
+		{
+			if (!PhysicsAsset->GetPreviewSkeletalMeshPath().empty() && GEngine)
 			{
-				SelectedConstraintIndex = -1;
-				SelectedBoneIndex = -1;
-				if (!PhysicsAsset->GetBodySetups().empty())
+				if (FAssetFactory::PopulatePhysicsAssetFromSkeletalMesh(
+					PhysicsAsset,
+					PhysicsAsset->GetPreviewSkeletalMeshPath(),
+					ToolSettings,
+					GEngine->GetRenderer().GetFD3DDevice().GetDevice()))
 				{
-					SelectBodyByIndex(0);
+					SelectedConstraintIndex = -1;
+					SelectedBoneIndex = -1;
+					if (!PhysicsAsset->GetBodySetups().empty())
+					{
+						SelectBodyByIndex(0);
+					}
+					bChanged = true;
 				}
+			}
+		}
+
+		ImGui::Separator();
+
+		if (ImGui::Button("Add Empty Body"))
+		{
+			UPhysicsBodySetup* NewBodySetup = GUObjectArray.CreateObject<UPhysicsBodySetup>(PhysicsAsset);
+			NewBodySetup->SetTargetBoneName(FName("NewBody"));
+			FPhysicsCapsuleShapeSetup CapsuleShape;
+			CapsuleShape.Name = FName("NewBody_Capsule");
+			CapsuleShape.Radius = 8.0f;
+			CapsuleShape.Length = 24.0f;
+			NewBodySetup->GetMutableShapeSetup().CapsuleShapeSetups.push_back(CapsuleShape);
+			PhysicsAsset->GetMutableBodySetups().push_back(NewBodySetup);
+			SelectBodyByIndex(static_cast<int32>(PhysicsAsset->GetBodySetups().size()) - 1);
+			bChanged = true;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Add Empty Constraint"))
+		{
+			FPhysicsConstraintSetup NewConstraint;
+			NewConstraint.ConstraintName = FName("NewConstraint");
+			PhysicsAsset->GetMutableConstraintSetups().push_back(NewConstraint);
+			SelectConstraintByIndex(static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()) - 1);
+			bChanged = true;
+		}
+
+		if (SelectedBodyIndex >= 0 && SelectedBodyIndex < static_cast<int32>(PhysicsAsset->GetBodySetups().size()))
+		{
+			if (ImGui::Button("Remove Selected Body"))
+			{
+				if (UPhysicsBodySetup* RemovedBody = PhysicsAsset->GetMutableBodySetups()[SelectedBodyIndex])
+				{
+					GUObjectArray.DestroyObject(RemovedBody);
+				}
+				PhysicsAsset->GetMutableBodySetups().erase(PhysicsAsset->GetMutableBodySetups().begin() + SelectedBodyIndex);
+				SelectedBodyIndex = -1;
+				bChanged = true;
+			}
+		}
+
+		if (SelectedConstraintIndex >= 0 && SelectedConstraintIndex < static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()))
+		{
+			if (ImGui::Button("Remove Selected Constraint"))
+			{
+				PhysicsAsset->GetMutableConstraintSetups().erase(PhysicsAsset->GetMutableConstraintSetups().begin() + SelectedConstraintIndex);
+				SelectedConstraintIndex = -1;
 				bChanged = true;
 			}
 		}
 	}
 
-	if (ImGui::Button("Add Empty Body"))
-	{
-		UPhysicsBodySetup* NewBodySetup = GUObjectArray.CreateObject<UPhysicsBodySetup>(PhysicsAsset);
-		NewBodySetup->SetTargetBoneName(FName("NewBody"));
-		FPhysicsCapsuleShapeSetup CapsuleShape;
-		CapsuleShape.Name = FName("NewBody_Capsule");
-		CapsuleShape.Radius = 8.0f;
-		CapsuleShape.Length = 24.0f;
-		NewBodySetup->GetMutableShapeSetup().CapsuleShapeSetups.push_back(CapsuleShape);
-		PhysicsAsset->GetMutableBodySetups().push_back(NewBodySetup);
-		SelectBodyByIndex(static_cast<int32>(PhysicsAsset->GetBodySetups().size()) - 1);
-		bChanged = true;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Add Empty Constraint"))
-	{
-		FPhysicsConstraintSetup NewConstraint;
-		NewConstraint.ConstraintName = FName("NewConstraint");
-		PhysicsAsset->GetMutableConstraintSetups().push_back(NewConstraint);
-		SelectConstraintByIndex(static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()) - 1);
-		bChanged = true;
-	}
-
-	if (SelectedBodyIndex >= 0 && SelectedBodyIndex < static_cast<int32>(PhysicsAsset->GetBodySetups().size()))
-	{
-		if (ImGui::Button("Remove Selected Body"))
-		{
-			if (UPhysicsBodySetup* RemovedBody = PhysicsAsset->GetMutableBodySetups()[SelectedBodyIndex])
-			{
-				GUObjectArray.DestroyObject(RemovedBody);
-			}
-			PhysicsAsset->GetMutableBodySetups().erase(PhysicsAsset->GetMutableBodySetups().begin() + SelectedBodyIndex);
-			SelectedBodyIndex = -1;
-			bChanged = true;
-		}
-	}
-
-	if (SelectedConstraintIndex >= 0 && SelectedConstraintIndex < static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()))
-	{
-		if (ImGui::Button("Remove Selected Constraint"))
-		{
-			PhysicsAsset->GetMutableConstraintSetups().erase(PhysicsAsset->GetMutableConstraintSetups().begin() + SelectedConstraintIndex);
-			SelectedConstraintIndex = -1;
-			bChanged = true;
-		}
-	}
+	bChanged |= RenderBatchBodyPropertyTools(PhysicsAsset);
 
 	return bChanged;
+}
+
+bool FPhysicsAssetEditorWidget::RenderBatchBodyPropertyTools(UPhysicsAsset* PhysicsAsset)
+{
+	if (!PhysicsAsset)
+	{
+		return false;
+	}
+
+	if (!ImGui::CollapsingHeader("Batch Body Properties", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		return false;
+	}
+
+	const int32 BodyCount = static_cast<int32>(PhysicsAsset->GetBodySetups().size());
+	ImGui::TextDisabled("Apply selected properties to all %d bodies in this asset.", BodyCount);
+
+	const bool bHasSelectedBody = SelectedBodyIndex >= 0
+		&& SelectedBodyIndex < BodyCount
+		&& PhysicsAsset->GetBodySetups()[SelectedBodyIndex] != nullptr;
+	if (bHasSelectedBody && ImGui::Button("Copy Values From Selected Body"))
+	{
+		LoadBatchBodyPropertyValues(PhysicsAsset->GetBodySetups()[SelectedBodyIndex]);
+		BatchBodyEditSettings.bApplyOverrideMass = true;
+		BatchBodyEditSettings.bApplyMass = true;
+		BatchBodyEditSettings.bApplyLinearDamping = true;
+		BatchBodyEditSettings.bApplyAngularDamping = true;
+		BatchBodyEditSettings.bApplyEnableGravity = true;
+		BatchBodyEditSettings.bApplyGravityGroupIndex = true;
+		BatchBodyEditSettings.bApplyBodyType = true;
+		ToolbarStatusMessage = "Loaded batch values from the selected body.";
+	}
+
+	if (ImGui::BeginTable("BatchBodyPropertyTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+	{
+		auto Row = [](const char* Label)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TextUnformatted(Label);
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-1.0f);
+		};
+
+		Row("Override Mass");
+		ImGui::Checkbox("##BatchApplyOverrideMass", &BatchBodyEditSettings.bApplyOverrideMass);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!BatchBodyEditSettings.bApplyOverrideMass);
+		ImGui::Checkbox("##BatchOverrideMass", &BatchBodyEditSettings.bOverrideMass);
+		ImGui::EndDisabled();
+
+		Row("Mass (kg)");
+		ImGui::Checkbox("##BatchApplyMass", &BatchBodyEditSettings.bApplyMass);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!BatchBodyEditSettings.bApplyMass);
+		ImGui::DragFloat("##BatchMass", &BatchBodyEditSettings.Mass, 0.05f, 0.0f, 100000.0f);
+		ImGui::EndDisabled();
+
+		Row("Linear Damping");
+		ImGui::Checkbox("##BatchApplyLinearDamping", &BatchBodyEditSettings.bApplyLinearDamping);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!BatchBodyEditSettings.bApplyLinearDamping);
+		ImGui::DragFloat("##BatchLinearDamping", &BatchBodyEditSettings.LinearDamping, 0.01f, 0.0f, 1000.0f);
+		ImGui::EndDisabled();
+
+		Row("Angular Damping");
+		ImGui::Checkbox("##BatchApplyAngularDamping", &BatchBodyEditSettings.bApplyAngularDamping);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!BatchBodyEditSettings.bApplyAngularDamping);
+		ImGui::DragFloat("##BatchAngularDamping", &BatchBodyEditSettings.AngularDamping, 0.01f, 0.0f, 1000.0f);
+		ImGui::EndDisabled();
+
+		Row("Enable Gravity");
+		ImGui::Checkbox("##BatchApplyEnableGravity", &BatchBodyEditSettings.bApplyEnableGravity);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!BatchBodyEditSettings.bApplyEnableGravity);
+		ImGui::Checkbox("##BatchEnableGravity", &BatchBodyEditSettings.bEnableGravity);
+		ImGui::EndDisabled();
+
+		Row("Gravity Group Index");
+		ImGui::Checkbox("##BatchApplyGravityGroupIndex", &BatchBodyEditSettings.bApplyGravityGroupIndex);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!BatchBodyEditSettings.bApplyGravityGroupIndex);
+		ImGui::InputInt("##BatchGravityGroupIndex", &BatchBodyEditSettings.GravityGroupIndex);
+		ImGui::EndDisabled();
+
+		Row("Physics Type");
+		ImGui::Checkbox("##BatchApplyBodyType", &BatchBodyEditSettings.bApplyBodyType);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!BatchBodyEditSettings.bApplyBodyType);
+		RenderBodyTypeCombo(BatchBodyEditSettings.BodyType, "##BatchBodyType");
+		ImGui::EndDisabled();
+
+		ImGui::EndTable();
+	}
+
+	ImGui::TextDisabled("Check a property to include it in the batch update.");
+	if (ImGui::Button("Apply To All Bodies"))
+	{
+		return ApplyBatchBodyProperties(PhysicsAsset);
+	}
+
+	return false;
+}
+
+bool FPhysicsAssetEditorWidget::ApplyBatchBodyProperties(UPhysicsAsset* PhysicsAsset)
+{
+	if (!PhysicsAsset)
+	{
+		return false;
+	}
+
+	const bool bHasSelectedProperty =
+		BatchBodyEditSettings.bApplyOverrideMass
+		|| BatchBodyEditSettings.bApplyMass
+		|| BatchBodyEditSettings.bApplyLinearDamping
+		|| BatchBodyEditSettings.bApplyAngularDamping
+		|| BatchBodyEditSettings.bApplyEnableGravity
+		|| BatchBodyEditSettings.bApplyGravityGroupIndex
+		|| BatchBodyEditSettings.bApplyBodyType;
+	if (!bHasSelectedProperty)
+	{
+		ToolbarStatusMessage = "Select at least one body property to apply.";
+		return false;
+	}
+
+	TArray<UPhysicsBodySetup*>& BodySetups = PhysicsAsset->GetMutableBodySetups();
+	if (BodySetups.empty())
+	{
+		ToolbarStatusMessage = "There are no bodies to update.";
+		return false;
+	}
+
+	constexpr float FloatTolerance = 1.0e-4f;
+	int32 UpdatedBodyCount = 0;
+	for (UPhysicsBodySetup* BodySetup : BodySetups)
+	{
+		if (!BodySetup)
+		{
+			continue;
+		}
+
+		bool bBodyChanged = false;
+		if (BatchBodyEditSettings.bApplyOverrideMass && BodySetup->bOverrideMass != BatchBodyEditSettings.bOverrideMass)
+		{
+			BodySetup->bOverrideMass = BatchBodyEditSettings.bOverrideMass;
+			bBodyChanged = true;
+		}
+
+		if (BatchBodyEditSettings.bApplyMass
+			&& std::fabs(BodySetup->GetMass() - BatchBodyEditSettings.Mass) > FloatTolerance)
+		{
+			BodySetup->SetMass(BatchBodyEditSettings.Mass);
+			bBodyChanged = true;
+		}
+
+		if (BatchBodyEditSettings.bApplyLinearDamping
+			&& std::fabs(BodySetup->GetLinearDamping() - BatchBodyEditSettings.LinearDamping) > FloatTolerance)
+		{
+			BodySetup->SetLinearDamping(BatchBodyEditSettings.LinearDamping);
+			bBodyChanged = true;
+		}
+
+		if (BatchBodyEditSettings.bApplyAngularDamping
+			&& std::fabs(BodySetup->GetAngularDamping() - BatchBodyEditSettings.AngularDamping) > FloatTolerance)
+		{
+			BodySetup->SetAngularDamping(BatchBodyEditSettings.AngularDamping);
+			bBodyChanged = true;
+		}
+
+		if (BatchBodyEditSettings.bApplyEnableGravity && BodySetup->bEnableGravity != BatchBodyEditSettings.bEnableGravity)
+		{
+			BodySetup->bEnableGravity = BatchBodyEditSettings.bEnableGravity;
+			bBodyChanged = true;
+		}
+
+		if (BatchBodyEditSettings.bApplyGravityGroupIndex
+			&& BodySetup->GravityGroupIndex != BatchBodyEditSettings.GravityGroupIndex)
+		{
+			BodySetup->GravityGroupIndex = BatchBodyEditSettings.GravityGroupIndex;
+			bBodyChanged = true;
+		}
+
+		if (BatchBodyEditSettings.bApplyBodyType && BodySetup->GetBodyType() != BatchBodyEditSettings.BodyType)
+		{
+			BodySetup->SetBodyType(BatchBodyEditSettings.BodyType);
+			bBodyChanged = true;
+		}
+
+		if (bBodyChanged)
+		{
+			++UpdatedBodyCount;
+		}
+	}
+
+	if (UpdatedBodyCount == 0)
+	{
+		ToolbarStatusMessage = "All bodies already match the selected values.";
+		return false;
+	}
+
+	ToolbarStatusMessage = "Applied body properties to " + std::to_string(UpdatedBodyCount) + " bodies.";
+	return true;
+}
+
+void FPhysicsAssetEditorWidget::LoadBatchBodyPropertyValues(const UPhysicsBodySetup* BodySetup)
+{
+	if (!BodySetup)
+	{
+		return;
+	}
+
+	BatchBodyEditSettings.bOverrideMass = BodySetup->bOverrideMass;
+	BatchBodyEditSettings.Mass = BodySetup->GetMass();
+	BatchBodyEditSettings.LinearDamping = BodySetup->GetLinearDamping();
+	BatchBodyEditSettings.AngularDamping = BodySetup->GetAngularDamping();
+	BatchBodyEditSettings.bEnableGravity = BodySetup->bEnableGravity;
+	BatchBodyEditSettings.GravityGroupIndex = BodySetup->GravityGroupIndex;
+	BatchBodyEditSettings.BodyType = BodySetup->GetBodyType();
 }

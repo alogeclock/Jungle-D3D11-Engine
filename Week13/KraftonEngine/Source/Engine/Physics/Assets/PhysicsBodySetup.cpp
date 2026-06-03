@@ -5,7 +5,7 @@
 void UPhysicsBodySetup::Serialize(FArchive& Ar)
 {
 	constexpr uint32 VersionTag = 0x50425355u;
-	constexpr uint32 Version = 2u;
+	constexpr uint32 Version = 3u;
 
 	uint32 SerializedTag = VersionTag;
 	uint32 SerializedVersion = Version;
@@ -28,7 +28,17 @@ void UPhysicsBodySetup::Serialize(FArchive& Ar)
 	}
 
 	Ar << TargetBoneName;
-	Ar << ShapeSetup;
+	if (SerializedVersion >= 3u || Ar.IsSaving())
+	{
+		Ar << ShapeSetup;
+	}
+	else
+	{
+		Ar << ShapeSetup.SphereShapeSetups;
+		Ar << ShapeSetup.BoxShapeSetups;
+		Ar << ShapeSetup.CapsuleShapeSetups;
+		Ar << ShapeSetup.ConvexShapeSetups;
+	}
 
 	uint8 SerializedBodyType = static_cast<uint8>(BodyType);
 	Ar << SerializedBodyType;

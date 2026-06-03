@@ -18,6 +18,7 @@ namespace physx
     class PxFoundation;
     class PxPhysics;
     class PxScene;
+    class PxAggregate;
     class PxDefaultCpuDispatcher;
     class PxMaterial;
     class PxRigidActor;
@@ -44,6 +45,15 @@ public:
         const FPhysicsBodyDesc& BodyDesc,
         const FTransform& WorldTransform,
         bool bSyncOwnerTransform = false) override;
+    bool SupportsAggregateRagdolls() const override { return true; }
+    void* CreateAggregateHandle(uint32 MaxActorCount, bool bEnableSelfCollision) override;
+    void DestroyAggregateHandle(void* AggregateHandle) override;
+    FPhysicsBodyInstance* CreateBodyAtTransformInAggregate(
+        UPrimitiveComponent* OwnerComponent,
+        const FPhysicsBodyDesc& BodyDesc,
+        const FTransform& WorldTransform,
+        void* AggregateHandle,
+        bool bSyncOwnerTransform = false) override;
     void DestroyBody(FPhysicsBodyInstance* BodyInstance) override;
     bool GetBodyWorldTransform(const FPhysicsBodyInstance* BodyInstance, FTransform& OutTransform) const override;
     void SetBodyWorldTransform(FPhysicsBodyInstance* BodyInstance, const FTransform& WorldTransform) override;
@@ -55,6 +65,7 @@ public:
     void DestroyConstraint(FPhysicsConstraintInstance* ConstraintInstance) override;
 
     void RebuildBody(UPrimitiveComponent* Comp) override;
+    void SimulateRigid(const FPhysicsStepInfo& StepInfo) override;
     void Simulate(const FPhysicsStepInfo& StepInfo) override;
     void FetchResults(bool bBlock) override;
 
@@ -86,6 +97,10 @@ public:
         FHitResult& OutHit,
         ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic,
         const AActor* IgnoreActor = nullptr) const override;
+
+    void GatherClothCollision(
+        const FClothCollisionGatherParams& Params,
+        FClothCollisionData& Out) const override;
 
 	//Vehicle 관련 API
 	FVehicleRuntimeHandle CreateVehicle(const FVehicleRuntimeCreateDesc& BuildDesc);
@@ -121,6 +136,12 @@ private:
     const FBodyMapping* FindMappingByActor(AActor* OwnerActor) const;
     FBodyMapping* FindMappingByComponent(UPrimitiveComponent* Comp);
     const FBodyMapping* FindMappingByComponent(UPrimitiveComponent* Comp) const;
+    FPhysicsBodyInstance* CreateBodyAtTransformInternal(
+        UPrimitiveComponent* OwnerComponent,
+        const FPhysicsBodyDesc& BodyDesc,
+        const FTransform& WorldTransform,
+        bool bSyncOwnerTransform,
+        physx::PxAggregate* Aggregate);
 
     physx::PxShape* AddShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp);
     void DetachShapeForComponent(FBodyMapping& Mapping, UPrimitiveComponent* Comp);

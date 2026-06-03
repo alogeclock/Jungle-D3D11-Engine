@@ -16,8 +16,10 @@
 #endif
 #endif
 
-// 슬라이딩 윈도우 크기
-static constexpr uint32 STAT_WINDOW_SIZE = 60;
+// 슬라이딩 윈도우 크기 (256 프레임 = 120fps 기준 약 2초)
+static constexpr uint32 STAT_WINDOW_SIZE = 256;
+// 평균 계산에 사용할 시간 범위
+static constexpr double STAT_AVG_WINDOW_SECONDS = 2.0;
 
 // --- Stat Entry (Snapshot용 — 읽기 전용) ---
 struct FStatEntry
@@ -26,7 +28,7 @@ struct FStatEntry
 	const char* Category = "Default";
 	uint32 CallCount = 0;		// 현재 프레임 호출 횟수
 	double TotalTime = 0.0;	// 현재 프레임 합산 시간
-	double AvgTime = 0.0;		// 최근 N프레임 평균
+	double AvgTime = 0.0;		// 최근 2초 평균
 	double MaxTime = 0.0;		// 최근 N프레임 최대
 	double MinTime = 0.0;		// 최근 N프레임 최소
 	double LastTime = 0.0;		// 직전 프레임 시간
@@ -44,6 +46,7 @@ struct FStatAccum
 
 	// 슬라이딩 윈도우 (ring buffer)
 	double Window[STAT_WINDOW_SIZE] = {};
+	double WindowTimes[STAT_WINDOW_SIZE] = {};	// 각 샘플의 기록 시각 (초)
 	uint32 WindowHead = 0;		// 다음 쓸 위치
 	uint32 WindowCount = 0;	// 채워진 수 (최대 STAT_WINDOW_SIZE)
 };

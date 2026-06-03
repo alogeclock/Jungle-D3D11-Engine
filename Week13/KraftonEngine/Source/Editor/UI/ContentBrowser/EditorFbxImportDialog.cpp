@@ -638,8 +638,16 @@ void FEditorFbxImportDialog::RenderPhysicsAssetOptions()
 		PhysicsAssetCreateParams.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
 	}
 
+	int32 RagdollMode = static_cast<int32>(PhysicsAssetCreateParams.RagdollMode);
+	const char* RagdollModeLabels[] = { "Per-Body", "PxAggregate" };
 	ImGui::SetNextItemWidth(180.0f);
-	ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+	if (ImGui::Combo("Body Grouping", &RagdollMode, RagdollModeLabels, IM_ARRAYSIZE(RagdollModeLabels)))
+	{
+		PhysicsAssetCreateParams.RagdollMode = static_cast<EPhysicsAssetRagdollMode>(RagdollMode);
+	}
+
+	ImGui::SetNextItemWidth(180.0f);
+	ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 0.1f, 1000.0f);
 	ImGui::Checkbox("Auto Orient", &PhysicsAssetCreateParams.bAutoOrientToBone);
 	ImGui::Checkbox("Create Constraints", &PhysicsAssetCreateParams.bCreateConstraints);
 	ImGui::EndDisabled();
@@ -829,7 +837,7 @@ bool FEditorFbxImportDialog::ExecuteImport(UEditorEngine* EditorEngine)
 				}
 
 				const std::filesystem::path MeshPath = ResolveProjectPath(ImportedPath);
-				const FString AssetName = FPaths::ToUtf8(MeshPath.stem().wstring()) + "_PhysicsAsset";
+				const FString AssetName;
 				FString CreatedPhysicsAssetPath;
 				if (FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(
 					FPaths::ToUtf8(MeshPath.parent_path().generic_wstring()),

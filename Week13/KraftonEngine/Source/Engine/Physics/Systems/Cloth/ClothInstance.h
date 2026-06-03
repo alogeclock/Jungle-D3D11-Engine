@@ -39,11 +39,17 @@ public:
     void PostSceneSimulate();
 
     nv::cloth::Cloth* GetCloth() const { return Cloth; }
+    bool IsInitialized() const { return Cloth != nullptr; }
 
     const TArray<FVertexPNCTT>& GetRenderVertices() const { return RenderVertices; }
     const TArray<uint32>& GetRenderIndices() const { return Triangles; }
     uint64 GetRenderRevision() const { return RenderRevision; }
     int32 GetSubstepCount() const { return SimulationSettings.SubstepCount; }
+    int32 GetParticleCount() const { return static_cast<int32>(Particles.size()); }
+    int32 GetConstraintCount() const { return static_cast<int32>(RestValues.size()); }
+    int32 GetColliderCount() const { return LastColliderCount; }
+    int32 GetCollisionTestCount() const { return LastCollisionTestCount; }
+    bool IsSelfCollisionEnabled() const { return SimulationSettings.bEnableSelfCollision; }
 
     bool GetLocalBounds(FVector& OutCenter, FVector& OutExtent) const;
 
@@ -81,5 +87,7 @@ private:
     uint64 RenderRevision = 0;
     int32 GridWidth = 0;
     int32 GridHeight = 0;
+    int32 LastColliderCount = 0;
+    int32 LastCollisionTestCount = 0;
     bool bUseSourceMeshAttributes = false;
 };

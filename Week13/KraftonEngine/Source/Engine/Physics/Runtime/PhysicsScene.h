@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Physics/Runtime/PhysicsSceneInterface.h"
 #include "Physics/Backends/NvClothScene.h"
@@ -28,6 +28,34 @@ public:
 
     void SetEventCallback(IPhysicsEventCallback* InCallback) override { SceneEventCallback = InCallback; }
     const FPhysicsRuntimeStats& GetStats() const override { return RuntimeStats; }
+    void RegisterRagdollInstanceStats(bool bUsingAggregate, int32 BodyCount, int32 ConstraintCount) override
+    {
+        RuntimeStats.ActiveRagdollCount += 1;
+        if (bUsingAggregate)
+        {
+            RuntimeStats.ActiveAggregateRagdollCount += 1;
+        }
+        else
+        {
+            RuntimeStats.ActivePerBodyRagdollCount += 1;
+        }
+        RuntimeStats.RagdollBodyCount += (std::max)(0, BodyCount);
+        RuntimeStats.RagdollConstraintCount += (std::max)(0, ConstraintCount);
+    }
+    void UnregisterRagdollInstanceStats(bool bUsingAggregate, int32 BodyCount, int32 ConstraintCount) override
+    {
+        RuntimeStats.ActiveRagdollCount = (std::max)(0, RuntimeStats.ActiveRagdollCount - 1);
+        if (bUsingAggregate)
+        {
+            RuntimeStats.ActiveAggregateRagdollCount = (std::max)(0, RuntimeStats.ActiveAggregateRagdollCount - 1);
+        }
+        else
+        {
+            RuntimeStats.ActivePerBodyRagdollCount = (std::max)(0, RuntimeStats.ActivePerBodyRagdollCount - 1);
+        }
+        RuntimeStats.RagdollBodyCount = (std::max)(0, RuntimeStats.RagdollBodyCount - (std::max)(0, BodyCount));
+        RuntimeStats.RagdollConstraintCount = (std::max)(0, RuntimeStats.RagdollConstraintCount - (std::max)(0, ConstraintCount));
+    }
 
     FNvClothScene* GetClothScene() override { return &ClothScene; }
     const FNvClothScene* GetClothScene() const override { return &ClothScene; }

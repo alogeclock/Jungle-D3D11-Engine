@@ -408,6 +408,7 @@ bool FPhysicsAssetManager::SaveAsJson(UPhysicsAsset* Asset, const FString& Overr
     Root["ClassName"] = "PhysicsAsset";
     Root["AssetPath"] = Asset->GetAssetPathFileName();
     Root["PreviewSkeletalMeshPath"] = Asset->GetPreviewSkeletalMeshPath();
+    Root["RagdollMode"] = PhysicsAssetRagdollModeToString(Asset->GetRagdollMode());
 
     json::JSON GraphView = json::Object();
     GraphView["Pan"] = SerializeVector(FVector(Asset->GetGraphViewState().Pan.X, Asset->GetGraphViewState().Pan.Y, 0.0f));
@@ -438,9 +439,19 @@ bool FPhysicsAssetManager::SaveAsJson(UPhysicsAsset* Asset, const FString& Overr
     Root["Constraints"] = Constraints;
 
     std::filesystem::path OutputPath(FPaths::ToWide(JsonPath));
+    if (!OutputPath.is_absolute())
+    {
+        OutputPath = std::filesystem::path(FPaths::RootDir()) / OutputPath;
+    }
+
+    std::error_code ErrorCode;
     if (OutputPath.has_parent_path())
     {
-        std::filesystem::create_directories(OutputPath.parent_path());
+        std::filesystem::create_directories(OutputPath.parent_path(), ErrorCode);
+        if (ErrorCode)
+        {
+            return false;
+        }
     }
 
     std::ofstream File(OutputPath, std::ios::binary | std::ios::trunc);
@@ -450,6 +461,7 @@ bool FPhysicsAssetManager::SaveAsJson(UPhysicsAsset* Asset, const FString& Overr
     }
 
     File << Root.dump(4);
+    File.flush();
     return File.good();
 }
 

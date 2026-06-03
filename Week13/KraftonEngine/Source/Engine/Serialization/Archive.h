@@ -4,6 +4,7 @@
 #include "Object/FName.h"
 #include <type_traits>
 #include <string>
+#include <utility>
 
 // 언리얼 엔진의 핵심 직렬화 베이스 클래스
 class FArchive
@@ -64,6 +65,23 @@ inline FArchive& operator<<(FArchive& Ar, FName& Name)
 		Name = FName(Str);
 	}
 	return Ar;
+}
+
+template<typename T>
+inline void SerializeArrayElements(FArchive& Ar, TArray<T>& Array)
+{
+	uint32 ArrayNum = Ar.IsSaving() ? static_cast<uint32>(Array.size()) : 0u;
+	Ar << ArrayNum;
+
+	if (Ar.IsLoading())
+	{
+		Array.resize(ArrayNum);
+	}
+
+	for (uint32 ArrayIndex = 0; ArrayIndex < ArrayNum; ++ArrayIndex)
+	{
+		Ar << Array[ArrayIndex];
+	}
 }
 
 // ----------------------------------------------------
