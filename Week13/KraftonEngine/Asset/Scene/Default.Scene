@@ -594,6 +594,7 @@
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
               "Collision Enabled" : 0,
               "Enable Gravity" : true,
+              "Enable Ragdoll Self Collision" : true,
               "Enable Two Bone IK" : true,
               "Generate Overlap Events" : false,
               "Is Visible" : true,
@@ -1753,6 +1754,7 @@
               "Center of Mass" : [0.000000, 0.000000, 0.000000],
               "Collision Enabled" : 0,
               "Enable Gravity" : true,
+              "Enable Ragdoll Self Collision" : true,
               "Enable Two Bone IK" : true,
               "Generate Overlap Events" : false,
               "Is Visible" : true,
@@ -1850,6 +1852,7 @@
           "Center of Mass" : [0.000000, 0.000000, 0.000000],
           "Collision Enabled" : 3,
           "Enable Gravity" : true,
+          "Enable Ragdoll Self Collision" : true,
           "Enable Two Bone IK" : true,
           "Generate Overlap Events" : false,
           "Is Visible" : true,
@@ -1862,7 +1865,7 @@
               "Path" : "Asset/Mesh/hirasawa-yui/yui_KON001_Hirasawa_Yui_face.003.mat"
             }],
           "Object Type" : 0,
-          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset.uasset",
+          "Physics Asset" : "Asset/Mesh/hirasawa-yui/yui_SkeletalMesh_PhysicsAsset_aggregate.uasset",
           "RelativeTransform" : {
             "Location" : [22.715458, 17.571968, 8.872340],
             "Scale" : [10.000000, 10.000000, 10.000000]
@@ -2026,7 +2029,7 @@
     "FarClip" : 1000.000000,
     "Location" : [-7.291406, 2.977905, 17.372852],
     "NearClip" : 0.100000,
-    "Rotation" : [0.000000, 30.522442, -730.320984]
+    "Rotation" : [0.000000, 12.372444, -725.220947]
   },
   "Version" : 2,
   "WorldSettings" : {
