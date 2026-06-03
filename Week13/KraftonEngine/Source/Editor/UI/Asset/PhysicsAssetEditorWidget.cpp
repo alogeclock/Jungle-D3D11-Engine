@@ -47,6 +47,7 @@
 #include <cmath>
 #include <cstdio>
 #include <filesystem>
+#include <unordered_set>
 
 namespace
 {
@@ -919,7 +920,7 @@ namespace
 		};
 
 		Row("Min Bone Size");
-		bChanged |= ImGui::DragFloat("##MinBoneSize", &Params.MinBoneSize, 0.1f, 1.0f, 1000.0f);
+		bChanged |= ImGui::DragFloat("##MinBoneSize", &Params.MinBoneSize, 0.1f, 0.1f, 1000.0f);
 
 		Row("Body Grouping");
 		{
@@ -2579,6 +2580,7 @@ namespace
 		ImDrawList* DrawList,
 		const ImVec2& ViewportPos,
 		const UPhysicsAsset* PhysicsAsset,
+		const USkeletalMesh* PreviewSkeletalMesh,
 		const UWorld* PreviewWorld,
 		bool bPreviewSimulating)
 	{
@@ -2587,11 +2589,163 @@ namespace
 			return;
 		}
 
+		struct FPhysicsAssetOverlaySummary
+		{
+			int32 BodyCount = 0;
+			int32 ConsideredForBoundsCount = 0;
+			int32 SphereCount = 0;
+			int32 BoxCount = 0;
+			int32 CapsuleCount = 0;
+			int32 ConvexCount = 0;
+			int32 ConstraintCount = 0;
+			int32 CrossConstraintCount = 0;
+			int32 CollisionInteractionCount = 0;
+		};
+
+		auto FormatCountLabel = [](int32 Count, const char* Singular, const char* Plural) -> FString
+		{
+			return std::to_string(Count) + " " + (Count == 1 ? Singular : Plural);
+		};
+
+		auto IsCrossConstraint = [](const FSkeletonAsset* SkeletonAsset, const FPhysicsConstraintSetup& Constraint) -> bool
+		{
+			if (!SkeletonAsset)
+			{
+				return false;
+			}
+
+			const int32 ParentBoneIndex = FindSkeletonBoneIndexByName(SkeletonAsset, Constraint.ParentBoneName);
+			const int32 ChildBoneIndex = FindSkeletonBoneIndexByName(SkeletonAsset, Constraint.ChildBoneName);
+			if (ParentBoneIndex < 0 || ChildBoneIndex < 0)
+			{
+				return false;
+			}
+
+			const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
+			if (ParentBoneIndex >= BoneCount || ChildBoneIndex >= BoneCount)
+			{
+				return false;
+			}
+
+			return SkeletonAsset->Bones[ChildBoneIndex].ParentIndex != ParentBoneIndex
+				&& SkeletonAsset->Bones[ParentBoneIndex].ParentIndex != ChildBoneIndex;
+		};
+
+		auto BuildOverlaySummary = [&](const UPhysicsAsset* Asset, const FSkeletonAsset* SkeletonAsset) -> FPhysicsAssetOverlaySummary
+		{
+			FPhysicsAssetOverlaySummary Summary;
+			if (!Asset)
+			{
+				return Summary;
+			}
+
+			const TArray<UPhysicsBodySetup*>& BodySetups = Asset->GetBodySetups();
+			Summary.BodyCount = static_cast<int32>(BodySetups.size());
+
+			for (const UPhysicsBodySetup* BodySetup : BodySetups)
+			{
+				if (!BodySetup)
+				{
+					continue;
+				}
+
+				if (BodySetup->bConsiderForBounds)
+				{
+					++Summary.ConsideredForBoundsCount;
+				}
+
+				const FPhysicsAggregateShapeSetup& ShapeSetup = BodySetup->GetShapeSetup();
+				Summary.SphereCount += static_cast<int32>(ShapeSetup.SphereShapeSetups.size());
+				Summary.BoxCount += static_cast<int32>(ShapeSetup.BoxShapeSetups.size());
+				Summary.CapsuleCount += static_cast<int32>(ShapeSetup.CapsuleShapeSetups.size());
+				Summary.ConvexCount += static_cast<int32>(ShapeSetup.ConvexShapeSetups.size());
+			}
+
+			std::unordered_set<uint64> CollisionInteractionPairs;
+			const TArray<FPhysicsConstraintSetup>& Constraints = Asset->GetConstraintSetups();
+			Summary.ConstraintCount = static_cast<int32>(Constraints.size());
+			for (const FPhysicsConstraintSetup& Constraint : Constraints)
+			{
+				if (IsCrossConstraint(SkeletonAsset, Constraint))
+				{
+					++Summary.CrossConstraintCount;
+				}
+
+				if (Constraint.bDisableCollision)
+				{
+					continue;
+				}
+
+				const int32 ParentBodyIndex = FindBodySetupIndex(Asset, Constraint.ParentBoneName);
+				const int32 ChildBodyIndex = FindBodySetupIndex(Asset, Constraint.ChildBoneName);
+				if (ParentBodyIndex < 0 || ChildBodyIndex < 0 || ParentBodyIndex == ChildBodyIndex)
+				{
+					continue;
+				}
+
+				const uint32 MinIndex = static_cast<uint32>((std::min)(ParentBodyIndex, ChildBodyIndex));
+				const uint32 MaxIndex = static_cast<uint32>((std::max)(ParentBodyIndex, ChildBodyIndex));
+				const uint64 PairKey = (static_cast<uint64>(MinIndex) << 32) | static_cast<uint64>(MaxIndex);
+				CollisionInteractionPairs.insert(PairKey);
+			}
+
+			Summary.CollisionInteractionCount = static_cast<int32>(CollisionInteractionPairs.size());
+			return Summary;
+		};
+
+		auto BuildPrimitiveSummaryText = [&](const FPhysicsAssetOverlaySummary& Summary) -> FString
+		{
+			const int32 PrimitiveCount = Summary.CapsuleCount + Summary.SphereCount + Summary.BoxCount + Summary.ConvexCount;
+			TArray<FString> PrimitiveBreakdown;
+			if (Summary.CapsuleCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.CapsuleCount, "Capsule", "Capsules"));
+			}
+			if (Summary.SphereCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.SphereCount, "Sphere", "Spheres"));
+			}
+			if (Summary.BoxCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.BoxCount, "Box", "Boxes"));
+			}
+			if (Summary.ConvexCount > 0)
+			{
+				PrimitiveBreakdown.push_back(FormatCountLabel(Summary.ConvexCount, "Convex", "Convexes"));
+			}
+			if (PrimitiveBreakdown.empty())
+			{
+				PrimitiveBreakdown.push_back("None");
+			}
+
+			FString BreakdownText;
+			for (int32 Index = 0; Index < static_cast<int32>(PrimitiveBreakdown.size()); ++Index)
+			{
+				if (Index > 0)
+				{
+					BreakdownText += ", ";
+				}
+				BreakdownText += PrimitiveBreakdown[Index];
+			}
+
+			return FormatCountLabel(PrimitiveCount, "Primitive", "Primitives") + ": (" + BreakdownText + ")";
+		};
+
+		const FSkeletonAsset* SkeletonAsset = PreviewSkeletalMesh ? PreviewSkeletalMesh->GetSkeletonAsset() : nullptr;
+		const FPhysicsAssetOverlaySummary Summary = BuildOverlaySummary(PhysicsAsset, SkeletonAsset);
+		const int32 ConsideredPercent = Summary.BodyCount > 0
+			? static_cast<int32>(std::round(static_cast<double>(Summary.ConsideredForBoundsCount) * 100.0 / static_cast<double>(Summary.BodyCount)))
+			: 0;
+
 		const bool bShowDetailedPhysicsStats = IsEditorPhysicsStatVisible();
 		FString Text =
-			"Asset Bodies: " + std::to_string(PhysicsAsset->GetBodySetups().size()) + "\n" +
-			"Asset Constraints: " + std::to_string(PhysicsAsset->GetConstraintSetups().size()) + "\n" +
-			"Grouping: " + FString(PhysicsAssetRagdollModeToString(PhysicsAsset->GetRagdollMode()));
+			FormatCountLabel(Summary.BodyCount, "Body", "Bodies")
+			+ " (" + std::to_string(Summary.ConsideredForBoundsCount)
+			+ " Considered For Bounds, " + std::to_string(ConsideredPercent) + "%)\n"
+			+ BuildPrimitiveSummaryText(Summary) + "\n"
+			+ FormatCountLabel(Summary.ConstraintCount, "Constraint", "Constraints")
+			+ " (" + FormatCountLabel(Summary.CrossConstraintCount, "Cross Constraint", "Cross Constraints") + ")\n"
+			+ std::to_string(Summary.CollisionInteractionCount) + " Collision Interactions";
 
 		const IPhysicsSceneInterface* PhysicsScene = PreviewWorld ? PreviewWorld->GetPhysicsScene() : nullptr;
 		if (bShowDetailedPhysicsStats && PhysicsScene && bPreviewSimulating)
@@ -2604,7 +2758,7 @@ namespace
 				"Step/Sync: %.3f / %.3f ms",
 				Stats.StepTimeMs,
 				Stats.SyncTimeMs);
-			Text += "\nScene Bodies: " + std::to_string(Stats.BodyCount);
+			Text += "\n\nScene Bodies: " + std::to_string(Stats.BodyCount);
 			Text += "\nActive Ragdolls: " + std::to_string(Stats.ActiveRagdollCount)
 				+ " (" + std::to_string(Stats.ActiveAggregateRagdollCount)
 				+ " agg / " + std::to_string(Stats.ActivePerBodyRagdollCount) + " per-body)";
@@ -2617,7 +2771,7 @@ namespace
 		}
 		else if (bShowDetailedPhysicsStats)
 		{
-			Text += "\nRuntime Stats: press Simulate to populate";
+			Text += "\n\nRuntime Stats: press Simulate to populate";
 		}
 
 		const ImVec2 TextPos(ViewportPos.x + 8.0f, ViewportPos.y + 36.0f);
@@ -4799,6 +4953,7 @@ void FPhysicsAssetEditorWidget::Render(float DeltaTime)
 					DrawList,
 					ViewportPos,
 					PhysicsAsset,
+					PreviewSkeletalMesh,
 					ViewportClient.GetPreviewWorld(),
 					bPreviewSimulating);
 				if (bPreviewSimulating)
