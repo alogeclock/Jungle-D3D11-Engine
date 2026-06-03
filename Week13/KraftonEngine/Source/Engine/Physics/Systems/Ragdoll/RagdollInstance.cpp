@@ -194,6 +194,8 @@ bool FRagdollInstance::Initialize(
 		return false;
 	}
 
+	const bool bEnableSelfCollision = MeshComp->IsRagdollSelfCollisionEnabled();
+
 	const int32 BoneCount = static_cast<int32>(SkeletonAsset->Bones.size());
 	InitialLocalPose.clear();
 	InitialLocalPose.reserve(BoneCount);
@@ -227,7 +229,7 @@ bool FRagdollInstance::Initialize(
 	}
 	else if (bRequestAggregate)
 	{
-		AggregateHandle = Scene->CreateAggregateHandle(static_cast<uint32>(BodySetups.size()), true);
+		AggregateHandle = Scene->CreateAggregateHandle(static_cast<uint32>(BodySetups.size()), bEnableSelfCollision);
 		if (!AggregateHandle)
 		{
 			UE_LOG("[RagdollBuildModeFallback] Owner=%s RequestedMode=%s aggregate creation failed. Falling back to Per-Body.",
@@ -258,7 +260,7 @@ bool FRagdollInstance::Initialize(
 
 		FPhysicsBodyDesc BodyDesc = BodySetup->BuildBodyDesc();
 		BodyDesc.BodyType = EPhysicsBodyType::PBT_Dynamic;
-		BodyDesc.bEnableSelfCollision = true;
+		BodyDesc.bEnableSelfCollision = bEnableSelfCollision;
 		ScaleBodyDescForComponent(BodyDesc, StartScale);
 
 		UE_LOG("[RagdollBuildBody] Owner=%s Bone=%s BoneIndex=%d ShapeCount=%d Mass=%.3f ComponentScale=(%.3f, %.3f, %.3f) BoneWorldP=(%.3f, %.3f, %.3f) BoneWorldQ=(%.3f, %.3f, %.3f, %.3f)",

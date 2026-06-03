@@ -44,6 +44,8 @@ public:
 	void SetPhysicsAsset(UPhysicsAsset* InAsset);
 	UPhysicsAsset* GetPhysicsAsset();
 	const FString& GetPhysicsAssetPath() const { return PhysicsAssetRef.GetPath().ToString(); }
+	void SetRagdollSelfCollisionEnabled(bool bEnabled);
+	bool IsRagdollSelfCollisionEnabled() const { return bEnableRagdollSelfCollision; }
 	void SetRagdollEnabled(bool bEnable);
 	bool IsRagdollActive() const;
 
@@ -96,6 +98,9 @@ private:
 
 	UPROPERTY(Edit, Category="Physics", DisplayName="Physics Asset", Type=SoftObject, Class=UPhysicsAsset)
 	TSoftObjectPtr<UPhysicsAsset> PhysicsAssetRef;
+
+	UPROPERTY(Edit, Category="Physics", DisplayName="Enable Ragdoll Self Collision")
+	bool bEnableRagdollSelfCollision = true;
 
 	std::unique_ptr<FRagdollInstance> Ragdoll;
 	bool bRagdollEnabled = false;

@@ -113,6 +113,14 @@ void USkeletalMeshComponent::PostEditProperty(const char* PropertyName)
 	}
 
 	if (PropertyName
+		&& (strcmp(PropertyName, "Enable Ragdoll Self Collision") == 0 || strcmp(PropertyName, "bEnableRagdollSelfCollision") == 0)
+		&& (GetSimulatePhysics() || IsRagdollActive()))
+	{
+		SetRagdollEnabled(false);
+		RefreshRagdollFromPhysicsState(true);
+	}
+
+	if (PropertyName
 		&& (strcmp(PropertyName, "Simulate Physics") == 0 || strcmp(PropertyName, "bSimulatePhysics") == 0))
 	{
 		RefreshRagdollFromPhysicsState();
@@ -248,6 +256,21 @@ UPhysicsAsset* USkeletalMeshComponent::GetPhysicsAsset()
 		PhysicsAssetRef.SetCache(Asset);
 	}
 	return Asset;
+}
+
+void USkeletalMeshComponent::SetRagdollSelfCollisionEnabled(bool bEnabled)
+{
+	if (bEnableRagdollSelfCollision == bEnabled)
+	{
+		return;
+	}
+
+	bEnableRagdollSelfCollision = bEnabled;
+	if (GetSimulatePhysics() || IsRagdollActive())
+	{
+		SetRagdollEnabled(false);
+		RefreshRagdollFromPhysicsState(true);
+	}
 }
 
 void USkeletalMeshComponent::SetRagdollEnabled(bool bEnable)
