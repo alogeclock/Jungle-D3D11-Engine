@@ -497,6 +497,8 @@ void FClothInstance::UpdateCollision(const FClothCollisionData& CollisionData)
     Cloth->setPlanes(MakeConstRange(CollisionData.Planes), 0, 0);
     Cloth->setCapsules(MakeConstRange(CollisionData.Capsules), 0, 0);
     Cloth->setConvexes(MakeConstRange(CollisionData.ConvexMasks), 0, 0);
+
+    Cloth->clearInterpolation();
 }
 
 void FClothInstance::SetSimulationSpaceTransform(const FVector& WorldLocation, const FQuat& WorldRotation, bool bTeleport)

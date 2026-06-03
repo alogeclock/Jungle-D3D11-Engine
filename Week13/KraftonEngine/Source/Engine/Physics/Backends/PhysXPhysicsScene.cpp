@@ -360,7 +360,11 @@ static bool ShouldGatherClothShape(
 		return false;
 	}
 
-	if (!Shape->getFlags().isSet(PxShapeFlag::eSIMULATION_SHAPE))
+	const PxShapeFlags ShapeFlags = Shape->getFlags();
+	const bool bSimulationShape = ShapeFlags.isSet(PxShapeFlag::eSIMULATION_SHAPE);
+	const bool bQueryShape = ShapeFlags.isSet(PxShapeFlag::eSCENE_QUERY_SHAPE);
+	const bool bTriggerShape = ShapeFlags.isSet(PxShapeFlag::eTRIGGER_SHAPE);
+	if (!bSimulationShape && (!bQueryShape || bTriggerShape))
 	{
 		return false;
 	}
@@ -1683,7 +1687,11 @@ PxShape* FPhysXPhysicsScene::AddShapeForComponent(FBodyMapping& Mapping, UPrimit
 		float Radius = Capsule->GetScaledCapsuleRadius();
 		float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
 		Geom = PxCapsuleGeometry(Radius, HalfHeight - Radius);
-		ShapeAxisRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
+		// PhysX capsules are aligned to the local X axis. UCapsuleComponent is
+		// authored/drawn along local Z, so rotate the PhysX shape X axis onto Z.
+		// The previous Z-axis rotation mapped X to Y and made visual capsule/cloth
+		// collision disagree.
+		ShapeAxisRot = PxQuat(PxHalfPi, PxVec3(0.0f, -1.0f, 0.0f));
 		bHasGeom = true;
 	}
 	else if (auto* StaticMesh = Cast<UStaticMeshComponent>(Comp))

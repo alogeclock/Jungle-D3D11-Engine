@@ -1,4 +1,4 @@
-#include "Component/ClothComponent.h"
+﻿#include "Component/ClothComponent.h"
 
 #include "Engine/Platform/Paths.h"
 #include "Engine/Runtime/Engine.h"
@@ -272,18 +272,20 @@ void UClothComponent::ApplyWindToCloth()
         return;
     }
 
-    FVector LocalWind = FVector::ZeroVector;
-    if (bEnableWind && WindScale > 0.0f && !WindDirection.IsNearlyZero())
+    FVector WorldWind = FVector::ZeroVector;
+    const bool bHasWind = bEnableWind && WindScale > 0.0f && !WindDirection.IsNearlyZero();
+    if (bHasWind)
     {
-        FVector WorldWind = WindDirection.Normalized() * WindScale;
-        // NvCloth wind is supplied in simulation space. Current simulation space uses
-        // component translation/rotation only; non-uniform scale needs a separate policy.
-        // TODO: Support non-uniform component scale for wind direction/velocity conversion.
-        const FQuat WorldRotation = GetWorldMatrix().ToQuat().GetNormalized();
-        LocalWind = WorldRotation.Inverse().RotateVector(WorldWind);
+        WorldWind = WindDirection.Normalized() * WindScale;
     }
 
-    Cloth->setWindVelocity(physx::PxVec3(LocalWind.X, LocalWind.Y, LocalWind.Z));
+    // NvCloth는 전역 좌표계(global coordinates) 기준의 바람 속도를 필요로 합니다. 
+    Cloth->setWindVelocity(physx::PxVec3(WorldWind.X, WorldWind.Y, WorldWind.Z));
+
+    // setWindVelocity는 공기의 속도만 정의합니다. 해당 공기 속도가 실제로 폴리곤(triangles)에 공기역학적 힘을 가할지 여부는 항력(Drag)/양력(Lift) 계수가 결정합니다.
+    Cloth->setDragCoefficient(bHasWind ? 1.0f : 0.0f);
+    Cloth->setLiftCoefficient(0.0f);
+    Cloth->setFluidDensity(1.0f);
 }
 
 void UClothComponent::UpdateClothCollision()

@@ -43,7 +43,7 @@ struct FClothSimulationSettings
     float Friction = 0.5f;
 
     UPROPERTY(Edit, Category = "Cloth", DisplayName = "Collision Mass Scale", Min = 0.0, Speed = 0.1)
-    float CollisionMassScale = 1.0f;
+    float CollisionMassScale = 3.0f;
 
     UPROPERTY(Edit, Category = "Cloth", DisplayName = "Enable CCD")
     bool bEnableCCD = false;
@@ -53,9 +53,6 @@ struct FClothSimulationSettings
 
     UPROPERTY(Edit, Category = "Cloth", DisplayName = "Teleport Distance Threshold", Min = 0.0, Speed = 1.0)
     float TeleportDistanceThreshold = 100.0f;
-
-    UPROPERTY(Edit, Category = "Cloth", DisplayName = "Wind Scale", Min = 0.0, Speed = 0.1)
-    float WindScale = 0.0f;
 
     UPROPERTY(Edit, Category = "Cloth", DisplayName = "Render Normal Offset", Min = 0.0, Speed = 0.01)
     float RenderNormalOffset = 0.0f;
