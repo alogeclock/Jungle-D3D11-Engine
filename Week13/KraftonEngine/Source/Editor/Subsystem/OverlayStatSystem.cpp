@@ -92,7 +92,7 @@ static void AddTimingRow(TArray<FStatRow>& Rows, const char* Label, float LastTi
 	FStatRow Row;
 	Row.Label = Label;
 	char Buf[128] = {};
-	snprintf(Buf, sizeof(Buf), "%.3f ms (avg %.3f)", SafeLastTimeMs, AverageTimeMs > 0.0f ? AverageTimeMs : SafeLastTimeMs);
+	snprintf(Buf, sizeof(Buf), "%.3f ms (2s avg %.3f)", SafeLastTimeMs, AverageTimeMs > 0.0f ? AverageTimeMs : SafeLastTimeMs);
 	Row.Value = Buf;
 	Rows.push_back(std::move(Row));
 }
@@ -276,7 +276,7 @@ void FOverlayStatSystem::BuildSkinningLines(TArray<FStatRow>& OutRows) const
 				break;
 			}
 		}
-		AddRow(OutRows, StatName, "%.3f ms  (avg %.3f)",
+		AddRow(OutRows, StatName, "%.3f ms  (2s avg %.3f)",
 			FoundEntry ? FoundEntry->LastTime * 1000.0 : 0.0,
 			FoundEntry ? FoundEntry->AvgTime * 1000.0 : 0.0);
 	}
@@ -361,16 +361,16 @@ void FOverlayStatSystem::BuildParticleLines(const UEditorEngine& Editor, TArray<
 	const FStatEntry* ProcessEventsEntry = FindParticleStatEntry("ParticleEmitters::ProcessEvents");
 	const FStatEntry* BuildEntry         = FindParticleStatEntry("ParticleSystemComponent::BuildRenderData");
 
-	AddRow(OutRows, "Tick",            "%.3f ms  (avg %.3f)",
+	AddRow(OutRows, "Tick",            "%.3f ms  (2s avg %.3f)",
 		TickEntry ? TickEntry->LastTime * 1000.0 : 0.0,
 		TickEntry ? TickEntry->AvgTime * 1000.0 : 0.0);
-	AddRow(OutRows, "Simulate",        "%.3f ms  (avg %.3f)",
+	AddRow(OutRows, "Simulate",        "%.3f ms  (2s avg %.3f)",
 		SimulateEntry ? SimulateEntry->LastTime * 1000.0 : 0.0,
 		SimulateEntry ? SimulateEntry->AvgTime * 1000.0 : 0.0);
-	AddRow(OutRows, "ProcessEvents",   "%.3f ms  (avg %.3f)",
+	AddRow(OutRows, "ProcessEvents",   "%.3f ms  (2s avg %.3f)",
 		ProcessEventsEntry ? ProcessEventsEntry->LastTime * 1000.0 : 0.0,
 		ProcessEventsEntry ? ProcessEventsEntry->AvgTime * 1000.0 : 0.0);
-	AddRow(OutRows, "BuildRenderData", "%.3f ms  (avg %.3f)",
+	AddRow(OutRows, "BuildRenderData", "%.3f ms  (2s avg %.3f)",
 		BuildEntry ? BuildEntry->LastTime * 1000.0 : 0.0,
 		BuildEntry ? BuildEntry->AvgTime * 1000.0 : 0.0);
 #else
@@ -508,27 +508,12 @@ void FOverlayStatSystem::BuildRagdollLines(const UEditorEngine& Editor, TArray<F
 	}
 
 	const FPhysicsRuntimeStats& Stats = PhysicsScene->GetStats();
-	const char* ModeText = "None";
-	if (Stats.ActiveAggregateRagdollCount > 0 && Stats.ActivePerBodyRagdollCount > 0)
-	{
-		ModeText = "Mixed";
-	}
-	else if (Stats.ActiveAggregateRagdollCount > 0)
-	{
-		ModeText = "Aggregate";
-	}
-	else if (Stats.ActivePerBodyRagdollCount > 0)
-	{
-		ModeText = "Per-body";
-	}
-
 	const int32 PerBodyActors = (std::max)(0, Stats.RagdollBodyCount - Stats.AggregateActorCount);
 
 	AddSectionHeader(OutRows, "State");
 	AddRow(OutRows, "Ragdolls", "%d total", Stats.ActiveRagdollCount);
 	AddRow(OutRows, "Bodies", "%d", Stats.RagdollBodyCount);
 	AddRow(OutRows, "Constraints", "%d", Stats.RagdollConstraintCount);
-	AddRow(OutRows, "Mode", "%s", ModeText);
 	AddRow(OutRows, "Aggregates", "%d active / %d actors", Stats.ActiveAggregateRagdollCount, Stats.AggregateActorCount);
 	AddRow(OutRows, "Per-body Actors", "%d", PerBodyActors);
 
