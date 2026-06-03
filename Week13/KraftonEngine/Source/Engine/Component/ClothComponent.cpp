@@ -1,4 +1,4 @@
-#include "Component/ClothComponent.h"
+﻿#include "Component/ClothComponent.h"
 
 #include "Engine/Platform/Paths.h"
 #include "Engine/Runtime/Engine.h"
@@ -10,6 +10,8 @@
 #include "Physics/Runtime/PhysicsSceneInterface.h"
 #include "Profiling/Stats.h"
 #include "Render/Proxy/ClothSceneProxy.h"
+
+#include <NvCloth/Cloth.h>
 
 #include <algorithm>
 #include <cmath>
@@ -215,6 +217,7 @@ void UClothComponent::RegisterClothToScene()
     if (ClothScene && ClothScene->AddInstance(&ClothInstance))
     {
         bRegisteredToClothScene = true;
+        World->RegisterClothComponent(this);
     }
 }
 
@@ -228,6 +231,10 @@ void UClothComponent::UnregisterClothFromScene()
     UWorld* World = GetWorld();
     IPhysicsSceneInterface* PhysicsScene = World ? World->GetPhysicsScene() : nullptr;
     FNvClothScene* ClothScene = PhysicsScene ? PhysicsScene->GetClothScene() : nullptr;
+    if (World)
+    {
+        World->UnregisterClothComponent(this);
+    }
     if (ClothScene)
     {
         ClothScene->RemoveInstance(&ClothInstance);
@@ -257,6 +264,88 @@ void UClothComponent::UpdateSimulationSpaceTransform(bool bTeleport)
     PrevSimulationLocation = WorldLocation;
     PrevSimulationRotation = WorldRotation;
     bHasPrevSimulationTransform = true;
+}
+
+void UClothComponent::ApplyRuntimeClothSettings()
+{
+    if (!ClothInstance.GetCloth()) return;
+    ClothInstance.ApplySimulationSettings(BuildDesc.SimulationSettings, BuildDesc.ConstraintSettings);
+    ApplyWindToCloth();
+}
+
+void UClothComponent::ApplyWindToCloth()
+{
+    nv::cloth::Cloth* Cloth = ClothInstance.GetCloth();
+    if (!Cloth)
+    {
+        return;
+    }
+
+    FVector SimulationWind = FVector::ZeroVector;
+    const bool bHasWind = bEnableWind && WindScale > 0.0f && !WindDirection.IsNearlyZero();
+    if (bHasWind)
+    {
+        const FVector WorldWind = WindDirection.Normalized() * WindScale;
+        SimulationWind = GetWorldMatrix().GetInverse().TransformVector(WorldWind);
+    }
+
+    // Keep every wind update on one path. NvCloth receives the wind velocity in the
+    // same simulation space used by particles and collision primitives.
+    // TODO: Non-uniform component scale can skew wind speed; consider a conservative
+    // scale policy if scaled cloth components become a supported workflow.
+    Cloth->setWindVelocity(physx::PxVec3(SimulationWind.X, SimulationWind.Y, SimulationWind.Z));
+
+    // setWindVelocity only provides air velocity. Drag/lift coefficients decide
+    // whether that velocity produces aerodynamic force on triangles.
+    Cloth->setDragCoefficient(bHasWind ? 1.0f : 0.0f);
+    Cloth->setLiftCoefficient(0.0f);
+    Cloth->setFluidDensity(1.0f);
+}
+
+void UClothComponent::UpdateClothCollision()
+{
+    FClothCollisionData CollisionData;
+
+    UWorld* World = GetWorld();
+    IPhysicsSceneInterface* PhysicsScene = World ? World->GetPhysicsScene() : nullptr;
+    if (PhysicsScene)
+    {
+        FClothCollisionGatherParams Params;
+        Params.WorldToCloth = GetWorldMatrix().GetInverse();
+        Params.IgnoreComponent = this;
+        Params.IgnoreActor = GetOwner();
+        Params.bIncludeStatic = true;
+        Params.bIncludeDynamic = true;
+        Params.Thickness = BuildDesc.SimulationSettings.Thickness;
+        PhysicsScene->GatherClothCollision(Params, CollisionData);
+    }
+
+    ClothInstance.UpdateCollision(CollisionData);
+}
+
+void UClothComponent::PrepareClothSimulation(float DeltaTime)
+{
+    (void)DeltaTime;
+    if (!ClothInstance.GetCloth())
+    {
+        return;
+    }
+
+    UpdateSimulationSpaceTransform(false);
+    ApplyRuntimeClothSettings();
+    UpdateClothCollision();
+}
+
+void UClothComponent::FinalizeClothSimulation()
+{
+    if (!ClothInstance.GetCloth())
+    {
+        return;
+    }
+
+    CacheLocalBounds();
+    MarkWorldBoundsDirty();
+    MarkProxyDirty(EDirtyFlag::Mesh);
 }
 
 void UClothComponent::ApplyMaterialSlots()
@@ -317,6 +406,7 @@ bool UClothComponent::RebuildClothInternal(bool bRecreateRenderState)
     if (bCreated)
     {
         UpdateSimulationSpaceTransform(true);
+        ApplyRuntimeClothSettings();
         RegisterClothToScene();
     }
 
@@ -346,7 +436,17 @@ void UClothComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
         return;
     }
 
+    // Game-world cloth is stepped from UWorld's fixed physics loop:
+    // Rigid Simulate -> Fetch -> PrepareClothSimulation -> NvCloth -> Finalize.
+    // Tick remains only for editor/debug preview refresh where BeginPlay has not started.
+    UWorld* World = GetWorld();
+    if (World && World->HasBegunPlay())
+    {
+        return;
+    }
+
     UpdateSimulationSpaceTransform(false);
+    ApplyRuntimeClothSettings();
     CacheLocalBounds();
     MarkWorldBoundsDirty();
     MarkProxyDirty(EDirtyFlag::Mesh);
@@ -377,6 +477,14 @@ void UClothComponent::PostEditProperty(const char* PropertyName)
 
     const bool bStaticMeshChanged = strcmp(PropertyName, "Static Mesh") == 0;
     const bool bBuildDescChanged = strcmp(PropertyName, "Build Desc") == 0 || strcmp(PropertyName, "Cloth") == 0;
+    const bool bRuntimeSettingsChanged = strcmp(PropertyName, "Simulation Settings") == 0
+        || strcmp(PropertyName, "Enable CCD") == 0
+        || strcmp(PropertyName, "Thickness") == 0
+        || strcmp(PropertyName, "Collision Mass Scale") == 0
+        || strcmp(PropertyName, "Friction") == 0;
+    const bool bWindChanged = strcmp(PropertyName, "Enable Wind") == 0
+        || strcmp(PropertyName, "Wind Direction") == 0
+        || strcmp(PropertyName, "Wind Scale") == 0;
     const bool bMaterialsChanged = strcmp(PropertyName, "Materials") == 0;
     const bool bMaterialElementChanged = strncmp(PropertyName, "Element ", 8) == 0;
 
@@ -404,6 +512,13 @@ void UClothComponent::PostEditProperty(const char* PropertyName)
     if (bBuildDescChanged)
     {
         RebuildCloth();
+        return;
+    }
+
+    if (bRuntimeSettingsChanged || bWindChanged)
+    {
+        ApplyRuntimeClothSettings();
+        UpdateClothCollision();
         return;
     }
 

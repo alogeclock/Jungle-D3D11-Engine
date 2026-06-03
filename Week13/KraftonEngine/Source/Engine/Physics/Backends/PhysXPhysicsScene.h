@@ -65,6 +65,7 @@ public:
     void DestroyConstraint(FPhysicsConstraintInstance* ConstraintInstance) override;
 
     void RebuildBody(UPrimitiveComponent* Comp) override;
+    void SimulateRigid(const FPhysicsStepInfo& StepInfo) override;
     void Simulate(const FPhysicsStepInfo& StepInfo) override;
     void FetchResults(bool bBlock) override;
 
@@ -96,6 +97,10 @@ public:
         FHitResult& OutHit,
         ECollisionChannel TraceChannel = ECollisionChannel::ECC_WorldStatic,
         const AActor* IgnoreActor = nullptr) const override;
+
+    void GatherClothCollision(
+        const FClothCollisionGatherParams& Params,
+        FClothCollisionData& Out) const override;
 
 	//Vehicle 관련 API
 	FVehicleRuntimeHandle CreateVehicle(const FVehicleRuntimeCreateDesc& BuildDesc);
