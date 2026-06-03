@@ -5782,6 +5782,67 @@ bool FPhysicsAssetEditorWidget::RenderToolsPanel(UPhysicsAsset* PhysicsAsset)
 	ImGui::TextWrapped("%s", PhysicsAsset->GetPreviewSkeletalMeshPath().empty() ? "None" : PhysicsAsset->GetPreviewSkeletalMeshPath().c_str());
 	ImGui::Separator();
 
+	ImGui::Text("Generation Type");
+	{
+		int32 PrimitiveType = static_cast<int32>(ToolSettings.PrimitiveType);
+		const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
+		ImGui::SetNextItemWidth(-1.0f);
+		if (ImGui::Combo("##GenerationPrimitiveType", &PrimitiveType, PrimitiveLabels, IM_ARRAYSIZE(PrimitiveLabels)))
+		{
+			ToolSettings.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
+		}
+	}
+	ImGui::Separator();
+
+	if (ImGui::Button("Add Empty Body"))
+	{
+		UPhysicsBodySetup* NewBodySetup = GUObjectArray.CreateObject<UPhysicsBodySetup>(PhysicsAsset);
+		NewBodySetup->SetTargetBoneName(FName("NewBody"));
+		FPhysicsCapsuleShapeSetup CapsuleShape;
+		CapsuleShape.Name = FName("NewBody_Capsule");
+		CapsuleShape.Radius = 8.0f;
+		CapsuleShape.Length = 24.0f;
+		NewBodySetup->GetMutableShapeSetup().CapsuleShapeSetups.push_back(CapsuleShape);
+		PhysicsAsset->GetMutableBodySetups().push_back(NewBodySetup);
+		SelectBodyByIndex(static_cast<int32>(PhysicsAsset->GetBodySetups().size()) - 1);
+		bChanged = true;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Add Empty Constraint"))
+	{
+		FPhysicsConstraintSetup NewConstraint;
+		NewConstraint.ConstraintName = FName("NewConstraint");
+		PhysicsAsset->GetMutableConstraintSetups().push_back(NewConstraint);
+		SelectConstraintByIndex(static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()) - 1);
+		bChanged = true;
+	}
+
+	if (SelectedBodyIndex >= 0 && SelectedBodyIndex < static_cast<int32>(PhysicsAsset->GetBodySetups().size()))
+	{
+		if (ImGui::Button("Remove Selected Body"))
+		{
+			if (UPhysicsBodySetup* RemovedBody = PhysicsAsset->GetMutableBodySetups()[SelectedBodyIndex])
+			{
+				GUObjectArray.DestroyObject(RemovedBody);
+			}
+			PhysicsAsset->GetMutableBodySetups().erase(PhysicsAsset->GetMutableBodySetups().begin() + SelectedBodyIndex);
+			SelectedBodyIndex = -1;
+			bChanged = true;
+		}
+	}
+
+	if (SelectedConstraintIndex >= 0 && SelectedConstraintIndex < static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()))
+	{
+		if (ImGui::Button("Remove Selected Constraint"))
+		{
+			PhysicsAsset->GetMutableConstraintSetups().erase(PhysicsAsset->GetMutableConstraintSetups().begin() + SelectedConstraintIndex);
+			SelectedConstraintIndex = -1;
+			bChanged = true;
+		}
+	}
+
+	ImGui::Separator();
+
 	if (ImGui::CollapsingHeader("Body Creation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		RenderCreateParamsEditor(ToolSettings);
@@ -5813,55 +5874,6 @@ bool FPhysicsAssetEditorWidget::RenderToolsPanel(UPhysicsAsset* PhysicsAsset)
 					}
 					bChanged = true;
 				}
-			}
-		}
-
-		ImGui::Separator();
-
-		if (ImGui::Button("Add Empty Body"))
-		{
-			UPhysicsBodySetup* NewBodySetup = GUObjectArray.CreateObject<UPhysicsBodySetup>(PhysicsAsset);
-			NewBodySetup->SetTargetBoneName(FName("NewBody"));
-			FPhysicsCapsuleShapeSetup CapsuleShape;
-			CapsuleShape.Name = FName("NewBody_Capsule");
-			CapsuleShape.Radius = 8.0f;
-			CapsuleShape.Length = 24.0f;
-			NewBodySetup->GetMutableShapeSetup().CapsuleShapeSetups.push_back(CapsuleShape);
-			PhysicsAsset->GetMutableBodySetups().push_back(NewBodySetup);
-			SelectBodyByIndex(static_cast<int32>(PhysicsAsset->GetBodySetups().size()) - 1);
-			bChanged = true;
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Add Empty Constraint"))
-		{
-			FPhysicsConstraintSetup NewConstraint;
-			NewConstraint.ConstraintName = FName("NewConstraint");
-			PhysicsAsset->GetMutableConstraintSetups().push_back(NewConstraint);
-			SelectConstraintByIndex(static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()) - 1);
-			bChanged = true;
-		}
-
-		if (SelectedBodyIndex >= 0 && SelectedBodyIndex < static_cast<int32>(PhysicsAsset->GetBodySetups().size()))
-		{
-			if (ImGui::Button("Remove Selected Body"))
-			{
-				if (UPhysicsBodySetup* RemovedBody = PhysicsAsset->GetMutableBodySetups()[SelectedBodyIndex])
-				{
-					GUObjectArray.DestroyObject(RemovedBody);
-				}
-				PhysicsAsset->GetMutableBodySetups().erase(PhysicsAsset->GetMutableBodySetups().begin() + SelectedBodyIndex);
-				SelectedBodyIndex = -1;
-				bChanged = true;
-			}
-		}
-
-		if (SelectedConstraintIndex >= 0 && SelectedConstraintIndex < static_cast<int32>(PhysicsAsset->GetConstraintSetups().size()))
-		{
-			if (ImGui::Button("Remove Selected Constraint"))
-			{
-				PhysicsAsset->GetMutableConstraintSetups().erase(PhysicsAsset->GetMutableConstraintSetups().begin() + SelectedConstraintIndex);
-				SelectedConstraintIndex = -1;
-				bChanged = true;
 			}
 		}
 	}
