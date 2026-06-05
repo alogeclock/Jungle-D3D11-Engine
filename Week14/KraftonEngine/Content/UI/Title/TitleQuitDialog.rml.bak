@@ -1,9 +1,9 @@
 <rml>
 <head>
     <title>Title Quit Dialog</title>
-    <link type="text/rcss" href="../Common/MenuHoverButton.rcss"/>
-    <link type="text/rcss" href="../Common/FullWidthContentBox.rcss"/>
-    <link type="text/rcss" href="TitleQuitDialog.rcss"/>
+    <link type="text/rcss" href="../Common/MenuHoverButton.rcss.bak"/>
+    <link type="text/rcss" href="../Common/FullWidthContentBox.rcss.bak"/>
+    <link type="text/rcss" href="TitleQuitDialog.rcss.bak"/>
 </head>
 <body>
     <div id="quit-dialog-screen">
