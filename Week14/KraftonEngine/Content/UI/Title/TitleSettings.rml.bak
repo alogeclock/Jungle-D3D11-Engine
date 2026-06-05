@@ -1,8 +1,8 @@
 <rml>
 <head>
     <title>Title Settings</title>
-    <link type="text/rcss" href="../Common/MenuHoverButton.rcss"/>
-    <link type="text/rcss" href="TitleSettings.rcss"/>
+    <link type="text/rcss" href="../Common/MenuHoverButton.rcss.bak"/>
+    <link type="text/rcss" href="TitleSettings.rcss.bak"/>
 </head>
 <body>
     <div id="settings-screen" class="settings-screen">
