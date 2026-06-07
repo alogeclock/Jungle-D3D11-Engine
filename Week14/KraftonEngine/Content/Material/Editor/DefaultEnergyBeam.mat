@@ -2,12 +2,12 @@
         "BlendState" : "AlphaBlend",
         "DepthStencilState" : "DepthReadOnly",
         "EmissiveColor" : [1.000000, 1.000000, 1.000000, 1.000000],
-        "EmissiveIntensity" : 0.000000,
+        "EmissiveIntensity" : 2.000000,
         "Origin" : "Editor",
         "Parameters" : {
 
         },
-        "PathFileName" : "Content/Material/Editor/DefaultParticleSprite.mat",
+        "PathFileName" : "Content/Material/Editor/DefaultEnergyBeam.mat",
         "RasterizerState" : "SolidBackCull",
         "RenderPass" : "AlphaBlend",
         "ShaderPath" : "Shaders/Geometry/Particle.hlsl",
@@ -15,5 +15,5 @@
         "Textures" : {
           "DiffuseTexture" : "Content/Texture/white.png"
         },
-        "bEnableBloom" : false
+        "bEnableBloom" : true
       }
