@@ -317,7 +317,7 @@ body {
 	position: absolute;
 	left: 0px;
 	top: 0px;
-	width: 92px;
+	width: 80.00px;
 	height: 34px;
 }
 
