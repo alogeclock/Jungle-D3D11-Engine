@@ -11,13 +11,14 @@
     "_pad0" : 0.000000,
     "_pad1" : 0.000000
   },
-  "PathFileName" : "Content/Material/Auto/Skin14_Body_Mat1.mat",
+  "PathFileName" : "Content/Material/Auto/Key_Card.mat",
   "RasterizerState" : "SolidBackCull",
   "RenderPass" : "Opaque",
   "ShaderPath" : "Shaders/Geometry/UberLit.hlsl",
   "ShadowMode" : "Opaque",
   "Textures" : {
-    "DiffuseTexture" : "Content/Texture/Auto/Ahri/Skin14_Body_Mat1.png"
+    "DiffuseTexture" : "C:/Users/Jungle/AppData/Local/Temp/blender_a50152/usd_textures_tmp/Key_Card_baseColor.jpg",
+    "NormalTexture" : "C:/Users/Jungle/AppData/Local/Temp/blender_a50152/usd_textures_tmp/Key_Card_normal.jpg"
   },
   "TwoSidedLighting" : false,
   "bEnableBloom" : false
