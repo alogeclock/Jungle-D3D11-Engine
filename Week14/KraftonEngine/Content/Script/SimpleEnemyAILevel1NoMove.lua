@@ -3,8 +3,8 @@ local CombatEvents = require("Game.CombatEvents")
 -- 플레이어 탐색 fallback에 사용할 actor tag
 local PLAYER_TAG = "player"
 
--- 거리/속도 튜닝 기준이 되는 robodude 스케일
--- BeginPlay에서 실제 actor scale을 읽어 이 값 대비 배율로 거리/속도 계열 상수를 보정한다.
+-- 거리 튜닝 기준이 되는 robodude 스케일
+-- BeginPlay에서 실제 actor scale을 읽어 이 값 대비 배율로 거리 계열 상수를 보정한다.
 local SCALE_REFERENCE = 7.0
 
 -- 적의 최대 체력
@@ -51,26 +51,11 @@ local INACCURACY_DEGREES = 12.5
 -- 발사 애니메이션 상태를 유지하는 시간
 local FIRE_ACTION_DURATION = 0.55
 
--- 피격 반응 애니메이션과 추격 정지를 유지하는 시간
+-- 피격 반응 애니메이션을 유지하는 시간
 local HIT_REACT_DURATION = 0.45
 
--- target을 향해 이동할 때의 기본 추격 속도
-local CHASE_SPEED = 5
-
--- 멈춰 있던 적이 target 추격을 시작하는 거리
-local CHASE_START_RANGE = 34.0
-
--- target 근처에서 추격을 멈추는 거리
-local CHASE_STOP_RANGE = 25.0
-
--- 추격 중 발소리를 반복 재생하는 간격
-local FOOTSTEP_INTERVAL = 0.42
-
--- 실제 actor scale을 SCALE_REFERENCE와 비교해 계산한 거리/속도 보정 배율
+-- 실제 actor scale을 SCALE_REFERENCE와 비교해 계산한 거리 보정 배율
 local scaleMultiplier = 1.0
-
--- 추격 이동 발소리 이벤트 이름
-local AUDIO_WALK_STEP = "enemy.human.walk.step"
 
 -- 사격음 이벤트 이름
 local AUDIO_FIRE = "enemy.human.weapon.fire"
@@ -84,18 +69,13 @@ local STATE_IDLE = 0
 -- 애니메이션에 전달하는 경계 상태
 local STATE_ALERT = 1
 
--- 애니메이션에 전달하는 추격 상태
-local STATE_CHASE = 2
-
 local targetActor = nil
 local currentHealth = MAX_HEALTH
 local isDead = false
 local thinkTimer = 0.0
 local fireTimer = 0.0
 local hitReactTimer = 0.0
-local footstepTimer = 0.0
 local alerted = false
-local isMoving = false
 local debugTimer = 0.0
 
 -- AI 상태 디버그 로그 출력 간격
@@ -215,11 +195,9 @@ local function update_anim_state()
     if state == nil then return end
 
     state.Alerted = alerted == true
-    state.Moving = isMoving == true
+    state.Moving = false
     if not alerted then
         state.MoveState = STATE_IDLE
-    elseif isMoving then
-        state.MoveState = STATE_CHASE
     else
         state.MoveState = STATE_ALERT
     end
@@ -250,44 +228,6 @@ end
 local function horizontal_distance_to(target)
     if not is_valid_actor(target) then return 0.0 end
     return horizontal(target.Location - obj.Location):Length()
-end
-
-local function update_chase(target, dt)
-    local wasMoving = isMoving
-    isMoving = false
-    if not alerted or not is_valid_actor(target) or hitReactTimer > 0.0 then
-        return
-    end
-
-    local flatDelta = horizontal(target.Location - obj.Location)
-    local distance = flatDelta:Length()
-    local stopRange = CHASE_STOP_RANGE * scaleMultiplier
-    if distance <= stopRange then
-        return
-    end
-
-    if distance < CHASE_START_RANGE * scaleMultiplier and not wasMoving then
-        return
-    end
-
-    local dir = normalized_or_zero(flatDelta)
-    if dir:Length() <= 0.001 then
-        return
-    end
-
-    local step = math.min(CHASE_SPEED * scaleMultiplier * dt, math.max(distance - stopRange, 0.0))
-    if step <= 0.0 then
-        return
-    end
-
-    obj:AddWorldOffset(dir * step)
-    isMoving = true
-
-    footstepTimer = footstepTimer - dt
-    if footstepTimer <= 0.0 then
-        play_event_at(AUDIO_WALK_STEP, obj.Location)
-        footstepTimer = FOOTSTEP_INTERVAL
-    end
 end
 
 local function can_see_target(target)
@@ -526,9 +466,7 @@ function BeginPlay()
     thinkTimer = 0.0
     fireTimer = random_range(0.25, 0.65)
     hitReactTimer = 0.0
-    footstepTimer = 0.0
     alerted = false
-    isMoving = false
     targetActor = nil
 
     local actorScale = obj.Scale
@@ -581,7 +519,6 @@ function Tick(dt)
         end
     end
 
-    update_chase(targetActor, dt)
     update_anim_state()
 
     if alerted and horizontal_distance_to(targetActor) <= FIRE_RANGE * scaleMultiplier and hitReactTimer <= 0.0 and fireTimer <= 0.0 then
