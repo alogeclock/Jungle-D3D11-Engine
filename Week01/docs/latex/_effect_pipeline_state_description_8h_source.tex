@@ -1,0 +1,145 @@
+\doxysection{Effect\+Pipeline\+State\+Description.\+h}
+\hypertarget{_effect_pipeline_state_description_8h_source}{}\label{_effect_pipeline_state_description_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/EffectPipelineStateDescription.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/EffectPipelineStateDescription.h}}
+\doxymbox{\hyperlink{_effect_pipeline_state_description_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ EffectPipelineStateDescription.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <directx/dxgiformat.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <dxgiformat.h>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_render_target_state_8h}{RenderTargetState.h}}"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00050\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{comment}{//\ Pipeline\ state\ information\ for\ creating\ effects.}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}}
+\DoxyCodeLine{00053\ \ \ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}(}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC*\ iinputLayout,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_BLEND\_DESC\&\ blend,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_DEPTH\_STENCIL\_DESC\&\ depthStencil,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_RASTERIZER\_DESC\&\ rasterizer,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{RenderTargetState}}\&\ renderTarget,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_PRIMITIVE\_TOPOLOGY\_TYPE\ iprimitiveTopology\ =\ D3D12\_PRIMITIVE\_TOPOLOGY\_TYPE\_TRIANGLE,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_INDEX\_BUFFER\_STRIP\_CUT\_VALUE\ istripCutValue\ =\ D3D12\_INDEX\_BUFFER\_STRIP\_CUT\_VALUE\_DISABLED)\ noexcept}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_ac36db5c91b357562c1a74bbf9ee829c0}{inputLayout}}\{\},}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ blendDesc(blend),}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ depthStencilDesc(depthStencil),}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ rasterizerDesc(rasterizer),}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ renderTargetState(renderTarget),}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ primitiveTopology(iprimitiveTopology),}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ stripCutValue(istripCutValue)}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (iinputLayout)}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>inputLayout\ =\ *iinputLayout;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_ac528b53e49202dddea5d7c985cd1f9c8}{EffectPipelineStateDescription}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a03e8766eb11a6bcc84c4de9cf72bb20d}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a683538f278ea08d3e1b5cb82b435e687}{EffectPipelineStateDescription}}(\doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a762f9e50246af61a719be85899e98a9a}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a0f48a9e0b1b3f7a05d004a92d05d5ddf}{EffectPipelineStateDescription}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a952bdc981cb7ce04bdd6a4065f3bd02a}{CreatePipelineState}}(}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12RootSignature*\ rootSignature,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_SHADER\_BYTECODE\&\ vertexShader,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_SHADER\_BYTECODE\&\ pixelShader,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12PipelineState**\ pPipelineState)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{preprocessor}{\ \ \ \ \#if\ defined(\_MSC\_VER)\ ||\ !defined(\_WIN32)}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ D3D12\_GRAPHICS\_PIPELINE\_STATE\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a17acd243e93af646336aa80f00a8b1aa}{GetDesc}}()\ const\ noexcept}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GRAPHICS\_PIPELINE\_STATE\_DESC\ psoDesc\ =\ \{\};}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.BlendState\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a29929668921d5f913504bc01be983f7c}{blendDesc}};}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.SampleMask\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a9acdc6b879934d44c2e1be127eb03cb6}{renderTargetState}}.sampleMask;}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.RasterizerState\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_aaed1dbf74c64c1ee451759a4a7110819}{rasterizerDesc}};}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.DepthStencilState\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a414105229d3f26caae767579af2d7fc7}{depthStencilDesc}};}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.InputLayout\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_ac36db5c91b357562c1a74bbf9ee829c0}{inputLayout}};}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.IBStripCutValue\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a053cf3acf1f01396281976b2e7d58085}{stripCutValue}};}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.PrimitiveTopologyType\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a6476ecaa1f91a95559b4226c83d3f57d}{primitiveTopology}};}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.NumRenderTargets\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a9acdc6b879934d44c2e1be127eb03cb6}{renderTargetState}}.numRenderTargets;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ memcpy(psoDesc.RTVFormats,\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a9acdc6b879934d44c2e1be127eb03cb6}{renderTargetState}}.rtvFormats,\ \textcolor{keyword}{sizeof}(DXGI\_FORMAT)\ *\ D3D12\_SIMULTANEOUS\_RENDER\_TARGET\_COUNT);}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.DSVFormat\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a9acdc6b879934d44c2e1be127eb03cb6}{renderTargetState}}.dsvFormat;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.SampleDesc\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a9acdc6b879934d44c2e1be127eb03cb6}{renderTargetState}}.sampleDesc;}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc.NodeMask\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a9acdc6b879934d44c2e1be127eb03cb6}{renderTargetState}}.nodeMask;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ psoDesc;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \textcolor{preprocessor}{\ \ \ \ \#else}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ D3D12\_GRAPHICS\_PIPELINE\_STATE\_DESC*\ GetDesc(\_Out\_\ D3D12\_GRAPHICS\_PIPELINE\_STATE\_DESC*\ psoDesc)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!psoDesc)}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ *psoDesc\ =\ \{\};}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>BlendState\ =\ blendDesc;}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>SampleMask\ =\ renderTargetState.sampleMask;}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>RasterizerState\ =\ rasterizerDesc;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>DepthStencilState\ =\ depthStencilDesc;}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>InputLayout\ =\ inputLayout;}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>IBStripCutValue\ =\ stripCutValue;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>PrimitiveTopologyType\ =\ primitiveTopology;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>NumRenderTargets\ =\ renderTargetState.numRenderTargets;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ memcpy(psoDesc-\/>RTVFormats,\ renderTargetState.rtvFormats,\ \textcolor{keyword}{sizeof}(DXGI\_FORMAT)\ *\ D3D12\_SIMULTANEOUS\_RENDER\_TARGET\_COUNT);}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>DSVFormat\ =\ renderTargetState.dsvFormat;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>SampleDesc\ =\ renderTargetState.sampleDesc;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ psoDesc-\/>NodeMask\ =\ renderTargetState.nodeMask;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ psoDesc;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a934d66cd90e2b187fd7b2b68c6714e10}{ComputeHash}}()\ const\ noexcept;}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ D3D12\_INPUT\_LAYOUT\_DESC\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_ac36db5c91b357562c1a74bbf9ee829c0}{inputLayout}};}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ D3D12\_BLEND\_DESC\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a29929668921d5f913504bc01be983f7c}{blendDesc}};}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ D3D12\_DEPTH\_STENCIL\_DESC\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a414105229d3f26caae767579af2d7fc7}{depthStencilDesc}};}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ D3D12\_RASTERIZER\_DESC\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_aaed1dbf74c64c1ee451759a4a7110819}{rasterizerDesc}};}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_render_target_state}{RenderTargetState}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a9acdc6b879934d44c2e1be127eb03cb6}{renderTargetState}};}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ D3D12\_PRIMITIVE\_TOPOLOGY\_TYPE\ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a6476ecaa1f91a95559b4226c83d3f57d}{primitiveTopology}};}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ D3D12\_INDEX\_BUFFER\_STRIP\_CUT\_VALUE\ \ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description_a053cf3acf1f01396281976b2e7d58085}{stripCutValue}};}
+\DoxyCodeLine{00138\ \ \ \ \ \};}
+\DoxyCodeLine{00139\ \}}
+
+\end{DoxyCode}

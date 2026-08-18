@@ -1,0 +1,168 @@
+\doxysection{DirectX::\+Sound\+Effect Class Reference}
+\hypertarget{class_direct_x_1_1_sound_effect}{}\label{class_direct_x_1_1_sound_effect}\index{DirectX::SoundEffect@{DirectX::SoundEffect}}
+
+
+{\ttfamily \+\#include $<$Audio.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} (\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_audio_engine}{Audio\+Engine}} \texorpdfstring{$\ast$}{*}engine, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}wave\+File\+Name)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a5ff8b79cfd21ecff721c22ba7b87d48f}{Sound\+Effect}} (\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_audio_engine}{Audio\+Engine}} \texorpdfstring{$\ast$}{*}engine, \+\_\+\+Inout\+\_\+ std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&wav\+Data, \+\_\+\+In\+\_\+ const WAVEFORMATEX \texorpdfstring{$\ast$}{*}wfx, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(audio\+Bytes) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}start\+Audio, size\+\_\+t audio\+Bytes)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a5aa6b9b2276f9f98072e8fb50a487eef}{Sound\+Effect}} (\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_audio_engine}{Audio\+Engine}} \texorpdfstring{$\ast$}{*}engine, \+\_\+\+Inout\+\_\+ std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&wav\+Data, \+\_\+\+In\+\_\+ const WAVEFORMATEX \texorpdfstring{$\ast$}{*}wfx, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(audio\+Bytes) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}start\+Audio, size\+\_\+t audio\+Bytes, uint32\+\_\+t loop\+Start, uint32\+\_\+t loop\+Length)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a010b51125ca137c9d0aa287548717636}{Sound\+Effect}} (Sound\+Effect \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} \& \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a19e870b86796a75d7dcdd945c28f66a5}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_ab098a3b5899c0e3b1e2928ec09399c2d}{Sound\+Effect}} (Sound\+Effect const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} \& \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_ad23aad3fbda5b0c7a96bc1e800443805}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a0fc70b2cbf8253b144adc40d22702f5e}{\texorpdfstring{$\sim$}{\string~}\+Sound\+Effect}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a614522164ca82efeabc7a3da95b3cbda}{Play}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_ae0f60fc773ee5f5e772a3891ef498d0e}{Play}} (float volume, float pitch, float pan)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_instance}{Sound\+Effect\+Instance}} $>$ \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a4e3485bb618f0dade846703471b33b41}{Create\+Instance}} (\doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49f}{SOUND\+\_\+\+EFFECT\+\_\+\+INSTANCE\+\_\+\+FLAGS}} flags=\doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fac7ad93a64d0cf3b3f9a3ecc076874177}{Sound\+Effect\+Instance\+\_\+\+Default}})
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a80bf37f9bb71935d1a0c035d2799f4ac}{Is\+In\+Use}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} size\+\_\+t \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_afb7bd926942852e08cc1096b195c7fb8}{Get\+Sample\+Size\+In\+Bytes}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} size\+\_\+t \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_ab4e686342d0fbe27515577c5c74104fb}{Get\+Sample\+Duration}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} size\+\_\+t \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_af83804a5c3f508ac94c75c482c29ed83}{Get\+Sample\+Duration\+MS}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const WAVEFORMATEX \texorpdfstring{$\ast$}{*}\+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a20cadec58105f5da23d59a69718e23a8}{Get\+Format}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a7591a60d2ce9aacdeb8136f4eac89c7b}{Fill\+Submit\+Buffer}} (\+\_\+\+Out\+\_\+ XAUDIO2\+\_\+\+BUFFER \&buffer) const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a8068f67c6876b6781102c88d993f74ad}{Unregister\+Instance}} (\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_i_voice_notify}{IVoice\+Notify}} \texorpdfstring{$\ast$}{*}instance)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_sound_effect_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!SoundEffect@{SoundEffect}}
+\index{SoundEffect@{SoundEffect}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{SoundEffect()}{SoundEffect()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Sound\+Effect::\+\+Sound\+Effect (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_audio_engine}{Audio\+Engine}} \texorpdfstring{$\ast$}{*}}]{engine}{, }\item[{\+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}}]{wave\+File\+Name}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a5ff8b79cfd21ecff721c22ba7b87d48f}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!SoundEffect@{SoundEffect}}
+\index{SoundEffect@{SoundEffect}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{SoundEffect()}{SoundEffect()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a5ff8b79cfd21ecff721c22ba7b87d48f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Sound\+Effect::\+\+Sound\+Effect (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_audio_engine}{Audio\+Engine}} \texorpdfstring{$\ast$}{*}}]{engine}{, }\item[{\+\_\+\+Inout\+\_\+ std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&}]{wav\+Data}{, }\item[{\+\_\+\+In\+\_\+ const WAVEFORMATEX \texorpdfstring{$\ast$}{*}}]{wfx}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(audio\+Bytes) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{start\+Audio}{, }\item[{size\+\_\+t}]{audio\+Bytes}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a5aa6b9b2276f9f98072e8fb50a487eef}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!SoundEffect@{SoundEffect}}
+\index{SoundEffect@{SoundEffect}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{SoundEffect()}{SoundEffect()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a5aa6b9b2276f9f98072e8fb50a487eef} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Sound\+Effect::\+\+Sound\+Effect (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_audio_engine}{Audio\+Engine}} \texorpdfstring{$\ast$}{*}}]{engine}{, }\item[{\+\_\+\+Inout\+\_\+ std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&}]{wav\+Data}{, }\item[{\+\_\+\+In\+\_\+ const WAVEFORMATEX \texorpdfstring{$\ast$}{*}}]{wfx}{, }\item[{\+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(audio\+Bytes) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{start\+Audio}{, }\item[{size\+\_\+t}]{audio\+Bytes}{, }\item[{uint32\+\_\+t}]{loop\+Start}{, }\item[{uint32\+\_\+t}]{loop\+Length}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a010b51125ca137c9d0aa287548717636}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!SoundEffect@{SoundEffect}}
+\index{SoundEffect@{SoundEffect}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{SoundEffect()}{SoundEffect()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a010b51125ca137c9d0aa287548717636} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Sound\+Effect::\+\+Sound\+Effect (\begin{DoxyParamCaption}\item[{Sound\+Effect \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_ab098a3b5899c0e3b1e2928ec09399c2d}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!SoundEffect@{SoundEffect}}
+\index{SoundEffect@{SoundEffect}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{SoundEffect()}{SoundEffect()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_ab098a3b5899c0e3b1e2928ec09399c2d} 
+Direct\+X::\+\+Sound\+Effect::\+\+Sound\+Effect (\begin{DoxyParamCaption}\item[{Sound\+Effect const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a0fc70b2cbf8253b144adc40d22702f5e}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!````~SoundEffect@{\texorpdfstring{$\sim$}{\string~}SoundEffect}}
+\index{````~SoundEffect@{\texorpdfstring{$\sim$}{\string~}SoundEffect}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}SoundEffect()}{\string~SoundEffect()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a0fc70b2cbf8253b144adc40d22702f5e} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Sound\+Effect::\+\texorpdfstring{$\sim$}{\string~}\+Sound\+Effect (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_sound_effect_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_sound_effect_a4e3485bb618f0dade846703471b33b41}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!CreateInstance@{CreateInstance}}
+\index{CreateInstance@{CreateInstance}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{CreateInstance()}{CreateInstance()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a4e3485bb618f0dade846703471b33b41} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_instance}{Sound\+Effect\+Instance}} $>$ \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Create\+Instance (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49f}{SOUND\+\_\+\+EFFECT\+\_\+\+INSTANCE\+\_\+\+FLAGS}}}]{flags}{ = {\ttfamily \doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fac7ad93a64d0cf3b3f9a3ecc076874177}{Sound\+Effect\+Instance\+\_\+\+Default}}}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a7591a60d2ce9aacdeb8136f4eac89c7b}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!FillSubmitBuffer@{FillSubmitBuffer}}
+\index{FillSubmitBuffer@{FillSubmitBuffer}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{FillSubmitBuffer()}{FillSubmitBuffer()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a7591a60d2ce9aacdeb8136f4eac89c7b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Fill\+Submit\+Buffer (\begin{DoxyParamCaption}\item[{\+\_\+\+Out\+\_\+ XAUDIO2\+\_\+\+BUFFER \&}]{buffer}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a20cadec58105f5da23d59a69718e23a8}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!GetFormat@{GetFormat}}
+\index{GetFormat@{GetFormat}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{GetFormat()}{GetFormat()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a20cadec58105f5da23d59a69718e23a8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const WAVEFORMATEX \texorpdfstring{$\ast$}{*}\+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Get\+Format (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_ab4e686342d0fbe27515577c5c74104fb}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!GetSampleDuration@{GetSampleDuration}}
+\index{GetSampleDuration@{GetSampleDuration}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{GetSampleDuration()}{GetSampleDuration()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_ab4e686342d0fbe27515577c5c74104fb} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} size\+\_\+t \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Get\+Sample\+Duration (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_af83804a5c3f508ac94c75c482c29ed83}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!GetSampleDurationMS@{GetSampleDurationMS}}
+\index{GetSampleDurationMS@{GetSampleDurationMS}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{GetSampleDurationMS()}{GetSampleDurationMS()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_af83804a5c3f508ac94c75c482c29ed83} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} size\+\_\+t \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Get\+Sample\+Duration\+MS (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_afb7bd926942852e08cc1096b195c7fb8}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!GetSampleSizeInBytes@{GetSampleSizeInBytes}}
+\index{GetSampleSizeInBytes@{GetSampleSizeInBytes}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{GetSampleSizeInBytes()}{GetSampleSizeInBytes()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_afb7bd926942852e08cc1096b195c7fb8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} size\+\_\+t \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Get\+Sample\+Size\+In\+Bytes (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a80bf37f9bb71935d1a0c035d2799f4ac}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!IsInUse@{IsInUse}}
+\index{IsInUse@{IsInUse}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{IsInUse()}{IsInUse()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a80bf37f9bb71935d1a0c035d2799f4ac} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Is\+In\+Use (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a19e870b86796a75d7dcdd945c28f66a5}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a19e870b86796a75d7dcdd945c28f66a5} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} \& Direct\+X::\+\+Sound\+Effect::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_ad23aad3fbda5b0c7a96bc1e800443805}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_ad23aad3fbda5b0c7a96bc1e800443805} 
+\doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} \& Direct\+X::\+\+Sound\+Effect::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_a01cc924b3fcec541720a8f52c6548290}{Sound\+Effect}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a614522164ca82efeabc7a3da95b3cbda}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!Play@{Play}}
+\index{Play@{Play}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{Play()}{Play()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a614522164ca82efeabc7a3da95b3cbda} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Play (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_ae0f60fc773ee5f5e772a3891ef498d0e}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!Play@{Play}}
+\index{Play@{Play}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{Play()}{Play()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_ae0f60fc773ee5f5e772a3891ef498d0e} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Play (\begin{DoxyParamCaption}\item[{float}]{volume}{, }\item[{float}]{pitch}{, }\item[{float}]{pan}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_sound_effect_a8068f67c6876b6781102c88d993f74ad}\index{DirectX::SoundEffect@{DirectX::SoundEffect}!UnregisterInstance@{UnregisterInstance}}
+\index{UnregisterInstance@{UnregisterInstance}!DirectX::SoundEffect@{DirectX::SoundEffect}}
+\doxysubsubsection{\texorpdfstring{UnregisterInstance()}{UnregisterInstance()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_sound_effect_a8068f67c6876b6781102c88d993f74ad} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Sound\+Effect::\+\+Unregister\+Instance (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ \doxymbox{\hyperlink{class_direct_x_1_1_i_voice_notify}{IVoice\+Notify}} \texorpdfstring{$\ast$}{*}}]{instance}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_audio_8h}{Audio.\+h}}\end{DoxyCompactItemize}

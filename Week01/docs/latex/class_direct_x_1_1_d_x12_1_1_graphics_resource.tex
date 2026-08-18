@@ -1,0 +1,144 @@
+\doxysection{DirectX::\+DX12::\+Graphics\+Resource Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource}{}\label{class_direct_x_1_1_d_x12_1_1_graphics_resource}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+
+
+{\ttfamily \+\#include $<$Graphics\+Memory.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} () noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ae9767c984d8f8d368794a5aa1595ac9e}{Graphics\+Resource}} (\+\_\+\+In\+\_\+ Linear\+Allocator\+Page \texorpdfstring{$\ast$}{*}page, \+\_\+\+In\+\_\+ D3\+D12\+\_\+\+GPU\+\_\+\+VIRTUAL\+\_\+\+ADDRESS gpu\+Address, \+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}resource, \+\_\+\+In\+\_\+ void \texorpdfstring{$\ast$}{*}memory, \+\_\+\+In\+\_\+ size\+\_\+t offset, \+\_\+\+In\+\_\+ size\+\_\+t size) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ae22372bea16468c421b39dde94ba7cc8}{Graphics\+Resource}} (Graphics\+Resource \&\&other) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&\& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ac709f4ad314669a948db25c574a6d99c}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a688145515d5c1d2ccfccc4f079e921aa}{Graphics\+Resource}} (const Graphics\+Resource \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8bb9413315c5ece48d6b0d1742590afc}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a624dfba5cd0979ab366a18ca93a531d7}{\texorpdfstring{$\sim$}{\string~}\+Graphics\+Resource}} ()
+\item 
+D3\+D12\+\_\+\+GPU\+\_\+\+VIRTUAL\+\_\+\+ADDRESS \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a08f102bbf05192422a82f2cb6a1ef5d5}{Gpu\+Address}} () const noexcept
+\item 
+ID3\+D12\+Resource \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_aaa1f97148fed475bf6ba080f0714c16a}{Resource}} () const noexcept
+\item 
+void \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_af4b82ba00c4fcbef13ecdb2a3a412698}{Memory}} () const noexcept
+\item 
+size\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ac8210e952a2a5e1a6db0751583a82e51}{Resource\+Offset}} () const noexcept
+\item 
+size\+\_\+t \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ace8ab026cc2454b9d9672ebe534635f4}{Size}} () const noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a11ac594108e69a72a013706526cca073}{operator bool}} () const noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_acbaad2db656e3f9efac31498fcd2a009}{Reset}} () noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_ab4e2d36a39d5dac14417f61aff0895f6}{Reset}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&\&) noexcept
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!GraphicsResource@{GraphicsResource}}
+\index{GraphicsResource@{GraphicsResource}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{GraphicsResource()}{GraphicsResource()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3} 
+Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Graphics\+Resource (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_ae9767c984d8f8d368794a5aa1595ac9e}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!GraphicsResource@{GraphicsResource}}
+\index{GraphicsResource@{GraphicsResource}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{GraphicsResource()}{GraphicsResource()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_ae9767c984d8f8d368794a5aa1595ac9e} 
+Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Graphics\+Resource (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ Linear\+Allocator\+Page \texorpdfstring{$\ast$}{*}}]{page}{, }\item[{\+\_\+\+In\+\_\+ D3\+D12\+\_\+\+GPU\+\_\+\+VIRTUAL\+\_\+\+ADDRESS}]{gpu\+Address}{, }\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}}]{resource}{, }\item[{\+\_\+\+In\+\_\+ void \texorpdfstring{$\ast$}{*}}]{memory}{, }\item[{\+\_\+\+In\+\_\+ size\+\_\+t}]{offset}{, }\item[{\+\_\+\+In\+\_\+ size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_ae22372bea16468c421b39dde94ba7cc8}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!GraphicsResource@{GraphicsResource}}
+\index{GraphicsResource@{GraphicsResource}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{GraphicsResource()}{GraphicsResource()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_ae22372bea16468c421b39dde94ba7cc8} 
+Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Graphics\+Resource (\begin{DoxyParamCaption}\item[{Graphics\+Resource \&\&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_a688145515d5c1d2ccfccc4f079e921aa}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!GraphicsResource@{GraphicsResource}}
+\index{GraphicsResource@{GraphicsResource}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{GraphicsResource()}{GraphicsResource()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_a688145515d5c1d2ccfccc4f079e921aa} 
+Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Graphics\+Resource (\begin{DoxyParamCaption}\item[{const Graphics\+Resource \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_a624dfba5cd0979ab366a18ca93a531d7}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!````~GraphicsResource@{\texorpdfstring{$\sim$}{\string~}GraphicsResource}}
+\index{````~GraphicsResource@{\texorpdfstring{$\sim$}{\string~}GraphicsResource}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}GraphicsResource()}{\string~GraphicsResource()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_a624dfba5cd0979ab366a18ca93a531d7} 
+Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\texorpdfstring{$\sim$}{\string~}\+Graphics\+Resource (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_a08f102bbf05192422a82f2cb6a1ef5d5}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!GpuAddress@{GpuAddress}}
+\index{GpuAddress@{GpuAddress}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{GpuAddress()}{GpuAddress()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_a08f102bbf05192422a82f2cb6a1ef5d5} 
+D3\+D12\+\_\+\+GPU\+\_\+\+VIRTUAL\+\_\+\+ADDRESS Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Gpu\+Address (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_af4b82ba00c4fcbef13ecdb2a3a412698}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!Memory@{Memory}}
+\index{Memory@{Memory}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{Memory()}{Memory()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_af4b82ba00c4fcbef13ecdb2a3a412698} 
+void \texorpdfstring{$\ast$}{*} Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Memory (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_a11ac594108e69a72a013706526cca073}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!operator bool@{operator bool}}
+\index{operator bool@{operator bool}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{operator bool()}{operator bool()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_a11ac594108e69a72a013706526cca073} 
+Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+operator bool (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8bb9413315c5ece48d6b0d1742590afc}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8bb9413315c5ece48d6b0d1742590afc} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \& Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_ac709f4ad314669a948db25c574a6d99c}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_ac709f4ad314669a948db25c574a6d99c} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&\& Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_acbaad2db656e3f9efac31498fcd2a009}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!Reset@{Reset}}
+\index{Reset@{Reset}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{Reset()}{Reset()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_acbaad2db656e3f9efac31498fcd2a009} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_ab4e2d36a39d5dac14417f61aff0895f6}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!Reset@{Reset}}
+\index{Reset@{Reset}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{Reset()}{Reset()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_ab4e2d36a39d5dac14417f61aff0895f6} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Reset (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource_a8d91f1d6e346806b3b6015766c5f88b3}{Graphics\+Resource}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_aaa1f97148fed475bf6ba080f0714c16a}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!Resource@{Resource}}
+\index{Resource@{Resource}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{Resource()}{Resource()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_aaa1f97148fed475bf6ba080f0714c16a} 
+ID3\+D12\+Resource \texorpdfstring{$\ast$}{*} Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Resource (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_ac8210e952a2a5e1a6db0751583a82e51}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!ResourceOffset@{ResourceOffset}}
+\index{ResourceOffset@{ResourceOffset}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{ResourceOffset()}{ResourceOffset()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_ac8210e952a2a5e1a6db0751583a82e51} 
+size\+\_\+t Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Resource\+Offset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_resource_ace8ab026cc2454b9d9672ebe534635f4}\index{DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}!Size@{Size}}
+\index{Size@{Size}!DirectX::DX12::GraphicsResource@{DirectX::DX12::GraphicsResource}}
+\doxysubsubsection{\texorpdfstring{Size()}{Size()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_resource_ace8ab026cc2454b9d9672ebe534635f4} 
+size\+\_\+t Direct\+X::\+\+DX12::\+\+Graphics\+Resource::\+\+Size (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_graphics_memory_8h}{Graphics\+Memory.\+h}}\end{DoxyCompactItemize}

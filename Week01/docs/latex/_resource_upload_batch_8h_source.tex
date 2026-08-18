@@ -1,0 +1,111 @@
+\doxysection{Resource\+Upload\+Batch.\+h}
+\hypertarget{_resource_upload_batch_8h_source}{}\label{_resource_upload_batch_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/ResourceUploadBatch.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/ResourceUploadBatch.h}}
+\doxymbox{\hyperlink{_resource_upload_batch_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ ResourceUploadBatch.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <directx/dxgiformat.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <dxgiformat.h>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <future>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_graphics_memory_8h}{GraphicsMemory.h}}"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00051\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{//\ Has\ a\ command\ list\ of\ it's\ own\ so\ it\ can\ upload\ at\ any\ time.}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}}
+\DoxyCodeLine{00054\ \ \ \ \ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{explicit}\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}(\_In\_\ ID3D12Device*\ device)\ \textcolor{keyword}{noexcept}(\textcolor{keyword}{false});}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a7d516bb456d11cec36c9a7f152aff1e3}{ResourceUploadBatch}}(\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}\&\&)\ noexcept;}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}\&\&)\ noexcept;}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}(\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa8f6ae043f60393109fbc1231337ac4b}{ResourceUploadBatch}}();}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Call\ this\ before\ your\ multiple\ calls\ to\ Upload.}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_ace42bfb359644c172042498ba759257a}{Begin}}(D3D12\_COMMAND\_LIST\_TYPE\ commandType\ =\ D3D12\_COMMAND\_LIST\_TYPE\_DIRECT);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Asynchronously\ uploads\ a\ resource.\ The\ memory\ in\ subRes\ is\ copied.}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ resource\ must\ be\ in\ the\ COPY\_DEST\ state.}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_ab8f9ed5538946360f62e2d8880516b39}{Upload}}(}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ resource,}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ subresourceIndexStart,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(numSubresources)\ const\ D3D12\_SUBRESOURCE\_DATA*\ subRes,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ numSubresources);}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_ab8f9ed5538946360f62e2d8880516b39}{Upload}}(}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ resource,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ const\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{SharedGraphicsResource}}\&\ buffer);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Asynchronously\ generate\ mips\ from\ a\ resource.}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Resource\ must\ be\ in\ the\ PIXEL\_SHADER\_RESOURCE\ state}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a88c78b89d327f16bb3d15957984c9c9f}{GenerateMips}}(\_In\_\ ID3D12Resource*\ resource);}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Transition\ a\ resource\ once\ you're\ done\ with\ it}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a0edd3b2743171174a6bf72f74638ad0c}{Transition}}(}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Resource*\ resource,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateBefore,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateAfter);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Submits\ all\ the\ uploads\ to\ the\ driver.}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ No\ more\ uploads\ can\ happen\ after\ this\ call\ until\ Begin\ is\ called\ again.}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ returns\ a\ handle\ to\ an\ event\ that\ can\ be\ waited\ on.}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{namespacestd}{std}}::future<\textcolor{keywordtype}{void}>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_aa564eaa32af424c1bf679a3dcc735f67}{End}}(\_In\_\ ID3D12CommandQueue*\ commandQueue);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Validates\ if\ the\ given\ DXGI\ format\ is\ supported\ for\ autogen\ mipmaps}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch_a4a3a0eb1ab823e6061fec8593832ac25}{IsSupportedForGenerateMips}}(DXGI\_FORMAT\ format)\ noexcept;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ private:}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ class\ Impl;}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00104\ \ \ \ \ \};}
+\DoxyCodeLine{00105\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,182 @@
+\doxysection{DirectX::\+Audio\+Emitter Struct Reference}
+\hypertarget{struct_direct_x_1_1_audio_emitter}{}\label{struct_direct_x_1_1_audio_emitter}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+
+
+{\ttfamily \+\#include $<$Audio.\+h$>$}
+
+Inheritance diagram for DirectX::\+Audio\+Emitter:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{struct_direct_x_1_1_audio_emitter}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_afc7a7fc09823a7714da11336affeb602}{Audio\+Emitter}} () noexcept
+\item 
+void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a57559ec15418d47b4c14f074f54765c8}{Set\+Position}} (FXMVECTOR v) noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_afe99e04f28a73c9e1d73e0871d654290}{Set\+Position}} (const XMFLOAT3 \&pos) noexcept
+\item 
+void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a582bf1ebf81f03507dc56bef94af745a}{Set\+Velocity}} (FXMVECTOR v) noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a8de5e2e093870a6719a8783d08b2fd98}{Set\+Velocity}} (const XMFLOAT3 \&vel) noexcept
+\item 
+void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_ac926249b98aebb5c301af8c586f96104}{Set\+Orientation}} (FXMVECTOR forward, FXMVECTOR up) noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a067d2235cdc4643a1020c89852465c74}{Set\+Orientation}} (const XMFLOAT3 \&forward, const XMFLOAT3 \&up) noexcept
+\item 
+void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a2ff305442b756d8de2f712f5b75b9e85}{Set\+Orientation\+From\+Quaternion}} (FXMVECTOR quat) noexcept
+\item 
+void XM\+\_\+\+CALLCONV \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a266dcf737640ba5fc028bb85709eae10}{Update}} (FXMVECTOR new\+Pos, XMVECTOR up\+Dir, float dt) noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a7e9fba704d16ae9d58793393e3b92413}{Set\+Omnidirectional}} () noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a4e9130e98d99b36936c7ed87dfd3b86c}{Set\+Cone}} (const X3\+DAUDIO\+\_\+\+CONE \&emitter\+Cone)
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_abfb291d9288732ebd102aad0c8d096a7}{Enable\+Default\+Multi\+Channel}} (unsigned int channels, float radius=1.f)
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a154a010a62d148e2f0251b6f01e28add}{Enable\+Default\+Curves}} () noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a199f7a850ae144d8020d18167dcac9c6}{Enable\+Linear\+Curves}} () noexcept
+\item 
+void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a2fa592eb777af7a22991ad1d75efb18d}{Enable\+Inverse\+Square\+Curves}} () noexcept
+\item 
+bool \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_aa2f29f74ac29865f4d761bab250b7498}{Is\+Valid}} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+X3\+DAUDIO\+\_\+\+CONE \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a7fa42396a4088817fd4db85b642f3311}{Emitter\+Cone}}
+\item 
+float \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter_a441d792348e0464a2f77d2ef35ae7334}{Emitter\+Azimuths}} \+[XAUDIO2\+\_\+\+MAX\+\_\+\+AUDIO\+\_\+\+CHANNELS]\+
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_direct_x_1_1_audio_emitter_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_direct_x_1_1_audio_emitter_afc7a7fc09823a7714da11336affeb602}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!AudioEmitter@{AudioEmitter}}
+\index{AudioEmitter@{AudioEmitter}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{AudioEmitter()}{AudioEmitter()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_afc7a7fc09823a7714da11336affeb602} 
+Direct\+X::\+\+Audio\+Emitter::\+\+Audio\+Emitter (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{struct_direct_x_1_1_audio_emitter_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a154a010a62d148e2f0251b6f01e28add}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!EnableDefaultCurves@{EnableDefaultCurves}}
+\index{EnableDefaultCurves@{EnableDefaultCurves}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{EnableDefaultCurves()}{EnableDefaultCurves()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a154a010a62d148e2f0251b6f01e28add} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Enable\+Default\+Curves (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_abfb291d9288732ebd102aad0c8d096a7}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!EnableDefaultMultiChannel@{EnableDefaultMultiChannel}}
+\index{EnableDefaultMultiChannel@{EnableDefaultMultiChannel}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{EnableDefaultMultiChannel()}{EnableDefaultMultiChannel()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_abfb291d9288732ebd102aad0c8d096a7} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Enable\+Default\+Multi\+Channel (\begin{DoxyParamCaption}\item[{unsigned int}]{channels}{, }\item[{float}]{radius}{ = {\ttfamily 1.f}}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a2fa592eb777af7a22991ad1d75efb18d}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!EnableInverseSquareCurves@{EnableInverseSquareCurves}}
+\index{EnableInverseSquareCurves@{EnableInverseSquareCurves}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{EnableInverseSquareCurves()}{EnableInverseSquareCurves()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a2fa592eb777af7a22991ad1d75efb18d} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Enable\+Inverse\+Square\+Curves (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a199f7a850ae144d8020d18167dcac9c6}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!EnableLinearCurves@{EnableLinearCurves}}
+\index{EnableLinearCurves@{EnableLinearCurves}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{EnableLinearCurves()}{EnableLinearCurves()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a199f7a850ae144d8020d18167dcac9c6} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Enable\+Linear\+Curves (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_aa2f29f74ac29865f4d761bab250b7498}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!IsValid@{IsValid}}
+\index{IsValid@{IsValid}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{IsValid()}{IsValid()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_aa2f29f74ac29865f4d761bab250b7498} 
+bool \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Is\+Valid (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a4e9130e98d99b36936c7ed87dfd3b86c}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetCone@{SetCone}}
+\index{SetCone@{SetCone}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetCone()}{SetCone()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a4e9130e98d99b36936c7ed87dfd3b86c} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Cone (\begin{DoxyParamCaption}\item[{const X3\+DAUDIO\+\_\+\+CONE \&}]{emitter\+Cone}{}\end{DoxyParamCaption})}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a7e9fba704d16ae9d58793393e3b92413}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetOmnidirectional@{SetOmnidirectional}}
+\index{SetOmnidirectional@{SetOmnidirectional}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetOmnidirectional()}{SetOmnidirectional()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a7e9fba704d16ae9d58793393e3b92413} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Omnidirectional (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a067d2235cdc4643a1020c89852465c74}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetOrientation@{SetOrientation}}
+\index{SetOrientation@{SetOrientation}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetOrientation()}{SetOrientation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a067d2235cdc4643a1020c89852465c74} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Orientation (\begin{DoxyParamCaption}\item[{const XMFLOAT3 \&}]{forward}{, }\item[{const XMFLOAT3 \&}]{up}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_ac926249b98aebb5c301af8c586f96104}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetOrientation@{SetOrientation}}
+\index{SetOrientation@{SetOrientation}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetOrientation()}{SetOrientation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_ac926249b98aebb5c301af8c586f96104} 
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Orientation (\begin{DoxyParamCaption}\item[{FXMVECTOR}]{forward}{, }\item[{FXMVECTOR}]{up}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a2ff305442b756d8de2f712f5b75b9e85}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetOrientationFromQuaternion@{SetOrientationFromQuaternion}}
+\index{SetOrientationFromQuaternion@{SetOrientationFromQuaternion}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetOrientationFromQuaternion()}{SetOrientationFromQuaternion()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a2ff305442b756d8de2f712f5b75b9e85} 
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Orientation\+From\+Quaternion (\begin{DoxyParamCaption}\item[{FXMVECTOR}]{quat}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_afe99e04f28a73c9e1d73e0871d654290}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetPosition@{SetPosition}}
+\index{SetPosition@{SetPosition}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetPosition()}{SetPosition()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_afe99e04f28a73c9e1d73e0871d654290} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Position (\begin{DoxyParamCaption}\item[{const XMFLOAT3 \&}]{pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a57559ec15418d47b4c14f074f54765c8}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetPosition@{SetPosition}}
+\index{SetPosition@{SetPosition}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetPosition()}{SetPosition()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a57559ec15418d47b4c14f074f54765c8} 
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Position (\begin{DoxyParamCaption}\item[{FXMVECTOR}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a8de5e2e093870a6719a8783d08b2fd98}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetVelocity@{SetVelocity}}
+\index{SetVelocity@{SetVelocity}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetVelocity()}{SetVelocity()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a8de5e2e093870a6719a8783d08b2fd98} 
+void \+\_\+\+\_\+cdecl Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Velocity (\begin{DoxyParamCaption}\item[{const XMFLOAT3 \&}]{vel}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a582bf1ebf81f03507dc56bef94af745a}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!SetVelocity@{SetVelocity}}
+\index{SetVelocity@{SetVelocity}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{SetVelocity()}{SetVelocity()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a582bf1ebf81f03507dc56bef94af745a} 
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+Audio\+Emitter::\+\+Set\+Velocity (\begin{DoxyParamCaption}\item[{FXMVECTOR}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a266dcf737640ba5fc028bb85709eae10}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!Update@{Update}}
+\index{Update@{Update}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a266dcf737640ba5fc028bb85709eae10} 
+void XM\+\_\+\+CALLCONV Direct\+X::\+\+Audio\+Emitter::\+\+Update (\begin{DoxyParamCaption}\item[{FXMVECTOR}]{new\+Pos}{, }\item[{XMVECTOR}]{up\+Dir}{, }\item[{float}]{dt}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_direct_x_1_1_audio_emitter_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a441d792348e0464a2f77d2ef35ae7334}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!EmitterAzimuths@{EmitterAzimuths}}
+\index{EmitterAzimuths@{EmitterAzimuths}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{EmitterAzimuths}{EmitterAzimuths}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a441d792348e0464a2f77d2ef35ae7334} 
+float Direct\+X::\+\+Audio\+Emitter::\+\+Emitter\+Azimuths\+[XAUDIO2\+\_\+\+MAX\+\_\+\+AUDIO\+\_\+\+CHANNELS]\+}
+
+\Hypertarget{struct_direct_x_1_1_audio_emitter_a7fa42396a4088817fd4db85b642f3311}\index{DirectX::AudioEmitter@{DirectX::AudioEmitter}!EmitterCone@{EmitterCone}}
+\index{EmitterCone@{EmitterCone}!DirectX::AudioEmitter@{DirectX::AudioEmitter}}
+\doxysubsubsection{\texorpdfstring{EmitterCone}{EmitterCone}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_audio_emitter_a7fa42396a4088817fd4db85b642f3311} 
+X3\+DAUDIO\+\_\+\+CONE Direct\+X::\+\+Audio\+Emitter::\+\+Emitter\+Cone}
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_audio_8h}{Audio.\+h}}\end{DoxyCompactItemize}

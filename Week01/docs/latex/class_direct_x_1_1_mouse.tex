@@ -1,0 +1,178 @@
+\doxysection{DirectX::\+Mouse Class Reference}
+\hypertarget{class_direct_x_1_1_mouse}{}\label{class_direct_x_1_1_mouse}\index{DirectX::Mouse@{DirectX::Mouse}}
+
+
+{\ttfamily \+\#include $<$Mouse.\+h$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_mouse_1_1_button_state_tracker}{Button\+State\+Tracker}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}{Mode}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8facf005bf64d1ca284abf9bd9c33879df3}{MODE\+\_\+\+ABSOLUTE}} = 0
+, \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8fa98d4231da442dc8c22ffef7537019f34}{MODE\+\_\+\+RELATIVE}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} () noexcept(false)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_mouse_aa0b94778853146dc8755b07b56d2f7c7}{Mouse}} (Mouse \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \& \doxymbox{\hyperlink{class_direct_x_1_1_mouse_afc62ada1419d485afdbc021c40b7fcf6}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_mouse_ac1a2aa3f338697d113d90a4df4ee86e9}{Mouse}} (Mouse const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \& \doxymbox{\hyperlink{class_direct_x_1_1_mouse_ae8ede1a8cb2e70d65429d468dbb824b5}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a16f514ed5d36e3b4fa28bf538556773e}{\texorpdfstring{$\sim$}{\string~}\+Mouse}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a128372e8ad36d467e8d6cfdf2aa8808a}{Get\+State}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_abf5a97f5b758543581870eb4503d0fc5}{Reset\+Scroll\+Wheel\+Value}} () noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_ad77ae23a73f02b4c5e4f69e4b06177f9}{Set\+Mode}} (\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}{Mode}} mode)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_af37955658bc0e93d27c8e97b70c0fd33}{End\+Of\+Input\+Frame}} () noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a8b0c141251eba429fd572c561fb79680}{Is\+Connected}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_ac664c00ca95b29e3c60ab965aca86ef8}{Is\+Visible}} () const noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a643846b121cfea0df5ace87f973283f5}{Set\+Visible}} (bool visible)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \&\+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_mouse_acd13a0cf557d21f71c831975fbfb21c4}{Get}} ()
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_mouse_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}\index{DirectX::Mouse@{DirectX::Mouse}!Mode@{Mode}}
+\index{Mode@{Mode}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{Mode}{Mode}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}{Direct\+X::\+\+Mouse::\+\+Mode}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MODE\_ABSOLUTE@{MODE\_ABSOLUTE}!DirectX::Mouse@{DirectX::Mouse}}
+\index{DirectX::Mouse@{DirectX::Mouse}!MODE\_ABSOLUTE@{MODE\_ABSOLUTE}}
+}\Hypertarget{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8facf005bf64d1ca284abf9bd9c33879df3}\label{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8facf005bf64d1ca284abf9bd9c33879df3} 
+MODE\+\_\+\+ABSOLUTE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MODE\_RELATIVE@{MODE\_RELATIVE}!DirectX::Mouse@{DirectX::Mouse}}
+\index{DirectX::Mouse@{DirectX::Mouse}!MODE\_RELATIVE@{MODE\_RELATIVE}}
+}\Hypertarget{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8fa98d4231da442dc8c22ffef7537019f34}\label{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8fa98d4231da442dc8c22ffef7537019f34} 
+MODE\+\_\+\+RELATIVE&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_mouse_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}\index{DirectX::Mouse@{DirectX::Mouse}!Mouse@{Mouse}}
+\index{Mouse@{Mouse}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{Mouse()}{Mouse()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Mouse::\+\+Mouse (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_mouse_aa0b94778853146dc8755b07b56d2f7c7}\index{DirectX::Mouse@{DirectX::Mouse}!Mouse@{Mouse}}
+\index{Mouse@{Mouse}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{Mouse()}{Mouse()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_aa0b94778853146dc8755b07b56d2f7c7} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Mouse::\+\+Mouse (\begin{DoxyParamCaption}\item[{Mouse \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_ac1a2aa3f338697d113d90a4df4ee86e9}\index{DirectX::Mouse@{DirectX::Mouse}!Mouse@{Mouse}}
+\index{Mouse@{Mouse}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{Mouse()}{Mouse()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_ac1a2aa3f338697d113d90a4df4ee86e9} 
+Direct\+X::\+\+Mouse::\+\+Mouse (\begin{DoxyParamCaption}\item[{Mouse const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_a16f514ed5d36e3b4fa28bf538556773e}\index{DirectX::Mouse@{DirectX::Mouse}!````~Mouse@{\texorpdfstring{$\sim$}{\string~}Mouse}}
+\index{````~Mouse@{\texorpdfstring{$\sim$}{\string~}Mouse}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Mouse()}{\string~Mouse()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_a16f514ed5d36e3b4fa28bf538556773e} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Mouse::\+\texorpdfstring{$\sim$}{\string~}\+Mouse (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_mouse_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_mouse_af37955658bc0e93d27c8e97b70c0fd33}\index{DirectX::Mouse@{DirectX::Mouse}!EndOfInputFrame@{EndOfInputFrame}}
+\index{EndOfInputFrame@{EndOfInputFrame}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{EndOfInputFrame()}{EndOfInputFrame()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_af37955658bc0e93d27c8e97b70c0fd33} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+End\+Of\+Input\+Frame (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_acd13a0cf557d21f71c831975fbfb21c4}\index{DirectX::Mouse@{DirectX::Mouse}!Get@{Get}}
+\index{Get@{Get}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_acd13a0cf557d21f71c831975fbfb21c4} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \&\+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+Get (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_a128372e8ad36d467e8d6cfdf2aa8808a}\index{DirectX::Mouse@{DirectX::Mouse}!GetState@{GetState}}
+\index{GetState@{GetState}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{GetState()}{GetState()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_a128372e8ad36d467e8d6cfdf2aa8808a} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_mouse_1_1_state}{State}} \+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+Get\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_mouse_a8b0c141251eba429fd572c561fb79680}\index{DirectX::Mouse@{DirectX::Mouse}!IsConnected@{IsConnected}}
+\index{IsConnected@{IsConnected}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{IsConnected()}{IsConnected()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_a8b0c141251eba429fd572c561fb79680} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+Is\+Connected (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_mouse_ac664c00ca95b29e3c60ab965aca86ef8}\index{DirectX::Mouse@{DirectX::Mouse}!IsVisible@{IsVisible}}
+\index{IsVisible@{IsVisible}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{IsVisible()}{IsVisible()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_ac664c00ca95b29e3c60ab965aca86ef8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+Is\+Visible (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_afc62ada1419d485afdbc021c40b7fcf6}\index{DirectX::Mouse@{DirectX::Mouse}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_afc62ada1419d485afdbc021c40b7fcf6} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \& Direct\+X::\+\+Mouse::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_ae8ede1a8cb2e70d65429d468dbb824b5}\index{DirectX::Mouse@{DirectX::Mouse}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_ae8ede1a8cb2e70d65429d468dbb824b5} 
+\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} \& Direct\+X::\+\+Mouse::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a37fc579b052597c80db8fc5c9dd5c535}{Mouse}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_abf5a97f5b758543581870eb4503d0fc5}\index{DirectX::Mouse@{DirectX::Mouse}!ResetScrollWheelValue@{ResetScrollWheelValue}}
+\index{ResetScrollWheelValue@{ResetScrollWheelValue}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{ResetScrollWheelValue()}{ResetScrollWheelValue()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_abf5a97f5b758543581870eb4503d0fc5} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+Reset\+Scroll\+Wheel\+Value (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_mouse_ad77ae23a73f02b4c5e4f69e4b06177f9}\index{DirectX::Mouse@{DirectX::Mouse}!SetMode@{SetMode}}
+\index{SetMode@{SetMode}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{SetMode()}{SetMode()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_ad77ae23a73f02b4c5e4f69e4b06177f9} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+Set\+Mode (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_mouse_a0e9ffc50203746d05adc012101a6ef8f}{Mode}}}]{mode}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_mouse_a643846b121cfea0df5ace87f973283f5}\index{DirectX::Mouse@{DirectX::Mouse}!SetVisible@{SetVisible}}
+\index{SetVisible@{SetVisible}!DirectX::Mouse@{DirectX::Mouse}}
+\doxysubsubsection{\texorpdfstring{SetVisible()}{SetVisible()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_mouse_a643846b121cfea0df5ace87f973283f5} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Mouse::\+\+Set\+Visible (\begin{DoxyParamCaption}\item[{bool}]{visible}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_mouse_8h}{Mouse.\+h}}\end{DoxyCompactItemize}

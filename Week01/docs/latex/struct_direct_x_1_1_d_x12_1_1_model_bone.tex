@@ -1,0 +1,131 @@
+\doxysection{DirectX::\+DX12::\+Model\+Bone Struct Reference}
+\hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone}{}\label{struct_direct_x_1_1_d_x12_1_1_model_bone}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+
+
+{\ttfamily \+\#include $<$Model.\+h$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_1_1aligned__deleter}{aligned\+\_\+deleter}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5}{Collection}} = std::\+vector$<$\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a6227d1cf1484aee77be975eb30b76e08}{Model\+Bone}}$>$
+\item 
+using \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Transform\+Array}} = std::\+unique\+\_\+ptr$<$XMMATRIX\+[$\,$]\+, \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_1_1aligned__deleter}{aligned\+\_\+deleter}}$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a6227d1cf1484aee77be975eb30b76e08}{Model\+Bone}} () noexcept
+\item 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a08dfaaf18d3d9b9bd03267727190896f}{Model\+Bone}} (uint32\+\_\+t parent, uint32\+\_\+t child, uint32\+\_\+t sibling) noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Transform\+Array}} \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a483c7479ba0a19621980e90b2bed49b4}{Make\+Array}} (size\+\_\+t count)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aec7e3f37aff96ce099e37424c51a7f68}{parent\+Index}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1c7ceedc40256c96fa9fca81782376fd}{child\+Index}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a9959eac5d6182a2d1bbd93bc364c5bc1}{sibling\+Index}}
+\item 
+std::\+wstring \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a6501b5eb393d2e6fb3cc8c72d9bc29fe}{name}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr uint32\+\_\+t \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{c\+\_\+\+Invalid}} = uint32\+\_\+t(-\/1)
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_doc-typedef-members}
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!Collection@{Collection}}
+\index{Collection@{Collection}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{Collection}{Collection}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5} 
+using \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5}{Direct\+X::\+\+DX12::\+\+Model\+Bone::\+\+Collection}} = std::\+vector$<$\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a6227d1cf1484aee77be975eb30b76e08}{Model\+Bone}}$>$}
+
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!TransformArray@{TransformArray}}
+\index{TransformArray@{TransformArray}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{TransformArray}{TransformArray}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0} 
+using \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Direct\+X::\+\+DX12::\+\+Model\+Bone::\+\+Transform\+Array}} = std::\+unique\+\_\+ptr$<$XMMATRIX\+[$\,$]\+, \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_1_1aligned__deleter}{aligned\+\_\+deleter}}$>$}
+
+
+
+\label{doc-constructors}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_a6227d1cf1484aee77be975eb30b76e08}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!ModelBone@{ModelBone}}
+\index{ModelBone@{ModelBone}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{ModelBone()}{ModelBone()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_a6227d1cf1484aee77be975eb30b76e08} 
+Direct\+X::\+\+DX12::\+\+Model\+Bone::\+\+Model\+Bone (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_a08dfaaf18d3d9b9bd03267727190896f}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!ModelBone@{ModelBone}}
+\index{ModelBone@{ModelBone}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{ModelBone()}{ModelBone()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_a08dfaaf18d3d9b9bd03267727190896f} 
+Direct\+X::\+\+DX12::\+\+Model\+Bone::\+\+Model\+Bone (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{parent}{, }\item[{uint32\+\_\+t}]{child}{, }\item[{uint32\+\_\+t}]{sibling}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_a483c7479ba0a19621980e90b2bed49b4}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!MakeArray@{MakeArray}}
+\index{MakeArray@{MakeArray}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{MakeArray()}{MakeArray()}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_a483c7479ba0a19621980e90b2bed49b4} 
+\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{Transform\+Array}} Direct\+X::\+\+DX12::\+\+Model\+Bone::\+\+Make\+Array (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{count}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!c\_Invalid@{c\_Invalid}}
+\index{c\_Invalid@{c\_Invalid}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{c\_Invalid}{c\_Invalid}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Bone::\+c\+\_\+\+Invalid = uint32\+\_\+t(-\/1)\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}}
+
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_a1c7ceedc40256c96fa9fca81782376fd}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!childIndex@{childIndex}}
+\index{childIndex@{childIndex}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{childIndex}{childIndex}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_a1c7ceedc40256c96fa9fca81782376fd} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Bone::\+child\+Index}
+
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_a6501b5eb393d2e6fb3cc8c72d9bc29fe}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!name@{name}}
+\index{name@{name}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_a6501b5eb393d2e6fb3cc8c72d9bc29fe} 
+std::\+wstring Direct\+X::\+\+DX12::\+\+Model\+Bone::\+name}
+
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_aec7e3f37aff96ce099e37424c51a7f68}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!parentIndex@{parentIndex}}
+\index{parentIndex@{parentIndex}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{parentIndex}{parentIndex}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_aec7e3f37aff96ce099e37424c51a7f68} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Bone::\+parent\+Index}
+
+\Hypertarget{struct_direct_x_1_1_d_x12_1_1_model_bone_a9959eac5d6182a2d1bbd93bc364c5bc1}\index{DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}!siblingIndex@{siblingIndex}}
+\index{siblingIndex@{siblingIndex}!DirectX::DX12::ModelBone@{DirectX::DX12::ModelBone}}
+\doxysubsubsection{\texorpdfstring{siblingIndex}{siblingIndex}}
+{\footnotesize\ttfamily \label{struct_direct_x_1_1_d_x12_1_1_model_bone_a9959eac5d6182a2d1bbd93bc364c5bc1} 
+uint32\+\_\+t Direct\+X::\+\+DX12::\+\+Model\+Bone::\+sibling\+Index}
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_model_8h}{Model.\+h}}\end{DoxyCompactItemize}

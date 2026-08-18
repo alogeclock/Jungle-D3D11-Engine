@@ -1,0 +1,115 @@
+\doxysection{Im\+Font\+Loader Struct Reference}
+\hypertarget{struct_im_font_loader}{}\label{struct_im_font_loader}\index{ImFontLoader@{ImFontLoader}}
+
+
+{\ttfamily \+\#include $<$imgui\+\_\+internal.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_im_font_loader_acdc4cafcd88d7a6c555503f3c64bc558}{Im\+Font\+Loader}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_a153cc96530e7e732e4bdc2b5dbf01669}{Name}}
+\item 
+bool(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_a1b23e9ca7a5795bdafc36a788b35f730}{Loader\+Init}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_a399d6536554ff9e5213e3bc564b157f3}{Loader\+Shutdown}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)
+\item 
+bool(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_a0de310931947a51e065053aec6fc3066}{Font\+Src\+Init}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)
+\item 
+void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_ae002d058bf4425177ee216b0cb7b1c5f}{Font\+Src\+Destroy}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)
+\item 
+bool(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_ae2cfffcf9b2cb3253b11c90cc7e1f86d}{Font\+Src\+Contains\+Glyph}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} codepoint)
+\item 
+bool(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_adf776fb33feacc76c85ae9a453081357}{Font\+Baked\+Init}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, void \texorpdfstring{$\ast$}{*}loader\+\_\+data\+\_\+for\+\_\+baked\+\_\+src)
+\item 
+void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_a6171a890aa08324de2b5c050c22ae8b5}{Font\+Baked\+Destroy}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, void \texorpdfstring{$\ast$}{*}loader\+\_\+data\+\_\+for\+\_\+baked\+\_\+src)
+\item 
+bool(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_im_font_loader_a424d8285a181dbd5e56c47ff99a5aabb}{Font\+Baked\+Load\+Glyph}} )(\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, void \texorpdfstring{$\ast$}{*}loader\+\_\+data\+\_\+for\+\_\+baked\+\_\+src, \doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} codepoint, \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}out\+\_\+glyph, float \texorpdfstring{$\ast$}{*}out\+\_\+advance\+\_\+x)
+\item 
+size\+\_\+t \doxymbox{\hyperlink{struct_im_font_loader_a887e08e0283aa65086f0e4ca8d8cdb9f}{Font\+Baked\+Src\+Loader\+Data\+Size}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{struct_im_font_loader_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_im_font_loader_acdc4cafcd88d7a6c555503f3c64bc558}\index{ImFontLoader@{ImFontLoader}!ImFontLoader@{ImFontLoader}}
+\index{ImFontLoader@{ImFontLoader}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{ImFontLoader()}{ImFontLoader()}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_acdc4cafcd88d7a6c555503f3c64bc558} 
+Im\+Font\+Loader::\+\+Im\+Font\+Loader (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_im_font_loader_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_im_font_loader_a6171a890aa08324de2b5c050c22ae8b5}\index{ImFontLoader@{ImFontLoader}!FontBakedDestroy@{FontBakedDestroy}}
+\index{FontBakedDestroy@{FontBakedDestroy}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{FontBakedDestroy}{FontBakedDestroy}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_a6171a890aa08324de2b5c050c22ae8b5} 
+void(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Font\+Baked\+Destroy) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, void \texorpdfstring{$\ast$}{*}loader\+\_\+data\+\_\+for\+\_\+baked\+\_\+src)}
+
+\Hypertarget{struct_im_font_loader_adf776fb33feacc76c85ae9a453081357}\index{ImFontLoader@{ImFontLoader}!FontBakedInit@{FontBakedInit}}
+\index{FontBakedInit@{FontBakedInit}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{FontBakedInit}{FontBakedInit}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_adf776fb33feacc76c85ae9a453081357} 
+bool(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Font\+Baked\+Init) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, void \texorpdfstring{$\ast$}{*}loader\+\_\+data\+\_\+for\+\_\+baked\+\_\+src)}
+
+\Hypertarget{struct_im_font_loader_a424d8285a181dbd5e56c47ff99a5aabb}\index{ImFontLoader@{ImFontLoader}!FontBakedLoadGlyph@{FontBakedLoadGlyph}}
+\index{FontBakedLoadGlyph@{FontBakedLoadGlyph}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{FontBakedLoadGlyph}{FontBakedLoadGlyph}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_a424d8285a181dbd5e56c47ff99a5aabb} 
+bool(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Font\+Baked\+Load\+Glyph) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{struct_im_font_baked}{Im\+Font\+Baked}} \texorpdfstring{$\ast$}{*}baked, void \texorpdfstring{$\ast$}{*}loader\+\_\+data\+\_\+for\+\_\+baked\+\_\+src, \doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} codepoint, \doxymbox{\hyperlink{struct_im_font_glyph}{Im\+Font\+Glyph}} \texorpdfstring{$\ast$}{*}out\+\_\+glyph, float \texorpdfstring{$\ast$}{*}out\+\_\+advance\+\_\+x)}
+
+\Hypertarget{struct_im_font_loader_a887e08e0283aa65086f0e4ca8d8cdb9f}\index{ImFontLoader@{ImFontLoader}!FontBakedSrcLoaderDataSize@{FontBakedSrcLoaderDataSize}}
+\index{FontBakedSrcLoaderDataSize@{FontBakedSrcLoaderDataSize}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{FontBakedSrcLoaderDataSize}{FontBakedSrcLoaderDataSize}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_a887e08e0283aa65086f0e4ca8d8cdb9f} 
+size\+\_\+t Im\+Font\+Loader::\+\+Font\+Baked\+Src\+Loader\+Data\+Size}
+
+\Hypertarget{struct_im_font_loader_ae2cfffcf9b2cb3253b11c90cc7e1f86d}\index{ImFontLoader@{ImFontLoader}!FontSrcContainsGlyph@{FontSrcContainsGlyph}}
+\index{FontSrcContainsGlyph@{FontSrcContainsGlyph}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{FontSrcContainsGlyph}{FontSrcContainsGlyph}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_ae2cfffcf9b2cb3253b11c90cc7e1f86d} 
+bool(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Font\+Src\+Contains\+Glyph) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src, \doxymbox{\hyperlink{imgui_8h_a1ecb49ee827c39a982f1e1467910d020}{Im\+Wchar}} codepoint)}
+
+\Hypertarget{struct_im_font_loader_ae002d058bf4425177ee216b0cb7b1c5f}\index{ImFontLoader@{ImFontLoader}!FontSrcDestroy@{FontSrcDestroy}}
+\index{FontSrcDestroy@{FontSrcDestroy}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{FontSrcDestroy}{FontSrcDestroy}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_ae002d058bf4425177ee216b0cb7b1c5f} 
+void(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Font\+Src\+Destroy) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)}
+
+\Hypertarget{struct_im_font_loader_a0de310931947a51e065053aec6fc3066}\index{ImFontLoader@{ImFontLoader}!FontSrcInit@{FontSrcInit}}
+\index{FontSrcInit@{FontSrcInit}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{FontSrcInit}{FontSrcInit}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_a0de310931947a51e065053aec6fc3066} 
+bool(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Font\+Src\+Init) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas, \doxymbox{\hyperlink{struct_im_font_config}{Im\+Font\+Config}} \texorpdfstring{$\ast$}{*}src)}
+
+\Hypertarget{struct_im_font_loader_a1b23e9ca7a5795bdafc36a788b35f730}\index{ImFontLoader@{ImFontLoader}!LoaderInit@{LoaderInit}}
+\index{LoaderInit@{LoaderInit}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{LoaderInit}{LoaderInit}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_a1b23e9ca7a5795bdafc36a788b35f730} 
+bool(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Loader\+Init) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)}
+
+\Hypertarget{struct_im_font_loader_a399d6536554ff9e5213e3bc564b157f3}\index{ImFontLoader@{ImFontLoader}!LoaderShutdown@{LoaderShutdown}}
+\index{LoaderShutdown@{LoaderShutdown}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{LoaderShutdown}{LoaderShutdown}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_a399d6536554ff9e5213e3bc564b157f3} 
+void(\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Loader\+Shutdown) (\doxymbox{\hyperlink{struct_im_font_atlas}{Im\+Font\+Atlas}} \texorpdfstring{$\ast$}{*}atlas)}
+
+\Hypertarget{struct_im_font_loader_a153cc96530e7e732e4bdc2b5dbf01669}\index{ImFontLoader@{ImFontLoader}!Name@{Name}}
+\index{Name@{Name}!ImFontLoader@{ImFontLoader}}
+\doxysubsubsection{\texorpdfstring{Name}{Name}}
+{\footnotesize\ttfamily \label{struct_im_font_loader_a153cc96530e7e732e4bdc2b5dbf01669} 
+const char\texorpdfstring{$\ast$}{*} Im\+Font\+Loader::\+\+Name}
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Third\+Party/\+imgui/\+\doxymbox{\hyperlink{imgui__internal_8h}{imgui\+\_\+internal.\+h}}\end{DoxyCompactItemize}

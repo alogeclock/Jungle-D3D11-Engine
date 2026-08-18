@@ -1,0 +1,121 @@
+#include "pch.h"
+#include <algorithm>
+#include <filesystem>
+#include "IO/JsonFile.h"
+#include "ScoreRepository.h"
+#include "ThirdParty/nlohmann/json.hpp"
+
+namespace
+{
+    void WriteScoreboardArray(nlohmann::json &Root, const std::vector<FScoreRecord> &Records)
+    {
+        Root = nlohmann::json::object();
+        Root["scoreboard"] = nlohmann::json::array();
+
+        for (const FScoreRecord &Record : Records)
+        {
+            Root["scoreboard"].push_back({
+                {"nickname", Record.Nickname},
+                {"stage", Record.Stage},
+                {"score", Record.Score}
+            });
+        }
+    }
+}
+
+std::vector<FScoreRecord> ScoreRepository::Load()
+{
+    std::vector<FScoreRecord> Records;
+
+    FJsonFile JsonFile;
+    if (!JsonFile.LoadFromFile(DefaultPath))
+    {
+        return Records;
+    }
+
+    const nlohmann::json &Root = JsonFile.GetRoot();
+    if (!Root.is_object())
+    {
+        return Records;
+    }
+
+    if (!Root.contains("scoreboard"))
+    {
+        return Records;
+    }
+
+    const nlohmann::json &Scoreboard = Root["scoreboard"];
+    if (!Scoreboard.is_array())
+    {
+        return Records;
+    }
+
+    for (const nlohmann::json &Item : Scoreboard)
+    {
+        if (!Item.is_object())
+            continue;
+
+        if (!Item.contains("nickname") || !Item["nickname"].is_string())
+            continue;
+
+        if (!Item.contains("stage") || !Item["stage"].is_number_integer())
+            continue;
+
+        if (!Item.contains("score") || !Item["score"].is_number_integer())
+            continue;
+
+        FScoreRecord Record;
+        Record.Nickname = Item["nickname"].get<std::string>();
+        Record.Stage = Item["stage"].get<int>();
+        Record.Score = Item["score"].get<int>();
+
+        Records.push_back(Record);
+    }
+
+    return Records;
+}
+
+std::vector<FScoreRecord> ScoreRepository::LoadSorted()
+{
+    std::vector<FScoreRecord> Records = Load();
+    SortDescending(Records);
+    return Records;
+}
+
+bool ScoreRepository::Save(const std::vector<FScoreRecord> &Records)
+{
+    std::filesystem::path Dir = std::filesystem::path(DefaultPath).parent_path();
+    if (!Dir.empty())
+        std::filesystem::create_directories(Dir);
+
+    FJsonFile JsonFile;
+    nlohmann::json &Root = JsonFile.GetRoot();
+
+    WriteScoreboardArray(Root, Records);
+    return JsonFile.SaveToFile(DefaultPath);
+}
+
+bool ScoreRepository::AppendRecord(const FScoreRecord &Record)
+{
+    std::vector<FScoreRecord> Records = Load();
+
+    Records.push_back(Record);
+    SortDescending(Records);
+
+    return Save(Records);
+}
+
+void ScoreRepository::SortDescending(std::vector<FScoreRecord> &Records)
+{
+    std::sort(Records.begin(), Records.end(),
+              [](const FScoreRecord &A, const FScoreRecord &B)
+              {
+                  if (A.Score != B.Score)
+                      return A.Score > B.Score;
+
+                  if (A.Stage != B.Stage)
+                      return A.Stage > B.Stage;
+
+                  return A.Nickname < B.Nickname;
+              });
+}

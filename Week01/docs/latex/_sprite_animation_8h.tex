@@ -1,0 +1,39 @@
+\doxysection{Gameplay/\+\+Sprite\+Animation.h File Reference}
+\hypertarget{_sprite_animation_8h}{}\label{_sprite_animation_8h}\index{Gameplay/SpriteAnimation.h@{Gameplay/SpriteAnimation.h}}
+{\ttfamily \+\#include $<$Direct\+XMath.\+h$>$}\newline
+{\ttfamily \+\#include $<$string$>$}\newline
+{\ttfamily \+\#include $<$unordered\+\_\+map$>$}\newline
+{\ttfamily \+\#include $<$vector$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_f_keyframe}{FKeyframe}}
+\item 
+struct \doxymbox{\hyperlink{struct_f_sprite_animation}{FSprite\+Animation}}
+\item 
+class \doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_f_sprite_animation}{FSprite\+Animation}} \doxymbox{\hyperlink{_sprite_animation_8h_ac38d414aed897cdaebbcc9b4d5779c0b}{Make\+Sheet\+Animation}} (float Frame\+Width, float Frame\+Height, int Frame\+Count, float Frame\+Duration, bool b\+Loop=true, int Start\+Row=0)
+\item 
+bool \doxymbox{\hyperlink{_sprite_animation_8h_a72234a2915758b028fc2e7e54d0a203b}{Load\+Animations\+From\+Json}} (const std::\+string \&Json\+Path, \doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \&Out\+Animator, bool \&Out\+Default\+Mirrored)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{_sprite_animation_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_sprite_animation_8h_a72234a2915758b028fc2e7e54d0a203b}\index{SpriteAnimation.h@{SpriteAnimation.h}!LoadAnimationsFromJson@{LoadAnimationsFromJson}}
+\index{LoadAnimationsFromJson@{LoadAnimationsFromJson}!SpriteAnimation.h@{SpriteAnimation.h}}
+\doxysubsubsection{\texorpdfstring{LoadAnimationsFromJson()}{LoadAnimationsFromJson()}}
+{\footnotesize\ttfamily \label{_sprite_animation_8h_a72234a2915758b028fc2e7e54d0a203b} 
+bool Load\+Animations\+From\+Json (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Json\+Path}{, }\item[{\doxymbox{\hyperlink{class_f_sprite_animator}{FSprite\+Animator}} \&}]{Out\+Animator}{, }\item[{bool \&}]{Out\+Default\+Mirrored}{}\end{DoxyParamCaption})}
+
+\Hypertarget{_sprite_animation_8h_ac38d414aed897cdaebbcc9b4d5779c0b}\index{SpriteAnimation.h@{SpriteAnimation.h}!MakeSheetAnimation@{MakeSheetAnimation}}
+\index{MakeSheetAnimation@{MakeSheetAnimation}!SpriteAnimation.h@{SpriteAnimation.h}}
+\doxysubsubsection{\texorpdfstring{MakeSheetAnimation()}{MakeSheetAnimation()}}
+{\footnotesize\ttfamily \label{_sprite_animation_8h_ac38d414aed897cdaebbcc9b4d5779c0b} 
+\doxymbox{\hyperlink{struct_f_sprite_animation}{FSprite\+Animation}} Make\+Sheet\+Animation (\begin{DoxyParamCaption}\item[{float}]{Frame\+Width}{, }\item[{float}]{Frame\+Height}{, }\item[{int}]{Frame\+Count}{, }\item[{float}]{Frame\+Duration}{, }\item[{bool}]{b\+Loop}{ = {\ttfamily true}, }\item[{int}]{Start\+Row}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+

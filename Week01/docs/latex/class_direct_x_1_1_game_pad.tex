@@ -1,0 +1,203 @@
+\doxysection{DirectX::\+Game\+Pad Class Reference}
+\hypertarget{class_direct_x_1_1_game_pad}{}\label{class_direct_x_1_1_game_pad}\index{DirectX::GamePad@{DirectX::GamePad}}
+
+
+{\ttfamily \+\#include $<$Game\+Pad.\+h$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_buttons}{Buttons}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_d_pad}{DPad}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_thumb_sticks}{Thumb\+Sticks}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_triggers}{Triggers}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_state}{State}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_capabilities}{Capabilities}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_1_1_button_state_tracker}{Button\+State\+Tracker}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0}{Dead\+Zone}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0aee807856a5a689fe39d4cc4bc1607347}{DEAD\+\_\+\+ZONE\+\_\+\+INDEPENDENT\+\_\+\+AXES}} = 0
+, \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0a286b7afbb8982461f4e13d5bd8ec3bce}{DEAD\+\_\+\+ZONE\+\_\+\+CIRCULAR}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0a5df5b9503f583db3fae49930a951e2b4}{DEAD\+\_\+\+ZONE\+\_\+\+NONE}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} () noexcept(false)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ad5bd929147a65c227ce10dc4b92837d1}{Game\+Pad}} (Game\+Pad \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \& \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a7a80fcf240d62cc77e69ee9259c9660f}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a5db57fbb57288631572b897894c05870}{Game\+Pad}} (Game\+Pad const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \& \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a0b0efd83757f53aef1fb9d1176d0dfcd}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a904947e39f4da823e18ce475b22231d5}{\texorpdfstring{$\sim$}{\string~}\+Game\+Pad}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_state}{State}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_af97cdfe410c3e3c0b4db257f2432298b}{Get\+State}} (int player, \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0}{Dead\+Zone}} dead\+Zone\+Mode=\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0aee807856a5a689fe39d4cc4bc1607347}{DEAD\+\_\+\+ZONE\+\_\+\+INDEPENDENT\+\_\+\+AXES}})
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_capabilities}{Capabilities}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a46735f5a059da1868ddbee7e55cac560}{Get\+Capabilities}} (int player)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a3570d62096d846cd6f66734d166b17b8}{Set\+Vibration}} (int player, float left\+Motor, float right\+Motor, float left\+Trigger=0.f, float right\+Trigger=0.f) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a7c53daa371bb97fbd2cd00753ce06436}{Suspend}} () noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a00a7c38ac3ac50abbe81b1fb14babaa6}{Resume}} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \&\+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a5d60e02ef26fa25b301863f7e1f83721}{Get}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr int \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a658f8a340a7ac3eceb0a00162d49f6ce}{MAX\+\_\+\+PLAYER\+\_\+\+COUNT}} = 4
+\item 
+static constexpr int \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a2f7b5bf9076916e7d38bdfba080a3cc4}{c\+\_\+\+Most\+Recent}} = -\/1
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_game_pad_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0}\index{DirectX::GamePad@{DirectX::GamePad}!DeadZone@{DeadZone}}
+\index{DeadZone@{DeadZone}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{DeadZone}{DeadZone}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0}{Direct\+X::\+\+Game\+Pad::\+\+Dead\+Zone}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DEAD\_ZONE\_INDEPENDENT\_AXES@{DEAD\_ZONE\_INDEPENDENT\_AXES}!DirectX::GamePad@{DirectX::GamePad}}
+\index{DirectX::GamePad@{DirectX::GamePad}!DEAD\_ZONE\_INDEPENDENT\_AXES@{DEAD\_ZONE\_INDEPENDENT\_AXES}}
+}\Hypertarget{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0aee807856a5a689fe39d4cc4bc1607347}\label{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0aee807856a5a689fe39d4cc4bc1607347} 
+DEAD\+\_\+\+ZONE\+\_\+\+INDEPENDENT\+\_\+\+AXES&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DEAD\_ZONE\_CIRCULAR@{DEAD\_ZONE\_CIRCULAR}!DirectX::GamePad@{DirectX::GamePad}}
+\index{DirectX::GamePad@{DirectX::GamePad}!DEAD\_ZONE\_CIRCULAR@{DEAD\_ZONE\_CIRCULAR}}
+}\Hypertarget{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0a286b7afbb8982461f4e13d5bd8ec3bce}\label{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0a286b7afbb8982461f4e13d5bd8ec3bce} 
+DEAD\+\_\+\+ZONE\+\_\+\+CIRCULAR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DEAD\_ZONE\_NONE@{DEAD\_ZONE\_NONE}!DirectX::GamePad@{DirectX::GamePad}}
+\index{DirectX::GamePad@{DirectX::GamePad}!DEAD\_ZONE\_NONE@{DEAD\_ZONE\_NONE}}
+}\Hypertarget{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0a5df5b9503f583db3fae49930a951e2b4}\label{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0a5df5b9503f583db3fae49930a951e2b4} 
+DEAD\+\_\+\+ZONE\+\_\+\+NONE&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_game_pad_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}\index{DirectX::GamePad@{DirectX::GamePad}!GamePad@{GamePad}}
+\index{GamePad@{GamePad}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{GamePad()}{GamePad()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Game\+Pad::\+\+Game\+Pad (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_game_pad_ad5bd929147a65c227ce10dc4b92837d1}\index{DirectX::GamePad@{DirectX::GamePad}!GamePad@{GamePad}}
+\index{GamePad@{GamePad}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{GamePad()}{GamePad()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_ad5bd929147a65c227ce10dc4b92837d1} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Game\+Pad::\+\+Game\+Pad (\begin{DoxyParamCaption}\item[{Game\+Pad \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a5db57fbb57288631572b897894c05870}\index{DirectX::GamePad@{DirectX::GamePad}!GamePad@{GamePad}}
+\index{GamePad@{GamePad}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{GamePad()}{GamePad()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a5db57fbb57288631572b897894c05870} 
+Direct\+X::\+\+Game\+Pad::\+\+Game\+Pad (\begin{DoxyParamCaption}\item[{Game\+Pad const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a904947e39f4da823e18ce475b22231d5}\index{DirectX::GamePad@{DirectX::GamePad}!````~GamePad@{\texorpdfstring{$\sim$}{\string~}GamePad}}
+\index{````~GamePad@{\texorpdfstring{$\sim$}{\string~}GamePad}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}GamePad()}{\string~GamePad()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a904947e39f4da823e18ce475b22231d5} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+Game\+Pad::\+\texorpdfstring{$\sim$}{\string~}\+Game\+Pad (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_game_pad_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_a5d60e02ef26fa25b301863f7e1f83721}\index{DirectX::GamePad@{DirectX::GamePad}!Get@{Get}}
+\index{Get@{Get}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a5d60e02ef26fa25b301863f7e1f83721} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \&\+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Get (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a46735f5a059da1868ddbee7e55cac560}\index{DirectX::GamePad@{DirectX::GamePad}!GetCapabilities@{GetCapabilities}}
+\index{GetCapabilities@{GetCapabilities}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{GetCapabilities()}{GetCapabilities()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a46735f5a059da1868ddbee7e55cac560} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_capabilities}{Capabilities}} \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Get\+Capabilities (\begin{DoxyParamCaption}\item[{int}]{player}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_game_pad_af97cdfe410c3e3c0b4db257f2432298b}\index{DirectX::GamePad@{DirectX::GamePad}!GetState@{GetState}}
+\index{GetState@{GetState}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{GetState()}{GetState()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_af97cdfe410c3e3c0b4db257f2432298b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_game_pad_1_1_state}{State}} \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Get\+State (\begin{DoxyParamCaption}\item[{int}]{player}{, }\item[{\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0}{Dead\+Zone}}}]{dead\+Zone\+Mode}{ = {\ttfamily \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_ac941962f0c5c2814725c75fdc428dff0aee807856a5a689fe39d4cc4bc1607347}{DEAD\+\_\+\+ZONE\+\_\+\+INDEPENDENT\+\_\+\+AXES}}}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a7a80fcf240d62cc77e69ee9259c9660f}\index{DirectX::GamePad@{DirectX::GamePad}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a7a80fcf240d62cc77e69ee9259c9660f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \& Direct\+X::\+\+Game\+Pad::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a0b0efd83757f53aef1fb9d1176d0dfcd}\index{DirectX::GamePad@{DirectX::GamePad}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a0b0efd83757f53aef1fb9d1176d0dfcd} 
+\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} \& Direct\+X::\+\+Game\+Pad::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_game_pad_a16420d61348eb3d0fe022e0f4ff1a75f}{Game\+Pad}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a00a7c38ac3ac50abbe81b1fb14babaa6}\index{DirectX::GamePad@{DirectX::GamePad}!Resume@{Resume}}
+\index{Resume@{Resume}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{Resume()}{Resume()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a00a7c38ac3ac50abbe81b1fb14babaa6} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Resume (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a3570d62096d846cd6f66734d166b17b8}\index{DirectX::GamePad@{DirectX::GamePad}!SetVibration@{SetVibration}}
+\index{SetVibration@{SetVibration}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{SetVibration()}{SetVibration()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a3570d62096d846cd6f66734d166b17b8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} bool \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Set\+Vibration (\begin{DoxyParamCaption}\item[{int}]{player}{, }\item[{float}]{left\+Motor}{, }\item[{float}]{right\+Motor}{, }\item[{float}]{left\+Trigger}{ = {\ttfamily 0.f}, }\item[{float}]{right\+Trigger}{ = {\ttfamily 0.f}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a7c53daa371bb97fbd2cd00753ce06436}\index{DirectX::GamePad@{DirectX::GamePad}!Suspend@{Suspend}}
+\index{Suspend@{Suspend}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{Suspend()}{Suspend()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a7c53daa371bb97fbd2cd00753ce06436} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+Game\+Pad::\+\+Suspend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_game_pad_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_game_pad_a2f7b5bf9076916e7d38bdfba080a3cc4}\index{DirectX::GamePad@{DirectX::GamePad}!c\_MostRecent@{c\_MostRecent}}
+\index{c\_MostRecent@{c\_MostRecent}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{c\_MostRecent}{c\_MostRecent}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a2f7b5bf9076916e7d38bdfba080a3cc4} 
+int Direct\+X::\+\+Game\+Pad::\+c\+\_\+\+Most\+Recent = -\/1\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}}
+
+\Hypertarget{class_direct_x_1_1_game_pad_a658f8a340a7ac3eceb0a00162d49f6ce}\index{DirectX::GamePad@{DirectX::GamePad}!MAX\_PLAYER\_COUNT@{MAX\_PLAYER\_COUNT}}
+\index{MAX\_PLAYER\_COUNT@{MAX\_PLAYER\_COUNT}!DirectX::GamePad@{DirectX::GamePad}}
+\doxysubsubsection{\texorpdfstring{MAX\_PLAYER\_COUNT}{MAX\_PLAYER\_COUNT}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_game_pad_a658f8a340a7ac3eceb0a00162d49f6ce} 
+int Direct\+X::\+\+Game\+Pad::\+\+MAX\+\_\+\+PLAYER\+\_\+\+COUNT = 4\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_game_pad_8h}{Game\+Pad.\+h}}\end{DoxyCompactItemize}

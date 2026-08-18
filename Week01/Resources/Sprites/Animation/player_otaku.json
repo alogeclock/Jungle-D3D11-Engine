@@ -1,0 +1,36 @@
+{
+    "default_mirrored": false,
+    "animations": [
+        {
+            "name": "idle",
+            "loop": true,
+            "frames": [
+                {
+                    "offset_min": [ 207, 0 ],
+                    "offset_max": [ 407, 200 ],
+                    "duration": 0.25
+                },
+                {
+                    "offset_min": [ 408, 0 ],
+                    "offset_max": [ 608, 200 ],
+                    "duration": 0.25
+                },
+                {
+                    "offset_min": [ 5, 202 ],
+                    "offset_max": [ 205, 402 ],
+                    "duration": 0.25
+                },
+                {
+                    "offset_min": [ 206, 214 ],
+                    "offset_max": [ 406, 414 ],
+                    "duration": 0.25
+                },
+                {
+                    "offset_min": [ 406, 214 ],
+                    "offset_max": [ 606, 414 ],
+                    "duration": 0.25
+                }
+            ]
+        }
+    ]
+}

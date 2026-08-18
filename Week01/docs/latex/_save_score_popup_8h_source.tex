@@ -1,0 +1,44 @@
+\doxysection{Save\+Score\+Popup.\+h}
+\hypertarget{_save_score_popup_8h_source}{}\label{_save_score_popup_8h_source}\index{UI/popup/SaveScorePopup.h@{UI/popup/SaveScorePopup.h}}
+\doxymbox{\hyperlink{_save_score_popup_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_base_8h}{UIPopupBase.h}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_save_score_popup_aa40415bac20cf7ac4270292c97000519}{FSaveScorePopup}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopupBase}}}
+\DoxyCodeLine{00009\ \{}
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00011\ \ \ \ \ \doxymbox{\hyperlink{class_f_save_score_popup_aa40415bac20cf7ac4270292c97000519}{FSaveScorePopup}}();}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_save_score_popup_aeaa777dcfd0c3edf5ad07e8fff16ccf7}{SetNickname}}(\textcolor{keyword}{const}\ std::string\ \&InNickname);}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_save_score_popup_aaf28e75545cab45716b73a25b3fd4d95}{SetScore}}(\textcolor{keywordtype}{int}\ InScore)\ \{\ Score\ =\ InScore;\ \}}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_save_score_popup_a6c435d67bf00e60661ffc1c542166f2f}{SetStage}}(\textcolor{keywordtype}{int}\ InStage)\ \{\ Stage\ =\ InStage;\ \}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{class_f_save_score_popup_a11c440a503b375d724ee8ef0a5a0b944}{GetNickname}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ Nickname;\ \}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ \doxymbox{\hyperlink{class_f_save_score_popup_a744925b2e2146cdafcf5b2d50883f544}{ConsumeAction}}();}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_save_score_popup_afd2d6826c8fcdd6ba3c7498af7dc7dcb}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_save_score_popup_a797726ed75a6b1913e2c9435c408c5bd}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \{\}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ SyncBufferFromNickname();}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ SyncNicknameFromBuffer();}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{bool}\ IsValidNickname()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopupContentTextSize}}\ ContentTextSize\ =\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3}{EUIPopupContentTextSize::Big}};}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ MaxNicknameLength\ =\ 6;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ std::string\ \ \ \ Nickname;}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{char}\ \ \ \ \ \ \ \ \ \ \ NicknameBuffer[MaxNicknameLength\ +\ 1]\{\};}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ Score\ =\ 0;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ Stage\ =\ 0;}
+\DoxyCodeLine{00036\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ PendingAction\ =\ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1aa6adf97f83acf6453d4a6a4b1070f3754}{EUIPopupAction::None}};}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ bShowValidationMessage\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00038\ \};}
+
+\end{DoxyCode}

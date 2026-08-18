@@ -1,0 +1,218 @@
+\doxysection{DirectX::\+DX12::\+Graphics\+Memory Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory}{}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+
+
+{\ttfamily \+\#include $<$Graphics\+Memory.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2}{Tag}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a55f5525bc535085c3ef0530daee36cac}{TAG\+\_\+\+GENERIC}} = 0
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2abd7cd4c332a88011220a8bfce2cdd202}{TAG\+\_\+\+CONSTANT}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a89071c3e07b0c2fac2bc23bdae0e98cc}{TAG\+\_\+\+VERTEX}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2ae233f58c54e5d9aa7917ed1375c32b31}{TAG\+\_\+\+INDEX}}
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a1b117a18962142c932f94ac4d3ac366e}{TAG\+\_\+\+SPRITES}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a0fda46a24ef504004dee9ee364960efc}{TAG\+\_\+\+TEXTURE}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a145d926ef132be06fafa4d8e9f400d4d}{TAG\+\_\+\+COMPUTE}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a211e2e917549975170397f4d9b6c6eb6}{Graphics\+Memory}} (Graphics\+Memory \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_ab562d2c95d76ffbb6a11b19967c7c222}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_ae669d9ba1d58f00b0104a1dce25da0fb}{Graphics\+Memory}} (Graphics\+Memory const \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a7bd3a63fd6968f9e2c020c4f3738533a}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} const \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_afc2a6bb1d5148e0caee3c5781285b42f}{\texorpdfstring{$\sim$}{\string~}\+Graphics\+Memory}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{Graphics\+Resource}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a9fc7f00fbbf97c67875b314686540d64}{Allocate}} (size\+\_\+t size, size\+\_\+t alignment=16, uint32\+\_\+t tag=\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a55f5525bc535085c3ef0530daee36cac}{TAG\+\_\+\+GENERIC}})
+\item 
+{\footnotesize template$<$typename T$>$ }\\\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{Graphics\+Resource}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a5348241f83a5c262666536d3921b6ff2}{Allocate\+Constant}} ()
+\item 
+{\footnotesize template$<$typename T$>$ }\\\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{Graphics\+Resource}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_acc6c81ef9aa07d4a4b39e25350242d5c}{Allocate\+Constant}} (const T \&set\+Data)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a4ee8fcc92d1466980766d4c2e5715c0b}{Commit}} (\+\_\+\+In\+\_\+ ID3\+D12\+Command\+Queue \texorpdfstring{$\ast$}{*}command\+Queue)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_ad45050767c508827c43f2f7837591216}{Garbage\+Collect}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics}{Graphics\+Memory\+Statistics}} \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a80d40258ccc2bbe0bdc403ed325bd261}{Get\+Statistics}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aae457b622ad063c3e2e923f28db566b6}{Reset\+Statistics}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} ID3\+D12\+Device \texorpdfstring{$\ast$}{*}\+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aad0f5856a9e0fa0f2b65eb23a55a6fe5}{Get\+Device}} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \&\+\_\+\+\_\+cdecl \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_a733be46cca4cc2a0009d027e63d9f0f9}{Get}} (\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device=nullptr)
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!Tag@{Tag}}
+\index{Tag@{Tag}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{Tag}{Tag}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2} 
+enum \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2}{Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Tag}} :\+ uint32\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TAG\_GENERIC@{TAG\_GENERIC}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!TAG\_GENERIC@{TAG\_GENERIC}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a55f5525bc535085c3ef0530daee36cac}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a55f5525bc535085c3ef0530daee36cac} 
+TAG\+\_\+\+GENERIC&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TAG\_CONSTANT@{TAG\_CONSTANT}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!TAG\_CONSTANT@{TAG\_CONSTANT}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2abd7cd4c332a88011220a8bfce2cdd202}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2abd7cd4c332a88011220a8bfce2cdd202} 
+TAG\+\_\+\+CONSTANT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TAG\_VERTEX@{TAG\_VERTEX}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!TAG\_VERTEX@{TAG\_VERTEX}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a89071c3e07b0c2fac2bc23bdae0e98cc}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a89071c3e07b0c2fac2bc23bdae0e98cc} 
+TAG\+\_\+\+VERTEX&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TAG\_INDEX@{TAG\_INDEX}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!TAG\_INDEX@{TAG\_INDEX}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2ae233f58c54e5d9aa7917ed1375c32b31}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2ae233f58c54e5d9aa7917ed1375c32b31} 
+TAG\+\_\+\+INDEX&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TAG\_SPRITES@{TAG\_SPRITES}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!TAG\_SPRITES@{TAG\_SPRITES}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a1b117a18962142c932f94ac4d3ac366e}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a1b117a18962142c932f94ac4d3ac366e} 
+TAG\+\_\+\+SPRITES&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TAG\_TEXTURE@{TAG\_TEXTURE}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!TAG\_TEXTURE@{TAG\_TEXTURE}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a0fda46a24ef504004dee9ee364960efc}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a0fda46a24ef504004dee9ee364960efc} 
+TAG\+\_\+\+TEXTURE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TAG\_COMPUTE@{TAG\_COMPUTE}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!TAG\_COMPUTE@{TAG\_COMPUTE}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a145d926ef132be06fafa4d8e9f400d4d}\label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a145d926ef132be06fafa4d8e9f400d4d} 
+TAG\+\_\+\+COMPUTE&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!GraphicsMemory@{GraphicsMemory}}
+\index{GraphicsMemory@{GraphicsMemory}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{GraphicsMemory()}{GraphicsMemory()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Graphics\+Memory (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_a211e2e917549975170397f4d9b6c6eb6}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!GraphicsMemory@{GraphicsMemory}}
+\index{GraphicsMemory@{GraphicsMemory}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{GraphicsMemory()}{GraphicsMemory()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_a211e2e917549975170397f4d9b6c6eb6} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Graphics\+Memory (\begin{DoxyParamCaption}\item[{Graphics\+Memory \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_ae669d9ba1d58f00b0104a1dce25da0fb}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!GraphicsMemory@{GraphicsMemory}}
+\index{GraphicsMemory@{GraphicsMemory}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{GraphicsMemory()}{GraphicsMemory()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_ae669d9ba1d58f00b0104a1dce25da0fb} 
+Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Graphics\+Memory (\begin{DoxyParamCaption}\item[{Graphics\+Memory const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_afc2a6bb1d5148e0caee3c5781285b42f}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!````~GraphicsMemory@{\texorpdfstring{$\sim$}{\string~}GraphicsMemory}}
+\index{````~GraphicsMemory@{\texorpdfstring{$\sim$}{\string~}GraphicsMemory}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}GraphicsMemory()}{\string~GraphicsMemory()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_afc2a6bb1d5148e0caee3c5781285b42f} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\texorpdfstring{$\sim$}{\string~}\+Graphics\+Memory (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_a9fc7f00fbbf97c67875b314686540d64}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!Allocate@{Allocate}}
+\index{Allocate@{Allocate}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{Allocate()}{Allocate()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_a9fc7f00fbbf97c67875b314686540d64} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{Graphics\+Resource}} \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Allocate (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{size}{, }\item[{size\+\_\+t}]{alignment}{ = {\ttfamily 16}, }\item[{uint32\+\_\+t}]{tag}{ = {\ttfamily \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_aac51fae7cc2bf6746441b5b93a9a5af2a55f5525bc535085c3ef0530daee36cac}{TAG\+\_\+\+GENERIC}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_a5348241f83a5c262666536d3921b6ff2}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!AllocateConstant@{AllocateConstant}}
+\index{AllocateConstant@{AllocateConstant}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{AllocateConstant()}{AllocateConstant()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_a5348241f83a5c262666536d3921b6ff2} 
+template$<$typename T$>$ \\
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{Graphics\+Resource}} Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Allocate\+Constant (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_acc6c81ef9aa07d4a4b39e25350242d5c}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!AllocateConstant@{AllocateConstant}}
+\index{AllocateConstant@{AllocateConstant}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{AllocateConstant()}{AllocateConstant()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_acc6c81ef9aa07d4a4b39e25350242d5c} 
+template$<$typename T$>$ \\
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_resource}{Graphics\+Resource}} Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Allocate\+Constant (\begin{DoxyParamCaption}\item[{const T \&}]{set\+Data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_a4ee8fcc92d1466980766d4c2e5715c0b}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!Commit@{Commit}}
+\index{Commit@{Commit}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{Commit()}{Commit()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_a4ee8fcc92d1466980766d4c2e5715c0b} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Commit (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Command\+Queue \texorpdfstring{$\ast$}{*}}]{command\+Queue}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_ad45050767c508827c43f2f7837591216}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!GarbageCollect@{GarbageCollect}}
+\index{GarbageCollect@{GarbageCollect}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{GarbageCollect()}{GarbageCollect()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_ad45050767c508827c43f2f7837591216} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Garbage\+Collect (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_a733be46cca4cc2a0009d027e63d9f0f9}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!Get@{Get}}
+\index{Get@{Get}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_a733be46cca4cc2a0009d027e63d9f0f9} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \&\+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Get (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aad0f5856a9e0fa0f2b65eb23a55a6fe5}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!GetDevice@{GetDevice}}
+\index{GetDevice@{GetDevice}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{GetDevice()}{GetDevice()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aad0f5856a9e0fa0f2b65eb23a55a6fe5} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} ID3\+D12\+Device \texorpdfstring{$\ast$}{*}\+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Get\+Device (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_a80d40258ccc2bbe0bdc403ed325bd261}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!GetStatistics@{GetStatistics}}
+\index{GetStatistics@{GetStatistics}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{GetStatistics()}{GetStatistics()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_a80d40258ccc2bbe0bdc403ed325bd261} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_graphics_memory_statistics}{Graphics\+Memory\+Statistics}} \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Get\+Statistics (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_ab562d2c95d76ffbb6a11b19967c7c222}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_ab562d2c95d76ffbb6a11b19967c7c222} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \& Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_a7bd3a63fd6968f9e2c020c4f3738533a}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_a7bd3a63fd6968f9e2c020c4f3738533a} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} \& Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_graphics_memory_af99009b883f2b2aa3b63375443f31daa}{Graphics\+Memory}} const \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_graphics_memory_aae457b622ad063c3e2e923f28db566b6}\index{DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}!ResetStatistics@{ResetStatistics}}
+\index{ResetStatistics@{ResetStatistics}!DirectX::DX12::GraphicsMemory@{DirectX::DX12::GraphicsMemory}}
+\doxysubsubsection{\texorpdfstring{ResetStatistics()}{ResetStatistics()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_graphics_memory_aae457b622ad063c3e2e923f28db566b6} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl Direct\+X::\+\+DX12::\+\+Graphics\+Memory::\+\+Reset\+Statistics (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_graphics_memory_8h}{Graphics\+Memory.\+h}}\end{DoxyCompactItemize}

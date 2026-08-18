@@ -1,0 +1,55 @@
+\doxysection{Sprite\+Animation.\+h}
+\hypertarget{_sprite_animation_8h_source}{}\label{_sprite_animation_8h_source}\index{Gameplay/SpriteAnimation.h@{Gameplay/SpriteAnimation.h}}
+\doxymbox{\hyperlink{_sprite_animation_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_keyframe}{FKeyframe}}}
+\DoxyCodeLine{00009\ \{}
+\DoxyCodeLine{00010\ \ \ \ \ DirectX::XMFLOAT2\ \doxymbox{\hyperlink{struct_f_keyframe_ad40bb3aeac715fe79fa4acd95244426c}{OffsetMin}}\ =\ \{0.0f,\ 0.0f\};\ \textcolor{comment}{//\ 좌상단\ 픽셀\ 좌표}}
+\DoxyCodeLine{00011\ \ \ \ \ DirectX::XMFLOAT2\ \doxymbox{\hyperlink{struct_f_keyframe_a63eae334529a0b488c1e6f3891d7dd9d}{OffsetMax}}\ =\ \{0.0f,\ 0.0f\};\ \textcolor{comment}{//\ 우하단\ 픽셀\ 좌표}}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_keyframe_ab181361540f2bae5278bea0f22d1ab79}{Duration}}\ =\ 0.1f;}
+\DoxyCodeLine{00013\ \};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_sprite_animation}{FSpriteAnimation}}}
+\DoxyCodeLine{00016\ \{}
+\DoxyCodeLine{00017\ \ \ \ \ std::vector<FKeyframe>\ \doxymbox{\hyperlink{struct_f_sprite_animation_a93a430efa7e1959d0c88648cc5f8cf4f}{Frames}};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_f_sprite_animation_aaecec8e362778ef1333a6b7ca7bc5775}{bLoop}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00019\ \};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_sprite_animator}{FSpriteAnimator}}}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_sprite_animator_ac5c9ef75416d8cccf0a6c1fa7bc7b096}{AddAnimation}}(\textcolor{keyword}{const}\ std::string\ \&Name,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_sprite_animation}{FSpriteAnimation}}\ \&Anim);}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_sprite_animator_afbb7960bdb83c1e5efcfed3e3cd4ee7b}{Play}}(\textcolor{keyword}{const}\ std::string\ \&Name,\ \textcolor{keywordtype}{bool}\ bForceRestart\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_sprite_animator_a885b0dd2805291aa51d85b903c6ecbd3}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime);}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_keyframe}{FKeyframe}}\ *\doxymbox{\hyperlink{class_f_sprite_animator_ac46f23cf097efc13817ac385625bbe76}{GetCurrentKeyframe}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_sprite_animator_a70bd460108d04f2cd82e2eb760006d67}{IsPlaying}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_f_sprite_animator_a99231624214f0f26c1715ff451f7b2b6}{IsFinished}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{class_f_sprite_animator_af8e4ce577125fa9ac7522608335eddf7}{GetCurrentAnimName}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \ \ std::unordered\_map<std::string,\ FSpriteAnimation>\ Animations;}
+\DoxyCodeLine{00035\ \ \ \ \ std::string\ CurrentAnim;}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ CurrentFrame\ =\ 0;}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ Timer\ =\ 0.0f;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ bFinished\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00039\ \};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{//\ 스프라이트\ 시트에서\ 가로로\ 나열된\ 프레임들로\ 애니메이션\ 생성\ 헬퍼}}
+\DoxyCodeLine{00042\ \doxymbox{\hyperlink{struct_f_sprite_animation}{FSpriteAnimation}}\ \doxymbox{\hyperlink{_sprite_animation_8h_ac38d414aed897cdaebbcc9b4d5779c0b}{MakeSheetAnimation}}(\textcolor{keywordtype}{float}\ FrameWidth,\ \textcolor{keywordtype}{float}\ FrameHeight,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ FrameCount,\ \textcolor{keywordtype}{float}\ FrameDuration,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ bLoop\ =\ \textcolor{keyword}{true},\ \textcolor{keywordtype}{int}\ StartRow\ =\ 0);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{comment}{//\ JSON\ 파일에서\ 애니메이션\ 데이터를\ 로드하여\ Animator에\ 등록}}
+\DoxyCodeLine{00047\ \textcolor{comment}{//\ OutDefaultMirrored:\ JSON의\ "{}default\_mirrored"{}\ 값\ (없으면\ false)}}
+\DoxyCodeLine{00048\ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{_sprite_animation_8h_a72234a2915758b028fc2e7e54d0a203b}{LoadAnimationsFromJson}}(\textcolor{keyword}{const}\ std::string\ \&JsonPath,\ \doxymbox{\hyperlink{class_f_sprite_animator}{FSpriteAnimator}}\ \&OutAnimator,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \&OutDefaultMirrored);}
+
+\end{DoxyCode}

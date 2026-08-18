@@ -1,0 +1,65 @@
+\doxysection{Ending\+Popup.\+h}
+\hypertarget{_ending_popup_8h_source}{}\label{_ending_popup_8h_source}\index{UI/popup/EndingPopup.h@{UI/popup/EndingPopup.h}}
+\doxymbox{\hyperlink{_ending_popup_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_action_8h}{UIPopupAction.h}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_base_8h}{UIPopupBase.h}}"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_ending_popup}{FEndingPopup}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopupBase}}}
+\DoxyCodeLine{00011\ \{}
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_ending_popup_a8ed85a06afc1f23b7a54307f1492126f}{SetData}}(\textcolor{keyword}{const}\ std::string\ \&InTitle,\ \textcolor{keyword}{const}\ std::vector<std::string>\ \&InMessages)}
+\DoxyCodeLine{00014\ \ \ \ \ \{}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ Title\ =\ InTitle;}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ Messages\ =\ InMessages;}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ CurrentPage\ =\ 0;}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ ResetPage();}
+\DoxyCodeLine{00019\ \ \ \ \ \}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_ending_popup_a08590ce238142e9c0181191c8a4d9049}{SetTitle}}(\textcolor{keyword}{const}\ std::string\ \&InTitle)}
+\DoxyCodeLine{00022\ \ \ \ \ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ Title\ =\ InTitle;}
+\DoxyCodeLine{00024\ \ \ \ \ \}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_ending_popup_a876ce7956248c73ec8f59b43f4444777}{SetMessages}}(\textcolor{keyword}{const}\ std::vector<std::string>\ \&InMessages)}
+\DoxyCodeLine{00027\ \ \ \ \ \{}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ Messages\ =\ InMessages;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ CurrentPage\ =\ 0;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ ResetPage();}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ \doxymbox{\hyperlink{class_f_ending_popup_a53740670ab5a4d0d6e3c8241a3f2af47}{ConsumeAction}}();}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_ending_popup_abb141f482feae88806d771686fbc209a}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_ending_popup_aac5fb623c2aca2072f3e11b125cf73c4}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \ \ std::vector<std::string>\ SplitMessageLines(\textcolor{keyword}{const}\ std::string\ \&InMessage)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ GetTotalPages()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ GoToNextPage();}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ResetPage();}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&GetCurrentPageMessage()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DrawBottomButtonArea(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopupFrameLayout}}\ \&Layout);}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00048\ \ \ \ \ std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ Title\ =\ \textcolor{stringliteral}{"{}Ending"{}};}
+\DoxyCodeLine{00049\ \ \ \ \ std::vector<std::string>\ Messages;}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CurrentPage\ =\ 0;}
+\DoxyCodeLine{00051\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ \ \ \ \ \ \ \ \ \ \ PendingAction\ =\ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1aa6adf97f83acf6453d4a6a4b1070f3754}{EUIPopupAction::None}};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopupContentAlign}}\ ContentAlign\ =\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopupContentAlign::Center}};}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopupContentTextSize}}\ ContentTextSize\ =\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8a87f8a6ab85c9ced3702b4ea641ad4bb5}{EUIPopupContentTextSize::Medium}};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}{EUIPopupContentVerticalAlign}}\ ContentVerticalAlign\ =}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopupContentVerticalAlign::Center}};}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ MessageLineGap\ =\ \doxymbox{\hyperlink{class_f_u_i_popup_base_a1c4ccbf989e7e4de0d1525676c334107}{DefaultContentLineGap}};}
+\DoxyCodeLine{00059\ \};}
+
+\end{DoxyCode}

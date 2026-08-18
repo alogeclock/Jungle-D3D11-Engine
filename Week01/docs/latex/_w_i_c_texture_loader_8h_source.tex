@@ -1,0 +1,242 @@
+\doxysection{WICTexture\+Loader.\+h}
+\hypertarget{_w_i_c_texture_loader_8h_source}{}\label{_w_i_c_texture_loader_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/WICTextureLoader.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/WICTextureLoader.h}}
+\doxymbox{\hyperlink{_w_i_c_texture_loader_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ WICTextureLoader.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Function\ for\ loading\ a\ WIC\ image\ and\ creating\ a\ Direct3D\ runtime\ texture\ for\ it}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ (auto-\/generating\ mipmaps\ if\ possible)}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ Note:\ Assumes\ application\ has\ already\ called\ CoInitializeEx}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ Note\ these\ functions\ are\ useful\ for\ images\ created\ as\ simple\ 2D\ textures.\ For}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ more\ complex\ resources,\ DDSTextureLoader\ is\ an\ excellent\ light-\/weight\ runtime\ loader.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ For\ a\ full-\/featured\ DDS\ file\ reader,\ writer,\ and\ texture\ processing\ pipeline\ see}}
+\DoxyCodeLine{00012\ \textcolor{comment}{//\ the\ 'Texconv'\ sample\ and\ the\ 'DirectXTex'\ library.}}
+\DoxyCodeLine{00013\ \textcolor{comment}{//}}
+\DoxyCodeLine{00014\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00015\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{//}}
+\DoxyCodeLine{00017\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00018\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#ifdef\ \_MSC\_VER}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#pragma\ comment(lib,"{}uuid.lib"{})}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00054\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00061\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }DX12}
+\DoxyCodeLine{00063\ \ \ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}}\ :\ uint32\_t}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a1cac01b4ab4dd26e933b7072e6e945e6}{WIC\_LOADER\_DEFAULT}}\ =\ 0,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950ad403fbd896e177a4d303ffacba6a051b}{WIC\_LOADER\_FORCE\_SRGB}}\ =\ 0x1,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950adcd31ab427c9c80f29f5e63cc6ffac75}{WIC\_LOADER\_IGNORE\_SRGB}}\ =\ 0x2,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a6ab8f7a866dc7437c6f89a189617c056}{WIC\_LOADER\_SRGB\_DEFAULT}}\ =\ 0x4,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a29209f7825decf21b3de63afd8179ed9}{WIC\_LOADER\_MIP\_AUTOGEN}}\ =\ 0x8,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a3289204c844cb7501fee0df7d3776ff3}{WIC\_LOADER\_MIP\_RESERVE}}\ =\ 0x10,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950ad25b95b5176427cb898b37426287e1b6}{WIC\_LOADER\_FIT\_POW2}}\ =\ 0x20,}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a7488668121bc58476bdfc83e4e241176}{WIC\_LOADER\_MAKE\_SQUARE}}\ =\ 0x40,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950a24138ce33ae0e444c979623d57fe9946}{WIC\_LOADER\_FORCE\_RGBA32}}\ =\ 0x80,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00076\ \ \ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{comment}{//\ Standard\ version}}
+\DoxyCodeLine{00081\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_ad0421049a7b94d174daef438996c049b}{LoadWICTextureFromMemory}}(}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ \textcolor{keyword}{const}\ uint8\_t*\ wicData,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<uint8\_t[]>\&\ decodedData,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SUBRESOURCE\_DATA\&\ subresource,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize\ =\ 0)\ noexcept;}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_ab876335c0dc5b15f72b1671b8104b613}{LoadWICTextureFromFile}}(}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ const\ \textcolor{keywordtype}{wchar\_t}*\ szFileName,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<uint8\_t[]>\&\ decodedData,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SUBRESOURCE\_DATA\&\ subresource,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize\ =\ 0)\ noexcept;}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Standard\ version\ with\ resource\ upload}}
+\DoxyCodeLine{00101\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a81d2114703b93ed6715d39a86de39cca}{CreateWICTextureFromMemory}}(}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ const\ uint8\_t*\ wicData,}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ generateMips\ =\ false,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize\ =\ 0);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_af3aa8c76ff11e8c9c24375bd8e69862b}{CreateWICTextureFromFile}}(}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ const\ \textcolor{keywordtype}{wchar\_t}*\ szFileName,}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ generateMips\ =\ false,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize\ =\ 0);}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Extended\ version}}
+\DoxyCodeLine{00121\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a4c4fc485f0146f3375862deac0911ed5}{LoadWICTextureFromMemoryEx}}(}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ const\ uint8\_t*\ wicData,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags,}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}}\ loadFlags,}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<uint8\_t[]>\&\ decodedData,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SUBRESOURCE\_DATA\&\ subresource)\ noexcept;}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a623a8e8e65a599610723b806cd716c44}{LoadWICTextureFromFileEx}}(}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ const\ \textcolor{keywordtype}{wchar\_t}*\ szFileName,}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags,}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}}\ loadFlags,}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<uint8\_t[]>\&\ decodedData,}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SUBRESOURCE\_DATA\&\ subresource)\ noexcept;}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Extended\ version\ with\ resource\ upload}}
+\DoxyCodeLine{00145\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a671c42531616861832fd74563180fc7d}{CreateWICTextureFromMemoryEx}}(}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ const\ uint8\_t*\ wicData,}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize,}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}}\ loadFlags,}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture);}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a909ae06175fb8e5a799ecfba27d2fb39}{CreateWICTextureFromFileEx}}(}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ const\ \textcolor{keywordtype}{wchar\_t}*\ szFileName,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags,}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}}\ loadFlags,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture);}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \textcolor{preprocessor}{\#ifdef\ \_\_cpp\_lib\_byte}}
+\DoxyCodeLine{00167\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_ad0421049a7b94d174daef438996c049b}{LoadWICTextureFromMemory}}(}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ \textcolor{keyword}{const}\ std::byte*\ wicData,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<uint8\_t[]>\&\ decodedData,}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SUBRESOURCE\_DATA\&\ subresource,}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize\ =\ 0)\ noexcept}
+\DoxyCodeLine{00176\ \ \ \ \ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_ad0421049a7b94d174daef438996c049b}{LoadWICTextureFromMemory}}(device,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint8\_t*\textcolor{keyword}{>}(wicData),\ wicDataSize,\ texture,\ decodedData,\ subresource,\ maxsize);}
+\DoxyCodeLine{00178\ \ \ \ \ \}}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a81d2114703b93ed6715d39a86de39cca}{CreateWICTextureFromMemory}}(}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ ResourceUploadBatch\&\ resourceUpload,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ \textcolor{keyword}{const}\ std::byte*\ wicData,}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ generateMips\ =\ \textcolor{keyword}{false},}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize\ =\ 0)}
+\DoxyCodeLine{00189\ \ \ \ \ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_a81d2114703b93ed6715d39a86de39cca}{CreateWICTextureFromMemory}}(device,\ resourceUpload,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint8\_t*\textcolor{keyword}{>}(wicData),\ wicDataSize,\ texture,\ generateMips,\ maxsize);}
+\DoxyCodeLine{00191\ \ \ \ \ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a4c4fc485f0146f3375862deac0911ed5}{LoadWICTextureFromMemoryEx}}(}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ \textcolor{keyword}{const}\ std::byte*\ wicData,}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize,}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags,}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}}\ loadFlags,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<uint8\_t[]>\&\ decodedData,}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_SUBRESOURCE\_DATA\&\ subresource)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00204\ \ \ \ \ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_a4c4fc485f0146f3375862deac0911ed5}{LoadWICTextureFromMemoryEx}}(device,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint8\_t*\textcolor{keyword}{>}(wicData),\ wicDataSize,\ maxsize,\ resFlags,\ loadFlags,\ texture,\ decodedData,\ subresource);}
+\DoxyCodeLine{00206\ \ \ \ \ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a671c42531616861832fd74563180fc7d}{CreateWICTextureFromMemoryEx}}(}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(wicDataSize)\ \textcolor{keyword}{const}\ std::byte*\ wicData,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ wicDataSize,}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxsize,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}}\ loadFlags,}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ ID3D12Resource**\ texture)}
+\DoxyCodeLine{00218\ \ \ \ \ \{}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_a671c42531616861832fd74563180fc7d}{CreateWICTextureFromMemoryEx}}(device,\ resourceUpload,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint8\_t*\textcolor{keyword}{>}(wicData),\ wicDataSize,\ maxsize,\ resFlags,\ loadFlags,\ texture);}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \ \_\_cpp\_lib\_byte}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00224\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ push}}
+\DoxyCodeLine{00225\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ ignored\ "{}-\/Wdeprecated-\/dynamic-\/exception-\/spec"{}}}
+\DoxyCodeLine{00226\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{DX12}}}
+\DoxyCodeLine{00229\ \ \ \ \ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ DEFINE\_ENUM\_FLAG\_OPERATORS(\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_abb339ebf74481814d76068bc3c334950}{WIC\_LOADER\_FLAGS}})}
+\DoxyCodeLine{00231\ \ \ \ \ \}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00234\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ pop}}
+\DoxyCodeLine{00235\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00236\ \}}
+
+\end{DoxyCode}

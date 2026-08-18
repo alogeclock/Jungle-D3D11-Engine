@@ -1,0 +1,24 @@
+\doxysection{Score\+Repository.\+h}
+\hypertarget{_score_repository_8h_source}{}\label{_score_repository_8h_source}\index{Data/ScoreRepository.h@{Data/ScoreRepository.h}}
+\doxymbox{\hyperlink{_score_repository_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_score_record_8h}{ScoreRecord.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_application_8h}{Core/Application.h}}"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_score_repository}{ScoreRepository}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\doxymbox{\hyperlink{namespace_score_repository_a2b2f11dda74d2304071107576007e4cf}{DefaultPath}}\ =\textcolor{stringliteral}{"{}Resources/Data/scoreboard.json"{}};}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ std::vector<FScoreRecord>\ \doxymbox{\hyperlink{namespace_score_repository_a074e0babd9e3dce2a37ca366ad83d862}{Load}}();}
+\DoxyCodeLine{00012\ \ \ \ \ std::vector<FScoreRecord>\ \doxymbox{\hyperlink{namespace_score_repository_a6c7b7641205e83fd08fa99c33da4b8ef}{LoadSorted}}();}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{namespace_score_repository_a5ee4eff274b1308cc091ad0ff7349d47}{Save}}(\textcolor{keyword}{const}\ std::vector<FScoreRecord>\ \&Records);}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{namespace_score_repository_aa9faa3025c50f9c01d22144f00d8407c}{AppendRecord}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_score_record}{FScoreRecord}}\ \&Record);}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{namespace_score_repository_a0e46f695ab6f0efb1d77d672ab049bbf}{SortDescending}}(std::vector<FScoreRecord>\ \&Records);}
+\DoxyCodeLine{00018\ \}\ \textcolor{comment}{//\ namespace\ ScoreRepository}}
+
+\end{DoxyCode}

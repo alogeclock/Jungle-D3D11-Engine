@@ -1,0 +1,25 @@
+\doxysection{Input.\+h}
+\hypertarget{_input_8h_source}{}\label{_input_8h_source}\index{Core/Input.h@{Core/Input.h}}
+\doxymbox{\hyperlink{_input_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Types.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ todo:\ down\ -\/>\ press,\ up\ -\/>\ release로\ 용어\ 변경\ 고려}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_input}{FInput}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_input_addf6980f69fb017d6962f1e33398a0a6}{Update}}();}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_input_a3b87d20e55bb73734dd74962780a1a0b}{GetKey}}(\doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64}{EKeyCode}}\ KeyCode)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_input_abc71e323976a47789bfeb3243789758a}{GetKeyDown}}(\doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64}{EKeyCode}}\ KeyCode)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_input_a3e458fec79d4656116f5b451b52e5bc3}{GetKeyUp}}(\doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64}{EKeyCode}}\ KeyCode)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ CurrentKeys[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64ae93f994f01c537c4e2f7d8528c3eb5e9}{EKeyCode::Count}})]\{\};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{bool}\ PreviousKeys[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\doxymbox{\hyperlink{_types_8h_aa67133a8a9762ae46eca5395ef73cd64ae93f994f01c537c4e2f7d8528c3eb5e9}{EKeyCode::Count}})]\{\};}
+\DoxyCodeLine{00019\ \};}
+
+\end{DoxyCode}

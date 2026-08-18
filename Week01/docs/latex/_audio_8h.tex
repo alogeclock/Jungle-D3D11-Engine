@@ -1,0 +1,145 @@
+\doxysection{packages/\+directxtk12\+\_\+desktop\+\_\+2019.2025.10.28.1/\+include/\+\+Audio.h File Reference}
+\hypertarget{_audio_8h}{}\label{_audio_8h}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Audio.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Audio.h}}
+{\ttfamily \+\#include $<$cstddef$>$}\newline
+{\ttfamily \+\#include $<$cstdint$>$}\newline
+{\ttfamily \+\#include $<$functional$>$}\newline
+{\ttfamily \+\#include $<$memory$>$}\newline
+{\ttfamily \+\#include $<$string$>$}\newline
+{\ttfamily \+\#include $<$vector$>$}\newline
+{\ttfamily \+\#include $<$objbase.\+h$>$}\newline
+{\ttfamily \+\#include $<$mmreg.\+h$>$}\newline
+{\ttfamily \+\#include $<$Audioclient.\+h$>$}\newline
+{\ttfamily \+\#include $<$xaudio2.\+h$>$}\newline
+{\ttfamily \+\#include $<$xaudio2fx.\+h$>$}\newline
+{\ttfamily \+\#include $<$x3daudio.\+h$>$}\newline
+{\ttfamily \+\#include $<$xapofx.\+h$>$}\newline
+{\ttfamily \+\#include $<$Direct\+XMath.\+h$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_audio_statistics}{Direct\+X::\+\+Audio\+Statistics}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_i_voice_notify}{Direct\+X::\+\+IVoice\+Notify}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_audio_engine}{Direct\+X::\+\+Audio\+Engine}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_audio_engine_1_1_renderer_detail}{Direct\+X::\+\+Audio\+Engine::\+\+Renderer\+Detail}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_wave_bank}{Direct\+X::\+\+Wave\+Bank}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect}{Direct\+X::\+\+Sound\+Effect}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_audio_listener}{Direct\+X::\+\+Audio\+Listener}}
+\item 
+struct \doxymbox{\hyperlink{struct_direct_x_1_1_audio_emitter}{Direct\+X::\+\+Audio\+Emitter}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_sound_effect_instance}{Direct\+X::\+\+Sound\+Effect\+Instance}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_sound_stream_instance}{Direct\+X::\+\+Sound\+Stream\+Instance}}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_dynamic_sound_effect_instance}{Direct\+X::\+\+Dynamic\+Sound\+Effect\+Instance}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x}{DirectX}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{_audio_8h_a91bcb060bd6be952f1cd26029531135f}{XAUDIO2\+\_\+\+HELPER\+\_\+\+FUNCTIONS}}
+\item 
+\+\#define \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2}{Direct\+X::\+\+AUDIO\+\_\+\+ENGINE\+\_\+\+FLAGS}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2ad32622095f0a3ea460eebe4695353974}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Default}} = 0x0
+, \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2a8a77fc4a4c02427d53cdf2c52ae76353}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Environmental\+Reverb}} = 0x1
+, \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2a66d0eed6855c77a4cc813e3e7fd98634}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Reverb\+Use\+Filters}} = 0x2
+, \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2aaff797bafb3a08ad9c7d9122c18978c7}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Use\+Mastering\+Limiter}} = 0x4
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2a7c02384668afcc8f2a8886994ecc2416}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Disable\+LFERedirect}} = 0x8
+, \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2ae3bbb07464920ae2f7b2e83e33e690be}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Disable\+Doppler\+Effect}} = 0x10
+, \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2ae135566fa6acde83d8b4610dbe980e71}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Zero\+Center3D}} = 0x20
+, \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2ac9f75dd9f76a7e6efcf6af0057eb32e5}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Debug}} = 0x10000
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2a9c7c43e3cc3f20b3af4dc8e22df99dc4}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Throw\+On\+No\+Audio\+HW}} = 0x20000
+, \doxymbox{\hyperlink{namespace_direct_x_a46329170545f0757a75837bafbdc55d2a26e3bb3ce33f1a6e41c4165625b22ab3}{Direct\+X::\+\+Audio\+Engine\+\_\+\+Disable\+Voice\+Reuse}} = 0x40000
+ \}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49f}{Direct\+X::\+\+SOUND\+\_\+\+EFFECT\+\_\+\+INSTANCE\+\_\+\+FLAGS}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fac7ad93a64d0cf3b3f9a3ecc076874177}{Direct\+X::\+\+Sound\+Effect\+Instance\+\_\+\+Default}} = 0x0
+, \doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fade41c569c394c34676f520dd2ccdddb7}{Direct\+X::\+\+Sound\+Effect\+Instance\+\_\+\+Use3D}} = 0x1
+, \doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fa465d1831356a0a90e50c054d4575344e}{Direct\+X::\+\+Sound\+Effect\+Instance\+\_\+\+Reverb\+Use\+Filters}} = 0x2
+, \doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fa903d3529630a28b346b212cb2986246c}{Direct\+X::\+\+Sound\+Effect\+Instance\+\_\+\+No\+Set\+Pitch}} = 0x4
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fa5913975f755a62b63b3110512000585e}{Direct\+X::\+\+Sound\+Effect\+Instance\+\_\+\+Use\+Redirect\+LFE}} = 0x8
+, \doxymbox{\hyperlink{namespace_direct_x_abdb0c634c1126f9bdbcc849c909ff49fa9892f029d6cb59c69b779c80ba537f3a}{Direct\+X::\+\+Sound\+Effect\+Instance\+\_\+\+Zero\+Center3D}} = 0x10
+ \}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6}{Direct\+X::\+\+AUDIO\+\_\+\+ENGINE\+\_\+\+REVERB}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6aac1fb5b0ed22adb0262ea50151f04059}{Direct\+X::\+\+Reverb\+\_\+\+Off}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6af0b6011e361c27425bd6999482585179}{Direct\+X::\+\+Reverb\+\_\+\+Default}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a8e09f8d6bd1e00ed2a68f6b7e0e769b0}{Direct\+X::\+\+Reverb\+\_\+\+Generic}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6ad58491dea577b65fde79c121b905fcd4}{Direct\+X::\+\+Reverb\+\_\+\+Forest}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6ae903c8165097ac4d9574529e90359ce7}{Direct\+X::\+\+Reverb\+\_\+\+Padded\+Cell}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a32642ce5e3b1038d2c7b8110216b0e33}{Direct\+X::\+\+Reverb\+\_\+\+Room}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a81fde54fda3f01a0629c6318379461bf}{Direct\+X::\+\+Reverb\+\_\+\+Bathroom}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a6cdfbed538570d815138034544a1ed95}{Direct\+X::\+\+Reverb\+\_\+\+Living\+Room}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a4229a4a7396c48f6470a76a7db82e899}{Direct\+X::\+\+Reverb\+\_\+\+Stone\+Room}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a9ab94b1d9bfee904bea33fb13a17afad}{Direct\+X::\+\+Reverb\+\_\+\+Auditorium}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a274a1acd4cffa8d095337e5ee637b8e1}{Direct\+X::\+\+Reverb\+\_\+\+Concert\+Hall}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a2b99b4f8759cf4316839a404a1eec223}{Direct\+X::\+\+Reverb\+\_\+\+Cave}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6aadb679a76897c0149e9608519e599070}{Direct\+X::\+\+Reverb\+\_\+\+Arena}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6ab16b7264dc4f269bb1ff7cbd00a1926b}{Direct\+X::\+\+Reverb\+\_\+\+Hangar}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a751bd488820660c0ee7f0c6b6fbe3f72}{Direct\+X::\+\+Reverb\+\_\+\+Carpeted\+Hallway}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6adca5cc12e17396d4963f03283c81ee75}{Direct\+X::\+\+Reverb\+\_\+\+Hallway}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6ae0848bdca671beb44ba58eccdf1f232b}{Direct\+X::\+\+Reverb\+\_\+\+Stone\+Corridor}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a40a03533a3d36aeac6301c400de1594c}{Direct\+X::\+\+Reverb\+\_\+\+Alley}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6aca3c4fcd8477e0fec6b92b012c0cfb3f}{Direct\+X::\+\+Reverb\+\_\+\+City}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6ab1d6271fa1212f5029a5af07b2077c3e}{Direct\+X::\+\+Reverb\+\_\+\+Mountains}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a6e000ac9edd467c58139cc178c6723c6}{Direct\+X::\+\+Reverb\+\_\+\+Quarry}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a49ab7651a1bd54554aa512bdd12fa464}{Direct\+X::\+\+Reverb\+\_\+\+Plain}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a9d13870945849f6e97314f639bf0dd2b}{Direct\+X::\+\+Reverb\+\_\+\+Parking\+Lot}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a16e92b61f3503b2a902323dbc480b975}{Direct\+X::\+\+Reverb\+\_\+\+Sewer\+Pipe}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a9bfc748ee42c9b2a45fb2cbcfb24a4ed}{Direct\+X::\+\+Reverb\+\_\+\+Underwater}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6addafed9aa1250a1f3030fb452de33dee}{Direct\+X::\+\+Reverb\+\_\+\+Small\+Room}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a4a2f7d4f34d3eb9cfda23c93ef60b26d}{Direct\+X::\+\+Reverb\+\_\+\+Medium\+Room}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a03ee2d2de0ec44342b2997fd4c680ca2}{Direct\+X::\+\+Reverb\+\_\+\+Large\+Room}}
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a8b9bf27679f7bcaae70c3dd9e33781ca}{Direct\+X::\+\+Reverb\+\_\+\+Medium\+Hall}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a45d8f213e587cf6380b1f445dfa868a8}{Direct\+X::\+\+Reverb\+\_\+\+Large\+Hall}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6ab25c11cb74ec8d49c627ae6f1660d190}{Direct\+X::\+\+Reverb\+\_\+\+Plate}}
+, \doxymbox{\hyperlink{namespace_direct_x_a45a843556cb605d48d9cfbd3275f2ec6a211e2f7ad87773ad07a8cd04fbce9782}{Direct\+X::\+\+Reverb\+\_\+\+MAX}}
+ \}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_a1c1a351926458f307ce9b003bb8f5057}{Direct\+X::\+\+Sound\+State}} :\+ uint32\+\_\+t \{ \doxymbox{\hyperlink{namespace_direct_x_a1c1a351926458f307ce9b003bb8f5057ac18b5d4089cb221c5bd61b1381c0a017}{Direct\+X::\+\+STOPPED}} = 0
+, \doxymbox{\hyperlink{namespace_direct_x_a1c1a351926458f307ce9b003bb8f5057a675eeb4f41807ed4311852f9a6ccd91a}{Direct\+X::\+\+PLAYING}}
+, \doxymbox{\hyperlink{namespace_direct_x_a1c1a351926458f307ce9b003bb8f5057ae64ce04a459b3e33048f12a8f43207a3}{Direct\+X::\+\+PAUSED}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_audio_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}\index{Audio.h@{Audio.h}!DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}}
+\index{DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}!Audio.h@{Audio.h}}
+\doxysubsubsection{\texorpdfstring{DIRECTX\_TOOLKIT\_API}{DIRECTX\_TOOLKIT\_API}}
+{\footnotesize\ttfamily \label{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74} 
+\+\#define DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}
+
+\Hypertarget{_audio_8h_a91bcb060bd6be952f1cd26029531135f}\index{Audio.h@{Audio.h}!XAUDIO2\_HELPER\_FUNCTIONS@{XAUDIO2\_HELPER\_FUNCTIONS}}
+\index{XAUDIO2\_HELPER\_FUNCTIONS@{XAUDIO2\_HELPER\_FUNCTIONS}!Audio.h@{Audio.h}}
+\doxysubsubsection{\texorpdfstring{XAUDIO2\_HELPER\_FUNCTIONS}{XAUDIO2\_HELPER\_FUNCTIONS}}
+{\footnotesize\ttfamily \label{_audio_8h_a91bcb060bd6be952f1cd26029531135f} 
+\+\#define XAUDIO2\+\_\+\+HELPER\+\_\+\+FUNCTIONS}
+

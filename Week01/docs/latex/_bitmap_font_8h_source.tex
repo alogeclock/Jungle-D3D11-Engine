@@ -1,0 +1,29 @@
+\doxysection{Bitmap\+Font.\+h}
+\hypertarget{_bitmap_font_8h_source}{}\label{_bitmap_font_8h_source}\index{Render/BitmapFont.h@{Render/BitmapFont.h}}
+\doxymbox{\hyperlink{_bitmap_font_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_glyph_8h}{Render/Glyph.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_bitmap_font}{FBitmapFont}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \ \ \ \ std::string\ \doxymbox{\hyperlink{struct_f_bitmap_font_ac5d3b7e5db84561816289df465a026c1}{TextureFile}};\ \textcolor{comment}{//\ Font\ File\ Name\ ex)\ font\_0.png}}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_bitmap_font_ab9307cec026f9ea0bc0596f87303f886}{LineHeight}}\ =\ 0;\ \textcolor{comment}{//\ Height\ when\ doing\ Line\ Change}}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_bitmap_font_aa769dad72c6386ba26e4c9b685bfbfef}{Base}}\ =\ 0;\ \textcolor{comment}{//?}}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_bitmap_font_af6983f85445d24579a3ebe859628b461}{ScaleW}}\ =\ 0;\ \textcolor{comment}{//\ BitmapFont\ 이미지의\ 너비}}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_bitmap_font_a340eeb4436b559f929d7489b40e21ee3}{ScaleH}}\ =\ 0;\ \textcolor{comment}{//\ BitmapFont\ 이미지의\ 높이}}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_bitmap_font_ace99f759261d4a570155dbc49091c844}{ThickNess}}\ =\ 0;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ std::unordered\_map<int,\ FGlyph>\ \doxymbox{\hyperlink{struct_f_bitmap_font_a63d495b80ef1d191666522ce34d7e5b1}{Glyphs}};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_glyph}{FGlyph}}*\ \doxymbox{\hyperlink{struct_f_bitmap_font_a137b7bc59f692fbd1263cef0acd8e8e3}{Get}}(\textcolor{keywordtype}{int}\ CharCode)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00017\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ It\ =\ \doxymbox{\hyperlink{struct_f_bitmap_font_a63d495b80ef1d191666522ce34d7e5b1}{Glyphs}}.find(CharCode);}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (It\ ==\ \doxymbox{\hyperlink{struct_f_bitmap_font_a63d495b80ef1d191666522ce34d7e5b1}{Glyphs}}.end())}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&It-\/>second;}
+\DoxyCodeLine{00022\ \ \ \ \ \}}
+\DoxyCodeLine{00023\ \};}
+
+\end{DoxyCode}

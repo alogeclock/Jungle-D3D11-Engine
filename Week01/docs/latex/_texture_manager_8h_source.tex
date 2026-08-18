@@ -1,0 +1,27 @@
+\doxysection{Texture\+Manager.\+h}
+\hypertarget{_texture_manager_8h_source}{}\label{_texture_manager_8h_source}\index{Render/TextureManager.h@{Render/TextureManager.h}}
+\doxymbox{\hyperlink{_texture_manager_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture}{FTexture}};}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture_manager}{FTextureManager}}}
+\DoxyCodeLine{00010\ \{}
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager_a9204cb67cd904c4b49710d03bc31389c}{Register}}(\textcolor{keyword}{const}\ std::string\ \&Key,\ std::unique\_ptr<FTexture>\ Texture);}
+\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{class_f_texture}{FTexture}}\ *\doxymbox{\hyperlink{class_f_texture_manager_ad199aa919e2a3c376b20a50e29bb96df}{Get}}(\textcolor{keyword}{const}\ std::string\ \&Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \doxymbox{\hyperlink{class_f_texture_manager_af59626fa5964275f29727319443d08b6}{Has}}(\textcolor{keyword}{const}\ std::string\ \&Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_manager_a1602f407f67129a27f085cb2a6978ae6}{Unload}}(\textcolor{keyword}{const}\ std::string\ \&Key);}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_texture_manager_a2afe883588b90d2f5eff5159a64abf25}{Clear}}();}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00020\ \ \ \ \ std::unordered\_map<std::string,\ std::unique\_ptr<FTexture>>\ Textures;}
+\DoxyCodeLine{00021\ \};}
+
+\end{DoxyCode}

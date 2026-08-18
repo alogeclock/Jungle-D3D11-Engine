@@ -1,0 +1,384 @@
+\doxysection{Vertex\+Types.\+h}
+\hypertarget{_vertex_types_8h_source}{}\label{_vertex_types_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/VertexTypes.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/VertexTypes.h}}
+\doxymbox{\hyperlink{_vertex_types_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ VertexTypes.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#pragma\ warning(push)}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#pragma\ warning(disable\ :\ 4251)}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00050\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }DX12}
+\DoxyCodeLine{00052\ \ \ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position\ information.}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_adc0c87650108acfcf8586e98b871798c}{VertexPosition}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a58c1e0417cc5812096bd0f2a762c707d}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a504dfe5c72966a736f3273f7e64af037}{VertexPosition}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a0e094204c65113470b9194daea8e8343}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_af57e0124f8066c35d9e50a2de0daca47}{VertexPosition}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a56cb675a58d48ca2162d70f88b2ad212}{VertexPosition}}(XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition)\ noexcept}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a6b518ca8243d4b3d46c795611bf260b2}{position}}(iposition)}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_ab5b7042c15690dce52763749624e20b0}{VertexPosition}}(FXMVECTOR\ iposition)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a6b518ca8243d4b3d46c795611bf260b2}{position}},\ iposition);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a6b518ca8243d4b3d46c795611bf260b2}{position}};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_a7a47ede509d06de09e8d7ea8aa5470e3}{InputLayout}};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 1;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position\ and\ color\ information.}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a706ba8bcc771d384f218f4865d244a84}{VertexPositionColor}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a2b00b7d31c59a823411e952f30f56ed3}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a94530663719881a190fd317a669bc78b}{VertexPositionColor}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_aad63859279faf1ff9e6ad7ec337cee7e}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a159e411e2a3c8efbcb897caef5950ce6}{VertexPositionColor}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_aa6d71a35146f81e721d1dcb72403eb1c}{VertexPositionColor}}(XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,\ XMFLOAT4\ \textcolor{keyword}{const}\&\ icolor)\ noexcept}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a3afefe9ceef9fe62f412a51e9f633bd5}{position}}(iposition),}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a1415143cc84a36e6636539766048a3f0}{color}}(icolor)}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a57d3b49cc61c3678dc07cccc0e3753e4}{VertexPositionColor}}(FXMVECTOR\ iposition,\ FXMVECTOR\ icolor)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a3afefe9ceef9fe62f412a51e9f633bd5}{position}},\ iposition);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat4(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a1415143cc84a36e6636539766048a3f0}{color}},\ icolor);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a3afefe9ceef9fe62f412a51e9f633bd5}{position}};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT4\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_a1415143cc84a36e6636539766048a3f0}{color}};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_aaa31b9cee69dd48a31ac8577b62bd52d}{InputLayout}};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 2;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position\ and\ texture\ mapping\ information.}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a9ef7cb3898d734c9b63c87a4426708d5}{VertexPositionTexture}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_aced8abd5a9c4796002298780385fd5d4}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_aa8ba9f2d925ae089c366510e1edeed08}{VertexPositionTexture}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a53ca7559f5437218db185644a6c30879}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a492cc2a4d3bd04881be4792d7fa9fe42}{VertexPositionTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_ad8c324c422828a7ecc6f68b94933f7ff}{VertexPositionTexture}}(XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,\ XMFLOAT2\ \textcolor{keyword}{const}\&\ itextureCoordinate)\ noexcept}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_ab93cae804d34c9a61ba320c5fffc1963}{position}}(iposition),}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_aa92f016162f564a0b9e5dfe341ab622e}{textureCoordinate}}(itextureCoordinate)}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a282af5f66639e3af2279d13b74dc290f}{VertexPositionTexture}}(FXMVECTOR\ iposition,\ FXMVECTOR\ itextureCoordinate)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_ab93cae804d34c9a61ba320c5fffc1963}{position}},\ iposition);}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat2(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_aa92f016162f564a0b9e5dfe341ab622e}{textureCoordinate}},\ itextureCoordinate);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_ab93cae804d34c9a61ba320c5fffc1963}{position}};}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_aa92f016162f564a0b9e5dfe341ab622e}{textureCoordinate}};}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_texture_a1ab290a08e1a4e21c90e57a84374bc95}{InputLayout}};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 2;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position\ and\ dual\ texture\ mapping\ information.}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_a736083f26db60ec4edea794638d44c6b}{VertexPositionDualTexture}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ac36182be8c78848f0afdc53e4880856a}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_a031c9025718a834805457154f8dfffc3}{VertexPositionDualTexture}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ab8b70f9efadb7fc74f9c8e824a07cd78}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ace292f2334219799b5b99d7b02099170}{VertexPositionDualTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ab890acff59113a68308a51b5b825cd23}{VertexPositionDualTexture}}(}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \textcolor{keyword}{const}\&\ itextureCoordinate0,}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \textcolor{keyword}{const}\&\ itextureCoordinate1)\ noexcept}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_af83fb09ce6737ea48c61cdbb41a879ac}{position}}(iposition),}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_a87e2d19db2018783d241fd0af8b1fb5c}{textureCoordinate0}}(itextureCoordinate0),}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_acfa1c0742b28450f8634b312d879a61f}{textureCoordinate1}}(itextureCoordinate1)}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_a4dc3ed8f50514ea81cb1956bcb4775a8}{VertexPositionDualTexture}}(}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ iposition,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ itextureCoordinate0,}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ itextureCoordinate1)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_af83fb09ce6737ea48c61cdbb41a879ac}{position}},\ iposition);}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat2(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_a87e2d19db2018783d241fd0af8b1fb5c}{textureCoordinate0}},\ itextureCoordinate0);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat2(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_acfa1c0742b28450f8634b312d879a61f}{textureCoordinate1}},\ itextureCoordinate1);}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_af83fb09ce6737ea48c61cdbb41a879ac}{position}};}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_a87e2d19db2018783d241fd0af8b1fb5c}{textureCoordinate0}};}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_acfa1c0742b28450f8634b312d879a61f}{textureCoordinate1}};}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_dual_texture_ac5a0bc8787637aef1b133dabdc17da49}{InputLayout}};}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 3;}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position\ and\ normal\ vector.}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a56d8267358610bce83953a96503a5d75}{VertexPositionNormal}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a607b70dfb850f19bf6f56489e7413df6}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a5607ef01d3fa227e1928c81f22392e1b}{VertexPositionNormal}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_ab13fb6c57cfd1ddcfd23f429aa2c254d}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a9e00371f432875ebf0f560abc0e5aa60}{VertexPositionNormal}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a096ab58a3a4bf77dd36a333b6e67f7c9}{VertexPositionNormal}}(XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,\ XMFLOAT3\ \textcolor{keyword}{const}\&\ inormal)\ noexcept}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_ae1a7b3b896e186d2c67e6dd4f1920795}{position}}(iposition),}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a5c04c5ba1e2dfdba9569b63af10c1698}{normal}}(inormal)}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a781499ea223f6885ac2f268a912a7f1f}{VertexPositionNormal}}(FXMVECTOR\ iposition,\ FXMVECTOR\ inormal)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_ae1a7b3b896e186d2c67e6dd4f1920795}{position}},\ iposition);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a5c04c5ba1e2dfdba9569b63af10c1698}{normal}},\ inormal);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_ae1a7b3b896e186d2c67e6dd4f1920795}{position}};}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_a5c04c5ba1e2dfdba9569b63af10c1698}{normal}};}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_ae2197a0388a177a602ac6b744baf2a31}{InputLayout}};}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 2;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position,\ color,\ and\ texture\ mapping\ information.}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a159d425eb577eb75df9dd877e42c8e2e}{VertexPositionColorTexture}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a7d2a2e6ec89d4e2fb5e022de69b43c0d}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4f55ecde4cc64467c7d65c209111ba1}{VertexPositionColorTexture}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a6efa92247bc0da4ae883d4c08c7f1a14}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_aa4ae4415a41e799376f902a44e0f494b}{VertexPositionColorTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a745757c275757ad943101cc0286f8102}{VertexPositionColorTexture}}(XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,\ XMFLOAT4\ \textcolor{keyword}{const}\&\ icolor,\ XMFLOAT2\ \textcolor{keyword}{const}\&\ itextureCoordinate)\ noexcept}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a75ec86426acbf9ca2683b7668c565152}{position}}(iposition),}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_af1d1df49dfb834b662bdb1b51a623f3f}{color}}(icolor),}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a78b28622d1b349e93f027c7576792a26}{textureCoordinate}}(itextureCoordinate)}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a5810ee9d14ef136482636d5062f56162}{VertexPositionColorTexture}}(FXMVECTOR\ iposition,\ FXMVECTOR\ icolor,\ FXMVECTOR\ itextureCoordinate)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a75ec86426acbf9ca2683b7668c565152}{position}},\ iposition);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat4(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_af1d1df49dfb834b662bdb1b51a623f3f}{color}},\ icolor);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat2(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a78b28622d1b349e93f027c7576792a26}{textureCoordinate}},\ itextureCoordinate);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a75ec86426acbf9ca2683b7668c565152}{position}};}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT4\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_af1d1df49dfb834b662bdb1b51a623f3f}{color}};}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_a78b28622d1b349e93f027c7576792a26}{textureCoordinate}};}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_color_texture_afbb5f49afdd8a8178756736ae2dd72b4}{InputLayout}};}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 3;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position,\ normal\ vector,\ and\ color\ information.}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a0d24bf4f6a2cf3993fe0d8df1e3dc6fd}{VertexPositionNormalColor}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_acfac63ac06a9b2fb90aa37878afc290b}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a3f6d6ac954b4c72839a10a4923ac7477}{VertexPositionNormalColor}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a2753030b81fdc0fed6bb91190bea3f9d}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a6b74c21597da2853d499300effcb43fd}{VertexPositionNormalColor}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a78f991267c9112dcef7ac07371b3a925}{VertexPositionNormalColor}}(XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,\ XMFLOAT3\ \textcolor{keyword}{const}\&\ inormal,\ XMFLOAT4\ \textcolor{keyword}{const}\&\ icolor)\ noexcept}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_ad91418b9bd96de114d862330410af7fc}{position}}(iposition),}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a235dc68996743bdf20c4393293f77ae2}{normal}}(inormal),}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_af3659cacde7fd660599331d38579b9b2}{color}}(icolor)}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_ac89be1547a4ba55fa2a1bdbda3cb9bb6}{VertexPositionNormalColor}}(FXMVECTOR\ iposition,\ FXMVECTOR\ inormal,\ FXMVECTOR\ icolor)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_ad91418b9bd96de114d862330410af7fc}{position}},\ iposition);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a235dc68996743bdf20c4393293f77ae2}{normal}},\ inormal);}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat4(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_af3659cacde7fd660599331d38579b9b2}{color}},\ icolor);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_ad91418b9bd96de114d862330410af7fc}{position}};}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_a235dc68996743bdf20c4393293f77ae2}{normal}};}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT4\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_af3659cacde7fd660599331d38579b9b2}{color}};}
+\DoxyCodeLine{00287\ }
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_afcc980b63640509e01ed6efcc52b7f68}{InputLayout}};}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 3;}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position,\ normal\ vector,\ and\ texture\ mapping\ information.}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_af02023cb35f2e90f98e4a76c0a4f7e52}{VertexPositionNormalTexture}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ab8cbd4a06b178ed3d09e2081fc26654e}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ab774593578373ef24ef6d52433fb23ef}{VertexPositionNormalTexture}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ab9c7d2a38ebd8d3a3f565124ed9c9e98}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a21fb60c43e4b1237277af89ae0302435}{VertexPositionNormalTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ae477e18f752619ed564a0a54970a285c}{VertexPositionNormalTexture}}(XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,\ XMFLOAT3\ \textcolor{keyword}{const}\&\ inormal,\ XMFLOAT2\ \textcolor{keyword}{const}\&\ itextureCoordinate)\ noexcept}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a35675bb013cc6df35d095060fbee5192}{position}}(iposition),}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ab111e825b9b1586c07fb6c6b63015a3e}{normal}}(inormal),}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a496a3be37f14cf1a0aa8dbacd48df2ec}{textureCoordinate}}(itextureCoordinate)}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00312\ }
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a809b43b4155117069798597dd2fe0740}{VertexPositionNormalTexture}}(FXMVECTOR\ iposition,\ FXMVECTOR\ inormal,\ FXMVECTOR\ itextureCoordinate)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a35675bb013cc6df35d095060fbee5192}{position}},\ iposition);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ab111e825b9b1586c07fb6c6b63015a3e}{normal}},\ inormal);}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat2(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a496a3be37f14cf1a0aa8dbacd48df2ec}{textureCoordinate}},\ itextureCoordinate);}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00319\ }
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a35675bb013cc6df35d095060fbee5192}{position}};}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ab111e825b9b1586c07fb6c6b63015a3e}{normal}};}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_a496a3be37f14cf1a0aa8dbacd48df2ec}{textureCoordinate}};}
+\DoxyCodeLine{00323\ }
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_texture_ae37862ed2115a44149dc150c6e76b6ee}{InputLayout}};}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 3;}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00330\ }
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Vertex\ struct\ holding\ position,\ normal\ vector,\ color,\ and\ texture\ mapping\ information.}}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a6cf6d8603c5047e533ad52733cd0f56d}{VertexPositionNormalColorTexture}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a1dba3aa484a6a83264bceb79bc52f1eb}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_aea844f748c3b43a935402f145766cc4a}{VertexPositionNormalColorTexture}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}\&\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_adc33480551d38809d56ef2bdb446bc3d}{operator=}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a62a94cb30cc33f4299fcaebdf4d8af0a}{VertexPositionNormalColorTexture}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00342\ }
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_aadffa3bc7433fae3bedd1ce8b55a4978}{VertexPositionNormalColorTexture}}(}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \textcolor{keyword}{const}\&\ iposition,}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \textcolor{keyword}{const}\&\ inormal,}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT4\ \textcolor{keyword}{const}\&\ icolor,}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \textcolor{keyword}{const}\&\ itextureCoordinate)\ noexcept}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_ad70ffd92172bfb2e9d46778133f87429}{position}}(iposition),}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a83b0278663ff6a108a4a235f120d245c}{normal}}(inormal),}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_ae35bb6d4b328492ab459ee58530bfd9f}{color}}(icolor),}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_af5b0b66c844f4500bc9eaf00a13dc36e}{textureCoordinate}}(itextureCoordinate)}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_ae7fe205ea094326469b2ddc2d4fab674}{VertexPositionNormalColorTexture}}(FXMVECTOR\ iposition,\ FXMVECTOR\ inormal,\ FXMVECTOR\ icolor,\ CXMVECTOR\ itextureCoordinate)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_ad70ffd92172bfb2e9d46778133f87429}{position}},\ iposition);}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat3(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a83b0278663ff6a108a4a235f120d245c}{normal}},\ inormal);}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat4(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_ae35bb6d4b328492ab459ee58530bfd9f}{color}},\ icolor);}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMStoreFloat2(\&this-\/>\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_af5b0b66c844f4500bc9eaf00a13dc36e}{textureCoordinate}},\ itextureCoordinate);}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00361\ }
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_ad70ffd92172bfb2e9d46778133f87429}{position}};}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT3\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a83b0278663ff6a108a4a235f120d245c}{normal}};}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT4\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_ae35bb6d4b328492ab459ee58530bfd9f}{color}};}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_af5b0b66c844f4500bc9eaf00a13dc36e}{textureCoordinate}};}
+\DoxyCodeLine{00366\ }
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_LAYOUT\_DESC\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_vertex_position_normal_color_texture_a9e98148726a588541346dbacc6203224}{InputLayout}};}
+\DoxyCodeLine{00368\ }
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ InputElementCount\ =\ 4;}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ D3D12\_INPUT\_ELEMENT\_DESC\ InputElements[InputElementCount];}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00373\ \ \ \ \ \}}
+\DoxyCodeLine{00374\ \}}
+\DoxyCodeLine{00375\ }
+\DoxyCodeLine{00376\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00377\ \textcolor{preprocessor}{\#pragma\ warning(pop)}}
+\DoxyCodeLine{00378\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

@@ -1,0 +1,45 @@
+\doxysection{Camera2\+D.\+h}
+\hypertarget{_camera2_d_8h_source}{}\label{_camera2_d_8h_source}\index{Gameplay/Camera2D.h@{Gameplay/Camera2D.h}}
+\doxymbox{\hyperlink{_camera2_d_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_types_8h}{Core/Types.h}}"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}}}
+\DoxyCodeLine{00006\ \{}
+\DoxyCodeLine{00007\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_a490adc04c2cc06c519a3c5f3148433dc}{Reset}}();}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_ac5a4bbc1571429b8f1f0a42d425f323c}{SetViewportSize}}(\textcolor{keywordtype}{float}\ Width,\ \textcolor{keywordtype}{float}\ Height);}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_a487c10dc5ccb55b71289535c2085027d}{SetWorldBounds}}(\textcolor{keywordtype}{float}\ Width,\ \textcolor{keywordtype}{float}\ Height);}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_a5a8809044296f8005e36b5fb4ee34151}{SetPosition}}(\textcolor{keywordtype}{float}\ X,\ \textcolor{keywordtype}{float}\ Y);}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_ae954fe843ef86314f29f2cc85e91810e}{SetTargetCenter}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}\&\ WorldCenter);}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_afc9fa197ae0d257b15b5ca0f63e0e65f}{SetZoom}}(\textcolor{keywordtype}{float}\ InZoom);}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_camera2_d_a35f9a2a6ee4968cb447f6b7561e0a533}{GetZoom}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_a54d1419282b3c9f8e7b542987e0fb754}{SetFollowSpeed}}(\textcolor{keywordtype}{float}\ InFollowSpeed);}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_f_camera2_d_ad9639f78f19ef5c4cee2532674e7af44}{GetFollowSpeed}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_camera2_d_a357aa7f1d49fca3b2814803f8bba2970}{Update}}(\textcolor{keywordtype}{float}\ DeltaTime);}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}\ \doxymbox{\hyperlink{class_f_camera2_d_a3a1b3e140ec466312b47a2a6f1bdf786}{GetPosition}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}\ \doxymbox{\hyperlink{class_f_camera2_d_a49a8b421b2c5de6d09a6f36a9bc0f74c}{WorldToScreen}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}\&\ WorldPosition)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00028\ \ \ \ \ \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}\ Position\{\};}
+\DoxyCodeLine{00029\ \ \ \ \ \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}\ TargetCenter\{\};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{float}\ ViewportWidth\ =\ 0.0f;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{float}\ ViewportHeight\ =\ 0.0f;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{float}\ WorldWidth\ =\ 0.0f;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{float}\ WorldHeight\ =\ 0.0f;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{float}\ Zoom\ =\ 1.07f;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{float}\ FollowSpeed\ =\ 10.0f;}
+\DoxyCodeLine{00039\ \};}
+
+\end{DoxyCode}

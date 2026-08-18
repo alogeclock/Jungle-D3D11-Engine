@@ -1,0 +1,25 @@
+var class_direct_x_1_1_d_x12_1_1_shared_graphics_resource =
+[
+    [ "SharedGraphicsResource", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a1338f9bae4794bb00ea1c3a17ee3715a", null ],
+    [ "SharedGraphicsResource", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a7e56b3418a02f1cdec57c6cccd376075", null ],
+    [ "SharedGraphicsResource", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#ae91cc12d8fb022e0c91d6f514d5c998e", null ],
+    [ "SharedGraphicsResource", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#aca9bacf4f6391edfa05f625571c2784c", null ],
+    [ "SharedGraphicsResource", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a42fbf7a8cee7efbda912d38401e9478e", null ],
+    [ "~SharedGraphicsResource", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a510528af15c1f16c40ec2813df5300bb", null ],
+    [ "GpuAddress", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a0fb68543d0c6e8421202e520dbf28461", null ],
+    [ "Memory", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a68f01f94af9a2142c0df89295e5727aa", null ],
+    [ "operator bool", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#ada83331540ab4c7a5a985d0ffae9e152", null ],
+    [ "operator!=", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#ae963787ee0138349d2a6a8bf1e7692b0", null ],
+    [ "operator=", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#af6f37cbd6d5b9e2780920cb0acfd5766", null ],
+    [ "operator=", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a98a685a3f143178c090be871a4b19f49", null ],
+    [ "operator=", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a427a07674c5a89464db4620dfb67a8a5", null ],
+    [ "operator=", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a69588484cdf4f2afd9a5c38cc8166694", null ],
+    [ "operator==", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#aa483aa23a773fd19028fa24aff0c3098", null ],
+    [ "Reset", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#aabbd44b7a82d1a283ec8c48bb1abe115", null ],
+    [ "Reset", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#aa863f87e321ede289cad747f2dfcf2e8", null ],
+    [ "Reset", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#af27c65290ce3a26fa3854a561feb3ac7", null ],
+    [ "Reset", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a9d3c8fef7e07a5a561706cf54f823909", null ],
+    [ "Resource", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a657937c500ee29e25abddd002216a230", null ],
+    [ "ResourceOffset", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#af2994b37ab01b0564466c8db6fd3a4c9", null ],
+    [ "Size", "class_direct_x_1_1_d_x12_1_1_shared_graphics_resource.html#a9d478fdc511c892c219a5873fc4d6573", null ]
+];

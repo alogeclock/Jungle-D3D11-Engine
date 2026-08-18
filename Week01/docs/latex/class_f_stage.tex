@@ -1,0 +1,473 @@
+\doxysection{FStage Class Reference}
+\hypertarget{class_f_stage}{}\label{class_f_stage}\index{FStage@{FStage}}
+
+
+{\ttfamily \+\#include $<$Stage.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_f_stage_a3deb7aa7822e14c77d581281f158b1f5}{\texorpdfstring{$\sim$}{\string~}\+FStage}} ()
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a177b670745a9425a45f6fa3b71e7ec32}{Load}} (int Stage\+Index, \doxymbox{\hyperlink{class_f_renderer}{FRenderer}} \texorpdfstring{$\ast$}{*}In\+Renderer, \doxymbox{\hyperlink{class_f_texture_manager}{FTexture\+Manager}} \texorpdfstring{$\ast$}{*}In\+Textures)
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a18e3f47a7d25eb986d485f0da9401d8e}{Reset}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a575032fbd92b8ce84d9a5e19f8532cca}{Update}} (float Delta\+Time, \doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context)
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a0a53cc9eca76cbc9779ee31ed4d8cc3a}{Render}} ()
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a7a614cf2e6fa87b4e3026e5f155463b5}{Is\+Walkable}} (int X, int Y) const
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_aa02a0643c7fb4f471047f9441234c0c2}{Is\+Occupied}} (int X, int Y) const
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a090be5bc82bfa3dabac5ab816cf1fab1}{Can\+Move\+To}} (int X, int Y) const
+\item 
+\doxymbox{\hyperlink{class_f_actor}{FActor}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_stage_a4258242cb0f98a6b891c55bcffd24c57}{Find\+Actor\+At}} (int X, int Y)
+\item 
+const \doxymbox{\hyperlink{class_f_actor}{FActor}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_stage_a7fd07ab53bc74e72648a2a729a48c8cb}{Find\+Actor\+At}} (int X, int Y) const
+\item 
+\doxymbox{\hyperlink{class_f_player}{FPlayer}} \& \doxymbox{\hyperlink{class_f_stage_a394110153304fa270b756a8a6e000835}{Get\+Player}} ()
+\item 
+const \doxymbox{\hyperlink{class_f_player}{FPlayer}} \& \doxymbox{\hyperlink{class_f_stage_a578b61c86ed68c008973253d9e150fe2}{Get\+Player}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a5d80d6f2e6dc548196fe507dc44d17cd}{Add\+Monster}} (std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_monster}{FMonster}} $>$ Monster)
+\item 
+std::\+vector$<$ std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_monster}{FMonster}} $>$ $>$ \& \doxymbox{\hyperlink{class_f_stage_add5dec470918bf0d595f6fe806a5db5f}{Get\+Monsters}} ()
+\item 
+const std::\+vector$<$ std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_monster}{FMonster}} $>$ $>$ \& \doxymbox{\hyperlink{class_f_stage_aaa5dfc34be9ae579d333b7ef54b79bfd}{Get\+Monsters}} () const
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{class_f_tile}{FTile}} $>$ \& \doxymbox{\hyperlink{class_f_stage_a9b1eb473c7e907084b94f01942c034f7}{Get\+Tiles}} ()
+\item 
+const std::\+vector$<$ \doxymbox{\hyperlink{class_f_tile}{FTile}} $>$ \& \doxymbox{\hyperlink{class_f_stage_aa7ea19de9fc22742e0687383d4684e7b}{Get\+Tiles}} () const
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{class_f_wall}{FWall}} $>$ \& \doxymbox{\hyperlink{class_f_stage_aac409d9fcc35456f935e34b9b9455fc5}{Get\+Walls}} ()
+\item 
+const std::\+vector$<$ \doxymbox{\hyperlink{class_f_wall}{FWall}} $>$ \& \doxymbox{\hyperlink{class_f_stage_ab5eff933107a7c8bc589aa11f9c79219}{Get\+Walls}} () const
+\item 
+\doxymbox{\hyperlink{class_f_wall}{FWall}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_f_stage_ae99f7c1cf46815e489df0e3ab6b44321}{Find\+Wall\+At}} (int X, int Y)
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a1031a6bffb83d9b925b3b75fd77eae5c}{Remove\+Destroyed\+Walls}} ()
+\item 
+\doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \& \doxymbox{\hyperlink{class_f_stage_a5761a4d4882586daeae2452d68b3a0a7}{Get\+Map}} ()
+\item 
+const \doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \& \doxymbox{\hyperlink{class_f_stage_ab08e149e8fb52f6d8f9f0506e57086e1}{Get\+Map}} () const
+\item 
+\doxymbox{\hyperlink{class_f_beat_system}{FBeat\+System}} \& \doxymbox{\hyperlink{class_f_stage_ac62d59d0647f196f7ca04dd5e99d8ab2}{Get\+Beat\+System}} ()
+\item 
+const \doxymbox{\hyperlink{class_f_beat_system}{FBeat\+System}} \& \doxymbox{\hyperlink{class_f_stage_a7dd5def8ef52d11e0327aceae327c7dd}{Get\+Beat\+System}} () const
+\item 
+\doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}} \& \doxymbox{\hyperlink{class_f_stage_ae42ee4896d533a24b59cdb188c80044e}{Get\+Camera}} ()
+\item 
+const \doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}} \& \doxymbox{\hyperlink{class_f_stage_a8803bf6d5e8cf3f310a6de40002eb843}{Get\+Camera}} () const
+\item 
+\doxymbox{\hyperlink{class_f_score_system}{FScore\+System}} \& \doxymbox{\hyperlink{class_f_stage_a3d1166c59f61a4d9b719d1fd1d15cdd0}{Get\+Score\+System}} ()
+\item 
+const \doxymbox{\hyperlink{class_f_score_system}{FScore\+System}} \& \doxymbox{\hyperlink{class_f_stage_ab37a9e96a235e57b69f300a50ee61362}{Get\+Score\+System}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_ac2dcbddc8ed3171f5b14ed5fdb31021c}{Get\+Score}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_stage_a91e4ca712cbfb0da1f64e8dd8b20d97c}{Get\+Tile\+Size}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a016d3ebf8555e9fd8589f03ba07ead43}{Is\+Game\+Over}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_aed2b927bae8e05c7b836bfd749887231}{Set\+Is\+Cleared}} (bool b\+Is\+Cleared)
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_acae64b4e60b86d1c07313675f48ec41a}{Is\+Cleared}} () const
+\item 
+float \doxymbox{\hyperlink{class_f_stage_aa11199158d611de51286bc7009b1310a}{Get\+Remaining\+Time}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a56712b94d43594c597a014fd0db5444f}{Set\+Remaining\+Time}} (float Time)
+\item 
+float \doxymbox{\hyperlink{class_f_stage_a770cc01ef55c09ef02337e716ba40961}{Get\+Time\+Limit}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_a616e0bd01acce98e8257d871b1915683}{Get\+Darkness\+Level}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ae4727cdee3f5d89f0903f7f1c4d19a64}{Set\+Darkness\+Level}} (int Level)
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a169d08115d8ade93d6cd65070284effd}{Is\+Time\+Frozen}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ae3aa0d5810017bfe84317db0cc22aa86}{Set\+Time\+Frozen}} (bool b\+Frozen)
+\item 
+float \doxymbox{\hyperlink{class_f_stage_ae47a0a83b55bfaa678fae0862423d979}{Get\+Time\+Freeze\+Remaining}} () const
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a8a662f41b41320c8ead506b2c798d23a}{Is\+Darkness\+Disabled}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ad4ef8e58b2f35d3cc5f0efd847f494ff}{Set\+Darkness\+Disabled}} (bool b\+Disabled)
+\item 
+bool \doxymbox{\hyperlink{class_f_stage_a214b72e71df69ae92b9ba74c0cbb0cf0}{Is\+Angry}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a32ac1e10a78ce6f9daaea7b8d252ffc3}{Apply\+Item}} (const \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} \&Item)
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a06dfeb142832383612f9742d79afc822}{Update\+Active\+Effects}} (float Delta\+Time)
+\item 
+const std::\+vector$<$ \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} $>$ \& \doxymbox{\hyperlink{class_f_stage_ac83faad044c470df05854643f121d72e}{Get\+Items}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_af68f830bf45fcaa6a51604625e12aa67}{Get\+Current\+Stage\+Index}} () const
+\item 
+const std::\+string \& \doxymbox{\hyperlink{class_f_stage_aec5d09194ca32f56243f90979d5e001d}{Get\+Stage\+Name}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_ac4822dda94731fbc6b3af9cd542b39cc}{Get\+GoalX}} () const
+\item 
+int \doxymbox{\hyperlink{class_f_stage_af8a1f3a93553dddec1249269da77e8c2}{Get\+GoalY}} () const
+\item 
+void \doxymbox{\hyperlink{class_f_stage_ae9063aa3a8dca0bd290bf1789c9447ce}{Start\+BGM}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_stage_a6509170509180d2bdd181e70d7283aa7}{Stop\+BGM}} ()
+\item 
+void \doxymbox{\hyperlink{class_f_stage_acf227bc1c144141bd6ed8470a183c5a1}{Set\+Player\+Skin\+Key}} (const std::\+string \&Key)
+\item 
+const std::\+string \& \doxymbox{\hyperlink{class_f_stage_ad8fdc978db57ea5e0c39a1121409e417}{Get\+Player\+Skin\+Key}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_stage_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_stage_a3deb7aa7822e14c77d581281f158b1f5}\index{FStage@{FStage}!````~FStage@{\texorpdfstring{$\sim$}{\string~}FStage}}
+\index{````~FStage@{\texorpdfstring{$\sim$}{\string~}FStage}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}FStage()}{\string~FStage()}}
+{\footnotesize\ttfamily \label{class_f_stage_a3deb7aa7822e14c77d581281f158b1f5} 
+FStage::\+\texorpdfstring{$\sim$}{\string~}\+FStage (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_stage_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_stage_a5d80d6f2e6dc548196fe507dc44d17cd}\index{FStage@{FStage}!AddMonster@{AddMonster}}
+\index{AddMonster@{AddMonster}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{AddMonster()}{AddMonster()}}
+{\footnotesize\ttfamily \label{class_f_stage_a5d80d6f2e6dc548196fe507dc44d17cd} 
+void FStage::\+\+Add\+Monster (\begin{DoxyParamCaption}\item[{std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_monster}{FMonster}} $>$}]{Monster}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a32ac1e10a78ce6f9daaea7b8d252ffc3}\index{FStage@{FStage}!ApplyItem@{ApplyItem}}
+\index{ApplyItem@{ApplyItem}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{ApplyItem()}{ApplyItem()}}
+{\footnotesize\ttfamily \label{class_f_stage_a32ac1e10a78ce6f9daaea7b8d252ffc3} 
+void FStage::\+\+Apply\+Item (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} \&}]{Item}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a090be5bc82bfa3dabac5ab816cf1fab1}\index{FStage@{FStage}!CanMoveTo@{CanMoveTo}}
+\index{CanMoveTo@{CanMoveTo}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{CanMoveTo()}{CanMoveTo()}}
+{\footnotesize\ttfamily \label{class_f_stage_a090be5bc82bfa3dabac5ab816cf1fab1} 
+bool FStage::\+\+Can\+Move\+To (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a4258242cb0f98a6b891c55bcffd24c57}\index{FStage@{FStage}!FindActorAt@{FindActorAt}}
+\index{FindActorAt@{FindActorAt}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{FindActorAt()}{FindActorAt()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a4258242cb0f98a6b891c55bcffd24c57} 
+\doxymbox{\hyperlink{class_f_actor}{FActor}} \texorpdfstring{$\ast$}{*} FStage::\+\+Find\+Actor\+At (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a7fd07ab53bc74e72648a2a729a48c8cb}\index{FStage@{FStage}!FindActorAt@{FindActorAt}}
+\index{FindActorAt@{FindActorAt}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{FindActorAt()}{FindActorAt()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a7fd07ab53bc74e72648a2a729a48c8cb} 
+const \doxymbox{\hyperlink{class_f_actor}{FActor}} \texorpdfstring{$\ast$}{*} FStage::\+\+Find\+Actor\+At (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ae99f7c1cf46815e489df0e3ab6b44321}\index{FStage@{FStage}!FindWallAt@{FindWallAt}}
+\index{FindWallAt@{FindWallAt}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{FindWallAt()}{FindWallAt()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae99f7c1cf46815e489df0e3ab6b44321} 
+\doxymbox{\hyperlink{class_f_wall}{FWall}} \texorpdfstring{$\ast$}{*} FStage::\+\+Find\+Wall\+At (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ac62d59d0647f196f7ca04dd5e99d8ab2}\index{FStage@{FStage}!GetBeatSystem@{GetBeatSystem}}
+\index{GetBeatSystem@{GetBeatSystem}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetBeatSystem()}{GetBeatSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_ac62d59d0647f196f7ca04dd5e99d8ab2} 
+\doxymbox{\hyperlink{class_f_beat_system}{FBeat\+System}} \& FStage::\+\+Get\+Beat\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a7dd5def8ef52d11e0327aceae327c7dd}\index{FStage@{FStage}!GetBeatSystem@{GetBeatSystem}}
+\index{GetBeatSystem@{GetBeatSystem}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetBeatSystem()}{GetBeatSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a7dd5def8ef52d11e0327aceae327c7dd} 
+const \doxymbox{\hyperlink{class_f_beat_system}{FBeat\+System}} \& FStage::\+\+Get\+Beat\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ae42ee4896d533a24b59cdb188c80044e}\index{FStage@{FStage}!GetCamera@{GetCamera}}
+\index{GetCamera@{GetCamera}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetCamera()}{GetCamera()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_ae42ee4896d533a24b59cdb188c80044e} 
+\doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}} \& FStage::\+\+Get\+Camera (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a8803bf6d5e8cf3f310a6de40002eb843}\index{FStage@{FStage}!GetCamera@{GetCamera}}
+\index{GetCamera@{GetCamera}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetCamera()}{GetCamera()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a8803bf6d5e8cf3f310a6de40002eb843} 
+const \doxymbox{\hyperlink{class_f_camera2_d}{FCamera2D}} \& FStage::\+\+Get\+Camera (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_af68f830bf45fcaa6a51604625e12aa67}\index{FStage@{FStage}!GetCurrentStageIndex@{GetCurrentStageIndex}}
+\index{GetCurrentStageIndex@{GetCurrentStageIndex}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetCurrentStageIndex()}{GetCurrentStageIndex()}}
+{\footnotesize\ttfamily \label{class_f_stage_af68f830bf45fcaa6a51604625e12aa67} 
+int FStage::\+\+Get\+Current\+Stage\+Index (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a616e0bd01acce98e8257d871b1915683}\index{FStage@{FStage}!GetDarknessLevel@{GetDarknessLevel}}
+\index{GetDarknessLevel@{GetDarknessLevel}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetDarknessLevel()}{GetDarknessLevel()}}
+{\footnotesize\ttfamily \label{class_f_stage_a616e0bd01acce98e8257d871b1915683} 
+int FStage::\+\+Get\+Darkness\+Level (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ac4822dda94731fbc6b3af9cd542b39cc}\index{FStage@{FStage}!GetGoalX@{GetGoalX}}
+\index{GetGoalX@{GetGoalX}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetGoalX()}{GetGoalX()}}
+{\footnotesize\ttfamily \label{class_f_stage_ac4822dda94731fbc6b3af9cd542b39cc} 
+int FStage::\+\+Get\+GoalX (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_af8a1f3a93553dddec1249269da77e8c2}\index{FStage@{FStage}!GetGoalY@{GetGoalY}}
+\index{GetGoalY@{GetGoalY}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetGoalY()}{GetGoalY()}}
+{\footnotesize\ttfamily \label{class_f_stage_af8a1f3a93553dddec1249269da77e8c2} 
+int FStage::\+\+Get\+GoalY (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ac83faad044c470df05854643f121d72e}\index{FStage@{FStage}!GetItems@{GetItems}}
+\index{GetItems@{GetItems}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetItems()}{GetItems()}}
+{\footnotesize\ttfamily \label{class_f_stage_ac83faad044c470df05854643f121d72e} 
+const std::\+vector$<$ \doxymbox{\hyperlink{struct_f_item_data}{FItem\+Data}} $>$ \& FStage::\+\+Get\+Items (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a5761a4d4882586daeae2452d68b3a0a7}\index{FStage@{FStage}!GetMap@{GetMap}}
+\index{GetMap@{GetMap}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetMap()}{GetMap()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a5761a4d4882586daeae2452d68b3a0a7} 
+\doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \& FStage::\+\+Get\+Map (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ab08e149e8fb52f6d8f9f0506e57086e1}\index{FStage@{FStage}!GetMap@{GetMap}}
+\index{GetMap@{GetMap}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetMap()}{GetMap()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_ab08e149e8fb52f6d8f9f0506e57086e1} 
+const \doxymbox{\hyperlink{struct_f_stage_data}{FStage\+Data}} \& FStage::\+\+Get\+Map (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_add5dec470918bf0d595f6fe806a5db5f}\index{FStage@{FStage}!GetMonsters@{GetMonsters}}
+\index{GetMonsters@{GetMonsters}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetMonsters()}{GetMonsters()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_add5dec470918bf0d595f6fe806a5db5f} 
+std::\+vector$<$ std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_monster}{FMonster}} $>$ $>$ \& FStage::\+\+Get\+Monsters (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_aaa5dfc34be9ae579d333b7ef54b79bfd}\index{FStage@{FStage}!GetMonsters@{GetMonsters}}
+\index{GetMonsters@{GetMonsters}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetMonsters()}{GetMonsters()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_aaa5dfc34be9ae579d333b7ef54b79bfd} 
+const std::\+vector$<$ std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_f_monster}{FMonster}} $>$ $>$ \& FStage::\+\+Get\+Monsters (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a394110153304fa270b756a8a6e000835}\index{FStage@{FStage}!GetPlayer@{GetPlayer}}
+\index{GetPlayer@{GetPlayer}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetPlayer()}{GetPlayer()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a394110153304fa270b756a8a6e000835} 
+\doxymbox{\hyperlink{class_f_player}{FPlayer}} \& FStage::\+\+Get\+Player (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a578b61c86ed68c008973253d9e150fe2}\index{FStage@{FStage}!GetPlayer@{GetPlayer}}
+\index{GetPlayer@{GetPlayer}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetPlayer()}{GetPlayer()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a578b61c86ed68c008973253d9e150fe2} 
+const \doxymbox{\hyperlink{class_f_player}{FPlayer}} \& FStage::\+\+Get\+Player (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ad8fdc978db57ea5e0c39a1121409e417}\index{FStage@{FStage}!GetPlayerSkinKey@{GetPlayerSkinKey}}
+\index{GetPlayerSkinKey@{GetPlayerSkinKey}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetPlayerSkinKey()}{GetPlayerSkinKey()}}
+{\footnotesize\ttfamily \label{class_f_stage_ad8fdc978db57ea5e0c39a1121409e417} 
+const std::\+string \& FStage::\+\+Get\+Player\+Skin\+Key (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_aa11199158d611de51286bc7009b1310a}\index{FStage@{FStage}!GetRemainingTime@{GetRemainingTime}}
+\index{GetRemainingTime@{GetRemainingTime}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetRemainingTime()}{GetRemainingTime()}}
+{\footnotesize\ttfamily \label{class_f_stage_aa11199158d611de51286bc7009b1310a} 
+float FStage::\+\+Get\+Remaining\+Time (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ac2dcbddc8ed3171f5b14ed5fdb31021c}\index{FStage@{FStage}!GetScore@{GetScore}}
+\index{GetScore@{GetScore}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetScore()}{GetScore()}}
+{\footnotesize\ttfamily \label{class_f_stage_ac2dcbddc8ed3171f5b14ed5fdb31021c} 
+int FStage::\+\+Get\+Score (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a3d1166c59f61a4d9b719d1fd1d15cdd0}\index{FStage@{FStage}!GetScoreSystem@{GetScoreSystem}}
+\index{GetScoreSystem@{GetScoreSystem}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetScoreSystem()}{GetScoreSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a3d1166c59f61a4d9b719d1fd1d15cdd0} 
+\doxymbox{\hyperlink{class_f_score_system}{FScore\+System}} \& FStage::\+\+Get\+Score\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ab37a9e96a235e57b69f300a50ee61362}\index{FStage@{FStage}!GetScoreSystem@{GetScoreSystem}}
+\index{GetScoreSystem@{GetScoreSystem}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetScoreSystem()}{GetScoreSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_ab37a9e96a235e57b69f300a50ee61362} 
+const \doxymbox{\hyperlink{class_f_score_system}{FScore\+System}} \& FStage::\+\+Get\+Score\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_aec5d09194ca32f56243f90979d5e001d}\index{FStage@{FStage}!GetStageName@{GetStageName}}
+\index{GetStageName@{GetStageName}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetStageName()}{GetStageName()}}
+{\footnotesize\ttfamily \label{class_f_stage_aec5d09194ca32f56243f90979d5e001d} 
+const std::\+string \& FStage::\+\+Get\+Stage\+Name (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a9b1eb473c7e907084b94f01942c034f7}\index{FStage@{FStage}!GetTiles@{GetTiles}}
+\index{GetTiles@{GetTiles}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetTiles()}{GetTiles()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_a9b1eb473c7e907084b94f01942c034f7} 
+std::\+vector$<$ \doxymbox{\hyperlink{class_f_tile}{FTile}} $>$ \& FStage::\+\+Get\+Tiles (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_aa7ea19de9fc22742e0687383d4684e7b}\index{FStage@{FStage}!GetTiles@{GetTiles}}
+\index{GetTiles@{GetTiles}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetTiles()}{GetTiles()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_aa7ea19de9fc22742e0687383d4684e7b} 
+const std::\+vector$<$ \doxymbox{\hyperlink{class_f_tile}{FTile}} $>$ \& FStage::\+\+Get\+Tiles (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a91e4ca712cbfb0da1f64e8dd8b20d97c}\index{FStage@{FStage}!GetTileSize@{GetTileSize}}
+\index{GetTileSize@{GetTileSize}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetTileSize()}{GetTileSize()}}
+{\footnotesize\ttfamily \label{class_f_stage_a91e4ca712cbfb0da1f64e8dd8b20d97c} 
+float FStage::\+\+Get\+Tile\+Size (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_ae47a0a83b55bfaa678fae0862423d979}\index{FStage@{FStage}!GetTimeFreezeRemaining@{GetTimeFreezeRemaining}}
+\index{GetTimeFreezeRemaining@{GetTimeFreezeRemaining}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetTimeFreezeRemaining()}{GetTimeFreezeRemaining()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae47a0a83b55bfaa678fae0862423d979} 
+float FStage::\+\+Get\+Time\+Freeze\+Remaining (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a770cc01ef55c09ef02337e716ba40961}\index{FStage@{FStage}!GetTimeLimit@{GetTimeLimit}}
+\index{GetTimeLimit@{GetTimeLimit}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetTimeLimit()}{GetTimeLimit()}}
+{\footnotesize\ttfamily \label{class_f_stage_a770cc01ef55c09ef02337e716ba40961} 
+float FStage::\+\+Get\+Time\+Limit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_aac409d9fcc35456f935e34b9b9455fc5}\index{FStage@{FStage}!GetWalls@{GetWalls}}
+\index{GetWalls@{GetWalls}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetWalls()}{GetWalls()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_aac409d9fcc35456f935e34b9b9455fc5} 
+std::\+vector$<$ \doxymbox{\hyperlink{class_f_wall}{FWall}} $>$ \& FStage::\+\+Get\+Walls (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ab5eff933107a7c8bc589aa11f9c79219}\index{FStage@{FStage}!GetWalls@{GetWalls}}
+\index{GetWalls@{GetWalls}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{GetWalls()}{GetWalls()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_f_stage_ab5eff933107a7c8bc589aa11f9c79219} 
+const std::\+vector$<$ \doxymbox{\hyperlink{class_f_wall}{FWall}} $>$ \& FStage::\+\+Get\+Walls (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a214b72e71df69ae92b9ba74c0cbb0cf0}\index{FStage@{FStage}!IsAngry@{IsAngry}}
+\index{IsAngry@{IsAngry}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsAngry()}{IsAngry()}}
+{\footnotesize\ttfamily \label{class_f_stage_a214b72e71df69ae92b9ba74c0cbb0cf0} 
+bool FStage::\+\+Is\+Angry (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_acae64b4e60b86d1c07313675f48ec41a}\index{FStage@{FStage}!IsCleared@{IsCleared}}
+\index{IsCleared@{IsCleared}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsCleared()}{IsCleared()}}
+{\footnotesize\ttfamily \label{class_f_stage_acae64b4e60b86d1c07313675f48ec41a} 
+bool FStage::\+\+Is\+Cleared (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a8a662f41b41320c8ead506b2c798d23a}\index{FStage@{FStage}!IsDarknessDisabled@{IsDarknessDisabled}}
+\index{IsDarknessDisabled@{IsDarknessDisabled}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsDarknessDisabled()}{IsDarknessDisabled()}}
+{\footnotesize\ttfamily \label{class_f_stage_a8a662f41b41320c8ead506b2c798d23a} 
+bool FStage::\+\+Is\+Darkness\+Disabled (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a016d3ebf8555e9fd8589f03ba07ead43}\index{FStage@{FStage}!IsGameOver@{IsGameOver}}
+\index{IsGameOver@{IsGameOver}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsGameOver()}{IsGameOver()}}
+{\footnotesize\ttfamily \label{class_f_stage_a016d3ebf8555e9fd8589f03ba07ead43} 
+bool FStage::\+\+Is\+Game\+Over (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_aa02a0643c7fb4f471047f9441234c0c2}\index{FStage@{FStage}!IsOccupied@{IsOccupied}}
+\index{IsOccupied@{IsOccupied}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsOccupied()}{IsOccupied()}}
+{\footnotesize\ttfamily \label{class_f_stage_aa02a0643c7fb4f471047f9441234c0c2} 
+bool FStage::\+\+Is\+Occupied (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a169d08115d8ade93d6cd65070284effd}\index{FStage@{FStage}!IsTimeFrozen@{IsTimeFrozen}}
+\index{IsTimeFrozen@{IsTimeFrozen}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsTimeFrozen()}{IsTimeFrozen()}}
+{\footnotesize\ttfamily \label{class_f_stage_a169d08115d8ade93d6cd65070284effd} 
+bool FStage::\+\+Is\+Time\+Frozen (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a7a614cf2e6fa87b4e3026e5f155463b5}\index{FStage@{FStage}!IsWalkable@{IsWalkable}}
+\index{IsWalkable@{IsWalkable}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{IsWalkable()}{IsWalkable()}}
+{\footnotesize\ttfamily \label{class_f_stage_a7a614cf2e6fa87b4e3026e5f155463b5} 
+bool FStage::\+\+Is\+Walkable (\begin{DoxyParamCaption}\item[{int}]{X}{, }\item[{int}]{Y}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_f_stage_a177b670745a9425a45f6fa3b71e7ec32}\index{FStage@{FStage}!Load@{Load}}
+\index{Load@{Load}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{Load()}{Load()}}
+{\footnotesize\ttfamily \label{class_f_stage_a177b670745a9425a45f6fa3b71e7ec32} 
+bool FStage::\+\+Load (\begin{DoxyParamCaption}\item[{int}]{Stage\+Index}{, }\item[{\doxymbox{\hyperlink{class_f_renderer}{FRenderer}} \texorpdfstring{$\ast$}{*}}]{In\+Renderer}{, }\item[{\doxymbox{\hyperlink{class_f_texture_manager}{FTexture\+Manager}} \texorpdfstring{$\ast$}{*}}]{In\+Textures}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a1031a6bffb83d9b925b3b75fd77eae5c}\index{FStage@{FStage}!RemoveDestroyedWalls@{RemoveDestroyedWalls}}
+\index{RemoveDestroyedWalls@{RemoveDestroyedWalls}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{RemoveDestroyedWalls()}{RemoveDestroyedWalls()}}
+{\footnotesize\ttfamily \label{class_f_stage_a1031a6bffb83d9b925b3b75fd77eae5c} 
+void FStage::\+\+Remove\+Destroyed\+Walls (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a0a53cc9eca76cbc9779ee31ed4d8cc3a}\index{FStage@{FStage}!Render@{Render}}
+\index{Render@{Render}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_f_stage_a0a53cc9eca76cbc9779ee31ed4d8cc3a} 
+void FStage::\+\+Render (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a18e3f47a7d25eb986d485f0da9401d8e}\index{FStage@{FStage}!Reset@{Reset}}
+\index{Reset@{Reset}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily \label{class_f_stage_a18e3f47a7d25eb986d485f0da9401d8e} 
+void FStage::\+\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ad4ef8e58b2f35d3cc5f0efd847f494ff}\index{FStage@{FStage}!SetDarknessDisabled@{SetDarknessDisabled}}
+\index{SetDarknessDisabled@{SetDarknessDisabled}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetDarknessDisabled()}{SetDarknessDisabled()}}
+{\footnotesize\ttfamily \label{class_f_stage_ad4ef8e58b2f35d3cc5f0efd847f494ff} 
+void FStage::\+\+Set\+Darkness\+Disabled (\begin{DoxyParamCaption}\item[{bool}]{b\+Disabled}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ae4727cdee3f5d89f0903f7f1c4d19a64}\index{FStage@{FStage}!SetDarknessLevel@{SetDarknessLevel}}
+\index{SetDarknessLevel@{SetDarknessLevel}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetDarknessLevel()}{SetDarknessLevel()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae4727cdee3f5d89f0903f7f1c4d19a64} 
+void FStage::\+\+Set\+Darkness\+Level (\begin{DoxyParamCaption}\item[{int}]{Level}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_aed2b927bae8e05c7b836bfd749887231}\index{FStage@{FStage}!SetIsCleared@{SetIsCleared}}
+\index{SetIsCleared@{SetIsCleared}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetIsCleared()}{SetIsCleared()}}
+{\footnotesize\ttfamily \label{class_f_stage_aed2b927bae8e05c7b836bfd749887231} 
+void FStage::\+\+Set\+Is\+Cleared (\begin{DoxyParamCaption}\item[{bool}]{b\+Is\+Cleared}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_acf227bc1c144141bd6ed8470a183c5a1}\index{FStage@{FStage}!SetPlayerSkinKey@{SetPlayerSkinKey}}
+\index{SetPlayerSkinKey@{SetPlayerSkinKey}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetPlayerSkinKey()}{SetPlayerSkinKey()}}
+{\footnotesize\ttfamily \label{class_f_stage_acf227bc1c144141bd6ed8470a183c5a1} 
+void FStage::\+\+Set\+Player\+Skin\+Key (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{Key}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a56712b94d43594c597a014fd0db5444f}\index{FStage@{FStage}!SetRemainingTime@{SetRemainingTime}}
+\index{SetRemainingTime@{SetRemainingTime}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetRemainingTime()}{SetRemainingTime()}}
+{\footnotesize\ttfamily \label{class_f_stage_a56712b94d43594c597a014fd0db5444f} 
+void FStage::\+\+Set\+Remaining\+Time (\begin{DoxyParamCaption}\item[{float}]{Time}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ae3aa0d5810017bfe84317db0cc22aa86}\index{FStage@{FStage}!SetTimeFrozen@{SetTimeFrozen}}
+\index{SetTimeFrozen@{SetTimeFrozen}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{SetTimeFrozen()}{SetTimeFrozen()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae3aa0d5810017bfe84317db0cc22aa86} 
+void FStage::\+\+Set\+Time\+Frozen (\begin{DoxyParamCaption}\item[{bool}]{b\+Frozen}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_ae9063aa3a8dca0bd290bf1789c9447ce}\index{FStage@{FStage}!StartBGM@{StartBGM}}
+\index{StartBGM@{StartBGM}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{StartBGM()}{StartBGM()}}
+{\footnotesize\ttfamily \label{class_f_stage_ae9063aa3a8dca0bd290bf1789c9447ce} 
+void FStage::\+\+Start\+BGM (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a6509170509180d2bdd181e70d7283aa7}\index{FStage@{FStage}!StopBGM@{StopBGM}}
+\index{StopBGM@{StopBGM}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{StopBGM()}{StopBGM()}}
+{\footnotesize\ttfamily \label{class_f_stage_a6509170509180d2bdd181e70d7283aa7} 
+void FStage::\+\+Stop\+BGM (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a575032fbd92b8ce84d9a5e19f8532cca}\index{FStage@{FStage}!Update@{Update}}
+\index{Update@{Update}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_stage_a575032fbd92b8ce84d9a5e19f8532cca} 
+void FStage::\+\+Update (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{, }\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_f_stage_a06dfeb142832383612f9742d79afc822}\index{FStage@{FStage}!UpdateActiveEffects@{UpdateActiveEffects}}
+\index{UpdateActiveEffects@{UpdateActiveEffects}!FStage@{FStage}}
+\doxysubsubsection{\texorpdfstring{UpdateActiveEffects()}{UpdateActiveEffects()}}
+{\footnotesize\ttfamily \label{class_f_stage_a06dfeb142832383612f9742d79afc822} 
+void FStage::\+\+Update\+Active\+Effects (\begin{DoxyParamCaption}\item[{float}]{Delta\+Time}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Gameplay/\+\doxymbox{\hyperlink{_stage_8h}{Stage.\+h}}\item 
+Gameplay/\+\doxymbox{\hyperlink{_stage_8cpp}{Stage.\+cpp}}\end{DoxyCompactItemize}

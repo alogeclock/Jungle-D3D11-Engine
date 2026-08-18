@@ -1,0 +1,25 @@
+\doxysection{Game\+Over\+Popup.\+h}
+\hypertarget{_game_over_popup_8h_source}{}\label{_game_over_popup_8h_source}\index{UI/popup/GameOverPopup.h@{UI/popup/GameOverPopup.h}}
+\doxymbox{\hyperlink{_game_over_popup_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_action_8h}{UIPopupAction.h}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_popup_base_8h}{UIPopupBase.h}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_game_over_popup}{FGameOverPopup}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopupBase}}}
+\DoxyCodeLine{00007\ \{}
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ \doxymbox{\hyperlink{class_f_game_over_popup_af8beb0922b3b2448b49e6b409393448e}{ConsumeAction}}();}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_game_over_popup_a8266db842d0b875f5bece95454b8c5de}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_game_over_popup_a9130f831a51de149dd6dd039c5cbe393}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopupContentAlign}}\ ContentAlign\ =\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd}{EUIPopupContentAlign::Center}};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopupContentTextSize}}\ ContentTextSize\ =\ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3}{EUIPopupContentTextSize::Big}};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00018\ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ PendingAction\ =\ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1aa6adf97f83acf6453d4a6a4b1070f3754}{EUIPopupAction::None}};}
+\DoxyCodeLine{00019\ \};}
+
+\end{DoxyCode}

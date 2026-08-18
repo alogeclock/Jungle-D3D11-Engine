@@ -1,0 +1,48 @@
+\doxysection{Item.\+h}
+\hypertarget{_item_8h_source}{}\label{_item_8h_source}\index{Gameplay/Item.h@{Gameplay/Item.h}}
+\doxymbox{\hyperlink{_item_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItemType}}}
+\DoxyCodeLine{00005\ \{}
+\DoxyCodeLine{00006\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a6ae2a59f875534297e7a2379bc8fa909}{Invincibility}},}
+\DoxyCodeLine{00007\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a8cb2592d8513f72c2a42403c7efaeadb}{TimeScaleDown}},}
+\DoxyCodeLine{00008\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a7739549fff07a20ca811641d88534d4d}{DarknessUp}},}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a4e21ea5f44f26c83670336fdbd3d181e}{DarknessDown}},}
+\DoxyCodeLine{00010\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762af4b0cfd652d521a7fc34c0152067ba9c}{TimeFreeze}},}
+\DoxyCodeLine{00011\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762aeff7d0c22b481f2b897592067cf5dd9e}{HpUp}}}
+\DoxyCodeLine{00012\ \};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_item_data}{FItemData}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_item_data_a9e5a65eb6db70dab1710b13ac9ac6773}{X}}\ =\ 0;}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_item_data_a5c34b0c36a665f534355b3648709834a}{Y}}\ =\ 0;}
+\DoxyCodeLine{00018\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItemType}}\ \doxymbox{\hyperlink{struct_f_item_data_a5c587c0d48bfe2fc34b4b04dd40bf73a}{Type}}\ =\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a6ae2a59f875534297e7a2379bc8fa909}{EItemType::Invincibility}};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_item_data_ab8d6a4e7aae0efde8e332fd781fd6f4c}{Duration}}\ =\ 0.0f;\ \ \textcolor{comment}{//\ 0\ =\ permanent\ (darkness)}}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_f_item_data_a2fe16038b06fc808295fe68eb802d074}{Level}}\ =\ 0;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ DarknessUp/Down:\ target\ level\ (1\string~5)}}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_f_item_data_a9de2f545dcb26d99bc3f69154700431e}{bPickedUp}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00022\ \};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_active_effect}{FActiveEffect}}}
+\DoxyCodeLine{00025\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItemType}}\ \doxymbox{\hyperlink{struct_f_active_effect_aa35480d8f5b0c2ed32443a20b0e44710}{Type}};}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_f_active_effect_aad1c22bf689f16829bdf7ec20bd076ed}{RemainingTime}};}
+\DoxyCodeLine{00028\ \};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{inline}\ std::string\ \doxymbox{\hyperlink{_item_8h_a18d07378b72036816a79d86ab8a910b5}{GetItemTextureKey}}(\doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762}{EItemType}}\ Type)}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordflow}{switch}\ (Type)}
+\DoxyCodeLine{00033\ \ \ \ \ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a6ae2a59f875534297e7a2379bc8fa909}{EItemType::Invincibility}}:\ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}item\_invincibility"{}};}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a8cb2592d8513f72c2a42403c7efaeadb}{EItemType::TimeScaleDown}}:\ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}item\_time\_scale\_down"{}};}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a7739549fff07a20ca811641d88534d4d}{EItemType::DarknessUp}}:\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}item\_darkness\_up"{}};}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762a4e21ea5f44f26c83670336fdbd3d181e}{EItemType::DarknessDown}}:\ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}item\_darkness\_down"{}};}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762af4b0cfd652d521a7fc34c0152067ba9c}{EItemType::TimeFreeze}}:\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}item\_time\_freeze"{}};}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{_item_8h_a8e767a593b51b2324703625995d9e762aeff7d0c22b481f2b897592067cf5dd9e}{EItemType::HpUp}}:\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}item\_hp\_up"{}};}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{default}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}item\_invincibility"{}};}
+\DoxyCodeLine{00041\ \ \ \ \ \}}
+\DoxyCodeLine{00042\ \}}
+
+\end{DoxyCode}
