@@ -6,7 +6,9 @@ for %%I in ("%SCRIPT_DIR%..") do set "REPO_ROOT=%%~fI"
 
 set "ENGINE_DIR=%REPO_ROOT%\KraftonEngine"
 set "THIRDPARTY_DIR=%ENGINE_DIR%\ThirdParty"
-set "NVCLOTH_BUILD_ROOT=%ENGINE_DIR%\Build"
+rem Keep generated third-party projects outside the repository. Deep checkout
+rem paths can exceed MSBuild FileTracker's legacy path limit during CMake tests.
+set "NVCLOTH_BUILD_ROOT=%LOCALAPPDATA%\JungleGameTechLab\Week13"
 set "NVCLOTH_ROOT=%NVCLOTH_BUILD_ROOT%\NvCloth"
 set "NVCLOTH_SDK_DIR=%NVCLOTH_ROOT%\NvCloth"
 set "NVCLOTH_PXSHARED_DIR=%NVCLOTH_ROOT%\PxShared"

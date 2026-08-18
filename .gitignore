@@ -12,6 +12,11 @@
 *.lib
 *.dll
 *.exe
+**/packages/
+
+# Source folders named Debug are build inputs.
+!**/Source/**/Debug/
+!**/Source/**/Debug/**
 
 # Unreal-style generated directories
 **/Binaries/
@@ -28,4 +33,3 @@
 *.zip
 *.7z
 *.rar
-

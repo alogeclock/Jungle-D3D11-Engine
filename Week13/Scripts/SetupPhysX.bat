@@ -6,7 +6,9 @@ for %%I in ("%SCRIPT_DIR%..") do set "REPO_ROOT=%%~fI"
 
 set "ENGINE_DIR=%REPO_ROOT%\KraftonEngine"
 set "THIRDPARTY_DIR=%ENGINE_DIR%\ThirdParty"
-set "PHYSX_BUILD_ROOT=%ENGINE_DIR%\Build"
+rem Keep generated third-party projects outside the repository. Deep checkout
+rem paths can exceed MSBuild FileTracker's legacy path limit during CMake tests.
+set "PHYSX_BUILD_ROOT=%LOCALAPPDATA%\JungleGameTechLab\Week13"
 set "PHYSX_LEGACY_ROOT=%REPO_ROOT%\PhysX"
 set "PHYSX_OLD_SOURCE_ROOT=%THIRDPARTY_DIR%\PhysXSource"
 set "PHYSX_ROOT=%PHYSX_BUILD_ROOT%\PhysX"
@@ -66,7 +68,12 @@ if not exist "%PHYSX_SDK_DIR%\" (
     exit /b 1
 )
 
-set "PM_python_PATH=%REPO_ROOT%\Scripts\python"
+where /q python
+if errorlevel 1 (
+    call :Error "python.exe was not found. Install Python or add it to PATH."
+    exit /b 1
+)
+set "PM_PYTHON=python"
 
 call :CopyFile "%REPO_ROOT%\Scripts\PhysX\generate_projects.bat" "%PHYSX_SDK_DIR%\generate_projects.bat"
 if errorlevel 1 exit /b 1

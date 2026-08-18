@@ -166,6 +166,10 @@
     <ThirdPartyBinaryConfiguration Condition="'$(Configuration)'=='Debug'">Debug</ThirdPartyBinaryConfiguration>
     <FbxSdkConfiguration>release</FbxSdkConfiguration>
     <FbxSdkConfiguration Condition="'$(Configuration)'=='Debug'">debug</FbxSdkConfiguration>
+    <FbxSdkRoot Condition="'$(FbxSdkRoot)'==''">$(ProgramW6432)\Autodesk\FBX\FBX SDK\2020.3.9</FbxSdkRoot>
+    <FbxSdkLibDir Condition="Exists('$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration)\libfbxsdk.lib')">$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration)</FbxSdkLibDir>
+    <FbxSdkLibDir Condition="'$(FbxSdkLibDir)'=='' and Exists('$(FbxSdkRoot)\lib\$(Platform)\$(FbxSdkConfiguration)\libfbxsdk.lib')">$(FbxSdkRoot)\lib\$(Platform)\$(FbxSdkConfiguration)</FbxSdkLibDir>
+    <FbxSdkRuntimeDll Condition="Exists('$(FbxSdkLibDir)\libfbxsdk.dll')">$(FbxSdkLibDir)\libfbxsdk.dll</FbxSdkRuntimeDll>
     <DirectXTKBinaryConfiguration>Release</DirectXTKBinaryConfiguration>
     <DirectXTKBinaryConfiguration Condition="'$(Configuration)'=='Debug'">Debug</DirectXTKBinaryConfiguration>
     <DirectXTKPlatform>$(Platform)</DirectXTKPlatform>
@@ -233,7 +237,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(FbxSdkLibDir);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTK.lib;RmlUiCore.lib;SoLoud.lib;libfbxsdk.lib;gdiplus.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -257,7 +261,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(FbxSdkLibDir);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTK.lib;RmlUiCore.lib;SoLoud.lib;libfbxsdk.lib;gdiplus.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -305,7 +309,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(FbxSdkLibDir);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTK.lib;RmlUiCore.lib;SoLoud.lib;libfbxsdk.lib;gdiplus.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -329,7 +333,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)packages\directxtk_desktop_win10.2025.10.28.2\native\lib\$(DirectXTKPlatform)\$(DirectXTKBinaryConfiguration);$(ProjectDir)ThirdParty\RmlUi\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(ProjectDir)ThirdParty\SoLoud\Lib\$(Platform)\$(ThirdPartyBinaryConfiguration);$(FbxSdkLibDir);$(ProjectDir)ThirdParty\luajit\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTK.lib;RmlUiCore.lib;SoLoud.lib;libfbxsdk.lib;gdiplus.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -343,7 +347,7 @@
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\BuildTools\Scripts\BuildSoLoudLib.ps1&quot; -ProjectDir &quot;$(MSBuildProjectDirectory)&quot; -Configuration &quot;$(ThirdPartyBinaryConfiguration)&quot; -Platform &quot;$(Platform)&quot;" />
   </Target>
   <Target Name="GenerateReflectionCode" BeforeTargets="ClCompile">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)\..\Scripts\python\python.exe&quot; &quot;$(MSBuildProjectDirectory)\..\Scripts\GenerateReflection.py&quot;" />
+    <Exec Command="python &quot;$(MSBuildProjectDirectory)\..\Scripts\GenerateReflection.py&quot;" />
   </Target>
   <ItemGroup>
     <ClCompile Include="Intermediate\Reflection\Animation\FAnimGraphNodeDesc.gen.cpp" />
@@ -1441,16 +1445,18 @@
   <Target Name="CopyLuaJitRuntimeDll" AfterTargets="Build" Condition="Exists('$(ProjectDir)ThirdParty\luajit\src\lua51.dll')">
     <Copy SourceFiles="$(ProjectDir)ThirdParty\luajit\src\lua51.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
-  <Target Name="CopyFbxSdkRuntimeDll" AfterTargets="Build" Condition="'$(Platform)'=='x64' and '$(Configuration)'!='ObjViewer' and Exists('$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration)\libfbxsdk.dll')">
-    <Copy SourceFiles="$(ProjectDir)ThirdParty\FBX\lib\$(FbxSdkConfiguration)\libfbxsdk.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  <Target Name="CopyFbxSdkRuntimeDll" AfterTargets="Build" Condition="'$(Platform)'=='x64' and '$(Configuration)'!='ObjViewer' and Exists('$(FbxSdkRuntimeDll)')">
+    <Copy SourceFiles="$(FbxSdkRuntimeDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets" Condition="Exists('packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets')" />
+    <Import Project="packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets" Condition="Exists('packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild" DependsOnTargets="RestoreNuGetPackages">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing and automatic restore failed. Restore NuGet packages or build again with network access. Missing file: {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtk_desktop_win10.2025.10.28.2\build\native\directxtk_desktop_win10.targets'))" />
+    <Error Condition="!Exists('packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets'))" />
   </Target>
 </Project>

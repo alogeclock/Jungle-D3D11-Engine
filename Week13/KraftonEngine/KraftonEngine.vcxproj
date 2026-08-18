@@ -112,6 +112,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <FbxSdkConfiguration>release</FbxSdkConfiguration>
+    <FbxSdkConfiguration Condition="'$(Configuration)'=='Debug'">debug</FbxSdkConfiguration>
+    <FbxSdkRoot Condition="'$(FbxSdkRoot)'==''">$(ProgramW6432)\Autodesk\FBX\FBX SDK\2020.3.9</FbxSdkRoot>
+    <FbxSdkLibDir Condition="Exists('$(ProjectDir)ThirdParty\fbx\lib\x64\$(FbxSdkConfiguration)\libfbxsdk.lib')">$(ProjectDir)ThirdParty\fbx\lib\x64\$(FbxSdkConfiguration)</FbxSdkLibDir>
+    <FbxSdkLibDir Condition="'$(FbxSdkLibDir)'=='' and Exists('$(FbxSdkRoot)\lib\$(Platform)\$(FbxSdkConfiguration)\libfbxsdk.lib')">$(FbxSdkRoot)\lib\$(Platform)\$(FbxSdkConfiguration)</FbxSdkLibDir>
+    <FbxSdkRuntimeDll Condition="Exists('$(FbxSdkLibDir)\libfbxsdk.dll')">$(FbxSdkLibDir)\libfbxsdk.dll</FbxSdkRuntimeDll>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
@@ -130,14 +138,14 @@
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
     <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;ThirdParty\PhysX\Include\physx;ThirdParty\PhysX\Include\pxshared;ThirdParty\NvCloth\Include;ThirdParty\NvCloth\Include\PxShared;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
-    <LibraryPath>ThirdParty\RmlUi\Debug;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Debug;ThirdParty\NvCloth\Lib\x64\Debug;ThirdParty\fbx\lib\x64\debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>ThirdParty\RmlUi\Debug;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Debug;ThirdParty\NvCloth\Lib\x64\Debug;$(FbxSdkLibDir);$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
     <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;ThirdParty\PhysX\Include\physx;ThirdParty\PhysX\Include\pxshared;ThirdParty\NvCloth\Include;ThirdParty\NvCloth\Include\PxShared;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
-    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Release;ThirdParty\NvCloth\Lib\x64\Release;ThirdParty\fbx\lib\x64\release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Release;ThirdParty\NvCloth\Lib\x64\Release;$(FbxSdkLibDir);$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'">
@@ -151,7 +159,7 @@
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\</IntDir>
     <IncludePath>Source\Engine;Source;ThirdParty;ThirdParty\ImGui;ThirdParty\RmlUi\Include;Source\Editor;Source\Game;ThirdParty\lua\include;ThirdParty\sol2\include;ThirdParty\fmod\include;Intermediate\Generated\Inc;.;ThirdParty\PhysX\Include\physx;ThirdParty\PhysX\Include\pxshared;ThirdParty\NvCloth\Include;ThirdParty\NvCloth\Include\PxShared;ThirdParty\fbx\include;$(IncludePath)</IncludePath>
-    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Release;ThirdParty\NvCloth\Lib\x64\Release;ThirdParty\fbx\lib\x64\release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>ThirdParty\RmlUi\Release;ThirdParty\fmod\lib;ThirdParty\PhysX\Lib\x64\Release;ThirdParty\NvCloth\Lib\x64\Release;$(FbxSdkLibDir);$(LibraryPath)</LibraryPath>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">
@@ -220,7 +228,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fmod\lib\fmodL.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\PhysX\Bin\x64\Debug\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\NvCloth\Bin\x64\Debug\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"
-xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\debug\libfbxsdk.dll" "$(OutDir)"</Command>
+if exist "$(FbxSdkRuntimeDll)" copy /Y "$(FbxSdkRuntimeDll)" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -248,7 +256,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fmod\lib\fmod.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\PhysX\Bin\x64\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\NvCloth\Bin\x64\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"
-xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"</Command>
+if exist "$(FbxSdkRuntimeDll)" copy /Y "$(FbxSdkRuntimeDll)" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'">
@@ -295,7 +303,7 @@ xcopy /Y "$(ProjectDir)ThirdParty\fmod\lib\fmod.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\PhysX\Bin\x64\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\NvCloth\Bin\x64\Release\*.dll" "$(OutDir)"
 xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"
-xcopy /Y "$(ProjectDir)ThirdParty\fbx\lib\x64\release\libfbxsdk.dll" "$(OutDir)"</Command>
+if exist "$(FbxSdkRuntimeDll)" copy /Y "$(FbxSdkRuntimeDll)" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">
@@ -1910,18 +1918,20 @@ xcopy /Y "$(ProjectDir)ThirdParty\lua\bin\lua51.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="GenerateCode" BeforeTargets="ClCompile">
-    <Exec Command="$(SolutionDir)Scripts\python\python.exe $(SolutionDir)Scripts\GenerateCode.py" />
+    <Exec Command="python &quot;$(SolutionDir)Scripts\GenerateCode.py&quot;" />
     <ItemGroup>
       <ClCompile Include="Intermediate\Generated\Source\*.gen.cpp" />
     </ItemGroup>
   </Target>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets" Condition="Exists('packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets')" />
+    <Import Project="packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets" Condition="Exists('packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtk_desktop_win10.2026.5.8.1\build\native\directxtk_desktop_win10.targets'))" />
+    <Error Condition="!Exists('packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\luajit.native.2.1.1739213504\build\native\luajit.native.targets'))" />
   </Target>
 </Project>
