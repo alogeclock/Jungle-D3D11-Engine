@@ -1,0 +1,66 @@
+﻿#pragma once
+
+#include "EditorViewportSettings.h"
+#include "GizmoToolSettings.h"
+#include "Core/CoreTypes.h"
+#include "Platform/Paths.h"
+#include "Core/Singleton.h"
+#include "Math/Vector.h"
+#include "Math/Rotator.h"
+#include "Render/Types/ViewTypes.h"
+
+class FEditorSettings : public TSingleton<FEditorSettings>
+{
+	friend class TSingleton<FEditorSettings>;
+
+public:
+	// Viewport
+	FVector InitViewPos = FVector(10, 0, 5);
+	FVector InitLookAt = FVector(0, 0, 0);
+
+	// Viewport Layout
+	int32 LayoutType = 0; // EViewportLayout
+	float SplitterRatios[3] = { 0.5f, 0.5f, 0.5f };
+	int32 SplitterCount = 0;
+
+	// Perspective Camera (slot 0) 복원용
+	FVector PerspCamLocation = FVector(10, 0, 5);
+	FRotator PerspCamRotation;
+	float PerspCamFOV = 60.0f;
+	float PerspCamNearClip = 0.1f;
+	float PerspCamFarClip = 1000.0f;
+	bool PerspCamDOFEnabled = false;
+	float PerspCamFocusDistance = 10.0f;
+	float PerspCamFocalLength = 10.0f;
+	float PerspCamFocusRange = 5.0f;
+	float PerspCamAperture = 4.0f;
+	float PerspCamMaxBlurRadius = 8.0f;
+	float PerspCamNearCoCScale = 0.5f;
+
+	FViewportCameraControlSettings LevelViewportCameraControls;
+	FEditorViewportSettings LevelViewportSettings[4];
+	FEditorViewportSettings MeshEditorViewportSettings;
+
+	// File paths
+	FString EditorStartLevel;  // 비어있으면 빈 씬, 씬 파일명(확장자 제외)이면 자동 로드
+	FString ContentBrowserPath; // 비어있으면 프로젝트 루트
+
+	// UI 위젯 표시 여부
+	struct FUIVisibility
+	{
+		bool bConsole = true;
+		bool bControl = true;
+		bool bProperty = true;
+		bool bScene = true;
+		bool bStat = false;
+		bool bContentBrowser = true;
+		bool bImGUISettings = false;
+		bool bShadowMapDebug = false;
+		bool bVehicleDebug = false;
+	} UI;
+
+	void SaveToFile(const FString& Path) const;
+	void LoadFromFile(const FString& Path);
+
+	static FString GetDefaultSettingsPath() { return FPaths::ToUtf8(FPaths::SettingsFilePath()); }
+};

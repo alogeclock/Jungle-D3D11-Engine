@@ -1,0 +1,15 @@
+{
+  "BlendMode" : "Opaque",
+  "BlendState" : "Opaque",
+  "DepthStencilState" : "Default",
+  "Origin" : "FbxImport",
+  "Parameters" : {
+    "HasNormalMap" : 0.000000,
+    "SectionColor" : [0.921582, 0.123920, 0.001764, 1.000000],
+    "_pad" : [0.000000, 0.000000, 0.000000]
+  },
+  "PathFileName" : "Asset/Mesh/Vehicles/Truck/Kids Truck_Tire_Mat3.001.mat",
+  "RasterizerState" : "SolidBackCull",
+  "RenderPass" : "Opaque",
+  "ShaderPath" : "Shaders/Geometry/UberLit.hlsl"
+}

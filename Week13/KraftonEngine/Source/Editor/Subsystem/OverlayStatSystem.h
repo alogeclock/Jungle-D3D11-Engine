@@ -1,0 +1,121 @@
+﻿#pragma once
+
+#include "Core/CoreTypes.h"
+#include "Math/Vector.h"
+
+class UEditorEngine;
+struct FRect;
+
+// 스크린 공간 텍스트 — Overlay Stats 등에서 사용
+struct FOverlayStatLine
+{
+	FString Text;
+	FVector2 ScreenPosition = FVector2(0.0f, 0.0f);
+};
+
+// 레이블/값 쌍 — 컬럼 정렬 렌더링용
+struct FStatRow
+{
+	FString Label;
+	FString Value;
+	bool    bIsSectionHeader = false; // true면 구분선 헤더로 렌더링
+};
+
+struct FOverlayStatLayout
+{
+	float StartX = 16.0f;
+	float StartY = 25.0f;
+	float LineHeight = 20.0f;
+	float GroupSpacing = 12.0f;
+	float TextScale = 1.0f;
+};
+
+class FOverlayStatSystem
+{
+public:
+	FOverlayStatSystem() = default;
+
+	void ShowFPS(bool bEnable = true) { bShowFPS = bEnable; }
+	void ShowPickingTime(bool bEnable = true) { bShowPickingTime = bEnable; }
+	void ShowMemory(bool bEnable = true) { bShowMemory = bEnable; }
+	void ShowShadow(bool bEnable = true) { bShowShadow = bEnable; }
+	void ShowSkinning(bool bEnable = true) { bShowSkinning = bEnable; }
+	void ShowParticle(bool bEnable = true) { bShowParticle = bEnable; }
+	void ShowPhysics(bool bEnable = true) { bShowPhysics = bEnable; }
+	void ShowRagdoll(bool bEnable = true) { bShowRagdoll = bEnable; }
+	void ShowCloth(bool bEnable = true) { bShowCloth = bEnable; }
+	void ShowVehicle(bool bEnable = true) { bShowVehicle = bEnable; }
+	bool IsShowingFPS() const { return bShowFPS; }
+	bool IsShowingMemory() const { return bShowMemory; }
+	bool IsShowingShadow() const { return bShowShadow; }
+	bool IsShowingSkinning() const { return bShowSkinning; }
+	bool IsShowingParticle() const { return bShowParticle; }
+	bool IsShowingPhysics() const { return bShowPhysics; }
+	bool IsShowingRagdoll() const { return bShowRagdoll; }
+	bool IsShowingCloth() const { return bShowCloth; }
+	bool IsShowingVehicle() const { return bShowVehicle; }
+	bool ToggleFPS() { bShowFPS = !bShowFPS; return bShowFPS; }
+	bool ToggleMemory() { bShowMemory = !bShowMemory; return bShowMemory; }
+	bool ToggleShadow() { bShowShadow = !bShowShadow; return bShowShadow; }
+	bool ToggleSkinning() { bShowSkinning = !bShowSkinning; return bShowSkinning; }
+	bool ToggleParticle() { bShowParticle = !bShowParticle; return bShowParticle; }
+	bool TogglePhysics() { bShowPhysics = !bShowPhysics; return bShowPhysics; }
+	bool ToggleRagdoll() { bShowRagdoll = !bShowRagdoll; return bShowRagdoll; }
+	bool ToggleCloth() { bShowCloth = !bShowCloth; return bShowCloth; }
+	bool ToggleVehicle() { bShowVehicle = !bShowVehicle; return bShowVehicle; }
+	void RecordPickingAttempt(double ElapsedMs);
+	void HideAll()
+	{
+		bShowFPS = false;
+		bShowPickingTime = false;
+		bShowMemory = false;
+		bShowShadow = false;
+		bShowSkinning = false;
+		bShowParticle = false;
+		bShowPhysics = false;
+		bShowRagdoll = false;
+		bShowCloth = false;
+		bShowVehicle = false;
+	}
+
+	const FOverlayStatLayout& GetLayout() const { return Layout; }
+	FOverlayStatLayout& GetLayout() { return Layout; }
+
+	void BuildLines(const UEditorEngine& Editor, TArray<FOverlayStatLine>& OutLines) const;
+	TArray<FOverlayStatLine> BuildLines(const UEditorEngine& Editor) const;
+	void RenderImGui(const UEditorEngine& Editor, const FRect& ViewportRect) const;
+
+private:
+	void AppendLine(TArray<FOverlayStatLine>& OutLines, float Y, const FString& Text) const;
+	void BuildFPSLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildMemoryLines(TArray<FStatRow>& OutRows) const;
+	void BuildShadowLines(TArray<FStatRow>& OutRows) const;
+	void BuildSkinningLines(TArray<FStatRow>& OutRows) const;
+	void BuildParticleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildPhysicsLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildRagdollLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildClothLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+	void BuildVehicleLines(const UEditorEngine& Editor, TArray<FStatRow>& OutRows) const;
+
+	bool bShowFPS = false;
+	bool bShowPickingTime = false; // WM_LBUTTONDOWN , VK_LBUTTON 입력 시점이 아닌 오브젝트 충돌 판정에 걸린 시간을 측정합니다.
+	bool bShowMemory = false;
+	bool bShowShadow = false;
+	bool bShowSkinning = false;
+	bool bShowParticle = false;
+	bool bShowPhysics = false;
+	bool bShowRagdoll = false;
+	bool bShowCloth = false;
+	bool bShowVehicle = false;
+	double LastPickingTimeMs = 0.0;
+	double AccumulatedPickingTimeMs = 0.0;
+	uint32 PickingAttemptCount = 0;
+	mutable FString CachedFPSLine;
+	mutable FString CachedPickingLine;
+	mutable double FPSAverageWindowStartTime = 0.0;
+	mutable double FPSAccumulatedFrameTimeMs = 0.0;
+	mutable uint32 FPSAccumulatedFrameCount = 0;
+	mutable bool bFPSAverageInitialized = false;
+
+	FOverlayStatLayout Layout;
+};

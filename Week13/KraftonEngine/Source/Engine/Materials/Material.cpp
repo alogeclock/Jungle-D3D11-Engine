@@ -1,0 +1,518 @@
+#include "Materials/Material.h"
+#include "Serialization/Archive.h"
+#include "Render/Shader/Shader.h"
+#include "Texture/Texture2D.h"
+#include "Engine/Runtime/Engine.h"
+#include "Render/Pipeline/Renderer.h"
+#include "Render/Types/MaterialTextureSlot.h"
+
+namespace
+{
+	int32 ResolveTextureSlotFromShader(FShader* Shader, const FString& ParamName)
+	{
+		if (!Shader)
+		{
+			return -1;
+		}
+
+		for (const FMaterialTextureBindingInfo& Binding : Shader->GetTextureBindings())
+		{
+			if (Binding.Name == ParamName && Binding.SlotIndex < static_cast<uint32>(EMaterialTextureSlot::Max))
+			{
+				return static_cast<int32>(Binding.SlotIndex);
+			}
+		}
+
+		return -1;
+	}
+
+	int32 ResolveTextureSlotFromLegacyName(const FString& ParamName)
+	{
+		for (int32 Slot = 0; Slot < static_cast<int32>(EMaterialTextureSlot::Max); ++Slot)
+		{
+			const FString SlotName = MaterialTextureSlot::ToString(Slot) + "Texture";
+			if (ParamName == SlotName)
+			{
+				return Slot;
+			}
+		}
+
+		return -1;
+	}
+
+	int32 ResolveTextureSlot(FShader* Shader, const FString& ParamName)
+	{
+		const int32 ShaderSlot = ResolveTextureSlotFromShader(Shader, ParamName);
+		return ShaderSlot >= 0 ? ShaderSlot : ResolveTextureSlotFromLegacyName(ParamName);
+	}
+
+	bool IsColorTextureParameter(const FString& ParamName)
+	{
+		return ParamName == "DiffuseTexture"
+			|| ParamName == "ParticleTexture"
+			|| ParamName == "EmissiveTexture"
+			|| ParamName == "Custom0Texture"
+			|| ParamName == "Custom1Texture";
+	}
+}
+
+
+// ─── FMaterialTemplate ───
+
+void FMaterialTemplate::Create(FShader* InShader)
+{
+	ParameterLayout = InShader->GetParameterLayout(); // 셰이더에서 리플렉션된 파라미터 레이아웃 정보 확보
+	Shader = InShader;
+}
+
+bool FMaterialTemplate::GetParameterInfo(const FString& Name, FMaterialParameterInfo& OutInfo) const
+{
+	auto it = ParameterLayout.find(Name);
+	if (it != ParameterLayout.end())
+	{
+		OutInfo = *(it->second);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+// ─── FMaterialConstantBuffer ───
+
+FMaterialConstantBuffer::~FMaterialConstantBuffer()
+{
+	Release();
+}
+
+void FMaterialConstantBuffer::Init(ID3D11Device* InDevice, uint32 InSize, uint32 InSlot)
+{
+	Release();
+
+	uint32 AlignedSize = (InSize + 15) & ~15;
+	GPUBuffer.Create(InDevice, AlignedSize, "MaterialGPUBuffer");
+	CPUData = new uint8[AlignedSize]();
+	Size = AlignedSize;
+	SlotIndex = InSlot;
+	bDirty = true;
+}
+
+void FMaterialConstantBuffer::SetData(const void* Data, uint32 InSize, uint32 Offset)
+{
+	if (!CPUData || Offset + InSize > Size)
+	{
+		return;
+	}
+	memcpy(CPUData + Offset, Data, InSize);
+	bDirty = true;
+}
+
+void FMaterialConstantBuffer::Upload(ID3D11DeviceContext* DeviceContext)
+{
+	if (!bDirty)
+		return;
+
+	GPUBuffer.Update(DeviceContext, CPUData, Size);
+	bDirty = false;
+}
+
+void FMaterialConstantBuffer::Release()
+{
+	GPUBuffer.Release();
+	delete[] CPUData;
+	CPUData = nullptr;
+	Size = 0;
+	bDirty = false;
+}
+
+// ─── UMaterial ───
+
+UMaterial::~UMaterial()
+{
+	for (auto& Pair : ConstantBufferMap)
+	{
+		Pair.second->Release();
+	}
+	ConstantBufferMap.clear();
+
+	for (auto& Pair : TextureParameters)
+	{
+		Pair.second = nullptr;
+	}
+}
+
+void UMaterial::Create(const FString& InPathFileName, FMaterialTemplate* InTemplate,
+	ERenderPass InRenderPass,
+	EBlendState InBlend,
+	EDepthStencilState InDepth,
+	ERasterizerState InRaster,
+	TMap<FString, std::unique_ptr<FMaterialConstantBuffer>>&& InBuffers,
+	EMaterialBlendMode InBlendMode)
+{
+	PathFileName = InPathFileName;
+	Template = InTemplate;
+	BlendMode = InBlendMode;
+	RenderPass = InRenderPass;
+	BlendState = InBlend;
+	DepthStencilState = InDepth;
+	RasterizerState = InRaster;
+
+	ConstantBufferMap = std::move(InBuffers);
+}
+
+void UMaterial::SetBlendMode(EMaterialBlendMode InMode)
+{
+	BlendMode = InMode;
+	RenderPass = MaterialBlendMode::GetDefaultRenderPass(InMode);
+	BlendState = MaterialBlendMode::GetDefaultBlendState(InMode);
+	DepthStencilState = MaterialBlendMode::GetDefaultDepthStencilState(InMode);
+	RasterizerState = MaterialBlendMode::GetDefaultRasterizerState(InMode);
+}
+
+bool UMaterial::SetParameter(const FString& Name, const void* Data, uint32 Size)
+{
+	FMaterialParameterInfo Info;
+	if (!Template->GetParameterInfo(Name, Info)) {
+		return false;
+	}
+	auto It = ConstantBufferMap.find(Info.BufferName);
+	if (It == ConstantBufferMap.end()) return false;
+
+	It->second->SetData(Data, Size, Info.Offset);
+	It->second->bDirty = true;
+
+	It->second->Upload(GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext());
+	return true;
+}
+
+
+bool UMaterial::SetScalarParameter(const FString& ParamName, float Value)
+{
+	return SetParameter(ParamName, &Value, sizeof(float));
+}
+
+bool UMaterial::SetVector3Parameter(const FString& ParamName, const FVector& Value)
+{
+	float Data[3] = { Value.X, Value.Y, Value.Z };
+	return SetParameter(ParamName, Data, sizeof(Data));
+}
+
+bool UMaterial::SetVector4Parameter(const FString& ParamName, const FVector4& Value)
+{
+	float Data[4] = { Value.X, Value.Y, Value.Z, Value.W };
+	return SetParameter(ParamName, Data, sizeof(Data));
+}
+
+bool UMaterial::SetTextureParameter(const FString& ParamName, UTexture2D* Texture)
+{
+	TextureParameters[ParamName] = Texture;
+
+	// Shader reflection binding을 우선 사용하고, 기존 DiffuseTexture/NormalTexture 이름 규칙으로 fallback합니다.
+	const int32 SlotIndex = ResolveTextureSlot(GetShader(), ParamName);
+	if (SlotIndex >= 0)
+	{
+		CachedSRVs[SlotIndex] = (Texture && Texture->GetSRV()) ? Texture->GetSRV() : nullptr;
+	}
+
+	return true;
+}
+
+bool UMaterial::SetMatrixParameter(const FString& ParamName, const FMatrix& Value)
+{
+	return SetParameter(ParamName, Value.Data, sizeof(float) * 16);
+}
+
+bool UMaterial::GetScalarParameter(const FString& ParamName, float& OutValue) const
+{
+	FMaterialParameterInfo Info;
+	if (!Template->GetParameterInfo(ParamName, Info)) return false;
+
+	auto It = ConstantBufferMap.find(Info.BufferName);
+	if (It == ConstantBufferMap.end()) return false;
+
+	const uint8* Ptr = It->second->CPUData + Info.Offset;
+	OutValue = *reinterpret_cast<const float*>(Ptr);
+	return true;
+}
+
+bool UMaterial::GetVector3Parameter(const FString& ParamName, FVector& OutValue) const
+{
+	FMaterialParameterInfo Info;
+	if (!Template->GetParameterInfo(ParamName, Info)) return false;
+
+	auto It = ConstantBufferMap.find(Info.BufferName);
+	if (It == ConstantBufferMap.end()) return false;
+
+	const uint8* Ptr = It->second->CPUData + Info.Offset;
+	OutValue = *reinterpret_cast<const FVector*>(Ptr);
+	return true;
+}
+
+bool UMaterial::GetVector4Parameter(const FString& ParamName, FVector4& OutValue) const
+{
+	FMaterialParameterInfo Info;
+	if (!Template->GetParameterInfo(ParamName, Info)) return false;
+
+	auto It = ConstantBufferMap.find(Info.BufferName);
+	if (It == ConstantBufferMap.end()) return false;
+
+	const uint8* Ptr = It->second->CPUData + Info.Offset;
+	OutValue = *reinterpret_cast<const FVector4*>(Ptr);
+	return true;
+}
+
+bool UMaterial::GetTextureParameter(const FString& ParamName, UTexture2D*& OutTexture) const
+{
+	auto It = TextureParameters.find(ParamName);
+	if (It == TextureParameters.end()) return false;
+
+	OutTexture = It->second;
+	return true;
+}
+
+bool UMaterial::GetMatrixParameter(const FString& ParamName, FMatrix& Value) const
+{
+	FMaterialParameterInfo Info;
+	if (!Template->GetParameterInfo(ParamName, Info)) return false;
+
+	auto It = ConstantBufferMap.find(Info.BufferName);
+	if (It == ConstantBufferMap.end()) return false;
+
+	const uint8* Ptr = It->second->CPUData + Info.Offset;
+	memcpy(Value.Data, Ptr, sizeof(float) * 16);
+	return true;
+}
+
+void UMaterial::Bind(ID3D11DeviceContext* Context)
+{
+}
+
+const FString& UMaterial::GetTexturePathFileName(const FString& TextureName)const
+{
+	auto it = TextureParameters.find(TextureName);
+	if (it != TextureParameters.end())
+	{
+		UTexture2D* Texture = it->second;
+		if(Texture)
+		{
+			return Texture->GetSourcePath();
+		}
+	}
+	static const FString EmptyString;
+	return EmptyString;
+}
+
+void UMaterial::RebuildCachedSRVs()
+{
+	for (int s = 0; s < (int)EMaterialTextureSlot::Max; s++)
+	{
+		CachedSRVs[s] = nullptr;
+	}
+
+	if (FShader* Shader = GetShader())
+	{
+		for (const FMaterialTextureBindingInfo& Binding : Shader->GetTextureBindings())
+		{
+			if (Binding.SlotIndex >= static_cast<uint32>(EMaterialTextureSlot::Max))
+			{
+				continue;
+			}
+
+			UTexture2D* Tex = nullptr;
+			if (GetTextureParameter(Binding.Name, Tex) && Tex && Tex->GetSRV())
+			{
+				CachedSRVs[Binding.SlotIndex] = Tex->GetSRV();
+			}
+		}
+	}
+
+	for (const auto& Pair : TextureParameters)
+	{
+		const int32 SlotIndex = ResolveTextureSlotFromLegacyName(Pair.first);
+		if (SlotIndex >= 0 && Pair.second && Pair.second->GetSRV())
+		{
+			CachedSRVs[SlotIndex] = Pair.second->GetSRV();
+		}
+	}
+}
+
+void UMaterial::Serialize(FArchive& Ar)
+{
+	Ar << PathFileName;
+
+	uint32 BufferCount = static_cast<uint32>(ConstantBufferMap.size());
+	Ar << BufferCount;
+
+	if (Ar.IsSaving())
+	{
+		for (auto& Pair : ConstantBufferMap)
+		{
+			FString BufferName = Pair.first;
+			uint32 Size = Pair.second->Size;
+
+			Ar << BufferName;
+			Ar << Size;
+			Ar.Serialize(Pair.second->CPUData, Size);
+		}
+	}
+
+	if (Ar.IsLoading())
+	{
+		for (uint32 i = 0; i < BufferCount; ++i)
+		{
+			FString BufferName;
+			uint32 Size = 0;
+
+			Ar << BufferName;
+			Ar << Size;
+
+			auto It = ConstantBufferMap.find(BufferName);
+			if (It != ConstantBufferMap.end())
+			{
+				Ar.Serialize(It->second->CPUData, Size);
+				It->second->bDirty = true;
+				It->second->Upload(GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext());
+			}
+			else
+			{
+				TArray<uint8> Dummy(Size);
+				Ar.Serialize(Dummy.data(), Size);
+			}
+		}
+	}
+	
+	uint32 TextureCount = static_cast<uint32>(TextureParameters.size());
+	Ar << TextureCount;
+
+	if (Ar.IsSaving())
+	{
+		for (auto& Pair : TextureParameters)
+		{
+			FString SlotName = Pair.first;
+			FString TexturePath = Pair.second ? Pair.second->GetSourcePath() : FString();
+
+			Ar << SlotName;
+			Ar << TexturePath;
+		}
+	}
+	else // IsLoading
+	{
+		for (uint32 i = 0; i < TextureCount; ++i)
+		{
+			FString SlotName;
+			FString TexturePath;
+
+			Ar << SlotName;
+			Ar << TexturePath;
+
+			if (!TexturePath.empty())
+			{
+				ID3D11Device* Device = GEngine->GetRenderer().GetFD3DDevice().GetDevice();
+				UTexture2D* Loaded = UTexture2D::LoadFromFile(
+					TexturePath,
+					Device,
+					IsColorTextureParameter(SlotName) ? ETextureColorSpace::SRGB : ETextureColorSpace::Linear);
+				if (Loaded)
+				{
+					TextureParameters[SlotName] = Loaded;
+				}
+			}
+		}
+
+		RebuildCachedSRVs();
+	}
+}
+
+UMaterial* UMaterial::CreateEditableCopy(ID3D11Device* Device) const
+{
+	if (!Device)
+	{
+		return nullptr;
+	}
+
+	TMap<FString, std::unique_ptr<FMaterialConstantBuffer>> CopiedBuffers;
+	for (const auto& Pair : ConstantBufferMap)
+	{
+		const FMaterialConstantBuffer* SourceBuffer = Pair.second.get();
+		if (!SourceBuffer)
+		{
+			continue;
+		}
+
+		auto CopiedBuffer = std::make_unique<FMaterialConstantBuffer>();
+		CopiedBuffer->Init(Device, SourceBuffer->Size, SourceBuffer->SlotIndex);
+		if (SourceBuffer->CPUData && SourceBuffer->Size > 0)
+		{
+			CopiedBuffer->SetData(SourceBuffer->CPUData, SourceBuffer->Size);
+			if (GEngine)
+			{
+				CopiedBuffer->Upload(GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext());
+			}
+		}
+		CopiedBuffers.emplace(Pair.first, std::move(CopiedBuffer));
+	}
+
+	UMaterial* Copy = GUObjectArray.CreateObject<UMaterial>();
+	Copy->Create(PathFileName, Template, RenderPass, BlendState, DepthStencilState, RasterizerState, std::move(CopiedBuffers), BlendMode);
+	Copy->TransientShader = TransientShader;
+	Copy->TextureParameters = TextureParameters;
+	Copy->RebuildCachedSRVs();
+	return Copy;
+}
+
+bool UMaterial::CopyEditableStateFrom(const UMaterial* SourceMaterial)
+{
+	if (!SourceMaterial)
+	{
+		return false;
+	}
+
+	if (Template != SourceMaterial->Template)
+	{
+		return false;
+	}
+
+	BlendMode = SourceMaterial->BlendMode;
+	RenderPass = SourceMaterial->RenderPass;
+	BlendState = SourceMaterial->BlendState;
+	DepthStencilState = SourceMaterial->DepthStencilState;
+	RasterizerState = SourceMaterial->RasterizerState;
+
+	for (auto& Pair : ConstantBufferMap)
+	{
+		FMaterialConstantBuffer* TargetBuffer = Pair.second.get();
+		auto SourceIt = SourceMaterial->ConstantBufferMap.find(Pair.first);
+		if (!TargetBuffer || SourceIt == SourceMaterial->ConstantBufferMap.end() || !SourceIt->second)
+		{
+			continue;
+		}
+
+		const FMaterialConstantBuffer* SourceBuffer = SourceIt->second.get();
+		if (!SourceBuffer->CPUData || !TargetBuffer->CPUData || SourceBuffer->Size != TargetBuffer->Size)
+		{
+			continue;
+		}
+
+		TargetBuffer->SetData(SourceBuffer->CPUData, SourceBuffer->Size);
+		if (GEngine)
+		{
+			TargetBuffer->Upload(GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext());
+		}
+	}
+
+	TextureParameters = SourceMaterial->TextureParameters;
+	RebuildCachedSRVs();
+	return true;
+}
+
+UMaterial* UMaterial::CreateTransient(ERenderPass InPass, EBlendState InBlend,
+	EDepthStencilState InDepth, ERasterizerState InRaster, FShader* InShader)
+{
+	UMaterial* Mat = GUObjectArray.CreateObject<UMaterial>();
+	TMap<FString, std::unique_ptr<FMaterialConstantBuffer>> EmptyBuffers;
+	const EMaterialBlendMode BlendMode = MaterialBlendMode::InferFromRenderState(InPass, InBlend);
+	Mat->Create(FString("__transient__"), nullptr, InPass, InBlend, InDepth, InRaster, std::move(EmptyBuffers), BlendMode);
+	Mat->TransientShader = InShader;
+	return Mat;
+}

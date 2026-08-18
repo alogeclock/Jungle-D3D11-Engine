@@ -1,0 +1,15 @@
+{
+  "BlendMode" : "Opaque",
+  "BlendState" : "Opaque",
+  "DepthStencilState" : "Default",
+  "Origin" : "ObjImport",
+  "Parameters" : {
+    "HasNormalMap" : 0.000000,
+    "SectionColor" : [0.640000, 0.640000, 0.640000, 1.000000],
+    "_pad" : [0.000000, 0.000000, 0.000000]
+  },
+  "PathFileName" : "Asset/Mesh/mario-kart-8-mario-kart-stadium/source/Mario Kart Stadium_fc_StaticShadow.mat",
+  "RasterizerState" : "SolidBackCull",
+  "RenderPass" : "Opaque",
+  "ShaderPath" : "Shaders/Geometry/UberLit.hlsl"
+}

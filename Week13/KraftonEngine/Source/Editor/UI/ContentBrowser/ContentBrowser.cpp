@@ -1,0 +1,1646 @@
+#include "ContentBrowser.h"
+
+#include "Asset/AssetPackage.h"
+#include "ContentBrowserElement.h"
+#include "Core/Log.h"
+#include "Core/Notification.h"
+#include "Editor/Settings/EditorSettings.h"
+#include "Editor/Subsystem/AssetFactory.h"
+#include "Editor/UI/EditorTextureManager.h"
+#include "EditorEngine.h"
+#include "Object/Object.h"
+
+#include "Editor/Import/EditorObjImportService.h"
+#include "Editor/Import/EditorFbxImportService.h"
+#include "Animation/AnimSequence.h"
+#include "Mesh/MeshImportOptions.h"
+#include "Mesh/MeshManager.h"
+#include "Mesh/SkeletalMesh.h"
+#include "Mesh/Skeleton.h"
+#include "Mesh/SkeletonManager.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialManager.h"
+#include "CameraShake/CameraShakeAsset.h"
+#include "CameraShake/CameraShakeManager.h"
+#include "FloatCurve/FloatCurveAsset.h"
+#include "FloatCurve/FloatCurveManager.h"
+#include "Animation/AnimInstanceAsset.h"
+#include "Animation/AnimInstanceAssetManager.h"
+#include "Animation/AnimSequenceManager.h"
+#include "Particles/Assets/ParticleAsset.h"
+#include "Particles/Assets/ParticleSystemAssetManager.h"
+#include "Physics/Assets/PhysicsAsset.h"
+#include "Physics/Assets/PhysicsAssetManager.h"
+#include "Physics/Common/PhysicalMaterialManager.h"
+#include "Physics/Common/PhysicsMaterialTypes.h"
+
+#include <Windows.h>
+#include <commdlg.h>
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+
+namespace
+{
+	bool IsParentDirectoryReference(const std::filesystem::path& Path)
+	{
+		for (const std::filesystem::path& Part : Path)
+		{
+			if (Part == L"..")
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	FString MakeContentBrowserSettingsPath(const std::wstring& CurrentPath)
+	{
+		const std::filesystem::path RootPath = std::filesystem::path(FPaths::RootDir()).lexically_normal();
+		const std::filesystem::path Path = std::filesystem::path(CurrentPath).lexically_normal();
+		const std::filesystem::path RelativePath = Path.lexically_relative(RootPath);
+
+		if (!RelativePath.empty() && !IsParentDirectoryReference(RelativePath))
+		{
+			return FPaths::ToUtf8(RelativePath.generic_wstring());
+		}
+
+		return FPaths::ToUtf8(Path.wstring());
+	}
+
+	std::wstring ResolveContentBrowserSettingsPath(const FString& SavedPath)
+	{
+		if (SavedPath.empty())
+		{
+			return FPaths::RootDir();
+		}
+
+		std::filesystem::path Path(FPaths::ToWide(SavedPath));
+		if (!Path.is_absolute())
+		{
+			Path = std::filesystem::path(FPaths::RootDir()) / Path;
+		}
+
+		Path = Path.lexically_normal();
+		if (std::filesystem::exists(Path) && std::filesystem::is_directory(Path))
+		{
+			return Path.wstring();
+		}
+
+		return FPaths::RootDir();
+	}
+
+	bool IsSubPath(const std::filesystem::path& Parent, const std::filesystem::path& Child)
+	{
+		std::filesystem::path P = std::filesystem::weakly_canonical(Parent);
+		std::filesystem::path C = std::filesystem::weakly_canonical(Child);
+
+		auto PIt = P.begin();
+		auto CIt = C.begin();
+
+		for (; PIt != P.end() && CIt != C.end(); ++PIt, ++CIt)
+		{
+			if (*PIt != *CIt)
+			{
+				return false;
+			}
+		}
+
+		return PIt == P.end();
+	}
+
+	FString GetLowerExtension(const std::filesystem::path& Path)
+	{
+		FString Extension = FPaths::ToUtf8(Path.extension().wstring());
+		std::transform(Extension.begin(), Extension.end(), Extension.begin(),
+			[](unsigned char Ch) { return static_cast<char>(std::tolower(Ch)); });
+		return Extension;
+	}
+
+	std::filesystem::path ResolveProjectPath(const FString& Path)
+	{
+		std::filesystem::path FullPath(FPaths::ToWide(Path));
+		if (!FullPath.is_absolute())
+		{
+			FullPath = std::filesystem::path(FPaths::RootDir()) / FullPath;
+		}
+		return FullPath.lexically_normal();
+	}
+
+	FString ToProjectRelativePath(const std::filesystem::path& Path)
+	{
+		return FPaths::MakeProjectRelative(FPaths::ToUtf8(Path.lexically_normal().generic_wstring()));
+	}
+
+	UObject* FindLoadedAssetByPath(const FString& RelativePath, const FString& Extension, EAssetPackageType* OutPackageType = nullptr)
+	{
+		if (OutPackageType)
+		{
+			*OutPackageType = EAssetPackageType::Unknown;
+		}
+
+		if (Extension == ".mat")
+		{
+			return FMaterialManager::Get().FindMaterial(RelativePath);
+		}
+
+		if (Extension == ".curve")
+		{
+			return FFloatCurveManager::Get().Find(RelativePath);
+		}
+
+		if (Extension == ".shake")
+		{
+			return FCameraShakeManager::Get().Find(RelativePath);
+		}
+
+		if (Extension != ".uasset")
+		{
+			return nullptr;
+		}
+
+		EAssetPackageType PackageType = EAssetPackageType::Unknown;
+		if (!FAssetPackage::GetPackageType(RelativePath, PackageType))
+		{
+			return nullptr;
+		}
+		if (OutPackageType)
+		{
+			*OutPackageType = PackageType;
+		}
+
+		switch (PackageType)
+		{
+		case EAssetPackageType::StaticMesh:
+			return FMeshManager::FindStaticMesh(RelativePath);
+		case EAssetPackageType::SkeletalMesh:
+			return FMeshManager::FindSkeletalMesh(RelativePath);
+		case EAssetPackageType::Skeleton:
+			return FSkeletonManager::Get().Find(RelativePath);
+		case EAssetPackageType::AnimSequence:
+			return FAnimSequenceManager::Get().Find(RelativePath);
+		case EAssetPackageType::AnimInstance:
+			return FAnimInstanceAssetManager::Get().Find(RelativePath);
+		case EAssetPackageType::FloatCurve:
+			return FFloatCurveManager::Get().Find(RelativePath);
+		case EAssetPackageType::CameraShake:
+			return FCameraShakeManager::Get().Find(RelativePath);
+		case EAssetPackageType::ParticleSystem:
+			return FParticleSystemAssetManager::Get().Find(RelativePath);
+		case EAssetPackageType::PhysicsAsset:
+			return FPhysicsAssetManager::Get().Find(RelativePath);
+		case EAssetPackageType::PhysicalMaterial:
+			return FPhysicalMaterialManager::Get().Find(RelativePath);
+		default:
+			return nullptr;
+		}
+	}
+
+	void UnloadAssetByPath(const FString& RelativePath, const FString& Extension, EAssetPackageType PackageType = EAssetPackageType::Unknown)
+	{
+		if (Extension == ".mat")
+		{
+			FMaterialManager::Get().ForgetMaterial(RelativePath);
+			return;
+		}
+
+		if (Extension == ".curve")
+		{
+			FFloatCurveManager::Get().Unload(RelativePath);
+			return;
+		}
+
+		if (Extension == ".shake")
+		{
+			FCameraShakeManager::Get().Unload(RelativePath);
+			return;
+		}
+
+		if (Extension != ".uasset")
+		{
+			return;
+		}
+
+		if (PackageType == EAssetPackageType::Unknown && !FAssetPackage::GetPackageType(RelativePath, PackageType))
+		{
+			return;
+		}
+
+		switch (PackageType)
+		{
+		case EAssetPackageType::StaticMesh:
+			FMeshManager::UnloadStaticMesh(RelativePath);
+			break;
+		case EAssetPackageType::SkeletalMesh:
+			FMeshManager::UnloadSkeletalMesh(RelativePath);
+			break;
+		case EAssetPackageType::Skeleton:
+			FSkeletonManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::AnimSequence:
+			FAnimSequenceManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::AnimInstance:
+			FAnimInstanceAssetManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::FloatCurve:
+			FFloatCurveManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::CameraShake:
+			FCameraShakeManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::ParticleSystem:
+			FParticleSystemAssetManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::PhysicsAsset:
+			FPhysicsAssetManager::Get().Unload(RelativePath);
+			break;
+		case EAssetPackageType::PhysicalMaterial:
+			FPhysicalMaterialManager::Get().Unload(RelativePath);
+			break;
+		default:
+			break;
+		}
+	}
+
+	FString OpenImportSourceFileDialog(const std::wstring& InitialDirectory)
+	{
+		wchar_t FilePath[MAX_PATH] = {};
+		std::wstring InitialDir = InitialDirectory.empty() ? FPaths::AssetDir() : InitialDirectory;
+
+		OPENFILENAMEW Ofn = {};
+		Ofn.lStructSize = sizeof(Ofn);
+		Ofn.hwndOwner = nullptr;
+		Ofn.lpstrFilter = L"Asset Source Files (*.obj;*.fbx)\0*.obj;*.fbx\0OBJ Files (*.obj)\0*.obj\0FBX Files (*.fbx)\0*.fbx\0All Files (*.*)\0*.*\0";
+		Ofn.lpstrFile = FilePath;
+		Ofn.nMaxFile = MAX_PATH;
+		Ofn.lpstrInitialDir = InitialDir.c_str();
+		Ofn.lpstrTitle = L"Import Asset Source";
+		Ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
+
+		if (!GetOpenFileNameW(&Ofn))
+		{
+			return FString();
+		}
+
+		return FPaths::ToUtf8(std::filesystem::path(FilePath).lexically_normal().generic_wstring());
+	}
+
+	bool IsEditorSourceFile(const std::filesystem::path& Path)
+	{
+		const FString Extension = GetLowerExtension(Path);
+		return Extension == ".obj" || Extension == ".mtl" || Extension == ".fbx";
+	}
+
+	FString TrimCopy(const FString& Value)
+	{
+		size_t Start = 0;
+		while (Start < Value.size() && std::isspace(static_cast<unsigned char>(Value[Start])))
+		{
+			++Start;
+		}
+
+		size_t End = Value.size();
+		while (End > Start && std::isspace(static_cast<unsigned char>(Value[End - 1])))
+		{
+			--End;
+		}
+
+		return Value.substr(Start, End - Start);
+	}
+
+	void CopyToInputBuffer(char* Buffer, size_t BufferSize, const FString& Value)
+	{
+		if (!Buffer || BufferSize == 0)
+		{
+			return;
+		}
+
+		std::snprintf(Buffer, BufferSize, "%s", Value.c_str());
+	}
+
+	bool TryNormalizeAssetName(const char* RawInput, FString& OutName, FString& OutError, const char* ExtensionToStrip)
+	{
+		FString Name = TrimCopy(RawInput ? FString(RawInput) : FString());
+		if (Name.empty())
+		{
+			OutError = "Name cannot be empty.";
+			return false;
+		}
+
+		if (Name == "." || Name == "..")
+		{
+			OutError = "Name is reserved.";
+			return false;
+		}
+
+		const char* InvalidChars = "<>:\"/\\|?*";
+		for (char Ch : Name)
+		{
+			if (static_cast<unsigned char>(Ch) < 32 || std::strchr(InvalidChars, Ch))
+			{
+				OutError = "Name contains invalid file characters.";
+				return false;
+			}
+		}
+
+		std::filesystem::path NamePath(FPaths::ToWide(Name));
+		FString Extension = FPaths::ToUtf8(NamePath.extension().wstring());
+		std::transform(Extension.begin(), Extension.end(), Extension.begin(),
+			[](unsigned char Ch) { return static_cast<char>(std::tolower(Ch)); });
+		if (ExtensionToStrip && Extension == ExtensionToStrip)
+		{
+			Name = FPaths::ToUtf8(NamePath.stem().wstring());
+		}
+
+		if (Name.empty())
+		{
+			OutError = "Name cannot be empty.";
+			return false;
+		}
+
+		OutName = Name;
+		OutError.clear();
+		return true;
+	}
+
+	FString ToLowerCopy(const FString& Value)
+	{
+		FString Lower = Value;
+		std::transform(Lower.begin(), Lower.end(), Lower.begin(),
+			[](unsigned char Ch) { return static_cast<char>(std::tolower(Ch)); });
+		return Lower;
+	}
+
+	bool MatchesSearchToken(const FString& SearchText, const FMeshAssetListItem& Item)
+	{
+		if (SearchText.empty())
+		{
+			return true;
+		}
+
+		const FString LowerSearch = ToLowerCopy(SearchText);
+		return ToLowerCopy(Item.DisplayName).find(LowerSearch) != FString::npos
+			|| ToLowerCopy(Item.FullPath).find(LowerSearch) != FString::npos;
+	}
+
+	std::wstring GetContentBrowserIconFileName(const FString& Extension, EAssetPackageType PackageType)
+	{
+		if (Extension == ".mat")
+		{
+			return L"Material_64.png";
+		}
+
+		if (Extension == ".fbx")
+		{
+			return L"SkeletalMesh_64.png";
+		}
+
+		if (Extension == ".uasset")
+		{
+			switch (PackageType)
+			{
+			case EAssetPackageType::StaticMesh:
+			case EAssetPackageType::SkeletalMesh:
+				return L"SkeletalMesh_64.png";
+			case EAssetPackageType::ParticleSystem:
+				return L"ParticleSystem_64x.png";
+			case EAssetPackageType::PhysicsAsset:
+				return L"PhysicsAsset_64x.png";
+			case EAssetPackageType::PhysicalMaterial:
+				return L"PhysicalMaterial_64.png";
+			default:
+				break;
+			}
+		}
+
+		return L"";
+	}
+}
+
+void FEditorContentBrowserWidget::Initialize(UEditorEngine* InEditor, ID3D11Device* InDevice)
+{
+	FEditorWidget::Initialize(InEditor);
+	if (!InDevice) return;
+
+	IconFileMap[".Scene"] = L"World_64x.png";
+	IconFileMap[".obj"] = L"icon_MatEd_Mesh_40x.png";
+	IconFileMap[".mat"] = L"Material_64.png";
+	IconFileMap[".shake"] = L"StartMerge_42x.png";
+	IconFileMap[".fbx"] = L"SkeletalMesh_64.png";
+	IconFileMap[".uasset"] = L"icon_MatEd_Mesh_40x.png";
+
+	ContentBrowserContext Context;
+	Context.ContentSize = ImVec2(112, 112);
+	Context.EditorEngine = InEditor;
+	Context.OnImportFbxSource = [this](const FString& SourcePath)
+	{
+		BeginFbxImport(SourcePath);
+	};
+	Context.OnRenameAsset = [this](const FContentItem& Item)
+	{
+		BeginRenameAsset(Item);
+	};
+	Context.OnDeleteAsset = [this](const FContentItem& Item)
+	{
+		BeginDeleteAsset(Item);
+	};
+	BrowserContext = Context;
+	LoadFromSettings();
+
+	Refresh();
+}
+
+void FEditorContentBrowserWidget::Render(float DeltaTime)
+{
+	if (!ImGui::Begin("ContentBrowser"))
+	{
+		ImGui::End();
+		return;
+	}
+
+	(void)DeltaTime;
+
+	if (ImGui::Button("Import"))
+	{
+		BeginImportSourceFile();
+	}
+
+	ImGui::SameLine();
+	if (BrowserContext.bPendingContentRefresh)
+	{
+		RefreshContent();
+		BrowserContext.bPendingContentRefresh = false;
+	}
+
+	std::wstring PathText = BrowserContext.CurrentPath;
+	if (BrowserContext.SelectedElement)
+		PathText += L"/" + BrowserContext.SelectedElement->GetFileName();
+
+	int Size = static_cast<int>(BrowserContext.ContentSize.x);
+	BrowserContext.ContentSize = ImVec2(static_cast<float>(Size), static_cast<float>(Size));
+
+	bool bShowSourceFiles = BrowserContext.bShowSourceFiles;
+	if (ImGui::Checkbox("Source Files", &bShowSourceFiles))
+	{
+		BrowserContext.bShowSourceFiles = bShowSourceFiles;
+		RefreshContent();
+	}
+
+	RenderFbxImportPopup();
+	RenderMaterialCreatePopup();
+	RenderParticleSystemCreatePopup();
+	RenderPhysicsAssetMeshPickerPopup();
+	RenderPhysicsAssetCreatePopup();
+	RenderRenamePopup();
+	RenderDeletePopup();
+
+	if (!ImGui::BeginTable("ContentBrowserLayout", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV))
+	{
+		ImGui::End();
+		return;
+	}
+
+	ImGui::TableSetupColumn("Directory", ImGuiTableColumnFlags_WidthFixed, 250.0f);
+	ImGui::TableSetupColumn("Content", ImGuiTableColumnFlags_WidthStretch);
+	ImGui::TableSetupColumn("Details", ImGuiTableColumnFlags_WidthFixed, 260.0f);
+
+	ImGui::TableNextColumn();
+	{
+		ImGui::BeginChild("DirectoryTree", ImVec2(0, 0), true);
+		DrawDirNode(RootNode);
+		BrowserContext.PendingRevealPath.clear();
+		ImGui::EndChild();
+	}
+
+	ImGui::TableNextColumn();
+	{
+		ImGui::BeginChild("ContentArea", ImVec2(0, 0), true);
+		DrawContents();
+		ImGui::EndChild();
+	}
+
+	ImGui::TableNextColumn();
+	{
+		ImGui::BeginChild("DetailsPanel", ImVec2(0, 0), true);
+
+		if (BrowserContext.SelectedElement)
+		{
+			BrowserContext.SelectedElement->RenderDetail();
+		}
+		else
+		{
+			ImGui::TextDisabled("No asset selected");
+		}
+
+		ImGui::EndChild();
+	}
+
+	ImGui::EndTable();
+
+	ImGui::End();
+}
+
+void FEditorContentBrowserWidget::Refresh()
+{
+	RootNode = BuildDirectoryTree(FPaths::RootDir());
+	RefreshContent();
+
+	BrowserContext.bPendingContentRefresh = false;
+}
+
+void FEditorContentBrowserWidget::SetIconSize(float Size)
+{
+	const float ClampedSize = (std::max)(72.0f, (std::min)(Size, 160.0f));
+	BrowserContext.ContentSize = ImVec2(ClampedSize, ClampedSize);
+}
+
+void FEditorContentBrowserWidget::LoadFromSettings()
+{
+	BrowserContext.CurrentPath = ResolveContentBrowserSettingsPath(FEditorSettings::Get().ContentBrowserPath);
+	BrowserContext.PendingRevealPath = BrowserContext.CurrentPath;
+}
+
+void FEditorContentBrowserWidget::SaveToSettings() const
+{
+	FEditorSettings::Get().ContentBrowserPath = MakeContentBrowserSettingsPath(BrowserContext.CurrentPath);
+}
+
+void FEditorContentBrowserWidget::RefreshContent()
+{
+	FEditorTextureManager::Get().ClearThumbnails();
+	CachedBrowserElements.clear();
+	TArray<FContentItem> CurrentContents = ReadDirectory(BrowserContext.CurrentPath);
+	for (const auto& Content : CurrentContents)
+	{
+		std::shared_ptr<ContentBrowserElement> Element;
+		FString Extension = GetLowerExtension(Content.Path);
+		ID3D11ShaderResourceView* Icon = nullptr;
+		EAssetPackageType PackageType = EAssetPackageType::Unknown;
+
+		if (Content.bIsDirectory)
+		{
+			Element = std::make_shared<DirectoryElement>();
+			Icon = FEditorTextureManager::Get().GetOrLoadIcon(FPaths::ToUtf8(FPaths::Combine(FPaths::AssetDir(), L"Editor/Icons/", L"Folder_Base_256x.png")));
+		}
+		else if (IsEditorSourceFile(Content.Path))
+		{
+			Element = std::make_shared<SourceFileElement>();
+		}
+		else if (Extension == ".scene")
+		{
+			Element = std::make_shared<SceneElement>();
+		}
+		else if (Extension == ".mat")
+		{
+			Element = std::make_shared<MaterialElement>();
+		}
+		else if (Extension == ".curve")
+		{
+			Element = std::make_shared<FloatCurveElement>();
+		}
+		else if (Extension == ".shake")
+		{
+			Element = std::make_shared<CameraShakeElement>();
+		}
+		else if (Extension == ".fbx")
+		{
+			Element = std::make_shared<MeshElement>();
+		}
+		else if (Extension == ".png" | Extension == ".jpg" | Extension == ".jpeg")
+		{
+			Element = std::make_shared<ImageElement>();
+			Icon = FEditorTextureManager::Get().GetOrLoadThumbnail(FPaths::ToUtf8(Content.Path.lexically_relative(FPaths::RootDir()).generic_wstring()));
+		}
+		else if (Extension == ".uasset")
+		{
+			FString PackagePath = FPaths::ToUtf8(Content.Path.lexically_relative(FPaths::RootDir()).generic_wstring());
+
+			if (FAssetPackage::GetPackageType(PackagePath, PackageType))
+			{
+				switch (PackageType)
+				{
+				case EAssetPackageType::StaticMesh:
+					Element = std::make_shared<ObjectElement>();
+					break;
+				case EAssetPackageType::SkeletalMesh:
+					Element = std::make_shared<MeshElement>();
+					break;
+				case EAssetPackageType::Skeleton:
+					Element = std::make_shared<SkeletonElement>();
+					break;
+				case EAssetPackageType::AnimSequence:
+					Element = std::make_shared<AnimSequenceElement>();
+					break;
+				case EAssetPackageType::AnimInstance:
+					Element = std::make_shared<AnimInstanceElement>();
+					break;
+				case EAssetPackageType::FloatCurve:
+					Element = std::make_shared<FloatCurveElement>();
+					break;
+				case EAssetPackageType::CameraShake:
+					Element = std::make_shared<CameraShakeElement>();
+					break;
+				case EAssetPackageType::ParticleSystem:
+					Element = std::make_shared<ParticleSystemElement>();
+					break;
+				case EAssetPackageType::PhysicsAsset:
+					Element = std::make_shared<PhysicsAssetElement>();
+					break;
+				case EAssetPackageType::PhysicalMaterial:
+					Element = std::make_shared<PhysicalMaterialElement>();
+					break;
+				default:
+					Element = std::make_shared<ContentBrowserElement>();
+					break;
+				}
+			}
+		}
+		else
+		{
+			Element = std::make_shared<ContentBrowserElement>();
+		}
+
+		if (!Icon)
+		{
+			std::wstring IconFileName = L"StartMerge_42x.png";
+			const std::wstring TypeSpecificIconFile = GetContentBrowserIconFileName(Extension, PackageType);
+			if (!TypeSpecificIconFile.empty())
+			{
+				IconFileName = TypeSpecificIconFile;
+			}
+			else if (auto It = IconFileMap.find(Extension); It != IconFileMap.end())
+			{
+				IconFileName = It->second;
+			}
+
+			Icon = FEditorTextureManager::Get().GetOrLoadIcon(FPaths::ToUtf8(FPaths::Combine(FPaths::AssetDir(), L"Editor/Icons/", IconFileName)));
+		}
+
+		Element->SetIcon(Icon);
+
+		Element->SetContent(Content);
+		CachedBrowserElements.push_back(std::move(Element));
+	}
+}
+
+void FEditorContentBrowserWidget::DrawDirNode(const FDirNode& InNode)
+{
+	ImGuiTreeNodeFlags Flag =
+		InNode.Children.empty() ? ImGuiTreeNodeFlags_Leaf : ImGuiTreeNodeFlags_OpenOnArrow;
+
+	if (InNode.Self.Path == BrowserContext.CurrentPath)
+	{
+		Flag |= ImGuiTreeNodeFlags_Selected;
+	}
+	if (!BrowserContext.PendingRevealPath.empty() && IsSubPath(InNode.Self.Path, BrowserContext.PendingRevealPath))
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Always);
+	}
+
+	bool bIsOpen = ImGui::TreeNodeEx(FPaths::ToUtf8(InNode.Self.Name).c_str(), Flag);
+	if (ImGui::IsItemClicked())
+	{
+		if (BrowserContext.CurrentPath != InNode.Self.Path)
+		{
+			BrowserContext.CurrentPath = InNode.Self.Path;
+			RefreshContent();
+		}
+	}
+
+	if (!bIsOpen)
+	{
+		return;
+	}
+
+	int32 ChildrenCount = static_cast<int32>(InNode.Children.size());
+	for (int i = 0; i < ChildrenCount; i++)
+	{
+		DrawDirNode(InNode.Children[i]);
+	}
+
+	ImGui::TreePop();
+}
+
+void FEditorContentBrowserWidget::DrawContents()
+{
+	int ElementCount = static_cast<int>(CachedBrowserElements.size());
+
+	const float ContentWidth = ImGui::GetContentRegionAvail().x;
+	const float ItemWidth = BrowserContext.ContentSize.x;
+	const float ItemHeight = BrowserContext.ContentSize.y;
+
+	int ColumnCount = static_cast<int>(ContentWidth / ItemWidth);
+	if (ColumnCount < 1)
+	{
+		ColumnCount = 1;
+	}
+
+	float GapSize = 0.0f;
+	if (ColumnCount > 1)
+	{
+		GapSize = (ContentWidth - ItemWidth * ColumnCount) / (ColumnCount);
+	}
+
+	ImVec2 StartPos = ImGui::GetCursorPos();
+
+	for (int i = 0; i < ElementCount; ++i)
+	{
+		int Column = i % ColumnCount;
+		int Row = i / ColumnCount;
+
+		float X = StartPos.x + Column * (ItemWidth + GapSize);
+		float Y = StartPos.y + Row * (ItemHeight + GapSize * 2.f);
+
+		ImGui::SetCursorPos(ImVec2(X, Y));
+		CachedBrowserElements[i]->Render(BrowserContext);
+	}
+
+	int RowCount = (ElementCount + ColumnCount - 1) / ColumnCount;
+	ImGui::SetCursorPos(ImVec2(StartPos.x, StartPos.y + RowCount * ItemHeight));
+
+	if (ImGui::BeginPopupContextWindow("##ContentBrowserBackgroundContext", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+	{
+		if (ImGui::BeginMenu("Create"))
+		{
+			if (ImGui::BeginMenu("Material"))
+			{
+				if (ImGui::MenuItem("UberLit"))
+				{
+					BeginMaterialCreate(EMaterialCreatePreset::UberLit, "NewUberLitMaterial");
+				}
+				if (ImGui::MenuItem("Particle"))
+				{
+					BeginMaterialCreate(EMaterialCreatePreset::Particle, "NewParticleMaterial");
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::MenuItem("Float Curve"))
+			{
+				FString CreatedPath;
+				if (FAssetFactory::CreateFloatCurve(FPaths::ToUtf8(BrowserContext.CurrentPath), "NewFloatCurve", CreatedPath))
+				{
+					Refresh();
+					if (BrowserContext.EditorEngine)
+					{
+						if (UFloatCurveAsset* CurveAsset = FFloatCurveManager::Get().Load(CreatedPath))
+						{
+							BrowserContext.EditorEngine->OpenAssetEditorForObject(CurveAsset);
+						}
+					}
+				}
+			}
+			if (ImGui::MenuItem("Camera Shake"))
+			{
+				FString CreatedPath;
+				if (FAssetFactory::CreateCameraShake(FPaths::ToUtf8(BrowserContext.CurrentPath), "NewCameraShake", CreatedPath))
+				{
+					Refresh();
+					if (BrowserContext.EditorEngine)
+					{
+						if (UCameraShakeAsset* ShakeAsset = FCameraShakeManager::Get().Load(CreatedPath))
+						{
+							BrowserContext.EditorEngine->OpenAssetEditorForObject(ShakeAsset);
+						}
+					}
+				}
+			}
+			if (ImGui::MenuItem("Anim Instance"))
+			{
+				FString CreatedPath;
+				if (FAssetFactory::CreateAnimInstanceAsset(FPaths::ToUtf8(BrowserContext.CurrentPath), "NewAnimInstance", CreatedPath))
+				{
+					Refresh();
+					if (BrowserContext.EditorEngine)
+					{
+						if (UAnimInstanceAsset* AnimInstanceAsset = FAnimInstanceAssetManager::Get().Load(CreatedPath))
+						{
+							BrowserContext.EditorEngine->OpenAssetEditorForObject(AnimInstanceAsset);
+						}
+					}
+				}
+			}
+			if (ImGui::MenuItem("Particle System"))
+			{
+				BeginParticleSystemCreate("NewParticleSystem");
+			}
+			if (ImGui::MenuItem("Physical Material"))
+			{
+				FString CreatedPath;
+				if (FAssetFactory::CreatePhysicalMaterial(FPaths::ToUtf8(BrowserContext.CurrentPath), "NewPhysicalMaterial", CreatedPath))
+				{
+					Refresh();
+					if (BrowserContext.EditorEngine)
+					{
+						if (UPhysicalMaterial* Asset = FPhysicalMaterialManager::Get().Load(CreatedPath))
+						{
+							BrowserContext.EditorEngine->OpenAssetEditorForObject(Asset);
+						}
+					}
+				}
+			}
+			if (ImGui::MenuItem("Physics Asset"))
+			{
+				BeginPhysicsAssetCreate();
+			}
+			ImGui::EndMenu();
+		}
+
+		ImGui::Separator();
+		if (ImGui::MenuItem("Refresh"))
+		{
+			Refresh();
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
+void FEditorContentBrowserWidget::BeginMaterialCreate(EMaterialCreatePreset Preset, const FString& DefaultName)
+{
+	PendingMaterialPreset = Preset;
+	CopyToInputBuffer(MaterialCreateName, sizeof(MaterialCreateName), DefaultName);
+	MaterialCreateError.clear();
+	bOpenMaterialCreatePopup = true;
+}
+
+void FEditorContentBrowserWidget::RenderMaterialCreatePopup()
+{
+	constexpr const char* PopupName = "Create Material";
+	if (bOpenMaterialCreatePopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenMaterialCreatePopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextUnformatted("Name");
+	ImGui::SetNextItemWidth(320.0f);
+	const bool bSubmitted = ImGui::InputText("##MaterialCreateName", MaterialCreateName, sizeof(MaterialCreateName), ImGuiInputTextFlags_EnterReturnsTrue);
+
+	if (!MaterialCreateError.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.32f, 0.26f, 1.0f), "%s", MaterialCreateError.c_str());
+	}
+
+	if (bSubmitted)
+	{
+		if (ExecuteMaterialCreate())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+
+	if (ImGui::Button("Create"))
+	{
+		if (ExecuteMaterialCreate())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+bool FEditorContentBrowserWidget::ExecuteMaterialCreate()
+{
+	FString AssetName;
+	if (!TryNormalizeAssetName(MaterialCreateName, AssetName, MaterialCreateError, ".mat"))
+	{
+		return false;
+	}
+
+	FString CreatedPath;
+	if (!FAssetFactory::CreateMaterial(FPaths::ToUtf8(BrowserContext.CurrentPath), AssetName, PendingMaterialPreset, CreatedPath))
+	{
+		MaterialCreateError = "Failed to create material.";
+		return false;
+	}
+
+	FMaterialManager::Get().ScanMaterialAssets();
+	Refresh();
+	if (BrowserContext.EditorEngine)
+	{
+		if (UMaterial* Material = FMaterialManager::Get().GetOrCreateMaterial(CreatedPath))
+		{
+			BrowserContext.EditorEngine->OpenAssetEditorForObject(Material);
+		}
+	}
+
+	return true;
+}
+
+void FEditorContentBrowserWidget::BeginParticleSystemCreate(const FString& DefaultName)
+{
+	CopyToInputBuffer(ParticleSystemCreateName, sizeof(ParticleSystemCreateName), DefaultName);
+	ParticleSystemCreateError.clear();
+	bOpenParticleSystemCreatePopup = true;
+}
+
+void FEditorContentBrowserWidget::RenderParticleSystemCreatePopup()
+{
+	constexpr const char* PopupName = "Create Particle System";
+	if (bOpenParticleSystemCreatePopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenParticleSystemCreatePopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextUnformatted("Name");
+	ImGui::SetNextItemWidth(320.0f);
+	const bool bSubmitted = ImGui::InputText("##ParticleSystemCreateName", ParticleSystemCreateName, sizeof(ParticleSystemCreateName), ImGuiInputTextFlags_EnterReturnsTrue);
+
+	if (!ParticleSystemCreateError.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.32f, 0.26f, 1.0f), "%s", ParticleSystemCreateError.c_str());
+	}
+
+	if (bSubmitted)
+	{
+		if (ExecuteParticleSystemCreate())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+
+	if (ImGui::Button("Create"))
+	{
+		if (ExecuteParticleSystemCreate())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+bool FEditorContentBrowserWidget::ExecuteParticleSystemCreate()
+{
+	FString AssetName;
+	if (!TryNormalizeAssetName(ParticleSystemCreateName, AssetName, ParticleSystemCreateError, ".uasset"))
+	{
+		return false;
+	}
+
+	FString CreatedPath;
+	if (!FAssetFactory::CreateParticleSystemAsset(FPaths::ToUtf8(BrowserContext.CurrentPath), AssetName, CreatedPath))
+	{
+		ParticleSystemCreateError = "Failed to create particle system.";
+		return false;
+	}
+
+	Refresh();
+	if (BrowserContext.EditorEngine)
+	{
+		if (UParticleSystem* Asset = FParticleSystemAssetManager::Get().Load(CreatedPath))
+		{
+			BrowserContext.EditorEngine->OpenAssetEditorForObject(Asset);
+		}
+	}
+
+	return true;
+}
+
+void FEditorContentBrowserWidget::BeginPhysicsAssetCreate()
+{
+	FMeshManager::ScanMeshAssets();
+	PhysicsMeshOptions = FMeshManager::GetAvailableSkeletalMeshFiles();
+	std::sort(PhysicsMeshOptions.begin(), PhysicsMeshOptions.end(),
+		[](const FMeshAssetListItem& A, const FMeshAssetListItem& B)
+		{
+			return A.FullPath < B.FullPath;
+		});
+
+	PhysicsAssetMeshSearch[0] = '\0';
+	PhysicsAssetCreateError.clear();
+	PendingPhysicsAssetMeshPath.clear();
+	PendingPhysicsAssetMeshName.clear();
+	SelectedPhysicsMeshIndex = PhysicsMeshOptions.empty() ? -1 : 0;
+	PhysicsAssetCreateParams = FPhysicsAssetCreateParams();
+	bOpenPhysicsAssetMeshPickerPopup = true;
+}
+
+void FEditorContentBrowserWidget::RenderPhysicsAssetMeshPickerPopup()
+{
+	constexpr const char* PopupName = "Pick Skeletal Mesh";
+	if (bOpenPhysicsAssetMeshPickerPopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenPhysicsAssetMeshPickerPopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextUnformatted("Select the skeletal mesh used to initialize the Physics Asset.");
+	ImGui::SetNextItemWidth(420.0f);
+	ImGui::InputTextWithHint("##PhysicsAssetMeshSearch", "Search Assets", PhysicsAssetMeshSearch, sizeof(PhysicsAssetMeshSearch));
+
+	ImGui::BeginChild("PhysicsAssetMeshList", ImVec2(480.0f, 320.0f), true);
+	if (PhysicsMeshOptions.empty())
+	{
+		ImGui::TextDisabled("No skeletal mesh assets were found.");
+	}
+	else
+	{
+		const FString SearchText = PhysicsAssetMeshSearch;
+		for (int32 Index = 0; Index < static_cast<int32>(PhysicsMeshOptions.size()); ++Index)
+		{
+			const FMeshAssetListItem& Item = PhysicsMeshOptions[Index];
+			if (!MatchesSearchToken(SearchText, Item))
+			{
+				continue;
+			}
+
+			ImGui::PushID(Index);
+			const bool bSelected = SelectedPhysicsMeshIndex == Index;
+			if (ImGui::Selectable(Item.DisplayName.c_str(), bSelected, ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				SelectedPhysicsMeshIndex = Index;
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					PendingPhysicsAssetMeshPath = Item.FullPath;
+					PendingPhysicsAssetMeshName = Item.DisplayName;
+					PhysicsAssetCreateError.clear();
+					bOpenPhysicsAssetCreatePopup = true;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::TextDisabled("%s", Item.FullPath.c_str());
+			ImGui::Separator();
+			ImGui::PopID();
+		}
+	}
+	ImGui::EndChild();
+
+	if (ImGui::Button("Next"))
+	{
+		if (SelectedPhysicsMeshIndex >= 0 && SelectedPhysicsMeshIndex < static_cast<int32>(PhysicsMeshOptions.size()))
+		{
+			PendingPhysicsAssetMeshPath = PhysicsMeshOptions[SelectedPhysicsMeshIndex].FullPath;
+			PendingPhysicsAssetMeshName = PhysicsMeshOptions[SelectedPhysicsMeshIndex].DisplayName;
+			PhysicsAssetCreateError.clear();
+			PhysicsAssetCreateWarning.clear();
+			bOpenPhysicsAssetCreatePopup = true;
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+void FEditorContentBrowserWidget::RenderPhysicsAssetCreatePopup()
+{
+	constexpr const char* PopupName = "New Physics Asset";
+	if (bOpenPhysicsAssetCreatePopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenPhysicsAssetCreatePopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::Text("Skeletal Mesh: %s", PendingPhysicsAssetMeshName.empty() ? "None" : PendingPhysicsAssetMeshName.c_str());
+	ImGui::Separator();
+
+	if (ImGui::CollapsingHeader("Body Creation", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Bone Size", &PhysicsAssetCreateParams.MinBoneSize, 0.1f, 0.1f, 1000.0f);
+
+		int32 PrimitiveType = static_cast<int32>(PhysicsAssetCreateParams.PrimitiveType);
+		const char* PrimitiveLabels[] = { "Capsule", "Box", "Sphere" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Primitive Type", &PrimitiveType, PrimitiveLabels, IM_ARRAYSIZE(PrimitiveLabels)))
+		{
+			PhysicsAssetCreateParams.PrimitiveType = static_cast<EPhysicsAssetPrimitiveType>(PrimitiveType);
+		}
+
+		int32 RagdollMode = static_cast<int32>(PhysicsAssetCreateParams.RagdollMode);
+		const char* RagdollModeLabels[] = { "Per-Body", "PxAggregate" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Body Grouping", &RagdollMode, RagdollModeLabels, IM_ARRAYSIZE(RagdollModeLabels)))
+		{
+			PhysicsAssetCreateParams.RagdollMode = static_cast<EPhysicsAssetRagdollMode>(RagdollMode);
+		}
+
+		int32 BodyGenerationMethod = static_cast<int32>(PhysicsAssetCreateParams.BodyGenerationMethod);
+		const char* BodyGenerationLabels[] = { "Vertex Weight", "Bone Length" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Body Generation", &BodyGenerationMethod, BodyGenerationLabels, IM_ARRAYSIZE(BodyGenerationLabels)))
+		{
+			PhysicsAssetCreateParams.BodyGenerationMethod = static_cast<EPhysicsAssetBodyGenerationMethod>(BodyGenerationMethod);
+		}
+
+		const bool bUseVertexWeight = PhysicsAssetCreateParams.BodyGenerationMethod == EPhysicsAssetBodyGenerationMethod::VertexWeight;
+		ImGui::BeginDisabled(!bUseVertexWeight);
+		int32 VertexWeightingType = static_cast<int32>(PhysicsAssetCreateParams.VertexWeightingType);
+		const char* VertexWeightLabels[] = { "Dominant Weight", "Any Weight" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Vertex Weighting Type", &VertexWeightingType, VertexWeightLabels, IM_ARRAYSIZE(VertexWeightLabels)))
+		{
+			PhysicsAssetCreateParams.VertexWeightingType = static_cast<EPhysicsAssetVertexWeightingType>(VertexWeightingType);
+		}
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Vertex Weight", &PhysicsAssetCreateParams.MinVertexWeight, 0.01f, 0.0f, 1.0f);
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Weld Size", &PhysicsAssetCreateParams.MinWeldSize, 0.0001f, 0.0f, 10.0f, "%.4f");
+		ImGui::TextWrapped("Small vertex fits are merged into their parent bone. Bone-length fallback is used only if vertex generation creates no bodies.");
+		ImGui::Checkbox("Fallback to Bone Length", &PhysicsAssetCreateParams.bFallbackToBoneLength);
+		ImGui::EndDisabled();
+
+		ImGui::Checkbox("Auto Orient to Bone", &PhysicsAssetCreateParams.bAutoOrientToBone);
+		ImGui::Checkbox("Walk Past Small Bones", &PhysicsAssetCreateParams.bWalkPastSmallBones);
+		ImGui::Checkbox("Create Body for All Bones", &PhysicsAssetCreateParams.bCreateBodyForAllBones);
+		ImGui::Checkbox("Disable Collisions by Default", &PhysicsAssetCreateParams.bDisableCollisionsByDefault);
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::InputInt("LOD Index", &PhysicsAssetCreateParams.LodIndex);
+		if (PhysicsAssetCreateParams.LodIndex < 0)
+		{
+			PhysicsAssetCreateParams.LodIndex = 0;
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Advanced"))
+	{
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Min Primitive Size", &PhysicsAssetCreateParams.MinPrimitiveSize, 0.01f, 0.01f, 100.0f);
+		ImGui::SetNextItemWidth(180.0f);
+		ImGui::DragFloat("Fit Padding", &PhysicsAssetCreateParams.FitPadding, 0.01f, 1.0f, 2.0f);
+		ImGui::TextDisabled("LOD is currently reserved for future generation refinements.");
+	}
+
+	if (ImGui::CollapsingHeader("Constraint Creation", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Checkbox("Create Constraints", &PhysicsAssetCreateParams.bCreateConstraints);
+
+		int32 AngularMode = static_cast<int32>(PhysicsAssetCreateParams.AngularConstraintMode);
+		const char* AngularModeLabels[] = { "Limited", "Locked", "Free" };
+		ImGui::SetNextItemWidth(180.0f);
+		if (ImGui::Combo("Angular Constraint Mode", &AngularMode, AngularModeLabels, IM_ARRAYSIZE(AngularModeLabels)))
+		{
+			PhysicsAssetCreateParams.AngularConstraintMode = static_cast<EPhysicsAssetAngularConstraintMode>(AngularMode);
+		}
+	}
+
+	if (!PhysicsAssetCreateWarning.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.75f, 0.25f, 1.0f), "%s", PhysicsAssetCreateWarning.c_str());
+	}
+
+	if (!PhysicsAssetCreateError.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.32f, 0.26f, 1.0f), "%s", PhysicsAssetCreateError.c_str());
+	}
+
+	if (ImGui::Button("Create Asset"))
+	{
+		if (ExecutePhysicsAssetCreate())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+bool FEditorContentBrowserWidget::ExecutePhysicsAssetCreate()
+{
+	if (PendingPhysicsAssetMeshPath.empty())
+	{
+		PhysicsAssetCreateError = "Select a skeletal mesh first.";
+		return false;
+	}
+
+	if (!BrowserContext.EditorEngine)
+	{
+		PhysicsAssetCreateError = "Editor engine is unavailable.";
+		return false;
+	}
+
+	FString AssetName;
+	FString CreatedPath;
+	PhysicsAssetCreateWarning.clear();
+	if (!FAssetFactory::CreatePhysicsAssetFromSkeletalMesh(
+		FPaths::ToUtf8(BrowserContext.CurrentPath),
+		AssetName,
+		PendingPhysicsAssetMeshPath,
+		PhysicsAssetCreateParams,
+		BrowserContext.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice(),
+		CreatedPath))
+	{
+		PhysicsAssetCreateError = "Failed to create Physics Asset.";
+		return false;
+	}
+
+	PhysicsAssetCreateWarning = FAssetFactory::GetLastPhysicsAssetCreateWarning();
+	if (!PhysicsAssetCreateWarning.empty())
+	{
+		FNotificationManager::Get().AddNotification(PhysicsAssetCreateWarning, ENotificationType::Info, 6.0f);
+	}
+
+	Refresh();
+	if (UPhysicsAsset* Asset = FPhysicsAssetManager::Get().Load(CreatedPath))
+	{
+		BrowserContext.EditorEngine->OpenAssetEditorForObject(Asset);
+	}
+
+	return true;
+}
+
+void FEditorContentBrowserWidget::BeginRenameAsset(const FContentItem& Item)
+{
+	RenameSourcePath = Item.Path;
+	CopyToInputBuffer(RenameAssetName, sizeof(RenameAssetName), FPaths::ToUtf8(Item.Path.stem().wstring()));
+	RenameError.clear();
+	bOpenRenamePopup = true;
+}
+
+void FEditorContentBrowserWidget::RenderRenamePopup()
+{
+	constexpr const char* PopupName = "Rename Asset";
+	if (bOpenRenamePopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenRenamePopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextUnformatted("Name");
+	ImGui::SetNextItemWidth(320.0f);
+	const bool bSubmitted = ImGui::InputText("##RenameAssetName", RenameAssetName, sizeof(RenameAssetName), ImGuiInputTextFlags_EnterReturnsTrue);
+
+	if (!RenameError.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.32f, 0.26f, 1.0f), "%s", RenameError.c_str());
+	}
+
+	if (bSubmitted)
+	{
+		if (ExecuteRenameAsset())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+
+	if (ImGui::Button("Rename"))
+	{
+		if (ExecuteRenameAsset())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+bool FEditorContentBrowserWidget::ExecuteRenameAsset()
+{
+	FString AssetName;
+	if (!TryNormalizeAssetName(RenameAssetName, AssetName, RenameError, ".mat"))
+	{
+		return false;
+	}
+
+	const FString OldPath = FPaths::MakeProjectRelative(FPaths::ToUtf8(RenameSourcePath.generic_wstring()));
+	FString NewPath;
+	if (!FMaterialManager::Get().RenameMaterial(OldPath, AssetName, NewPath))
+	{
+		RenameError = "Failed to rename material.";
+		return false;
+	}
+
+	BrowserContext.SelectedElement.reset();
+	Refresh();
+	return true;
+}
+
+void FEditorContentBrowserWidget::BeginDeleteAsset(const FContentItem& Item)
+{
+	DeleteSourcePath = Item.Path;
+	DeleteAssetName = FPaths::ToUtf8(Item.Path.filename().wstring());
+	DeleteError.clear();
+	bOpenDeletePopup = true;
+}
+
+void FEditorContentBrowserWidget::RenderDeletePopup()
+{
+	constexpr const char* PopupName = "Delete Asset";
+	if (bOpenDeletePopup)
+	{
+		ImGui::OpenPopup(PopupName);
+		bOpenDeletePopup = false;
+	}
+
+	if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextWrapped("Delete this file?");
+	ImGui::TextUnformatted(DeleteAssetName.c_str());
+
+	if (!DeleteError.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.32f, 0.26f, 1.0f), "%s", DeleteError.c_str());
+	}
+
+	if (ImGui::Button("Delete"))
+	{
+		if (ExecuteDeleteAsset())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
+}
+
+bool FEditorContentBrowserWidget::ExecuteDeleteAsset()
+{
+	const std::filesystem::path FullPath = DeleteSourcePath.lexically_normal();
+	if (!std::filesystem::exists(FullPath))
+	{
+		DeleteError = "File does not exist.";
+		return false;
+	}
+
+	if (!std::filesystem::is_regular_file(FullPath))
+	{
+		DeleteError = "Only files can be deleted.";
+		return false;
+	}
+
+	const std::filesystem::path AssetRoot = std::filesystem::path(FPaths::AssetDir()).lexically_normal();
+	if (!IsSubPath(AssetRoot, FullPath))
+	{
+		DeleteError = "Only files under Asset/ can be deleted.";
+		return false;
+	}
+
+	const FString Extension = GetLowerExtension(FullPath);
+	const FString RelativePath = ToProjectRelativePath(FullPath);
+	EAssetPackageType PackageType = EAssetPackageType::Unknown;
+	UObject* LoadedAsset = FindLoadedAssetByPath(RelativePath, Extension, &PackageType);
+
+	std::error_code Error;
+	if (!std::filesystem::remove(FullPath, Error) || Error)
+	{
+		DeleteError = "Failed to delete file.";
+		return false;
+	}
+
+	if (LoadedAsset && BrowserContext.EditorEngine)
+	{
+		BrowserContext.EditorEngine->CloseAssetEditorsForObject(LoadedAsset);
+	}
+
+	UnloadAssetByPath(RelativePath, Extension, PackageType);
+
+	BrowserContext.SelectedElement.reset();
+	RefreshImportedAssetLists();
+	Refresh();
+	return true;
+}
+
+void FEditorContentBrowserWidget::BeginImportSourceFile()
+{
+	const FString SelectedPath = OpenImportSourceFileDialog(BrowserContext.CurrentPath);
+	if (SelectedPath.empty())
+	{
+		return;
+	}
+
+	const std::filesystem::path FullPath = ResolveProjectPath(SelectedPath);
+	const std::filesystem::path AssetRoot(FPaths::AssetDir());
+	if (!IsSubPath(AssetRoot, FullPath))
+	{
+		UE_LOG("Content Browser import rejected: source must be inside Asset/. Path=%s", SelectedPath.c_str());
+		return;
+	}
+
+	const FString SourcePath = ToProjectRelativePath(FullPath);
+	const FString Extension = GetLowerExtension(FullPath);
+	if (Extension == ".obj")
+	{
+		if (ExecuteObjImport(SourcePath))
+		{
+			Refresh();
+		}
+		return;
+	}
+
+	if (Extension == ".fbx")
+	{
+		BeginFbxImport(SourcePath);
+		return;
+	}
+
+	UE_LOG("Content Browser import rejected: unsupported source extension. Path=%s", SelectedPath.c_str());
+}
+
+void FEditorContentBrowserWidget::BeginFbxImport(const FString& SourcePath)
+{
+	FbxImportDialog.Open(SourcePath);
+}
+
+void FEditorContentBrowserWidget::RenderFbxImportPopup()
+{
+	if (FbxImportDialog.Render(BrowserContext.EditorEngine))
+	{
+		Refresh();
+	}
+}
+
+bool FEditorContentBrowserWidget::ExecuteObjImport(const FString& SourcePath)
+{
+	if (!BrowserContext.EditorEngine)
+	{
+		return false;
+	}
+
+	UStaticMesh* ImportedMesh = nullptr;
+	ID3D11Device* Device = BrowserContext.EditorEngine->GetRenderer().GetFD3DDevice().GetDevice();
+	const bool bImported = FEditorObjImportService::ImportStaticMeshFromObj(SourcePath, Device, ImportedMesh, false);
+	if (bImported)
+	{
+		RefreshImportedAssetLists();
+	}
+	return bImported;
+}
+
+void FEditorContentBrowserWidget::RefreshImportedAssetLists()
+{
+	FMeshManager::ScanMeshAssets();
+	FMaterialManager::Get().ScanMaterialAssets();
+	FEditorObjImportService::ScanObjSourceFiles();
+	FEditorFbxImportService::ScanFbxSourceFiles();
+}
+
+TArray<FContentItem> FEditorContentBrowserWidget::ReadDirectory(std::wstring Path)
+{
+	TArray<FContentItem> Items;
+
+	if (!std::filesystem::exists(Path) || !std::filesystem::is_directory(Path))
+		return Items;
+
+	const std::filesystem::path CurrentPath = std::filesystem::path(Path).lexically_normal();
+	const std::filesystem::path RootPath = std::filesystem::path(FPaths::RootDir()).lexically_normal();
+	const bool bIsRootDir = CurrentPath == RootPath;
+
+	for (const auto& Entry : std::filesystem::directory_iterator(Path))
+	{
+		std::wstring Name = Entry.path().filename().wstring();
+
+		// Root Directory에서 "Asset" 폴더만 Content browser에 표시
+		if (bIsRootDir && Name != L"Asset")
+		{
+			continue;
+		}
+
+		if (!BrowserContext.bShowSourceFiles && IsEditorSourceFile(Entry.path()))
+		{
+			continue;
+		}
+
+		FContentItem Item;
+		Item.Path = Entry.path();
+		Item.Name = Name;
+		Item.bIsDirectory = Entry.is_directory();
+
+		Items.push_back(Item);
+	}
+
+	std::sort(Items.begin(), Items.end(),
+		[](const FContentItem& A, const FContentItem& B)
+		{
+			if (A.bIsDirectory != B.bIsDirectory)
+				return A.bIsDirectory > B.bIsDirectory;
+
+			return A.Name < B.Name;
+		});
+
+	return Items;
+}
+
+FEditorContentBrowserWidget::FDirNode FEditorContentBrowserWidget::BuildDirectoryTree(const std::filesystem::path& DirPath)
+{
+	FDirNode Node;
+	Node.Self.Path = DirPath;
+	Node.Self.Name = DirPath.filename().wstring();
+	Node.Self.bIsDirectory = true;
+
+	const std::filesystem::path CurrentPath = DirPath.lexically_normal();
+	const std::filesystem::path RootPath = std::filesystem::path(FPaths::RootDir()).lexically_normal();
+	const bool bIsRootDir = CurrentPath == RootPath;
+
+	for (const auto& Entry : std::filesystem::directory_iterator(DirPath))
+	{
+		if (!Entry.is_directory())
+			continue;
+
+		std::wstring DirName = Entry.path().filename().wstring();
+		
+		// Root Directory에서 "Asset" 폴더만 Content browser에 표시
+		if (bIsRootDir && DirName != L"Asset")
+		{
+			continue;
+		}
+
+		Node.Children.push_back(BuildDirectoryTree(Entry.path()));
+	}
+
+	if (Node.Self.Name.empty())
+		Node.Self.Name = FPaths::ToWide("Project");
+
+	return Node;
+}
+
+TArray<FMeshAssetListItem> FEditorContentBrowserWidget::ScanSkeletonAssets() const
+{
+	TArray<FMeshAssetListItem> Items;
+
+	const std::filesystem::path AssetRoot(FPaths::AssetDir());
+	if (!std::filesystem::exists(AssetRoot))
+	{
+		return Items;
+	}
+
+	for (const auto& Entry : std::filesystem::recursive_directory_iterator(AssetRoot))
+	{
+		if (!Entry.is_regular_file() || GetLowerExtension(Entry.path()) != ".uasset")
+		{
+			continue;
+		}
+
+		const FString PackagePath = ToProjectRelativePath(Entry.path());
+		EAssetPackageType PackageType = EAssetPackageType::Unknown;
+		if (!FAssetPackage::GetPackageType(PackagePath, PackageType) || PackageType != EAssetPackageType::Skeleton)
+		{
+			continue;
+		}
+
+		FMeshAssetListItem Item;
+		Item.DisplayName = FPaths::ToUtf8(Entry.path().stem().wstring());
+		Item.FullPath = PackagePath;
+		Items.push_back(Item);
+	}
+
+	std::sort(Items.begin(), Items.end(),
+		[](const FMeshAssetListItem& A, const FMeshAssetListItem& B)
+		{
+			return A.FullPath < B.FullPath;
+		});
+
+	return Items;
+}
