@@ -1,0 +1,443 @@
+﻿#include "Input/InputManager.h"
+#include "ImGui/imgui.h"
+#include <cstring>
+#include <cmath>
+#include <algorithm>
+
+namespace
+{
+	bool IsInputForegroundWindow(HWND OwnerHWnd)
+	{
+		if (!OwnerHWnd)
+		{
+			return true;
+		}
+
+		HWND ForegroundHWnd = GetForegroundWindow();
+		if (!ForegroundHWnd)
+		{
+			return false;
+		}
+
+		if (ForegroundHWnd == OwnerHWnd || IsChild(OwnerHWnd, ForegroundHWnd))
+		{
+			return true;
+		}
+
+		DWORD ProcessId = 0;
+		GetWindowThreadProcessId(ForegroundHWnd, &ProcessId);
+		return ProcessId == GetCurrentProcessId();
+	}
+}
+
+FInputManager* FInputManager::Instance = nullptr;
+// Function : ProcessMessage handle raw input from windows 
+//and store input event to event queue
+void FInputManager::ProcessMessage(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
+{
+	switch (Msg)
+	{
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+		if (WParam < MAX_KEYS)
+			EventQueue.push_back({ EInputEventType::KeyDown, static_cast<int32>(WParam) });
+		break;
+
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		if (WParam < MAX_KEYS)
+			EventQueue.push_back({ EInputEventType::KeyUp, static_cast<int32>(WParam) });
+		break;
+
+	case WM_KILLFOCUS:
+	case WM_CANCELMODE:
+		ResetAllStates();
+		break;
+
+	case WM_ACTIVATEAPP:
+		if (!WParam)
+		{
+			ResetAllStates();
+		}
+		break;
+
+	case WM_LBUTTONDOWN:
+		EventQueue.push_back({ EInputEventType::MouseButtonDown, MOUSE_LEFT });
+		SetCapture(Hwnd);
+		break;
+
+	case WM_LBUTTONUP:
+		EventQueue.push_back({ EInputEventType::MouseButtonUp, MOUSE_LEFT });
+		ReleaseCapture();
+		break;
+
+	case WM_RBUTTONDOWN:
+		EventQueue.push_back({ EInputEventType::MouseButtonDown, MOUSE_RIGHT });
+		ResetMouseDelta();
+		bSuppressNextMouseDelta = true;
+		bTrackingMouse = true;
+		SetCapture(Hwnd);
+		break;
+
+	case WM_RBUTTONUP:
+		EventQueue.push_back({ EInputEventType::MouseButtonUp, MOUSE_RIGHT });
+		bTrackingMouse = false;
+		ReleaseCapture();
+		break;
+
+	case WM_MBUTTONDOWN:
+		EventQueue.push_back({ EInputEventType::MouseButtonDown, MOUSE_MIDDLE });
+		SetCapture(Hwnd);
+		break;
+
+	case WM_MBUTTONUP:
+		EventQueue.push_back({ EInputEventType::MouseButtonUp, MOUSE_MIDDLE });
+		ReleaseCapture();
+		break;
+
+	case WM_XBUTTONDOWN:
+	{
+		int32 Btn = (GET_XBUTTON_WPARAM(WParam) == XBUTTON1) ? MOUSE_X1 : MOUSE_X2;
+		EventQueue.push_back({ EInputEventType::MouseButtonDown, Btn });
+		break;
+	}
+	case WM_XBUTTONUP:
+	{
+		int32 Btn = (GET_XBUTTON_WPARAM(WParam) == XBUTTON1) ? MOUSE_X1 : MOUSE_X2;
+		EventQueue.push_back({ EInputEventType::MouseButtonUp, Btn });
+		break;
+	}
+
+	case WM_MOUSEWHEEL:
+	{
+		const float WheelDelta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(WParam)) / static_cast<float>(WHEEL_DELTA);
+		PendingWheelDelta += WheelDelta;
+		EventQueue.push_back({ EInputEventType::MouseWheel, 0, WheelDelta });
+		break;
+	}
+
+	case WM_INPUT:
+	{
+		if (!IsInputForegroundWindow(OwnerHWnd))
+		{
+			break;
+		}
+
+		UINT Size = 0;
+		GetRawInputData((HRAWINPUT)LParam, RID_INPUT, NULL, &Size, sizeof(RAWINPUTHEADER));
+		if (Size > 0)
+		{
+			std::vector<BYTE> Data(Size);
+			if (GetRawInputData((HRAWINPUT)LParam, RID_INPUT, Data.data(), &Size, sizeof(RAWINPUTHEADER)) == Size)
+			{
+				RAWINPUT* Raw = (RAWINPUT*)Data.data();
+				if (Raw->header.dwType == RIM_TYPEMOUSE)
+				{
+					RawMouseDeltaAccumX += static_cast<float>(Raw->data.mouse.lLastX);
+					RawMouseDeltaAccumY += static_cast<float>(Raw->data.mouse.lLastY);
+				}
+			}
+		}
+		break;
+	}
+	}
+}
+
+void FInputManager::Tick()
+{
+	// Focus check
+	bool bFocused = IsInputForegroundWindow(OwnerHWnd);
+	if (bFocused != bWindowFocused)
+	{
+		bWindowFocused = bFocused;
+		if (!bWindowFocused)
+		{
+			ResetAllStates();
+			return;
+		}
+
+		ResetMouseDelta();
+		bSuppressNextMouseDelta = true;
+	}
+
+	if (!bWindowFocused)
+	{
+		ResetMouseDelta();
+		ResetWheelDelta();
+		EventQueue.clear();
+		FrameEventQueue.clear();
+		return;
+	}
+
+	// Save previous frame state
+	std::memcpy(PrevKeyState, KeyState, sizeof(KeyState));
+	FrameEventQueue = EventQueue;
+
+	// Clear transient drag states
+	for (int i = 0; i < MAX_KEYS; ++i)
+	{
+		bWasDragStarted[i] = false;
+		bWasDragEnded[i] = false;
+	}
+
+	// Flush event queue
+	for (const FInputEvent& Event : EventQueue)
+	{
+		int32 Key = Event.KeyOrButton;
+		if (Key < 0 || Key >= MAX_KEYS) continue;
+
+		switch (Event.Type)
+		{
+		case EInputEventType::KeyDown:
+		case EInputEventType::MouseButtonDown:
+			KeyState[Key] = true;
+			if (Event.Type == EInputEventType::MouseButtonDown)
+			{
+				bDragCandidate[Key] = true;
+				MouseDownPos[Key] = LastMousePos;
+			}
+			break;
+		case EInputEventType::KeyUp:
+		case EInputEventType::MouseButtonUp:
+			KeyState[Key] = false;
+			if (Event.Type == EInputEventType::MouseButtonUp)
+			{
+				if (bIsDragging[Key])
+				{
+					bIsDragging[Key] = false;
+					bWasDragEnded[Key] = true;
+				}
+				bDragCandidate[Key] = false;
+			}
+			break;
+		}
+	}
+	EventQueue.clear();
+
+	// Modifier key-up messages can be swallowed by system/GUI handling paths
+	// (Alt uses WM_SYSKEY*, and ImGui may consume focused text input events).
+	// Keep the held-state authoritative from the OS so stale modifiers cannot
+	// leak into viewport navigation.
+	auto SyncPhysicalKey = [this](int32 Key)
+	{
+		if (Key >= 0 && Key < MAX_KEYS)
+		{
+			KeyState[Key] = (GetAsyncKeyState(Key) & 0x8000) != 0;
+		}
+	};
+
+	SyncPhysicalKey(VK_LCONTROL);
+	SyncPhysicalKey(VK_RCONTROL);
+	SyncPhysicalKey(VK_CONTROL);
+	KeyState[VK_CONTROL] = KeyState[VK_LCONTROL] || KeyState[VK_RCONTROL] || ((GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0);
+
+	SyncPhysicalKey(VK_LMENU);
+	SyncPhysicalKey(VK_RMENU);
+	SyncPhysicalKey(VK_MENU);
+	KeyState[VK_MENU] = KeyState[VK_LMENU] || KeyState[VK_RMENU] || ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0);
+
+	SyncPhysicalKey(VK_LSHIFT);
+	SyncPhysicalKey(VK_RSHIFT);
+	SyncPhysicalKey(VK_SHIFT);
+	KeyState[VK_SHIFT] = KeyState[VK_LSHIFT] || KeyState[VK_RSHIFT] || ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
+
+	// Mouse Wheel
+	MouseWheelDelta = PendingWheelDelta;
+	PendingWheelDelta = 0.0f;
+
+	// Mouse delta
+	POINT CurrentPos;
+	GetCursorPos(&CurrentPos);
+	
+	// If we have raw delta, use it. Otherwise use cursor pos.
+	if (std::abs(RawMouseDeltaAccumX) > 0.0f || std::abs(RawMouseDeltaAccumY) > 0.0f)
+	{
+		MouseDeltaX = RawMouseDeltaAccumX;
+		MouseDeltaY = RawMouseDeltaAccumY;
+	}
+	else
+	{
+		MouseDeltaX = static_cast<float>(CurrentPos.x - LastMousePos.x);
+		MouseDeltaY = static_cast<float>(CurrentPos.y - LastMousePos.y);
+	}
+
+	if (bSuppressNextMouseDelta)
+	{
+		MouseDeltaX = 0.0f;
+		MouseDeltaY = 0.0f;
+		bSuppressNextMouseDelta = false;
+	}
+	
+	LastMousePos = CurrentPos;
+	RawMouseDeltaAccumX = 0.0f;
+	RawMouseDeltaAccumY = 0.0f;
+
+	UpdateDragging();
+}
+
+void FInputManager::UpdateDragging()
+{
+	for (int i = 0; i < MAX_KEYS; ++i)
+	{
+		if (bDragCandidate[i] && !bIsDragging[i])
+		{
+			float DX = static_cast<float>(LastMousePos.x - MouseDownPos[i].x);
+			float DY = static_cast<float>(LastMousePos.y - MouseDownPos[i].y);
+			if (std::sqrt(DX * DX + DY * DY) >= static_cast<float>(DRAG_THRESHOLD))
+			{
+				bIsDragging[i] = true;
+				bWasDragStarted[i] = true;
+			}
+		}
+	}
+}
+
+bool FInputManager::IsGuiUsingMouse() const
+{
+	if (bHasGuiCaptureOverride)
+	{
+		return bGuiUsingMouseOverride;
+	}
+	return ImGui::GetIO().WantCaptureMouse;
+}
+
+bool FInputManager::IsGuiUsingKeyboard() const
+{
+	if (bHasGuiCaptureOverride)
+	{
+		return bGuiUsingKeyboardOverride || bGuiUsingTextInputOverride;
+	}
+	return ImGui::GetIO().WantCaptureKeyboard || ImGui::GetIO().WantTextInput;
+}
+
+bool FInputManager::IsGuiUsingTextInput() const
+{
+	if (bHasGuiCaptureOverride)
+	{
+		return bGuiUsingTextInputOverride;
+	}
+	return ImGui::GetIO().WantTextInput;
+}
+
+void FInputManager::SetGuiCaptureOverride(bool bInUsingMouse, bool bInUsingKeyboard, bool bInUsingTextInput)
+{
+	bHasGuiCaptureOverride = true;
+	bGuiUsingMouseOverride = bInUsingMouse;
+	bGuiUsingKeyboardOverride = bInUsingKeyboard;
+	bGuiUsingTextInputOverride = bInUsingTextInput;
+}
+
+void FInputManager::ClearGuiCaptureOverride()
+{
+	bHasGuiCaptureOverride = false;
+	bGuiUsingMouseOverride = false;
+	bGuiUsingKeyboardOverride = false;
+	bGuiUsingTextInputOverride = false;
+}
+
+void FInputManager::ResetAllStates()
+{
+	ResetAllKeyStates();
+	ResetMouseDelta();
+	ResetWheelDelta();
+	FrameEventQueue.clear();
+}
+
+void FInputManager::ResetMouseDelta()
+{
+	MouseDeltaX = 0.0f;
+	MouseDeltaY = 0.0f;
+	RawMouseDeltaAccumX = 0.0f;
+	RawMouseDeltaAccumY = 0.0f;
+	GetCursorPos(&LastMousePos);
+}
+
+void FInputManager::ResetWheelDelta()
+{
+	MouseWheelDelta = 0.0f;
+	PendingWheelDelta = 0.0f;
+}
+
+void FInputManager::ResetAllKeyStates()
+{
+	std::memset(KeyState, 0, sizeof(KeyState));
+	std::memset(PrevKeyState, 0, sizeof(PrevKeyState));
+	std::memset(bIsDragging, 0, sizeof(bIsDragging));
+	std::memset(bDragCandidate, 0, sizeof(bDragCandidate));
+	EventQueue.clear();
+	FrameEventQueue.clear();
+}
+
+bool FInputManager::IsKeyDown(int32 Key) const
+{
+	if (Key < 0 || Key >= MAX_KEYS) return false;
+	return KeyState[Key];
+}
+
+bool FInputManager::WasKeyDown(int32 Key) const
+{
+	if (Key < 0 || Key >= MAX_KEYS) return false;
+	return PrevKeyState[Key];
+}
+
+bool FInputManager::IsKeyPressed(int32 Key) const
+{
+	if (Key < 0 || Key >= MAX_KEYS) return false;
+	return KeyState[Key] && !PrevKeyState[Key];
+}
+
+bool FInputManager::IsKeyReleased(int32 Key) const
+{
+	if (Key < 0 || Key >= MAX_KEYS) return false;
+	return !KeyState[Key] && PrevKeyState[Key];
+}
+
+bool FInputManager::IsMouseButtonDown(int32 Button) const
+{
+	return IsKeyDown(Button);
+}
+
+bool FInputManager::IsMouseButtonPressed(int32 Button) const
+{
+	return IsKeyPressed(Button);
+}
+
+bool FInputManager::IsMouseButtonReleased(int32 Button) const
+{
+	return IsKeyReleased(Button);
+}
+
+bool FInputManager::IsDragging(int32 Button) const
+{
+	if (Button < 0 || Button >= MAX_KEYS) return false;
+	return bIsDragging[Button];
+}
+
+bool FInputManager::WasDragStarted(int32 Button) const
+{
+	if (Button < 0 || Button >= MAX_KEYS) return false;
+	return bWasDragStarted[Button];
+}
+
+bool FInputManager::WasDragEnded(int32 Button) const
+{
+	if (Button < 0 || Button >= MAX_KEYS) return false;
+	return bWasDragEnded[Button];
+}
+
+POINT FInputManager::GetDragDelta(int32 Button) const
+{
+	POINT Delta = { 0, 0 };
+	if (Button >= 0 && Button < MAX_KEYS && bIsDragging[Button])
+	{
+		Delta.x = LastMousePos.x - MouseDownPos[Button].x;
+		Delta.y = LastMousePos.y - MouseDownPos[Button].y;
+	}
+	return Delta;
+}
+
+float FInputManager::GetDragDistance(int32 Button) const
+{
+	POINT Delta = GetDragDelta(Button);
+	return std::sqrt(static_cast<float>(Delta.x * Delta.x + Delta.y * Delta.y));
+}

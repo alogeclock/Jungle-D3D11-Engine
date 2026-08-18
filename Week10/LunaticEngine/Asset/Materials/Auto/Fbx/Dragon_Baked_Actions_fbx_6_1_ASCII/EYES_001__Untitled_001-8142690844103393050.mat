@@ -1,0 +1,29 @@
+{
+  "BlendState" : "",
+  "DepthStencilState" : "",
+  "FbxFlags" : {
+    "HasEmbeddedTexture" : false,
+    "HasLayeredTexture" : true
+  },
+  "Origin" : "FbxImport",
+  "Parameters" : {
+    "HasNormalMap" : 0.000000,
+    "SectionColor" : [0.800000, 0.800000, 0.800000, 1.000000],
+    "_pad" : [0.000000, 0.000000, 0.000000]
+  },
+  "PathFileName" : "Asset/Materials/Auto/Fbx/Dragon_Baked_Actions_fbx_6_1_ASCII/EYES_001__Untitled_001-8142690844103393050.mat",
+  "RasterizerState" : "",
+  "RenderPass" : "Opaque",
+  "ShaderPath" : "Shaders/Geometry/UberLit.hlsl",
+  "TextureTransforms" : {
+    "DiffuseTexture" : {
+      "Rotation" : 0.000000,
+      "Scale" : [1.000000, 1.000000],
+      "Translation" : [0.000000, 0.000000],
+      "UVSet" : "UV_mirror"
+    }
+  },
+  "Textures" : {
+    "DiffuseTexture" : "Asset/Content/Model/Dragon/Black Dragon Rigged and Game Ready/Black Dragon Rigged and Game Ready/textures/Dragon_Bump_Col2.jpg"
+  }
+}
