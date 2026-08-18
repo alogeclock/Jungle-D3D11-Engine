@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{bacfc356-6c90-4aa5-bdba-e03a839d4bbd}</ProjectGuid>
+    <RootNamespace>Jungle_Week2_Team7</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:/Github/Week2/Engine/Source;$(ProjectDir)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>;$(ProjectDir);$(ProjectDir)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine\Source\Runtime\Core\Private\TimeManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Axis.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Grid.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ArrowComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\CubeArrowComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\CubeComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\GridComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PlaneComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\RingComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\MeshManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\VertexData.cpp" />
+    <ClCompile Include="Memory\Memory.cpp" />
+    <ClCompile Include="Object\Actor.cpp" />
+    <ClCompile Include="Object\Level.cpp" />
+    <ClCompile Include="Object\Object.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\Guid.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\EditorViewportClient.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\PivotTransformGizmo.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Application.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\Viewport.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\AxisComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\ActorComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\PrimitiveComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SceneComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\SphereComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Classes\Components\TriangleComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Editor\Private\BaseTransformGizmo.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\Rendering\Renderer.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SceneProxy\Scene.cpp" />
+    <ClCompile Include="World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EngineStatics.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Intersections.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\OrthographicMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\TimeManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Axis.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Grid.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ArrowComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\CubeArrowComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\CubeComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\GridComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PlaneComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\RingComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\MeshManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\VertexData.h" />
+    <ClInclude Include="Memory\Memory.h" />
+    <ClInclude Include="nlohmann\json.hpp" />
+    <ClInclude Include="Object\Actor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\CoreMinimal.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\AutoRTFM.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\CoreTypes.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatform.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMisc.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Guid.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\MicrosoftPlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Platform.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformMisc.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Quat.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Rotator.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TransformNonVectorized.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\TranslationMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealPlatformMathSSE4.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatform.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\WindowsPlatformMisc.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Transform.h" />
+    <ClInclude Include="Object\Level.h" />
+    <ClInclude Include="Object\Object.h" />
+    <ClInclude Include="CoreTypes.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\GenericPlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Matrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PerspectiveMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Plane.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformCrt.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\PlatformMath.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\RotationMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ScaleMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\UnrealMathUtility.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\Vector4.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Math\ViewMatrix.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Templates\TypeCompatibleBytes.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\EditorViewportClient.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\PivotTransformGizmo.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Application.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\Viewport.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\AxisComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\PrimitiveComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SceneComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\ActorComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\PrimitiveComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SceneComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Classes\Components\TriangleComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\ImGuiManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Editor\Public\BaseTransformGizmo.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\Rendering\Renderer.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="SceneProxy\Scene.h" />
+    <ClInclude Include="SceneProxy\SceneProxy.h" />
+    <ClInclude Include="World.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
