@@ -121,7 +121,7 @@ void FFbxMaterialImporter::CollectMaterials(FbxScene* Scene, FFbxImportContext& 
 		if (Opacity.IsValid())
 		{
 			FbxDouble OpacityValue = Opacity.Get<FbxDouble>();
-			MaterialInfo.Opacity = 1.0f - OpacityValue;
+			MaterialInfo.Opacity = static_cast<float>(1.0 - OpacityValue);
 
 			if (MaterialInfo.Opacity < 1.0f)
 			{

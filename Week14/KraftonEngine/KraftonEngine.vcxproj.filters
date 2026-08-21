@@ -148,9 +148,6 @@
     <Filter Include="Source\Engine\Audio">
       <UniqueIdentifier>{60f7fb11-d80b-bf66-98c3-689d6f8326ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Engine\Score">
-      <UniqueIdentifier>{7a6f61da-3c8c-4bd8-9c74-891d3d21b978}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Engine\CameraShake">
       <UniqueIdentifier>{6402e8a9-52cd-5e58-13d2-0638ee5aff09}</UniqueIdentifier>
     </Filter>
@@ -357,6 +354,9 @@
     </Filter>
     <Filter Include="Source\Engine\Runtime">
       <UniqueIdentifier>{a1bbb40a-2c30-7ca6-caf9-d2e4532b09c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Score">
+      <UniqueIdentifier>{6d7608b2-6b4d-afea-8823-6f34a98cb93e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Engine\Serialization">
       <UniqueIdentifier>{b03fb85a-4e75-0b00-08fd-bb38cdc05e3f}</UniqueIdentifier>
@@ -664,6 +664,9 @@
       <Filter>Shaders\Geometry</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\Geometry\Particle.hlsl">
+      <Filter>Shaders\Geometry</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Geometry\PreDepth.hlsl">
       <Filter>Shaders\Geometry</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\Geometry\Primitive.hlsl">
@@ -1070,9 +1073,6 @@
     <ClCompile Include="Source\Engine\Audio\Miniaudio.cpp">
       <Filter>Source\Engine\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Score\ScoreManager.cpp">
-      <Filter>Source\Engine\Score</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\CameraShake\CameraShakeAsset.cpp">
       <Filter>Source\Engine\CameraShake</Filter>
     </ClCompile>
@@ -1337,13 +1337,13 @@
     <ClCompile Include="Source\Engine\GameFramework\Actor\PlayerStart.cpp">
       <Filter>Source\Engine\GameFramework\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\Actor\SceneTransitionTriggerActor.cpp">
+      <Filter>Source\Engine\GameFramework\Actor</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\Actor\SkeletalMeshActor.cpp">
       <Filter>Source\Engine\GameFramework\Actor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\Actor\SphereActor.cpp">
-      <Filter>Source\Engine\GameFramework\Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\GameFramework\Actor\SceneTransitionTriggerActor.cpp">
       <Filter>Source\Engine\GameFramework\Actor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\GameFramework\Actor\StaticMeshActor.cpp">
@@ -1868,6 +1868,9 @@
     <ClCompile Include="Source\Engine\Runtime\Launch.cpp">
       <Filter>Source\Engine\Runtime</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Score\ScoreManager.cpp">
+      <Filter>Source\Engine\Score</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Serialization\SceneSaveManager.cpp">
       <Filter>Source\Engine\Serialization</Filter>
     </ClCompile>
@@ -2321,9 +2324,6 @@
     <ClInclude Include="Source\Engine\Audio\AudioManager.h">
       <Filter>Source\Engine\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Score\ScoreManager.h">
-      <Filter>Source\Engine\Score</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\CameraShake\CameraShakeAsset.h">
       <Filter>Source\Engine\CameraShake</Filter>
     </ClInclude>
@@ -2624,13 +2624,13 @@
     <ClInclude Include="Source\Engine\GameFramework\Actor\PlayerStart.h">
       <Filter>Source\Engine\GameFramework\Actor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\Actor\SceneTransitionTriggerActor.h">
+      <Filter>Source\Engine\GameFramework\Actor</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\Actor\SkeletalMeshActor.h">
       <Filter>Source\Engine\GameFramework\Actor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\Actor\SphereActor.h">
-      <Filter>Source\Engine\GameFramework\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\GameFramework\Actor\SceneTransitionTriggerActor.h">
       <Filter>Source\Engine\GameFramework\Actor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\GameFramework\Actor\StaticMeshActor.h">
@@ -3313,6 +3313,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Runtime\Launch.h">
       <Filter>Source\Engine\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Score\ScoreManager.h">
+      <Filter>Source\Engine\Score</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Serialization\Archive.h">
       <Filter>Source\Engine\Serialization</Filter>

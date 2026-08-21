@@ -1,5 +1,7 @@
 # Jungle GameTechLab Projects
 
+![](Thumbnail.png)
+
 정글 게임테크랩 Week 01~14 팀 프로젝트를 하나로 모은 소스 중심 아카이브입니다.
 
 각 프로젝트의 기본 브랜치 이력은 `main`에 `Week01/`~`Week14/` 경로로 병합했습니다. 기본 브랜치가 아닌 브랜치도 `archive/weekXX/bNNN/<original-name>` 형식으로 보존했습니다. `bNNN`은 Windows에서 대소문자 또는 경로가 충돌하는 Git 브랜치를 함께 보존하기 위한 고유 식별자입니다.

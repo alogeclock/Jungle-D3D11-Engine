@@ -125,14 +125,7 @@ FMOD_RELEASE_DLL = "fmod.dll"
 # 두 위치에 모두 박는다 — VS IDE / msbuild 호출 경로 모두 커버.
 GENERATE_HEADERS_TOOL = "..\\Scripts\\GenerateHeaders.py"
 GENERATE_LUA_BINDINGS_TOOL = "..\\Scripts\\GenerateLuaBindings.py"
-PYTHON_EXE_DEFAULT = r"$(MSBuildProjectDirectory)\..\Scripts\python\python.exe"
-
-# Lua (LuaJIT, 5.1 ABI) — lua51.dll 은 .gitignore 의 **/[Bb]in/* 에 걸려 있어
-# 팀원이 직접 ThirdParty\\lua\\bin\\lua51.dll 위치에 배치해야 한다 (LuaJIT 배포본).
-LUA_LIB_DIR = "ThirdParty\\lua\\lib"
-LUA_BIN_DIR = "ThirdParty\\lua\\bin"
-LUA_LIB     = "lua51.lib"
-LUA_DLL     = "lua51.dll"
+PYTHON_EXE_DEFAULT = r"$(MSBuildProjectDirectory)\..\Scripts\RunPython.bat"
 
 # FBX SDK — 동적 링크. libfbxsdk.lib(import lib) + libfbxsdk.dll 를 사용하고,
 # Debug/Release 디렉터리가 분리되어 있어 구성별로 경로를 선택한다.
@@ -165,17 +158,17 @@ NVCLOTH_DEBUG_DLL = "NvClothDEBUG_x64.dll"
 NVCLOTH_RELEASE_DLL = "NvCloth_x64.dll"
 
 # Additional linker settings
-ADDITIONAL_LIB_DIRS = [
-    f"$(ProjectDir){LUA_LIB_DIR}",
-]
+ADDITIONAL_LIB_DIRS = []
 ADDITIONAL_DEPENDENCIES = [
-    LUA_LIB,
     "xinput.lib",
+    "dinput8.lib",
+    "dxguid.lib",
 ]
 
 # NuGet packages (id, version) — restored via packages.config
 NUGET_PACKAGES = [
     ("directxtk_desktop_win10", "2025.10.28.2"),
+    ("luajit.native", "2.1.1739213504"),
 ]
 
 NS = "http://schemas.microsoft.com/developer/msbuild/2003"
@@ -449,7 +442,6 @@ def generate_vcxproj(files: dict[str, list[str]]):
             ET.SubElement(post_build, "Command").text = (
                 f'xcopy /Y "$(ProjectDir){rmlui_dir}\\*.dll" "$(OutDir)"\n'
                 f'xcopy /Y "$(ProjectDir){FMOD_LIB_DIR}\\{fmod_dll}" "$(OutDir)"\n'
-                f'xcopy /Y "$(ProjectDir){LUA_BIN_DIR}\\{LUA_DLL}" "$(OutDir)"\n'
                 f'xcopy /Y "$(ProjectDir){fbx_lib_dir}\\{FBX_DLL}" "$(OutDir)"\n'
                 f'xcopy /Y "$(ProjectDir){physx_lib_dir}\\PhysX_64.dll" "$(OutDir)"\n'
                 f'xcopy /Y "$(ProjectDir){physx_lib_dir}\\PhysXCommon_64.dll" "$(OutDir)"\n'
@@ -518,16 +510,22 @@ def generate_vcxproj(files: dict[str, list[str]]):
     else:
         ET.SubElement(proj, "ImportGroup", Label="ExtensionTargets")
 
-    # Reflection codegen — ClCompile 직전 한 번 더 보장.
+    # Reflection/Lua codegen — ClCompile 직전 한 번 더 보장.
     # PreBuildEvent 만으로는 IDE 의 IntelliSense 파싱 시점이나 incremental build 에서
     # 누락될 수 있어 BeforeTargets="ClCompile" 타깃을 별도로 둔다.
-    # PythonExe 기본값은 Globals에서 repo-local Python으로 설정한다.
+    # PythonExe 기본값은 repo-local Python, py launcher, system Python 순으로 탐색하는 wrapper다.
     refl = ET.SubElement(proj, "Target",
                          Name="GenerateReflectionHeaders",
                          BeforeTargets="ClCompile")
     ET.SubElement(refl, "Exec",
                   Command=(
                       f'"$(PythonExe)" "$(MSBuildProjectDirectory)\\{GENERATE_HEADERS_TOOL}"'
+                      f' --root "$(MSBuildProjectDirectory)"'
+                  ),
+                  WorkingDirectory="$(MSBuildProjectDirectory)")
+    ET.SubElement(refl, "Exec",
+                  Command=(
+                      f'"$(PythonExe)" "$(MSBuildProjectDirectory)\\{GENERATE_LUA_BINDINGS_TOOL}"'
                       f' --root "$(MSBuildProjectDirectory)"'
                   ),
                   WorkingDirectory="$(MSBuildProjectDirectory)")
